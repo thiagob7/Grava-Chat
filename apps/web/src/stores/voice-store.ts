@@ -11,6 +11,7 @@ import {
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
 import { ProcessadorDeVoz } from "~/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
+import { tocarSom, type SomDaInterface } from "~/lib/ui-sounds";
 import { ajustesDe, useVoicePrefs, type VoicePrefs } from "~/stores/voice-prefs";
 import { apiErrorMessage } from "~/@core/lib/api";
 import {
@@ -211,7 +212,24 @@ async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
   await track.setProcessor(processador);
 }
 
-export const useVoiceStore = create<VoiceStore>((set, store) => ({
+/**
+ * Bipe da interface, respeitando as duas razões pra ficar calado: a pessoa
+ * desligou os bipes, ou está surda (quem não quer ouvir ninguém também não quer
+ * ouvir bipe). Fica aqui, e não em cada ação, pra essa regra existir num lugar
+ * só.
+ */
+function bipe(nome: SomDaInterface) {
+  const { somDaInterface, volumeSaida } = useVoicePrefs.getState();
+  tocarSom(nome, { mudo: !somDaInterface || store_().deafened, volume: volumeSaida });
+}
+
+/** Referência tardia à store: `bipe` é definido antes de ela existir. */
+let store_: () => VoiceStore;
+
+export const useVoiceStore = create<VoiceStore>((set, store) => {
+  store_ = store;
+
+  return {
   room: null,
   channelId: null,
   connecting: false,
@@ -282,8 +300,14 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
       };
 
       room
-        .on(RoomEvent.ParticipantConnected, refresh)
-        .on(RoomEvent.ParticipantDisconnected, refresh)
+        .on(RoomEvent.ParticipantConnected, () => {
+          bipe("alguemEntrou");
+          refresh();
+        })
+        .on(RoomEvent.ParticipantDisconnected, () => {
+          bipe("alguemSaiu");
+          refresh();
+        })
         .on(RoomEvent.TrackSubscribed, refresh)
         .on(RoomEvent.TrackUnsubscribed, refresh)
         .on(RoomEvent.TrackPublished, refresh)
@@ -317,6 +341,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
 
         await prenderProcessador(room, processador);
         set({ micBlocked: false, noiseFilterAvailable: processador.supressaoDisponivel });
+        bipe("entrarNaChamada");
 
         // mesma regra da troca: se o filtro não subiu ao entrar, a preferência
         // acompanha a realidade em vez de deixar o botão aceso à toa
@@ -359,6 +384,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
     const { room } = store();
     if (!room) return;
 
+    // antes do disconnect: depois dele o `deafened` que o bipe consulta já era
+    bipe("sairDaChamada");
     await room.disconnect();
     set({ room: null, channelId: null, tiles: [], cameraEnabled: false, screenEnabled: false, processador: null });
     // Saída deliberada: não reconecta no próximo reload.
@@ -383,6 +410,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
       const { processador } = store();
       if (room && processador) await prenderProcessador(room, processador);
       set({ micBlocked: false });
+      // só depois de dar certo: bipar antes mentiria quando a permissão nega
+      bipe(next ? "desmutar" : "mutar");
     } catch {
       // permissão negada agora: volta ao estado mudo em vez de mentir na UI
       set({ micEnabled: false, micBlocked: true });
@@ -396,7 +425,15 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
     const { room, deafened } = store();
     const next = !deafened;
 
+    /**
+     * A ordem importa: o `bipe` fica calado quando você está surdo. Ficando
+     * surdo, ele toca ANTES de o estado virar; saindo, DEPOIS. Nos dois casos
+     * você ouve a confirmação — que é justamente a informação que falta quando
+     * o mundo emudece.
+     */
+    if (next) bipe("ensurdecer");
     set({ deafened: next });
+    if (!next) bipe("desensurdecer");
     // Ficar surdo também muta: ninguém fica ouvindo você sem você ouvir ninguém.
     if (next) {
       set({ micEnabled: false });
@@ -510,10 +547,12 @@ export const useVoiceStore = create<VoiceStore>((set, store) => ({
       // vídeo em conjunto funcionar de verdade.
       await room.localParticipant.setScreenShareEnabled(next, { audio: true });
       set({ screenEnabled: next, tiles: snapshot(room) });
+      bipe(next ? "liveNoAr" : "liveEncerrada");
       await updateVoiceState({ screenShare: next }).catch(() => undefined);
     } catch {
       // O usuário cancelou o seletor de tela do navegador — não é erro.
       set({ screenEnabled: false });
     }
   },
-}));
+  };
+});

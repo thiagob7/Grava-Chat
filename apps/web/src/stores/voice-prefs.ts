@@ -15,6 +15,8 @@ export interface VoicePrefs extends AjustesDeVoz {
   volumeSaida: number;
   /** tecla do push-to-talk, no formato de KeyboardEvent.code */
   teclaPtt: string;
+  /** bipes de entrar/sair/mutar. Desligável: em live incomoda. */
+  somDaInterface: boolean;
 }
 
 const PADRAO: VoicePrefs = {
@@ -23,6 +25,7 @@ const PADRAO: VoicePrefs = {
   saidaId: null,
   volumeSaida: 1,
   teclaPtt: "Space",
+  somDaInterface: true,
 };
 
 const CHAVE = "gravae:voice-prefs";

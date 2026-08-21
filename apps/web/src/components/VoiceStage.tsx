@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Mic, MicOff, MonitorUp } from "lucide-react";
 
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
@@ -7,6 +7,7 @@ import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
 import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
+import { VoiceStageControls } from "~/components/VoiceStageControls";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import { cn } from "~/lib/utils";
 
@@ -32,6 +33,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   minhasPermissoes = [],
   currentUserId,
 }) => {
+  // o alvo da tela cheia é o palco, não a página: a barra lateral não precisa ir junto
+  const palco = useRef<HTMLDivElement>(null);
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);
   const error = useVoiceStore((s) => s.error);
@@ -67,7 +70,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
   if (sharing) {
     return (
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4">
         <div className="relative flex-1 overflow-hidden rounded-lg bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
           <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs font-medium">
@@ -75,13 +78,16 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             {sharing.name} está compartilhando
           </span>
         </div>
-        <div className="flex h-24 shrink-0 gap-3 overflow-x-auto">
+        {/* a fileira ganha margem embaixo pra barra não cobrir os rostos */}
+        <div className="flex h-24 shrink-0 gap-3 overflow-x-auto pb-14">
           {tiles.map((tile) => (
             <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
               <Tile tile={tile} compact />
             </ComMenu>
           ))}
         </div>
+
+        <VoiceStageControls alvoTelaCheia={palco} />
       </div>
     );
   }
@@ -89,7 +95,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const columns = Math.min(tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : 3, 3);
 
   return (
-    <div className="flex flex-1 items-center justify-center p-6">
+    <div ref={palco} className="group relative flex flex-1 items-center justify-center bg-surface-2 p-6">
       <div
         className="grid w-full max-w-5xl gap-4"
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
@@ -101,6 +107,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         ))}
       </div>
       {!tiles.length && <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>}
+
+      <VoiceStageControls alvoTelaCheia={palco} />
     </div>
   );
 };

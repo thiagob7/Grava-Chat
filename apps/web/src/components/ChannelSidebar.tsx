@@ -19,6 +19,7 @@ import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSetti
 import { CreateChannelModal } from "~/components/CreateChannelModal";
 import { InviteModal } from "~/components/InviteModal";
 import { VoiceMembers } from "~/components/VoiceMembers";
+import { useVoiceSync } from "~/hooks/use-voice-sync";
 import { VoicePanel } from "~/components/VoicePanel";
 import {
   DropdownMenu,
@@ -72,6 +73,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
 
   const { can } = usePermissions(detail);
+
+  // a lista de quem está na chamada acompanha o LiveKit, não só o socket
+  useVoiceSync(detail?.guild.id);
   const canManage = can("MANAGE_GUILD");
   const canManageChannels = can("MANAGE_CHANNELS");
   const canManageRoles = can("MANAGE_ROLES");
@@ -300,7 +304,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         categoryId={creatingIn === false ? null : creatingIn}
         onClose={() => setCreatingIn(false)}
       />
-      <InviteModal open={inviting} guildId={detail?.guild.id} onClose={() => setInviting(false)} />
+      <InviteModal
+        open={inviting}
+        guildId={detail?.guild.id}
+        guildName={detail?.guild.name}
+        onClose={() => setInviting(false)}
+      />
 
       {detail &&
         editandoCanal &&

@@ -369,6 +369,20 @@ export const VoiceSection: React.FC = () => {
             onCheckedChange={(v) => void aplicarAjustes({ supressaoDeRuido: v })}
           />
         </div>
+
+        <div className="mt-4 flex items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">Sons da interface</p>
+            <p className="mt-0.5 text-xs text-ink-faint">
+              Bipes curtos ao entrar e sair da chamada, mutar e começar a transmitir. Quem está
+              gravando ou transmitindo costuma preferir desligado.
+            </p>
+          </div>
+          <Switch
+            checked={prefs.somDaInterface}
+            onCheckedChange={(v) => prefs.definir({ somDaInterface: v })}
+          />
+        </div>
       </section>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Settings } from "lucide-react";
+import { Headphones, HeadphoneOff, Mic, MicOff, Settings } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -7,6 +7,8 @@ import { UserSettingsModal } from "~/components/user-settings/UserSettingsModal"
 import { Button } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
+import { useVoiceStore } from "~/stores/voice-store";
 
 interface UserPanelProps {
   user: SelfUserModel;
@@ -28,6 +30,15 @@ const STATUS_LABEL: Record<string, string> = {
 export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
   // qual seção abrir: o botão de perfil vai pro perfil, a engrenagem pra conta
   const [configurando, setConfigurando] = useState<"conta" | "perfil" | null>(null);
+
+  /**
+   * Microfone e fone moram aqui, e não no painel da chamada.
+   *
+   * São preferências SUAS, não da call: entrar mutado é uma decisão que a
+   * pessoa toma antes de entrar. No painel de voz eles só existiam durante a
+   * chamada, o que fazia parecer que mutar dependia de estar em uma.
+   */
+  const { micEnabled, micBlocked, deafened, toggleMic, toggleDeafen } = useVoiceStore();
 
   return (
     <>
@@ -88,6 +99,22 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
           </PopoverContent>
         </Popover>
 
+        <BotaoDoPainel
+          label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
+          onClick={() => void toggleMic()}
+          cortado={!micEnabled || micBlocked}
+        >
+          {micEnabled && !micBlocked ? <Mic size={18} /> : <MicOff size={18} />}
+        </BotaoDoPainel>
+
+        <BotaoDoPainel
+          label={deafened ? "Ouvir" : "Ficar surdo"}
+          onClick={() => void toggleDeafen()}
+          cortado={deafened}
+        >
+          {deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
+        </BotaoDoPainel>
+
         <Tooltip label="Configurações">
           <button
             onClick={() => setConfigurando("conta")}
@@ -111,3 +138,27 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
     </>
   );
 };
+
+interface BotaoDoPainelProps {
+  children: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  /** vermelho = está cortando alguma coisa (mudo, surdo, bloqueado) */
+  cortado?: boolean;
+}
+
+const BotaoDoPainel: React.FC<BotaoDoPainelProps> = ({ children, label, onClick, cortado }) => (
+  <Tooltip label={label}>
+    <button
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={cortado}
+      className={cn(
+        "shrink-0 rounded p-1.5 transition hover:bg-surface-3",
+        cortado ? "text-danger" : "text-ink-muted hover:text-ink",
+      )}
+    >
+      {children}
+    </button>
+  </Tooltip>
+);

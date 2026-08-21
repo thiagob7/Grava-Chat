@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  AudioLines,
-  Headphones,
-  HeadphoneOff,
-  Mic,
-  MicOff,
-  MonitorUp,
-  PhoneOff,
-  Signal,
-  Video,
-  VideoOff,
-} from "lucide-react";
+import { AudioLines, MonitorUp, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
 import type { Channel } from "@gravae/shared";
 
 import { SoundboardPanel } from "~/components/SoundboardPanel";
+import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
+import { VoiceDetailsPopover } from "~/components/VoiceDetailsPopover";
+import { corDoPing, useVoicePing, type PingDaChamada } from "~/hooks/use-voice-ping";
 import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
@@ -49,20 +41,20 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({
 }) => {
   const {
     channelId,
-    micEnabled,
     micBlocked,
-    deafened,
     cameraEnabled,
     screenEnabled,
     noiseFilterAvailable,
     noiseFilterBusy,
     toggleNoiseFilter,
-    toggleMic,
-    toggleDeafen,
     toggleCamera,
     toggleScreen,
     leave,
   } = useVoiceStore();
+
+  const ping = useVoicePing();
+  // o endereço do SFU é o que dá pra mostrar como "onde a chamada está"
+  const { data: config } = useAuthConfig();
 
   // a preferência de supressão vive nas configurações do usuário; aqui é atalho
   const noiseFilter = useVoicePrefs((s) => s.supressaoDeRuido);
@@ -97,65 +89,89 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({
   const channel = channels.find((c) => c.id === channelId);
 
   return (
-    <div className="border-b border-black/20 bg-surface-1 px-2 py-2">
+    <div className="group/voz border-b border-black/20 bg-surface-1 px-2 py-2">
       <div className="mb-2 flex items-center justify-between px-1">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-online">
-            <Signal size={16} /> Voz conectada
-          </p>
+          {/*
+            Passar o mouse troca "Voz conectada" por "Detalhes de Voz"; clicar
+            abre o gráfico. O estado é a informação do dia a dia — o número e o
+            histórico só interessam quando alguém desconfia da conexão, e aí a
+            pessoa já está com o mouse ali.
+
+            As duas versões ocupam a MESMA célula de grid: empilhadas, a barra
+            não pula de altura no hover.
+          */}
+          <VoiceDetailsPopover ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>
+            <button
+              aria-label="Detalhes de voz"
+              className="grid w-full text-left text-sm font-semibold"
+            >
+              <span className="col-start-1 row-start-1 flex items-center gap-1.5 text-online transition-opacity group-hover/voz:opacity-0">
+                <IconeDeSinal ping={ping} /> Voz conectada
+              </span>
+              <span className="col-start-1 row-start-1 flex items-center gap-1.5 text-ink opacity-0 transition-opacity group-hover/voz:opacity-100">
+                <IconeDeSinal ping={ping} /> Detalhes de Voz
+              </span>
+            </button>
+          </VoiceDetailsPopover>
           <p className="truncate text-xs text-ink-muted">
             {channel?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
           </p>
         </div>
 
-        <Tooltip
-          label={
-            noiseFilterBusy
-              ? "Aplicando…"
-              : !noiseFilterAvailable
-                ? "Supressão avançada indisponível — usando a do navegador"
-                : noiseFilter
-                  ? "Supressão de ruído fornecida por Krisp"
-                  : "Supressão de ruído desligada"
-          }
-        >
-          <button
-            onClick={() => void toggleNoiseFilter()}
-            aria-label="Supressão de ruído"
-            aria-pressed={noiseFilter && noiseFilterAvailable}
-            disabled={noiseFilterBusy}
-            className={cn(
-              "rounded p-2 transition hover:bg-surface-3 disabled:opacity-50",
-              noiseFilterBusy && "animate-pulse",
-              noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
-            )}
+        {/*
+          Os dois ficam juntos, encostados na direita. Soltos como filhos
+          diretos do `justify-between`, o de supressão sobrava no meio da barra
+          — parecia deslocado e ninguém associava ao controle da chamada.
+        */}
+        <div className="flex shrink-0 items-center gap-0.5">
+          <Tooltip
+            label={
+              noiseFilterBusy
+                ? "Aplicando…"
+                : !noiseFilterAvailable
+                  ? "Supressão avançada indisponível — usando a do navegador"
+                  : noiseFilter
+                    ? "Supressão de ruído fornecida por Krisp"
+                    : "Supressão de ruído desligada"
+            }
           >
-            <AudioLines size={18} />
-          </button>
-        </Tooltip>
+            <button
+              onClick={() => void toggleNoiseFilter()}
+              aria-label="Supressão de ruído"
+              aria-pressed={noiseFilter && noiseFilterAvailable}
+              disabled={noiseFilterBusy}
+              className={cn(
+                "rounded p-2 transition hover:bg-surface-3 disabled:opacity-50",
+                noiseFilterBusy && "animate-pulse",
+                noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
+              )}
+            >
+              <AudioLines size={18} />
+            </button>
+          </Tooltip>
 
-        <Tooltip label="Desconectar">
-          <button
-            onClick={() => void leave()}
-            className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
-          >
-            <PhoneOff size={18} />
-          </button>
-        </Tooltip>
+          <Tooltip label="Desconectar">
+            <button
+              onClick={() => void leave()}
+              className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
+            >
+              <PhoneOff size={18} />
+            </button>
+          </Tooltip>
+        </div>
       </div>
 
       {micBlocked && <AvisoMicrofoneBloqueado />}
 
-      <div className="grid grid-cols-5 gap-1">
+      {/*
+        Só o que é da CHAMADA. Microfone e fone desceram pro painel do usuário:
+        eles valem pra você em qualquer lugar, e não só enquanto há chamada —
+        misturar os dois grupos fazia parecer que mutar dependia de estar em
+        call.
+      */}
+      <div className="grid grid-cols-3 gap-1">
         <SoundboardPanel guildId={guildId} podeUsar={podeUsarSons} />
-
-        <VoiceControl label={micEnabled ? "Mutar" : "Desmutar"} onClick={() => void toggleMic()}>
-          {micEnabled ? <Mic size={18} /> : <MicOff size={18} className="text-danger" />}
-        </VoiceControl>
-
-        <VoiceControl label={deafened ? "Ouvir" : "Ficar surdo"} onClick={() => void toggleDeafen()}>
-          {deafened ? <HeadphoneOff size={18} className="text-danger" /> : <Headphones size={18} />}
-        </VoiceControl>
 
         <VoiceControl label="Câmera" onClick={() => void toggleCamera()}>
           {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}
@@ -237,3 +253,31 @@ const AvisoMicrofoneBloqueado: React.FC = () => {
     </p>
   );
 };
+
+/**
+ * O sinalzinho. A cor acompanha a qualidade da conexão (verde, laranja,
+ * vermelho) e o balão traz o número — que é o que a pessoa quer conferir de
+ * relance, sem abrir nada.
+ */
+const IconeDeSinal: React.FC<{ ping: PingDaChamada }> = ({ ping }) => (
+  <Tooltip label={ping.ms !== null ? `${ping.ms} ms` : "Medindo…"}>
+    <span className={corDoPing(ping)}>
+      <Signal size={16} />
+    </span>
+  </Tooltip>
+);
+
+/**
+ * O nome que aparece nos detalhes. Não temos regiões como o LiveKit Cloud, e
+ * inventar uma sigla seria pior que nada — então mostramos o host real do SFU,
+ * que é a informação de verdade quando algo está lento.
+ */
+function regiaoDaChamada(url: string | undefined): string {
+  if (!url) return "Servidor de voz";
+
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return "Servidor de voz";
+  }
+}
