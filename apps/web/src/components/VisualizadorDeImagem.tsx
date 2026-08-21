@@ -1,0 +1,60 @@
+import React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { ExternalLink, X } from "lucide-react";
+
+import { useLightbox } from "~/stores/lightbox";
+
+/**
+ * A imagem em tela cheia, dentro do app.
+ *
+ * Antes, clicar numa imagem ou num GIF abria o navegador — no aplicativo de
+ * desktop isso é pior ainda: joga a pessoa pra fora do Gravaê no meio da
+ * conversa, e não há botão de voltar. O Radix cuida do Esc, do clique fora e
+ * do foco preso.
+ */
+export const VisualizadorDeImagem: React.FC = () => {
+  const url = useLightbox((s) => s.url);
+  const alt = useLightbox((s) => s.alt);
+  const fechar = useLightbox((s) => s.fechar);
+
+  if (!url) return null;
+
+  return (
+    <DialogPrimitive.Root open onOpenChange={(aberto) => !aberto && fechar()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
+
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 p-10 outline-none"
+          // clicar no fundo fecha; no conteúdo, não
+          onClick={(e) => e.target === e.currentTarget && fechar()}
+        >
+          <DialogPrimitive.Title className="sr-only">{alt || "Imagem"}</DialogPrimitive.Title>
+
+          <img
+            src={url}
+            alt={alt}
+            className="max-h-[80vh] max-w-full rounded object-contain shadow-2xl"
+          />
+
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex items-center gap-1.5 text-xs text-ink-muted transition hover:text-ink"
+          >
+            <ExternalLink size={13} /> Abrir no navegador
+          </a>
+
+          <DialogPrimitive.Close
+            aria-label="Fechar"
+            className="absolute right-5 top-5 rounded p-1 text-ink-muted transition hover:bg-white/10 hover:text-ink"
+          >
+            <X size={24} />
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+};

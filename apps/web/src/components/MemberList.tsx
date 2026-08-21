@@ -1,0 +1,156 @@
+import React, { useMemo } from "react";
+import type { GuildMember, Role } from "@gravae/shared";
+
+import { Avatar } from "~/components/Avatar";
+import { ServerTag } from "~/components/ServerTag";
+import { UserProfilePopover } from "~/components/UserProfilePopover";
+import { cn } from "~/lib/utils";
+import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+
+interface MemberListProps {
+  members: GuildMember[];
+  roles?: Role[];
+  ownerId: string | undefined;
+  /** etiqueta do servidor, que aparece ao lado de cada nome */
+  tag?: string | null;
+  tagIcon?: string | null;
+}
+
+/** A cor do nome vem do cargo mais alto que TEM cor — cargo sem cor não pinta. */
+function corDoMembro(member: GuildMember, roles: Role[]): string | null {
+  return (
+    roles
+      .filter((r) => r.color && member.roleIds.includes(r.id))
+      .sort((a, b) => b.position - a.position)[0]?.color ?? null
+  );
+}
+
+export const MemberList: React.FC<MemberListProps> = ({
+  members,
+  roles = [],
+  ownerId,
+  tag,
+  tagIcon,
+}) => {
+  /**
+   * Cargos com "exibir separado" ganham a própria seção, do mais alto para o
+   * mais baixo, e cada pessoa aparece uma vez só — no cargo mais alto dela.
+   * Quem sobra cai em Online, e quem está fora fica sempre por último.
+   */
+  const grupos = useMemo(() => {
+    const hoisted = roles
+      .filter((r) => r.hoist && !r.isEveryone)
+      .sort((a, b) => b.position - a.position);
+
+    const online = members.filter((m) => m.user.status !== "OFFLINE");
+    const offline = members.filter((m) => m.user.status === "OFFLINE");
+    const jaListados = new Set<string>();
+
+    const seccoes = hoisted.map((role) => {
+      const doCargo = online.filter((m) => !jaListados.has(m.id) && m.roleIds.includes(role.id));
+      doCargo.forEach((m) => jaListados.add(m.id));
+
+      return { titulo: `${role.name} — ${doCargo.length}`, membros: doCargo, dim: false };
+    });
+
+    const restante = online.filter((m) => !jaListados.has(m.id));
+
+    return [
+      ...seccoes.filter((s) => s.membros.length),
+      { titulo: `Online — ${restante.length}`, membros: restante, dim: false },
+      { titulo: `Offline — ${offline.length}`, membros: offline, dim: true },
+    ];
+  }, [members, roles]);
+
+  const { largura, arrastando, alca, limites } = useLarguraAjustavel("membros", {
+    padrao: 240,
+    min: 170,
+    max: 400,
+    borda: "esquerda",
+  });
+
+  return (
+    /*
+      A rolagem fica no filho, e não no <aside>: a alça é posicionada em
+      relação ao painel, e num container que rola ela subiria junto com a
+      lista até sumir da tela.
+    */
+    <aside
+      className="relative hidden shrink-0 bg-surface-1 lg:block"
+      style={{ width: largura }}
+    >
+      <AlcaDeLargura borda="esquerda" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
+
+      <div className="h-full overflow-y-auto px-2 py-4">
+        {grupos.map((grupo) => (
+          <MemberGroup
+            key={grupo.titulo}
+            title={grupo.titulo}
+            members={grupo.membros}
+            roles={roles}
+            ownerId={ownerId}
+            tag={tag}
+            tagIcon={tagIcon}
+            dim={grupo.dim}
+          />
+        ))}
+      </div>
+    </aside>
+  );
+};
+
+interface MemberGroupProps extends MemberListProps {
+  title: string;
+  dim?: boolean;
+}
+
+const MemberGroup: React.FC<MemberGroupProps> = ({
+  title,
+  members,
+  roles = [],
+  ownerId,
+  tag,
+  tagIcon,
+  dim,
+}) => {
+  if (!members.length) return null;
+
+  return (
+    <section className="mb-5">
+      <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">{title}</h3>
+      {members.map((member) => {
+        const cor = corDoMembro(member, roles);
+
+        return (
+          <UserProfilePopover key={member.id} userId={member.user.id} side="left">
+            <button
+              className={cn(
+                "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
+                dim && "opacity-40",
+              )}
+            >
+              <Avatar
+                id={member.user.id}
+                name={member.nickname ?? member.user.displayName}
+                url={member.user.avatarUrl}
+                size={32}
+                status={member.user.status}
+              />
+              <span
+                className={cn(
+                  "min-w-0 flex-1 truncate text-sm font-medium",
+                  cor ? "" : "text-ink-muted",
+                )}
+                style={cor ? { color: cor } : undefined}
+              >
+                {member.nickname ?? member.user.displayName}
+              </span>
+              <ServerTag tag={tag} icone={tagIcon} />
+              {member.user.id === ownerId && <span title="Dono do servidor">👑</span>}
+            </button>
+          </UserProfilePopover>
+        );
+      })}
+    </section>
+  );
+};

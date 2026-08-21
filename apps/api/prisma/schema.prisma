@@ -1,0 +1,558 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum ChannelType {
+  TEXT
+  VOICE
+  FORUM
+}
+
+/// Como o conteúdo do canal se comporta: normal, borrado até clicar, ou +18.
+enum ContentVisibility {
+  DEFAULT
+  SPOILER
+  AGE_RESTRICTED
+}
+
+enum VideoQuality {
+  AUTO
+  HD
+}
+
+/// O que gerou a mensagem. USER é gente escrevendo; o resto o sistema cria.
+enum MessageType {
+  USER
+  JOIN
+}
+
+enum AutoModTrigger {
+  WORDS
+  MENTION_SPAM
+  LINKS
+}
+
+enum AutoModAction {
+  BLOCK
+  ALERT
+  TIMEOUT
+}
+
+enum PresenceStatus {
+  ONLINE
+  IDLE
+  DND
+  OFFLINE
+}
+
+enum OverwriteType {
+  ROLE
+  MEMBER
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+/// Anexo fica embutido na mensagem (composite type do Mongo) em vez de colecao
+/// separada: sempre e lido junto com a mensagem e nunca e consultado sozinho.
+type Attachment {
+  id          String
+  url         String
+  filename    String
+  contentType String
+  size        Int
+  width       Int?
+  height      Int?
+  /// chega borrado e só abre no clique
+  spoiler     Boolean @default(false)
+  /// texto alternativo, para quem usa leitor de tela
+  description String?
+}
+
+/// Uma opção da enquete. Os votos ficam com a opção porque é assim que a tela
+/// lê — nunca precisamos "todos os votos de uma pessoa" no servidor inteiro.
+type PollOption {
+  id      String
+  texto   String
+  emoji   String?
+  /// ids de quem votou nesta opção
+  userIds String[] @db.ObjectId
+}
+
+type Poll {
+  pergunta    String
+  opcoes      PollOption[]
+  /// permite marcar mais de uma opção
+  multiSelect Boolean     @default(false)
+  expiresAt   DateTime?
+  closedAt    DateTime?
+}
+
+model User {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  email       String         @unique
+  username    String         @unique
+  displayName String
+  avatarUrl   String?
+  bio         String?
+  /// conta de webhook: não faz login, não aparece na lista de membros
+  isBot       Boolean        @default(false)
+  status      PresenceStatus @default(OFFLINE)
+  lastSeenAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  accounts            Account[]
+  refreshTokens       RefreshToken[]
+  memberships         GuildMember[]
+  ownedGuilds         Guild[]        @relation("GuildOwner")
+  messages            Message[]
+  reactions           Reaction[]
+  readStates          ReadState[]
+  invitesCreated      Invite[]
+  streamKeys          StreamKey[]
+  friendshipsSent     Friendship[]   @relation("FriendshipRequester")
+  friendshipsReceived Friendship[]   @relation("FriendshipAddressee")
+  webhookIdentity     Webhook?       @relation("WebhookBot")
+  webhooksCreated     Webhook[]      @relation("WebhookCreator")
+  auditLogs           AuditLog[]     @relation("AuditActor")
+  bans                Ban[]          @relation("BanTarget")
+  forumPosts          ForumPost[]    @relation("PostAuthor")
+}
+
+/// Um endereço que posta num canal sem login: quem tem o token, escreve.
+///
+/// Cada webhook tem um `User` marcado com `isBot` e a mensagem é DELE. Assim
+/// nada no resto do sistema precisa saber que webhooks existem — histórico,
+/// avatar, nome e serialização já funcionam.
+model Webhook {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId   String   @db.ObjectId
+  guild     Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  channelId String   @db.ObjectId
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  name      String
+  avatarUrl String?
+  /// Em texto puro de propósito: a URL completa precisa poder ser copiada de
+  /// novo depois, como no Discord. Quem tem o token posta — trate como senha.
+  token     String   @unique
+  /// o usuário-bot que assina as mensagens deste webhook
+  botUserId String   @unique @db.ObjectId
+  bot       User     @relation("WebhookBot", fields: [botUserId], references: [id], onDelete: Cascade)
+  createdById String @db.ObjectId
+  createdBy User     @relation("WebhookCreator", fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([guildId])
+  @@index([channelId])
+}
+
+/// Uma conta de provedor externo (hoje so google). Model separado do User pra
+/// que amanha dar pra plugar Discord/GitHub sem migrar nada.
+model Account {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+/// Guardamos o HASH do refresh token, nunca o token. Se o banco vazar, ninguem
+/// consegue se passar por usuario. Ter no banco (em vez de so JWT) e o que
+/// permite "sair de todos os dispositivos".
+model RefreshToken {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  /// Substituido por um refresh normal. Aceita a janela de tolerancia.
+  supersededAt DateTime?
+  /// Revogado de verdade (logout). NUNCA aceito de novo.
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Guild {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  iconUrl     String?
+  description String?
+  /// etiqueta de até 4 letras que aparece do lado do nome de quem é membro
+  tag       String?
+  tagIcon   String?
+  /// canal onde caem as mensagens do sistema (boas-vindas)
+  systemChannelId String? @db.ObjectId
+  welcomeEnabled  Boolean @default(true)
+  ownerId   String   @db.ObjectId
+  owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    GuildMember[]
+  categories Category[]
+  channels   Channel[]
+  invites    Invite[]
+  roles      Role[]
+  webhooks   Webhook[]
+  bans       Ban[]
+  auditLogs  AuditLog[]
+  emojis     GuildEmoji[]
+  stickers   GuildSticker[]
+  sounds     GuildSound[]
+  automod    AutoModRule[]
+
+  @@index([ownerId])
+}
+
+model GuildMember {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId  String   @db.ObjectId
+  guild    Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  userId   String   @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Cargos desta pessoa neste servidor. O @everyone é implícito — todo membro
+  /// o tem, então guardá-lo aqui seria só ruído duplicado em cada documento.
+  roleIds  String[] @db.ObjectId
+  nickname String?
+  /// de castigo até esta hora: não escreve nem fala
+  timeoutUntil DateTime?
+  joinedAt DateTime @default(now())
+
+  @@unique([guildId, userId])
+  @@index([userId])
+}
+
+/// Cargo do servidor. As permissões são nomes, não bitfield — ver
+/// packages/shared/src/permissions.ts.
+model Role {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId     String   @db.ObjectId
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name        String
+  /// hex (#5865f2); null usa a cor padrão do tema
+  color       String?
+  /// hierarquia: maior manda mais. O @everyone é sempre 0.
+  position    Int      @default(0)
+  permissions String[]
+  /// exibir os membros deste cargo separadamente na lista
+  hoist       Boolean  @default(false)
+  mentionable Boolean  @default(false)
+  /// o cargo padrão do servidor; exatamente um por servidor
+  isEveryone  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  overwrites PermissionOverwrite[]
+
+  @@index([guildId, position])
+}
+
+/// Exceção de permissão dentro de um canal, para um cargo ou uma pessoa.
+model PermissionOverwrite {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String        @db.ObjectId
+  channel   Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  /// id de um Role ou de um User, conforme `type`
+  targetId  String        @db.ObjectId
+  role      Role?         @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  type      OverwriteType
+  allow     String[]
+  deny      String[]
+
+  @@unique([channelId, targetId])
+  @@index([channelId])
+}
+
+model Category {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  guildId  String  @db.ObjectId
+  guild    Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name     String
+  position Int     @default(0)
+
+  channels Channel[]
+
+  @@index([guildId, position])
+}
+
+model Channel {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  /// null = DM (conversa direta, fora de qualquer servidor)
+  guildId    String?     @db.ObjectId
+  guild      Guild?      @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  categoryId String?     @db.ObjectId
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name       String
+  type       ChannelType @default(TEXT)
+  topic      String?
+  position   Int         @default(0)
+  isPrivate  Boolean     @default(false)
+  /// segundos entre uma mensagem e a próxima da mesma pessoa; 0 = desligado
+  slowmodeSeconds Int    @default(0)
+  contentVisibility ContentVisibility @default(DEFAULT)
+  /// só canal de voz daqui pra baixo
+  bitrate    Int         @default(64000)
+  videoQuality VideoQuality @default(AUTO)
+  /// 0 = sem limite
+  userLimit  Int         @default(0)
+  /// so usado quando guildId e null
+  recipients String[]    @db.ObjectId
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  messages   Message[]
+  readStates ReadState[]
+  invites    Invite[]
+  streamKeys StreamKey[]
+  overwrites PermissionOverwrite[]
+  webhooks   Webhook[]
+  posts      ForumPost[]
+
+  @@index([guildId, position])
+  @@index([categoryId])
+}
+
+model Message {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  channelId   String       @db.ObjectId
+  channel     Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  authorId    String       @db.ObjectId
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content     String
+  tipo        MessageType  @default(USER)
+  attachments Attachment[]
+  poll        Poll?
+  /// figurinha do servidor, quando a mensagem é só ela
+  stickerId   String?       @db.ObjectId
+  sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
+  replyToId   String?      @db.ObjectId
+  mentions    String[]     @db.ObjectId
+  /// post do fórum a que esta mensagem pertence; null nos canais normais
+  postId      String?      @db.ObjectId
+  post        ForumPost?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  pinnedAt    DateTime?
+  pinnedById  String?      @db.ObjectId
+  createdAt   DateTime     @default(now())
+  editedAt    DateTime?
+  deletedAt   DateTime?
+
+  reactions Reaction[]
+
+  /// Indice que sustenta a paginacao por cursor do historico do canal.
+  @@index([channelId, createdAt])
+  @@index([postId, createdAt])
+  @@index([channelId, pinnedAt])
+  @@index([authorId])
+}
+
+model Reaction {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  messageId String   @db.ObjectId
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+}
+
+/// Onde cada usuario parou de ler em cada canal — e o que acende a bolinha de
+/// nao-lidas na sidebar.
+model ReadState {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channelId         String   @db.ObjectId
+  channel           Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  lastReadMessageId String?  @db.ObjectId
+  mentionCount      Int      @default(0)
+  updatedAt         DateTime @updatedAt
+
+  @@unique([userId, channelId])
+  @@index([userId])
+}
+
+model Invite {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  code      String    @unique
+  guildId   String    @db.ObjectId
+  guild     Guild     @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  channelId String?   @db.ObjectId
+  channel   Channel?  @relation(fields: [channelId], references: [id], onDelete: SetNull)
+  inviterId String    @db.ObjectId
+  inviter   User      @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  uses      Int       @default(0)
+  maxUses   Int?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([guildId])
+}
+
+/// Chave de transmissao do OBS (Fase 4). Uma por usuario+canal, rotacionavel.
+model StreamKey {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channelId String   @db.ObjectId
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime?
+
+  @@unique([userId, channelId])
+}
+
+model Friendship {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  requesterId String           @db.ObjectId
+  requester   User             @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String           @db.ObjectId
+  addressee   User             @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
+}
+
+/// Quem fez o quê no servidor. Só cresce — nada aqui é editado depois.
+model AuditLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId    String   @db.ObjectId
+  guild      Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  actorId    String   @db.ObjectId
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  /// ex.: "role.create", "member.ban", "channel.update"
+  action     String
+  targetType String
+  targetId   String?
+  /// nome no momento da ação: o alvo pode ser apagado depois
+  targetName String?
+  /// o que mudou, campo a campo — { nome: { de: "x", para: "y" } }
+  changes    Json?
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  @@index([guildId, createdAt])
+}
+
+model Ban {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId     String   @db.ObjectId
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  userId      String   @db.ObjectId
+  user        User     @relation("BanTarget", fields: [userId], references: [id], onDelete: Cascade)
+  moderatorId String   @db.ObjectId
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  @@unique([guildId, userId])
+  @@index([guildId])
+}
+
+model AutoModRule {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  guildId        String          @db.ObjectId
+  guild          Guild           @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name           String
+  enabled        Boolean         @default(true)
+  trigger        AutoModTrigger
+  /// para WORDS: as palavras barradas, já em minúsculas
+  palavras       String[]
+  /// para MENTION_SPAM: a partir de quantas menções bloqueia
+  limiteMencoes  Int?
+  acoes          AutoModAction[]
+  alertChannelId String?         @db.ObjectId
+  timeoutSeconds Int?
+  /// cargos que a regra ignora
+  cargosIsentos  String[]        @db.ObjectId
+  createdAt      DateTime        @default(now())
+
+  @@index([guildId])
+}
+
+model GuildEmoji {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId     String   @db.ObjectId
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name        String
+  url         String
+  animated    Boolean  @default(false)
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  @@unique([guildId, name])
+  @@index([guildId])
+}
+
+model GuildSticker {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId       String   @db.ObjectId
+  guild         Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  /// emoji que representa a figurinha na busca
+  relatedEmoji  String
+  url           String
+  createdById   String   @db.ObjectId
+  createdAt     DateTime @default(now())
+
+  messages Message[]
+
+  @@index([guildId])
+}
+
+model GuildSound {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId     String   @db.ObjectId
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  name        String
+  emoji       String?
+  url         String
+  /// 0..1 — volume gravado com o som, para não estourar na chamada
+  volume      Float    @default(1)
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  @@index([guildId])
+}
+
+/// Um assunto dentro de um canal de fórum. As respostas são Messages com postId.
+model ForumPost {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  channelId     String    @db.ObjectId
+  channel       Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  guildId       String    @db.ObjectId
+  authorId      String    @db.ObjectId
+  author        User      @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  title         String
+  tags          String[]
+  /// ordena a lista: assunto com resposta nova sobe
+  lastMessageAt DateTime  @default(now())
+  messageCount  Int       @default(0)
+  closedAt      DateTime?
+  createdAt     DateTime  @default(now())
+
+  messages Message[]
+
+  @@index([channelId, lastMessageAt])
+}

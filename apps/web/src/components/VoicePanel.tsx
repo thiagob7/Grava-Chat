@@ -1,0 +1,239 @@
+import React, { useEffect, useState } from "react";
+import {
+  AudioLines,
+  Headphones,
+  HeadphoneOff,
+  Mic,
+  MicOff,
+  MonitorUp,
+  PhoneOff,
+  Signal,
+  Video,
+  VideoOff,
+} from "lucide-react";
+import type { Channel } from "@gravae/shared";
+
+import { SoundboardPanel } from "~/components/SoundboardPanel";
+import { desktop } from "~/lib/desktop";
+import { Tooltip } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
+import { useVoicePrefs } from "~/stores/voice-prefs";
+import { useVoiceStore } from "~/stores/voice-store";
+
+interface VoicePanelProps {
+  guildName: string | undefined;
+  guildId?: string;
+  /** o painel de sons só aparece pra quem pode usar */
+  podeUsarSons?: boolean;
+  channels: Channel[];
+  /**
+   * Canal em que a CONTA está (vem do servidor). Pode ser diferente do canal em
+   * que ESTA aba está conectada — a mesma conta pode ter várias abas abertas,
+   * mas só uma segura a sessão de mídia.
+   */
+  accountChannelId?: string | null;
+  onMoveHere?: (channelId: string) => void;
+}
+
+/**
+ * O painel de "Voz conectada" acima do seu usuário — o controle precisa estar
+ * sempre à mão, mesmo navegando por outros canais.
+ */
+export const VoicePanel: React.FC<VoicePanelProps> = ({
+  guildName,
+  guildId,
+  podeUsarSons = false,
+  channels,
+  accountChannelId,
+  onMoveHere,
+}) => {
+  const {
+    channelId,
+    micEnabled,
+    micBlocked,
+    deafened,
+    cameraEnabled,
+    screenEnabled,
+    noiseFilterAvailable,
+    noiseFilterBusy,
+    toggleNoiseFilter,
+    toggleMic,
+    toggleDeafen,
+    toggleCamera,
+    toggleScreen,
+    leave,
+  } = useVoiceStore();
+
+  // a preferência de supressão vive nas configurações do usuário; aqui é atalho
+  const noiseFilter = useVoicePrefs((s) => s.supressaoDeRuido);
+
+  /**
+   * A conta está numa chamada, mas não é esta aba. Sem mostrar isso, a barra
+   * lateral diz que você está na Sala 1 e o painel some — parece contradição.
+   */
+  if (!channelId && accountChannelId) {
+    const remote = channels.find((c) => c.id === accountChannelId);
+
+    return (
+      <div className="border-b border-black/20 bg-surface-1 px-3 py-2.5">
+        <p className="flex items-center gap-1.5 text-sm font-medium text-idle">
+          <Signal size={16} /> Em chamada em outra aba
+        </p>
+        <p className="mt-0.5 truncate text-xs text-ink-muted">
+          {remote?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
+        </p>
+        <button
+          onClick={() => onMoveHere?.(accountChannelId)}
+          className="mt-1.5 text-xs font-medium text-brand hover:underline"
+        >
+          Trazer a chamada para esta aba
+        </button>
+      </div>
+    );
+  }
+
+  if (!channelId) return null;
+
+  const channel = channels.find((c) => c.id === channelId);
+
+  return (
+    <div className="border-b border-black/20 bg-surface-1 px-2 py-2">
+      <div className="mb-2 flex items-center justify-between px-1">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-online">
+            <Signal size={16} /> Voz conectada
+          </p>
+          <p className="truncate text-xs text-ink-muted">
+            {channel?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
+          </p>
+        </div>
+
+        <Tooltip
+          label={
+            noiseFilterBusy
+              ? "Aplicando…"
+              : !noiseFilterAvailable
+                ? "Supressão avançada indisponível — usando a do navegador"
+                : noiseFilter
+                  ? "Supressão de ruído fornecida por Krisp"
+                  : "Supressão de ruído desligada"
+          }
+        >
+          <button
+            onClick={() => void toggleNoiseFilter()}
+            aria-label="Supressão de ruído"
+            aria-pressed={noiseFilter && noiseFilterAvailable}
+            disabled={noiseFilterBusy}
+            className={cn(
+              "rounded p-2 transition hover:bg-surface-3 disabled:opacity-50",
+              noiseFilterBusy && "animate-pulse",
+              noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
+            )}
+          >
+            <AudioLines size={18} />
+          </button>
+        </Tooltip>
+
+        <Tooltip label="Desconectar">
+          <button
+            onClick={() => void leave()}
+            className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
+          >
+            <PhoneOff size={18} />
+          </button>
+        </Tooltip>
+      </div>
+
+      {micBlocked && <AvisoMicrofoneBloqueado />}
+
+      <div className="grid grid-cols-5 gap-1">
+        <SoundboardPanel guildId={guildId} podeUsar={podeUsarSons} />
+
+        <VoiceControl label={micEnabled ? "Mutar" : "Desmutar"} onClick={() => void toggleMic()}>
+          {micEnabled ? <Mic size={18} /> : <MicOff size={18} className="text-danger" />}
+        </VoiceControl>
+
+        <VoiceControl label={deafened ? "Ouvir" : "Ficar surdo"} onClick={() => void toggleDeafen()}>
+          {deafened ? <HeadphoneOff size={18} className="text-danger" /> : <Headphones size={18} />}
+        </VoiceControl>
+
+        <VoiceControl label="Câmera" onClick={() => void toggleCamera()}>
+          {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}
+        </VoiceControl>
+
+        <VoiceControl label="Compartilhar tela" onClick={() => void toggleScreen()}>
+          <MonitorUp size={18} className={screenEnabled ? "text-online" : undefined} />
+        </VoiceControl>
+      </div>
+    </div>
+  );
+};
+
+interface VoiceControlProps {
+  children: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}
+
+const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick }) => (
+  <Tooltip label={label}>
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="flex items-center justify-center rounded bg-surface-3 py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+    >
+      {children}
+    </button>
+  </Tooltip>
+);
+
+/**
+ * "Microfone bloqueado" tem duas causas bem diferentes, e mandar a pessoa pro
+ * lugar errado custa meia hora dela.
+ *
+ * No navegador é a permissão do site. No aplicativo, quase sempre é o macOS —
+ * uma camada ANTES do Chromium, que o Gravaê não tem como conceder sozinho e
+ * que fica numa tela que ninguém acha por acaso.
+ */
+const AvisoMicrofoneBloqueado: React.FC = () => {
+  const ponte = desktop();
+  const [statusDoSistema, setStatusDoSistema] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ponte) return;
+    void ponte.midia.status("microphone").then(setStatusDoSistema);
+  }, [ponte]);
+
+  if (!ponte) {
+    return (
+      <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+        Microfone bloqueado — você está só ouvindo. Libere o acesso nas permissões do navegador.
+      </p>
+    );
+  }
+
+  if (statusDoSistema && statusDoSistema !== "granted") {
+    return (
+      <div className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+        <p>
+          O macOS está bloqueando o microfone. Marque o <b>{ponte.nomeNoSistema}</b> em{" "}
+          <b>Ajustes do Sistema → Privacidade e Segurança → Microfone</b>.
+        </p>
+        <button
+          onClick={() => ponte.midia.abrirAjustes("microphone")}
+          className="mt-1.5 rounded bg-danger/25 px-2 py-1 font-medium transition hover:bg-danger/40"
+        >
+          Abrir os ajustes
+        </button>
+        <p className="mt-1.5 text-ink-faint">O macOS vai pedir pra reabrir o aplicativo.</p>
+      </div>
+    );
+  }
+
+  return (
+    <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+      Não deu pra abrir o microfone — você está só ouvindo. Confira o dispositivo em Configurações
+      → Voz e vídeo.
+    </p>
+  );
+};

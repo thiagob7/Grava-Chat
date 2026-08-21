@@ -1,0 +1,33 @@
+{
+  "name": "gravae-chat",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "yarn workspace @gravae/api db:generate",
+    "dev": "turbo run dev --filter=!@gravae/desktop",
+    "desktop": "yarn workspace @gravae/desktop dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "infra:reset": "docker compose -f infra/docker-compose.yml down -v",
+    "infra:logs": "docker compose -f infra/docker-compose.yml logs -f",
+    "db:push": "yarn workspace @gravae/api db:push",
+    "db:generate": "yarn workspace @gravae/api db:generate",
+    "db:studio": "yarn workspace @gravae/api db:studio",
+    "limpar": "yarn workspace @gravae/api limpar"
+  },
+  "devDependencies": {
+    "turbo": "2.10.11",
+    "typescript": "5.9.3"
+  }
+}

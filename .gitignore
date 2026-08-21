@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.turbo/
+.env
+.env.local
+*.log
+.DS_Store
+apps/api/prisma/generated/
+infra/data/
+release/
+
+# Anotacoes de sessao: ficam so na maquina
+PROXIMA_SESSAO.md

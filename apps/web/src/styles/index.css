@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/*
+  Tokens do tema. Tudo no app usa estes nomes (bg-surface-1, text-muted...)
+  em vez de cor solta tipo bg-[#313338]: quando quisermos tema claro ou
+  customizar por servidor, muda so aqui.
+*/
+@theme {
+  /*
+    Paleta do Gravaê — os mesmos valores do backoffice
+    (`GravaeV2/backoffice/src/styles/global.css`), traduzidos para os nomes que
+    este app já usa. Tudo aqui usa `bg-surface-1`, `text-ink-muted` e afins em
+    vez de cor solta, então trocar a marca é trocar este bloco.
+
+    Antes eram as cores do Discord, copiadas tal e qual. Os cinzas do Gravaê são
+    mais frios e mais escuros, e o acento é o vermelho da marca.
+  */
+  --color-surface-0: #121214; /* coluna dos servidores (gray-900) */
+  --color-surface-1: #18181b; /* sidebar de canais    (gray-800) */
+  --color-surface-2: #202024; /* área de chat         (gray-850) */
+  --color-surface-3: #27272a; /* input, hover         (gray-700) */
+  --color-surface-4: #353539; /* elementos elevados   (gray-650) */
+
+  --color-line: #29292e; /* gray-750 — some no fundo, aparece na borda */
+
+  --color-ink: #e1e1e6; /* gray-100 */
+  --color-ink-muted: #a8a8b3; /* gray-300 */
+  --color-ink-faint: #666675; /* gray-400 */
+
+  --color-brand: #d30404; /* red-300 — o vermelho do ponto da marca */
+  --color-brand-hover: #a90303; /* red-400 */
+
+  --color-online: #17c964; /* green-350 */
+  --color-idle: #febc2f; /* orange-100 */
+
+  /*
+    Com a marca em vermelho, "perigo" precisa gritar MAIS ALTO que o botão
+    primário — senão excluir um servidor e confirmar um convite viram o mesmo
+    botão. Este é um tom mais claro do mesmo vermelho, para essa distinção.
+  */
+  --color-dnd: #f13a3a;
+  --color-danger: #f13a3a;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-2 text-ink font-sans antialiased;
+    margin: 0;
+    overscroll-behavior: none;
+  }
+
+  /**
+   * O Tailwind 4 tirou o `cursor: pointer` padrão dos botões. Sem isto, metade
+   * do app parece morta ao passar o mouse — a mão só aparecia em link.
+   */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label:has(> input[type="checkbox"]),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Scrollbar fina estilo Discord — sem isso a barra branca do Mac destoa
+     completamente do tema escuro. */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-0 rounded-full;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+}

@@ -1,0 +1,22 @@
+# Configuracao de DESENVOLVIMENTO do SFU. A de producao muda node_ip e as chaves.
+port: 7880
+log_level: info
+
+rtc:
+  # Uma unica porta UDP multiplexada em vez de uma faixa: no Docker Desktop do
+  # Mac, publicar uma faixa de 100 portas UDP e lento e pouco confiavel.
+  udp_port: 7882
+  # Fallback TCP pra quem esta atras de firewall que bloqueia UDP.
+  tcp_port: 7881
+  use_external_ip: false
+  # Sem isso o LiveKit anuncia o IP interno do container (172.x), que o
+  # navegador no host nao alcanca — a chamada conecta e fica muda pra sempre.
+  node_ip: 127.0.0.1
+
+keys:
+  devkey: devsecret-precisa-ter-no-minimo-32-caracteres
+
+room:
+  # Sala some sozinha quando o ultimo sai: ninguem precisa "fechar" o canal.
+  empty_timeout: 60
+  max_participants: 30

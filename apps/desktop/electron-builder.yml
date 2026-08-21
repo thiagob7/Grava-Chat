@@ -1,0 +1,76 @@
+# Empacotamento do aplicativo de desktop.
+#
+# O motivo de existir não é distribuição — é IDENTIDADE. Em desenvolvimento o
+# executável é o Electron genérico, e o macOS guarda as permissões debaixo de
+# quem lançou o processo. Resultado: microfone e gravação de tela ficavam
+# negados sem o app sequer aparecer nas listas de Privacidade. Empacotado, ele
+# vira "Gravaê Chat" com identificador próprio, pede as permissões sozinho e
+# aparece na lista com o nome dele.
+appId: io.gravae.chat
+
+# ⚠️ SEM ACENTO AQUI, de propósito. O `productName` batiza o executável e os
+# quatro processos auxiliares ("… Helper.app", "… Helper (GPU).app", …). Com
+# "Gravaê" no nome, o app empacotado MORRE em SIGTRAP no processo principal,
+# antes do `app.whenReady()` — sem janela, sem uma linha de erro. O mesmo
+# bundle com nome ASCII abre normalmente; foi o único ajuste entre os dois
+# empacotamentos. O acento volta logo abaixo, em `CFBundleDisplayName`, que é
+# o que o Finder, o Dock e o menu mostram.
+productName: Gravae Chat
+copyright: Gravaê
+
+# O uiohook-napi é N-API e já vem com o `.node` pronto pra cada plataforma
+# (prebuilds/darwin-arm64/…). Recompilar não só é desnecessário como quebra:
+# o node-gyp depende do Python do sistema, e o do homebrew está com o pyexpat
+# corrompido. N-API é justamente a promessa de não precisar recompilar.
+npmRebuild: false
+
+# A assinatura ad-hoc fica com o electron-builder (`identity: "-"`), que assina
+# de dentro pra fora — frameworks e helpers antes do bundle externo. O
+# `codesign --deep` feito à mão sai na ordem errada.
+
+directories:
+  output: release
+  buildResources: build
+
+# `dist` é o bundle do tsup (main + preload). O `package.json` entra porque o
+# Electron lê o campo `main` dele pra saber por onde começar.
+#
+# ⚠️ Só globs simples aqui. Misturar com entradas `from:`/`to:` faz o
+# electron-builder ignorar os globs — o app saiu empacotado SEM o próprio
+# código, abrindo um processo sem janela nenhuma. E aquelas entradas eram
+# inúteis: ele já resolve sozinho as dependências içadas pelo yarn workspaces.
+files:
+  - dist/**
+  - package.json
+
+# um `.node` dentro do asar não carrega — o `require` nativo precisa de arquivo
+# de verdade no disco
+asarUnpack:
+  - "**/node_modules/uiohook-napi/**"
+
+mac:
+  category: public.app-category.social-networking
+  icon: build/icon.icns
+  target:
+    - target: dmg
+      arch: [arm64]
+  # Sem conta de desenvolvedor Apple: assinatura ad-hoc. Dá ao app uma
+  # identidade estável, que é do que o TCC precisa pra guardar a permissão.
+  identity: "-"
+  hardenedRuntime: false
+  # Sem estes textos o macOS NEGA o pedido sem mostrar nada — a permissão nem
+  # chega a ser perguntada.
+  extendInfo:
+    # O nome bonito, com acento, vive só aqui — nunca em caminho de arquivo.
+    CFBundleDisplayName: Gravaê Chat
+    NSMicrophoneUsageDescription: O Gravaê usa o microfone nas chamadas de voz.
+    NSCameraUsageDescription: O Gravaê usa a câmera quando você liga o vídeo na chamada.
+    NSAudioCaptureUsageDescription: O Gravaê captura o som do sistema ao compartilhar a tela.
+
+# o retorno do login com Google chega por aqui
+protocols:
+  - name: Gravaê
+    schemes: [gravae]
+
+dmg:
+  title: Gravaê Chat

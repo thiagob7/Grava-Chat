@@ -1,0 +1,49 @@
+{
+  "name": "@gravae/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e ../../.env -- tsx watch src/server.ts",
+    "build": "tsup",
+    "start": "dotenv -e ../../.env -- node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:studio": "dotenv -e ../../.env -- prisma studio",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "limpar": "dotenv -e ../../.env -- tsx scripts/limpar-dados-de-teste.ts",
+    "migrar-cargos": "dotenv -e ../../.env -- tsx scripts/migrar-cargos.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1115.0",
+    "@aws-sdk/s3-request-presigner": "^3.1115.0",
+    "@fastify/cookie": "11.0.2",
+    "@fastify/cors": "11.1.0",
+    "@fastify/jwt": "9.1.0",
+    "@fastify/multipart": "^10.1.1",
+    "@fastify/oauth2": "8.1.2",
+    "@fastify/sensible": "6.0.3",
+    "@gravae/shared": "*",
+    "@prisma/client": "6.19.3",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "fastify": "5.12.1",
+    "fastify-plugin": "^6.0.0",
+    "ioredis": "5.9.0",
+    "livekit-server-sdk": "^2.18.0",
+    "socket.io": "4.8.3",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "dotenv-cli": "10.0.0",
+    "pino-pretty": "13.1.3",
+    "prisma": "6.19.3",
+    "socket.io-client": "4.8.3",
+    "tsup": "8.5.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "^4.1.11"
+  }
+}
