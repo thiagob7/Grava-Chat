@@ -217,6 +217,12 @@ export const voiceStateSchema = z.object({
    * dentro da janela, o estado e apagado de verdade.
    */
   orphanedAt: z.number().nullable(),
+  /**
+   * Quando esta pessoa entrou na chamada. O menor `joinedAt` do canal e o
+   * comeco da chamada — e o cronometro da barra lateral conta a partir dele.
+   * Fica no estado (e nao numa variavel do cliente) pra sobreviver a reload.
+   */
+  joinedAt: z.number(),
   selfMute: z.boolean(),
   selfDeaf: z.boolean(),
   /** silenciado por um moderador: vale no SFU, não dá pra desfazer no cliente */

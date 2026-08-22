@@ -20,6 +20,7 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import { Slider } from "~/components/ui/slider";
+import { useConfirmar } from "~/components/ui/confirm";
 import { useVoiceStore } from "~/stores/voice-store";
 
 interface VoiceMemberMenuProps {
@@ -58,6 +59,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const navigate = useNavigate();
   const openDm = useOpenDm();
   const setRoles = useSetMemberRoles(guildId);
+  const confirmar = useConfirmar();
   const setNickname = useSetNickname(guildId);
 
   const volumes = useVoiceStore((s) => s.volumesLocais);
@@ -124,13 +126,23 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
             <ContextMenuItem
               disabled={!pode("MANAGE_NICKNAMES")}
-              onSelect={() => {
-                const atual = member?.nickname ?? "";
-                const novo = window.prompt(`Apelido de ${displayName}`, atual);
-                if (novo === null) return;
-
-                setNickname.mutate({ guildId, userId, nickname: novo.trim() || null });
-              }}
+              onSelect={() =>
+                /*
+                 * Era `window.prompt`, que o Electron não implementa: no
+                 * aplicativo o apelido nunca chegava a ser trocado, sem erro
+                 * nenhum na tela.
+                 */
+                void confirmar({
+                  titulo: `Apelido de ${displayName}`,
+                  descricao: "Vale só neste servidor. Deixe em branco para voltar ao nome original.",
+                  acao: "Salvar",
+                  destrutivo: false,
+                  campo: { rotulo: "Apelido", placeholder: displayName },
+                }).then(
+                  ({ confirmado, texto }) =>
+                    confirmado && setNickname.mutate({ guildId, userId, nickname: texto || null }),
+                )
+              }
             >
               Alterar apelido
             </ContextMenuItem>

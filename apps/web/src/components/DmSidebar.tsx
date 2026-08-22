@@ -11,7 +11,8 @@ import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
 interface DmSidebarProps {
   activeChannelId: string | undefined;
-  readStates: Record<string, string | null>;
+  /** por canal: o id da última lida e quantas entraram depois */
+  readStates: Record<string, { lido: string | null; naoLidas: number }>;
   user: SelfUserModel;
   onOpenFriends: () => void;
   onSelectDm: (channelId: string) => void;
@@ -74,7 +75,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
         {dms.map((dm) => {
           const ativa = dm.id === activeChannelId;
-          const naoLida = !ativa && dm.lastMessageId && dm.lastMessageId !== readStates[dm.id];
+          const naoLida = !ativa && dm.lastMessageId && dm.lastMessageId !== readStates[dm.id]?.lido;
 
           return (
             <button

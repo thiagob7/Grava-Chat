@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
+import { FloatingScreenShare } from "~/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
@@ -38,6 +39,13 @@ export const AppRoutes: React.FC = () => (
       />
       <Route path="*" element={<Navigate to="/channels" replace />} />
     </Routes>
+
+    {/*
+      Dentro do Router, fora das rotas: precisa do `useNavigate` pra voltar ao
+      canal da chamada, e não pode ser desmontada a cada navegação — senão o
+      vídeo pisca em toda troca de canal.
+    */}
+    <FloatingScreenShare />
   </BrowserRouter>
 );
 

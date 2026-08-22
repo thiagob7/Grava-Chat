@@ -16,6 +16,7 @@ import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { Slider } from "~/components/ui/slider";
+import { useConfirmar } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
 import { uploadArquivo } from "~/lib/upload";
 
@@ -37,6 +38,7 @@ const nomeSeguro = (texto: string) =>
 export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateEmoji(guildId);
+  const confirmar = useConfirmar();
   const apagar = useDeleteEmoji(guildId);
   const input = useRef<HTMLInputElement>(null);
   const [subindo, setSubindo] = useState(false);
@@ -134,7 +136,12 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
               <td className="py-2 text-right">
                 {podeGerenciar && (
                   <button
-                    onClick={() => apagar.mutate({ guildId, emojiId: emoji.id })}
+                    onClick={() =>
+                      void confirmar(pedidoDeExclusao("emoji", emoji.name)).then(
+                        ({ confirmado }) =>
+                          confirmado && apagar.mutate({ guildId, emojiId: emoji.id }),
+                      )
+                    }
                     title="Apagar"
                     className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
                   >
@@ -159,6 +166,7 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
 export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSticker(guildId);
+  const confirmar = useConfirmar();
   const apagar = useDeleteSticker(guildId);
   const input = useRef<HTMLInputElement>(null);
   const [pendente, setPendente] = useState<{ file: File; url: string } | null>(null);
@@ -269,7 +277,12 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
 
             {podeGerenciar && (
               <button
-                onClick={() => apagar.mutate({ guildId, stickerId: sticker.id })}
+                onClick={() =>
+                  void confirmar(pedidoDeExclusao("figurinha", sticker.name)).then(
+                    ({ confirmado }) =>
+                      confirmado && apagar.mutate({ guildId, stickerId: sticker.id }),
+                  )
+                }
                 title="Apagar"
                 className="absolute right-1 top-1 rounded bg-surface-0 p-1 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
               >
@@ -297,6 +310,7 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
 export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSound(guildId);
+  const confirmar = useConfirmar();
   const apagar = useDeleteSound(guildId);
   const input = useRef<HTMLInputElement>(null);
 
@@ -444,7 +458,11 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
 
             {podeGerenciar && (
               <button
-                onClick={() => apagar.mutate({ guildId, soundId: som.id })}
+                onClick={() =>
+                  void confirmar(pedidoDeExclusao("som", som.name)).then(
+                    ({ confirmado }) => confirmado && apagar.mutate({ guildId, soundId: som.id }),
+                  )
+                }
                 title="Apagar"
                 className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
               >
@@ -461,3 +479,16 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
     </div>
   );
 };
+
+/**
+ * Uma exclusão de expressão é sempre a mesma conversa: some do servidor, e as
+ * mensagens que já usaram continuam como estão. Fica num lugar só pras três
+ * seções não divergirem no texto.
+ */
+function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
+  return {
+    titulo: `Excluir ${tipo} "${nome}"?`,
+    descricao: `Some do servidor para todo mundo. As mensagens que já usaram continuam como estão.`,
+    acao: "Excluir",
+  } as const;
+}

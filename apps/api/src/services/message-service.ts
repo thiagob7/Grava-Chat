@@ -268,11 +268,22 @@ export const messageService = {
   async readStates(userId: string) {
     const states = await readStateRepository.findManyByUser(userId);
 
-    return states.map((s) => ({
-      channelId: s.channelId,
-      lastReadMessageId: s.lastReadMessageId,
-      mentionCount: s.mentionCount,
-    }));
+    /**
+     * A contagem é calculada aqui, e não guardada num contador incrementado a
+     * cada mensagem: incrementar exigiria escrever numa linha por MEMBRO a cada
+     * mensagem enviada. Contar na leitura é uma consulta por canal com algo
+     * pendente, e a lista de canais de um usuário é pequena.
+     */
+    return Promise.all(
+      states.map(async (s) => ({
+        channelId: s.channelId,
+        lastReadMessageId: s.lastReadMessageId,
+        unreadCount: s.lastReadMessageId
+          ? await readStateRepository.countUnread(s.channelId, s.lastReadMessageId)
+          : 0,
+        mentionCount: s.mentionCount,
+      })),
+    );
   },
 
   get pageSize() {

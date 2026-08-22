@@ -28,7 +28,7 @@ import { useVoiceStore } from "~/stores/voice-store";
  * sessão de mídia. Este gancho aplica isso no cache, então a barra lateral, o
  * palco e o contador passam a contar a mesma história, na hora.
  */
-export function useVoiceSync(guildId: string | undefined) {
+export function useVoiceSync(guildId: string | undefined, currentUserId?: string) {
   const queryClient = useQueryClient();
   const channelId = useVoiceStore((s) => s.channelId);
   const tiles = useVoiceStore((s) => s.tiles);
@@ -58,17 +58,57 @@ export function useVoiceSync(guildId: string | undefined) {
       (antigo: GuildDetailModel | undefined) => {
         if (!antigo) return antigo;
 
-        const atuais = antigo.voiceStates[channelId] ?? [];
+        /**
+         * Você só pode estar em UMA chamada. Se aparece em outro canal, aquilo
+         * é sobra de cache — um `voice:left` que se perdeu, ou o estado antigo
+         * de antes de trocar de canal. Ninguém mais reconsulta isso, então o
+         * fantasma ficava lá pra sempre, inclusive com o cronômetro contando.
+         */
+        const semFantasmas = currentUserId
+          ? Object.fromEntries(
+              Object.entries(antigo.voiceStates).map(([id, estados]) => [
+                id,
+                id === channelId ? estados : estados.filter((v) => v.userId !== currentUserId),
+              ]),
+            )
+          : antigo.voiceStates;
+
+        const atuais = semFantasmas[channelId] ?? [];
 
         // sai quem o LiveKit não tem mais — mas só quem já chegou a aparecer
-        const mantidos = atuais.filter(
-          (v) => presentes.has(v.userId) || !vistos.current.has(v.userId),
-        );
+        const mantidos = atuais
+          .filter((v) => presentes.has(v.userId) || !vistos.current.has(v.userId))
+          /**
+           * Câmera e tela também vêm do LiveKit para quem está presente. O
+           * `voice:updated` pode se perder, e aí o ícone de "transmitindo"
+           * fica aceso na barra lateral com a live já encerrada.
+           */
+          .map((v) => {
+            const tile = tiles.find((t) => t.identity === v.userId);
+            if (!tile) return v;
+
+            return {
+              ...v,
+              camera: Boolean(tile.cameraTrack),
+              screenShare: Boolean(tile.screenTrack),
+            };
+          });
 
         // entra quem está na mídia e o servidor não contou
         const faltando = tiles.filter((t) => !atuais.some((v) => v.userId === t.identity));
 
-        if (mantidos.length === atuais.length && !faltando.length) return antigo;
+        const limpou = Object.entries(semFantasmas).some(
+          ([id, estados]) => estados.length !== (antigo.voiceStates[id] ?? []).length,
+        );
+
+        const flagsIguais = mantidos.every((v, i) => {
+          const antes = atuais[i];
+          return antes && antes.camera === v.camera && antes.screenShare === v.screenShare;
+        });
+
+        if (mantidos.length === atuais.length && !faltando.length && !limpou && flagsIguais) {
+          return antigo;
+        }
 
         /**
          * O estado sintetizado é provisório e serve só pra pessoa aparecer AGORA.
@@ -81,6 +121,9 @@ export function useVoiceSync(guildId: string | undefined) {
           guildId,
           socketId: "",
           orphanedAt: null,
+          // não sabemos quando entrou: agora é o palpite menos errado, e o
+          // valor real chega no `voice:joined` logo em seguida
+          joinedAt: Date.now(),
           selfMute: !t.micEnabled,
           selfDeaf: false,
           serverMute: false,
@@ -92,11 +135,11 @@ export function useVoiceSync(guildId: string | undefined) {
         return {
           ...antigo,
           voiceStates: {
-            ...antigo.voiceStates,
+            ...semFantasmas,
             [channelId]: [...mantidos, ...sintetizados],
           },
         };
       },
     );
-  }, [guildId, channelId, tiles, queryClient]);
+  }, [guildId, channelId, tiles, currentUserId, queryClient]);
 }

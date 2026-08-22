@@ -53,6 +53,18 @@ type VoiceStore = {
   screenEnabled: boolean;
 
   tiles: VoiceTile[];
+  /**
+   * Identidade de quem você escolheu assistir, ou `null`.
+   *
+   * Vive na store e não no palco porque a janelinha flutuante precisa da mesma
+   * resposta — e porque navegar pra um canal de texto desmonta o palco, o que
+   * zeraria a escolha se ela morasse lá.
+   */
+  assistindo: string | null;
+  /** servidor da chamada — a janelinha flutuante precisa dele pra voltar pro canal */
+  guildId: string | null;
+  /** true enquanto o palco da chamada está montado na tela */
+  palcoVisivel: boolean;
   /** volume por pessoa, só pra você (0..2) */
   volumesLocais: Record<string, number>;
   /** quem você silenciou só pra você */
@@ -65,6 +77,9 @@ type VoiceStore = {
   toggleCamera: () => Promise<void>;
   toggleScreen: () => Promise<void>;
   toggleNoiseFilter: () => Promise<void>;
+  /** Escolhe (ou larga) a transmissão que você está assistindo. */
+  assistir: (identity: string | null) => void;
+  definirPalcoVisivel: (visivel: boolean) => void;
   setVolumeLocal: (userId: string, volume: number) => void;
   toggleSilenciarLocal: (userId: string) => void;
   /**
@@ -243,6 +258,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   cameraEnabled: false,
   screenEnabled: false,
   tiles: [],
+  assistindo: null,
+  guildId: null,
+  palcoVisivel: false,
   volumesLocais: {},
   silenciadosLocais: {},
 
@@ -296,7 +314,48 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
           p.setVolume(mudo ? 0 : volumeSaida * individual);
         });
 
-        set({ tiles: snapshot(room) });
+        const tiles = snapshot(room);
+
+        /**
+         * Câmera e tela vêm do que está PUBLICADO, não de um booleano que só o
+         * nosso botão mexia.
+         *
+         * A transmissão pode acabar por fora: a barra "Parar compartilhamento"
+         * do navegador, a janela compartilhada sendo fechada, a track caindo.
+         * Nesses casos o LiveKit despublica e ninguém avisava o resto — o
+         * ícone verde de "está transmitindo" ficava aceso na barra lateral de
+         * todo mundo, com a live já encerrada.
+         */
+        const eu = tiles.find((t) => t.isLocal);
+        const camera = Boolean(eu?.cameraTrack);
+        const tela = Boolean(eu?.screenTrack);
+        const { cameraEnabled, screenEnabled, assistindo } = store();
+
+        /**
+         * Sua própria transmissão você já está vendo — clicar em "assistir" na
+         * própria tela não faz sentido nenhum. Quem precisa optar é quem está
+         * do outro lado.
+         *
+         * E se quem você assistia parou, a escolha morre junto: senão o palco
+         * ficaria preso num quadro preto esperando um vídeo que não vem mais.
+         */
+        const aindaTransmite = tiles.some((t) => t.identity === assistindo && t.screenTrack);
+        const proximoAssistindo = tela && eu ? eu.identity : aindaTransmite ? assistindo : null;
+
+        if (proximoAssistindo !== assistindo) set({ assistindo: proximoAssistindo });
+
+        set({ tiles, cameraEnabled: camera, screenEnabled: tela });
+
+        // só avisa o servidor quando mudou de verdade: `refresh` roda a cada
+        // evento da sala, e um `updateVoiceState` por evento seria enxurrada
+        if (camera !== cameraEnabled || tela !== screenEnabled) {
+          void updateVoiceState({
+            ...(camera !== cameraEnabled ? { camera } : {}),
+            ...(tela !== screenEnabled ? { screenShare: tela } : {}),
+          }).catch(() => undefined);
+
+          if (tela !== screenEnabled) bipe(tela ? "liveNoAr" : "liveEncerrada");
+        }
       };
 
       room
@@ -318,7 +377,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         .on(RoomEvent.TrackUnmuted, refresh)
         .on(RoomEvent.ActiveSpeakersChanged, refresh)
         .on(RoomEvent.Disconnected, () => {
-          set({ room: null, channelId: null, tiles: [], cameraEnabled: false, screenEnabled: false });
+          set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false });
         });
 
       await room.connect(url, token);
@@ -372,7 +431,17 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
        * desfaz a conexão de mídia — ficar conectado no SFU sem o servidor
        * reconhecer deixaria duas abas disputando o mesmo áudio.
        */
-      await joinVoiceChannel(channelId, options?.resume ?? false);
+      /**
+       * O `emit` devolve `unknown` de propósito (o ack do socket é genérico),
+       * então o servidor é a fonte do `guildId` mas o tipo precisa ser afirmado
+       * aqui. Guardar isto é o que permite à janelinha flutuante saber pra
+       * onde voltar quando você está num canal de texto.
+       */
+      const estado = (await joinVoiceChannel(channelId, options?.resume ?? false)) as
+        | { guildId?: string }
+        | undefined;
+
+      if (estado?.guildId) set({ guildId: estado.guildId });
       await updateVoiceState({ selfMute: !store().micEnabled, selfDeaf: store().deafened });
     } catch (err) {
       set({ connecting: false, channelId: null, error: apiErrorMessage(err, "Não deu pra entrar na chamada") });
@@ -387,7 +456,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     // antes do disconnect: depois dele o `deafened` que o bipe consulta já era
     bipe("sairDaChamada");
     await room.disconnect();
-    set({ room: null, channelId: null, tiles: [], cameraEnabled: false, screenEnabled: false, processador: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
     // Saída deliberada: não reconecta no próximo reload.
     rememberVoiceTab(null);
     await leaveVoiceChannel().catch(() => undefined);
@@ -458,10 +527,13 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   reset: () => {
     rememberVoiceTab(null);
     void store().room?.disconnect();
-    set({ room: null, channelId: null, tiles: [], cameraEnabled: false, screenEnabled: false, processador: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
   },
 
   /** Atalho do painel de voz para o mesmo ajuste que vive nas configurações. */
+  assistir: (identity) => set({ assistindo: identity }),
+  definirPalcoVisivel: (visivel) => set({ palcoVisivel: visivel }),
+
   toggleNoiseFilter: async () => {
     const { supressaoDeRuido } = useVoicePrefs.getState();
     await store().aplicarAjustes({ supressaoDeRuido: !supressaoDeRuido });
@@ -543,9 +615,14 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const next = !screenEnabled;
 
     try {
-      // audio: true captura o som da aba/tela junto — é o que faz assistir
-      // vídeo em conjunto funcionar de verdade.
-      await room.localParticipant.setScreenShareEnabled(next, { audio: true });
+      /**
+       * O som do sistema é o que faz assistir vídeo em conjunto funcionar — e
+       * é também a causa do eco quando quem transmite ouve a chamada pelas
+       * caixas: o que se captura inclui a voz de todo mundo saindo do
+       * alto-falante, e volta pra sala multiplicada. Por isso é desligável.
+       */
+      const { somDaTela } = useVoicePrefs.getState();
+      await room.localParticipant.setScreenShareEnabled(next, { audio: somDaTela });
       set({ screenEnabled: next, tiles: snapshot(room) });
       bipe(next ? "liveNoAr" : "liveEncerrada");
       await updateVoiceState({ screenShare: next }).catch(() => undefined);

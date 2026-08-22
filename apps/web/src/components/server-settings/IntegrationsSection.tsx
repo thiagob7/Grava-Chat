@@ -12,6 +12,7 @@ import type { WebhookModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 
 interface IntegrationsSectionProps {
@@ -89,7 +90,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
   const [nome, setNome] = useState(webhook.name);
   const [mostrandoUrl, setMostrandoUrl] = useState(false);
   const [copiado, setCopiado] = useState(false);
-  const [confirmando, setConfirmando] = useState(false);
+  const confirmar = useConfirmar();
 
   const copiar = async () => {
     await navigator.clipboard.writeText(webhook.url).catch(() => undefined);
@@ -141,7 +142,14 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
         </div>
 
         <button
-          onClick={() => setConfirmando((v) => !v)}
+          onClick={() =>
+            void confirmar({
+              titulo: `Apagar webhook "${webhook.name}"?`,
+              descricao:
+                "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
+              acao: "Apagar webhook",
+            }).then(({ confirmado }) => confirmado && apagar.mutate({ guildId, webhookId: webhook.id }))
+          }
           title="Apagar webhook"
           className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
         >
@@ -178,27 +186,6 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
         {webhook.createdBy.displayName}.
       </p>
 
-      {confirmando && (
-        <div className="mt-3 rounded border border-danger/40 bg-danger/10 p-3">
-          <p className="text-sm">
-            Apagar <strong>{webhook.name}</strong>? A URL para de funcionar na hora. As mensagens
-            que ele já mandou continuam no canal.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <Button
-              variant="danger"
-              size="sm"
-              disabled={apagar.isPending}
-              onClick={() => apagar.mutate({ guildId, webhookId: webhook.id })}
-            >
-              Apagar webhook
-            </Button>
-            <Button variant="surface" size="sm" onClick={() => setConfirmando(false)}>
-              Cancelar
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

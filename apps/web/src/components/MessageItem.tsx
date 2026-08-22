@@ -16,6 +16,7 @@ import { ServerTag } from "~/components/ServerTag";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { formatTime, formatTimestamp } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { useConfirmar } from "~/components/ui/confirm";
 
 const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];
 
@@ -49,6 +50,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onRetry,
   onPin,
 }) => {
+  const confirmar = useConfirmar();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
   const [showEmojis, setShowEmojis] = useState(false);
@@ -256,7 +258,16 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
           {canDelete && (
             <button
-              onClick={() => void deleteMessage(message.id).catch(() => undefined)}
+              onClick={() =>
+                void confirmar({
+                  titulo: "Apagar mensagem?",
+                  descricao: "Ela some para todo mundo do canal. Não dá pra recuperar.",
+                  acao: "Apagar",
+                }).then(
+                  ({ confirmado }) =>
+                    confirmado && void deleteMessage(message.id).catch(() => undefined),
+                )
+              }
               title="Apagar"
               className="rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
             >

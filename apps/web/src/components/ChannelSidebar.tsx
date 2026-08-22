@@ -18,6 +18,7 @@ import { UserPanel } from "~/components/UserPanel";
 import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSettingsModal";
 import { CreateChannelModal } from "~/components/CreateChannelModal";
 import { InviteModal } from "~/components/InviteModal";
+import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
 import { VoicePanel } from "~/components/VoicePanel";
@@ -40,7 +41,8 @@ interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
   summary: GuildSummaryModel | undefined;
   activeChannelId: string | undefined;
-  readStates: Record<string, string | null>;
+  /** por canal: o id da última lida e quantas entraram depois */
+  readStates: Record<string, { lido: string | null; naoLidas: number }>;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
   onLogout: () => void;
@@ -75,7 +77,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const { can } = usePermissions(detail);
 
   // a lista de quem está na chamada acompanha o LiveKit, não só o socket
-  useVoiceSync(detail?.guild.id);
+  useVoiceSync(detail?.guild.id, user?.id);
   const canManage = can("MANAGE_GUILD");
   const canManageChannels = can("MANAGE_CHANNELS");
   const canManageRoles = can("MANAGE_ROLES");
@@ -205,9 +207,23 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 {!isCollapsed &&
                   group.channels.map((channel) => {
                     const active = channel.id === activeChannelId;
+                    const leitura = readStates[channel.id];
                     const unread =
-                      !active && channel.lastMessageId && channel.lastMessageId !== readStates[channel.id];
+                      !active && channel.lastMessageId && channel.lastMessageId !== leitura?.lido;
+                    const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
                     const inThisCall = voiceChannelId === channel.id;
+
+                    /**
+                     * Começo da chamada: quem entrou primeiro manda no relógio.
+                     *
+                     * O filtro não é paranoia — estado de voz gravado antes de
+                     * `joinedAt` existir chega sem o campo, e `Math.min` de um
+                     * `undefined` devolve `NaN`, que virava "NaN:NaN" na tela.
+                     */
+                    const entradas = (detail?.voiceStates[channel.id] ?? [])
+                      .map((v) => v.joinedAt)
+                      .filter((t): t is number => Number.isFinite(t));
+                    const chamadaDesde = entradas.length ? Math.min(...entradas) : null;
 
                     return (
                       <div key={channel.id} className="group/canal relative">
@@ -233,10 +249,30 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             <Hash size={18} className="shrink-0 text-ink-faint" />
                           )}
                           <span className="truncate">{channel.name}</span>
-                          {unread && <span className="ml-auto size-2 shrink-0 rounded-full bg-ink" />}
+
+                          {/*
+                            Reserva o espaço da direita. Os indicadores e os
+                            botões de ação ocupam ESTA área, um de cada vez —
+                            antes os botões eram `absolute` e caíam POR CIMA do
+                            ponto de não-lido, que continuava desenhado embaixo.
+                          */}
+                          <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            {channel.type === "VOICE" && chamadaDesde !== null && !unread && (
+                              <CallTimer desde={chamadaDesde} />
+                            )}
+
+                            {unread &&
+                              (naoLidas > 0 ? (
+                                <span className="min-w-[18px] rounded-full bg-danger px-1.5 text-center text-[11px] font-bold leading-[18px] text-white">
+                                  {naoLidas > 99 ? "99+" : naoLidas}
+                                </span>
+                              ) : (
+                                <span className="size-2 rounded-full bg-ink" />
+                              ))}
+                          </span>
                         </button>
 
-                        <div className="absolute right-1 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:opacity-100">
+                        <div className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                           {channel.type === "VOICE" && (
                             <button
                               onClick={() => onOpenVoiceChat?.(channel.id)}

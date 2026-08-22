@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToastContainer } from "react-toastify";
 
+import { ConfirmProvider } from "~/components/ui/confirm";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";
 import { VoiceAudioSink } from "~/components/VoiceAudioSink";
@@ -34,6 +35,9 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
         <TooltipProvider>
+          {/* Envolve tudo: a confirmação de exclusão é chamada de dentro de menus
+              suspensos, que desmontam o gatilho ao abrir o diálogo. */}
+          <ConfirmProvider>
           <AppRoutes />
           {/* Fora das rotas de propósito: navegar entre canais não pode cortar o
               áudio de uma chamada em andamento. */}
@@ -47,6 +51,7 @@ export const App: React.FC = () => {
           {/* Só em desenvolvimento: mostra o que há em cada query key, o que está
               stale e o que o socket acabou de escrever no cache. */}
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />}
+          </ConfirmProvider>
         </TooltipProvider>
       </SessionProvider>
     </QueryClientProvider>

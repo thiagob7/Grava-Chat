@@ -128,6 +128,20 @@ export const readStateRepository = {
     return prisma.readState.findMany({ where: { userId } });
   },
 
+  /**
+   * Quantas mensagens entraram depois da última lida.
+   *
+   * Compara por `id` e não por data: no Mongo o ObjectId já embute o instante
+   * de criação e é monotônico, então `gt` no id ordena igual à data — é o
+   * mesmo truque que a paginação por cursor daqui já usa, sem precisar buscar
+   * a mensagem lida só pra descobrir o `createdAt` dela.
+   */
+  countUnread(channelId: string, afterMessageId: string) {
+    return prisma.message.count({
+      where: { channelId, id: { gt: afterMessageId } },
+    });
+  },
+
   markRead(userId: string, channelId: string, messageId: string) {
     return prisma.readState.upsert({
       where: { userId_channelId: { userId, channelId } },

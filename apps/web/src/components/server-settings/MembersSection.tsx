@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
+import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 
 interface MembersSectionProps {
@@ -56,6 +57,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   canTimeout,
   canManageRoles,
 }) => {
+  const confirmar = useConfirmar();
   const removeMember = useRemoveMember();
   const banir = useBanMember(guild.id);
   const castigar = useTimeoutMember(guild.id);
@@ -63,6 +65,46 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordem>("recentes");
+
+  const nomeDe = (member: GuildMember) => member.nickname ?? member.user.displayName;
+
+  const expulsar = async (member: GuildMember) => {
+    const { confirmado } = await confirmar({
+      titulo: `Expulsar ${nomeDe(member)}?`,
+      descricao: (
+        <>
+          <strong>{nomeDe(member)}</strong> sai de {guild.name} na hora. Pode entrar de novo com um
+          convite — expulsar não impede a volta.
+        </>
+      ),
+      acao: "Expulsar",
+    });
+
+    if (confirmado) removeMember.mutate({ guildId: guild.id, userId: member.user.id });
+  };
+
+  /**
+   * O motivo vinha de um `window.prompt`, que o Electron não implementa: no
+   * aplicativo de desktop ele devolvia `null` e o banimento simplesmente não
+   * acontecia, sem erro nenhum na tela.
+   */
+  const banirMembro = async (member: GuildMember) => {
+    const { confirmado, texto } = await confirmar({
+      titulo: `Banir ${nomeDe(member)}?`,
+      descricao: (
+        <>
+          <strong>{nomeDe(member)}</strong> sai de {guild.name} e <strong>não consegue voltar</strong>,
+          nem com convite, até ser desbanido.
+        </>
+      ),
+      acao: "Banir",
+      campo: { rotulo: "Motivo (opcional)", placeholder: "Fica registrado na auditoria" },
+    });
+
+    if (confirmado) {
+      banir.mutate({ guildId: guild.id, userId: member.user.id, reason: texto || null });
+    }
+  };
 
   const lista = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -271,9 +313,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {canKick && (
                           <DropdownMenuItem
                             danger
-                            onSelect={() =>
-                              removeMember.mutate({ guildId: guild.id, userId: member.user.id })
-                            }
+                            onSelect={() => void expulsar(member)}
                           >
                             Expulsar <UserX size={14} />
                           </DropdownMenuItem>
@@ -282,19 +322,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {canBan && (
                           <DropdownMenuItem
                             danger
-                            onSelect={() => {
-                              const motivo = window.prompt(
-                                `Banir ${member.user.displayName}. Motivo (opcional):`,
-                                "",
-                              );
-                              if (motivo === null) return;
-
-                              banir.mutate({
-                                guildId: guild.id,
-                                userId: member.user.id,
-                                reason: motivo.trim() || null,
-                              });
-                            }}
+                            onSelect={() => void banirMembro(member)}
                           >
                             Banir <Ban size={14} />
                           </DropdownMenuItem>

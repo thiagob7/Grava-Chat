@@ -19,7 +19,7 @@ export const useMarkRead = () => {
     (channelId: string, messageId: string, { emit = true } = {}) => {
       queryClient.setQueryData([queryKeys.message.read_states], (old: ReadStateModel[] | undefined) => {
         const others = (old ?? []).filter((s) => s.channelId !== channelId);
-        return [...others, { channelId, lastReadMessageId: messageId, mentionCount: 0 }];
+        return [...others, { channelId, lastReadMessageId: messageId, unreadCount: 0, mentionCount: 0 }];
       });
 
       if (emit) void ackMessage(channelId, messageId).catch(() => undefined);

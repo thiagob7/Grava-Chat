@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Mic, MicOff, MonitorUp } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { Mic, MicOff, MonitorUp, Play, X } from "lucide-react";
 
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 
@@ -37,6 +37,21 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const palco = useRef<HTMLDivElement>(null);
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);
+
+  /**
+   * Quem você escolheu assistir vive na store: navegar pra um canal de texto
+   * desmonta o palco, e a escolha precisa sobreviver a isso pra janelinha
+   * flutuante saber o que mostrar.
+   */
+  const assistindo = useVoiceStore((s) => s.assistindo);
+  const setAssistindo = useVoiceStore((s) => s.assistir);
+  const definirPalcoVisivel = useVoiceStore((s) => s.definirPalcoVisivel);
+
+  /** Enquanto o palco está montado, a janelinha flutuante não aparece. */
+  useEffect(() => {
+    definirPalcoVisivel(true);
+    return () => definirPalcoVisivel(false);
+  }, [definirPalcoVisivel]);
   const error = useVoiceStore((s) => s.error);
 
   if (error) {
@@ -53,10 +68,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }
 
   /**
-   * Quem está compartilhando tela vira o foco: a tela ocupa o palco e as
-   * pessoas ficam numa fileira embaixo, como no Discord.
+   * Só entra em modo teatro quem VOCÊ escolheu — e enquanto essa pessoa ainda
+   * estiver transmitindo. Ela encerrando, o palco volta sozinho pra grade, sem
+   * deixar um quadro preto no lugar.
    */
-  const sharing = tiles.find((tile) => tile.screenTrack);
+  const sharing = assistindo ? tiles.find((t) => t.identity === assistindo && t.screenTrack) : null;
 
   const contexto = {
     guildId,
@@ -77,6 +93,13 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             <MonitorUp size={12} className="mr-1 inline" />
             {sharing.name} está compartilhando
           </span>
+
+          <button
+            onClick={() => setAssistindo(null)}
+            className="absolute right-3 top-3 flex items-center gap-1.5 rounded bg-black/70 px-2.5 py-1.5 text-xs font-medium transition hover:bg-black/90"
+          >
+            <X size={14} /> Parar de assistir
+          </button>
         </div>
         {/* a fileira ganha margem embaixo pra barra não cobrir os rostos */}
         <div className="flex h-24 shrink-0 gap-3 overflow-x-auto pb-14">
@@ -102,7 +125,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       >
         {tiles.map((tile) => (
           <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-            <Tile tile={tile} />
+            <Tile tile={tile} onAssistir={() => setAssistindo(tile.identity)} />
           </ComMenu>
         ))}
       </div>
@@ -116,15 +139,36 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 interface TileProps {
   tile: VoiceTile;
   compact?: boolean;
+  /** ausente na fileira do modo teatro: lá você já está assistindo alguém */
+  onAssistir?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, compact }) => (
+const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => (
   <div
     className={cn(
-      "relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
+      "group/tile relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
       compact ? "aspect-video h-full shrink-0" : "aspect-video",
     )}
   >
+    {/*
+      O convite pra entrar na live. Cobre o quadro inteiro porque é a ação
+      principal daquele quadro naquele momento — e porque um botãozinho no
+      canto seria perdido no meio dos avatares.
+    */}
+    {tile.screenTrack && onAssistir && (
+      <button
+        onClick={onAssistir}
+        className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/70 transition hover:bg-black/60"
+      >
+        <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+        </span>
+        <span className="flex items-center gap-1.5 text-sm font-medium">
+          <Play size={16} /> Assistir {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
+        </span>
+      </button>
+    )}
+
     {tile.cameraTrack ? (
       // com vídeo não há avatar pra circundar: o anel volta pra borda do quadro
       <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>

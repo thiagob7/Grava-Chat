@@ -5,10 +5,12 @@ import { useFindGuildInvites } from "~/@core/application/queries/guild/use-find-
 import { useDeleteInvite } from "~/@core/application/queries/guild/use-delete-invite";
 import { Avatar } from "~/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
+import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 
 export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
   const { data: convites = [], isLoading } = useFindGuildInvites(guildId, true);
+  const confirmar = useConfirmar();
   const deleteInvite = useDeleteInvite();
 
   return (
@@ -64,7 +66,21 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
 
               <Tooltip label="Revogar convite">
                 <button
-                  onClick={() => deleteInvite.mutate({ guildId, inviteId: convite.id })}
+                  onClick={() =>
+                    void confirmar({
+                      titulo: "Revogar convite?",
+                      descricao: (
+                        <>
+                          O link <strong>{convite.code}</strong> para de funcionar na hora. Quem já
+                          entrou por ele continua no servidor.
+                        </>
+                      ),
+                      acao: "Revogar",
+                    }).then(
+                      ({ confirmado }) =>
+                        confirmado && deleteInvite.mutate({ guildId, inviteId: convite.id }),
+                    )
+                  }
                   className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
                 >
                   <Trash2 size={18} />

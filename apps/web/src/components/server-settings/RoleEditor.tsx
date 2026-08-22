@@ -10,6 +10,7 @@ import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
+import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 
 /** Paleta do Discord, que é escolhida pra ler bem em fundo escuro. */
@@ -50,7 +51,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   const [mentionable, setMentionable] = useState(role.mentionable);
   const [permissoes, setPermissoes] = useState<Permission[]>(role.permissions as Permission[]);
   const [busca, setBusca] = useState("");
-  const [confirmando, setConfirmando] = useState(false);
+  const confirmar = useConfirmar();
 
   // trocar de cargo na lista tem que jogar fora o rascunho do anterior
   useEffect(() => {
@@ -59,7 +60,6 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
     setHoist(role.hoist);
     setMentionable(role.mentionable);
     setPermissoes(role.permissions as Permission[]);
-    setConfirmando(false);
   }, [role]);
 
   const souAdmin = minhasPermissoes.includes("ADMINISTRATOR");
@@ -132,7 +132,16 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
         {!role.isEveryone && editavel && (
           <button
-            onClick={() => setConfirmando(true)}
+            onClick={() =>
+              void confirmar({
+                titulo: `Excluir cargo "${role.name}"?`,
+                descricao: "Quem tem esse cargo perde tudo o que ele dava. Não dá pra desfazer.",
+                acao: "Excluir cargo",
+              }).then(
+                ({ confirmado }) =>
+                  confirmado && deleteRole.mutate({ guildId, roleId: role.id }, { onSuccess: onDeleted }),
+              )
+            }
             className="ml-auto rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
             title="Apagar cargo"
           >
@@ -147,28 +156,6 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         </p>
       )}
 
-      {confirmando && (
-        <div className="mt-4 rounded border border-danger/40 bg-danger/10 p-4">
-          <p className="text-sm">
-            Apagar <strong>{role.name}</strong>? Quem tem esse cargo perde o que ele dava.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <Button
-              variant="danger"
-              size="sm"
-              disabled={deleteRole.isPending}
-              onClick={() =>
-                deleteRole.mutate({ guildId, roleId: role.id }, { onSuccess: onDeleted })
-              }
-            >
-              Apagar cargo
-            </Button>
-            <Button variant="surface" size="sm" onClick={() => setConfirmando(false)}>
-              Cancelar
-            </Button>
-          </div>
-        </div>
-      )}
 
       <nav className="mt-5 flex gap-4 border-b border-line">
         {abas.map((a) => (

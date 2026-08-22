@@ -11,6 +11,7 @@ import type { AutoModRuleModel } from "~/@core/application/requests/moderation/m
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
+import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 
 interface AutoModSectionProps {
@@ -55,6 +56,7 @@ const novaRegra = (trigger: AutoModRuleModel["trigger"]): Omit<AutoModRuleModel,
 export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channels, roles }) => {
   const { data: regras = [] } = useFindAutoModRules(guildId);
   const salvar = useSaveAutoModRule(guildId);
+  const confirmar = useConfirmar();
   const apagar = useDeleteAutoModRule(guildId);
   const [editando, setEditando] = useState<AutoModRuleModel | null>(null);
 
@@ -111,7 +113,17 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
                       Definir
                     </Button>
                     <button
-                      onClick={() => apagar.mutate({ guildId, ruleId: existente.id })}
+                      onClick={() =>
+                        void confirmar({
+                          titulo: "Excluir regra do AutoMod?",
+                          descricao:
+                            "O servidor deixa de filtrar por ela na hora. Dá pra criar de novo, mas a configuração atual se perde.",
+                          acao: "Excluir regra",
+                        }).then(
+                          ({ confirmado }) =>
+                            confirmado && apagar.mutate({ guildId, ruleId: existente.id }),
+                        )
+                      }
                       title="Apagar regra"
                       className="rounded p-1.5 text-ink-faint transition hover:text-danger"
                     >

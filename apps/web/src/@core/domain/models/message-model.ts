@@ -17,5 +17,7 @@ export interface MessagePageModel {
 export interface ReadStateModel {
   channelId: string;
   lastReadMessageId: string | null;
+  /** mensagens que entraram depois da última lida */
+  unreadCount: number;
   mentionCount: number;
 }

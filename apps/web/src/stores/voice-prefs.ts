@@ -17,6 +17,14 @@ export interface VoicePrefs extends AjustesDeVoz {
   teclaPtt: string;
   /** bipes de entrar/sair/mutar. Desligável: em live incomoda. */
   somDaInterface: boolean;
+  /**
+   * Capturar o som do sistema junto com a tela.
+   *
+   * É o que faz assistir vídeo em conjunto funcionar — e também a causa do eco
+   * quando quem transmite está ouvindo a chamada pelas CAIXAS: o som capturado
+   * inclui a voz de todo mundo saindo do alto-falante, e volta pra sala.
+   */
+  somDaTela: boolean;
 }
 
 const PADRAO: VoicePrefs = {
@@ -26,6 +34,7 @@ const PADRAO: VoicePrefs = {
   volumeSaida: 1,
   teclaPtt: "Space",
   somDaInterface: true,
+  somDaTela: true,
 };
 
 const CHAVE = "gravae:voice-prefs";

@@ -83,7 +83,10 @@ export const useSendMessage = () => {
 
       queryClient.setQueryData([queryKeys.message.read_states], (old: ReadStateModel[] | undefined) => {
         const others = (old ?? []).filter((s) => s.channelId !== variables.channelId);
-        return [...others, { channelId: variables.channelId, lastReadMessageId: id, mentionCount: 0 }];
+        return [
+          ...others,
+          { channelId: variables.channelId, lastReadMessageId: id, unreadCount: 0, mentionCount: 0 },
+        ];
       });
     },
 

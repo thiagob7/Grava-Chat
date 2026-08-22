@@ -11,6 +11,7 @@ import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import { useConfirmar } from "~/components/ui/confirm";
 import { avatarColor } from "~/lib/format";
 
 interface UserProfilePopoverProps {
@@ -55,6 +56,7 @@ const ProfileCard: React.FC<{ perfil: ProfileModel; onFechar: () => void }> = ({
   const navigate = useNavigate();
   const requestFriend = useRequestFriend();
   const respondFriend = useRespondFriend();
+  const confirmar = useConfirmar();
   const removeFriend = useRemoveFriend();
   const openDm = useOpenDm();
 
@@ -126,7 +128,19 @@ const ProfileCard: React.FC<{ perfil: ProfileModel; onFechar: () => void }> = ({
                   </Button>
                   <Button
                     variant="ghost"
-                    onClick={() => perfil.friendshipId && removeFriend.mutate(perfil.friendshipId)}
+                    onClick={() =>
+                      void confirmar({
+                        titulo: `Desfazer amizade com ${perfil.displayName}?`,
+                        descricao:
+                          "Vocês deixam de ser amigos. A conversa privada continua no histórico, e dá pra adicionar de novo depois.",
+                        acao: "Desfazer amizade",
+                      }).then(
+                        ({ confirmado }) =>
+                          confirmado &&
+                          perfil.friendshipId &&
+                          removeFriend.mutate(perfil.friendshipId),
+                      )
+                    }
                     disabled={ocupado}
                     className="w-full text-danger"
                   >

@@ -383,6 +383,22 @@ export const VoiceSection: React.FC = () => {
             onCheckedChange={(v) => prefs.definir({ somDaInterface: v })}
           />
         </div>
+
+        <div className="mt-4 flex items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">Compartilhar o som do sistema</p>
+            <p className="mt-0.5 text-xs text-ink-faint">
+              Manda o áudio do computador junto com a tela — é o que faz assistir vídeo em conjunto
+              funcionar. <strong className="text-ink">Se você ouve a chamada pelas caixas</strong>, o
+              que sai delas é capturado e volta pra sala: todo mundo se escuta em eco. De fone, não
+              acontece.
+            </p>
+          </div>
+          <Switch
+            checked={prefs.somDaTela}
+            onCheckedChange={(v) => prefs.definir({ somDaTela: v })}
+          />
+        </div>
       </section>
     </div>
   );

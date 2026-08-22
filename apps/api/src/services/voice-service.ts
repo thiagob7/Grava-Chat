@@ -182,6 +182,12 @@ export const voiceService = {
       guildId: channel.guildId,
       socketId,
       ...DEFAULTS,
+      /**
+       * Reload ou troca de aba no MESMO canal continua a mesma participação —
+       * senão o cronômetro da chamada voltaria a zero toda vez que alguém
+       * recarregasse a página.
+       */
+      joinedAt: previous?.channelId === channelId ? previous.joinedAt : Date.now(),
       selfMute: previous?.selfMute ?? DEFAULTS.selfMute,
       selfDeaf: previous?.selfDeaf ?? DEFAULTS.selfDeaf,
       /**
@@ -260,7 +266,7 @@ export const voiceService = {
 
   async get(userId: string): Promise<VoiceState | null> {
     const raw = await redis.get(keys.voiceState(userId));
-    return raw ? (JSON.parse(raw) as VoiceState) : null;
+    return raw ? hidratar(JSON.parse(raw) as VoiceState) : null;
   },
 
   /** Quem está em cada canal de voz — usado ao abrir o servidor. */
@@ -276,13 +282,24 @@ export const voiceService = {
 
     userIds.forEach((id, i) => {
       const value = raw[i];
-      if (value) byUser.set(id, JSON.parse(value) as VoiceState);
+      if (value) byUser.set(id, hidratar(JSON.parse(value) as VoiceState));
     });
 
+    /**
+     * O `channelId` do estado manda, não o conjunto em que a pessoa aparece.
+     *
+     * São duas chaves separadas no Redis — o conjunto do canal e o estado da
+     * pessoa — e elas podem divergir: uma saída que não chegou a limpar o
+     * conjunto (processo morto no meio, `SREM` perdido) deixa o usuário
+     * listado num canal que ele já não está. O sintoma é a mesma pessoa
+     * aparecendo em DOIS canais de voz ao mesmo tempo, o que não pode existir.
+     */
     return Object.fromEntries(
       channelIds.map((channelId, i) => [
         channelId,
-        (memberships[i] ?? []).map((u) => byUser.get(u)).filter((s): s is VoiceState => Boolean(s)),
+        (memberships[i] ?? [])
+          .map((u) => byUser.get(u))
+          .filter((s): s is VoiceState => Boolean(s) && s!.channelId === channelId),
       ]),
     );
   },
@@ -293,3 +310,17 @@ export const voiceService = {
     if (stale.length) await redis.del(...stale);
   },
 };
+
+/**
+ * Completa campos que estados antigos do Redis não têm.
+ *
+ * O estado de voz é gravado como JSON puro, sem migração: uma chamada que já
+ * estava em andamento quando o servidor subiu com um campo novo continua no
+ * formato velho até a pessoa sair e voltar. Sem isto, `joinedAt` chegava
+ * `undefined` na tela e o cronômetro virava `NaN:NaN`.
+ */
+function hidratar(state: VoiceState): VoiceState {
+  return { ...state, joinedAt: state.joinedAt ?? Date.now() };
+}
+
+
