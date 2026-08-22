@@ -2,7 +2,9 @@ import { randomUUID } from "node:crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "~/env.js";
-import type { PresignInput } from "~/validations/upload.js";
+import { TETO_POR_FINALIDADE } from "@gravae/shared";
+import { AppError } from "~/lib/http.js";
+import type { ImportarImagemInput, PresignInput } from "~/validations/upload.js";
 
 const s3 = new S3Client({
   region: env.R2_REGION,
@@ -60,6 +62,43 @@ export const uploadService = {
       contentType: file.contentType,
       size: file.body.length,
     };
+  },
+
+  /**
+   * Baixa uma imagem de fora e guarda no NOSSO bucket.
+   *
+   * Existe porque o GIF do seletor vem do CDN do provedor, e todo endereco que
+   * gravamos em perfil precisa ser do nosso bucket — e a regra que impede um
+   * `bannerUrl` externo de virar pixel de rastreamento carregado por todo mundo
+   * que abre o perfil. De brinde, o GIF continua vivo se o provedor mudar de
+   * endereco.
+   *
+   * O host ja foi conferido na validacao; aqui o cuidado e com o TAMANHO: o
+   * `content-length` e conferido antes de baixar, e o corpo e conferido depois
+   * — um servidor pode mentir no cabecalho, ou nem manda-lo.
+   */
+  async importar(userId: string, input: ImportarImagemInput) {
+    const teto = TETO_POR_FINALIDADE[input.purpose];
+
+    const resposta = await fetch(input.url, { signal: AbortSignal.timeout(10_000) }).catch(() => null);
+    if (!resposta?.ok) throw new AppError("Nao consegui baixar essa imagem", 502);
+
+    const anunciado = Number(resposta.headers.get("content-length") ?? 0);
+    if (anunciado > teto) throw new AppError(`A imagem passa de ${Math.round(teto / 1024)} KB`, 413);
+
+    const contentType = resposta.headers.get("content-type") ?? "";
+    if (!uploadService.isImage(contentType)) throw new AppError("Isso nao e uma imagem");
+
+    const body = Buffer.from(await resposta.arrayBuffer());
+    if (body.length > teto) throw new AppError(`A imagem passa de ${Math.round(teto / 1024)} KB`, 413);
+
+    const extensao = contentType.split("/")[1]?.split(";")[0] ?? "gif";
+
+    return uploadService.upload(userId, {
+      filename: `importada.${extensao}`,
+      contentType,
+      body,
+    });
   },
 
   async presign(userId: string, input: PresignInput) {

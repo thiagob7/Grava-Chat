@@ -3,8 +3,8 @@ import type { Channel } from "@gravae/shared";
 
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
-import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/input";
+import { UnsavedBar } from "~/components/ui/unsaved-bar";
+import { Label, campoBase } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 
 interface EngagementSectionProps {
@@ -50,7 +50,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
             id="canal-sistema"
             value={canal}
             onChange={(e) => setCanal(e.target.value)}
-            className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2"
+            className={campoBase}
           >
             <option value="">Sem canal de sistema</option>
             {canaisDeTexto.map((c) => (
@@ -65,35 +65,21 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
         </div>
       </section>
 
-      {mudou && (
-        <footer className="sticky bottom-0 mt-6 flex items-center gap-3 rounded bg-surface-0 px-4 py-3">
-          <p className="flex-1 text-sm">Você tem alterações não salvas.</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setWelcome(guild.welcomeEnabled ?? true);
-              setCanal(guild.systemChannelId ?? "");
-            }}
-          >
-            Descartar
-          </Button>
-          <Button
-            variant="success"
-            size="sm"
-            disabled={salvar.isPending}
-            onClick={() =>
-              salvar.mutate({
-                guildId: guild.id,
-                welcomeEnabled: welcome,
-                systemChannelId: canal || null,
-              })
-            }
-          >
-            Salvar
-          </Button>
-        </footer>
-      )}
+      <UnsavedBar
+        visivel={mudou}
+        salvando={salvar.isPending}
+        onDescartar={() => {
+          setWelcome(guild.welcomeEnabled ?? true);
+          setCanal(guild.systemChannelId ?? "");
+        }}
+        onSalvar={() =>
+          salvar.mutate({
+            guildId: guild.id,
+            welcomeEnabled: welcome,
+            systemChannelId: canal || null,
+          })
+        }
+      />
     </div>
   );
 };

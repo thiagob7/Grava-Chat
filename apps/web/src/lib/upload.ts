@@ -1,4 +1,4 @@
-import type { Attachment } from "@gravae/shared";
+import type { Attachment, FinalidadeDeUpload } from "@gravae/shared";
 
 import { findUploadConfig } from "~/@core/application/requests/upload/find-upload-config";
 import { presignUpload } from "~/@core/application/requests/upload/presign-upload";
@@ -20,16 +20,21 @@ const obterConfiguracao = () => (configuracao ??= findUploadConfig().catch(() =>
  */
 export async function uploadImage(
   file: File,
-  { maxSize }: { maxSize: number },
+  { maxSize, finalidade = "anexo" }: { maxSize: number; finalidade?: FinalidadeDeUpload },
 ): Promise<{ attachment: Attachment; originalSize: number; uploadedSize: number }> {
   const preparada: PreparedImage = await resizeImage(file, { maxSize });
   const tipo = preparada.file.type || "application/octet-stream";
 
   const { direct } = await obterConfiguracao();
 
+  /**
+   * A finalidade viaja com o arquivo porque é ela que escolhe o teto de bytes
+   * no servidor. Sem ela, uma foto de perfil herda o teto de anexo — cinquenta
+   * megabytes para algo desenhado a 72 pixels.
+   */
   const attachment = direct
-    ? await enviarDireto(preparada, tipo)
-    : await uploadFile(preparada.file);
+    ? await enviarDireto(preparada, tipo, finalidade)
+    : await uploadFile(preparada.file, finalidade);
 
   return {
     // dimensões vão junto: o chat reserva o espaço antes da imagem carregar
@@ -39,11 +44,16 @@ export async function uploadImage(
   };
 }
 
-async function enviarDireto(preparada: PreparedImage, tipo: string): Promise<Attachment> {
+async function enviarDireto(
+  preparada: PreparedImage,
+  tipo: string,
+  finalidade: FinalidadeDeUpload,
+): Promise<Attachment> {
   const { uploadUrl, attachment } = await presignUpload({
     filename: preparada.file.name,
     contentType: tipo,
     size: preparada.file.size,
+    purpose: finalidade,
   });
 
   const resposta = await fetch(uploadUrl, {

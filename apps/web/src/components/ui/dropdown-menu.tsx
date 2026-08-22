@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as DropdownPrimitive from "@radix-ui/react-dropdown-menu";
 
+import { ChevronRight } from "lucide-react";
+
 import { cn } from "~/lib/utils";
 
 export const DropdownMenu = DropdownPrimitive.Root;
@@ -46,4 +48,44 @@ export const DropdownMenuSeparator = ({
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.Separator>) => (
   <DropdownPrimitive.Separator className={cn("my-1.5 h-px bg-line", className)} {...props} />
+);
+
+/**
+ * Submenu. Mesma forma do `context-menu.tsx` — o Radix trata igual nos dois, e
+ * manter o desenho idêntico evita que o mesmo item pareça outra coisa
+ * dependendo de onde foi aberto.
+ */
+export const DropdownMenuSub = DropdownPrimitive.Sub;
+
+export const DropdownMenuSubTrigger = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownPrimitive.SubTrigger>) => (
+  <DropdownPrimitive.SubTrigger
+    className={cn(
+      "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=open]:bg-surface-3",
+      className,
+    )}
+    {...props}
+  >
+    {children}
+    <ChevronRight size={14} />
+  </DropdownPrimitive.SubTrigger>
+);
+
+export const DropdownMenuSubContent = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownPrimitive.SubContent>) => (
+  <DropdownPrimitive.Portal>
+    <DropdownPrimitive.SubContent
+      className={cn(
+        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-0 p-1.5 shadow-2xl outline-none",
+        className,
+      )}
+      {...props}
+    />
+  </DropdownPrimitive.Portal>
 );

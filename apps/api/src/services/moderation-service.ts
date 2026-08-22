@@ -129,10 +129,17 @@ export const moderationService = {
     return toMember(member);
   },
 
-  /** Apelido: o seu, qualquer um muda; o dos outros exige MANAGE_NICKNAMES. */
+  /**
+   * Apelido: o seu exige CHANGE_NICKNAME; o dos outros, MANAGE_NICKNAMES.
+   *
+   * São duas permissões porque são duas coisas diferentes — dá pra travar o
+   * apelido de todo mundo (servidor que exige nome real) sem tirar de ninguém
+   * o poder de moderar apelido alheio, e vice-versa.
+   */
   async apelidar(actorId: string, guildId: string, targetId: string, nickname: string | null) {
-    if (actorId === targetId) await accessService.requireMember(actorId, guildId);
-    else {
+    if (actorId === targetId) {
+      await accessService.requirePermission(actorId, guildId, "CHANGE_NICKNAME");
+    } else {
       const contexto = await accessService.requirePermission(actorId, guildId, "MANAGE_NICKNAMES");
       await requireAcimaDoAlvo(contexto, guildId, targetId);
     }

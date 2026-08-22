@@ -41,6 +41,13 @@ vi.mock("~/repositories/guild-repository.js", () => ({
   categoryRepository: {},
 }));
 
+const cargosDoServidor = vi.fn();
+
+vi.mock("~/repositories/role-repository.js", () => ({
+  roleRepository: { findManyByGuild: (...a: unknown[]) => cargosDoServidor(...a) },
+  overwriteRepository: {},
+}));
+
 vi.mock("~/repositories/expression-repository.js", () => ({
   expressionRepository: { findStickerById: vi.fn() },
 }));
@@ -97,9 +104,90 @@ const messageRow = {
   },
 };
 
+const CARGO_MENCIONAVEL = "6a8781db7415b08f427be1ab";
+const CARGO_FECHADO = "6a8781db7415b08f427be1ac";
+
 beforeEach(() => {
   vi.clearAllMocks();
   requireChannelAccess.mockResolvedValue(textChannel);
+  createMessage.mockResolvedValue(messageRow);
+  cargosDoServidor.mockResolvedValue([
+    { id: CARGO_MENCIONAVEL, mentionable: true },
+    { id: CARGO_FECHADO, mentionable: false },
+  ]);
+});
+
+/** O que foi realmente gravado na última chamada de `create`. */
+const gravado = () => createMessage.mock.calls.at(-1)?.[0];
+
+const comPermissao = (...extras: string[]) => ({
+  ...textChannel,
+  contexto: { ...contextoComum, permissions: new Set([...contextoComum.permissions, ...extras]) },
+});
+
+describe("menções", () => {
+  it("guarda o id de quem foi mencionado", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `oi <@${OUTRO}>` });
+
+    expect(gravado().mentions).toEqual([OUTRO]);
+  });
+
+  it("não confunde menção de cargo com menção de pessoa", async () => {
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: `<@&${CARGO_MENCIONAVEL}>`,
+    });
+
+    // se caíssem no mesmo array, o contador de não-lidas trataria cargo como gente
+    expect(gravado().mentions).toEqual([]);
+    expect(gravado().mentionRoleIds).toEqual([CARGO_MENCIONAVEL]);
+  });
+
+  it("cargo que não é mencionável não pinga", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${CARGO_FECHADO}>` });
+
+    expect(gravado().mentionRoleIds).toEqual([]);
+  });
+
+  it("quem tem MENTION_EVERYONE menciona cargo fechado também", async () => {
+    requireChannelAccess.mockResolvedValue(comPermissao("MENTION_EVERYONE"));
+
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${CARGO_FECHADO}>` });
+
+    expect(gravado().mentionRoleIds).toEqual([CARGO_FECHADO]);
+  });
+
+  it("sem permissão, @everyone é APAGADO e a mensagem passa", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "bom dia @everyone" });
+
+    // recusar a mensagem inteira por causa de uma palavra é hostil
+    expect(gravado().mentionEveryone).toBe(false);
+    expect(gravado().content).toBe("bom dia @everyone");
+  });
+
+  it("com permissão, @everyone vale", async () => {
+    requireChannelAccess.mockResolvedValue(comPermissao("MENTION_EVERYONE"));
+
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "@here alguém aí?" });
+
+    expect(gravado().mentionEveryone).toBe(true);
+  });
+
+  it("na DM não há cargo nem @everyone", async () => {
+    requireChannelAccess.mockResolvedValue({
+      channel: { id: CHANNEL, type: "TEXT", guildId: null, slowmodeSeconds: 0 },
+      contexto: null,
+    });
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: `@everyone <@&${CARGO_MENCIONAVEL}>`,
+    });
+
+    expect(gravado().mentionEveryone).toBe(false);
+    expect(gravado().mentionRoleIds).toEqual([]);
+    expect(cargosDoServidor).not.toHaveBeenCalled();
+  });
 });
 
 describe("enviar", () => {

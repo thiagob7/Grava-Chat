@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
 import { guildService } from "~/services/guild-service.js";
+import { emblemaService } from "~/services/emblema-service.js";
 import { io } from "~/realtime/io.js";
 import {
   guildParams,
@@ -16,6 +17,7 @@ import {
   createCategoryInput,
   createInviteInput,
   updateGuildInput,
+  criarEmblemaInput,
 } from "~/validations/guild.js";
 
 /**
@@ -110,6 +112,56 @@ export async function guildRoutes(app: FastifyInstance) {
     return reply.code(201).send(invite);
   });
 
+  /** O cartão que abre ao clicar numa etiqueta de servidor. */
+  app.get("/guilds/:guildId/preview", (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    return guildService.preview(req.userId, guildId);
+  });
+
+  /**
+   * Emblemas: o servidor CRIA (precisa de MANAGE_GUILD) e qualquer membro
+   * VESTE (não precisa de nada além de estar aqui). Essa divisão é o desenho da
+   * feature, não um detalhe de rota.
+   */
+  app.get("/guilds/:guildId/emblemas", (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    return emblemaService.listar(req.userId, guildId);
+  });
+
+  app.post("/guilds/:guildId/emblemas", async (req, reply) => {
+    const { guildId } = guildParams.parse(req.params);
+    const emblema = await emblemaService.criar(
+      req.userId,
+      guildId,
+      criarEmblemaInput.parse(req.body),
+    );
+
+    io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
+    return reply.code(201).send(emblema);
+  });
+
+  app.delete("/guilds/:guildId/emblemas/:emblemaId", async (req, reply) => {
+    const { guildId, emblemaId } = z
+      .object({ guildId: objectId, emblemaId: objectId })
+      .parse(req.params);
+
+    await emblemaService.remover(req.userId, guildId, emblemaId);
+
+    io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
+    return reply.code(204).send();
+  });
+
+  /** O que EU visto aqui. `@me` porque ninguém escolhe pelos outros. */
+  app.put("/guilds/:guildId/members/@me/emblemas", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    const { emblemIds } = z.object({ emblemIds: z.array(objectId) }).parse(req.body);
+
+    const resultado = await emblemaService.vestir(req.userId, guildId, emblemIds);
+
+    io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
+    return resultado;
+  });
+
   app.delete("/guilds/:guildId", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
     const membros = await guildService.remove(req.userId, guildId);
@@ -121,6 +173,25 @@ export async function guildRoutes(app: FastifyInstance) {
     void membros;
 
     return reply.code(204).send();
+  });
+
+  /** A ficha de moderação de um membro — ver `guildService.moderationView`. */
+  app.get("/guilds/:guildId/members/:userId/moderation", (req) => {
+    const { guildId, userId } = guildMemberParams.parse(req.params);
+    return guildService.moderationView(req.userId, guildId, userId);
+  });
+
+  /** O "ver mais" de cada contagem da ficha de moderação. */
+  app.get("/guilds/:guildId/members/:userId/messages", (req) => {
+    const { guildId, userId } = guildMemberParams.parse(req.params);
+    const { filtro, before } = z
+      .object({
+        filtro: z.enum(["todas", "links", "midia"]).default("todas"),
+        before: objectId.optional(),
+      })
+      .parse(req.query);
+
+    return guildService.moderationMessages(req.userId, guildId, userId, filtro, before);
   });
 
   app.delete("/guilds/:guildId/members/:userId", async (req, reply) => {

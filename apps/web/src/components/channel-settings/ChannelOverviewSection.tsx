@@ -4,7 +4,8 @@ import { MODO_LENTO_OPCOES } from "@gravae/shared";
 
 import { useUpdateChannel } from "~/@core/application/queries/guild/use-update-channel";
 import { Button } from "~/components/ui/button";
-import { Input, Label } from "~/components/ui/input";
+import { UnsavedBar } from "~/components/ui/unsaved-bar";
+import { Input, Label, campoBase } from "~/components/ui/input";
 import { Slider } from "~/components/ui/slider";
 import { cn } from "~/lib/utils";
 
@@ -90,7 +91,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
               rows={3}
               placeholder="Do que se fala aqui?"
               onChange={(e) => setTopic(e.target.value)}
-              className="w-full resize-none rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 transition placeholder:text-ink-faint focus:ring-2"
+              className={cn(campoBase, "resize-none")}
             />
           </div>
         )}
@@ -101,7 +102,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
             id="modo-lento"
             value={slowmode}
             onChange={(e) => setSlowmode(Number(e.target.value))}
-            className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2"
+            className={campoBase}
           >
             {MODO_LENTO_OPCOES.map((segundos) => (
               <option key={segundos} value={segundos}>
@@ -194,44 +195,30 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
         )}
       </div>
 
-      {mudou && (
-        <footer className="sticky bottom-0 mt-6 flex items-center gap-3 rounded bg-surface-0 px-4 py-3">
-          <p className="flex-1 text-sm">Você tem alterações não salvas.</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setName(channel.name);
-              setTopic(channel.topic ?? "");
-              setSlowmode(channel.slowmodeSeconds);
-              setVisibilidade(channel.contentVisibility);
-              setBitrate(channel.bitrate);
-              setVideoQuality(channel.videoQuality);
-              setUserLimit(channel.userLimit);
-            }}
-          >
-            Descartar
-          </Button>
-          <Button
-            variant="success"
-            size="sm"
-            disabled={salvar.isPending}
-            onClick={() =>
-              salvar.mutate({
-                guildId,
-                channelId: channel.id,
-                name: name.trim(),
-                topic: topic.trim() || null,
-                slowmodeSeconds: slowmode,
-                contentVisibility: visibilidade,
-                ...(ehVoz ? { bitrate, videoQuality, userLimit } : {}),
-              })
-            }
-          >
-            Salvar
-          </Button>
-        </footer>
-      )}
+      <UnsavedBar
+        visivel={mudou}
+        salvando={salvar.isPending}
+        onDescartar={() => {
+          setName(channel.name);
+          setTopic(channel.topic ?? "");
+          setSlowmode(channel.slowmodeSeconds);
+          setVisibilidade(channel.contentVisibility);
+          setBitrate(channel.bitrate);
+          setVideoQuality(channel.videoQuality);
+          setUserLimit(channel.userLimit);
+        }}
+        onSalvar={() =>
+          salvar.mutate({
+            guildId,
+            channelId: channel.id,
+            name: name.trim(),
+            topic: topic.trim() || null,
+            slowmodeSeconds: slowmode,
+            contentVisibility: visibilidade,
+            ...(ehVoz ? { bitrate, videoQuality, userLimit } : {}),
+          })
+        }
+      />
     </div>
   );
 };

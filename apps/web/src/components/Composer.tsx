@@ -7,6 +7,7 @@ import { startTyping } from "~/@core/lib/websocket/emit-message-actions";
 import { AttachmentTray } from "~/components/AttachmentTray";
 import { CreatePollModal } from "~/components/CreatePollModal";
 import { ExpressionPicker, type Aba } from "~/components/ExpressionPicker";
+import { MencaoSugestoes } from "~/components/MencaoSugestoes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,10 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useAttachments } from "~/hooks/use-attachments";
+import { usePermissions } from "~/hooks/use-permissions";
+import { detectarMencao, useMencoes, type Mencionavel } from "~/hooks/use-mencoes";
 import { cn } from "~/lib/utils";
 
 interface ComposerProps {
@@ -45,9 +49,48 @@ export const Composer: React.FC<ComposerProps> = ({
   const [arrastando, setArrastando] = useState(false);
   const [seletor, setSeletor] = useState<Aba | null>(null);
   const [criandoEnquete, setCriandoEnquete] = useState(false);
+  const [mencao, setMencao] = useState<{ termo: string; inicio: number } | null>(null);
+  const [escolhido, setEscolhido] = useState(0);
   const lastTypingSent = useRef(0);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const inputArquivo = useRef<HTMLInputElement>(null);
+
+  /**
+   * A permissão é resolvida AQUI e não recebida por prop: o composer aparece em
+   * quatro lugares (canal, chat da chamada, assunto do fórum, DM) e três deles
+   * teriam que repassar a mesma prop por duas ou três camadas só para chegar
+   * aqui. O detalhe do servidor já está no cache; perguntar custa nada.
+   */
+  const { data: detail } = useFindGuild(guildId);
+  const { canInChannel } = usePermissions(detail);
+
+  const { filtrar } = useMencoes(guildId, canInChannel(channelId, "MENTION_EVERYONE"));
+  const sugestoes = mencao ? filtrar(mencao.termo) : [];
+
+  /**
+   * Troca o `@termo` que está sendo digitado pelo formato que o servidor
+   * entende — `<@id>`, `<@&id>` ou `@everyone`.
+   *
+   * O texto guardado é o id, nunca o nome: é o que faz a menção sobreviver a
+   * uma troca de apelido, e o que impede alguém de escrever à mão uma menção
+   * que parece ser de outra pessoa.
+   */
+  const inserirMencao = (item: Mencionavel) => {
+    const campo = textarea.current;
+    if (!mencao || !campo) return;
+
+    const cursor = campo.selectionStart ?? value.length;
+    const texto = `${item.texto} `;
+    const proximo = value.slice(0, mencao.inicio) + texto + value.slice(cursor);
+    const posicao = mencao.inicio + texto.length;
+
+    setValue(proximo);
+    setMencao(null);
+    requestAnimationFrame(() => {
+      campo.focus();
+      campo.setSelectionRange(posicao, posicao);
+    });
+  };
 
   const podeEnviar =
     podeEscrever && (value.trim().length > 0 || anexos.prontos.length > 0) && !anexos.subindo;
@@ -58,6 +101,7 @@ export const Composer: React.FC<ComposerProps> = ({
     const content = value.trim();
 
     setValue("");
+    setMencao(null);
     if (textarea.current) textarea.current.style.height = "auto";
 
     sendMessage.mutate({
@@ -139,7 +183,12 @@ export const Composer: React.FC<ComposerProps> = ({
           void anexos.add([...e.dataTransfer.files]);
         }}
         className={cn(
-          "rounded-lg bg-surface-3 transition",
+          /**
+           * O campo é `surface-4`, um tom acima do painel: no chat escuro ele
+           * precisa parecer levantado, não um buraco. Estava em `surface-3`, que
+           * quase encostava na cor do fundo — e aí a caixa de escrever sumia.
+           */
+          "rounded-lg bg-surface-4 transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >
@@ -149,7 +198,14 @@ export const Composer: React.FC<ComposerProps> = ({
           onPatch={anexos.patchAttachment}
         />
 
-        <div className="flex items-end gap-3 px-4">
+        <div className="relative flex items-end gap-3 px-4">
+          <MencaoSugestoes
+            itens={sugestoes}
+            indice={escolhido}
+            onEscolher={inserirMencao}
+            onPassarMouse={setEscolhido}
+          />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!podeEscrever}>
               <button
@@ -197,12 +253,51 @@ export const Composer: React.FC<ComposerProps> = ({
             onPaste={colar}
             onChange={(e) => {
               setValue(e.target.value);
+              setMencao(detectarMencao(e.target.value, e.target.selectionStart ?? 0));
+              setEscolhido(0);
               notifyTyping();
               // auto-grow até metade da tela
               e.target.style.height = "auto";
               e.target.style.height = `${Math.min(e.target.scrollHeight, window.innerHeight / 2)}px`;
             }}
+            /* mover o cursor com o mouse ou as setas também muda o `@` em foco */
+            onClick={(e) => setMencao(detectarMencao(value, e.currentTarget.selectionStart ?? 0))}
+            onBlur={() => setMencao(null)}
             onKeyDown={(e) => {
+              /**
+               * Com a lista aberta, as teclas são DELA. Enter escolhendo alguém
+               * não pode mandar a mensagem no meio da frase — é o erro que faz
+               * a pessoa desistir do autocomplete e digitar o nome na mão.
+               */
+              if (sugestoes.length) {
+                if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                  e.preventDefault();
+                  const passo = e.key === "ArrowDown" ? 1 : -1;
+                  setEscolhido((i) => (i + passo + sugestoes.length) % sugestoes.length);
+                  return;
+                }
+
+                if (e.key === "Enter" || e.key === "Tab") {
+                  e.preventDefault();
+                  const item = sugestoes[escolhido];
+                  if (item) inserirMencao(item);
+                  return;
+                }
+
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  setMencao(null);
+                  return;
+                }
+              }
+
+              // seta com a lista fechada só anda o cursor: reavalia o `@` em foco
+              if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                requestAnimationFrame(() =>
+                  setMencao(detectarMencao(value, textarea.current?.selectionStart ?? 0)),
+                );
+              }
+
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 submit();

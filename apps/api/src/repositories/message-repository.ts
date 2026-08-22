@@ -142,11 +142,98 @@ export const readStateRepository = {
     });
   },
 
+  /**
+   * Quantas dessas nao-lidas sao PRA VOCE.
+   *
+   * A expansao cargo -> pessoa acontece aqui, na leitura: `mentionRoleIds`
+   * guarda o cargo, e quem esta nele hoje e quem recebe. Congelar a lista de
+   * pessoas na escrita ignoraria quem entrou depois e pingaria pra sempre quem
+   * saiu.
+   *
+   * Da pra passar os cargos de TODOS os servidores sem filtrar por servidor: id
+   * de cargo e um ObjectId unico, entao um cargo de outro servidor nao tem como
+   * aparecer nas mensagens deste canal.
+   */
+  countMentions(channelId: string, afterMessageId: string, userId: string, roleIds: string[]) {
+    return prisma.message.count({
+      where: {
+        channelId,
+        id: { gt: afterMessageId },
+        // a propria mensagem nao conta: quem escreveu ja sabe que escreveu
+        authorId: { not: userId },
+        OR: [
+          { mentions: { has: userId } },
+          { mentionEveryone: true },
+          ...(roleIds.length ? [{ mentionRoleIds: { hasSome: roleIds } }] : []),
+        ],
+      },
+    });
+  },
+
   markRead(userId: string, channelId: string, messageId: string) {
     return prisma.readState.upsert({
       where: { userId_channelId: { userId, channelId } },
       create: { userId, channelId, lastReadMessageId: messageId, mentionCount: 0 },
       update: { lastReadMessageId: messageId, mentionCount: 0 },
+    });
+  },
+};
+
+/**
+ * Números sobre o que uma pessoa mandou num servidor.
+ *
+ * Existe separado do `messageRepository` porque não serve pra ler mensagem:
+ * é material da tela de moderação, e contagem é a única coisa que sai daqui.
+ */
+export const messageStatsRepository = {
+  /**
+   * Conta mensagens, links e mídia de um usuário nos canais informados.
+   *
+   * Os canais chegam prontos (a rota já sabe quais são do servidor) em vez de
+   * um `join`: o Prisma com Mongo não faz relação em `count`, e uma consulta
+   * por canal seria muito pior que três consultas com `in`.
+   */
+  async byUserInChannels(userId: string, channelIds: string[]) {
+    if (!channelIds.length) return { mensagens: 0, links: 0, midia: 0 };
+
+    const base = { authorId: userId, channelId: { in: channelIds } };
+
+    const [mensagens, links, midia] = await Promise.all([
+      prisma.message.count({ where: base }),
+      // http:// ou https:// em qualquer posição do texto
+      prisma.message.count({ where: { ...base, content: { contains: "http" } } }),
+      prisma.message.count({ where: { ...base, attachments: { isEmpty: false } } }),
+    ]);
+
+    return { mensagens, links, midia };
+  },
+
+  /**
+   * As mensagens em si, para o "ver mais" da visualização de moderador.
+   *
+   * Vem com o canal junto porque a lista é agrupada por canal na tela — sem o
+   * `include` seriam N consultas para descobrir o nome de cada um.
+   */
+  findByUserInChannels(params: {
+    userId: string;
+    channelIds: string[];
+    filtro: "todas" | "links" | "midia";
+    limit: number;
+    before?: string;
+  }) {
+    if (!params.channelIds.length) return Promise.resolve([]);
+
+    return prisma.message.findMany({
+      where: {
+        authorId: params.userId,
+        channelId: { in: params.channelIds },
+        ...(params.filtro === "links" ? { content: { contains: "http" } } : {}),
+        ...(params.filtro === "midia" ? { attachments: { isEmpty: false } } : {}),
+        ...(params.before ? { id: { lt: params.before } } : {}),
+      },
+      include: { author: true, channel: true },
+      orderBy: { createdAt: "desc" },
+      take: params.limit,
     });
   },
 };

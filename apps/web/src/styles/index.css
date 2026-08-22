@@ -1,6 +1,16 @@
 @import "tailwindcss";
 
 /*
+  Os enfeites de perfil, cargo e nome. Fica em arquivo separado porque nada ali
+  é Tailwind: são classes estáticas com custom property, o único jeito de um
+  valor escolhido em runtime virar CSS de verdade no Tailwind 4.
+
+  O `@import` tem que vir aqui em cima — o CSS exige que todo `@import` preceda
+  qualquer regra, e a primeira regra deste arquivo é o `@theme` logo abaixo.
+*/
+@import "./cosmeticos.css";
+
+/*
   Tokens do tema. Tudo no app usa estes nomes (bg-surface-1, text-muted...)
   em vez de cor solta tipo bg-[#313338]: quando quisermos tema claro ou
   customizar por servidor, muda so aqui.

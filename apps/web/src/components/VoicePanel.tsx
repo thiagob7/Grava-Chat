@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { AudioLines, MonitorUp, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
-import type { Channel } from "@gravae/shared";
-
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
+import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/components/SoundboardPanel";
 import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
 import { VoiceDetailsPopover } from "~/components/VoiceDetailsPopover";
@@ -13,34 +14,31 @@ import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 
 interface VoicePanelProps {
-  guildName: string | undefined;
-  guildId?: string;
-  /** o painel de sons só aparece pra quem pode usar */
-  podeUsarSons?: boolean;
-  channels: Channel[];
   /**
    * Canal em que a CONTA está (vem do servidor). Pode ser diferente do canal em
    * que ESTA aba está conectada — a mesma conta pode ter várias abas abertas,
    * mas só uma segura a sessão de mídia.
+   *
+   * Só a tela do servidor sabe disso, então continua vindo de fora.
    */
   accountChannelId?: string | null;
   onMoveHere?: (channelId: string) => void;
 }
 
 /**
- * O painel de "Voz conectada" acima do seu usuário — o controle precisa estar
- * sempre à mão, mesmo navegando por outros canais.
+ * O painel de "Voz conectada" acima do seu usuário.
+ *
+ * Ele NÃO depende de onde você está navegando: os dados vêm da chamada, não da
+ * tela. Antes recebia os canais e o nome do servidor abertos, e por isso
+ * mostrava "… / OutroServidor" assim que você trocava de servidor — o nome era
+ * o do lugar em que você estava olhando, não o da chamada. E na tela de
+ * conversas ele nem existia, que é justamente onde some o resto da referência.
  */
-export const VoicePanel: React.FC<VoicePanelProps> = ({
-  guildName,
-  guildId,
-  podeUsarSons = false,
-  channels,
-  accountChannelId,
-  onMoveHere,
-}) => {
+export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMoveHere }) => {
+  const navigate = useNavigate();
   const {
     channelId,
+    guildId,
     micBlocked,
     cameraEnabled,
     screenEnabled,
@@ -51,6 +49,16 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({
     toggleScreen,
     leave,
   } = useVoiceStore();
+
+  /**
+   * O servidor DA CHAMADA, não o que está aberto. Sai do cache (você esteve
+   * nele pra entrar na chamada); se por acaso não estiver, a consulta busca —
+   * e é o comportamento certo, porque sem ela não há como nomear o canal.
+   */
+  const { data: detail } = useFindGuild(guildId ?? undefined);
+  const channels = detail?.channels ?? [];
+  const guildName = detail?.guild.name;
+  const podeUsarSons = usePermissions(detail).can("USE_SOUNDBOARD");
 
   const ping = useVoicePing();
   // o endereço do SFU é o que dá pra mostrar como "onde a chamada está"
@@ -114,9 +122,19 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({
               </span>
             </button>
           </VoiceDetailsPopover>
-          <p className="truncate text-xs text-ink-muted">
+          {/*
+            Clicar leva DE VOLTA pra chamada — servidor e canal. É o caminho de
+            volta pra quem foi ver outra coisa e se perdeu: sem ele, a única
+            forma de reencontrar a chamada é lembrar em que servidor ela estava.
+          */}
+          <button
+            onClick={() => guildId && navigate(`/channels/${guildId}/${channelId}`)}
+            disabled={!guildId}
+            title="Voltar para a chamada"
+            className="block max-w-full truncate text-left text-xs text-ink-muted transition hover:text-ink hover:underline disabled:cursor-default disabled:no-underline"
+          >
             {channel?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
-          </p>
+          </button>
         </div>
 
         {/*
@@ -171,7 +189,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({
         call.
       */}
       <div className="grid grid-cols-3 gap-1">
-        <SoundboardPanel guildId={guildId} podeUsar={podeUsarSons} />
+        <SoundboardPanel guildId={guildId ?? undefined} podeUsar={podeUsarSons} />
 
         <VoiceControl label="Câmera" onClick={() => void toggleCamera()}>
           {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}

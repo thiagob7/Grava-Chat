@@ -106,6 +106,9 @@ model User {
   /// conta de webhook: não faz login, não aparece na lista de membros
   isBot       Boolean        @default(false)
   status      PresenceStatus @default(OFFLINE)
+  /// enfeites; ausente em quem nunca personalizou nada
+  perfil              EstiloDePerfil?
+  statusPersonalizado StatusPersonalizado?
   lastSeenAt  DateTime?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -124,6 +127,8 @@ model User {
   webhookIdentity     Webhook?       @relation("WebhookBot")
   webhooksCreated     Webhook[]      @relation("WebhookCreator")
   auditLogs           AuditLog[]     @relation("AuditActor")
+  notasEscritas       UserNote[]     @relation("NotasEscritas")
+  notasRecebidas      UserNote[]     @relation("NotasRecebidas")
   bans                Ban[]          @relation("BanTarget")
   forumPosts          ForumPost[]    @relation("PostAuthor")
 }
@@ -216,9 +221,54 @@ model Guild {
   emojis     GuildEmoji[]
   stickers   GuildSticker[]
   sounds     GuildSound[]
+  emblems    GuildEmblem[]
   automod    AutoModRule[]
 
   @@index([ownerId])
+}
+
+/// Como o nome da pessoa e pintado. Ver `packages/shared/src/cosmeticos.ts`.
+type EstiloDeNome {
+  fonte  String?
+  efeito String?
+  cor    String?
+  cor2   String?
+}
+
+/// Enfeites do perfil, num documento embutido.
+///
+/// Um no so em vez de doze colunas soltas em `User`: da pra incluir ou excluir
+/// inteiro num select, normalizar inteiro numa escrita e espelhar 1:1 no schema
+/// Zod. `User` e lido em massa (lista de membros, autor de cada mensagem), entao
+/// poder tratar o cosmetico como grupo importa.
+type EstiloDePerfil {
+  nome           EstiloDeNome?
+  /// O nome curto que a pessoa escolhe pra si, ao lado do @usuario. NAO e a
+  /// etiqueta do servidor (`Guild.tag`), que e do servidor e vale pra todos.
+  etiqueta       String?
+  /// De qual servidor a pessoa veste a etiqueta. A escolha e dela e vale em
+  /// todo lugar — inclusive fora deste servidor e na conversa privada.
+  tagGuildId     String?  @db.ObjectId
+  decoracao      String?
+  moldura        String?
+  efeito         String?
+  placa          String?
+  bannerUrl      String?
+  bannerCor      String?
+  temaPrimario   String?
+  temaSecundario String?
+}
+
+/// Status personalizado. `expiraEm` nulo = nao expira.
+///
+/// Fica no Mongo, e nao no Redis com TTL: presenca e efemera por definicao
+/// (`presenceService.reset()` limpa na subida do processo), e "de ferias ate
+/// sexta" nao pode estar no raio dessa vassoura. Vindo daqui tambem chega de
+/// graca no `include: { user: true }` que a lista de membros ja faz.
+type StatusPersonalizado {
+  texto    String
+  emoji    String?
+  expiraEm DateTime?
 }
 
 model GuildMember {
@@ -230,9 +280,18 @@ model GuildMember {
   /// Cargos desta pessoa neste servidor. O @everyone é implícito — todo membro
   /// o tem, então guardá-lo aqui seria só ruído duplicado em cada documento.
   roleIds  String[] @db.ObjectId
+  /// Os emblemas do servidor que esta pessoa escolheu vestir. Fica no MEMBRO e
+  /// nao no usuario porque emblema e do servidor: o mesmo perfil aparece com o
+  /// emblema aqui e sem ele no servidor ao lado.
+  emblemIds String[] @db.ObjectId
   nickname String?
   /// de castigo até esta hora: não escreve nem fala
   timeoutUntil DateTime?
+  /// Por qual convite entrou, e de quem era. Guardado no MEMBRO e não lido do
+  /// convite depois porque convite é apagável: revogar um link não pode apagar
+  /// a história de como as pessoas chegaram aqui.
+  inviteCode String?
+  invitedById String? @db.ObjectId
   joinedAt DateTime @default(now())
 
   @@unique([guildId, userId])
@@ -253,6 +312,19 @@ model Role {
   permissions String[]
   /// exibir os membros deste cargo separadamente na lista
   hoist       Boolean  @default(false)
+  /// segunda cor do gradiente
+  colorSecondary String?
+  /// imagem OU emoji; a exclusividade e garantida no service, nao no banco
+  iconUrl        String?
+  iconEmoji      String?
+  /// "solido" | "gradiente" | "holografico"
+  ///
+  /// NULLABLE de proposito, mesmo tendo um padrao obvio. No conector Mongo o
+  /// `@default` so vale no create: um cargo que ja existe nao tem o campo, e
+  /// campo obrigatorio ausente estoura na LEITURA — o que derrubaria
+  /// `findManyByGuild`, ou seja, toda carga de servidor. `null` e tratado como
+  /// "solido" no `toRole`.
+  estilo         String?
   mentionable Boolean  @default(false)
   /// o cargo padrão do servidor; exatamente um por servidor
   isEveryone  Boolean  @default(false)
@@ -343,6 +415,15 @@ model Message {
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
   mentions    String[]     @db.ObjectId
+  /// Cargos mencionados. SEPARADO de `mentions`, que significa usuario: se os
+  /// dois morassem no mesmo array, o contador de nao-lidas e o AutoMod
+  /// passariam a tratar um cargo como se fosse uma pessoa. E a expansao
+  /// cargo -> membros NAO pode ser congelada aqui: quem entrasse depois seria
+  /// ignorado, e quem saisse continuaria sendo pingado pra sempre.
+  mentionRoleIds String[]  @db.ObjectId
+  /// `@everyone` ou `@here`. Anulavel de proposito — no conector do Mongo um
+  /// campo obrigatorio com default estoura na LEITURA de documento antigo.
+  mentionEveryone Boolean?
   /// post do fórum a que esta mensagem pertence; null nos canais normais
   postId      String?      @db.ObjectId
   post        ForumPost?   @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -555,4 +636,37 @@ model ForumPost {
   messages Message[]
 
   @@index([channelId, lastMessageAt])
+}
+
+/// Uma anotacao PRIVADA sobre outra pessoa: "amigo do Leo", "cuidado".
+///
+/// So quem escreveu le. Nao e um campo do perfil do outro — e uma lembranca
+/// sua sobre ele, e por isso mora numa colecao propria com dono e alvo, em vez
+/// de virar mais um campo em `User` que a serializacao teria que se lembrar de
+/// nunca mandar pra ninguem.
+model UserNote {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId   String   @db.ObjectId
+  owner     User     @relation("NotasEscritas", fields: [ownerId], references: [id], onDelete: Cascade)
+  targetId  String   @db.ObjectId
+  target    User     @relation("NotasRecebidas", fields: [targetId], references: [id], onDelete: Cascade)
+  texto     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([ownerId, targetId])
+}
+
+/// Um emblema do servidor. O servidor cria; cada membro escolhe se veste.
+model GuildEmblem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId     String   @db.ObjectId
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  nome        String
+  /// emoji OU imagem; o service garante que so um esta preenchido
+  emoji       String?
+  iconUrl     String?
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  @@index([guildId])
 }

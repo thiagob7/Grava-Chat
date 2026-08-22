@@ -13,7 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label } from "~/components/ui/input";
+import { Input, Label, campoBase } from "~/components/ui/input";
+import { cn } from "~/lib/utils";
 import { formatTimestamp } from "~/lib/format";
 
 interface ForumChannelProps {
@@ -162,7 +163,7 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
               maxLength={4000}
               placeholder="Conte o caso"
               onChange={(e) => setConteudo(e.target.value)}
-              className="w-full resize-none rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 transition placeholder:text-ink-faint focus:ring-2"
+              className={cn(campoBase, "resize-none")}
             />
           </div>
         </DialogBody>

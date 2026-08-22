@@ -1,4 +1,4 @@
-import type { Attachment } from "@gravae/shared";
+import type { Attachment, FinalidadeDeUpload } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
 /**
@@ -8,10 +8,15 @@ import { api } from "~/@core/lib/api";
  * banda da API, então o presign continua sendo o preferido — ver
  * `R2_DIRECT_UPLOAD` no backend.
  */
-export async function uploadFile(file: File): Promise<Attachment> {
+export async function uploadFile(
+  file: File,
+  finalidade: FinalidadeDeUpload = "anexo",
+): Promise<Attachment> {
   const form = new FormData();
   form.append("file", file, file.name);
 
-  const response = await api.post<Attachment>("/uploads", form);
+  // na query, e não no corpo: o corpo é multipart e o servidor precisa do teto
+  // ANTES de decidir se aceita os bytes
+  const response = await api.post<Attachment>(`/uploads?purpose=${finalidade}`, form);
   return response.data;
 }

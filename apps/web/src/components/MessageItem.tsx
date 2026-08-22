@@ -3,6 +3,8 @@ import { Pencil, Pin, PinOff, RotateCw, SmilePlus, Trash2, UserPlus } from "luci
 import type { GuildEmoji, Message } from "@gravae/shared";
 
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
+import type { EnfeitesDaPessoa } from "~/hooks/use-enfeites";
+import type { ResolverMencoes } from "~/hooks/use-mencoes";
 import {
   deleteMessage,
   editMessage,
@@ -13,10 +15,12 @@ import { MessageAttachments } from "~/components/MessageAttachments";
 import { MessageContent } from "~/components/MessageContent";
 import { PollCard } from "~/components/PollCard";
 import { ServerTag } from "~/components/ServerTag";
+import { UserName } from "~/components/UserName";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { formatTime, formatTimestamp } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { useConfirmar } from "~/components/ui/confirm";
+import { useIgnoreStore } from "~/stores/ignore-store";
 
 const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];
 
@@ -30,9 +34,18 @@ interface MessageItemProps {
   currentUserId?: string;
   /** emojis do servidor, para `:nome:` virar imagem */
   emojis?: GuildEmoji[];
-  /** etiqueta do servidor ao lado do nome */
-  tag?: string | null;
-  tagIcon?: string | null;
+  /**
+   * Enfeite e cor de cargo do autor, já resolvidos pela lista.
+   *
+   * Vem de fora e não de um hook aqui dentro porque este componente aparece
+   * cinquenta vezes por página: o cruzamento de cargos acontece uma vez lá em
+   * cima, não uma vez por mensagem.
+   */
+  enfeites?: EnfeitesDaPessoa;
+  /** de onde tirar o nome de quem foi mencionado no texto */
+  mencoes?: ResolverMencoes;
+  /** true quando ESTA mensagem menciona você: ganha a barra lateral e o fundo */
+  meMenciona?: boolean;
   onRetry: (message: PendingMessageModel) => void;
   onPin?: (message: Message, fixar: boolean) => void;
 }
@@ -45,12 +58,22 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   isOwn,
   currentUserId,
   emojis = [],
-  tag,
-  tagIcon,
+  enfeites,
+  mencoes,
+  meMenciona = false,
   onRetry,
   onPin,
 }) => {
   const confirmar = useConfirmar();
+
+  /**
+   * Ignorar não apaga a mensagem — colapsa. Sumir de vez tiraria o contexto de
+   * quem responde a essa pessoa, e a conversa ficaria com buracos que ninguém
+   * consegue explicar. O "mostrar" é local e vale só para aquela mensagem.
+   */
+  const ignorado = useIgnoreStore((s) => s.ignorados).includes(message.author.id);
+  const [revelado, setRevelado] = useState(false);
+
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
   const [showEmojis, setShowEmojis] = useState(false);
@@ -89,6 +112,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       className={cn(
         "group relative flex gap-4 px-4 py-0.5 transition hover:bg-black/10",
         !compact && "mt-4",
+        /**
+         * Fundo e barra lateral quando a mensagem é pra você. É o mesmo sinal
+         * do Discord, e resolve o problema de rolar cem mensagens procurando
+         * onde te chamaram.
+         */
+        meMenciona && "bg-idle/10 shadow-[inset_2px_0_0_var(--color-idle)] hover:bg-idle/15",
         message.pending && "opacity-60",
         message.failed && "bg-danger/10",
       )}
@@ -105,6 +134,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 id={message.author.id}
                 name={message.author.displayName}
                 url={message.author.avatarUrl}
+                enfeites={enfeites?.perfil}
               />
             </button>
           </UserProfilePopover>
@@ -115,11 +145,20 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         {!compact && (
           <div className="flex items-baseline gap-2">
             <UserProfilePopover userId={message.author.id}>
+              {/*
+                O `<span>` do nome vai DENTRO do botão, nunca no lugar dele: o
+                gatilho do cartão de perfil já é um botão, e botão dentro de
+                botão o navegador reaninha calado — o clique de dentro some.
+              */}
               <button className="font-medium text-ink hover:underline">
-                {message.author.displayName}
+                <UserName
+                  nome={message.author.displayName}
+                  perfil={enfeites?.perfil}
+                  corDoCargo={enfeites?.corDoCargo}
+                />
               </button>
             </UserProfilePopover>
-            <ServerTag tag={tag} icone={tagIcon} />
+            <ServerTag etiqueta={enfeites?.perfil?.etiquetaDoServidor} />
             <span className="text-xs text-ink-faint">{formatTimestamp(message.createdAt)}</span>
             {message.pinnedAt && (
               <span className="flex items-center gap-1 text-[10px] text-ink-faint">
@@ -129,7 +168,14 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </div>
         )}
 
-        {editing ? (
+        {ignorado && !revelado ? (
+          <p className="my-1 flex items-center gap-2 text-sm italic text-ink-faint">
+            Mensagem de alguém que você ignora.
+            <button onClick={() => setRevelado(true)} className="not-italic text-brand hover:underline">
+              Mostrar
+            </button>
+          </p>
+        ) : editing ? (
           <div className="my-1">
             <textarea
               autoFocus
@@ -156,7 +202,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <p className="whitespace-pre-wrap break-words text-ink-muted">
-              <MessageContent content={message.content} emojis={emojis} />
+              <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} />
               {message.editedAt && <span className="ml-1 text-[10px] text-ink-faint">(editado)</span>}
             </p>
           )

@@ -9,7 +9,7 @@ import {
 } from "~/@core/application/queries/moderation/use-moderation";
 import type { AutoModRuleModel } from "~/@core/application/requests/moderation/moderation";
 import { Button } from "~/components/ui/button";
-import { Input, Label } from "~/components/ui/input";
+import { Input, Label, campoBase } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
@@ -305,7 +305,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
               onChange={(e) =>
                 setRascunho({ ...rascunho, alertChannelId: e.target.value || null })
               }
-              className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2"
+              className={campoBase}
             >
               <option value="">Escolha um canal</option>
               {canais.map((canal) => (

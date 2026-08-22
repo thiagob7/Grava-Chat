@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
-import { Button } from "~/components/ui/button";
+import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, Label } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
@@ -73,35 +73,21 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => 
         </div>
       </div>
 
-      {mudou && (
-        <footer className="sticky bottom-0 mt-6 flex items-center gap-3 rounded bg-surface-0 px-4 py-3">
-          <p className="flex-1 text-sm">Você tem alterações não salvas.</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setTag(guild.tag ?? "");
-              setIcone(guild.tagIcon ?? INSIGNIAS[0]!);
-            }}
-          >
-            Descartar
-          </Button>
-          <Button
-            variant="success"
-            size="sm"
-            disabled={salvar.isPending}
-            onClick={() =>
-              salvar.mutate({
-                guildId: guild.id,
-                tag: tag.trim() || null,
-                tagIcon: tag.trim() ? icone : null,
-              })
-            }
-          >
-            Salvar
-          </Button>
-        </footer>
-      )}
+      <UnsavedBar
+        visivel={mudou}
+        salvando={salvar.isPending}
+        onDescartar={() => {
+          setTag(guild.tag ?? "");
+          setIcone(guild.tagIcon ?? INSIGNIAS[0]!);
+        }}
+        onSalvar={() =>
+          salvar.mutate({
+            guildId: guild.id,
+            tag: tag.trim() || null,
+            tagIcon: tag.trim() ? icone : null,
+          })
+        }
+      />
     </div>
   );
 };

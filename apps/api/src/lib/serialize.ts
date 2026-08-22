@@ -9,6 +9,9 @@ import type {
   Sticker,
   GuildEmoji,
   GuildSound,
+  PerfilPublico,
+  StatusPersonalizado,
+  DesiredStatus,
 } from "@gravae/shared";
 import { unset } from "./mongo.js";
 
@@ -28,13 +31,90 @@ export function toPublicUser(u: UserRow): PublicUser {
   };
 }
 
-export function toSelfUser(u: UserRow, providers: string[] = []): SelfUser {
+/**
+ * O que os OUTROS veem de enfeite seu.
+ *
+ * Fica separado de `toPublicUser` de proposito: aquele esta embutido em cada
+ * mensagem, este viaja uma vez por pessoa no mapa `profiles`. Enfeite e por
+ * usuario, nao por mensagem.
+ *
+ * Chaves em branco sao omitidas — quem nunca personalizou nada custa `{}`.
+ */
+/** A etiqueta de um servidor, ja resolvida — ver `EtiquetaDeServidor`. */
+export type EtiquetaResolvida = { guildId: string; tag: string; tagIcon: string | null };
+
+export function toPerfilPublico(
+  u: UserRow,
+  emblemas: string[] = [],
+  /**
+   * A etiqueta do servidor que esta pessoa escolheu vestir, ja resolvida por
+   * quem chamou. Vem de fora porque resolver id -> `tag` exige buscar servidores
+   * que talvez nem sejam o que esta aberto — e em lista de membros isso tem que
+   * acontecer UMA vez pra todo mundo, nao uma vez por pessoa.
+   */
+  etiquetaDoServidor: EtiquetaResolvida | null = null,
+): PerfilPublico {
+  const p = u.perfil;
+
+  return {
+    ...(p?.nome ? { nome: limparNome(p.nome) } : {}),
+    ...(p?.etiqueta ? { etiqueta: p.etiqueta } : {}),
+    ...(etiquetaDoServidor ? { etiquetaDoServidor } : {}),
+    ...(emblemas.length ? { emblemas } : {}),
+    ...(p?.decoracao ? { decoracao: p.decoracao as PerfilPublico["decoracao"] } : {}),
+    ...(p?.moldura ? { moldura: p.moldura as PerfilPublico["moldura"] } : {}),
+    ...(p?.placa ? { placa: p.placa as PerfilPublico["placa"] } : {}),
+    ...(statusVigente(u) ? { status: statusVigente(u) } : {}),
+  };
+}
+
+/**
+ * O status personalizado ja venceu?
+ *
+ * A expiracao e conferida AQUI, na leitura, e nao por tarefa agendada — mesmo
+ * idioma que o castigo usa comparando `timeoutUntil` com a hora atual. O
+ * documento vencido fica no banco ate a proxima escrita, e nao incomoda ninguem.
+ */
+export function statusVigente(u: UserRow): StatusPersonalizado | null {
+  const s = u.statusPersonalizado;
+  if (!s) return null;
+  if (s.expiraEm && s.expiraEm <= new Date()) return null;
+
+  return {
+    texto: s.texto,
+    emoji: s.emoji,
+    expiraEm: s.expiraEm?.toISOString() ?? null,
+  };
+}
+
+/** Tira os nulos que o Prisma devolve pra o schema receber `undefined`. */
+function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
+  return {
+    ...(n.fonte ? { fonte: n.fonte as "padrao" } : {}),
+    ...(n.efeito ? { efeito: n.efeito as "solido" } : {}),
+    ...(n.cor ? { cor: n.cor } : {}),
+    ...(n.cor2 ? { cor2: n.cor2 } : {}),
+  };
+}
+
+/**
+ * `desiredStatus` vem de fora (Redis, via `presenceService`) porque o Mongo so
+ * guarda o status PROJETADO — invisivel nunca e gravado la.
+ */
+export function toSelfUser(
+  u: UserRow,
+  providers: string[] = [],
+  desiredStatus: DesiredStatus = "ONLINE",
+): SelfUser {
   return {
     ...toPublicUser(u),
     email: u.email,
     bio: u.bio,
     providers,
     createdAt: u.createdAt.toISOString(),
+    perfil: u.perfil ? (u.perfil as SelfUser["perfil"]) : null,
+    statusPersonalizado: statusVigente(u),
+    desiredStatus,
   };
 }
 
@@ -62,6 +142,11 @@ export function toRole(r: Prisma.RoleGetPayload<object>): Role {
     guildId: r.guildId,
     name: r.name,
     color: r.color,
+    colorSecondary: r.colorSecondary,
+    iconUrl: r.iconUrl,
+    iconEmoji: r.iconEmoji,
+    // `null` = cargo criado antes do campo existir; "solido" e o padrao
+    estilo: (r.estilo as Role["estilo"]) ?? "solido",
     position: r.position,
     permissions: r.permissions,
     hoist: r.hoist,
@@ -134,6 +219,10 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
       : null,
     sticker: m.sticker ? toSticker(m.sticker) : null,
     reactions: [...grouped.entries()].map(([emoji, v]) => ({ emoji, count: v.count, me: v.me })),
+    mentions: m.mentions,
+    mentionRoleIds: m.mentionRoleIds,
+    // `null` = mensagem escrita antes do campo existir; ver o comentario no schema
+    mentionEveryone: m.mentionEveryone ?? false,
     replyToId: m.replyToId,
     postId: m.postId,
     pinnedAt: m.pinnedAt?.toISOString() ?? null,

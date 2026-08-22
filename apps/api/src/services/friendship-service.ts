@@ -38,6 +38,42 @@ export const friendshipService = {
     });
   },
 
+  /**
+   * Bloquear alguém.
+   *
+   * Reaproveita a linha de amizade em vez de criar uma tabela separada: a
+   * relação entre duas pessoas já mora aqui, e um bloqueio É um estado dessa
+   * relação. Duas tabelas concorrentes dariam o caso impossível de "amigos e
+   * bloqueados ao mesmo tempo".
+   *
+   * O `requesterId` passa a ser quem bloqueou — é isso que permite saber, mais
+   * tarde, quem tem o poder de desfazer.
+   */
+  async block(userId: string, alvoId: string) {
+    if (alvoId === userId) throw new AppError("Você não pode bloquear a si mesmo");
+
+    const alvo = await userRepository.findById(alvoId);
+    if (!alvo) throw new NotFoundError("Usuário não encontrado");
+
+    const existente = await friendshipRepository.findBetween(userId, alvoId);
+
+    // desfazer e recriar: o bloqueio precisa registrar QUEM bloqueou, e a
+    // linha antiga pode ter os papéis invertidos
+    if (existente) await friendshipRepository.remove(existente.id);
+
+    await friendshipRepository.createBlocked(userId, alvoId);
+  },
+
+  /** Só quem bloqueou desfaz — senão bastaria o bloqueado se desbloquear. */
+  async unblock(userId: string, alvoId: string) {
+    const relacao = await friendshipRepository.findBetween(userId, alvoId);
+
+    if (!relacao || relacao.status !== "BLOCKED") throw new AppError("Essa pessoa não está bloqueada");
+    if (relacao.requesterId !== userId) throw new AppError("Quem bloqueou foi a outra pessoa");
+
+    await friendshipRepository.remove(relacao.id);
+  },
+
   /** Pedido de amizade por nome de usuário, como no Discord. */
   async request(userId: string, username: string) {
     const alvo = await userRepository.findByUsernamePublic(username.replace(/^@/, "").trim());
@@ -98,6 +134,8 @@ export const friendshipService = {
    */
   async openDm(userId: string, outroId: string) {
     const relacao = await friendshipRepository.findBetween(userId, outroId);
+
+    if (relacao?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
     if (!relacao || relacao.status !== "ACCEPTED") {
       throw new AppError("Vocês precisam ser amigos para conversar");
     }

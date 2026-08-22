@@ -1,3 +1,5 @@
+import { cn } from "~/lib/utils";
+import { campoBase } from "~/components/ui/input";
 import React, { useState } from "react";
 import {
   Ban,
@@ -88,7 +90,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, membe
           <select
             value={actorId}
             onChange={(e) => setActorId(e.target.value)}
-            className="mt-1 block w-44 rounded bg-surface-0 px-3 py-2 text-sm font-normal normal-case text-ink outline-none ring-brand/60 focus:ring-2"
+            className={cn(campoBase, "mt-1 block w-44 px-3 py-2 font-normal normal-case")}
           >
             <option value="">Todos os usuários</option>
             {members.map((m) => (
@@ -104,7 +106,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, membe
           <select
             value={action}
             onChange={(e) => setAction(e.target.value)}
-            className="mt-1 block w-40 rounded bg-surface-0 px-3 py-2 text-sm font-normal normal-case text-ink outline-none ring-brand/60 focus:ring-2"
+            className={cn(campoBase, "mt-1 block w-40 px-3 py-2 font-normal normal-case")}
           >
             {FILTROS.map((f) => (
               <option key={f.valor} value={f.valor}>

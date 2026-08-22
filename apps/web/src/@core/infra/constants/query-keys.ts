@@ -11,7 +11,10 @@ export const queryKeys = {
   guild: {
     find_many: "find-many-guilds",
     find: (guildId: string) => ["find-guild", guildId] as const,
+    preview: (guildId: string) => ["find-guild-preview", guildId] as const,
     invites: (guildId: string) => ["find-guild-invites", guildId] as const,
+    moderation: "find-moderation-view",
+    moderation_messages: "find-moderation-messages",
   },
 
   role: {

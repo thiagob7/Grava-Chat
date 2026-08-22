@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { DESIRED_STATUSES, type DesiredStatus } from "./constants.js";
+import { perfilPublicoSchema } from "./cosmeticos.js";
 import {
   objectId,
   messageSchema,
@@ -37,7 +39,13 @@ export const clientEventSchemas = {
 
   "typing:start": z.object({ channelId: objectId }),
 
-  "presence:update": z.object({ status: z.enum(["ONLINE", "IDLE", "DND"]) }),
+  "presence:update": z.object({ status: z.enum(DESIRED_STATUSES) }),
+  /**
+   * Inatividade e detectada no CLIENTE: o ping do Socket.IO prova que a aba
+   * esta viva, nao que a pessoa esta. Vai numa chave separada do status manual
+   * — se fosse a mesma, voltar do ausente esqueceria que voce estava em DND.
+   */
+  "presence:afk": z.object({ idle: z.boolean() }),
 
   "voice:join": z.object({
     channelId: objectId,
@@ -106,6 +114,24 @@ export type ServerToClientEvents = {
   "typing:started": (p: { channelId: string; user: z.infer<typeof publicUserSchema> }) => void;
 
   "presence:changed": (p: { userId: string; status: PresenceStatus }) => void;
+  /**
+   * O seu proprio status, com o valor DESEJADO.
+   *
+   * Existe porque os seus sockets tambem estao nas salas dos servidores, entao
+   * voce recebe o `presence:changed` dizendo que VOCE esta offline ao ficar
+   * invisivel. O front ignora o `changed` sobre o proprio id e escuta este.
+   */
+  "presence:self": (p: { status: DesiredStatus }) => void;
+  /**
+   * Perfil (nome, foto, enfeite, status personalizado) mudou.
+   *
+   * Sem isto, trocar o avatar so aparece pros outros depois de um F5 — limitacao
+   * que ja existia e que enfeite e status personalizado tornariam gritante.
+   */
+  "user:updated": (p: {
+    user: z.infer<typeof publicUserSchema>;
+    perfil: z.infer<typeof perfilPublicoSchema>;
+  }) => void;
 
   /** Alguem te mandou pedido de amizade, ou respondeu o seu. */
   "friend:updated": () => void;

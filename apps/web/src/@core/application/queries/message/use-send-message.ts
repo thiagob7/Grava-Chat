@@ -56,6 +56,15 @@ export const useSendMessage = () => {
         poll: null,
         sticker: null,
         reactions: [],
+        /**
+         * A menção otimista fica vazia de propósito: quem decide o que pinga de
+         * verdade é o servidor (cargo mencionável, `MENTION_EVERYONE`), e a
+         * mensagem real chega logo em seguida pelo socket com a resposta dele.
+         * Adivinhar aqui só criaria um piscar de destaque que some.
+         */
+        mentions: [],
+        mentionRoleIds: [],
+        mentionEveryone: false,
         replyToId: variables.replyToId ?? null,
         postId: variables.postId ?? null,
         pinnedAt: null,

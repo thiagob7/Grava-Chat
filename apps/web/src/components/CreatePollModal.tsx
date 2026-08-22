@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label } from "~/components/ui/input";
+import { Input, Label, campoBase } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 
 interface CreatePollModalProps {
@@ -121,7 +121,7 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
               id="duracao"
               value={duracao ?? ""}
               onChange={(e) => setDuracao(e.target.value ? Number(e.target.value) : null)}
-              className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2"
+              className={campoBase}
             >
               {DURACOES.map((item) => (
                 <option key={item.horas} value={item.horas}>

@@ -11,6 +11,7 @@ import { IntegrationsSection } from "~/components/server-settings/IntegrationsSe
 import { AuditLogSection } from "~/components/server-settings/AuditLogSection";
 import { AutoModSection } from "~/components/server-settings/AutoModSection";
 import { BansSection } from "~/components/server-settings/BansSection";
+import { EmblemasSection } from "~/components/server-settings/EmblemasSection";
 import { EngagementSection } from "~/components/server-settings/EngagementSection";
 import {
   EmojiSection,
@@ -29,6 +30,7 @@ type Secao =
   | "emoji"
   | "figurinhas"
   | "sons"
+  | "emblemas"
   | "membros"
   | "cargos"
   | "convites"
@@ -41,7 +43,7 @@ type Secao =
 /** Os grupos do menu, na mesma ordem do Discord. */
 const GRUPOS: { titulo: string | null; itens: Secao[] }[] = [
   { titulo: null, itens: ["perfil", "tag", "engajamento"] },
-  { titulo: "Expressões", itens: ["emoji", "figurinhas", "sons"] },
+  { titulo: "Expressões", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
   { titulo: "Pessoas", itens: ["membros", "cargos", "convites"] },
   { titulo: "Apps", itens: ["integracoes"] },
   { titulo: "Moderação", itens: ["auditoria", "banimentos", "automod"] },
@@ -54,6 +56,7 @@ const ROTULOS: Record<Secao, string> = {
   emoji: "Emoji",
   figurinhas: "Figurinhas",
   sons: "Painel de efeitos sonoros",
+  emblemas: "Emblemas",
   membros: "Membros",
   cargos: "Cargos",
   convites: "Convites",
@@ -118,6 +121,8 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     emoji: true,
     figurinhas: true,
     sons: true,
+    // todo mundo vê: quem não gerencia ainda precisa saber o que dá pra vestir
+    emblemas: true,
     membros: true,
     cargos: canManageRoles,
     convites: true,
@@ -218,6 +223,14 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                 guildId={detail.guild.id}
                 channels={detail.channels}
                 roles={detail.roles}
+              />
+            )}
+
+            {secao === "emblemas" && (
+              <EmblemasSection
+                guildId={detail.guild.id}
+                emblemas={detail.emblemas}
+                editavel={canManage}
               />
             )}
 

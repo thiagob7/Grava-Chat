@@ -6,6 +6,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { UserPanel } from "~/components/UserPanel";
+import { VoicePanel } from "~/components/VoicePanel";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
@@ -103,6 +104,15 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
           );
         })}
       </div>
+
+      {/*
+        A chamada acompanha você até aqui.
+        
+        Era justamente na tela de conversas que ela sumia — e é onde some o
+        resto da referência: sem a barra lateral do servidor, não sobra nada
+        dizendo que você está numa call, nem como voltar pra ela.
+      */}
+      <VoicePanel />
 
       <UserPanel user={user} onLogout={onLogout} />
       <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />

@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label } from "~/components/ui/input";
+import { Input, Label, campoBase } from "~/components/ui/input";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 
@@ -173,7 +173,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
               rows={3}
               placeholder="Adicionar uma descrição"
               onChange={(e) => setDescricao(e.target.value)}
-              className="w-full resize-none rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 transition placeholder:text-ink-faint focus:ring-2"
+              className={cn(campoBase, "resize-none")}
             />
             <p className="mt-1 text-xs text-ink-faint">
               Descreve a imagem para quem usa leitor de tela.

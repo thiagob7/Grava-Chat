@@ -1,11 +1,21 @@
 import { useEffect } from "react";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import type { GuildMember, Message, PresenceStatus, VoiceState, Channel } from "@gravae/shared";
+import type {
+  Channel,
+  DesiredStatus,
+  GuildMember,
+  Message,
+  PerfilPublico,
+  PresenceStatus,
+  PublicUser,
+  VoiceState,
+} from "@gravae/shared";
 
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import type { MessagePageModel, PendingMessageModel } from "~/@core/domain/models/message-model";
+import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { onMessageCreated, offMessageCreated } from "~/@core/lib/websocket/on-message-created";
@@ -14,6 +24,7 @@ import { onMessageDeleted, offMessageDeleted } from "~/@core/lib/websocket/on-me
 import { onMessageReactions, offMessageReactions } from "~/@core/lib/websocket/on-message-reactions";
 import { onTypingStarted, offTypingStarted } from "~/@core/lib/websocket/on-typing-started";
 import { onPresenceChanged, offPresenceChanged } from "~/@core/lib/websocket/on-presence-changed";
+import { onPresenceSelf, offPresenceSelf } from "~/@core/lib/websocket/on-presence-self";
 import { onChannelCreated, offChannelCreated } from "~/@core/lib/websocket/on-channel-created";
 import { onChannelUpdated, offChannelUpdated } from "~/@core/lib/websocket/on-channel-updated";
 import { onChannelDeleted, offChannelDeleted } from "~/@core/lib/websocket/on-channel-deleted";
@@ -35,6 +46,7 @@ import { onVoiceJoined, offVoiceJoined } from "~/@core/lib/websocket/on-voice-jo
 import { onVoiceLeft, offVoiceLeft } from "~/@core/lib/websocket/on-voice-left";
 import { onVoiceUpdated, offVoiceUpdated } from "~/@core/lib/websocket/on-voice-updated";
 import { onSocketError, offSocketError } from "~/@core/lib/websocket/on-socket-error";
+import { onUserUpdated, offUserUpdated } from "~/@core/lib/websocket/on-user-updated";
 import { onFriendUpdated, offFriendUpdated } from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
 import { useTypingStore } from "~/stores/typing-store";
@@ -149,6 +161,15 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     };
 
     const handlePresence = ({ userId, status }: { userId: string; status: PresenceStatus }) => {
+      /**
+       * O evento sobre MIM é ignorado aqui: os meus sockets também estão nas
+       * salas dos servidores, então quando fico invisível o broadcast chega
+       * dizendo que EU estou offline. Quem manda no meu próprio estado é o
+       * `presence:self`, logo abaixo — e não há como o servidor distinguir os
+       * dois casos do outro lado.
+       */
+      if (userId === queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id) return;
+
       cache.patchGuildsWhere(
         queryClient,
         (g) => g.members.some((m) => m.user.id === userId),
@@ -156,6 +177,76 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
           ...g,
           members: g.members.map((m) =>
             m.user.id === userId ? { ...m, user: { ...m.user, status } } : m,
+          ),
+        }),
+      );
+    };
+
+    /**
+     * Alguém trocou foto, nome ou enfeite.
+     *
+     * Mexe nos DOIS lugares onde a pessoa aparece: em `members[].user` (foto e
+     * nome, que viajam em todo lugar) e no mapa `profiles` (o enfeite, que
+     * viaja uma vez por pessoa). Sem o segundo, trocar de moldura só apareceria
+     * pros outros no próximo F5 — e a prévia ao vivo do editor prometeria uma
+     * coisa que a tela dos amigos não cumpre.
+     *
+     * O enfeite vazio TIRA a pessoa do mapa em vez de gravar `{}`: é a mesma
+     * regra que o servidor usa ao montar o mapa, e mantê-las iguais é o que
+     * impede o cache de divergir da resposta HTTP.
+     */
+    const handleUserUpdated = ({ user, perfil }: { user: PublicUser; perfil: PerfilPublico }) => {
+      const temEnfeite = Object.keys(perfil).length > 0;
+
+      cache.patchGuildsWhere(
+        queryClient,
+        (g) => g.members.some((m) => m.user.id === user.id),
+        (g) => {
+          const profiles = { ...g.profiles };
+          if (temEnfeite) profiles[user.id] = perfil;
+          else delete profiles[user.id];
+
+          return {
+            ...g,
+            profiles,
+            members: g.members.map((m) =>
+              // a presença NÃO vem neste evento; preservar a que já está no
+              // cache evita apagar quem está online a cada troca de avatar
+              m.user.id === user.id ? { ...m, user: { ...user, status: m.user.status } } : m,
+            ),
+          };
+        },
+      );
+
+      // o cartão de perfil dessa pessoa, se estiver aberto ou em cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.profile(user.id) });
+    };
+
+    /**
+     * O meu status, ecoado pelo servidor com o valor DESEJADO.
+     *
+     * `desiredStatus` guarda o que eu escolhi (inclusive `INVISIBLE`, que só eu
+     * vejo); `status` guarda a projeção pública, que é o que a bolinha desenha
+     * — invisível aparece como offline pra todo mundo, inclusive na minha
+     * própria linha da lista de membros.
+     */
+    const handlePresenceSelf = ({ status }: { status: DesiredStatus }) => {
+      const projetado: PresenceStatus = status === "INVISIBLE" ? "OFFLINE" : status;
+
+      queryClient.setQueryData([queryKeys.auth.me], (eu?: SelfUserModel) =>
+        eu ? { ...eu, desiredStatus: status, status: projetado } : eu,
+      );
+
+      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+      if (!meuId) return;
+
+      cache.patchGuildsWhere(
+        queryClient,
+        (g) => g.members.some((m) => m.user.id === meuId),
+        (g) => ({
+          ...g,
+          members: g.members.map((m) =>
+            m.user.id === meuId ? { ...m, user: { ...m.user, status: projetado } } : m,
           ),
         }),
       );
@@ -212,6 +303,7 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     );
     onTypingStarted(({ channelId, user }) => useTypingStore.getState().add(channelId, user));
     onPresenceChanged(handlePresence);
+    onPresenceSelf(handlePresenceSelf);
     onChannelCreated(handleChannelUpsert);
     onChannelUpdated(handleChannelUpsert);
     onChannelDeleted(({ channelId, guildId }) =>
@@ -300,6 +392,7 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         members: g.members.filter((m) => m.user.id !== userId),
       })),
     );
+    onUserUpdated(handleUserUpdated);
     onVoiceJoined(upsertVoiceState);
     onVoiceUpdated(upsertVoiceState);
     onVoiceLeft(removeVoiceState);
@@ -356,6 +449,8 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       offMemberJoined();
       offMemberUpdated();
       offMemberLeft();
+      offUserUpdated();
+      offPresenceSelf();
       offVoiceJoined();
       offVoiceUpdated();
       offVoiceLeft();

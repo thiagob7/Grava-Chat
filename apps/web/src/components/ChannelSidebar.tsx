@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ChevronDown,
   Hash,
+  Lock,
   LogOut,
   MessageSquare,
   MessagesSquare,
@@ -42,7 +43,7 @@ interface ChannelSidebarProps {
   summary: GuildSummaryModel | undefined;
   activeChannelId: string | undefined;
   /** por canal: o id da última lida e quantas entraram depois */
-  readStates: Record<string, { lido: string | null; naoLidas: number }>;
+  readStates: Record<string, { lido: string | null; naoLidas: number; mencoes: number }>;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
   onLogout: () => void;
@@ -74,7 +75,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const [configurando, setConfigurando] = useState(false);
   const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
 
-  const { can } = usePermissions(detail);
+  const { can, canInChannel } = usePermissions(detail);
 
   // a lista de quem está na chamada acompanha o LiveKit, não só o socket
   useVoiceSync(detail?.guild.id, user?.id);
@@ -121,9 +122,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="start" className="w-64">
-              <DropdownMenuItem onSelect={() => setInviting(true)}>
-                Convidar pessoas <UserPlus size={16} />
-              </DropdownMenuItem>
+              {can("CREATE_INVITE") && (
+                <DropdownMenuItem onSelect={() => setInviting(true)}>
+                  Convidar pessoas <UserPlus size={16} />
+                </DropdownMenuItem>
+              )}
 
               {podeConfigurar && (
                 <DropdownMenuItem onSelect={() => setConfigurando(true)}>
@@ -163,7 +166,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {detail && (
+          {detail && can("CREATE_INVITE") && (
             <Tooltip label="Convidar amigos">
               <button
                 onClick={() => setInviting(true)}
@@ -211,7 +214,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                     const unread =
                       !active && channel.lastMessageId && channel.lastMessageId !== leitura?.lido;
                     const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
+                    // menção pinta de vermelho; não-lida comum é só um número
+                    const mencoes = unread ? (leitura?.mencoes ?? 0) : 0;
                     const inThisCall = voiceChannelId === channel.id;
+                    const bloqueado =
+                      channel.type === "VOICE" && !canInChannel(channel.id, "CONNECT");
 
                     /**
                      * Começo da chamada: quem entrou primeiro manda no relógio.
@@ -233,16 +240,31 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             "mb-0.5 flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-sm transition",
                             active
                               ? "bg-surface-4 text-ink"
-                              : unread
-                                ? "font-semibold text-ink hover:bg-surface-3"
-                                : "text-ink-muted hover:bg-surface-3",
+                              : bloqueado
+                                ? "text-ink-faint hover:bg-surface-3"
+                                : unread
+                                  ? "font-semibold text-ink hover:bg-surface-3"
+                                  : "text-ink-muted hover:bg-surface-3",
                           )}
                         >
                           {channel.type === "VOICE" ? (
-                            <Volume2
-                              size={18}
-                              className={cn("shrink-0", inThisCall ? "text-online" : "text-ink-faint")}
-                            />
+                            /*
+                              O cadeado no lugar do alto-falante quando você não
+                              pode entrar. Clicar já mostrava a explicação — mas
+                              descobrir só DEPOIS de clicar parece que o app
+                              falhou, e não que o canal é fechado.
+                            */
+                            bloqueado ? (
+                              <Lock size={18} className="shrink-0 text-ink-faint" />
+                            ) : (
+                              <Volume2
+                                size={18}
+                                className={cn(
+                                  "shrink-0",
+                                  inThisCall ? "text-online" : "text-ink-faint",
+                                )}
+                              />
+                            )
                           ) : channel.type === "FORUM" ? (
                             <MessagesSquare size={18} className="shrink-0 text-ink-faint" />
                           ) : (
@@ -263,7 +285,21 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                             {unread &&
                               (naoLidas > 0 ? (
-                                <span className="min-w-[18px] rounded-full bg-danger px-1.5 text-center text-[11px] font-bold leading-[18px] text-white">
+                                <span
+                                  title={mencoes > 0 ? `${mencoes} menção(ões) a você` : undefined}
+                                  className={cn(
+                                    "min-w-[18px] rounded-full px-1.5 text-center text-[11px] font-bold leading-[18px]",
+                                    /**
+                                     * Vermelho é para o que é PRA VOCÊ. Antes
+                                     * toda mensagem nova era vermelha, e aí o
+                                     * vermelho não queria dizer nada — canal
+                                     * movimentado ficava aceso o dia inteiro.
+                                     */
+                                    mencoes > 0
+                                      ? "bg-danger text-white"
+                                      : "bg-surface-4 text-ink-muted",
+                                  )}
+                                >
                                   {naoLidas > 99 ? "99+" : naoLidas}
                                 </span>
                               ) : (
@@ -283,13 +319,17 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             </button>
                           )}
 
-                          <button
-                            onClick={() => setInviting(true)}
-                            title="Convidar pessoas"
-                            className="rounded p-0.5 text-ink-faint transition hover:text-ink"
-                          >
-                            <UserPlus size={14} />
-                          </button>
+                          {/* sem CREATE_INVITE o botão some: mostrar um atalho
+                              que o servidor vai recusar só ensina a errar */}
+                          {can("CREATE_INVITE") && (
+                            <button
+                              onClick={() => setInviting(true)}
+                              title="Convidar pessoas"
+                              className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                            >
+                              <UserPlus size={14} />
+                            </button>
+                          )}
 
                           {(canManageChannels || canManageRoles) && (
                             <button
@@ -321,14 +361,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           })}
         </div>
 
-        <VoicePanel
-          guildName={detail?.guild.name}
-          guildId={detail?.guild.id}
-          podeUsarSons={can("USE_SOUNDBOARD")}
-          channels={channels}
-          accountChannelId={accountVoiceChannelId}
-          onMoveHere={onMoveCallHere}
-        />
+        {/*
+          O painel se vira sozinho: os dados vêm da CHAMADA, não desta tela. Só
+          "está em outra aba" continua vindo daqui, porque é a única parte que
+          depende do servidor aberto.
+        */}
+        <VoicePanel accountChannelId={accountVoiceChannelId} onMoveHere={onMoveCallHere} />
 
         {user && <UserPanel user={user} onLogout={onLogout} />}
         <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />

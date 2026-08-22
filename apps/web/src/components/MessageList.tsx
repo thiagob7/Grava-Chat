@@ -8,6 +8,8 @@ import { useMarkRead } from "~/@core/application/queries/message/use-mark-read";
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { MessageItem, shouldGroup } from "~/components/MessageItem";
+import { useEnfeites } from "~/hooks/use-enfeites";
+import { useMencoes } from "~/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
 
 interface MessageListProps {
@@ -17,8 +19,6 @@ interface MessageListProps {
   isModerator: boolean;
   /** servidor do canal: de lá vêm os emojis customizados */
   guildId?: string;
-  tag?: string | null;
-  tagIcon?: string | null;
   /** conversa de um assunto do fórum */
   postId?: string;
   /** Cabeçalho do começo da conversa. A DM mostra a pessoa; o canal, o #nome. */
@@ -32,8 +32,6 @@ export const MessageList: React.FC<MessageListProps> = ({
   isModerator,
   guildId,
   postId,
-  tag,
-  tagIcon,
   header,
 }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFindMessages(
@@ -41,6 +39,21 @@ export const MessageList: React.FC<MessageListProps> = ({
     postId,
   );
   const { data: expressoes } = useFindExpressions(guildId);
+  /**
+   * Enfeite e cor de cargo saem do cache do detalhe do servidor, não de um
+   * campo novo na mensagem: o autor se repete cinquenta vezes por página, e
+   * pendurar o cosmético nele seria pagar cinquenta vezes pela mesma pessoa.
+   *
+   * Numa DM `guildId` é `undefined` e isto devolve "sem enfeite" — é o cartão
+   * de perfil que carrega o enfeite por lá.
+   */
+  const enfeitesDe = useEnfeites(guildId);
+  /**
+   * Os nomes por trás de `<@id>` e `<@&id>`. O texto guardado tem só o id — é o
+   * que faz uma mensagem antiga continuar certa depois que alguém troca de
+   * apelido ou o cargo muda de nome.
+   */
+  const mencoes = useMencoes(guildId, false, currentUserId);
   const pinMessage = usePinMessage(channelId);
   const sendMessage = useSendMessage();
   const markRead = useMarkRead();
@@ -165,8 +178,9 @@ export const MessageList: React.FC<MessageListProps> = ({
               isOwn={message.author.id === currentUserId}
               currentUserId={currentUserId}
               emojis={expressoes.emojis}
-              tag={tag}
-              tagIcon={tagIcon}
+              enfeites={enfeitesDe(message.author.id)}
+              mencoes={mencoes}
+              meMenciona={mencoes.mencionaVoce(message)}
               canDelete={message.author.id === currentUserId || isModerator}
               canPin={isModerator}
               onPin={(alvo, fixar) => pinMessage.mutate({ messageId: alvo.id, pin: fixar })}

@@ -9,5 +9,6 @@ apps/api/prisma/generated/
 infra/data/
 release/
 
-# Anotacoes de sessao: ficam so na maquina
+# Anotacoes de sessao e documentos de trabalho: ficam so na maquina
 PROXIMA_SESSAO.md
+docs/

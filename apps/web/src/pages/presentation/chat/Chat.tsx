@@ -81,7 +81,7 @@ export const Chat: React.FC = () => {
 
   const channel = detail?.channels.find((c) => c.id === routeChannelId);
   const summary = guilds.find((g) => g.id === routeGuildId);
-  const { canInChannel } = usePermissions(detail);
+  const { can, canInChannel } = usePermissions(detail);
   const pedidosPendentes = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
   /**
@@ -303,8 +303,6 @@ export const Chat: React.FC = () => {
               channelId={channel.id}
               channelName={channel.name}
               guildId={channel.guildId ?? undefined}
-              tag={detail?.guild.tag}
-              tagIcon={detail?.guild.tagIcon}
               currentUserId={user?.id}
               isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
             />
@@ -339,8 +337,8 @@ export const Chat: React.FC = () => {
           members={detail?.members ?? []}
           roles={detail?.roles ?? []}
           ownerId={detail?.guild.ownerId}
-          tag={detail?.guild.tag}
-          tagIcon={detail?.guild.tagIcon}
+          guildId={detail?.guild.id}
+          podeModerar={can("MODERATE_MEMBERS")}
         />
       )}
     </div>

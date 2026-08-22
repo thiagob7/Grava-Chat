@@ -3,7 +3,9 @@ import type { GuildMember, Role } from "@gravae/shared";
 
 import { Avatar } from "~/components/Avatar";
 import { ServerTag } from "~/components/ServerTag";
+import { UserName } from "~/components/UserName";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
+import { useEnfeites, type ResolverEnfeites } from "~/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
@@ -11,27 +13,20 @@ interface MemberListProps {
   members: GuildMember[];
   roles?: Role[];
   ownerId: string | undefined;
-  /** etiqueta do servidor, que aparece ao lado de cada nome */
-  tag?: string | null;
-  tagIcon?: string | null;
-}
-
-/** A cor do nome vem do cargo mais alto que TEM cor — cargo sem cor não pinta. */
-function corDoMembro(member: GuildMember, roles: Role[]): string | null {
-  return (
-    roles
-      .filter((r) => r.color && member.roleIds.includes(r.id))
-      .sort((a, b) => b.position - a.position)[0]?.color ?? null
-  );
+  /** contexto que a visualização de moderador precisa */
+  guildId?: string;
+  podeModerar?: boolean;
 }
 
 export const MemberList: React.FC<MemberListProps> = ({
   members,
   roles = [],
   ownerId,
-  tag,
-  tagIcon,
+  guildId,
+  podeModerar = false,
 }) => {
+  const enfeitesDe = useEnfeites(guildId);
+
   /**
    * Cargos com "exibir separado" ganham a própria seção, do mais alto para o
    * mais baixo, e cada pessoa aparece uma vez só — no cargo mais alto dela.
@@ -89,9 +84,10 @@ export const MemberList: React.FC<MemberListProps> = ({
             members={grupo.membros}
             roles={roles}
             ownerId={ownerId}
-            tag={tag}
-            tagIcon={tagIcon}
             dim={grupo.dim}
+            guildId={guildId}
+            podeModerar={podeModerar}
+            enfeitesDe={enfeitesDe}
           />
         ))}
       </div>
@@ -102,6 +98,11 @@ export const MemberList: React.FC<MemberListProps> = ({
 interface MemberGroupProps extends MemberListProps {
   title: string;
   dim?: boolean;
+  /**
+   * Resolvido uma vez lá em cima e passado adiante: cada seção montar o próprio
+   * cruzamento de cargos daria o mesmo trabalho quatro ou cinco vezes.
+   */
+  enfeitesDe: ResolverEnfeites;
 }
 
 const MemberGroup: React.FC<MemberGroupProps> = ({
@@ -109,9 +110,10 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
   members,
   roles = [],
   ownerId,
-  tag,
-  tagIcon,
   dim,
+  guildId,
+  podeModerar = false,
+  enfeitesDe,
 }) => {
   if (!members.length) return null;
 
@@ -119,10 +121,18 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
     <section className="mb-5">
       <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">{title}</h3>
       {members.map((member) => {
-        const cor = corDoMembro(member, roles);
+        const { perfil, corDoCargo } = enfeitesDe(member.user.id);
 
         return (
-          <UserProfilePopover key={member.id} userId={member.user.id} side="left">
+          <UserProfilePopover
+            key={member.id}
+            userId={member.user.id}
+            side="left"
+            guildId={guildId}
+            roles={roles}
+            roleIds={member.roleIds}
+            podeModerar={podeModerar}
+          >
             <button
               className={cn(
                 "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
@@ -135,17 +145,29 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 url={member.user.avatarUrl}
                 size={32}
                 status={member.user.status}
+                enfeites={perfil}
               />
-              <span
+              {/*
+                `tamanho` fica em `sm` — o padrão — porque aqui são cem nomes a
+                14px: gradiente e brilho recortam o texto e emagrecem a linha
+                inteira. Neon e cor sólida continuam valendo.
+              */}
+              <UserName
+                nome={member.nickname ?? member.user.displayName}
+                perfil={perfil}
+                corDoCargo={corDoCargo}
                 className={cn(
                   "min-w-0 flex-1 truncate text-sm font-medium",
-                  cor ? "" : "text-ink-muted",
+                  corDoCargo || perfil?.nome ? "" : "text-ink-muted",
                 )}
-                style={cor ? { color: cor } : undefined}
-              >
-                {member.nickname ?? member.user.displayName}
-              </span>
-              <ServerTag tag={tag} icone={tagIcon} />
+              />
+              {/*
+                A etiqueta é de quem a VESTE, não do servidor onde a linha está
+                sendo desenhada. Antes vinha de `guild.tag` e grudava em todo
+                mundo que estivesse aqui — o que fazia dela enfeite do cenário,
+                e não de quem está nele.
+              */}
+              <ServerTag etiqueta={perfil?.etiquetaDoServidor} interativo={false} />
               {member.user.id === ownerId && <span title="Dono do servidor">👑</span>}
             </button>
           </UserProfilePopover>

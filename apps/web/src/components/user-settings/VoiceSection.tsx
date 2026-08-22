@@ -9,6 +9,7 @@ import { desktop } from "~/lib/desktop";
 import { usePttGlobal } from "~/stores/ptt-global";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
+import { campoBase } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
 /** Nome legível de uma tecla a partir do `code` do teclado. */
@@ -165,7 +166,7 @@ export const VoiceSection: React.FC = () => {
           <select
             value={prefs.entradaId ?? ""}
             onChange={(e) => void aplicarAjustes({ entradaId: e.target.value || null })}
-            className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2"
+            className={campoBase}
           >
             <option value="">Padrão do sistema</option>
             {entradas.map((d) => (
@@ -184,7 +185,7 @@ export const VoiceSection: React.FC = () => {
             value={prefs.saidaId ?? ""}
             disabled={!suportaTrocaDeSaida}
             onChange={(e) => void aplicarAjustes({ saidaId: e.target.value || null })}
-            className="w-full rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 focus:ring-2 disabled:opacity-50"
+            className={cn(campoBase, "disabled:opacity-50")}
           >
             <option value="">Padrão do sistema</option>
             {saidas.map((d) => (

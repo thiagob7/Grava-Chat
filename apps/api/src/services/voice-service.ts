@@ -143,7 +143,18 @@ export const voiceService = {
       canPublishData: true,
     });
 
-    return { url: env.LIVEKIT_URL, token: await token.toJwt() };
+    /**
+     * `USE_VAD` é o único caso aqui que o servidor NÃO consegue impor sozinho:
+     * o SFU não sabe se o áudio veio de detecção de voz ou de tecla apertada.
+     * Vai como instrução para o cliente, e a interface trava o modo.
+     *
+     * Quem adulterar o cliente escapa — por isso é uma ferramenta contra
+     * microfone barulhento, não contra quem age de má-fé. Para esse caso existe
+     * `MUTE_MEMBERS`, que corta no próprio SFU.
+     */
+    const exigePushToTalk = Boolean(contexto) && !has(contexto!.permissions, "USE_VAD");
+
+    return { url: env.LIVEKIT_URL, token: await token.toJwt(), exigePushToTalk };
   },
 
   async join(userId: string, channelId: string, socketId: string, resume = false) {

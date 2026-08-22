@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { CHANNEL_TYPES, PRESENCE_STATUSES, LIMITS } from "./constants.js";
+import { CHANNEL_TYPES, DESIRED_STATUSES, PRESENCE_STATUSES, LIMITS } from "./constants.js";
+import {
+  corHex,
+  ESTILOS_DE_CARGO,
+  estiloDePerfilSchema,
+  statusPersonalizadoSchema,
+} from "./cosmeticos.js";
 
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, "id invalido");
 
@@ -17,12 +23,32 @@ export const publicUserSchema = z.object({
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
+/*
+ * ATENCAO: `publicUserSchema` NAO ganha enfeite nenhum, e isso e deliberado.
+ *
+ * Ele esta embutido em `messageSchema.author` — cinquenta mensagens por pagina,
+ * o mesmo autor repetido. Um objeto cosmetico de duzentos bytes ali vira dez KB
+ * por pagina, pra sempre, e em cada evento de socket.
+ *
+ * Enfeite e por USUARIO, nao por mensagem: viaja no mapa `profiles` do detalhe
+ * do servidor, uma vez por pessoa. De brinde, trocar o banner deixa de invalidar
+ * cache de mensagem.
+ */
+
 export const selfUserSchema = publicUserSchema.extend({
   email: z.email(),
   bio: z.string().nullable(),
   /** provedores ligados a esta conta ("google"); vazio = entrou pelo dev-login */
   providers: z.array(z.string()),
   createdAt: z.iso.datetime(),
+  /** enfeites completos, inclusive os que so aparecem no proprio cartao */
+  perfil: estiloDePerfilSchema.nullable(),
+  statusPersonalizado: statusPersonalizadoSchema.nullable(),
+  /**
+   * O UNICO lugar onde `INVISIBLE` aparece. Os outros veem `status: OFFLINE`;
+   * so voce sabe que escolheu ficar invisivel.
+   */
+  desiredStatus: z.enum(DESIRED_STATUSES),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 
@@ -156,6 +182,14 @@ export const messageSchema = z.object({
   poll: pollSchema.nullable(),
   sticker: stickerSchema.nullable(),
   reactions: z.array(reactionSummarySchema),
+  /**
+   * Quem foi mencionado. Vem pro front porque e o que permite destacar a
+   * mensagem em que VOCE foi citado sem uma segunda consulta.
+   */
+  mentions: z.array(objectId),
+  /** cargos mencionados; a expansao pra pessoas acontece na LEITURA, nunca aqui */
+  mentionRoleIds: z.array(objectId),
+  mentionEveryone: z.boolean(),
   replyToId: objectId.nullable(),
   /** assunto do fórum a que pertence; null nos canais normais */
   postId: objectId.nullable(),
@@ -182,6 +216,12 @@ export const roleSchema = z.object({
   guildId: objectId,
   name: z.string(),
   color: z.string().nullable(),
+  /** segunda cor do gradiente; ignorada quando o estilo nao usa duas */
+  colorSecondary: z.string().nullable(),
+  /** imagem OU emoji, nunca os dois — quem garante isso e o service */
+  iconUrl: z.string().nullable(),
+  iconEmoji: z.string().nullable(),
+  estilo: z.enum(ESTILOS_DE_CARGO),
   position: z.number().int(),
   permissions: z.array(z.string()),
   hoist: z.boolean(),
@@ -189,6 +229,24 @@ export const roleSchema = z.object({
   isEveryone: z.boolean(),
 });
 export type Role = z.infer<typeof roleSchema>;
+
+/**
+ * Um emblema do servidor: o icone que os membros podem vestir ao lado do nome.
+ *
+ * Quem CRIA e o servidor; quem VESTE e cada membro, por conta propria. E de
+ * proposito que nao existe concessao: um emblema que precisa ser concedido vira
+ * fila de pedido no ouvido do dono, e a graca aqui e a pessoa se identificar
+ * com o grupo sem pedir licenca.
+ */
+export const emblemaSchema = z.object({
+  id: objectId,
+  guildId: objectId,
+  nome: z.string(),
+  /** emoji OU imagem, nunca os dois — quem garante isso e o service */
+  emoji: z.string().nullable(),
+  iconUrl: z.string().nullable(),
+});
+export type Emblema = z.infer<typeof emblemaSchema>;
 
 export const overwriteSchema = z.object({
   channelId: objectId,

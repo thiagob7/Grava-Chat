@@ -13,8 +13,9 @@ import {
   categoryRepository,
   channelRepository,
 } from "~/repositories/guild-repository.js";
+import { emblemaRepository, tagRepository } from "~/repositories/guild-repository.js";
 import { inviteRepository } from "~/repositories/invite-repository.js";
-import { toChannel, toMember, toPublicUser, toRole } from "~/lib/serialize.js";
+import { toChannel, toMember, toPerfilPublico, toPublicUser, toRole } from "~/lib/serialize.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { toMessage } from "~/lib/serialize.js";
@@ -22,6 +23,9 @@ import { accessService } from "./access-service.js";
 import { auditService, diferenca } from "./audit-service.js";
 import { presenceService } from "./presence-service.js";
 import { voiceService } from "./voice-service.js";
+import { messageStatsRepository } from "~/repositories/message-repository.js";
+import { auditStatsRepository } from "~/repositories/audit-repository.js";
+import { userRepository } from "~/repositories/user-repository.js";
 import type {
   CreateChannelInput,
   CreateGuildInput,
@@ -60,6 +64,9 @@ export const guildService = {
           iconUrl: m.guild.iconUrl,
           ownerId: m.guild.ownerId,
           memberCount: m.guild._count.members,
+          /** o seletor de etiqueta lista os servidores que TEM etiqueta */
+          tag: m.guild.tag,
+          tagIcon: m.guild.tagIcon,
           isOwner,
           permissions: [...computePermissions({ userId, isOwner, roles })],
         };
@@ -99,16 +106,47 @@ export const guildService = {
     };
   },
 
+  /**
+   * O cartãozinho que abre ao clicar numa etiqueta de servidor.
+   *
+   * Só responde se o servidor TEM etiqueta — e essa é a fronteira de privacidade
+   * inteira: um servidor com etiqueta está se anunciando por ela, que viaja ao
+   * lado do nome de cada membro que a veste. Sem essa regra, isto seria uma
+   * consulta livre de qualquer servidor por id, para qualquer pessoa logada.
+   */
+  async preview(userId: string, guildId: string) {
+    const guild = await guildRepository.findByIdOrThrow(guildId);
+    if (!guild.tag) throw new NotFoundError("Servidor não encontrado");
+
+    const membros = await memberRepository.findManyByGuild(guildId);
+    const presenca = await presenceService.mapFor(membros.map((m) => m.userId));
+
+    return {
+      id: guild.id,
+      name: guild.name,
+      iconUrl: guild.iconUrl,
+      description: guild.description,
+      tag: guild.tag,
+      tagIcon: guild.tagIcon,
+      memberCount: guild._count.members,
+      onlineCount: Object.values(presenca).filter((s) => s !== "OFFLINE").length,
+      createdAt: guild.createdAt.toISOString(),
+      /** decide o botão: "ir para o servidor" ou nada que se possa fazer daqui */
+      souMembro: membros.some((m) => m.userId === userId),
+    };
+  },
+
   /** Tudo que a tela do servidor precisa, numa chamada só. */
   async detail(userId: string, guildId: string) {
     const member = await accessService.requireMember(userId, guildId);
 
-    const [guild, categories, todosOsCanais, members, roles] = await Promise.all([
+    const [guild, categories, todosOsCanais, members, roles, emblemas] = await Promise.all([
       guildRepository.findByIdOrThrow(guildId),
       categoryRepository.findManyByGuild(guildId),
       channelRepository.findManyByGuild(guildId),
       memberRepository.findManyByGuild(guildId),
       roleRepository.findManyByGuild(guildId),
+      emblemaRepository.findManyByGuild(guildId),
     ]);
 
     const isOwner = guild.ownerId === userId;
@@ -136,6 +174,19 @@ export const guildService = {
       permissoesPorCanal.set(c.id, [...permissoes]);
       return true;
     });
+
+    /**
+     * As etiquetas que os membros escolheram vestir. Podem ser de servidores
+     * QUALQUER — a escolha e da pessoa e vale em todo lugar —, entao sao
+     * resolvidas de uma vez, e nao uma consulta por membro.
+     */
+    const etiquetas = await tagRepository.resolverMuitas([
+      ...new Set(
+        members
+          .map((m) => (m.user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ]);
 
     const [lastMessages, presence, voiceStates] = await Promise.all([
       channelRepository.lastMessageIdByChannel(channels.map((c) => c.id)),
@@ -176,6 +227,46 @@ export const guildService = {
         const dto = toMember(m);
         return { ...dto, user: { ...dto.user, status: presence[m.userId] ?? "OFFLINE" } };
       }),
+      /**
+       * Os enfeites de cada pessoa, UMA vez por pessoa.
+       *
+       * Não entram em `members[].user` nem em `message.author` de propósito:
+       * aquele objeto está embutido em cinquenta mensagens por página, sempre
+       * com o mesmo autor repetido, e um blob cosmético ali viraria dez KB por
+       * página para sempre. Aqui a lista de membros já traz `user` incluído, o
+       * que faz este mapa custar zero consulta.
+       *
+       * Quem não personalizou nada fica FORA do mapa em vez de virar `{}`: o
+       * front trata ausente e vazio do mesmo jeito, e num servidor de cem
+       * pessoas isso é a diferença entre pagar por todas e pagar por quem
+       * escolheu alguma coisa.
+       */
+      profiles: Object.fromEntries(
+        members
+          // o emblema e do SERVIDOR: mora no membro, e so faz sentido aqui
+          .map((m) => {
+            const escolhida = (m.user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId;
+            const etiqueta = escolhida ? etiquetas.get(escolhida) : undefined;
+
+            return [
+              m.userId,
+              toPerfilPublico(
+                m.user,
+                m.emblemIds,
+                etiqueta ? { guildId: escolhida!, ...etiqueta } : null,
+              ),
+            ] as const;
+          })
+          .filter(([, perfil]) => Object.keys(perfil).length > 0),
+      ),
+      /** As definicoes; quem veste o que esta no mapa `profiles`. */
+      emblemas: emblemas.map((e) => ({
+        id: e.id,
+        guildId: e.guildId,
+        nome: e.nome,
+        emoji: e.emoji,
+        iconUrl: e.iconUrl,
+      })),
       voiceStates,
     };
   },
@@ -403,6 +494,85 @@ export const guildService = {
   },
 
   /** Sair do próprio servidor não exige permissão; expulsar outro exige. */
+  /**
+   * A ficha de um membro para quem modera: o que ele mandou, o que pode fazer e
+   * desde quando está aqui.
+   *
+   * Exige `MODERATE_MEMBERS` — é informação sobre outra pessoa, e quem não
+   * modera não tem por que ver a contagem de mensagens de ninguém.
+   */
+  async moderationView(actorId: string, guildId: string, targetId: string) {
+    await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
+
+    const membro = await memberRepository.find(guildId, targetId);
+    if (!membro) throw new NotFoundError("Essa pessoa não está no servidor");
+
+    const canais = await channelRepository.findManyByGuild(guildId);
+    const contexto = await accessService.contextOf(targetId, guildId);
+
+    const usuario = await userRepository.findByIdOrThrow(targetId);
+
+    const [atividade, auditoria] = await Promise.all([
+      messageStatsRepository.byUserInChannels(targetId, canais.map((c) => c.id)),
+      auditStatsRepository.countFor(guildId, targetId),
+    ]);
+
+    // quem convidou pode ter saído do servidor desde então; o nome é opcional
+    const convidadoPor = membro.invitedById
+      ? await userRepository.findById(membro.invitedById)
+      : null;
+
+    return {
+      atividade,
+      auditoria,
+      // `computePermissions` devolve Set, e Set vira `{}` no JSON — o resto do
+      // service já espalha em array por isso mesmo
+      permissoes: [...contexto.permissions],
+      roleIds: membro.roleIds,
+      entrouNoServidor: membro.joinedAt,
+      entrouNoGravae: usuario.createdAt,
+      timeoutUntil: membro.timeoutUntil,
+      adesao: {
+        inviteCode: membro.inviteCode,
+        convidadoPor: convidadoPor ? convidadoPor.displayName : null,
+      },
+    };
+  },
+
+  /**
+   * As mensagens de um membro, para o "ver mais" de cada contagem.
+   *
+   * Mesma permissão da ficha: quem não modera não lê o histórico de ninguém.
+   */
+  async moderationMessages(
+    actorId: string,
+    guildId: string,
+    targetId: string,
+    filtro: "todas" | "links" | "midia",
+    before?: string,
+  ) {
+    await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
+
+    const canais = await channelRepository.findManyByGuild(guildId);
+    const linhas = await messageStatsRepository.findByUserInChannels({
+      userId: targetId,
+      channelIds: canais.map((c) => c.id),
+      filtro,
+      limit: 50,
+      before,
+    });
+
+    return linhas.map((m) => ({
+      id: m.id,
+      channelId: m.channelId,
+      channelName: m.channel.name,
+      channelType: m.channel.type,
+      content: m.content,
+      attachments: m.attachments,
+      createdAt: m.createdAt,
+    }));
+  },
+
   async removeMember(actorId: string, guildId: string, targetId: string) {
     if (targetId !== actorId) await accessService.requirePermission(actorId, guildId, "KICK_MEMBERS");
     else await accessService.requireMember(actorId, guildId);

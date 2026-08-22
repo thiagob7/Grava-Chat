@@ -152,9 +152,27 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "presence:update", async ({ status }) => {
-    await presenceService.set(userId, status);
-    await broadcastPresence(userId, status);
+    await presenceService.setDesired(userId, status);
+    await broadcastPresence(userId);
+
+    /**
+     * O eco pra propria pessoa vai num evento SEPARADO, com o valor desejado.
+     *
+     * Os sockets dela tambem estao nas salas dos servidores, entao o
+     * `presence:changed` do broadcast chega dizendo que ELA esta offline quando
+     * fica invisivel. Sem este evento, o proprio app mostraria "offline" pra
+     * quem acabou de escolher "invisivel" — e nao ha como o servidor distinguir
+     * os dois casos do outro lado.
+     */
+    io().to(rooms.user(userId)).emit("presence:self", { status });
     return { status };
+  });
+
+  /** Ausencia detectada pelo cliente. Nao mexe no status escolhido. */
+  on(socket, "presence:afk", async ({ idle }) => {
+    await presenceService.setIdle(userId, idle);
+    await broadcastPresence(userId);
+    return { idle };
   });
 
   // --------------------------------- voz -----------------------------------
@@ -286,12 +304,18 @@ function announceLeave(guildId: string, channelId: string, userId: string) {
  * isso que permite testá-lo sem subir servidor. Quem publica é a camada de
  * tempo real.
  */
-export async function broadcastPresence(userId: string, status: PresenceStatus) {
+export async function broadcastPresence(userId: string, status?: PresenceStatus) {
+  /**
+   * Sem `status`, projeta na hora. E o caminho normal desde que existe
+   * invisivel: quem chama nao deve precisar saber traduzir escolha em
+   * aparencia — essa regra mora num lugar so, no `presenceService`.
+   */
+  const projetado = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
   const memberships = await memberRepository.guildIdsOf(userId);
 
   io()
     .to(memberships.map((m) => rooms.guild(m.guildId)))
-    .emit("presence:changed", { userId, status });
+    .emit("presence:changed", { userId, status: projetado });
 }
 
 /**

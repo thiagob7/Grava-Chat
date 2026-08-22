@@ -6,7 +6,8 @@ import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-gui
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
-import { Input, Label } from "~/components/ui/input";
+import { Input, Label, campoBase } from "~/components/ui/input";
+import { cn } from "~/lib/utils";
 import { avatarColor, initials } from "~/lib/format";
 import { formatBytes } from "~/lib/image";
 
@@ -126,7 +127,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
           maxLength={512}
           rows={3}
           placeholder="Do que é esse servidor?"
-          className="w-full resize-none rounded bg-surface-0 px-3 py-2.5 text-sm outline-none ring-brand/60 transition placeholder:text-ink-faint focus:ring-2"
+          className={cn(campoBase, "resize-none")}
         />
       </div>
 

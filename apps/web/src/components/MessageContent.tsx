@@ -1,6 +1,8 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
+import type { ResolverMencoes } from "~/hooks/use-mencoes";
+import { legivel } from "~/lib/cosmeticos/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { useLightbox } from "~/stores/lightbox";
 
@@ -12,7 +14,15 @@ import { useLightbox } from "~/stores/lightbox";
  * deixaria o histórico dependente de como a tela renderiza hoje, e um emoji
  * renomeado quebraria mensagens antigas.
  */
-const EMOJI = /:([a-zA-Z0-9_]{2,32}):/g;
+/**
+ * Emoji do servidor e as três formas de menção, num regex só.
+ *
+ * Numa passada só porque as regras precisam competir pela mesma posição do
+ * texto: com dois laços, o segundo receberia pedaços já fatiados pelo primeiro
+ * e uma menção partida ao meio viraria texto cru — que é exatamente o que
+ * acontecia até aqui, com `<@id>` aparecendo escrito na tela.
+ */
+const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
 const LINK = /https?:\/\/[^\s<]+/g;
 /** Sem `g`: um `.test` num regex global mexe no `lastIndex` e quebra o matchAll. */
 const SO_UM_LINK = /^https?:\/\/\S+$/;
@@ -27,30 +37,99 @@ interface MessageContentProps {
   emojis: GuildEmoji[];
   /** só emoji na mensagem inteira? aí eles vão grandes, como no Discord */
   className?: string;
+  /**
+   * De onde tirar o nome de quem foi mencionado. Vem de fora porque isto aqui
+   * renderiza cinquenta vezes por página: o cruzamento acontece uma vez na
+   * lista, não uma vez por mensagem.
+   */
+  mencoes?: ResolverMencoes;
 }
 
-/** Troca `:nome:` pelos emojis do servidor. Só texto entra aqui — link, não. */
-function comEmojis(texto: string, porNome: Map<string, GuildEmoji>, chave: string) {
+/** A menção desenhada: um pedacinho clicável, destacado do texto em volta. */
+const Pilula: React.FC<{ children: React.ReactNode; cor?: string | null; titulo?: string }> = ({
+  children,
+  cor,
+  titulo,
+}) => (
+  <span
+    title={titulo}
+    className="rounded px-1 py-px font-medium"
+    style={
+      cor
+        ? { color: legivel(cor), backgroundColor: `${legivel(cor)}22` }
+        : { color: "var(--color-brand)", backgroundColor: "color-mix(in oklab, var(--color-brand), transparent 82%)" }
+    }
+  >
+    {children}
+  </span>
+);
+
+/**
+ * Troca `:nome:` pelos emojis do servidor e as menções pelo nome de quem foi
+ * mencionado. Só texto entra aqui — link, não.
+ *
+ * O que fica gravado no banco é sempre o id (`<@…>`), nunca o nome: quem troca
+ * de apelido não quebra mensagem antiga, e ninguém consegue escrever à mão uma
+ * menção que parece ser de outra pessoa.
+ */
+function enriquecer(
+  texto: string,
+  porNome: Map<string, GuildEmoji>,
+  chave: string,
+  mencoes?: ResolverMencoes,
+) {
   const partes: React.ReactNode[] = [];
   let ultimo = 0;
 
-  for (const casamento of texto.matchAll(EMOJI)) {
-    const emoji = porNome.get(casamento[1]!);
-    if (!emoji || casamento.index === undefined) continue;
+  for (const casamento of texto.matchAll(RICO)) {
+    const [inteiro, emoji, cargoId, usuarioId, todos] = casamento;
+    if (casamento.index === undefined) continue;
 
-    if (casamento.index > ultimo) partes.push(texto.slice(ultimo, casamento.index));
+    const anterior = texto.slice(ultimo, casamento.index);
+    let pedaco: React.ReactNode = null;
+    const k = `${chave}-${casamento.index}`;
 
-    partes.push(
-      <img
-        key={`${chave}-${emoji.id}-${casamento.index}`}
-        src={emoji.url}
-        alt={`:${emoji.name}:`}
-        title={`:${emoji.name}:`}
-        className="inline-block size-6 align-text-bottom"
-      />,
-    );
+    if (emoji) {
+      const encontrado = porNome.get(emoji);
+      if (encontrado) {
+        pedaco = (
+          <img
+            key={k}
+            src={encontrado.url}
+            alt={`:${encontrado.name}:`}
+            title={`:${encontrado.name}:`}
+            className="inline-block size-6 align-text-bottom"
+          />
+        );
+      }
+    } else if (cargoId) {
+      const cargo = mencoes?.cargos.get(cargoId);
+      // cargo apagado vira texto neutro em vez de sumir: a mensagem continua
+      // fazendo sentido pra quem lê o histórico
+      pedaco = (
+        <Pilula key={k} cor={cargo?.color} titulo="Menção de cargo">
+          @{cargo?.name ?? "cargo"}
+        </Pilula>
+      );
+    } else if (usuarioId) {
+      pedaco = (
+        <Pilula key={k} titulo="Menção">
+          @{mencoes?.nomes.get(usuarioId) ?? "alguém"}
+        </Pilula>
+      );
+    } else if (todos) {
+      pedaco = (
+        <Pilula key={k} titulo={todos === "here" ? "Notifica quem está online" : "Notifica o servidor"}>
+          @{todos}
+        </Pilula>
+      );
+    }
 
-    ultimo = casamento.index + casamento[0].length;
+    if (!pedaco) continue;
+
+    if (anterior) partes.push(anterior);
+    partes.push(pedaco);
+    ultimo = casamento.index + inteiro.length;
   }
 
   if (!partes.length) return [texto];
@@ -59,7 +138,12 @@ function comEmojis(texto: string, porNome: Map<string, GuildEmoji>, chave: strin
   return partes;
 }
 
-export const MessageContent: React.FC<MessageContentProps> = ({ content, emojis, className }) => {
+export const MessageContent: React.FC<MessageContentProps> = ({
+  content,
+  emojis,
+  className,
+  mencoes,
+}) => {
   // antes de qualquer return: hook não pode ficar atrás de condição
   const abrirImagem = useLightbox((s) => s.abrir);
 
@@ -100,7 +184,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({ content, emojis,
 
     const url = limpar(casamento[0]);
     if (casamento.index > ultimo) {
-      partes.push(...comEmojis(content.slice(ultimo, casamento.index), porNome, `t${ultimo}`));
+      partes.push(...enriquecer(content.slice(ultimo, casamento.index), porNome, `t${ultimo}`, mencoes));
     }
 
     partes.push(
@@ -120,7 +204,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({ content, emojis,
   }
 
   if (ultimo < content.length) {
-    partes.push(...comEmojis(content.slice(ultimo), porNome, `t${ultimo}`));
+    partes.push(...enriquecer(content.slice(ultimo), porNome, `t${ultimo}`, mencoes));
   }
 
   return <span className={className}>{partes}</span>;

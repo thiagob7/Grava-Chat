@@ -16,7 +16,18 @@ export function useReconnectVoice(enabled: boolean) {
   const tentou = useRef(false);
 
   useEffect(() => {
-    if (!enabled || tentou.current || connectedHere) return;
+    if (!enabled || tentou.current) return;
+
+    /**
+     * Já existe chamada nesta aba: a janela de retomada acabou, e marcamos
+     * como tentada. Sem isto, SAIR da chamada devolveria o gancho ao estado
+     * "sem chamada" e ele tentaria retomar — transformando o botão de sair num
+     * botão de sair-e-voltar.
+     */
+    if (connectedHere) {
+      tentou.current = true;
+      return;
+    }
 
     const channelId = voiceTabChannelId();
     if (!channelId) return;

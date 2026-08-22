@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import type { FinalidadeDeUpload } from "@gravae/shared";
 import { toast } from "react-toastify";
 
 import { apiErrorMessage } from "~/@core/lib/api";
@@ -8,6 +9,8 @@ interface UploadImageVariables {
   file: File;
   /** maior lado, em pixels, depois do redimensionamento */
   maxSize: number;
+  /** escolhe o teto de bytes no servidor; ausente = anexo */
+  finalidade?: FinalidadeDeUpload;
 }
 
 /**
@@ -16,7 +19,8 @@ interface UploadImageVariables {
  */
 export const useUploadImage = () =>
   useMutation({
-    mutationFn: ({ file, maxSize }: UploadImageVariables) => uploadImage(file, { maxSize }),
+    mutationFn: ({ file, maxSize, finalidade }: UploadImageVariables) =>
+      uploadImage(file, { maxSize, finalidade }),
     onError: (error) => {
       toast.error(apiErrorMessage(error, "Não consegui enviar a imagem."));
     },

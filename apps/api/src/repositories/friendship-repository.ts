@@ -37,6 +37,13 @@ export const friendshipRepository = {
     });
   },
 
+  /** `requesterId` = quem bloqueou. É por ele que se sabe quem pode desfazer. */
+  createBlocked(requesterId: string, addresseeId: string) {
+    return prisma.friendship.create({
+      data: { requesterId, addresseeId, status: "BLOCKED" },
+    });
+  },
+
   updateStatus(id: string, status: FriendshipStatus) {
     return prisma.friendship.update({ where: { id }, data: { status }, include: comUsuarios });
   },

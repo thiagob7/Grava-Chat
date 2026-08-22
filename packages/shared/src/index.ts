@@ -1,4 +1,5 @@
 export * from "./constants.js";
+export * from "./cosmeticos.js";
 export * from "./models.js";
 export * from "./events.js";
 export * from "./permissions.js";

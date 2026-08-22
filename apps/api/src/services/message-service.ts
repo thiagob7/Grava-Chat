@@ -7,17 +7,71 @@ import {
   readStateRepository,
 } from "~/repositories/message-repository.js";
 import { toMessage } from "~/lib/serialize.js";
-import { channelRepository } from "~/repositories/guild-repository.js";
+import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { redis, keys } from "~/lib/redis.js";
+import { roleRepository } from "~/repositories/role-repository.js";
 import { accessService, type Contexto } from "./access-service.js";
 import { autoModService } from "./automod-service.js";
 import { forumService } from "./forum-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
 
-/** `<@id>` é o formato de menção; o front converte o nome digitado pra isso. */
+/**
+ * Os três formatos de menção, iguais aos do Discord: `<@id>` pra pessoa,
+ * `<@&id>` pra cargo, `@everyone`/`@here` pra sala inteira. O que fica gravado
+ * é o id, nunca o nome — quem troca de apelido não quebra mensagem antiga.
+ *
+ * O regex de usuário não pega `<@&…>` por acaso: `&` não é dígito hexadecimal.
+ */
+const MENCAO_DE_USUARIO = /<@([a-f\d]{24})>/gi;
+const MENCAO_DE_CARGO = /<@&([a-f\d]{24})>/gi;
+const MENCAO_DE_TODOS = /@(everyone|here)\b/;
+
+const unicos = (ids: string[]) => ids.filter((v, i, a) => a.indexOf(v) === i);
+
 const extractMentions = (content: string) =>
-  [...content.matchAll(/<@([a-f\d]{24})>/gi)].map((m) => m[1]!).filter((v, i, a) => a.indexOf(v) === i);
+  unicos([...content.matchAll(MENCAO_DE_USUARIO)].map((m) => m[1]!));
+
+const extrairCargos = (content: string) =>
+  unicos([...content.matchAll(MENCAO_DE_CARGO)].map((m) => m[1]!));
+
+/**
+ * Resolve o que a mensagem PODE mencionar de verdade.
+ *
+ * Duas regras, as duas do Discord:
+ *
+ * 1. Cargo só pinga se for **deste servidor** e `mentionable` — ou se quem
+ *    escreveu tem `MENTION_EVERYONE`. É isto que faz `mentionable` deixar de
+ *    ser flag morta: ela é persistida, validada, serializada e editável há
+ *    tempo, e até agora **nada** a lia.
+ * 2. Sem `MENTION_EVERYONE`, o `@everyone` é **apagado da flag** e a mensagem
+ *    passa. Recusar a mensagem inteira por causa de uma palavra é hostil, e a
+ *    pessoa não entende o que fez de errado — ela só digitou uma palavra.
+ */
+async function resolverMencoes(
+  content: string,
+  guildId: string | null,
+  contexto: Contexto | null,
+): Promise<{ mentionRoleIds: string[]; mentionEveryone: boolean }> {
+  if (!guildId || !contexto) return { mentionRoleIds: [], mentionEveryone: false };
+
+  const podeTodos = has(contexto.permissions, "MENTION_EVERYONE");
+  const pedidos = extrairCargos(content);
+
+  if (!pedidos.length) {
+    return { mentionRoleIds: [], mentionEveryone: podeTodos && MENCAO_DE_TODOS.test(content) };
+  }
+
+  const cargos = await roleRepository.findManyByGuild(guildId);
+  const permitidos = new Set(
+    cargos.filter((c) => podeTodos || c.mentionable).map((c) => c.id),
+  );
+
+  return {
+    mentionRoleIds: pedidos.filter((id) => permitidos.has(id)),
+    mentionEveryone: podeTodos && MENCAO_DE_TODOS.test(content),
+  };
+}
 
 export const messageService = {
   async history(
@@ -25,7 +79,20 @@ export const messageService = {
     channelId: string,
     params: { before?: string; limit: number; postId?: string },
   ) {
-    await accessService.requireChannelAccess(userId, channelId);
+    const { contexto } = await accessService.requireChannelAccess(userId, channelId);
+
+    /**
+     * Sem `READ_MESSAGE_HISTORY` o canal abre VAZIO: a pessoa só vê o que for
+     * dito daqui pra frente, chegando por socket. É o comportamento do Discord
+     * — serve pra canal de avisos onde o histórico não interessa a quem chegou
+     * agora, e pra deixar alguém participar sem ler o que passou.
+     *
+     * O corte é AQUI, no servidor. Esconder no front deixaria o histórico
+     * inteiro viajando na resposta pra quem não pode ver.
+     */
+    if (contexto && !has(contexto.permissions, "READ_MESSAGE_HISTORY")) {
+      return { messages: [], hasMore: false };
+    }
 
     const messages = await messageRepository.findPage({ channelId, ...params });
 
@@ -59,6 +126,10 @@ export const messageService = {
 
       if (input.attachments?.length && !has(contexto.permissions, "ATTACH_FILES")) {
         throw new ForbiddenError("Você não pode anexar arquivos neste canal");
+      }
+
+      if (input.poll && !has(contexto.permissions, "CREATE_POLLS")) {
+        throw new ForbiddenError("Você não pode criar enquetes neste canal");
       }
 
       await respeitarModoLento(userId, channel, contexto);
@@ -108,6 +179,7 @@ export const messageService = {
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
       mentions: extractMentions(content),
+      ...(await resolverMencoes(content, channel.guildId, contexto)),
     });
 
     // resposta no fórum sobe o assunto e conta a mensagem
@@ -126,10 +198,18 @@ export const messageService = {
 
     const content = input.content.trim();
 
+    /**
+     * A edição repassa pelo mesmo crivo: sem isto, dava pra mandar uma mensagem
+     * inofensiva e editá-la para `@everyone` sem ter a permissão.
+     */
+    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const canal = await channelRepository.findById(existing.channelId);
+
     const updated = await messageRepository.update(input.messageId, {
       content,
       editedAt: new Date(),
       mentions: extractMentions(content),
+      ...(await resolverMencoes(content, canal?.guildId ?? null, contexto)),
     });
 
     return toMessage(updated, userId);
@@ -159,7 +239,14 @@ export const messageService = {
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
     const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
-    if (contexto && !has(contexto.permissions, "MANAGE_MESSAGES")) {
+
+    // `PIN_MESSAGES` separa fixar de apagar: dá pra deixar alguém organizar o
+    // canal sem poder apagar mensagem dos outros. Quem gerencia continua podendo.
+    const podeFixar =
+      has(contexto?.permissions ?? new Set(), "PIN_MESSAGES") ||
+      has(contexto?.permissions ?? new Set(), "MANAGE_MESSAGES");
+
+    if (contexto && !podeFixar) {
       throw new ForbiddenError("Você não pode fixar mensagens neste canal");
     }
 
@@ -269,6 +356,16 @@ export const messageService = {
     const states = await readStateRepository.findManyByUser(userId);
 
     /**
+     * Os meus cargos, de todos os servidores, numa consulta so.
+     *
+     * `mentionCount` era campo MORTO: gravado, lido, devolvido — e escrito
+     * sempre como zero. Sem isto, uma mencao de cargo destaca a mensagem mas
+     * nao avisa ninguem, que e a metade que importa.
+     */
+    const memberships = await memberRepository.rolesOf(userId);
+    const meusCargos = [...new Set(memberships.flatMap((m) => m.roleIds))];
+
+    /**
      * A contagem é calculada aqui, e não guardada num contador incrementado a
      * cada mensagem: incrementar exigiria escrever numa linha por MEMBRO a cada
      * mensagem enviada. Contar na leitura é uma consulta por canal com algo
@@ -281,7 +378,14 @@ export const messageService = {
         unreadCount: s.lastReadMessageId
           ? await readStateRepository.countUnread(s.channelId, s.lastReadMessageId)
           : 0,
-        mentionCount: s.mentionCount,
+        mentionCount: s.lastReadMessageId
+          ? await readStateRepository.countMentions(
+              s.channelId,
+              s.lastReadMessageId,
+              userId,
+              meusCargos,
+            )
+          : 0,
       })),
     );
   },
@@ -311,8 +415,14 @@ async function respeitarModoLento(
   contexto: Contexto,
 ) {
   if (!channel.slowmodeSeconds) return;
-  // quem modera o canal passa direto, como no Discord
-  if (has(contexto.permissions, "MANAGE_MESSAGES") || has(contexto.permissions, "MANAGE_CHANNELS")) {
+
+  // quem modera o canal passa direto, como no Discord — e agora dá pra liberar
+  // alguém do modo lento SEM dar poder de moderação junto
+  if (
+    has(contexto.permissions, "BYPASS_SLOWMODE") ||
+    has(contexto.permissions, "MANAGE_MESSAGES") ||
+    has(contexto.permissions, "MANAGE_CHANNELS")
+  ) {
     return;
   }
 

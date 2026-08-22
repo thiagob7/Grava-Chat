@@ -68,3 +68,34 @@ export const userRepository = {
     });
   },
 };
+
+/**
+ * A anotacao privada que voce faz sobre outra pessoa.
+ *
+ * Repositorio separado do `userRepository` de proposito: o dono do dado nao e o
+ * usuario descrito, e sim quem escreveu. Misturar os dois convidaria alguem a
+ * incluir a nota num `select` de perfil e vazar o que uma pessoa anotou sobre
+ * a outra.
+ */
+export const noteRepository = {
+  find(ownerId: string, targetId: string) {
+    return prisma.userNote.findUnique({ where: { ownerId_targetId: { ownerId, targetId } } });
+  },
+
+  /** Texto vazio APAGA: nota em branco e ausencia de nota, nao uma nota vazia. */
+  async upsert(ownerId: string, targetId: string, texto: string) {
+    if (!texto.trim()) {
+      await prisma.userNote
+        .delete({ where: { ownerId_targetId: { ownerId, targetId } } })
+        .catch(() => undefined);
+
+      return null;
+    }
+
+    return prisma.userNote.upsert({
+      where: { ownerId_targetId: { ownerId, targetId } },
+      create: { ownerId, targetId, texto },
+      update: { texto },
+    });
+  },
+};

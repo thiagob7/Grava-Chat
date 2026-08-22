@@ -61,6 +61,11 @@ type VoiceStore = {
    * zeraria a escolha se ela morasse lá.
    */
   assistindo: string | null;
+  /**
+   * Sem `USE_VAD` no servidor, a pessoa só fala apertando a tecla. A interface
+   * força o modo e explica; o SFU não consegue impor isso sozinho.
+   */
+  exigePushToTalk: boolean;
   /** servidor da chamada — a janelinha flutuante precisa dele pra voltar pro canal */
   guildId: string | null;
   /** true enquanto o palco da chamada está montado na tela */
@@ -228,6 +233,25 @@ async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
 }
 
 /**
+ * A supressão está disponível?
+ *
+ * A resposta depende do que a pessoa pediu. Com a preferência LIGADA, a prova
+ * é o filtro ter subido de verdade — se pediu e não veio, está indisponível.
+ * Com ela desligada não há o que provar, e vale o suporte do navegador.
+ *
+ * O que NÃO se faz aqui é mexer na preferência. Ela é a intenção da pessoa e
+ * sobrevive em localStorage; sobrescrevê-la quando o filtro falha desligava a
+ * supressão PARA SEMPRE — e como o Krisp não funciona em LiveKit
+ * auto-hospedado, ela falha sempre. O sintoma era exatamente esse: sair da
+ * chamada e voltar com a supressão desativada, sem ninguém ter desligado nada.
+ */
+function disponibilidade(processador: ProcessadorDeVoz): boolean {
+  return useVoicePrefs.getState().supressaoDeRuido
+    ? processador.supressaoAtiva
+    : processador.supressaoDisponivel;
+}
+
+/**
  * Bipe da interface, respeitando as duas razões pra ficar calado: a pessoa
  * desligou os bipes, ou está surda (quem não quer ouvir ninguém também não quer
  * ouvir bipe). Fica aqui, e não em cada ação, pra essa regra existir num lugar
@@ -259,6 +283,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   screenEnabled: false,
   tiles: [],
   assistindo: null,
+  exigePushToTalk: false,
   guildId: null,
   palcoVisivel: false,
   volumesLocais: {},
@@ -273,7 +298,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     try {
       // O token é a permissão: a API só o emite depois de confirmar que você é
       // membro do servidor daquele canal.
-      const { url, token } = await findVoiceToken(channelId);
+      const { url, token, exigePushToTalk } = await findVoiceToken(channelId);
 
       /**
        * O servidor de voz aponta pra localhost, mas esta página está sendo
@@ -387,8 +412,15 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
        * participar só ouvindo. Antes, um "não permitir" no navegador fazia a
        * chamada inteira falhar com uma mensagem de erro sem sentido.
        */
+      set({ exigePushToTalk: Boolean(exigePushToTalk) });
+
       const prefs = useVoicePrefs.getState();
-      const processador = new ProcessadorDeVoz(ajustesDe(prefs));
+      const ajustes = ajustesDe(prefs);
+
+      // a permissão vence a preferência: sem USE_VAD, é push-to-talk e ponto
+      const processador = new ProcessadorDeVoz(
+        exigePushToTalk ? { ...ajustes, modo: "ptt" } : ajustes,
+      );
       set({ processador });
 
       try {
@@ -399,14 +431,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         );
 
         await prenderProcessador(room, processador);
-        set({ micBlocked: false, noiseFilterAvailable: processador.supressaoDisponivel });
+        set({ micBlocked: false, noiseFilterAvailable: disponibilidade(processador) });
         bipe("entrarNaChamada");
-
-        // mesma regra da troca: se o filtro não subiu ao entrar, a preferência
-        // acompanha a realidade em vez de deixar o botão aceso à toa
-        if (prefs.supressaoDeRuido && !processador.supressaoAtiva) {
-          useVoicePrefs.getState().definir({ supressaoDeRuido: false });
-        }
       } catch (erro) {
         // fica no console porque "microfone bloqueado" tem várias causas
         // (permissão negada, dispositivo sumiu, processador falhando) e a
@@ -453,12 +479,21 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const { room } = store();
     if (!room) return;
 
+    /**
+     * A marca da aba sai PRIMEIRO, antes do disconnect.
+     *
+     * `room.disconnect()` dispara `RoomEvent.Disconnected`, cujo handler zera o
+     * `channelId` na hora. Isso re-renderiza, e o `useReconnectVoice` — que só
+     * age quando NÃO há chamada — encontrava a marca ainda gravada e pedia a
+     * retomada. Resultado: apertar "sair" saía e voltava, e era preciso apertar
+     * de novo. Limpando antes, não sobra nada pra ele retomar.
+     */
+    rememberVoiceTab(null);
+
     // antes do disconnect: depois dele o `deafened` que o bipe consulta já era
     bipe("sairDaChamada");
     await room.disconnect();
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
-    // Saída deliberada: não reconecta no próximo reload.
-    rememberVoiceTab(null);
     await leaveVoiceChannel().catch(() => undefined);
   },
 
@@ -553,19 +588,13 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (trocouSupressao) set({ noiseFilterBusy: true });
 
     try {
-      await processador?.aplicar(ajustesDe(prefs));
+      const ajustes = ajustesDe(prefs);
+      await processador?.aplicar(
+        store().exigePushToTalk ? { ...ajustes, modo: "ptt" } : ajustes,
+      );
     } finally {
       if (trocouSupressao && processador) {
-        /**
-         * A preferência não pode mentir. Se o filtro não subiu, o botão volta
-         * sozinho pro estado real — antes ele ficava aceso com o Krisp
-         * desligado, e a pessoa só descobria ao sair e entrar da chamada.
-         */
-        if (processador.supressaoAtiva !== useVoicePrefs.getState().supressaoDeRuido) {
-          definir({ supressaoDeRuido: processador.supressaoAtiva });
-        }
-
-        set({ noiseFilterBusy: false, noiseFilterAvailable: processador.supressaoDisponivel });
+        set({ noiseFilterBusy: false, noiseFilterAvailable: disponibilidade(processador) });
       }
     }
 

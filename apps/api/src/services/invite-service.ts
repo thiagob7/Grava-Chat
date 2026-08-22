@@ -41,7 +41,12 @@ export const inviteService = {
     if (existing) return { guildId: invite.guildId, alreadyMember: true as const, member: null };
 
     // entra só com o @everyone, que é implícito
-    const member = await memberRepository.create({ guildId: invite.guildId, userId });
+    const member = await memberRepository.create({
+      guildId: invite.guildId,
+      userId,
+      inviteCode: invite.code,
+      invitedById: invite.inviterId,
+    });
     await inviteRepository.incrementUses(invite.id);
 
     return { guildId: invite.guildId, alreadyMember: false as const, member: toMember(member) };

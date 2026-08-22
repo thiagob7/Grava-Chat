@@ -1,7 +1,9 @@
 import type {
   Category,
   Channel,
+  Emblema,
   GuildMember,
+  PerfilPublico,
   Permission,
   PublicUser,
   Role,
@@ -12,6 +14,7 @@ export interface GuildModel {
   id: string;
   name: string;
   iconUrl: string | null;
+  /** etiqueta DESTE servidor; quem veste é quem escolheu vestir */
   description?: string | null;
   /** etiqueta de até 4 letras ao lado do nome de quem é membro */
   tag?: string | null;
@@ -79,6 +82,19 @@ export interface GuildDetailModel {
   categories: Category[];
   channels: ChannelWithLastMessageModel[];
   members: GuildMember[];
+  /**
+   * Enfeites por pessoa, uma entrada por usuário — e só de quem tem algum.
+   *
+   * Fica fora de `members[].user` porque aquele objeto é o mesmo que viaja em
+   * cada mensagem: enfeite é por USUÁRIO, não por mensagem. Ausente significa
+   * "não personalizou nada", que é o caso da maioria.
+   */
+  profiles: Record<string, PerfilPublico>;
+  /**
+   * Os emblemas que ESTE servidor criou. Quem veste o quê está no mapa
+   * `profiles` — aqui ficam só as definições, uma vez cada.
+   */
+  emblemas: Emblema[];
   voiceStates: Record<string, VoiceState[]>;
 }
 

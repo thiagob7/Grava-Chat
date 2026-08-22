@@ -8,6 +8,7 @@ import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-memb
 import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
@@ -353,27 +354,18 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         )}
       </div>
 
-      {sujo && editavel && (
-        <footer className="sticky bottom-0 mt-6 flex items-center gap-3 rounded bg-surface-0 px-4 py-3">
-          <p className="flex-1 text-sm">Você tem alterações não salvas.</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setNome(role.name);
-              setCor(role.color);
-              setHoist(role.hoist);
-              setMentionable(role.mentionable);
-              setPermissoes(role.permissions as Permission[]);
-            }}
-          >
-            Descartar
-          </Button>
-          <Button variant="success" size="sm" disabled={updateRole.isPending} onClick={salvar}>
-            Salvar
-          </Button>
-        </footer>
-      )}
+      <UnsavedBar
+        visivel={sujo && editavel}
+        salvando={updateRole.isPending}
+        onDescartar={() => {
+          setNome(role.name);
+          setCor(role.color);
+          setHoist(role.hoist);
+          setMentionable(role.mentionable);
+          setPermissoes(role.permissions as Permission[]);
+        }}
+        onSalvar={salvar}
+      />
     </div>
   );
 };

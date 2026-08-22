@@ -14,11 +14,13 @@ export const PERMISSIONS = [
   "MANAGE_CHANNELS",
   "MANAGE_WEBHOOKS",
   "MANAGE_EXPRESSIONS",
+  "CREATE_EXPRESSIONS",
   "CREATE_INVITE",
   "KICK_MEMBERS",
   "BAN_MEMBERS",
   "MODERATE_MEMBERS",
   "MANAGE_NICKNAMES",
+  "CHANGE_NICKNAME",
   "VIEW_AUDIT_LOG",
   // texto
   "VIEW_CHANNEL",
@@ -27,6 +29,10 @@ export const PERMISSIONS = [
   "ATTACH_FILES",
   "ADD_REACTIONS",
   "MENTION_EVERYONE",
+  "READ_MESSAGE_HISTORY",
+  "PIN_MESSAGES",
+  "BYPASS_SLOWMODE",
+  "CREATE_POLLS",
   // voz
   "CONNECT",
   "SPEAK",
@@ -36,6 +42,7 @@ export const PERMISSIONS = [
   "DEAFEN_MEMBERS",
   "MOVE_MEMBERS",
   "USE_SOUNDBOARD",
+  "USE_VAD",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -51,13 +58,20 @@ export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] =
       "MANAGE_CHANNELS",
       "MANAGE_WEBHOOKS",
       "MANAGE_EXPRESSIONS",
+      "CREATE_EXPRESSIONS",
       "CREATE_INVITE",
       "VIEW_AUDIT_LOG",
     ],
   },
   {
     label: "Moderação",
-    permissions: ["KICK_MEMBERS", "BAN_MEMBERS", "MODERATE_MEMBERS", "MANAGE_NICKNAMES"],
+    permissions: [
+      "KICK_MEMBERS",
+      "BAN_MEMBERS",
+      "MODERATE_MEMBERS",
+      "MANAGE_NICKNAMES",
+      "CHANGE_NICKNAME",
+    ],
   },
   {
     label: "Canais de texto",
@@ -68,6 +82,10 @@ export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] =
       "ATTACH_FILES",
       "ADD_REACTIONS",
       "MENTION_EVERYONE",
+      "READ_MESSAGE_HISTORY",
+      "PIN_MESSAGES",
+      "BYPASS_SLOWMODE",
+      "CREATE_POLLS",
     ],
   },
   {
@@ -78,6 +96,7 @@ export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] =
       "VIDEO",
       "SHARE_SCREEN",
       "USE_SOUNDBOARD",
+      "USE_VAD",
       "MUTE_MEMBERS",
       "DEAFEN_MEMBERS",
       "MOVE_MEMBERS",
@@ -116,6 +135,11 @@ export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: st
     descricao: "Deixar alguém sem escrever nem falar por um tempo.",
   },
   MANAGE_NICKNAMES: { nome: "Gerenciar apelidos", descricao: "Mudar o apelido de outras pessoas." },
+  CHANGE_NICKNAME: { nome: "Alterar apelido", descricao: "Mudar o próprio apelido neste servidor." },
+  CREATE_EXPRESSIONS: {
+    nome: "Criar expressões",
+    descricao: "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
+  },
 
   VIEW_CHANNEL: { nome: "Ver canal", descricao: "Ver o canal e ler o histórico." },
   SEND_MESSAGES: { nome: "Enviar mensagens", descricao: "Escrever nos canais de texto." },
@@ -123,6 +147,16 @@ export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: st
   ATTACH_FILES: { nome: "Anexar arquivos", descricao: "Enviar imagens e arquivos." },
   ADD_REACTIONS: { nome: "Adicionar reações", descricao: "Reagir às mensagens." },
   MENTION_EVERYONE: { nome: "Mencionar @everyone", descricao: "Notificar o servidor inteiro." },
+  READ_MESSAGE_HISTORY: {
+    nome: "Ver histórico de mensagens",
+    descricao: "Ler o que foi dito antes de você abrir o canal.",
+  },
+  PIN_MESSAGES: { nome: "Fixar mensagens", descricao: "Fixar e desafixar qualquer mensagem." },
+  BYPASS_SLOWMODE: {
+    nome: "Ignorar modo lento",
+    descricao: "Escrever sem esperar o intervalo do canal.",
+  },
+  CREATE_POLLS: { nome: "Criar enquetes", descricao: "Publicar enquetes nos canais." },
 
   CONNECT: { nome: "Conectar", descricao: "Entrar em canais de voz." },
   SPEAK: { nome: "Falar", descricao: "Transmitir áudio na chamada." },
@@ -141,6 +175,10 @@ export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: st
     nome: "Mover membros",
     descricao: "Puxar alguém para outro canal de voz, ou desconectar.",
   },
+  USE_VAD: {
+    nome: "Usar detecção de voz",
+    descricao: "Falar sem apertar tecla. Sem isto, só push-to-talk.",
+  },
 };
 
 /** O que o @everyone recebe num servidor novo: conversar e entrar em call. */
@@ -149,11 +187,15 @@ export const DEFAULT_EVERYONE_PERMISSIONS: Permission[] = [
   "SEND_MESSAGES",
   "ATTACH_FILES",
   "ADD_REACTIONS",
+  "READ_MESSAGE_HISTORY",
+  "CREATE_POLLS",
+  "CHANGE_NICKNAME",
   "CREATE_INVITE",
   "CONNECT",
   "SPEAK",
   "VIDEO",
   "SHARE_SCREEN",
+  "USE_VAD",
 ];
 
 export interface RoleLike {

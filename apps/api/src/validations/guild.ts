@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createGuildInput, createChannelInput, LIMITS } from "@gravae/shared";
+import { r2Url } from "./auth.js";
 
 /**
  * Os schemas compartilhados com o front vivem em `@gravae/shared` (contrato).
@@ -43,3 +44,14 @@ export const createInviteInput = z.object({
   maxUses: z.number().int().positive().nullable().optional(),
   expiresInHours: z.number().int().positive().nullable().optional(),
 });
+
+/**
+ * Emoji ou imagem — nao os dois. Quem decide qual sobrevive e o service, que
+ * enxerga o estado atual; aqui so passa o que veio.
+ */
+export const criarEmblemaInput = z.object({
+  nome: z.string().min(1).max(LIMITS.emblemaNome),
+  emoji: z.string().max(64).nullable().optional(),
+  iconUrl: r2Url.nullable().optional(),
+});
+export type CriarEmblemaInput = z.infer<typeof criarEmblemaInput>;

@@ -47,6 +47,16 @@ describe("automod — menções", () => {
     expect(violacao("<@6a8781da7415b08f427be1a4> oi", regra)).toBeNull();
   });
 
+  it("menção de cargo conta — é a que notifica mais gente de uma vez", () => {
+    const tres = "<@&6a8781da7415b08f427be1a4> <@&6a8781f57415b08f427be1ad> <@&6a8781db7415b08f427be1aa>";
+    expect(violacao(tres, regra)).not.toBeNull();
+  });
+
+  it("cargo e usuário somam no mesmo contador", () => {
+    const misto = "<@&6a8781da7415b08f427be1a4> <@6a8781f57415b08f427be1ad> @everyone";
+    expect(violacao(misto, regra)).not.toBeNull();
+  });
+
   it("@everyone conta como menção", () => {
     expect(violacao("@everyone @here <@6a8781da7415b08f427be1a4>", regra)).not.toBeNull();
   });

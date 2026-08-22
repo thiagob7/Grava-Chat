@@ -1,5 +1,5 @@
-import { LIMITS } from "@gravae/shared";
-import { AppError, NotFoundError } from "~/lib/http.js";
+import { has, LIMITS } from "@gravae/shared";
+import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import { toGuildEmoji, toGuildSound, toPublicUser, toSticker } from "~/lib/serialize.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
@@ -43,7 +43,7 @@ export const expressionService = {
 
   // ------------------------------------------------------------------ emoji
   async createEmoji(userId: string, guildId: string, input: CreateEmojiInput) {
-    await accessService.requirePermission(userId, guildId, "MANAGE_EXPRESSIONS");
+    await requirePodeCriarExpressao(userId, guildId);
 
     if ((await expressionRepository.countEmojis(guildId)) >= LIMITS.emojisPorServidor) {
       throw new AppError(`O servidor já tem ${LIMITS.emojisPorServidor} emojis`);
@@ -113,7 +113,7 @@ export const expressionService = {
 
   // -------------------------------------------------------------- figurinha
   async createSticker(userId: string, guildId: string, input: CreateStickerInput) {
-    await accessService.requirePermission(userId, guildId, "MANAGE_EXPRESSIONS");
+    await requirePodeCriarExpressao(userId, guildId);
 
     if ((await expressionRepository.countStickers(guildId)) >= LIMITS.figurinhasPorServidor) {
       throw new AppError(`O servidor já tem ${LIMITS.figurinhasPorServidor} figurinhas`);
@@ -159,7 +159,7 @@ export const expressionService = {
 
   // ------------------------------------------------------------------- som
   async createSound(userId: string, guildId: string, input: CreateSoundInput) {
-    await accessService.requirePermission(userId, guildId, "MANAGE_EXPRESSIONS");
+    await requirePodeCriarExpressao(userId, guildId);
 
     if ((await expressionRepository.countSounds(guildId)) >= LIMITS.sonsPorServidor) {
       throw new AppError(`O servidor já tem ${LIMITS.sonsPorServidor} sons`);
@@ -217,3 +217,23 @@ export const expressionService = {
     });
   },
 };
+
+/**
+ * Criar expressão: `CREATE_EXPRESSIONS` basta, e `MANAGE_EXPRESSIONS` também
+ * serve — quem pode apagar as dos outros obviamente pode subir a sua.
+ *
+ * A separação existe pra liberar a galera a subir emoji sem dar, junto, o poder
+ * de apagar o que os outros subiram.
+ */
+async function requirePodeCriarExpressao(userId: string, guildId: string) {
+  const contexto = await accessService.contextOf(userId, guildId);
+
+  if (
+    !has(contexto.permissions, "CREATE_EXPRESSIONS") &&
+    !has(contexto.permissions, "MANAGE_EXPRESSIONS")
+  ) {
+    throw new ForbiddenError("Você não pode criar expressões neste servidor");
+  }
+
+  return contexto;
+}

@@ -14,6 +14,15 @@ export const keys = {
   presence: (userId: string) => `presence:${userId}`,
   /** contador de sockets abertos por usuario: 3 abas = 3, so fica offline no 0 */
   sessions: (userId: string) => `sessions:${userId}`,
+  /**
+   * Ausencia detectada pelo cliente, com TTL.
+   *
+   * Chave SEPARADA da `presence:` de proposito. Se a inatividade escrevesse na
+   * mesma chave do status escolhido, voltar do ausente esqueceria que a pessoa
+   * estava em "nao perturbe" — o status manual e o automatico precisam
+   * coexistir, e e a projecao que decide qual vence.
+   */
+  idle: (userId: string) => `idle:${userId}`,
   typing: (channelId: string, userId: string) => `typing:${channelId}:${userId}`,
   /** janela de vazão do webhook — ver webhook-service */
   webhookRate: (webhookId: string) => `webhook:rate:${webhookId}`,

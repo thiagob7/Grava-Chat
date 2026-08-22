@@ -26,12 +26,21 @@ export const normalizar = (texto: string) =>
 const ESCAPE = /[.*+?^${}()|[\]\\]/g;
 const LINK = /\bhttps?:\/\/\S+|\bwww\.\S+\.\S+/i;
 
-/** `<@id>`, `@everyone` e `@here` contam igual: todos tiram alguém do sério. */
+/**
+ * `<@id>`, `<@&id>`, `@everyone` e `@here` contam igual: todos tiram alguém do
+ * sério.
+ *
+ * A menção de CARGO faltava, e ela é a que mais pesa de verdade: um `<@&id>`
+ * num cargo de quarenta pessoas notifica quarenta, enquanto cinco menções de
+ * usuário notificam cinco. Contá-la como uma só já é conservador — o que não dá
+ * é não contar.
+ */
 function contarMencoes(content: string) {
   const usuarios = content.match(/<@[a-f\d]{24}>/gi)?.length ?? 0;
+  const cargos = content.match(/<@&[a-f\d]{24}>/gi)?.length ?? 0;
   const todos = content.match(/@(everyone|here)\b/gi)?.length ?? 0;
 
-  return usuarios + todos;
+  return usuarios + cargos + todos;
 }
 
 export function violacao(content: string, regra: RegraDeConteudo): string | null {

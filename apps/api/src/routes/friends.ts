@@ -1,4 +1,6 @@
 import type { FastifyInstance } from "fastify";
+import { z } from "zod";
+import { objectId } from "@gravae/shared";
 import { rooms } from "@gravae/shared";
 import { friendshipService } from "~/services/friendship-service.js";
 import { io } from "~/realtime/io.js";
@@ -46,6 +48,20 @@ export async function friendRoutes(app: FastifyInstance) {
   });
 
   // --------------------------------- DMs -----------------------------------
+
+  app.post("/friends/block", async (req, reply) => {
+    const { userId } = z.object({ userId: objectId }).parse(req.body);
+    await friendshipService.block(req.userId, userId);
+
+    return reply.code(204).send();
+  });
+
+  app.delete("/friends/block/:userId", async (req, reply) => {
+    const { userId } = z.object({ userId: objectId }).parse(req.params);
+    await friendshipService.unblock(req.userId, userId);
+
+    return reply.code(204).send();
+  });
 
   app.get("/dms", (req) => friendshipService.listDms(req.userId));
 

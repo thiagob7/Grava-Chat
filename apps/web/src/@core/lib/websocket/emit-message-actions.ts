@@ -1,4 +1,4 @@
-import type { ClientEventPayload } from "@gravae/shared";
+import type { ClientEventPayload, DesiredStatus } from "@gravae/shared";
 
 import { emit } from ".";
 
@@ -20,5 +20,11 @@ export const ackMessage = (channelId: string, messageId: string) =>
 
 export const startTyping = (channelId: string) => emit("typing:start", { channelId });
 
-export const updatePresence = (status: "ONLINE" | "IDLE" | "DND") =>
-  emit("presence:update", { status });
+/**
+ * O status que você ESCOLHE. `INVISIBLE` também vem por aqui — é um estado
+ * desejado, e quem traduz pra o que os outros veem (`OFFLINE`) é o servidor.
+ */
+export const updatePresence = (status: DesiredStatus) => emit("presence:update", { status });
+
+/** Ausência detectada aqui no cliente. Não mexe no status escolhido. */
+export const marcarAusente = (idle: boolean) => emit("presence:afk", { idle });
