@@ -67,10 +67,16 @@ export const roleService = {
         .map((r) => roleRepository.update(r.id, { position: r.position + 1 })),
     );
 
+    const { iconEmoji, iconUrl } = normalizarIcone(input);
+
     const role = await roleRepository.create({
       guildId,
       name: input.name,
       color: input.color ?? null,
+      colorSecondary: input.colorSecondary ?? null,
+      estilo: input.estilo ?? "solido",
+      iconEmoji: iconEmoji ?? null,
+      iconUrl: iconUrl ?? null,
       position: 1,
       permissions,
       hoist: input.hoist ?? false,
@@ -88,14 +94,30 @@ export const roleService = {
     if (input.permissions) requireGrantable(contexto, input.permissions);
 
     /**
-     * O @everyone é a base de todo mundo: renomear ou pintar não faz sentido, e
-     * mover de posição quebraria o "todo mundo está embaixo".
+     * O @everyone é a base de todo mundo: renomear ou enfeitar não faz sentido,
+     * e mover de posição quebraria o "todo mundo está embaixo".
+     *
+     * A lista precisa incluir os enfeites novos: um @everyone holográfico
+     * repinta o nome de TODO MUNDO e mata a hierarquia visual do servidor.
+     *
+     * E `!== undefined` em vez de truthiness — com `input.hoist` cru, mandar
+     * `hoist: false` escapava da guarda por ser um valor falso.
      */
-    if (role.isEveryone && (input.name !== undefined || input.color !== undefined || input.hoist)) {
+    const mexeNaAparencia = [
+      input.name,
+      input.color,
+      input.colorSecondary,
+      input.estilo,
+      input.iconEmoji,
+      input.iconUrl,
+      input.hoist,
+    ].some((v) => v !== undefined);
+
+    if (role.isEveryone && mexeNaAparencia) {
       throw new AppError("O cargo @everyone só aceita mudança de permissões");
     }
 
-    return toRole(await roleRepository.update(roleId, input));
+    return toRole(await roleRepository.update(roleId, normalizarIcone(input)));
   },
 
   async remove(userId: string, guildId: string, roleId: string) {
@@ -235,3 +257,19 @@ export const roleService = {
     await overwriteRepository.remove(channelId, targetId);
   },
 };
+
+/**
+ * Emoji OU imagem, nunca os dois.
+ *
+ * Resolvido aqui e nao no schema porque o PATCH e parcial: quem manda um emoji
+ * esta trocando o icone, entao a imagem sai junto — e vice-versa. Um
+ * `.refine()` nao teria como saber disso sem enxergar o estado atual.
+ */
+function normalizarIcone<T extends { iconEmoji?: string | null; iconUrl?: string | null }>(
+  input: T,
+): T {
+  if (input.iconEmoji) return { ...input, iconUrl: null };
+  if (input.iconUrl) return { ...input, iconEmoji: null };
+
+  return input;
+}

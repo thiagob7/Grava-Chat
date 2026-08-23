@@ -49,6 +49,7 @@ import { onSocketError, offSocketError } from "~/@core/lib/websocket/on-socket-e
 import { onUserUpdated, offUserUpdated } from "~/@core/lib/websocket/on-user-updated";
 import { onFriendUpdated, offFriendUpdated } from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
+import { useAusencia } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/stores/typing-store";
 import { useVoiceStore } from "~/stores/voice-store";
 
@@ -134,6 +135,12 @@ const cache = {
 };
 
 export function useRealtime(currentGuildId: string | undefined, currentChannelId: string | undefined) {
+  /**
+   * Ausência automática mora aqui junto: ela é presença, e presença é socket.
+   * Pendurada numa tela, sairia do ar quando a pessoa navegasse pra outra.
+   */
+  useAusencia(true);
+
   const queryClient = useQueryClient();
 
   useEffect(() => {

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { PerfilPublico, PresenceStatus } from "@gravae/shared";
 
+import { DecoracaoAnimada } from "~/components/DecoracaoAnimada";
+import { ehAnimada } from "~/lib/cosmeticos/animadas";
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -53,7 +55,17 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const mostrarImagem = Boolean(url) && !falhou;
 
-  const decoracao = classeDoEnfeite("decoracao", enfeites?.decoracao);
+  /**
+   * Decoração pode ser CSS ou ARQUIVO.
+   *
+   * As de CSS são uma camada com classe; as animadas são um Lottie tocado por
+   * um player. Quem decide é o catálogo, não este componente — acrescentar uma
+   * animada nova não passa por aqui.
+   */
+  const animada = ehAnimada(enfeites?.decoracao);
+  const decoracao = animada
+    ? null
+    : classeDoEnfeite("decoracao", enfeites?.decoracao);
   /**
    * "Está falando" ganha da moldura, sempre.
    *
@@ -62,7 +74,9 @@ export const Avatar: React.FC<AvatarProps> = ({
    * falando, não que o colega escolheu uma moldura dourada. Sinal em tempo real
    * ganha de enfeite.
    */
-  const moldura = speaking ? null : classeDoEnfeite("moldura", enfeites?.moldura);
+  const moldura = speaking
+    ? null
+    : classeDoEnfeite("moldura", enfeites?.moldura);
   const ritmo = variaveisDoEnfeite({ animar, velocidade: "8s" });
 
   return (
@@ -109,8 +123,23 @@ export const Avatar: React.FC<AvatarProps> = ({
         </div>
       )}
 
-      {moldura && <span aria-hidden className={cn("gc-camada gc-camada--moldura", moldura)} style={ritmo} />}
-      {decoracao && <span aria-hidden className={cn("gc-camada", decoracao)} style={ritmo} />}
+      {moldura && (
+        <span
+          aria-hidden
+          className={cn("gc-camada gc-camada--moldura", moldura)}
+          style={ritmo}
+        />
+      )}
+      {decoracao && (
+        <span
+          aria-hidden
+          className={cn("gc-camada", decoracao)}
+          style={ritmo}
+        />
+      )}
+      {animada && enfeites?.decoracao && (
+        <DecoracaoAnimada decoracao={enfeites.decoracao} animar={animar} />
+      )}
 
       {status && (
         // A borda na cor do fundo cria o "recorte" do indicador, igual ao Discord.

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    /* as decoracoes animadas sao `.json` importados por `import()` */
+    "resolveJsonModule": true,
     "target": "ES2023",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "ESNext",
@@ -15,5 +17,5 @@
     "baseUrl": ".",
     "paths": { "~/*": ["src/*"] }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json", "vite.config.ts"]
 }

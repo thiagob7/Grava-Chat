@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { PerfilPublico, Role } from "@gravae/shared";
 
 import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
+import { carregarFonte } from "~/lib/cosmeticos/fontes";
 import { estiloDoNome } from "~/lib/cosmeticos/nome";
 import { cn } from "~/lib/utils";
 
@@ -50,6 +51,15 @@ export const UserName: React.FC<UserNameProps> = ({
   className,
   title,
 }) => {
+  /**
+   * Puxa o arquivo da fonte só quando um nome com ela aparece na tela.
+   *
+   * É seguro chamar a cada nome renderizado: a função guarda o que já pediu, e
+   * da segunda vez em diante é uma busca em `Set`. Quem nunca cruza com um nome
+   * enfeitado não baixa fonte nenhuma.
+   */
+  useEffect(() => carregarFonte(perfil?.nome?.fonte), [perfil?.nome?.fonte]);
+
   const cor = corDoCargo ?? (roleIds && roles ? corDoCargoMaisAlto(roleIds, roles) : null);
   const enfeite = estiloDoNome({ estilo: perfil?.nome, corDoCargo: cor, tamanho, animar, fundo });
 

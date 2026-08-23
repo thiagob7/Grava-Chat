@@ -7,13 +7,15 @@
 
     <link rel="icon" type="image/png" href="/brand/icone-512.png" />
 
-    <!-- Inter: a mesma do backoffice, para o chat não destoar do resto do Gravaê -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!--
+      A Inter NÃO vem mais de CDN. Ela é importada no `main.tsx` pelo
+      `@fontsource-variable/inter`, empacotada junto do app.
+
+      O `<link>` que estava aqui falhava no aplicativo de desktop sem internet
+      alcançável — e falhava calado, caindo no `system-ui`: o app inteiro
+      mudava de cara e nada no console dizia por quê. De brinde, saem dois
+      round-trips do carregamento inicial.
+    -->
 
     <title>Gravaê Chat</title>
   </head>

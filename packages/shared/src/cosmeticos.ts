@@ -33,7 +33,24 @@ export type EfeitoDeNome = (typeof EFEITOS_DE_NOME)[number];
 
 // ------------------------------------------------------------- avatar
 
-export const DECORACOES = ["nenhuma", "aurora", "chamas", "circuito", "petalas", "orbita"] as const;
+/**
+ * As decoracoes de avatar.
+ *
+ * A maioria e CSS. As ANIMADAS (`aro` em diante) sao arquivos Lottie — animacao
+ * vetorial em JSON, o mesmo espirito do que o Discord faz (la e APNG desenhado
+ * quadro a quadro). Aqui o id continua sendo so um id: quem sabe se ele vira
+ * classe CSS ou player e o front, em `lib/cosmeticos/animadas.ts`.
+ */
+export const DECORACOES = [
+  "nenhuma",
+  "aurora",
+  "chamas",
+  "circuito",
+  "petalas",
+  "orbita",
+  "aro",
+  "alada",
+] as const;
 export type Decoracao = (typeof DECORACOES)[number];
 
 export const MOLDURAS = ["nenhuma", "neon", "dourada", "vidro", "pixel", "espinhos"] as const;

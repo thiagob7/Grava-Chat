@@ -6,6 +6,11 @@ import { socket } from "~/@core/lib/websocket";
 import { getAccessToken } from "~/@core/lib/api";
 import { useVoiceStore, voiceTabChannelId } from "~/stores/voice-store";
 import { useTypingStore } from "~/stores/typing-store";
+/*
+  A fonte do app, empacotada. Variável: um arquivo cobre todos os pesos, então
+  isto é UM download em vez de quatro.
+*/
+import "@fontsource-variable/inter";
 import "~/styles/index.css";
 import "react-toastify/dist/ReactToastify.css";
 

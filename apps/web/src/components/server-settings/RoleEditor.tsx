@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Check, Search, Trash2, UserMinus, X } from "lucide-react";
-import type { GuildMember, Permission } from "@gravae/shared";
+import type { EstiloDeCargo, GuildMember, Permission } from "@gravae/shared";
 import { PERMISSION_GROUPS, PERMISSION_LABELS } from "@gravae/shared";
 
-import { useUpdateRole, useDeleteRole } from "~/@core/application/queries/role/use-save-role";
+import {
+  useUpdateRole,
+  useDeleteRole,
+} from "~/@core/application/queries/role/use-save-role";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/components/Avatar";
@@ -12,12 +15,22 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
+import { ESTILOS_DO_CARGO } from "~/lib/cosmeticos/catalogo";
+import { estiloDoCargo } from "~/lib/cosmeticos/cargo";
 import { cn } from "~/lib/utils";
 
 /** Paleta do Discord, que é escolhida pra ler bem em fundo escuro. */
 export const CORES = [
-  "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#e91e63",
-  "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#607d8b",
+  "#1abc9c",
+  "#2ecc71",
+  "#3498db",
+  "#9b59b6",
+  "#e91e63",
+  "#f1c40f",
+  "#e67e22",
+  "#e74c3c",
+  "#95a5a6",
+  "#607d8b",
 ];
 
 type Aba = "exibicao" | "permissoes" | "membros";
@@ -48,9 +61,14 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   const [aba, setAba] = useState<Aba>("exibicao");
   const [nome, setNome] = useState(role.name);
   const [cor, setCor] = useState<string | null>(role.color);
+  const [cor2, setCor2] = useState<string | null>(role.colorSecondary);
+  const [estilo, setEstilo] = useState<EstiloDeCargo>(role.estilo);
+  const [emoji, setEmoji] = useState(role.iconEmoji ?? "");
   const [hoist, setHoist] = useState(role.hoist);
   const [mentionable, setMentionable] = useState(role.mentionable);
-  const [permissoes, setPermissoes] = useState<Permission[]>(role.permissions as Permission[]);
+  const [permissoes, setPermissoes] = useState<Permission[]>(
+    role.permissions as Permission[],
+  );
   const [busca, setBusca] = useState("");
   const confirmar = useConfirmar();
 
@@ -64,7 +82,8 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   }, [role]);
 
   const souAdmin = minhasPermissoes.includes("ADMINISTRATOR");
-  const posso = (permissao: Permission) => souAdmin || minhasPermissoes.includes(permissao);
+  const posso = (permissao: Permission) =>
+    souAdmin || minhasPermissoes.includes(permissao);
 
   const sujo = useMemo(() => {
     const mesmasPermissoes =
@@ -86,7 +105,22 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
       roleId: role.id,
       permissions: permissoes,
       // o @everyone só aceita permissões: nome e cor dele não existem
-      ...(role.isEveryone ? {} : { name: nome, color: cor, hoist, mentionable }),
+      /*
+        O @everyone só aceita permissões: nome, cor e enfeite dele não existem.
+        E é mais do que "não faz sentido" — um @everyone holográfico repinta o
+        nome de TODO MUNDO e mata a hierarquia visual do servidor.
+      */
+      ...(role.isEveryone
+        ? {}
+        : {
+            name: nome,
+            color: cor,
+            colorSecondary: cor2,
+            estilo,
+            iconEmoji: emoji.trim() || null,
+            hoist,
+            mentionable,
+          }),
     });
   };
 
@@ -113,9 +147,13 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   };
 
   const abas: { id: Aba; label: string }[] = [
-    ...(role.isEveryone ? [] : [{ id: "exibicao" as const, label: "Exibição" }]),
+    ...(role.isEveryone
+      ? []
+      : [{ id: "exibicao" as const, label: "Exibição" }]),
     { id: "permissoes", label: "Permissões" },
-    ...(role.isEveryone ? [] : [{ id: "membros" as const, label: `Membros — ${comOCargo.length}` }]),
+    ...(role.isEveryone
+      ? []
+      : [{ id: "membros" as const, label: `Membros — ${comOCargo.length}` }]),
   ];
 
   const abaAtiva = abas.some((a) => a.id === aba) ? aba : "permissoes";
@@ -128,7 +166,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
           style={{ backgroundColor: cor ?? "#99aab5" }}
         />
         <h3 className="truncate text-lg font-semibold">
-          {role.isEveryone ? "@everyone" : (nome || "Cargo sem nome")}
+          {role.isEveryone ? "@everyone" : nome || "Cargo sem nome"}
         </h3>
 
         {!role.isEveryone && editavel && (
@@ -136,11 +174,16 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
             onClick={() =>
               void confirmar({
                 titulo: `Excluir cargo "${role.name}"?`,
-                descricao: "Quem tem esse cargo perde tudo o que ele dava. Não dá pra desfazer.",
+                descricao:
+                  "Quem tem esse cargo perde tudo o que ele dava. Não dá pra desfazer.",
                 acao: "Excluir cargo",
               }).then(
                 ({ confirmado }) =>
-                  confirmado && deleteRole.mutate({ guildId, roleId: role.id }, { onSuccess: onDeleted }),
+                  confirmado &&
+                  deleteRole.mutate(
+                    { guildId, roleId: role.id },
+                    { onSuccess: onDeleted },
+                  ),
               )
             }
             className="ml-auto rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
@@ -153,10 +196,10 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
       {role.isEveryone && (
         <p className="mt-1 text-xs text-ink-faint">
-          Vale para todo mundo no servidor. É a base sobre a qual os outros cargos somam.
+          Vale para todo mundo no servidor. É a base sobre a qual os outros
+          cargos somam.
         </p>
       )}
-
 
       <nav className="mt-5 flex gap-4 border-b border-line">
         {abas.map((a) => (
@@ -235,6 +278,101 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </div>
             </div>
 
+            <div>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Estilo do nome
+              </span>
+
+              <div className="mb-3 grid grid-cols-3 gap-2">
+                {ESTILOS_DO_CARGO.map((opcao) => (
+                  <button
+                    key={opcao.id}
+                    onClick={() => editavel && setEstilo(opcao.id)}
+                    title={opcao.descricao}
+                    className={cn(
+                      "rounded border px-2 py-2 text-xs transition",
+                      estilo === opcao.id
+                        ? "border-brand bg-surface-3 text-ink"
+                        : "border-line bg-surface-0 text-ink-muted hover:bg-surface-3",
+                    )}
+                  >
+                    {opcao.rotulo}
+                  </button>
+                ))}
+              </div>
+
+              {estilo !== "solido" && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-ink-muted">Segunda cor</span>
+                  <input
+                    type="color"
+                    value={cor2 ?? "#a855f7"}
+                    disabled={!editavel}
+                    onChange={(e) => setCor2(e.target.value)}
+                    className="size-8 cursor-pointer rounded border border-line bg-transparent"
+                  />
+                  {cor2 && (
+                    <button
+                      onClick={() => setCor2(null)}
+                      className="rounded p-1 text-ink-faint transition hover:text-ink"
+                      aria-label="Limpar segunda cor"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                  <span className="text-xs text-ink-faint">
+                    Sem ela, o gradiente cai para cor sólida — não some.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Ícone
+              </span>
+              <Input
+                value={emoji}
+                disabled={!editavel}
+                maxLength={8}
+                placeholder="⚡"
+                onChange={(e) => setEmoji(e.target.value)}
+                className="w-24"
+              />
+              <p className="mt-1 text-xs text-ink-faint">
+                Aparece ao lado do cargo no cartão de perfil de quem o tem.
+              </p>
+            </div>
+
+            {/*
+              A prévia mostra as DUAS formas em que o cargo aparece: a linha da
+              lista de membros e a linha do chat. Elas não são iguais — na lista
+              o nome é menor, e gradiente em texto pequeno cai para cor sólida.
+              Sem ver as duas, dá pra escolher um gradiente que não existe onde a
+              pessoa mais aparece.
+            */}
+            <div>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Prévia
+              </span>
+
+              <div className="space-y-2 rounded bg-surface-0 p-3">
+                <PreviaDoCargo
+                  cargo={{ color: cor, colorSecondary: cor2, estilo }}
+                  emoji={emoji}
+                  nome={nome}
+                  legenda="na lista de membros"
+                />
+                <PreviaDoCargo
+                  cargo={{ color: cor, colorSecondary: cor2, estilo }}
+                  emoji={emoji}
+                  nome={nome}
+                  legenda="no chat"
+                  tamanho="md"
+                />
+              </div>
+            </div>
+
             <Linha
               titulo="Exibir separado dos outros membros"
               descricao="O cargo ganha uma seção própria na lista de membros."
@@ -279,7 +417,9 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                         disabled={bloqueado}
                         onChange={(valor) =>
                           setPermissoes((atual) =>
-                            valor ? [...atual, permissao] : atual.filter((p) => p !== permissao),
+                            valor
+                              ? [...atual, permissao]
+                              : atual.filter((p) => p !== permissao),
                           )
                         }
                       />
@@ -312,9 +452,18 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     onClick={() => mudarCargoDe(m, true)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-surface-3"
                   >
-                    <Avatar id={m.user.id} name={m.user.displayName} url={m.user.avatarUrl} size={24} />
-                    <span className="truncate text-sm">{m.user.displayName}</span>
-                    <span className="truncate text-xs text-ink-faint">@{m.user.username}</span>
+                    <Avatar
+                      id={m.user.id}
+                      name={m.user.displayName}
+                      url={m.user.avatarUrl}
+                      size={24}
+                    />
+                    <span className="truncate text-sm">
+                      {m.user.displayName}
+                    </span>
+                    <span className="truncate text-xs text-ink-faint">
+                      @{m.user.username}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -326,10 +475,19 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   key={m.id}
                   className="flex items-center gap-3 border-t border-line px-2 py-2.5 transition hover:bg-surface-3"
                 >
-                  <Avatar id={m.user.id} name={m.user.displayName} url={m.user.avatarUrl} size={32} />
+                  <Avatar
+                    id={m.user.id}
+                    name={m.user.displayName}
+                    url={m.user.avatarUrl}
+                    size={32}
+                  />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{m.nickname ?? m.user.displayName}</p>
-                    <p className="truncate text-xs text-ink-faint">@{m.user.username}</p>
+                    <p className="truncate text-sm">
+                      {m.nickname ?? m.user.displayName}
+                    </p>
+                    <p className="truncate text-xs text-ink-faint">
+                      @{m.user.username}
+                    </p>
                   </div>
 
                   {editavel && (
@@ -360,6 +518,9 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         onDescartar={() => {
           setNome(role.name);
           setCor(role.color);
+          setCor2(role.colorSecondary);
+          setEstilo(role.estilo);
+          setEmoji(role.iconEmoji ?? "");
           setHoist(role.hoist);
           setMentionable(role.mentionable);
           setPermissoes(role.permissions as Permission[]);
@@ -378,7 +539,13 @@ interface LinhaProps {
   onChange: (valor: boolean) => void;
 }
 
-const Linha: React.FC<LinhaProps> = ({ titulo, descricao, checked, disabled, onChange }) => (
+const Linha: React.FC<LinhaProps> = ({
+  titulo,
+  descricao,
+  checked,
+  disabled,
+  onChange,
+}) => (
   <div className={cn("flex items-start gap-4", disabled && "opacity-60")}>
     <div className="min-w-0 flex-1">
       <p className="text-sm font-medium">{titulo}</p>
@@ -387,3 +554,40 @@ const Linha: React.FC<LinhaProps> = ({ titulo, descricao, checked, disabled, onC
     <Switch checked={checked} disabled={disabled} onCheckedChange={onChange} />
   </div>
 );
+
+/**
+ * Uma linha de prévia do cargo, no tamanho em que ela aparece de verdade.
+ *
+ * Chama `estiloDoCargo`, a MESMA função que o chat e a lista chamam — se fosse
+ * uma cópia do visual, mentiria na primeira vez que a regra mudasse, e mentiria
+ * justo pra quem está decidindo a cor.
+ */
+const PreviaDoCargo: React.FC<{
+  cargo: {
+    color: string | null;
+    colorSecondary: string | null;
+    estilo: EstiloDeCargo;
+  };
+  emoji: string;
+  nome: string;
+  legenda: string;
+  tamanho?: "sm" | "md";
+}> = ({ cargo, emoji, nome, legenda, tamanho = "sm" }) => {
+  const enfeite = estiloDoCargo(cargo, { tamanho, animar: true });
+
+  return (
+    <p className="flex items-baseline gap-2">
+      <span
+        className={cn(
+          tamanho === "md" ? "text-base font-semibold" : "text-sm font-medium",
+          enfeite.className,
+        )}
+        style={enfeite.style}
+      >
+        {emoji.trim() && <span className="mr-1">{emoji.trim()}</span>}
+        {nome || "Cargo"}
+      </span>
+      <span className="text-xs text-ink-faint">{legenda}</span>
+    </p>
+  );
+};

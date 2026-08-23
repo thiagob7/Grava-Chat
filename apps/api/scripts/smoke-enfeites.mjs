@@ -75,12 +75,7 @@ const cartao = await api(`/users/${dono.user.id}`, { token: membro.accessToken, 
 if (cartao.perfil?.nome?.efeito !== "gradiente") throw new Error(`o cartao nao trouxe o enfeite: ${JSON.stringify(cartao.perfil)}`);
 ok("o cartao de perfil traz o enfeite (e o que faz funcionar na DM)");
 
-/*
- * O cargo NAO entra aqui: `colorSecondary` e `estilo` existem no schema e na
- * serializacao (Fase 0), mas a rota de escrita ainda nao os aceita — isso e a
- * Fase 5. Um teste verde sobre um campo que o PATCH descarta seria pior que
- * nenhum teste.
- */
+
 
 console.log("\n== teto por finalidade ==");
 const mega = 1024 * 1024;
@@ -171,6 +166,28 @@ if (!doCanal || doCanal.mentionCount < 1) {
   throw new Error(`mentionCount devia contar as mencoes: ${JSON.stringify(doCanal)}`);
 }
 ok(`mentionCount deixou de ser campo morto: ${doCanal.mentionCount}`);
+
+console.log("\n== enfeite de cargo ==");
+const pintado = await api(`/guilds/${guild.id}/roles/${cargo.id}`, {
+  token: dono.accessToken,
+  method: "PATCH",
+  body: { color: "#22d3ee", colorSecondary: "#a855f7", estilo: "holografico", iconEmoji: "\u26a1" },
+});
+if (pintado.estilo !== "holografico" || pintado.colorSecondary !== "#a855f7") {
+  throw new Error(`o cargo devia guardar estilo e segunda cor: ${JSON.stringify(pintado)}`);
+}
+ok("cargo guarda cor secundaria, estilo e emoji");
+
+const everyone = (await api(`/guilds/${guild.id}/roles`, { token: dono.accessToken, method: "GET" })).find((r) => r.isEveryone);
+if ((await recusa(`/guilds/${guild.id}/roles/${everyone.id}`, { token: dono.accessToken, method: "PATCH", body: { estilo: "holografico" } })) !== 400) {
+  throw new Error("@everyone holografico repintaria o nome de TODO MUNDO");
+}
+ok("@everyone recusa enfeite — senao repintaria o nome de todo mundo");
+
+if ((await recusa(`/guilds/${guild.id}/roles/${everyone.id}`, { token: dono.accessToken, method: "PATCH", body: { hoist: false } })) !== 400) {
+  throw new Error("`hoist: false` escapava da guarda por ser valor falso");
+}
+ok("`hoist: false` tambem e barrado (a guarda testava truthiness)");
 
 console.log("\n== emblemas ==");
 const emblema = await api(`/guilds/${guild.id}/emblemas`, { token: dono.accessToken, body: { nome: "DEV", emoji: "\u26a1" } });

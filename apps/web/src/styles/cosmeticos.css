@@ -46,7 +46,10 @@
   background-image: linear-gradient(
     100deg,
     var(--gc-cor-1, var(--color-ink)),
-    var(--gc-cor-2, color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), white 45%))
+    var(
+      --gc-cor-2,
+      color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), white 45%)
+    )
   );
   background-clip: text;
   -webkit-background-clip: text;
@@ -62,8 +65,10 @@
 .gc-nome--neon {
   color: var(--gc-cor-1, var(--color-ink));
   text-shadow:
-    0 0 4px color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), transparent 30%),
-    0 0 14px color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), transparent 55%);
+    0 0 4px
+      color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), transparent 30%),
+    0 0 14px
+      color-mix(in oklab, var(--gc-cor-1, var(--color-ink)), transparent 55%);
   animation: gc-pulsar var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
@@ -78,8 +83,16 @@
 */
 .gc-nome--brilho {
   background-image:
-    linear-gradient(100deg, transparent 38%, rgb(255 255 255 / 0.85) 50%, transparent 62%),
-    linear-gradient(var(--gc-cor-1, var(--color-ink)), var(--gc-cor-1, var(--color-ink)));
+    linear-gradient(
+      100deg,
+      transparent 38%,
+      rgb(255 255 255 / 0.85) 50%,
+      transparent 62%
+    ),
+    linear-gradient(
+      var(--gc-cor-1, var(--color-ink)),
+      var(--gc-cor-1, var(--color-ink))
+    );
   background-size:
     250% 100%,
     100% 100%;
@@ -142,7 +155,12 @@
 */
 .gc-cargo--holografico {
   color: var(--gc-cor-1, var(--color-ink));
-  text-shadow: 0 0 10px color-mix(in oklab, var(--gc-cor-2, var(--gc-cor-1, white)), transparent 60%);
+  text-shadow: 0 0 10px
+    color-mix(
+      in oklab,
+      var(--gc-cor-2, var(--gc-cor-1, white)),
+      transparent 60%
+    );
   animation: gc-holografico var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
@@ -177,74 +195,290 @@
   inset: -8%;
 }
 
+/*
+  Como o Discord faz e como fazemos aqui.
+
+  Lá, decoração de avatar é um APNG — arte desenhada, animada quadro a quadro, e
+  comprada na loja. Efeito de perfil é uma folha de sprites tocada por cima do
+  cartão. Os dois são ARQUIVO: alguém desenhou, alguém hospeda, alguém paga.
+
+  Aqui não há loja, então também não há arte. O que dá pra fazer com gradiente,
+  máscara e mistura é o que existe — e a troca não é só de custo: nada pra
+  hospedar, nada pra quebrar, e funciona offline no aplicativo de desktop, que é
+  onde a moldura ilustrada de um concorrente vira quadrado vazio.
+
+  A regra pra parecer arte e não CSS: NUNCA uma camada só. Um anel de uma cor
+  parece o que é. Três camadas com velocidades diferentes — uma girando, uma
+  pulsando, um brilho por trás — o olho lê como profundidade.
+*/
+
+/*
+  ⚠️ A máscara do elemento recorta os FILHOS junto.
+  
+  Por isso nenhuma decoração com mais de uma camada põe `mask` no elemento: ela
+  vai em cada `::before`/`::after` separadamente, e o elemento fica só com o que
+  não pode ser recortado (o halo, o brilho) e com a animação que gira o conjunto.
+  Com a máscara no pai, o halo virava um anel fino e a camada de dentro sumia
+  inteira — dois enfeites "que não funcionavam" pelo mesmo motivo invisível.
+*/
+
+/*
+  Aurora: fita de cor girando com um halo desfocado por trás. O desfoque é o que
+  separa as duas em profundidade — sem ele são dois anéis; com ele, um halo com
+  uma fita dentro. A fita gira mais rápido que o halo porque as rotações se
+  somam: o filho anda no quadro já girado do pai.
+*/
 .gc-decoracao--aurora {
-  background: conic-gradient(from 0deg, #22d3ee, #a855f7, #f472b6, #22d3ee);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  background: conic-gradient(
+    from 180deg,
+    transparent,
+    #a855f7 40%,
+    #22d3ee 60%,
+    transparent
+  );
+  filter: blur(7px);
+  opacity: 0.8;
   animation: gc-girar var(--gc-vel, 0s) linear infinite;
 }
 
-.gc-decoracao--chamas {
-  background:
-    radial-gradient(60% 45% at 50% 100%, #f97316 0%, #f59e0b 35%, transparent 70%),
-    radial-gradient(45% 35% at 30% 100%, #ef4444 0%, transparent 70%);
-  filter: blur(1px);
-  animation: gc-tremular var(--gc-vel, 0s) ease-in-out infinite alternate;
-}
-
-.gc-decoracao--circuito {
-  background: repeating-conic-gradient(from 0deg, #34d399 0deg 6deg, transparent 6deg 18deg);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
-  animation: gc-girar var(--gc-vel, 0s) linear infinite;
-}
-
-.gc-decoracao--petalas {
-  background: repeating-conic-gradient(from 0deg, #fb7185 0deg 10deg, transparent 10deg 45deg);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-  animation: gc-girar var(--gc-vel, 0s) linear infinite reverse;
+.gc-decoracao--aurora::before {
+  content: "";
+  position: absolute;
+  inset: 6%;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    #22d3ee,
+    #a855f7,
+    #f472b6,
+    #38bdf8,
+    #22d3ee
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  filter: blur(0);
+  animation: gc-girar calc(var(--gc-vel, 0s) * 2) linear infinite;
 }
 
 /*
-  Órbita é o único enfeite com um ponto solto em vez de um anel: o `::before` é
-  o satélite, e quem gira é o contêiner. Girar o ponto pelo próprio centro não
-  o moveria de lugar nenhum.
+  Chamas: três focos de calor de tamanhos diferentes, cada um no seu tempo. Fogo
+  não pulsa junto — é a dessincronia que faz parecer chama, e não uma luz
+  piscando.
+*/
+.gc-decoracao--chamas {
+  background:
+    radial-gradient(
+      50% 40% at 50% 100%,
+      #fbbf24 0%,
+      #f97316 40%,
+      transparent 72%
+    ),
+    radial-gradient(38% 30% at 28% 100%, #ef4444 0%, transparent 70%),
+    radial-gradient(34% 26% at 72% 100%, #f59e0b 0%, transparent 70%);
+  filter: blur(2px);
+  animation: gc-tremular var(--gc-vel, 0s) ease-in-out infinite alternate;
+}
+
+.gc-decoracao--chamas::before {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: 9999px;
+  background: radial-gradient(45% 32% at 50% 100%, #fff7ed 0%, transparent 62%);
+  filter: blur(3px);
+  animation: gc-tremular calc(var(--gc-vel, 0s) * 0.6) ease-in-out infinite
+    alternate-reverse;
+}
+
+/*
+  Circuito: traços curtos girando sobre um anel fino contínuo, com o verde
+  vazando pra fora. O anel de baixo é o que dá a leitura de "placa" — sem ele os
+  traços viram poeira.
+*/
+.gc-decoracao--circuito {
+  box-shadow: 0 0 12px rgb(52 211 153 / 0.45);
+  border-radius: 9999px;
+  animation: gc-girar var(--gc-vel, 0s) linear infinite;
+}
+
+.gc-decoracao--circuito::before {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #34d399 0deg 5deg,
+    transparent 5deg 16deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 5px),
+    #000 calc(100% - 4px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 5px),
+    #000 calc(100% - 4px)
+  );
+}
+
+.gc-decoracao--circuito::after {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px rgb(52 211 153 / 0.4);
+}
+
+/*
+  Pétalas: duas voltas de pontos em sentidos opostos. Uma volta sozinha é um
+  anel girando; duas em sentidos contrários dão a sensação de algo caindo em
+  volta.
+*/
+.gc-decoracao--petalas {
+  animation: gc-girar var(--gc-vel, 0s) linear infinite reverse;
+}
+
+.gc-decoracao--petalas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #fb7185 0deg 7deg,
+    transparent 7deg 40deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 6px),
+    #000 calc(100% - 5px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 6px),
+    #000 calc(100% - 5px)
+  );
+}
+
+.gc-decoracao--petalas::after {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 20deg,
+    #fda4af 0deg 5deg,
+    transparent 5deg 60deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  animation: gc-girar calc(var(--gc-vel, 0s) * 2.5) linear infinite;
+}
+
+/*
+  Órbita: dois satélites em anéis diferentes, com rastro. Um ponto girando
+  sozinho parece bug de renderização; dois, em velocidades diferentes e com
+  rastro, leem como órbita.
 */
 .gc-decoracao--orbita {
   animation: gc-girar var(--gc-vel, 0s) linear infinite;
 }
 
-.gc-decoracao--orbita::before {
+.gc-decoracao--orbita::before,
+.gc-decoracao--orbita::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 14%;
-  height: 14%;
   border-radius: 9999px;
   background: #60a5fa;
-  box-shadow: 0 0 6px #60a5fa;
-  transform: translate(-50%, -30%);
 }
 
+.gc-decoracao--orbita::before {
+  top: 0;
+  left: 50%;
+  width: 13%;
+  height: 13%;
+  transform: translate(-50%, -30%);
+  box-shadow:
+    0 0 8px #60a5fa,
+    -10px 4px 6px -3px rgb(96 165 250 / 0.5);
+}
+
+.gc-decoracao--orbita::after {
+  bottom: 6%;
+  left: 22%;
+  width: 8%;
+  height: 8%;
+  background: #c4b5fd;
+  box-shadow: 0 0 6px #c4b5fd;
+  animation: gc-girar calc(var(--gc-vel, 0s) * 1.6) linear infinite reverse;
+}
+
+/*
+  Moldura é anel FECHADO — a diferença de decoração é essa. Decoração transborda
+  e anda; moldura emoldura.
+*/
 .gc-moldura--neon {
   box-shadow:
     0 0 0 2px var(--gc-cor-1, #22d3ee),
-    0 0 10px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 40%);
+    0 0 12px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 30%),
+    inset 0 0 8px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 55%);
+  animation: gc-pulsar var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
+/*
+  Dourada: o metal vem do gradiente cônico com claros e escuros ALTERNADOS —
+  é o contraste entre eles que o olho lê como reflexo. Uma faixa dourada
+  uniforme parece plástico amarelo.
+*/
 .gc-moldura--dourada {
-  background: conic-gradient(from 210deg, #fde68a, #b45309, #fcd34d, #92400e, #fde68a);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  background: conic-gradient(
+    from 210deg,
+    #fde68a,
+    #92400e,
+    #fcd34d,
+    #b45309,
+    #fffbeb,
+    #92400e,
+    #fde68a
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 3px)
+  );
+  animation: gc-girar calc(var(--gc-vel, 0s) * 3) linear infinite;
 }
 
 .gc-moldura--vidro {
   box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.35),
+    inset 0 0 0 1px rgb(255 255 255 / 0.4),
+    inset 0 -6px 10px -6px rgb(255 255 255 / 0.5),
     0 0 0 2px rgb(255 255 255 / 0.12);
-  background: linear-gradient(150deg, rgb(255 255 255 / 0.22), transparent 55%);
+  background: linear-gradient(150deg, rgb(255 255 255 / 0.28), transparent 45%);
+  backdrop-filter: blur(1px);
 }
 
 /*
@@ -270,10 +504,25 @@
   );
 }
 
+/* Espinhos: pontas finas com uma base sólida atrás, senão flutuam soltas. */
 .gc-moldura--espinhos {
-  background: repeating-conic-gradient(from 0deg, var(--gc-cor-1, #a78bfa) 0deg 3deg, transparent 3deg 24deg);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  background: repeating-conic-gradient(
+    from 0deg,
+    var(--gc-cor-1, #a78bfa) 0deg 2deg,
+    transparent 2deg 18deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 9px),
+    #000 calc(100% - 8px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 9px),
+    #000 calc(100% - 8px)
+  );
+  box-shadow: inset 0 0 0 2px
+    color-mix(in oklab, var(--gc-cor-1, #a78bfa), transparent 40%);
 }
 
 @keyframes gc-girar {
@@ -307,13 +556,41 @@
   pointer-events: none;
 }
 
+/*
+  Efeito de cartão: duas camadas com velocidades diferentes.
+  
+  A de trás anda devagar e desfocada, a da frente rápida e nítida — é o mesmo
+  truque do parallax, e é o que separa "tem partícula aqui" de "tem
+  profundidade aqui". Com uma camada só, qualquer um destes vira um papel de
+  parede pontilhado.
+*/
 .gc-perfil--poeira {
   background-image:
-    radial-gradient(1.5px 1.5px at 20% 30%, rgb(255 255 255 / 0.55), transparent),
-    radial-gradient(1.5px 1.5px at 70% 60%, rgb(255 255 255 / 0.45), transparent),
+    radial-gradient(
+      1.5px 1.5px at 20% 30%,
+      rgb(255 255 255 / 0.55),
+      transparent
+    ),
+    radial-gradient(
+      1.5px 1.5px at 70% 60%,
+      rgb(255 255 255 / 0.45),
+      transparent
+    ),
     radial-gradient(2px 2px at 45% 80%, rgb(255 255 255 / 0.35), transparent);
   background-size: 120px 120px;
   animation: gc-subir var(--gc-vel, 0s) linear infinite;
+}
+
+.gc-perfil--poeira::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 60% 20%, rgb(255 255 255 / 0.4), transparent),
+    radial-gradient(1px 1px at 15% 70%, rgb(255 255 255 / 0.3), transparent);
+  background-size: 90px 90px;
+  filter: blur(1px);
+  animation: gc-subir calc(var(--gc-vel, 0s) * 2.2) linear infinite;
 }
 
 .gc-perfil--chuva {
@@ -326,21 +603,52 @@
   animation: gc-descer var(--gc-vel, 0s) linear infinite;
 }
 
+.gc-perfil--chuva::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    100deg,
+    rgb(148 197 255 / 0.18) 0 1px,
+    transparent 1px 22px
+  );
+  background-size: 140px 140px;
+  filter: blur(1px);
+  animation: gc-descer calc(var(--gc-vel, 0s) * 1.8) linear infinite;
+}
+
+/*
+  Brasa sobe e APAGA no caminho — por isso a máscara em degradê no topo. Sem
+  ela as fagulhas somem de repente na borda, e o olho lê o corte, não o fogo.
+*/
 .gc-perfil--brasas {
   background-image:
     radial-gradient(2px 2px at 25% 90%, #fb923c, transparent),
     radial-gradient(1.5px 1.5px at 65% 90%, #f97316, transparent),
     radial-gradient(2.5px 2.5px at 85% 90%, #fdba74, transparent);
   background-size: 140px 140px;
+  mask: linear-gradient(to top, #000 45%, transparent);
+  -webkit-mask: linear-gradient(to top, #000 45%, transparent);
   animation: gc-subir var(--gc-vel, 0s) linear infinite;
 }
 
 .gc-perfil--bolhas {
   background-image:
-    radial-gradient(6px 6px at 30% 90%, rgb(125 211 252 / 0.35), transparent),
-    radial-gradient(9px 9px at 70% 90%, rgb(125 211 252 / 0.25), transparent);
+    radial-gradient(6px 6px at 30% 90%, rgb(125 211 252 / 0.3), transparent),
+    radial-gradient(9px 9px at 70% 90%, rgb(125 211 252 / 0.22), transparent);
   background-size: 160px 160px;
   animation: gc-subir var(--gc-vel, 0s) linear infinite;
+}
+
+.gc-perfil--bolhas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(4px 4px at 50% 90%, rgb(224 242 254 / 0.35), transparent),
+    radial-gradient(3px 3px at 12% 90%, rgb(224 242 254 / 0.3), transparent);
+  background-size: 110px 110px;
+  animation: gc-subir calc(var(--gc-vel, 0s) * 0.65) linear infinite;
 }
 
 @keyframes gc-subir {
@@ -397,7 +705,11 @@
 }
 
 .gc-placa--cristal {
-  background: linear-gradient(150deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.04));
+  background: linear-gradient(
+    150deg,
+    rgb(255 255 255 / 0.18),
+    rgb(255 255 255 / 0.04)
+  );
   border: 1px solid rgb(255 255 255 / 0.25);
   color: var(--color-ink);
   backdrop-filter: blur(4px);
@@ -411,11 +723,21 @@
   preferência, e ela vem de gente com enxaqueca e distúrbio vestibular.
 */
 @media (prefers-reduced-motion: reduce) {
+  /*
+    Os `::before`/`::after` entram na lista: agora quase todo enfeite tem camada
+    animada em pseudo-elemento, e uma regra que só alcança o elemento pai
+    deixaria metade do movimento de pé — o pior resultado possível pra quem
+    pediu menos movimento.
+  */
   .gc-nome--neon,
   .gc-nome--brilho,
   .gc-cargo--holografico,
   .gc-camada,
-  .gc-perfil {
+  .gc-camada::before,
+  .gc-camada::after,
+  .gc-perfil,
+  .gc-perfil::before,
+  .gc-perfil::after {
     animation: none !important;
   }
 }

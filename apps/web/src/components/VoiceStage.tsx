@@ -1,7 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { Mic, MicOff, MonitorUp, Play, X } from "lucide-react";
 
-import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
+import type {
+  Channel,
+  GuildMember,
+  Permission,
+  Role,
+  VoiceState,
+} from "@gravae/shared";
 
 import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
 import { Avatar } from "~/components/Avatar";
@@ -9,6 +15,7 @@ import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { VoiceStageControls } from "~/components/VoiceStageControls";
 import { VoiceVideo } from "~/components/VoiceTrack";
+import { useParticipante } from "~/hooks/use-participante";
 import { cn } from "~/lib/utils";
 
 interface VoiceStageProps {
@@ -64,7 +71,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }
 
   if (connecting) {
-    return <div className="flex flex-1 items-center justify-center text-ink-muted">Conectando à chamada…</div>;
+    return (
+      <div className="flex flex-1 items-center justify-center text-ink-muted">
+        Conectando à chamada…
+      </div>
+    );
   }
 
   /**
@@ -72,7 +83,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
    * estiver transmitindo. Ela encerrando, o palco volta sozinho pra grade, sem
    * deixar um quadro preto no lugar.
    */
-  const sharing = assistindo ? tiles.find((t) => t.identity === assistindo && t.screenTrack) : null;
+  const sharing = assistindo
+    ? tiles.find((t) => t.identity === assistindo && t.screenTrack)
+    : null;
 
   const contexto = {
     guildId,
@@ -86,7 +99,10 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
   if (sharing) {
     return (
-      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4">
+      <div
+        ref={palco}
+        className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4"
+      >
         <div className="relative flex-1 overflow-hidden rounded-lg bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
           <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs font-medium">
@@ -115,10 +131,16 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     );
   }
 
-  const columns = Math.min(tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : 3, 3);
+  const columns = Math.min(
+    tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : 3,
+    3,
+  );
 
   return (
-    <div ref={palco} className="group relative flex flex-1 items-center justify-center bg-surface-2 p-6">
+    <div
+      ref={palco}
+      className="group relative flex flex-1 items-center justify-center bg-surface-2 p-6"
+    >
       <div
         className="grid w-full max-w-5xl gap-4"
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
@@ -129,7 +151,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </ComMenu>
         ))}
       </div>
-      {!tiles.length && <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>}
+      {!tiles.length && (
+        <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>
+      )}
 
       <VoiceStageControls alvoTelaCheia={palco} />
     </div>
@@ -143,62 +167,80 @@ interface TileProps {
   onAssistir?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => (
-  <div
-    className={cn(
-      "group/tile relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
-      compact ? "aspect-video h-full shrink-0" : "aspect-video",
-    )}
-  >
-    {/*
+const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
+  /**
+   * Nome, foto e enfeite saem do cache do servidor, não do metadata do LiveKit.
+   *
+   * O metadata é gravado no TOKEN, emitido uma vez no join: quem trocasse de
+   * avatar durante a chamada continuava com o antigo até sair e entrar. O
+   * `tile` fica só como queda, pra quem ainda não chegou no cache.
+   */
+  const resolver = useParticipante();
+  const participante = resolver(tile.identity, {
+    name: tile.name,
+    avatarUrl: tile.avatarUrl,
+  });
+
+  return (
+    <div
+      className={cn(
+        "group/tile relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
+        compact ? "aspect-video h-full shrink-0" : "aspect-video",
+      )}
+    >
+      {/*
       O convite pra entrar na live. Cobre o quadro inteiro porque é a ação
       principal daquele quadro naquele momento — e porque um botãozinho no
       canto seria perdido no meio dos avatares.
     */}
-    {tile.screenTrack && onAssistir && (
-      <button
-        onClick={onAssistir}
-        className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/70 transition hover:bg-black/60"
-      >
-        <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
-        </span>
-        <span className="flex items-center gap-1.5 text-sm font-medium">
-          <Play size={16} /> Assistir {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
-        </span>
-      </button>
-    )}
-
-    {tile.cameraTrack ? (
-      // com vídeo não há avatar pra circundar: o anel volta pra borda do quadro
-      <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>
-        <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
-      </div>
-    ) : (
-      <Avatar
-        id={tile.identity}
-        name={tile.name}
-        url={tile.avatarUrl}
-        size={compact ? 40 : 80}
-        speaking={tile.speaking}
-      />
-    )}
-
-    <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded bg-black/60 px-2 py-1">
-      {tile.micEnabled ? (
-        <Mic size={12} className="text-ink-muted" />
-      ) : (
-        <MicOff size={12} className="text-danger" />
-      )}
-      <UserProfilePopover userId={tile.identity} side="top">
-        <button className="text-xs font-medium hover:underline">
-          {tile.name}
-          {tile.isLocal && " (você)"}
+      {tile.screenTrack && onAssistir && (
+        <button
+          onClick={onAssistir}
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/70 transition hover:bg-black/60"
+        >
+          <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao
+            vivo
+          </span>
+          <span className="flex items-center gap-1.5 text-sm font-medium">
+            <Play size={16} /> Assistir{" "}
+            {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
+          </span>
         </button>
-      </UserProfilePopover>
+      )}
+
+      {tile.cameraTrack ? (
+        // com vídeo não há avatar pra circundar: o anel volta pra borda do quadro
+        <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>
+          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+        </div>
+      ) : (
+        <Avatar
+          id={tile.identity}
+          name={participante.nome}
+          url={participante.avatarUrl}
+          size={compact ? 40 : 80}
+          speaking={tile.speaking}
+          enfeites={participante.perfil}
+        />
+      )}
+
+      <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded bg-black/60 px-2 py-1">
+        {tile.micEnabled ? (
+          <Mic size={12} className="text-ink-muted" />
+        ) : (
+          <MicOff size={12} className="text-danger" />
+        )}
+        <UserProfilePopover userId={tile.identity} side="top">
+          <button className="text-xs font-medium hover:underline">
+            {participante.nome}
+            {tile.isLocal && " (você)"}
+          </button>
+        </UserProfilePopover>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 interface ContextoDoPalco {
   guildId?: string;
@@ -226,7 +268,9 @@ const ComMenu: React.FC<{
     <VoiceMemberMenu
       guildId={contexto.guildId}
       userId={tile.identity}
-      displayName={tile.name}
+      displayName={
+        contexto.members.find((m) => m.user.id === tile.identity)?.user.displayName ?? tile.name
+      }
       voiceState={contexto.voiceStates.find((v) => v.userId === tile.identity)}
       member={contexto.members.find((m) => m.user.id === tile.identity)}
       roles={contexto.roles}
@@ -234,7 +278,9 @@ const ComMenu: React.FC<{
       minhasPermissoes={contexto.minhasPermissoes}
       currentUserId={contexto.currentUserId}
     >
-      <div className={tile.screenTrack ? "contents" : undefined}>{children}</div>
+      <div className={tile.screenTrack ? "contents" : undefined}>
+        {children}
+      </div>
     </VoiceMemberMenu>
   );
 };

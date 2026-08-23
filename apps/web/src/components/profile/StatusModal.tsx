@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { Smile, X } from "lucide-react";
 import { LIMITS, type StatusPersonalizado } from "@gravae/shared";
 
 import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { Input, Label } from "~/components/ui/input";
+import { Label } from "~/components/ui/input";
+import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { EstiloDePerfil } from "@gravae/shared";
 
@@ -21,7 +23,12 @@ const PRAZOS = [
   { id: "30m", rotulo: "Limpar em 30 minutos", minutos: 30 },
   { id: "1h", rotulo: "Limpar em 1 hora", minutos: 60 },
   { id: "4h", rotulo: "Limpar em 4 horas", minutos: 240 },
-  { id: "hoje", rotulo: "Limpar hoje", minutos: null as number | null, ateOFimDoDia: true },
+  {
+    id: "hoje",
+    rotulo: "Limpar hoje",
+    minutos: null as number | null,
+    ateOFimDoDia: true,
+  },
   { id: "amanha", rotulo: "Limpar amanhã", minutos: 24 * 60 },
 ] as const;
 
@@ -68,7 +75,9 @@ export const StatusModal: React.FC<StatusModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
       <DialogContent className="max-w-md p-5">
-        <DialogTitle className="text-lg font-semibold">Definir seu status</DialogTitle>
+        <DialogTitle className="text-lg font-semibold">
+          Definir seu status
+        </DialogTitle>
 
         <div className="mt-4">
           <ProfileCardVisual
@@ -84,29 +93,47 @@ export const StatusModal: React.FC<StatusModalProps> = ({
 
         <div className="mt-5">
           <Label htmlFor="status-texto">Status</Label>
-          <div className="flex items-center gap-2 rounded bg-surface-0 px-2">
-            {/*
-              Emoji é um campo de texto de propósito: o teclado do sistema já
-              tem seletor de emoji (⌃⌘Espaço no Mac), e um seletor próprio aqui
-              seria o terceiro do app pra um campo de um caractere.
-            */}
-            <Input
-              value={emoji}
-              onChange={(e) => setEmoji(e.target.value)}
-              maxLength={8}
-              placeholder="🙂"
-              aria-label="Emoji do status"
-              className="w-12 bg-transparent px-1 text-center"
-            />
-            <Input
+
+          {/*
+            UM campo, não dois.
+
+            O emoji e o texto são a mesma frase, e cada um com a própria caixa
+            (e o próprio anel de foco) parecia formulário de cadastro. O anel
+            vive no contêiner, com `focus-within`: clicar em qualquer parte
+            acende a coisa inteira, que é como um campo composto tem que se
+            comportar.
+          */}
+          <div className="flex items-center gap-1 rounded bg-surface-0 px-1 ring-ink-faint/70 transition focus-within:ring-2">
+            <SeletorDeEmoji onEscolher={setEmoji}>
+              <button
+                type="button"
+                aria-label="Escolher emoji"
+                className="flex size-9 shrink-0 items-center justify-center rounded text-xl text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+              >
+                {emoji || <Smile size={18} />}
+              </button>
+            </SeletorDeEmoji>
+
+            <input
               id="status-texto"
               autoFocus
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               maxLength={LIMITS.statusPersonalizado}
               placeholder="No que você está pensando?"
-              className="bg-transparent px-0"
+              className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-ink outline-none placeholder:text-ink-faint"
             />
+
+            {emoji && (
+              <button
+                type="button"
+                onClick={() => setEmoji("")}
+                aria-label="Tirar o emoji"
+                className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -115,7 +142,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             value={prazo}
             onChange={(e) => setPrazo(e.target.value)}
             aria-label="Quando limpar"
-            className="flex-1 rounded bg-surface-0 px-3 py-2 text-sm text-ink-muted outline-none ring-brand/60 transition focus:ring-2"
+            className="flex-1 rounded bg-surface-0 px-3 py-2 text-sm text-ink-muted outline-none ring-ink-faint/70 transition focus:ring-2"
           >
             {PRAZOS.map((p) => (
               <option key={p.id} value={p.id}>

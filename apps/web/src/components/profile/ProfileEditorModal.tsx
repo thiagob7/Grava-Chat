@@ -12,7 +12,10 @@ import { UserName } from "~/components/UserName";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { EnfeitesAba } from "~/components/user-settings/perfil/EnfeitesAba";
 import { IdentidadeAba } from "~/components/user-settings/perfil/IdentidadeAba";
-import { doUsuario, paraPerfil } from "~/components/user-settings/perfil/rascunho";
+import {
+  doUsuario,
+  paraPerfil,
+} from "~/components/user-settings/perfil/rascunho";
 import { useRascunho } from "~/hooks/use-rascunho";
 
 /**
@@ -65,14 +68,23 @@ export const ProfileEditorModal: React.FC<{
       .catch(() => null);
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => !next && onClose()}
+    >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[85vh] w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
+          /*
+            78vh e não 85: a barra de "não salvas" flutua no rodapé da JANELA, e
+            com o modal mais alto ela pousava por cima dele em vez de embaixo.
+          */
+          className="fixed left-1/2 top-1/2 z-50 flex h-[78vh] w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
           aria-label="Editar perfil"
         >
-          <DialogPrimitive.Title className="sr-only">Editar perfil</DialogPrimitive.Title>
+          <DialogPrimitive.Title className="sr-only">
+            Editar perfil
+          </DialogPrimitive.Title>
 
           {/* coluna 1: os controles */}
           <aside className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
@@ -92,22 +104,38 @@ export const ProfileEditorModal: React.FC<{
 
           {/* coluna 2: o cartão de verdade, ao vivo */}
           <main className="min-w-0 flex-1 overflow-y-auto p-8">
-            <div className="mx-auto max-w-md">
-              <ProfileCardVisual
-                id={user.id}
-                displayName={rascunho.displayName || user.displayName}
-                username={user.username}
-                avatarUrl={rascunho.avatarUrl}
-                status={user.status}
-                perfil={perfil}
-                statusPersonalizado={user.statusPersonalizado}
-                bio={rascunho.bio || null}
-                createdAt={user.createdAt}
-                editavel
-                onEtiqueta={(valor) => definir("etiqueta", valor)}
-                onEtiquetaDoServidor={(guildId) => definir("tagGuildId", guildId)}
-                onStatus={() => setDefinindoStatus(true)}
-              />
+            {/* 320 × 1.3 = 416: o que sobra alinha com a largura ampliada do cartão */}
+            <div className="mx-auto w-[416px]">
+              <div className="w-80">
+                {/*
+                O cartão tem a LARGURA REAL (320px, a mesma do popover) e é só
+                ampliado na tela.
+
+                Alargá-lo pra ocupar a coluna faria a prévia mentir: tudo caberia
+                numa linha aqui e quebraria lá fora. `zoom` amplia mantendo cada
+                proporção — e, diferente de `transform: scale`, ele reflui o
+                layout, então o que vem abaixo não fica por cima.
+              */}
+                <div style={{ zoom: 1.3 }}>
+                  <ProfileCardVisual
+                    id={user.id}
+                    displayName={rascunho.displayName || user.displayName}
+                    username={user.username}
+                    avatarUrl={rascunho.avatarUrl}
+                    status={user.status}
+                    perfil={perfil}
+                    statusPersonalizado={user.statusPersonalizado}
+                    bio={rascunho.bio || null}
+                    createdAt={user.createdAt}
+                    editavel
+                    onEtiqueta={(valor) => definir("etiqueta", valor)}
+                    onEtiquetaDoServidor={(guildId) =>
+                      definir("tagGuildId", guildId)
+                    }
+                    onStatus={() => setDefinindoStatus(true)}
+                  />
+                </div>
+              </div>
 
               {/*
                 A linha de chat vai junto porque o enfeite se comporta diferente
@@ -117,7 +145,9 @@ export const ProfileEditorModal: React.FC<{
                 onde ela realmente aparece ele não existe.
               */}
               <div className="mt-6">
-                <p className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">No chat</p>
+                <p className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">
+                  No chat
+                </p>
                 <div className="flex gap-3 rounded bg-surface-1 px-3 py-2">
                   <Avatar
                     id={user.id}
@@ -139,13 +169,6 @@ export const ProfileEditorModal: React.FC<{
                   </div>
                 </div>
               </div>
-
-              <UnsavedBar
-                visivel={sujo}
-                salvando={updateProfile.isPending}
-                onDescartar={descartar}
-                onSalvar={salvar}
-              />
             </div>
           </main>
 
@@ -153,7 +176,8 @@ export const ProfileEditorModal: React.FC<{
           <aside className="hidden w-72 shrink-0 overflow-y-auto border-l border-line p-5 xl:block">
             <p className="mb-3 text-sm font-semibold">Atividade</p>
             <p className="text-sm text-ink-faint">
-              Quando você entrar numa chamada, ela aparece aqui — e no seu cartão, pra quem abrir.
+              Quando você entrar numa chamada, ela aparece aqui — e no seu
+              cartão, pra quem abrir.
             </p>
           </aside>
 
@@ -175,6 +199,24 @@ export const ProfileEditorModal: React.FC<{
             />
           )}
         </DialogPrimitive.Content>
+
+        {/*
+          A barra fica FORA do `Content`, irmã dele dentro do portal.
+
+          `position: fixed` dentro de um ancestral com `transform` deixa de ser
+          relativo à janela e passa a ser relativo a ELE — e o modal é centrado
+          com `-translate-x/y-1/2`. Dentro dele, "rodapé da janela" virava
+          "rodapé do modal", e a barra pousava por cima do conteúdo.
+        */}
+        <UnsavedBar
+          visivel={sujo}
+          salvando={updateProfile.isPending}
+          onDescartar={descartar}
+          onSalvar={salvar}
+          texto="Não se esqueça de salvar suas alterações!"
+          acaoDescartar="Redefinir"
+          flutuante
+        />
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );

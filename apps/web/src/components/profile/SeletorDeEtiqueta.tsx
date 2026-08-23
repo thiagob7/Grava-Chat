@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { ServerTag } from "~/components/ServerTag";
@@ -47,7 +47,14 @@ export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onE
               etiqueta={{ guildId: escolhido.id, tag: escolhido.tag!, tagIcon: escolhido.tagIcon ?? null }}
             />
           ) : (
-            <span className="text-xs text-ink-faint">sem etiqueta</span>
+            /*
+              Vazio é um `+` e não "sem etiqueta": a linha do `@usuario` divide
+              espaço com a etiqueta pessoal e os emblemas, e as duas palavras
+              faziam tudo quebrar pra segunda linha por poucos pixels.
+            */
+            <span className="flex items-center gap-0.5 text-xs text-ink-faint">
+              <Plus size={11} /> tag
+            </span>
           )}
           <ChevronDown size={12} className="text-ink-faint" />
         </button>
