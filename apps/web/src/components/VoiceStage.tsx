@@ -220,8 +220,24 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
           name={participante.nome}
           url={participante.avatarUrl}
           size={compact ? 40 : 80}
-          speaking={tile.speaking}
           enfeites={participante.perfil}
+          /**
+           * Aqui quem diz "está falando" é a DECORAÇÃO andando, e não o anel
+           * verde — repare que não existe `speaking` nesta chamada.
+           *
+           * Os dois juntos são o mesmo recado dito duas vezes, e no quadro
+           * grande um atrapalha o outro: o anel corta a arte justamente no
+           * momento em que ela ganha movimento. O anel continua inteiro na
+           * lista do canal de voz (`VoiceMembers`), que é onde ele não disputa
+           * espaço com nada — então quem não tem decoração animada não fica sem
+           * sinal nenhum, só sem o segundo.
+           *
+           * É o único lugar fora do cartão de perfil onde a animação solta. O
+           * custo que faz o resto do app ficar parado — cem avatares animando ao
+           * mesmo tempo — não existe numa chamada, que tem um punhado de pessoas
+           * e onde só quem está falando anda.
+           */
+          animar={tile.speaking}
         />
       )}
 

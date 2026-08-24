@@ -5,6 +5,7 @@ import type {
   EstiloDePerfil,
   FonteDeNome,
   Moldura,
+  Patente,
   Placa,
 } from "@gravae/shared";
 
@@ -39,6 +40,7 @@ export interface RascunhoDePerfil {
   cor: string | null;
   cor2: string | null;
 
+  patente: Patente;
   decoracao: Decoracao;
   moldura: Moldura;
   efeitoDoPerfil: EfeitoDePerfil;
@@ -65,6 +67,7 @@ export function doUsuario(user: SelfUserModel): RascunhoDePerfil {
     cor: p?.nome?.cor ?? null,
     cor2: p?.nome?.cor2 ?? null,
 
+    patente: p?.patente ?? "nenhuma",
     decoracao: p?.decoracao ?? "nenhuma",
     moldura: p?.moldura ?? "nenhuma",
     efeitoDoPerfil: p?.efeito ?? "nenhum",
@@ -97,6 +100,7 @@ export function paraPerfil(r: RascunhoDePerfil): EstiloDePerfil | null {
     ...(Object.keys(nome).length ? { nome } : {}),
     etiqueta: r.etiqueta.trim(),
     tagGuildId: r.tagGuildId,
+    patente: r.patente,
     decoracao: r.decoracao,
     moldura: r.moldura,
     efeito: r.efeitoDoPerfil,

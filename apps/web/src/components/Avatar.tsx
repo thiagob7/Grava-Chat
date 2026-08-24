@@ -144,23 +144,40 @@ export const Avatar: React.FC<AvatarProps> = ({
       {status && (
         // A borda na cor do fundo cria o "recorte" do indicador, igual ao Discord.
         <span
-          className={cn(
-            "absolute -bottom-0.5 -right-0.5 rounded-full border-[3px]",
-            STATUS_COLOR[status],
-          )}
+          className={cn("absolute rounded-full border-[3px]", STATUS_COLOR[status])}
           /**
            * O recorte era `border-surface-1` fixo, e isso já é um bug hoje: o
            * `UserPanel` e o cartão de perfil vivem em `surface-0`, então a
            * bolinha aparece com um aro do tom errado em volta. Quem sabe qual é
            * o fundo é quem chama — daí a variável, com o tom antigo de padrão.
            */
-          style={{
-            width: size * 0.35,
-            height: size * 0.35,
-            borderColor: "var(--gc-recorte, var(--color-surface-1))",
-          }}
+          style={{ ...cantoDoStatus(size), borderColor: "var(--gc-recorte, var(--color-surface-1))" }}
         />
       )}
     </div>
   );
 };
+
+/**
+ * Tamanho e lugar da bolinha de status.
+ *
+ * Ela era posicionada pelo CANTO da caixa (`-bottom-0.5 -right-0.5`), e canto
+ * de caixa não é borda de círculo: fica a raio×√2 do centro, ou seja FORA da
+ * foto. Somado a 35% de diâmetro, metade da bolinha ficava pendurada pra fora —
+ * e no cartão de perfil, onde o avatar tem um anel de 6px do MESMO tom da borda
+ * dela, as duas se fundiam num borrão escuro pendurado no canto.
+ *
+ * Agora ela anda pela DIAGONAL de verdade, a uma distância que deixa só um fio
+ * pra fora do círculo, e é um terço menor.
+ */
+function cantoDoStatus(size: number) {
+  // `box-sizing: border-box` no app inteiro: este tamanho JÁ inclui os 3px de
+  // borda de cada lado. Somá-los de novo enfia a bolinha 3px pra dentro.
+  const lado = Math.round(size * 0.28);
+  // um fio pra fora da foto — o bastante pra a bolinha morder a borda em vez de
+  // boiar em cima do rosto
+  const distancia = (size / 2) * 1.04 - lado / 2;
+  const canto = size / 2 + distancia / Math.SQRT2 - lado / 2;
+
+  return { width: lado, height: lado, left: canto, top: canto };
+}

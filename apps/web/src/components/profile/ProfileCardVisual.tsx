@@ -10,6 +10,7 @@ import type {
 } from "@gravae/shared";
 
 import { Avatar } from "~/components/Avatar";
+import { PatenteAnimada } from "~/components/PatenteAnimada";
 import { SeletorDeEtiqueta } from "~/components/profile/SeletorDeEtiqueta";
 import { ServerTag } from "~/components/ServerTag";
 import { UserName } from "~/components/UserName";
@@ -115,6 +116,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   /** a etiqueta só vira campo depois do clique; ver o comentário lá embaixo */
   const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
 
+  /** `nenhuma` está no enum só pra a grade ter o que marcar como vazio */
+  const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
   const efeito = classeDoEnfeite("perfil", perfil?.efeito);
   const placa = classeDoEnfeite("placa", perfil?.placa);
 
@@ -179,6 +182,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
 
         <div className="relative -mt-10 mb-3 flex items-start gap-3">
+          {/*
+            O anel de 6px existe pra descolar o avatar do banner que ele invade
+            — sem ele a foto encosta na imagem de trás e some. Mas QUEM TEM
+            DECORAÇÃO já ganhou essa separação da própria arte, e aí o anel vira
+            uma borda preta cortando entre a foto e o enfeite. O Discord não tem
+            isso: lá a decoração encosta na foto.
+          */}
           <Avatar
             id={id}
             name={displayName}
@@ -187,7 +197,10 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             status={status}
             enfeites={perfil}
             animar
-            className="rounded-full ring-[6px] ring-surface-0"
+            className={cn(
+              "rounded-full",
+              !temDecoracao && "ring-[6px] ring-surface-0",
+            )}
           />
 
           {/*
@@ -283,11 +296,15 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           </div>
 
           {/*
-            A linha de identidade: `@usuario • Etiqueta` e os emblemas.
+            A linha de identidade: `@usuario • Etiqueta`, a patente e os emblemas.
 
             A etiqueta é o nome curto que a PESSOA escolheu; os emblemas são do
             SERVIDOR e ela escolheu vestir. Ficam juntos porque é uma frase só —
             "quem eu sou e a que eu pertenço".
+
+            A patente entra ANTES dos emblemas, e não depois, porque ela é a
+            metade "eu" da frase: vem do perfil da pessoa e a acompanha até numa
+            DM, onde não existe emblema nenhum pra vir depois dela.
           */}
           <p className="flex flex-wrap items-center gap-1.5 text-sm text-ink-muted">
             <span>@{username}</span>
@@ -355,6 +372,15 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               />
             ) : (
               <ServerTag etiqueta={etiquetaDoServidor} />
+            )}
+
+            {perfil?.patente && (
+              /*
+                `animar` porque o cartão abre um de cada vez — é exatamente a
+                condição que o resto do catálogo usa pra soltar a animação. A
+                insígnia se monta uma vez, quando o cartão aparece, e para.
+              */
+              <PatenteAnimada patente={perfil.patente} animar />
             )}
 
             {emblemas.map((emblema) => (

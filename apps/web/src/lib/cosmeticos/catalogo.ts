@@ -8,7 +8,9 @@
  * alguém achar um nome melhor).
  *
  * Cada lista é a fonte da grade de opções da Fase 2. Adicionar enfeite novo é
- * uma entrada aqui e um bloco em `styles/cosmeticos.css` — nenhum componente.
+ * uma entrada aqui e mais uma coisa só: um bloco em `styles/cosmeticos.css` se
+ * for CSS, ou uma entrada em `animadas.ts`/`patentes.ts` se for arte. Componente
+ * nenhum precisa saber.
  */
 import {
   DECORACOES,
@@ -17,6 +19,7 @@ import {
   ESTILOS_DE_CARGO,
   FONTES_DE_NOME,
   MOLDURAS,
+  PATENTES,
   PLACAS,
   type Decoracao,
   type EfeitoDeNome,
@@ -24,6 +27,7 @@ import {
   type EstiloDeCargo,
   type FonteDeNome,
   type Moldura,
+  type Patente,
   type Placa,
 } from "@gravae/shared";
 
@@ -77,6 +81,8 @@ export const DECORACOES_DE_AVATAR: Opcao<Decoracao>[] = catalogar(DECORACOES, {
   orbita: "Órbita",
   aro: ["Aro dourado", "animada — arquivo Lottie, não CSS"],
   alada: ["Moldura alada", "animada — asas e estrela"],
+  sol: ["Selo do sol", "animada — pontas e faíscas"],
+  caveiras: ["Chamas infernais", "animada — fogo azul e cinco caveiras"],
 });
 
 export const MOLDURAS_DE_AVATAR: Opcao<Moldura>[] = catalogar(MOLDURAS, {
@@ -102,6 +108,15 @@ export const PLACAS_DE_PERFIL: Opcao<Placa>[] = catalogar(PLACAS, {
   holograma: "Holograma",
   carimbo: "Carimbo",
   cristal: "Cristal",
+});
+
+/**
+ * As patentes. Ordem crescente de "quanto isso chama atenção" — `nenhuma`
+ * primeiro, como no resto do catálogo.
+ */
+export const PATENTES_DE_PERFIL: Opcao<Patente>[] = catalogar(PATENTES, {
+  nenhuma: "Nenhuma",
+  orbe: ["Orbe alado", "monta uma vez quando o cartão abre"],
 });
 
 export const ESTILOS_DO_CARGO: Opcao<EstiloDeCargo>[] = catalogar(ESTILOS_DE_CARGO, {

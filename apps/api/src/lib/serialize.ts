@@ -61,6 +61,7 @@ export function toPerfilPublico(
     ...(p?.etiqueta ? { etiqueta: p.etiqueta } : {}),
     ...(etiquetaDoServidor ? { etiquetaDoServidor } : {}),
     ...(emblemas.length ? { emblemas } : {}),
+    ...(p?.patente ? { patente: p.patente as PerfilPublico["patente"] } : {}),
     ...(p?.decoracao ? { decoracao: p.decoracao as PerfilPublico["decoracao"] } : {}),
     ...(p?.moldura ? { moldura: p.moldura as PerfilPublico["moldura"] } : {}),
     ...(p?.placa ? { placa: p.placa as PerfilPublico["placa"] } : {}),

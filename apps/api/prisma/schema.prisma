@@ -249,6 +249,10 @@ type EstiloDePerfil {
   /// De qual servidor a pessoa veste a etiqueta. A escolha e dela e vale em
   /// todo lugar — inclusive fora deste servidor e na conversa privada.
   tagGuildId     String?  @db.ObjectId
+  /// A insignia ao lado do nome. Nao confundir com `GuildMember.emblemIds`: a
+  /// patente e da PESSOA e vem do conjunto fechado que acompanha o app; emblema
+  /// e do servidor e some quando ela sai dali.
+  patente        String?
   decoracao      String?
   moldura        String?
   efeito         String?

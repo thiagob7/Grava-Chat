@@ -4,10 +4,12 @@ import { z } from "zod";
  * O catálogo de enfeites: estilo de nome, decoração de avatar, moldura, efeito
  * de perfil e placa de identificação.
  *
- * Tudo aqui é GERADO EM CSS, não é arte comprada. No Discord esses itens vêm de
- * uma loja com ilustração pronta; aqui não há loja nem assinatura, então todo
- * mundo tem tudo. A consequência técnica é boa: nenhum arquivo pra hospedar,
- * nenhum link pra quebrar, e funciona offline no aplicativo de desktop.
+ * No Discord esses itens vêm de uma loja com ilustração pronta; aqui não há loja
+ * nem assinatura, então todo mundo tem tudo. A maior parte é GERADA EM CSS; o
+ * resto (as decorações animadas e as patentes) é arte embutida no pacote do
+ * front. O que nenhum deles é: arquivo hospedado. Nada aqui busca nada em tempo
+ * de execução, então não há link pra quebrar e funciona offline no aplicativo de
+ * desktop.
  *
  * Os ids viram `z.enum` de propósito. Com `z.string()` livre, o front acabaria
  * interpolando um id vindo do banco dentro de uma classe CSS ou de um atributo
@@ -50,6 +52,8 @@ export const DECORACOES = [
   "orbita",
   "aro",
   "alada",
+  "sol",
+  "caveiras",
 ] as const;
 export type Decoracao = (typeof DECORACOES)[number];
 
@@ -63,6 +67,21 @@ export type EfeitoDePerfil = (typeof EFEITOS_DE_PERFIL)[number];
 
 export const PLACAS = ["nenhuma", "fita", "holograma", "carimbo", "cristal"] as const;
 export type Placa = (typeof PLACAS)[number];
+
+/**
+ * A patente: a insignia que fica ao lado do nome.
+ *
+ * NAO e `emblemas`, e a diferenca e de dono. Emblema o SERVIDOR cria e o membro
+ * veste, entao ele e ObjectId e some quando a pessoa sai dali. A patente e como
+ * decoracao e moldura: um conjunto fechado que vem com o app, escolhido pela
+ * PESSOA, e que a acompanha em qualquer servidor e na conversa privada.
+ *
+ * Tambem e o unico enfeite daqui que nao e CSS nem camada em volta do avatar —
+ * a arte e Lottie e mora em `assets/patentes/` no front. Aqui o id continua
+ * sendo so um id.
+ */
+export const PATENTES = ["nenhuma", "orbe"] as const;
+export type Patente = (typeof PATENTES)[number];
 
 // ------------------------------------------------------------- cargo
 
@@ -112,6 +131,7 @@ export const estiloDePerfilSchema = z.object({
    * apelido de quatro letras que os amigos usam.
    */
   etiqueta: z.string().max(6).nullable().optional(),
+  patente: z.enum(PATENTES).optional(),
   decoracao: z.enum(DECORACOES).optional(),
   moldura: z.enum(MOLDURAS).optional(),
   efeito: z.enum(EFEITOS_DE_PERFIL).optional(),
@@ -175,6 +195,12 @@ export const perfilPublicoSchema = z.object({
    * montado por servidor, entao isto viaja de graca.
    */
   emblemas: z.array(objectIdCosmetico).optional(),
+  /**
+   * A patente vem no perfil PUBLICO e nao no mapa do servidor porque ela e da
+   * pessoa, nao do servidor: o mesmo id vale numa DM, onde nao ha mapa nenhum
+   * de onde tira-la. E o oposto exato de `emblemas`, logo acima.
+   */
+  patente: z.enum(PATENTES).optional(),
   decoracao: z.enum(DECORACOES).optional(),
   moldura: z.enum(MOLDURAS).optional(),
   placa: z.enum(PLACAS).optional(),

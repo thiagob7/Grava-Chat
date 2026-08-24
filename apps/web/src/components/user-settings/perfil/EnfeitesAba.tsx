@@ -7,9 +7,11 @@ import {
   EFEITOS_DO_PERFIL,
   FONTES,
   MOLDURAS_DE_AVATAR,
+  PATENTES_DE_PERFIL,
   PLACAS_DE_PERFIL,
 } from "~/lib/cosmeticos/catalogo";
 import { DecoracaoAnimada } from "~/components/DecoracaoAnimada";
+import { PatenteAnimada } from "~/components/PatenteAnimada";
 import { ehAnimada } from "~/lib/cosmeticos/animadas";
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
 import { carregarTodasAsFontes, familiaDaFonte } from "~/lib/cosmeticos/fontes";
@@ -30,8 +32,8 @@ interface EnfeitesAbaProps {
 }
 
 /**
- * Os adornos: fonte e efeito do nome, decoração e moldura do avatar, efeito e
- * placa do cartão.
+ * Os adornos: fonte e efeito do nome, decoração e moldura do avatar, efeito do
+ * cartão, patente e placa do nome.
  *
  * Cada amostra da grade chama a MESMA função que o chat chama pra renderizar de
  * verdade. Não existe caminho onde a amostra e o resultado possam divergir —
@@ -133,6 +135,20 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
       />
 
       <GradeDeOpcoes
+        label="Patente"
+        opcoes={PATENTES_DE_PERFIL}
+        valor={rascunho.patente}
+        onEscolher={(id) => definir("patente", id)}
+        /*
+          A amostra é o player de verdade, e por isso ela MONTA na sua frente
+          quando a aba abre — que é exatamente o que vai acontecer quando alguém
+          abrir seu cartão. Um quadro parado esconderia justamente a única coisa
+          que diferencia esta escolha das outras.
+        */
+        amostra={(id) => <PatenteAnimada patente={id} animar altura={24} />}
+      />
+
+      <GradeDeOpcoes
         label="Placa do nome"
         opcoes={PLACAS_DE_PERFIL}
         valor={rascunho.placa}
@@ -155,16 +171,25 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
  * a mesma camada do `Avatar`, no mesmo tamanho relativo. Um quadrado colorido
  * com o nome do efeito não diria nada sobre como o enfeite fica em volta de uma
  * foto redonda.
+ *
+ * As decorações ANIMADAS passam pelo mesmo player do chat, e não por uma classe
+ * de CSS que não existe pra elas. Sem isto, "Aro dourado", "Moldura alada" e
+ * "Selo do sol" apareciam como três bolinhas cinzas idênticas na grade — três
+ * escolhas indistinguíveis numa tela que só serve pra escolher com os olhos.
  */
 const Amostra: React.FC<{ familia: string; id: string }> = ({
   familia,
   id,
 }) => {
   const classe = classeDoEnfeite(familia, id);
+  // o `id` vem sempre do catálogo, que é montado a partir do próprio enum
+  const animada = familia === "decoracao" && ehAnimada(id as Decoracao);
 
   return (
     <span className="relative block size-7 rounded-full bg-surface-4">
-      {classe && (
+      {animada && <DecoracaoAnimada decoracao={id as Decoracao} animar />}
+
+      {!animada && classe && (
         <span
           aria-hidden
           className={cn(
