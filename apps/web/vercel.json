@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://chat-api.gravae.io/api/:path*"
+      "destination": "https://gravaechat-api.duckdns.org/api/:path*"
     },
     {
       "source": "/(.*)",
