@@ -9,7 +9,6 @@ import { devLoginInput, desktopExchangeInput, desktopStartInput } from "~/valida
 
 declare module "fastify" {
   interface FastifyInstance {
-    /** Registrado condicionalmente — só existe quando há credenciais do Google. */
     googleOAuth2: OAuth2Namespace;
   }
 }
@@ -22,11 +21,6 @@ const refreshCookieOptions = {
   maxAge: 30 * 24 * 60 * 60,
 };
 
-/**
- * O aplicativo de desktop pediu este login. O valor é o desafio do PKCE — não é
- * segredo (é um hash), e por isso pode viajar em cookie comum entre o "start" e
- * o retorno do Google, que acontecem no MESMO navegador do sistema.
- */
 const DESKTOP_COOKIE = "gravae_desktop";
 
 const desktopCookieOptions = {
@@ -37,13 +31,6 @@ const desktopCookieOptions = {
   maxAge: 10 * 60,
 };
 
-/**
- * A última tela que a pessoa vê no navegador antes de voltar pro aplicativo.
- *
- * Um 302 direto pra `gravae://` é bloqueado por parte dos navegadores — eles
- * não seguem redirecionamento pra esquema externo. Uma página que tenta e
- * oferece o link funciona nos dois casos.
- */
 function paginaDeVolta(destino: string | null) {
   const corpo = destino
     ? `<h1>Tudo certo!</h1>
@@ -60,7 +47,6 @@ function paginaDeVolta(destino: string | null) {
     </body></html>`;
 }
 
-/** Origem pública desta requisição, quando ela veio por um proxy (ngrok, Caddy). */
 function origemDoTunel(req: FastifyRequest): string | null {
   const forwardedHost = req.headers["x-forwarded-host"];
   if (typeof forwardedHost !== "string" || !forwardedHost) return null;
@@ -68,18 +54,10 @@ function origemDoTunel(req: FastifyRequest): string | null {
   return `${req.protocol}://${forwardedHost}`;
 }
 
-/**
- * Endereço do callback registrado no Google.
- *
- * Atrás do túnel, front e API compartilham a origem — é a URI do ngrok.
- * Direto em desenvolvimento, o navegador fala com a API na porta dela.
- * As duas formas correspondem exatamente às duas URIs cadastradas no console.
- */
 function callbackUrl(req: FastifyRequest) {
   return `${origemDoTunel(req) ?? env.API_PUBLIC_URL}/api/auth/google/callback`;
 }
 
-/** Para onde mandar a pessoa DEPOIS do login: sempre o app, não a API. */
 function webAppUrl(req: FastifyRequest, path = "/") {
   const base = origemDoTunel(req) ?? env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
   return `${base}${path}`;
@@ -91,11 +69,6 @@ export async function authRoutes(app: FastifyInstance) {
     ip: req.ip,
   });
 
-  /**
-   * Porta de entrada de DESENVOLVIMENTO. Existe pra construir e testar o chat
-   * com vários usuários antes do OAuth do Google estar configurado. O callback
-   * do Google (Fase 1) cai no MESMO fluxo de emissão abaixo.
-   */
   if (isDev) {
     app.post("/auth/dev-login", async (req, reply) => {
       const body = devLoginInput.parse(req.body);
@@ -119,8 +92,6 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = await authService.requireUser(result.userId);
 
-    // Toda resposta sai com um cookie utilizável, inclusive na corrida: o
-    // navegador nunca deve terminar segurando um token já rotacionado.
     return reply
       .setCookie(REFRESH_COOKIE, result.raw, refreshCookieOptions)
       .send({
@@ -135,13 +106,10 @@ export async function authRoutes(app: FastifyInstance) {
     return reply.clearCookie(REFRESH_COOKIE, refreshCookieOptions).code(204).send();
   });
 
-  /** Só possível porque o refresh vive no banco — um JWT puro não dá pra revogar. */
   app.post("/auth/logout-all", { preHandler: [app.authenticate] }, async (req, reply) => {
     await authService.revokeAll(req.userId);
     return reply.clearCookie(REFRESH_COOKIE, refreshCookieOptions).code(204).send();
   });
-
-  // ------------------------------- Google ---------------------------------
 
   const googleConfigured = Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 
@@ -153,18 +121,11 @@ export async function authRoutes(app: FastifyInstance) {
         client: { id: env.GOOGLE_CLIENT_ID, secret: env.GOOGLE_CLIENT_SECRET },
         auth: oauth2.GOOGLE_CONFIGURATION,
       },
-      // O plugin cria esta rota: é para cá que o botão "Entrar com Google" leva.
       startRedirectPath: "/auth/google",
       callbackUri: callbackUrl,
-      // guarda o state num cookie e valida no retorno (proteção contra CSRF)
       cookie: { path: "/api/auth", sameSite: "lax", secure: env.NODE_ENV === "production" },
     });
 
-    /**
-     * Entrada do aplicativo de desktop. Ele abre ISTO no navegador do sistema —
-     * o Google recusa a tela de consentimento dentro de janela embutida, e com
-     * razão. O desafio fica no cookie e é lido lá no callback.
-     */
     app.get("/auth/desktop/start", async (req, reply) => {
       const { desafio } = desktopStartInput.parse(req.query);
 
@@ -174,7 +135,6 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     app.get("/auth/google/callback", async (req, reply) => {
-      // presente = este login começou no aplicativo, e o retorno é outro
       const desafio = req.cookies[DESKTOP_COOKIE];
 
       try {
@@ -183,12 +143,6 @@ export async function authRoutes(app: FastifyInstance) {
 
         const user = await authService.signInWithProvider({ provider: "google", ...profile });
 
-        /**
-         * No fluxo do aplicativo o navegador não ganha sessão nenhuma: ele só
-         * carrega um código de uso único de volta pro app, que troca por
-         * sessão de dentro da janela dele. Sessão sobrando num navegador que
-         * a pessoa abriu sem querer é sessão que ela não sabe que tem.
-         */
         if (desafio) {
           const codigo = await desktopLoginService.emitirCodigo(user.id, desafio);
 
@@ -200,11 +154,6 @@ export async function authRoutes(app: FastifyInstance) {
 
         const refresh = await authService.issueRefreshToken(user.id, metaOf(req));
 
-        /**
-         * O access token NÃO vai na URL: só o cookie de refresh é gravado, e o
-         * front pega o access no bootstrap com POST /auth/refresh. Token em
-         * query string vaza pro histórico, pro Referer e pros logs do servidor.
-         */
         return reply
           .setCookie(REFRESH_COOKIE, refresh.raw, refreshCookieOptions)
           .redirect(webAppUrl(req, "/channels"));
@@ -222,11 +171,6 @@ export async function authRoutes(app: FastifyInstance) {
       }
     });
 
-    /**
-     * O aplicativo troca o código pela sessão de verdade. É esta chamada que
-     * grava o cookie httpOnly — na sessão da janela do Electron, exatamente
-     * como o navegador faria.
-     */
     app.post("/auth/desktop/trocar", async (req, reply) => {
       const { codigo, verificador } = desktopExchangeInput.parse(req.body);
 
@@ -246,10 +190,6 @@ export async function authRoutes(app: FastifyInstance) {
   app.get("/auth/config", () => ({
     devLogin: isDev,
     google: googleConfigured,
-    /**
-     * O front compara com a própria origem para saber se consegue alcançar o
-     * SFU. Não é segredo — é o mesmo endereço que já vai no token de voz.
-     */
     voiceUrl: env.LIVEKIT_URL,
   }));
 }

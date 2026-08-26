@@ -3,7 +3,6 @@ import { api } from "~/@core/lib/api";
 
 export interface ReorderRolesDTO {
   guildId: string;
-  /** a ordem inteira; posição 0 é do @everyone e não entra aqui */
   roles: { id: string; position: number }[];
 }
 

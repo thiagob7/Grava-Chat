@@ -23,10 +23,6 @@ interface ChannelSettingsModalProps {
   canManageRoles: boolean;
 }
 
-/**
- * Configurações do canal, no mesmo formato de tela cheia da tela do servidor —
- * são as mesmas quatro seções do Discord, na mesma ordem.
- */
 export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
   open,
   onClose,

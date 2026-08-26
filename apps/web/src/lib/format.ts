@@ -3,7 +3,6 @@ const dayMonth = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-di
 
 const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 
-/** "hoje às 14:32" / "ontem às 09:10" / "05/08/2026 21:00" */
 export function formatTimestamp(iso: string) {
   const d = new Date(iso);
   const now = new Date();
@@ -28,7 +27,6 @@ export function formatDayDivider(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric" }).format(d);
 }
 
-/** Cor determinística do avatar a partir do id — evita todo mundo cinza. */
 const AVATAR_COLORS = ["#5865f2", "#3ba55c", "#faa61a", "#ed4245", "#eb459e", "#00a8fc", "#9b59b6"];
 
 export const avatarColor = (id: string) => {

@@ -1,13 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 
-/**
- * Emoji, figurinha e efeito sonoro do servidor. Três tabelas com a mesma
- * cara — ficam juntas porque a tela também as trata como uma coisa só
- * ("Expressões") e a permissão é a mesma.
- */
 export const expressionRepository = {
-  // ------------------------------------------------------------------ emoji
   findEmojisByGuild(guildId: string) {
     return prisma.guildEmoji.findMany({ where: { guildId }, orderBy: { createdAt: "asc" } });
   },
@@ -36,7 +30,6 @@ export const expressionRepository = {
     return prisma.guildEmoji.delete({ where: { id } });
   },
 
-  // -------------------------------------------------------------- figurinha
   findStickersByGuild(guildId: string) {
     return prisma.guildSticker.findMany({ where: { guildId }, orderBy: { createdAt: "asc" } });
   },
@@ -61,7 +54,6 @@ export const expressionRepository = {
     return prisma.guildSticker.delete({ where: { id } });
   },
 
-  // ------------------------------------------------------------------- som
   findSoundsByGuild(guildId: string) {
     return prisma.guildSound.findMany({ where: { guildId }, orderBy: { createdAt: "asc" } });
   },

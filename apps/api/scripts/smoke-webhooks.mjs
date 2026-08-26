@@ -1,7 +1,3 @@
-/**
- * Webhooks: criar, postar sem login pela URL, aparecer no canal em tempo real,
- * e as recusas (token errado, permissao, vazao).
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -116,7 +112,6 @@ const vazia = await postar({ content: "   " });
 if (vazia.status !== 400) throw new Error(`mensagem vazia devolveu ${vazia.status}`);
 ok("mensagem vazia -> 400");
 
-// a vazao e de 5 por janela de 5s; ja gastamos 2
 const rajada = await Promise.all([1, 2, 3, 4, 5].map(() => postar({ content: "spam" })));
 if (!rajada.some((r) => r.status === 429)) throw new Error("a vazao nao segurou a rajada");
 ok("rajada de mensagens bate no limite de vazao -> 429");
@@ -139,7 +134,6 @@ const historicoFinal = await api(`/channels/${geral.id}/messages`, { token: dono
 if (historicoFinal.messages.length < 2) throw new Error("as mensagens do webhook sumiram junto");
 ok(`o historico manteve as ${historicoFinal.messages.length} mensagens do bot`);
 
-// um webhook que nunca postou nao deixa conta-fantasma pra tras
 const efemero = await api(`/guilds/${guild.id}/webhooks`, {
   token: dono.accessToken,
   body: { name: "So pra testar", channelId: geral.id },

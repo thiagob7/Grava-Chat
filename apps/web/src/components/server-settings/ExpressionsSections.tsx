@@ -25,15 +25,12 @@ interface SecaoProps {
   podeGerenciar: boolean;
 }
 
-/** Nome de emoji vira `:nome:`: sem espaço, sem acento, sem símbolo. */
 const nomeSeguro = (texto: string) =>
   texto
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-zA-Z0-9_]/g, "_")
     .slice(0, 32);
-
-// ------------------------------------------------------------------- emoji
 
 export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
@@ -50,11 +47,6 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
 
     setSubindo(true);
 
-    /**
-     * Vários de uma vez, com o nome vindo do arquivo — é como o Discord faz
-     * quando você arrasta um monte. Um a um, com editor, seria pior pra quem
-     * quer subir dez de uma vez.
-     */
     for (const arquivo of arquivos) {
       const anexo = await uploadArquivo(arquivo).catch(() => null);
       if (!anexo) continue;
@@ -160,8 +152,6 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
     </div>
   );
 };
-
-// --------------------------------------------------------------- figurinhas
 
 export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
@@ -304,8 +294,6 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
     </div>
   );
 };
-
-// --------------------------------------------------------------------- sons
 
 export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
   const { data } = useFindExpressions(guildId);
@@ -480,11 +468,6 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
   );
 };
 
-/**
- * Uma exclusão de expressão é sempre a mesma conversa: some do servidor, e as
- * mensagens que já usaram continuam como estão. Fica num lugar só pras três
- * seções não divergirem no texto.
- */
 function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
   return {
     titulo: `Excluir ${tipo} "${nome}"?`,

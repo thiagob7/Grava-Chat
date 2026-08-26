@@ -1,9 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-/**
- * `visible()` e uma funcao pura, mas mora no service — e o service abre Redis
- * no import. O mock existe so pra isso: o teste e da REGRA, nao da conexao.
- */
 vi.mock("~/lib/redis.js", () => ({
   redis: {},
   keys: { presence: () => "", sessions: () => "", idle: () => "" },
@@ -20,12 +16,10 @@ describe("projecao de presenca", () => {
   });
 
   it("invisivel aparece OFFLINE pros outros", () => {
-    // e o unico jeito: `INVISIBLE` nao existe no enum publico de presenca
     expect(visible("INVISIBLE", true, false)).toBe("OFFLINE");
   });
 
   it("nao perturbe GANHA do ausente automatico", () => {
-    // quem pediu silencio nao volta a "ausente" so por ter parado de mexer
     expect(visible("DND", true, true)).toBe("DND");
   });
 

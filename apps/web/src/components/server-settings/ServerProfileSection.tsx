@@ -6,12 +6,10 @@ import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-gui
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
-import { Input, Label, campoBase } from "~/components/ui/input";
-import { cn } from "~/lib/utils";
+import { Input, Label, Textarea } from "~/components/ui/input";
 import { avatarColor, initials } from "~/lib/format";
 import { formatBytes } from "~/lib/image";
 
-/** O ícone aparece no máximo a 48px; 256 cobre retina com folga. */
 const ICONE_MAX_PX = 256;
 
 export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild }) => {
@@ -120,14 +118,13 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
 
       <div className="mt-5">
         <Label htmlFor="guild-description">Descrição</Label>
-        <textarea
+        <Textarea
           id="guild-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           maxLength={512}
           rows={3}
           placeholder="Do que é esse servidor?"
-          className={cn(campoBase, "resize-none")}
         />
       </div>
 

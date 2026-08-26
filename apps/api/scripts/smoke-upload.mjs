@@ -1,14 +1,5 @@
-/**
- * Upload de ponta a ponta: a API assina, o "navegador" faz PUT direto no R2,
- * e o arquivo fica acessível pela URL pública. O binário nunca passa pela API.
- */
 const BASE = "http://localhost:3333";
 
-/**
- * Limpa o que este teste criou. Sem isso, cada execução deixa um servidor e
- * usuários no banco — em uma tarde de desenvolvimento vira dezenas de
- * servidores fantasma na barra lateral de quem está usando o app.
- */
 async function limpar(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
@@ -31,7 +22,6 @@ const api = async (path, { token, body, method = "POST" } = {}) => {
 
 const { accessToken } = await api("/auth/dev-login", { body: { email: "upload@gravae.io", displayName: "Upload" } });
 
-// PNG 1x1 de verdade
 const png = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
@@ -60,10 +50,6 @@ if (!bytes.equals(png)) throw new Error("o arquivo baixado difere do enviado");
 ok(`arquivo lido de volta idêntico (${bytes.length} bytes, ${get.headers.get("content-type")})`);
 
 console.log("\n== anexo numa mensagem ==");
-/**
- * O caminho que o compositor faz: sobe o arquivo, manda a mensagem com o anexo,
- * e o anexo tem que voltar no historico com dimensoes preservadas.
- */
 const { io } = await import("socket.io-client");
 const guild = await api("/guilds", { token: accessToken, body: { name: "Teste Anexo" } });
 const detalhe = await api(`/guilds/${guild.id}`, { token: accessToken, method: "GET" });
@@ -87,7 +73,6 @@ if (comAnexo.attachments[0].url !== attachment.url) throw new Error("url do anex
 if (comAnexo.attachments[0].width !== 1) throw new Error("dimensoes do anexo se perderam");
 ok("mensagem com anexo persiste (url e dimensoes preservadas)");
 
-// mensagem SO com anexo, sem texto, precisa ser aceita
 await emit("message:send", { channelId: canal.id, content: "", attachments: [attachment] });
 const depois = await api(`/channels/${canal.id}/messages`, { token: accessToken, method: "GET" });
 if (depois.messages.filter((m) => m.attachments.length > 0).length !== 2) {

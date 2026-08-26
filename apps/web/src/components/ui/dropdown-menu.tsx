@@ -50,11 +50,6 @@ export const DropdownMenuSeparator = ({
   <DropdownPrimitive.Separator className={cn("my-1.5 h-px bg-line", className)} {...props} />
 );
 
-/**
- * Submenu. Mesma forma do `context-menu.tsx` — o Radix trata igual nos dois, e
- * manter o desenho idêntico evita que o mesmo item pareça outra coisa
- * dependendo de onde foi aberto.
- */
 export const DropdownMenuSub = DropdownPrimitive.Sub;
 
 export const DropdownMenuSubTrigger = ({

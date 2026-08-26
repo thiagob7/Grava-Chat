@@ -8,28 +8,12 @@ import { Switch } from "~/components/ui/switch";
 import { desktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
-/**
- * O seletor de tela do aplicativo de desktop.
- *
- * No navegador, quem desenha essa tela é o Chrome e o áudio do sistema não vem
- * junto — de lá só sai o som da *aba*. Aqui o `getDisplayMedia` passa pelo
- * processo principal, que devolve as telas e janelas de verdade; este
- * componente escolhe, e a captura sai com o som do sistema se a pessoa quiser.
- *
- * Fica montado o tempo todo (fora das rotas, como o `VoiceAudioSink`), porque o
- * pedido pode chegar de qualquer lugar do app.
- */
 export const SeletorDeTela: React.FC = () => {
   const [fontes, setFontes] = useState<FonteDeTela[] | null>(null);
   const [escolhido, setEscolhido] = useState<string | null>(null);
   const [comAudio, setComAudio] = useState(true);
   const [semPermissao, setSemPermissao] = useState(false);
 
-  /**
-   * O `getDisplayMedia` do outro lado fica pendurado até alguém responder. Este
-   * ref garante UMA resposta por pedido: fechar no Esc, no X, no clique fora e
-   * no botão Cancelar são quatro caminhos para o mesmo lugar.
-   */
   const respondido = useRef(true);
 
   const responder = useCallback((escolha: { id: string; comAudio: boolean } | null) => {

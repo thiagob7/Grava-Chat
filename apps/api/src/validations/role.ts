@@ -5,19 +5,10 @@ import { r2Url } from "./auth.js";
 const permissionList = z.array(z.enum(PERMISSIONS));
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida");
 
-/** Enfeites do cargo — os mesmos em criar e editar. */
 const enfeitesDoCargo = {
   color: hexColor.nullable().optional(),
-  /** segunda cor; so o gradiente usa */
   colorSecondary: hexColor.nullable().optional(),
   estilo: z.enum(ESTILOS_DE_CARGO).optional(),
-  /**
-   * Icone: emoji OU imagem, nunca os dois — e quem resolve isso e o service.
-   *
-   * Um `.refine()` aqui nao serve porque o PATCH e PARCIAL: mandar so o emoji
-   * seria recusado por "falta imagem", e trocar um pelo outro exigiria mandar os
-   * dois. O validador nao enxerga o estado atual; o service enxerga.
-   */
   iconEmoji: z.string().max(64).nullable().optional(),
   iconUrl: r2Url.nullable().optional(),
 };
@@ -40,7 +31,6 @@ export const updateRoleInput = z.object({
 });
 export type UpdateRoleInput = z.infer<typeof updateRoleInput>;
 
-/** Arrastar para reordenar manda a lista inteira: uma posição só nunca fecha a conta. */
 export const reorderRolesInput = z.object({
   roles: z.array(z.object({ id: objectId, position: z.number().int().min(1) })).min(1),
 });

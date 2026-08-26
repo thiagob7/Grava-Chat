@@ -1,10 +1,3 @@
-/**
- * A regra do AutoMod, sem banco e sem contexto: entra texto, sai o motivo do
- * bloqueio (ou null). Fica separada porque é a parte fácil de errar em
- * silêncio — filtro que não pega nada e filtro que pega tudo têm a mesma cara
- * em produção.
- */
-
 export type Gatilho = "WORDS" | "MENTION_SPAM" | "LINKS";
 
 export interface RegraDeConteudo {
@@ -13,10 +6,6 @@ export interface RegraDeConteudo {
   limiteMencoes: number | null;
 }
 
-/**
- * Minúsculas e sem acento dos dois lados. Sem isso, "Idiota" e "idiotá" passam
- * por uma lista que tem "idiota" — e quem configurou jura que configurou.
- */
 export const normalizar = (texto: string) =>
   texto
     .toLowerCase()
@@ -26,15 +15,6 @@ export const normalizar = (texto: string) =>
 const ESCAPE = /[.*+?^${}()|[\]\\]/g;
 const LINK = /\bhttps?:\/\/\S+|\bwww\.\S+\.\S+/i;
 
-/**
- * `<@id>`, `<@&id>`, `@everyone` e `@here` contam igual: todos tiram alguém do
- * sério.
- *
- * A menção de CARGO faltava, e ela é a que mais pesa de verdade: um `<@&id>`
- * num cargo de quarenta pessoas notifica quarenta, enquanto cinco menções de
- * usuário notificam cinco. Contá-la como uma só já é conservador — o que não dá
- * é não contar.
- */
 function contarMencoes(content: string) {
   const usuarios = content.match(/<@[a-f\d]{24}>/gi)?.length ?? 0;
   const cargos = content.match(/<@&[a-f\d]{24}>/gi)?.length ?? 0;
@@ -59,11 +39,6 @@ export function violacao(content: string, regra: RegraDeConteudo): string | null
     const alvo = normalizar(palavra).trim();
     if (!alvo) continue;
 
-    /**
-     * Fronteira de palavra "à mão": `\b` do JS não considera acento nem
-     * caracteres de outros alfabetos, e a lista já veio normalizada.
-     * Assim "burro" pega "burro!" mas não "burrocracia".
-     */
     const padrao = new RegExp(`(^|[^\\p{L}\\p{N}])${alvo.replace(ESCAPE, "\\$&")}([^\\p{L}\\p{N}]|$)`, "u");
     if (padrao.test(texto)) return `palavra bloqueada: ${palavra}`;
   }

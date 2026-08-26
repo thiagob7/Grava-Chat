@@ -7,19 +7,10 @@ import { cn } from "~/lib/utils";
 
 interface EscolherEmblemasProps {
   guildId: string;
-  /** tudo que este servidor criou */
   disponiveis: Emblema[];
-  /** o que eu já visto aqui */
   vestidos: Emblema[];
 }
 
-/**
- * Vestir os emblemas do servidor — no próprio cartão, sem pedir a ninguém.
- *
- * É de propósito que não exista concessão: o servidor cria o conjunto, e quem
- * pertence escolhe o que usar. Com aprovação isto viraria fila de pedido no
- * ouvido do dono e morreria na primeira semana.
- */
 export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
   guildId,
   disponiveis,
@@ -35,7 +26,6 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
 
     if (proximos.has(id)) proximos.delete(id);
     else if (proximos.size >= LIMITS.emblemasPorMembro) {
-      // avisar é melhor que desabilitar em silêncio: assim dá pra entender o limite
       return toast.info(`Dá pra vestir até ${LIMITS.emblemasPorMembro} emblemas.`);
     } else proximos.add(id);
 

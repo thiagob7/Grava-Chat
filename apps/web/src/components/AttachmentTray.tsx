@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label, campoBase } from "~/components/ui/input";
+import { Input, Label, Textarea } from "~/components/ui/input";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 
@@ -24,7 +24,6 @@ interface AttachmentTrayProps {
   ) => void;
 }
 
-/** A faixa de anexos que aparece acima do campo de texto, antes de enviar. */
 export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove, onPatch }) => {
   const [editando, setEditando] = useState<PendingAttachment | null>(null);
 
@@ -127,11 +126,6 @@ interface ModificarAnexoProps {
   onSalvar: (dados: { filename: string; description: string | null; spoiler: boolean }) => void;
 }
 
-/**
- * "Modificar anexo": nome do arquivo, texto alternativo e spoiler. O spoiler é
- * decidido aqui e não depois de enviar — a graça de esconder é ninguém ter
- * visto antes.
- */
 const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar }) => {
   const [filename, setFilename] = useState(item.filename);
   const [descricao, setDescricao] = useState(item.attachment?.description ?? "");
@@ -166,14 +160,13 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
 
           <div>
             <Label htmlFor="anexo-descricao">Descrição (texto alternativo)</Label>
-            <textarea
+            <Textarea
               id="anexo-descricao"
               value={descricao}
               maxLength={1024}
               rows={3}
               placeholder="Adicionar uma descrição"
               onChange={(e) => setDescricao(e.target.value)}
-              className={cn(campoBase, "resize-none")}
             />
             <p className="mt-1 text-xs text-ink-faint">
               Descreve a imagem para quem usa leitor de tela.

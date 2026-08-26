@@ -1,13 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 import {
+  findFavoriteGifs,
+  findGifCategories,
   findGifConfig,
   findTrendingGifs,
+  removeFavoriteGif,
+  saveFavoriteGif,
   searchGifs,
+  type GifModel,
 } from "~/@core/application/requests/gif/gifs";
+import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-/** Sem chave de GIF no servidor, a aba explica o que falta em vez de quebrar. */
 export const useGifConfig = (enabled: boolean) =>
   useQuery({
     queryKey: [queryKeys.gif.config],
@@ -24,10 +30,6 @@ export const useTrendingGifs = (enabled: boolean) =>
     staleTime: 10 * 60_000,
   });
 
-/**
- * A busca só dispara com o termo já "parado" (o componente faz o debounce) e o
- * resultado fica em cache — a cota é do dono da chave, não infinita.
- */
 export const useSearchGifs = (termo: string) =>
   useQuery({
     queryKey: queryKeys.gif.search(termo),
@@ -35,3 +37,35 @@ export const useSearchGifs = (termo: string) =>
     enabled: termo.trim().length > 1,
     staleTime: 10 * 60_000,
   });
+
+export const useGifCategories = (enabled: boolean) =>
+  useQuery({
+    queryKey: [queryKeys.gif.categories],
+    queryFn: findGifCategories,
+    enabled,
+    staleTime: 60 * 60_000,
+  });
+
+export const useFavoriteGifs = (enabled: boolean) =>
+  useQuery({
+    queryKey: [queryKeys.gif.favorites],
+    queryFn: findFavoriteGifs,
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+
+/**
+ * A estrela é um interruptor, e as duas rotas devolvem a lista inteira já
+ * atualizada — então o cache é escrito com a resposta em vez de invalidado.
+ * Sem isso, tirar um favorito piscava a grade toda enquanto o refetch vinha.
+ */
+export const useToggleFavoriteGif = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ gif, salvo }: { gif: GifModel; salvo: boolean }) =>
+      salvo ? removeFavoriteGif(gif.id) : saveFavoriteGif(gif),
+    onSuccess: (lista) => queryClient.setQueryData([queryKeys.gif.favorites], lista),
+    onError: (e) => toast.error(apiErrorMessage(e, "Não deu pra salvar esse GIF.")),
+  });
+};

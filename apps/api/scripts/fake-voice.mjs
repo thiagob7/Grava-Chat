@@ -1,8 +1,3 @@
-/**
- * Entra num canal de voz por socket (sem mídia — isso é do navegador).
- * Serve pra testar a lista de "quem está no canal" ao vivo.
- * Uso: node apps/api/scripts/fake-voice.mjs <email> <nomeDoServidor>
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -31,7 +26,6 @@ const emit = (ev, p) => new Promise((res, rej) => s.emit(ev, p, (r) => (r.ok ? r
 await emit("voice:join", { channelId: voice.id });
 console.log(`${user.displayName} entrou em ${voice.name}`);
 
-// alterna mutado/câmera pra dar pra ver os ícones mudando ao vivo
 const segundos = Number(process.argv[4] ?? 45);
 console.log(`ficando na call por ${segundos}s (Ctrl+C para sair antes)`);
 await new Promise((r) => setTimeout(r, segundos * 1000));

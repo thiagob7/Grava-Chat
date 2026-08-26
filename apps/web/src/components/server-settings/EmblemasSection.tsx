@@ -8,24 +8,14 @@ import { Button } from "~/components/ui/button";
 import { useConfirmar } from "~/components/ui/confirm";
 import { Input, Label } from "~/components/ui/input";
 
-/** O emblema aparece a 16px ao lado de um nome; 64 já cobre tela retina. */
 const EMBLEMA_MAX_PX = 64;
 
 interface EmblemasSectionProps {
   guildId: string;
   emblemas: Emblema[];
-  /** sem MANAGE_GUILD a tela ainda abre, só não deixa criar nem apagar */
   editavel: boolean;
 }
 
-/**
- * Os emblemas do servidor.
- *
- * O servidor CRIA; quem VESTE é cada membro, sozinho, pelo próprio cartão. Não
- * existe conceder: um emblema que precisa de aprovação vira fila de pedido no
- * ouvido do dono, e a graça é a pessoa se identificar com o grupo sem pedir
- * licença. Quem quiser um "DEV" de mentira, que use — o custo social já resolve.
- */
 export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
   guildId,
   emblemas,
@@ -58,7 +48,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
 
     if (resultado) {
       setIconUrl(resultado.attachment.url);
-      setEmoji(""); // emoji OU imagem: escolher uma limpa a outra
+      setEmoji("");
     }
   };
 

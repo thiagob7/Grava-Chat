@@ -14,7 +14,6 @@ export const roleRepository = {
     return prisma.role.findFirst({ where: { guildId, isEveryone: true } });
   },
 
-  /** Só os cargos que a pessoa tem, mais o @everyone (que é implícito). */
   async findForMember(guildId: string, roleIds: string[]) {
     return prisma.role.findMany({
       where: { guildId, OR: [{ id: { in: roleIds } }, { isEveryone: true }] },
@@ -41,7 +40,6 @@ export const roleRepository = {
     return prisma.role.delete({ where: { id } });
   },
 
-  /** Quantas pessoas têm cada cargo — para a coluna "membros" da tela. */
   async countMembersByRole(guildId: string): Promise<Record<string, number>> {
     const membros = await prisma.guildMember.findMany({
       where: { guildId },
@@ -73,7 +71,6 @@ export const overwriteRepository = {
     return prisma.permissionOverwrite.findMany({ where: { channelId: { in: channelIds } } });
   },
 
-  /** Um overwrite por alvo em cada canal: gravar de novo substitui. */
   upsert(data: {
     channelId: string;
     targetId: string;

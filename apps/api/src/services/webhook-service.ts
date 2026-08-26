@@ -14,11 +14,6 @@ import type {
   UpdateWebhookInput,
 } from "~/validations/webhook.js";
 
-/**
- * Vazão: no máximo 5 mensagens a cada 5 segundos por webhook. Um script com um
- * laço errado consegue encher um canal em segundos, e do outro lado não tem
- * ninguém pra pedir pra parar — só o dono do servidor apagando o webhook.
- */
 const LIMITE_POR_JANELA = 5;
 const JANELA_S = 5;
 
@@ -31,7 +26,6 @@ const publico = (w: Awaited<ReturnType<typeof webhookRepository.findById>>, base
     channelId: w.channelId,
     name: w.name,
     avatarUrl: w.avatarUrl,
-    /** a URL inteira, pronta pra colar no que vai postar */
     url: `${baseUrl}/api/webhooks/${w.id}/${w.token}`,
     bot: toPublicUser(w.bot),
     createdBy: toPublicUser(w.createdBy),
@@ -47,11 +41,6 @@ export const webhookService = {
     return webhooks.map((w) => publico(w, baseUrl));
   },
 
-  /**
-   * Cada webhook nasce com um usuário-bot próprio. É esse usuário que assina as
-   * mensagens — por isso nem o histórico, nem a lista de membros, nem a
-   * serialização precisam de um caso especial pra webhook.
-   */
   async create(userId: string, guildId: string, input: CreateWebhookInput, baseUrl: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS", input.channelId);
 
@@ -62,7 +51,6 @@ export const webhookService = {
     }
 
     const bot = await userRepository.create({
-      // e-mail interno: o model exige um, e este nunca recebe login
       email: `webhook-${randomBytes(8).toString("hex")}@bots.gravae.local`,
       username: await authService.uniqueUsername(input.name),
       displayName: input.name,
@@ -101,8 +89,6 @@ export const webhookService = {
       }
     }
 
-    // nome e foto vivem nos dois lugares: no webhook (o que a tela mostra) e no
-    // usuário-bot (o que assina as mensagens antigas e novas)
     if (input.name !== undefined || input.avatarUrl !== undefined) {
       await userRepository.update(atual.botUserId, {
         ...(input.name !== undefined ? { displayName: input.name } : {}),
@@ -121,24 +107,14 @@ export const webhookService = {
 
     await webhookRepository.remove(webhookId);
 
-    /**
-     * O usuário-bot só vai embora se nunca tiver postado nada. Apagá-lo com
-     * histórico levaria as mensagens junto (cascade), e "excluir webhook"
-     * significa que a URL para de funcionar — não que a conversa some.
-     */
     if ((await messageRepository.countByAuthor(webhook.botUserId)) === 0) {
       await userRepository.remove(webhook.botUserId);
     }
   },
 
-  /**
-   * A rota pública. Não tem login: o token na URL É a autorização, como no
-   * Discord. Por isso ele vale exatamente para um canal e nada mais.
-   */
   async execute(webhookId: string, token: string, input: ExecuteWebhookInput) {
     const webhook = await webhookRepository.findById(webhookId);
 
-    // 401 e não 404 quando o token está errado: o id sozinho não prova nada
     if (!webhook) throw new NotFoundError("Webhook não encontrado");
     if (webhook.token !== token) throw new UnauthorizedError("Token inválido");
 
@@ -149,11 +125,6 @@ export const webhookService = {
     if (usos === 1) await redis.expire(keys.webhookRate(webhookId), JANELA_S);
     if (usos > LIMITE_POR_JANELA) throw new AppError("Muitas mensagens seguidas", 429);
 
-    /**
-     * `username` e `avatar_url` sobrescrevem a identidade por mensagem — é como
-     * um webhook só consegue postar como "CI" numa mensagem e "Deploy" na
-     * seguinte. Quando não vêm, vale o que está configurado.
-     */
     if (input.username || input.avatar_url !== undefined) {
       await userRepository.update(webhook.botUserId, {
         ...(input.username ? { displayName: input.username } : {}),
@@ -170,8 +141,6 @@ export const webhookService = {
       mentions: [],
     });
 
-    // o bot "leu" o que ele mesmo escreveu; sem isso o canal fica com
-    // não-lido eterno para a conta do bot
     await readStateRepository.markRead(webhook.botUserId, webhook.channelId, created.id);
 
     return toMessage(created, webhook.botUserId);

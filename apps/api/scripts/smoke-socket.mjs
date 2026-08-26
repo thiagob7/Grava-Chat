@@ -1,16 +1,7 @@
-/**
- * Teste de fumaca do tempo real: dois usuarios no mesmo canal, um manda e o
- * outro tem que receber. Uso: node apps/api/scripts/smoke-socket.mjs
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 
-/**
- * Limpa o que este teste criou. Sem isso, cada execução deixa um servidor e
- * usuários no banco — em uma tarde de desenvolvimento vira dezenas de
- * servidores fantasma na barra lateral de quem está usando o app.
- */
 async function limpar(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
@@ -49,7 +40,6 @@ const waitFor = (s, ev, ms = 3000) =>
     s.once(ev, (p) => (clearTimeout(t), resolve(p)));
   });
 
-// --- preparo: dois usuarios no mesmo servidor -------------------------------
 const a = await api("/auth/dev-login", { body: { email: "socket-a@gravae.io", displayName: "Ana" } });
 const b = await api("/auth/dev-login", { body: { email: "socket-b@gravae.io", displayName: "Bruno" } });
 const guild = await api("/guilds", { token: a.accessToken, body: { name: "Teste Socket" } });
@@ -95,11 +85,6 @@ const r = await reacted;
 if (!r.reactions[0].userIds.includes(brunoId)) throw new Error("quem reagiu nao esta na lista");
 ok("evento traz quem reagiu (o cliente resolve o proprio 'me')");
 
-/**
- * Espera o evento com DOIS ids em vez do proximo evento qualquer: o broadcast
- * vai pra sala inteira, entao os dois sockets recebem os dois eventos e o
- * "proximo evento" nao e necessariamente o que interessa.
- */
 const bothReacted = new Promise((res, rej) => {
   const t = setTimeout(() => rej(new Error("timeout esperando 2 reacoes")), 3000);
   sa.on("message:reactions", (p) => {
@@ -142,12 +127,6 @@ if (p.status !== "DND") throw new Error("status errado");
 ok(`presenca propagou para os membros do servidor: ${p.status}`);
 
 console.log("\n== presenca com duas conexoes ==");
-/**
- * Regressao: o StrictMode do React monta o efeito duas vezes, entao o mesmo
- * usuario abre dois sockets. O broadcast de presenca so acontece na transicao
- * 0->1 sessoes, entao o segundo socket nunca receberia o evento e o usuario
- * aparecia OFFLINE pra si mesmo. O snapshot precisa vir do Redis.
- */
 const sa2 = await connect(a.accessToken);
 const snapshot = await api(`/guilds/${guild.id}`, { token: a.accessToken, method: "GET" });
 const ana = snapshot.members.find((m) => m.user.id === snapshot.members[0].user.id && m.user.displayName === "Ana");
@@ -156,11 +135,6 @@ ok(`com 2 conexoes abertas, o snapshot diz ${ana.user.status}`);
 sa2.close();
 
 console.log("\n== persistencia ==");
-/**
- * Regressao: `deletedAt: null` no Prisma+Mongo nao casa com campo ausente, e o
- * historico voltava VAZIO mesmo com mensagens no banco. O tempo real continuava
- * funcionando, entao so aparecia depois de um F5 — bug silencioso.
- */
 await emit(sa, "message:send", { channelId: channel.id, content: "isso tem que sobreviver ao F5" });
 const hist = await api(`/channels/${channel.id}/messages`, { token: a.accessToken, method: "GET" });
 const found = hist.messages.filter((m) => m.content === "isso tem que sobreviver ao F5");
@@ -182,11 +156,6 @@ try {
   ok("payload invalido e recusado pelo schema compartilhado");
 }
 
-/**
- * Canal de voz agora ACEITA mensagem: e o chat que fica ao lado da chamada.
- * A checagem antiga ("nao da pra escrever") passava por acidente — a mensagem
- * de FALHOU tambem casava com o regex. Aqui o teste confere o texto que voltou.
- */
 const voiceChannel = detail.channels.find((c) => c.type === "VOICE");
 const naVoz = await emit(sa, "message:send", { channelId: voiceChannel.id, content: "chat da call", nonce: "v1" });
 if (!naVoz?.id) throw new Error("canal de voz recusou a mensagem do chat");

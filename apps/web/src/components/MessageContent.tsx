@@ -4,48 +4,19 @@ import type { GuildEmoji } from "@gravae/shared";
 import type { ResolverMencoes } from "~/hooks/use-mencoes";
 import { legivel } from "~/lib/cosmeticos/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
+import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/lib/links";
 import { useLightbox } from "~/stores/lightbox";
+import { useAparencia } from "~/stores/aparencia";
 
-/**
- * O texto da mensagem: emojis do servidor viram imagem, links viram link, e
- * uma mensagem que é SÓ um link de imagem vira a imagem.
- *
- * `:nome:` e a URL são o que ficam gravados no banco — guardar já como HTML
- * deixaria o histórico dependente de como a tela renderiza hoje, e um emoji
- * renomeado quebraria mensagens antigas.
- */
-/**
- * Emoji do servidor e as três formas de menção, num regex só.
- *
- * Numa passada só porque as regras precisam competir pela mesma posição do
- * texto: com dois laços, o segundo receberia pedaços já fatiados pelo primeiro
- * e uma menção partida ao meio viraria texto cru — que é exatamente o que
- * acontecia até aqui, com `<@id>` aparecendo escrito na tela.
- */
 const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
-const LINK = /https?:\/\/[^\s<]+/g;
-/** Sem `g`: um `.test` num regex global mexe no `lastIndex` e quebra o matchAll. */
-const SO_UM_LINK = /^https?:\/\/\S+$/;
-
-/** Pontuação colada no fim não faz parte do endereço: "veja https://x.com/a." */
-const limpar = (url: string) => url.replace(/[.,;:!?)\]}]+$/, "");
-
-const EH_IMAGEM = /\.(gif|png|jpe?g|webp|avif)(\?|#|$)/i;
 
 interface MessageContentProps {
   content: string;
   emojis: GuildEmoji[];
-  /** só emoji na mensagem inteira? aí eles vão grandes, como no Discord */
   className?: string;
-  /**
-   * De onde tirar o nome de quem foi mencionado. Vem de fora porque isto aqui
-   * renderiza cinquenta vezes por página: o cruzamento acontece uma vez na
-   * lista, não uma vez por mensagem.
-   */
   mencoes?: ResolverMencoes;
 }
 
-/** A menção desenhada: um pedacinho clicável, destacado do texto em volta. */
 const Pilula: React.FC<{ children: React.ReactNode; cor?: string | null; titulo?: string }> = ({
   children,
   cor,
@@ -64,14 +35,6 @@ const Pilula: React.FC<{ children: React.ReactNode; cor?: string | null; titulo?
   </span>
 );
 
-/**
- * Troca `:nome:` pelos emojis do servidor e as menções pelo nome de quem foi
- * mencionado. Só texto entra aqui — link, não.
- *
- * O que fica gravado no banco é sempre o id (`<@…>`), nunca o nome: quem troca
- * de apelido não quebra mensagem antiga, e ninguém consegue escrever à mão uma
- * menção que parece ser de outra pessoa.
- */
 function enriquecer(
   texto: string,
   porNome: Map<string, GuildEmoji>,
@@ -104,8 +67,6 @@ function enriquecer(
       }
     } else if (cargoId) {
       const cargo = mencoes?.cargos.get(cargoId);
-      // cargo apagado vira texto neutro em vez de sumir: a mensagem continua
-      // fazendo sentido pra quem lê o histórico
       pedaco = (
         <Pilula key={k} cor={cargo?.color} titulo="Menção de cargo">
           @{cargo?.name ?? "cargo"}
@@ -144,18 +105,13 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   className,
   mencoes,
 }) => {
-  // antes de qualquer return: hook não pode ficar atrás de condição
   const abrirImagem = useLightbox((s) => s.abrir);
+  const abrirImagensDeLinks = useAparencia((s) => s.imagensDeLinks);
 
   if (!content) return null;
 
-  /**
-   * Mensagem que é só um endereço de imagem vira a imagem — é o que o seletor
-   * de GIF produz, e sem isto o GIF chegava como uma URL escrita por extenso.
-   * `loading="lazy"` porque um canal antigo pode ter dezenas deles.
-   */
   const sozinho = content.trim();
-  if (SO_UM_LINK.test(sozinho) && EH_IMAGEM.test(limpar(sozinho))) {
+  if (abrirImagensDeLinks && SO_UM_LINK.test(sozinho) && EH_IMAGEM.test(limparLink(sozinho))) {
     return (
       <button
         onClick={() => abrirImagem(sozinho)}
@@ -167,8 +123,9 @@ export const MessageContent: React.FC<MessageContentProps> = ({
           alt=""
           loading="lazy"
           decoding="async"
-          // o mesmo teto dos anexos: um GIF não pode empurrar a conversa
-          style={{ maxWidth: MAX_IMAGEM_W, maxHeight: MAX_IMAGEM_H }}
+          /// `min()` porque o teto de 420px também tem que respeitar a coluna:
+          /// no painel estreito quem manda é o 100%.
+          style={{ maxWidth: `min(${MAX_IMAGEM_W}px, 100%)`, maxHeight: MAX_IMAGEM_H }}
           className="block h-auto w-auto object-contain"
         />
       </button>
@@ -182,7 +139,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   for (const casamento of content.matchAll(LINK)) {
     if (casamento.index === undefined) continue;
 
-    const url = limpar(casamento[0]);
+    const url = limparLink(casamento[0]);
     if (casamento.index > ultimo) {
       partes.push(...enriquecer(content.slice(ultimo, casamento.index), porNome, `t${ultimo}`, mencoes));
     }
@@ -199,7 +156,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
       </a>,
     );
 
-    // o que sobrou da pontuação volta como texto
     ultimo = casamento.index + url.length;
   }
 

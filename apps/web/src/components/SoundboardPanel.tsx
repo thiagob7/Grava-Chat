@@ -11,26 +11,13 @@ import { useVoicePrefs } from "~/stores/voice-prefs";
 
 interface SoundboardPanelProps {
   guildId: string | undefined;
-  /** sem USE_SOUNDBOARD o botão aparece desabilitado, e não some */
   podeUsar: boolean;
 }
 
-/**
- * O painel de efeitos sonoros da chamada.
- *
- * Apertar manda um recado pelo servidor e cada pessoa toca o arquivo. O som
- * NÃO entra na sua track de voz: republicar áudio a cada clique picotaria a
- * conversa de todo mundo.
- */
 export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeUsar }) => {
   const { data } = useFindExpressions(guildId);
   const [busca, setBusca] = useState("");
 
-  /**
-   * O volume dos efeitos acompanha o volume de saída da chamada. Um controle
-   * separado seria mais um lugar pra esquecer ligado — e ninguém quer efeito
-   * mais alto que a voz de quem está falando.
-   */
   const volumeSaida = useVoicePrefs((s) => s.volumeSaida);
 
   const sons = useMemo(() => {
@@ -54,7 +41,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
       </PopoverTrigger>
 
       <PopoverContent side="top" align="center" className="w-80 p-0">
-        <div className="flex items-center gap-2 border-b border-black/20 p-3">
+        <div className="flex items-center gap-2 border-b border-divisor p-3">
           <div className="relative flex-1">
             <Search
               size={15}
@@ -91,10 +78,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
             <p className="py-6 text-center text-sm text-ink-muted">Nenhum som com esse nome.</p>
           )}
 
-          {/*
-            Dois por linha, e não quatro: o nome do som é o que a pessoa procura,
-            e em quatro colunas ele virava reticências em quase todos.
-          */}
           <div className="grid grid-cols-2 gap-2">
             {sons.map((som) => (
               <button

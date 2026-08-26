@@ -20,7 +20,6 @@ import { cn } from "~/lib/utils";
 
 interface VoiceStageProps {
   channelName: string;
-  /** o que o menu do botão direito precisa saber sobre o servidor */
   guildId?: string;
   members?: GuildMember[];
   roles?: Role[];
@@ -40,21 +39,14 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   minhasPermissoes = [],
   currentUserId,
 }) => {
-  // o alvo da tela cheia é o palco, não a página: a barra lateral não precisa ir junto
   const palco = useRef<HTMLDivElement>(null);
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);
 
-  /**
-   * Quem você escolheu assistir vive na store: navegar pra um canal de texto
-   * desmonta o palco, e a escolha precisa sobreviver a isso pra janelinha
-   * flutuante saber o que mostrar.
-   */
   const assistindo = useVoiceStore((s) => s.assistindo);
   const setAssistindo = useVoiceStore((s) => s.assistir);
   const definirPalcoVisivel = useVoiceStore((s) => s.definirPalcoVisivel);
 
-  /** Enquanto o palco está montado, a janelinha flutuante não aparece. */
   useEffect(() => {
     definirPalcoVisivel(true);
     return () => definirPalcoVisivel(false);
@@ -78,11 +70,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     );
   }
 
-  /**
-   * Só entra em modo teatro quem VOCÊ escolheu — e enquanto essa pessoa ainda
-   * estiver transmitindo. Ela encerrando, o palco volta sozinho pra grade, sem
-   * deixar um quadro preto no lugar.
-   */
   const sharing = assistindo
     ? tiles.find((t) => t.identity === assistindo && t.screenTrack)
     : null;
@@ -117,7 +104,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             <X size={14} /> Parar de assistir
           </button>
         </div>
-        {/* a fileira ganha margem embaixo pra barra não cobrir os rostos */}
         <div className="flex h-24 shrink-0 gap-3 overflow-x-auto pb-14">
           {tiles.map((tile) => (
             <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
@@ -163,18 +149,10 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 interface TileProps {
   tile: VoiceTile;
   compact?: boolean;
-  /** ausente na fileira do modo teatro: lá você já está assistindo alguém */
   onAssistir?: () => void;
 }
 
 const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
-  /**
-   * Nome, foto e enfeite saem do cache do servidor, não do metadata do LiveKit.
-   *
-   * O metadata é gravado no TOKEN, emitido uma vez no join: quem trocasse de
-   * avatar durante a chamada continuava com o antigo até sair e entrar. O
-   * `tile` fica só como queda, pra quem ainda não chegou no cache.
-   */
   const resolver = useParticipante();
   const participante = resolver(tile.identity, {
     name: tile.name,
@@ -188,11 +166,6 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
         compact ? "aspect-video h-full shrink-0" : "aspect-video",
       )}
     >
-      {/*
-      O convite pra entrar na live. Cobre o quadro inteiro porque é a ação
-      principal daquele quadro naquele momento — e porque um botãozinho no
-      canto seria perdido no meio dos avatares.
-    */}
       {tile.screenTrack && onAssistir && (
         <button
           onClick={onAssistir}
@@ -210,7 +183,6 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
       )}
 
       {tile.cameraTrack ? (
-        // com vídeo não há avatar pra circundar: o anel volta pra borda do quadro
         <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>
           <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
         </div>
@@ -221,22 +193,6 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
           url={participante.avatarUrl}
           size={compact ? 40 : 80}
           enfeites={participante.perfil}
-          /**
-           * Aqui quem diz "está falando" é a DECORAÇÃO andando, e não o anel
-           * verde — repare que não existe `speaking` nesta chamada.
-           *
-           * Os dois juntos são o mesmo recado dito duas vezes, e no quadro
-           * grande um atrapalha o outro: o anel corta a arte justamente no
-           * momento em que ela ganha movimento. O anel continua inteiro na
-           * lista do canal de voz (`VoiceMembers`), que é onde ele não disputa
-           * espaço com nada — então quem não tem decoração animada não fica sem
-           * sinal nenhum, só sem o segundo.
-           *
-           * É o único lugar fora do cartão de perfil onde a animação solta. O
-           * custo que faz o resto do app ficar parado — cem avatares animando ao
-           * mesmo tempo — não existe numa chamada, que tem um punhado de pessoas
-           * e onde só quem está falando anda.
-           */
           animar={tile.speaking}
         />
       )}
@@ -268,11 +224,6 @@ interface ContextoDoPalco {
   currentUserId?: string;
 }
 
-/**
- * Envolve o quadro no menu do botão direito. Só num servidor: numa DM não há
- * cargo, mover nem mutar — e um menu com tudo desabilitado é pior que menu
- * nenhum.
- */
 const ComMenu: React.FC<{
   tile: VoiceTile;
   contexto: ContextoDoPalco;

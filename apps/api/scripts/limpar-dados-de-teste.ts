@@ -1,21 +1,9 @@
-/**
- * Apaga o que os scripts de fumaça criaram, preservando os servidores de verdade.
- *
- * Uso: yarn workspace @gravae/api limpar
- *      GUILDS_MANTER=<id>,<id> yarn workspace @gravae/api limpar
- *
- * Sem GUILDS_MANTER, mantém todo servidor que NÃO tenha nome de teste. É
- * conservador de propósito: apagar um servidor leva junto canais, mensagens e
- * convites, e não tem desfazer.
- */
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-/** Nomes que só os scripts de fumaça criam. */
 const NOMES_DE_TESTE = [/^Teste /i];
 
-/** Contas criadas pelos scripts. Nunca inclui quem participa de verdade. */
 const EMAILS_DE_TESTE =
   /^(amiga|amigo|estranho|bagunceiro-|socket-[ab]|voz-[abc]|teste-|dono-|mod-|ze-|membro-|refresh-race|desktop-login|upload|redis-check|mon-check|porta-check|presence-test)/i;
 
@@ -31,16 +19,9 @@ const paraApagar = guilds.filter((g) => {
 console.log(`servidores: ${guilds.length} no total, ${paraApagar.length} para apagar\n`);
 
 for (const g of paraApagar) {
-  // delete (e não deleteMany) para o Prisma emular as exclusões em cascata:
-  // no MongoDB não existe integridade referencial no banco.
   await prisma.guild.delete({ where: { id: g.id } });
 }
 
-/**
- * Bots de webhook cujo webhook já não existe (o servidor de teste foi apagado
- * e levou o webhook junto). Sem isso eles ficam para sempre, invisíveis na
- * interface e ocupando um nome de usuário.
- */
 const bots = await prisma.user.findMany({ where: { isBot: true }, select: { id: true, username: true } });
 let botsRemovidos = 0;
 
@@ -59,7 +40,6 @@ for (const u of usuariosDeTeste) {
   await prisma.user.delete({ where: { id: u.id } });
 }
 
-/** Canais órfãos: DMs de usuários que deixaram de existir. */
 const dms = await prisma.channel.findMany({ where: { guildId: null } });
 const idsVivos = new Set((await prisma.user.findMany({ select: { id: true } })).map((u) => u.id));
 const dmsOrfas = dms.filter((c) => c.recipients.some((r) => !idsVivos.has(r)));

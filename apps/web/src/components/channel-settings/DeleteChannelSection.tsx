@@ -20,7 +20,6 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
   const apagar = useDeleteChannel(guildId);
   const [confirmacao, setConfirmacao] = useState("");
 
-  // digitar o nome é o freio: apagar canal leva o histórico junto e não desfaz
   const pode = confirmacao.trim().toLowerCase() === channel.name.toLowerCase();
 
   return (

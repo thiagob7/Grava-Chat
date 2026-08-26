@@ -11,16 +11,9 @@ import {
   channelSchema,
   sendMessageInput,
   editMessageInput,
+  invocarComandoInput,
 } from "./models.js";
 import type { PresenceStatus } from "./constants.js";
-
-/**
- * Contrato dos eventos de tempo real. Front e back importam DAQUI — e a unica
- * forma de garantir que os dois lados falam a mesma lingua. Se um evento nao
- * esta aqui, ele nao existe.
- */
-
-// --------------------------- cliente -> servidor ---------------------------
 
 export const clientEventSchemas = {
   "channel:subscribe": z.object({ channelId: objectId }),
@@ -29,38 +22,42 @@ export const clientEventSchemas = {
   "message:send": sendMessageInput,
   "message:edit": editMessageInput,
   "message:delete": z.object({ messageId: objectId }),
-  "message:react": z.object({ messageId: objectId, emoji: z.string().max(64) }),
+  "message:react": z.object({
+    messageId: objectId,
+    emoji: z.string().max(64),
+    /// super reação: além de contar, dispara a animação em quem está no canal
+    burst: z.boolean().optional(),
+  }),
   "message:unreact": z.object({ messageId: objectId, emoji: z.string().max(64) }),
   "message:ack": z.object({ channelId: objectId, messageId: objectId }),
+  /// deixa o canal não-lido A PARTIR desta mensagem: quem marca quer voltar
+  /// nela depois, então o ponteiro de leitura recua para a mensagem anterior.
+  "message:unread": z.object({ channelId: objectId, messageId: objectId }),
 
-  /** Um clique na opção já marcada tira o voto — o servidor decide qual é o caso. */
   "poll:vote": z.object({ messageId: objectId, optionId: z.string().min(1).max(64) }),
   "poll:close": z.object({ messageId: objectId }),
 
   "typing:start": z.object({ channelId: objectId }),
 
+  /// A pessoa escolheu um comando de barra na lista e mandou.
+  "command:invoke": invocarComandoInput,
+
   "presence:update": z.object({ status: z.enum(DESIRED_STATUSES) }),
-  /**
-   * Inatividade e detectada no CLIENTE: o ping do Socket.IO prova que a aba
-   * esta viva, nao que a pessoa esta. Vai numa chave separada do status manual
-   * — se fosse a mesma, voltar do ausente esqueceria que voce estava em DND.
-   */
   "presence:afk": z.object({ idle: z.boolean() }),
 
   "voice:join": z.object({
     channelId: objectId,
-    /**
-     * Retomar apos um reload, e nao entrar de novo. O servidor so aceita se a
-     * chamada estiver orfa — assim a aba que voltou reassume, mas uma aba que
-     * reabre nao rouba a chamada de outra que esta ao vivo.
-     */
     resume: z.boolean().optional(),
   }),
   "voice:leave": z.object({}),
-  /** Toca um som do painel para todo mundo que está na chamada. */
+  /// Credencial do SFU para um canal. O app pega pela rota REST, com o cookie
+  /// de sessão; um bot não tem cookie e só existe aqui dentro do socket.
+  "voice:token": z.object({ channelId: objectId }),
+  /// Em que canal de voz alguém está, se estiver em algum. Um bot que acabou
+  /// de conectar não viu os "voice:joined" de quem já estava lá.
+  "voice:onde": z.object({ userId: objectId }),
   "voice:sound": z.object({ soundId: objectId }),
 
-  /** Moderação de voz: vale no SFU, não é pedido gentil ao cliente do outro. */
   "voice:moderate": z.object({
     userId: objectId,
     serverMute: z.boolean().optional(),
@@ -79,14 +76,11 @@ export const clientEventSchemas = {
 export type ClientEventName = keyof typeof clientEventSchemas;
 export type ClientEventPayload<E extends ClientEventName> = z.infer<(typeof clientEventSchemas)[E]>;
 
-/** Toda emissao do cliente responde por callback — sucesso ou erro legivel. */
 export type Ack<T = void> = (res: { ok: true; data: T } | { ok: false; error: string }) => void;
 
 export type ClientToServerEvents = {
   [E in ClientEventName]: (payload: ClientEventPayload<E>, ack?: Ack<unknown>) => void;
 };
-
-// --------------------------- servidor -> cliente ---------------------------
 
 export interface ForumPostPayload {
   id: string;
@@ -111,55 +105,64 @@ export type ServerToClientEvents = {
     reactions: z.infer<typeof reactionStateSchema>[];
   }) => void;
 
+  /// só a animação: a contagem já foi pelo "message:reactions" de sempre
+  "message:super": (p: {
+    messageId: string;
+    channelId: string;
+    emoji: string;
+    userId: string;
+  }) => void;
+
   "typing:started": (p: { channelId: string; user: z.infer<typeof publicUserSchema> }) => void;
 
+  /*
+    O comando chegando ao bot.
+
+    Só o bot dono do comando recebe — vai para a sala dele, e não para a do
+    canal. Quem está no canal já viu a mensagem de comando aparecer; mandar o
+    evento junto seria contar duas vezes a mesma coisa, e para quem não tem o
+    que fazer com ela.
+
+    `opcoes` já vem convertido: o `numero` chega número, o `usuario` e o
+    `canal` chegam como id. O bot não repete a validação que o servidor fez.
+  */
+  "command:invoked": (p: {
+    channelId: string;
+    guildId: string;
+    /// a mensagem "fulano usou /play", para o bot poder responder citando
+    messageId: string;
+    comando: string;
+    opcoes: Record<string, string | number>;
+    usuario: z.infer<typeof publicUserSchema>;
+  }) => void;
+
+  /// A lista de comandos de um servidor mudou: bot entrou, saiu, ou
+  /// registrou outra coisa. O app recarrega em vez de ficar oferecendo
+  /// comando que não existe mais.
+  "commands:changed": (p: { guildId: string }) => void;
+
   "presence:changed": (p: { userId: string; status: PresenceStatus }) => void;
-  /**
-   * O seu proprio status, com o valor DESEJADO.
-   *
-   * Existe porque os seus sockets tambem estao nas salas dos servidores, entao
-   * voce recebe o `presence:changed` dizendo que VOCE esta offline ao ficar
-   * invisivel. O front ignora o `changed` sobre o proprio id e escuta este.
-   */
   "presence:self": (p: { status: DesiredStatus }) => void;
-  /**
-   * Perfil (nome, foto, enfeite, status personalizado) mudou.
-   *
-   * Sem isto, trocar o avatar so aparece pros outros depois de um F5 — limitacao
-   * que ja existia e que enfeite e status personalizado tornariam gritante.
-   */
   "user:updated": (p: {
     user: z.infer<typeof publicUserSchema>;
     perfil: z.infer<typeof perfilPublicoSchema>;
   }) => void;
 
-  /** Alguem te mandou pedido de amizade, ou respondeu o seu. */
   "friend:updated": () => void;
-  /** Uma DM nova apareceu (a outra pessoa iniciou a conversa). */
   "dm:created": (p: { channelId: string }) => void;
 
   "member:joined": (member: z.infer<typeof guildMemberSchema>) => void;
-  /** Cargos ou apelido de alguém mudaram. */
   "member:updated": (member: z.infer<typeof guildMemberSchema>) => void;
   "member:left": (p: { guildId: string; userId: string }) => void;
 
   "channel:created": (channel: z.infer<typeof channelSchema>) => void;
   "channel:updated": (channel: z.infer<typeof channelSchema>) => void;
   "channel:deleted": (p: { channelId: string; guildId: string }) => void;
-  /**
-   * Cargos ou permissões de canal mudaram. Não mandamos o estado novo porque
-   * ele é diferente para cada pessoa (um canal pode sumir para uma e aparecer
-   * para outra); cada cliente recarrega o servidor e recebe a sua versão.
-   */
   "guild:refresh": (p: { guildId: string }) => void;
-  /** Assunto novo no fórum, ou um assunto que mudou (fechou, por exemplo). */
   "post:created": (post: ForumPostPayload) => void;
   "post:updated": (post: ForumPostPayload) => void;
-  /** Emoji, figurinha ou som do servidor mudou. */
   "expressions:changed": (p: { guildId: string }) => void;
-  /** O servidor inteiro deixou de existir. */
   "guild:deleted": (p: { guildId: string }) => void;
-  /** Nome, ícone ou descrição mudaram. */
   "guild:updated": (guild: {
     id: string;
     name: string;
@@ -170,9 +173,7 @@ export type ServerToClientEvents = {
   }) => void;
 
   "voice:states": (p: { channelId: string; states: z.infer<typeof voiceStateSchema>[] }) => void;
-  /** Alguém apertou um som do painel; cada cliente toca o arquivo. */
   "voice:sound": (p: { channelId: string; userId: string; url: string; volume: number }) => void;
-  /** Um moderador te puxou para outro canal de voz. */
   "voice:move": (p: { channelId: string }) => void;
   "voice:joined": (state: z.infer<typeof voiceStateSchema>) => void;
   "voice:left": (p: { channelId: string; userId: string }) => void;
@@ -184,9 +185,6 @@ export type ServerToClientEvents = {
   error: (p: { event?: string; message: string }) => void;
 };
 
-// ------------------------------- salas -------------------------------------
-
-/** Nomes de sala do Socket.IO. Centralizado pra nao ter string solta divergindo. */
 export const rooms = {
   user: (userId: string) => `user:${userId}`,
   guild: (guildId: string) => `guild:${guildId}`,

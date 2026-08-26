@@ -28,7 +28,6 @@ interface VoiceMemberMenuProps {
   guildId: string;
   userId: string;
   displayName: string;
-  /** estado de voz da pessoa, quando ela está numa chamada */
   voiceState?: VoiceState;
   member?: GuildMember;
   roles: Role[];
@@ -37,13 +36,6 @@ interface VoiceMemberMenuProps {
   currentUserId: string | undefined;
 }
 
-/**
- * O menu do botão direito em cima de quem está na chamada.
- *
- * Metade das ações é local (volume, silenciar só pra você) e metade é de
- * servidor (mudo, mover, desconectar). As locais nem passam pelo servidor; as
- * de servidor valem no SFU, então não dá pra burlar pelo cliente.
- */
 export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   children,
   guildId,
@@ -72,7 +64,9 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const pode = (p: Permission) => has(permissoes as Set<Permission>, p);
 
   const naChamada = Boolean(voiceState);
-  const volume = volumes[userId] ?? 1;
+  /// O `min` limpa o que ficou guardado da versão em que a escala ia até 2 —
+  /// sem ele, o controle abriria fora da própria régua.
+  const volume = Math.min(1, volumes[userId] ?? 1);
 
   return (
     <ContextMenu>
@@ -96,14 +90,14 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
         {!euMesmo && naChamada && (
           <>
             <ContextMenuSeparator />
-            <ContextMenuLabel>Volume do usuário</ContextMenuLabel>
+            <ContextMenuLabel>Volume · {Math.round(volume * 100)}%</ContextMenuLabel>
             <div className="px-2.5 pb-2 pt-1" onClick={(e) => e.stopPropagation()}>
               <Slider
                 min={0}
-                max={2}
+                max={1}
                 step={0.05}
                 value={volume}
-                preenchido={volume / 2}
+                preenchido={volume}
                 onChange={(e) => setVolumeLocal(userId, Number(e.target.value))}
               />
             </div>
@@ -127,11 +121,6 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
             <ContextMenuItem
               disabled={!pode("MANAGE_NICKNAMES")}
               onSelect={() =>
-                /*
-                 * Era `window.prompt`, que o Electron não implementa: no
-                 * aplicativo o apelido nunca chegava a ser trocado, sem erro
-                 * nenhum na tela.
-                 */
                 void confirmar({
                   titulo: `Apelido de ${displayName}`,
                   descricao: "Vale só neste servidor. Deixe em branco para voltar ao nome original.",

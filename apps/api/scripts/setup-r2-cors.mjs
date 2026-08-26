@@ -1,10 +1,3 @@
-/**
- * Configura o CORS do bucket R2 para aceitar PUT direto do navegador.
- * Sem isso o upload falha com "Failed to fetch" — o Node nao aplica CORS, entao
- * so aparece quando o envio sai de uma pagina de verdade.
- *
- * Uso: node apps/api/scripts/setup-r2-cors.mjs [origem-extra ...]
- */
 import { S3Client, PutBucketCorsCommand, GetBucketCorsCommand } from "@aws-sdk/client-s3";
 import { readFileSync } from "node:fs";
 
@@ -24,7 +17,6 @@ const s3 = new S3Client({
 const origens = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  // ngrok sorteia uma URL nova a cada sessao; o R2 aceita curinga de subdominio
   "https://*.ngrok-free.dev",
   "https://*.ngrok-free.app",
   "https://*.ngrok.io",

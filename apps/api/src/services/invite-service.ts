@@ -5,7 +5,6 @@ import { banRepository } from "~/repositories/ban-repository.js";
 import { toMember } from "~/lib/serialize.js";
 
 export const inviteService = {
-  /** Preview público: quem recebeu o link vê onde está entrando antes de aceitar. */
   async preview(userId: string, code: string) {
     const invite = await inviteRepository.findByCodeWithRelations(code);
     if (!invite) throw new NotFoundError("Convite inválido ou expirado");
@@ -32,7 +31,6 @@ export const inviteService = {
       throw new AppError("Convite esgotado", 410);
     }
 
-    // banido não volta nem com convite novo — é isso que separa banir de expulsar
     if (await banRepository.find(invite.guildId, userId)) {
       throw new AppError("Você está banido deste servidor", 403);
     }
@@ -40,7 +38,6 @@ export const inviteService = {
     const existing = await memberRepository.find(invite.guildId, userId);
     if (existing) return { guildId: invite.guildId, alreadyMember: true as const, member: null };
 
-    // entra só com o @everyone, que é implícito
     const member = await memberRepository.create({
       guildId: invite.guildId,
       userId,

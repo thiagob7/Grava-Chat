@@ -1,8 +1,3 @@
-/**
- * Erros de domínio. Os services lançam estes; a camada HTTP e a de socket
- * traduzem para status/mensagem. É o que permite um service não saber nada
- * sobre Fastify — e ser testável sem subir servidor.
- */
 export class AppError extends Error {
   constructor(
     message: string,

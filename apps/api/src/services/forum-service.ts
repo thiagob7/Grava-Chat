@@ -5,13 +5,6 @@ import { forumRepository } from "~/repositories/forum-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { accessService } from "./access-service.js";
 
-/**
- * Fórum: cada assunto é um post com conversa própria.
- *
- * As respostas continuam sendo `Message` — o que muda é o `postId`. Assim o
- * histórico, as reações, os anexos e o tempo real funcionam iguais, sem um
- * segundo sistema de mensagens vivendo em paralelo.
- */
 const toPost = (
   p: Awaited<ReturnType<typeof forumRepository.findById>> & object,
 ) => ({
@@ -36,7 +29,6 @@ export const forumService = {
     return { posts: posts.map(toPost), hasMore: posts.length === params.limit };
   },
 
-  /** Criar assunto = o post mais a primeira mensagem, que é o corpo dele. */
   async create(
     userId: string,
     channelId: string,
@@ -80,7 +72,6 @@ export const forumService = {
     return toPost(post);
   },
 
-  /** Fechar: quem criou, ou quem modera as mensagens do canal. */
   async fechar(userId: string, postId: string, fechado: boolean) {
     const post = await forumRepository.findById(postId);
     if (!post) throw new NotFoundError("Assunto não encontrado");
@@ -95,14 +86,12 @@ export const forumService = {
     return toPost(await forumRepository.update(postId, { closedAt: fechado ? new Date() : null }));
   },
 
-  /** Antes de gravar a resposta: o assunto existe, é deste canal, e está aberto. */
   async requirePostAberto(postId: string, channelId: string) {
     const post = await forumRepository.findById(postId);
     if (!post || post.channelId !== channelId) throw new NotFoundError("Assunto não encontrado");
     if (post.closedAt) throw new AppError("Este assunto está fechado");
   },
 
-  /** Depois de gravar: sobe o assunto na lista e conta a mensagem. */
   registrarResposta(postId: string) {
     return forumRepository.registrarResposta(postId);
   },

@@ -30,10 +30,6 @@ export async function forumRoutes(app: FastifyInstance) {
     const { channelId } = channelParams.parse(req.params);
     const criado = await forumService.create(req.userId, channelId, createPostInput.parse(req.body));
 
-    /**
-     * Dois eventos porque são duas coisas: o assunto novo (que entra na lista)
-     * e a primeira mensagem dele (que é a conversa).
-     */
     io().to(rooms.channel(channelId)).emit("post:created", criado.post);
     io().to(rooms.channel(channelId)).emit("message:created", criado.message);
 

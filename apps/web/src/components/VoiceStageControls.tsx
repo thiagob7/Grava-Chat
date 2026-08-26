@@ -16,17 +16,6 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { useVoiceStore } from "~/stores/voice-store";
 
-/**
- * Os controles da chamada flutuando sobre o palco, como no Discord.
- *
- * Já existem os mesmos botões no painel lateral — mas quem está numa chamada
- * olha pro palco, e atravessar a tela pra mutar é o tipo de atrito que só
- * aparece no uso. Aqui eles ficam onde a mão já está.
- *
- * Aparecem no hover pra não competir com o vídeo. `focus-within` está junto de
- * propósito: quem navega por teclado nunca dispara hover, e sem isso os botões
- * receberiam foco continuando invisíveis.
- */
 export const VoiceStageControls: React.FC<{ alvoTelaCheia?: React.RefObject<HTMLElement | null> }> = ({
   alvoTelaCheia,
 }) => {
@@ -49,7 +38,6 @@ export const VoiceStageControls: React.FC<{ alvoTelaCheia?: React.RefObject<HTML
     <div
       className={cn(
         "pointer-events-none absolute inset-x-0 bottom-4 flex justify-center",
-        // some suave, mas aparece na hora: esperar pra revelar irrita
         "opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-within:opacity-100",
       )}
     >
@@ -86,7 +74,6 @@ export const VoiceStageControls: React.FC<{ alvoTelaCheia?: React.RefObject<HTML
           {telaCheia.ativa ? <Minimize size={18} /> : <Maximize size={18} />}
         </Botao>
 
-        {/* separador: desligar não pode ser clicado por engano no meio dos outros */}
         <span className="mx-0.5 h-6 w-px bg-white/10" aria-hidden />
 
         <Tooltip label="Desconectar">
@@ -107,7 +94,6 @@ interface BotaoProps {
   children: React.ReactNode;
   label: string;
   onClick: () => void;
-  /** ligado = verde; desligado = cinza. O vermelho fica só pro que está cortado. */
   ativo?: boolean;
 }
 
@@ -127,14 +113,6 @@ const Botao: React.FC<BotaoProps> = ({ children, label, onClick, ativo }) => (
   </Tooltip>
 );
 
-/**
- * Tela cheia do palco da chamada.
- *
- * O estado NÃO é um `useState` que o botão alterna: o navegador tem o próprio
- * (Esc sai, F11 entra, e a barra do sistema também mexe). Guardar uma cópia
- * daria botão dessincronizado na primeira vez que alguém apertasse Esc — por
- * isso o `fullscreenchange` é a única fonte da verdade.
- */
 function useTelaCheia(alvo?: React.RefObject<HTMLElement | null>) {
   const [ativa, setAtiva] = useState(false);
 
@@ -151,8 +129,6 @@ function useTelaCheia(alvo?: React.RefObject<HTMLElement | null>) {
       if (document.fullscreenElement) await document.exitFullscreen();
       else await (alvo?.current ?? document.documentElement).requestFullscreen();
     } catch {
-      // Safari e alguns gerenciadores de janela recusam sem gesto direto; o
-      // botão simplesmente não faz nada, que é melhor que um erro na tela
     }
   };
 

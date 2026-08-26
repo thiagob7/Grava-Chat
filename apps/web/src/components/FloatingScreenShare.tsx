@@ -5,20 +5,6 @@ import { Maximize2, MonitorUp, X } from "lucide-react";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import { useVoiceStore } from "~/stores/voice-store";
 
-/**
- * A transmissão que você está assistindo, numa janelinha, quando o palco não
- * está na tela.
- *
- * Sem isto, ir pro chat encerrava a live na prática: o palco desmonta, o vídeo
- * some, e você tinha que voltar pro canal de voz pra continuar vendo. É o
- * mesmo comportamento do Discord — e resolve o caso real de assistir alguém
- * jogando enquanto se conversa no texto.
- *
- * Mora fora das rotas (ver App.tsx) de propósito: navegar não pode desmontá-la,
- * senão o vídeo pisca a cada troca de canal.
- */
-
-/** Distância mínima da borda, pra janelinha nunca sumir da tela. */
 const MARGEM = 8;
 const LARGURA = 320;
 const ALTURA = 180;
@@ -40,7 +26,6 @@ export const FloatingScreenShare: React.FC = () => {
     y: window.innerHeight - ALTURA - 24,
   }));
 
-  /** Deslocamento entre o ponteiro e o canto da janela, no início do arrasto. */
   const arrasto = useRef<{ dx: number; dy: number } | null>(null);
 
   const limitar = useCallback(
@@ -51,11 +36,6 @@ export const FloatingScreenShare: React.FC = () => {
     [],
   );
 
-  /**
-   * Os ouvintes ficam na JANELA, não na janelinha: arrastando rápido, o
-   * ponteiro sai de cima do elemento e os eventos parariam de chegar — a
-   * janelinha "escaparia" do mouse no meio do movimento.
-   */
   useEffect(() => {
     const mover = (e: PointerEvent) => {
       if (!arrasto.current) return;
@@ -75,7 +55,6 @@ export const FloatingScreenShare: React.FC = () => {
     };
   }, [limitar]);
 
-  /** Redimensionar a janela do navegador não pode deixar a janelinha fora da tela. */
   useEffect(() => {
     const ajustar = () => setPosicao((p) => limitar(p.x, p.y));
 
@@ -92,11 +71,6 @@ export const FloatingScreenShare: React.FC = () => {
     >
       <VoiceVideo track={alvo.screenTrack!} />
 
-      {/*
-        A barra inteira é a alça de arrasto. `touch-action: none` é obrigatório:
-        sem isso o navegador interpreta o movimento como rolagem da página e o
-        arrasto não acontece em telas de toque.
-      */}
       <div
         onPointerDown={(e) => {
           arrasto.current = { dx: e.clientX - posicao.x, dy: e.clientY - posicao.y };
@@ -128,7 +102,6 @@ const BotaoDaMini: React.FC<{
   onClick: () => void;
 }> = ({ children, label, onClick }) => (
   <button
-    // o clique não pode virar arrasto: sem isto, apertar o X move a janelinha
     onPointerDown={(e) => e.stopPropagation()}
     onClick={onClick}
     title={label}

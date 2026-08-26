@@ -9,16 +9,11 @@ import { presenceService } from "./presence-service.js";
 export type FriendshipView = {
   id: string;
   user: PublicUser;
-  /** ACCEPTED = amigos; PENDING_IN = ele te chamou; PENDING_OUT = você chamou */
   status: "ACCEPTED" | "PENDING_IN" | "PENDING_OUT" | "BLOCKED";
   createdAt: string;
 };
 
 export const friendshipService = {
-  /**
-   * Lista tudo de uma vez, já do ponto de vista de quem perguntou: quem pediu e
-   * quem recebeu vira "entrada" ou "saída", que é o que a tela precisa saber.
-   */
   async list(userId: string): Promise<FriendshipView[]> {
     const relacoes = await friendshipRepository.findAllForUser(userId);
     const outros = relacoes.map((r) => (r.requesterId === userId ? r.addressee : r.requester));
@@ -38,17 +33,6 @@ export const friendshipService = {
     });
   },
 
-  /**
-   * Bloquear alguém.
-   *
-   * Reaproveita a linha de amizade em vez de criar uma tabela separada: a
-   * relação entre duas pessoas já mora aqui, e um bloqueio É um estado dessa
-   * relação. Duas tabelas concorrentes dariam o caso impossível de "amigos e
-   * bloqueados ao mesmo tempo".
-   *
-   * O `requesterId` passa a ser quem bloqueou — é isso que permite saber, mais
-   * tarde, quem tem o poder de desfazer.
-   */
   async block(userId: string, alvoId: string) {
     if (alvoId === userId) throw new AppError("Você não pode bloquear a si mesmo");
 
@@ -57,14 +41,11 @@ export const friendshipService = {
 
     const existente = await friendshipRepository.findBetween(userId, alvoId);
 
-    // desfazer e recriar: o bloqueio precisa registrar QUEM bloqueou, e a
-    // linha antiga pode ter os papéis invertidos
     if (existente) await friendshipRepository.remove(existente.id);
 
     await friendshipRepository.createBlocked(userId, alvoId);
   },
 
-  /** Só quem bloqueou desfaz — senão bastaria o bloqueado se desbloquear. */
   async unblock(userId: string, alvoId: string) {
     const relacao = await friendshipRepository.findBetween(userId, alvoId);
 
@@ -74,7 +55,6 @@ export const friendshipService = {
     await friendshipRepository.remove(relacao.id);
   },
 
-  /** Pedido de amizade por nome de usuário, como no Discord. */
   async request(userId: string, username: string) {
     const alvo = await userRepository.findByUsernamePublic(username.replace(/^@/, "").trim());
     if (!alvo) throw new NotFoundError("Não achei ninguém com esse nome de usuário");
@@ -86,10 +66,6 @@ export const friendshipService = {
       if (existente.status === "ACCEPTED") throw new AppError("Vocês já são amigos");
       if (existente.status === "BLOCKED") throw new AppError("Não foi possível enviar o pedido");
 
-      /**
-       * Ele já tinha te chamado e você "pediu" de volta: isso é aceitar. Sem
-       * este caso, os dois ficariam presos com um pedido pendente cada um.
-       */
       if (existente.addresseeId === userId) {
         return { relacao: await friendshipRepository.updateStatus(existente.id, "ACCEPTED"), aceitou: true };
       }
@@ -104,7 +80,6 @@ export const friendshipService = {
     const relacao = await friendshipRepository.findById(friendshipId);
     if (!relacao) throw new NotFoundError("Pedido não encontrado");
 
-    // Só quem RECEBEU pode aceitar; quem enviou só pode cancelar.
     if (relacao.addresseeId !== userId) throw new AppError("Este pedido não é seu");
     if (relacao.status !== "PENDING") throw new AppError("Este pedido já foi respondido");
 
@@ -116,7 +91,6 @@ export const friendshipService = {
     return friendshipRepository.updateStatus(relacao.id, "ACCEPTED");
   },
 
-  /** Serve para cancelar pedido enviado e para desfazer amizade. */
   async remove(userId: string, friendshipId: string) {
     const relacao = await friendshipRepository.findById(friendshipId);
     if (!relacao) throw new NotFoundError("Não encontrado");
@@ -128,10 +102,6 @@ export const friendshipService = {
     await friendshipRepository.remove(relacao.id);
   },
 
-  /**
-   * Abre (ou cria) a conversa privada. Exige amizade: sem isso, qualquer pessoa
-   * com um id de usuário poderia abrir uma DM e mandar mensagem.
-   */
   async openDm(userId: string, outroId: string) {
     const relacao = await friendshipRepository.findBetween(userId, outroId);
 
@@ -146,7 +116,6 @@ export const friendshipService = {
     return toChannel(await dmRepository.create([userId, outroId]));
   },
 
-  /** Conversas privadas do usuário, com a outra pessoa e a última mensagem. */
   async listDms(userId: string) {
     const canais = await dmRepository.findManyForUser(userId);
     if (!canais.length) return [];

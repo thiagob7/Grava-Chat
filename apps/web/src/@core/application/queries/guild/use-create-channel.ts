@@ -8,11 +8,6 @@ import { apiErrorMessage } from "~/@core/lib/api";
 export const useCreateChannel = () =>
   useMutation({
     mutationFn: (data: CreateChannelDTO) => createChannel(data),
-    /**
-     * Sem invalidate: o canal criado volta pelo evento `channel:created` — que
-     * chega inclusive pra quem criou — e o handler de socket põe no cache.
-     * Invalidar aqui refetcharia o servidor inteiro à toa.
-     */
     onSuccess: () => {
       toast.success("Canal criado.");
     },

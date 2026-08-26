@@ -2,7 +2,6 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 
 export const forumRepository = {
-  /** Ordenado por atividade: assunto com resposta nova sobe pro topo. */
   findManyByChannel(channelId: string, params: { limit: number; before?: string }) {
     return prisma.forumPost.findMany({
       where: { channelId, ...(params.before ? { id: { lt: params.before } } : {}) },
@@ -24,7 +23,6 @@ export const forumRepository = {
     return prisma.forumPost.update({ where: { id }, data, include: { author: true } });
   },
 
-  /** Uma resposta nova mexe em duas coisas ao mesmo tempo: contagem e ordem. */
   registrarResposta(id: string) {
     return prisma.forumPost.update({
       where: { id },

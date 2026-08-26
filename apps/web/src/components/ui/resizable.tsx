@@ -2,21 +2,12 @@ import React, { useRef, useState } from "react";
 
 import { cn } from "~/lib/utils";
 
-/**
- * Painéis laterais com largura arrastável, como no Discord.
- *
- * A largura fica no localStorage e não na conta: é uma questão do tamanho
- * DESTA tela. Levar isso pro servidor faria a barra encolher no notebook
- * porque você a alargou no monitor grande.
- */
-
 type Borda = "esquerda" | "direita";
 
 interface Opcoes {
   padrao: number;
   min: number;
   max: number;
-  /** de que lado do painel fica a alça */
   borda: Borda;
 }
 
@@ -34,7 +25,6 @@ function ler(nome: string, padrao: number, min: number, max: number) {
 export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: Opcoes) {
   const [largura, setLargura] = useState(() => ler(nome, padrao, min, max));
   const [arrastando, setArrastando] = useState(false);
-  /** onde o arrasto começou; `null` quando não há arrasto em curso */
   const inicio = useRef<{ x: number; largura: number } | null>(null);
 
   const limitar = (valor: number) => Math.min(max, Math.max(min, valor));
@@ -43,13 +33,11 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: O
     try {
       localStorage.setItem(chaveDe(nome), String(valor));
     } catch {
-      /* modo privado sem storage: vale só nesta sessão */
     }
   };
 
   const props = {
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
-      // sem isto o arrasto vira seleção de texto do painel inteiro
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
       inicio.current = { x: e.clientX, largura };
@@ -60,7 +48,6 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: O
       if (!inicio.current) return;
 
       const delta = e.clientX - inicio.current.x;
-      // painel à esquerda cresce pra direita; à direita, o contrário
       setLargura(limitar(inicio.current.largura + (borda === "direita" ? delta : -delta)));
     },
 
@@ -73,13 +60,11 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: O
       guardar(largura);
     },
 
-    /** Volta ao tamanho de fábrica — o jeito de sair de um arrasto infeliz. */
     onDoubleClick: () => {
       setLargura(padrao);
       guardar(padrao);
     },
 
-    /** Teclado: a alça é focável, então tem que dar pra ajustar sem o mouse. */
     onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
       const passo = e.key === "ArrowLeft" ? -16 : e.key === "ArrowRight" ? 16 : 0;
       if (!passo) return;
@@ -94,11 +79,6 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: O
   return { largura, arrastando, alca: props, limites: { min, max } };
 }
 
-/**
- * A alça em si: uma faixa fina na borda do painel. Fica absoluta pra não
- * empurrar o conteúdo, e transborda meio pixel pra cada lado — uma linha de 1px
- * é impossível de acertar com o mouse.
- */
 export const AlcaDeLargura: React.FC<
   {
     borda: Borda;
@@ -115,12 +95,26 @@ export const AlcaDeLargura: React.FC<
     aria-valuemin={limites.min}
     aria-valuemax={limites.max}
     tabIndex={0}
+    /*
+      A área de PEGAR é larga (8px) e invisível; o que aparece é o fio de dentro.
+      Antes as duas eram a mesma coisa: 4px pintados de `bg-brand` cheio, que no
+      arraste viravam uma tira vermelha da altura da tela.
+    */
     className={cn(
-      "absolute inset-y-0 z-20 w-1 cursor-col-resize transition-colors",
-      borda === "direita" ? "-right-0.5" : "-left-0.5",
-      arrastando ? "bg-brand" : "hover:bg-brand/70 focus-visible:bg-brand/70",
+      "group/alca absolute inset-y-0 z-20 w-2 cursor-col-resize",
+      borda === "direita" ? "-right-1" : "-left-1",
       className,
     )}
     {...props}
-  />
+  >
+    <span
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
+        arrastando
+          ? "w-0.5 bg-brand/80"
+          : "w-px bg-transparent group-hover/alca:bg-brand/40 group-focus-visible/alca:bg-brand/60",
+      )}
+    />
+  </div>
 );

@@ -19,21 +19,6 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
-/**
- * O que faz sentido ajustar em cada tipo de canal. Mostrar "Falar" num canal de
- * texto só ensina a errar.
- */
-/*
- * `CREATE_INVITE` NÃO está aqui de propósito.
- *
- * Convite no Gravaê é do SERVIDOR: o `Invite` não tem canal, e quem aceita
- * entra no servidor, não num canal específico. Uma exceção por canal seria
- * impossível de cumprir — o `guildService.createInvite` só sabe checar a
- * permissão no nível do servidor. Oferecer o botão aqui prometia um bloqueio
- * que nunca ia acontecer.
- *
- * Ele continua na tela de Cargos, que é onde tem efeito de verdade.
- */
 const PERMISSOES_POR_TIPO: Record<"TEXTO" | "VOZ", Permission[]> = {
   TEXTO: [
     "VIEW_CHANNEL",
@@ -66,15 +51,9 @@ interface ChannelPermissionsBoardProps {
   channelType: ChannelType;
   roles: Role[];
   members: GuildMember[];
-  /** o que EU tenho: não se concede o que não se possui */
   minhasPermissoes: Permission[];
 }
 
-/**
- * O miolo das permissões do canal. Fica separado do modal porque a mesma coisa
- * aparece em dois lugares: no atalho da barra lateral e dentro das
- * configurações do canal.
- */
 export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = ({
   guildId,
   channelId,
@@ -89,27 +68,14 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
   const [alvo, setAlvo] = useState<{ id: string; type: "ROLE" | "MEMBER" } | null>(null);
   const [busca, setBusca] = useState("");
 
-  /**
-   * Alvos que a pessoa acabou de adicionar mas que ainda não têm nenhuma
-   * permissão marcada.
-   *
-   * Ficam só aqui, na tela. O servidor APAGA um overwrite sem allow nem deny
-   * (ver `role-service.setOverwrite`), então não há como gravar "presente na
-   * lista, sem regra nenhuma" — e a versão anterior contornava isso gravando
-   * `deny: ["VIEW_CHANNEL"]`. O efeito era brutal: adicionar o @everyone à
-   * lista pra configurar o canal fazia o canal SUMIR para todo mundo, na hora,
-   * sem ninguém ter pedido isso.
-   */
   const [pendentes, setPendentes] = useState<{ id: string; type: "ROLE" | "MEMBER" }[]>([]);
 
   const everyone = roles.find((r) => r.isEveryone);
 
-  // começa sempre no @everyone: é a regra que vale pro canal inteiro
   useEffect(() => {
     if (!alvo && everyone) setAlvo({ id: everyone.id, type: "ROLE" });
   }, [alvo, everyone]);
 
-  // trocar de canal joga fora os pendentes: eles são deste canal, não do modal
   useEffect(() => setPendentes([]), [channelId]);
 
   const lista = useMemo(() => {
@@ -190,7 +156,6 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                     <button
                       key={`${s.type}-${s.id}`}
                       onClick={() => {
-                        // só entra na lista; nada é gravado até marcarem algo
                         setPendentes((atuais) =>
                           atuais.some((p) => p.id === s.id)
                             ? atuais
@@ -312,7 +277,6 @@ interface ChannelPermissionsModalProps extends ChannelPermissionsBoardProps {
   channelName: string;
 }
 
-/** O atalho da barra lateral: o mesmo quadro, dentro de um modal. */
 export const ChannelPermissionsModal: React.FC<ChannelPermissionsModalProps> = ({
   open,
   onClose,

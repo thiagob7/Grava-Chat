@@ -12,8 +12,6 @@ export const useUpdateGuild = () => {
     mutationFn: (data: UpdateGuildDTO) => updateGuild(data),
     onSuccess: () => {
       toast.success("Servidor atualizado.");
-      // o evento guild:updated já atualiza quem está com o servidor aberto;
-      // isto é para a lista lateral de quem disparou a mudança
       queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao salvar o servidor.")),

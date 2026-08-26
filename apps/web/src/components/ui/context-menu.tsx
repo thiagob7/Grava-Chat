@@ -4,7 +4,6 @@ import { ChevronRight } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
-/** Menu do botão direito. Mesmo visual do dropdown — o que muda é o gatilho. */
 export const ContextMenu = ContextMenuPrimitive.Root;
 export const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 export const ContextMenuSub = ContextMenuPrimitive.Sub;

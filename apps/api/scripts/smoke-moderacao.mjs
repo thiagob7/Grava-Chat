@@ -1,4 +1,3 @@
-/** Moderação: banimento, castigo, automod e o registro de auditoria. */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -34,7 +33,6 @@ const connect = (token) =>
     s.on("connect_error", reject);
   });
 
-/** Com timeout: ack que nunca chega tem que falhar, e nao travar o teste. */
 const emit = (s, ev, payload) =>
   new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`${ev}: o servidor nao respondeu`)), 8000);
@@ -81,8 +79,6 @@ try {
 await recusa(403, "de castigo tambem nao ganha token de voz pra falar", async () => {
   const sala = detalhe.channels.find((c) => c.type === "VOICE");
   const r = await api(`/channels/${sala.id}/voice-token`, { token: ze.accessToken });
-  // o token sai, mas sem permissao de publicar: quem checa isso e o SFU.
-  // aqui garantimos que pelo menos a entrada continua permitida
   if (r.token) throw new Error("-> 403");
 });
 
@@ -128,7 +124,6 @@ await emit(socketBagunceiro, "message:send", {
 });
 ok("palavra dentro de outra palavra nao e bloqueada");
 
-// o dono administra: o proprio filtro nao vale pra ele
 const socketDono = await connect(dono.accessToken);
 await emit(socketDono, "channel:subscribe", { channelId: geral.id });
 await emit(socketDono, "message:send", { channelId: geral.id, content: "bobagem nenhuma", nonce: "a0" });

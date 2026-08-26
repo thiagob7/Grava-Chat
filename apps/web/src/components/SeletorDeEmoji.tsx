@@ -20,17 +20,6 @@ interface SeletorDeEmojiProps {
   onEscolher: (emoji: string) => void;
 }
 
-/**
- * Um seletor de emoji UNICODE, para campos que guardam um caractere.
- *
- * Não oferece emoji do servidor de propósito: aqueles são gravados como
- * `:nome:` e viram imagem só onde existe um renderizador. Num status, que
- * aparece no cartão e ao lado do nome, sairia escrito `:festa:` — pior do que
- * não ter emoji nenhum.
- *
- * O dataset chega por `import()` (ver `lib/emoji.ts`): ninguém baixa a lista de
- * emoji sem abrir um seletor.
- */
 export const SeletorDeEmoji: React.FC<SeletorDeEmojiProps> = ({
   children,
   onEscolher,
@@ -41,7 +30,7 @@ export const SeletorDeEmoji: React.FC<SeletorDeEmojiProps> = ({
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
-      <PopoverContent side="bottom" align="start" className="w-80 p-0">
+      <PopoverContent side="bottom" align="start" portal={false} className="w-80 p-0">
         {aberto && (
           <Grade
             onEscolher={(emoji) => {

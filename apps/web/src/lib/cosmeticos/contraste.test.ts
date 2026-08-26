@@ -32,7 +32,6 @@ describe("piso de contraste", () => {
   it("mantém a cor que a pessoa quis: um roxo escuro vira roxo claro, não cinza", () => {
     const [r, g, b] = paraRgb(legivel("#2a0a4a", FUNDO));
 
-    // continua sendo roxo: azul e vermelho acima do verde
     expect(b).toBeGreaterThan(g);
     expect(r).toBeGreaterThan(g);
   });
@@ -50,7 +49,6 @@ describe("piso de contraste", () => {
 
   it("garante o piso para toda cor do espectro contra o fundo do app", () => {
     for (let h = 0; h < 360; h += 15) {
-      // uma volta pelo círculo cromático, em tom escuro (o pior caso)
       const cor = corDoMatiz(h, 0.18);
 
       expect(contraste(legivel(cor, FUNDO), FUNDO)).toBeGreaterThanOrEqual(3);
@@ -58,7 +56,6 @@ describe("piso de contraste", () => {
   });
 });
 
-/** HSL simplificado, saturação cheia, só para varrer o espectro no teste. */
 function corDoMatiz(h: number, l: number): string {
   const c = (1 - Math.abs(2 * l - 1)) * 1;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { LogOut, ShieldAlert } from "lucide-react";
 
+import { useAparencia } from "~/stores/aparencia";
+
 import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -29,7 +31,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
         </div>
 
         <div className="mt-5 space-y-4">
-          <Campo rotulo="E-mail" valor={user.email} />
+          <Campo rotulo="E-mail" valor={user.email} sigiloso />
           <Campo
             rotulo="Entrar com"
             valor={user.providers.includes("google") ? "Conta Google" : "Login de desenvolvimento"}
@@ -82,9 +84,37 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
   );
 };
 
-const Campo: React.FC<{ rotulo: string; valor: string }> = ({ rotulo, valor }) => (
-  <div>
-    <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">{rotulo}</p>
-    <p className="mt-0.5 text-sm">{valor}</p>
-  </div>
-);
+/**
+ * Um dado da conta — e, quando marcado como sigiloso, um que some na
+ * transmissão.
+ *
+ * Escondido não é apagado: um clique revela. Quem está no modo streamer
+ * também precisa ler o próprio e-mail de vez em quando; o que ele não pode é
+ * que ele apareça sem ninguém ter pedido.
+ */
+const Campo: React.FC<{ rotulo: string; valor: string; sigiloso?: boolean }> = ({
+  rotulo,
+  valor,
+  sigiloso = false,
+}) => {
+  const [revelado, setRevelado] = useState(false);
+  const prefs = useAparencia();
+  const escondido = sigiloso && !revelado && prefs.modoStreamer && prefs.streamerEscondeDados;
+
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">{rotulo}</p>
+
+      {escondido ? (
+        <button
+          onClick={() => setRevelado(true)}
+          className="mt-0.5 rounded bg-surface-3 px-2 py-0.5 text-sm text-ink-faint transition hover:text-ink"
+        >
+          Escondido pelo modo streamer — clique para ver
+        </button>
+      ) : (
+        <p className="mt-0.5 text-sm">{valor}</p>
+      )}
+    </div>
+  );
+};

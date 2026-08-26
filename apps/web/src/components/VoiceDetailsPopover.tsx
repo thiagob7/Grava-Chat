@@ -10,13 +10,6 @@ interface VoiceDetailsPopoverProps {
   children: React.ReactNode;
 }
 
-/**
- * Os detalhes da conexão de voz, ao clicar em "Detalhes de Voz".
- *
- * O gráfico é o ponto: um número sozinho não distingue "está ruim agora" de
- * "está ruim sempre", e é justamente essa diferença que decide se a pessoa
- * reinicia o roteador ou culpa o servidor.
- */
 export const VoiceDetailsPopover: React.FC<VoiceDetailsPopoverProps> = ({
   ping,
   regiao,
@@ -68,13 +61,6 @@ const Linha: React.FC<{ rotulo: string; children: React.ReactNode }> = ({ rotulo
   </div>
 );
 
-/**
- * O histórico como área preenchida.
- *
- * A escala é fixa em 200 ms e não automática: com escala automática, um ping
- * ótimo e estável desenharia exatamente o mesmo gráfico de um péssimo e
- * estável. Fixa, a altura da linha quer dizer alguma coisa.
- */
 const TETO_MS = 200;
 
 const GraficoDePing: React.FC<{ historico: (number | null)[] }> = ({ historico }) => {
@@ -92,7 +78,6 @@ const GraficoDePing: React.FC<{ historico: (number | null)[] }> = ({ historico }
   const altura = 40;
   const passo = largura / (amostras.length - 1);
 
-  // buraco (medição sem resposta) vira o teto: sumir daria a impressão de ping 0
   const y = (v: number | null) =>
     altura - (Math.min(v ?? TETO_MS, TETO_MS) / TETO_MS) * altura;
 

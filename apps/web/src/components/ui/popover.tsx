@@ -11,9 +11,10 @@ export const PopoverContent = ({
   className,
   align = "start",
   sideOffset = 8,
+  portal = true,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) => (
-  <PopoverPrimitive.Portal>
+}: React.ComponentProps<typeof PopoverPrimitive.Content> & { portal?: boolean }) => {
+  const conteudo = (
     <PopoverPrimitive.Content
       align={align}
       sideOffset={sideOffset}
@@ -24,5 +25,7 @@ export const PopoverContent = ({
       )}
       {...props}
     />
-  </PopoverPrimitive.Portal>
-);
+  );
+
+  return portal ? <PopoverPrimitive.Portal>{conteudo}</PopoverPrimitive.Portal> : conteudo;
+};

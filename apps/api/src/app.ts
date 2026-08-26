@@ -23,6 +23,10 @@ import { uploadRoutes } from "~/routes/uploads.js";
 import { voiceRoutes } from "~/routes/voice.js";
 import { friendRoutes } from "~/routes/friends.js";
 import { userRoutes } from "~/routes/users.js";
+import { botRoutes } from "~/routes/bots.js";
+import { oauthRoutes } from "~/routes/oauth.js";
+import { botApiRoutes } from "~/routes/bot-api.js";
+import { embedRoutes } from "~/routes/embeds.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -36,21 +40,13 @@ export async function buildApp() {
 
   await app.register(cors, {
     origin: (origin, cb) => corsOrigin(origin, cb),
-    // obrigatório: o refresh token vai em cookie httpOnly e o browser só o
-    // envia cross-origin com credentials habilitado dos dois lados.
     credentials: true,
   });
 
   await app.register(cookie, { secret: env.COOKIE_SECRET });
   await app.register(authPlugin);
 
-  /**
-   * Traduz as excecoes do dominio pra HTTP num lugar so. Sem isso cada rota
-   * viraria um try/catch e um erro de permissao sairia como 500.
-   */
   app.setErrorHandler((error, req, reply) => {
-    // Erro de domínio lançado por um service: ele não sabe nada de HTTP, a
-    // tradução acontece aqui.
     if (error instanceof AppError) {
       return reply.code(error.statusCode).send({ message: error.message });
     }
@@ -77,6 +73,9 @@ export async function buildApp() {
       await api.register(authRoutes);
       await api.register(meRoutes);
       await api.register(guildRoutes);
+      await api.register(botRoutes);
+      await api.register(oauthRoutes);
+      await api.register(botApiRoutes);
       await api.register(roleRoutes);
       await api.register(inviteRoutes);
       await api.register(messageRoutes);
@@ -89,7 +88,7 @@ export async function buildApp() {
       await api.register(moderationRoutes);
       await api.register(forumRoutes);
       await api.register(gifRoutes);
-      // sem sessão: o token na URL é a credencial (ver routes/webhooks.ts)
+      await api.register(embedRoutes);
       await api.register(publicWebhookRoutes);
     },
     { prefix: "/api" },

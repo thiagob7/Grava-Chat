@@ -1,6 +1,3 @@
-/**
- * Compositor e mensagens: fixar, spoiler, enquete e modo lento.
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -106,7 +103,6 @@ if ((await api(`/channels/${geral.id}/pins`, { token: dono.accessToken, method: 
 ok("desafixar tira do painel");
 
 console.log("\n== enquete ==");
-// o ack do socket devolve so o id; a mensagem inteira vem pelo evento/historico
 const criada = await emit(socketDono, "message:send", {
   channelId: geral.id,
   content: "",
@@ -133,7 +129,6 @@ let atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessTok
 if (atual.poll.opcoes[0].userIds.length !== 2) throw new Error("os votos nao contaram");
 ok("dois votos na mesma opcao contam os dois");
 
-// escolha unica: votar na outra opcao move o voto
 await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoB });
 atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
   .messages.find((m) => m.id === enquete.id);
@@ -142,7 +137,6 @@ if (atual.poll.opcoes[0].userIds.length !== 1 || atual.poll.opcoes[1].userIds.le
 }
 ok("enquete de escolha unica move o voto em vez de somar");
 
-// clicar de novo na mesma opcao tira o voto
 await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoB });
 atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
   .messages.find((m) => m.id === enquete.id);

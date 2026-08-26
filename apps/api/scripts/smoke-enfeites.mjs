@@ -1,7 +1,3 @@
-/**
- * Fase 1: o mapa `profiles` no detalhe do servidor, e o enfeite no cartao de
- * perfil. Cria contas descartaveis (o `limpar-dados-de-teste` conhece o padrao).
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -17,7 +13,6 @@ const api = async (path, { token, body, method = "POST" } = {}) => {
   return res.status === 204 ? null : res.json();
 };
 
-/** Espera a recusa: devolve o status em vez de estourar. */
 const recusa = async (path, { token, body, method = "POST", form } = {}) => {
   const res = await fetch(`${BASE}/api${path}`, {
     method,
@@ -38,10 +33,6 @@ const guild = await api("/guilds", { token: dono.accessToken, body: { name: "Tes
 const convite = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
 await api(`/invites/${convite.code}/join`, { token: membro.accessToken });
 
-/*
- * As contas do dev-login sobrevivem entre execucoes: sem zerar o enfeite, a
- * segunda rodada comeca com o que a primeira gravou e o "antes" nunca e antes.
- */
 await api("/me", { token: dono.accessToken, method: "PATCH", body: { perfil: null } });
 await api("/me", { token: membro.accessToken, method: "PATCH", body: { perfil: null } });
 
@@ -75,19 +66,12 @@ const cartao = await api(`/users/${dono.user.id}`, { token: membro.accessToken, 
 if (cartao.perfil?.nome?.efeito !== "gradiente") throw new Error(`o cartao nao trouxe o enfeite: ${JSON.stringify(cartao.perfil)}`);
 ok("o cartao de perfil traz o enfeite (e o que faz funcionar na DM)");
 
-
-
 console.log("\n== teto por finalidade ==");
 const mega = 1024 * 1024;
 ok(`presign de anexo com 3 MB passa: ${(await api("/uploads/presign", { token: dono.accessToken, body: { filename: "a.png", contentType: "image/png", size: 3 * mega, purpose: "anexo" } })).attachment.size} bytes`);
 ok(`o MESMO tamanho como avatar e recusado: ${await recusa("/uploads/presign", { token: dono.accessToken, body: { filename: "a.png", contentType: "image/png", size: 3 * mega, purpose: "avatar" } })}`);
 ok(`e como icone de cargo tambem: ${await recusa("/uploads/presign", { token: dono.accessToken, body: { filename: "a.png", contentType: "image/png", size: 300 * 1024, purpose: "iconeDeCargo" } })}`);
 
-/*
- * O caminho multipart tambem: hoje e ELE que esta em uso (o envio direto ao
- * bucket depende de uma politica de CORS que ainda nao existe). Um teto que so
- * o outro caminho respeita nao e teto nenhum.
- */
 const grande = new FormData();
 grande.append("file", new Blob([new Uint8Array(3 * mega)], { type: "image/png" }), "grande.png");
 ok(`upload de 3 MB pela API como avatar e recusado: ${await recusa("/uploads?purpose=avatar", { token: dono.accessToken, form: grande })}`);
@@ -107,8 +91,6 @@ const cargo = await api(`/guilds/${guild.id}/roles`, { token: dono.accessToken, 
 await api(`/guilds/${guild.id}/roles/${cargo.id}`, { token: dono.accessToken, method: "PATCH", body: { mentionable: true } });
 const fechado = await api(`/guilds/${guild.id}/roles`, { token: dono.accessToken, body: { name: "Fechado" } });
 
-/* Mensagem vai por WebSocket: ela ja precisa ser distribuida pra sala inteira,
-   e um POST faria a viagem duas vezes. */
 const conectar = (token) =>
   new Promise((resolve, reject) => {
     const s = io(BASE, { auth: { token }, transports: ["websocket"] });
@@ -127,8 +109,6 @@ await emitir(socketDono, "channel:subscribe", { channelId: canal.id });
 await emitir(socketMembro, "channel:subscribe", { channelId: canal.id });
 
 let nonce = 0;
-/* O ack do socket devolve so o id — o resto vem do historico, que e o mesmo
-   caminho por onde o front le. */
 const enviar = async (token, content) => {
   const { id } = await emitir(token === dono.accessToken ? socketDono : socketMembro, "message:send", {
     channelId: canal.id,
@@ -280,7 +260,6 @@ if ((await recusa("/uploads/importar", { token: dono.accessToken, body: { url: "
 }
 ok("endereco fora da lista de hosts e recusado antes de qualquer fetch");
 
-// leva junto o que ficou de execucoes anteriores que morreram no meio
 const meus = await api("/guilds", { token: dono.accessToken, method: "GET" });
 for (const g of meus.filter((g) => g.name === "Teste Enfeites")) {
   await api(`/guilds/${g.id}`, { token: dono.accessToken, method: "DELETE" });

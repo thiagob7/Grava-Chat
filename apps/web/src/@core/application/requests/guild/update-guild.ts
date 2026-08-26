@@ -6,12 +6,11 @@ export interface UpdateGuildDTO {
   name?: string;
   iconUrl?: string | null;
   description?: string | null;
-  /** etiqueta ao lado do nome de quem é membro */
   tag?: string | null;
   tagIcon?: string | null;
-  /** canal das mensagens do sistema (boas-vindas) */
   systemChannelId?: string | null;
   welcomeEnabled?: boolean;
+  welcomeMessage?: string | null;
 }
 
 export async function updateGuild({ guildId, ...data }: UpdateGuildDTO): Promise<GuildModel> {

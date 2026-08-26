@@ -1,13 +1,3 @@
-/**
- * Fumaça do login do aplicativo de desktop.
- *
- * O consentimento do Google exige um humano na tela — o que dá pra verificar
- * sozinho é a parte que o app inventou: o desafio guardado no cookie, e o
- * código de uso único que só vira sessão na mão de quem tem o verificador.
- *
- * O código é semeado direto no Redis porque, no fluxo real, quem o emite é o
- * callback do Google. É o mesmo dado, no mesmo formato.
- */
 import { createHash, randomBytes } from "node:crypto";
 import Redis from "ioredis";
 
@@ -58,7 +48,6 @@ const { user } = await login.json();
 
 const redis = new Redis(REDIS, { maxRetriesPerRequest: 2 });
 
-/** Mesmo formato que o callback do Google grava. */
 const semear = async (desafio) => {
   const codigo = b64();
   await redis.set(

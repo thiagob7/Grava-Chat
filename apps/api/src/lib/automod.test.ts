@@ -16,7 +16,6 @@ describe("automod — palavras", () => {
   });
 
   it("não pega palavra que só CONTÉM o termo", () => {
-    // "burro" na lista não pode derrubar "burrocracia"
     expect(violacao("isso é burrocracia pura", palavras(["burro"]))).toBeNull();
   });
 
@@ -29,7 +28,6 @@ describe("automod — palavras", () => {
   });
 
   it("caractere especial na lista não vira regex", () => {
-    // um "(" solto na lista quebraria a expressão se não fosse escapado
     expect(() => violacao("teste", palavras(["(", "a+b"]))).not.toThrow();
     expect(violacao("conta a+b agora", palavras(["a+b"]))).not.toBeNull();
   });

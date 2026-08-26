@@ -11,7 +11,6 @@ export const auditRepository = {
       where: {
         guildId: params.guildId,
         ...(params.actorId ? { actorId: params.actorId } : {}),
-        // "role" pega role.create, role.update e role.delete de uma vez
         ...(params.action ? { action: { startsWith: params.action } } : {}),
         ...(params.before ? { id: { lt: params.before } } : {}),
       },
@@ -22,7 +21,6 @@ export const auditRepository = {
   },
 };
 
-/** Quantas entradas de auditoria a pessoa causou e quantas sofreu. */
 export const auditStatsRepository = {
   async countFor(guildId: string, userId: string) {
     const [feitas, sofridas] = await Promise.all([

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { LIMITS } from "@gravae/shared";
 
-/** Nome de emoji vira `:nome:` no texto — sem espaço, sem dois-pontos. */
 const nomeDeEmoji = z
   .string()
   .min(2)
@@ -20,7 +19,6 @@ export const updateEmojiInput = z.object({ name: nomeDeEmoji });
 export const createStickerInput = z.object({
   name: z.string().min(2).max(30),
   description: z.string().max(100).nullable().optional(),
-  /** o emoji que representa a figurinha na busca */
   relatedEmoji: z.string().min(1).max(16),
   url: z.string().url(),
   size: z.number().int().positive().max(LIMITS.figurinhaBytes),

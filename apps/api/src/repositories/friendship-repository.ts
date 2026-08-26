@@ -4,7 +4,6 @@ import { prisma } from "~/lib/prisma.js";
 const comUsuarios = { requester: true, addressee: true } as const;
 
 export const friendshipRepository = {
-  /** A relação entre duas pessoas, em qualquer direção. */
   findBetween(a: string, b: string) {
     return prisma.friendship.findFirst({
       where: {
@@ -21,7 +20,6 @@ export const friendshipRepository = {
     return prisma.friendship.findUnique({ where: { id }, include: comUsuarios });
   },
 
-  /** Tudo que envolve a pessoa: amigos, pedidos enviados e recebidos. */
   findAllForUser(userId: string) {
     return prisma.friendship.findMany({
       where: { OR: [{ requesterId: userId }, { addresseeId: userId }] },
@@ -37,7 +35,6 @@ export const friendshipRepository = {
     });
   },
 
-  /** `requesterId` = quem bloqueou. É por ele que se sabe quem pode desfazer. */
   createBlocked(requesterId: string, addresseeId: string) {
     return prisma.friendship.create({
       data: { requesterId, addresseeId, status: "BLOCKED" },
@@ -53,7 +50,6 @@ export const friendshipRepository = {
   },
 };
 
-/** Servidores em comum entre duas pessoas — usado no perfil e na permissão de vê-lo. */
 export const mutualRepository = {
   async guildIdsInCommon(a: string, b: string): Promise<string[]> {
     const [deA, deB] = await Promise.all([
@@ -80,10 +76,6 @@ export const mutualRepository = {
 };
 
 export const dmRepository = {
-  /**
-   * Busca a conversa entre exatamente estas duas pessoas. `hasEvery` + tamanho
-   * evita casar com um grupo que contenha as duas mais outras.
-   */
   async findBetween(a: string, b: string) {
     const candidatos = await prisma.channel.findMany({
       where: { guildId: null, recipients: { hasEvery: [a, b] } },

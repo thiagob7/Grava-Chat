@@ -11,7 +11,6 @@ import {
   openDmInput,
 } from "~/validations/friendship.js";
 
-/** Avisa os dois lados que a lista de amigos mudou. */
 const notificar = (...userIds: string[]) => {
   for (const id of userIds) io().to(rooms.user(id)).emit("friend:updated");
 };
@@ -47,8 +46,6 @@ export async function friendRoutes(app: FastifyInstance) {
     return reply.code(204).send();
   });
 
-  // --------------------------------- DMs -----------------------------------
-
   app.post("/friends/block", async (req, reply) => {
     const { userId } = z.object({ userId: objectId }).parse(req.body);
     await friendshipService.block(req.userId, userId);
@@ -69,7 +66,6 @@ export async function friendRoutes(app: FastifyInstance) {
     const { userId } = openDmInput.parse(req.body);
     const channel = await friendshipService.openDm(req.userId, userId);
 
-    // A outra pessoa precisa ver a conversa aparecer sem recarregar a página.
     io().to(rooms.user(userId)).emit("dm:created", { channelId: channel.id });
     return channel;
   });

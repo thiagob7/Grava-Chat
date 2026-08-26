@@ -1,16 +1,7 @@
-/**
- * Amigos e conversa privada: pedido, aceite, DM, e as regras que impedem
- * alguem de conversar com quem nao aceitou.
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 
-/**
- * Limpa o que este teste criou. Sem isso, cada execução deixa um servidor e
- * usuários no banco — em uma tarde de desenvolvimento vira dezenas de
- * servidores fantasma na barra lateral de quem está usando o app.
- */
 async function limpar(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {

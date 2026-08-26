@@ -41,12 +41,6 @@ export const useFindAutoModRules = (guildId: string | undefined) =>
     enabled: Boolean(guildId),
   });
 
-/**
- * Toda ação de moderação mexe em três telas: a lista de membros (que vem no
- * detalhe do servidor), a lista de banidos e o registro de auditoria. Por isso
- * a invalidação é sempre das três — é mais barato do que descobrir depois que
- * a tela mentiu.
- */
 function useInvalidarModeracao(guildId: string | undefined) {
   const queryClient = useQueryClient();
 

@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-/**
- * Valida tudo na subida. E melhor o servidor se recusar a iniciar com uma
- * mensagem clara do que descobrir na Fase 3 que LIVEKIT_API_SECRET estava vazio.
- */
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
@@ -22,26 +18,18 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().default(""),
 
   R2_ENDPOINT: z.string().min(1),
-  // R2 usa "auto"; S3 de verdade usa a região do bucket
   R2_REGION: z.string().default("auto"),
   R2_BUCKET: z.string().min(1),
   R2_ACCESS_KEY_ID: z.string().min(1),
   R2_SECRET_ACCESS_KEY: z.string().min(1),
   R2_PUBLIC_URL: z.string().min(1),
-  /** Isola os arquivos deste app dentro do bucket (o token do R2 é de um bucket só). */
   R2_PREFIX: z.string().default("gravae-chat"),
-  /**
-   * Upload direto do navegador pro bucket (mais barato: o binário não passa
-   * pela API). Exige política de CORS configurada no painel do R2 — enquanto
-   * não houver, o arquivo sobe através da API.
-   */
   R2_DIRECT_UPLOAD: z.stringbool().default(false),
 
   LIVEKIT_URL: z.string().default("ws://localhost:7880"),
   LIVEKIT_API_KEY: z.string().default("devkey"),
   LIVEKIT_API_SECRET: z.string().default(""),
 
-  /** Busca de GIF. Sem chave, a aba de GIF explica o que falta em vez de quebrar. */
   KLIPY_API_KEY: z.string().default(""),
 });
 

@@ -4,7 +4,6 @@ import { accessService } from "./access-service.js";
 import { auditService } from "./audit-service.js";
 import type { AutoModRuleInput } from "~/validations/moderation.js";
 
-/** A parte "de tela" do AutoMod: listar, criar, ligar/desligar e apagar regra. */
 export const autoModCrud = {
   async list(userId: string, guildId: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
@@ -19,7 +18,6 @@ export const autoModCrud = {
       name: input.name,
       enabled: input.enabled ?? true,
       trigger: input.trigger,
-      // guardar já em minúsculas evita normalizar a lista inteira a cada mensagem
       palavras: (input.palavras ?? []).map((p) => p.toLowerCase().trim()).filter(Boolean),
       limiteMencoes: input.limiteMencoes ?? null,
       acoes: input.acoes,

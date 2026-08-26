@@ -1,16 +1,7 @@
-/**
- * Teste de fumaca da voz: estado no Redis, permissao do token do SFU, e a
- * limpeza quando o socket cai. Nao testa midia (isso e no navegador).
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 
-/**
- * Limpa o que este teste criou. Sem isso, cada execução deixa um servidor e
- * usuários no banco — em uma tarde de desenvolvimento vira dezenas de
- * servidores fantasma na barra lateral de quem está usando o app.
- */
 async function limpar(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
@@ -121,10 +112,6 @@ if (detail.voiceStates[voice.id]?.length !== 0) throw new Error("ficou fantasma 
 ok("canal antigo ficou vazio de verdade");
 
 console.log("\n== queda de conexao ==");
-/**
- * A saida nao e mais imediata: ha uma janela de tolerancia pro reload. O evento
- * `voice:left` so sai quando ninguem reassume dentro dela.
- */
 const sawDisconnectLeave = waitFor(sb, "voice:left", 14_000);
 sa.close();
 console.log("     esperando a janela de tolerancia...");
@@ -134,11 +121,6 @@ if (detail.voiceStates[other.id]?.length !== 0) throw new Error("fantasma apos q
 ok("passada a tolerancia, quem caiu sai do canal (sem fantasma)");
 
 console.log("\n== varias abas ==");
-/**
- * Regressao: o estado de voz e por CONTA, mas quem segura a chamada e uma
- * conexao so. Antes, fechar QUALQUER aba do usuario apagava o estado da conta —
- * ou seja, fechar uma aba parada te tirava da call em que voce estava falando.
- */
 const abaCall = await connect(b.accessToken);
 const abaParada = await connect(b.accessToken);
 
@@ -163,14 +145,9 @@ if (detail.voiceStates[voice.id]?.length) throw new Error("fechar a aba da call 
 ok("fechar a aba que ESTAVA na call encerra (apos a tolerancia)");
 
 console.log("\n== reload ==");
-/**
- * Regressao: dar F5 derrubava a pessoa da chamada. O socket cai no reload, e o
- * servidor encerrava na hora — quando a pagina voltava, ja tinha saido.
- * Agora o estado fica "orfao" pela janela de tolerancia e a aba reassume.
- */
 const antes = await connect(b.accessToken);
 await emit(antes, "voice:join", { channelId: voice.id });
-antes.close(); // <- isto e o reload: o socket cai
+antes.close();
 await new Promise((r) => setTimeout(r, 1500));
 
 detail = await api(`/guilds/${guild.id}`, { token: a.accessToken, method: "GET" });
@@ -185,7 +162,6 @@ if (reassumido.orphanedAt !== null) throw new Error("reassumir nao limpou o esta
 if (reassumido.socketId === orfao.socketId) throw new Error("nao trocou de conexao dona");
 ok("a aba que voltou reassumiu a chamada, sem sair dela");
 
-// e uma retomada NAO pode roubar uma chamada que outra aba esta segurando ao vivo
 const intrusa = await connect(b.accessToken);
 try {
   await emit(intrusa, "voice:join", { channelId: voice.id, resume: true });
@@ -209,11 +185,6 @@ if (detail.voiceStates[voice.id]?.length) throw new Error("ficou fantasma apos a
 ok("passada a janela sem ninguem reassumir, a chamada encerra de verdade");
 
 console.log("\n== resistencia ==");
-/**
- * Regressao: varios sockets do mesmo usuario conectando juntos escrevem no
- * MESMO documento do Mongo e disparam P2034 (write conflict). Como estava num
- * `void promise` sem catch, a rejeicao nao tratada DERRUBAVA a API inteira.
- */
 const burst = await Promise.all(Array.from({ length: 6 }, () => connect(b.accessToken)));
 await new Promise((r) => setTimeout(r, 800));
 

@@ -9,7 +9,6 @@ interface PollCardProps {
   messageId: string;
   poll: Poll;
   currentUserId: string | undefined;
-  /** só quem criou pode encerrar antes da hora */
   isAuthor: boolean;
 }
 
@@ -48,7 +47,6 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
                 encerrada && "cursor-default",
               )}
             >
-              {/* a barra é o fundo: ela cresce sem empurrar o texto */}
               <span
                 className={cn(
                   "absolute inset-y-0 left-0 transition-[width]",

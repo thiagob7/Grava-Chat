@@ -12,14 +12,13 @@ import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Input } from "~/components/ui/input";
+import { Input, campoDeCor } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
 import { ESTILOS_DO_CARGO } from "~/lib/cosmeticos/catalogo";
 import { estiloDoCargo } from "~/lib/cosmeticos/cargo";
 import { cn } from "~/lib/utils";
 
-/** Paleta do Discord, que é escolhida pra ler bem em fundo escuro. */
 export const CORES = [
   "#1abc9c",
   "#2ecc71",
@@ -39,9 +38,7 @@ interface RoleEditorProps {
   guildId: string;
   role: RoleModel;
   members: GuildMember[];
-  /** o que EU tenho — não dá pra conceder o que não se tem */
   minhasPermissoes: Permission[];
-  /** posso mexer neste cargo? (hierarquia decidida no servidor, refletida aqui) */
   editavel: boolean;
   onDeleted: () => void;
 }
@@ -72,7 +69,6 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   const [busca, setBusca] = useState("");
   const confirmar = useConfirmar();
 
-  // trocar de cargo na lista tem que jogar fora o rascunho do anterior
   useEffect(() => {
     setNome(role.name);
     setCor(role.color);
@@ -104,12 +100,6 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
       guildId,
       roleId: role.id,
       permissions: permissoes,
-      // o @everyone só aceita permissões: nome e cor dele não existem
-      /*
-        O @everyone só aceita permissões: nome, cor e enfeite dele não existem.
-        E é mais do que "não faz sentido" — um @everyone holográfico repinta o
-        nome de TODO MUNDO e mata a hierarquia visual do servidor.
-      */
       ...(role.isEveryone
         ? {}
         : {
@@ -272,7 +262,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   value={cor ?? "#99aab5"}
                   disabled={!editavel}
                   onChange={(e) => setCor(e.target.value)}
-                  className="size-8 cursor-pointer rounded border border-line bg-transparent"
+                  className={cn(campoDeCor, "size-8 rounded")}
                   title="Cor personalizada"
                 />
               </div>
@@ -309,7 +299,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     value={cor2 ?? "#a855f7"}
                     disabled={!editavel}
                     onChange={(e) => setCor2(e.target.value)}
-                    className="size-8 cursor-pointer rounded border border-line bg-transparent"
+                    className={cn(campoDeCor, "size-8 rounded")}
                   />
                   {cor2 && (
                     <button
@@ -344,13 +334,6 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </p>
             </div>
 
-            {/*
-              A prévia mostra as DUAS formas em que o cargo aparece: a linha da
-              lista de membros e a linha do chat. Elas não são iguais — na lista
-              o nome é menor, e gradiente em texto pequeno cai para cor sólida.
-              Sem ver as duas, dá pra escolher um gradiente que não existe onde a
-              pessoa mais aparece.
-            */}
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 Prévia
@@ -555,13 +538,6 @@ const Linha: React.FC<LinhaProps> = ({
   </div>
 );
 
-/**
- * Uma linha de prévia do cargo, no tamanho em que ela aparece de verdade.
- *
- * Chama `estiloDoCargo`, a MESMA função que o chat e a lista chamam — se fosse
- * uma cópia do visual, mentiria na primeira vez que a regra mudasse, e mentiria
- * justo pra quem está decidindo a cor.
- */
 const PreviaDoCargo: React.FC<{
   cargo: {
     color: string | null;

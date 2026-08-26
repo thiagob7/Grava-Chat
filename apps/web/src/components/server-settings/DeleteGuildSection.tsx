@@ -15,10 +15,6 @@ export const DeleteGuildSection: React.FC<{ guild: GuildModel; onClose: () => vo
   const navigate = useNavigate();
   const [confirmacao, setConfirmacao] = useState("");
 
-  /**
-   * Digitar o nome não é burocracia: apagar leva junto todos os canais, todas as
-   * mensagens e o histórico de todo mundo que está no servidor. Não tem desfazer.
-   */
   const confere = confirmacao.trim() === guild.name;
 
   const excluir = async () => {

@@ -8,12 +8,6 @@ import { reorderRoles, type ReorderRolesDTO } from "~/@core/application/requests
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-/**
- * Toda mudança de cargo mexe em duas coisas: a lista de cargos e o que cada
- * pessoa enxerga do servidor (um cargo sem VIEW_CHANNEL some canais). Por isso
- * as duas chaves caem juntas — invalidar só a de cargos deixaria a barra
- * lateral mostrando canal que a pessoa acabou de perder.
- */
 function useInvalidarCargos(guildId: string | undefined) {
   const queryClient = useQueryClient();
 

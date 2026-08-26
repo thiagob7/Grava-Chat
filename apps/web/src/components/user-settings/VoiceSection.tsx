@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Keyboard, Mic, Volume2 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { CampoSelect } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/hooks/use-voice-meter";
@@ -9,10 +10,8 @@ import { desktop } from "~/lib/desktop";
 import { usePttGlobal } from "~/stores/ptt-global";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
-import { campoBase } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
-/** Nome legível de uma tecla a partir do `code` do teclado. */
 function nomeDaTecla(code: string) {
   if (code === "Space") return "Espaço";
   if (code.startsWith("Key")) return code.slice(3);
@@ -21,11 +20,6 @@ function nomeDaTecla(code: string) {
   return code;
 }
 
-/**
- * O que o push-to-talk consegue fazer AQUI, nesta máquina — que muda bastante:
- * no navegador a tecla só chega com a aba em foco; no aplicativo ela chega
- * sempre, desde que o macOS tenha liberado o Gravaê em Acessibilidade.
- */
 const AvisoDoAtalho: React.FC = () => {
   const estado = usePttGlobal((s) => s.estado);
   const tecla = useVoicePrefs((s) => s.teclaPtt);
@@ -95,10 +89,6 @@ export const VoiceSection: React.FC = () => {
 
   const retorno = useRef<HTMLAudioElement>(null);
 
-  /**
-   * Com o limiar manual a barra precisa estar rodando o tempo todo — é olhando
-   * pra ela que se escolhe o corte. No resto, só durante o teste.
-   */
   const medindo = testando || (!prefs.sensibilidadeAutomatica && !emChamada) || emChamada;
   const { nivel, aberto, erro, stream } = useVoiceMeter(medindo);
 
@@ -113,17 +103,10 @@ export const VoiceSection: React.FC = () => {
     return () => navigator.mediaDevices.removeEventListener("devicechange", listarDispositivos);
   }, []);
 
-  /**
-   * O navegador só entrega a lista de dispositivos depois de o microfone ter
-   * sido liberado uma vez. Assim que o teste (ou a chamada) abre o microfone,
-   * vale listar de novo — senão os menus ficam com "Padrão do sistema" e nada
-   * mais, parecendo quebrados.
-   */
   useEffect(() => {
     if (stream || emChamada) void listarDispositivos();
   }, [stream, emChamada]);
 
-  /** Retorno da própria voz durante o teste, para conferir o microfone certo. */
   useEffect(() => {
     const el = retorno.current;
     if (!el) return;
@@ -147,8 +130,6 @@ export const VoiceSection: React.FC = () => {
     return () => window.removeEventListener("keydown", capturar, { capture: true });
   }, [capturandoTecla, aplicarAjustes]);
 
-  // os nomes dos dispositivos só aparecem depois de o navegador liberar o
-  // microfone uma vez — antes disso vem tudo em branco
   const semNomes = dispositivos.length > 0 && dispositivos.every((d) => !d.label);
   const entradas = dispositivos.filter((d) => d.kind === "audioinput");
   const saidas = dispositivos.filter((d) => d.kind === "audiooutput");
@@ -163,37 +144,29 @@ export const VoiceSection: React.FC = () => {
           <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             <Mic size={13} /> Dispositivo de entrada
           </span>
-          <select
-            value={prefs.entradaId ?? ""}
-            onChange={(e) => void aplicarAjustes({ entradaId: e.target.value || null })}
-            className={campoBase}
-          >
-            <option value="">Padrão do sistema</option>
-            {entradas.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label || "Microfone"}
-              </option>
-            ))}
-          </select>
+          <CampoSelect
+            valor={prefs.entradaId ?? ""}
+            onEscolher={(id) => void aplicarAjustes({ entradaId: id || null })}
+            opcoes={[
+              { valor: "", rotulo: "Padrão do sistema" },
+              ...entradas.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Microfone" })),
+            ]}
+          />
         </label>
 
         <label className="block">
           <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             <Volume2 size={13} /> Dispositivo de saída
           </span>
-          <select
-            value={prefs.saidaId ?? ""}
+          <CampoSelect
+            valor={prefs.saidaId ?? ""}
             disabled={!suportaTrocaDeSaida}
-            onChange={(e) => void aplicarAjustes({ saidaId: e.target.value || null })}
-            className={cn(campoBase, "disabled:opacity-50")}
-          >
-            <option value="">Padrão do sistema</option>
-            {saidas.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label || "Alto-falante"}
-              </option>
-            ))}
-          </select>
+            onEscolher={(id) => void aplicarAjustes({ saidaId: id || null })}
+            opcoes={[
+              { valor: "", rotulo: "Padrão do sistema" },
+              ...saidas.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Alto-falante" })),
+            ]}
+          />
           {!suportaTrocaDeSaida && (
             <p className="mt-1.5 text-xs text-ink-faint">
               Este navegador não deixa escolher a saída — quem manda é o padrão do sistema.

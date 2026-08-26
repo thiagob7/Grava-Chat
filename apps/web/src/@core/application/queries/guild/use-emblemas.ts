@@ -9,10 +9,6 @@ import {
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-/**
- * As três operações de emblema compartilham a mesma invalidação: tudo — a
- * definição e quem veste — chega no detalhe do servidor, numa requisição só.
- */
 const useEmblemaMutation = <T,>(guildId: string, fn: (v: T) => Promise<unknown>, erro: string) => {
   const queryClient = useQueryClient();
 

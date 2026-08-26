@@ -13,10 +13,6 @@ import {
 const webhookParams = guildParams.extend({ webhookId: objectId });
 const executeParams = z.object({ webhookId: objectId, token: z.string().min(16).max(128) });
 
-/**
- * A URL que a pessoa vai copiar precisa ser a que ela usa pra chegar aqui —
- * localhost em casa, o endereço do ngrok quando o link é pros amigos.
- */
 function baseUrlDe(req: FastifyRequest) {
   const host = (req.headers["x-forwarded-host"] as string) ?? req.headers.host;
   const proto = (req.headers["x-forwarded-proto"] as string) ?? req.protocol;
@@ -24,7 +20,6 @@ function baseUrlDe(req: FastifyRequest) {
   return `${proto}://${host}`;
 }
 
-/** Gerenciar webhooks: exige login e MANAGE_WEBHOOKS. */
 export async function webhookRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
@@ -65,10 +60,6 @@ export async function webhookRoutes(app: FastifyInstance) {
   });
 }
 
-/**
- * A porta pública, registrada FORA do bloco autenticado: quem posta é um script
- * qualquer, que não tem sessão nenhuma. O token na URL é a credencial.
- */
 export async function publicWebhookRoutes(app: FastifyInstance) {
   app.post("/webhooks/:webhookId/:token", async (req, reply) => {
     const { webhookId, token } = executeParams.parse(req.params);
@@ -78,7 +69,6 @@ export async function publicWebhookRoutes(app: FastifyInstance) {
       executeWebhookInput.parse(req.body ?? {}),
     );
 
-    // chega em tempo real pra quem está com o canal aberto, igual mensagem de gente
     io().to(rooms.channel(message.channelId)).emit("message:created", message);
 
     return reply.code(201).send({ id: message.id });

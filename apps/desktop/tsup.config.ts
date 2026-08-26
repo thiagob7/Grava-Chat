@@ -1,13 +1,5 @@
 import { defineConfig } from "tsup";
 
-/**
- * Dois alvos, os dois em CommonJS: o processo principal do Electron e o
- * preload. O preload PRECISA ser CJS — com `contextIsolation` ligado ele roda
- * antes de qualquer sistema de módulos do renderer existir.
- *
- * `electron` fica de fora do bundle (é o próprio runtime), e o `uiohook-napi`
- * também, porque é binário nativo: empacotar um `.node` não funciona.
- */
 export default defineConfig({
   entry: { main: "src/main/index.ts", preload: "src/preload/index.ts" },
   format: ["cjs"],
@@ -15,8 +7,11 @@ export default defineConfig({
   platform: "node",
   outExtension: () => ({ js: ".cjs" }),
   external: ["electron", "uiohook-napi"],
-  // @gravae/shared é TypeScript cru, sem build próprio: entra no bundle
   noExternal: ["@gravae/shared"],
+  // O app empacotado nao tem .env: o `dotenv` do script `dev` so envolve o
+  // electron, nao o build. Sem embutir a URL aqui, o .dmg instalado cai no
+  // fallback de localhost e abre a tela de erro.
+  env: { GRAVAE_APP_URL_EMBUTIDO: process.env.GRAVAE_APP_URL ?? "" },
   clean: true,
   sourcemap: true,
 });

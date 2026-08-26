@@ -4,10 +4,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "~/lib/utils";
 
-/**
- * Estrutura shadcn (cva + asChild), mas com as variantes do NOSSO tema escuro
- * — os tokens são os do chat (surface/ink/brand), não os do backoffice.
- */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/60 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
   {

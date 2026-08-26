@@ -42,11 +42,6 @@ const CASTIGOS = [
   { minutos: 60 * 24 * 7, label: "1 semana" },
 ];
 
-/**
- * A tela de administração de membros: buscar, ordenar, ver cargos e agir.
- * A lista da direita do chat continua sendo a "social"; esta aqui é a de
- * moderação, e por isso mostra data de entrada e castigo.
- */
 export const MembersSection: React.FC<MembersSectionProps> = ({
   guild,
   members,
@@ -83,11 +78,6 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
     if (confirmado) removeMember.mutate({ guildId: guild.id, userId: member.user.id });
   };
 
-  /**
-   * O motivo vinha de um `window.prompt`, que o Electron não implementa: no
-   * aplicativo de desktop ele devolvia `null` e o banimento simplesmente não
-   * acontecia, sem erro nenhum na tela.
-   */
   const banirMembro = async (member: GuildMember) => {
     const { confirmado, texto } = await confirmar({
       titulo: `Banir ${nomeDe(member)}?`,

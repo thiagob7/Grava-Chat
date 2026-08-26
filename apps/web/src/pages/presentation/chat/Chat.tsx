@@ -10,15 +10,20 @@ import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-member";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
+import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
+import { CampoDeBusca } from "~/components/CampoDeBusca";
 import { ChannelSidebar } from "~/components/ChannelSidebar";
 import { Composer } from "~/components/Composer";
 import { ForumChannel } from "~/components/ForumChannel";
 import { ForumPostView } from "~/components/ForumPostView";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
+import { FavoritasPanel } from "~/components/FavoritasPanel";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
 import { MemberList } from "~/components/MemberList";
 import { MessageList } from "~/components/MessageList";
+import { ModeratorView } from "~/components/ModeratorView";
+import { PainelDeBusca } from "~/components/PainelDeBusca";
 import { TypingIndicator } from "~/components/TypingIndicator";
 import { VoiceStage } from "~/components/VoiceStage";
 import { Button } from "~/components/ui/button";
@@ -27,7 +32,9 @@ import { useSession } from "~/contexts/session-context";
 import { usePermissions } from "~/hooks/use-permissions";
 import { useRealtime } from "~/hooks/use-realtime";
 import { useReconnectVoice } from "~/hooks/use-reconnect-voice";
+import { useModeracao } from "~/stores/moderacao";
 import { useVoiceStore } from "~/stores/voice-store";
+import { familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 
 export const Chat: React.FC = () => {
@@ -45,20 +52,28 @@ export const Chat: React.FC = () => {
   const joinVoice = useVoiceStore((s) => s.join);
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const [showMembers, setShowMembers] = useState(true);
-  /** assunto do fórum aberto, e chat lateral da chamada */
   const [postAberto, setPostAberto] = useState<ForumPostModel | null>(null);
-  const [chatDaVoz, setChatDaVoz] = useState<string | null>(null);
+  /*
+    O chat da chamada mora DENTRO do canal de voz, como no Discord.
+
+    Antes ele era um painel solto: dava para estar lendo #musica-play com o
+    chat do "Tecnologia" aberto do lado, dois canais na tela ao mesmo tempo,
+    e nada dizia a qual deles a caixa de escrever pertencia. Agora é um
+    liga/desliga do canal de voz que está aberto — some sozinho quando você
+    sai dele.
+  */
+  const [chatDaVozAberto, setChatDaVozAberto] = useState(false);
+  /// termo que está valendo; vazio fecha o painel de resultados
+  const [busca, setBusca] = useState("");
 
   useRealtime(routeGuildId, routeChannelId);
 
-  // Sem servidor na URL, cai no primeiro da lista.
   useEffect(() => {
     if (!routeGuildId && guildsLoaded && guilds[0]) {
       navigate(`/channels/${guilds[0].id}`, { replace: true });
     }
   }, [routeGuildId, guildsLoaded, guilds, navigate]);
 
-  // A URL manda: navegar (ou dar F5) abre o servidor e o canal certos.
   useEffect(() => {
     const channels = detail?.channels ?? [];
     if (!routeGuildId || !channels.length) return;
@@ -71,24 +86,30 @@ export const Chat: React.FC = () => {
       return;
     }
 
-    if (target.type === "TEXT" || target.type === "FORUM") {
+    /*
+      A voz entra na mesma lista: o canal tem chat, e sem o `join` no gateway
+      as mensagens novas dele não chegavam enquanto o painel estava aberto.
+    */
+    if (target.type === "TEXT" || target.type === "FORUM" || target.type === "VOICE") {
       void joinChannel(target.id).catch(() => undefined);
     }
   }, [routeGuildId, routeChannelId, detail, navigate]);
 
-  // trocar de canal fecha o assunto do fórum que estava aberto
   useEffect(() => setPostAberto(null), [routeChannelId]);
+  /// Resultado é de um servidor só; ao trocar, o painel some em vez de mostrar
+  /// mensagens de um lugar onde você não está mais.
+  useEffect(() => setBusca(""), [routeGuildId]);
+  /// A ficha é de alguém DESTE servidor; trocando de casa, ela fecha.
+  useEffect(() => useModeracao.getState().fechar(), [routeGuildId]);
 
   const channel = detail?.channels.find((c) => c.id === routeChannelId);
+  /// Aberto E num canal de voz: mudar para um canal de texto guarda a escolha
+  /// sem mostrar o painel, e voltar para a voz o traz de volta.
+  const chatDaVozVisivel = chatDaVozAberto && channel?.type === "VOICE";
   const summary = guilds.find((g) => g.id === routeGuildId);
   const { can, canInChannel } = usePermissions(detail);
   const pedidosPendentes = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
-  /**
-   * Onde a CONTA está, segundo o servidor — pode não ser esta aba. Sem
-   * distinguir as duas coisas, a barra lateral mostra você na Sala 1 enquanto o
-   * resto da tela oferece "Entrar na chamada", e parece contradição.
-   */
   const myVoiceState = Object.values(detail?.voiceStates ?? {})
     .flat()
     .find((state) => state.userId === user?.id);
@@ -100,15 +121,6 @@ export const Chat: React.FC = () => {
   const inCallHere = voiceChannelId !== null;
   const inCallElsewhere = Boolean(accountVoiceChannelId) && !inCallHere;
 
-  /**
-   * Clicar num canal de voz entra na chamada, como no Discord — não é só
-   * "abrir a tela". Canal de texto continua sendo navegação normal.
-   *
-   * Exceção: se a conta já está nessa chamada por outra aba, NÃO entra sozinho.
-   * Entrar aqui derrubaria a sessão de mídia da outra aba (mesma identidade no
-   * SFU) no meio de uma conversa, sem a pessoa pedir. A tela do canal explica a
-   * situação e oferece o botão pra trazer de propósito.
-   */
   const selectChannel = (channelId: string) => {
     navigate(`/channels/${routeGuildId}/${channelId}`);
 
@@ -120,9 +132,7 @@ export const Chat: React.FC = () => {
       (state) => state.userId === user?.id,
     );
     if (contaJaEstaNesteCanal) return;
-    // sem CONNECT, clicar no canal só abre a tela com a explicação
     if (!canInChannel(channelId, "CONNECT")) return;
-    // sem SFU alcançável, clicar no canal só abre a tela com a explicação
     if (!voiceReachable) return;
 
     void joinVoice(channelId).catch(() => undefined);
@@ -172,7 +182,15 @@ export const Chat: React.FC = () => {
         onLogout={() => void handleLogout()}
         accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
         onMoveCallHere={(channelId) => void joinVoice(channelId).catch(() => undefined)}
-        onOpenVoiceChat={(id) => setChatDaVoz(id)}
+        /*
+          O ícone de chat abre o canal de voz e o chat dele — sem entrar na
+          chamada. Por isso `navigate` direto, e não o `selectChannel`, que
+          conecta o microfone ao chegar num canal de voz.
+        */
+        onOpenVoiceChat={(id) => {
+          navigate(`/channels/${routeGuildId}/${id}`);
+          setChatDaVozAberto(true);
+        }}
         onLeaveGuild={() => {
           if (!routeGuildId || !user) return;
           removeMember.mutate(
@@ -183,7 +201,7 @@ export const Chat: React.FC = () => {
       />
 
       <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-black/20 px-4 shadow-sm">
+        <header className="@container flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
           {channel?.type === "VOICE" ? (
             <Volume2 size={20} className="text-ink-faint" />
           ) : channel?.type === "FORUM" ? (
@@ -200,7 +218,9 @@ export const Chat: React.FC = () => {
             </>
           )}
 
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-3">
+            {routeGuildId && <CampoDeBusca termo={busca} onBuscar={setBusca} />}
+
             {channel && channel.type !== "VOICE" && (
               <PinnedMessagesPanel
                 channelId={channel.id}
@@ -208,14 +228,16 @@ export const Chat: React.FC = () => {
               />
             )}
 
-            {channel?.type === "VOICE" && voiceChannelId === channel.id && (
-              <Tooltip label="Abrir chat">
+            <FavoritasPanel />
+
+            {channel?.type === "VOICE" && (
+              <Tooltip label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
                 <button
-                  onClick={() => setChatDaVoz(chatDaVoz ? null : channel.id)}
-                  aria-label="Abrir chat"
+                  onClick={() => setChatDaVozAberto((aberto) => !aberto)}
+                  aria-label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}
                   className={cn(
                     "transition hover:text-ink",
-                    chatDaVoz ? "text-ink" : "text-ink-muted",
+                    chatDaVozAberto ? "text-ink" : "text-ink-muted",
                   )}
                 >
                   <MessageSquare size={20} />
@@ -249,7 +271,12 @@ export const Chat: React.FC = () => {
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
               <Volume2 size={48} className="text-ink-faint" />
-              <h3 className="text-lg font-semibold">{channel.name}</h3>
+              <h3
+                className="text-lg font-semibold"
+                style={{ fontFamily: familiaDaFonte(channel.fonte) ?? undefined }}
+              >
+                {channel.name}
+              </h3>
 
               {!canInChannel(channel.id, "CONNECT") ? (
                 <p className="max-w-sm text-sm text-ink-muted">
@@ -298,7 +325,7 @@ export const Chat: React.FC = () => {
             />
           )
         ) : channel ? (
-          <>
+          <AreaDeConversa>
             <MessageList
               channelId={channel.id}
               channelName={channel.name}
@@ -306,33 +333,47 @@ export const Chat: React.FC = () => {
               currentUserId={user?.id}
               isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
             />
-            <TypingIndicator channelId={channel.id} currentUserId={user?.id} />
-            <Composer
-              channelId={channel.id}
-              channelName={channel.name}
-              guildId={channel.guildId ?? undefined}
-              podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
-              podeAnexar={canInChannel(channel.id, "ATTACH_FILES")}
-            />
-          </>
+            <RodapeDaConversa>
+              <TypingIndicator channelId={channel.id} currentUserId={user?.id} />
+              <Composer
+                channelId={channel.id}
+                channelName={channel.name}
+                guildId={channel.guildId ?? undefined}
+                podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
+                podeAnexar={canInChannel(channel.id, "ATTACH_FILES")}
+              />
+            </RodapeDaConversa>
+          </AreaDeConversa>
         ) : (
           <div className="flex-1" />
         )}
       </main>
 
-      {chatDaVoz && detail && (
+      {chatDaVozVisivel && channel && detail && (
         <VoiceChatPanel
-          channelId={chatDaVoz}
-          channelName={detail.channels.find((c) => c.id === chatDaVoz)?.name ?? ""}
+          channelId={channel.id}
+          channelName={channel.name}
           guildId={detail.guild.id}
           currentUserId={user?.id}
-          isModerator={canInChannel(chatDaVoz, "MANAGE_MESSAGES")}
-          podeEscrever={canInChannel(chatDaVoz, "SEND_MESSAGES")}
-          onClose={() => setChatDaVoz(null)}
+          isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
+          podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
+          onClose={() => setChatDaVozAberto(false)}
         />
       )}
 
-      {showMembers && !chatDaVoz && (
+      {busca && routeGuildId && !chatDaVozVisivel && (
+        <PainelDeBusca
+          guildId={routeGuildId}
+          termo={busca}
+          currentUserId={user?.id}
+          onFechar={() => setBusca("")}
+          onIr={(channelId, messageId) =>
+            navigate(`/channels/${routeGuildId}/${channelId}?m=${messageId}`)
+          }
+        />
+      )}
+
+      {showMembers && !chatDaVozVisivel && !busca && (
         <MemberList
           members={detail?.members ?? []}
           roles={detail?.roles ?? []}
@@ -341,6 +382,13 @@ export const Chat: React.FC = () => {
           podeModerar={can("MODERATE_MEMBERS")}
         />
       )}
+
+      {/*
+        Por último na fila, à direita de tudo: a ficha empurra a lista de
+        membros para o lado em vez de tapá-la. Só a partir de `xl` — abaixo
+        disso, duas colunas de 22rem não cabem sem espremer a conversa.
+      */}
+      <ModeratorView roles={detail?.roles ?? []} />
     </div>
   );
 };

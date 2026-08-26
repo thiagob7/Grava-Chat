@@ -33,14 +33,6 @@ export async function meRoutes(app: FastifyInstance) {
       presenceService.desiredOf(req.userId),
     ]);
 
-    /**
-     * Avisa quem convive com você.
-     *
-     * Sem isto, trocar a foto só aparecia pros outros depois de um F5 —
-     * limitação que já existia e que enfeite e status personalizado tornariam
-     * gritante. Vai pras salas dos servidores, mesmo padrão do broadcast de
-     * presença.
-     */
     const guilds = await memberRepository.guildIdsOf(req.userId);
     const payload = { user: toPublicUser(user), perfil: toPerfilPublico(user) };
 
@@ -51,6 +43,5 @@ export async function meRoutes(app: FastifyInstance) {
     return toSelfUser(user, providers, desired);
   });
 
-  /** Alimenta as bolinhas de não-lido. */
   app.get("/me/read-states", (req) => messageService.readStates(req.userId));
 }

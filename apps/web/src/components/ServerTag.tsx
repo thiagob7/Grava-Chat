@@ -7,28 +7,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { avatarColor } from "~/lib/format";
 
 interface ServerTagProps {
-  /** já resolvida pelo servidor: quem lê não teria como resolver o id sozinho */
   etiqueta?: { guildId: string; tag: string; tagIcon: string | null } | null;
-  /**
-   * `false` dentro de outro botão — a linha da lista de membros é um botão
-   * inteiro, e botão dentro de botão o navegador reaninha calado: o clique de
-   * dentro simplesmente para de existir. Lá a etiqueta é só o selo; clicável ela
-   * fica no cartão que a própria linha abre.
-   */
   interativo?: boolean;
 }
 
-/**
- * A etiqueta de servidor que a PESSOA escolheu vestir.
- *
- * Ela acompanha quem a veste em todo lugar — nos outros servidores e na conversa
- * privada. Antes era a etiqueta do servidor aberto, aplicada a todos os membros
- * dele: com isso ela dizia "você está aqui" em vez de "eu sou de lá", que é o
- * ponto de existir uma etiqueta.
- *
- * Clicar abre o servidor por trás dela. É o que fecha o ciclo: a etiqueta deixa
- * de ser um enfeite e vira a porta de entrada de uma comunidade.
- */
 const SELO = "flex shrink-0 items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-brand";
 
 export const ServerTag: React.FC<ServerTagProps> = ({ etiqueta, interativo = true }) => {
@@ -71,7 +53,6 @@ const CartaoDoServidor: React.FC<{ guildId: string; onIr: () => void }> = ({ gui
 
   return (
     <>
-      {/* a faixa é a cor gerada do id: servidor não tem banner próprio ainda */}
       <div className="h-16" style={{ backgroundColor: avatarColor(servidor.id) }} />
 
       <div className="px-4 pb-4">
@@ -126,7 +107,6 @@ const CartaoDoServidor: React.FC<{ guildId: string; onIr: () => void }> = ({ gui
             Ir para o servidor
           </Button>
         ) : (
-          /* sem convite não há entrada: a etiqueta anuncia, ela não abre a porta */
           <p className="mt-4 text-center text-xs text-ink-faint">
             Você precisa de um convite para entrar
           </p>

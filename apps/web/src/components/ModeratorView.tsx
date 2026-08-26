@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import {
@@ -18,6 +18,7 @@ import {
   ShieldAlert,
   UserMinus,
   Volume2,
+  X,
 } from "lucide-react";
 import type { Role } from "@gravae/shared";
 
@@ -28,7 +29,9 @@ import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-me
 import { useBanMember, useTimeoutMember } from "~/@core/application/queries/moderation/use-moderation";
 import type { ModerationMessageModel } from "~/@core/domain/models/moderation-model";
 import { Avatar } from "~/components/Avatar";
-import { Sheet, SheetCloseButton, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { useModeracao } from "~/stores/moderacao";
+import { useEmbed } from "~/@core/application/queries/embed/use-embed";
+import { extrairLinks } from "~/lib/links";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
@@ -42,72 +45,70 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "~/lib/utils";
 
-interface ModeratorViewProps {
-  open: boolean;
-  guildId: string;
-  userId: string;
-  displayName: string;
-  username: string;
-  avatarUrl: string | null;
-  roles: Role[];
-  onClose: () => void;
-}
-
-/** Qual lista o "ver mais" abriu; `null` = a ficha. */
 type Detalhe = "todas" | "links" | "midia" | null;
 
 /**
- * A ficha de um membro para quem modera, numa gaveta lateral.
+ * A visualização de moderador, como uma COLUNA.
  *
- * Junta num lugar só o que estava espalhado: quanto a pessoa fala, o que ela
- * pode fazer, desde quando está aqui, se já apareceu na auditoria — e as ações
- * (expulsar, banir, castigo) logo no topo. A decisão costuma depender
- * exatamente disso, e abrir três telas pra juntar é o que faz moderador
- * decidir no chute.
- *
- * Gaveta e não modal centralizado de propósito: moderar é uma tarefa de
- * consulta, e o conteúdo do canal precisa continuar visível ao lado enquanto
- * se lê a ficha.
+ * Ela já foi um painel flutuante por cima de tudo, com o fundo escurecido —
+ * e aí olhar a ficha de alguém tapava justamente a lista de onde você acabou
+ * de clicar. Agora ela empurra a lista de membros para o lado, como no
+ * Discord: as duas coisas na tela ao mesmo tempo, porque moderar é ir de uma
+ * pessoa para a outra.
  */
-export const ModeratorView: React.FC<ModeratorViewProps> = ({
-  open,
-  guildId,
-  userId,
-  displayName,
-  username,
-  avatarUrl,
-  roles,
-  onClose,
-}) => {
+export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
   const navigate = useNavigate();
+  const alvo = useModeracao((s) => s.alvo);
+  const fechar = useModeracao((s) => s.fechar);
   const [detalhe, setDetalhe] = useState<Detalhe>(null);
-  const { data, isLoading, error } = useModerationView(open ? guildId : null, open ? userId : null);
+
+  const guildId = alvo?.guildId ?? null;
+  const userId = alvo?.userId ?? null;
+  const { data, isLoading, error } = useModerationView(guildId, userId);
+
+  /// Trocar de pessoa começa a ficha do zero, não no detalhe em que a
+  /// anterior tinha parado.
+  useEffect(() => setDetalhe(null), [userId]);
+
+  /// ESC fecha — é o que a tecla faz em todo painel deste app, e o Discord
+  /// chega a desenhar a dica no cabeçalho.
+  useEffect(() => {
+    if (!alvo) return;
+
+    const aoTeclar = (evento: KeyboardEvent) => {
+      if (evento.key === "Escape") fechar();
+    };
+
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [alvo, fechar]);
+
+  if (!alvo || !guildId || !userId) return null;
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(aberto) => {
-        if (aberto) return;
-        setDetalhe(null);
-        onClose();
-      }}
-    >
-      <SheetContent>
-        <header className="shrink-0 border-b border-black/30 bg-surface-1">
+    <aside className="hidden w-[22rem] shrink-0 flex-col border-l border-divisor bg-surface-2 xl:flex">
+        <header className="shrink-0 border-b border-divisor bg-surface-1">
           <div className="flex items-center gap-3 p-4">
-            <Avatar id={userId} name={displayName} url={avatarUrl} size={40} />
+            <Avatar id={userId} name={alvo.displayName} url={alvo.avatarUrl} size={40} />
             <div className="min-w-0 flex-1">
-              <SheetTitle className="truncate text-base font-semibold">{displayName}</SheetTitle>
-              <p className="truncate text-xs text-ink-muted">@{username}</p>
+              <h2 className="truncate text-base font-semibold">{alvo.displayName}</h2>
+              <p className="truncate text-xs text-ink-muted">@{alvo.username}</p>
             </div>
-            <SheetCloseButton />
+            <button
+              onClick={fechar}
+              aria-label="Fechar"
+              title="Fechar (Esc)"
+              className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
+            >
+              <X size={20} />
+            </button>
           </div>
 
           <BarraDeAcoes
             guildId={guildId}
             userId={userId}
-            displayName={displayName}
-            onFechar={onClose}
+            displayName={alvo.displayName}
+            onFechar={fechar}
           />
         </header>
 
@@ -118,12 +119,9 @@ export const ModeratorView: React.FC<ModeratorViewProps> = ({
               userId={userId}
               filtro={detalhe}
               onVoltar={() => setDetalhe(null)}
-              onIrParaMensagem={(channelId, messageId) => {
-                // fecha a gaveta: o canal está atrás dela, e ficar aberta
-                // esconderia justamente a mensagem que a pessoa foi ver
-                onClose();
-                navigate(`/channels/${guildId}/${channelId}?m=${messageId}`);
-              }}
+              onIrParaMensagem={(channelId, messageId) =>
+                navigate(`/channels/${guildId}/${channelId}?m=${messageId}`)
+              }
             />
           ) : (
             <div className="p-4">
@@ -222,12 +220,9 @@ export const ModeratorView: React.FC<ModeratorViewProps> = ({
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+    </aside>
   );
 };
-
-// ------------------------------------------------------------------ ações
 
 const BarraDeAcoes: React.FC<{
   guildId: string;
@@ -277,11 +272,6 @@ const BarraDeAcoes: React.FC<{
     }
   };
 
-  /**
-   * O castigo pede minutos em vez de oferecer botões prontos: o intervalo útil
-   * vai de 5 minutos a uma semana, e uma lista que cobrisse isso teria opções
-   * demais pra escolher rápido.
-   */
   const castigarMembro = async () => {
     const { confirmado, texto } = await confirmar({
       titulo: `Castigar ${displayName}?`,
@@ -307,7 +297,7 @@ const BarraDeAcoes: React.FC<{
   };
 
   return (
-    <div className="grid grid-cols-5 gap-1 border-t border-black/20 p-2">
+    <div className="grid grid-cols-5 gap-1 border-t border-divisor p-2">
       <AcaoDoTopo label="Mensagem" onClick={() => void conversar()}>
         <MessageSquare size={18} />
       </AcaoDoTopo>
@@ -347,8 +337,6 @@ const AcaoDoTopo: React.FC<{
   </Tooltip>
 );
 
-// ------------------------------------------------------------- "ver mais"
-
 const TITULOS: Record<"todas" | "links" | "midia", string> = {
   todas: "Mensagens",
   links: "Links",
@@ -366,7 +354,7 @@ const ListaDeMensagens: React.FC<{
 
   return (
     <div>
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-black/20 bg-surface-2 px-4 py-2.5">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-divisor bg-surface-2 px-4 py-2.5">
         <button
           onClick={onVoltar}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-ink"
@@ -389,12 +377,11 @@ const ListaDeMensagens: React.FC<{
           <MensagemDaLista
             key={mensagem.id}
             mensagem={mensagem}
+            filtro={filtro}
             onIr={() => onIrParaMensagem(mensagem.channelId, mensagem.id)}
           />
         ))}
 
-        {/* O teto de 50 é do servidor. Dizer isso evita a conclusão errada de
-            que a pessoa mandou exatamente 50 mensagens. */}
         {data && data.length >= 50 && (
           <p className="pt-2 text-center text-xs text-ink-faint">
             Mostrando as 50 mais recentes.
@@ -405,10 +392,11 @@ const ListaDeMensagens: React.FC<{
   );
 };
 
-const MensagemDaLista: React.FC<{ mensagem: ModerationMessageModel; onIr: () => void }> = ({
-  mensagem,
-  onIr,
-}) => (
+const MensagemDaLista: React.FC<{
+  mensagem: ModerationMessageModel;
+  filtro: "todas" | "links" | "midia";
+  onIr: () => void;
+}> = ({ mensagem, filtro, onIr }) => (
   <article className="group/msg rounded-lg bg-surface-1 p-3">
     <header className="mb-1.5 flex items-center gap-1.5 text-xs text-ink-faint">
       {mensagem.channelType === "VOICE" ? <Volume2 size={12} /> : <Hash size={12} />}
@@ -416,8 +404,6 @@ const MensagemDaLista: React.FC<{ mensagem: ModerationMessageModel; onIr: () => 
         {mensagem.channelName}
       </span>
 
-      {/* aparece no hover, como no Discord: a data é a informação constante,
-          e o botão só interessa quando você decidiu ir olhar de perto */}
       <button
         onClick={onIr}
         className="rounded bg-surface-3 px-1.5 py-0.5 text-[11px] opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
@@ -432,8 +418,25 @@ const MensagemDaLista: React.FC<{ mensagem: ModerationMessageModel; onIr: () => 
       </time>
     </header>
 
+    {/*
+      Na aba de links, o que interessa é o LINK.
+
+      Antes esta lista mostrava a mensagem crua — três endereços colados um no
+      outro, quebrando linha no meio, e ninguém conseguia dizer o que era cada
+      um sem copiar e colar no navegador. Agora cada endereço vira uma linha
+      com o ícone e o título do site, do mesmo cartão que a conversa usa.
+    */}
+    {filtro === "links" && <LinksDaMensagem conteudo={mensagem.content} />}
+
     {mensagem.content && (
-      <p className="whitespace-pre-wrap break-words text-sm">{mensagem.content}</p>
+      <p
+        className={cn(
+          "whitespace-pre-wrap break-words text-sm",
+          filtro === "links" && "mt-2 line-clamp-2 text-xs text-ink-faint",
+        )}
+      >
+        {mensagem.content}
+      </p>
     )}
 
     {mensagem.attachments.length > 0 && (
@@ -460,7 +463,68 @@ const MensagemDaLista: React.FC<{ mensagem: ModerationMessageModel; onIr: () => 
   </article>
 );
 
-// ---------------------------------------------------------------- pedaços
+const LinksDaMensagem: React.FC<{ conteudo: string }> = ({ conteudo }) => {
+  const links = extrairLinks(conteudo, 5);
+  if (!links.length) return null;
+
+  return (
+    <div className="flex flex-col gap-1">
+      {links.map((url) => (
+        <LinhaDeLink key={url} url={url} />
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Um endereço, do jeito que dá para ler.
+ *
+ * O cartão vem do mesmo `/api/embeds` da conversa — então o título já está em
+ * cache quando a mensagem estava na tela. Enquanto ele não chega (ou quando o
+ * site não responde), fica o endereço encurtado, que é melhor que uma linha
+ * vazia esperando.
+ */
+const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
+  const { data: embed } = useEmbed(url);
+  const dominio = (() => {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      return url;
+    }
+  })();
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer noopener"
+      title={url}
+      className="flex items-center gap-2 rounded bg-surface-3 px-2 py-1.5 transition hover:bg-surface-4"
+    >
+      {embed?.favicon ? (
+        <img
+          src={embed.favicon}
+          alt=""
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          className="size-4 shrink-0 rounded-sm object-contain"
+        />
+      ) : (
+        <Link2 size={14} className="shrink-0 text-ink-faint" />
+      )}
+
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-xs font-medium text-brand">
+          {embed?.titulo ?? url}
+        </span>
+        <span className="block truncate text-[11px] text-ink-faint">
+          {embed?.site ?? dominio}
+        </span>
+      </span>
+    </a>
+  );
+};
 
 const Secao: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
   <section className="mb-4">
@@ -473,10 +537,8 @@ interface LinhaProps {
   icone?: React.ReactNode;
   rotulo: string;
   valor: number | string;
-  /** formata como data em vez de número */
   data?: boolean;
   alerta?: boolean;
-  /** presente = a linha vira botão e ganha a seta de "ver mais" */
   onClick?: () => void;
 }
 
@@ -494,7 +556,7 @@ const Linha: React.FC<LinhaProps> = ({ icone, rotulo, valor, data, alerta, onCli
     </>
   );
 
-  const classe = "flex w-full items-center gap-2 border-b border-black/20 px-3 py-2.5 last:border-0";
+  const classe = "flex w-full items-center gap-2 border-b border-divisor px-3 py-2.5 last:border-0";
 
   if (!onClick) return <div className={classe}>{conteudo}</div>;
 
@@ -505,13 +567,6 @@ const Linha: React.FC<LinhaProps> = ({ icone, rotulo, valor, data, alerta, onCli
   );
 };
 
-/**
- * Cargos com o `+` que abre a lista marcável, como no Discord.
- *
- * Marcar aplica na hora, sem botão de salvar: é uma escolha por vez e o efeito
- * é imediato no servidor — um "salvar" só criaria a dúvida de se ficou
- * pendente.
- */
 const EditorDeCargos: React.FC<{
   guildId: string;
   userId: string;
@@ -521,7 +576,6 @@ const EditorDeCargos: React.FC<{
   const queryClient = useQueryClient();
   const setRoles = useSetMemberRoles(guildId);
 
-  // o @everyone é implícito: todo mundo tem, ninguém escolhe
   const atribuiveis = roles.filter((r) => !r.isEveryone);
   const marcados = atribuiveis.filter((r) => atuais.includes(r.id));
 
@@ -533,8 +587,6 @@ const EditorDeCargos: React.FC<{
     setRoles.mutate(
       { guildId, userId, roleIds: proximos },
       {
-        // a ficha tem os cargos junto com as contagens; sem isto o `+` marca e
-        // a lista de baixo continua mostrando o estado antigo
         onSuccess: () =>
           void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.moderation] }),
       },
@@ -577,8 +629,6 @@ const EditorDeCargos: React.FC<{
               return (
                 <DropdownMenuItem
                   key={cargo.id}
-                  // sem isto o menu fecha a cada clique, e marcar três cargos
-                  // exigiria reabrir três vezes
                   onSelect={(e) => {
                     e.preventDefault();
                     alternar(cargo.id);

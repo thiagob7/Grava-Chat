@@ -7,16 +7,13 @@ import { useUploadImage } from "~/@core/application/queries/upload/use-upload-im
 import { SeletorDeImagem } from "~/components/SeletorDeImagem";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { Input, Label, campoBase } from "~/components/ui/input";
-import { cn } from "~/lib/utils";
+import { Input, Label, Textarea } from "~/components/ui/input";
 import { CampoDeCor } from "~/components/user-settings/perfil/campos";
 import type { RascunhoDePerfil } from "~/components/user-settings/perfil/rascunho";
 import { formatBytes } from "~/lib/image";
 import { toast } from "react-toastify";
 
-/** O avatar aparece no máximo a 72px; 256 cobre tela retina com folga. */
 const AVATAR_MAX_PX = 256;
-/** O banner ocupa a largura do cartão, que é estreito: 640 já é generoso. */
 const BANNER_MAX_PX = 640;
 
 interface IdentidadeAbaProps {
@@ -26,13 +23,6 @@ interface IdentidadeAbaProps {
   definir: <K extends keyof RascunhoDePerfil>(campo: K, valor: RascunhoDePerfil[K]) => void;
 }
 
-/**
- * Quem você é: nome, foto, bio, e a faixa e as cores do seu cartão.
- *
- * Separado dos enfeites porque são decisões de natureza diferente — aqui é
- * conteúdo, ali é adorno — e porque a lista inteira numa aba só vira uma
- * rolagem em que ninguém acha nada.
- */
 export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rascunho, definir }) => {
   const uploadImage = useUploadImage();
   const escolherFoto = useRef<HTMLInputElement>(null);
@@ -46,7 +36,7 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
     campo: "avatarUrl" | "bannerUrl",
   ) => {
     const file = event.target.files?.[0];
-    event.target.value = ""; // permite escolher o mesmo arquivo de novo
+    event.target.value = "";
     if (!file) return;
 
     const foto = campo === "avatarUrl";
@@ -54,7 +44,6 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
       .mutateAsync({
         file,
         maxSize: foto ? AVATAR_MAX_PX : BANNER_MAX_PX,
-        // é isto que troca o teto de 50 MB de anexo pelo teto da finalidade
         finalidade: foto ? "avatar" : "banner",
       })
       .catch(() => null);
@@ -69,12 +58,6 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
     );
   };
 
-  /**
-   * O GIF vem do CDN do provedor, e todo endereço que gravamos no perfil tem
-   * que ser do nosso bucket — é o que impede um `bannerUrl` externo de virar
-   * pixel de rastreamento carregado por quem abre o cartão. Quem baixa e guarda
-   * é o servidor: pelo navegador dependeria de CORS no CDN, que não existe.
-   */
   const usarGif = async (url: string) => {
     setImportando(true);
     const anexo = await importarImagem(url, "banner")
@@ -146,14 +129,13 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
 
       <div>
         <Label htmlFor="bio">Sobre mim</Label>
-        <textarea
+        <Textarea
           id="bio"
           value={rascunho.bio}
           onChange={(e) => definir("bio", e.target.value)}
           maxLength={512}
           rows={3}
           placeholder="Conte algo sobre você"
-          className={cn(campoBase, "resize-none")}
         />
       </div>
 
@@ -162,11 +144,6 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
       <div>
         <Label>Faixa do cartão</Label>
         <div className="flex items-center gap-2">
-          {/*
-            Abre o seletor, e não a janela de arquivos: ir direto pro sistema
-            escondia que dá pra usar um GIF, e quem quisesse um teria que baixar
-            primeiro pra depois subir.
-          */}
           <Button
             variant="surface"
             size="sm"

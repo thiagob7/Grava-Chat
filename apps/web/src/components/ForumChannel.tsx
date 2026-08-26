@@ -13,8 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label, campoBase } from "~/components/ui/input";
-import { cn } from "~/lib/utils";
+import { Input, Label, Textarea } from "~/components/ui/input";
 import { formatTimestamp } from "~/lib/format";
 
 interface ForumChannelProps {
@@ -24,10 +23,6 @@ interface ForumChannelProps {
   onAbrirPost: (post: ForumPostModel) => void;
 }
 
-/**
- * A lista de assuntos do fórum. Cada assunto tem conversa própria — clicar
- * abre a thread, como no Discord.
- */
 export const ForumChannel: React.FC<ForumChannelProps> = ({
   channelId,
   channelName,
@@ -156,14 +151,13 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
 
           <div>
             <Label htmlFor="post-conteudo">Primeira mensagem</Label>
-            <textarea
+            <Textarea
               id="post-conteudo"
               value={conteudo}
               rows={5}
               maxLength={4000}
               placeholder="Conte o caso"
               onChange={(e) => setConteudo(e.target.value)}
-              className={cn(campoBase, "resize-none")}
             />
           </div>
         </DialogBody>

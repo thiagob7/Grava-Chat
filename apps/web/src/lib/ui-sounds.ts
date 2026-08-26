@@ -1,49 +1,25 @@
-/**
- * Os bipes da interface: entrar e sair da chamada, mutar, ficar surdo, abrir a
- * live.
- *
- * São SINTETIZADOS, não arquivos. Três motivos: não engordam o bundle (um pacote
- * de .mp3 curtos passa fácil de 100 KB), tocam instantaneamente porque não
- * dependem de download, e continuam funcionando offline no aplicativo de
- * desktop. Um bipe de interface é uma ou duas senoides com envelope — gravar
- * isso num arquivo seria desperdício.
- *
- * O timbre é de propósito o mesmo em todos: subir de tom = algo começou, descer
- * = algo terminou. É o que faz a pessoa entender sem precisar aprender.
- */
+import { prefsDeAparencia } from "~/stores/aparencia";
 
-/**
- * UM contexto pra tudo. Cada `new AudioContext()` come uma das poucas instâncias
- * que o navegador permite, e criar um por bipe fura o limite depois de algumas
- * dezenas de cliques — os sons simplesmente param, sem erro.
- */
 let ctx: AudioContext | null = null;
 
 function contexto(): AudioContext | null {
   try {
     ctx ??= new AudioContext();
 
-    // Navegador suspende o contexto criado antes do primeiro clique da pessoa.
-    // Sem isto, o primeiro bipe da sessão sai mudo.
     if (ctx.state === "suspended") void ctx.resume().catch(() => undefined);
 
     return ctx;
   } catch {
-    // sem Web Audio o app inteiro continua funcionando; só fica silencioso
     return null;
   }
 }
 
 interface Nota {
-  /** frequência em Hz */
   hz: number;
-  /** quando começa, em segundos a partir de agora */
   em: number;
-  /** duração em segundos */
   dura: number;
 }
 
-/** Volume base. Bipe de interface tem que ser discreto perto da voz de alguém. */
 const VOLUME = 0.16;
 
 function tocar(notas: Nota[], volume: number) {
@@ -56,18 +32,12 @@ function tocar(notas: Nota[], volume: number) {
     const osc = audio.createOscillator();
     const ganho = audio.createGain();
 
-    // senoide pura: onda quadrada ou dente de serra viram "alarme" no ouvido
     osc.type = "sine";
     osc.frequency.value = nota.hz;
 
     const inicio = agora + nota.em;
     const fim = inicio + nota.dura;
 
-    /**
-     * O envelope não é enfeite. Ligar e desligar um oscilador na marra produz
-     * um clique audível — a descontinuidade na forma de onda vira um estalo.
-     * A subida de 8 ms e a descida exponencial eliminam isso.
-     */
     ganho.gain.setValueAtTime(0.0001, inicio);
     ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.008);
     ganho.gain.exponentialRampToValueAtTime(0.0001, fim);
@@ -80,13 +50,6 @@ function tocar(notas: Nota[], volume: number) {
   }
 }
 
-/**
- * O repertório.
- *
- * Os pares sobem ou descem juntos porque o significado vem do movimento, não da
- * nota: entrar sobe, sair desce; desmutar sobe, mutar desce. Quem usa aprende
- * em duas chamadas e nunca mais confunde.
- */
 const SONS = {
   entrarNaChamada: [
     { hz: 523.25, em: 0, dura: 0.09 },
@@ -96,7 +59,6 @@ const SONS = {
     { hz: 659.25, em: 0, dura: 0.09 },
     { hz: 415.3, em: 0.08, dura: 0.16 },
   ],
-  /** alguém ENTROU na chamada em que você está — mais curto que o seu próprio */
   alguemEntrou: [{ hz: 880, em: 0, dura: 0.07 }],
   alguemSaiu: [{ hz: 523.25, em: 0, dura: 0.09 }],
 
@@ -111,7 +73,18 @@ const SONS = {
     { hz: 740, em: 0.05, dura: 0.09 },
   ],
 
-  /** começou a transmitir: três degraus subindo, tem cara de "no ar" */
+  /*
+    Os dois avisos do chat.
+
+    A mensagem é uma nota curta e discreta; a menção sobe duas, porque ela
+    precisa se destacar do resto do dia sem parecer alarme de incêndio.
+  */
+  mensagem: [{ hz: 587.33, em: 0, dura: 0.07 }],
+  mencao: [
+    { hz: 659.25, em: 0, dura: 0.07 },
+    { hz: 987.77, em: 0.07, dura: 0.12 },
+  ],
+
   liveNoAr: [
     { hz: 523.25, em: 0, dura: 0.07 },
     { hz: 659.25, em: 0.06, dura: 0.07 },
@@ -125,11 +98,18 @@ const SONS = {
 
 export type SomDaInterface = keyof typeof SONS;
 
-/**
- * Quem chama isto não sabe (nem precisa saber) se a pessoa está surda ou
- * desligou os bipes — a decisão mora aqui, num lugar só.
- */
 export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?: boolean } = {}) {
   if (opcoes.mudo) return;
+
+  /*
+    O modo streamer cala tudo aqui, num lugar só.
+
+    Espalhar a checagem por quem toca (voz, mensagem, menção) daria no mesmo
+    até alguém acrescentar um som novo e esquecer — e o esquecimento aparece
+    ao vivo, na transmissão de alguém.
+  */
+  const { modoStreamer, streamerSemSom } = prefsDeAparencia();
+  if (modoStreamer && streamerSemSom) return;
+
   tocar(SONS[nome], VOLUME * (opcoes.volume ?? 1));
 }

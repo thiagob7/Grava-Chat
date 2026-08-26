@@ -1,7 +1,6 @@
 import type { GuildEmoji, GuildSound, Sticker } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
-/** As três expressões seguem o mesmo formato de chamada; só muda o caminho. */
 export interface CreateEmojiDTO {
   guildId: string;
   name: string;

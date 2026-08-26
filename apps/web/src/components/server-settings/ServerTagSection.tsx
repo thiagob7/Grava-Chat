@@ -6,7 +6,6 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, Label } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
-/** Insígnias que acompanham a etiqueta. Emoji porque não temos arte própria. */
 const INSIGNIAS = ["🍃", "⚔️", "💜", "🔥", "💧", "💀", "🌙", "⚡", "✨", "🎮", "🎧", "🏆"];
 
 export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => {

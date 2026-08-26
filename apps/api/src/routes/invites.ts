@@ -18,12 +18,9 @@ export async function inviteRoutes(app: FastifyInstance) {
     const result = await inviteService.accept(req.userId, code);
 
     if (result.member) {
-      // Avisa quem já está no servidor e coloca o recém-chegado na sala do
-      // guild sem precisar reconectar.
       io().to(rooms.guild(result.guildId)).emit("member:joined", result.member);
       io().in(rooms.user(req.userId)).socketsJoin(rooms.guild(result.guildId));
 
-      // e a saudação cai no canal do sistema, se o servidor tiver um
       const saudacao = await guildService.boasVindas(result.guildId, req.userId);
       if (saudacao) io().to(rooms.channel(saudacao.channelId)).emit("message:created", saudacao);
     }

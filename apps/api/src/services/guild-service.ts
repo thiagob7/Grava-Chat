@@ -35,7 +35,6 @@ import type {
 
 const DEFAULT_CATEGORIES = ["CANAIS DE TEXTO", "CANAIS DE VOZ"];
 
-/** Boas-vindas sorteadas, como no Discord — sempre a mesma frase cansa rápido. */
 const SAUDACOES = [
   "{pessoa} acabou de chegar!",
   "Bem-vindo(a), {pessoa}. A gente estava esperando.",
@@ -44,15 +43,28 @@ const SAUDACOES = [
   "{pessoa} apareceu. Segura a emoção.",
 ];
 
+/**
+ * As trocas que a mensagem de boas-vindas aceita.
+ *
+ * `{pessoa}` vira menção de verdade — é o que faz a pessoa ser notificada e
+ * ver o próprio nome destacado. `{nome}` é o mesmo nome sem o toque, para
+ * quem quer uma frase que não cutuca ninguém.
+ */
+function preencher(
+  modelo: string,
+  dados: { userId: string; nome: string; servidor: string; contagem: number },
+) {
+  return modelo
+    .replaceAll("{pessoa}", `<@${dados.userId}>`)
+    .replaceAll("{nome}", dados.nome)
+    .replaceAll("{servidor}", dados.servidor)
+    .replaceAll("{contagem}", String(dados.contagem));
+}
+
 export const guildService = {
   async listForUser(userId: string) {
     const memberships = await guildRepository.findManyByUser(userId);
 
-    /**
-     * A lista lateral precisa saber o que você pode fazer em cada servidor
-     * (mostrar ou não "Configurações", "Criar canal"...). Calcular aqui evita
-     * uma consulta de permissões por servidor no front.
-     */
     const porGuild = await Promise.all(
       memberships.map(async (m) => {
         const roles = await roleRepository.findForMember(m.guildId, m.roleIds);
@@ -64,7 +76,6 @@ export const guildService = {
           iconUrl: m.guild.iconUrl,
           ownerId: m.guild.ownerId,
           memberCount: m.guild._count.members,
-          /** o seletor de etiqueta lista os servidores que TEM etiqueta */
           tag: m.guild.tag,
           tagIcon: m.guild.tagIcon,
           isOwner,
@@ -76,10 +87,6 @@ export const guildService = {
     return porGuild;
   },
 
-  /**
-   * Servidor novo já nasce com categorias e canais, como no Discord: um
-   * servidor vazio não tem onde clicar e passa a impressão de que quebrou.
-   */
   async create(userId: string, input: CreateGuildInput) {
     const guild = await guildRepository.createWithDefaults({
       name: input.name,
@@ -106,14 +113,6 @@ export const guildService = {
     };
   },
 
-  /**
-   * O cartãozinho que abre ao clicar numa etiqueta de servidor.
-   *
-   * Só responde se o servidor TEM etiqueta — e essa é a fronteira de privacidade
-   * inteira: um servidor com etiqueta está se anunciando por ela, que viaja ao
-   * lado do nome de cada membro que a veste. Sem essa regra, isto seria uma
-   * consulta livre de qualquer servidor por id, para qualquer pessoa logada.
-   */
   async preview(userId: string, guildId: string) {
     const guild = await guildRepository.findByIdOrThrow(guildId);
     if (!guild.tag) throw new NotFoundError("Servidor não encontrado");
@@ -131,12 +130,10 @@ export const guildService = {
       memberCount: guild._count.members,
       onlineCount: Object.values(presenca).filter((s) => s !== "OFFLINE").length,
       createdAt: guild.createdAt.toISOString(),
-      /** decide o botão: "ir para o servidor" ou nada que se possa fazer daqui */
       souMembro: membros.some((m) => m.userId === userId),
     };
   },
 
-  /** Tudo que a tela do servidor precisa, numa chamada só. */
   async detail(userId: string, guildId: string) {
     const member = await accessService.requireMember(userId, guildId);
 
@@ -156,11 +153,6 @@ export const guildService = {
     const porCanal = new Map<string, typeof overwrites>();
     for (const o of overwrites) porCanal.set(o.channelId, [...(porCanal.get(o.channelId) ?? []), o]);
 
-    /**
-     * As permissões são calculadas canal a canal e o que você não pode ver
-     * simplesmente não sai daqui. É isso que faz um canal restrito não existir
-     * para quem não tem acesso — em vez de aparecer cinza e provocar.
-     */
     const permissoesPorCanal = new Map<string, Permission[]>();
     const channels = todosOsCanais.filter((c) => {
       const permissoes = computePermissions({
@@ -175,11 +167,6 @@ export const guildService = {
       return true;
     });
 
-    /**
-     * As etiquetas que os membros escolheram vestir. Podem ser de servidores
-     * QUALQUER — a escolha e da pessoa e vale em todo lugar —, entao sao
-     * resolvidas de uma vez, e nao uma consulta por membro.
-     */
     const etiquetas = await tagRepository.resolverMuitas([
       ...new Set(
         members
@@ -190,7 +177,6 @@ export const guildService = {
 
     const [lastMessages, presence, voiceStates] = await Promise.all([
       channelRepository.lastMessageIdByChannel(channels.map((c) => c.id)),
-      // Presença e voz vêm do Redis, não do cache no Mongo — ver presence-service.
       presenceService.mapFor(members.map((m) => m.userId)),
       voiceService.statesForChannels(channels.filter((c) => c.type === "VOICE").map((c) => c.id)),
     ]);
@@ -205,12 +191,11 @@ export const guildService = {
         tagIcon: guild.tagIcon,
         systemChannelId: guild.systemChannelId,
         welcomeEnabled: guild.welcomeEnabled,
+        welcomeMessage: guild.welcomeMessage,
         ownerId: guild.ownerId,
         memberCount: guild._count.members,
       },
-      /** O que EU posso neste servidor — a interface se monta a partir daqui. */
       permissions: [...computePermissions({ userId, isOwner, roles: meusCargos })],
-      /** E o que eu posso em cada canal, que pode ser diferente do geral. */
       channelPermissions: Object.fromEntries(permissoesPorCanal),
       roles: roles.map(toRole),
       categories: categories.map((c) => ({
@@ -227,23 +212,8 @@ export const guildService = {
         const dto = toMember(m);
         return { ...dto, user: { ...dto.user, status: presence[m.userId] ?? "OFFLINE" } };
       }),
-      /**
-       * Os enfeites de cada pessoa, UMA vez por pessoa.
-       *
-       * Não entram em `members[].user` nem em `message.author` de propósito:
-       * aquele objeto está embutido em cinquenta mensagens por página, sempre
-       * com o mesmo autor repetido, e um blob cosmético ali viraria dez KB por
-       * página para sempre. Aqui a lista de membros já traz `user` incluído, o
-       * que faz este mapa custar zero consulta.
-       *
-       * Quem não personalizou nada fica FORA do mapa em vez de virar `{}`: o
-       * front trata ausente e vazio do mesmo jeito, e num servidor de cem
-       * pessoas isso é a diferença entre pagar por todas e pagar por quem
-       * escolheu alguma coisa.
-       */
       profiles: Object.fromEntries(
         members
-          // o emblema e do SERVIDOR: mora no membro, e so faz sentido aqui
           .map((m) => {
             const escolhida = (m.user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId;
             const etiqueta = escolhida ? etiquetas.get(escolhida) : undefined;
@@ -259,7 +229,6 @@ export const guildService = {
           })
           .filter(([, perfil]) => Object.keys(perfil).length > 0),
       ),
-      /** As definicoes; quem veste o que esta no mapa `profiles`. */
       emblemas: emblemas.map((e) => ({
         id: e.id,
         guildId: e.guildId,
@@ -271,7 +240,6 @@ export const guildService = {
     };
   },
 
-  /** Editar o servidor: perfil, etiqueta e mensagens do sistema. */
   async update(userId: string, guildId: string, input: UpdateGuildInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
@@ -297,26 +265,37 @@ export const guildService = {
       tagIcon: guild.tagIcon,
       systemChannelId: guild.systemChannelId,
       welcomeEnabled: guild.welcomeEnabled,
+      welcomeMessage: guild.welcomeMessage,
       ownerId: guild.ownerId,
       memberCount: guild._count.members,
     };
   },
 
-  /**
-   * Mensagem de boas-vindas. É uma mensagem de sistema no canal escolhido —
-   * o que faz o servidor parecer vivo quando chega gente nova.
-   */
   async boasVindas(guildId: string, userId: string) {
     const guild = await guildRepository.findById(guildId);
     if (!guild?.welcomeEnabled || !guild.systemChannelId) return null;
 
-    const frase = SAUDACOES[Math.floor(Math.random() * SAUDACOES.length)]!;
+    const escrita = guild.welcomeMessage?.trim();
+
+    /// Sem texto próprio, sorteia — é o que todo servidor tinha antes de dar
+    /// para escrever o seu, e continua sendo o padrão de quem não mexeu.
+    const modelo = escrita || SAUDACOES[Math.floor(Math.random() * SAUDACOES.length)]!;
+
+    const [pessoa, membros] = await Promise.all([
+      userRepository.findById(userId),
+      memberRepository.findManyByGuild(guildId),
+    ]);
 
     const criada = await messageRepository.create({
       channelId: guild.systemChannelId,
       authorId: userId,
       tipo: "JOIN",
-      content: frase.replace("{pessoa}", `<@${userId}>`),
+      content: preencher(modelo, {
+        userId,
+        nome: pessoa?.displayName ?? "alguém",
+        servidor: guild.name,
+        contagem: membros.length,
+      }),
       attachments: [],
       replyToId: null,
       mentions: [userId],
@@ -325,7 +304,6 @@ export const guildService = {
     return toMessage(criada, userId);
   },
 
-  /** Convites ativos do servidor, com quem criou e quanto já foi usado. */
   async listInvites(userId: string, guildId: string) {
     await accessService.requirePermission(userId, guildId, "CREATE_INVITE");
     const convites = await inviteRepository.findManyByGuild(guildId);
@@ -338,7 +316,6 @@ export const guildService = {
       maxUses: c.maxUses,
       expiresAt: c.expiresAt?.toISOString() ?? null,
       createdAt: c.createdAt.toISOString(),
-      // já vencido ou esgotado continua na lista, mas marcado
       expired: Boolean(
         (c.expiresAt && c.expiresAt < new Date()) || (c.maxUses !== null && c.uses >= c.maxUses),
       ),
@@ -351,7 +328,6 @@ export const guildService = {
     const convite = await inviteRepository.findById(inviteId);
     if (!convite || convite.guildId !== guildId) throw new NotFoundError("Convite não encontrado");
 
-    // quem criou pode revogar o seu; para revogar de outros, precisa gerenciar o servidor
     if (convite.inviterId !== userId) {
       await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
     }
@@ -362,7 +338,6 @@ export const guildService = {
   async createChannel(userId: string, guildId: string, input: CreateChannelInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_CHANNELS");
 
-
     const categoryId = input.categoryId ?? null;
     const last = await channelRepository.lastPosition(guildId, categoryId);
 
@@ -370,17 +345,13 @@ export const guildService = {
       guildId,
       categoryId,
       name: input.name,
+      ...(input.fonte && input.fonte !== "padrao" ? { fonte: input.fonte } : {}),
       type: input.type,
       topic: input.topic ?? null,
       isPrivate: input.isPrivate ?? false,
       position: (last?.position ?? -1) + 1,
     });
 
-    /**
-     * Canal privado já nasce fechado: nega VIEW_CHANNEL para o @everyone e
-     * devolve o acesso a quem criou. Criar e só depois configurar deixaria uma
-     * janela em que o canal "privado" esteve aberto para o servidor inteiro.
-     */
     if (channel.isPrivate) {
       const everyone = await roleRepository.findEveryone(guildId);
 
@@ -478,10 +449,6 @@ export const guildService = {
     return { code: invite.code, expiresAt: invite.expiresAt, maxUses: invite.maxUses };
   },
 
-  /**
-   * Apagar o servidor. Só o dono — nem ADMIN pode, porque é irreversível e leva
-   * junto todo o histórico de conversa de todo mundo que está lá.
-   */
   async remove(userId: string, guildId: string) {
     const guild = await guildRepository.findById(guildId);
     if (!guild) throw new NotFoundError("Servidor não encontrado");
@@ -493,14 +460,6 @@ export const guildService = {
     return membros.map((m) => m.userId);
   },
 
-  /** Sair do próprio servidor não exige permissão; expulsar outro exige. */
-  /**
-   * A ficha de um membro para quem modera: o que ele mandou, o que pode fazer e
-   * desde quando está aqui.
-   *
-   * Exige `MODERATE_MEMBERS` — é informação sobre outra pessoa, e quem não
-   * modera não tem por que ver a contagem de mensagens de ninguém.
-   */
   async moderationView(actorId: string, guildId: string, targetId: string) {
     await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
 
@@ -517,7 +476,6 @@ export const guildService = {
       auditStatsRepository.countFor(guildId, targetId),
     ]);
 
-    // quem convidou pode ter saído do servidor desde então; o nome é opcional
     const convidadoPor = membro.invitedById
       ? await userRepository.findById(membro.invitedById)
       : null;
@@ -525,8 +483,6 @@ export const guildService = {
     return {
       atividade,
       auditoria,
-      // `computePermissions` devolve Set, e Set vira `{}` no JSON — o resto do
-      // service já espalha em array por isso mesmo
       permissoes: [...contexto.permissions],
       roleIds: membro.roleIds,
       entrouNoServidor: membro.joinedAt,
@@ -539,11 +495,6 @@ export const guildService = {
     };
   },
 
-  /**
-   * As mensagens de um membro, para o "ver mais" de cada contagem.
-   *
-   * Mesma permissão da ficha: quem não modera não lê o histórico de ninguém.
-   */
   async moderationMessages(
     actorId: string,
     guildId: string,

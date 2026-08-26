@@ -8,6 +8,7 @@ import {
 import { NotFoundError, ForbiddenError } from "~/lib/http.js";
 import { memberRepository, channelRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
+import { dmRepository } from "~/repositories/friendship-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 
 export interface Contexto {
@@ -15,26 +16,15 @@ export interface Contexto {
   roles: RoleLike[];
   isOwner: boolean;
   permissions: Set<Permission>;
-  /** posição do cargo mais alto — limita o que se pode fazer com cargos e pessoas */
   highest: number;
 }
 
-/**
- * Toda checagem de permissão passa por aqui. Centralizado de propósito: com a
- * regra espalhada, uma rota nova esquece de checar e vira buraco de acesso.
- */
 export const accessService = {
   async requireMember(userId: string, guildId: string) {
     const member = await memberRepository.find(guildId, userId);
 
-    // 404 e não 403: um não-membro não deve nem descobrir que o servidor existe.
     if (!member) throw new NotFoundError("Você não é membro deste servidor");
 
-    /**
-     * Banido some do servidor na hora, mesmo com a tela aberta. A remoção do
-     * membro já acontece no banimento; esta checagem cobre a corrida entre
-     * banir e a próxima requisição de quem estava dentro.
-     */
     if (await banRepository.find(guildId, userId)) {
       throw new NotFoundError("Você não é membro deste servidor");
     }
@@ -42,10 +32,6 @@ export const accessService = {
     return member;
   },
 
-  /**
-   * Contexto de permissões no servidor, ou dentro de um canal se `channelId`
-   * for passado (aí os overwrites entram no cálculo).
-   */
   async contextOf(userId: string, guildId: string, channelId?: string): Promise<Contexto> {
     const [member, guild] = await Promise.all([
       accessService.requireMember(userId, guildId),
@@ -82,13 +68,6 @@ export const accessService = {
     return contexto;
   },
 
-  /**
-   * Resolve o canal e confirma o acesso. Serve para canal de servidor e para DM
-   * (que não tem guildId — a checagem ali é a lista de destinatários).
-   *
-   * Num canal de servidor, exige VIEW_CHANNEL: é isso que faz um canal
-   * restrito simplesmente não existir para quem não pode vê-lo.
-   */
   async requireChannelAccess(userId: string, channelId: string) {
     const channel = await channelRepository.findById(channelId);
     if (!channel) throw new NotFoundError("Canal não encontrado");
@@ -100,16 +79,84 @@ export const accessService = {
 
     const contexto = await accessService.contextOf(userId, channel.guildId, channelId);
 
-    // 404 outra vez: dizer "sem permissão" já entrega que o canal existe.
     if (!has(contexto.permissions, "VIEW_CHANNEL")) throw new NotFoundError("Canal não encontrado");
 
     return { channel, contexto };
   },
 
   /**
-   * Ninguém mexe em cargo igual ou acima do próprio, nem em quem está acima.
-   * Sem isso, qualquer um com MANAGE_ROLES se promove a administrador.
+   * Os canais do servidor onde esta pessoa pode ler.
+   *
+   * A busca precisa disso antes de qualquer consulta: procurar em todos os
+   * canais e filtrar o resultado depois vazaria por outro caminho — o número
+   * de acertos já conta que existe conversa no canal fechado. Aqui a lista de
+   * canais entra na consulta, não sai dela.
+   *
+   * `READ_MESSAGE_HISTORY` junto de `VIEW_CHANNEL` porque é o histórico que
+   * está sendo vasculhado: quem só pode ver o canal daqui pra frente não pode
+   * achar o que foi dito antes.
    */
+  async readableChannels(
+    userId: string,
+    guildId: string,
+    { comHistorico = true } = {},
+  ): Promise<string[]> {
+    const [member, guild] = await Promise.all([
+      accessService.requireMember(userId, guildId),
+      guildRepository.findById(guildId),
+    ]);
+
+    if (!guild) throw new NotFoundError("Servidor não encontrado");
+
+    const isOwner = guild.ownerId === userId;
+    const roles = await roleRepository.findForMember(guildId, member.roleIds);
+    const canais = await channelRepository.findManyByGuild(guildId);
+    const overwrites = await overwriteRepository.findManyByChannels(canais.map((c) => c.id));
+
+    const porCanal = new Map<string, typeof overwrites>();
+    for (const o of overwrites) porCanal.set(o.channelId, [...(porCanal.get(o.channelId) ?? []), o]);
+
+    return canais
+      .filter((canal) => {
+        const permissoes = computePermissions({
+          userId,
+          isOwner,
+          roles,
+          overwrites: porCanal.get(canal.id) ?? [],
+        });
+
+        if (!has(permissoes, "VIEW_CHANNEL")) return false;
+        return !comHistorico || has(permissoes, "READ_MESSAGE_HISTORY");
+      })
+      .map((canal) => canal.id);
+  },
+
+  /**
+   * Tudo o que esta pessoa deve OUVIR — servidores e conversas privadas.
+   *
+   * Antes, o app só entrava na sala do canal que estava aberto. Funcionava
+   * para o chat e escondia um buraco: mensagem de qualquer outro canal
+   * simplesmente não chegava no navegador. Nada de contador crescendo, nada
+   * de aviso — a menção de um canal fechado só aparecia quando você abrisse
+   * aquele canal, que é justamente quando o aviso não serve mais para nada.
+   *
+   * Aqui é `VIEW_CHANNEL` só: receber o que está sendo dito agora não é ler
+   * o que foi dito antes.
+   */
+  async listenableChannels(userId: string, guildIds: string[]): Promise<string[]> {
+    const porServidor = await Promise.all(
+      guildIds.map((guildId) =>
+        accessService
+          .readableChannels(userId, guildId, { comHistorico: false })
+          .catch(() => [] as string[]),
+      ),
+    );
+
+    const dms = await dmRepository.findManyForUser(userId);
+
+    return [...porServidor.flat(), ...dms.map((c) => c.id)];
+  },
+
   requireAbove(contexto: Contexto, posicaoAlvo: number, mensagem: string) {
     if (contexto.isOwner) return;
     if (contexto.highest <= posicaoAlvo) throw new ForbiddenError(mensagem);

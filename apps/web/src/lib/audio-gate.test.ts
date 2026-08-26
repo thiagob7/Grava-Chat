@@ -18,7 +18,6 @@ describe("porta de voz — atividade de voz", () => {
   it("segura a porta aberta nas pausas entre as palavras", () => {
     const fala = decidirAbertura({ ...base, modo: "voz", nivel: 0.3 });
 
-    // 200ms depois, em silêncio: ainda dentro da sustentação
     const pausa = decidirAbertura({
       ...base,
       modo: "voz",
@@ -72,7 +71,6 @@ describe("porta de voz — push-to-talk", () => {
 describe("sensibilidade automática", () => {
   it("o piso sobe quando o ambiente fica barulhento", () => {
     let piso = 0.02;
-    // ventilador ligado: ruído constante de 0.05 por uns 20 segundos
     for (let i = 0; i < 700; i++) piso = proximoPiso(piso, 0.05);
 
     expect(piso).toBeGreaterThan(0.04);
@@ -114,11 +112,6 @@ describe("precisaRemontar", () => {
     expect(precisaRemontar({ temKrisp: true, estadoApos: false, alvo: false })).toBe(false);
   });
 
-  /**
-   * O caso que deixava a supressão só valendo na chamada seguinte: o
-   * `setEnabled` do Krisp devolve `boolean | undefined` e não lança, então a
-   * troca falhava calada e ninguém remontava.
-   */
   it("troca no lugar que NÃO pegou remonta", () => {
     expect(precisaRemontar({ temKrisp: true, estadoApos: false, alvo: true })).toBe(true);
     expect(precisaRemontar({ temKrisp: true, estadoApos: true, alvo: false })).toBe(true);

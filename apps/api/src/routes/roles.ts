@@ -14,11 +14,6 @@ import {
 const roleParams = guildParams.extend({ roleId: objectId });
 const overwriteParams = guildChannelParams.extend({ targetId: objectId });
 
-/**
- * Mudar cargo ou permissão de canal muda o que cada pessoa PODE VER. Não dá pra
- * mandar o novo estado pronto, porque ele é diferente pra cada um — então o
- * servidor avisa "mudou" e cada cliente recarrega o que lhe cabe.
- */
 const avisarMudanca = (guildId: string) =>
   io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
 
@@ -72,7 +67,6 @@ export async function roleRoutes(app: FastifyInstance) {
     );
 
     io().to(rooms.guild(guildId)).emit("member:updated", member);
-    // quem ganhou ou perdeu cargo pode ter ganhado ou perdido canais
     io().to(rooms.user(userId)).emit("guild:refresh", { guildId });
 
     return member;

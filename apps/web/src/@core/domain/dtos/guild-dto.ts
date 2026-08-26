@@ -1,4 +1,4 @@
-import type { ChannelType } from "@gravae/shared";
+import type { FonteDeNome, ChannelType } from "@gravae/shared";
 
 export interface CreateGuildDTO {
   name: string;
@@ -7,6 +7,7 @@ export interface CreateGuildDTO {
 export interface CreateChannelDTO {
   guildId: string;
   name: string;
+  fonte?: FonteDeNome;
   type: ChannelType;
   categoryId?: string | null;
   topic?: string | null;

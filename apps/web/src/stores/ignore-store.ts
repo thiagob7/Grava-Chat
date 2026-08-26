@@ -1,16 +1,5 @@
 import { create } from "zustand";
 
-/**
- * Quem você escolheu ignorar.
- *
- * Fica só neste navegador, em localStorage, e NÃO no servidor — de propósito.
- * Ignorar é uma preferência de leitura sua: a pessoa continua no servidor,
- * continua sendo vista por todo mundo, e nada muda pra ela. Levar isso pro
- * servidor viraria um bloqueio pela metade, com a expectativa errada de que
- * teria algum efeito do outro lado.
- *
- * Bloquear é a versão com efeito de verdade — essa mora no servidor.
- */
 const CHAVE = "gravae:ignorados";
 
 function ler(): string[] {
@@ -42,7 +31,6 @@ export const useIgnoreStore = create<IgnoreStore>((set, store) => ({
     try {
       localStorage.setItem(CHAVE, JSON.stringify(proximo));
     } catch {
-      /* modo privado sem storage: vale só nesta sessão */
     }
   },
 

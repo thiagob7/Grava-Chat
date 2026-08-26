@@ -3,15 +3,9 @@ import * as React from "react";
 import { cn } from "~/lib/utils";
 
 interface SliderProps extends Omit<React.ComponentProps<"input">, "type"> {
-  /** 0..1 — quanto da barra fica preenchido à esquerda do controle */
   preenchido: number;
 }
 
-/**
- * Range nativo com a pista pintada até o valor. Nativo de propósito: teclado,
- * leitor de tela e arrastar com o dedo já vêm prontos, e o que faltava era só
- * a aparência.
- */
 export const Slider = ({ className, preenchido, ...props }: SliderProps) => (
   <input
     type="range"

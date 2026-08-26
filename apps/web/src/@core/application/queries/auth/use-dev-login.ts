@@ -12,7 +12,6 @@ export const useDevLogin = () => {
   return useMutation({
     mutationFn: (data: DevLoginDTO) => devLogin(data),
     onSuccess: (session) => {
-      // Semeia o cache em vez de refetch: a resposta do login já traz o usuário.
       queryClient.setQueryData([queryKeys.auth.me], session.user);
       queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
     },

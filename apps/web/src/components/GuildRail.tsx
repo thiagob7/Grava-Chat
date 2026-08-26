@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { MessageSquare, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
+import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { CreateGuildModal } from "~/components/CreateGuildModal";
@@ -11,7 +12,6 @@ interface GuildRailProps {
   activeGuildId: string | null;
   onSelect: (guildId: string) => void;
   onOpenFriends: () => void;
-  /** pedidos de amizade recebidos, pra bolinha vermelha */
   pendingFriendRequests: number;
 }
 
@@ -22,16 +22,16 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   pendingFriendRequests,
 }) => {
   const { data: guilds = [] } = useFindManyGuilds(true);
+  const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const [creating, setCreating] = useState(false);
 
   return (
     <>
-      <nav className="flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 py-3">
-        {/* Casa: conversas privadas e amigos, fora de qualquer servidor. */}
+      <nav className="flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 pb-36 pt-3">
         <div className="group relative flex w-full justify-center">
           <span
             className={cn(
-              "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-white transition-all",
+              "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
               activeGuildId === null ? "h-10" : "h-0 group-hover:h-5",
             )}
           />
@@ -45,7 +45,12 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   : "rounded-3xl bg-surface-1 hover:rounded-2xl hover:bg-brand",
               )}
             >
-              <MessageSquare size={22} />
+              <img
+                src="/brand/logo%20g%20branco.svg"
+                alt=""
+                className="h-6 w-auto object-contain"
+                draggable={false}
+              />
               {pendingFriendRequests > 0 && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-0 bg-danger text-[10px] font-bold text-white">
                   {pendingFriendRequests}
@@ -59,14 +64,24 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
         {guilds.map((guild) => {
           const active = guild.id === activeGuildId;
+          const { naoLidas = 0, mencoes = 0 } = porServidor[guild.id] ?? {};
+
+          /*
+            A barrinha branca da esquerda diz três coisas com o mesmo traço,
+            como no Discord: comprida = servidor aberto, curta e redonda = tem
+            mensagem nova, nada = tudo lido. O número vermelho é outra coisa —
+            é menção, e menção não se descobre rolando o chat.
+
+            Servidor aberto não mostra a marca de não-lido: você está lendo.
+          */
+          const temNovidade = !active && naoLidas > 0;
 
           return (
             <div key={guild.id} className="group relative flex w-full justify-center">
-              {/* pílula branca à esquerda: alta quando ativo, some quando não */}
               <span
                 className={cn(
-                  "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-white transition-all",
-                  active ? "h-10" : "h-0 group-hover:h-5",
+                  "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
+                  active ? "h-10" : temNovidade ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
                 )}
               />
               <Tooltip label={guild.name} side="right">
@@ -87,6 +102,21 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   )}
                 </button>
               </Tooltip>
+
+              {mencoes > 0 && (
+                <span
+                  title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
+                  /*
+                    Fora do botão, não dentro: o ícone do servidor tem
+                    `overflow-hidden` para recortar a foto no quadrado
+                    arredondado, e qualquer selo desenhado lá dentro sumiria
+                    junto com o canto.
+                  */
+                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-0 bg-danger px-1 text-[11px] font-bold leading-4 text-white"
+                >
+                  {mencoes > 99 ? "99+" : mencoes}
+                </span>
+              )}
             </div>
           );
         })}

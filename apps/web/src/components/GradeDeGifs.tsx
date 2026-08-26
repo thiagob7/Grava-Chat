@@ -4,13 +4,6 @@ import { Loader2, Search, TrendingUp } from "lucide-react";
 import { useGifConfig, useSearchGifs, useTrendingGifs } from "~/@core/application/queries/gif/use-gifs";
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
 
-/**
- * A grade de GIFs: em alta quando não há busca, resultados quando há.
- *
- * Vive fora do `ExpressionPicker` porque o seletor da faixa de perfil usa a
- * mesma grade. Dois lugares desenhando a própria grade divergiriam no primeiro
- * ajuste de espaçamento — e um deles esqueceria o aviso de "sem chave".
- */
 export const GradeDeGifs: React.FC<{ busca: string; onGif: (gif: GifModel) => void }> = ({
   busca,
   onGif,
@@ -18,10 +11,6 @@ export const GradeDeGifs: React.FC<{ busca: string; onGif: (gif: GifModel) => vo
   const { data: config } = useGifConfig(true);
   const [termo, setTermo] = useState("");
 
-  /**
-   * Espera a pessoa parar de digitar antes de perguntar ao serviço de GIF. Sem
-   * isso, cada letra viraria uma chamada — e a cota é do dono da chave.
-   */
   useEffect(() => {
     const timer = setTimeout(() => setTermo(busca), 400);
     return () => clearTimeout(timer);
@@ -60,11 +49,6 @@ export const GradeDeGifs: React.FC<{ busca: string; onGif: (gif: GifModel) => vo
         </div>
       )}
 
-      {/*
-        Mosaico de duas ou três colunas conforme a largura, cada GIF na altura
-        que ele tem. Uma grade de células iguais cortaria metade deles — e num
-        seletor de GIF o que se escolhe é a imagem, não o retângulo.
-      */}
       <div className="columns-2 gap-2 sm:columns-3">
         {(lista ?? []).map((gif) => (
           <button

@@ -1,0 +1,163 @@
+import React, { useMemo, useState } from "react";
+import { Hash, Search, Send } from "lucide-react";
+import type { Message } from "@gravae/shared";
+
+import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
+import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
+import { Avatar } from "~/components/Avatar";
+import { Dialog, DialogBody, DialogContent, DialogTitle } from "~/components/ui/dialog";
+import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { cn } from "~/lib/utils";
+
+interface Destino {
+  id: string;
+  nome: string;
+  /// a foto, nas conversas privadas; nos canais é o "#"
+  avatar?: { id: string; url: string | null };
+}
+
+interface EncaminharModalProps {
+  aberto: boolean;
+  onFechar: () => void;
+  mensagem: Message;
+  guildId?: string;
+}
+
+/**
+ * Encaminhar é reenviar o texto noutro lugar, com uma linha dizendo de onde
+ * veio. Não é uma referência guardada no banco: a mensagem nova é dela mesma,
+ * e apagar a original não deixa um buraco na conversa de destino.
+ */
+export const EncaminharModal: React.FC<EncaminharModalProps> = ({
+  aberto,
+  onFechar,
+  mensagem,
+  guildId,
+}) => {
+  const [busca, setBusca] = useState("");
+  const [enviandoPara, setEnviandoPara] = useState<string | null>(null);
+
+  const guild = useFindGuild(guildId);
+  const dms = useFindDms(aberto);
+  const sendMessage = useSendMessage();
+
+  const destinos = useMemo<{ canais: Destino[]; conversas: Destino[] }>(() => {
+    const termo = busca.toLowerCase().trim();
+    const cabe = (nome: string) => !termo || nome.toLowerCase().includes(termo);
+
+    return {
+      canais: (guild.data?.channels ?? [])
+        .filter((c) => c.type === "TEXT" && c.id !== mensagem.channelId && cabe(c.name))
+        .map((c) => ({ id: c.id, nome: c.name })),
+
+      conversas: (dms.data ?? [])
+        .filter((d) => d.id !== mensagem.channelId && cabe(d.user.displayName))
+        .map((d) => ({
+          id: d.id,
+          nome: d.user.displayName,
+          avatar: { id: d.user.id, url: d.user.avatarUrl },
+        })),
+    };
+  }, [guild.data, dms.data, busca, mensagem.channelId]);
+
+  const encaminhar = (destino: Destino) => {
+    setEnviandoPara(destino.id);
+
+    sendMessage.mutate(
+      {
+        channelId: destino.id,
+        content: mensagem.content || "(mensagem sem texto)",
+        nonce: crypto.randomUUID(),
+      },
+      { onSettled: () => (setEnviandoPara(null), onFechar()) },
+    );
+  };
+
+  const vazio = !destinos.canais.length && !destinos.conversas.length;
+
+  return (
+    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent className="max-w-md">
+        <DialogTitle>Encaminhar mensagem</DialogTitle>
+
+        <DialogBody>
+          <div className={grupoDeCampo}>
+            <Search size={14} className="shrink-0 text-ink-faint" />
+            <input
+              autoFocus
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Para onde?"
+              className={campoNu}
+            />
+          </div>
+
+          <p className="mt-3 line-clamp-2 rounded bg-surface-0 px-3 py-2 text-xs text-ink-faint">
+            {mensagem.content || "(mensagem sem texto)"}
+          </p>
+
+          <div className="mt-3 max-h-64 space-y-3 overflow-y-auto">
+            {vazio && (
+              <p className="py-8 text-center text-sm text-ink-faint">
+                Nenhum lugar com esse nome.
+              </p>
+            )}
+
+            <Grupo titulo="Canais" itens={destinos.canais} enviandoPara={enviandoPara} onEscolher={encaminhar} />
+            <Grupo
+              titulo="Conversas"
+              itens={destinos.conversas}
+              enviandoPara={enviandoPara}
+              onEscolher={encaminhar}
+            />
+          </div>
+        </DialogBody>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Grupo: React.FC<{
+  titulo: string;
+  itens: Destino[];
+  enviandoPara: string | null;
+  onEscolher: (d: Destino) => void;
+}> = ({ titulo, itens, enviandoPara, onEscolher }) => {
+  if (!itens.length) return null;
+
+  return (
+    <section>
+      <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        {titulo}
+      </h4>
+
+      {itens.map((destino) => (
+        <button
+          key={destino.id}
+          disabled={enviandoPara !== null}
+          onClick={() => onEscolher(destino)}
+          className={cn(
+            "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm transition",
+            "hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50",
+          )}
+        >
+          {destino.avatar ? (
+            <Avatar
+              id={destino.avatar.id}
+              name={destino.nome}
+              url={destino.avatar.url}
+              size={20}
+            />
+          ) : (
+            <Hash size={16} className="shrink-0 text-ink-faint" />
+          )}
+
+          <span className="min-w-0 flex-1 truncate">{destino.nome}</span>
+
+          {enviandoPara === destino.id && <Send size={14} className="shrink-0 text-brand" />}
+        </button>
+      ))}
+    </section>
+  );
+};

@@ -3,13 +3,11 @@ import { objectId } from "@gravae/shared";
 
 export const banInput = z.object({
   reason: z.string().max(512).nullable().optional(),
-  /** apagar as mensagens das últimas N horas de quem foi banido */
   apagarHoras: z.number().int().min(0).max(168).optional(),
 });
 export type BanInput = z.infer<typeof banInput>;
 
 export const timeoutInput = z.object({
-  /** minutos de castigo; 0 solta na hora */
   minutos: z.number().int().min(0).max(60 * 24 * 28),
   reason: z.string().max(512).nullable().optional(),
 });

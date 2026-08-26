@@ -17,13 +17,6 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
 
-/**
- * Os quatro estados que dá pra ESCOLHER.
- *
- * `OFFLINE` não está aqui de propósito: ficar offline é consequência de fechar
- * o app, não uma escolha. Quem quer sumir sem sair escolhe `INVISIBLE` — que é
- * um estado desejado cuja projeção pública é offline, e só você sabe.
- */
 const ESTADOS: {
   id: DesiredStatus;
   rotulo: string;
@@ -59,13 +52,6 @@ interface MenuDoProprioCartaoProps {
   onGerenciarContas: () => void;
 }
 
-/**
- * O menu do seu próprio cartão: editar perfil, escolher status, conta e id.
- *
- * Fica no cartão e não nas configurações porque é aqui que a pessoa olha
- * quando quer mexer em si mesma — e o status, principalmente, é uma decisão de
- * momento ("vou almoçar"), não uma visita a uma tela de ajustes.
- */
 export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
   user,
   onEditarPerfil,

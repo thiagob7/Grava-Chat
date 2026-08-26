@@ -1,4 +1,3 @@
-/** Expressões do servidor: emoji, figurinha e efeito sonoro. */
 const BASE = "http://localhost:3333";
 const ok = (m) => console.log(`  ok  ${m}`);
 

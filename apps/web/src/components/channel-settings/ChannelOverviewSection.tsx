@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import type { Channel } from "@gravae/shared";
+import type { Channel, FonteDeNome } from "@gravae/shared";
 import { MODO_LENTO_OPCOES } from "@gravae/shared";
 
 import { useUpdateChannel } from "~/@core/application/queries/guild/use-update-channel";
 import { Button } from "~/components/ui/button";
+import { CampoSelect } from "~/components/ui/select";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Input, Label, campoBase } from "~/components/ui/input";
+import { GrupoSegmentado, Label, OpcaoEmCartao, Textarea } from "~/components/ui/input";
+import { CampoDeNomeDeCanal } from "~/components/CampoDeNomeDeCanal";
 import { Slider } from "~/components/ui/slider";
-import { cn } from "~/lib/utils";
 
 interface ChannelOverviewSectionProps {
   guildId: string;
   channel: Channel;
 }
 
-/** "Desligado", "5s", "1 min", "6 h" — o rótulo do modo lento. */
 function rotuloDoModoLento(segundos: number) {
   if (!segundos) return "Desligado";
   if (segundos < 60) return `${segundos}s`;
@@ -48,6 +48,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
   const salvar = useUpdateChannel(guildId);
 
   const [name, setName] = useState(channel.name);
+  const [fonte, setFonte] = useState<FonteDeNome>(channel.fonte ?? "padrao");
   const [topic, setTopic] = useState(channel.topic ?? "");
   const [slowmode, setSlowmode] = useState(channel.slowmodeSeconds);
   const [visibilidade, setVisibilidade] = useState(channel.contentVisibility);
@@ -59,6 +60,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
   const mudou =
     name !== channel.name ||
+    fonte !== (channel.fonte ?? "padrao") ||
     (topic || null) !== (channel.topic ?? null) ||
     slowmode !== channel.slowmodeSeconds ||
     visibilidade !== channel.contentVisibility ||
@@ -73,43 +75,41 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
       <div className="mt-6 space-y-6">
         <div>
           <Label htmlFor="canal-nome">Nome do canal</Label>
-          <Input
+          <CampoDeNomeDeCanal
             id="canal-nome"
-            value={name}
-            maxLength={48}
-            onChange={(e) => setName(e.target.value.replace(/\s+/g, ehVoz ? " " : "-"))}
+            valor={name}
+            onMudar={setName}
+            fonte={fonte}
+            onFonte={setFonte}
+            ehVoz={ehVoz}
           />
         </div>
 
         {!ehVoz && (
           <div>
             <Label htmlFor="canal-topico">Tópico do canal</Label>
-            <textarea
+            <Textarea
               id="canal-topico"
               value={topic}
               maxLength={512}
               rows={3}
               placeholder="Do que se fala aqui?"
               onChange={(e) => setTopic(e.target.value)}
-              className={cn(campoBase, "resize-none")}
             />
           </div>
         )}
 
         <div>
           <Label htmlFor="modo-lento">Modo lento — {rotuloDoModoLento(slowmode)}</Label>
-          <select
+          <CampoSelect
             id="modo-lento"
-            value={slowmode}
-            onChange={(e) => setSlowmode(Number(e.target.value))}
-            className={campoBase}
-          >
-            {MODO_LENTO_OPCOES.map((segundos) => (
-              <option key={segundos} value={segundos}>
-                {rotuloDoModoLento(segundos)}
-              </option>
-            ))}
-          </select>
+            valor={slowmode}
+            onEscolher={setSlowmode}
+            opcoes={MODO_LENTO_OPCOES.map((segundos) => ({
+              valor: segundos,
+              rotulo: rotuloDoModoLento(segundos),
+            }))}
+          />
           <p className="mt-1.5 text-xs text-ink-faint">
             Cada pessoa só manda uma mensagem por intervalo. Quem gerencia mensagens ou canais passa
             direto.
@@ -120,25 +120,13 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
           <Label>Visibilidade do conteúdo</Label>
           <div className="space-y-2">
             {VISIBILIDADES.map((opcao) => (
-              <button
+              <OpcaoEmCartao
                 key={opcao.valor}
-                onClick={() => setVisibilidade(opcao.valor)}
-                className={cn(
-                  "flex w-full items-start gap-3 rounded px-3 py-2.5 text-left transition",
-                  visibilidade === opcao.valor ? "bg-surface-4" : "bg-surface-0 hover:bg-surface-4/60",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 size-4 shrink-0 rounded-full border-2",
-                    visibilidade === opcao.valor ? "border-brand bg-brand" : "border-ink-faint",
-                  )}
-                />
-                <span>
-                  <span className="block text-sm font-medium">{opcao.titulo}</span>
-                  <span className="mt-0.5 block text-xs text-ink-faint">{opcao.descricao}</span>
-                </span>
-              </button>
+                escolhido={visibilidade === opcao.valor}
+                onEscolher={() => setVisibilidade(opcao.valor)}
+                titulo={opcao.titulo}
+                descricao={opcao.descricao}
+              />
             ))}
           </div>
         </div>
@@ -162,20 +150,14 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
             <div>
               <Label>Qualidade do vídeo</Label>
-              <div className="flex gap-2">
-                {(["AUTO", "HD"] as const).map((valor) => (
-                  <button
-                    key={valor}
-                    onClick={() => setVideoQuality(valor)}
-                    className={cn(
-                      "flex-1 rounded border px-3 py-2 text-sm transition",
-                      videoQuality === valor ? "border-brand bg-surface-0" : "border-line hover:bg-surface-3",
-                    )}
-                  >
-                    {valor === "AUTO" ? "Automática" : "720p"}
-                  </button>
-                ))}
-              </div>
+              <GrupoSegmentado
+                valor={videoQuality}
+                onEscolher={setVideoQuality}
+                opcoes={[
+                  { valor: "AUTO" as const, rotulo: "Automática" },
+                  { valor: "HD" as const, rotulo: "720p" },
+                ]}
+              />
             </div>
 
             <div>
@@ -206,12 +188,14 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
           setBitrate(channel.bitrate);
           setVideoQuality(channel.videoQuality);
           setUserLimit(channel.userLimit);
+          setFonte(channel.fonte ?? "padrao");
         }}
         onSalvar={() =>
           salvar.mutate({
             guildId,
             channelId: channel.id,
             name: name.trim(),
+            fonte,
             topic: topic.trim() || null,
             slowmodeSeconds: slowmode,
             contentVisibility: visibilidade,

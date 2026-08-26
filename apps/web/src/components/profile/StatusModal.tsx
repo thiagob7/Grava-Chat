@@ -4,20 +4,14 @@ import { LIMITS, type StatusPersonalizado } from "@gravae/shared";
 
 import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { Button } from "~/components/ui/button";
+import { CampoSelect } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { Label } from "~/components/ui/input";
+import { Label, campoNu, grupoDeCampo } from "~/components/ui/input";
+import { cn } from "~/lib/utils";
 import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { EstiloDePerfil } from "@gravae/shared";
 
-/**
- * Por quanto tempo o status vale.
- *
- * A expiração é conferida na SERIALIZAÇÃO, não por tarefa agendada — o mesmo
- * idioma que o castigo já usa comparando `timeoutUntil` com a hora atual. Sem
- * cron, sem fila: o documento vencido fica no banco até a próxima escrita e não
- * incomoda ninguém.
- */
 const PRAZOS = [
   { id: "nunca", rotulo: "Não limpar", minutos: null },
   { id: "30m", rotulo: "Limpar em 30 minutos", minutos: 30 },
@@ -35,19 +29,12 @@ const PRAZOS = [
 interface StatusModalProps {
   open: boolean;
   user: SelfUserModel;
-  /** o perfil do RASCUNHO, pra prévia bater com o que está sendo editado */
   perfil: EstiloDePerfil | null;
   onClose: () => void;
   onSalvar: (status: StatusPersonalizado | null) => void;
   salvando?: boolean;
 }
 
-/**
- * "Definir seu status" — o recado curto ao lado do seu nome.
- *
- * Tem prévia porque o status divide a linha com a etiqueta e os emblemas: um
- * texto que parece curto no campo pode empurrar tudo. Aqui dá pra ver antes.
- */
 export const StatusModal: React.FC<StatusModalProps> = ({
   open,
   user,
@@ -94,23 +81,14 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         <div className="mt-5">
           <Label htmlFor="status-texto">Status</Label>
 
-          {/*
-            UM campo, não dois.
-
-            O emoji e o texto são a mesma frase, e cada um com a própria caixa
-            (e o próprio anel de foco) parecia formulário de cadastro. O anel
-            vive no contêiner, com `focus-within`: clicar em qualquer parte
-            acende a coisa inteira, que é como um campo composto tem que se
-            comportar.
-          */}
-          <div className="flex items-center gap-1 rounded bg-surface-0 px-1 ring-ink-faint/70 transition focus-within:ring-2">
+          <div className={cn(grupoDeCampo, "gap-1 px-1.5")}>
             <SeletorDeEmoji onEscolher={setEmoji}>
               <button
                 type="button"
                 aria-label="Escolher emoji"
-                className="flex size-9 shrink-0 items-center justify-center rounded text-xl text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+                className="flex size-8 shrink-0 items-center justify-center rounded text-lg text-ink-faint transition hover:bg-surface-3 hover:text-ink"
               >
-                {emoji || <Smile size={18} />}
+                {emoji || <Smile size={16} />}
               </button>
             </SeletorDeEmoji>
 
@@ -121,7 +99,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               onChange={(e) => setTexto(e.target.value)}
               maxLength={LIMITS.statusPersonalizado}
               placeholder="No que você está pensando?"
-              className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-ink outline-none placeholder:text-ink-faint"
+              className={campoNu}
             />
 
             {emoji && (
@@ -138,18 +116,12 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         </div>
 
         <div className="mt-4 flex items-center gap-3">
-          <select
-            value={prazo}
-            onChange={(e) => setPrazo(e.target.value)}
-            aria-label="Quando limpar"
-            className="flex-1 rounded bg-surface-0 px-3 py-2 text-sm text-ink-muted outline-none ring-ink-faint/70 transition focus:ring-2"
-          >
-            {PRAZOS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.rotulo}
-              </option>
-            ))}
-          </select>
+          <CampoSelect
+            valor={prazo}
+            onEscolher={setPrazo}
+            className="flex-1"
+            opcoes={PRAZOS.map((p) => ({ valor: p.id, rotulo: p.rotulo }))}
+          />
 
           <Button onClick={salvar} disabled={salvando}>
             {salvando ? "Salvando…" : "Salvar"}
@@ -169,7 +141,6 @@ export const StatusModal: React.FC<StatusModalProps> = ({
   );
 };
 
-/** `null` = não expira. O horário sai daqui em ISO, que é o formato do schema. */
 function calcularExpiracao(prazo?: (typeof PRAZOS)[number]): string | null {
   if (!prazo) return null;
 

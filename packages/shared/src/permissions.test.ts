@@ -30,8 +30,8 @@ describe("no nível do servidor", () => {
   it("soma as permissões de todos os cargos", () => {
     const p = computePermissions({ userId: EU, isOwner: false, roles: [everyone, design] });
 
-    expect(has(p, "SEND_MESSAGES")).toBe(true); // do @everyone
-    expect(has(p, "ATTACH_FILES")).toBe(true); // do Design
+    expect(has(p, "SEND_MESSAGES")).toBe(true);
+    expect(has(p, "ATTACH_FILES")).toBe(true);
     expect(has(p, "MANAGE_ROLES")).toBe(false);
   });
 

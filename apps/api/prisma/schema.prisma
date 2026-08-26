@@ -29,6 +29,9 @@ enum VideoQuality {
 enum MessageType {
   USER
   JOIN
+  /// "fulano usou /play" — o rastro visível de um comando de barra. Fica no
+  /// histórico como qualquer mensagem, e é ela que o bot cita ao responder.
+  COMANDO
 }
 
 enum AutoModTrigger {
@@ -131,6 +134,10 @@ model User {
   notasRecebidas      UserNote[]     @relation("NotasRecebidas")
   bans                Ban[]          @relation("BanTarget")
   forumPosts          ForumPost[]    @relation("PostAuthor")
+  gifsFavoritos       GifFavorito[]
+  mensagensFavoritas  MensagemFavorita[]
+  botsCriados         Bot[]          @relation("BotOwner")
+  botIdentity         Bot?           @relation("BotIdentity")
 }
 
 /// Um endereço que posta num canal sem login: quem tem o token, escreve.
@@ -205,6 +212,9 @@ model Guild {
   /// canal onde caem as mensagens do sistema (boas-vindas)
   systemChannelId String? @db.ObjectId
   welcomeEnabled  Boolean @default(true)
+  /// O texto das boas-vindas. Vazio cai nas frases sorteadas de sempre —
+  /// servidor que nunca configurou nada continua com a saudação variada.
+  welcomeMessage  String?
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
@@ -375,6 +385,9 @@ model Channel {
   categoryId String?     @db.ObjectId
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   name       String
+  /// Fonte do NOME do canal. Anulavel: campo obrigatorio com default estoura na
+  /// leitura de documento antigo no conector do Mongo.
+  fonte      String?
   type       ChannelType @default(TEXT)
   topic      String?
   position   Int         @default(0)
@@ -411,6 +424,9 @@ model Message {
   authorId    String       @db.ObjectId
   author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   content     String
+  /// A fonte que a pessoa escolheu no compositor. Anulavel: campo obrigatorio
+  /// com default estoura na LEITURA de documento antigo no conector do Mongo.
+  fonte       String?
   tipo        MessageType  @default(USER)
   attachments Attachment[]
   poll        Poll?
@@ -438,6 +454,7 @@ model Message {
   deletedAt   DateTime?
 
   reactions Reaction[]
+  favoritada MensagemFavorita[]
 
   /// Indice que sustenta a paginacao por cursor do historico do canal.
   @@index([channelId, createdAt])
@@ -453,6 +470,10 @@ model Reaction {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   emoji     String
+  /// super reação: a mesma reação, mas que dispara a animação em quem está no
+  /// canal na hora. Fica na própria linha da reação, e não numa tabela à
+  /// parte, porque não existe super reação que não seja também uma reação.
+  burst     Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@unique([messageId, userId, emoji])
@@ -673,4 +694,89 @@ model GuildEmblem {
   createdAt   DateTime @default(now())
 
   @@index([guildId])
+}
+
+/// Um GIF que a pessoa guardou. Fica na conta, e não no navegador, porque a
+/// mesma lista tem que aparecer no app de desktop e na web.
+///
+/// Os campos do GIF vêm copiados da Klipy em vez de guardarmos só o id: a
+/// aba de favoritos precisa desenhar a grade sem depender de a Klipy estar
+/// no ar, e sem gastar uma chamada por GIF salvo.
+model GifFavorito {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// o id na Klipy — é o que evita salvar o mesmo GIF duas vezes
+  gifId     String
+  descricao String
+  url       String
+  preview   String
+  width     Int
+  height    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, gifId])
+  @@index([userId, createdAt])
+}
+
+/// Uma mensagem que a pessoa guardou pra achar depois. É particular: ninguém
+/// vê o que você favoritou, nem o autor da mensagem.
+model MensagemFavorita {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageId String   @db.ObjectId
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, messageId])
+  @@index([userId, createdAt])
+}
+
+/// Um bot criado por alguém daqui. O código dele roda ONDE O DONO QUISER — a
+/// gente não hospeda nada: entrega token e endereço do gateway, e o bot se
+/// conecta de fora, como qualquer cliente.
+///
+/// A identidade do bot é um `User` marcado com `isBot`, e não um tipo à parte:
+/// assim ele entra na lista de membros, recebe cargo, aparece na mensagem e
+/// obedece às permissões sem que nada disso precise saber que bots existem.
+model Bot {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId   String   @db.ObjectId
+  owner     User     @relation("BotOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  /// o usuário que representa o bot nas conversas
+  botUserId String   @unique @db.ObjectId
+  usuario   User     @relation("BotIdentity", fields: [botUserId], references: [id], onDelete: Cascade)
+  /// Em texto puro, como o do webhook: quem tem o token É o bot. Some da API
+  /// depois de criado, e só volta se o dono mandar gerar outro.
+  token     String   @unique
+  /// aparece na tela de convite, antes de a pessoa decidir se adiciona
+  descricao String?
+  /// O que o bot PEDE ao ser adicionado. Vira o cargo dele no servidor — quem
+  /// adiciona vê a lista antes de aceitar, e pode mexer depois como em
+  /// qualquer outro cargo.
+  permissoesPedidas String[]
+  /// Bot fechado só entra em servidor do próprio dono. Aberto, qualquer um
+  /// com o link adiciona no servidor onde MANDA.
+  publico   Boolean  @default(true)
+  /// O par do token para o OAuth2. Vive separado porque serve a outra coisa:
+  /// o token É o bot; o segredo só prova, no servidor do dev, que o pedido de
+  /// troca de código veio mesmo do app dele.
+  clientSecret String @default("")
+  /// Para onde o OAuth2 pode devolver a pessoa depois de autorizar. Lista
+  /// fechada de propósito: sem isso, qualquer site poria o `redirect_uri`
+  /// dele no link e roubaria o código no meio do caminho.
+  redirectUris String[]
+  /// Os comandos de barra que ele declara: nome, descrição e opções.
+  ///
+  /// `Json` porque nada aqui é consultado — a lista é lida inteira, do bot
+  /// que já foi encontrado por outro caminho. Modelar como relação criaria
+  /// tabela, índices e migração para uma coisa que sempre viaja junta.
+  ///
+  /// E anulável: no conector do Mongo, campo obrigatório com default estoura
+  /// na LEITURA de documento antigo — e todo bot criado até ontem é antigo.
+  comandos  Json?
+  createdAt DateTime @default(now())
+
+  @@index([ownerId])
 }

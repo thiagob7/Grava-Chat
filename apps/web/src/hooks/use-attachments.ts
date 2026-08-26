@@ -7,11 +7,9 @@ import { apiErrorMessage } from "~/@core/lib/api";
 import { uploadImage } from "~/lib/upload";
 
 export interface PendingAttachment {
-  /** id local, só para a lista do React — o id real vem do storage */
   id: string;
   filename: string;
   contentType: string;
-  /** URL local para mostrar a miniatura antes de o upload terminar */
   previewUrl: string | null;
   originalSize: number;
   uploadedSize: number | null;
@@ -19,21 +17,12 @@ export interface PendingAttachment {
   error: string | null;
 }
 
-/** Anexo de mensagem: 1600px cobre tela cheia em retina sem exagerar no peso. */
 const MESSAGE_IMAGE_MAX_PX = 1600;
 
-/**
- * Anexos do compositor: escolhe, comprime, sobe pro storage e guarda o
- * resultado até a mensagem ser enviada.
- *
- * O upload começa na hora da escolha, não no envio: quando a pessoa termina de
- * escrever, o arquivo já está lá e a mensagem sai instantânea.
- */
 export function useAttachments() {
   const [items, setItems] = useState<PendingAttachment[]>([]);
   const previews = useRef(new Set<string>());
 
-  // ObjectURL vaza memória se não for revogado; guardamos todos e limpamos no fim.
   useEffect(
     () => () => {
       previews.current.forEach((url) => URL.revokeObjectURL(url));
@@ -46,11 +35,6 @@ export function useAttachments() {
     setItems((atuais) => atuais.map((item) => (item.id === id ? { ...item, ...dados } : item)));
   }, []);
 
-  /**
-   * Editar o anexo antes de enviar: nome do arquivo, texto alternativo e
-   * spoiler. Mexe no `attachment` (o que vai pro servidor) e no `filename` (o
-   * que a bandeja mostra) ao mesmo tempo — se só um mudasse, a tela mentiria.
-   */
   const patchAttachment = useCallback(
     (id: string, dados: { filename?: string; description?: string | null; spoiler?: boolean }) => {
       setItems((atuais) =>
@@ -83,11 +67,6 @@ export function useAttachments() {
       }
 
       for (const file of aceitos) {
-        /**
-         * O limite é verificado com o tamanho ORIGINAL antes de comprimir: uma
-         * imagem gigante pode caber depois, mas um vídeo de 2 GB travaria o
-         * navegador só de tentar processar.
-         */
         if (file.size > LIMITS.attachmentBytes) {
           toast.error(`"${file.name}" passa do limite de 50 MB.`);
           continue;
@@ -152,7 +131,6 @@ export function useAttachments() {
     remove,
     clear,
     patchAttachment,
-    /** só os que subiram — o envio ignora os que falharam */
     prontos: items.map((item) => item.attachment).filter((a): a is Attachment => Boolean(a)),
     subindo: items.some((item) => !item.attachment && !item.error),
   };

@@ -10,16 +10,9 @@ import { usarLottie } from "~/lib/cosmeticos/lottie";
 
 interface DecoracaoAnimadaProps {
   decoracao: Decoracao;
-  /** parada em lista, andando no cartão — ver `animar` em `lottie.ts` */
   animar: boolean;
 }
 
-/**
- * Uma decoração de avatar que é arquivo Lottie, e não CSS.
- *
- * Repete pra sempre: é enfeite de fundo, não evento. O ciclo de vida do player
- * mora em `usarLottie`, dividido com a patente.
- */
 export const DecoracaoAnimada: React.FC<DecoracaoAnimadaProps> = ({
   decoracao,
   animar,
@@ -34,10 +27,6 @@ export const DecoracaoAnimada: React.FC<DecoracaoAnimadaProps> = ({
     segmento: segmentoDaDecoracao(decoracao),
   });
 
-  /*
-    A folga vem do catálogo, e não do CSS: cada arte tem o buraco num tamanho
-    diferente, e é ele que precisa casar com a foto.
-  */
   return (
     <span
       ref={caixa}

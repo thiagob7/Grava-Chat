@@ -28,7 +28,6 @@ export const useSetChannelOverwrite = (guildId: string | undefined, channelId: s
       if (channelId) {
         void queryClient.invalidateQueries({ queryKey: queryKeys.role.overwrites(channelId) });
       }
-      // pode ter tirado o canal da própria vista de quem editou
       if (guildId) void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao salvar as permissões.")),

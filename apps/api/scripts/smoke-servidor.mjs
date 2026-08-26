@@ -1,7 +1,3 @@
-/**
- * Configuracoes do servidor: editar, convites e excluir — com as regras de
- * quem pode o que.
- */
 const BASE = "http://localhost:3333";
 const ok = (m) => console.log(`  ok  ${m}`);
 

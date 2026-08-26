@@ -1,11 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { messageService } from "~/services/message-service.js";
+import { messageFavoriteService } from "~/services/message-favorite-service.js";
 import { accessService } from "~/services/access-service.js";
 import { objectId, channelParams } from "~/validations/common.js";
 import { rooms } from "@gravae/shared";
 import { z } from "zod";
 import { io } from "~/realtime/io.js";
-import { historyQuery } from "~/validations/message.js";
+import { buscaQuery, historyQuery } from "~/validations/message.js";
 
 export async function messageRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -26,11 +27,6 @@ export async function messageRoutes(app: FastifyInstance) {
     return messageService.pinned(req.userId, channelId);
   });
 
-  /**
-   * Fixar e desafixar mudam a mensagem, então o evento que sai é o mesmo
-   * `message:updated` de sempre — a tela não precisa de um caminho novo só
-   * para o alfinete aparecer.
-   */
   app.put("/messages/:messageId/pin", async (req) => {
     const { messageId } = messageParams.parse(req.params);
     const message = await messageService.pin(req.userId, messageId, true);
@@ -45,6 +41,25 @@ export async function messageRoutes(app: FastifyInstance) {
 
     io().to(rooms.channel(message.channelId)).emit("message:updated", message);
     return message;
+  });
+
+  app.get("/messages/busca", (req) => {
+    const { q, guildId, canalId, autorId, before } = buscaQuery.parse(req.query);
+    return messageService.buscar(req.userId, { guildId, termo: q, canalId, autorId, before });
+  });
+
+  app.get("/messages/favoritas", (req) => messageFavoriteService.listar(req.userId));
+
+  app.get("/messages/favoritas/ids", (req) => messageFavoriteService.idsDe(req.userId));
+
+  app.put("/messages/:messageId/favorita", (req) => {
+    const { messageId } = messageParams.parse(req.params);
+    return messageFavoriteService.alternar(req.userId, messageId, true);
+  });
+
+  app.delete("/messages/:messageId/favorita", (req) => {
+    const { messageId } = messageParams.parse(req.params);
+    return messageFavoriteService.alternar(req.userId, messageId, false);
   });
 }
 

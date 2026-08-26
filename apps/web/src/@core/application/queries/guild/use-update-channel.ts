@@ -15,8 +15,6 @@ export const useUpdateChannel = (guildId: string | undefined) => {
   return useMutation({
     mutationFn: (data: UpdateChannelDTO) => updateChannel(data),
     onSuccess: () => {
-      // o evento channel:updated já corrige quem está com o servidor aberto;
-      // isto é para quem disparou a mudança ver na hora
       if (guildId) void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
       toast.success("Canal salvo.");
     },

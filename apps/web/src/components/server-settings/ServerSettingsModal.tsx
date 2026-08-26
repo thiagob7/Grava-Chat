@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Trash2, X } from "lucide-react";
 import type { GuildMember, Permission } from "@gravae/shared";
@@ -23,7 +23,7 @@ import { ServerTagSection } from "~/components/server-settings/ServerTagSection"
 import { ServerProfileSection } from "~/components/server-settings/ServerProfileSection";
 import { cn } from "~/lib/utils";
 
-type Secao =
+export type Secao =
   | "perfil"
   | "tag"
   | "engajamento"
@@ -40,7 +40,6 @@ type Secao =
   | "automod"
   | "excluir";
 
-/** Os grupos do menu, na mesma ordem do Discord. */
 const GRUPOS: { titulo: string | null; itens: Secao[] }[] = [
   { titulo: null, itens: ["perfil", "tag", "engajamento"] },
   { titulo: "Expressões", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
@@ -77,14 +76,12 @@ interface ServerSettingsModalProps {
   canManage: boolean;
   canManageRoles: boolean;
   canManageWebhooks: boolean;
-  /** o resto das permissões que decidem o que aparece no menu */
   permissoes: Set<string>;
+  /// Onde cair ao abrir. Quem chama de longe — o "Adicionar emoji" do seletor
+  /// de expressões — quer a tela de emoji, não o Perfil do servidor.
+  secaoInicial?: Secao | null;
 }
 
-/**
- * Configurações do servidor em tela cheia, como no Discord — não é um modal
- * pequeno porque são muitas seções e listas longas.
- */
 export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   open,
   onClose,
@@ -96,15 +93,18 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   canManageRoles,
   canManageWebhooks,
   permissoes,
+  secaoInicial,
 }) => {
   const pode = (p: string) => permissoes.has("ADMINISTRATOR") || permissoes.has(p);
   const [secao, setSecao] = useState<Secao>(canManage ? "perfil" : "membros");
 
-  /**
-   * Meu cargo mais alto. É ele que decide o que a tela deixa editar — a mesma
-   * conta que o servidor faz, só que aqui para não oferecer o que vai ser
-   * recusado depois.
-   */
+  /// Só na abertura. Aplicar a cada render desfaria o clique de quem navega
+  /// pela lista da esquerda: escolher "Cargos" voltaria sozinho para a seção
+  /// pedida lá atrás.
+  useEffect(() => {
+    if (open && secaoInicial) setSecao(secaoInicial);
+  }, [open, secaoInicial]);
+
   const minhaPosicao = isOwner
     ? Number.POSITIVE_INFINITY
     : (() => {
@@ -121,7 +121,6 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     emoji: true,
     figurinhas: true,
     sons: true,
-    // todo mundo vê: quem não gerencia ainda precisa saber o que dá pra vestir
     emblemas: true,
     membros: true,
     cargos: canManageRoles,

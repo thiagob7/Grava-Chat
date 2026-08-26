@@ -1,7 +1,3 @@
-/**
- * Chaves centralizadas. Sempre use daqui — chave escrita à mão num componente é
- * como um `invalidateQueries` deixa de invalidar sem ninguém perceber.
- */
 export const queryKeys = {
   auth: {
     me: "find-me",
@@ -26,6 +22,10 @@ export const queryKeys = {
     find_many: (guildId: string) => ["find-webhooks", guildId] as const,
   },
 
+  comando: {
+    find_many: (guildId: string) => ["find-comandos", guildId] as const,
+  },
+
   expression: {
     find_many: (guildId: string) => ["find-expressions", guildId] as const,
   },
@@ -41,21 +41,37 @@ export const queryKeys = {
     post: (postId: string) => ["find-post", postId] as const,
   },
 
+  embed: {
+    link: (url: string) => ["find-embed", url] as const,
+  },
+
   gif: {
     config: "gif-config",
     trending: "gif-trending",
     search: (q: string) => ["gif-search", q] as const,
+    categories: "gif-categories",
+    favorites: "gif-favorites",
   },
 
   channel: {
     messages: (channelId: string) => ["find-channel-messages", channelId] as const,
-    /** conversa de um assunto do fórum */
     postMessages: (postId: string) => ["find-post-messages", postId] as const,
     pins: (channelId: string) => ["find-pins", channelId] as const,
   },
 
   message: {
     read_states: "find-read-states",
+    favorites: "find-favorite-messages",
+    favorite_ids: "find-favorite-message-ids",
+    busca: (guildId: string, termo: string, canalId: string, autorId: string) =>
+      ["buscar-mensagens", guildId, termo, canalId, autorId] as const,
+  },
+
+  bot: {
+    find_many: "find-bots",
+    invite: (botId: string) => ["find-bot-invite", botId] as const,
+    guilds: (botId: string) => ["find-bot-guilds", botId] as const,
+    destinations: (botId: string) => ["find-bot-destinations", botId] as const,
   },
 
   user: {

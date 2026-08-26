@@ -15,7 +15,6 @@ const emojiParams = guildParams.extend({ emojiId: objectId });
 const stickerParams = guildParams.extend({ stickerId: objectId });
 const soundParams = guildParams.extend({ soundId: objectId });
 
-/** Mudou uma expressão: quem está no servidor precisa recarregar a lista. */
 const avisar = (guildId: string) =>
   io().to(rooms.guild(guildId)).emit("expressions:changed", { guildId });
 
@@ -27,7 +26,6 @@ export async function expressionRoutes(app: FastifyInstance) {
     return expressionService.list(req.userId, guildId);
   });
 
-  // ------------------------------------------------------------------ emoji
   app.post("/guilds/:guildId/emojis", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
     const emoji = await expressionService.createEmoji(
@@ -57,7 +55,6 @@ export async function expressionRoutes(app: FastifyInstance) {
     return reply.code(204).send();
   });
 
-  // -------------------------------------------------------------- figurinha
   app.post("/guilds/:guildId/stickers", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
     const sticker = await expressionService.createSticker(
@@ -78,7 +75,6 @@ export async function expressionRoutes(app: FastifyInstance) {
     return reply.code(204).send();
   });
 
-  // ------------------------------------------------------------------- som
   app.post("/guilds/:guildId/sounds", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
     const sound = await expressionService.createSound(

@@ -1,0 +1,10 @@
+{
+  "name": "gravae-bot-musica",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@livekit/rtc-node": "^0.13.34",
+    "socket.io-client": "^4.8.1",
+    "yt-search": "^2.13.1"
+  }
+}

@@ -8,7 +8,6 @@ type AccessTokenPayload = { sub: string };
 
 declare module "fastify" {
   interface FastifyInstance {
-    /** preHandler: exige um access token valido e popula request.userId */
     authenticate: (req: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
   interface FastifyRequest {

@@ -1,4 +1,3 @@
-/** Fórum: assunto com conversa própria, ordem por atividade e fechamento. */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";

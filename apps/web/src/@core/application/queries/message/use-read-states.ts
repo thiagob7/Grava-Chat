@@ -8,11 +8,6 @@ export const useReadStates = (enabled: boolean) =>
     queryKey: [queryKeys.message.read_states],
     queryFn: findReadStates,
     enabled,
-    /**
-     * Vira um mapa por canal com o id lido, a contagem de não-lidas e a de
-     * menções. Antes só o id sobrevivia ao `select`, e as contagens — que a API
-     * já mandava — eram jogadas fora antes de chegar na tela.
-     */
     select: (states) =>
       Object.fromEntries(
         states.map((s) => [
@@ -20,4 +15,33 @@ export const useReadStates = (enabled: boolean) =>
           { lido: s.lastReadMessageId, naoLidas: s.unreadCount, mencoes: s.mentionCount },
         ]),
       ) as Record<string, { lido: string | null; naoLidas: number; mencoes: number }>,
+  });
+
+/**
+ * O mesmo estado, somado por servidor.
+ *
+ * A barra da esquerda não tem a lista de canais dos outros servidores — só o
+ * do que está aberto vem carregado. Por isso o `guildId` viaja junto de cada
+ * estado: sem ele, um servidor fechado nunca saberia que tem coisa nova.
+ */
+export const useReadStatesPorServidor = (enabled: boolean) =>
+  useQuery({
+    queryKey: [queryKeys.message.read_states],
+    queryFn: findReadStates,
+    enabled,
+    select: (states) => {
+      const porServidor: Record<string, { naoLidas: number; mencoes: number }> = {};
+
+      for (const estado of states) {
+        if (!estado.guildId) continue;
+
+        const atual = porServidor[estado.guildId] ?? { naoLidas: 0, mencoes: 0 };
+        porServidor[estado.guildId] = {
+          naoLidas: atual.naoLidas + estado.unreadCount,
+          mencoes: atual.mencoes + estado.mentionCount,
+        };
+      }
+
+      return porServidor;
+    },
   });

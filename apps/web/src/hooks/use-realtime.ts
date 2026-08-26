@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import type {
@@ -14,7 +15,11 @@ import type {
 
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
-import type { MessagePageModel, PendingMessageModel } from "~/@core/domain/models/message-model";
+import type {
+  MessagePageModel,
+  PendingMessageModel,
+  ReadStateModel,
+} from "~/@core/domain/models/message-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
@@ -22,6 +27,8 @@ import { onMessageCreated, offMessageCreated } from "~/@core/lib/websocket/on-me
 import { onMessageUpdated, offMessageUpdated } from "~/@core/lib/websocket/on-message-updated";
 import { onMessageDeleted, offMessageDeleted } from "~/@core/lib/websocket/on-message-deleted";
 import { onMessageReactions, offMessageReactions } from "~/@core/lib/websocket/on-message-reactions";
+import { onMessageSuper, offMessageSuper } from "~/@core/lib/websocket/on-message-super";
+import { useSuperReacao } from "~/stores/super-reacao";
 import { onTypingStarted, offTypingStarted } from "~/@core/lib/websocket/on-typing-started";
 import { onPresenceChanged, offPresenceChanged } from "~/@core/lib/websocket/on-presence-changed";
 import { onPresenceSelf, offPresenceSelf } from "~/@core/lib/websocket/on-presence-self";
@@ -31,6 +38,10 @@ import { onChannelDeleted, offChannelDeleted } from "~/@core/lib/websocket/on-ch
 import { onGuildUpdated, offGuildUpdated } from "~/@core/lib/websocket/on-guild-updated";
 import { onGuildDeleted, offGuildDeleted } from "~/@core/lib/websocket/on-guild-deleted";
 import { onGuildRefresh, offGuildRefresh } from "~/@core/lib/websocket/on-guild-refresh";
+import {
+  onCommandsChanged,
+  offCommandsChanged,
+} from "~/@core/lib/websocket/on-commands-changed";
 import {
   onExpressionsChanged,
   offExpressionsChanged,
@@ -49,22 +60,15 @@ import { onSocketError, offSocketError } from "~/@core/lib/websocket/on-socket-e
 import { onUserUpdated, offUserUpdated } from "~/@core/lib/websocket/on-user-updated";
 import { onFriendUpdated, offFriendUpdated } from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
+import { avisarDeMensagem } from "~/lib/notificacoes";
+import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAusencia } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/stores/typing-store";
 import { useVoiceStore } from "~/stores/voice-store";
 
 type MessagesCache = { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
 
-/**
- * Ponte entre o socket e o cache do React Query.
- *
- * O cache é a fonte única: os mesmos dados que vieram por HTTP são atualizados
- * pelos eventos, em vez de manter uma store paralela que precisa ser
- * reconciliada. Fica tudo num lugar só porque listener espalhado por componente
- * é a causa clássica de evento duplicado.
- */
 const cache = {
-  /** Página 0 é a mais nova; mensagem nova entra no fim dela. */
   appendMessage(queryClient: QueryClient, message: PendingMessageModel) {
     queryClient.setQueryData(queryKeys.channel.messages(message.channelId), (old: MessagesCache) => {
       if (!old?.pages.length) return old;
@@ -72,7 +76,6 @@ const cache = {
       const [newest, ...rest] = old.pages;
       if (!newest) return old;
 
-      // troca a otimista pela real (mesmo nonce) ou ignora duplicata
       const withoutOptimistic = message.nonce
         ? newest.messages.filter((m) => (m as PendingMessageModel).nonce !== message.nonce)
         : newest.messages;
@@ -114,13 +117,43 @@ const cache = {
     });
   },
 
+  /**
+   * O não-lido crescendo sozinho.
+   *
+   * Sem isto, o número na barra lateral era o do último carregamento: a
+   * bolinha aparecia (ela sai do `lastMessageId`), mas o "3" só virava "4" na
+   * próxima vez que a tela montasse. E o contador do título, que soma esses
+   * mesmos números, ficava parado no mesmo lugar.
+   */
+  contarNaoLida(
+    queryClient: QueryClient,
+    channelId: string,
+    guildId: string | null,
+    mencionou: boolean,
+  ) {
+    queryClient.setQueryData([queryKeys.message.read_states], (old: ReadStateModel[] | undefined) => {
+      const atual = (old ?? []).find((s) => s.channelId === channelId);
+
+      const proximo: ReadStateModel = {
+        channelId,
+        /// O que já estava guardado manda: o servidor veio do banco, e o
+        /// evento pode chegar de um canal cujo servidor não está carregado.
+        guildId: atual?.guildId ?? guildId,
+        lastReadMessageId: atual?.lastReadMessageId ?? null,
+        unreadCount: (atual?.unreadCount ?? 0) + 1,
+        mentionCount: (atual?.mentionCount ?? 0) + (mencionou ? 1 : 0),
+      };
+
+      return [...(old ?? []).filter((s) => s.channelId !== channelId), proximo];
+    });
+  },
+
   patchGuild(queryClient: QueryClient, guildId: string, patch: (g: GuildDetailModel) => GuildDetailModel) {
     queryClient.setQueryData(queryKeys.guild.find(guildId), (old: GuildDetailModel | undefined) =>
       old ? patch(old) : old,
     );
   },
 
-  /** Alguns eventos não dizem o servidor; encontramos pelo cache já carregado. */
   patchGuildsWhere(
     queryClient: QueryClient,
     predicate: (g: GuildDetailModel) => boolean,
@@ -135,25 +168,89 @@ const cache = {
 };
 
 export function useRealtime(currentGuildId: string | undefined, currentChannelId: string | undefined) {
-  /**
-   * Ausência automática mora aqui junto: ela é presença, e presença é socket.
-   * Pendurada numa tela, sairia do ar quando a pessoa navegasse pra outra.
-   */
   useAusencia(true);
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    /**
-     * Sempre ligado: o hook só roda dentro de rota autenticada. Antes ele
-     * dependia de haver um servidor aberto, e no modo "amigos" (que não tem
-     * servidor nenhum) os listeners nunca eram registrados — pedido de amizade
-     * e mensagem privada só apareciam depois de recarregar.
-     */
     const socketInstance = connectSocket();
+
+    /*
+      Onde a mensagem caiu.
+
+      O evento traz o canal, não o servidor — e para avisar direito é preciso
+      saber os dois: o nome do canal vai no aviso, e os meus cargos naquele
+      servidor decidem se a menção de cargo é minha. Os dois estão no cache
+      do servidor, que já está carregado porque a lista dele está na tela.
+    */
+    const ondeCaiu = (channelId: string) => {
+      const detalhes = queryClient.getQueriesData<GuildDetailModel>({
+        queryKey: ["find-guild"],
+      });
+
+      for (const [, detalhe] of detalhes) {
+        const canal = detalhe?.channels.find((c) => c.id === channelId);
+        if (canal && detalhe) return { canal, detalhe };
+      }
+
+      return null;
+    };
+
+    const avisar = (message: PendingMessageModel) => {
+      const eu = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me]);
+      const lugar = ondeCaiu(message.channelId);
+
+      const meusCargos = new Set(
+        lugar?.detalhe.members.find((m) => m.user.id === eu?.id)?.roleIds ?? [],
+      );
+
+      const meMenciona =
+        Boolean(eu) &&
+        (message.mentionEveryone ||
+          message.mentions.includes(eu?.id ?? "") ||
+          message.mentionRoleIds.some((id) => meusCargos.has(id)));
+
+      /*
+        Ler é o que zera; estar com a aba na frente NO canal certo é ler.
+        A mesma condição do aviso — quem está acompanhando a conversa ao vivo
+        não acumula não-lido nem ouve barulho.
+      */
+      const lendoAgora =
+        currentChannelId === message.channelId &&
+        document.visibilityState === "visible" &&
+        document.hasFocus();
+
+      if (eu && message.author.id !== eu.id && !lendoAgora) {
+        cache.contarNaoLida(
+          queryClient,
+          message.channelId,
+          lugar?.detalhe.guild.id ?? null,
+          meMenciona,
+        );
+      }
+
+      avisarDeMensagem({
+        message,
+        meuId: eu?.id,
+        canalAberto: currentChannelId,
+        meMenciona,
+        nomeDoCanal: lugar?.canal.name,
+        /// Sem servidor no cache, a mensagem veio de uma conversa privada.
+        ehDm: !lugar,
+        ignorado: useIgnoreStore.getState().estaIgnorado(message.author.id),
+        onAbrir: () =>
+          navigate(
+            lugar
+              ? `/channels/${lugar.detalhe.guild.id}/${message.channelId}`
+              : `/dm/${message.channelId}`,
+          ),
+      });
+    };
 
     const handleMessageCreated = (message: PendingMessageModel) => {
       cache.appendMessage(queryClient, message);
+      avisar(message);
       cache.patchGuildsWhere(
         queryClient,
         (g) => g.channels.some((c) => c.id === message.channelId),
@@ -168,13 +265,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     };
 
     const handlePresence = ({ userId, status }: { userId: string; status: PresenceStatus }) => {
-      /**
-       * O evento sobre MIM é ignorado aqui: os meus sockets também estão nas
-       * salas dos servidores, então quando fico invisível o broadcast chega
-       * dizendo que EU estou offline. Quem manda no meu próprio estado é o
-       * `presence:self`, logo abaixo — e não há como o servidor distinguir os
-       * dois casos do outro lado.
-       */
       if (userId === queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id) return;
 
       cache.patchGuildsWhere(
@@ -189,19 +279,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       );
     };
 
-    /**
-     * Alguém trocou foto, nome ou enfeite.
-     *
-     * Mexe nos DOIS lugares onde a pessoa aparece: em `members[].user` (foto e
-     * nome, que viajam em todo lugar) e no mapa `profiles` (o enfeite, que
-     * viaja uma vez por pessoa). Sem o segundo, trocar de moldura só apareceria
-     * pros outros no próximo F5 — e a prévia ao vivo do editor prometeria uma
-     * coisa que a tela dos amigos não cumpre.
-     *
-     * O enfeite vazio TIRA a pessoa do mapa em vez de gravar `{}`: é a mesma
-     * regra que o servidor usa ao montar o mapa, e mantê-las iguais é o que
-     * impede o cache de divergir da resposta HTTP.
-     */
     const handleUserUpdated = ({ user, perfil }: { user: PublicUser; perfil: PerfilPublico }) => {
       const temEnfeite = Object.keys(perfil).length > 0;
 
@@ -217,26 +294,15 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
             ...g,
             profiles,
             members: g.members.map((m) =>
-              // a presença NÃO vem neste evento; preservar a que já está no
-              // cache evita apagar quem está online a cada troca de avatar
               m.user.id === user.id ? { ...m, user: { ...user, status: m.user.status } } : m,
             ),
           };
         },
       );
 
-      // o cartão de perfil dessa pessoa, se estiver aberto ou em cache
       queryClient.invalidateQueries({ queryKey: queryKeys.user.profile(user.id) });
     };
 
-    /**
-     * O meu status, ecoado pelo servidor com o valor DESEJADO.
-     *
-     * `desiredStatus` guarda o que eu escolhi (inclusive `INVISIBLE`, que só eu
-     * vejo); `status` guarda a projeção pública, que é o que a bolinha desenha
-     * — invisível aparece como offline pra todo mundo, inclusive na minha
-     * própria linha da lista de membros.
-     */
     const handlePresenceSelf = ({ status }: { status: DesiredStatus }) => {
       const projetado: PresenceStatus = status === "INVISIBLE" ? "OFFLINE" : status;
 
@@ -300,14 +366,32 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     onMessageDeleted(({ channelId, messageId }) => cache.removeMessage(queryClient, channelId, messageId));
     onMessageReactions(({ channelId, messageId, reactions }) =>
       cache.patchMessage(queryClient, channelId, messageId, {
-        // O servidor manda quem reagiu; o "me" é por espectador e resolve aqui.
         reactions: reactions.map((r) => ({
           emoji: r.emoji,
           count: r.userIds.length,
           me: r.userIds.includes(queryClient.getQueryData<{ id: string }>([queryKeys.auth.me])?.id ?? ""),
+          burst: r.burst,
         })),
       }),
     );
+    /// A animação sai da pílula da reação, se a mensagem estiver na tela; se
+    /// não estiver, a store cai no rodapé sozinha. Quem super-reagiu já viu a
+    /// animação na hora do clique, então não repete pra ele.
+    onMessageSuper(({ messageId, emoji, userId: quem }) => {
+      const meuId = queryClient.getQueryData<{ id: string }>([queryKeys.auth.me])?.id;
+      if (quem === meuId) return;
+
+      const alvo = document.querySelector(`[data-mensagem="${messageId}"]`);
+      const caixa = alvo?.getBoundingClientRect();
+
+      useSuperReacao
+        .getState()
+        .disparar(
+          emoji,
+          caixa ? { x: caixa.left + caixa.width / 2, y: caixa.bottom } : undefined,
+        );
+    });
+
     onTypingStarted(({ channelId, user }) => useTypingStore.getState().add(channelId, user));
     onPresenceChanged(handlePresence);
     onPresenceSelf(handlePresenceSelf);
@@ -324,11 +408,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
     });
 
-    /**
-     * Cargos ou permissões de canal mudaram. Aqui não dá pra remendar o cache:
-     * o que mudou pode ter tirado (ou dado) canais inteiros pra ESTA pessoa, e
-     * só o servidor sabe o resultado. Então recarrega o servidor de verdade.
-     */
     onGuildRefresh(({ guildId }) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.role.find_many(guildId) });
@@ -337,6 +416,10 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
 
     onExpressionsChanged(({ guildId }) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.expression.find_many(guildId) });
+    });
+
+    onCommandsChanged(({ guildId }) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.comando.find_many(guildId) });
     });
 
     onPostCreated((post) => {
@@ -348,10 +431,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       void queryClient.invalidateQueries({ queryKey: queryKeys.forum.posts(post.channelId) });
     });
 
-    /**
-     * Efeito sonoro: o servidor manda o endereço e cada cliente toca. Só quem
-     * está na MESMA chamada ouve — e quem está surdo, não.
-     */
     onVoiceSound(({ channelId, url, volume }) => {
       const voz = useVoiceStore.getState();
       if (voz.channelId !== channelId || voz.deafened) return;
@@ -361,7 +440,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       void audio.play().catch(() => undefined);
     });
 
-    /** Um moderador te moveu (ou te desconectou, quando vem sem canal). */
     onVoiceMove(({ channelId }) => {
       const voz = useVoiceStore.getState();
 
@@ -413,12 +491,6 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       void queryClient.invalidateQueries({ queryKey: [queryKeys.friend.dms] });
     });
 
-    /**
-     * Reconectou: as salas do Socket.IO vivem no servidor e somem quando o
-     * socket cai, então é preciso reinscrever. E qualquer evento emitido
-     * enquanto estávamos fora se perdeu — daí o refetch do servidor, que traz
-     * presença e estado de voz do jeito que o servidor os vê agora.
-     */
     const handleConnect = () => {
       if (currentChannelId) void joinChannel(currentChannelId).catch(() => undefined);
       if (currentGuildId) {
@@ -429,17 +501,12 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     socketInstance.on("connect", handleConnect);
 
     return () => {
-      /**
-       * Só remove os listeners; NÃO derruba a conexão. O StrictMode monta o
-       * efeito duas vezes em desenvolvimento e desconectar aqui criava um ciclo
-       * conecta/desconecta a cada carregamento — janela em que eventos
-       * (presença, entrada em canal de voz) se perdiam de vez.
-       */
       socketInstance.off("connect", handleConnect);
       offMessageCreated();
       offMessageUpdated();
       offMessageDeleted();
       offMessageReactions();
+      offMessageSuper();
       offTypingStarted();
       offPresenceChanged();
       offChannelCreated();
@@ -448,6 +515,7 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       offGuildUpdated();
       offGuildDeleted();
       offGuildRefresh();
+      offCommandsChanged();
       offExpressionsChanged();
       offPostCreated();
       offPostUpdated();
@@ -465,17 +533,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       offFriendUpdated();
       offDmCreated();
     };
-  }, [queryClient, currentGuildId, currentChannelId]);
+  }, [queryClient, navigate, currentGuildId, currentChannelId]);
 }
 
-/**
- * Encerra a conexão de verdade — só no logout.
- *
- * `isBooting` é essencial: durante a restauração da sessão o usuário ainda é
- * null, e tratar isso como "deslogou" resetava o estado de voz em TODO
- * carregamento de página — apagando a marca da aba e impedindo o retorno à
- * chamada depois de um reload.
- */
 export function useDisconnectOnLogout(isLoggedIn: boolean, isBooting: boolean) {
   useEffect(() => {
     if (isBooting || isLoggedIn) return;

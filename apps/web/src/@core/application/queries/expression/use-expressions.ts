@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
@@ -18,11 +18,6 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 
 const VAZIO: ExpressionsModel = { emojis: [], stickers: [], sounds: [] };
 
-/**
- * As três listas juntas: o seletor do compositor e a tela de configurações
- * precisam das mesmas expressões, e separar renderia três requisições para
- * mostrar uma janela só.
- */
 export const useFindExpressions = (guildId: string | undefined) => {
   const query = useQuery({
     queryKey: queryKeys.expression.find_many(guildId ?? ""),
@@ -32,6 +27,27 @@ export const useFindExpressions = (guildId: string | undefined) => {
   });
 
   return { ...query, data: query.data ?? VAZIO };
+};
+
+/**
+ * As expressões de vários servidores de uma vez — é o que o seletor precisa
+ * para mostrar os emojis de todos os seus servidores, e não só os do que está
+ * aberto.
+ *
+ * Usa a mesma `queryKey` do `useFindExpressions`, então o servidor que já
+ * estava carregado sai do cache sem nova ida à rede.
+ */
+export const useFindExpressionsOf = (guildIds: string[], enabled = true) => {
+  const resultados = useQueries({
+    queries: guildIds.map((id) => ({
+      queryKey: queryKeys.expression.find_many(id),
+      queryFn: () => findExpressions(id),
+      enabled,
+      staleTime: 5 * 60_000,
+    })),
+  });
+
+  return guildIds.map((guildId, i) => ({ guildId, data: resultados[i]?.data ?? VAZIO }));
 };
 
 function useInvalidar(guildId: string | undefined) {

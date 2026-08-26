@@ -10,21 +10,12 @@ import { cn } from "~/lib/utils";
 interface SeletorDeImagemProps {
   open: boolean;
   onClose: () => void;
-  /** arquivo escolhido no computador */
   onArquivo: () => void;
   onGif: (gif: GifModel) => void;
   titulo?: string;
   rodape?: React.ReactNode;
 }
 
-/**
- * "Selecione uma imagem": subir do computador, ou escolher um GIF.
- *
- * Antes o botão da faixa abria direto a janela de arquivos do sistema, o que
- * escondia metade das opções — não havia como saber que dava pra usar um GIF, e
- * quem quisesse um teria que baixá-lo primeiro pra depois subir. Duas portas,
- * uma tela.
- */
 export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
   open,
   onClose,
@@ -44,11 +35,6 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(aberto) => !aberto && fechar()}>
-      {/*
-        Larga e alta quando é a hora do GIF: a grade é o conteúdo, e numa caixa
-        estreita ela vira duas colunas de selo. `flex` + `min-h-0` pra a rolagem
-        acontecer DENTRO da grade, com a busca fixa em cima.
-      */}
       <DialogContent
         className={cn(
           "flex max-h-[85vh] flex-col",

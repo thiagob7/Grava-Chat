@@ -28,10 +28,14 @@
   --color-surface-0: #121214; /* coluna dos servidores (gray-900) */
   --color-surface-1: #18181b; /* sidebar de canais    (gray-800) */
   --color-surface-2: #202024; /* área de chat         (gray-850) */
-  --color-surface-3: #27272a; /* input, hover         (gray-700) */
+  --color-surface-3: #27272a; /* hover, elevação leve (gray-700) */
   --color-surface-4: #353539; /* elementos elevados   (gray-650) */
 
   --color-line: #29292e; /* gray-750 — some no fundo, aparece na borda */
+
+  /* campo de formulário: o mesmo par que o backoffice usa (gray-750 / gray-550) */
+  --color-campo: #29292e;
+  --color-campo-foco: #52525b;
 
   --color-ink: #e1e1e6; /* gray-100 */
   --color-ink-muted: #a8a8b3; /* gray-300 */
@@ -51,7 +55,143 @@
   --color-dnd: #f13a3a;
   --color-danger: #f13a3a;
 
+  /*
+    Três tokens que nasceram de `black/20`, `black/10` e `white` espalhados
+    pelo código.
+
+    Enquanto só existia o tema escuro eles funcionavam: preto translúcido
+    sobre cinza escuro vira uma linha discreta. No claro, a mesma linha vira
+    um risco sujo, e a barrinha branca do servidor ativo some no fundo branco.
+    Agora cada um é um nome, e cada tema diz o que ele vale.
+  */
+  --color-divisor: rgb(0 0 0 / 0.25);
+  --color-hover: rgb(0 0 0 / 0.1);
+  --color-pilula: #ffffff;
+
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/*
+  Os temas.
+
+  O Tailwind 4 escreve os tokens do `@theme` como variáveis no `:root`, e toda
+  utilidade (`bg-surface-2`, `text-ink`) lê a variável — não o valor. Então
+  trocar de tema é redeclarar as mesmas variáveis num seletor mais específico,
+  sem recompilar nada e sem uma classe a mais em lugar nenhum.
+
+  `data-tema` no `<html>` é escrito pelo app; o bloco de `prefers-color-scheme`
+  atende quem escolheu "seguir o sistema", que não carimba atributo nenhum.
+*/
+:root[data-tema="mais-escuro"] {
+  --color-surface-0: #000000;
+  --color-surface-1: #08080a;
+  --color-surface-2: #0e0e11;
+  --color-surface-3: #1a1a1f;
+  --color-surface-4: #26262c;
+  --color-line: #1f1f25;
+  --color-campo: #1f1f25;
+  --color-campo-foco: #4a4a55;
+  --color-divisor: rgb(0 0 0 / 0.5);
+  --color-hover: rgb(255 255 255 / 0.04);
+}
+
+/*
+  Modo Gravaê — o app vestido com a marca.
+
+  Não é "escuro com o vermelho por cima": os cinzas inteiros foram puxados
+  para o quente, então o preto do fundo é o mesmo preto do logotipo, e não um
+  cinza-azulado que briga com ele. O vermelho é o do ponto da marca (#ff0000),
+  o mais forte da paleta — aqui ele pode, porque tudo em volta foi calibrado
+  para deixar ele gritar sozinho.
+
+  A barrinha do servidor ativo também vira vermelha: é o único tema em que ela
+  não é branca, e é o detalhe que faz a barra da esquerda parecer da marca.
+*/
+:root[data-tema="gravae"] {
+  --color-surface-0: #0b0708;
+  --color-surface-1: #120c0d;
+  --color-surface-2: #171011;
+  --color-surface-3: #201617;
+  --color-surface-4: #2b1e1f;
+  --color-line: #2e2021;
+  --color-campo: #201617;
+  --color-campo-foco: #6b3134;
+
+  --color-ink: #f4ecec;
+  --color-ink-muted: #bda9aa;
+  --color-ink-faint: #806c6d;
+
+  --color-brand: #ff0000;
+  --color-brand-hover: #cc0000;
+
+  --color-divisor: rgb(0 0 0 / 0.45);
+  --color-hover: rgb(255 0 0 / 0.06);
+  --color-pilula: #ff0000;
+}
+
+/*
+  A barra de rolagem também é da marca neste tema — é o tipo de detalhe que
+  ninguém aponta, mas que faz o resto parecer descuidado quando falta.
+*/
+:root[data-tema="gravae"] ::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--color-brand), transparent 55%);
+}
+
+:root[data-tema="claro"],
+:root[data-tema="sistema"] {
+  color-scheme: light;
+
+  --color-surface-0: #e2e2e8;
+  --color-surface-1: #eeeef2;
+  --color-surface-2: #ffffff;
+  --color-surface-3: #e6e6ec;
+  --color-surface-4: #dcdce4;
+  --color-line: #d5d5de;
+  --color-campo: #eaeaf0;
+  --color-campo-foco: #9a9aa8;
+
+  --color-ink: #1b1b20;
+  --color-ink-muted: #4c4c58;
+  --color-ink-faint: #83838f;
+
+  /*
+    O vermelho da marca no claro é o mesmo — ele já nasceu escuro o bastante
+    para se ler em branco. O que muda é o hover, que no escuro escurecia e
+    aqui precisa fazer o contrário.
+  */
+  --color-brand-hover: #a90303;
+
+  --color-divisor: rgb(0 0 0 / 0.1);
+  --color-hover: rgb(0 0 0 / 0.045);
+  --color-pilula: #1b1b20;
+}
+
+/*
+  "Seguir o sistema" não escolhe cor nenhuma — quem escolhe é o sistema. Por
+  isso o bloco de cima já responde por `sistema` (o claro), e este devolve o
+  escuro quando o sistema está no escuro.
+*/
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="sistema"] {
+    color-scheme: dark;
+
+    --color-surface-0: #121214;
+    --color-surface-1: #18181b;
+    --color-surface-2: #202024;
+    --color-surface-3: #27272a;
+    --color-surface-4: #353539;
+    --color-line: #29292e;
+    --color-campo: #29292e;
+    --color-campo-foco: #52525b;
+
+    --color-ink: #e1e1e6;
+    --color-ink-muted: #a8a8b3;
+    --color-ink-faint: #666675;
+
+    --color-divisor: rgb(0 0 0 / 0.25);
+    --color-hover: rgb(0 0 0 / 0.1);
+    --color-pilula: #ffffff;
+  }
 }
 
 @layer base {
@@ -90,5 +230,56 @@
   }
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
+  }
+}
+
+/*
+  Exibição compacta.
+
+  O Discord chama de "densidade" e muda a altura das linhas de mensagem. Aqui
+  é a mesma ideia por um atributo na raiz: quem quer mais conversa na tela
+  perde o respiro entre as mensagens, não o tamanho da letra — encolher a
+  fonte é o caminho rápido para não conseguir ler nada.
+*/
+:root[data-densidade="compacta"] [data-mensagem] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+:root[data-densidade="compacta"] [data-mensagem].mt-4 {
+  margin-top: 0.5rem;
+}
+
+/*
+  A partícula da super reação: sobe com o impulso sorteado, gira e some. As
+  distâncias vêm em variáveis para cada partícula ter a sua — uma keyframe só
+  serve as dezoito.
+*/
+@keyframes gc-super {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--gc-dx)), calc(-50% + var(--gc-dy)))
+      scale(var(--gc-escala)) rotate(var(--gc-giro));
+  }
+}
+
+/* Quem pediu menos movimento não leva chuva de emoji na cara. */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes gc-super {
+    0%,
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.6);
+    }
+    30% {
+      opacity: 0.9;
+    }
   }
 }

@@ -7,6 +7,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { openDm } from "~/@core/application/requests/friend/open-dm";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { Avatar } from "~/components/Avatar";
+import { useAparencia } from "~/stores/aparencia";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -26,28 +27,23 @@ interface InviteModalProps {
   onClose: () => void;
 }
 
-/** Estado por amigo: o botão precisa dizer o que aconteceu com AQUELE convite. */
 type Envio = "enviando" | "enviado" | "erro";
 
-/**
- * Convidar para o servidor.
- *
- * Duas formas, e a ordem importa: mandar direto para um amigo é o caminho de
- * quase todo mundo, então ele fica em cima e ocupa o espaço. Copiar o link
- * resolve o resto (mandar no zap, colar em outro lugar) e vive no rodapé.
- *
- * O envio é uma DM com o link. Não existe "convite" como entidade separada no
- * servidor — e nem precisa: a mensagem já é o convite, aparece no histórico da
- * conversa e a pessoa acha depois.
- */
+const MASCARA = "••••••••••••••••••••••••••";
+
 export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildName, onClose }) => {
   const createInvite = useCreateInvite();
   const [link, setLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revelado, setRevelado] = useState(false);
+  const prefs = useAparencia();
+
+  /// O link é o que dá acesso ao servidor. Numa live, ele vale um convite
+  /// aberto para qualquer um que leia a tela.
+  const escondido = !revelado && prefs.modoStreamer && prefs.streamerEscondeConvites;
   const [busca, setBusca] = useState("");
   const [envios, setEnvios] = useState<Record<string, Envio>>({});
 
-  // só busca a lista com o modal aberto: ninguém precisa dos amigos antes disso
   const { data: amizades, isLoading } = useFindFriends(open);
 
   const { mutateAsync } = createInvite;
@@ -90,7 +86,6 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
     setEnvios((atual) => ({ ...atual, [userId]: "enviando" }));
 
     try {
-      // abre (ou reaproveita) a conversa privada e manda o link como mensagem
       const canal = await openDm(userId);
       await sendMessage({ channelId: canal.id, content: link, nonce: crypto.randomUUID() });
 
@@ -125,10 +120,6 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
             />
           </div>
 
-          {/*
-            Altura fixa de propósito: sem ela o modal encolhe e cresce conforme
-            a busca filtra, e o botão de copiar link foge do dedo.
-          */}
           <div className="h-64 space-y-0.5 overflow-y-auto pr-1">
             {isLoading && <Vazio>Carregando…</Vazio>}
 
@@ -179,12 +170,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
             })}
           </div>
 
-          <div className="border-t border-black/20 pt-3">
+          <div className="border-t border-divisor pt-3">
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
               Ou mande o link
             </p>
             <div className="flex items-center gap-2 rounded bg-surface-0 p-1 pl-3">
-              <Input readOnly value={link ?? "Gerando…"} className="bg-transparent px-0" />
+              <Input
+                readOnly
+                value={link ? (escondido ? MASCARA : link) : "Gerando…"}
+                onFocus={() => setRevelado(true)}
+                title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
+                className="bg-transparent px-0"
+              />
               <Button onClick={() => void copy()} disabled={!link} size="md">
                 {copied ? <Check size={16} /> : <Copy size={16} />}
                 {copied ? "Copiado" : "Copiar"}

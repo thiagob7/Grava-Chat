@@ -7,38 +7,20 @@ import { estiloDoNome } from "~/lib/cosmeticos/nome";
 import { cn } from "~/lib/utils";
 
 interface UserNameProps {
-  /** o que aparece: apelido do servidor quando existe, senão o nome de exibição */
   nome: string;
-  /** enfeites de quem é dono do nome; `null` para quem nunca mexeu */
   perfil?: PerfilPublico | null;
-  /**
-   * De onde tirar a cor do cargo. Passar `roleIds` + `roles` deixa a busca do
-   * cargo mais alto aqui dentro; quem já a fez passa `corDoCargo` direto.
-   */
   roleIds?: string[];
   roles?: Role[];
   corDoCargo?: string | null;
-  /** `md` libera os efeitos que recortam o texto; ver `lib/cosmeticos/nome.ts` */
   tamanho?: "sm" | "md";
   animar?: boolean;
-  /** o fundo contra o qual medir o contraste, quando não for o padrão do tema */
   fundo?: string;
   className?: string;
   title?: string;
+  /// conta de bot: ganha o selo "APP" ao lado do nome, como no Discord
+  ehBot?: boolean;
 }
 
-/**
- * O nome de uma pessoa, em um lugar só.
- *
- * Hoje `{displayName}` está solto em ~35 pontos do app, o que é a razão de a
- * cor do cargo nunca ter chegado ao chat: não havia onde aplicá-la. Este
- * componente é o lugar.
- *
- * **É sempre um `<span>`, nunca um `<button>`.** Quase todo call site já
- * embrulha o nome num botão — o gatilho do `UserProfilePopover`, o item da
- * lista de membros — e botão dentro de botão é HTML inválido: o React não
- * reclama, o navegador reaninha a árvore e o clique de dentro para de existir.
- */
 export const UserName: React.FC<UserNameProps> = ({
   nome,
   perfil,
@@ -50,22 +32,36 @@ export const UserName: React.FC<UserNameProps> = ({
   fundo,
   className,
   title,
+  ehBot = false,
 }) => {
-  /**
-   * Puxa o arquivo da fonte só quando um nome com ela aparece na tela.
-   *
-   * É seguro chamar a cada nome renderizado: a função guarda o que já pediu, e
-   * da segunda vez em diante é uma busca em `Set`. Quem nunca cruza com um nome
-   * enfeitado não baixa fonte nenhuma.
-   */
   useEffect(() => carregarFonte(perfil?.nome?.fonte), [perfil?.nome?.fonte]);
 
   const cor = corDoCargo ?? (roleIds && roles ? corDoCargoMaisAlto(roleIds, roles) : null);
   const enfeite = estiloDoNome({ estilo: perfil?.nome, corDoCargo: cor, tamanho, animar, fundo });
 
-  return (
+  const escrito = (
     <span className={cn(className, enfeite.className)} style={enfeite.style} title={title}>
       {nome}
     </span>
   );
+
+  if (!ehBot) return escrito;
+
+  /*
+    O selo fica FORA do span do nome porque o nome pode ter enfeite —
+    gradiente, neon, fonte própria. Herdar isso deixaria o "APP" ilegível, e
+    ele existe justamente para ser lido de relance.
+  */
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {escrito}
+      <SeloDeApp />
+    </span>
+  );
 };
+
+export const SeloDeApp: React.FC = () => (
+  <span className="shrink-0 rounded bg-brand px-1 py-px text-[9px] font-bold uppercase leading-tight text-white">
+    app
+  </span>
+);

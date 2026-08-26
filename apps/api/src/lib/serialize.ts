@@ -17,10 +17,6 @@ import { unset } from "./mongo.js";
 
 type UserRow = Prisma.UserGetPayload<object>;
 
-/**
- * O User do banco tem email. Toda resposta que sai pra outros membros passa
- * por aqui — e o unico lugar que decide o que e publico.
- */
 export function toPublicUser(u: UserRow): PublicUser {
   return {
     id: u.id,
@@ -28,30 +24,15 @@ export function toPublicUser(u: UserRow): PublicUser {
     displayName: u.displayName,
     avatarUrl: u.avatarUrl,
     status: u.status,
+    isBot: u.isBot,
   };
 }
 
-/**
- * O que os OUTROS veem de enfeite seu.
- *
- * Fica separado de `toPublicUser` de proposito: aquele esta embutido em cada
- * mensagem, este viaja uma vez por pessoa no mapa `profiles`. Enfeite e por
- * usuario, nao por mensagem.
- *
- * Chaves em branco sao omitidas — quem nunca personalizou nada custa `{}`.
- */
-/** A etiqueta de um servidor, ja resolvida — ver `EtiquetaDeServidor`. */
 export type EtiquetaResolvida = { guildId: string; tag: string; tagIcon: string | null };
 
 export function toPerfilPublico(
   u: UserRow,
   emblemas: string[] = [],
-  /**
-   * A etiqueta do servidor que esta pessoa escolheu vestir, ja resolvida por
-   * quem chamou. Vem de fora porque resolver id -> `tag` exige buscar servidores
-   * que talvez nem sejam o que esta aberto — e em lista de membros isso tem que
-   * acontecer UMA vez pra todo mundo, nao uma vez por pessoa.
-   */
   etiquetaDoServidor: EtiquetaResolvida | null = null,
 ): PerfilPublico {
   const p = u.perfil;
@@ -69,13 +50,6 @@ export function toPerfilPublico(
   };
 }
 
-/**
- * O status personalizado ja venceu?
- *
- * A expiracao e conferida AQUI, na leitura, e nao por tarefa agendada — mesmo
- * idioma que o castigo usa comparando `timeoutUntil` com a hora atual. O
- * documento vencido fica no banco ate a proxima escrita, e nao incomoda ninguem.
- */
 export function statusVigente(u: UserRow): StatusPersonalizado | null {
   const s = u.statusPersonalizado;
   if (!s) return null;
@@ -88,7 +62,6 @@ export function statusVigente(u: UserRow): StatusPersonalizado | null {
   };
 }
 
-/** Tira os nulos que o Prisma devolve pra o schema receber `undefined`. */
 function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
   return {
     ...(n.fonte ? { fonte: n.fonte as "padrao" } : {}),
@@ -98,10 +71,6 @@ function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
   };
 }
 
-/**
- * `desiredStatus` vem de fora (Redis, via `presenceService`) porque o Mongo so
- * guarda o status PROJETADO — invisivel nunca e gravado la.
- */
 export function toSelfUser(
   u: UserRow,
   providers: string[] = [],
@@ -125,6 +94,7 @@ export function toChannel(c: Prisma.ChannelGetPayload<object>): Channel {
     guildId: c.guildId,
     categoryId: c.categoryId,
     name: c.name,
+    fonte: (c.fonte ?? null) as Channel["fonte"],
     type: c.type,
     topic: c.topic,
     position: c.position,
@@ -146,7 +116,6 @@ export function toRole(r: Prisma.RoleGetPayload<object>): Role {
     colorSecondary: r.colorSecondary,
     iconUrl: r.iconUrl,
     iconEmoji: r.iconEmoji,
-    // `null` = cargo criado antes do campo existir; "solido" e o padrao
     estilo: (r.estilo as Role["estilo"]) ?? "solido",
     position: r.position,
     permissions: r.permissions,
@@ -172,18 +141,14 @@ type MessageRow = Prisma.MessageGetPayload<{
   include: { author: true; reactions: true; sticker: true };
 }>;
 
-/**
- * As reacoes vem do banco como uma linha por (usuario, emoji) e o front quer
- * o agrupado com "eu ja reagi?". O `viewerId` e o que permite montar isso sem
- * um request extra por mensagem.
- */
 export function toMessage(m: MessageRow, viewerId: string): Message {
-  const grouped = new Map<string, { count: number; me: boolean }>();
+  const grouped = new Map<string, { count: number; me: boolean; burst: boolean }>();
 
   for (const r of m.reactions) {
-    const entry = grouped.get(r.emoji) ?? { count: 0, me: false };
+    const entry = grouped.get(r.emoji) ?? { count: 0, me: false, burst: false };
     entry.count += 1;
     if (r.userId === viewerId) entry.me = true;
+    if (r.burst) entry.burst = true;
     grouped.set(r.emoji, entry);
   }
 
@@ -192,6 +157,7 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
     channelId: m.channelId,
     author: toPublicUser(m.author),
     content: m.content,
+    fonte: (m.fonte ?? null) as Message["fonte"],
     tipo: m.tipo,
     attachments: m.attachments.map((a) => ({
       id: a.id,
@@ -219,10 +185,14 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
         }
       : null,
     sticker: m.sticker ? toSticker(m.sticker) : null,
-    reactions: [...grouped.entries()].map(([emoji, v]) => ({ emoji, count: v.count, me: v.me })),
+    reactions: [...grouped.entries()].map(([emoji, v]) => ({
+      emoji,
+      count: v.count,
+      me: v.me,
+      burst: v.burst,
+    })),
     mentions: m.mentions,
     mentionRoleIds: m.mentionRoleIds,
-    // `null` = mensagem escrita antes do campo existir; ver o comentario no schema
     mentionEveryone: m.mentionEveryone ?? false,
     replyToId: m.replyToId,
     postId: m.postId,
@@ -257,5 +227,4 @@ export const messageInclude = {
   sticker: true,
 } satisfies Prisma.MessageInclude;
 
-/** Mensagens nao apagadas. Ver a nota em lib/mongo.ts sobre null vs ausente. */
 export const notDeleted = unset("deletedAt") satisfies Prisma.MessageWhereInput;

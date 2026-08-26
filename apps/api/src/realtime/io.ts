@@ -5,10 +5,10 @@ export type GravaeServer = Server<ClientToServerEvents, ServerToClientEvents, Re
 
 export type SocketData = {
   userId: string;
-  /** servidores do usuario, resolvidos no handshake */
   guildIds: string[];
-  /** canal de voz atual, se houver — usado na Fase 3 */
   voiceChannelId: string | null;
+  /// entrou com token de bot, e não com a sessão de uma pessoa
+  ehBot?: boolean;
 };
 
 let instance: GravaeServer | null = null;
@@ -17,11 +17,6 @@ export function setIo(server: GravaeServer) {
   instance = server;
 }
 
-/**
- * Acesso ao Socket.IO a partir das rotas REST (criar canal, aceitar convite...).
- * Passar o `io` como parametro por toda a arvore de rotas polui muito mais do
- * que este acessor.
- */
 export function io(): GravaeServer {
   if (!instance) throw new Error("Socket.IO ainda não foi inicializado");
   return instance;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Hash, Lock, MessagesSquare, Volume2 } from "lucide-react";
-import type { ChannelType } from "@gravae/shared";
+import type { ChannelType, FonteDeNome } from "@gravae/shared";
 
 import { useCreateChannel } from "~/@core/application/queries/guild/use-create-channel";
 import { Button } from "~/components/ui/button";
@@ -12,7 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label } from "~/components/ui/input";
+import { Label, cartaoDeEscolha } from "~/components/ui/input";
+import { CampoDeNomeDeCanal } from "~/components/CampoDeNomeDeCanal";
 import { Switch } from "~/components/ui/switch";
 import { cn } from "~/lib/utils";
 
@@ -54,19 +55,24 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
   const [name, setName] = useState("");
   const [type, setType] = useState<ChannelType>("TEXT");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [fonte, setFonte] = useState<FonteDeNome>("padrao");
 
   const submit = async () => {
     if (!guildId || !name.trim()) return;
 
-    /**
-     * Sem mexer na lista aqui: o canal chega pelo evento `channel:created`,
-     * que o servidor manda inclusive pra quem criou.
-     */
     await createChannel
-      .mutateAsync({ guildId, name: name.trim(), type, categoryId, isPrivate })
+      .mutateAsync({
+        guildId,
+        name: name.trim(),
+        ...(fonte !== "padrao" ? { fonte } : {}),
+        type,
+        categoryId,
+        isPrivate,
+      })
       .catch(() => null);
 
     setName("");
+    setFonte("padrao");
     setIsPrivate(false);
     onClose();
   };
@@ -87,10 +93,7 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
               <button
                 key={option.value}
                 onClick={() => setType(option.value)}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded px-3 py-2.5 text-left transition",
-                  type === option.value ? "bg-surface-4" : "bg-surface-0 hover:bg-surface-4/60",
-                )}
+                className={cartaoDeEscolha(type === option.value)}
               >
                 <option.icon size={20} className="text-ink-faint" />
                 <div className="flex-1">
@@ -108,19 +111,18 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
           </div>
 
           <Label htmlFor="channel-name">Nome do canal</Label>
-          <div className="flex items-center gap-2 rounded bg-surface-0 px-3">
-            <Icon size={18} className="text-ink-faint" />
-            <Input
-              id="channel-name"
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value.replace(/\s+/g, type === "TEXT" ? "-" : " "))}
-              onKeyDown={(e) => e.key === "Enter" && void submit()}
-              placeholder={type === "TEXT" ? "novo-canal" : "Sala 2"}
-              maxLength={48}
-              className="bg-transparent px-0"
-            />
-          </div>
+          <CampoDeNomeDeCanal
+            id="channel-name"
+            autoFocus
+            valor={name}
+            onMudar={setName}
+            fonte={fonte}
+            onFonte={setFonte}
+            ehVoz={type !== "TEXT"}
+            icone={<Icon size={18} className="shrink-0 text-ink-faint" />}
+            placeholder={type === "TEXT" ? "novo-canal" : "Sala 2"}
+            onEnter={() => void submit()}
+          />
 
           <div className="mt-5 flex items-start gap-4">
             <div className="min-w-0 flex-1">

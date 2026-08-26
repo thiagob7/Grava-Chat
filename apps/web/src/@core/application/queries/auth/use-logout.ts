@@ -8,7 +8,6 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      // Sessão encerrada: nada do cache anterior pode sobreviver.
       queryClient.clear();
     },
   });

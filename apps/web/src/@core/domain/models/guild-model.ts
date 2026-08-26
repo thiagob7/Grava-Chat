@@ -14,13 +14,12 @@ export interface GuildModel {
   id: string;
   name: string;
   iconUrl: string | null;
-  /** etiqueta DESTE servidor; quem veste é quem escolheu vestir */
   description?: string | null;
-  /** etiqueta de até 4 letras ao lado do nome de quem é membro */
   tag?: string | null;
   tagIcon?: string | null;
   systemChannelId?: string | null;
   welcomeEnabled?: boolean;
+  welcomeMessage?: string | null;
   ownerId: string;
   memberCount: number;
 }
@@ -33,18 +32,15 @@ export interface GuildInviteModel {
   maxUses: number | null;
   expiresAt: string | null;
   createdAt: string;
-  /** vencido ou esgotado: continua na lista, mas marcado */
   expired: boolean;
 }
 
-/** O que a lista lateral precisa: o servidor mais o que VOCÊ pode nele. */
 export interface GuildSummaryModel extends GuildModel {
   isOwner: boolean;
   permissions: Permission[];
 }
 
 export interface RoleModel extends Role {
-  /** quantas pessoas têm este cargo; ausente no @everyone, que é todo mundo */
   memberCount?: number;
 }
 
@@ -54,9 +50,7 @@ export interface WebhookModel {
   channelId: string;
   name: string;
   avatarUrl: string | null;
-  /** a URL inteira, pronta pra colar em quem vai postar — trate como senha */
   url: string;
-  /** o usuário-bot que assina as mensagens */
   bot: PublicUser;
   createdBy: PublicUser;
   createdAt: string;
@@ -74,26 +68,13 @@ export type ChannelWithLastMessageModel = Channel & { lastMessageId: string | nu
 
 export interface GuildDetailModel {
   guild: GuildModel;
-  /** o que EU posso neste servidor */
   permissions: Permission[];
-  /** e o que eu posso em cada canal, que pode divergir do geral */
   channelPermissions: Record<string, Permission[]>;
   roles: Role[];
   categories: Category[];
   channels: ChannelWithLastMessageModel[];
   members: GuildMember[];
-  /**
-   * Enfeites por pessoa, uma entrada por usuário — e só de quem tem algum.
-   *
-   * Fica fora de `members[].user` porque aquele objeto é o mesmo que viaja em
-   * cada mensagem: enfeite é por USUÁRIO, não por mensagem. Ausente significa
-   * "não personalizou nada", que é o caso da maioria.
-   */
   profiles: Record<string, PerfilPublico>;
-  /**
-   * Os emblemas que ESTE servidor criou. Quem veste o quê está no mapa
-   * `profiles` — aqui ficam só as definições, uma vez cada.
-   */
   emblemas: Emblema[];
   voiceStates: Record<string, VoiceState[]>;
 }

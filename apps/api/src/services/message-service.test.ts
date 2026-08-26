@@ -9,11 +9,6 @@ const createMessage = vi.fn();
 const markRead = vi.fn();
 const requireChannelAccess = vi.fn();
 
-/**
- * Sem estes mocks o service falaria com o Mongo de verdade. É exatamente isso
- * que a separação repository/service compra: dá pra testar a REGRA sem banco,
- * sem servidor e em milissegundos.
- */
 vi.mock("~/repositories/message-repository.js", () => ({
   messageRepository: {
     findById: (...a: unknown[]) => findMessageById(...a),
@@ -29,11 +24,6 @@ vi.mock("~/services/access-service.js", () => ({
   accessService: { requireChannelAccess: (...a: unknown[]) => requireChannelAccess(...a) },
 }));
 
-/**
- * O service passou a conhecer canal, expressões, automod e fórum. Nenhum deles
- * participa das regras testadas aqui — mockar mantém o teste sem banco, sem
- * Redis e em milissegundos.
- */
 vi.mock("~/repositories/guild-repository.js", () => ({
   channelRepository: { findById: vi.fn() },
   memberRepository: { find: vi.fn() },
@@ -71,7 +61,6 @@ const AUTHOR = "6a8781da7415b08f427be1a4";
 const OUTRO = "6a8781f57415b08f427be1ad";
 const CHANNEL = "6a8781db7415b08f427be1aa";
 
-/** Contexto de quem é membro comum: vê e escreve, mas não modera. */
 const contextoComum = {
   permissions: new Set(["VIEW_CHANNEL", "SEND_MESSAGES", "ATTACH_FILES", "ADD_REACTIONS"]),
   member: { timeoutUntil: null },
@@ -117,7 +106,6 @@ beforeEach(() => {
   ]);
 });
 
-/** O que foi realmente gravado na última chamada de `create`. */
 const gravado = () => createMessage.mock.calls.at(-1)?.[0];
 
 const comPermissao = (...extras: string[]) => ({
@@ -138,7 +126,6 @@ describe("menções", () => {
       content: `<@&${CARGO_MENCIONAVEL}>`,
     });
 
-    // se caíssem no mesmo array, o contador de não-lidas trataria cargo como gente
     expect(gravado().mentions).toEqual([]);
     expect(gravado().mentionRoleIds).toEqual([CARGO_MENCIONAVEL]);
   });
@@ -160,7 +147,6 @@ describe("menções", () => {
   it("sem permissão, @everyone é APAGADO e a mensagem passa", async () => {
     await messageService.send(AUTHOR, { channelId: CHANNEL, content: "bom dia @everyone" });
 
-    // recusar a mensagem inteira por causa de uma palavra é hostil
     expect(gravado().mentionEveryone).toBe(false);
     expect(gravado().content).toBe("bom dia @everyone");
   });

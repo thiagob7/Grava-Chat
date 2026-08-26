@@ -39,7 +39,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
 
   return (
     <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-      <header className="flex h-12 shrink-0 items-center gap-1 border-b border-black/20 px-4 shadow-sm">
+      <header className="flex h-12 shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm">
         <span className="mr-2 font-semibold">Amigos</span>
         {abas.map((item) => (
           <button

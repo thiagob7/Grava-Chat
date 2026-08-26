@@ -5,7 +5,6 @@ import { redis } from "~/lib/redis.js";
 export async function healthRoutes(app: FastifyInstance) {
   app.get("/health", async () => {
     const [db, cache] = await Promise.allSettled([
-      // ping barato que confirma que o replica set respondeu de verdade
       prisma.$runCommandRaw({ ping: 1 }),
       redis.ping(),
     ]);

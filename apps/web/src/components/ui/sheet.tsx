@@ -4,14 +4,6 @@ import { X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
-/**
- * Gaveta lateral.
- *
- * É o mesmo Radix Dialog do `dialog.tsx` — muda só onde ela encosta e como
- * entra. Reaproveitar em vez de escrever do zero traz de graça o que é chato e
- * fácil de errar: foco preso dentro, Esc, clique fora, `aria-modal` e o
- * retorno do foco pro gatilho ao fechar.
- */
 export const Sheet = DialogPrimitive.Root;
 export const SheetTrigger = DialogPrimitive.Trigger;
 export const SheetClose = DialogPrimitive.Close;
@@ -38,7 +30,6 @@ export const SheetContent = ({
   </DialogPrimitive.Portal>
 );
 
-/** O X fica solto: cada gaveta decide onde ele encaixa no próprio cabeçalho. */
 export const SheetCloseButton = ({ className }: { className?: string }) => (
   <DialogPrimitive.Close
     aria-label="Fechar"

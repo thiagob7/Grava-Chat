@@ -14,7 +14,6 @@ export const SignIn: React.FC = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // existe só dentro do aplicativo de desktop; no navegador é null
   const ponte = desktop();
 
   const submit = async () => {
@@ -29,11 +28,6 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    /*
-      A foto da marca ao fundo, escurecida o bastante para o cartão continuar
-      legível. O `bg-surface-0` embaixo é o que a tela mostra enquanto a imagem
-      não chegou — sem ele, o primeiro instante do login pisca branco.
-    */
     <div className="relative flex min-h-full items-center justify-center overflow-hidden bg-surface-0 p-6">
       <img
         src="/brand/fundo-login.jpg"
@@ -54,15 +48,6 @@ export const SignIn: React.FC = () => {
           <p className="mt-1 text-sm text-ink-muted">Que bom te ver de novo</p>
         </div>
 
-        {/*
-          Navegação de página inteira, não fetch: o OAuth do Google exige que o
-          NAVEGADOR vá até lá e volte. Um XHR seria bloqueado por CORS e a
-          pessoa nunca veria a tela de consentimento.
-
-          No aplicativo de desktop o caminho é outro: o Google recusa a tela de
-          consentimento dentro de janela embutida, então quem vai até lá é o
-          navegador do sistema e o resultado volta por `gravae://`.
-        */}
         {ponte ? (
           <Button
             disabled={!googleEnabled}

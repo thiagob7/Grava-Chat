@@ -5,7 +5,6 @@ import { removeMember } from "~/@core/application/requests/guild/remove-member";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-/** Serve para expulsar alguém e para sair do servidor (mesma rota). */
 export const useRemoveMember = () => {
   const queryClient = useQueryClient();
 

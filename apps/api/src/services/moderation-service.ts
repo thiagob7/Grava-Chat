@@ -10,17 +10,13 @@ import { accessService, type Contexto } from "./access-service.js";
 import { auditService } from "./audit-service.js";
 import type { BanInput, TimeoutInput } from "~/validations/moderation.js";
 
-/**
- * Toda ação daqui é sobre uma PESSOA, e todas passam pela mesma pergunta: você
- * está acima dela? Sem isso, quem tem "expulsar membros" expulsa o dono.
- */
 async function requireAcimaDoAlvo(contexto: Contexto, guildId: string, targetId: string) {
   const guild = await guildRepository.findById(guildId);
   if (!guild) throw new NotFoundError("Servidor não encontrado");
   if (guild.ownerId === targetId) throw new AppError("O dono do servidor não pode ser moderado", 403);
 
   const alvo = await memberRepository.find(guildId, targetId);
-  if (!alvo) return; // banir alguém que já saiu continua valendo
+  if (!alvo) return;
 
   const roles = await roleRepository.findForMember(guildId, alvo.roleIds);
   accessService.requireAbove(
@@ -46,11 +42,6 @@ export const moderationService = {
     }));
   },
 
-  /**
-   * Banir = tirar do servidor e impedir de voltar. A checagem de volta está em
-   * `inviteService.accept` e em `accessService.requireMember`: um banido com o
-   * link na mão não entra, e um banido que já estava dentro perde o acesso.
-   */
   async ban(actorId: string, guildId: string, targetId: string, input: BanInput) {
     const contexto = await accessService.requirePermission(actorId, guildId, "BAN_MEMBERS");
     await requireAcimaDoAlvo(contexto, guildId, targetId);
@@ -107,7 +98,6 @@ export const moderationService = {
     });
   },
 
-  /** Castigo: fica sem escrever e sem falar até a hora marcada. */
   async castigar(actorId: string, guildId: string, targetId: string, input: TimeoutInput) {
     const contexto = await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
     await requireAcimaDoAlvo(contexto, guildId, targetId);
@@ -129,13 +119,6 @@ export const moderationService = {
     return toMember(member);
   },
 
-  /**
-   * Apelido: o seu exige CHANGE_NICKNAME; o dos outros, MANAGE_NICKNAMES.
-   *
-   * São duas permissões porque são duas coisas diferentes — dá pra travar o
-   * apelido de todo mundo (servidor que exige nome real) sem tirar de ninguém
-   * o poder de moderar apelido alheio, e vice-versa.
-   */
   async apelidar(actorId: string, guildId: string, targetId: string, nickname: string | null) {
     if (actorId === targetId) {
       await accessService.requirePermission(actorId, guildId, "CHANGE_NICKNAME");

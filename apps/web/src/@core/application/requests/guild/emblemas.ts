@@ -13,7 +13,6 @@ export async function removerEmblema(guildId: string, emblemaId: string): Promis
   await api.delete(`/guilds/${guildId}/emblemas/${emblemaId}`);
 }
 
-/** Os que EU visto aqui. `@me` porque ninguém escolhe pelos outros. */
 export async function vestirEmblemas(
   guildId: string,
   emblemIds: string[],

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   Hash,
@@ -15,14 +15,13 @@ import {
 
 import type { GuildDetailModel, GuildSummaryModel } from "~/@core/domain/models/guild-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { UserPanel } from "~/components/UserPanel";
 import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSettingsModal";
 import { CreateChannelModal } from "~/components/CreateChannelModal";
 import { InviteModal } from "~/components/InviteModal";
 import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
-import { VoicePanel } from "~/components/VoicePanel";
+import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,8 +32,10 @@ import {
 import { ServerSettingsModal } from "~/components/server-settings/ServerSettingsModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { usePermissions } from "~/hooks/use-permissions";
+import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 import { toast } from "react-toastify";
+import { useServerSettingsStore } from "~/stores/server-settings-store";
 import { useVoiceStore } from "~/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
@@ -42,16 +43,13 @@ interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
   summary: GuildSummaryModel | undefined;
   activeChannelId: string | undefined;
-  /** por canal: o id da última lida e quantas entraram depois */
   readStates: Record<string, { lido: string | null; naoLidas: number; mencoes: number }>;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
   onLogout: () => void;
-  /** canal de voz em que a CONTA está, segundo o servidor */
   accountVoiceChannelId: string | null;
   onMoveCallHere: (channelId: string) => void;
   onLeaveGuild: () => void;
-  /** abre o chat lateral de um canal de voz */
   onOpenVoiceChat?: (channelId: string) => void;
 }
 
@@ -72,22 +70,28 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [creatingIn, setCreatingIn] = useState<string | null | false>(false);
   const [inviting, setInviting] = useState(false);
-  const [configurando, setConfigurando] = useState(false);
+  const configuracoes = useServerSettingsStore();
+
+  /// O pedido pode ter nascido no servidor anterior: quem clicou em
+  /// "Adicionar emoji" e trocou de servidor no meio do caminho não quer cair
+  /// nas configurações deste aqui.
+  const configurando = configuracoes.aberto && configuracoes.guildId === detail?.guild.id;
   const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
 
   const { can, canInChannel } = usePermissions(detail);
 
-  // a lista de quem está na chamada acompanha o LiveKit, não só o socket
   useVoiceSync(detail?.guild.id, user?.id);
   const canManage = can("MANAGE_GUILD");
   const canManageChannels = can("MANAGE_CHANNELS");
   const canManageRoles = can("MANAGE_ROLES");
   const canManageWebhooks = can("MANAGE_WEBHOOKS");
-  // a tela de configurações abre pra quem administra QUALQUER coisa: quem só
-  // cuida dos webhooks também precisa chegar lá
   const podeConfigurar = canManage || canManageRoles || canManageWebhooks;
   const isOwner = Boolean(summary?.isOwner);
   const channels = detail?.channels ?? [];
+
+  useEffect(() => {
+    channels.forEach((c) => carregarFonte(c.fonte));
+  }, [channels]);
   const uncategorized = channels.filter((c) => !c.categoryId);
 
   const groups = [
@@ -112,7 +116,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         className="relative flex shrink-0 flex-col bg-surface-1"
         style={{ width: largura }}
       >
-        <header className="flex h-12 items-center justify-between border-b border-black/20 shadow-sm">
+        <header className="flex h-12 items-center justify-between border-b border-divisor shadow-sm">
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
               <button className="flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition hover:bg-surface-3">
@@ -129,7 +133,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               )}
 
               {podeConfigurar && (
-                <DropdownMenuItem onSelect={() => setConfigurando(true)}>
+                <DropdownMenuItem onSelect={() => configuracoes.abrir(detail!.guild.id)}>
                   Configurações do servidor <Settings size={16} />
                 </DropdownMenuItem>
               )}
@@ -155,7 +159,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
               <DropdownMenuSeparator />
               {isOwner ? (
-                <DropdownMenuItem danger onSelect={() => setConfigurando(true)}>
+                <DropdownMenuItem danger onSelect={() => configuracoes.abrir(detail!.guild.id, "excluir")}>
                   Excluir servidor <Trash2 size={16} />
                 </DropdownMenuItem>
               ) : (
@@ -214,19 +218,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                     const unread =
                       !active && channel.lastMessageId && channel.lastMessageId !== leitura?.lido;
                     const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
-                    // menção pinta de vermelho; não-lida comum é só um número
                     const mencoes = unread ? (leitura?.mencoes ?? 0) : 0;
                     const inThisCall = voiceChannelId === channel.id;
                     const bloqueado =
                       channel.type === "VOICE" && !canInChannel(channel.id, "CONNECT");
 
-                    /**
-                     * Começo da chamada: quem entrou primeiro manda no relógio.
-                     *
-                     * O filtro não é paranoia — estado de voz gravado antes de
-                     * `joinedAt` existir chega sem o campo, e `Math.min` de um
-                     * `undefined` devolve `NaN`, que virava "NaN:NaN" na tela.
-                     */
                     const entradas = (detail?.voiceStates[channel.id] ?? [])
                       .map((v) => v.joinedAt)
                       .filter((t): t is number => Number.isFinite(t));
@@ -248,12 +244,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           )}
                         >
                           {channel.type === "VOICE" ? (
-                            /*
-                              O cadeado no lugar do alto-falante quando você não
-                              pode entrar. Clicar já mostrava a explicação — mas
-                              descobrir só DEPOIS de clicar parece que o app
-                              falhou, e não que o canal é fechado.
-                            */
                             bloqueado ? (
                               <Lock size={18} className="shrink-0 text-ink-faint" />
                             ) : (
@@ -270,14 +260,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           ) : (
                             <Hash size={18} className="shrink-0 text-ink-faint" />
                           )}
-                          <span className="truncate">{channel.name}</span>
+                          <span
+                            className="truncate"
+                            style={{ fontFamily: familiaDaFonte(channel.fonte) ?? undefined }}
+                          >
+                            {channel.name}
+                          </span>
 
-                          {/*
-                            Reserva o espaço da direita. Os indicadores e os
-                            botões de ação ocupam ESTA área, um de cada vez —
-                            antes os botões eram `absolute` e caíam POR CIMA do
-                            ponto de não-lido, que continuava desenhado embaixo.
-                          */}
                           <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
                             {channel.type === "VOICE" && chamadaDesde !== null && !unread && (
                               <CallTimer desde={chamadaDesde} />
@@ -289,12 +278,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                   title={mencoes > 0 ? `${mencoes} menção(ões) a você` : undefined}
                                   className={cn(
                                     "min-w-[18px] rounded-full px-1.5 text-center text-[11px] font-bold leading-[18px]",
-                                    /**
-                                     * Vermelho é para o que é PRA VOCÊ. Antes
-                                     * toda mensagem nova era vermelha, e aí o
-                                     * vermelho não queria dizer nada — canal
-                                     * movimentado ficava aceso o dia inteiro.
-                                     */
                                     mencoes > 0
                                       ? "bg-danger text-white"
                                       : "bg-surface-4 text-ink-muted",
@@ -319,8 +302,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             </button>
                           )}
 
-                          {/* sem CREATE_INVITE o botão some: mostrar um atalho
-                              que o servidor vai recusar só ensina a errar */}
                           {can("CREATE_INVITE") && (
                             <button
                               onClick={() => setInviting(true)}
@@ -361,14 +342,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           })}
         </div>
 
-        {/*
-          O painel se vira sozinho: os dados vêm da CHAMADA, não desta tela. Só
-          "está em outra aba" continua vindo daqui, porque é a única parte que
-          depende do servidor aberto.
-        */}
-        <VoicePanel accountChannelId={accountVoiceChannelId} onMoveHere={onMoveCallHere} />
-
-        {user && <UserPanel user={user} onLogout={onLogout} />}
+        <RodapeDaBarra
+          user={user}
+          onLogout={onLogout}
+          accountChannelId={accountVoiceChannelId}
+          onMoveHere={onMoveCallHere}
+        />
         <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
       </aside>
 
@@ -409,7 +388,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
       {detail && (
         <ServerSettingsModal
           open={configurando}
-          onClose={() => setConfigurando(false)}
+          onClose={configuracoes.fechar}
+          secaoInicial={configuracoes.secao}
           detail={detail}
           members={detail.members}
           currentUserId={user?.id}

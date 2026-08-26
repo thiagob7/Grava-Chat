@@ -3,10 +3,14 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 
 import { FloatingScreenShare } from "~/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
+import { useAvisoNoTitulo } from "~/hooks/use-aviso-no-titulo";
+import { useConviteDeAviso } from "~/hooks/use-convite-de-aviso";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
+import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
+import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 
 export const AppRoutes: React.FC = () => (
@@ -18,6 +22,22 @@ export const AppRoutes: React.FC = () => (
         element={
           <Protected>
             <AcceptInvite />
+          </Protected>
+        }
+      />
+      <Route
+        path="/oauth2/autorizar"
+        element={
+          <Protected>
+            <AutorizarApp />
+          </Protected>
+        }
+      />
+      <Route
+        path="/bots/:botId/adicionar"
+        element={
+          <Protected>
+            <AdicionarBot />
           </Protected>
         }
       />
@@ -40,11 +60,6 @@ export const AppRoutes: React.FC = () => (
       <Route path="*" element={<Navigate to="/channels" replace />} />
     </Routes>
 
-    {/*
-      Dentro do Router, fora das rotas: precisa do `useNavigate` pra voltar ao
-      canal da chamada, e não pode ser desmontada a cada navegação — senão o
-      vídeo pisca em toda troca de canal.
-    */}
     <FloatingScreenShare />
   </BrowserRouter>
 );
@@ -54,13 +69,11 @@ const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
 
   useDisconnectOnLogout(Boolean(user), isBooting);
+  useAvisoNoTitulo(Boolean(user));
+  useConviteDeAviso(Boolean(user));
 
   if (isBooting) return <Splash />;
 
-  /**
-   * Guarda o destino no state: quem abre um link de convite deslogado volta
-   * pro convite depois de entrar, e não pra tela inicial.
-   */
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
   return <>{children}</>;

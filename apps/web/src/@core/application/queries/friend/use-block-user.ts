@@ -5,11 +5,6 @@ import { blockUser, unblockUser } from "~/@core/application/requests/friend/bloc
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { apiErrorMessage } from "~/@core/lib/api";
 
-/**
- * Bloquear derruba a amizade e fecha a DM do lado do servidor, então o perfil e
- * a lista de amigos precisam ser reconsultados — senão a tela continua
- * oferecendo "enviar mensagem" para alguém que já não aceita.
- */
 export const useBlockUser = () => {
   const queryClient = useQueryClient();
 

@@ -11,7 +11,6 @@ import { cn } from "~/lib/utils";
 interface VoiceMembersProps {
   states: VoiceState[];
   members: GuildMember[];
-  /** o que o menu do botão direito precisa saber */
   guildId?: string;
   roles?: Role[];
   canaisDeVoz?: Channel[];
@@ -19,10 +18,6 @@ interface VoiceMembersProps {
   currentUserId?: string;
 }
 
-/**
- * Quem está dentro de um canal de voz, listado embaixo dele na barra lateral —
- * é o que faz alguém pensar "ah, o pessoal tá lá" e entrar.
- */
 export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   states,
   members,
@@ -32,12 +27,6 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   minhasPermissoes = [],
   currentUserId,
 }) => {
-  /**
-   * Quem está falando vem do LiveKit, não do nosso servidor: é um sinal de
-   * altíssima frequência e mandá-lo por socket seria desperdício. Como o dado só
-   * existe pra quem está na mesma chamada, o anel aparece exatamente quando o
-   * Discord também mostra.
-   */
   const tiles = useVoiceStore((s) => s.tiles);
   const falando = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
 
@@ -82,7 +71,6 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
           </UserProfilePopover>
         );
 
-        // sem servidor (DM, por exemplo) não há o que moderar: só a linha
         if (!guildId) return <div key={state.userId}>{linha}</div>;
 
         return (

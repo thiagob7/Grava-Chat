@@ -11,10 +11,6 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
   const byChannel = useTypingStore((s) => s.byChannel);
   const activeIn = useTypingStore((s) => s.activeIn);
 
-  /**
-   * Não existe evento de "parou de digitar": cada entrada expira sozinha por
-   * TTL. Este tick é o que faz a linha sumir da tela quando isso acontece.
-   */
   const [, tick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => tick((n) => n + 1), 1000);
@@ -34,7 +30,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         : `${names.length} pessoas estão digitando…`;
 
   return (
-    <div className="flex h-6 items-center gap-2 px-5 text-xs text-ink-muted">
+    <div className="flex h-6 items-center gap-2 px-3 text-xs text-ink-muted">
       <span className="flex gap-0.5">
         {[0, 150, 300].map((delay) => (
           <span

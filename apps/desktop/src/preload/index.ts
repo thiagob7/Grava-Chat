@@ -9,16 +9,6 @@ import type {
   TipoDeMidia,
 } from "@gravae/shared";
 
-/**
- * A ponte entre o app de desktop e o front.
- *
- * O front é o mesmo do navegador: ele checa `window.gravae` e, quando existe,
- * usa o que só o desktop tem (push-to-talk global, seletor de tela com áudio do
- * sistema). Quando não existe, continua exatamente como sempre foi.
- *
- * `contextIsolation` fica ligado e nada de Node atravessa — só as funções
- * declaradas aqui.
- */
 const ponte: PonteDesktop = {
   ehDesktop: true as const,
   plataforma: process.platform,
@@ -26,15 +16,12 @@ const ponte: PonteDesktop = {
     process.argv.find((a) => a.startsWith("--gravae-nome="))?.split("=")[1] ?? "Gravaê",
 
   ptt: {
-    /** Liga/desliga o gancho global e diz o que deu. */
     configurar: (opcoes: OpcoesPtt): Promise<EstadoPtt> =>
       ipcRenderer.invoke("ptt:configurar", opcoes),
 
-    /** Mesma coisa, mas pedindo a permissão do sistema (macOS). */
     pedirPermissao: (opcoes: OpcoesPtt): Promise<EstadoPtt> =>
       ipcRenderer.invoke("ptt:pedir-permissao", opcoes),
 
-    /** Só dispara com a janela FORA de foco; em foco quem manda é o front. */
     aoMudar: (callback: (pressionada: boolean) => void) => {
       const ouvinte = (_e: unknown, pressionada: boolean) => callback(pressionada);
       ipcRenderer.on("ptt:mudou", ouvinte);
@@ -66,6 +53,12 @@ const ponte: PonteDesktop = {
     },
   },
 
+  janela: {
+    contador: (quantas: number): Promise<void> => ipcRenderer.invoke("janela:contador", quantas),
+    chamarAtencao: (): Promise<void> => ipcRenderer.invoke("janela:chamar-atencao"),
+    focar: (): Promise<void> => ipcRenderer.invoke("janela:focar"),
+  },
+
   login: {
     iniciar: () => {
       void ipcRenderer.invoke("login:iniciar");
@@ -75,7 +68,6 @@ const ponte: PonteDesktop = {
       const ouvinte = (_e: unknown, dados: CodigoDeLogin) => callback(dados);
       ipcRenderer.on("login:codigo", ouvinte);
 
-      // o link pode ter ABERTO o app, antes de existir alguém pra ouvir
       void ipcRenderer
         .invoke("login:pendente")
         .then((dados: CodigoDeLogin | null) => dados && callback(dados));

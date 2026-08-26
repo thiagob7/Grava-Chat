@@ -1,6 +1,5 @@
 import { prisma } from "~/lib/prisma.js";
 
-/** Contas de provedor externo (google hoje; discord/github amanhã). */
 export const accountRepository = {
   findByProvider(provider: string, providerAccountId: string) {
     return prisma.account.findUnique({

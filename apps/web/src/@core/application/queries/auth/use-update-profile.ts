@@ -13,7 +13,6 @@ export const useUpdateProfile = () => {
     mutationFn: (data: UpdateProfileDTO) => updateProfile(data),
     onSuccess: (user) => {
       queryClient.setQueryData([queryKeys.auth.me], user);
-      // o nome e a foto aparecem na lista de membros de cada servidor
       queryClient.invalidateQueries({ queryKey: ["find-guild"] });
       toast.success("Perfil atualizado.");
     },

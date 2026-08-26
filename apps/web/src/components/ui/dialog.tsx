@@ -4,10 +4,6 @@ import { X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
-/**
- * Radix cuida do que é chato e fácil de errar à mão: foco preso dentro do
- * modal, Esc, clique fora, aria-modal e o retorno do foco ao fechar.
- */
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;

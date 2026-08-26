@@ -14,7 +14,6 @@ describe("formatarDuracao", () => {
     expect(formatarDuracao(26_930_000)).toBe("7:28:50");
   });
 
-  /** Era o bug do "NaN:NaN": estado de voz antigo chegava sem `joinedAt`. */
   it("não devolve NaN com entrada inválida", () => {
     expect(formatarDuracao(NaN)).toBe("00:00");
     expect(formatarDuracao(-5_000)).toBe("00:00");

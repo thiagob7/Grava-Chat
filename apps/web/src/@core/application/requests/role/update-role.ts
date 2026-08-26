@@ -7,10 +7,8 @@ export interface UpdateRoleDTO {
   roleId: string;
   name?: string;
   color?: string | null;
-  /** segunda cor; só o gradiente usa */
   colorSecondary?: string | null;
   estilo?: EstiloDeCargo;
-  /** emoji OU imagem — quem garante isso é o service */
   iconEmoji?: string | null;
   iconUrl?: string | null;
   permissions?: Permission[];

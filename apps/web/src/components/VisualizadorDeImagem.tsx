@@ -4,14 +4,6 @@ import { ExternalLink, X } from "lucide-react";
 
 import { useLightbox } from "~/stores/lightbox";
 
-/**
- * A imagem em tela cheia, dentro do app.
- *
- * Antes, clicar numa imagem ou num GIF abria o navegador — no aplicativo de
- * desktop isso é pior ainda: joga a pessoa pra fora do Gravaê no meio da
- * conversa, e não há botão de voltar. O Radix cuida do Esc, do clique fora e
- * do foco preso.
- */
 export const VisualizadorDeImagem: React.FC = () => {
   const url = useLightbox((s) => s.url);
   const alt = useLightbox((s) => s.alt);
@@ -27,7 +19,6 @@ export const VisualizadorDeImagem: React.FC = () => {
         <DialogPrimitive.Content
           aria-describedby={undefined}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 p-10 outline-none"
-          // clicar no fundo fecha; no conteúdo, não
           onClick={(e) => e.target === e.currentTarget && fechar()}
         >
           <DialogPrimitive.Title className="sr-only">{alt || "Imagem"}</DialogPrimitive.Title>

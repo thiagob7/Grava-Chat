@@ -9,7 +9,8 @@ import {
 } from "~/@core/application/queries/moderation/use-moderation";
 import type { AutoModRuleModel } from "~/@core/application/requests/moderation/moderation";
 import { Button } from "~/components/ui/button";
-import { Input, Label, campoBase } from "~/components/ui/input";
+import { CampoSelect } from "~/components/ui/select";
+import { Input, Label } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
@@ -299,21 +300,15 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
         {rascunho.acoes.includes("ALERT") && (
           <div>
             <Label htmlFor="regra-canal">Canal do alerta</Label>
-            <select
+            <CampoSelect
               id="regra-canal"
-              value={rascunho.alertChannelId ?? ""}
-              onChange={(e) =>
-                setRascunho({ ...rascunho, alertChannelId: e.target.value || null })
-              }
-              className={campoBase}
-            >
-              <option value="">Escolha um canal</option>
-              {canais.map((canal) => (
-                <option key={canal.id} value={canal.id}>
-                  #{canal.name}
-                </option>
-              ))}
-            </select>
+              valor={rascunho.alertChannelId ?? ""}
+              onEscolher={(id) => setRascunho({ ...rascunho, alertChannelId: id || null })}
+              opcoes={[
+                { valor: "", rotulo: "Escolha um canal" },
+                ...canais.map((canal) => ({ valor: canal.id, rotulo: `#${canal.name}` })),
+              ]}
+            />
           </div>
         )}
 

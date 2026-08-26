@@ -3,6 +3,7 @@ import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 
 import { useClosePost } from "~/@core/application/queries/forum/use-forum";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
+import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
 import { Composer } from "~/components/Composer";
 import { MessageList } from "~/components/MessageList";
 import { Button } from "~/components/ui/button";
@@ -17,7 +18,6 @@ interface ForumPostViewProps {
   onVoltar: () => void;
 }
 
-/** A conversa de um assunto: o mesmo chat de sempre, filtrado pelo post. */
 export const ForumPostView: React.FC<ForumPostViewProps> = ({
   post,
   guildId,
@@ -31,7 +31,7 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-black/20 px-4 shadow-sm">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-divisor px-4 shadow-sm">
         <button
           onClick={onVoltar}
           className="flex items-center gap-1.5 text-sm text-ink-muted transition hover:text-ink"
@@ -61,6 +61,7 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
         )}
       </header>
 
+      <AreaDeConversa>
       <MessageList
         channelId={post.channelId}
         channelName={post.title}
@@ -78,19 +79,22 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
         }
       />
 
-      {post.closedAt ? (
-        <p className="px-4 pb-6 text-center text-sm text-ink-faint">
-          Este assunto está fechado. Reabra para continuar a conversa.
-        </p>
-      ) : (
-        <Composer
-          channelId={post.channelId}
-          channelName={post.title}
-          guildId={guildId}
-          postId={post.id}
-          podeEscrever={podeEscrever}
-        />
-      )}
+      <RodapeDaConversa>
+        {post.closedAt ? (
+          <p className="px-4 pb-6 text-center text-sm text-ink-faint">
+            Este assunto está fechado. Reabra para continuar a conversa.
+          </p>
+        ) : (
+          <Composer
+            channelId={post.channelId}
+            channelName={post.title}
+            guildId={guildId}
+            postId={post.id}
+            podeEscrever={podeEscrever}
+          />
+        )}
+      </RodapeDaConversa>
+      </AreaDeConversa>
     </>
   );
 };

@@ -1,12 +1,3 @@
-/**
- * Catálogo de emoji unicode.
- *
- * O dataset inteiro (~400 KB) é carregado sob demanda, na primeira vez que
- * alguém abre o seletor — quem só lê o chat não paga por ele. Os nomes vêm em
- * inglês, então o mapa de apelidos abaixo cobre a busca em português do que a
- * turma realmente procura.
- */
-
 export interface EmojiUnicode {
   emoji: string;
   name: string;
@@ -31,7 +22,6 @@ const TITULOS: Record<string, string> = {
   flags: "Bandeiras",
 };
 
-/** Busca em português para os que mais aparecem no dia a dia. */
 const APELIDOS: Record<string, string[]> = {
   grinning_face: ["sorriso", "feliz"],
   face_with_tears_of_joy: ["risada", "chorando de rir", "kkk"],
@@ -79,7 +69,6 @@ export function carregarEmojis(): Promise<GrupoDeEmoji[]> {
   return catalogo;
 }
 
-/** Casa o termo com o nome em inglês e com os apelidos em português. */
 export function combina(emoji: EmojiUnicode, termo: string) {
   const alvo = termo.toLowerCase().trim();
   if (!alvo) return true;
@@ -103,6 +92,5 @@ export function registrarUso(emoji: string) {
     const atual = emojisRecentes().filter((e) => e !== emoji);
     localStorage.setItem(CHAVE_RECENTES, JSON.stringify([emoji, ...atual].slice(0, 36)));
   } catch {
-    /* modo privado sem storage: só perde a lista de recentes */
   }
 }

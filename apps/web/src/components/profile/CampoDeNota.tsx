@@ -2,21 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { useSalvarNota } from "~/@core/application/queries/user/use-salvar-nota";
 
-/**
- * A anotação privada sobre alguém.
- *
- * Grava ao sair do campo, não a cada tecla: é texto curto escrito de uma vez, e
- * uma requisição por letra seria desperdício num campo que quase ninguém usa.
- *
- * O aviso de que ninguém mais vê fica NO rótulo, não num tooltip. Sem ele a
- * pessoa não sabe se está escrevendo um recado pro outro — e aí ou não escreve,
- * ou escreve achando que ele vai ler.
- */
 export const CampoDeNota: React.FC<{ userId: string; nota: string | null }> = ({ userId, nota }) => {
   const salvar = useSalvarNota(userId);
   const [texto, setTexto] = useState(nota ?? "");
 
-  // trocar de pessoa reaproveita o componente; sem isto a nota de um apareceria no outro
   useEffect(() => setTexto(nota ?? ""), [nota, userId]);
 
   return (

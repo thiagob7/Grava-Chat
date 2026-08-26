@@ -11,15 +11,7 @@ import type {
   CreateStickerInput,
 } from "~/validations/expression.js";
 
-/**
- * Emoji, figurinha e som do servidor.
- *
- * O arquivo já subiu para o storage antes de chegar aqui (o mesmo caminho dos
- * anexos): o que este service guarda é o endereço e o nome. Assim não existe
- * um segundo jeito de subir arquivo no sistema.
- */
 export const expressionService = {
-  /** Tudo de uma vez: o seletor do compositor precisa das três listas juntas. */
   async list(userId: string, guildId: string) {
     await accessService.requireMember(userId, guildId);
 
@@ -41,7 +33,6 @@ export const expressionService = {
     };
   },
 
-  // ------------------------------------------------------------------ emoji
   async createEmoji(userId: string, guildId: string, input: CreateEmojiInput) {
     await requirePodeCriarExpressao(userId, guildId);
 
@@ -111,7 +102,6 @@ export const expressionService = {
     });
   },
 
-  // -------------------------------------------------------------- figurinha
   async createSticker(userId: string, guildId: string, input: CreateStickerInput) {
     await requirePodeCriarExpressao(userId, guildId);
 
@@ -157,7 +147,6 @@ export const expressionService = {
     });
   },
 
-  // ------------------------------------------------------------------- som
   async createSound(userId: string, guildId: string, input: CreateSoundInput) {
     await requirePodeCriarExpressao(userId, guildId);
 
@@ -218,13 +207,6 @@ export const expressionService = {
   },
 };
 
-/**
- * Criar expressão: `CREATE_EXPRESSIONS` basta, e `MANAGE_EXPRESSIONS` também
- * serve — quem pode apagar as dos outros obviamente pode subir a sua.
- *
- * A separação existe pra liberar a galera a subir emoji sem dar, junto, o poder
- * de apagar o que os outros subiram.
- */
 async function requirePodeCriarExpressao(userId: string, guildId: string) {
   const contexto = await accessService.contextOf(userId, guildId);
 

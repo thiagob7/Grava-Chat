@@ -4,6 +4,7 @@ import type { Attachment } from "@gravae/shared";
 
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { useLightbox } from "~/stores/lightbox";
+import { useAparencia } from "~/stores/aparencia";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
@@ -13,13 +14,17 @@ const MAX_W = MAX_IMAGEM_W;
 const MAX_H = MAX_IMAGEM_H;
 
 export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ attachments }) => {
+  /// Desligado, a foto vira a mesma linha de arquivo dos outros anexos — ela
+  /// continua ali, a um clique, só não ocupa a conversa.
+  const abrirImagens = useAparencia((s) => s.imagensEnviadas);
+
   if (!attachments.length) return null;
 
   return (
     <div className="mt-1 flex flex-wrap gap-2">
       {attachments.map((anexo) => (
         <ComSpoiler key={anexo.id} anexo={anexo}>
-          {isImageType(anexo.contentType) ? (
+          {abrirImagens && isImageType(anexo.contentType) ? (
             <ImageAttachment anexo={anexo} />
           ) : (
             <FileAttachment anexo={anexo} />
@@ -30,18 +35,14 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ attachme
   );
 };
 
-/**
- * Anexo marcado como spoiler chega borrado e só abre no clique. O conteúdo é
- * montado do mesmo jeito por baixo — o que muda é só a cortina por cima, e por
- * isso o clique já revela a imagem inteira, sem recarregar nada.
- */
 const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = ({
   anexo,
   children,
 }) => {
   const [aberto, setAberto] = useState(false);
+  const quando = useAparencia((s) => s.spoilers);
 
-  if (!anexo.spoiler || aberto) return <>{children}</>;
+  if (!anexo.spoiler || aberto || quando === "sempre") return <>{children}</>;
 
   return (
     <button
@@ -63,33 +64,36 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
 const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   const abrir = useLightbox((s) => s.abrir);
 
-  /**
-   * Reserva o espaço exato antes de carregar. Sem isso, cada imagem que chega
-   * empurra a conversa para baixo enquanto você está lendo.
-   */
-  const escala =
+  const medida =
     anexo.width && anexo.height
-      ? Math.min(1, MAX_W / anexo.width, MAX_H / anexo.height)
+      ? {
+          largura: Math.round(anexo.width * Math.min(1, MAX_W / anexo.width, MAX_H / anexo.height)),
+          proporcao: `${anexo.width} / ${anexo.height}`,
+        }
       : null;
 
+  /*
+    A largura em pixels é um TETO, não uma medida.
+
+    Antes ela era fixa: numa coluna de 280px — o painel da voz — a foto de
+    420px passava por baixo da lista e sumia meio corpo. Agora a caixa é
+    `max-w-full` e a altura vem da proporção, então a mesma imagem encolhe
+    inteira em vez de ser cortada.
+  */
   return (
     <button
       onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
       aria-label={`Ver ${anexo.filename}`}
-      className="block overflow-hidden rounded-lg transition hover:brightness-110"
-      style={
-        escala && anexo.width && anexo.height
-          ? { width: Math.round(anexo.width * escala), height: Math.round(anexo.height * escala) }
-          : { maxWidth: MAX_W }
-      }
+      className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
+      style={medida ? { width: medida.largura } : { maxWidth: MAX_W }}
     >
       <img
         src={anexo.url}
         alt={anexo.description || anexo.filename}
         loading="lazy"
         decoding="async"
-        className="size-full bg-surface-1 object-cover"
-        style={!escala ? { maxHeight: MAX_H } : undefined}
+        className="block h-auto w-full bg-surface-1 object-cover"
+        style={medida ? { aspectRatio: medida.proporcao } : { maxHeight: MAX_H }}
       />
     </button>
   );
@@ -100,7 +104,7 @@ const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
     href={anexo.url}
     target="_blank"
     rel="noreferrer"
-    className="flex max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5 transition hover:border-ink-faint"
+    className="flex w-full max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5 transition hover:border-ink-faint"
   >
     <FileText size={28} className="shrink-0 text-brand" />
 

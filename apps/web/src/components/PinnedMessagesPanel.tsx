@@ -9,7 +9,6 @@ import { formatTimestamp } from "~/lib/format";
 
 interface PinnedMessagesPanelProps {
   channelId: string;
-  /** só quem modera mensagens pode desafixar daqui */
   canManage: boolean;
 }
 

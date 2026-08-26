@@ -29,7 +29,6 @@ export type VoiceTile = {
   micEnabled: boolean;
   cameraTrack: Track | null;
   screenTrack: Track | null;
-  /** microfone + audio da tela; vazio no participante local (nao se ouve) */
   audioTracks: Track[];
 };
 
@@ -40,39 +39,20 @@ type VoiceStore = {
   error: string | null;
 
   micEnabled: boolean;
-  /** microfone negado/ausente: entra na call só pra ouvir */
   micBlocked: boolean;
-  /** dono da cadeia de áudio da sua voz — ver lib/audio-gate.ts */
   processador: ProcessadorDeVoz | null;
-  /** false quando o navegador ou o plano não suportam o filtro avançado */
   noiseFilterAvailable: boolean;
-  /** true enquanto o filtro está sendo aplicado na track */
   noiseFilterBusy: boolean;
   deafened: boolean;
   cameraEnabled: boolean;
   screenEnabled: boolean;
 
   tiles: VoiceTile[];
-  /**
-   * Identidade de quem você escolheu assistir, ou `null`.
-   *
-   * Vive na store e não no palco porque a janelinha flutuante precisa da mesma
-   * resposta — e porque navegar pra um canal de texto desmonta o palco, o que
-   * zeraria a escolha se ela morasse lá.
-   */
   assistindo: string | null;
-  /**
-   * Sem `USE_VAD` no servidor, a pessoa só fala apertando a tecla. A interface
-   * força o modo e explica; o SFU não consegue impor isso sozinho.
-   */
   exigePushToTalk: boolean;
-  /** servidor da chamada — a janelinha flutuante precisa dele pra voltar pro canal */
   guildId: string | null;
-  /** true enquanto o palco da chamada está montado na tela */
   palcoVisivel: boolean;
-  /** volume por pessoa, só pra você (0..2) */
   volumesLocais: Record<string, number>;
-  /** quem você silenciou só pra você */
   silenciadosLocais: Record<string, boolean>;
 
   join: (channelId: string, options?: { resume?: boolean }) => Promise<void>;
@@ -82,29 +62,16 @@ type VoiceStore = {
   toggleCamera: () => Promise<void>;
   toggleScreen: () => Promise<void>;
   toggleNoiseFilter: () => Promise<void>;
-  /** Escolhe (ou larga) a transmissão que você está assistindo. */
   assistir: (identity: string | null) => void;
   definirPalcoVisivel: (visivel: boolean) => void;
   setVolumeLocal: (userId: string, volume: number) => void;
   toggleSilenciarLocal: (userId: string) => void;
-  /**
-   * Muda uma preferência de áudio e aplica na chamada em andamento, se houver.
-   * Ponto único: a tela de configurações não fala com o LiveKit direto.
-   */
   aplicarAjustes: (mudanca: Partial<VoicePrefs>) => Promise<void>;
-  /** Tecla do push-to-talk pressionada ou solta. */
   definirPtt: (pressionado: boolean) => void;
-  /** Medidor ao vivo da sua voz durante a chamada. */
   observarNivel: (ouvinte: (nivel: number, aberto: boolean) => void) => () => void;
-  /** Desliga tudo — usado no logout. */
   reset: () => void;
 };
 
-/**
- * A foto vem no metadata que a API assina junto com o token (ver
- * voice-service.ts). O LiveKit não conhece nossos usuários — é por aqui que o
- * avatar chega ao palco sem uma consulta extra por participante.
- */
 function avatarDoParticipante(metadata: string | undefined): string | null {
   if (!metadata) return null;
 
@@ -115,7 +82,6 @@ function avatarDoParticipante(metadata: string | undefined): string | null {
   }
 }
 
-/** Monta a lista de participantes a partir do estado atual da sala. */
 function snapshot(room: Room): VoiceTile[] {
   const build = (p: Participant, isLocal: boolean): VoiceTile => {
     const track = (source: Track.Source) => {
@@ -123,11 +89,6 @@ function snapshot(room: Room): VoiceTile[] {
       return pub?.track ?? null;
     };
 
-    /**
-     * Com o livekit-client puro, o audio remoto NAO toca sozinho: e preciso
-     * anexar cada track a um elemento no DOM. Sem isso a chamada conecta,
-     * mostra todo mundo, e fica muda.
-     */
     const audioTracks = isLocal
       ? []
       : ([track(Track.Source.Microphone), track(Track.Source.ScreenShareAudio)].filter(Boolean) as Track[]);
@@ -151,14 +112,41 @@ function snapshot(room: Room): VoiceTile[] {
   ];
 }
 
-/**
- * Marca de "esta aba estava numa chamada", em sessionStorage.
- *
- * sessionStorage é a ferramenta certa aqui: sobrevive ao reload MAS é isolado
- * por aba. Com localStorage, fechar a aba da chamada faria outra aba aberta
- * reassumir a call sozinha — que é justamente o que ninguém quer.
- */
 const TAB_VOICE_KEY = "gravae:voice-channel";
+
+/*
+  O volume de cada pessoa mora no navegador.
+
+  Era estado de memória: bastava recarregar o app — ou o processo do desktop
+  reiniciar — para o bot de música voltar a gritar no volume padrão. Como é
+  uma decisão sobre ALGUÉM ("esse aí é alto demais"), ela vale para as
+  próximas chamadas também, não só para esta.
+*/
+const AJUSTES_KEY = "gravae:volumes-por-pessoa";
+
+interface AjustesPorPessoa {
+  volumes: Record<string, number>;
+  silenciados: Record<string, boolean>;
+}
+
+function lerAjustesPorPessoa(): AjustesPorPessoa {
+  try {
+    const salvo = localStorage.getItem(AJUSTES_KEY);
+    if (!salvo) return { volumes: {}, silenciados: {} };
+
+    const dados = JSON.parse(salvo) as Partial<AjustesPorPessoa>;
+    return { volumes: dados.volumes ?? {}, silenciados: dados.silenciados ?? {} };
+  } catch {
+    return { volumes: {}, silenciados: {} };
+  }
+}
+
+function guardarAjustesPorPessoa(ajustes: AjustesPorPessoa) {
+  try {
+    localStorage.setItem(AJUSTES_KEY, JSON.stringify(ajustes));
+  } catch {
+  }
+}
 
 const apontaProLocalhost = (url: string) => /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
 const estamosNoLocalhost = () =>
@@ -169,7 +157,6 @@ export const rememberVoiceTab = (channelId: string | null) => {
     if (channelId) sessionStorage.setItem(TAB_VOICE_KEY, channelId);
     else sessionStorage.removeItem(TAB_VOICE_KEY);
   } catch {
-    /* modo privado sem storage: só perde o reconectar automático */
   }
 };
 
@@ -181,21 +168,12 @@ export const voiceTabChannelId = (): string | null => {
   }
 };
 
-/**
- * Processamento de áudio da captura.
- *
- * Duas camadas: o navegador já faz cancelamento de eco, controle de ganho e uma
- * supressão de ruído básica — isso é grátis e sempre liga. Por cima, o Krisp
- * (mesmo filtro que o Discord usa) roda como processador na track local e
- * remove ruído de fundo de verdade: ventilador, teclado, obra na rua.
- */
 const CAPTURA_LIMPA = {
   echoCancellation: true,
   noiseSuppression: true,
   autoGainControl: true,
 } as const;
 
-/** Opções da captura: dispositivo escolhido nas configurações + limpeza nativa. */
 function opcoesDeCaptura() {
   const { entradaId } = useVoicePrefs.getState();
 
@@ -205,25 +183,9 @@ function opcoesDeCaptura() {
   };
 }
 
-/**
- * No aplicativo, a permissão do macOS vem ANTES da do Chromium — e é uma coisa
- * separada dela. Sem isto o `getUserMedia` falha calado e a tela acusa o
- * navegador por uma caixinha desmarcada nos Ajustes do Sistema.
- *
- * No navegador não existe essa camada: devolve `true` e segue.
- */
 const permissaoDoSistema = (): Promise<boolean> =>
   desktop()?.midia.garantir("microphone") ?? Promise.resolve(true);
 
-/**
- * Prende o processador na track do microfone que já está publicada.
- *
- * Tem que ser DEPOIS de publicar, e não junto com a captura: o LiveKit só
- * entrega o AudioContext à track no momento em que ela é publicada, e um
- * processador criado antes disso morre com "Audio context needs to be set" —
- * o que na tela virava um "microfone bloqueado" que não tinha nada a ver com
- * permissão.
- */
 async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
   const publicacao = room.localParticipant.getTrackPublication(Track.Source.Microphone);
   const track = publicacao?.track as LocalAudioTrack | undefined;
@@ -232,37 +194,17 @@ async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
   await track.setProcessor(processador);
 }
 
-/**
- * A supressão está disponível?
- *
- * A resposta depende do que a pessoa pediu. Com a preferência LIGADA, a prova
- * é o filtro ter subido de verdade — se pediu e não veio, está indisponível.
- * Com ela desligada não há o que provar, e vale o suporte do navegador.
- *
- * O que NÃO se faz aqui é mexer na preferência. Ela é a intenção da pessoa e
- * sobrevive em localStorage; sobrescrevê-la quando o filtro falha desligava a
- * supressão PARA SEMPRE — e como o Krisp não funciona em LiveKit
- * auto-hospedado, ela falha sempre. O sintoma era exatamente esse: sair da
- * chamada e voltar com a supressão desativada, sem ninguém ter desligado nada.
- */
 function disponibilidade(processador: ProcessadorDeVoz): boolean {
   return useVoicePrefs.getState().supressaoDeRuido
     ? processador.supressaoAtiva
     : processador.supressaoDisponivel;
 }
 
-/**
- * Bipe da interface, respeitando as duas razões pra ficar calado: a pessoa
- * desligou os bipes, ou está surda (quem não quer ouvir ninguém também não quer
- * ouvir bipe). Fica aqui, e não em cada ação, pra essa regra existir num lugar
- * só.
- */
 function bipe(nome: SomDaInterface) {
   const { somDaInterface, volumeSaida } = useVoicePrefs.getState();
   tocarSom(nome, { mudo: !somDaInterface || store_().deafened, volume: volumeSaida });
 }
 
-/** Referência tardia à store: `bipe` é definido antes de ela existir. */
 let store_: () => VoiceStore;
 
 export const useVoiceStore = create<VoiceStore>((set, store) => {
@@ -286,8 +228,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   exigePushToTalk: false,
   guildId: null,
   palcoVisivel: false,
-  volumesLocais: {},
-  silenciadosLocais: {},
+  volumesLocais: lerAjustesPorPessoa().volumes,
+  silenciadosLocais: lerAjustesPorPessoa().silenciados,
 
   join: async (channelId, options) => {
     if (store().channelId === channelId) return;
@@ -296,19 +238,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     set({ connecting: true, error: null, channelId });
 
     try {
-      // O token é a permissão: a API só o emite depois de confirmar que você é
-      // membro do servidor daquele canal.
       const { url, token, exigePushToTalk } = await findVoiceToken(channelId);
 
-      /**
-       * O servidor de voz aponta pra localhost, mas esta página está sendo
-       * acessada de fora (ngrok, IP da rede). "localhost" no navegador de quem
-       * acessa é a máquina DELE, onde não existe SFU — a tentativa morreria com
-       * ERR_CONNECTION_REFUSED e uma sequência de retentativas sem sentido.
-       *
-       * O SFU precisa de endereço público e de UDP; um túnel HTTP não carrega
-       * isso. A saída é apontar LIVEKIT_URL pra um SFU alcançável.
-       */
       if (apontaProLocalhost(url) && !estamosNoLocalhost()) {
         throw new Error(
           "A voz não está disponível neste acesso: o servidor de voz roda só na máquina de quem hospeda. " +
@@ -318,21 +249,14 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
       const room = new Room({
         adaptiveStream: true,
-        // Simulcast: quem tem banda ruim recebe uma resolução menor em vez de
-        // travar a chamada inteira.
         dynacast: true,
       });
 
       const refresh = () => {
-        /**
-         * O volume vale pra quem entrar DEPOIS também — por isso aqui, e não só
-         * no momento em que a pessoa mexe no controle.
-         */
         const { volumeSaida } = useVoicePrefs.getState();
         const { deafened, volumesLocais, silenciadosLocais } = store();
 
         room.remoteParticipants.forEach((p) => {
-          // o ajuste individual manda sobre o volume geral
           const individual = volumesLocais[p.identity] ?? 1;
           const mudo = deafened || silenciadosLocais[p.identity];
 
@@ -341,29 +265,11 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
         const tiles = snapshot(room);
 
-        /**
-         * Câmera e tela vêm do que está PUBLICADO, não de um booleano que só o
-         * nosso botão mexia.
-         *
-         * A transmissão pode acabar por fora: a barra "Parar compartilhamento"
-         * do navegador, a janela compartilhada sendo fechada, a track caindo.
-         * Nesses casos o LiveKit despublica e ninguém avisava o resto — o
-         * ícone verde de "está transmitindo" ficava aceso na barra lateral de
-         * todo mundo, com a live já encerrada.
-         */
         const eu = tiles.find((t) => t.isLocal);
         const camera = Boolean(eu?.cameraTrack);
         const tela = Boolean(eu?.screenTrack);
         const { cameraEnabled, screenEnabled, assistindo } = store();
 
-        /**
-         * Sua própria transmissão você já está vendo — clicar em "assistir" na
-         * própria tela não faz sentido nenhum. Quem precisa optar é quem está
-         * do outro lado.
-         *
-         * E se quem você assistia parou, a escolha morre junto: senão o palco
-         * ficaria preso num quadro preto esperando um vídeo que não vem mais.
-         */
         const aindaTransmite = tiles.some((t) => t.identity === assistindo && t.screenTrack);
         const proximoAssistindo = tela && eu ? eu.identity : aindaTransmite ? assistindo : null;
 
@@ -371,8 +277,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
         set({ tiles, cameraEnabled: camera, screenEnabled: tela });
 
-        // só avisa o servidor quando mudou de verdade: `refresh` roda a cada
-        // evento da sala, e um `updateVoiceState` por evento seria enxurrada
         if (camera !== cameraEnabled || tela !== screenEnabled) {
           void updateVoiceState({
             ...(camera !== cameraEnabled ? { camera } : {}),
@@ -407,17 +311,11 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
       await room.connect(url, token);
 
-      /**
-       * Microfone negado ou inexistente não pode derrubar a entrada: dá pra
-       * participar só ouvindo. Antes, um "não permitir" no navegador fazia a
-       * chamada inteira falhar com uma mensagem de erro sem sentido.
-       */
       set({ exigePushToTalk: Boolean(exigePushToTalk) });
 
       const prefs = useVoicePrefs.getState();
       const ajustes = ajustesDe(prefs);
 
-      // a permissão vence a preferência: sem USE_VAD, é push-to-talk e ponto
       const processador = new ProcessadorDeVoz(
         exigePushToTalk ? { ...ajustes, modo: "ptt" } : ajustes,
       );
@@ -434,15 +332,10 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         set({ micBlocked: false, noiseFilterAvailable: disponibilidade(processador) });
         bipe("entrarNaChamada");
       } catch (erro) {
-        // fica no console porque "microfone bloqueado" tem várias causas
-        // (permissão negada, dispositivo sumiu, processador falhando) e a
-        // mensagem na tela não pode listar todas
         console.warn("[voz] não deu pra publicar o microfone:", erro);
         set({ micEnabled: false, micBlocked: true });
       }
 
-      // alto-falante escolhido nas configurações; o LiveKit aplica setSinkId
-      // nos elementos que já estão tocando
       if (prefs.saidaId) {
         await room.switchActiveDevice("audiooutput", prefs.saidaId).catch(() => undefined);
       }
@@ -450,19 +343,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       set({ room, connecting: false, tiles: snapshot(room) });
       rememberVoiceTab(channelId);
 
-      // Avisa o resto do app (barra lateral, lista de membros) por WebSocket —
-      // o LiveKit só cuida da mídia, não da nossa noção de "quem está onde".
-      /**
-       * Se o servidor recusar a retomada (outra aba está ao vivo na chamada),
-       * desfaz a conexão de mídia — ficar conectado no SFU sem o servidor
-       * reconhecer deixaria duas abas disputando o mesmo áudio.
-       */
-      /**
-       * O `emit` devolve `unknown` de propósito (o ack do socket é genérico),
-       * então o servidor é a fonte do `guildId` mas o tipo precisa ser afirmado
-       * aqui. Guardar isto é o que permite à janelinha flutuante saber pra
-       * onde voltar quando você está num canal de texto.
-       */
       const estado = (await joinVoiceChannel(channelId, options?.resume ?? false)) as
         | { guildId?: string }
         | undefined;
@@ -479,18 +359,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const { room } = store();
     if (!room) return;
 
-    /**
-     * A marca da aba sai PRIMEIRO, antes do disconnect.
-     *
-     * `room.disconnect()` dispara `RoomEvent.Disconnected`, cujo handler zera o
-     * `channelId` na hora. Isso re-renderiza, e o `useReconnectVoice` — que só
-     * age quando NÃO há chamada — encontrava a marca ainda gravada e pedia a
-     * retomada. Resultado: apertar "sair" saía e voltava, e era preciso apertar
-     * de novo. Limpando antes, não sobra nada pra ele retomar.
-     */
     rememberVoiceTab(null);
 
-    // antes do disconnect: depois dele o `deafened` que o bipe consulta já era
     bipe("sairDaChamada");
     await room.disconnect();
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
@@ -502,22 +372,17 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const next = !micEnabled;
 
     set({ micEnabled: next });
-    // Sair do surdo ao falar é o comportamento esperado: se você desmutou, é
-    // porque quer participar.
     if (next && deafened) await store().toggleDeafen();
 
     try {
       await permissaoDoSistema();
       await room?.localParticipant.setMicrophoneEnabled(next, opcoesDeCaptura());
 
-      // desmutar pode ter recriado a track; o processador precisa voltar nela
       const { processador } = store();
       if (room && processador) await prenderProcessador(room, processador);
       set({ micBlocked: false });
-      // só depois de dar certo: bipar antes mentiria quando a permissão nega
       bipe(next ? "desmutar" : "mutar");
     } catch {
-      // permissão negada agora: volta ao estado mudo em vez de mentir na UI
       set({ micEnabled: false, micBlocked: true });
       return;
     }
@@ -529,16 +394,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const { room, deafened } = store();
     const next = !deafened;
 
-    /**
-     * A ordem importa: o `bipe` fica calado quando você está surdo. Ficando
-     * surdo, ele toca ANTES de o estado virar; saindo, DEPOIS. Nos dois casos
-     * você ouve a confirmação — que é justamente a informação que falta quando
-     * o mundo emudece.
-     */
     if (next) bipe("ensurdecer");
     set({ deafened: next });
     if (!next) bipe("desensurdecer");
-    // Ficar surdo também muta: ninguém fica ouvindo você sem você ouvir ninguém.
     if (next) {
       set({ micEnabled: false });
       await room?.localParticipant.setMicrophoneEnabled(false);
@@ -565,7 +423,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
   },
 
-  /** Atalho do painel de voz para o mesmo ajuste que vive nas configurações. */
   assistir: (identity) => set({ assistindo: identity }),
   definirPalcoVisivel: (visivel) => set({ palcoVisivel: visivel }),
 
@@ -583,8 +440,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     const trocouSupressao = mudanca.supressaoDeRuido !== undefined && !!processador;
 
-    // o Krisp leva um instante pra ligar (na primeira vez, baixa o modelo); o
-    // botão mostra isso em vez de parecer que não fez nada
     if (trocouSupressao) set({ noiseFilterBusy: true });
 
     try {
@@ -616,12 +471,10 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
   definirPtt: (pressionado) => store().processador?.definirPtt(pressionado),
 
-  /**
-   * Volume e mudo por pessoa valem só pra você — nada disso vai pro servidor.
-   * O LiveKit aplica direto no participante remoto, então o efeito é imediato.
-   */
   setVolumeLocal: (userId, volume) => {
-    set({ volumesLocais: { ...store().volumesLocais, [userId]: volume } });
+    const volumes = { ...store().volumesLocais, [userId]: volume };
+    set({ volumesLocais: volumes });
+    guardarAjustesPorPessoa({ volumes, silenciados: store().silenciadosLocais });
 
     const participante = store().room?.remoteParticipants.get(userId);
     participante?.setVolume(store().silenciadosLocais[userId] ? 0 : volume);
@@ -629,7 +482,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
   toggleSilenciarLocal: (userId) => {
     const mudo = !store().silenciadosLocais[userId];
-    set({ silenciadosLocais: { ...store().silenciadosLocais, [userId]: mudo } });
+    const silenciados = { ...store().silenciadosLocais, [userId]: mudo };
+    set({ silenciadosLocais: silenciados });
+    guardarAjustesPorPessoa({ volumes: store().volumesLocais, silenciados });
 
     const participante = store().room?.remoteParticipants.get(userId);
     participante?.setVolume(mudo ? 0 : (store().volumesLocais[userId] ?? 1));
@@ -644,19 +499,12 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const next = !screenEnabled;
 
     try {
-      /**
-       * O som do sistema é o que faz assistir vídeo em conjunto funcionar — e
-       * é também a causa do eco quando quem transmite ouve a chamada pelas
-       * caixas: o que se captura inclui a voz de todo mundo saindo do
-       * alto-falante, e volta pra sala multiplicada. Por isso é desligável.
-       */
       const { somDaTela } = useVoicePrefs.getState();
       await room.localParticipant.setScreenShareEnabled(next, { audio: somDaTela });
       set({ screenEnabled: next, tiles: snapshot(room) });
       bipe(next ? "liveNoAr" : "liveEncerrada");
       await updateVoiceState({ screenShare: next }).catch(() => undefined);
     } catch {
-      // O usuário cancelou o seletor de tela do navegador — não é erro.
       set({ screenEnabled: false });
     }
   },

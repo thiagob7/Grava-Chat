@@ -1,22 +1,8 @@
-/**
- * Migra do modelo antigo (enum OWNER/ADMIN/MEMBER em GuildMember.role) para
- * cargos de verdade.
- *
- * Para cada servidor: cria o @everyone com as permissões de membro comum e,
- * se houver alguém que era ADMIN, um cargo "Admin" com ADMINISTRATOR.
- *
- * Idempotente — rodar duas vezes não duplica nada.
- * Uso: yarn workspace @gravae/api migrar-cargos
- */
 import { PrismaClient } from "@prisma/client";
 import { DEFAULT_EVERYONE_PERMISSIONS } from "@gravae/shared";
 
 const prisma = new PrismaClient();
 
-/**
- * O campo `role` não existe mais no schema do Prisma, mas os documentos antigos
- * ainda o têm no Mongo. Só dá para ler por consulta crua.
- */
 const antigos = (await prisma.guildMember.aggregateRaw({
   pipeline: [{ $match: { role: { $exists: true } } }, { $project: { _id: 1, role: 1 } }],
 })) as unknown as { _id: { $oid: string } | string; role: string }[];

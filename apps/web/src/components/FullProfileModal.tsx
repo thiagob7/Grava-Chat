@@ -16,18 +16,10 @@ import { avatarColor } from "~/lib/format";
 interface FullProfileModalProps {
   open: boolean;
   perfil: ProfileModel;
-  /** cargos da pessoa NESTE servidor; vazio numa DM */
   cargos?: Role[];
   onClose: () => void;
 }
 
-/**
- * O perfil completo, em modal.
- *
- * O cartão que abre ao clicar numa pessoa é estreito de propósito — cabe ao
- * lado da lista de membros e some com um clique fora. Aqui há espaço pra bio
- * inteira, cargos e as datas sem apertar nada.
- */
 export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
   perfil,
@@ -52,11 +44,6 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
           />
         </div>
 
-        {/*
-          O fundo daqui é `surface-3`, bem mais claro que o do resto do app — e
-          é contra ELE que o piso de contraste tem que ser medido, senão uma cor
-          clara que brilha no chat escuro some neste modal.
-        */}
         <DialogTitle className="text-2xl font-bold leading-tight">
           <UserName
             nome={perfil.displayName}

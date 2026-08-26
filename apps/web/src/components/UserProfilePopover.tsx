@@ -28,7 +28,7 @@ import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import type { Role } from "@gravae/shared";
 
-import { ModeratorView } from "~/components/ModeratorView";
+import { useModeracao } from "~/stores/moderacao";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
@@ -65,23 +65,12 @@ interface UserProfilePopoverProps {
   userId: string;
   children: ReactNode;
   side?: "top" | "right" | "bottom" | "left";
-  /**
-   * Contexto do servidor. Sem ele o cartão continua funcionando — só não
-   * oferece a visualização de moderador, que não faz sentido numa DM.
-   */
   guildId?: string;
   roles?: Role[];
-  /** cargos DESTA pessoa no servidor; o perfil completo lista os nomes */
   roleIds?: string[];
-  /** true mostra o escudo; quem não modera não vê o botão */
   podeModerar?: boolean;
 }
 
-/**
- * O cartão de perfil que abre ao clicar numa pessoa — na lista de membros, no
- * canal de voz ou no autor de uma mensagem. É daqui que se manda pedido de
- * amizade e se abre a conversa privada.
- */
 export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   userId,
   children,
@@ -92,18 +81,12 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   podeModerar = false,
 }) => {
   const [aberto, setAberto] = useState(false);
-  // só busca o perfil depois do clique — ver use-find-profile
   const { data: perfil, isLoading } = useFindProfile(aberto ? userId : null);
 
   return (
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
-      {/*
-        O cartão cresceu — banner, cargos, nota e emblemas — e passou a caber
-        mal em tela baixa. Teto com rolagem PRÓPRIA: sem isto o rodapé com
-        "Enviar mensagem" cai fora da janela e não tem como alcançá-lo.
-      */}
       <PopoverContent side={side} className="max-h-[80vh] w-80 overflow-y-auto p-0">
         {isLoading || !perfil ? (
           <div className="p-6 text-sm text-ink-faint">Carregando…</div>
@@ -130,16 +113,13 @@ const ProfileCard: React.FC<{
   roleIds: string[];
   podeModerar: boolean;
 }> = ({ perfil, onFechar, guildId, roles, roleIds, podeModerar }) => {
-  const [moderando, setModerando] = useState(false);
   const [perfilCompleto, setPerfilCompleto] = useState(false);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
-  // já está no cache (a sessão inteira depende dele); aqui é só leitura
   const { data: eu } = useMe(true);
   const updateProfile = useUpdateProfile();
 
   const bloquear = useBlockUser();
-  // já está no cache (a barra lateral usa a mesma chave); aqui é só leitura
   const guilds = useFindManyGuilds(true);
   const criarConvite = useCreateInvite();
   const ignorados = useIgnoreStore((s) => s.ignorados);
@@ -147,29 +127,11 @@ const ProfileCard: React.FC<{
 
   const ignorado = ignorados.includes(perfil.id);
 
-  /**
-   * Aqui o enfeite vem no próprio perfil, não do mapa do servidor: o cartão
-   * abre um de cada vez e já faz a requisição da pessoa. É o que faz ele
-   * funcionar igual numa DM, onde não há servidor nenhum de onde tirar mapa.
-   */
   const corDoCargo = corDoCargoMaisAlto(roleIds, roles);
-  /**
-   * Emblema é do SERVIDOR, então não vem no perfil global — vem do mapa do
-   * servidor aberto. Numa DM não há emblema, e é o correto: o emblema diz "eu
-   * sou daqui", e ali não existe daqui.
-   */
   const enfeitesDe = useEnfeites(guildId);
   const emblemas = enfeitesDe.emblemasDe(perfil.id);
   const { data: detalheDoServidor } = useFindGuild(guildId);
 
-  /**
-   * Convidar pro servidor = gerar um convite e mandar por DM.
-   *
-   * Sem amizade não há DM, então aí o link vai pra área de transferência. É
-   * menos automático, mas continua resolvendo — e é honesto sobre o que
-   * aconteceu, em vez de dizer "convite enviado" para uma mensagem que o
-   * servidor recusou.
-   */
   const convidarPara = async (targetGuildId: string) => {
     const convite = await criarConvite.mutateAsync({ guildId: targetGuildId }).catch(() => null);
     if (!convite) return;
@@ -195,7 +157,6 @@ const ProfileCard: React.FC<{
   const removeFriend = useRemoveFriend();
   const openDm = useOpenDm();
 
-  /** Usada pelo botão de baixo e pelo menu "Mais" — a regra é a mesma. */
   const desfazerAmizade = async () => {
     const { confirmado } = await confirmar({
       titulo: `Desfazer amizade com ${perfil.displayName}?`,
@@ -232,17 +193,23 @@ const ProfileCard: React.FC<{
   const ocupado =
     requestFriend.isPending || respondFriend.isPending || removeFriend.isPending || openDm.isPending;
 
-  /*
-    Os botões circulares do topo, como no Discord. Ficam sobre a faixa do
-    banner porque ali é espaço morto — e assim a coluna de baixo continua
-    inteira pro que é conteúdo.
-  */
   const acoesDoTopo = perfil.friendship !== "SELF" && (
           <div className="absolute right-2 top-2 flex items-center gap-1.5">
             {podeModerar && guildId && (
               <BotaoRedondo
                 label="Abrir na visualização de moderador"
-                onClick={() => setModerando(true)}
+                onClick={() => {
+                  useModeracao.getState().abrir({
+                    guildId,
+                    userId: perfil.id,
+                    displayName: perfil.displayName,
+                    username: perfil.username,
+                    avatarUrl: perfil.avatarUrl,
+                  });
+                  /// O cartão sai da frente: a ficha abre na coluna, e os dois
+                  /// abertos ao mesmo tempo seriam a mesma pessoa em dobro.
+                  onFechar();
+                }}
               >
                 <ShieldAlert size={16} />
               </BotaoRedondo>
@@ -355,19 +322,6 @@ const ProfileCard: React.FC<{
         />
       )}
 
-      {moderando && guildId && (
-        <ModeratorView
-          open
-          guildId={guildId}
-          userId={perfil.id}
-          displayName={perfil.displayName}
-          username={perfil.username}
-          avatarUrl={perfil.avatarUrl}
-          roles={roles}
-          onClose={() => setModerando(false)}
-        />
-      )}
-
       <ProfileCardVisual
         id={perfil.id}
         displayName={perfil.displayName}
@@ -383,16 +337,13 @@ const ProfileCard: React.FC<{
         mutualFriends={perfil.mutualFriends}
         mutualGuilds={perfil.mutualGuilds}
         cargos={roles.filter((r) => !r.isEveryone && roleIds.includes(r.id))}
-        /* no meu próprio cartão o balão é clicável, em qualquer lugar que ele abra */
         onStatus={perfil.friendship === "SELF" ? () => setDefinindoStatus(true) : undefined}
         emblemas={emblemas}
         acoesDoTopo={acoesDoTopo}
         className="rounded-none"
       >
-        {/* a nota é sobre OUTRA pessoa; no próprio cartão não faz sentido */}
         {perfil.friendship !== "SELF" && <CampoDeNota userId={perfil.id} nota={perfil.nota} />}
 
-        {/* no próprio cartão, dentro de um servidor: escolher o que vestir aqui */}
         {perfil.friendship === "SELF" && guildId && (
           <EscolherEmblemas
             guildId={guildId}
@@ -403,23 +354,11 @@ const ProfileCard: React.FC<{
 
         <div className="mt-4 space-y-2">
           {perfil.friendship === "SELF" ? (
-            /*
-              No próprio cartão o botão leva pro editor — é a segunda porta da
-              mesma sala, e a mais óbvia: você está justamente olhando o que
-              quer mudar.
-            */
             <Button onClick={() => setEditandoPerfil(true)} className="w-full">
               <Pencil size={15} /> Editar perfil
             </Button>
           ) : (
             <>
-              {/*
-                Adicionar amigo e desfazer amizade vivem nos botões redondos do
-                topo e no menu "Mais". Aqui embaixo fica só o que NÃO tem
-                atalho lá em cima: abrir a conversa, e aceitar um pedido —
-                aceitar num ícone de 16px seria fácil demais de clicar sem
-                querer.
-              */}
               {perfil.friendship === "ACCEPTED" && (
                 <Button onClick={() => void conversar()} disabled={ocupado} className="w-full">
                   <MessageSquare size={16} /> Enviar mensagem
@@ -449,8 +388,6 @@ const ProfileCard: React.FC<{
         </div>
       </ProfileCardVisual>
 
-      {/* Conversar sem sair de onde você está — só faz sentido com amigos,
-          porque o servidor recusa DM entre quem não é. */}
       {perfil.friendship === "ACCEPTED" && (
         <ComposerDoPerfil userId={perfil.id} username={perfil.username} />
       )}
@@ -458,15 +395,6 @@ const ProfileCard: React.FC<{
   );
 };
 
-/**
- * Mandar uma mensagem direto do cartão.
- *
- * De propósito NÃO navega pra conversa: o valor disto é justamente responder
- * alguém sem largar o canal que você está lendo. Navegar mataria o motivo de
- * existir do campo — pra isso já existe o botão "Enviar mensagem" acima.
- *
- * Em troca, a confirmação tem que ser visível, senão fica a dúvida de se foi.
- */
 const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   userId,
   username,
@@ -483,7 +411,6 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
     setEnviando(true);
 
     try {
-      // abre (ou reaproveita) a conversa privada e manda por lá
       const canal = await openDm.mutateAsync(userId);
       await sendMessage({ channelId: canal.id, content: conteudo, nonce: crypto.randomUUID() });
 
@@ -550,14 +477,6 @@ const BotaoRedondo: React.FC<{
   </Tooltip>
 );
 
-/**
- * O botão de amizade conta o estado atual em vez de oferecer sempre "adicionar".
- *
- * São quatro situações e cada uma pede um desenho diferente: dá pra adicionar,
- * o pedido está pendente (e não há o que fazer aqui), vocês já são amigos, ou
- * ele te mandou um pedido — e nesse último o lugar de responder é o botão
- * grande embaixo, não um ícone de 16px.
- */
 const BotaoDeAmizade: React.FC<{ perfil: ProfileModel; onAdicionar: () => void }> = ({
   perfil,
   onAdicionar,

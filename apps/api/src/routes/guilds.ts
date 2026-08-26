@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
+import { botService } from "~/services/bot-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { emblemaService } from "~/services/emblema-service.js";
 import { io } from "~/realtime/io.js";
@@ -20,10 +21,6 @@ import {
   criarEmblemaInput,
 } from "~/validations/guild.js";
 
-/**
- * Controller fino: valida a entrada, chama o service, publica o evento de
- * tempo real. Nenhuma regra de negócio e nenhum Prisma aqui.
- */
 export async function guildRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
@@ -43,9 +40,22 @@ export async function guildRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     const guild = await guildService.update(req.userId, guildId, updateGuildInput.parse(req.body));
 
-    // nome e ícone aparecem na barra lateral de todo mundo
     io().to(rooms.guild(guildId)).emit("guild:updated", guild);
     return guild;
+  });
+
+  /*
+    O que se pode digitar depois da barra aqui dentro.
+
+    Passa pelo `detail` de propósito: ele já é a porta que cobra ser membro e
+    ver o servidor. Uma consulta própria repetiria essa regra, e é o tipo de
+    repetição que um dia diverge para o lado errado.
+  */
+  app.get("/guilds/:guildId/comandos", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    await guildService.detail(req.userId, guildId);
+
+    return botService.comandosDoServidor(guildId);
   });
 
   app.get("/guilds/:guildId/invites", (req) => {
@@ -112,17 +122,11 @@ export async function guildRoutes(app: FastifyInstance) {
     return reply.code(201).send(invite);
   });
 
-  /** O cartão que abre ao clicar numa etiqueta de servidor. */
   app.get("/guilds/:guildId/preview", (req) => {
     const { guildId } = guildParams.parse(req.params);
     return guildService.preview(req.userId, guildId);
   });
 
-  /**
-   * Emblemas: o servidor CRIA (precisa de MANAGE_GUILD) e qualquer membro
-   * VESTE (não precisa de nada além de estar aqui). Essa divisão é o desenho da
-   * feature, não um detalhe de rota.
-   */
   app.get("/guilds/:guildId/emblemas", (req) => {
     const { guildId } = guildParams.parse(req.params);
     return emblemaService.listar(req.userId, guildId);
@@ -151,7 +155,6 @@ export async function guildRoutes(app: FastifyInstance) {
     return reply.code(204).send();
   });
 
-  /** O que EU visto aqui. `@me` porque ninguém escolhe pelos outros. */
   app.put("/guilds/:guildId/members/@me/emblemas", async (req) => {
     const { guildId } = guildParams.parse(req.params);
     const { emblemIds } = z.object({ emblemIds: z.array(objectId) }).parse(req.body);
@@ -166,8 +169,6 @@ export async function guildRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     const membros = await guildService.remove(req.userId, guildId);
 
-    // avisa quem estava lá e tira todo mundo da sala, senão eles continuam
-    // recebendo eventos de um servidor que não existe mais
     io().to(rooms.guild(guildId)).emit("guild:deleted", { guildId });
     io().in(rooms.guild(guildId)).socketsLeave(rooms.guild(guildId));
     void membros;
@@ -175,13 +176,11 @@ export async function guildRoutes(app: FastifyInstance) {
     return reply.code(204).send();
   });
 
-  /** A ficha de moderação de um membro — ver `guildService.moderationView`. */
   app.get("/guilds/:guildId/members/:userId/moderation", (req) => {
     const { guildId, userId } = guildMemberParams.parse(req.params);
     return guildService.moderationView(req.userId, guildId, userId);
   });
 
-  /** O "ver mais" de cada contagem da ficha de moderação. */
   app.get("/guilds/:guildId/members/:userId/messages", (req) => {
     const { guildId, userId } = guildMemberParams.parse(req.params);
     const { filtro, before } = z

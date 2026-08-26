@@ -1,15 +1,8 @@
-/**
- * Cargos, permissoes e overwrites de canal ponta a ponta. O calculo em si tem
- * testes de unidade (packages/shared/src/permissions.test.ts); aqui o que se
- * verifica e o que a API faz com ele: hierarquia, canal invisivel, e as rotas
- * recusando de verdade.
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 const ok = (m) => console.log(`  ok  ${m}`);
 
-/** Mensagem so sai por socket — a rota REST de envio nao existe de proposito. */
 const connect = (token) =>
   new Promise((resolve, reject) => {
     const s = io(BASE, { auth: { token }, transports: ["websocket"] });
@@ -108,7 +101,6 @@ const cargoBaixo = await api(`/guilds/${guild.id}/roles`, {
   token: dono.accessToken,
   body: { name: "Design", permissions: ["ATTACH_FILES"] },
 });
-// o novo entrou na posicao 1 e empurrou o Moderador para 2
 await api(`/guilds/${guild.id}/roles/${cargoBaixo.id}`, {
   token: mod.accessToken,
   method: "PATCH",

@@ -1,10 +1,11 @@
-import type { Channel } from "@gravae/shared";
+import type { Channel, FonteDeNome } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
 export interface UpdateChannelDTO {
   guildId: string;
   channelId: string;
   name?: string;
+  fonte?: FonteDeNome;
   topic?: string | null;
   slowmodeSeconds?: number;
   contentVisibility?: "DEFAULT" | "SPOILER" | "AGE_RESTRICTED";

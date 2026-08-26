@@ -5,11 +5,6 @@ import { autoModRepository } from "~/repositories/automod-repository.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
 import type { Contexto } from "./access-service.js";
 
-/**
- * O AutoMod roda ANTES de gravar a mensagem. Bloquear depois significaria a
- * mensagem existir por um instante — e em tempo real "um instante" é o
- * suficiente para todo mundo ler.
- */
 export const autoModService = {
   async avaliar(params: {
     guildId: string;
@@ -20,7 +15,6 @@ export const autoModService = {
   }) {
     const { guildId, contexto, content, userId } = params;
 
-    // quem administra o servidor não é moderado pelo próprio filtro
     if (contexto.isOwner || has(contexto.permissions, "ADMINISTRATOR")) return;
 
     const regras = await autoModRepository.findEnabledByGuild(guildId);
@@ -39,7 +33,6 @@ export const autoModService = {
 
       if (!motivo) continue;
 
-      // castigo e aviso são efeitos colaterais: não podem atrasar a resposta
       if (regra.acoes.includes("TIMEOUT") && regra.timeoutSeconds) {
         void memberRepository
           .setTimeout(guildId, userId, new Date(Date.now() + regra.timeoutSeconds * 1000))
@@ -58,7 +51,6 @@ export const autoModService = {
     }
   },
 
-  /** O aviso é uma mensagem do sistema no canal escolhido. */
   async avisar(
     alertChannelId: string,
     params: { userId: string; channelId: string; content: string },

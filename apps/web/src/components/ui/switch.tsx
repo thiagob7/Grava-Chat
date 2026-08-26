@@ -3,10 +3,6 @@ import * as SwitchPrimitive from "@radix-ui/react-switch";
 
 import { cn } from "~/lib/utils";
 
-/**
- * Interruptor do shadcn com os tokens do chat. Usado nas permissões, onde
- * ligado/desligado precisa ser lido de relance numa lista longa.
- */
 export const Switch = ({
   className,
   ...props

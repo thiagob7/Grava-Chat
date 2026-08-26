@@ -8,6 +8,5 @@ export const useMe = (enabled: boolean) =>
     queryKey: [queryKeys.auth.me],
     queryFn: findMe,
     enabled,
-    // O usuário logado muda pouco; presença chega por socket, não por refetch.
     staleTime: 5 * 60_000,
   });

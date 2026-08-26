@@ -1,13 +1,4 @@
-/**
- * Permissões do servidor.
- *
- * Guardadas como LISTA DE NOMES, não como bitfield. O Discord usa bitfield
- * porque transmite bilhões de eventos por dia; aqui isso só tornaria o banco
- * ilegível e traria BigInt para dentro de tudo (número em JS quebra acima de
- * 2³¹). Com nomes, dá para abrir o Mongo e entender o que um cargo pode.
- */
 export const PERMISSIONS = [
-  // servidor
   "ADMINISTRATOR",
   "MANAGE_GUILD",
   "MANAGE_ROLES",
@@ -22,7 +13,6 @@ export const PERMISSIONS = [
   "MANAGE_NICKNAMES",
   "CHANGE_NICKNAME",
   "VIEW_AUDIT_LOG",
-  // texto
   "VIEW_CHANNEL",
   "SEND_MESSAGES",
   "MANAGE_MESSAGES",
@@ -33,7 +23,6 @@ export const PERMISSIONS = [
   "PIN_MESSAGES",
   "BYPASS_SLOWMODE",
   "CREATE_POLLS",
-  // voz
   "CONNECT",
   "SPEAK",
   "VIDEO",
@@ -47,7 +36,6 @@ export const PERMISSIONS = [
 
 export type Permission = (typeof PERMISSIONS)[number];
 
-/** Agrupamento usado na tela de edição de cargo. */
 export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] = [
   {
     label: "Geral do servidor",
@@ -181,7 +169,6 @@ export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: st
   },
 };
 
-/** O que o @everyone recebe num servidor novo: conversar e entrar em call. */
 export const DEFAULT_EVERYONE_PERMISSIONS: Permission[] = [
   "VIEW_CHANNEL",
   "SEND_MESSAGES",
@@ -218,24 +205,10 @@ const asPermissions = (lista: string[]) => lista.filter(ehPermissao);
 const ehPermissao = (valor: string): valor is Permission =>
   (PERMISSIONS as readonly string[]).includes(valor);
 
-/**
- * Permissões efetivas de alguém, opcionalmente dentro de um canal.
- *
- * Mesma ordem de precedência do Discord — a ordem importa: o overwrite da
- * pessoa vence o do cargo, que vence o do @everyone.
- *
- *   dono do servidor              → tudo
- *   @everyone + cargos            → base
- *   base tem ADMINISTRATOR        → tudo
- *   overwrite do @everyone        → base &= ~deny; base |= allow
- *   overwrites dos cargos (juntos) → base &= ~deny; base |= allow
- *   overwrite da pessoa           → base &= ~deny; base |= allow
- */
 export function computePermissions(params: {
   userId: string;
   isOwner: boolean;
   roles: RoleLike[];
-  /** overwrites do canal; omitir para as permissões no nível do servidor */
   overwrites?: OverwriteLike[];
 }): Set<Permission> {
   if (params.isOwner) return new Set(PERMISSIONS);
@@ -245,8 +218,6 @@ export function computePermissions(params: {
     for (const permissao of asPermissions(role.permissions)) base.add(permissao);
   }
 
-  // Administrador ignora inclusive as restrições por canal — é o atalho que
-  // impede alguém de se trancar fora do próprio servidor.
   if (base.has("ADMINISTRATOR")) return new Set(PERMISSIONS);
 
   const overwrites = params.overwrites;
@@ -263,11 +234,6 @@ export function computePermissions(params: {
   const doEveryone = overwrites.find((o) => o.type === "ROLE" && o.targetId === everyoneId);
   if (doEveryone) aplicar(doEveryone.allow, doEveryone.deny);
 
-  /**
-   * Os overwrites de cargo são acumulados ANTES de aplicar: se um cargo nega e
-   * outro permite, o permitir vence. Aplicar um a um faria o resultado depender
-   * da ordem em que vieram do banco.
-   */
   const dosCargos = overwrites.filter(
     (o) => o.type === "ROLE" && o.targetId !== everyoneId && idsDosCargos.has(o.targetId),
   );
@@ -288,10 +254,5 @@ export function computePermissions(params: {
 export const has = (permissoes: Set<Permission>, permissao: Permission) =>
   permissoes.has("ADMINISTRATOR") || permissoes.has(permissao);
 
-/**
- * O cargo mais alto de alguém. É o que limita o que a pessoa pode fazer com
- * cargos e com outras pessoas — sem isso, quem tem "gerenciar cargos" se
- * promoveria a administrador em dois cliques.
- */
 export const highestPosition = (roles: RoleLike[]) =>
   roles.reduce((maior, role) => Math.max(maior, role.position), -1);

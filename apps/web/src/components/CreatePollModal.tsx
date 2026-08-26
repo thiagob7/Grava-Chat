@@ -4,6 +4,8 @@ import type { CreatePollInput } from "@gravae/shared";
 import { LIMITS } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
+import { Input, Label } from "~/components/ui/input";
+import { CampoSelect } from "~/components/ui/select";
 import {
   Dialog,
   DialogBody,
@@ -12,7 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input, Label, campoBase } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 
 interface CreatePollModalProps {
@@ -117,19 +118,15 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
 
           <div>
             <Label htmlFor="duracao">Duração</Label>
-            <select
+            <CampoSelect
               id="duracao"
-              value={duracao ?? ""}
-              onChange={(e) => setDuracao(e.target.value ? Number(e.target.value) : null)}
-              className={campoBase}
-            >
-              {DURACOES.map((item) => (
-                <option key={item.horas} value={item.horas}>
-                  {item.label}
-                </option>
-              ))}
-              <option value="">Até eu encerrar</option>
-            </select>
+              valor={duracao === null ? "" : String(duracao)}
+              onEscolher={(v) => setDuracao(v ? Number(v) : null)}
+              opcoes={[
+                ...DURACOES.map((item) => ({ valor: String(item.horas), rotulo: item.label })),
+                { valor: "", rotulo: "Até eu encerrar" },
+              ]}
+            />
           </div>
         </DialogBody>
 

@@ -5,14 +5,12 @@ import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
-import { UserPanel } from "~/components/UserPanel";
-import { VoicePanel } from "~/components/VoicePanel";
+import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
 interface DmSidebarProps {
   activeChannelId: string | undefined;
-  /** por canal: o id da última lida e quantas entraram depois */
   readStates: Record<string, { lido: string | null; naoLidas: number }>;
   user: SelfUserModel;
   onOpenFriends: () => void;
@@ -20,7 +18,6 @@ interface DmSidebarProps {
   onLogout: () => void;
 }
 
-/** A barra lateral do "modo amigos" — substitui a lista de canais fora dos servidores. */
 export const DmSidebar: React.FC<DmSidebarProps> = ({
   activeChannelId,
   readStates,
@@ -43,7 +40,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside className="relative flex shrink-0 flex-col bg-surface-1" style={{ width: largura }}>
-      <header className="flex h-12 items-center border-b border-black/20 px-4 shadow-sm">
+      <header className="flex h-12 items-center border-b border-divisor px-4 shadow-sm">
         <h1 className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 
@@ -105,16 +102,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
         })}
       </div>
 
-      {/*
-        A chamada acompanha você até aqui.
-        
-        Era justamente na tela de conversas que ela sumia — e é onde some o
-        resto da referência: sem a barra lateral do servidor, não sobra nada
-        dizendo que você está numa call, nem como voltar pra ela.
-      */}
-      <VoicePanel />
-
-      <UserPanel user={user} onLogout={onLogout} />
+      <RodapeDaBarra user={user} onLogout={onLogout} />
       <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
     </aside>
   );

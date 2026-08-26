@@ -12,23 +12,10 @@ import {
 import { cn } from "~/lib/utils";
 
 interface SeletorDeEtiquetaProps {
-  /** o servidor cuja etiqueta estou vestindo agora */
   atual: string | null | undefined;
   onEscolher: (guildId: string | null) => void;
 }
 
-/**
- * De qual servidor eu visto a etiqueta.
- *
- * A escolha é da PESSOA e vale em todo lugar — a etiqueta te acompanha nos
- * outros servidores e na conversa privada. Antes ela era do servidor e grudava
- * em todo mundo que estivesse nele, o que fazia dela um enfeite do cenário: em
- * vez de dizer "eu sou de lá", dizia "você está aqui", que quem está aqui já
- * sabe.
- *
- * Só entram servidores que TÊM etiqueta — oferecer os outros seria oferecer uma
- * escolha sem efeito.
- */
 export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onEscolher }) => {
   const { data: guilds } = useFindManyGuilds(true);
   const comEtiqueta = (guilds ?? []).filter((g) => g.tag);
@@ -47,11 +34,6 @@ export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onE
               etiqueta={{ guildId: escolhido.id, tag: escolhido.tag!, tagIcon: escolhido.tagIcon ?? null }}
             />
           ) : (
-            /*
-              Vazio é um `+` e não "sem etiqueta": a linha do `@usuario` divide
-              espaço com a etiqueta pessoal e os emblemas, e as duas palavras
-              faziam tudo quebrar pra segunda linha por poucos pixels.
-            */
             <span className="flex items-center gap-0.5 text-xs text-ink-faint">
               <Plus size={11} /> tag
             </span>

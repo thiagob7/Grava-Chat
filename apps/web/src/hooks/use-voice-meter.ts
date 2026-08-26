@@ -6,20 +6,11 @@ import { useVoiceStore } from "~/stores/voice-store";
 
 interface Medicao {
   nivel: number;
-  /** a porta está aberta — é o que decide se sua voz sai daqui */
   aberto: boolean;
   erro: string | null;
-  /** stream do teste, para o retorno de voz; null quando a leitura vem da chamada */
   stream: MediaStream | null;
 }
 
-/**
- * Medidor da sua entrada de áudio.
- *
- * Dentro da chamada lê do processador que já está publicando — é o mesmo número
- * que decide o corte, então o que você vê na barra é literalmente o que sai.
- * Fora da chamada abre um microfone temporário só para o teste.
- */
 export function useVoiceMeter(ativo: boolean): Medicao {
   const emChamada = useVoiceStore((s) => s.channelId !== null);
   const observarNivel = useVoiceStore((s) => s.observarNivel);
@@ -32,8 +23,6 @@ export function useVoiceMeter(ativo: boolean): Medicao {
     stream: null,
   });
 
-  // as preferências mudam enquanto a barra roda; ler por ref evita religar o
-  // microfone a cada arrastada no controle de limiar
   const prefsRef = useRef(prefs);
   prefsRef.current = prefs;
 
@@ -64,10 +53,6 @@ export function useVoiceMeter(ativo: boolean): Medicao {
           const nivel = medidor.ler();
           const { modo, sensibilidadeAutomatica, limiar } = prefsRef.current;
 
-          /**
-           * Fora da chamada não existe porta de verdade; esta é a simulação que
-           * mostra, ao vivo, o que o limiar escolhido faria com a sua voz.
-           */
           const aberto =
             modo === "ptt" ? false : nivel >= (sensibilidadeAutomatica ? 0.05 : limiar);
 

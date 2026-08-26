@@ -11,10 +11,6 @@ interface ChannelPermissionsSectionProps {
   minhasPermissoes: string[];
 }
 
-/**
- * As permissões do canal dentro da tela de configurações. O miolo é o mesmo do
- * modal que abre pela barra lateral — um lugar só decide como isso funciona.
- */
 export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps> = ({
   guildId,
   channel,

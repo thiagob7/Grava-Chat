@@ -18,19 +18,6 @@ import {
 } from "~/components/user-settings/perfil/rascunho";
 import { useRascunho } from "~/hooks/use-rascunho";
 
-/**
- * O editor de perfil, em modal próprio.
- *
- * Saiu de dentro das configurações porque ali ele competia com voz, conta e
- * aparência por um espaço que ele não tem: o desenho pede a coluna de controles
- * **ao lado** do cartão, não abaixo dele. Aqui o cartão fica no meio, grande, e
- * cada mexida aparece nele na hora — que é a única razão de existir um editor
- * de aparência.
- *
- * O cartão do meio é o COMPONENTE REAL, o mesmo que os outros veem ao clicar em
- * você. Uma prévia que fosse cópia mentiria na primeira mudança de layout — e
- * mentiria justamente para quem está decidindo como vai aparecer.
- */
 export const ProfileEditorModal: React.FC<{
   open: boolean;
   user: SelfUserModel;
@@ -54,13 +41,6 @@ export const ProfileEditorModal: React.FC<{
       .then(() => descartar())
       .catch(() => null);
 
-  /**
-   * O status é salvo NA HORA, sem passar pela barra de "não salvas".
-   *
-   * Ele não é aparência: é um recado com validade — "volto em 10 minutos" que
-   * só vale se sair agora. Deixá-lo esperando um botão Salvar do outro lado da
-   * tela transformaria um aviso em rascunho esquecido.
-   */
   const salvarStatus = (status: StatusPersonalizado | null) =>
     void updateProfile
       .mutateAsync({ statusPersonalizado: status })
@@ -75,10 +55,6 @@ export const ProfileEditorModal: React.FC<{
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
-          /*
-            78vh e não 85: a barra de "não salvas" flutua no rodapé da JANELA, e
-            com o modal mais alto ela pousava por cima dele em vez de embaixo.
-          */
           className="fixed left-1/2 top-1/2 z-50 flex h-[78vh] w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
           aria-label="Editar perfil"
         >
@@ -86,7 +62,6 @@ export const ProfileEditorModal: React.FC<{
             Editar perfil
           </DialogPrimitive.Title>
 
-          {/* coluna 1: os controles */}
           <aside className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
             <h2 className="mb-4 text-sm font-semibold">Perfil principal</h2>
 
@@ -102,20 +77,9 @@ export const ProfileEditorModal: React.FC<{
             </div>
           </aside>
 
-          {/* coluna 2: o cartão de verdade, ao vivo */}
           <main className="min-w-0 flex-1 overflow-y-auto p-8">
-            {/* 320 × 1.3 = 416: o que sobra alinha com a largura ampliada do cartão */}
             <div className="mx-auto w-[416px]">
               <div className="w-80">
-                {/*
-                O cartão tem a LARGURA REAL (320px, a mesma do popover) e é só
-                ampliado na tela.
-
-                Alargá-lo pra ocupar a coluna faria a prévia mentir: tudo caberia
-                numa linha aqui e quebraria lá fora. `zoom` amplia mantendo cada
-                proporção — e, diferente de `transform: scale`, ele reflui o
-                layout, então o que vem abaixo não fica por cima.
-              */}
                 <div style={{ zoom: 1.3 }}>
                   <ProfileCardVisual
                     id={user.id}
@@ -137,13 +101,6 @@ export const ProfileEditorModal: React.FC<{
                 </div>
               </div>
 
-              {/*
-                A linha de chat vai junto porque o enfeite se comporta diferente
-                nos dois: aqui em cima o nome é grande e animado, lá embaixo é
-                14px e parado — e gradiente e brilho nem aparecem. Só o cartão
-                faria a pessoa escolher um gradiente lindo e descobrir depois que
-                onde ela realmente aparece ele não existe.
-              */}
               <div className="mt-6">
                 <p className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">
                   No chat
@@ -172,7 +129,6 @@ export const ProfileEditorModal: React.FC<{
             </div>
           </main>
 
-          {/* coluna 3: o que você está fazendo agora */}
           <aside className="hidden w-72 shrink-0 overflow-y-auto border-l border-line p-5 xl:block">
             <p className="mb-3 text-sm font-semibold">Atividade</p>
             <p className="text-sm text-ink-faint">
@@ -200,14 +156,6 @@ export const ProfileEditorModal: React.FC<{
           )}
         </DialogPrimitive.Content>
 
-        {/*
-          A barra fica FORA do `Content`, irmã dele dentro do portal.
-
-          `position: fixed` dentro de um ancestral com `transform` deixa de ser
-          relativo à janela e passa a ser relativo a ELE — e o modal é centrado
-          com `-translate-x/y-1/2`. Dentro dele, "rodapé da janela" virava
-          "rodapé do modal", e a barra pousava por cima do conteúdo.
-        */}
         <UnsavedBar
           visivel={sujo}
           salvando={updateProfile.isPending}

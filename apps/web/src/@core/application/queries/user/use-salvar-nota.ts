@@ -11,11 +11,6 @@ export const useSalvarNota = (userId: string) => {
 
   return useMutation({
     mutationFn: (texto: string) => salvarNota(userId, texto),
-    /**
-     * Escreve no cache em vez de invalidar: a nota é gravada ao sair do campo,
-     * e um refetch aqui piscaria o cartão inteiro por causa de uma linha de
-     * texto que já está na tela.
-     */
     onSuccess: ({ nota }) => {
       queryClient.setQueryData(queryKeys.user.profile(userId), (antigo?: ProfileModel) =>
         antigo ? { ...antigo, nota } : antigo,

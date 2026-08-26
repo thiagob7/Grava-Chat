@@ -1,8 +1,3 @@
-/**
- * Fumaça do login com Google. Não faz login de verdade (isso exige um humano na
- * tela do Google) — verifica a montagem: parâmetros do redirect, proteção de
- * CSRF, e que o callback bate com as URIs registradas no console.
- */
 const BASE = "http://localhost:3333";
 const NGROK = "emmanuel-successful-intensely.ngrok-free.dev";
 const ok = (m) => console.log(`  ok  ${m}`);

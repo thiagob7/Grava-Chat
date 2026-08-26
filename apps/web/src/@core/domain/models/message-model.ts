@@ -2,7 +2,6 @@ import type { Message } from "@gravae/shared";
 
 export type MessageModel = Message;
 
-/** Mensagem ainda não confirmada pelo servidor (envio otimista). */
 export type PendingMessageModel = MessageModel & {
   pending?: true;
   failed?: true;
@@ -12,12 +11,14 @@ export type PendingMessageModel = MessageModel & {
 export interface MessagePageModel {
   messages: MessageModel[];
   hasMore: boolean;
+  semHistorico?: boolean;
 }
 
 export interface ReadStateModel {
   channelId: string;
+  /// nulo em conversa privada, que não pertence a servidor nenhum
+  guildId: string | null;
   lastReadMessageId: string | null;
-  /** mensagens que entraram depois da última lida */
   unreadCount: number;
   mentionCount: number;
 }

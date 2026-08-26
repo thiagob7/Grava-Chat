@@ -4,12 +4,6 @@ import { LIMITS } from "@gravae/shared";
 
 type Entry = { user: PublicUser; at: number };
 
-/**
- * "Está digitando" fica fora do React Query de propósito: não é estado do
- * servidor, é um sinal efêmero de alta frequência que expira sozinho por TTL —
- * não existe evento de "parou de digitar". Guardar isso no cache de queries
- * causaria re-render de listas inteiras a cada tecla.
- */
 interface TypingStore {
   byChannel: Record<string, Entry[]>;
   add: (channelId: string, user: PublicUser) => void;

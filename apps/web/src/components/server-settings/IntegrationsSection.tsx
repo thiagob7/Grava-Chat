@@ -11,6 +11,7 @@ import {
 import type { WebhookModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { CampoSelect } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
@@ -24,7 +25,6 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({ guildI
   const { data: webhooks = [], isLoading } = useFindWebhooks(guildId);
   const criar = useCreateWebhook(guildId);
 
-  // webhook só posta em canal de texto — a API recusa o resto
   const canaisDeTexto = channels.filter((c) => c.type === "TEXT" || c.type === "FORUM");
 
   return (
@@ -125,19 +125,11 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
             <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
               Canal
             </span>
-            <select
-              value={webhook.channelId}
-              onChange={(e) =>
-                salvar.mutate({ guildId, webhookId: webhook.id, channelId: e.target.value })
-              }
-              className="w-full rounded bg-surface-0 px-3 py-1.5 text-sm outline-none ring-brand/60 focus:ring-2"
-            >
-              {canais.map((canal) => (
-                <option key={canal.id} value={canal.id}>
-                  #{canal.name}
-                </option>
-              ))}
-            </select>
+            <CampoSelect
+              valor={webhook.channelId}
+              onEscolher={(channelId) => salvar.mutate({ guildId, webhookId: webhook.id, channelId })}
+              opcoes={canais.map((canal) => ({ valor: canal.id, rotulo: `#${canal.name}` }))}
+            />
           </label>
         </div>
 
@@ -190,7 +182,6 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
   );
 };
 
-/** Um exemplo pronto vale mais que um parágrafo explicando o formato. */
 const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => (
   <section className="mt-8">
     <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">Como usar</h3>

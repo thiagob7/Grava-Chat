@@ -1,5 +1,3 @@
-import { cn } from "~/lib/utils";
-import { campoBase } from "~/components/ui/input";
 import React, { useState } from "react";
 import {
   Ban,
@@ -16,6 +14,7 @@ import type { GuildMember } from "@gravae/shared";
 import { useFindAuditLog } from "~/@core/application/queries/moderation/use-moderation";
 import type { AuditEntryModel } from "~/@core/application/requests/moderation/moderation";
 import { Avatar } from "~/components/Avatar";
+import { CampoSelect } from "~/components/ui/select";
 import { formatTimestamp } from "~/lib/format";
 
 interface AuditLogSectionProps {
@@ -23,7 +22,6 @@ interface AuditLogSectionProps {
   members: GuildMember[];
 }
 
-/** Cada ação vira uma frase em português — "role.create" não diz nada a ninguém. */
 const FRASES: Record<string, (alvo: string) => string> = {
   "guild.update": () => "fez alterações no servidor",
   "channel.create": (a) => `criou o canal ${a}`,
@@ -87,33 +85,25 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, membe
 
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Filtrar por usuário
-          <select
-            value={actorId}
-            onChange={(e) => setActorId(e.target.value)}
-            className={cn(campoBase, "mt-1 block w-44 px-3 py-2 font-normal normal-case")}
-          >
-            <option value="">Todos os usuários</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.user.id}>
-                {m.user.displayName}
-              </option>
-            ))}
-          </select>
+          <CampoSelect
+            valor={actorId}
+            onEscolher={setActorId}
+            className="mt-1 w-44 font-normal normal-case"
+            opcoes={[
+              { valor: "", rotulo: "Todos os usuários" },
+              ...members.map((m) => ({ valor: m.user.id, rotulo: m.user.displayName })),
+            ]}
+          />
         </label>
 
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Filtrar por ação
-          <select
-            value={action}
-            onChange={(e) => setAction(e.target.value)}
-            className={cn(campoBase, "mt-1 block w-40 px-3 py-2 font-normal normal-case")}
-          >
-            {FILTROS.map((f) => (
-              <option key={f.valor} value={f.valor}>
-                {f.label}
-              </option>
-            ))}
-          </select>
+          <CampoSelect
+            valor={action}
+            onEscolher={setAction}
+            className="mt-1 w-40 font-normal normal-case"
+            opcoes={FILTROS.map((f) => ({ valor: f.valor, rotulo: f.label }))}
+          />
         </label>
       </div>
 

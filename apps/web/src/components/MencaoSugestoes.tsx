@@ -13,12 +13,6 @@ interface MencaoSugestoesProps {
   onPassarMouse: (indice: number) => void;
 }
 
-/**
- * A lista que aparece ao digitar `@`.
- *
- * Flutua ACIMA do campo (`bottom-full`) e não abaixo: embaixo ela cairia fora
- * da janela justamente quando o campo já está colado no rodapé, que é sempre.
- */
 export const MencaoSugestoes: React.FC<MencaoSugestoesProps> = ({
   itens,
   indice,
@@ -36,11 +30,6 @@ export const MencaoSugestoes: React.FC<MencaoSugestoesProps> = ({
       <ul className="max-h-72 overflow-y-auto p-1.5">
         {itens.map((item, i) => (
           <li key={`${item.tipo}-${item.id}`}>
-            {/*
-              `onMouseDown` com `preventDefault`, e não `onClick`: o clique tira
-              o foco do campo antes de disparar, e aí a inserção aconteceria com
-              o cursor perdido — o texto ia parar no fim.
-            */}
             <button
               type="button"
               onMouseDown={(e) => {

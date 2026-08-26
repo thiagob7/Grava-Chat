@@ -2,7 +2,6 @@ import type { Attachment, Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 import { unset } from "~/lib/mongo.js";
 
-/** Mensagens não apagadas. Ver a nota em lib/mongo.ts sobre null vs ausente. */
 const notDeleted = unset("deletedAt") satisfies Prisma.MessageWhereInput;
 
 export const messageInclude = {
@@ -16,28 +15,24 @@ export const messageRepository = {
     return prisma.message.findUnique({ where: { id } });
   },
 
+  /// A mensagem imediatamente anterior no canal. O id do Mongo cresce com o
+  /// tempo, que é o mesmo critério da paginação de mensagens.
+  findPreviousIn(channelId: string, messageId: string) {
+    return prisma.message.findFirst({
+      where: { channelId, deletedAt: null, id: { lt: messageId } },
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
+  },
+
   findByIdWithRelations(id: string) {
     return prisma.message.findUniqueOrThrow({ where: { id }, include: messageInclude });
   },
 
-  /**
-   * Histórico paginado por cursor. Cursor e não offset porque o feed cresce
-   * enquanto o usuário rola: com skip/limit, mensagens novas empurram a janela
-   * e o leitor vê conteúdo repetido.
-   */
   findPage(params: { channelId: string; postId?: string | null; before?: string; limit: number }) {
     return prisma.message.findMany({
       where: {
         channelId: params.channelId,
-        /**
-         * No fórum a conversa é por assunto. Fora dele, `postId` tem que estar
-         * AUSENTE — ver a nota em lib/mongo.ts: no Mongo, `campo: null` não
-         * encontra documento que simplesmente não tem o campo.
-         *
-         * Os dois filtros vão dentro de `AND` porque cada `unset()` devolve um
-         * `OR`: espalhados no mesmo objeto, o segundo sobrescreveria o
-         * primeiro e o filtro sumiria sem erro nenhum.
-         */
         AND: [params.postId ? { postId: params.postId } : unset("postId"), notDeleted],
       },
       include: messageInclude,
@@ -47,14 +42,51 @@ export const messageRepository = {
     });
   },
 
+  /**
+   * A busca.
+   *
+   * `contains` sem índice de texto: com o tamanho de conversa que este app
+   * tem, o Mongo varre e devolve rápido, e um índice de texto traria a briga
+   * de idioma (radicais em português) para dentro de algo que ninguém pediu.
+   * Se um dia doer, é aqui que entra o `$text`.
+   */
+  buscar(params: {
+    channelIds: string[];
+    termo: string;
+    autorId?: string;
+    canalId?: string;
+    limit: number;
+    before?: string;
+  }) {
+    const canais = params.canalId
+      ? params.channelIds.filter((id) => id === params.canalId)
+      : params.channelIds;
+
+    if (!canais.length) return Promise.resolve([]);
+
+    return prisma.message.findMany({
+      where: {
+        channelId: { in: canais },
+        content: { contains: params.termo, mode: "insensitive" },
+        ...(params.autorId ? { authorId: params.autorId } : {}),
+        ...(params.before ? { id: { lt: params.before } } : {}),
+        AND: [notDeleted],
+      },
+      include: { ...messageInclude, channel: true },
+      orderBy: { id: "desc" },
+      take: params.limit,
+    });
+  },
+
   create(data: {
     channelId: string;
     authorId: string;
     content: string;
+    fonte?: string;
     attachments: Attachment[];
     replyToId: string | null;
     mentions: string[];
-    tipo?: "USER" | "JOIN";
+    tipo?: "USER" | "JOIN" | "COMANDO";
     poll?: Prisma.PollCreateInput;
     stickerId?: string;
     postId?: string;
@@ -66,15 +98,10 @@ export const messageRepository = {
     return prisma.message.update({ where: { id }, data, include: messageInclude });
   },
 
-  /** Soft delete: manter a linha preserva as respostas que apontam pra ela. */
   softDelete(id: string) {
     return prisma.message.update({ where: { id }, data: { deletedAt: new Date() } });
   },
 
-  /**
-   * Limpeza pós-banimento: apaga o que a pessoa escreveu nas últimas horas,
-   * em todos os canais do servidor. Soft delete, como qualquer exclusão aqui.
-   */
   async softDeleteRecentByAuthor(guildId: string, authorId: string, desde: Date) {
     const canais = await prisma.channel.findMany({ where: { guildId }, select: { id: true } });
 
@@ -108,12 +135,23 @@ export const messageRepository = {
 
 export const reactionRepository = {
   findManyByMessage(messageId: string) {
-    return prisma.reaction.findMany({ where: { messageId }, select: { emoji: true, userId: true } });
+    return prisma.reaction.findMany({
+      where: { messageId },
+      select: { emoji: true, userId: true, burst: true },
+    });
   },
 
-  /** Já reagiu = unique constraint. Não é erro, é idempotência. */
-  add(messageId: string, userId: string, emoji: string) {
-    return prisma.reaction.create({ data: { messageId, userId, emoji } }).catch(() => undefined);
+  /// Reagir de novo com o mesmo emoji, agora como super, promove a reação que
+  /// já estava lá — a chave única impediria uma segunda linha, e sem o update
+  /// o clique simplesmente não faria nada.
+  add(messageId: string, userId: string, emoji: string, burst = false) {
+    return prisma.reaction
+      .upsert({
+        where: { messageId_userId_emoji: { messageId, userId, emoji } },
+        create: { messageId, userId, emoji, burst },
+        update: burst ? { burst: true } : {},
+      })
+      .catch(() => undefined);
   },
 
   remove(messageId: string, userId: string, emoji: string) {
@@ -128,38 +166,17 @@ export const readStateRepository = {
     return prisma.readState.findMany({ where: { userId } });
   },
 
-  /**
-   * Quantas mensagens entraram depois da última lida.
-   *
-   * Compara por `id` e não por data: no Mongo o ObjectId já embute o instante
-   * de criação e é monotônico, então `gt` no id ordena igual à data — é o
-   * mesmo truque que a paginação por cursor daqui já usa, sem precisar buscar
-   * a mensagem lida só pra descobrir o `createdAt` dela.
-   */
   countUnread(channelId: string, afterMessageId: string) {
     return prisma.message.count({
       where: { channelId, id: { gt: afterMessageId } },
     });
   },
 
-  /**
-   * Quantas dessas nao-lidas sao PRA VOCE.
-   *
-   * A expansao cargo -> pessoa acontece aqui, na leitura: `mentionRoleIds`
-   * guarda o cargo, e quem esta nele hoje e quem recebe. Congelar a lista de
-   * pessoas na escrita ignoraria quem entrou depois e pingaria pra sempre quem
-   * saiu.
-   *
-   * Da pra passar os cargos de TODOS os servidores sem filtrar por servidor: id
-   * de cargo e um ObjectId unico, entao um cargo de outro servidor nao tem como
-   * aparecer nas mensagens deste canal.
-   */
   countMentions(channelId: string, afterMessageId: string, userId: string, roleIds: string[]) {
     return prisma.message.count({
       where: {
         channelId,
         id: { gt: afterMessageId },
-        // a propria mensagem nao conta: quem escreveu ja sabe que escreveu
         authorId: { not: userId },
         OR: [
           { mentions: { has: userId } },
@@ -170,7 +187,7 @@ export const readStateRepository = {
     });
   },
 
-  markRead(userId: string, channelId: string, messageId: string) {
+  markRead(userId: string, channelId: string, messageId: string | null) {
     return prisma.readState.upsert({
       where: { userId_channelId: { userId, channelId } },
       create: { userId, channelId, lastReadMessageId: messageId, mentionCount: 0 },
@@ -179,20 +196,7 @@ export const readStateRepository = {
   },
 };
 
-/**
- * Números sobre o que uma pessoa mandou num servidor.
- *
- * Existe separado do `messageRepository` porque não serve pra ler mensagem:
- * é material da tela de moderação, e contagem é a única coisa que sai daqui.
- */
 export const messageStatsRepository = {
-  /**
-   * Conta mensagens, links e mídia de um usuário nos canais informados.
-   *
-   * Os canais chegam prontos (a rota já sabe quais são do servidor) em vez de
-   * um `join`: o Prisma com Mongo não faz relação em `count`, e uma consulta
-   * por canal seria muito pior que três consultas com `in`.
-   */
   async byUserInChannels(userId: string, channelIds: string[]) {
     if (!channelIds.length) return { mensagens: 0, links: 0, midia: 0 };
 
@@ -200,7 +204,6 @@ export const messageStatsRepository = {
 
     const [mensagens, links, midia] = await Promise.all([
       prisma.message.count({ where: base }),
-      // http:// ou https:// em qualquer posição do texto
       prisma.message.count({ where: { ...base, content: { contains: "http" } } }),
       prisma.message.count({ where: { ...base, attachments: { isEmpty: false } } }),
     ]);
@@ -208,12 +211,6 @@ export const messageStatsRepository = {
     return { mensagens, links, midia };
   },
 
-  /**
-   * As mensagens em si, para o "ver mais" da visualização de moderador.
-   *
-   * Vem com o canal junto porque a lista é agrupada por canal na tela — sem o
-   * `include` seriam N consultas para descobrir o nome de cada um.
-   */
   findByUserInChannels(params: {
     userId: string;
     channelIds: string[];

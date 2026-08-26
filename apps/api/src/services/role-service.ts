@@ -12,10 +12,6 @@ import type {
   UpdateRoleInput,
 } from "~/validations/role.js";
 
-/**
- * Ninguém entrega o que não tem. Sem isto, quem tem MANAGE_ROLES cria um cargo
- * com ADMINISTRATOR, se atribui, e a hierarquia inteira vira decoração.
- */
 function requireGrantable(contexto: Contexto, permissoes: Permission[]) {
   if (contexto.isOwner || contexto.permissions.has("ADMINISTRATOR")) return;
 
@@ -32,7 +28,6 @@ async function roleDoGuild(guildId: string, roleId: string) {
 }
 
 export const roleService = {
-  /** Todo membro enxerga os cargos: são eles que dão nome e cor na lista. */
   async list(userId: string, guildId: string) {
     await accessService.requireMember(userId, guildId);
 
@@ -47,11 +42,6 @@ export const roleService = {
     }));
   },
 
-  /**
-   * Cargo novo nasce no fim da fila (logo acima do @everyone). Criar já no topo
-   * seria uma escada para se promover: aqui, subir depende de reordenar, que
-   * passa pela hierarquia.
-   */
   async create(userId: string, guildId: string, input: CreateRoleInput) {
     const contexto = await accessService.requirePermission(userId, guildId, "MANAGE_ROLES");
     const permissions = input.permissions ?? [];
@@ -60,7 +50,6 @@ export const roleService = {
     const existentes = await roleRepository.findManyByGuild(guildId);
     if (existentes.length >= 50) throw new AppError("Limite de 50 cargos por servidor");
 
-    // abre espaço na posição 1: o @everyone é sempre o 0
     await Promise.all(
       existentes
         .filter((r) => !r.isEveryone)
@@ -93,16 +82,6 @@ export const roleService = {
     accessService.requireAbove(contexto, role.position, "Este cargo está acima do seu");
     if (input.permissions) requireGrantable(contexto, input.permissions);
 
-    /**
-     * O @everyone é a base de todo mundo: renomear ou enfeitar não faz sentido,
-     * e mover de posição quebraria o "todo mundo está embaixo".
-     *
-     * A lista precisa incluir os enfeites novos: um @everyone holográfico
-     * repinta o nome de TODO MUNDO e mata a hierarquia visual do servidor.
-     *
-     * E `!== undefined` em vez de truthiness — com `input.hoist` cru, mandar
-     * `hoist: false` escapava da guarda por ser um valor falso.
-     */
     const mexeNaAparencia = [
       input.name,
       input.color,
@@ -127,12 +106,10 @@ export const roleService = {
     if (role.isEveryone) throw new AppError("O cargo @everyone não pode ser apagado");
     accessService.requireAbove(contexto, role.position, "Este cargo está acima do seu");
 
-    // a ordem importa: primeiro solta das pessoas, senão sobra id órfão no membro
     await memberRepository.pullRole(guildId, roleId);
     await roleRepository.remove(roleId);
   },
 
-  /** Arrastar na lista. Chega a ordem inteira e ela é gravada de uma vez. */
   async reorder(userId: string, guildId: string, input: ReorderRolesInput) {
     const contexto = await accessService.requirePermission(userId, guildId, "MANAGE_ROLES");
     const atuais = await roleRepository.findManyByGuild(guildId);
@@ -143,7 +120,6 @@ export const roleService = {
       if (!role) throw new NotFoundError("Cargo não encontrado");
       if (role.isEveryone) throw new AppError("O @everyone fica sempre embaixo");
 
-      // nem mexer no que está acima, nem empurrar algo para acima de si
       accessService.requireAbove(contexto, role.position, "Este cargo está acima do seu");
       accessService.requireAbove(contexto, item.position, "Você não pode mover um cargo para cima do seu");
     }
@@ -152,7 +128,6 @@ export const roleService = {
     return roleService.list(userId, guildId);
   },
 
-  /** Dar e tirar cargos de alguém. */
   async setMemberRoles(
     actorId: string,
     guildId: string,
@@ -180,7 +155,6 @@ export const roleService = {
       accessService.requireAbove(contexto, role.position, `Você não pode atribuir "${role.name}"`);
     }
 
-    // e a pessoa em si também não pode estar acima de você
     const atuaisDoAlvo = roles.filter((r) => alvo.roleIds.includes(r.id));
     accessService.requireAbove(
       contexto,
@@ -191,10 +165,6 @@ export const roleService = {
     const atualizado = await memberRepository.setRoles(guildId, targetId, [...depois]);
     return toMember(atualizado);
   },
-
-  // -------------------------------------------------------------------------
-  // Permissões por canal
-  // -------------------------------------------------------------------------
 
   async listOverwrites(userId: string, guildId: string, channelId: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_ROLES", channelId);
@@ -209,10 +179,6 @@ export const roleService = {
     }));
   },
 
-  /**
-   * Grava o overwrite de um alvo (cargo ou pessoa) num canal. Lista vazia dos
-   * dois lados = "herdar", e aí o registro some em vez de ficar guardando nada.
-   */
   async setOverwrite(
     userId: string,
     guildId: string,
@@ -228,7 +194,6 @@ export const roleService = {
 
     if (input.type === "ROLE") {
       const role = await roleDoGuild(guildId, targetId);
-      // o @everyone é a base do canal e qualquer um com MANAGE_ROLES mexe nele
       if (!role.isEveryone) {
         accessService.requireAbove(contexto, role.position, "Este cargo está acima do seu");
       }
@@ -258,13 +223,6 @@ export const roleService = {
   },
 };
 
-/**
- * Emoji OU imagem, nunca os dois.
- *
- * Resolvido aqui e nao no schema porque o PATCH e parcial: quem manda um emoji
- * esta trocando o icone, entao a imagem sai junto — e vice-versa. Um
- * `.refine()` nao teria como saber disso sem enxergar o estado atual.
- */
 function normalizarIcone<T extends { iconEmoji?: string | null; iconUrl?: string | null }>(
   input: T,
 ): T {

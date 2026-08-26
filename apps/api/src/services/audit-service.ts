@@ -3,25 +3,17 @@ import { auditRepository } from "~/repositories/audit-repository.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import { accessService } from "./access-service.js";
 
-/**
- * O registro de auditoria é um efeito colateral, nunca um pré-requisito: se
- * gravar falhar, a ação que a pessoa pediu já aconteceu e não pode ser desfeita
- * por causa do log. Por isso `registrar` engole o próprio erro.
- */
 export interface EntradaDeAuditoria {
   guildId: string;
   actorId: string;
-  /** "role.create", "member.ban", "channel.update"… sempre alvo.verbo */
   action: string;
   targetType: string;
   targetId?: string;
-  /** nome no momento da ação — o alvo pode ser apagado depois */
   targetName?: string;
   changes?: Record<string, { de: unknown; para: unknown }>;
   reason?: string;
 }
 
-/** Diferença campo a campo, só do que mudou de verdade. */
 export function diferenca<T extends Record<string, unknown>>(antes: T, depois: Partial<T>) {
   const changes: Record<string, { de: unknown; para: unknown }> = {};
 

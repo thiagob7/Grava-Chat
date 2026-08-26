@@ -1,7 +1,3 @@
-/**
- * Simula um amigo: entra pelo convite, conversa e reage.
- * Uso: node apps/api/scripts/fake-friend.mjs <codigo-do-convite>
- */
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
@@ -40,9 +36,6 @@ const emit = (ev, p) =>
 
 await emit("channel:subscribe", { channelId: channel.id });
 
-// As salas do Socket.IO vivem no servidor e somem quando o socket cai. Sem
-// reinscrever no reconnect, o cliente fica mudo depois de qualquer queda —
-// o cliente web faz o mesmo em useRealtime.
 socket.on("connect", () => {
   socket.emit("channel:subscribe", { channelId: channel.id }, () => console.log("  (reinscrito apos reconexao)"));
 });

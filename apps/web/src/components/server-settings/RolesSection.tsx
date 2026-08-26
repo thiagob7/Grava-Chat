@@ -12,9 +12,7 @@ import { cn } from "~/lib/utils";
 interface RolesSectionProps {
   guildId: string;
   members: GuildMember[];
-  /** minhas permissões no servidor */
   minhasPermissoes: Permission[];
-  /** posição do meu cargo mais alto; o dono não tem teto */
   minhaPosicao: number;
   isOwner: boolean;
 }
@@ -34,11 +32,6 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
   const [arrastando, setArrastando] = useState<string | null>(null);
   const [ordem, setOrdem] = useState<RoleModel[] | null>(null);
 
-  /**
-   * A lista mostra do mais alto para o mais baixo, com o @everyone sempre no
-   * fim — é a leitura de hierarquia que o Discord usa e que casa com o cálculo:
-   * quem está em cima ganha do que está embaixo.
-   */
   const ordenados = useMemo(() => {
     const lista = [...roles].sort((a, b) => b.position - a.position);
     return lista.filter((r) => !r.isEveryone);
@@ -64,11 +57,6 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
     setOrdem(base);
     setArrastando(null);
 
-    /**
-     * As posições são recalculadas a partir do fim da lista: o último acima do
-     * @everyone é 1, e vai subindo. Mandar a ordem inteira evita o vaivém de
-     * empurrar um por um e acabar com dois cargos na mesma posição.
-     */
     const posicoes = base.map((role, indice) => ({ id: role.id, position: base.length - indice }));
 
     reorderRoles.mutate(

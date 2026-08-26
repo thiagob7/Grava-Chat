@@ -9,6 +9,7 @@ import { useReadStates } from "~/@core/application/queries/message/use-read-stat
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/components/Avatar";
+import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
 import { Composer } from "~/components/Composer";
 import { DmSidebar } from "~/components/DmSidebar";
 import { GuildRail } from "~/components/GuildRail";
@@ -18,10 +19,6 @@ import { useSession } from "~/contexts/session-context";
 import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
 
-/**
- * O "modo amigos": fora de qualquer servidor. Mostra a lista de amigos ou uma
- * conversa privada, dependendo da URL.
- */
 export const DirectMessages: React.FC = () => {
   const { channelId } = useParams();
   const navigate = useNavigate();
@@ -35,7 +32,6 @@ export const DirectMessages: React.FC = () => {
 
   useRealtime(undefined, channelId);
 
-  // Inscrição na conversa: é o que faz a mensagem do outro chegar sem refresh.
   useEffect(() => {
     if (channelId) void joinChannel(channelId).catch(() => undefined);
   }, [channelId]);
@@ -75,12 +71,13 @@ export const DirectMessages: React.FC = () => {
 
       {conversa ? (
         <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-          <header className="flex h-12 shrink-0 items-center gap-2 border-b border-black/20 px-4 shadow-sm">
+          <header className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
             <AtSign size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
             <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
           </header>
 
+          <AreaDeConversa>
           <MessageList
             channelId={conversa.id}
             channelName={conversa.user.displayName}
@@ -102,8 +99,11 @@ export const DirectMessages: React.FC = () => {
             }
           />
 
-          <TypingIndicator channelId={conversa.id} currentUserId={user.id} />
-          <Composer channelId={conversa.id} channelName={conversa.user.displayName} />
+          <RodapeDaConversa>
+            <TypingIndicator channelId={conversa.id} currentUserId={user.id} />
+            <Composer channelId={conversa.id} channelName={conversa.user.displayName} />
+          </RodapeDaConversa>
+          </AreaDeConversa>
         </main>
       ) : (
         <Friends onOpenConversation={(userId) => void abrirConversa(userId)} />

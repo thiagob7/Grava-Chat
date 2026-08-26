@@ -1,8 +1,3 @@
-/**
- * Regressao da corrida de refresh: o StrictMode do React (e duas abas abrindo
- * juntas) mandam DOIS refresh com o mesmo cookie ao mesmo tempo. Antes da
- * janela de tolerancia, o segundo derrubava a sessao.
- */
 const BASE = "http://localhost:3333";
 const ok = (m) => console.log(`  ok  ${m}`);
 
@@ -16,7 +11,6 @@ ok("logado, cookie de refresh recebido");
 
 const refresh = () => fetch(`${BASE}/api/auth/refresh`, { method: "POST", headers: { cookie } });
 
-// as duas chamadas saem juntas, com o MESMO cookie
 const [a, b] = await Promise.all([refresh(), refresh()]);
 if (a.status !== 200 || b.status !== 200) throw new Error(`corrida derrubou a sessao: ${a.status}/${b.status}`);
 ok("dois refresh simultaneos: ambos 200, sessao intacta");
@@ -33,13 +27,8 @@ ok("os dois cookies da corrida continuam validos");
 
 cookie = rotated[0].split(";")[0];
 
-/**
- * O caso que derrubava a sessao de verdade: um reload aborta a resposta do
- * refresh, o navegador NAO guarda o cookie novo e continua com o antigo. O
- * proximo pedido tem que reancorar a cadeia, e nao devolver 401.
- */
 const perdido = cookie;
-const respostaPerdida = await refresh(); // o "navegador" ignora este Set-Cookie
+const respostaPerdida = await refresh();
 if (respostaPerdida.status !== 200) throw new Error("refresh normal falhou");
 
 const recuperacao = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", headers: { cookie: perdido } });
@@ -53,12 +42,10 @@ cookie = novo.split(";")[0];
 if ((await refresh()).status !== 200) throw new Error("o cookie rotacionado nao funciona");
 ok("o cookie novo continua valido");
 
-// e um token realmente invalido continua sendo recusado
 const bad = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", headers: { cookie: "gravae_rt=inventado" } });
 if (bad.status !== 401) throw new Error(`token invalido devolveu ${bad.status}`);
 ok("token inventado continua sendo recusado com 401");
 
-// logout-all tambem depende do filtro de "campo ausente vs null"
 const fresh = await fetch(`${BASE}/api/auth/dev-login`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },

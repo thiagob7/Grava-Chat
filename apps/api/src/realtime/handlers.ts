@@ -18,23 +18,22 @@ import { accessService } from "~/services/access-service.js";
 import { messageService } from "~/services/message-service.js";
 import { presenceService } from "~/services/presence-service.js";
 import { voiceService, VOICE_GRACE_MS } from "~/services/voice-service.js";
+import {
+  apagarMensagem,
+  editarMensagem,
+  enviarMensagem,
+  invocarComando,
+  reagir,
+} from "./difusao.js";
 import { io, type SocketData } from "./io.js";
 
 type GravaeSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
-/**
- * Envelope único de todo evento: valida o payload com o schema compartilhado,
- * chama o service e responde o ack. Sem isso, cada handler repetiria try/catch
- * e um payload malformado derrubaria o processo (exceção em callback assíncrono
- * de socket não tem quem pegue).
- */
 function on<E extends ClientEventName>(
   socket: GravaeSocket,
   event: E,
   handler: (payload: z.infer<(typeof clientEventSchemas)[E]>, socket: GravaeSocket) => Promise<unknown>,
 ) {
-  // O Socket tipado exige a assinatura exata de cada evento; aqui o listener é
-  // genérico de propósito, então passamos pela versão sem tipos do .on().
   const listen = socket.on.bind(socket) as (
     e: string,
     l: (raw: unknown, ack?: Ack<unknown>) => void,
@@ -68,8 +67,6 @@ function on<E extends ClientEventName>(
 export function registerHandlers(socket: GravaeSocket) {
   const userId = socket.data.userId;
 
-  // ------------------------------- canais ---------------------------------
-
   on(socket, "channel:subscribe", async ({ channelId }) => {
     await accessService.requireChannelAccess(userId, channelId);
     await socket.join(rooms.channel(channelId));
@@ -81,52 +78,52 @@ export function registerHandlers(socket: GravaeSocket) {
     return { channelId };
   });
 
-  // ------------------------------ mensagens --------------------------------
-
+  /*
+    O `except(socket.id)` mais o `socket.emit` com o `nonce` são o eco de
+    quem mandou: a tela dele já desenhou a mensagem e precisa do `nonce` para
+    reconhecer qual das suas era. O resto do canal recebe sem.
+  */
   on(socket, "message:send", async (payload) => {
-    const message = await messageService.send(userId, payload);
-
-    /**
-     * O nonce volta só pro autor: é como o cliente troca a mensagem otimista
-     * (a que já apareceu na tela) pela real, sem duplicar nem piscar.
-     */
-    const room = io().to(rooms.channel(payload.channelId));
-    room.except(socket.id).emit("message:created", message);
+    const message = await enviarMensagem(userId, payload, socket.id);
     socket.emit("message:created", { ...message, nonce: payload.nonce });
 
     return { id: message.id };
   });
 
   on(socket, "message:edit", async (payload) => {
-    const message = await messageService.edit(userId, payload);
-    io().to(rooms.channel(message.channelId)).emit("message:updated", message);
+    const message = await editarMensagem(userId, payload);
     return { id: message.id };
   });
 
   on(socket, "message:delete", async ({ messageId }) => {
-    const result = await messageService.remove(userId, messageId);
-    io().to(rooms.channel(result.channelId)).emit("message:deleted", result);
+    await apagarMensagem(userId, messageId);
     return { id: messageId };
   });
 
-  const broadcastReactions = async (messageId: string, emoji: string, add: boolean) => {
-    const { channelId, reactions } = await messageService.react(userId, messageId, emoji, add);
+  on(socket, "command:invoke", async (payload) => {
+    const message = await invocarComando(userId, payload);
+    return { messageId: message.id };
+  });
 
-    // Uma emissão para a sala inteira; cada cliente resolve o próprio "me" a
-    // partir dos ids. Ver a nota em reactionStateSchema.
-    io().to(rooms.channel(channelId)).emit("message:reactions", { messageId, channelId, reactions });
+  on(socket, "message:react", async ({ messageId, emoji, burst }) => {
+    const { messageId: id } = await reagir(userId, messageId, emoji, true, burst ?? false);
+    return { messageId: id, emoji };
+  });
+
+  on(socket, "message:unreact", async ({ messageId, emoji }) => {
+    await reagir(userId, messageId, emoji, false);
     return { messageId, emoji };
-  };
-
-  on(socket, "message:react", ({ messageId, emoji }) => broadcastReactions(messageId, emoji, true));
-  on(socket, "message:unreact", ({ messageId, emoji }) => broadcastReactions(messageId, emoji, false));
+  });
 
   on(socket, "message:ack", async ({ channelId, messageId }) => {
     await messageService.markRead(userId, channelId, messageId);
     return { channelId };
   });
 
-  // -------------------------- digitando / presença --------------------------
+  on(socket, "message:unread", async ({ channelId, messageId }) => {
+    await messageService.markUnread(userId, channelId, messageId);
+    return { channelId };
+  });
 
   on(socket, "poll:vote", async ({ messageId, optionId }) => {
     const message = await messageService.votar(userId, messageId, optionId);
@@ -146,7 +143,6 @@ export function registerHandlers(socket: GravaeSocket) {
     await accessService.requireChannelAccess(userId, channelId);
     const user = await userRepository.findByIdOrThrow(userId);
 
-    // só pros outros: ver o próprio "digitando" seria estranho
     socket.to(rooms.channel(channelId)).emit("typing:started", { channelId, user: toPublicUser(user) });
     return null;
   });
@@ -155,27 +151,22 @@ export function registerHandlers(socket: GravaeSocket) {
     await presenceService.setDesired(userId, status);
     await broadcastPresence(userId);
 
-    /**
-     * O eco pra propria pessoa vai num evento SEPARADO, com o valor desejado.
-     *
-     * Os sockets dela tambem estao nas salas dos servidores, entao o
-     * `presence:changed` do broadcast chega dizendo que ELA esta offline quando
-     * fica invisivel. Sem este evento, o proprio app mostraria "offline" pra
-     * quem acabou de escolher "invisivel" — e nao ha como o servidor distinguir
-     * os dois casos do outro lado.
-     */
     io().to(rooms.user(userId)).emit("presence:self", { status });
     return { status };
   });
 
-  /** Ausencia detectada pelo cliente. Nao mexe no status escolhido. */
   on(socket, "presence:afk", async ({ idle }) => {
     await presenceService.setIdle(userId, idle);
     await broadcastPresence(userId);
     return { idle };
   });
 
-  // --------------------------------- voz -----------------------------------
+  on(socket, "voice:token", ({ channelId }) => voiceService.issueToken(userId, channelId));
+
+  on(socket, "voice:onde", async ({ userId: alvo }) => {
+    const estado = await voiceService.get(alvo);
+    return { channelId: estado?.channelId ?? null };
+  });
 
   on(socket, "voice:join", async ({ channelId, resume }) => {
     const { state, left } = await voiceService.join(userId, channelId, socket.id, resume);
@@ -183,10 +174,6 @@ export function registerHandlers(socket: GravaeSocket) {
 
     if (left) announceLeave(left.guildId, left.channelId, userId);
 
-    /**
-     * O evento vai pra sala do SERVIDOR, não do canal: quem está em #geral
-     * também precisa ver quem entrou na Sala 1 na barra lateral.
-     */
     io().to(rooms.guild(state.guildId)).emit("voice:joined", state);
     return state;
   });
@@ -205,11 +192,6 @@ export function registerHandlers(socket: GravaeSocket) {
     return state;
   });
 
-  /**
-   * Efeito sonoro: o servidor não mixa nada na chamada — manda o endereço do
-   * arquivo e cada cliente toca. Mixar na track significaria republicar áudio a
-   * cada clique, o que pica a conversa de todo mundo.
-   */
   on(socket, "voice:sound", async ({ soundId }) => {
     const estado = await voiceService.get(userId);
     if (!estado) throw new AppError("Você não está numa chamada");
@@ -268,11 +250,6 @@ export function registerHandlers(socket: GravaeSocket) {
     return { userId: alvoId };
   });
 
-  /**
-   * Mover: o servidor tira a pessoa da sala de mídia antiga e AVISA a aba dela
-   * pra entrar na nova. Não dá pra "empurrar" alguém para outra sala do SFU —
-   * quem conecta é sempre o cliente, com o token dele.
-   */
   on(socket, "voice:moveMember", async ({ userId: alvoId, channelId }) => {
     const estado = await voiceService.get(alvoId);
     if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
@@ -289,27 +266,11 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 }
 
-/**
- * Sempre na sala do SERVIDOR, nunca na do canal: ninguém se inscreve na sala de
- * um canal de voz, então um aviso mandado pra lá não chegaria em ninguém.
- */
 function announceLeave(guildId: string, channelId: string, userId: string) {
   io().to(rooms.guild(guildId)).emit("voice:left", { channelId, userId });
 }
 
-/**
- * Presença muda pra todos os servidores em que a pessoa está.
- *
- * Fica aqui e não no service de propósito: o service não conhece Socket.IO — é
- * isso que permite testá-lo sem subir servidor. Quem publica é a camada de
- * tempo real.
- */
 export async function broadcastPresence(userId: string, status?: PresenceStatus) {
-  /**
-   * Sem `status`, projeta na hora. E o caminho normal desde que existe
-   * invisivel: quem chama nao deve precisar saber traduzir escolha em
-   * aparencia — essa regra mora num lugar so, no `presenceService`.
-   */
   const projetado = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
   const memberships = await memberRepository.guildIdsOf(userId);
 
@@ -318,13 +279,6 @@ export async function broadcastPresence(userId: string, status?: PresenceStatus)
     .emit("presence:changed", { userId, status: projetado });
 }
 
-/**
- * Fechou a aba, caiu a internet, deu reload: a conexão dona sumiu.
- *
- * Não encerra na hora. Marca como órfão e espera a janela de tolerância — um
- * reload reconecta em ~2s e a pessoa espera continuar na chamada, que é o que o
- * Discord faz. Se ninguém reassumir, aí sim encerra e avisa o servidor.
- */
 export async function cleanupVoiceOnDisconnect(userId: string, socketId: string) {
   const orphaned = await voiceService.orphan(userId, socketId);
   if (!orphaned) return;
