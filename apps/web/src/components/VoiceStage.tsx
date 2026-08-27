@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { Maximize, Mic, MicOff, Minimize, MonitorUp, Play, X } from "lucide-react";
 
 import type {
@@ -57,10 +58,22 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     return () => document.removeEventListener("fullscreenchange", sincronizar);
   }, []);
 
-  const alternarTelaCheia = () => {
-    if (document.fullscreenElement) return void document.exitFullscreen().catch(() => undefined);
+  const alternarTelaCheia = async () => {
+    try {
+      if (document.fullscreenElement) return void (await document.exitFullscreen());
 
-    void quadro.current?.requestFullscreen().catch(() => undefined);
+      if (!document.fullscreenEnabled) {
+        toast.error("Este navegador não está permitindo tela cheia aqui.");
+        return;
+      }
+
+      await quadro.current?.requestFullscreen();
+    } catch (erro) {
+      /// Silenciar aqui foi o que fez o clique parecer quebrado: sem efeito e
+      /// sem explicação. Se o navegador recusa, ele tem um motivo — mostra.
+      const motivo = erro instanceof Error ? erro.message : String(erro);
+      toast.error(`Não consegui abrir em tela cheia: ${motivo}`);
+    }
   };
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);

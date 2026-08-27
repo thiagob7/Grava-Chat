@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   Headphones,
   Maximize,
@@ -126,9 +127,23 @@ function useTelaCheia(alvo?: React.RefObject<HTMLElement | null>) {
 
   const alternar = async () => {
     try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await (alvo?.current ?? document.documentElement).requestFullscreen();
-    } catch {
+      if (document.fullscreenElement) return void (await document.exitFullscreen());
+
+      /*
+        Quando o navegador proíbe tela cheia — política de permissão, iframe sem
+        `allowfullscreen`, ou o Electron com a janela travada — o `catch` mudo
+        de antes fazia o clique não produzir NADA, nem erro nem efeito. Agora
+        diz o que aconteceu, que é o mínimo pra quem clicou entender.
+      */
+      if (!document.fullscreenEnabled) {
+        toast.error("Este navegador não está permitindo tela cheia aqui.");
+        return;
+      }
+
+      await (alvo?.current ?? document.documentElement).requestFullscreen();
+    } catch (erro) {
+      const motivo = erro instanceof Error ? erro.message : String(erro);
+      toast.error(`Não consegui abrir em tela cheia: ${motivo}`);
     }
   };
 
