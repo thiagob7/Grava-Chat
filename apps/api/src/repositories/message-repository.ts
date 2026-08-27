@@ -1,4 +1,5 @@
-import type { Attachment, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { Attachment } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 import { unset } from "~/lib/mongo.js";
 
@@ -187,12 +188,36 @@ export const readStateRepository = {
     });
   },
 
-  markRead(userId: string, channelId: string, messageId: string | null) {
-    return prisma.readState.upsert({
-      where: { userId_channelId: { userId, channelId } },
-      create: { userId, channelId, lastReadMessageId: messageId, mentionCount: 0 },
-      update: { lastReadMessageId: messageId, mentionCount: 0 },
-    });
+  /*
+    Marcar como lido acontece em rajada: abrir vários canais, o bot despejando
+    mensagens, duas abas do mesmo usuário. O `upsert` do Prisma no Mongo é
+    leitura-e-escrita dentro de uma transação, então duas rajadas no MESMO
+    documento colidem e o servidor devolve P2034 — que chegava na tela como
+    "Erro inesperado", em série.
+
+    A recomendação do próprio Prisma para P2034 é repetir. Aqui isso é seguro
+    porque a operação é idempotente: o resultado de marcar lido duas vezes é o
+    mesmo de marcar uma.
+  */
+  async markRead(userId: string, channelId: string, messageId: string | null) {
+    for (let tentativa = 0; ; tentativa++) {
+      try {
+        return await prisma.readState.upsert({
+          where: { userId_channelId: { userId, channelId } },
+          create: { userId, channelId, lastReadMessageId: messageId, mentionCount: 0 },
+          update: { lastReadMessageId: messageId, mentionCount: 0 },
+        });
+      } catch (erro) {
+        const conflito =
+          erro instanceof Prisma.PrismaClientKnownRequestError && erro.code === "P2034";
+
+        if (!conflito || tentativa >= 3) throw erro;
+
+        /// Espera crescente e curta: 20ms, 40ms, 80ms. O conflito dura o tempo
+        /// da outra transação, que aqui é uma escrita de um documento só.
+        await new Promise((r) => setTimeout(r, 20 * 2 ** tentativa));
+      }
+    }
   },
 };
 
