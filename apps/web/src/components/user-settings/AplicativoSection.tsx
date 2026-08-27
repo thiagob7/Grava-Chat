@@ -20,10 +20,10 @@ export const AplicativoSection: React.FC = () => (
       </p>
     </div>
 
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="space-y-3">
       <div className="rounded-lg border border-line bg-surface-1 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
-          <Apple size={16} /> macOS — Apple Silicon
+          <Apple size={16} /> macOS — Intel e Apple Silicon
         </p>
 
         <Button asChild className="mt-3 w-full">
@@ -64,9 +64,5 @@ export const AplicativoSection: React.FC = () => (
       </div>
     </div>
 
-    <p className="text-xs text-ink-faint">
-      Mac com processador Intel ainda não tem instalador — nele, use o Gravaê
-      pelo navegador.
-    </p>
   </div>
 );

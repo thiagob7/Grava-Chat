@@ -52,8 +52,11 @@ mac:
   category: public.app-category.social-networking
   icon: build/icon.icns
   target:
+    # `universal` empacota Intel e Apple Silicon no mesmo .dmg. Sai o dobro do
+    # tamanho (~220 MB), e vale: com dois arquivos separados, quem baixa tem que
+    # saber qual processador tem — e metade erra.
     - target: dmg
-      arch: [arm64]
+      arch: [universal]
   # Sem conta de desenvolvedor Apple: assinatura ad-hoc. Dá ao app uma
   # identidade estável, que é do que o TCC precisa pra guardar a permissão.
   identity: "-"
