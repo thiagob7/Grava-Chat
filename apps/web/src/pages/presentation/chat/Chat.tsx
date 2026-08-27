@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Hash, MessageSquare, MessagesSquare, Users, Volume2 } from "lucide-react";
+import { Hash, Menu, MessageSquare, MessagesSquare, Users, Volume2 } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
@@ -9,6 +9,8 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-member";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
+import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
 import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
 import { CampoDeBusca } from "~/components/CampoDeBusca";
@@ -138,6 +140,9 @@ export const Chat: React.FC = () => {
     void joinVoice(channelId).catch(() => undefined);
   };
 
+  const telaEstreita = useTelaEstreita();
+  const [menuAberto, setMenuAberto] = useState(false);
+
   const handleLogout = async () => {
     await logout.mutateAsync().catch(() => undefined);
     endSession();
@@ -163,45 +168,81 @@ export const Chat: React.FC = () => {
     );
   }
 
+  /*
+    As mesmas duas colunas servem os dois tamanhos de tela. No desktop elas
+    ficam no fluxo; no celular, dentro de uma gaveta — e por isso viram uma
+    variável em vez de JSX repetido: duplicar essa lista de props seria garantir
+    que uma das cópias ficasse pra trás na próxima mudança.
+  */
+  const navegacao = (
+    <>
+        <GuildRail
+          activeGuildId={routeGuildId ?? null}
+          onSelect={(id) => navigate(`/channels/${id}`)}
+          onOpenFriends={() => navigate("/dm")}
+          pendingFriendRequests={pedidosPendentes}
+        />
+
+        <ChannelSidebar
+          detail={detail}
+          summary={summary}
+          activeChannelId={routeChannelId}
+          readStates={readStates}
+          user={user}
+          onSelectChannel={(id) => {
+          selectChannel(id);
+          setMenuAberto(false);
+        }}
+          onLogout={() => void handleLogout()}
+          accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
+          onMoveCallHere={(channelId) => void joinVoice(channelId).catch(() => undefined)}
+          /*
+            O ícone de chat abre o canal de voz e o chat dele — sem entrar na
+            chamada. Por isso `navigate` direto, e não o `selectChannel`, que
+            conecta o microfone ao chegar num canal de voz.
+          */
+          onOpenVoiceChat={(id) => {
+            navigate(`/channels/${routeGuildId}/${id}`);
+            setChatDaVozAberto(true);
+          }}
+          onLeaveGuild={() => {
+            if (!routeGuildId || !user) return;
+            removeMember.mutate(
+              { guildId: routeGuildId, userId: user.id },
+              { onSuccess: () => navigate("/channels", { replace: true }) },
+            );
+          }}
+        />
+    </>
+  );
+
   return (
     <div className="flex h-full">
-      <GuildRail
-        activeGuildId={routeGuildId ?? null}
-        onSelect={(id) => navigate(`/channels/${id}`)}
-        onOpenFriends={() => navigate("/dm")}
-        pendingFriendRequests={pedidosPendentes}
-      />
-
-      <ChannelSidebar
-        detail={detail}
-        summary={summary}
-        activeChannelId={routeChannelId}
-        readStates={readStates}
-        user={user}
-        onSelectChannel={selectChannel}
-        onLogout={() => void handleLogout()}
-        accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
-        onMoveCallHere={(channelId) => void joinVoice(channelId).catch(() => undefined)}
-        /*
-          O ícone de chat abre o canal de voz e o chat dele — sem entrar na
-          chamada. Por isso `navigate` direto, e não o `selectChannel`, que
-          conecta o microfone ao chegar num canal de voz.
-        */
-        onOpenVoiceChat={(id) => {
-          navigate(`/channels/${routeGuildId}/${id}`);
-          setChatDaVozAberto(true);
-        }}
-        onLeaveGuild={() => {
-          if (!routeGuildId || !user) return;
-          removeMember.mutate(
-            { guildId: routeGuildId, userId: user.id },
-            { onSuccess: () => navigate("/channels", { replace: true }) },
-          );
-        }}
-      />
+      {telaEstreita ? (
+        <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
+          {/* O Sheet nasce à direita; aqui ele vira gaveta da esquerda, que é
+              de onde a navegação sai em qualquer app de celular. */}
+          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0 data-[state=open]:slide-in-from-left">
+            <SheetTitle className="sr-only">Servidores e canais</SheetTitle>
+            {navegacao}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        navegacao
+      )}
 
       <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
         <header className="@container flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
+          {telaEstreita && (
+            <button
+              onClick={() => setMenuAberto(true)}
+              aria-label="Abrir servidores e canais"
+              className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+            >
+              <Menu size={20} />
+            </button>
+          )}
+
           {channel?.type === "VOICE" ? (
             <Volume2 size={20} className="text-ink-faint" />
           ) : channel?.type === "FORUM" ? (

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { AtSign } from "lucide-react";
+import { AtSign, Menu } from "lucide-react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -12,6 +12,8 @@ import { Avatar } from "~/components/Avatar";
 import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
 import { Composer } from "~/components/Composer";
 import { DmSidebar } from "~/components/DmSidebar";
+import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { GuildRail } from "~/components/GuildRail";
 import { MessageList } from "~/components/MessageList";
 import { TypingIndicator } from "~/components/TypingIndicator";
@@ -49,10 +51,13 @@ export const DirectMessages: React.FC = () => {
     endSession();
   };
 
+  const telaEstreita = useTelaEstreita();
+  const [menuAberto, setMenuAberto] = useState(false);
+
   if (!user) return null;
 
-  return (
-    <div className="flex h-full">
+  const navegacao = (
+    <>
       <GuildRail
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
@@ -65,13 +70,42 @@ export const DirectMessages: React.FC = () => {
         readStates={readStates}
         user={user}
         onOpenFriends={() => navigate("/dm")}
-        onSelectDm={(id) => navigate(`/dm/${id}`)}
+        onSelectDm={(id) => {
+          navigate(`/dm/${id}`);
+          setMenuAberto(false);
+        }}
         onLogout={() => void sair()}
       />
+    </>
+  );
+
+  return (
+    <div className="flex h-full">
+      {/* Mesma navegação nos dois tamanhos: no fluxo em telas largas, dentro de
+          uma gaveta no celular. Ver o comentário equivalente em Chat.tsx. */}
+      {telaEstreita ? (
+        <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
+          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0 data-[state=open]:slide-in-from-left">
+            <SheetTitle className="sr-only">Conversas</SheetTitle>
+            {navegacao}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        navegacao
+      )}
 
       {conversa ? (
         <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
           <header className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
+            {telaEstreita && (
+              <button
+                onClick={() => setMenuAberto(true)}
+                aria-label="Abrir conversas"
+                className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+              >
+                <Menu size={20} />
+              </button>
+            )}
             <AtSign size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
             <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
