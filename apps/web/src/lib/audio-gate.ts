@@ -336,17 +336,43 @@ export async function criarMedidorDeTeste(deviceId?: string) {
 
   const ctx = new AudioContext();
   const fonte = ctx.createMediaStreamSource(stream);
+
+  /*
+    Os MESMOS filtros da cadeia de chamada. Sem eles o teste devolvia o microfone
+    cru: a tela promete "verde é o que sai daqui" e entregava outra coisa, então
+    quem ouvia o próprio assobio aqui concluía que o filtro não funcionava — mas
+    na chamada ele estava lá.
+
+    Se os valores mudarem em `montarCadeia`, mudam aqui junto; é o preço de ter
+    dois caminhos de áudio, e o teste mentir é pior que a duplicação.
+  */
+  const passaAlta = ctx.createBiquadFilter();
+  passaAlta.type = "highpass";
+  passaAlta.frequency.value = 100;
+
+  const passaBaixa = ctx.createBiquadFilter();
+  passaBaixa.type = "lowpass";
+  passaBaixa.frequency.value = 8000;
+
+  const saida = ctx.createMediaStreamDestination();
   const analisador = ctx.createAnalyser();
   analisador.fftSize = 1024;
-  fonte.connect(analisador);
+
+  fonte.connect(passaAlta);
+  passaAlta.connect(passaBaixa);
+  passaBaixa.connect(analisador);
+  passaBaixa.connect(saida);
 
   const buffer = new Float32Array(analisador.fftSize) as Float32Array<ArrayBuffer>;
 
   return {
-    stream,
+    /// O stream filtrado, que é o que o "Ouvir minha voz" toca de volta.
+    stream: saida.stream,
     ler: () => nivelDe(analisador, buffer),
     parar: () => {
       fonte.disconnect();
+      passaAlta.disconnect();
+      passaBaixa.disconnect();
       stream.getTracks().forEach((t) => t.stop());
       void ctx.close();
     },
