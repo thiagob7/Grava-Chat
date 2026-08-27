@@ -17,7 +17,15 @@ import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 
 export const AppRoutes: React.FC = () => (
   <BrowserRouter>
-    <BarraDeTitulo />
+    {/*
+      A coluna vive AQUI, e não no #root: lá dentro moram também o container de
+      avisos, o seletor de tela e o visualizador de imagem. Distribuir altura
+      entre todos eles deixava a aplicação ocupando um pedaço da janela.
+    */}
+    <div className="flex h-full flex-col">
+      <BarraDeTitulo />
+
+      <div className="min-h-0 flex-1">
     <Routes>
       <Route path="/login" element={<PublicOnly />} />
       <Route
@@ -62,6 +70,8 @@ export const AppRoutes: React.FC = () => (
       />
       <Route path="*" element={<Navigate to="/channels" replace />} />
     </Routes>
+      </div>
+    </div>
 
     <FloatingScreenShare />
   </BrowserRouter>
