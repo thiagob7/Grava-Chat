@@ -2,8 +2,10 @@ import * as React from "react";
 
 import { cn } from "~/lib/utils";
 
+// O anel no foco e o que faltava: so a borda mudando de cinza pra cinza mais
+// claro passa despercebido, ainda mais em tema escuro.
 export const campoBase =
-  "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition-colors placeholder:text-ink-faint focus-visible:border-campo-foco disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
+  "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-campo-foco focus-visible:ring-2 focus-visible:ring-brand/25 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
 export const Input = ({ className, ...props }: React.ComponentProps<"input">) => (
   <input className={cn(campoBase, "h-10 py-1", className)} {...props} />
@@ -17,7 +19,7 @@ export const campoDeCor =
   "shrink-0 cursor-pointer rounded-lg border border-white/5 bg-campo p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export const grupoDeCampo =
-  "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition-colors focus-within:border-campo-foco";
+  "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition focus-within:border-campo-foco focus-within:ring-2 focus-within:ring-brand/25";
 
 export const campoNu =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
@@ -25,8 +27,10 @@ export const campoNu =
 export const cartaoDeEscolha = (escolhido: boolean) =>
   cn(
     "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",
+    // Selecionado = borda cheia + fundo tingido da marca. So a borda vermelha
+    // fina, que era o que tinha antes, lia como erro em vez de escolha.
     escolhido
-      ? "border-brand/60 bg-surface-3"
+      ? "border-brand bg-brand/10 text-ink"
       : "border-white/5 bg-campo hover:border-white/10 hover:bg-surface-3/60",
   );
 
@@ -89,7 +93,7 @@ export function GrupoSegmentado<T extends string>({
           className={cn(
             "h-10 flex-1 rounded-lg border text-sm transition-colors",
             valor === o.valor
-              ? "border-brand/60 bg-surface-3 text-ink"
+              ? "border-brand bg-brand/10 text-ink"
               : "border-white/5 bg-campo text-ink-muted hover:border-white/10 hover:text-ink",
           )}
         >

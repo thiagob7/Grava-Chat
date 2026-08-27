@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from "react";
-import { PlusCircle } from "lucide-react";
+import { Camera, Pencil, PlusCircle } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 import type {
   Emblema,
@@ -43,12 +43,24 @@ interface ProfileCardVisualProps {
   cargos?: Role[];
   emblemas?: Emblema[];
   acoesDoTopo?: ReactNode;
+  /// Linha compacta logo abaixo do @username, como no Discord: [Mensagem] [⋯].
+  /// Diferente de `children`, que cai no rodape do cartao.
+  acoes?: ReactNode;
   children?: ReactNode;
   className?: string;
   editavel?: boolean;
   onEtiqueta?: (valor: string) => void;
   onEtiquetaDoServidor?: (guildId: string | null) => void;
   onStatus?: () => void;
+  /// Edicao pelo proprio cartao, como no Discord: lapis na faixa e camera
+  /// sobre o avatar. So aparecem quando o pai passa o callback.
+  onEditarFaixa?: () => void;
+  /// Quando o pai quer um menu no lugar do botao simples da faixa: ele manda
+  /// o proprio gatilho (um DropdownMenu), e o cartao so o posiciona.
+  menuDaFaixa?: ReactNode;
+  onEditarFoto?: () => void;
+  /// Edicao da descricao no proprio cartao: clicou, virou campo.
+  onBio?: (valor: string) => void;
 }
 
 export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
@@ -68,16 +80,23 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   cargos = [],
   emblemas = [],
   acoesDoTopo,
+  acoes,
   children,
   className,
   editavel = false,
   onEtiqueta,
   onEtiquetaDoServidor,
   onStatus,
+  onEditarFaixa,
+  menuDaFaixa,
+  onEditarFoto,
+  onBio,
 }) => {
   const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
+  const [editandoBio, setEditandoBio] = useState(false);
 
   const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
+  const molduraDoCartao = classeDoEnfeite("moldura", perfil?.moldura);
   const efeito = classeDoEnfeite("perfil", perfil?.efeito);
   const placa = classeDoEnfeite("placa", perfil?.placa);
 
@@ -92,9 +111,24 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
   return (
     <div
-      className={cn("overflow-hidden rounded-lg bg-surface-0", className)}
+      className={cn(
+        "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
+        className,
+      )}
       style={tema}
     >
+      {/*
+        A moldura emoldura o cartao inteiro — o retrato fica com a decoracao.
+        Camada por cima de tudo, sem borda: borda empurraria o conteudo pra
+        dentro e mudaria o layout a cada troca de enfeite.
+      */}
+      {molduraDoCartao && (
+        <span
+          aria-hidden
+          className={cn("gc-camada--cartao", molduraDoCartao)}
+          style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
+        />
+      )}
       <div
         className="relative aspect-[5/2] bg-cover bg-center"
         style={{
@@ -105,9 +139,25 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         }}
       >
         {acoesDoTopo}
+
+        {menuDaFaixa && (
+          <div className="absolute right-3 top-3">{menuDaFaixa}</div>
+        )}
+
+        {!menuDaFaixa && onEditarFaixa && (
+          <button
+            type="button"
+            onClick={onEditarFaixa}
+            aria-label="Trocar a faixa do cartão"
+            title="Trocar a faixa"
+            className="absolute right-3 top-3 rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
+          >
+            <Pencil size={15} />
+          </button>
+        )}
       </div>
 
-      <div className="relative px-4 pb-4 [--gc-recorte:var(--color-surface-0)]">
+      <div className="relative px-5 pb-5 [--gc-recorte:var(--color-surface-0)]">
         {efeito && (
           <span
             aria-hidden
@@ -116,12 +166,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           />
         )}
 
-        <div className="relative -mt-10 mb-3 flex items-start gap-3">
+        <div className="relative -mt-12 mb-3 flex items-start gap-3">
+          <span className="relative shrink-0">
           <Avatar
             id={id}
             name={displayName}
             url={avatarUrl}
-            size={72}
+            size={88}
             status={status}
             enfeites={perfil}
             animar
@@ -131,21 +182,39 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             )}
           />
 
+          {onEditarFoto && (
+            <button
+              type="button"
+              onClick={onEditarFoto}
+              aria-label="Trocar a foto de perfil"
+              title="Trocar a foto"
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition hover:opacity-100 focus-visible:opacity-100"
+            >
+              <Camera size={22} />
+            </button>
+          )}
+          </span>
+
+          {/*
+            Balão de pensamento: as duas bolinhas sobem pra cima-esquerda
+            saindo dele, como no Discord. O ml-2 é pra não encostar em
+            decoração de avatar, que vaza pra fora dos 72px do retrato.
+          */}
           {(statusPersonalizado || onStatus) && (
-            <span className="relative mt-1 min-w-0">
+            <span className="relative ml-2 mt-8 min-w-0">
               <span
                 aria-hidden
-                className="absolute -bottom-1 -left-2 size-2.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
+                className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
               />
               <span
                 aria-hidden
-                className="absolute -bottom-3 -left-4 size-1.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
+                className="absolute -left-5 -top-2.5 size-1.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
               />
 
               {onStatus ? (
                 <button
                   onClick={onStatus}
-                  className="flex max-w-52 items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-2 text-left text-sm text-ink-muted shadow-lg shadow-black/30 transition hover:bg-surface-4 hover:text-ink"
+                  className="flex max-w-52 items-center gap-2 rounded-full bg-surface-3 px-4 py-2.5 text-left text-sm text-ink-muted shadow-lg shadow-black/30 transition hover:bg-surface-4 hover:text-ink"
                 >
                   {statusPersonalizado ? (
                     <>
@@ -159,9 +228,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   ) : (
                     <>
                       <PlusCircle size={14} className="shrink-0" />
-                      <span className="whitespace-nowrap">
-                        Adicionar status
-                      </span>
+                      <span className="truncate italic">Adicionar status</span>
                     </>
                   )}
                 </button>
@@ -278,6 +345,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             ))}
           </p>
 
+          {acoes && <div className="mt-3 flex items-center gap-2">{acoes}</div>}
+
           {(mutualGuilds > 0 || mutualFriends > 0) && (
             <p className="mt-2 text-xs text-ink-faint">
               {[
@@ -291,19 +360,55 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </p>
           )}
 
-          {bio && (
-            <>
-              <div className="my-3 h-px bg-line" />
-              <p className="whitespace-pre-wrap text-sm text-ink-muted">
-                {bio}
-              </p>
-            </>
+          {/*
+            O Discord separa as secoes do cartao por espaco, nao por regua —
+            e o que da a ele aquele ar de painel em vez de ficha. As linhas
+            divisorias que existiam aqui picotavam o cartao em blocos.
+          */}
+          {onBio ? (
+            /*
+              No cartao do dono, a descricao e o proprio campo: clicou, virou
+              textarea com contador — o mesmo gesto do Discord. Fora do modo de
+              edicao ela continua sendo so texto.
+            */
+            editandoBio ? (
+              <div className="mt-4">
+                <textarea
+                  autoFocus
+                  rows={3}
+                  value={bio ?? ""}
+                  onChange={(e) => onBio(e.target.value)}
+                  onBlur={() => setEditandoBio(false)}
+                  maxLength={LIMITS.bio}
+                  placeholder="Conte algo sobre você"
+                  className="w-full resize-none rounded-lg border border-brand/70 bg-surface-1 px-3 py-2 text-sm text-ink outline-none ring-2 ring-brand/25 placeholder:text-ink-faint"
+                />
+                <p className="mt-1 text-right text-xs text-ink-faint">
+                  {(bio ?? "").length} / {LIMITS.bio}
+                </p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditandoBio(true)}
+                className="mt-4 block w-full rounded-lg px-1 py-0.5 text-left text-sm transition hover:bg-surface-3/60"
+              >
+                {bio ? (
+                  <span className="whitespace-pre-wrap text-ink">{bio}</span>
+                ) : (
+                  <span className="italic text-ink-faint">
+                    Clique para adicionar uma descrição
+                  </span>
+                )}
+              </button>
+            )
+          ) : (
+            bio && <p className="mt-4 whitespace-pre-wrap text-sm text-ink">{bio}</p>
           )}
 
           {cargos.length > 0 && (
             <>
-              <div className="my-3 h-px bg-line" />
-              <p className="mb-1.5 text-xs font-semibold uppercase text-ink-faint">
+              <p className="mb-1.5 mt-4 text-xs text-ink-faint">
                 {cargos.length === 1 ? "Cargo" : `Cargos — ${cargos.length}`}
               </p>
 
@@ -339,11 +444,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {createdAt && (
             <>
-              <div className="my-3 h-px bg-line" />
-              <p className="text-xs font-semibold uppercase text-ink-faint">
-                Membro desde
-              </p>
-              <p className="text-sm text-ink-muted">
+              <p className="mt-4 text-xs text-ink-faint">Membro desde</p>
+              <p className="text-sm text-ink">
                 {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
                   new Date(createdAt),
                 )}

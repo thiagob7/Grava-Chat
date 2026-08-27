@@ -121,7 +121,14 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           );
         })}
 
-        <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
+        {/*
+          Sem este guarda, quem nao tem servidor ve dois tracinhos colados: o
+          de cima separa as mensagens da lista, e este separaria a lista do "+"
+          — mas nao ha lista nenhuma no meio.
+        */}
+        {guilds.length > 0 && (
+          <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
+        )}
 
         <Tooltip label="Criar servidor" side="right">
           <button

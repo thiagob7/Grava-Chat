@@ -3,18 +3,14 @@ import { ImageUp, Upload, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
 import { importarImagem } from "~/@core/application/requests/upload/importar-imagem";
-import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
+import { useEnvioDeImagemDePerfil } from "~/hooks/use-envio-de-imagem-de-perfil";
 import { SeletorDeImagem } from "~/components/SeletorDeImagem";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { CampoDeCor } from "~/components/user-settings/perfil/campos";
 import type { RascunhoDePerfil } from "~/components/user-settings/perfil/rascunho";
-import { formatBytes } from "~/lib/image";
 import { toast } from "react-toastify";
-
-const AVATAR_MAX_PX = 256;
-const BANNER_MAX_PX = 640;
 
 interface IdentidadeAbaProps {
   id: string;
@@ -24,39 +20,13 @@ interface IdentidadeAbaProps {
 }
 
 export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rascunho, definir }) => {
-  const uploadImage = useUploadImage();
+  const { enviar, economia, enviando } = useEnvioDeImagemDePerfil((campo, url) =>
+    definir(campo, url),
+  );
   const escolherFoto = useRef<HTMLInputElement>(null);
   const escolherBanner = useRef<HTMLInputElement>(null);
-  const [economia, setEconomia] = useState<string | null>(null);
   const [escolhendoFaixa, setEscolhendoFaixa] = useState(false);
   const [importando, setImportando] = useState(false);
-
-  const enviar = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    campo: "avatarUrl" | "bannerUrl",
-  ) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
-    const foto = campo === "avatarUrl";
-    const resultado = await uploadImage
-      .mutateAsync({
-        file,
-        maxSize: foto ? AVATAR_MAX_PX : BANNER_MAX_PX,
-        finalidade: foto ? "avatar" : "banner",
-      })
-      .catch(() => null);
-
-    if (!resultado) return;
-
-    definir(campo, resultado.attachment.url);
-    setEconomia(
-      resultado.uploadedSize < resultado.originalSize
-        ? `${formatBytes(resultado.originalSize)} → ${formatBytes(resultado.uploadedSize)}`
-        : null,
-    );
-  };
 
   const usarGif = async (url: string) => {
     setImportando(true);
@@ -87,10 +57,10 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
             variant="surface"
             size="sm"
             onClick={() => escolherFoto.current?.click()}
-            disabled={uploadImage.isPending}
+            disabled={enviando}
           >
             <Upload size={14} />
-            {uploadImage.isPending ? "Enviando…" : "Trocar foto"}
+            {enviando ? "Enviando…" : "Trocar foto"}
           </Button>
 
           <p className="mt-1.5 text-xs text-ink-faint">
@@ -148,7 +118,7 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
             variant="surface"
             size="sm"
             onClick={() => setEscolhendoFaixa(true)}
-            disabled={uploadImage.isPending || importando}
+            disabled={enviando || importando}
           >
             <ImageUp size={14} />
             {importando ? "Trazendo o GIF…" : "Escolher imagem ou GIF"}

@@ -193,8 +193,25 @@ const ProfileCard: React.FC<{
   const ocupado =
     requestFriend.isPending || respondFriend.isPending || removeFriend.isPending || openDm.isPending;
 
-  const acoesDoTopo = perfil.friendship !== "SELF" && (
-          <div className="absolute right-2 top-2 flex items-center gap-1.5">
+  /*
+    Fila de acoes no corpo do cartao, embaixo do @username — o mesmo lugar do
+    Discord. Antes elas flutuavam no canto da faixa, sobre a imagem, o que
+    escondia parte do banner e deixava o botao principal la no rodape.
+  */
+  const acoes = (
+          <>
+            {perfil.friendship === "SELF" ? (
+              <Button size="sm" onClick={() => setEditandoPerfil(true)}>
+                <Pencil size={14} /> Editar perfil
+              </Button>
+            ) : (
+              <>
+            {perfil.friendship === "ACCEPTED" && (
+              <Button size="sm" onClick={() => void conversar()} disabled={ocupado}>
+                <MessageSquare size={14} /> Mensagem
+              </Button>
+            )}
+
             {podeModerar && guildId && (
               <BotaoRedondo
                 label="Abrir na visualização de moderador"
@@ -221,7 +238,7 @@ const ProfileCard: React.FC<{
               <DropdownMenuTrigger asChild>
                 <button
                   aria-label="Mais"
-                  className="rounded-full bg-black/40 p-2 text-white/80 transition hover:bg-black/60 hover:text-white"
+                  className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
                 >
                   <MoreHorizontal size={16} />
                 </button>
@@ -288,7 +305,9 @@ const ProfileCard: React.FC<{
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-    </div>
+              </>
+            )}
+          </>
   );
 
   return (
@@ -339,7 +358,7 @@ const ProfileCard: React.FC<{
         cargos={roles.filter((r) => !r.isEveryone && roleIds.includes(r.id))}
         onStatus={perfil.friendship === "SELF" ? () => setDefinindoStatus(true) : undefined}
         emblemas={emblemas}
-        acoesDoTopo={acoesDoTopo}
+        acoes={acoes}
         className="rounded-none"
       >
         {perfil.friendship !== "SELF" && <CampoDeNota userId={perfil.id} nota={perfil.nota} />}
@@ -353,18 +372,8 @@ const ProfileCard: React.FC<{
         )}
 
         <div className="mt-4 space-y-2">
-          {perfil.friendship === "SELF" ? (
-            <Button onClick={() => setEditandoPerfil(true)} className="w-full">
-              <Pencil size={15} /> Editar perfil
-            </Button>
-          ) : (
+          {perfil.friendship !== "SELF" && (
             <>
-              {perfil.friendship === "ACCEPTED" && (
-                <Button onClick={() => void conversar()} disabled={ocupado} className="w-full">
-                  <MessageSquare size={16} /> Enviar mensagem
-                </Button>
-              )}
-
               {perfil.friendship === "PENDING_IN" && (
                 <>
                   <p className="mb-1 text-center text-xs text-ink-faint">
@@ -470,7 +479,7 @@ const BotaoRedondo: React.FC<{
       onClick={onClick}
       disabled={desabilitado}
       aria-label={label}
-      className="rounded-full bg-black/40 p-2 text-white/80 transition hover:bg-black/60 hover:text-white disabled:cursor-default disabled:hover:bg-black/40"
+      className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:cursor-default disabled:hover:bg-surface-3"
     >
       {children}
     </button>

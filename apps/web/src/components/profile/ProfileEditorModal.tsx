@@ -1,16 +1,30 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import type { StatusPersonalizado } from "@gravae/shared";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
+import { useEnvioDeImagemDePerfil } from "~/hooks/use-envio-de-imagem-de-perfil";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { StatusModal } from "~/components/profile/StatusModal";
+import { EscolherEnfeiteModal } from "~/components/profile/EscolherEnfeiteModal";
+import {
+  DECORACOES_DE_AVATAR,
+  EFEITOS_DO_PERFIL,
+  MOLDURAS_DE_AVATAR,
+} from "~/lib/cosmeticos/catalogo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { UserName } from "~/components/UserName";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { EnfeitesAba } from "~/components/user-settings/perfil/EnfeitesAba";
+import { Amostra, EnfeitesAba } from "~/components/user-settings/perfil/EnfeitesAba";
 import { IdentidadeAba } from "~/components/user-settings/perfil/IdentidadeAba";
 import {
   doUsuario,
@@ -25,21 +39,51 @@ export const ProfileEditorModal: React.FC<{
 }> = ({ open, user, onClose }) => {
   const updateProfile = useUpdateProfile();
   const [definindoStatus, setDefinindoStatus] = useState(false);
+  const escolherFoto = useRef<HTMLInputElement>(null);
+  const escolherFaixa = useRef<HTMLInputElement>(null);
+  const [enfeiteAberto, setEnfeiteAberto] = useState<
+    "efeito" | "moldura" | "decoracao" | null
+  >(null);
 
   const salvo = useMemo(() => doUsuario(user), [user]);
   const { rascunho, definir, descartar, sujo } = useRascunho(salvo);
   const perfil = paraPerfil(rascunho);
+  const { enviar } = useEnvioDeImagemDePerfil((campo, url) => definir(campo, url));
 
-  const salvar = () =>
+  /// O mesmo cartao do editor, sem os gestos de edicao — serve de prévia
+  /// dentro dos modais de enfeite.
+  const previaDoCartao = {
+    id: user.id,
+    displayName: rascunho.displayName || user.displayName,
+    username: user.username,
+    avatarUrl: rascunho.avatarUrl,
+    status: user.status,
+    perfil,
+    statusPersonalizado: user.statusPersonalizado,
+    bio: rascunho.bio || null,
+    createdAt: user.createdAt,
+  };
+
+  /*
+    Só sobe o que mudou. Mandar o payload inteiro fazia trocar a decoração do
+    avatar reenviar o `avatarUrl` — e quem entra com Google tem ali a foto do
+    Google, que a API recusa por não ser do nosso R2. O erro aparecia numa
+    edição que nada tinha a ver com a foto.
+  */
+  const salvar = () => {
+    const displayName = rascunho.displayName.trim();
+    const bio = rascunho.bio.trim() || null;
+
     void updateProfile
       .mutateAsync({
-        displayName: rascunho.displayName.trim(),
-        bio: rascunho.bio.trim() || null,
-        avatarUrl: rascunho.avatarUrl,
-        perfil,
+        ...(displayName !== salvo.displayName ? { displayName } : {}),
+        ...(bio !== (salvo.bio || null) ? { bio } : {}),
+        ...(rascunho.avatarUrl !== salvo.avatarUrl ? { avatarUrl: rascunho.avatarUrl } : {}),
+        ...(JSON.stringify(perfil) !== JSON.stringify(paraPerfil(salvo)) ? { perfil } : {}),
       })
       .then(() => descartar())
       .catch(() => null);
+  };
 
   const salvarStatus = (status: StatusPersonalizado | null) =>
     void updateProfile
@@ -78,9 +122,33 @@ export const ProfileEditorModal: React.FC<{
           </aside>
 
           <main className="min-w-0 flex-1 overflow-y-auto p-8">
-            <div className="mx-auto w-[416px]">
-              <div className="w-80">
-                <div style={{ zoom: 1.3 }}>
+            {/*
+              Sem `zoom` de proposito: ampliar o cartao inflava junto toda a
+              tipografia e o resultado ficava com cara de cartaz. 384px ja e a
+              largura do cartao do Discord, entao ele aparece em tamanho real —
+              e e tambem o que impede o balao de status (max-w-52) de estourar
+              a borda e ser cortado pelo overflow-hidden.
+            */}
+            {/* Os dois campos ficam fora da tela: quem abre o seletor sao os
+                botoes desenhados sobre a faixa e sobre o avatar. */}
+            <input
+              ref={escolherFoto}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => void enviar(e, "avatarUrl")}
+            />
+            <input
+              ref={escolherFaixa}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => void enviar(e, "bannerUrl")}
+            />
+
+            <div className="mx-auto w-96">
+              <div>
+                <div>
                   <ProfileCardVisual
                     id={user.id}
                     displayName={rascunho.displayName || user.displayName}
@@ -97,6 +165,39 @@ export const ProfileEditorModal: React.FC<{
                       definir("tagGuildId", guildId)
                     }
                     onStatus={() => setDefinindoStatus(true)}
+                    onEditarFoto={() => escolherFoto.current?.click()}
+                    menuDaFaixa={
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="Editar o cartão"
+                            className="rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onSelect={() => escolherFaixa.current?.click()}
+                          >
+                            Trocar a faixa
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("efeito")}>
+                            Alterar o efeito do cartão
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("decoracao")}>
+                            Alterar a decoração do avatar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("moldura")}>
+                            Alterar a moldura do avatar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    }
+                    onBio={(valor) => definir("bio", valor)}
                   />
                 </div>
               </div>
@@ -105,7 +206,7 @@ export const ProfileEditorModal: React.FC<{
                 <p className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">
                   No chat
                 </p>
-                <div className="flex gap-3 rounded bg-surface-1 px-3 py-2">
+                <div className="flex gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5">
                   <Avatar
                     id={user.id}
                     name={rascunho.displayName || user.displayName}
@@ -143,6 +244,47 @@ export const ProfileEditorModal: React.FC<{
           >
             <X size={20} />
           </DialogPrimitive.Close>
+
+          {/*
+            Escolher enfeite vendo so a miniatura da grade e chute: o efeito de
+            cartao e a moldura mudam o conjunto todo. Por isso o cartao inteiro
+            vai junto no modal, montado com o rascunho — mexeu na grade, mudou
+            ali do lado, antes de salvar.
+          */}
+          <EscolherEnfeiteModal
+            open={enfeiteAberto === "efeito"}
+            titulo="Alterar o efeito do cartão"
+            legenda="Seus efeitos"
+            opcoes={EFEITOS_DO_PERFIL}
+            valor={rascunho.efeitoDoPerfil}
+            onEscolher={(id) => definir("efeitoDoPerfil", id)}
+            onClose={() => setEnfeiteAberto(null)}
+            previa={<ProfileCardVisual {...previaDoCartao} />}
+          />
+
+          <EscolherEnfeiteModal
+            open={enfeiteAberto === "moldura"}
+            titulo="Alterar a moldura do avatar"
+            legenda="Suas molduras"
+            opcoes={MOLDURAS_DE_AVATAR}
+            valor={rascunho.moldura}
+            onEscolher={(id) => definir("moldura", id)}
+            onClose={() => setEnfeiteAberto(null)}
+            amostra={(id) => <Amostra familia="moldura" id={id} />}
+            previa={<ProfileCardVisual {...previaDoCartao} />}
+          />
+
+          <EscolherEnfeiteModal
+            open={enfeiteAberto === "decoracao"}
+            titulo="Alterar a decoração do avatar"
+            legenda="Suas decorações"
+            opcoes={DECORACOES_DE_AVATAR}
+            valor={rascunho.decoracao}
+            onEscolher={(id) => definir("decoracao", id)}
+            onClose={() => setEnfeiteAberto(null)}
+            amostra={(id) => <Amostra familia="decoracao" id={id} />}
+            previa={<ProfileCardVisual {...previaDoCartao} />}
+          />
 
           {definindoStatus && (
             <StatusModal

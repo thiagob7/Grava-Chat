@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import type { Opcao } from "~/lib/cosmeticos/catalogo";
 import { Label, campoDeCor } from "~/components/ui/input";
@@ -66,14 +66,29 @@ export function GradeDeOpcoes<T extends string>({
             onClick={() => onEscolher(opcao.id)}
             title={opcao.descricao}
             className={cn(
-              "flex flex-col items-center gap-1.5 rounded border px-2 py-2.5 text-xs transition",
+              "relative flex flex-col items-center gap-1.5 rounded-lg border px-2 py-2.5 text-xs transition",
+              /*
+                Escolhido se anuncia por três sinais ao mesmo tempo: borda da
+                marca, fundo elevado e o visto no canto. Só tingir o fundo de
+                vermelho não funcionava — sobre superfície escura vira um marrom
+                apagado que passa por "desabilitado".
+              */
               valor === opcao.id
-                ? "border-brand bg-surface-3 text-ink"
-                : "border-line bg-surface-0 text-ink-muted hover:bg-surface-3 hover:text-ink",
+                ? "border-brand bg-surface-3 font-medium text-ink shadow-[0_0_0_1px_var(--color-brand)]"
+                : "border-line bg-surface-0 text-ink-muted hover:border-white/10 hover:bg-surface-3 hover:text-ink",
             )}
           >
+            {valor === opcao.id && (
+              <span
+                aria-hidden
+                className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-brand text-white shadow-md shadow-black/40"
+              >
+                <Check size={11} strokeWidth={3} />
+              </span>
+            )}
+
             {amostra && <span className="flex h-8 items-center justify-center">{amostra(opcao.id)}</span>}
-            <span className="truncate">{opcao.rotulo}</span>
+            <span className="text-center leading-tight">{opcao.rotulo}</span>
           </button>
         ))}
       </div>

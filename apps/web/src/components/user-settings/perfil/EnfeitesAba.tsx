@@ -145,25 +145,30 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
   );
 };
 
-const Amostra: React.FC<{ familia: string; id: string }> = ({
+export const Amostra: React.FC<{ familia: string; id: string }> = ({
   familia,
   id,
 }) => {
   const classe = classeDoEnfeite(familia, id);
   const animada = familia === "decoracao" && ehAnimada(id as Decoracao);
 
+  /// Moldura agora e do cartao: a amostra dela precisa ter forma de cartao,
+  /// senao a pessoa escolhe achando que vai em volta do retrato.
+  const doCartao = familia === "moldura";
+
   return (
-    <span className="relative block size-7 rounded-full bg-surface-4">
+    <span
+      className={cn(
+        "relative block bg-surface-4",
+        doCartao ? "h-7 w-10 rounded" : "size-7 rounded-full",
+      )}
+    >
       {animada && <DecoracaoAnimada decoracao={id as Decoracao} animar />}
 
       {!animada && classe && (
         <span
           aria-hidden
-          className={cn(
-            "gc-camada",
-            familia === "moldura" && "gc-camada--moldura",
-            classe,
-          )}
+          className={cn(doCartao ? "gc-camada--cartao" : "gc-camada", classe)}
           style={variaveisDoEnfeite({ animar: true, velocidade: "8s" })}
         />
       )}

@@ -26,6 +26,23 @@ const PRAZOS = [
   { id: "amanha", rotulo: "Limpar amanhã", minutos: 24 * 60 },
 ] as const;
 
+const PLACEHOLDER = "No que você está pensando?";
+
+/// "Limpar amanhã" nao diz nada; "Limpar amanhã às 21:11" diz. O horario e
+/// calculado com o mesmo `calcularExpiracao` que grava o valor, entao o rotulo
+/// nunca mente sobre o que vai acontecer.
+function rotuloComHora(prazo: (typeof PRAZOS)[number]): string {
+  const iso = calcularExpiracao(prazo);
+  if (!iso) return prazo.rotulo;
+
+  const hora = new Date(iso).toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `${prazo.rotulo} às ${hora}`;
+}
+
 interface StatusModalProps {
   open: boolean;
   user: SelfUserModel;
@@ -52,6 +69,17 @@ export const StatusModal: React.FC<StatusModalProps> = ({
     ? { texto: texto.trim(), emoji: emoji.trim() || null, expiraEm: null }
     : null;
 
+  /*
+    Com o campo vazio o cartao mostra o proprio placeholder no balao, em vez de
+    esconder o balao inteiro. E o que o Discord faz: a pessoa ve onde o status
+    vai parar antes de digitar qualquer coisa.
+  */
+  const previaNoCartao: StatusPersonalizado = previa ?? {
+    texto: PLACEHOLDER,
+    emoji: null,
+    expiraEm: null,
+  };
+
   const salvar = () => {
     if (!previa) return onSalvar(null);
 
@@ -74,7 +102,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             avatarUrl={user.avatarUrl}
             status={user.status}
             perfil={perfil}
-            statusPersonalizado={previa}
+            statusPersonalizado={previaNoCartao}
           />
         </div>
 
@@ -98,7 +126,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               maxLength={LIMITS.statusPersonalizado}
-              placeholder="No que você está pensando?"
+              placeholder={PLACEHOLDER}
               className={campoNu}
             />
 
@@ -120,7 +148,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             valor={prazo}
             onEscolher={setPrazo}
             className="flex-1"
-            opcoes={PRAZOS.map((p) => ({ valor: p.id, rotulo: p.rotulo }))}
+            opcoes={PRAZOS.map((p) => ({ valor: p.id, rotulo: rotuloComHora(p) }))}
           />
 
           <Button onClick={salvar} disabled={salvando}>

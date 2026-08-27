@@ -24,6 +24,7 @@ export const LIMITS = {
   emblemaNome: 24,
   emblemaBytes: 128 * 1024,
   statusPersonalizado: 96,
+  bio: 512,
   messagePageSize: 50,
   typingTtlMs: 6000,
   emojisPorServidor: 50,

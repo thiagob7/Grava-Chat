@@ -47,9 +47,6 @@ export const Avatar: React.FC<AvatarProps> = ({
   const decoracao = animada
     ? null
     : classeDoEnfeite("decoracao", enfeites?.decoracao);
-  const moldura = speaking
-    ? null
-    : classeDoEnfeite("moldura", enfeites?.moldura);
   const ritmo = variaveisDoEnfeite({ animar, velocidade: "8s" });
 
   return (
@@ -83,13 +80,6 @@ export const Avatar: React.FC<AvatarProps> = ({
         </div>
       )}
 
-      {moldura && (
-        <span
-          aria-hidden
-          className={cn("gc-camada gc-camada--moldura", moldura)}
-          style={ritmo}
-        />
-      )}
       {decoracao && (
         <span
           aria-hidden

@@ -190,11 +190,6 @@
   pointer-events: none;
 }
 
-/* O anel de "está falando" fica por fora de tudo; a camada não pode cobri-lo. */
-.gc-camada--moldura {
-  inset: -8%;
-}
-
 /*
   Como o Discord faz e como fazemos aqui.
 
@@ -432,23 +427,37 @@
 }
 
 /*
-  Moldura é anel FECHADO — a diferença de decoração é essa. Decoração transborda
-  e anda; moldura emoldura.
+  Moldura emoldura o CARTÃO, não o avatar — quem cerca o avatar é a decoração.
+  A distinção importa porque as duas competem pelo mesmo espaço visual: uma
+  moldura em volta do retrato brigava com a decoração e não sobrava nada pro
+  cartão, que é a peça grande.
+
+  Todas trabalham como CAMADA sobre o cartão: `inset: 0`, raio herdado e sem
+  captura de clique. Nenhuma usa `border`, porque borda empurra o conteúdo.
 */
+.gc-camada--cartao {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .gc-moldura--neon {
   box-shadow:
-    0 0 0 2px var(--gc-cor-1, #22d3ee),
-    0 0 12px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 30%),
-    inset 0 0 8px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 55%);
+    inset 0 0 0 2px var(--gc-cor-1, #22d3ee),
+    inset 0 0 22px -8px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 20%),
+    0 0 18px -4px color-mix(in oklab, var(--gc-cor-1, #22d3ee), transparent 35%);
   animation: gc-pulsar var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
 /*
-  Dourada: o metal vem do gradiente cônico com claros e escuros ALTERNADOS —
-  é o contraste entre eles que o olho lê como reflexo. Uma faixa dourada
-  uniforme parece plástico amarelo.
+  A faixa metálica vira moldura pelo truque das duas máscaras: a de fora pinta
+  o retângulo inteiro, a de dentro (content-box) é subtraída — sobra só a borda.
+  É o equivalente retangular do `radial-gradient` que a versão circular usava.
 */
 .gc-moldura--dourada {
+  padding: 3px;
   background: conic-gradient(
     from 210deg,
     #fde68a,
@@ -459,70 +468,66 @@
     #92400e,
     #fde68a
   );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 4px),
-    #000 calc(100% - 3px)
-  );
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 4px),
-    #000 calc(100% - 3px)
-  );
-  animation: gc-girar calc(var(--gc-vel, 0s) * 3) linear infinite;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: gc-girar calc(var(--gc-vel, 0s) * 4) linear infinite;
 }
 
 .gc-moldura--vidro {
   box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.4),
-    inset 0 -6px 10px -6px rgb(255 255 255 / 0.5),
-    0 0 0 2px rgb(255 255 255 / 0.12);
-  background: linear-gradient(150deg, rgb(255 255 255 / 0.28), transparent 45%);
-  backdrop-filter: blur(1px);
+    inset 0 0 0 1px rgb(255 255 255 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -20px 24px -22px rgb(255 255 255 / 0.6);
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 40%);
 }
 
 /*
-  Pixel abre mão do arredondamento de propósito: um anel serrilhado em cima de
-  um círculo perfeito não lê como pixel art, lê como bug de renderização.
+  Pixel abre mão do arredondamento de propósito: canto serrilhado sobre canto
+  redondo não lê como pixel art, lê como bug de renderização.
 */
 .gc-moldura--pixel {
   border-radius: 0;
-  box-shadow: 0 0 0 2px var(--gc-cor-1, #a3e635);
+  box-shadow: inset 0 0 0 3px var(--gc-cor-1, #a3e635);
   clip-path: polygon(
-    12% 0,
-    88% 0,
-    88% 12%,
-    100% 12%,
-    100% 88%,
-    88% 88%,
-    88% 100%,
-    12% 100%,
-    12% 88%,
-    0 88%,
-    0 12%,
-    12% 12%
+    6px 0,
+    calc(100% - 6px) 0,
+    calc(100% - 6px) 6px,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    6px calc(100% - 6px),
+    0 calc(100% - 6px),
+    0 6px,
+    6px 6px
   );
 }
 
-/* Espinhos: pontas finas com uma base sólida atrás, senão flutuam soltas. */
+/* Espinhos: serrilha fina na borda, com base sólida atrás pra não flutuar. */
 .gc-moldura--espinhos {
-  background: repeating-conic-gradient(
-    from 0deg,
-    var(--gc-cor-1, #a78bfa) 0deg 2deg,
-    transparent 2deg 18deg
-  );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 9px),
-    #000 calc(100% - 8px)
-  );
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 9px),
-    #000 calc(100% - 8px)
-  );
-  box-shadow: inset 0 0 0 2px
-    color-mix(in oklab, var(--gc-cor-1, #a78bfa), transparent 40%);
+  padding: 4px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--gc-cor-1, #a78bfa) 0 3px,
+      transparent 3px 9px
+    ),
+    color-mix(in oklab, var(--gc-cor-1, #a78bfa), transparent 70%);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
 }
 
 @keyframes gc-girar {
