@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
+import { BarraDeTitulo } from "~/components/BarraDeTitulo";
+
 import { FloatingScreenShare } from "~/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/hooks/use-aviso-no-titulo";
@@ -15,6 +17,7 @@ import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 
 export const AppRoutes: React.FC = () => (
   <BrowserRouter>
+    <BarraDeTitulo />
     <Routes>
       <Route path="/login" element={<PublicOnly />} />
       <Route

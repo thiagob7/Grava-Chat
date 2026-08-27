@@ -199,6 +199,19 @@
   body,
   #root {
     height: 100%;
+    /*
+      Coluna: a faixa de título fica no topo e as rotas ocupam o resto. Sem
+      isto, a faixa empurraria o app 32px pra baixo e a última linha sumiria
+      abaixo da janela.
+    */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* O roteador é o segundo filho do #root; ele é quem cresce. */
+  #root > *:not(header) {
+    flex: 1;
+    min-height: 0;
   }
 
   body {
@@ -306,10 +319,4 @@
 .regiao-de-arrasto :is(button, a, input, select, textarea, label, [role="button"], [role="tab"], [contenteditable]) {
   -webkit-app-region: no-drag;
   app-region: no-drag;
-}
-
-/* Espaço para os botões de fechar/minimizar/maximizar do macOS, que flutuam
-   sobre o topo da barra de servidores quando a barra de título está oculta. */
-.desktop-mac .trilho-de-servidores {
-  padding-top: 2.25rem;
 }
