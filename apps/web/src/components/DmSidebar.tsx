@@ -40,7 +40,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside className="relative flex shrink-0 flex-col bg-surface-1" style={{ width: largura }}>
-      <header className="flex h-12 items-center border-b border-divisor px-4 shadow-sm">
+      <header className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">
         <h1 className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 

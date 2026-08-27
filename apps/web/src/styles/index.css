@@ -283,3 +283,33 @@
     }
   }
 }
+
+/*
+  Faixa de arrastar a janela (só faz efeito no aplicativo de desktop; o
+  navegador ignora a propriedade).
+
+  Com `titleBarStyle: "hiddenInset"` o Electron esconde a barra de título, e sem
+  uma região de arrasto a janela fica presa: não dá pra mover nem para dar dois
+  cliques e maximizar. O `drag` devolve os dois gestos, que são nativos do
+  sistema — não precisamos implementar nenhum deles.
+
+  A segunda regra é o que torna isso seguro: dentro de uma região de arrasto,
+  TODO clique vira arrasto, inclusive em botão. Em vez de marcar `no-drag` em
+  cada elemento e esquecer metade, o seletor devolve o clique a tudo que é
+  interativo por natureza.
+*/
+.regiao-de-arrasto {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.regiao-de-arrasto :is(button, a, input, select, textarea, label, [role="button"], [role="tab"], [contenteditable]) {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Espaço para os botões de fechar/minimizar/maximizar do macOS, que flutuam
+   sobre o topo da barra de servidores quando a barra de título está oculta. */
+.desktop-mac .trilho-de-servidores {
+  padding-top: 2.25rem;
+}

@@ -116,7 +116,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         className="relative flex shrink-0 flex-col bg-surface-1"
         style={{ width: largura }}
       >
-        <header className="flex h-12 items-center justify-between border-b border-divisor shadow-sm">
+        <header className="regiao-de-arrasto flex h-12 items-center justify-between border-b border-divisor shadow-sm">
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
               <button className="flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition hover:bg-surface-3">

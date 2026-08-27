@@ -232,7 +232,7 @@ export const Chat: React.FC = () => {
       )}
 
       <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-        <header className="@container flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
+        <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
           {telaEstreita && (
             <button
               onClick={() => setMenuAberto(true)}

@@ -10,6 +10,12 @@ import "@fontsource-variable/inter";
 import "~/styles/index.css";
 import "react-toastify/dist/ReactToastify.css";
 
+import { marcarAmbienteDesktop } from "~/lib/desktop";
+
+/// Antes de renderizar: a classe muda espaçamento, e aplicá-la depois faria
+/// o trilho saltar na primeira pintura.
+marcarAmbienteDesktop();
+
 if (import.meta.env.DEV) {
   Object.assign(window, {
     __gravae: {
