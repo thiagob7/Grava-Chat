@@ -4,6 +4,10 @@ export const queryKeys = {
     config: "find-auth-config",
   },
 
+  status: {
+    find: "find-server-status",
+  },
+
   guild: {
     find_many: "find-many-guilds",
     find: (guildId: string) => ["find-guild", guildId] as const,

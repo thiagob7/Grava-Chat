@@ -31,6 +31,15 @@ const schema = z.object({
   LIVEKIT_API_SECRET: z.string().default(""),
 
   KLIPY_API_KEY: z.string().default(""),
+
+  /*
+    Contas com acesso ao painel de servidor, separadas por vírgula.
+
+    Vive aqui e não no banco de propósito: é a chave de casa. Quem tem acesso ao
+    .env do servidor já manda em tudo mesmo; qualquer outro lugar (uma flag numa
+    collection, um cargo no app) seria uma superfície a mais pra invadir.
+  */
+  ADMIN_EMAILS: z.string().default(""),
 });
 
 const parsed = schema.safeParse(process.env);

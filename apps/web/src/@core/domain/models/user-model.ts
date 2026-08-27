@@ -23,6 +23,8 @@ export interface SelfUserModel extends PublicUserModel {
   perfil: EstiloDePerfil | null;
   statusPersonalizado: StatusPersonalizado | null;
   desiredStatus: DesiredStatus;
+  /// Vem da API (lista ADMIN_EMAILS). Libera o painel de servidor.
+  admin: boolean;
 }
 
 export interface SessionModel {

@@ -8,6 +8,7 @@ import { authPlugin } from "~/plugins/auth.js";
 import { AppError } from "~/lib/http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
+import { statusRoutes } from "~/routes/status.js";
 import { authRoutes } from "~/routes/auth.js";
 import { meRoutes } from "~/routes/me.js";
 import { guildRoutes } from "~/routes/guilds.js";
@@ -70,6 +71,7 @@ export async function buildApp() {
   await app.register(
     async (api) => {
       await api.register(healthRoutes);
+      await api.register(statusRoutes);
       await api.register(authRoutes);
       await api.register(meRoutes);
       await api.register(guildRoutes);

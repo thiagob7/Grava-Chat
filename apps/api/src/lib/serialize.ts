@@ -13,6 +13,7 @@ import type {
   StatusPersonalizado,
   DesiredStatus,
 } from "@gravae/shared";
+import { env } from "~/env.js";
 import { unset } from "./mongo.js";
 
 type UserRow = Prisma.UserGetPayload<object>;
@@ -71,6 +72,14 @@ function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
   };
 }
 
+/// Comparação em minúsculas e sem espaço: e-mail digitado no .env com maiúscula
+/// ou espaço depois da vírgula é erro fácil de cometer e chato de diagnosticar.
+const ADMINS = new Set(
+  env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean),
+);
+
+export const ehAdmin = (email: string) => ADMINS.has(email.toLowerCase());
+
 export function toSelfUser(
   u: UserRow,
   providers: string[] = [],
@@ -85,6 +94,7 @@ export function toSelfUser(
     perfil: u.perfil ? (u.perfil as SelfUser["perfil"]) : null,
     statusPersonalizado: statusVigente(u),
     desiredStatus,
+    admin: ehAdmin(u.email),
   };
 }
 

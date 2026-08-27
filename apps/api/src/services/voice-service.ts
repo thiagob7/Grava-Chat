@@ -36,6 +36,27 @@ const DEFAULTS = {
 export const VOICE_GRACE_MS = 6_000;
 
 export const voiceService = {
+  /*
+    Radiografia do SFU pro painel: quantas salas abertas e quanta gente dentro.
+
+    Pergunta ao próprio LiveKit, não ao Redis, de propósito — o Redis guarda o
+    que a NOSSA aplicação acha que está acontecendo, e a graça do painel é
+    justamente pegar divergência entre os dois.
+  */
+  async estadoDoSfu() {
+    const salas = await roomService().listRooms();
+
+    return {
+      salas: salas.map((s) => ({
+        nome: s.name,
+        participantes: s.numParticipants,
+        publicando: s.numPublishers,
+        criadaEm: Number(s.creationTime),
+      })),
+      participantes: salas.reduce((total, s) => total + s.numParticipants, 0),
+    };
+  },
+
   async moderar(
     alvoId: string,
     patch: { serverMute?: boolean; serverDeaf?: boolean },

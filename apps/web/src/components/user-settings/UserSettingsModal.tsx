@@ -10,10 +10,11 @@ import { NotificationsSection } from "~/components/user-settings/NotificationsSe
 import { VoiceSection } from "~/components/user-settings/VoiceSection";
 import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
+import { ServidorSection } from "~/components/user-settings/ServidorSection";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
-type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo";
+type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo" | "servidor";
 
 interface UserSettingsModalProps {
   open: boolean;
@@ -24,7 +25,7 @@ interface UserSettingsModalProps {
   onEditarPerfil: () => void;
 }
 
-const ITENS: { id: Secao; label: string }[] = [
+const itensPara = (admin: boolean): { id: Secao; label: string }[] => [
   { id: "conta", label: "Minha conta" },
   { id: "voz", label: "Voz e vídeo" },
   { id: "avisos", label: "Notificações" },
@@ -33,6 +34,9 @@ const ITENS: { id: Secao; label: string }[] = [
   /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
   /// de baixar e um convite pra lugar nenhum.
   ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app" }]),
+  /// Esconder o item é conforto, não segurança: quem decide é a API, que
+  /// devolve 404 na rota pra qualquer conta fora da lista.
+  ...(admin ? [{ id: "servidor" as const, label: "Servidor" }] : []),
 ];
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -79,7 +83,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               Configurações do usuário
             </p>
 
-            {ITENS.map((item) => (
+            {itensPara(user.admin).map((item) => (
               <button
                 key={item.id}
                 onClick={() => setSecao(item.id)}
@@ -103,6 +107,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
             {secao === "aparencia" && <AppearanceSection />}
             {secao === "aplicativo" && <AplicativoSection />}
+            {secao === "servidor" && user.admin && <ServidorSection />}
           </div>
 
           <DialogPrimitive.Close

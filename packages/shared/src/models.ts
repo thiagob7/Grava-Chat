@@ -31,6 +31,8 @@ export const selfUserSchema = publicUserSchema.extend({
   perfil: estiloDePerfilSchema.nullable(),
   statusPersonalizado: statusPersonalizadoSchema.nullable(),
   desiredStatus: z.enum(DESIRED_STATUSES),
+  /// Mostra o painel do servidor. Quem decide é a API; o front só obedece.
+  admin: z.boolean(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 
