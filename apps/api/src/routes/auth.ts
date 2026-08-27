@@ -48,6 +48,12 @@ function paginaDeVolta(destino: string | null) {
 }
 
 function origemDoTunel(req: FastifyRequest): string | null {
+  // Só em desenvolvimento. Em produção existe um proxy reverso na frente
+  // (Caddy) que SEMPRE preenche x-forwarded-host — e aí o app passaria a se
+  // achar num túnel, mandando o usuário de volta pro domínio da API em vez do
+  // front. Túnel de ngrok, que é o motivo desta função existir, só acontece em dev.
+  if (!isDev) return null;
+
   const forwardedHost = req.headers["x-forwarded-host"];
   if (typeof forwardedHost !== "string" || !forwardedHost) return null;
 
