@@ -60,6 +60,18 @@ export function criarJanela() {
 
   janela.once("ready-to-show", () => janela.show());
 
+  /*
+    A janela acompanha o fullscreen da PÁGINA.
+
+    No macOS com `titleBarStyle: "hiddenInset"`, o Electron nem sempre
+    redimensiona a janela quando o conteúdo pede tela cheia: o documento entra
+    em fullscreen, a janela fica do mesmo tamanho, e pra quem clicou o botão
+    simplesmente não fez nada. Ligar os dois eventos resolve — e o Esc, que o
+    navegador trata sozinho, dispara o `leave` e devolve a janela.
+  */
+  janela.webContents.on("enter-html-full-screen", () => janela.setFullScreen(true));
+  janela.webContents.on("leave-html-full-screen", () => janela.setFullScreen(false));
+
   janela.webContents.on("did-finish-load", () => console.log(`[desktop] carregou ${APP_URL}`));
 
   if (ehDev) {

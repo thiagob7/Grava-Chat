@@ -83,6 +83,7 @@ export const queryKeys = {
   },
 
   friend: {
+    ativos: "find-friends-ativos",
     find_many: "find-many-friends",
     dms: "find-many-dms",
   },

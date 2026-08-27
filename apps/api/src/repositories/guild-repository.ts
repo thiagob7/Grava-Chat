@@ -2,6 +2,13 @@ import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 
 export const guildRepository = {
+  /// Vários servidores pelo id, para resolver nome e ícone em lote.
+  findManyByIds(ids: string[]) {
+    if (!ids.length) return Promise.resolve([]);
+
+    return prisma.guild.findMany({ where: { id: { in: ids } } });
+  },
+
   findManyByUser(userId: string) {
     return prisma.guildMember.findMany({
       where: { userId },
@@ -189,6 +196,14 @@ export const categoryRepository = {
 };
 
 export const channelRepository = {
+  /// Vários canais de uma vez, pelo id. O "ativo agora" precisa resolver nome
+  /// de canal para amigos espalhados por servidores diferentes.
+  findManyByIds(ids: string[]) {
+    if (!ids.length) return Promise.resolve([]);
+
+    return prisma.channel.findMany({ where: { id: { in: ids } } });
+  },
+
   findById(id: string) {
     return prisma.channel.findUnique({ where: { id } });
   },

@@ -20,6 +20,8 @@ export async function friendRoutes(app: FastifyInstance) {
 
   app.get("/friends", (req) => friendshipService.list(req.userId));
 
+  app.get("/friends/ativos", (req) => friendshipService.ativosAgora(req.userId));
+
   app.post("/friends", async (req, reply) => {
     const { username } = requestFriendInput.parse(req.body);
     const { relacao, aceitou } = await friendshipService.request(req.userId, username);

@@ -11,6 +11,7 @@ import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/components/Avatar";
 import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
 import { Composer } from "~/components/Composer";
+import { AtivosAgora } from "~/components/AtivosAgora";
 import { DmSidebar } from "~/components/DmSidebar";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
@@ -140,7 +141,10 @@ export const DirectMessages: React.FC = () => {
           </AreaDeConversa>
         </main>
       ) : (
-        <Friends onOpenConversation={(userId) => void abrirConversa(userId)} />
+        <>
+          <Friends onOpenConversation={(userId) => void abrirConversa(userId)} />
+          <AtivosAgora />
+        </>
       )}
     </div>
   );

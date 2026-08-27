@@ -2,7 +2,12 @@ import type { PublicUser } from "@gravae/shared";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { friendshipRepository, dmRepository } from "~/repositories/friendship-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { channelRepository } from "~/repositories/guild-repository.js";
+import {
+  channelRepository,
+  guildRepository,
+  memberRepository,
+} from "~/repositories/guild-repository.js";
+import { voiceService } from "./voice-service.js";
 import { toChannel, toPublicUser } from "~/lib/serialize.js";
 import { presenceService } from "./presence-service.js";
 
@@ -14,6 +19,68 @@ export type FriendshipView = {
 };
 
 export const friendshipService = {
+  /*
+    "Ativo agora": amigos que estão num canal de voz de um servidor que EU
+    também tenho. O filtro por servidor em comum não é detalhe de produto — sem
+    ele, eu veria onde meu amigo está em servidores que não são meus, o que é
+    vazar a rotina dele pra fora do lugar onde ele decidiu estar comigo.
+  */
+  async ativosAgora(userId: string) {
+    const relacoes = await friendshipRepository.findAllForUser(userId);
+    const amigos = relacoes
+      .filter((r) => r.status === "ACCEPTED")
+      .map((r) => (r.requesterId === userId ? r.addressee : r.requester));
+
+    if (!amigos.length) return [];
+
+    const estados = await Promise.all(amigos.map((a) => voiceService.get(a.id)));
+
+    const emVoz = amigos
+      .map((amigo, i) => ({ amigo, canalId: estados[i]?.channelId ?? null }))
+      .filter((x): x is { amigo: (typeof amigos)[number]; canalId: string } => Boolean(x.canalId));
+
+    if (!emVoz.length) return [];
+
+    const [meusServidores, canais] = await Promise.all([
+      memberRepository.guildIdsOf(userId),
+      channelRepository.guildIdsOf(emVoz.map((x) => x.canalId)),
+    ]);
+
+    const guildPorCanal = new Map(canais.map((c) => [c.id, c.guildId]));
+    const meus = new Set(meusServidores.map((m) => m.guildId));
+
+    const visiveis = emVoz.filter((x) => {
+      const guildId = guildPorCanal.get(x.canalId);
+      return guildId && meus.has(guildId);
+    });
+
+    if (!visiveis.length) return [];
+
+    const [detalhesDeCanal, servidores] = await Promise.all([
+      channelRepository.findManyByIds(visiveis.map((x) => x.canalId)),
+      guildRepository.findManyByIds([
+        ...new Set(visiveis.map((x) => guildPorCanal.get(x.canalId)!)),
+      ]),
+    ]);
+
+    const canalPorId = new Map(detalhesDeCanal.map((c) => [c.id, c] as const));
+    const servidorPorId = new Map(servidores.map((g) => [g.id, g] as const));
+
+    return visiveis.flatMap((x) => {
+      const canal = canalPorId.get(x.canalId);
+      const servidor = servidorPorId.get(guildPorCanal.get(x.canalId)!);
+      if (!canal || !servidor) return [];
+
+      return [
+        {
+          user: toPublicUser(x.amigo),
+          canal: { id: canal.id, nome: canal.name },
+          servidor: { id: servidor.id, nome: servidor.name, iconUrl: servidor.iconUrl },
+        },
+      ];
+    });
+  },
+
   async list(userId: string): Promise<FriendshipView[]> {
     const relacoes = await friendshipRepository.findAllForUser(userId);
     const outros = relacoes.map((r) => (r.requesterId === userId ? r.addressee : r.requester));
