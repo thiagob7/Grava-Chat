@@ -4,6 +4,17 @@ import path from "node:path";
 import { APP_ORIGIN, APP_URL, ehDev } from "./config.js";
 
 async function carregarComEspera(janela: BrowserWindow, tentativas = 40) {
+  /*
+    O app é uma janela carregando o site, então atualizar o site atualiza o app
+    — mas só se ele não servir a versão velha do próprio cache. Foi o que
+    aconteceu: publicamos, e a janela continuou mostrando o build anterior.
+
+    Limpar o cache HTTP na abertura resolve de vez. Custa alguns megabytes
+    baixados de novo a cada início, o que é nada perto de alguém jurando que a
+    correção não subiu.
+  */
+  await janela.webContents.session.clearCache().catch(() => undefined);
+
   for (let i = 0; i < tentativas; i++) {
     try {
       await janela.loadURL(APP_URL);
