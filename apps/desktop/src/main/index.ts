@@ -4,6 +4,7 @@ import { app, BrowserWindow, nativeImage } from "electron";
 import { registrarAvisos } from "./avisos.js";
 import { registrarCapturaDeTela } from "./captura-de-tela.js";
 import { criarJanela } from "./janela.js";
+import { registrarLinks } from "./links.js";
 import { registrarLoginDesktop } from "./login-desktop.js";
 import { registrarPermissoesDeMidia } from "./permissoes.js";
 import { registrarPushToTalk } from "./push-to-talk.js";
@@ -13,10 +14,15 @@ if (!app.requestSingleInstanceLock()) {
 } else {
   let janela: BrowserWindow | null = null;
   const loginDesktop = registrarLoginDesktop();
+  const links = registrarLinks();
 
   app.on("second-instance", (_evento, argv) => {
     const link = argv.find((arg) => arg.startsWith("gravae://"));
-    if (link) loginDesktop.receberUrl(link);
+
+    if (link) {
+      loginDesktop.receberUrl(link);
+      links.abrir(link);
+    }
 
     if (!janela) return;
     if (janela.isMinimized()) janela.restore();
@@ -37,6 +43,11 @@ if (!app.requestSingleInstanceLock()) {
     registrarCapturaDeTela();
     registrarAvisos();
     janela = criarJanela();
+
+    /// No Windows e no Linux o link de abertura chega pela linha de comando,
+    /// e nao pelo `open-url` do macOS.
+    const linkDeAbertura = process.argv.find((arg) => arg.startsWith("gravae://"));
+    if (linkDeAbertura) links.abrir(linkDeAbertura);
 
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) janela = criarJanela();

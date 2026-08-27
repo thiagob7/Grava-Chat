@@ -73,19 +73,35 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
   const channel = channels.find((c) => c.id === channelId);
 
   return (
-    <div className={cn("group/voz", SECAO_DA_CHAMADA)}>
+    <div className={SECAO_DA_CHAMADA}>
       <div className="mb-2 flex items-center justify-between">
         <div className="min-w-0">
           <VoiceDetailsPopover ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>
+            {/*
+              O grupo é o próprio botão: antes ele era a seção inteira, então
+              chegar perto do botão de desligar já trocava o rótulo para
+              "Detalhes de Voz" sem que o mouse tivesse encostado no texto.
+            */}
             <button
               aria-label="Detalhes de voz"
-              className="grid w-full text-left text-sm font-semibold"
+              className="group/voz flex w-full items-center gap-1.5 text-left text-sm font-semibold"
             >
-              <span className="col-start-1 row-start-1 flex items-center gap-1.5 text-online transition-opacity group-hover/voz:opacity-0">
-                <IconeDeSinal ping={ping} /> Voz conectada
-              </span>
-              <span className="col-start-1 row-start-1 flex items-center gap-1.5 text-ink opacity-0 transition-opacity group-hover/voz:opacity-100">
-                <IconeDeSinal ping={ping} /> Detalhes de Voz
+              {/*
+                O ícone fica de fora da troca: ele é o mesmo nos dois rótulos, e
+                vê-lo deslizar junto só denunciava que são dois textos
+                empilhados. Quem rola é o texto, dentro de uma janelinha da
+                altura da linha — um sai por cima enquanto o outro sobe no
+                lugar, como no Discord.
+              */}
+              <IconeDeSinal ping={ping} />
+
+              <span className="grid min-w-0 grid-cols-1 overflow-hidden">
+                <span className="col-start-1 row-start-1 truncate text-online transition duration-200 ease-out group-hover/voz:-translate-y-full group-hover/voz:opacity-0">
+                  Voz conectada
+                </span>
+                <span className="col-start-1 row-start-1 translate-y-full truncate text-ink opacity-0 transition duration-200 ease-out group-hover/voz:translate-y-0 group-hover/voz:opacity-100">
+                  Detalhes de Voz
+                </span>
               </span>
             </button>
           </VoiceDetailsPopover>
@@ -107,7 +123,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
                 : !noiseFilterAvailable
                   ? "Supressão avançada indisponível — usando a do navegador"
                   : noiseFilter
-                    ? "Supressão de ruído fornecida por Krisp"
+                    ? "Supressão de ruído ligada (RNNoise)"
                     : "Supressão de ruído desligada"
             }
           >

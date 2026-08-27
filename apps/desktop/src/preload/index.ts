@@ -75,6 +75,21 @@ const ponte: PonteDesktop = {
       return () => ipcRenderer.off("login:codigo", ouvinte);
     },
   },
+
+  links: {
+    aoAbrir: (callback: (rota: string) => void) => {
+      const ouvinte = (_e: unknown, rota: string) => callback(rota);
+      ipcRenderer.on("link:abrir", ouvinte);
+
+      /// O link pode ter chegado antes da tela existir — foi ele que abriu o
+      /// app. O main guarda, e a gente busca assim que monta.
+      void ipcRenderer
+        .invoke("link:pendente")
+        .then((rota: string | null) => rota && callback(rota));
+
+      return () => ipcRenderer.off("link:abrir", ouvinte);
+    },
+  },
 };
 
 contextBridge.exposeInMainWorld("gravae", ponte);

@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from "react";
-import { Camera, Pencil, PlusCircle } from "lucide-react";
+import { Camera, Pencil, PlusCircle, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 import type {
   Emblema,
@@ -11,6 +11,7 @@ import type {
 
 import { Avatar } from "~/components/Avatar";
 import { PatenteAnimada } from "~/components/PatenteAnimada";
+import { SeletorDeCargos } from "~/components/profile/SeletorDeCargos";
 import { SeletorDeEtiqueta } from "~/components/profile/SeletorDeEtiqueta";
 import { ServerTag } from "~/components/ServerTag";
 import { UserName } from "~/components/UserName";
@@ -41,6 +42,12 @@ interface ProfileCardVisualProps {
   mutualFriends?: number;
   mutualGuilds?: number;
   cargos?: Role[];
+  /// Cargos que quem esta olhando pode dar ou tirar. Vindo cheio, os chips
+  /// ganham o "x" e a fila termina num "+", como no Discord: da pra mexer no
+  /// cargo de alguem sem sair do cartao.
+  cargosDisponiveis?: Role[];
+  onAlternarCargo?: (roleId: string) => void;
+  salvandoCargos?: boolean;
   emblemas?: Emblema[];
   acoesDoTopo?: ReactNode;
   /// Linha compacta logo abaixo do @username, como no Discord: [Mensagem] [⋯].
@@ -78,6 +85,9 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   mutualFriends = 0,
   mutualGuilds = 0,
   cargos = [],
+  cargosDisponiveis = [],
+  onAlternarCargo,
+  salvandoCargos = false,
   emblemas = [],
   acoesDoTopo,
   acoes,
@@ -94,6 +104,11 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 }) => {
   const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
   const [editandoBio, setEditandoBio] = useState(false);
+
+  const gerenciaCargos = Boolean(onAlternarCargo);
+  /// So os que a hierarquia deixa mexer ganham o "x" — os de cima aparecem
+  /// como enfeite, do mesmo jeito que a API os trataria.
+  const cargosGeriveis = new Set(cargosDisponiveis.map((cargo) => cargo.id));
 
   const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
   const molduraDoCartao = classeDoEnfeite("moldura", perfil?.moldura);
@@ -406,13 +421,22 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             bio && <p className="mt-4 whitespace-pre-wrap text-sm text-ink">{bio}</p>
           )}
 
-          {cargos.length > 0 && (
+          {/*
+            Quem pode mexer nos cargos ve a secao mesmo com a lista vazia —
+            senao o "+" so existiria pra quem ja tem cargo, e dar o primeiro
+            obrigaria a ir ate as configuracoes do servidor.
+          */}
+          {(cargos.length > 0 || gerenciaCargos) && (
             <>
               <p className="mb-1.5 mt-4 text-xs text-ink-faint">
-                {cargos.length === 1 ? "Cargo" : `Cargos — ${cargos.length}`}
+                {cargos.length === 0
+                  ? "Cargos"
+                  : cargos.length === 1
+                    ? "Cargo"
+                    : `Cargos — ${cargos.length}`}
               </p>
 
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {cargos.map((cargo) => (
                   <span
                     key={cargo.id}
@@ -436,8 +460,30 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                       />
                     )}
                     {cargo.name}
+
+                    {onAlternarCargo && cargosGeriveis.has(cargo.id) && (
+                      <button
+                        type="button"
+                        onClick={() => onAlternarCargo(cargo.id)}
+                        disabled={salvandoCargos}
+                        aria-label={`Tirar o cargo ${cargo.name}`}
+                        title={`Tirar o cargo ${cargo.name}`}
+                        className="-mr-1 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
+                      >
+                        <X size={11} />
+                      </button>
+                    )}
                   </span>
                 ))}
+
+                {onAlternarCargo && (
+                  <SeletorDeCargos
+                    disponiveis={cargosDisponiveis}
+                    atuais={cargos.map((cargo) => cargo.id)}
+                    onAlternar={onAlternarCargo}
+                    desabilitado={salvandoCargos}
+                  />
+                )}
               </div>
             </>
           )}

@@ -1,5 +1,50 @@
-import { Track } from "livekit-client";
-import type { AudioProcessorOptions, Room, TrackProcessor } from "livekit-client";
+import type { RnnoiseWorkletNode } from "@sapphi-red/web-noise-suppressor";
+import rnnoiseWorkletUrl from "@sapphi-red/web-noise-suppressor/rnnoiseWorklet.js?url";
+import rnnoiseWasmUrl from "@sapphi-red/web-noise-suppressor/rnnoise.wasm?url";
+import rnnoiseSimdWasmUrl from "@sapphi-red/web-noise-suppressor/rnnoise_simd.wasm?url";
+import type { Track } from "livekit-client";
+import type { AudioProcessorOptions, TrackProcessor } from "livekit-client";
+
+/*
+  Supressão de ruído: RNNoise, uma rede pequena que roda em WASM aqui no
+  navegador mesmo.
+
+  Antes era o Krisp. O Krisp é melhor, mas a licença dele exige LiveKit Cloud
+  para o transporte de mídia, e o Gravaê hospeda o próprio SFU — então ele
+  nunca chegou a ligar: a checagem no `onPublish` reprovava, o `catch` marcava
+  indisponível, e o que sobrava era a cadeia de filtros aqui embaixo. O RNNoise
+  é BSD-3, não fala com servidor nenhum e não tem teto de minutos.
+*/
+
+/// O binário é o mesmo pra sempre: busca uma vez e reaproveita.
+let wasmDoRnnoise: Promise<ArrayBuffer> | null = null;
+
+/// `addModule` vale por contexto de áudio, e chamada e "ouvir minha voz" têm
+/// contextos diferentes. Refazer no mesmo contexto seria só trabalho repetido.
+const contextosPreparados = new WeakSet<BaseAudioContext>();
+
+async function criarRnnoise(ctx: AudioContext): Promise<RnnoiseWorkletNode> {
+  /*
+    Import dinâmico por dois motivos. O pacote declara classes que estendem
+    `AudioWorkletNode` já no topo do módulo, então importá-lo estaticamente
+    quebrava os testes das funções puras daqui — que rodam em Node, onde essa
+    classe não existe. E, de quebra, quem nunca liga a supressão não carrega
+    nada disso.
+  */
+  const { RnnoiseWorkletNode, loadRnnoise } = await import(
+    "@sapphi-red/web-noise-suppressor"
+  );
+
+  wasmDoRnnoise ??= loadRnnoise({ url: rnnoiseWasmUrl, simdUrl: rnnoiseSimdWasmUrl });
+  const binario = await wasmDoRnnoise;
+
+  if (!contextosPreparados.has(ctx)) {
+    await ctx.audioWorklet.addModule(rnnoiseWorkletUrl);
+    contextosPreparados.add(ctx);
+  }
+
+  return new RnnoiseWorkletNode(ctx, { maxChannels: 2, wasmBinary: binario });
+}
 
 export type ModoDeEntrada = "voz" | "ptt";
 
@@ -48,18 +93,6 @@ export function proximoPiso(piso: number, nivel: number): number {
 
 export const limiarAutomatico = (piso: number) => Math.max(0.02, piso * 2.5 + 0.015);
 
-export function precisaRemontar(params: {
-  temKrisp: boolean;
-  estadoApos: boolean;
-  alvo: boolean;
-}): boolean {
-  const { temKrisp, estadoApos, alvo } = params;
-
-  if (!temKrisp) return alvo;
-
-  return estadoApos !== alvo;
-}
-
 function nivelDe(analisador: AnalyserNode, buffer: Float32Array<ArrayBuffer>): number {
   analisador.getFloatTimeDomainData(buffer);
 
@@ -84,9 +117,7 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
   private buffer?: Float32Array<ArrayBuffer>;
   private relogio?: ReturnType<typeof setInterval>;
 
-  private krisp?: import("@livekit/krisp-noise-filter").KrispNoiseFilterProcessor;
-  private trackOriginal?: MediaStreamTrack;
-  private sala?: Room;
+  private rnnoise?: RnnoiseWorkletNode;
 
   private ajustes: AjustesDeVoz;
   private pttPressionado = false;
@@ -106,20 +137,14 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
 
   init = async (opts: AudioProcessorOptions) => {
     this.ctx = opts.audioContext;
-    this.trackOriginal = opts.track;
 
-    const entrada = await this.prepararEntrada(opts);
-    this.montarCadeia(entrada);
+    await this.prepararSupressao();
+    this.montarCadeia(opts.track);
   };
 
   restart = async (opts: AudioProcessorOptions) => {
     await this.desmontar();
     await this.init(opts);
-  };
-
-  onPublish = async (room: Room) => {
-    this.sala = room;
-    await this.krisp?.onPublish(room);
   };
 
   destroy = async () => {
@@ -151,37 +176,50 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     return () => this.ouvintes.delete(ouvinte);
   }
 
-  private async prepararEntrada(opts: AudioProcessorOptions): Promise<MediaStreamTrack> {
-    if (!this.ajustes.supressaoDeRuido) {
-      this.supressaoAtiva = false;
-      return opts.track;
-    }
+  /*
+    Carrega o RNNoise sob demanda: quem deixa a supressão desligada nunca baixa
+    os 150 kB de WASM. Falhou — navegador sem AudioWorklet, rede caiu no meio —
+    a chamada segue com a cadeia de filtros, e a tela mostra "indisponível".
+  */
+  private async prepararSupressao() {
+    const ctx = this.ctx;
+    if (!ctx || !this.ajustes.supressaoDeRuido || this.rnnoise) return;
 
     try {
-      const mod = await import("@livekit/krisp-noise-filter");
-      if (!mod.isKrispNoiseFilterSupported()) {
-        this.supressaoDisponivel = false;
-        this.supressaoAtiva = false;
-        return opts.track;
-      }
-
-      const krisp = mod.KrispNoiseFilter();
-      await krisp.init(opts);
-      if (this.sala) await krisp.onPublish(this.sala);
-
-      await krisp.setEnabled(true);
-
-      this.krisp = krisp;
+      this.rnnoise = await criarRnnoise(ctx);
       this.supressaoDisponivel = true;
-      this.supressaoAtiva = krisp.isEnabled();
-
-      return krisp.processedTrack ?? opts.track;
-    } catch {
+    } catch (erro) {
+      console.warn("[voz] RNNoise não carregou:", erro);
+      this.rnnoise = undefined;
       this.supressaoDisponivel = false;
-      this.supressaoAtiva = false;
-      this.krisp = undefined;
-      return opts.track;
     }
+  }
+
+  /*
+    Religa o começo da cadeia com ou sem o RNNoise no meio — é isso que a chave
+    de supressão faz agora.
+
+    Com o Krisp era preciso derrubar e remontar a entrada inteira, porque ele
+    entregava outra MediaStreamTrack. O RNNoise é um nó do próprio grafo: ligar
+    e desligar é reconectar dois fios, sem intervalo audível.
+  */
+  private ligarEntrada() {
+    const { fonte, passaAlta, rnnoise } = this;
+    if (!fonte || !passaAlta) return;
+
+    fonte.disconnect();
+    rnnoise?.disconnect();
+
+    const comSupressao = Boolean(this.ajustes.supressaoDeRuido && rnnoise);
+    this.supressaoAtiva = comSupressao;
+
+    if (comSupressao && rnnoise) {
+      fonte.connect(rnnoise);
+      rnnoise.connect(passaAlta);
+      return;
+    }
+
+    fonte.connect(passaAlta);
   }
 
   private montarCadeia(entrada: MediaStreamTrack) {
@@ -220,7 +258,9 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     this.ganho.gain.value = this.ajustes.ganhoEntrada;
     this.porta.gain.value = this.ajustes.modo === "ptt" ? 0 : 1;
 
-    this.fonte.connect(this.passaAlta);
+    /// O RNNoise vem primeiro, no sinal cheio — é onde a rede foi treinada. Os
+    /// filtros de faixa limpam o resíduo logo depois.
+    this.ligarEntrada();
     this.passaAlta.connect(this.passaBaixa);
     this.passaBaixa.connect(this.ganho);
     this.ganho.connect(this.analisador);
@@ -270,39 +310,8 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
   }
 
   private async executarTroca(ligar: boolean) {
-    if (this.krisp) {
-      try {
-        await this.krisp.setEnabled(ligar);
-      } catch {
-      }
-    }
-
-    const estadoApos = this.krisp?.isEnabled() ?? false;
-    this.supressaoAtiva = estadoApos;
-
-    if (!precisaRemontar({ temKrisp: !!this.krisp, estadoApos, alvo: ligar })) return;
-
-    await this.remontarEntrada();
-  }
-
-  private async remontarEntrada() {
-    const ctx = this.ctx;
-    const track = this.trackOriginal;
-    if (!ctx || !track) return;
-
-    const antigo = this.krisp;
-    this.krisp = undefined;
-
-    const entrada = await this.prepararEntrada({ kind: Track.Kind.Audio, track, audioContext: ctx });
-
-    this.fonte?.disconnect();
-    this.fonte = ctx.createMediaStreamSource(new MediaStream([entrada]));
-    /// Religa no INÍCIO da cadeia. Ligar direto no ganho pularia os filtros e o
-    /// assobio voltaria só depois de trocar a supressão — bug difícil de achar.
-    const primeiro = this.passaAlta ?? this.ganho;
-    if (primeiro) this.fonte.connect(primeiro);
-
-    if (antigo) await antigo.destroy().catch(() => undefined);
+    if (ligar) await this.prepararSupressao();
+    this.ligarEntrada();
   }
 
   private async desmontar() {
@@ -316,15 +325,16 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     this.porta?.disconnect();
     this.analisador?.disconnect();
 
-    await this.krisp?.destroy().catch(() => undefined);
-    this.krisp = undefined;
+    this.rnnoise?.disconnect();
+    this.rnnoise?.destroy();
+    this.rnnoise = undefined;
     this.supressaoAtiva = false;
     this.processedTrack?.stop();
     this.processedTrack = undefined;
   }
 }
 
-export async function criarMedidorDeTeste(deviceId?: string) {
+export async function criarMedidorDeTeste(deviceId?: string, supressao = true) {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
@@ -334,11 +344,16 @@ export async function criarMedidorDeTeste(deviceId?: string) {
     },
   });
 
-  const ctx = new AudioContext();
+  /// 48 kHz na marra: é a taxa em que o RNNoise foi treinado, e a mesma que o
+  /// LiveKit usa na chamada. Sem fixar, uma placa em 44,1 kHz faria o teste
+  /// soar diferente do que sai na call.
+  const ctx = new AudioContext({ sampleRate: 48_000 });
   const fonte = ctx.createMediaStreamSource(stream);
 
+  const rnnoise = supressao ? await criarRnnoise(ctx).catch(() => null) : null;
+
   /*
-    Os MESMOS filtros da cadeia de chamada. Sem eles o teste devolvia o microfone
+    A MESMA cadeia da chamada — RNNoise e filtros. Sem eles o teste devolvia o microfone
     cru: a tela promete "verde é o que sai daqui" e entregava outra coisa, então
     quem ouvia o próprio assobio aqui concluía que o filtro não funcionava — mas
     na chamada ele estava lá.
@@ -358,7 +373,13 @@ export async function criarMedidorDeTeste(deviceId?: string) {
   const analisador = ctx.createAnalyser();
   analisador.fftSize = 1024;
 
-  fonte.connect(passaAlta);
+  if (rnnoise) {
+    fonte.connect(rnnoise);
+    rnnoise.connect(passaAlta);
+  } else {
+    fonte.connect(passaAlta);
+  }
+
   passaAlta.connect(passaBaixa);
   passaBaixa.connect(analisador);
   passaBaixa.connect(saida);
@@ -371,6 +392,8 @@ export async function criarMedidorDeTeste(deviceId?: string) {
     ler: () => nivelDe(analisador, buffer),
     parar: () => {
       fonte.disconnect();
+      rnnoise?.disconnect();
+      rnnoise?.destroy();
       passaAlta.disconnect();
       passaBaixa.disconnect();
       stream.getTracks().forEach((t) => t.stop());

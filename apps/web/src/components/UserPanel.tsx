@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Headphones, HeadphoneOff, Mic, MicOff, Settings, Volume2 } from "lucide-react";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { UserName } from "~/components/UserName";
@@ -17,10 +18,11 @@ import { useVoiceStore } from "~/stores/voice-store";
 
 interface UserPanelProps {
   user: SelfUserModel;
+  guildId?: string;
   onLogout: () => void;
 }
 
-export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
+export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
   const [configurando, setConfigurando] = useState(false);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
@@ -29,12 +31,23 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
   const emChamada = useVoiceStore((v) => Boolean(v.channelId));
   const updateProfile = useUpdateProfile();
 
+  /*
+    Os seus cargos no servidor em que você está. Sai da mesma query que o resto
+    da tela já usa, então não custa requisição nenhuma — e o cartão de quem
+    clica em si mesmo passa a mostrar o que o cartão dos outros sempre mostrou.
+  */
+  const { data: detalhe } = useFindGuild(guildId);
+  const meusIds = detalhe?.members.find((m) => m.user.id === user.id)?.roleIds ?? [];
+  const meusCargos = (detalhe?.roles ?? []).filter(
+    (r) => !r.isEveryone && meusIds.includes(r.id),
+  );
+
   return (
     <>
       <div className="flex items-center gap-1 px-1 py-1">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="group/eu flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">
+            <button className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">
               <Avatar
                 id={user.id}
                 name={user.displayName}
@@ -43,22 +56,33 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
                 status={user.status}
                 enfeites={user.perfil}
               />
-              <div className="min-w-0 flex-1">
+              {/*
+                O grupo é o texto, não o botão inteiro: passar o mouse pelo
+                avatar ou pela sobra à direita não tem por que trocar a linha
+                de baixo. E as duas versões dela ficam empilhadas na mesma
+                célula da grade e rolam dentro de uma janelinha da altura da
+                linha: uma sai por cima enquanto a outra sobe no lugar.
+              */}
+              <div className="group/eu min-w-0 flex-1">
                 <p className="truncate text-sm font-medium leading-tight">
                   <UserName nome={user.displayName} perfil={user.perfil} />
                 </p>
-                <p className="truncate text-xs text-ink-faint group-hover/eu:hidden">
-                  {emChamada ? (
-                    <span className="flex items-center gap-1 text-online">
-                      <Volume2 size={12} className="shrink-0" /> Em voz
-                    </span>
-                  ) : (
-                    (user.statusPersonalizado?.texto ?? ROTULO_DO_ESTADO[user.desiredStatus])
-                  )}
-                </p>
-                <p className="hidden truncate text-xs text-ink-faint group-hover/eu:block">
-                  {user.username}
-                </p>
+
+                <span className="grid grid-cols-1 overflow-hidden text-xs text-ink-faint">
+                  <span className="col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0">
+                    {emChamada ? (
+                      <span className="flex items-center gap-1 text-online">
+                        <Volume2 size={12} className="shrink-0" /> Em voz
+                      </span>
+                    ) : (
+                      (user.statusPersonalizado?.texto ?? ROTULO_DO_ESTADO[user.desiredStatus])
+                    )}
+                  </span>
+
+                  <span className="col-start-1 row-start-1 translate-y-full truncate opacity-0 transition duration-200 ease-out group-hover/eu:translate-y-0 group-hover/eu:opacity-100">
+                    {user.username}
+                  </span>
+                </span>
               </div>
             </button>
           </PopoverTrigger>
@@ -74,6 +98,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, onLogout }) => {
               statusPersonalizado={user.statusPersonalizado}
               bio={user.bio}
               createdAt={user.createdAt}
+              cargos={meusCargos}
               onStatus={() => setDefinindoStatus(true)}
               className="rounded-none"
             >

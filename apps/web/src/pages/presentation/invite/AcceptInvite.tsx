@@ -1,10 +1,12 @@
 import React from "react";
+import { Monitor } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
 import { Button } from "~/components/ui/button";
 import { apiErrorMessage } from "~/@core/lib/api";
+import { ehDesktop } from "~/lib/desktop";
 import { avatarColor, initials } from "~/lib/format";
 
 export const AcceptInvite: React.FC = () => {
@@ -19,6 +21,18 @@ export const AcceptInvite: React.FC = () => {
 
     const result = await acceptInvite.mutateAsync(code).catch(() => null);
     if (result) navigate(`/channels/${result.guildId}`, { replace: true });
+  };
+
+  /*
+    Página aberta no navegador oferece o desvio para o aplicativo.
+
+    O navegador não tem como saber se o Gravaê está instalado — perguntar ao
+    sistema por um `gravae://` sem ninguém do outro lado só rende uma caixa de
+    erro. Então é um botão, não um desvio automático: quem tem o app clica,
+    quem não tem continua na aba e nem repara.
+  */
+  const abrirNoApp = () => {
+    if (code) window.location.href = `gravae://invite/${code}`;
   };
 
   return (
@@ -64,6 +78,12 @@ export const AcceptInvite: React.FC = () => {
                   ? "Você já está dentro — abrir"
                   : "Aceitar convite"}
             </Button>
+
+            {!ehDesktop() && (
+              <Button variant="ghost" size="sm" onClick={abrirNoApp} className="mt-2 w-full">
+                <Monitor size={14} /> Abrir no aplicativo
+              </Button>
+            )}
           </>
         )}
       </div>

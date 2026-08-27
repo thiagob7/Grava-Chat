@@ -7,6 +7,7 @@ import { FloatingScreenShare } from "~/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/hooks/use-aviso-no-titulo";
 import { useConviteDeAviso } from "~/hooks/use-convite-de-aviso";
+import { useLinksDoDesktop } from "~/hooks/use-links-do-desktop";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 import { Chat } from "~/pages/presentation/chat/Chat";
@@ -74,8 +75,15 @@ export const AppRoutes: React.FC = () => (
     </div>
 
     <FloatingScreenShare />
+    <LinksDoDesktop />
   </BrowserRouter>
 );
+
+/// Precisa morar dentro do BrowserRouter — é de lá que sai o `navigate`.
+const LinksDoDesktop: React.FC = () => {
+  useLinksDoDesktop();
+  return null;
+};
 
 const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isBooting } = useSession();

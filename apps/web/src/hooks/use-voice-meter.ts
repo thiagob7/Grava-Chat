@@ -42,7 +42,10 @@ export function useVoiceMeter(ativo: boolean): Medicao {
     let parar: (() => void) | null = null;
     let relogio: ReturnType<typeof setInterval> | null = null;
 
-    void criarMedidorDeTeste(prefsRef.current.entradaId ?? undefined)
+    void criarMedidorDeTeste(
+      prefsRef.current.entradaId ?? undefined,
+      prefsRef.current.supressaoDeRuido,
+    )
       .then((medidor) => {
         if (!vivo) return medidor.parar();
 

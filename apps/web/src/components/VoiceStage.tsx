@@ -149,7 +149,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             <div className="flex shrink-0 gap-2">
               {tiles.map((tile) => (
                 <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-                  <Tile tile={tile} compact />
+                  <Tile tile={tile} guildId={guildId} compact />
                 </ComMenu>
               ))}
             </div>
@@ -193,7 +193,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       >
         {tiles.map((tile) => (
           <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-            <Tile tile={tile} onAssistir={() => setAssistindo(tile.identity)} />
+            <Tile tile={tile} guildId={guildId} onAssistir={() => setAssistindo(tile.identity)} />
           </ComMenu>
         ))}
       </div>
@@ -208,11 +208,14 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
 interface TileProps {
   tile: VoiceTile;
+  /// Só pra que o cartão de perfil saiba de onde tirar os cargos — o menu de
+  /// contexto do quadro vem de fora, pelo `ComMenu`.
+  guildId?: string;
   compact?: boolean;
   onAssistir?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
+const Tile: React.FC<TileProps> = ({ tile, guildId, compact, onAssistir }) => {
   const resolver = useParticipante();
   const participante = resolver(tile.identity, {
     name: tile.name,
@@ -273,7 +276,7 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
         ) : (
           <MicOff size={12} className="shrink-0 text-danger" />
         )}
-        <UserProfilePopover userId={tile.identity} side="top">
+        <UserProfilePopover userId={tile.identity} guildId={guildId} side="top">
           <button
             className={cn(
               "min-w-0 truncate whitespace-nowrap font-medium hover:underline",

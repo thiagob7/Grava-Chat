@@ -26,12 +26,13 @@ import { useRespondFriend } from "~/@core/application/queries/friend/use-respond
 import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-friend";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
-import type { Role } from "@gravae/shared";
+import { highestPosition, type Role } from "@gravae/shared";
 
 import { useModeracao } from "~/stores/moderacao";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
+import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import { ProfileEditorModal } from "~/components/profile/ProfileEditorModal";
 import { StatusModal } from "~/components/profile/StatusModal";
 import { CampoDeNota } from "~/components/profile/CampoDeNota";
@@ -59,6 +60,7 @@ import { Input } from "~/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useEnfeites } from "~/hooks/use-enfeites";
+import { usePermissions } from "~/hooks/use-permissions";
 import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
 
 interface UserProfilePopoverProps {
@@ -127,10 +129,57 @@ const ProfileCard: React.FC<{
 
   const ignorado = ignorados.includes(perfil.id);
 
-  const corDoCargo = corDoCargoMaisAlto(roleIds, roles);
   const enfeitesDe = useEnfeites(guildId);
   const emblemas = enfeitesDe.emblemasDe(perfil.id);
   const { data: detalheDoServidor } = useFindGuild(guildId);
+  const { can } = usePermissions(detalheDoServidor);
+  const setRoles = useSetMemberRoles(guildId);
+
+  /*
+    Cargos vindos do detalhe do servidor, nao das props: e a mesma fonte que a
+    mutacao invalida, entao mexer num cargo aqui repinta o cartao na hora em
+    vez de esperar o pai repassar as props. As props ficam de reserva pra
+    quando o detalhe ainda nao esta em cache.
+  */
+  const cargosDoServidor = detalheDoServidor?.roles ?? roles;
+  const membrosDoServidor = detalheDoServidor?.members ?? [];
+  const idsDoMembro =
+    membrosDoServidor.find((m) => m.user.id === perfil.id)?.roleIds ?? roleIds;
+
+  const cargosDoMembro = cargosDoServidor.filter(
+    (r) => !r.isEveryone && idsDoMembro.includes(r.id),
+  );
+
+  const corDoCargo = corDoCargoMaisAlto(idsDoMembro, cargosDoServidor);
+
+  /*
+    A mesma hierarquia que a API cobra, so que antes: o dono passa por cima de
+    tudo, e os demais so mexem no que esta abaixo do proprio cargo mais alto —
+    inclusive na pessoa, que nao pode estar acima de quem esta mexendo.
+  */
+  const souDono = Boolean(eu && detalheDoServidor?.guild.ownerId === eu.id);
+  const meusIds = membrosDoServidor.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
+  const minhaPosicao = souDono
+    ? Number.POSITIVE_INFINITY
+    : highestPosition(cargosDoServidor.filter((r) => meusIds.includes(r.id)));
+
+  const podeMexerNaPessoa =
+    souDono || highestPosition(cargosDoMembro) < minhaPosicao;
+
+  const cargosQuePossoDar =
+    guildId && can("MANAGE_ROLES") && podeMexerNaPessoa
+      ? cargosDoServidor.filter((r) => !r.isEveryone && r.position < minhaPosicao)
+      : [];
+
+  const alternarCargo = (roleId: string) => {
+    if (!guildId) return;
+
+    const proximos = idsDoMembro.includes(roleId)
+      ? idsDoMembro.filter((id) => id !== roleId)
+      : [...idsDoMembro, roleId];
+
+    setRoles.mutate({ guildId, userId: perfil.id, roleIds: proximos });
+  };
 
   const convidarPara = async (targetGuildId: string) => {
     const convite = await criarConvite.mutateAsync({ guildId: targetGuildId }).catch(() => null);
@@ -336,7 +385,7 @@ const ProfileCard: React.FC<{
         <FullProfileModal
           open
           perfil={perfil}
-          cargos={roles.filter((r) => roleIds.includes(r.id))}
+          cargos={cargosDoMembro}
           onClose={() => setPerfilCompleto(false)}
         />
       )}
@@ -355,7 +404,10 @@ const ProfileCard: React.FC<{
         createdAt={perfil.createdAt}
         mutualFriends={perfil.mutualFriends}
         mutualGuilds={perfil.mutualGuilds}
-        cargos={roles.filter((r) => !r.isEveryone && roleIds.includes(r.id))}
+        cargos={cargosDoMembro}
+        cargosDisponiveis={cargosQuePossoDar}
+        onAlternarCargo={cargosQuePossoDar.length ? alternarCargo : undefined}
+        salvandoCargos={setRoles.isPending}
         onStatus={perfil.friendship === "SELF" ? () => setDefinindoStatus(true) : undefined}
         emblemas={emblemas}
         acoes={acoes}

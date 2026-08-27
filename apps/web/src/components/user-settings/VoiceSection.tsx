@@ -333,7 +333,7 @@ export const VoiceSection: React.FC = () => {
             <p className="text-sm font-medium">Supressão de ruído avançada</p>
             <p className="mt-0.5 text-xs text-ink-faint">
               {noiseFilterAvailable
-                ? "Remove ventilador, teclado e obra na rua. Fornecida por Krisp."
+                ? "Remove ventilador, teclado e obra na rua. RNNoise, rodando aqui no seu aparelho."
                 : "Indisponível neste navegador — segue valendo a supressão do próprio navegador."}
             </p>
           </div>

@@ -66,6 +66,17 @@ export interface PonteJanela {
   focar: () => Promise<void>;
 }
 
+/**
+ * Links `gravae://` que o sistema entrega ao aplicativo.
+ *
+ * `gravae://invite/ABC` vira a rota `/invite/ABC` dentro da janela — quem
+ * clica num convite no navegador cai no app já aberto em vez de numa segunda
+ * cópia do Gravaê rodando na aba.
+ */
+export interface PonteLinks {
+  aoAbrir: (callback: (rota: string) => void) => () => void;
+}
+
 export interface PonteDesktop {
   ehDesktop: true;
   plataforma: string;
@@ -75,6 +86,7 @@ export interface PonteDesktop {
   login: PonteLogin;
   midia: PonteMidia;
   janela: PonteJanela;
+  links: PonteLinks;
 }
 
 declare global {

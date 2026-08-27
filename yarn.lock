@@ -1031,15 +1031,7 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@livekit/krisp-noise-filter@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@livekit/krisp-noise-filter/-/krisp-noise-filter-0.4.4.tgz#c1358a871ea17054ba55600b644bc2598f7249e5"
-  integrity sha512-ljnNPRE0W0IPuMcgRruQZaIz/zWCfqt9vQYXgX0WmojIbHlRrak7BW+FXW4KtXZKi+/dZPNuEL0c2v1wIHR5Cg==
-  dependencies:
-    "@livekit/mutex" "^1.1.1"
-    "@livekit/protocol" "^1.45.4"
-
-"@livekit/mutex@1.1.1", "@livekit/mutex@^1.1.1":
+"@livekit/mutex@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@livekit/mutex/-/mutex-1.1.1.tgz#72492b611d55be8130ba2271b7a436d94b1bc6d4"
   integrity sha512-EsshAucklmpuUAfkABPxJNhzj9v2sG7JuzFDL4ML1oJQSV14sqrpTYnsaOudMAw9yOaW53NU3QQTlUQoRs4czw==
@@ -1051,7 +1043,7 @@
   dependencies:
     "@bufbuild/protobuf" "^1.10.0"
 
-"@livekit/protocol@1.50.4", "@livekit/protocol@^1.45.4":
+"@livekit/protocol@1.50.4":
   version "1.50.4"
   resolved "https://registry.yarnpkg.com/@livekit/protocol/-/protocol-1.50.4.tgz#31495741dd786924b8ba6e190dd2a6e5d3711c51"
   integrity sha512-L1uggNQAqyY21smQY8AllyOYbcv9Me9TaxwuLytL1R8ck9nbYPmQLNwEDi3pOFGAMa5F8I2nUi2Jc59W5awxlA==
@@ -1768,6 +1760,11 @@
   version "4.62.5"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.62.5.tgz#441b89b848ba51cbf259621c6f554e268d169b6a"
   integrity sha512-/gDJaRs4gl0NPIwqCz+6PkpmhhjRAD2j6P4rSNHBzUkO3naEx2mIU0pRle1vUNRQ7mE/+8OOeXLTv/J56FKiQg==
+
+"@sapphi-red/web-noise-suppressor@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@sapphi-red/web-noise-suppressor/-/web-noise-suppressor-0.4.0.tgz#951bd0194ed1e4702bc0d7475efaa48df2c84c96"
+  integrity sha512-vkBEL/VDkbeP3qqSRQFRtPLGa19a38JUzO6J0r5D/MQSumrlERy671DAMaETgY6etXjDCoJcD7JBIaXnuGVtVw==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"

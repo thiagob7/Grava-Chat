@@ -344,6 +344,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
         <RodapeDaBarra
           user={user}
+          guildId={detail?.guild.id}
           onLogout={onLogout}
           accountChannelId={accountVoiceChannelId}
           onMoveHere={onMoveCallHere}

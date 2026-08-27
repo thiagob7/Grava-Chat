@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { decidirAbertura, limiarAutomatico, precisaRemontar, proximoPiso, SUSTENTACAO_MS } from "./audio-gate";
+import { decidirAbertura, limiarAutomatico, proximoPiso, SUSTENTACAO_MS } from "./audio-gate";
 
 const base = { limiar: 0.1, pttPressionado: false, agora: 1_000, abertoAte: 0 };
 
@@ -95,25 +95,5 @@ describe("sensibilidade automática", () => {
 
     expect(limiarAutomatico(piso)).toBeGreaterThanOrEqual(0.02);
     expect(limiarAutomatico(piso)).toBeLessThan(0.05);
-  });
-});
-
-describe("precisaRemontar", () => {
-  it("liga sem Krisp na cadeia: tem que montar", () => {
-    expect(precisaRemontar({ temKrisp: false, estadoApos: false, alvo: true })).toBe(true);
-  });
-
-  it("desliga sem Krisp na cadeia: já é o estado atual", () => {
-    expect(precisaRemontar({ temKrisp: false, estadoApos: false, alvo: false })).toBe(false);
-  });
-
-  it("troca no lugar que pegou não remonta", () => {
-    expect(precisaRemontar({ temKrisp: true, estadoApos: true, alvo: true })).toBe(false);
-    expect(precisaRemontar({ temKrisp: true, estadoApos: false, alvo: false })).toBe(false);
-  });
-
-  it("troca no lugar que NÃO pegou remonta", () => {
-    expect(precisaRemontar({ temKrisp: true, estadoApos: false, alvo: true })).toBe(true);
-    expect(precisaRemontar({ temKrisp: true, estadoApos: true, alvo: false })).toBe(true);
   });
 });

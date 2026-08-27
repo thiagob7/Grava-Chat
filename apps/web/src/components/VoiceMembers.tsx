@@ -1,6 +1,7 @@
 import React from "react";
 import { Mic, MicOff, MonitorUp, Video } from "lucide-react";
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
+import { has } from "@gravae/shared";
 
 import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
@@ -30,6 +31,8 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   const tiles = useVoiceStore((s) => s.tiles);
   const falando = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
 
+  const podeModerar = has(new Set(minhasPermissoes), "MODERATE_MEMBERS");
+
   if (!states.length) return null;
 
   return (
@@ -39,7 +42,13 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         const name = member?.nickname ?? member?.user.displayName ?? "…";
 
         const linha = (
-          <UserProfilePopover userId={state.userId}>
+          <UserProfilePopover
+            userId={state.userId}
+            guildId={guildId}
+            roles={roles}
+            roleIds={member?.roleIds ?? []}
+            podeModerar={podeModerar}
+          >
             <button className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition hover:bg-surface-3">
               <Avatar
                 id={state.userId}
