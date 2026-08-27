@@ -89,8 +89,21 @@ const PublicOnly: React.FC = () => {
   return <SignIn />;
 };
 
+/*
+  Tela de espera: o "G" da marca parado e o ponto vermelho pulsando ao lado.
+
+  O ponto é o que pisca, não o logotipo inteiro: marca piscando parece defeito
+  de renderização, enquanto o pulso num detalhe lê como "está trabalhando" — e é
+  o mesmo ponto vermelho que fecha a marca no login.
+*/
 const Splash: React.FC = () => (
-  <div className="flex min-h-full items-center justify-center bg-surface-2">
-    <div className="size-10 animate-pulse rounded-2xl bg-brand" />
+  <div className="flex min-h-full items-center justify-center gap-2 bg-surface-2">
+    <img
+      src="/brand/logo g branco.svg"
+      alt=""
+      className="h-12 w-auto select-none"
+      draggable={false}
+    />
+    <span className="mb-1 size-3 animate-pulse self-end rounded-full bg-brand" />
   </div>
 );

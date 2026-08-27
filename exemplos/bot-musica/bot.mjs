@@ -474,6 +474,42 @@ async function tocarProxima(fila, avisarEm) {
   return tocarProxima(fila, avisarEm);
 }
 
+/*
+  De onde vem a música.
+
+  O YouTube recusa requisição vinda de IP de datacenter — "Sign in to confirm
+  you're not a bot" — então um bot hospedado em nuvem não consegue tocar de lá
+  sem cookies de uma conta Google, que expiram e põem a conta em risco. O
+  SoundCloud não faz esse bloqueio.
+
+  Por isso a fonte é configurável: em casa (IP residencial) o YouTube funciona e
+  tem catálogo maior; na VM, SoundCloud. `GRAVAE_FONTE=youtube|soundcloud`.
+*/
+const FONTE = process.env.GRAVAE_FONTE ?? "youtube";
+
+async function procurar(busca) {
+  const link = /^https?:\/\//.test(busca);
+
+  /// Link colado toca direto, seja de onde for: quem mandou já escolheu a fonte.
+  if (link) return { title: busca, url: busca, timestamp: null };
+
+  if (FONTE === "soundcloud") {
+    const achado = await rodar("yt-dlp", [
+      "scsearch1:" + busca,
+      "--print", "%(title)s\n%(webpage_url)s\n%(duration_string)s",
+      "--no-warnings",
+    ]).catch(() => null);
+
+    if (!achado) return null;
+
+    const [title, url, timestamp] = achado.stdout.trim().split("\n");
+    return title && url ? { title, url, timestamp } : null;
+  }
+
+  const resultado = await yts(busca);
+  return resultado.videos?.[0] ?? null;
+}
+
 async function comandoPlay(mensagem, busca, config) {
   const { channelId: canalDeVoz } = await pedir("voice:onde", { userId: mensagem.author.id });
 
@@ -481,8 +517,7 @@ async function comandoPlay(mensagem, busca, config) {
     return falar(mensagem.channelId, "Entra num canal de voz primeiro que eu te acompanho.");
   }
 
-  const resultado = await yts(busca);
-  const video = resultado.videos?.[0];
+  const video = await procurar(busca);
 
   if (!video) return falar(mensagem.channelId, `Não achei nada para **${busca}**.`);
 
