@@ -59,6 +59,10 @@ export const DECORACOES_DE_AVATAR: Opcao<Decoracao>[] = catalogar(DECORACOES, {
   orbita: "Órbita",
   aro: ["Aro dourado", "animada — arquivo Lottie, não CSS"],
   alada: ["Moldura alada", "animada — asas e estrela"],
+  gelo: ["Anel de gelo", "animada — neve acumulada e cristais"],
+  coroa: ["Coroa dourada", "imagem — gemas piscando e lampejo girando"],
+  runas: ["Anel rúnico", "imagem — glifos acendendo em pedra"],
+  loureiro: ["Coroa de louros", "imagem — ramos com balanço leve"],
 });
 
 export const MOLDURAS_DE_AVATAR: Opcao<Moldura>[] = catalogar(MOLDURAS, {

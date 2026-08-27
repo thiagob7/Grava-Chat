@@ -15,6 +15,10 @@ export const DECORACOES = [
   "orbita",
   "aro",
   "alada",
+  "gelo",
+  "coroa",
+  "runas",
+  "loureiro",
 ] as const;
 export type Decoracao = (typeof DECORACOES)[number];
 

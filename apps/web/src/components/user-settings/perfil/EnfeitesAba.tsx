@@ -10,9 +10,9 @@ import {
   PATENTES_DE_PERFIL,
   PLACAS_DE_PERFIL,
 } from "~/lib/cosmeticos/catalogo";
-import { DecoracaoAnimada } from "~/components/DecoracaoAnimada";
+import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
 import { PatenteAnimada } from "~/components/PatenteAnimada";
-import { ehAnimada } from "~/lib/cosmeticos/animadas";
+import { ehDeArquivo } from "~/lib/cosmeticos/decoracoes";
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
 import { carregarTodasAsFontes, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { estiloDoNome } from "~/lib/cosmeticos/nome";
@@ -150,7 +150,7 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
   id,
 }) => {
   const classe = classeDoEnfeite(familia, id);
-  const animada = familia === "decoracao" && ehAnimada(id as Decoracao);
+  const deArquivo = familia === "decoracao" && ehDeArquivo(id as Decoracao);
 
   /// Moldura agora e do cartao: a amostra dela precisa ter forma de cartao,
   /// senao a pessoa escolhe achando que vai em volta do retrato.
@@ -163,9 +163,9 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
         doCartao ? "h-7 w-10 rounded" : "size-7 rounded-full",
       )}
     >
-      {animada && <DecoracaoAnimada decoracao={id as Decoracao} animar />}
+      {deArquivo && <DecoracaoDeArquivo decoracao={id as Decoracao} animar />}
 
-      {!animada && classe && (
+      {!deArquivo && classe && (
         <span
           aria-hidden
           className={cn(doCartao ? "gc-camada--cartao" : "gc-camada", classe)}

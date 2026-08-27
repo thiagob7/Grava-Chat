@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { PerfilPublico, PresenceStatus } from "@gravae/shared";
 
-import { DecoracaoAnimada } from "~/components/DecoracaoAnimada";
-import { ehAnimada } from "~/lib/cosmeticos/animadas";
+import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
+import { ehDeArquivo } from "~/lib/cosmeticos/decoracoes";
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -43,8 +43,8 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const mostrarImagem = Boolean(url) && !falhou;
 
-  const animada = ehAnimada(enfeites?.decoracao);
-  const decoracao = animada
+  const deArquivo = ehDeArquivo(enfeites?.decoracao);
+  const decoracao = deArquivo
     ? null
     : classeDoEnfeite("decoracao", enfeites?.decoracao);
   const ritmo = variaveisDoEnfeite({ animar, velocidade: "8s" });
@@ -87,8 +87,8 @@ export const Avatar: React.FC<AvatarProps> = ({
           style={ritmo}
         />
       )}
-      {animada && enfeites?.decoracao && (
-        <DecoracaoAnimada decoracao={enfeites.decoracao} animar={animar} />
+      {deArquivo && enfeites?.decoracao && (
+        <DecoracaoDeArquivo decoracao={enfeites.decoracao} animar={animar} />
       )}
 
       {status && (
