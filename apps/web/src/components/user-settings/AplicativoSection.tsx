@@ -2,13 +2,30 @@ import React from "react";
 import { Apple, Download, Monitor } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 /*
   Onde mora o instalador: a página de releases do repositório. `latest` sempre
   aponta pra versão mais nova, então este link não precisa ser trocado a cada
   publicação — só a release nova é que sai.
 */
-const RELEASES = "https://github.com/thiagob7/Grava-Chat/releases/latest";
+const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";
+
+/// `latest/download/<nome>` serve sempre o arquivo da versão mais nova, desde
+/// que o nome não mude — por isso o `artifactName` fixo no electron-builder.
+const MAC = `${BASE}/gravae-chat-mac.dmg`;
+const WINDOWS = `${BASE}/gravae-chat-win.exe`;
+
+/*
+  Qual sistema a pessoa está usando agora. Serve só pra ordenar os cartões — o
+  de baixo continua acessível, porque é comum baixar num computador pra instalar
+  noutro. Esconder o outro sistema seria decidir demais por quem está lendo.
+*/
+function ehWindows(): boolean {
+  if (typeof navigator === "undefined") return false;
+
+  return /win/i.test(navigator.userAgent);
+}
 
 export const AplicativoSection: React.FC = () => (
   <div className="max-w-xl space-y-6">
@@ -20,14 +37,14 @@ export const AplicativoSection: React.FC = () => (
       </p>
     </div>
 
-    <div className="space-y-3">
+    <div className={cn("flex flex-col gap-3", ehWindows() && "flex-col-reverse")}>
       <div className="rounded-lg border border-line bg-surface-1 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
           <Apple size={16} /> macOS — Intel e Apple Silicon
         </p>
 
         <Button asChild className="mt-3 w-full">
-          <a href={RELEASES} target="_blank" rel="noreferrer">
+          <a href={MAC}>
             <Download size={16} /> Baixar
           </a>
         </Button>
@@ -50,7 +67,7 @@ export const AplicativoSection: React.FC = () => (
         </p>
 
         <Button asChild className="mt-3 w-full">
-          <a href={RELEASES} target="_blank" rel="noreferrer">
+          <a href={WINDOWS}>
             <Download size={16} /> Baixar
           </a>
         </Button>

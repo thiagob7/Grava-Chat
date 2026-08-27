@@ -75,6 +75,8 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
 
   private ctx?: AudioContext;
   private fonte?: MediaStreamAudioSourceNode;
+  private passaAlta?: BiquadFilterNode;
+  private passaBaixa?: BiquadFilterNode;
   private ganho?: GainNode;
   private porta?: GainNode;
   private analisador?: AnalyserNode;
@@ -187,6 +189,27 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     if (!ctx) return;
 
     this.fonte = ctx.createMediaStreamSource(new MediaStream([entrada]));
+
+    /*
+      Recorte da faixa de voz, antes de tudo.
+
+      A fala vive, na prática, entre 100 Hz e 8 kHz. Abaixo disso é ronco de
+      mesa, ar-condicionado e o zumbido de 60 Hz da rede; acima é chiado,
+      assobio de fonte e sibilância de microfone barato. Cortar as duas pontas
+      tira ruído sem tocar na inteligibilidade.
+
+      Vem ANTES do analisador de propósito: assim a porta de ruído decide olhando
+      só o que é voz. Sem isso, um assobio constante contava como sinal e
+      segurava o microfone aberto sozinho — que é exatamente o sintoma relatado.
+    */
+    this.passaAlta = ctx.createBiquadFilter();
+    this.passaAlta.type = "highpass";
+    this.passaAlta.frequency.value = 100;
+
+    this.passaBaixa = ctx.createBiquadFilter();
+    this.passaBaixa.type = "lowpass";
+    this.passaBaixa.frequency.value = 8000;
+
     this.ganho = ctx.createGain();
     this.porta = ctx.createGain();
     this.analisador = ctx.createAnalyser();
@@ -197,7 +220,9 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     this.ganho.gain.value = this.ajustes.ganhoEntrada;
     this.porta.gain.value = this.ajustes.modo === "ptt" ? 0 : 1;
 
-    this.fonte.connect(this.ganho);
+    this.fonte.connect(this.passaAlta);
+    this.passaAlta.connect(this.passaBaixa);
+    this.passaBaixa.connect(this.ganho);
     this.ganho.connect(this.analisador);
     this.ganho.connect(this.porta);
     this.porta.connect(this.destino);
@@ -272,7 +297,10 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
 
     this.fonte?.disconnect();
     this.fonte = ctx.createMediaStreamSource(new MediaStream([entrada]));
-    if (this.ganho) this.fonte.connect(this.ganho);
+    /// Religa no INÍCIO da cadeia. Ligar direto no ganho pularia os filtros e o
+    /// assobio voltaria só depois de trocar a supressão — bug difícil de achar.
+    const primeiro = this.passaAlta ?? this.ganho;
+    if (primeiro) this.fonte.connect(primeiro);
 
     if (antigo) await antigo.destroy().catch(() => undefined);
   }
@@ -282,6 +310,8 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     this.relogio = undefined;
 
     this.fonte?.disconnect();
+    this.passaAlta?.disconnect();
+    this.passaBaixa?.disconnect();
     this.ganho?.disconnect();
     this.porta?.disconnect();
     this.analisador?.disconnect();

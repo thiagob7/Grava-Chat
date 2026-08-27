@@ -197,14 +197,29 @@ const Tile: React.FC<TileProps> = ({ tile, compact, onAssistir }) => {
         />
       )}
 
-      <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded bg-black/60 px-2 py-1">
+      {/*
+        A etiqueta é limitada à largura do quadro e nunca quebra linha: sem isso,
+        num quadro pequeno o nome envolvia em duas linhas e subia por cima do
+        avatar. Nome comprido agora é cortado com reticências.
+      */}
+      <div
+        className={cn(
+          "absolute bottom-1.5 left-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded bg-black/60 px-1.5 py-0.5",
+          !compact && "bottom-2 left-2 gap-1.5 px-2 py-1",
+        )}
+      >
         {tile.micEnabled ? (
-          <Mic size={12} className="text-ink-muted" />
+          <Mic size={12} className="shrink-0 text-ink-muted" />
         ) : (
-          <MicOff size={12} className="text-danger" />
+          <MicOff size={12} className="shrink-0 text-danger" />
         )}
         <UserProfilePopover userId={tile.identity} side="top">
-          <button className="text-xs font-medium hover:underline">
+          <button
+            className={cn(
+              "min-w-0 truncate whitespace-nowrap font-medium hover:underline",
+              compact ? "text-[10px]" : "text-xs",
+            )}
+          >
             {participante.nome}
             {tile.isLocal && " (você)"}
           </button>

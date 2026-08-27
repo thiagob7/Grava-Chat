@@ -28,6 +28,12 @@ npmRebuild: false
 # de dentro pra fora — frameworks e helpers antes do bundle externo. O
 # `codesign --deep` feito à mão sai na ordem errada.
 
+# Nome fixo, sem a versão: é o que permite um link permanente do tipo
+# `releases/latest/download/gravae-chat-mac.dmg` no botão de baixar. Com a
+# versão no nome, o link teria que ser trocado a cada release — e alguém ia
+# esquecer. A versão continua visível na página da release.
+artifactName: gravae-chat-${os}.${ext}
+
 directories:
   output: release
   buildResources: build
@@ -57,6 +63,12 @@ mac:
     # saber qual processador tem — e metade erra.
     - target: dmg
       arch: [universal]
+  # No build universal, o electron-builder junta o app x64 com o arm64 e recusa
+  # arquivos idênticos nos dois que ele não saiba resolver — foi assim que o
+  # binário do uiohook-napi derrubou o primeiro build. Este padrão diz "pode
+  # copiar direto, é o mesmo arquivo de propósito".
+  x64ArchFiles: "**/node_modules/uiohook-napi/prebuilds/**"
+
   # Sem conta de desenvolvedor Apple: assinatura ad-hoc. Dá ao app uma
   # identidade estável, que é do que o TCC precisa pra guardar a permissão.
   identity: "-"
