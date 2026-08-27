@@ -67,6 +67,24 @@ mac:
     NSCameraUsageDescription: O Gravaê usa a câmera quando você liga o vídeo na chamada.
     NSAudioCaptureUsageDescription: O Gravaê captura o som do sistema ao compartilhar a tela.
 
+# Windows precisa ser empacotado NUM Windows — daí o GitHub Actions. O .ico é
+# gerado a partir do build/icon.png (512px), então não há um arquivo a manter.
+#
+# Sem certificado de assinatura (uns US$ 200/ano), o SmartScreen mostra um aviso
+# na primeira execução, do mesmo jeito que o Gatekeeper faz no macOS. O app
+# funciona normalmente.
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  # O executável e o atalho levam o nome bonito; só o caminho é que evita acento.
+  shortcutName: Gravaê Chat
+
 # o retorno do login com Google chega por aqui
 protocols:
   - name: Gravaê

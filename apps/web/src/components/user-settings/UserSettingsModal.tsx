@@ -9,9 +9,11 @@ import { AppearanceSection } from "~/components/user-settings/AppearanceSection"
 import { NotificationsSection } from "~/components/user-settings/NotificationsSection";
 import { VoiceSection } from "~/components/user-settings/VoiceSection";
 import { BotsSection } from "~/components/user-settings/BotsSection";
+import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
+import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
-type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia";
+type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo";
 
 interface UserSettingsModalProps {
   open: boolean;
@@ -28,6 +30,9 @@ const ITENS: { id: Secao; label: string }[] = [
   { id: "avisos", label: "Notificações" },
   { id: "bots", label: "Bots" },
   { id: "aparencia", label: "Aparência" },
+  /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
+  /// de baixar e um convite pra lugar nenhum.
+  ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app" }]),
 ];
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -97,6 +102,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             {secao === "bots" && <BotsSection />}
 
             {secao === "aparencia" && <AppearanceSection />}
+            {secao === "aplicativo" && <AplicativoSection />}
           </div>
 
           <DialogPrimitive.Close

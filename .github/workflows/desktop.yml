@@ -1,0 +1,63 @@
+# Empacota o aplicativo de desktop e anexa os instaladores à release da tag.
+#
+# Existe por um motivo só: o instalador de Windows (nsis) NÃO sai de um Mac.
+# Aqui o mesmo commit é empacotado em cada sistema, na máquina certa.
+#
+# Dispara ao publicar uma tag `v*` — ou na mão, pela aba Actions.
+name: Aplicativo de desktop
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag da release que vai receber os arquivos (ex.: v0.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  empacotar:
+    strategy:
+      # `fail-fast: false` de propósito: se o build do Windows quebrar, ainda
+      # queremos o do macOS publicado, em vez de perder os dois.
+      fail-fast: false
+      matrix:
+        include:
+          - so: macos-14
+            nome: macOS
+            arquivos: "apps/desktop/release/*.dmg"
+          - so: windows-latest
+            nome: Windows
+            arquivos: "apps/desktop/release/*.exe"
+
+    name: ${{ matrix.nome }}
+    runs-on: ${{ matrix.so }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Empacotar
+        env:
+          # É embutida no bundle durante o build (tsup), não lida em execução:
+          # sem ela o app instalado procuraria um localhost que não existe na
+          # máquina de quem baixou.
+          GRAVAE_APP_URL: ${{ vars.GRAVAE_APP_URL || 'https://gravae-chat.vercel.app' }}
+        run: yarn workspace @gravae/desktop empacotar
+
+      - name: Anexar à release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        # `--clobber` porque rodar de novo tem que substituir o arquivo, não falhar.
+        run: gh release upload "$TAG" ${{ matrix.arquivos }} --clobber
+        shell: bash
