@@ -8,6 +8,7 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Label, Textarea } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
+import { cn } from "~/lib/utils";
 
 interface EngagementSectionProps {
   guild: GuildModel;
@@ -71,8 +72,15 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
               ...canaisDeTexto.map((c) => ({ valor: c.id, rotulo: `#${c.name}` })),
             ]}
           />
-          <p className="mt-1.5 text-xs text-ink-faint">
-            Sem canal escolhido, a boas-vindas não é enviada.
+          {/*
+            Ligado e sem canal é a combinação que não faz nada, e era fácil
+            terminar nela sem perceber: a chave acima aparece ligada por padrão
+            e o aviso era cinza como qualquer outra legenda.
+          */}
+          <p className={cn("mt-1.5 text-xs", welcome && !canal ? "text-idle" : "text-ink-faint")}>
+            {welcome && !canal
+              ? "Escolha um canal — sem ele a chave acima não envia nada."
+              : "Sem canal escolhido, a boas-vindas não é enviada."}
           </p>
         </div>
 

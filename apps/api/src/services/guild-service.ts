@@ -97,9 +97,33 @@ export const guildService = {
 
     const [textCategory, voiceCategory] = guild.categories;
 
-    await channelRepository.createMany([
-      { guildId: guild.id, categoryId: textCategory?.id, name: "geral", type: "TEXT", position: 0 },
-      { guildId: guild.id, categoryId: voiceCategory?.id, name: "Sala 1", type: "VOICE", position: 0 },
+    /*
+      O #geral nasce sendo o canal de sistema.
+
+      Sem isso o `welcomeEnabled` vinha ligado por padrão do schema e o
+      `systemChannelId` vinha nulo, então `boasVindas` desistia na primeira
+      guarda e nenhuma boas-vindas era enviada — enquanto a tela de
+      Engajamento mostrava a chave ligada, porque ela também assume `?? true`.
+      Servidor recém-criado prometia a mensagem e não entregava.
+
+      Por isso ele é criado sozinho, e não no `createMany`: no Mongo o
+      `createMany` do Prisma devolve só a contagem, e aqui precisamos do id.
+    */
+    const geral = await channelRepository.create({
+      guildId: guild.id,
+      categoryId: textCategory?.id ?? null,
+      name: "geral",
+      type: "TEXT",
+      topic: null,
+      isPrivate: false,
+      position: 0,
+    });
+
+    await Promise.all([
+      channelRepository.createMany([
+        { guildId: guild.id, categoryId: voiceCategory?.id, name: "Sala 1", type: "VOICE", position: 0 },
+      ]),
+      guildRepository.update(guild.id, { systemChannelId: geral.id }),
     ]);
 
     return {
