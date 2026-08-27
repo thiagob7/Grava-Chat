@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { Mic, MicOff, MonitorUp, Play, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Maximize, Mic, MicOff, Minimize, MonitorUp, Play, X } from "lucide-react";
 
 import type {
   Channel,
@@ -40,6 +40,28 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   currentUserId,
 }) => {
   const palco = useRef<HTMLDivElement>(null);
+  const quadro = useRef<HTMLDivElement>(null);
+  const [telaCheia, setTelaCheia] = useState(false);
+
+  /*
+    Tela cheia no QUADRO, não na janela inteira: assim a barra de participantes
+    e o resto do app somem, e o vídeo ocupa o monitor.
+
+    O estado vem do evento do navegador, nunca do clique — sair com Esc não
+    passa pelo nosso botão, e sem escutar o evento o ícone ficaria mentindo.
+  */
+  useEffect(() => {
+    const sincronizar = () => setTelaCheia(document.fullscreenElement === quadro.current);
+
+    document.addEventListener("fullscreenchange", sincronizar);
+    return () => document.removeEventListener("fullscreenchange", sincronizar);
+  }, []);
+
+  const alternarTelaCheia = () => {
+    if (document.fullscreenElement) return void document.exitFullscreen().catch(() => undefined);
+
+    void quadro.current?.requestFullscreen().catch(() => undefined);
+  };
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);
 
@@ -90,26 +112,51 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         ref={palco}
         className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4"
       >
-        <div className="relative flex-1 overflow-hidden rounded-lg bg-black">
+        <div ref={quadro} className="relative flex-1 overflow-hidden rounded-lg bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
-          <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs font-medium">
-            <MonitorUp size={12} className="mr-1 inline" />
-            {sharing.name} está compartilhando
-          </span>
 
-          <button
-            onClick={() => setAssistindo(null)}
-            className="absolute right-3 top-3 flex items-center gap-1.5 rounded bg-black/70 px-2.5 py-1.5 text-xs font-medium transition hover:bg-black/90"
-          >
-            <X size={14} /> Parar de assistir
-          </button>
-        </div>
-        <div className="flex h-24 shrink-0 gap-3 overflow-x-auto pb-14">
-          {tiles.map((tile) => (
-            <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-              <Tile tile={tile} compact />
-            </ComMenu>
-          ))}
+          {/*
+            Duas faixas sobre o vídeo, como no Discord: quem transmite em cima,
+            controles embaixo. Ficam DENTRO do quadro de propósito — em tela
+            cheia elas vão junto, e é justamente aí que se precisa delas.
+
+            O degradê existe pra legibilidade: texto branco sobre imagem clara
+            some, e uma barra sólida comeria pedaço do vídeo.
+          */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/80 to-transparent px-4 pb-8 pt-3">
+            <span className="text-sm font-medium">{sharing.name}</span>
+            <span className="text-sm text-white/60">está transmitindo</span>
+
+            <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-[10px] font-bold tracking-wide">
+              AO VIVO
+            </span>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
+            <div className="flex shrink-0 gap-2">
+              {tiles.map((tile) => (
+                <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
+                  <Tile tile={tile} compact />
+                </ComMenu>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setAssistindo(null)}
+              className="mx-auto flex items-center gap-1.5 rounded bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-white/25"
+            >
+              <X size={14} /> Parar de assistir
+            </button>
+
+            <button
+              onClick={alternarTelaCheia}
+              aria-label={telaCheia ? "Sair da tela cheia" : "Tela cheia"}
+              title={telaCheia ? "Sair da tela cheia (Esc)" : "Tela cheia"}
+              className="shrink-0 rounded p-1.5 text-white/80 transition hover:bg-white/15 hover:text-white"
+            >
+              {telaCheia ? <Minimize size={16} /> : <Maximize size={16} />}
+            </button>
+          </div>
         </div>
 
         <VoiceStageControls alvoTelaCheia={palco} />
