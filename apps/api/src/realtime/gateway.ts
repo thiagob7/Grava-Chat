@@ -4,6 +4,7 @@ import Redis from "ioredis";
 import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
 import { env } from "~/env.js";
+import { vigiar } from "~/lib/redis.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
@@ -21,8 +22,10 @@ export async function createGateway(app: FastifyInstance) {
     pingTimeout: 25_000,
   });
 
-  const pub = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
-  const sub = pub.duplicate();
+  /// Os dois clientes do adaptador precisam do mesmo cuidado do cliente
+  /// principal: erro sem ouvinte derruba o processo.
+  const pub = vigiar(new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }), "pub");
+  const sub = vigiar(pub.duplicate(), "sub");
   server.adapter(createAdapter(pub, sub));
 
   server.use(async (socket, next) => {
