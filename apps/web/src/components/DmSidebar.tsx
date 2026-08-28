@@ -1,8 +1,9 @@
-import React from "react";
-import { Users } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Search, Users, Volume2 } from "lucide-react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
+import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
@@ -29,6 +30,32 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   const { data: dms = [] } = useFindDms(true);
   const { data: relacoes = [] } = useFindFriends(true);
 
+  /*
+    Quem dos amigos está numa chamada agora. É a mesma consulta que alimenta a
+    coluna "Ativo agora" — aqui ela vira o subtítulo "Em voz" na linha, que é
+    a informação que decide se vale chamar a pessoa ou não.
+  */
+  const { data: ativos = [] } = useAtivos();
+  const emVoz = new Set(ativos.map((a) => a.user.id));
+
+  const [busca, setBusca] = useState("");
+
+  /*
+    O filtro olha nome E usuário: você lembra de alguém por um ou por outro,
+    e obrigar a acertar qual dos dois seria uma busca que só funciona quando
+    você já sabe a resposta.
+  */
+  const visiveis = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return dms;
+
+    return dms.filter(
+      (dm) =>
+        dm.user.displayName.toLowerCase().includes(termo) ||
+        dm.user.username.toLowerCase().includes(termo),
+    );
+  }, [dms, busca]);
+
   const pedidosRecebidos = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("dm", {
@@ -45,6 +72,17 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
       </header>
 
       <div className="flex-1 overflow-y-auto px-2 py-3">
+        <div className="relative mb-3">
+          <Search size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-ink-faint" />
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Encontre uma conversa"
+            aria-label="Encontre uma conversa"
+            className="w-full rounded bg-surface-0 py-1.5 pl-7 pr-2 text-sm outline-none placeholder:text-ink-faint focus:ring-1 focus:ring-brand"
+          />
+        </div>
+
         <button
           onClick={onOpenFriends}
           className={cn(
@@ -65,13 +103,17 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
           Conversas
         </h2>
 
-        {dms.length === 0 && (
+        {visiveis.length === 0 && !busca && (
           <p className="px-2 py-1 text-xs text-ink-faint">
             Nenhuma conversa ainda. Adicione um amigo para começar.
           </p>
         )}
 
-        {dms.map((dm) => {
+        {visiveis.length === 0 && busca && (
+          <p className="px-2 py-1 text-xs text-ink-faint">Nenhuma conversa com esse nome.</p>
+        )}
+
+        {visiveis.map((dm) => {
           const ativa = dm.id === activeChannelId;
           const naoLida = !ativa && dm.lastMessageId && dm.lastMessageId !== readStates[dm.id]?.lido;
 
@@ -95,7 +137,19 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
                 size={32}
                 status={dm.user.status}
               />
-              <span className="truncate">{dm.user.displayName}</span>
+              <span className="min-w-0 flex-1 text-left">
+                <span className="block truncate">{dm.user.displayName}</span>
+
+                {/* só aparece quando há o que dizer — linha vazia embaixo de
+                    cada nome só faria a lista ocupar o dobro da altura */}
+                {emVoz.has(dm.user.id) && (
+                  <span className="flex items-center gap-1 truncate text-xs font-normal text-ink-faint">
+                    <Volume2 size={11} className="shrink-0 text-online" />
+                    Em voz
+                  </span>
+                )}
+              </span>
+
               {naoLida && <span className="ml-auto size-2 shrink-0 rounded-full bg-ink" />}
             </button>
           );

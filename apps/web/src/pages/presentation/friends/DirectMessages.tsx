@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { AtSign, Menu, Phone, PhoneOff, Video } from "lucide-react";
+import { AtSign, Menu, Phone, PhoneOff, UserRound, Video } from "lucide-react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -18,6 +18,8 @@ import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { GuildRail } from "~/components/GuildRail";
 import { VoiceStage } from "~/components/VoiceStage";
+import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
+import { PainelDePerfilDoDm } from "~/components/PainelDePerfilDoDm";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/stores/voice-store";
 import { MessageList } from "~/components/MessageList";
@@ -58,6 +60,8 @@ export const DirectMessages: React.FC = () => {
 
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
+  /// a coluna de perfil abre por padrão, como no Discord
+  const [perfilAberto, setPerfilAberto] = useState(true);
 
   /*
     A chamada no privado roda no PRÓPRIO canal da conversa.
@@ -125,6 +129,7 @@ export const DirectMessages: React.FC = () => {
       )}
 
       {conversa ? (
+        <div className="flex min-w-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
           <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
             {telaEstreita && (
@@ -172,6 +177,28 @@ export const DirectMessages: React.FC = () => {
                   <Video size={17} />
                 </button>
               </Tooltip>
+
+              {/*
+                No privado qualquer um dos dois pode fixar — o serviço só exige
+                permissão quando existe servidor por trás, e aqui não existe.
+              */}
+              <PinnedMessagesPanel channelId={conversa.id} canManage />
+
+              <Tooltip label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
+                <button
+                  onClick={() => setPerfilAberto((aberto) => !aberto)}
+                  aria-label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}
+                  aria-pressed={perfilAberto}
+                  className={cn(
+                    "flex size-8 items-center justify-center rounded-full transition",
+                    perfilAberto
+                      ? "bg-surface-4 text-ink"
+                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                  )}
+                >
+                  <UserRound size={17} />
+                </button>
+              </Tooltip>
             </div>
           </header>
 
@@ -214,6 +241,14 @@ export const DirectMessages: React.FC = () => {
           </RodapeDaConversa>
           </AreaDeConversa>
         </main>
+
+        {/*
+          A coluna de perfil fica FORA do `main` e não dentro: dentro, ela
+          dividiria a altura com a lista de mensagens e o campo de escrever,
+          em vez de ficar do lado deles.
+        */}
+        {perfilAberto && <PainelDePerfilDoDm userId={conversa.user.id} />}
+        </div>
       ) : (
         <>
           <Friends onOpenConversation={(userId) => void abrirConversa(userId)} />

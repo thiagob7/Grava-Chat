@@ -1,0 +1,102 @@
+import React, { useState } from "react";
+
+import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
+import { Avatar } from "~/components/Avatar";
+import { Button } from "~/components/ui/button";
+import { FullProfileModal } from "~/components/FullProfileModal";
+
+/**
+ * A coluna de perfil ao lado da conversa privada.
+ *
+ * Numa conversa de servidor você tem a lista de membros do lado; num privado
+ * não há lista, e a única forma de lembrar com quem se está falando era o nome
+ * no topo. Esta coluna ocupa esse espaço vazio com o que de fato ajuda: a
+ * pessoa, o que temos em comum, e desde quando ela existe por aqui.
+ *
+ * Os dados vêm do mesmo `useFindProfile` que alimenta o cartão de perfil do
+ * servidor — nada de rota nova.
+ */
+export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => {
+  const { data: perfil, isLoading } = useFindProfile(userId);
+  const [completo, setCompleto] = useState(false);
+
+  /*
+    Enquanto carrega, a coluna já existe com a largura final. Montá-la só depois
+    da resposta faria a conversa inteira pular para o lado quando o perfil
+    chegasse.
+  */
+  if (isLoading || !perfil) {
+    return <aside className="hidden w-64 shrink-0 border-l border-divisor bg-surface-1 lg:block" />;
+  }
+
+  return (
+    <aside className="hidden w-64 shrink-0 flex-col overflow-y-auto border-l border-divisor bg-surface-1 lg:flex">
+      {/*
+        A faixa de cor no topo é o banner do perfil quando existe. Sem ela o
+        avatar nasce colado no cabeçalho e a coluna parece um pedaço solto.
+      */}
+      <div
+        className="h-16 shrink-0 bg-surface-3"
+        style={perfil.perfil?.bannerCor ? { backgroundColor: perfil.perfil.bannerCor } : undefined}
+      />
+
+      <div className="-mt-8 px-4">
+        <Avatar
+          id={perfil.id}
+          name={perfil.displayName}
+          url={perfil.avatarUrl}
+          size={64}
+          enfeites={perfil.perfil ? undefined : undefined}
+        />
+
+        <h2 className="mt-2 truncate text-lg font-bold">{perfil.displayName}</h2>
+        <p className="truncate text-sm text-ink-muted">@{perfil.username}</p>
+
+        {perfil.statusPersonalizado?.texto && (
+          <p className="mt-2 break-words text-sm text-ink-muted">
+            {perfil.statusPersonalizado.emoji} {perfil.statusPersonalizado.texto}
+          </p>
+        )}
+
+        {perfil.bio && <p className="mt-3 whitespace-pre-wrap break-words text-sm">{perfil.bio}</p>}
+
+        <dl className="mt-4 space-y-2 border-t border-divisor pt-3 text-sm">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+              Membro desde
+            </dt>
+            <dd className="mt-0.5">
+              {new Date(perfil.createdAt).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </dd>
+          </div>
+
+          {/*
+            Zero em comum não vira linha: "0 amigos em comum" é uma informação
+            que só ocupa espaço pra dizer que não há informação.
+          */}
+          {perfil.mutualFriends > 0 && (
+            <div className="text-ink-muted">
+              {perfil.mutualFriends} {perfil.mutualFriends === 1 ? "amigo" : "amigos"} em comum
+            </div>
+          )}
+
+          {perfil.mutualGuilds > 0 && (
+            <div className="text-ink-muted">
+              {perfil.mutualGuilds} {perfil.mutualGuilds === 1 ? "servidor" : "servidores"} em comum
+            </div>
+          )}
+        </dl>
+
+        <Button variant="surface" className="mb-4 mt-4 w-full" onClick={() => setCompleto(true)}>
+          Ver perfil completo
+        </Button>
+      </div>
+
+      <FullProfileModal open={completo} perfil={perfil} onClose={() => setCompleto(false)} />
+    </aside>
+  );
+};
