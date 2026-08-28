@@ -399,42 +399,41 @@ const TileDaLive: React.FC<{
       Por isso a sua vem aberta e a dos outros vem como convite. Quando existir
       a camada baixa (`screenShareSimulcastLayers`), as duas podem vir abertas.
     */}
-    <button
-      onClick={onAssistir}
-      className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition hover:bg-white/5"
-    >
-      {/*
-        A SUA transmissão aparece por trás, DESFOCADA. A dos outros não aparece.
+    {/*
+      Quem transmite vê a própria live ABERTA; quem vai assistir vê o convite.
 
-        Desfocada e não nítida porque uma tela que transmite a própria tela vira
-        espelho infinito: o quadro mostra o app, que mostra o quadro, que mostra
-        o app. Nítido isso é uma distração piscando no canto do olho a chamada
-        inteira; borrado, continua dizendo "sua live está no ar e é isto aqui",
-        que é a única coisa que o quadro precisa dizer.
+      São papéis diferentes na mesma tela. Você precisa conferir o que está
+      mandando — se pegou a janela certa, se o jogo está ali — e um cartão
+      fechado não responde isso. Já quem não está transmitindo precisa de um
+      convite, não de mais uma imagem competindo por atenção.
 
-        E só a sua porque só ela é de graça: sua tela já está capturada nesta
-        máquina. A dos outros exigiria assinar o vídeo, e como a tela é publicada
-        em camada única seria 1080p por miniatura, de todo mundo, o tempo todo.
-      */}
-      {tile.isLocal && tile.screenTrack && (
-        <div className="pointer-events-none absolute inset-0 scale-110 opacity-50 blur-md">
-          <VoiceVideo track={tile.screenTrack} />
-        </div>
-      )}
+      E só a sua abre porque só ela é de graça: sua tela já está capturada nesta
+      máquina, desenhar aqui não assina nada. A dos outros exigiria assinar o
+      vídeo, e como a tela é publicada em camada única seria 1080p por
+      miniatura, de todo mundo, o tempo todo.
+    */}
+    {tile.isLocal && tile.screenTrack ? (
+      <button onClick={onAssistir} className="absolute inset-0 size-full">
+        <VoiceVideo track={tile.screenTrack} />
 
-      <span className="relative flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-        <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
-      </span>
-
-      <span
-        className={cn(
-          "relative flex items-center gap-1.5 font-medium drop-shadow",
-          denso ? "text-xs" : "text-sm",
-        )}
+        <span className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+        </span>
+      </button>
+    ) : (
+      <button
+        onClick={onAssistir}
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition hover:bg-white/5"
       >
-        <Play size={denso ? 14 : 16} /> Assistir {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
-      </span>
-    </button>
+        <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+        </span>
+
+        <span className={cn("flex items-center gap-1.5 font-medium", denso ? "text-xs" : "text-sm")}>
+          <Play size={denso ? 14 : 16} /> Assistir a {tile.name}
+        </span>
+      </button>
+    )}
 
     <div className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-black/60 px-2 py-1">
       <Monitor size={12} className="shrink-0 text-online" />
