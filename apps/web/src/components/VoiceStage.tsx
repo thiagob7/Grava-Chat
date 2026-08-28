@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, Volume2, VolumeX, X } from "lucide-react";
+import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
 import type {
   Channel,
@@ -12,6 +12,7 @@ import type {
 
 import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
 import { focar, formatoDaGrade, montarGrade } from "~/lib/grade-da-call";
+import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -345,6 +346,8 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, onFocar }) =
         ) : (
           <MicOff size={12} className="shrink-0 text-danger" />
         )}
+
+        <AvisoDeConexao qualidade={tile.qualidade} />
         <UserProfilePopover userId={tile.identity} guildId={guildId} side="top">
           <button
             /// o nome abre o perfil, e só — sem isto ele destacaria o quadro junto
@@ -492,6 +495,25 @@ const ControleDeVolumeDaLive: React.FC<{ identity: string; className?: string }>
         />
       </PopoverContent>
     </Popover>
+  );
+};
+
+/**
+ * O selo de conexão ruim, na etiqueta do quadro.
+ *
+ * Só aparece quando há o que avisar — a regra e o porquê estão em
+ * `lib/qualidade-da-conexao.ts`. Aqui é só o desenho.
+ */
+const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
+  const aviso = avisoDeQualidade(qualidade);
+  if (!aviso) return null;
+
+  return (
+    <Tooltip label={aviso.rotulo}>
+      <span className={cn("flex shrink-0 items-center", aviso.cor)} aria-label={aviso.rotulo}>
+        <SignalLow size={12} className={aviso.pulsando ? "animate-pulse" : undefined} />
+      </span>
+    </Tooltip>
   );
 };
 

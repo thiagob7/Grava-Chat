@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mic, MicOff, MonitorUp, Play, Video } from "lucide-react";
+import { Mic, MicOff, MonitorUp, Play, SignalLow, Video } from "lucide-react";
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 
@@ -8,6 +8,8 @@ import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { useVoiceStore } from "~/stores/voice-store";
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
+import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
+import { Tooltip } from "~/components/ui/tooltip";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
@@ -62,7 +64,10 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         const podeAssistir =
           state.screenShare && canalConectado === state.channelId && assistindo !== state.userId;
 
-        const transmissao = tiles.find((t) => t.identity === state.userId)?.screenTrack ?? null;
+        const naSala = tiles.find((t) => t.identity === state.userId);
+        const transmissao = naSala?.screenTrack ?? null;
+        /// só quem está na MESMA sala tem medida; dos outros não sabemos nada
+        const conexao = naSala ? avisoDeQualidade(naSala.qualidade) : null;
 
         const linha = (
           <ConviteParaLive
@@ -95,6 +100,13 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 {name}
               </span>
                 <span className="flex shrink-0 items-center gap-1 text-ink-faint">
+                {conexao && (
+                  <Tooltip label={conexao.rotulo}>
+                    <span className={cn("flex items-center", conexao.cor)} aria-label={conexao.rotulo}>
+                      <SignalLow size={13} className={conexao.pulsando ? "animate-pulse" : undefined} />
+                    </span>
+                  </Tooltip>
+                )}
                 {state.screenShare && <MonitorUp size={13} className="text-online" />}
                 {state.camera && <Video size={13} className="text-online" />}
                 {state.serverMute ? (

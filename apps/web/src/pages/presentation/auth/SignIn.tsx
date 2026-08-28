@@ -90,14 +90,23 @@ export const SignIn: React.FC = () => {
           </p>
         )}
 
+        {/*
+          O aviso mudou de tom porque o comportamento mudou: a consulta agora
+          insiste sozinha e segue tentando de fundo (ver `use-auth-config.ts`).
+          Chamar isso de erro definitivo, com um botão de "tentar de novo" como
+          única saída, era pedir uma ação que o app já está tomando.
+        */}
         {apiUnreachable && (
-          <div className="rounded bg-danger/15 p-3 text-center">
-            <p className="text-sm text-danger">Não consegui falar com a API.</p>
+          <div className="rounded bg-idle/15 p-3 text-center">
+            <p className="flex items-center justify-center gap-2 text-sm text-idle">
+              <span className="size-1.5 animate-pulse rounded-full bg-idle" />
+              Reconectando…
+            </p>
             <p className="mt-1 text-xs text-ink-muted">
-              Ela está rodando? (<code>yarn dev</code>)
+              O servidor pode estar reiniciando. Isso volta sozinho.
             </p>
             <Button variant="link" size="sm" onClick={retry} className="mt-1">
-              Tentar de novo
+              Tentar agora
             </Button>
           </div>
         )}

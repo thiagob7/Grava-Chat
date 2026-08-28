@@ -41,6 +41,8 @@ export type VoiceTile = {
   */
   micTrack: Track | null;
   screenAudioTrack: Track | null;
+  /// medida do LiveKit: "excellent" | "good" | "poor" | "lost" | "unknown"
+  qualidade: string;
 };
 
 type VoiceStore = {
@@ -128,6 +130,7 @@ function snapshot(room: Room): VoiceTile[] {
       screenTrack: track(Track.Source.ScreenShare),
       micTrack: ouvivel(Track.Source.Microphone),
       screenAudioTrack: ouvivel(Track.Source.ScreenShareAudio),
+      qualidade: p.connectionQuality,
     };
   };
 
@@ -366,6 +369,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         .on(RoomEvent.TrackUnpublished, refresh)
         .on(RoomEvent.LocalTrackPublished, refresh)
         .on(RoomEvent.LocalTrackUnpublished, refresh)
+        /// sem isto o selo de conexao so mudaria quando outra coisa mexesse
+        /// na sala — alguem entrando, mutando, publicando faixa
+        .on(RoomEvent.ConnectionQualityChanged, refresh)
         .on(RoomEvent.TrackMuted, refresh)
         .on(RoomEvent.TrackUnmuted, refresh)
         .on(RoomEvent.ActiveSpeakersChanged, refresh)
