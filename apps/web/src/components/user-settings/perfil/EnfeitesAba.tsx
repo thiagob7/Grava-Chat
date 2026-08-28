@@ -169,7 +169,12 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
         <span
           aria-hidden
           className={cn(doCartao ? "gc-camada--cartao" : "gc-camada", classe)}
-          style={variaveisDoEnfeite({ animar: true, velocidade: "8s" })}
+          style={{
+            ...variaveisDoEnfeite({ animar: true, velocidade: "8s" }),
+            /// A amostra tem 28px de altura; molduras desenhadas usam borda de
+            /// 36px no cartão e aqui se sobreporiam.
+            ...(doCartao ? { "--gc-borda": "7px" } : null),
+          }}
         />
       )}
     </span>

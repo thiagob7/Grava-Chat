@@ -455,11 +455,33 @@
   A faixa metálica vira moldura pelo truque das duas máscaras: a de fora pinta
   o retângulo inteiro, a de dentro (content-box) é subtraída — sobra só a borda.
   É o equivalente retangular do `radial-gradient` que a versão circular usava.
+
+  O brilho corre girando o ÂNGULO DO GRADIENTE, e nunca o elemento.
+
+  Antes ela usava o `gc-girar`, que é `transform: rotate(360deg)`. Num anel isso
+  é inofensivo — círculo girado continua o mesmo círculo — mas a moldura é um
+  retângulo do tamanho do cartão: girá-la joga os cantos pra fora, o
+  `overflow: hidden` do cartão corta o que sobra, e o que aparece é uma mancha
+  dourada atravessada em vez de uma borda. O `@property` abaixo é o que permite
+  interpolar um ângulo em custom property; sem ele o navegador trata
+  `--gc-giro` como texto e não anima nada.
 */
+@property --gc-giro {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gc-varrer {
+  to {
+    --gc-giro: 360deg;
+  }
+}
+
 .gc-moldura--dourada {
   padding: 3px;
   background: conic-gradient(
-    from 210deg,
+    from var(--gc-giro, 210deg),
     #fde68a,
     #92400e,
     #fcd34d,
@@ -476,7 +498,7 @@
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  animation: gc-girar calc(var(--gc-vel, 0s) * 4) linear infinite;
+  animation: gc-varrer calc(var(--gc-vel, 0s) * 4) linear infinite;
 }
 
 .gc-moldura--vidro {
@@ -528,6 +550,124 @@
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
+}
+
+/*
+  Prisma: arco-íris correndo pela borda.
+
+  A varredura é LINEAR e deslizando, não cônica. O `conic-gradient` distribui
+  cor por ângulo a partir do centro; num cartão largo os lados esquerdo e
+  direito ocupam poucos graus e o topo e a base ocupam muitos, então as cores
+  amontoam nas pontas e esticam no meio — ficava visivelmente torto. Um
+  gradiente linear de 300% de largura deslizando não tem centro, então trata os
+  quatro lados igual.
+
+  A primeira e a última parada são a mesma cor: é o que faz a volta fechar sem
+  emenda quando a posição salta de 200% pra 0%.
+*/
+.gc-moldura--prisma {
+  padding: 2px;
+  background: linear-gradient(
+    90deg,
+    #ff4d6d,
+    #ffd166,
+    #06d6a0,
+    #4cc9f0,
+    #b57bff,
+    #ff4d6d
+  );
+  background-size: 300% 100%;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: gc-deslizar calc(var(--gc-vel, 0s) * 2) linear infinite;
+}
+
+@keyframes gc-deslizar {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+/*
+  Estelar: faixa de céu profundo com estrelas.
+
+  As estrelas são LADRILHADAS, não posicionadas em porcentagem. Com posições
+  soltas pelo quadro, quase todas caíam no miolo e a máscara comia o campo
+  inteiro — sobrava uma borda azul lisa. Ladrilho garante estrela na faixa
+  qualquer que seja o tamanho do cartão, e três passos primos entre si
+  (17x13, 23x19, 29x23) evitam o alinhamento que denuncia a repetição.
+
+  Os pontos levam raio em PIXEL (`0 1.2px`) e não parada em porcentagem: com
+  `1.3px 1.3px ... 50%` a estrela ficava com 0,65px de raio e o antialiasing
+  simplesmente a apagava — a faixa lia como azul liso.
+*/
+.gc-moldura--estelar {
+  padding: 6px;
+  background:
+    radial-gradient(circle at 3px 4px, #fff 0 1.2px, transparent 1.9px) 0 0 / 17px 13px,
+    radial-gradient(circle at 14px 9px, #dce8ff 0 1px, transparent 1.6px) 0 0 / 23px 19px,
+    radial-gradient(circle at 7px 15px, #a9bdff 0 0.9px, transparent 1.5px) 0 0 / 29px 23px,
+    linear-gradient(150deg, #151d48, #33268a 55%, #121838);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: gc-pulsar calc(var(--gc-vel, 0s) * 1.4) ease-in-out infinite alternate;
+}
+
+/*
+  Filete: dois fios finos com uma folga entre eles, sem brilho e sem movimento.
+
+  É a única discreta do conjunto, e existe porque cartão de perfil não é
+  vitrine: quem escreveu uma bio longa quer moldura que emoldure, não que
+  dispute. Sem máscara — dois `inset` de sombra bastam, e sombra não come o
+  arredondamento do cartão.
+*/
+.gc-moldura--filete {
+  box-shadow:
+    inset 0 0 0 1px var(--gc-cor-1, #d4af37),
+    inset 0 0 0 4px transparent,
+    inset 0 0 0 5px color-mix(in oklab, var(--gc-cor-1, #d4af37), transparent 62%);
+}
+
+/*
+  Rosas: a primeira moldura DESENHADA, e não composta de gradiente.
+
+  Usa `border-image`, que é a ferramenta certa pra ornamento: ele fatia o SVG
+  em 9 pedaços, joga os quatro cantos inteiros nos cantos do cartão e ladrilha
+  as beiras ao longo dos lados. Uma imagem esticada em `background-size` faria
+  a rosa do canto virar oval num cartão alto.
+
+  A borda transparente é só pra reservar a área — `border-image` precisa de uma
+  largura de borda pra ocupar, e o desenho é pintado por cima dela. Como a
+  camada é `inset: 0` com `box-sizing: border-box`, a borda não empurra nada.
+
+  `round` e não `repeat`: o `round` ajusta a escala do ladrilho pra caber um
+  número inteiro de repetições, então nunca corta uma rosa no meio.
+
+  A faixa é FINA e mora SOBRE a borda do cartão — não é uma moldura em volta
+  dele. Uma faixa grossa tapava o banner e o texto; uma moldura por fora obrigava
+  o conteúdo a encolher ou o popover a crescer. Sobre a borda não custa nem um
+  nem outro.
+
+  A espessura sai de `--gc-borda` porque a amostra do seletor tem 28px de
+  altura: com os 20px do cartão, as bordas de cima e de baixo se sobrepunham e
+  a amostra virava um borrão. Quem desenha em miniatura reduz a variável.
+*/
+.gc-moldura--rosas {
+  border: var(--gc-borda, 20px) solid transparent;
+  border-image: url("../assets/molduras/rosas.svg") 48 / var(--gc-borda, 20px) / 0
+    round;
 }
 
 @keyframes gc-girar {

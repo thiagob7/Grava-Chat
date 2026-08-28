@@ -72,6 +72,10 @@ export const MOLDURAS_DE_AVATAR: Opcao<Moldura>[] = catalogar(MOLDURAS, {
   vidro: "Vidro",
   pixel: "Pixel",
   espinhos: "Espinhos",
+  prisma: ["Prisma", "arco-íris varrendo a borda"],
+  estelar: ["Estelar", "céu profundo com estrelas"],
+  filete: ["Filete", "dois fios finos, sem brilho nem movimento"],
+  rosas: ["Filigrana de rosas", "desenhada — ornamento nos cantos"],
 });
 
 export const EFEITOS_DO_PERFIL: Opcao<EfeitoDePerfil>[] = catalogar(EFEITOS_DE_PERFIL, {

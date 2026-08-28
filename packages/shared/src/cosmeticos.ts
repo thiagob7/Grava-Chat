@@ -22,7 +22,18 @@ export const DECORACOES = [
 ] as const;
 export type Decoracao = (typeof DECORACOES)[number];
 
-export const MOLDURAS = ["nenhuma", "neon", "dourada", "vidro", "pixel", "espinhos"] as const;
+export const MOLDURAS = [
+  "nenhuma",
+  "neon",
+  "dourada",
+  "vidro",
+  "pixel",
+  "espinhos",
+  "prisma",
+  "estelar",
+  "filete",
+  "rosas",
+] as const;
 export type Moldura = (typeof MOLDURAS)[number];
 
 export const EFEITOS_DE_PERFIL = ["nenhum", "poeira", "chuva", "brasas", "bolhas"] as const;
