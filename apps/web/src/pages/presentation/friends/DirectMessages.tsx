@@ -153,7 +153,16 @@ export const DirectMessages: React.FC = () => {
             )}
             <AtSign size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
-            <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
+
+            {/* na chamada, o estado substitui o @usuário: ali o que importa é
+                o que está acontecendo, não como a pessoa se chama */}
+            {emChamadaAqui ? (
+              <span className="flex items-center gap-1.5 text-sm text-online">
+                <Phone size={13} /> Em uma chamada
+              </span>
+            ) : (
+              <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
+            )}
 
             <div className="ml-auto flex items-center gap-1">
               <Tooltip label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { Search, Users, Volume2 } from "lucide-react";
+import { Phone, Search, Users, Volume2 } from "lucide-react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
+import { useVoiceStore } from "~/stores/voice-store";
+import { statusDaConversa } from "~/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
@@ -37,6 +39,13 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   */
   const { data: ativos = [] } = useAtivos();
   const emVoz = new Set(ativos.map((a) => a.user.id));
+
+  /*
+    A chamada de privado NÃO vem do `useAtivos` — o servidor a exclui de
+    propósito, porque ninguém entra na conversa privada dos outros. Quando ela
+    é comigo, quem sabe disso é o meu próprio store.
+  */
+  const canalEmChamada = useVoiceStore((s) => s.channelId);
 
   const [busca, setBusca] = useState("");
 
@@ -142,12 +151,25 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
                 {/* só aparece quando há o que dizer — linha vazia embaixo de
                     cada nome só faria a lista ocupar o dobro da altura */}
-                {emVoz.has(dm.user.id) && (
-                  <span className="flex items-center gap-1 truncate text-xs font-normal text-ink-faint">
-                    <Volume2 size={11} className="shrink-0 text-online" />
-                    Em voz
-                  </span>
-                )}
+                {(() => {
+                  const status = statusDaConversa({
+                    emChamadaComigo: canalEmChamada === dm.id,
+                    emVozNoServidor: emVoz.has(dm.user.id),
+                  });
+
+                  if (!status) return null;
+
+                  return (
+                    <span className="flex items-center gap-1 truncate text-xs font-normal text-ink-faint">
+                      {status.tipo === "chamada" ? (
+                        <Phone size={11} className="shrink-0 text-online" />
+                      ) : (
+                        <Volume2 size={11} className="shrink-0 text-online" />
+                      )}
+                      {status.texto}
+                    </span>
+                  );
+                })()}
               </span>
 
               {naoLida && <span className="ml-auto size-2 shrink-0 rounded-full bg-ink" />}

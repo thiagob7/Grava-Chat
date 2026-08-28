@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Headphones, HeadphoneOff, Mic, MicOff, Settings, Volume2 } from "lucide-react";
+import { Headphones, HeadphoneOff, Mic, MicOff, Phone, Settings, Volume2 } from "lucide-react";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
@@ -29,6 +29,9 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   const { micEnabled, micBlocked, deafened, toggleMic, toggleDeafen } = useVoiceStore();
   const emChamada = useVoiceStore((v) => Boolean(v.channelId));
+  /// sem servidor por trás, a chamada é num privado — e ali há alguém do
+  /// outro lado, não um canal aberto o dia todo
+  const emChamadaNoPrivado = useVoiceStore((v) => Boolean(v.channelId) && !v.guildId);
   const updateProfile = useUpdateProfile();
 
   /*
@@ -72,7 +75,18 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                   <span className="col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0">
                     {emChamada ? (
                       <span className="flex items-center gap-1 text-online">
-                        <Volume2 size={12} className="shrink-0" /> Em voz
+                        {/* "Em voz" e "Em uma chamada" descrevem coisas
+                            diferentes: uma é um canal de servidor aberto o dia
+                            todo, a outra é alguém do outro lado esperando você */}
+                        {emChamadaNoPrivado ? (
+                          <>
+                            <Phone size={12} className="shrink-0" /> Em uma chamada
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 size={12} className="shrink-0" /> Em voz
+                          </>
+                        )}
                       </span>
                     ) : (
                       (user.statusPersonalizado?.texto ?? ROTULO_DO_ESTADO[user.desiredStatus])

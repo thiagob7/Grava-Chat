@@ -5,6 +5,7 @@ import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/components/SoundboardPanel";
 import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
+import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { VoiceDetailsPopover } from "~/components/VoiceDetailsPopover";
 import { corDoPing, useVoicePing, type PingDaChamada } from "~/hooks/use-voice-ping";
 import { desktop } from "~/lib/desktop";
@@ -38,6 +39,14 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
   } = useVoiceStore();
 
   const { data: detail } = useFindGuild(guildId ?? undefined);
+
+  /*
+    Numa chamada de privado não há servidor nem canal a consultar: o `guildId`
+    é nulo e a busca acima volta vazia. Sem isto, o painel anunciava a chamada
+    como "…" — dizia que você estava em voz e não dizia com quem.
+  */
+  const { data: dms = [] } = useFindDms(true);
+  const conversa = dms.find((dm) => dm.id === channelId);
   const channels = detail?.channels ?? [];
   const guildName = detail?.guild.name;
   const podeUsarSons = usePermissions(detail).can("USE_SOUNDBOARD");
@@ -97,7 +106,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
 
               <span className="grid min-w-0 grid-cols-1 overflow-hidden">
                 <span className="col-start-1 row-start-1 truncate text-online transition duration-200 ease-out group-hover/voz:-translate-y-full group-hover/voz:opacity-0">
-                  Voz conectada
+                  {conversa ? "Em uma chamada" : "Voz conectada"}
                 </span>
                 <span className="col-start-1 row-start-1 translate-y-full truncate text-ink opacity-0 transition duration-200 ease-out group-hover/voz:translate-y-0 group-hover/voz:opacity-100">
                   Detalhes de Voz
@@ -106,12 +115,18 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
             </button>
           </VoiceDetailsPopover>
           <button
-            onClick={() => guildId && navigate(`/channels/${guildId}/${channelId}`)}
-            disabled={!guildId}
+            onClick={() =>
+              conversa
+                ? navigate(`/dm/${conversa.id}`)
+                : guildId && navigate(`/channels/${guildId}/${channelId}`)
+            }
+            disabled={!guildId && !conversa}
             title="Voltar para a chamada"
             className="block max-w-full truncate text-left text-xs text-ink-muted transition hover:text-ink hover:underline disabled:cursor-default disabled:no-underline"
           >
-            {channel?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
+            {conversa
+              ? conversa.user.displayName
+              : `${channel?.name ?? "…"} ${guildName ? `/ ${guildName}` : ""}`}
           </button>
         </div>
 
