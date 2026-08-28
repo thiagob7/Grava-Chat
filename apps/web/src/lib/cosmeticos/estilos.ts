@@ -6,6 +6,19 @@ export type EstiloCss = CSSProperties & Record<`--${string}`, string | number | 
 
 export const PARADO = "0s";
 
+/*
+  Molduras que passam pra FORA do retângulo do cartão.
+
+  As de gradiente são efeito de beirada: vivem sobre o cartão e herdam o
+  arredondamento dele. As desenhadas são ornamento, e ornamento colado por
+  dentro come o banner. Estas ganham uma faixa de 12px em volta — a folga sai
+  do popover, que cresce com o cartão, e não do conteúdo, que fica intacto.
+*/
+const TRANSBORDAM = new Set(["rosas"]);
+
+export const molduraTransborda = (id: string | null | undefined): boolean =>
+  Boolean(id && TRANSBORDAM.has(id));
+
 export function classeDoEnfeite(familia: string, id: string | null | undefined): string | null {
   if (!id || VAZIOS.has(id)) return null;
 
