@@ -2,27 +2,75 @@
   <defs><g id="canto">
   <path d="M48 14 C33 14 21 21 15 31 C11 38 11 42 11 48"
         fill="none" stroke="#7d9470" stroke-width="4.4" stroke-linecap="round"/>
-  <path d="M0 0 L-4.08 -13.2 L4.08 0Z" fill="#eaf2e4"
-     transform="translate(40 12) rotate(24)"/><path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(27 16) rotate(8)"/>
-  <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(16 27) rotate(-78)"/><path d="M0 0 L-4.08 -13.2 L4.08 0Z" fill="#eaf2e4"
-     transform="translate(12 40) rotate(-104)"/>
-  <path d="M0 0 L-2.72 -8.8 L2.72 0Z" fill="#eaf2e4"
-     transform="translate(24 22) rotate(138)"/>
+  <g transform="translate(40 12) rotate(24)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="0s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-4.08 -13.2 L4.08 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(27 16) rotate(8)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="1.3s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g>
+  <g transform="translate(16 27) rotate(-78)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="2.6s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(12 40) rotate(-104)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="3.9s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-4.08 -13.2 L4.08 0Z" fill="#eaf2e4"/>
+  </g></g>
+  <g transform="translate(24 22) rotate(138)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="5.2s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-2.72 -8.8 L2.72 0Z" fill="#eaf2e4"/>
+  </g></g>
   <circle cx="21" cy="21" r="3.4" fill="#eaf2e4" opacity=".85"/></g><g id="beira">
   <path d="M48 16 C84 4 116 30 150 16 C184 2 216 28 252 16"
         fill="none" stroke="#7d9470" stroke-width="4" stroke-linecap="round"/>
-  <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(78 11) rotate(12)"/><path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(112 20) rotate(-8)"/>
-  <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(150 15) rotate(6)"/><path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(188 20) rotate(8)"/><path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"
-     transform="translate(222 11) rotate(-12)"/>
-  <path d="M0 0 L-2.38 -7.7 L2.38 0Z" fill="#eaf2e4"
-     transform="translate(95 22) rotate(170)"/><path d="M0 0 L-2.38 -7.7 L2.38 0Z" fill="#eaf2e4"
-     transform="translate(205 22) rotate(190)"/></g></defs>
+  <g transform="translate(78 11) rotate(12)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="0s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(112 20) rotate(-8)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="1.6s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g>
+  <g transform="translate(150 15) rotate(6)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="3.2s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(188 20) rotate(8)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="4.8s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(222 11) rotate(-12)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="6.4s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-3.4 -11 L3.4 0Z" fill="#eaf2e4"/>
+  </g></g>
+  <g transform="translate(95 22) rotate(170)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="2.4s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-2.38 -7.7 L2.38 0Z" fill="#eaf2e4"/>
+  </g></g><g transform="translate(205 22) rotate(190)"><g>
+    <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"
+      dur="8s" begin="5.6s" repeatCount="indefinite" calcMode="spline"
+      keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    <path d="M0 0 L-2.38 -7.7 L2.38 0Z" fill="#eaf2e4"/>
+  </g></g></g></defs>
   <use href="#canto"/>
   <use href="#canto" transform="translate(300 0) scale(-1 1)"/>
   <use href="#canto" transform="translate(0 300) scale(1 -1)"/>

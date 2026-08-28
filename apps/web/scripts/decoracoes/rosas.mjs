@@ -17,13 +17,25 @@ const SOMBRA = "#b9a6e0";
 const RAMO = "#8f7cc4";
 
 /// Caracol de arcos: três voltas bastam pra ler como rosa em miniatura.
-const rosa = (x, y, r) => `<g transform="translate(${x} ${y})">
+/*
+  A rosa respira: um `scale` de sopro, num grupo INTERNO.
+
+  Interno porque o de fora já carrega o `translate` que a põe no lugar — dois
+  transforms no mesmo elemento se substituem, e a rosa ia parar na origem.
+
+  O `atraso` desencontra as rosas: em uníssono o canto inteiro pulsa junto e
+  lê como piscada, não como respiração.
+*/
+const rosa = (x, y, r, atraso = 0) => `<g transform="translate(${x} ${y})"><g>
+  <animateTransform attributeName="transform" type="scale"
+    values="1;1.07;1" dur="6s" begin="${atraso}s" repeatCount="indefinite"
+    calcMode="spline" keyTimes="0;0.5;1" keySplines=".4 0 .6 1;.4 0 .6 1"/>
   <circle r="${r}" fill="${CREME}" stroke="${SOMBRA}" stroke-width="${r * 0.13}"/>
   <path d="M${-r * 0.6} ${r * 0.22} A${r * 0.6} ${r * 0.6} 0 1 1 ${r * 0.48} ${-r * 0.3}"
         fill="none" stroke="${SOMBRA}" stroke-width="${r * 0.16}" stroke-linecap="round"/>
   <path d="M${-r * 0.3} ${r * 0.26} A${r * 0.34} ${r * 0.34} 0 1 1 ${r * 0.28} ${-r * 0.06}"
         fill="none" stroke="${SOMBRA}" stroke-width="${r * 0.16}" stroke-linecap="round"/>
-</g>`;
+</g></g>`;
 
 const folha = (x, y, g, e = 1) =>
   `<ellipse rx="${6.5 * e}" ry="${2.7 * e}" fill="${CREME}" stroke="${SOMBRA}"

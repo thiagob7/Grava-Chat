@@ -1,6 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" role="presentation">
   <defs><linearGradient id="ferro" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#fff0c2"/><stop offset=".5" stop-color="#e8c266"/>
+    <stop offset="0" stop-color="#fff0c2"/>
+    <stop offset=".5" stop-color="#e8c266">
+      <animate attributeName="offset" values=".18;.82;.18" dur="5s"
+        repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1"
+        keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    </stop>
     <stop offset="1" stop-color="#8a6516"/>
   </linearGradient><g id="canto">
   <path d="M48 10 C34 10 22 18 16 28 C12 35 12 41 12 48"

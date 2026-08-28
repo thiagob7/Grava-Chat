@@ -38,8 +38,21 @@ const beira = `
   ${voluta(150, 30, 15, 0)}
   ${gota(96, 12, 16)}${gota(196, 12, -16)}`;
 
+/*
+  O brilho corre pelo GRADIENTE, não pelo desenho.
+
+  Um lampejo viajando pelo traço não daria a volta no cartão: o border-image
+  fatia e ladrilha, então cada pedaço é independente e o lampejo apareceria
+  repetido em todos ao mesmo tempo. Deslocar a parada clara do gradiente faz o
+  metal pegar luz por inteiro, que é um efeito que não depende de continuidade.
+*/
 const defs = `<linearGradient id="ferro" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#fff0c2"/><stop offset=".5" stop-color="${OURO}"/>
+    <stop offset="0" stop-color="#fff0c2"/>
+    <stop offset=".5" stop-color="${OURO}">
+      <animate attributeName="offset" values=".18;.82;.18" dur="5s"
+        repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1"
+        keySplines=".4 0 .6 1;.4 0 .6 1"/>
+    </stop>
     <stop offset="1" stop-color="${SOMBRA}"/>
   </linearGradient>`;
 
