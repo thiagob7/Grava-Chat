@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 
 import { BarraDeTitulo } from "~/components/BarraDeTitulo";
 
+import { ChamadaRecebida } from "~/components/ChamadaRecebida";
 import { FloatingScreenShare } from "~/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/hooks/use-aviso-no-titulo";
@@ -75,6 +76,10 @@ export const AppRoutes: React.FC = () => (
     </div>
 
     <FloatingScreenShare />
+    {/* aqui dentro pelo mesmo motivo do `LinksDoDesktop`: atender uma
+        chamada navega para a conversa, e `useNavigate` só existe sob o
+        Router. Fora dele, ele lança e leva a aplicação inteira junto. */}
+    <ChamadaRecebida />
     <LinksDoDesktop />
   </BrowserRouter>
 );
