@@ -1,6 +1,7 @@
 import React from "react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
+import { CartaoDaTransmissao } from "~/components/CartaoDaTransmissao";
 import { UserPanel } from "~/components/UserPanel";
 import { VoicePanel } from "~/components/VoicePanel";
 
@@ -22,8 +23,13 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
   accountChannelId,
   onMoveHere,
 }) => (
-  <div className="relative z-30 -ml-16 mb-2 mr-2 rounded-lg bg-surface-2 p-2 shadow-lg shadow-black/30 ring-1 ring-white/[0.04] [--gc-recorte:var(--color-surface-2)]">
-    <VoicePanel accountChannelId={accountChannelId} onMoveHere={onMoveHere} />
-    {user && <UserPanel user={user} guildId={guildId} onLogout={onLogout} />}
-  </div>
+  <>
+    {/* Cartão à parte, acima do da chamada — as mesmas margens pra alinharem. */}
+    <CartaoDaTransmissao className="-ml-16 mb-2 mr-2" />
+
+    <div className="relative z-30 -ml-16 mb-2 mr-2 rounded-lg bg-surface-2 p-2 shadow-lg shadow-black/30 ring-1 ring-white/[0.04] [--gc-recorte:var(--color-surface-2)]">
+      <VoicePanel accountChannelId={accountChannelId} onMoveHere={onMoveHere} />
+      {user && <UserPanel user={user} guildId={guildId} onLogout={onLogout} />}
+    </div>
+  </>
 );

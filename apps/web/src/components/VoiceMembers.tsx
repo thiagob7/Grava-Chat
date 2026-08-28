@@ -1,5 +1,5 @@
-import React from "react";
-import { Mic, MicOff, MonitorUp, Video } from "lucide-react";
+import React, { useState } from "react";
+import { Mic, MicOff, MonitorUp, Play, Video } from "lucide-react";
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 
@@ -7,6 +7,9 @@ import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { useVoiceStore } from "~/stores/voice-store";
+import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
+import { VoiceVideo } from "~/components/VoiceTrack";
+import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
 
 interface VoiceMembersProps {
@@ -31,6 +34,17 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   const tiles = useVoiceStore((s) => s.tiles);
   const falando = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
 
+  /*
+    Só oferecemos "Assistir" para quem já está na MESMA chamada.
+
+    Fora dela não há sala do LiveKit conectada, e o alvo seria descartado no
+    próximo `refresh()` — o botão pareceria quebrado. Entrar na chamada antes é
+    um fluxo à parte, e já existe: é o clique no canal.
+  */
+  const canalConectado = useVoiceStore((s) => s.channelId);
+  const assistir = useVoiceStore((s) => s.assistir);
+  const assistindo = useVoiceStore((s) => s.assistindo);
+
   const podeModerar = has(new Set(minhasPermissoes), "MODERATE_MEMBERS");
 
   if (!states.length) return null;
@@ -41,43 +55,59 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         const member = members.find((m) => m.user.id === state.userId);
         const name = member?.nickname ?? member?.user.displayName ?? "…";
 
+        /*
+          Não oferecemos o que você já está fazendo: se a live desta pessoa já
+          está aberta na sua tela, o convite pra assistir é ruído.
+        */
+        const podeAssistir =
+          state.screenShare && canalConectado === state.channelId && assistindo !== state.userId;
+
+        const transmissao = tiles.find((t) => t.identity === state.userId)?.screenTrack ?? null;
+
         const linha = (
-          <UserProfilePopover
-            userId={state.userId}
-            guildId={guildId}
-            roles={roles}
-            roleIds={member?.roleIds ?? []}
-            podeModerar={podeModerar}
+          <ConviteParaLive
+            ativo={podeAssistir}
+            nome={name}
+            transmissao={transmissao}
+            onAssistir={() => assistir(state.userId)}
           >
-            <button className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition hover:bg-surface-3">
-              <Avatar
-                id={state.userId}
-                name={name}
-                url={member?.user.avatarUrl}
-                size={24}
-                speaking={falando.has(state.userId)}
-              />
-            <span
-              className={cn(
-                "min-w-0 flex-1 truncate text-sm",
-                state.selfMute ? "text-ink-faint" : "text-ink-muted",
-              )}
+            <UserProfilePopover
+              userId={state.userId}
+              guildId={guildId}
+              roles={roles}
+              roleIds={member?.roleIds ?? []}
+              podeModerar={podeModerar}
             >
-              {name}
-            </span>
-              <span className="flex shrink-0 items-center gap-1 text-ink-faint">
-              {state.screenShare && <MonitorUp size={13} className="text-online" />}
-              {state.camera && <Video size={13} className="text-online" />}
-              {state.serverMute ? (
-                <MicOff size={13} className="text-danger" />
-              ) : state.selfMute ? (
-                <MicOff size={13} className="text-danger" />
-              ) : (
-                <Mic size={13} />
-              )}
+              <button className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition hover:bg-surface-3">
+                <Avatar
+                  id={state.userId}
+                  name={name}
+                  url={member?.user.avatarUrl}
+                  size={24}
+                  speaking={falando.has(state.userId)}
+                />
+              <span
+                className={cn(
+                  "min-w-0 flex-1 truncate text-sm",
+                  state.selfMute ? "text-ink-faint" : "text-ink-muted",
+                )}
+              >
+                {name}
               </span>
-            </button>
-          </UserProfilePopover>
+                <span className="flex shrink-0 items-center gap-1 text-ink-faint">
+                {state.screenShare && <MonitorUp size={13} className="text-online" />}
+                {state.camera && <Video size={13} className="text-online" />}
+                {state.serverMute ? (
+                  <MicOff size={13} className="text-danger" />
+                ) : state.selfMute ? (
+                  <MicOff size={13} className="text-danger" />
+                ) : (
+                  <Mic size={13} />
+                )}
+                </span>
+              </button>
+            </UserProfilePopover>
+          </ConviteParaLive>
         );
 
         if (!guildId) return <div key={state.userId}>{linha}</div>;
@@ -100,5 +130,80 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         );
       })}
     </div>
+  );
+};
+
+/**
+ * O convite para assistir, num balão ao LADO da linha.
+ *
+ * A primeira versão era um botão dentro da própria linha, e não cabia: a linha
+ * tem 24px de avatar, o nome, e ainda os ícones de microfone, câmera e monitor
+ * — o botão empurrava tudo e cobria os ícones ao aparecer. Num balão ao lado
+ * não disputa espaço com nada, e ainda sobra lugar pra dizer de quem é a live.
+ *
+ * Abre no mouse e não no clique porque o clique na linha já tem dono: ele abre
+ * o cartão de perfil. Por isso o balão é ancorado (`PopoverAnchor`) em vez de
+ * disparado por um gatilho — o gatilho seria um segundo botão dentro de um
+ * botão, que é HTML inválido.
+ */
+const ConviteParaLive: React.FC<{
+  ativo: boolean;
+  nome: string;
+  /// a faixa de vídeo da transmissão, pra prévia
+  transmissao: Track | null;
+  onAssistir: () => void;
+  children: React.ReactNode;
+}> = ({ ativo, nome, transmissao, onAssistir, children }) => {
+  const [aberto, setAberto] = useState(false);
+
+  if (!ativo) return <div>{children}</div>;
+
+  return (
+    <Popover open={aberto} onOpenChange={setAberto}>
+      <PopoverAnchor asChild>
+        <div onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
+          {children}
+        </div>
+      </PopoverAnchor>
+
+      <PopoverContent
+        side="right"
+        align="center"
+        className="w-64 space-y-2 p-2"
+        /// sem isto o balão fecharia ao mover o mouse da linha até ele
+        onMouseEnter={() => setAberto(true)}
+        onMouseLeave={() => setAberto(false)}
+        /// o foco pertence à linha; roubá-lo faria a lista pular ao passar o mouse
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        {/*
+          A prévia assina o vídeo — e por isso ela vive AQUI, e não nos quadros
+          da grade. Aqui é uma transmissão por vez, só enquanto o mouse está em
+          cima; na grade seriam todas ao mesmo tempo, o tempo todo, e a tela é
+          publicada em camada única (1080p por miniatura) no Micro de 1/8 de
+          núcleo. É a diferença entre pagar por uma e pagar por todas.
+        */}
+        <div className="aspect-video overflow-hidden rounded bg-black">
+          {transmissao ? (
+            <VoiceVideo track={transmissao} />
+          ) : (
+            <div className="flex size-full items-center justify-center text-xs text-ink-faint">
+              Carregando a prévia…
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={() => {
+            onAssistir();
+            setAberto(false);
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded bg-surface-3 px-2 py-1.5 text-sm font-medium transition hover:bg-surface-4"
+        >
+          <Play size={14} className="text-online" />
+          Assistir a {nome}
+        </button>
+      </PopoverContent>
+    </Popover>
   );
 };

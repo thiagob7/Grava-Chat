@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { Maximize2, MonitorUp, X } from "lucide-react";
+import { Maximize2, MonitorUp, MonitorX, X } from "lucide-react";
 
 import { VoiceVideo } from "~/components/VoiceTrack";
+import { encaixarNoCanto } from "~/lib/cantos";
 import { useVoiceStore } from "~/stores/voice-store";
+import { cn } from "~/lib/utils";
 
 const MARGEM = 8;
 const LARGURA = 320;
@@ -14,6 +16,7 @@ export const FloatingScreenShare: React.FC = () => {
   const assistindo = useVoiceStore((s) => s.assistindo);
   const palcoVisivel = useVoiceStore((s) => s.palcoVisivel);
   const parar = useVoiceStore((s) => s.assistir);
+  const encerrarTransmissao = useVoiceStore((s) => s.toggleScreen);
   const channelId = useVoiceStore((s) => s.channelId);
   const guildId = useVoiceStore((s) => s.guildId);
   const navigate = useNavigate();
@@ -21,12 +24,22 @@ export const FloatingScreenShare: React.FC = () => {
   const alvo = assistindo ? tiles.find((t) => t.identity === assistindo && t.screenTrack) : null;
   const mostrar = Boolean(alvo) && !palcoVisivel;
 
-  const [posicao, setPosicao] = useState(() => ({
-    x: window.innerWidth - LARGURA - 24,
-    y: window.innerHeight - ALTURA - 24,
-  }));
+  const area = useCallback(
+    () => ({ largura: window.innerWidth, altura: window.innerHeight, margem: MARGEM }),
+    [],
+  );
+
+  const [posicao, setPosicao] = useState(() =>
+    encaixarNoCanto(
+      { x: window.innerWidth, y: window.innerHeight, largura: LARGURA, altura: ALTURA },
+      { largura: window.innerWidth, altura: window.innerHeight, margem: MARGEM },
+    ),
+  );
 
   const arrasto = useRef<{ dx: number; dy: number } | null>(null);
+  /// enquanto o dedo está na tela o card segue o ponteiro; a transição só entra
+  /// no pouso, senão o arrasto fica com atraso elástico
+  const [pousando, setPousando] = useState(false);
 
   const limitar = useCallback(
     (x: number, y: number) => ({
@@ -42,8 +55,18 @@ export const FloatingScreenShare: React.FC = () => {
       setPosicao(limitar(e.clientX - arrasto.current.dx, e.clientY - arrasto.current.dy));
     };
 
+    /*
+      O pouso é o que mudou: antes o card ficava exatamente onde fosse largado,
+      e o "exatamente onde" costumava ser em cima da conversa ou da lista de
+      canais. Agora ele gruda no canto mais perto — o arrasto continua livre,
+      só o destino é que é decidido.
+    */
     const soltar = () => {
+      if (!arrasto.current) return;
       arrasto.current = null;
+
+      setPousando(true);
+      setPosicao((p) => encaixarNoCanto({ ...p, largura: LARGURA, altura: ALTURA }, area()));
     };
 
     window.addEventListener("pointermove", mover);
@@ -53,30 +76,36 @@ export const FloatingScreenShare: React.FC = () => {
       window.removeEventListener("pointermove", mover);
       window.removeEventListener("pointerup", soltar);
     };
-  }, [limitar]);
+  }, [limitar, area]);
 
+  /// Redimensionar a janela reencaixa: o canto de antes pode nem existir mais.
   useEffect(() => {
-    const ajustar = () => setPosicao((p) => limitar(p.x, p.y));
+    const ajustar = () =>
+      setPosicao((p) => encaixarNoCanto({ ...p, largura: LARGURA, altura: ALTURA }, area()));
 
     window.addEventListener("resize", ajustar);
     return () => window.removeEventListener("resize", ajustar);
-  }, [limitar]);
+  }, [area]);
 
   if (!mostrar || !alvo) return null;
 
   return (
     <div
       style={{ left: posicao.x, top: posicao.y, width: LARGURA, height: ALTURA }}
-      className="group/mini fixed z-40 overflow-hidden rounded-lg bg-black shadow-2xl ring-1 ring-white/10"
+      className={cn(
+        "group/mini fixed z-40 overflow-hidden rounded-lg bg-black shadow-2xl ring-1 ring-white/10",
+        pousando && "transition-[left,top] duration-200 ease-out",
+      )}
     >
       <VoiceVideo track={alvo.screenTrack!} />
 
       <div
         onPointerDown={(e) => {
+          setPousando(false);
           arrasto.current = { dx: e.clientX - posicao.x, dy: e.clientY - posicao.y };
         }}
         style={{ touchAction: "none" }}
-        className="absolute inset-x-0 top-0 flex cursor-grab items-center gap-1.5 bg-gradient-to-b from-black/80 to-transparent px-2 py-1.5 opacity-0 transition group-hover/mini:opacity-100 active:cursor-grabbing"
+        className="absolute inset-x-0 top-0 flex cursor-grab items-center gap-1.5 bg-gradient-to-b from-black/85 to-transparent px-2 py-1.5 active:cursor-grabbing"
       >
         <MonitorUp size={12} className="shrink-0 text-online" />
         <span className="min-w-0 flex-1 truncate text-xs font-medium">{alvo.name}</span>
@@ -87,6 +116,21 @@ export const FloatingScreenShare: React.FC = () => {
         >
           <Maximize2 size={12} />
         </BotaoDaMini>
+
+        {/*
+          Dois botões, e a diferença entre eles é o ponto: o X só fecha a
+          janelinha (a live continua no ar), o monitor com X derruba a
+          transmissão. Antes só existia o primeiro, e pra encerrar de verdade
+          era preciso voltar até a chamada.
+
+          A barra também não some mais no hover — ela É a saída daqui, e uma
+          saída que só aparece quando o mouse passa por cima não é uma saída.
+        */}
+        {alvo.isLocal && (
+          <BotaoDaMini label="Encerrar a transmissão" onClick={() => void encerrarTransmissao()}>
+            <MonitorX size={12} className="text-danger" />
+          </BotaoDaMini>
+        )}
 
         <BotaoDaMini label="Parar de assistir" onClick={() => parar(null)}>
           <X size={12} />

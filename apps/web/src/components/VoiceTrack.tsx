@@ -40,12 +40,30 @@ export function VoiceVideo({ track, mirrored }: { track: Track; mirrored?: boole
  * Agora o ajuste mora aqui e é reaplicado a cada mudança: elemento novo nasce
  * já no volume certo, e mexer no controle chega neste `useEffect` na hora.
  */
-export function VoiceAudio({ track, identity }: { track: Track; identity: string }) {
+export function VoiceAudio({
+  track,
+  identity,
+  fonte = "voz",
+}: {
+  track: Track;
+  identity: string;
+  /*
+    De onde vem este som. A voz da pessoa e o som da transmissão dela são duas
+    coisas com controles separados: "abaixa o jogo dele" não deve emudecer a
+    pessoa junto. `deafened` continua calando os dois — é o botão de ficar
+    surdo, e ele não faz exceção.
+  */
+  fonte?: "voz" | "tela";
+}) {
   const ref = useRef<HTMLAudioElement>(null);
 
   const volumeSaida = useVoicePrefs((s) => s.volumeSaida);
-  const individual = useVoiceStore((s) => s.volumesLocais[identity] ?? 1);
-  const silenciado = useVoiceStore((s) => Boolean(s.silenciadosLocais[identity]));
+  const individual = useVoiceStore((s) =>
+    fonte === "tela" ? (s.volumesDeTela[identity] ?? 1) : (s.volumesLocais[identity] ?? 1),
+  );
+  const silenciado = useVoiceStore((s) =>
+    fonte === "tela" ? false : Boolean(s.silenciadosLocais[identity]),
+  );
   const deafened = useVoiceStore((s) => s.deafened);
 
   useEffect(() => {

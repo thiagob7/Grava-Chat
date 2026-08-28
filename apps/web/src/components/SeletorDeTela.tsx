@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
 import { Switch } from "~/components/ui/switch";
 import { desktop } from "~/lib/desktop";
+import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
 
 export const SeletorDeTela: React.FC = () => {
@@ -16,13 +17,28 @@ export const SeletorDeTela: React.FC = () => {
 
   const respondido = useRef(true);
 
-  const responder = useCallback((escolha: { id: string; comAudio: boolean } | null) => {
-    if (respondido.current) return;
-    respondido.current = true;
-    desktop()?.tela.responder(escolha);
-    setFontes(null);
-    setEscolhido(null);
-  }, []);
+  const definirFonteDaTela = useVoiceStore((s) => s.definirFonteDaTela);
+
+  const responder = useCallback(
+    (escolha: { id: string; comAudio: boolean } | null, lista: FonteDeTela[] | null) => {
+      if (respondido.current) return;
+      respondido.current = true;
+
+      /*
+        Guardar o que foi escolhido é o que permite o painel dizer "Tela 1" ou
+        "Visual Studio Code" em vez de um genérico. É aqui e em nenhum outro
+        lugar: depois que o Electron devolve a faixa, este nome já se perdeu —
+        o rótulo que chega na `MediaStreamTrack` é um identificador cru.
+      */
+      const fonte = escolha ? lista?.find((f) => f.id === escolha.id) : null;
+      definirFonteDaTela(fonte ? { nome: fonte.nome, icone: fonte.icone } : null);
+
+      desktop()?.tela.responder(escolha);
+      setFontes(null);
+      setEscolhido(null);
+    },
+    [definirFonteDaTela],
+  );
 
   useEffect(() => {
     const ponte = desktop();
@@ -42,7 +58,7 @@ export const SeletorDeTela: React.FC = () => {
   const janelas = fontes.filter((f) => !f.ehTela);
 
   return (
-    <Dialog open onOpenChange={(aberto) => !aberto && responder(null)}>
+    <Dialog open onOpenChange={(aberto) => !aberto && responder(null, fontes)}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Compartilhar tela</DialogTitle>
@@ -101,12 +117,12 @@ export const SeletorDeTela: React.FC = () => {
           </label>
 
           <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => responder(null)}>
+            <Button variant="ghost" onClick={() => responder(null, fontes)}>
               Cancelar
             </Button>
             <Button
               disabled={!escolhido}
-              onClick={() => escolhido && responder({ id: escolhido, comAudio })}
+              onClick={() => escolhido && responder({ id: escolhido, comAudio }, fontes)}
             >
               Compartilhar
             </Button>

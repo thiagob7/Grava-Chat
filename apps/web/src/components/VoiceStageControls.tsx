@@ -8,6 +8,7 @@ import {
   Mic,
   MicOff,
   MonitorUp,
+  MonitorX,
   PhoneOff,
   Video,
   VideoOff,
@@ -63,8 +64,14 @@ export const VoiceStageControls: React.FC<{ alvoTelaCheia?: React.RefObject<HTML
           {cameraEnabled ? <Video size={18} /> : <VideoOff size={18} />}
         </Botao>
 
-        <Botao label="Compartilhar tela" onClick={() => void toggleScreen()} ativo={screenEnabled}>
-          <MonitorUp size={18} />
+        <Botao
+          label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
+          onClick={() => void toggleScreen()}
+          ativo={screenEnabled}
+        >
+          {/* o monitor com X diz "clique pra PARAR"; a seta pra cima dizia o
+              contrário, e o botão parecia não ter feito nada */}
+          {screenEnabled ? <MonitorX size={18} /> : <MonitorUp size={18} />}
         </Botao>
 
         <Botao

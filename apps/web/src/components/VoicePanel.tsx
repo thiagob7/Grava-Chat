@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AudioLines, MonitorUp, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
+import { AudioLines, MonitorUp, MonitorX, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/components/SoundboardPanel";
@@ -162,8 +162,15 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
           {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}
         </VoiceControl>
 
-        <VoiceControl label="Compartilhar tela" onClick={() => void toggleScreen()}>
-          <MonitorUp size={18} className={screenEnabled ? "text-online" : undefined} />
+        <VoiceControl
+          label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
+          onClick={() => void toggleScreen()}
+        >
+          {screenEnabled ? (
+            <MonitorX size={18} className="text-online" />
+          ) : (
+            <MonitorUp size={18} />
+          )}
         </VoiceControl>
       </div>
     </div>

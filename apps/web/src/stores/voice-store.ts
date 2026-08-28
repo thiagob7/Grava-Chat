@@ -9,6 +9,8 @@ import {
   type LocalAudioTrack,
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
+import { proximoAlvo } from "~/lib/assistir";
+import { descreverFonte } from "~/lib/fonte-da-tela";
 import { ProcessadorDeVoz } from "~/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
 import { tocarSom, type SomDaInterface } from "~/lib/ui-sounds";
@@ -29,7 +31,16 @@ export type VoiceTile = {
   micEnabled: boolean;
   cameraTrack: Track | null;
   screenTrack: Track | null;
-  audioTracks: Track[];
+  /*
+    Voz e som da tela vivem em campos separados de propósito.
+
+    Num campo só, o `VoiceAudioSink` tocava os dois sempre que a pessoa estava
+    na sala — e era exatamente isso que fazia o som da live continuar tocando
+    pra quem NÃO estava assistindo. Separados, cada um tem seu destino: a voz
+    toca sempre, o som da tela só pra quem abriu a transmissão.
+  */
+  micTrack: Track | null;
+  screenAudioTrack: Track | null;
 };
 
 type VoiceStore = {
@@ -54,6 +65,18 @@ type VoiceStore = {
   palcoVisivel: boolean;
   volumesLocais: Record<string, number>;
   silenciadosLocais: Record<string, boolean>;
+  volumesDeTela: Record<string, number>;
+  /*
+    O que você está transmitindo — "Tela 1", "Visual Studio Code", o nome do
+    jogo — com o ícone do app quando existe.
+
+    No desktop o dado é bom: o `desktopCapturer` do Electron já devolve nome e
+    ícone de cada fonte, e o seletor guarda o que foi escolhido. No navegador
+    não há seletor nosso, e sobra o rótulo da faixa, que costuma ser um id
+    ("screen:0:0") em vez de um nome — daí o campo aceitar não ter ícone e o
+    nome cair num genérico.
+  */
+  fonteDaTela: { nome: string; icone: string | null } | null;
 
   join: (channelId: string, options?: { resume?: boolean }) => Promise<void>;
   leave: () => Promise<void>;
@@ -65,6 +88,8 @@ type VoiceStore = {
   assistir: (identity: string | null) => void;
   definirPalcoVisivel: (visivel: boolean) => void;
   setVolumeLocal: (userId: string, volume: number) => void;
+  setVolumeDeTela: (userId: string, volume: number) => void;
+  definirFonteDaTela: (fonte: { nome: string; icone: string | null } | null) => void;
   toggleSilenciarLocal: (userId: string) => void;
   aplicarAjustes: (mudanca: Partial<VoicePrefs>) => Promise<void>;
   definirPtt: (pressionado: boolean) => void;
@@ -89,9 +114,8 @@ function snapshot(room: Room): VoiceTile[] {
       return pub?.track ?? null;
     };
 
-    const audioTracks = isLocal
-      ? []
-      : ([track(Track.Source.Microphone), track(Track.Source.ScreenShareAudio)].filter(Boolean) as Track[]);
+    /// Ninguém ouve o próprio áudio de volta — daí o local não publicar nada aqui.
+    const ouvivel = (source: Track.Source) => (isLocal ? null : track(source));
 
     return {
       identity: p.identity,
@@ -102,7 +126,8 @@ function snapshot(room: Room): VoiceTile[] {
       micEnabled: p.isMicrophoneEnabled,
       cameraTrack: track(Track.Source.Camera),
       screenTrack: track(Track.Source.ScreenShare),
-      audioTracks,
+      micTrack: ouvivel(Track.Source.Microphone),
+      screenAudioTrack: ouvivel(Track.Source.ScreenShareAudio),
     };
   };
 
@@ -151,17 +176,28 @@ const AJUSTES_KEY = "gravae:volumes-por-pessoa";
 interface AjustesPorPessoa {
   volumes: Record<string, number>;
   silenciados: Record<string, boolean>;
+  /*
+    O volume da TRANSMISSÃO de alguém, separado do volume da voz.
+
+    São duas queixas diferentes e merecem dois controles: "a voz dele está
+    baixa" não é "o jogo que ele está transmitindo está estourando". Antes o
+    ajuste era um só e mexia nos dois — abaixar o barulho da live emudecia a
+    pessoa junto.
+  */
+  telas: Record<string, number>;
 }
 
 function lerAjustesPorPessoa(): AjustesPorPessoa {
   try {
     const salvo = localStorage.getItem(AJUSTES_KEY);
-    if (!salvo) return { volumes: {}, silenciados: {} };
+    if (!salvo) return { volumes: {}, silenciados: {}, telas: {} };
 
     const dados = JSON.parse(salvo) as Partial<AjustesPorPessoa>;
-    return { volumes: dados.volumes ?? {}, silenciados: dados.silenciados ?? {} };
+    /// `telas` nasceu depois: quem já tem ajustes salvos não o tem, e o `??`
+    /// é o que evita `undefined` chegando na leitura de volume.
+    return { volumes: dados.volumes ?? {}, silenciados: dados.silenciados ?? {}, telas: dados.telas ?? {} };
   } catch {
-    return { volumes: {}, silenciados: {} };
+    return { volumes: {}, silenciados: {}, telas: {} };
   }
 }
 
@@ -254,6 +290,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   palcoVisivel: false,
   volumesLocais: lerAjustesPorPessoa().volumes,
   silenciadosLocais: lerAjustesPorPessoa().silenciados,
+  volumesDeTela: lerAjustesPorPessoa().telas,
+  fonteDaTela: null,
 
   join: async (channelId, options) => {
     if (store().channelId === channelId) return;
@@ -277,16 +315,16 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       });
 
       const refresh = () => {
-        const { volumeSaida } = useVoicePrefs.getState();
-        const { deafened, volumesLocais, silenciadosLocais } = store();
+        /*
+          O volume NÃO é mais aplicado por participante aqui.
 
-        room.remoteParticipants.forEach((p) => {
-          const individual = volumesLocais[p.identity] ?? 1;
-          const mudo = deafened || silenciadosLocais[p.identity];
-
-          p.setVolume(mudo ? 0 : volumeSaida * individual);
-        });
-
+          `p.setVolume()` age no participante inteiro — voz e som de tela juntos
+          —, e agora esses dois têm destinos diferentes: a voz toca sempre, a
+          tela só pra quem assiste, cada uma com seu próprio ajuste. Quem manda
+          no volume é o elemento `<audio>` em `VoiceTrack.tsx`, que já reaplica
+          o valor a cada mudança. Manter as duas vias fazia o LiveKit sobrescrever
+          o ajuste por faixa toda vez que qualquer coisa na sala mudasse.
+        */
         const tiles = snapshot(room);
 
         const eu = tiles.find((t) => t.isLocal);
@@ -294,8 +332,10 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         const tela = Boolean(eu?.screenTrack);
         const { cameraEnabled, screenEnabled, assistindo } = store();
 
-        const aindaTransmite = tiles.some((t) => t.identity === assistindo && t.screenTrack);
-        const proximoAssistindo = tela && eu ? eu.identity : aindaTransmite ? assistindo : null;
+        const proximoAssistindo = proximoAlvo({
+          atual: assistindo,
+          alvoAindaTransmite: tiles.some((t) => t.identity === assistindo && t.screenTrack),
+        });
 
         if (proximoAssistindo !== assistindo) set({ assistindo: proximoAssistindo });
 
@@ -430,8 +470,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       await room?.localParticipant.setMicrophoneEnabled(false);
     }
 
-    const { volumeSaida } = useVoicePrefs.getState();
-    room?.remoteParticipants.forEach((p) => p.setVolume(next ? 0 : volumeSaida));
     await updateVoiceState({ selfDeaf: next, selfMute: next ? true : undefined }).catch(() => undefined);
   },
 
@@ -453,6 +491,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
   assistir: (identity) => set({ assistindo: identity }),
   definirPalcoVisivel: (visivel) => set({ palcoVisivel: visivel }),
+  definirFonteDaTela: (fonte) => set({ fonteDaTela: fonte }),
 
   toggleNoiseFilter: async () => {
     const { supressaoDeRuido } = useVoicePrefs.getState();
@@ -490,32 +529,40 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (mudanca.saidaId !== undefined) {
       await room.switchActiveDevice("audiooutput", mudanca.saidaId ?? "default").catch(() => undefined);
     }
-
-    if (mudanca.volumeSaida !== undefined) {
-      const volume = store().deafened ? 0 : mudanca.volumeSaida;
-      room.remoteParticipants.forEach((p) => p.setVolume(volume));
-    }
   },
 
   definirPtt: (pressionado) => store().processador?.definirPtt(pressionado),
 
+  /*
+    O volume vive no ESTADO, e só nele.
+
+    Não há mais nenhum `participante.setVolume()` por aqui. Ele agia no
+    participante inteiro — voz e som de tela na mesma tecla —, e o som da tela
+    agora tem destino próprio. Quem aplica é o elemento `<audio>` de
+    `VoiceTrack.tsx`, que reage a `volumeSaida`, `volumesLocais`,
+    `silenciadosLocais` e `deafened`. Mudar aqui basta pra chegar lá.
+  */
   setVolumeLocal: (userId, volume) => {
     const volumes = { ...store().volumesLocais, [userId]: volume };
     set({ volumesLocais: volumes });
-    guardarAjustesPorPessoa({ volumes, silenciados: store().silenciadosLocais });
+    guardarAjustesPorPessoa({ volumes, silenciados: store().silenciadosLocais, telas: store().volumesDeTela });
+  },
 
-    const participante = store().room?.remoteParticipants.get(userId);
-    participante?.setVolume(store().silenciadosLocais[userId] ? 0 : volume);
+  setVolumeDeTela: (userId, volume) => {
+    const telas = { ...store().volumesDeTela, [userId]: volume };
+    set({ volumesDeTela: telas });
+    guardarAjustesPorPessoa({
+      volumes: store().volumesLocais,
+      silenciados: store().silenciadosLocais,
+      telas,
+    });
   },
 
   toggleSilenciarLocal: (userId) => {
     const mudo = !store().silenciadosLocais[userId];
     const silenciados = { ...store().silenciadosLocais, [userId]: mudo };
     set({ silenciadosLocais: silenciados });
-    guardarAjustesPorPessoa({ volumes: store().volumesLocais, silenciados });
-
-    const participante = store().room?.remoteParticipants.get(userId);
-    participante?.setVolume(mudo ? 0 : (store().volumesLocais[userId] ?? 1));
+    guardarAjustesPorPessoa({ volumes: store().volumesLocais, silenciados, telas: store().volumesDeTela });
   },
 
   observarNivel: (ouvinte) => store().processador?.observarNivel(ouvinte) ?? (() => undefined),
@@ -526,14 +573,26 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     const next = !screenEnabled;
 
+    /// Encerrar limpa a fonte antes de tudo: se o `set` viesse só no fim, o
+    /// painel continuaria anunciando "Tela 1" durante a despublicação.
+    if (!next) set({ fonteDaTela: null });
+
     try {
       const { somDaTela } = useVoicePrefs.getState();
       await room.localParticipant.setScreenShareEnabled(next, { audio: somDaTela });
-      set({ screenEnabled: next, tiles: snapshot(room) });
+      const tiles = snapshot(room);
+
+      set({
+        screenEnabled: next,
+        tiles,
+        fonteDaTela: next
+          ? descreverFonte(store().fonteDaTela, tiles.find((t) => t.isLocal)?.screenTrack?.mediaStreamTrack)
+          : null,
+      });
       bipe(next ? "liveNoAr" : "liveEncerrada");
       await updateVoiceState({ screenShare: next }).catch(() => undefined);
     } catch {
-      set({ screenEnabled: false });
+      set({ screenEnabled: false, fonteDaTela: null });
     }
   },
   };

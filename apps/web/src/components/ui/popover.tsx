@@ -6,6 +6,9 @@ import { cn } from "~/lib/utils";
 export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
 export const PopoverClose = PopoverPrimitive.Close;
+/// Ancora o balão num elemento que NÃO é o gatilho — necessário quando quem
+/// abre é o mouse passando por cima, e não um clique.
+export const PopoverAnchor = PopoverPrimitive.Anchor;
 
 export const PopoverContent = ({
   className,

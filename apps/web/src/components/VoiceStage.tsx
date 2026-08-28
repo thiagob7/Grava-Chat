@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Maximize, Mic, MicOff, Minimize, MonitorUp, Play, X } from "lucide-react";
+import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, Volume2, VolumeX, X } from "lucide-react";
 
 import type {
   Channel,
@@ -11,6 +11,10 @@ import type {
 } from "@gravae/shared";
 
 import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
+import { focar, formatoDaGrade, montarGrade } from "~/lib/grade-da-call";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import { Slider } from "~/components/ui/slider";
+import { Tooltip } from "~/components/ui/tooltip";
 import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
@@ -43,6 +47,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
   const [telaCheia, setTelaCheia] = useState(false);
+  /// qual quadro está em destaque; `null` é a grade igualitária
+  const [focado, setFocado] = useState<string | null>(null);
 
   /*
     Tela cheia no QUADRO, não na janela inteira: assim a barra de participantes
@@ -143,6 +149,23 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-[10px] font-bold tracking-wide">
               AO VIVO
             </span>
+
+            {/*
+              "Parar de assistir" vive aqui em cima, e não na faixa de baixo,
+              porque lá ele caía exatamente debaixo da pílula de controles — o
+              `VoiceStageControls` é ancorado em `bottom-4` do palco, e o botão
+              ficava centralizado na mesma altura. Ele existia, era renderizado,
+              e simplesmente não dava pra clicar.
+
+              O `pointer-events-auto` é obrigatório: a faixa inteira é
+              `pointer-events-none` pra não roubar o clique do vídeo.
+            */}
+            <button
+              onClick={() => setAssistindo(null)}
+              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-white/25"
+            >
+              <X size={14} /> Parar de assistir
+            </button>
           </div>
 
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
@@ -155,17 +178,10 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             </div>
 
             <button
-              onClick={() => setAssistindo(null)}
-              className="mx-auto flex items-center gap-1.5 rounded bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-white/25"
-            >
-              <X size={14} /> Parar de assistir
-            </button>
-
-            <button
               onClick={alternarTelaCheia}
               aria-label={telaCheia ? "Sair da tela cheia" : "Tela cheia"}
               title={telaCheia ? "Sair da tela cheia (Esc)" : "Tela cheia"}
-              className="shrink-0 rounded p-1.5 text-white/80 transition hover:bg-white/15 hover:text-white"
+              className="ml-auto shrink-0 rounded p-1.5 text-white/80 transition hover:bg-white/15 hover:text-white"
             >
               {telaCheia ? <Minimize size={16} /> : <Maximize size={16} />}
             </button>
@@ -177,10 +193,63 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     );
   }
 
-  const columns = Math.min(
-    tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : 3,
-    3,
+  /*
+    Quem transmite ocupa dois quadros — o dele e o da live —, e não um só com a
+    transmissão desenhada por cima. Antes, abrir uma live fazia o avatar do dono
+    sumir atrás do botão "Assistir": justamente quem estava mostrando algo era
+    quem desaparecia da chamada.
+
+    A regra mora em `lib/grade-da-call.ts` porque é decisão, não desenho — e lá
+    ela tem teste.
+  */
+  const grade = montarGrade(
+    tiles.map((tile) => ({ identity: tile.identity, transmitindo: Boolean(tile.screenTrack), tile })),
   );
+
+  const { colunas, denso } = formatoDaGrade(grade.length);
+  const emFoco = focar(grade, focado);
+
+  const desenhar = (quadro: (typeof grade)[number], compacto?: boolean) =>
+    quadro.tipo === "tela" ? (
+      <TileDaLive
+        key={quadro.key}
+        tile={quadro.de.tile}
+        denso={denso || compacto}
+        onAssistir={() => setAssistindo(quadro.de.identity)}
+      />
+    ) : (
+      <ComMenu key={quadro.key} tile={quadro.de.tile} contexto={contexto}>
+        <Tile
+          tile={quadro.de.tile}
+          guildId={guildId}
+          denso={denso || compacto}
+          onFocar={() => setFocado((atual) => (atual === quadro.key ? null : quadro.key))}
+        />
+      </ComMenu>
+    );
+
+  /*
+    Clicar num quadro destaca ele e joga o resto numa faixa embaixo — clicar de
+    novo desfaz. A grade igualitária dá o mesmo espaço pra todo mundo mesmo
+    quando só uma pessoa interessa naquele instante; o foco é o que resolve.
+  */
+  if (emFoco) {
+    return (
+      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4">
+        <div className="min-h-0 flex-1 [&>*]:size-full">{desenhar(emFoco.destaque)}</div>
+
+        <div className="flex shrink-0 justify-center gap-2">
+          {emFoco.faixa.map((quadro) => (
+            <div key={quadro.key} className="w-40 shrink-0">
+              {desenhar(quadro, true)}
+            </div>
+          ))}
+        </div>
+
+        <VoiceStageControls alvoTelaCheia={palco} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -189,13 +258,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     >
       <div
         className="grid w-full max-w-5xl gap-4"
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        style={{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }}
       >
-        {tiles.map((tile) => (
-          <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-            <Tile tile={tile} guildId={guildId} onAssistir={() => setAssistindo(tile.identity)} />
-          </ComMenu>
-        ))}
+        {grade.map((quadro) => desenhar(quadro))}
       </div>
       {!tiles.length && (
         <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>
@@ -211,40 +276,44 @@ interface TileProps {
   /// Só pra que o cartão de perfil saiba de onde tirar os cargos — o menu de
   /// contexto do quadro vem de fora, pelo `ComMenu`.
   guildId?: string;
+  /// pastilha da barra inferior, enquanto se assiste a alguém
   compact?: boolean;
-  onAssistir?: () => void;
+  /// chamada cheia: quadros e avatares encolhem pra caber sem rolagem
+  denso?: boolean;
+  /// clicar no quadro alterna o modo destaque
+  onFocar?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, guildId, compact, onAssistir }) => {
+const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, onFocar }) => {
   const resolver = useParticipante();
   const participante = resolver(tile.identity, {
     name: tile.name,
     avatarUrl: tile.avatarUrl,
   });
 
+  /*
+    A transmissão NÃO é mais desenhada aqui em cima. Ela tem quadro próprio
+    (`TileDaLive`), e este voltou a ser o que sempre deveria ter sido: a pessoa.
+  */
   return (
     <div
+      /*
+        O clique de destaque mora no PRÓPRIO quadro. Envolver tudo num `<button>`
+        seria botão dentro de botão — o nome ali embaixo já é um, e o HTML
+        inválido come o clique de dentro em parte dos navegadores.
+      */
+      onClick={onFocar}
       className={cn(
         "group/tile relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
-        compact ? "aspect-video h-full shrink-0" : "aspect-video",
+        onFocar && "cursor-pointer",
+        /*
+          A pastilha tem tamanho fixo em vez de `aspect-video h-full`: como ela
+          divide a faixa com o botão de tela cheia, herdar a altura da faixa
+          deixava as três espremidas e o avatar minúsculo.
+        */
+        compact ? "h-16 w-24 shrink-0" : "aspect-video",
       )}
     >
-      {tile.screenTrack && onAssistir && (
-        <button
-          onClick={onAssistir}
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/70 transition hover:bg-black/60"
-        >
-          <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-            <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao
-            vivo
-          </span>
-          <span className="flex items-center gap-1.5 text-sm font-medium">
-            <Play size={16} /> Assistir{" "}
-            {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
-          </span>
-        </button>
-      )}
-
       {tile.cameraTrack ? (
         <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>
           <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
@@ -254,7 +323,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, onAssistir }) => {
           id={tile.identity}
           name={participante.nome}
           url={participante.avatarUrl}
-          size={compact ? 40 : 80}
+          size={compact ? 44 : denso ? 52 : 80}
           enfeites={participante.perfil}
           animar={tile.speaking}
         />
@@ -278,9 +347,19 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, onAssistir }) => {
         )}
         <UserProfilePopover userId={tile.identity} guildId={guildId} side="top">
           <button
+            /// o nome abre o perfil, e só — sem isto ele destacaria o quadro junto
+            onClick={(e) => e.stopPropagation()}
             className={cn(
               "min-w-0 truncate whitespace-nowrap font-medium hover:underline",
-              compact ? "text-[10px]" : "text-xs",
+              /*
+                Na pastilha o nome só aparece com o mouse em cima. Numa caixa de
+                96px, microfone + nome + reticências não cabem sem espremer os
+                dois; o avatar é o que identifica a pessoa ali, e o nome fica a
+                um passar de mouse de distância.
+              */
+              compact
+                ? "w-0 overflow-hidden text-[10px] opacity-0 transition-all group-hover/tile:w-auto group-hover/tile:opacity-100"
+                : "text-xs",
             )}
           >
             {participante.nome}
@@ -289,6 +368,131 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, onAssistir }) => {
         </UserProfilePopover>
       </div>
     </div>
+  );
+};
+
+/**
+ * O quadro da transmissão de alguém — irmão do quadro da pessoa, não substituto.
+ *
+ * Não desenha a imagem da live aqui de propósito. Assinar o vídeo de toda
+ * transmissão só pra mostrar miniatura na grade custa banda e CPU, e a tela é
+ * publicada numa camada única (sem `screenShareSimulcastLayers`): o SFU teria
+ * que mandar 1080p pra cada miniatura, no Micro de 1/8 de núcleo. Enquanto a
+ * camada baixa não existir, o cartão escuro com o convite é o certo — assinar
+ * o vídeo é decisão de quem clica em "Assistir".
+ */
+const TileDaLive: React.FC<{
+  tile: VoiceTile;
+  denso?: boolean;
+  onAssistir: () => void;
+}> = ({ tile, denso, onAssistir }) => (
+  <div className="group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black/70 ring-1 ring-white/10">
+    {/*
+      A SUA transmissão aparece aberta; a dos outros, não.
+
+      Não é inconsistência — é que as duas custam coisas diferentes. A sua tela
+      já está capturada e correndo nesta máquina: desenhar ela aqui não assina
+      nada e não pede um byte a mais ao SFU. A dos outros exigiria assinar o
+      vídeo, e como a tela é publicada em camada única seria 1080p por
+      miniatura, de todo mundo, o tempo todo.
+
+      Por isso a sua vem aberta e a dos outros vem como convite. Quando existir
+      a camada baixa (`screenShareSimulcastLayers`), as duas podem vir abertas.
+    */}
+    <button
+      onClick={onAssistir}
+      className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition hover:bg-white/5"
+    >
+      {/*
+        A SUA transmissão aparece por trás, DESFOCADA. A dos outros não aparece.
+
+        Desfocada e não nítida porque uma tela que transmite a própria tela vira
+        espelho infinito: o quadro mostra o app, que mostra o quadro, que mostra
+        o app. Nítido isso é uma distração piscando no canto do olho a chamada
+        inteira; borrado, continua dizendo "sua live está no ar e é isto aqui",
+        que é a única coisa que o quadro precisa dizer.
+
+        E só a sua porque só ela é de graça: sua tela já está capturada nesta
+        máquina. A dos outros exigiria assinar o vídeo, e como a tela é publicada
+        em camada única seria 1080p por miniatura, de todo mundo, o tempo todo.
+      */}
+      {tile.isLocal && tile.screenTrack && (
+        <div className="pointer-events-none absolute inset-0 scale-110 opacity-50 blur-md">
+          <VoiceVideo track={tile.screenTrack} />
+        </div>
+      )}
+
+      <span className="relative flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+      </span>
+
+      <span
+        className={cn(
+          "relative flex items-center gap-1.5 font-medium drop-shadow",
+          denso ? "text-xs" : "text-sm",
+        )}
+      >
+        <Play size={denso ? 14 : 16} /> Assistir {tile.isLocal ? "sua transmissão" : `a ${tile.name}`}
+      </span>
+    </button>
+
+    <div className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-black/60 px-2 py-1">
+      <Monitor size={12} className="shrink-0 text-online" />
+      <span className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
+        {tile.name}
+        {tile.isLocal && " (sua tela)"}
+      </span>
+    </div>
+
+    {/* som da própria tela não volta pra você — não há o que regular */}
+    {!tile.isLocal && <ControleDeVolumeDaLive identity={tile.identity} className="absolute bottom-2 right-2" />}
+  </div>
+);
+
+/**
+ * O volume da transmissão, separado do volume da voz de quem transmite.
+ *
+ * São duas queixas diferentes: "não escuto ele" e "o jogo dele está estourando".
+ * Com um controle só, abaixar o barulho da live emudecia a pessoa junto.
+ */
+const ControleDeVolumeDaLive: React.FC<{ identity: string; className?: string }> = ({
+  identity,
+  className,
+}) => {
+  const volume = useVoiceStore((s) => Math.min(1, s.volumesDeTela[identity] ?? 1));
+  const definir = useVoiceStore((s) => s.setVolumeDeTela);
+
+  return (
+    <Popover>
+      <Tooltip label={volume === 0 ? "Live sem som" : `Volume da live · ${Math.round(volume * 100)}%`}>
+        <PopoverTrigger asChild>
+          <button
+            aria-label="Volume da live"
+            className={cn(
+              "pointer-events-auto rounded bg-black/60 p-1.5 text-white/80 transition hover:bg-black/80 hover:text-white",
+              className,
+            )}
+          >
+            {volume === 0 ? <VolumeX size={14} className="text-danger" /> : <Volume2 size={14} />}
+          </button>
+        </PopoverTrigger>
+      </Tooltip>
+
+      <PopoverContent side="top" align="end" className="w-48 p-3">
+        <p className="mb-2 text-xs font-medium text-ink-muted">
+          Volume da live · {Math.round(volume * 100)}%
+        </p>
+
+        <Slider
+          min={0}
+          max={1}
+          step={0.05}
+          value={volume}
+          preenchido={volume}
+          onChange={(e) => definir(identity, Number(e.target.value))}
+        />
+      </PopoverContent>
+    </Popover>
   );
 };
 
@@ -323,9 +527,7 @@ const ComMenu: React.FC<{
       minhasPermissoes={contexto.minhasPermissoes}
       currentUserId={contexto.currentUserId}
     >
-      <div className={tile.screenTrack ? "contents" : undefined}>
-        {children}
-      </div>
+      <div>{children}</div>
     </VoiceMemberMenu>
   );
 };
