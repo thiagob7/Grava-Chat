@@ -28,6 +28,10 @@ export const keys = {
   typing: (channelId: string, userId: string) => `typing:${channelId}:${userId}`,
   webhookRate: (webhookId: string) => `webhook:rate:${webhookId}`,
   slowmode: (channelId: string, userId: string) => `slow:${channelId}:${userId}`,
+  /// bytes enviados ao R2 por esta pessoa na hora corrente
+  cotaDeUpload: (userId: string) => `upload:bytes:${userId}`,
+  /// mensagens enviadas por esta pessoa na janela curta anti-rajada
+  fluxoDeMensagens: (userId: string) => `fluxo:msg:${userId}`,
   desktopLogin: (codigo: string) => `desktop-login:${codigo}`,
   /// OAuth2 das aplicações: o código de uso único e o token que ele vira.
   oauthCode: (codigo: string) => `oauth:code:${codigo}`,

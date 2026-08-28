@@ -14,6 +14,12 @@ import { roleRepository } from "~/repositories/role-repository.js";
 import { accessService, type Contexto } from "./access-service.js";
 import { autoModService } from "./automod-service.js";
 import { forumService } from "./forum-service.js";
+import {
+  passouDoFluxo,
+  mensagemDeFluxo,
+  JANELA_S as JANELA_DO_FLUXO_S,
+} from "~/lib/fluxo-de-mensagens.js";
+import { uploadService } from "./upload-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
 
 const MENCAO_DE_USUARIO = /<@([a-f\d]{24})>/gi;
@@ -134,6 +140,16 @@ export const messageService = {
       await respeitarModoLento(userId, channel, contexto);
     }
 
+    /*
+      FORA do `if (contexto)` de propósito: o modo lento é coisa de canal de
+      servidor, mas a rajada precisa ser barrada em todo lugar — inclusive no
+      privado, que não tem contexto de permissão nenhum.
+
+      Depois das checagens de permissão porque não faz sentido gastar o teto de
+      quem não podia escrever ali de qualquer forma.
+    */
+    await garantirFluxo(userId);
+
     const content = input.content.trim();
     if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
       throw new AppError("Mensagem vazia");
@@ -214,6 +230,18 @@ export const messageService = {
     if (!isAuthor && !podeModerar) throw new ForbiddenError("Sem permissão para apagar esta mensagem");
 
     await messageRepository.softDelete(messageId);
+
+    /*
+      O anexo vai junto. Sem isto o arquivo ficava no R2 pra sempre: a mensagem
+      some de todas as leituras (todas filtram `deletedAt`, e não há desfazer),
+      mas o bucket continua guardando — e cobrando — um arquivo que ninguém
+      mais alcança.
+
+      Sem `await`: a limpeza não pode atrasar nem falhar a exclusão. O
+      `uploadService.remover` já engole o próprio erro.
+    */
+    void uploadService.remover(existing.attachments.map((a) => a.id));
+
     return { messageId, channelId: existing.channelId };
   },
 
@@ -412,6 +440,30 @@ async function respeitarModoLento(
   if (!primeiro) {
     const faltam = await redis.ttl(chave);
     throw new AppError(`Modo lento: espere ${Math.max(faltam, 1)}s para mandar de novo`, 429);
+  }
+}
+
+/**
+ * Teto curto contra rajada, valendo em TODO canal e sem depender de moderação.
+ *
+ * Fica separado do modo lento porque são coisas diferentes: o modo lento é
+ * ajuste de canal, opcional, e existe pra dar ritmo à conversa; este é do
+ * sistema, sempre ligado, e existe pra que um cliente em laço não despeje mais
+ * mensagem do que qualquer um consegue ler.
+ *
+ * Vive no service e não num limite de rota porque mensagem aqui vai pelo
+ * Socket.IO — um limite de rota HTTP não encostaria nela.
+ */
+async function garantirFluxo(userId: string) {
+  const chave = keys.fluxoDeMensagens(userId);
+
+  const usos = await redis.incr(chave);
+  /// só na primeira da janela: renovar a cada mensagem faria a janela nunca
+  /// virar pra quem está justamente mandando sem parar
+  if (usos === 1) await redis.expire(chave, JANELA_DO_FLUXO_S);
+
+  if (passouDoFluxo(usos)) {
+    throw new AppError(mensagemDeFluxo(await redis.ttl(chave)), 429);
   }
 }
 

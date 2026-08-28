@@ -103,18 +103,32 @@ export const messageRepository = {
     return prisma.message.update({ where: { id }, data: { deletedAt: new Date() } });
   },
 
+  /**
+   * Apaga em massa o que a pessoa mandou desde `desde`, e devolve as CHAVES dos
+   * anexos que ficaram órfãos.
+   *
+   * O `updateMany` não devolve os documentos que tocou, então os anexos são
+   * lidos ANTES. Sem esse passo o banimento com expurgo — que é justamente o
+   * caso de muito arquivo de uma vez — deixaria tudo no bucket pra sempre.
+   */
   async softDeleteRecentByAuthor(guildId: string, authorId: string, desde: Date) {
     const canais = await prisma.channel.findMany({ where: { guildId }, select: { id: true } });
 
-    await prisma.message.updateMany({
-      where: {
-        authorId,
-        channelId: { in: canais.map((c) => c.id) },
-        createdAt: { gte: desde },
-        ...notDeleted,
-      },
-      data: { deletedAt: new Date() },
+    const alvo = {
+      authorId,
+      channelId: { in: canais.map((c) => c.id) },
+      createdAt: { gte: desde },
+      ...notDeleted,
+    };
+
+    const comAnexo = await prisma.message.findMany({
+      where: alvo,
+      select: { attachments: true },
     });
+
+    await prisma.message.updateMany({ where: alvo, data: { deletedAt: new Date() } });
+
+    return comAnexo.flatMap((m) => m.attachments.map((a) => a.id));
   },
 
   countPinned(channelId: string) {

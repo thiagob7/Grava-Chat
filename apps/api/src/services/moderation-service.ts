@@ -8,6 +8,7 @@ import { roleRepository } from "~/repositories/role-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService, type Contexto } from "./access-service.js";
 import { auditService } from "./audit-service.js";
+import { uploadService } from "./upload-service.js";
 import type { BanInput, TimeoutInput } from "~/validations/moderation.js";
 
 async function requireAcimaDoAlvo(contexto: Contexto, guildId: string, targetId: string) {
@@ -59,11 +60,15 @@ export const moderationService = {
     await memberRepository.remove(guildId, targetId).catch(() => undefined);
 
     if (input.apagarHoras) {
-      await messageRepository.softDeleteRecentByAuthor(
+      const orfaos = await messageRepository.softDeleteRecentByAuthor(
         guildId,
         targetId,
         new Date(Date.now() - input.apagarHoras * 3600_000),
       );
+
+      /// Expurgo de banimento é onde mais arquivo some de uma vez — e era onde
+      /// mais ficava no bucket. Sem `await`: limpeza não segura o banimento.
+      void uploadService.remover(orfaos);
     }
 
     auditService.registrar({
