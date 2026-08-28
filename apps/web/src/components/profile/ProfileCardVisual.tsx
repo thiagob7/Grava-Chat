@@ -17,7 +17,6 @@ import { ServerTag } from "~/components/ServerTag";
 import { UserName } from "~/components/UserName";
 import {
   classeDoEnfeite,
-  molduraTransborda,
   variaveisDoEnfeite,
   type EstiloCss,
 } from "~/lib/cosmeticos/estilos";
@@ -113,7 +112,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
   const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
   const molduraDoCartao = classeDoEnfeite("moldura", perfil?.moldura);
-  const molduraPorFora = molduraTransborda(perfil?.moldura);
   const efeito = classeDoEnfeite("perfil", perfil?.efeito);
   const placa = classeDoEnfeite("placa", perfil?.placa);
 
@@ -126,35 +124,26 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
       }
     : undefined;
 
-  /*
-    A moldura emoldura o cartao inteiro — o retrato fica com a decoracao. E em
-    nenhum dos casos e borda no cartao: borda empurraria o conteudo e mudaria o
-    layout a cada troca de enfeite.
-
-    Onde ela mora depende da familia. As de gradiente ficam SOBRE o cartao,
-    herdando o arredondamento. As desenhadas ficam numa faixa por FORA: o
-    ornamento passa do retangulo do cartao, como no Discord. A faixa e do
-    involucro, entao quem cresce e o popover — o conteudo do cartao nao muda de
-    tamanho, que foi o que estragou a primeira tentativa.
-  */
-  const camadaDaMoldura = molduraDoCartao && (
-    <span
-      aria-hidden
-      className={cn("gc-camada--cartao", molduraDoCartao)}
-      style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
-    />
-  );
-
   return (
-    <div className={cn("relative", molduraPorFora && "p-3")}>
-      <div
-        className={cn(
-          "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
-          className,
-        )}
-        style={tema}
-      >
-        {!molduraPorFora && camadaDaMoldura}
+    <div
+      className={cn(
+        "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
+        className,
+      )}
+      style={tema}
+    >
+      {/*
+        A moldura emoldura o cartao inteiro — o retrato fica com a decoracao.
+        Camada por cima de tudo, sem borda: borda empurraria o conteudo pra
+        dentro e mudaria o layout a cada troca de enfeite.
+      */}
+      {molduraDoCartao && (
+        <span
+          aria-hidden
+          className={cn("gc-camada--cartao", molduraDoCartao)}
+          style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
+        />
+      )}
       <div
         className="relative aspect-[5/2] bg-cover bg-center"
         style={{
@@ -512,10 +501,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {children}
         </div>
-        </div>
       </div>
-
-      {molduraPorFora && camadaDaMoldura}
     </div>
   );
 };
