@@ -290,8 +290,10 @@ export function vigiarChamadasFantasma(aoErrar: (err: unknown) => void) {
   const varrer = () =>
     voiceService
       .reconciliar()
-      .then((removidos) => {
-        for (const estado of removidos) {
+      .then(({ doRedis }) => {
+        /// Só os do Redis precisam de anúncio: quem foi expulso do SFU some da
+        /// tela sozinho, porque o LiveKit avisa os clientes da própria sala.
+        for (const estado of doRedis) {
           announceLeave(estado.guildId, estado.channelId, estado.userId);
         }
       })

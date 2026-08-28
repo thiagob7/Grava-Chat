@@ -259,51 +259,100 @@ export const voiceService = {
   },
 
   /*
-    Confere o que o Redis acha com o que o LiveKit sabe, e apaga a diferença.
+    Confere o que o Redis acha com o que o LiveKit sabe, nos DOIS sentidos.
 
-    O SFU é a única fonte de verdade sobre quem está numa chamada: ele tem a
-    conexão de verdade aberta. O Redis é a nossa opinião sobre isso, e as duas
-    divergem sempre que um cliente some sem se despedir — aba fechada no
-    tranco, rede caindo, ou a API reiniciando antes de colher o órfão.
+    As duas fontes erram de jeitos diferentes, e cada uma engana uma parte da
+    tela: a lista embaixo do canal vem do Redis, e os quadros do palco vêm do
+    `room.remoteParticipants` do LiveKit. Um fantasma pode estar em qualquer
+    uma — ou nas duas.
 
-    Devolve os estados que removeu pra quem chamou anunciar a saída; sem isso
-    o fantasma some do servidor mas continua na tela de quem já estava com o
-    canal aberto.
+    REDIS SEM SFU acontece quando o cliente some sem se despedir e o órfão não
+    é colhido. Sai do Redis.
+
+    SFU SEM REDIS é o zumbi: a conexão do cliente morreu de um jeito que o
+    LiveKit não percebeu (máquina dormiu, rede caiu sem fechar o socket), e ele
+    segue listando a pessoa na sala. Aqui o Redis está CERTO e o SFU errado —
+    a pessoa fica com quadro no palco pra sempre. Esse é expulso do SFU.
+
+    Devolve os estados removidos do Redis pra quem chamou anunciar a saída; os
+    expulsos do SFU não precisam de anúncio, porque o próprio LiveKit avisa os
+    clientes quando alguém deixa a sala.
   */
-  async reconciliar(): Promise<VoiceState[]> {
-    const chaves = await redis.keys("voice:user:*");
-    if (!chaves.length) return [];
-
-    const brutos = await redis.mget(chaves);
+  async reconciliar(): Promise<{ doRedis: VoiceState[]; doSfu: number }> {
     const agora = Date.now();
 
-    const candidatos = brutos
+    const [chaves, salas] = await Promise.all([
+      redis.keys("voice:user:*"),
+      roomService().listRooms().catch(() => []),
+    ]);
+
+    const brutos = chaves.length ? await redis.mget(chaves) : [];
+    const noRedis = brutos
       .filter((v): v is string => Boolean(v))
-      .map((v) => hidratar(JSON.parse(v) as VoiceState))
-      .filter((e) => agora - e.joinedAt > CARENCIA_DO_SFU_MS);
+      .map((v) => hidratar(JSON.parse(v) as VoiceState));
 
-    if (!candidatos.length) return [];
+    /// `channel-<id>` é o nome que damos à sala; só nos interessam as nossas.
+    const nossas = salas.filter((sala) => sala.name.startsWith("channel-"));
 
-    const presentes = new Set<string>();
+    const participantes = await Promise.all(
+      nossas.map(async (sala) => ({
+        channelId: sala.name.slice("channel-".length),
+        sala: sala.name,
+        lista: await roomService().listParticipants(sala.name).catch(() => []),
+      })),
+    );
+
+    const noSfu = new Set<string>();
+    for (const { channelId, lista } of participantes) {
+      for (const p of lista) noSfu.add(`${channelId}:${p.identity}`);
+    }
+
+    /// Redis sem SFU: o estado é fantasma, some do Redis.
+    const orfaos = noRedis.filter(
+      (e) => agora - e.joinedAt > CARENCIA_DO_SFU_MS && !noSfu.has(`${e.channelId}:${e.userId}`),
+    );
+
+    const doRedis = (await Promise.all(orfaos.map((e) => voiceService.leave(e.userId)))).filter(
+      (e): e is VoiceState => Boolean(e),
+    );
+
+    /*
+      SFU sem Redis: o participante é zumbi, sai da sala.
+
+      A trava: só mexemos numa sala onde este Redis reconhece ALGUÉM. É o que
+      prova que a sala é deste ambiente.
+
+      Sem ela isto vira uma arma. O `.env` de desenvolvimento aponta o
+      `LIVEKIT_URL` para o SFU de PRODUÇÃO — então a API rodando na máquina de
+      alguém enxerga as salas de produção, não reconhece nenhum daqueles
+      usuários no seu Redis local, e expulsaria todo mundo de todas as chamadas
+      ao vivo. Com a trava, uma sala em que este Redis não conhece ninguém é
+      simplesmente ignorada.
+    */
+    const conhecidos = new Set(noRedis.map((e) => `${e.channelId}:${e.userId}`));
+
+    const zumbis = participantes.flatMap(({ channelId, sala, lista }) => {
+      const nossa = lista.some((p) => conhecidos.has(`${channelId}:${p.identity}`));
+      if (!nossa) return [];
+
+      return lista
+        .filter((p) => {
+          if (conhecidos.has(`${channelId}:${p.identity}`)) return false;
+          /// `joinedAt` do LiveKit vem em segundos; quem acabou de entrar ainda
+          /// pode não ter estado no Redis, e não é zumbi.
+          const entrouEm = Number(p.joinedAt ?? 0) * 1000;
+          return entrouEm > 0 && agora - entrouEm > CARENCIA_DO_SFU_MS;
+        })
+        .map((p) => ({ sala, identity: p.identity }));
+    });
 
     await Promise.all(
-      [...new Set(candidatos.map((e) => e.channelId))].map(async (channelId) => {
-        /// Sala que não existe mais no SFU lança; e sala vazia é exatamente o
-        /// caso que queremos — ninguém entra no conjunto, todos viram fantasma.
-        const participantes = await roomService()
-          .listParticipants(roomName(channelId))
-          .catch(() => []);
-
-        for (const p of participantes) presentes.add(`${channelId}:${p.identity}`);
-      }),
+      zumbis.map(({ sala, identity }) =>
+        roomService().removeParticipant(sala, identity).catch(() => undefined),
+      ),
     );
 
-    const fantasmas = candidatos.filter(
-      (e) => !presentes.has(`${e.channelId}:${e.userId}`),
-    );
-
-    const removidos = await Promise.all(fantasmas.map((e) => voiceService.leave(e.userId)));
-    return removidos.filter((e): e is VoiceState => Boolean(e));
+    return { doRedis, doSfu: zumbis.length };
   },
 
   async reset() {
