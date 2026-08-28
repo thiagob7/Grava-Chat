@@ -89,8 +89,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
-      <PopoverContent side={side} className="w-80 overflow-visible p-0">
-        <div className="-m-3 max-h-[80vh] overflow-y-auto p-3">
+      <PopoverContent side={side} className="max-h-[80vh] w-auto overflow-y-auto p-0">
         {isLoading || !perfil ? (
           <div className="p-6 text-sm text-ink-faint">Carregando…</div>
         ) : (
@@ -103,7 +102,6 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
             podeModerar={podeModerar}
           />
         )}
-        </div>
       </PopoverContent>
     </Popover>
   );
@@ -413,7 +411,7 @@ const ProfileCard: React.FC<{
         onStatus={perfil.friendship === "SELF" ? () => setDefinindoStatus(true) : undefined}
         emblemas={emblemas}
         acoes={acoes}
-        className="rounded-none"
+        className="w-80 rounded-none"
       >
         {perfil.friendship !== "SELF" && <CampoDeNota userId={perfil.id} nota={perfil.nota} />}
 

@@ -87,8 +87,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
             </button>
           </PopoverTrigger>
 
-          <PopoverContent side="top" className="w-80 overflow-visible p-0">
-            <div className="-m-3 max-h-[80vh] overflow-y-auto p-3">
+          <PopoverContent side="top" className="max-h-[80vh] w-auto overflow-y-auto p-0">
             <ProfileCardVisual
               id={user.id}
               displayName={user.displayName}
@@ -101,7 +100,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               createdAt={user.createdAt}
               cargos={meusCargos}
               onStatus={() => setDefinindoStatus(true)}
-              className="rounded-none"
+              className="w-80 rounded-none"
             >
               <MenuDoProprioCartao
                 user={user}
@@ -109,7 +108,6 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                 onGerenciarContas={() => setConfigurando(true)}
               />
             </ProfileCardVisual>
-            </div>
           </PopoverContent>
         </Popover>
 

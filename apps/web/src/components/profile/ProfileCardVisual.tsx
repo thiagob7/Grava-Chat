@@ -141,16 +141,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
     <span
       aria-hidden
       className={cn("gc-camada--cartao", molduraDoCartao)}
-      style={{
-        ...variaveisDoEnfeite({ animar: true, velocidade: "10s" }),
-        /// Metade da faixa cai sobre a quina do cartao, metade pra fora.
-        ...(molduraPorFora ? { inset: -12 } : null),
-      }}
+      style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
     />
   );
 
   return (
-    <div className="relative">
+    <div className={cn("relative", molduraPorFora && "p-3")}>
       <div
         className={cn(
           "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
