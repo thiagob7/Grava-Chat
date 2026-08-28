@@ -24,6 +24,7 @@
     "@fastify/jwt": "9.1.0",
     "@fastify/multipart": "^10.1.1",
     "@fastify/oauth2": "8.1.2",
+    "@fastify/rate-limit": "^11.2.0",
     "@fastify/sensible": "6.0.3",
     "@gravae/shared": "*",
     "@prisma/client": "6.19.3",

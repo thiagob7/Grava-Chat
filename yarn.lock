@@ -882,6 +882,16 @@
     "@fastify/forwarded" "^3.0.0"
     ipaddr.js "^2.1.0"
 
+"@fastify/rate-limit@^11.2.0":
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/@fastify/rate-limit/-/rate-limit-11.2.0.tgz#1eea79a5db89bd75bef3bb45eb805cf108f77860"
+  integrity sha512-X7osJd4XSvMoejYrnJkSZYYjY1eNYoBqhjlzf1RakC2204qExFqZFTKj5+T7VuzA/iUI9Z3UoSqQRkB2HpG0oQ==
+  dependencies:
+    "@lukeed/ms" "^2.0.2"
+    fastify-plugin "^6.0.0"
+    ip-address "^10.2.0"
+    toad-cache "^3.7.0"
+
 "@fastify/sensible@6.0.3":
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/@fastify/sensible/-/sensible-6.0.3.tgz#8a40cb5cd4deb537bb18bea9dc4a9d594bf24ae7"
@@ -3747,6 +3757,11 @@ ioredis@5.9.0:
     redis-errors "^1.2.0"
     redis-parser "^3.0.0"
     standard-as-callback "^2.1.0"
+
+ip-address@^10.2.0:
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-10.5.0.tgz#fcd6d7dfe9e68416b7cb71afe9bc960b3e38c13b"
+  integrity sha512-R5SnVLJmgYYvf2F2ZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==
 
 ipaddr.js@^2.1.0:
   version "2.5.0"
