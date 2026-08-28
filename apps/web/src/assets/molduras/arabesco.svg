@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" role="presentation">
+  <defs><linearGradient id="ferro" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff0c2"/><stop offset=".5" stop-color="#e8c266"/>
+    <stop offset="1" stop-color="#8a6516"/>
+  </linearGradient><g id="canto">
+  <path d="M48 10 C34 10 22 18 16 28 C12 35 12 41 12 48"
+        fill="none" stroke="url(#ferro)" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M48 21 C38 21 29 27 25 35 C22 40 22 43 22 48"
+        fill="none" stroke="#e8c266" stroke-width="1.3" stroke-linecap="round" opacity=".6"/>
+  <g transform="translate(24 24) rotate(20)">
+  <path d="M0 0 A7.48 7.48 0 1 1 -11 -3.52
+           A14.520000000000001 14.520000000000001 0 1 0 4.84 -18.919999999999998"
+        fill="none" stroke="url(#ferro)" stroke-width="4.4" stroke-linecap="round"/>
+</g>
+  <path d="M0 0 C4-5 9-5 11 0 C9 5 4 5 0 0Z" fill="#e8c266" opacity=".85"
+     transform="translate(34 12) rotate(-24)"/><path d="M0 0 C4-5 9-5 11 0 C9 5 4 5 0 0Z" fill="#e8c266" opacity=".85"
+     transform="translate(10 34) rotate(-114)"/></g><g id="beira">
+  <path d="M48 16 C80 2 106 30 150 16 C194 2 220 30 252 16"
+        fill="none" stroke="url(#ferro)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M48 24 C82 12 106 38 150 24 C194 10 218 36 252 24"
+        fill="none" stroke="#e8c266" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+  <g transform="translate(150 30) rotate(0)">
+  <path d="M0 0 A5.1000000000000005 5.1000000000000005 0 1 1 -7.5 -2.4
+           A9.9 9.9 0 1 0 3.3 -12.9"
+        fill="none" stroke="url(#ferro)" stroke-width="3" stroke-linecap="round"/>
+</g>
+  <path d="M0 0 C4-5 9-5 11 0 C9 5 4 5 0 0Z" fill="#e8c266" opacity=".85"
+     transform="translate(96 12) rotate(16)"/><path d="M0 0 C4-5 9-5 11 0 C9 5 4 5 0 0Z" fill="#e8c266" opacity=".85"
+     transform="translate(196 12) rotate(-16)"/></g></defs>
+  <use href="#canto"/>
+  <use href="#canto" transform="translate(300 0) scale(-1 1)"/>
+  <use href="#canto" transform="translate(0 300) scale(1 -1)"/>
+  <use href="#canto" transform="translate(300 300) scale(-1 -1)"/>
+  <use href="#beira"/>
+  <use href="#beira" transform="translate(0 300) scale(1 -1)"/>
+  <use href="#beira" transform="rotate(90 150 150)"/>
+  <use href="#beira" transform="rotate(-90 150 150)"/>
+</svg>

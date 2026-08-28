@@ -670,6 +670,29 @@
     round;
 }
 
+
+/*
+  As três abaixo são a mesma técnica da rosas, trocando só o desenho: fatia de
+  48, faixa de 20px, `round` pra nunca cortar um motivo no meio.
+*/
+.gc-moldura--arabesco {
+  border: var(--gc-borda, 20px) solid transparent;
+  border-image: url("../assets/molduras/arabesco.svg") 48 / var(--gc-borda, 20px) / 0
+    round;
+}
+
+.gc-moldura--grega {
+  border: var(--gc-borda, 20px) solid transparent;
+  border-image: url("../assets/molduras/grega.svg") 48 / var(--gc-borda, 20px) / 0
+    round;
+}
+
+.gc-moldura--espinheiro {
+  border: var(--gc-borda, 20px) solid transparent;
+  border-image: url("../assets/molduras/espinheiro.svg") 48 / var(--gc-borda, 20px) / 0
+    round;
+}
+
 @keyframes gc-girar {
   to {
     transform: rotate(360deg);

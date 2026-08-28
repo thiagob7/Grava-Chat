@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" role="presentation">
+  <defs><g id="canto">
+  <path d="M10 48 L10 10 L48 10" fill="none" stroke="#cbb98a" stroke-width="3"
+        stroke-linejoin="miter" stroke-linecap="square"/>
+  <path d="M20 48 L20 20 L48 20" fill="none" stroke="#cbb98a" stroke-width="3"
+        stroke-linejoin="miter" stroke-linecap="square"/>
+  <path d="M30 48 L30 30 L48 30" fill="none" stroke="#cbb98a" stroke-width="1.8"
+        opacity=".6" stroke-linejoin="miter" stroke-linecap="square"/>
+  <path d="M44 48 L44 44 L48 44" fill="none" stroke="#cbb98a" stroke-width="1.4"
+        opacity=".55" stroke-linejoin="miter" stroke-linecap="square"/></g><g id="beira">
+  <path d="M48 40 L48 10 L76 10 L76 31 L58 31 L58 20 L68 20 M82 40 L82 10 L110 10 L110 31 L92 31 L92 20 L102 20 M116 40 L116 10 L144 10 L144 31 L126 31 L126 20 L136 20 M150 40 L150 10 L178 10 L178 31 L160 31 L160 20 L170 20 M184 40 L184 10 L212 10 L212 31 L194 31 L194 20 L204 20 M218 40 L218 10 L246 10 L246 31 L228 31 L228 20 L238 20"
+        fill="none" stroke="#cbb98a" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+  <path d="M48 44 L252 44" stroke="#cbb98a" stroke-width="1.4" opacity=".55"/></g></defs>
+  <use href="#canto"/>
+  <use href="#canto" transform="translate(300 0) scale(-1 1)"/>
+  <use href="#canto" transform="translate(0 300) scale(1 -1)"/>
+  <use href="#canto" transform="translate(300 300) scale(-1 -1)"/>
+  <use href="#beira"/>
+  <use href="#beira" transform="translate(0 300) scale(1 -1)"/>
+  <use href="#beira" transform="rotate(90 150 150)"/>
+  <use href="#beira" transform="rotate(-90 150 150)"/>
+</svg>

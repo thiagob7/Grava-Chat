@@ -33,6 +33,9 @@ export const MOLDURAS = [
   "estelar",
   "filete",
   "rosas",
+  "arabesco",
+  "grega",
+  "espinheiro",
 ] as const;
 export type Moldura = (typeof MOLDURAS)[number];
 
