@@ -17,7 +17,7 @@ import { memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { messageService } from "~/services/message-service.js";
 import { presenceService } from "~/services/presence-service.js";
-import { voiceService, VOICE_GRACE_MS } from "~/services/voice-service.js";
+import { voiceService, destinatariosDaVoz, VOICE_GRACE_MS } from "~/services/voice-service.js";
 import {
   apagarMensagem,
   editarMensagem,
@@ -178,9 +178,9 @@ export function registerHandlers(socket: GravaeSocket) {
     );
     socket.data.voiceChannelId = channelId;
 
-    if (left) announceLeave(left.guildId, left.channelId, userId);
+    if (left) await announceLeave(left.guildId, left.channelId, userId);
 
-    io().to(rooms.guild(state.guildId)).emit("voice:joined", state);
+    io().to(await destinatariosDaVoz(state)).emit("voice:joined", state);
     return state;
   });
 
@@ -188,19 +188,27 @@ export function registerHandlers(socket: GravaeSocket) {
     const state = await voiceService.leave(userId);
     socket.data.voiceChannelId = null;
 
-    if (state) announceLeave(state.guildId, state.channelId, userId);
+    if (state) await announceLeave(state.guildId, state.channelId, userId);
     return state ? { channelId: state.channelId } : null;
   });
 
   on(socket, "voice:state", async (patch) => {
     const state = await voiceService.update(userId, patch);
-    io().to(rooms.guild(state.guildId)).emit("voice:updated", state);
+    io().to(await destinatariosDaVoz(state)).emit("voice:updated", state);
     return state;
   });
 
   on(socket, "voice:sound", async ({ soundId }) => {
     const estado = await voiceService.get(userId);
     if (!estado) throw new AppError("Você não está numa chamada");
+
+    /*
+      Soundboard, moderação, expulsar e mover são poderes de SERVIDOR: existem
+      porque existem cargos e permissões atrás deles. No privado não há nem um
+      nem outro — e sem a trava, `requirePermission` receberia um `guildId`
+      nulo e quebraria com erro interno em vez de dizer o que houve.
+    */
+    if (!estado.guildId) throw new AppError("O painel de sons só existe em servidor");
 
     const contexto = await accessService.requirePermission(
       userId,
@@ -228,6 +236,7 @@ export function registerHandlers(socket: GravaeSocket) {
   on(socket, "voice:moderate", async ({ userId: alvoId, serverMute, serverDeaf }) => {
     const estado = await voiceService.get(alvoId);
     if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!estado.guildId) throw new AppError("Não há moderação numa chamada de privado");
 
     if (serverMute !== undefined) {
       await accessService.requirePermission(userId, estado.guildId, "MUTE_MEMBERS");
@@ -237,7 +246,7 @@ export function registerHandlers(socket: GravaeSocket) {
     }
 
     const atualizado = await voiceService.moderar(alvoId, { serverMute, serverDeaf });
-    if (atualizado) io().to(rooms.guild(atualizado.guildId)).emit("voice:updated", atualizado);
+    if (atualizado) io().to(await destinatariosDaVoz(atualizado)).emit("voice:updated", atualizado);
 
     return atualizado;
   });
@@ -245,12 +254,13 @@ export function registerHandlers(socket: GravaeSocket) {
   on(socket, "voice:kick", async ({ userId: alvoId }) => {
     const estado = await voiceService.get(alvoId);
     if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!estado.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
 
     await accessService.requirePermission(userId, estado.guildId, "MOVE_MEMBERS");
     await voiceService.desconectarDoSfu(estado.channelId, alvoId);
 
     const saiu = await voiceService.leave(alvoId);
-    if (saiu) announceLeave(saiu.guildId, saiu.channelId, alvoId);
+    if (saiu) await announceLeave(saiu.guildId, saiu.channelId, alvoId);
 
     io().to(rooms.user(alvoId)).emit("voice:move", { channelId: "" });
     return { userId: alvoId };
@@ -259,6 +269,7 @@ export function registerHandlers(socket: GravaeSocket) {
   on(socket, "voice:moveMember", async ({ userId: alvoId, channelId }) => {
     const estado = await voiceService.get(alvoId);
     if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!estado.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
 
     await accessService.requirePermission(userId, estado.guildId, "MOVE_MEMBERS");
 
@@ -272,8 +283,9 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 }
 
-function announceLeave(guildId: string, channelId: string, userId: string) {
-  io().to(rooms.guild(guildId)).emit("voice:left", { channelId, userId });
+async function announceLeave(guildId: string | null, channelId: string, userId: string) {
+  const destinos = await destinatariosDaVoz({ guildId, channelId });
+  io().to(destinos).emit("voice:left", { channelId, userId });
 }
 
 /// De quanto em quanto a varredura roda. Trinta segundos é curto o bastante
@@ -300,7 +312,7 @@ export function vigiarChamadasFantasma(aoErrar: (err: unknown) => void) {
         /// Só os do Redis precisam de anúncio: quem foi expulso do SFU some da
         /// tela sozinho, porque o LiveKit avisa os clientes da própria sala.
         for (const estado of doRedis) {
-          announceLeave(estado.guildId, estado.channelId, estado.userId);
+          void announceLeave(estado.guildId, estado.channelId, estado.userId);
         }
       })
       .catch(aoErrar);
@@ -330,7 +342,7 @@ export async function cleanupVoiceOnDisconnect(userId: string, socketId: string)
     void voiceService
       .reapOrphan(userId, socketId)
       .then((state) => {
-        if (state) announceLeave(state.guildId, state.channelId, userId);
+        if (state) void announceLeave(state.guildId, state.channelId, userId);
       })
       .catch(() => undefined);
   }, VOICE_GRACE_MS).unref();

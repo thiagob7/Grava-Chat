@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { AtSign, Menu } from "lucide-react";
+import { AtSign, Menu, Phone, PhoneOff, Video } from "lucide-react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -15,7 +15,11 @@ import { AtivosAgora } from "~/components/AtivosAgora";
 import { DmSidebar } from "~/components/DmSidebar";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
+import { cn } from "~/lib/utils";
 import { GuildRail } from "~/components/GuildRail";
+import { VoiceStage } from "~/components/VoiceStage";
+import { Tooltip } from "~/components/ui/tooltip";
+import { useVoiceStore } from "~/stores/voice-store";
 import { MessageList } from "~/components/MessageList";
 import { TypingIndicator } from "~/components/TypingIndicator";
 import { useSession } from "~/contexts/session-context";
@@ -54,6 +58,31 @@ export const DirectMessages: React.FC = () => {
 
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
+
+  /*
+    A chamada no privado roda no PRÓPRIO canal da conversa.
+
+    Não existe um canal de voz separado por trás — o servidor aceita emitir
+    token de voz para um canal de DM justamente pra não precisar criar (e
+    depois limpar) um canal fantasma por conversa. Daí `channelId` da chamada
+    ser o mesmo id da conversa aberta.
+  */
+  const canalEmChamada = useVoiceStore((s) => s.channelId);
+  const entrarNaChamada = useVoiceStore((s) => s.join);
+  const sairDaChamada = useVoiceStore((s) => s.leave);
+  const ligarCamera = useVoiceStore((s) => s.toggleCamera);
+  const cameraLigada = useVoiceStore((s) => s.cameraEnabled);
+  const emChamadaAqui = Boolean(channelId) && canalEmChamada === channelId;
+
+  /*
+    Ligar com vídeo é a MESMA chamada, com a câmera já aberta — e não um tipo
+    diferente de ligação. Discord mostra os dois botões porque a intenção de
+    quem clica é diferente; por baixo, os dois entram na mesma sala.
+  */
+  const ligarComVideo = async (id: string) => {
+    if (!emChamadaAqui) await entrarNaChamada(id);
+    if (!useVoiceStore.getState().cameraEnabled) await ligarCamera();
+  };
 
   if (!user) return null;
 
@@ -110,7 +139,52 @@ export const DirectMessages: React.FC = () => {
             <AtSign size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
             <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
+
+            <div className="ml-auto flex items-center gap-1">
+              <Tooltip label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
+                <button
+                  onClick={() =>
+                    void (emChamadaAqui ? sairDaChamada() : entrarNaChamada(conversa.id))
+                  }
+                  aria-label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}
+                  className={cn(
+                    "flex size-8 items-center justify-center rounded-full transition",
+                    emChamadaAqui
+                      ? "bg-danger text-white hover:brightness-110"
+                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                  )}
+                >
+                  {emChamadaAqui ? <PhoneOff size={17} /> : <Phone size={17} />}
+                </button>
+              </Tooltip>
+
+              <Tooltip label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
+                <button
+                  onClick={() => void (cameraLigada ? ligarCamera() : ligarComVideo(conversa.id))}
+                  aria-label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
+                  className={cn(
+                    "flex size-8 items-center justify-center rounded-full transition",
+                    cameraLigada && emChamadaAqui
+                      ? "bg-surface-4 text-ink"
+                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                  )}
+                >
+                  <Video size={17} />
+                </button>
+              </Tooltip>
+            </div>
           </header>
+
+          {/*
+            A chamada fica ACIMA da conversa, e não no lugar dela: o combinado
+            no privado é falar e continuar mandando link, print e recado no meio
+            — trocar a tela obrigaria a escolher entre as duas coisas.
+          */}
+          {emChamadaAqui && (
+            <div className="flex h-80 shrink-0 flex-col border-b border-divisor">
+              <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} />
+            </div>
+          )}
 
           <AreaDeConversa>
           <MessageList

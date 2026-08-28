@@ -13,6 +13,7 @@ import type {
   VoiceState,
 } from "@gravae/shared";
 
+import { deveTocar } from "~/lib/chamada-no-privado";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import type {
@@ -325,17 +326,27 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       );
     };
 
+    /*
+      Estado de voz de chamada no privado não tem servidor pra atualizar.
+
+      O cache de guild é o que alimenta a lista de quem está no canal de voz da
+      barra lateral — coisa que só existe dentro de um servidor. Sem esta saída
+      antecipada, um `voice:joined` vindo de um DM chegaria aqui com `guildId`
+      nulo e iria procurar uma guild que não existe.
+    */
     const upsertVoiceState = (state: VoiceState) =>
-      cache.patchGuild(queryClient, state.guildId, (g) => ({
-        ...g,
-        voiceStates: {
-          ...g.voiceStates,
-          [state.channelId]: [
-            ...(g.voiceStates[state.channelId] ?? []).filter((v) => v.userId !== state.userId),
-            state,
-          ],
-        },
-      }));
+      state.guildId === null
+        ? undefined
+        : cache.patchGuild(queryClient, state.guildId, (g) => ({
+            ...g,
+            voiceStates: {
+              ...g.voiceStates,
+              [state.channelId]: [
+                ...(g.voiceStates[state.channelId] ?? []).filter((v) => v.userId !== state.userId),
+                state,
+              ],
+            },
+          }));
 
     const removeVoiceState = ({ channelId, userId }: { channelId: string; userId: string }) =>
       cache.patchGuildsWhere(
@@ -478,7 +489,39 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       })),
     );
     onUserUpdated(handleUserUpdated);
-    onVoiceJoined(upsertVoiceState);
+    /*
+      Chamada no privado precisa AVISAR, não só atualizar a tela.
+
+      Num servidor, alguém entrar na voz é informação de fundo. No privado, é
+      alguém te ligando — e o evento chega pela sua sala de usuário mesmo que a
+      conversa esteja fechada, que é justamente quando o aviso importa.
+    */
+    const aoEntrarNaVoz = (state: VoiceState) => {
+      upsertVoiceState(state);
+
+      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+      if (!meuId) return;
+
+      const tocar = deveTocar({
+        guildId: state.guildId,
+        channelId: state.channelId,
+        quemEntrou: state.userId,
+        euSou: meuId,
+        meuCanalDeVoz: useVoiceStore.getState().channelId,
+      });
+
+      if (!tocar) return;
+
+      toast.info("Chamada recebida — clique para atender", {
+        onClick: () => {
+          navigate(`/dm/${state.channelId}`);
+          void useVoiceStore.getState().join(state.channelId);
+        },
+        autoClose: 20_000,
+      });
+    };
+
+    onVoiceJoined(aoEntrarNaVoz);
     onVoiceUpdated(upsertVoiceState);
     onVoiceLeft(removeVoiceState);
     onSocketError(({ message }) => toast.error(message));

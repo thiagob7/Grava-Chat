@@ -216,7 +216,15 @@ export type GuildMember = z.infer<typeof guildMemberSchema>;
 export const voiceStateSchema = z.object({
   userId: objectId,
   channelId: objectId,
-  guildId: objectId,
+  /*
+    `null` quando a chamada é num privado.
+
+    Chamada de DM acontece fora de qualquer servidor: não há cargos, não há
+    permissão de canal e não há sala de guild pra difundir o estado. Quem
+    consome este campo precisa tratar os dois casos — é por isso que ele é
+    anulável e não uma string vazia.
+  */
+  guildId: objectId.nullable(),
   socketId: z.string(),
   /*
     Identidade da ABA, e não da conexão.

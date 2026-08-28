@@ -1,14 +1,43 @@
 import { AccessToken, RoomServiceClient, TrackSource } from "livekit-server-sdk";
 import type { VoiceState } from "@gravae/shared";
-import { has } from "@gravae/shared";
+import { has, rooms } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError, ForbiddenError } from "~/lib/http.js";
 import { ehOutraAba } from "~/lib/retomada.js";
 import { redis, keys } from "~/lib/redis.js";
 import { userRepository } from "~/repositories/user-repository.js";
+import { channelRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "./access-service.js";
 
 export const roomName = (channelId: string) => `channel-${channelId}`;
+
+/*
+  Um canal de privado serve de sala de chamada.
+
+  `guildId` nulo é o que define um DM no schema (`Channel.guildId`), e o tipo
+  dele é TEXT porque a conversa nasceu como conversa. Ligar não cria canal
+  nenhum: a sala do LiveKit é derivada do id do canal, igual em servidor.
+*/
+const ehChamadaDePrivado = (channel: { guildId: string | null }) => channel.guildId === null;
+
+/**
+ * Quem precisa saber do estado de voz desta pessoa.
+ *
+ * Em servidor é a sala da guild, e pronto. No privado não existe essa sala —
+ * então falamos com as duas pessoas da conversa pelas salas de usuário delas,
+ * que o gateway assina na conexão. É o que faz a ligação TOCAR para quem está
+ * com o app aberto noutra tela: a sala do canal só teria quem já abriu a
+ * conversa, e quem está sendo chamado normalmente não está lá.
+ */
+export async function destinatariosDaVoz(state: {
+  guildId: string | null;
+  channelId: string;
+}): Promise<string[]> {
+  if (state.guildId) return [rooms.guild(state.guildId)];
+
+  const channel = await channelRepository.findById(state.channelId);
+  return (channel?.recipients ?? []).map(rooms.user);
+}
 
 const estaDeCastigo = (member: { timeoutUntil: Date | null } | null | undefined) =>
   Boolean(member?.timeoutUntil && member.timeoutUntil > new Date());
@@ -115,7 +144,18 @@ export const voiceService = {
     const { channel, contexto } = await accessService.requireChannelAccess(userId, channelId);
     const anterior = await voiceService.get(userId);
 
-    if (channel.type !== "VOICE") throw new AppError("Este canal não é de voz");
+    /*
+      No privado a chamada acontece no PRÓPRIO canal da conversa, que é do tipo
+      TEXT — não existe um canal de voz separado pra criar, e criar um só pra
+      ligar seria um documento a mais pra manter vivo e limpar depois.
+
+      O acesso já foi checado: `requireChannelAccess` devolve `contexto` nulo
+      justamente para DM, e só depois de confirmar que quem pede está entre os
+      `recipients`. Quem não é dos dois nem chega aqui.
+    */
+    if (channel.type !== "VOICE" && !ehChamadaDePrivado(channel)) {
+      throw new AppError("Este canal não é de voz");
+    }
     if (contexto && !has(contexto.permissions, "CONNECT")) {
       throw new ForbiddenError("Você não pode entrar neste canal de voz");
     }
@@ -154,8 +194,9 @@ export const voiceService = {
     clienteId: string | null = null,
   ) {
     const { channel } = await accessService.requireChannelAccess(userId, channelId);
-    if (channel.type !== "VOICE") throw new AppError("Este canal não é de voz");
-    if (!channel.guildId) throw new AppError("Canal de voz inválido");
+    if (channel.type !== "VOICE" && !ehChamadaDePrivado(channel)) {
+      throw new AppError("Este canal não é de voz");
+    }
 
     const previous = await voiceService.get(userId);
 
