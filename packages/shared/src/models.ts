@@ -218,6 +218,14 @@ export const voiceStateSchema = z.object({
   channelId: objectId,
   guildId: objectId,
   socketId: z.string(),
+  /*
+    Identidade da ABA, e não da conexão.
+
+    O `socketId` muda a cada recarga da página; a aba, não. É essa diferença
+    que separa "voltei depois de recarregar" de "estou noutra aba" — sem ela
+    as duas coisas são indistinguíveis pro servidor.
+  */
+  clienteId: z.string().nullable(),
   orphanedAt: z.number().nullable(),
   joinedAt: z.number(),
   selfMute: z.boolean(),

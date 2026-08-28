@@ -2,8 +2,8 @@ import type { ClientEventPayload } from "@gravae/shared";
 
 import { emit } from ".";
 
-export const joinVoiceChannel = (channelId: string, resume = false) =>
-  emit("voice:join", { channelId, resume });
+export const joinVoiceChannel = (channelId: string, resume = false, cliente?: string) =>
+  emit("voice:join", { channelId, resume, ...(cliente ? { cliente } : null) });
 export const leaveVoiceChannel = () => emit("voice:leave", {});
 export const updateVoiceState = (patch: ClientEventPayload<"voice:state">) =>
   emit("voice:state", patch);

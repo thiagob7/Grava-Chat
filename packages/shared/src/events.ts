@@ -48,6 +48,9 @@ export const clientEventSchemas = {
   "voice:join": z.object({
     channelId: objectId,
     resume: z.boolean().optional(),
+    /// Quem está pedindo: a aba, não a conexão. Ver `clienteId` no
+    /// `voiceStateSchema`.
+    cliente: z.string().min(1).max(64).optional(),
   }),
   "voice:leave": z.object({}),
   /// Credencial do SFU para um canal. O app pega pela rota REST, com o cookie

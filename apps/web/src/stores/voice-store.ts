@@ -113,6 +113,30 @@ function snapshot(room: Room): VoiceTile[] {
 }
 
 const TAB_VOICE_KEY = "gravae:voice-channel";
+const TAB_ID_KEY = "gravae:voice-cliente";
+
+/*
+  Identidade desta ABA, estável entre recargas.
+
+  Fica no `sessionStorage` porque é exatamente a semântica que queremos: ele
+  sobrevive ao F5 e ao restart do app, mas cada aba nova nasce com o seu. É com
+  isso que o servidor distingue "voltei de uma recarga" de "abri numa segunda
+  aba" — o `socketId` não serve, porque muda nas duas situações.
+*/
+export const clienteDestaAba = (): string | undefined => {
+  try {
+    const salvo = sessionStorage.getItem(TAB_ID_KEY);
+    if (salvo) return salvo;
+
+    const novo = crypto.randomUUID();
+    sessionStorage.setItem(TAB_ID_KEY, novo);
+    return novo;
+  } catch {
+    /// Sem sessionStorage (aba anônima travada, storage cheio) volta o
+    /// comportamento antigo: sem identidade, o servidor decide pelo órfão.
+    return undefined;
+  }
+};
 
 /*
   O volume de cada pessoa mora no navegador.
@@ -343,7 +367,11 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       set({ room, connecting: false, tiles: snapshot(room) });
       rememberVoiceTab(channelId);
 
-      const estado = (await joinVoiceChannel(channelId, options?.resume ?? false)) as
+      const estado = (await joinVoiceChannel(
+        channelId,
+        options?.resume ?? false,
+        clienteDestaAba(),
+      )) as
         | { guildId?: string }
         | undefined;
 

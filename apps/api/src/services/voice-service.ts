@@ -3,6 +3,7 @@ import type { VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError, ForbiddenError } from "~/lib/http.js";
+import { ehOutraAba } from "~/lib/retomada.js";
 import { redis, keys } from "~/lib/redis.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "./access-service.js";
@@ -145,7 +146,13 @@ export const voiceService = {
     return { url: env.LIVEKIT_URL, token: await token.toJwt(), exigePushToTalk };
   },
 
-  async join(userId: string, channelId: string, socketId: string, resume = false) {
+  async join(
+    userId: string,
+    channelId: string,
+    socketId: string,
+    resume = false,
+    clienteId: string | null = null,
+  ) {
     const { channel } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.type !== "VOICE") throw new AppError("Este canal não é de voz");
     if (!channel.guildId) throw new AppError("Canal de voz inválido");
@@ -157,9 +164,10 @@ export const voiceService = {
       if (dentro >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
     }
 
-    if (resume && previous && previous.channelId === channelId && !previous.orphanedAt) {
+    if (ehOutraAba({ retomando: resume, anterior: previous, canalPedido: channelId, cliente: clienteId })) {
       throw new AppError("Outra aba está nesta chamada");
     }
+
     const left = previous && previous.channelId !== channelId ? await voiceService.leave(userId) : null;
 
     const state: VoiceState = {
@@ -167,6 +175,7 @@ export const voiceService = {
       channelId,
       guildId: channel.guildId,
       socketId,
+      clienteId: clienteId ?? previous?.clienteId ?? null,
       ...DEFAULTS,
       joinedAt: previous?.channelId === channelId ? previous.joinedAt : Date.now(),
       selfMute: previous?.selfMute ?? DEFAULTS.selfMute,
