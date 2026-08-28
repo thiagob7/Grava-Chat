@@ -270,6 +270,41 @@ function announceLeave(guildId: string, channelId: string, userId: string) {
   io().to(rooms.guild(guildId)).emit("voice:left", { channelId, userId });
 }
 
+/// De quanto em quanto a varredura roda. Trinta segundos é curto o bastante
+/// pra ninguém reclamar do fantasma e longo o bastante pra ser uma chamada só
+/// ao SFU por meio minuto.
+const INTERVALO_DA_VARREDURA_MS = 30_000;
+
+/*
+  Vigia a divergência entre o Redis e o SFU, pra sempre.
+
+  A colheita do órfão cobre a desconexão limpa: o cliente se despede, o
+  `setTimeout` corre, tudo certo. Ela NÃO cobre o resto — aba morta sem aviso,
+  rede caindo, e principalmente a API reiniciando dentro da janela de 6s, que
+  leva o temporizador junto. Nesses casos a pessoa fica na chamada pra sempre.
+
+  Roda uma vez na subida de propósito: é ali que estão os fantasmas que o
+  processo anterior deixou pra trás.
+*/
+export function vigiarChamadasFantasma(aoErrar: (err: unknown) => void) {
+  const varrer = () =>
+    voiceService
+      .reconciliar()
+      .then((removidos) => {
+        for (const estado of removidos) {
+          announceLeave(estado.guildId, estado.channelId, estado.userId);
+        }
+      })
+      .catch(aoErrar);
+
+  void varrer();
+
+  const relogio = setInterval(() => void varrer(), INTERVALO_DA_VARREDURA_MS);
+  relogio.unref();
+
+  return () => clearInterval(relogio);
+}
+
 export async function broadcastPresence(userId: string, status?: PresenceStatus) {
   const projetado = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
   const memberships = await memberRepository.guildIdsOf(userId);

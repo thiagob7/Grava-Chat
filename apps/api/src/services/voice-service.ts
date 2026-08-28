@@ -35,6 +35,24 @@ const DEFAULTS = {
 
 export const VOICE_GRACE_MS = 6_000;
 
+/*
+  Sobrevida da chave orfã no Redis.
+
+  O `setTimeout` que colhe o órfão vive DENTRO do processo. Se a API reinicia
+  na janela — deploy, crash, `yarn dev` recarregando — o temporizador morre e a
+  chave fica no Redis pra sempre: a pessoa aparece na chamada, desligada,
+  indefinidamente. O TTL é a rede embaixo do trapézio.
+*/
+const TTL_DO_ORFAO_MS = 60_000;
+
+/*
+  Quanto esperamos antes de confiar na ausência de alguém no SFU.
+
+  Entre pedir pra entrar e o navegador de fato conectar no LiveKit passam
+  segundos. Varrer sem essa carência derrubaria justamente quem está entrando.
+*/
+const CARENCIA_DO_SFU_MS = 25_000;
+
 export const voiceService = {
   /*
     Radiografia do SFU pro painel: quantas salas abertas e quanta gente dentro.
@@ -172,7 +190,8 @@ export const voiceService = {
     if (!state || state.socketId !== socketId || state.orphanedAt) return null;
 
     const orphaned = { ...state, orphanedAt: Date.now() };
-    await redis.set(keys.voiceState(userId), JSON.stringify(orphaned));
+    /// Com prazo: se o processo cair antes de colher, o Redis colhe por ele.
+    await redis.set(keys.voiceState(userId), JSON.stringify(orphaned), "PX", TTL_DO_ORFAO_MS);
     return orphaned;
   },
 
@@ -237,6 +256,54 @@ export const voiceService = {
           .filter((s): s is VoiceState => Boolean(s) && s!.channelId === channelId),
       ]),
     );
+  },
+
+  /*
+    Confere o que o Redis acha com o que o LiveKit sabe, e apaga a diferença.
+
+    O SFU é a única fonte de verdade sobre quem está numa chamada: ele tem a
+    conexão de verdade aberta. O Redis é a nossa opinião sobre isso, e as duas
+    divergem sempre que um cliente some sem se despedir — aba fechada no
+    tranco, rede caindo, ou a API reiniciando antes de colher o órfão.
+
+    Devolve os estados que removeu pra quem chamou anunciar a saída; sem isso
+    o fantasma some do servidor mas continua na tela de quem já estava com o
+    canal aberto.
+  */
+  async reconciliar(): Promise<VoiceState[]> {
+    const chaves = await redis.keys("voice:user:*");
+    if (!chaves.length) return [];
+
+    const brutos = await redis.mget(chaves);
+    const agora = Date.now();
+
+    const candidatos = brutos
+      .filter((v): v is string => Boolean(v))
+      .map((v) => hidratar(JSON.parse(v) as VoiceState))
+      .filter((e) => agora - e.joinedAt > CARENCIA_DO_SFU_MS);
+
+    if (!candidatos.length) return [];
+
+    const presentes = new Set<string>();
+
+    await Promise.all(
+      [...new Set(candidatos.map((e) => e.channelId))].map(async (channelId) => {
+        /// Sala que não existe mais no SFU lança; e sala vazia é exatamente o
+        /// caso que queremos — ninguém entra no conjunto, todos viram fantasma.
+        const participantes = await roomService()
+          .listParticipants(roomName(channelId))
+          .catch(() => []);
+
+        for (const p of participantes) presentes.add(`${channelId}:${p.identity}`);
+      }),
+    );
+
+    const fantasmas = candidatos.filter(
+      (e) => !presentes.has(`${e.channelId}:${e.userId}`),
+    );
+
+    const removidos = await Promise.all(fantasmas.map((e) => voiceService.leave(e.userId)));
+    return removidos.filter((e): e is VoiceState => Boolean(e));
   },
 
   async reset() {

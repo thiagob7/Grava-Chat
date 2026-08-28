@@ -9,7 +9,12 @@ import { corsOrigin } from "~/lib/origins.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { setIo, type GravaeServer } from "./io.js";
-import { registerHandlers, cleanupVoiceOnDisconnect, broadcastPresence } from "./handlers.js";
+import {
+  registerHandlers,
+  cleanupVoiceOnDisconnect,
+  broadcastPresence,
+  vigiarChamadasFantasma,
+} from "./handlers.js";
 import { presenceService } from "~/services/presence-service.js";
 import { voiceService } from "~/services/voice-service.js";
 import { botService } from "~/services/bot-service.js";
@@ -83,11 +88,21 @@ export async function createGateway(app: FastifyInstance) {
         .then((status) => (status ? broadcastPresence(userId, status) : undefined))
         .catch((err) => app.log.error({ err, userId }, "falha ao desconectar"));
 
-      if (socket.data.voiceChannelId) {
-        cleanupVoiceOnDisconnect(userId, socket.id).catch((err) =>
-          app.log.error({ err, userId }, "falha ao limpar estado de voz"),
-        );
-      }
+      /*
+        A limpeza roda SEMPRE, e não só quando este socket sabe estar na voz.
+
+        O `socket.data.voiceChannelId` é memória deste socket. Quando o cliente
+        reconecta, o socket novo nasce com ela em branco — e se a retomada da
+        chamada falhar, ninguém mais tem a lembrança, mas o estado continua no
+        Redis apontando pra um socket que já morreu. Era um caminho pra ficar
+        na chamada pra sempre.
+
+        Chamar sem a guarda é barato e seguro: o `orphan` só age se o estado
+        for mesmo deste socket, então para os outros isso é um GET no Redis.
+      */
+      cleanupVoiceOnDisconnect(userId, socket.id).catch((err) =>
+        app.log.error({ err, userId }, "falha ao limpar estado de voz"),
+      );
     });
 
     socket.join([rooms.user(userId), ...socket.data.guildIds.map(rooms.guild)]);
@@ -118,7 +133,13 @@ export async function createGateway(app: FastifyInstance) {
   setIo(server);
   await Promise.all([presenceService.reset(), voiceService.reset()]);
 
+  /// A partir daqui, quem manda sobre "está na chamada?" é o SFU.
+  const pararVigia = vigiarChamadasFantasma((err) =>
+    app.log.error({ err }, "falha ao varrer chamadas fantasma"),
+  );
+
   app.addHook("onClose", async () => {
+    pararVigia();
     await server.close();
     await Promise.allSettled([pub.quit(), sub.quit()]);
   });
