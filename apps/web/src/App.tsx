@@ -9,6 +9,7 @@ import { ChuvaDeSuperReacao } from "~/components/ChuvaDeSuperReacao";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";
 import { VoiceAudioSink } from "~/components/VoiceAudioSink";
+import { ChamadaRecebida } from "~/components/ChamadaRecebida";
 import { SeletorDeTela } from "~/components/SeletorDeTela";
 import { VisualizadorDeImagem } from "~/components/VisualizadorDeImagem";
 import { useAparenciaAplicada } from "~/hooks/use-aparencia";
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
           <ConfirmProvider>
           <AppRoutes />
           <VoiceAudioSink />
+          <ChamadaRecebida />
           <SeletorDeTela />
           <VisualizadorDeImagem />
           <ChuvaDeSuperReacao />

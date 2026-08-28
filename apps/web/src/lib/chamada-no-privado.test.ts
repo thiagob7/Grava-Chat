@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { deveTocar, type ChamadaRecebida } from "./chamada-no-privado";
+import { deveTocar, estaChamando, type ChamadaRecebida } from "./chamada-no-privado";
 
 const base: ChamadaRecebida = {
   guildId: null,
@@ -34,5 +34,27 @@ describe("deveTocar", () => {
 
   it("já estando os dois na chamada, é chegada e não chamada", () => {
     expect(deveTocar({ ...base, meuCanalDeVoz: "dm-1" })).toBe(false);
+  });
+});
+
+describe("estaChamando", () => {
+  it("sozinho na sala de um privado é telefone tocando do outro lado", () => {
+    expect(estaChamando({ guildId: null, quantosNaSala: 1 })).toBe(true);
+  });
+
+  it("com a outra pessoa dentro, a chamada está em curso", () => {
+    expect(estaChamando({ guildId: null, quantosNaSala: 2 })).toBe(false);
+  });
+
+  /*
+    Num canal de servidor, estar sozinho é só estar sozinho — gente entra e sai
+    o dia todo e ninguém está esperando ninguém atender.
+  */
+  it("sozinho num canal de servidor não é chamada", () => {
+    expect(estaChamando({ guildId: "servidor-1", quantosNaSala: 1 })).toBe(false);
+  });
+
+  it("sala vazia (antes do SFU responder) não trava em 'chamando'", () => {
+    expect(estaChamando({ guildId: null, quantosNaSala: 0 })).toBe(true);
   });
 });

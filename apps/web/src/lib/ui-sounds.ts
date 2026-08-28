@@ -94,6 +94,32 @@ const SONS = {
     { hz: 659.25, em: 0, dura: 0.07 },
     { hz: 392, em: 0.06, dura: 0.14 },
   ],
+
+  /*
+    O telefone tocando, dos dois lados.
+
+    `chamando` é o que QUEM LIGA ouve: duas notas iguais e espaçadas, o
+    equivalente ao "tuut… tuut" de espera. `tocando` é o que quem RECEBE ouve
+    — sobe em vez de repetir, porque precisa chamar atenção de alguém que não
+    estava esperando nada.
+
+    Os dois são repetidos por quem os toca, não aqui: um som que se repete
+    sozinho não teria como parar quando a chamada é atendida.
+  */
+  chamando: [
+    { hz: 440, em: 0, dura: 0.18 },
+    { hz: 440, em: 0.28, dura: 0.18 },
+  ],
+  tocando: [
+    { hz: 587.33, em: 0, dura: 0.12 },
+    { hz: 783.99, em: 0.13, dura: 0.12 },
+    { hz: 587.33, em: 0.4, dura: 0.12 },
+    { hz: 783.99, em: 0.53, dura: 0.12 },
+  ],
+  recusada: [
+    { hz: 415.3, em: 0, dura: 0.1 },
+    { hz: 311.13, em: 0.09, dura: 0.2 },
+  ],
 } satisfies Record<string, Nota[]>;
 
 export type SomDaInterface = keyof typeof SONS;

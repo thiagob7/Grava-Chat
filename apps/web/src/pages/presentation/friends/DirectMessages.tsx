@@ -20,6 +20,8 @@ import { GuildRail } from "~/components/GuildRail";
 import { VoiceStage } from "~/components/VoiceStage";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
 import { PainelDePerfilDoDm } from "~/components/PainelDePerfilDoDm";
+import { estaChamando } from "~/lib/chamada-no-privado";
+import { tocarSom } from "~/lib/ui-sounds";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/stores/voice-store";
 import { MessageList } from "~/components/MessageList";
@@ -77,6 +79,14 @@ export const DirectMessages: React.FC = () => {
   const ligarCamera = useVoiceStore((s) => s.toggleCamera);
   const cameraLigada = useVoiceStore((s) => s.cameraEnabled);
   const emChamadaAqui = Boolean(channelId) && canalEmChamada === channelId;
+
+  /*
+    Sozinho na sala de um privado é o telefone tocando do outro lado. Enquanto
+    isso, mostrar a grade vazia com o seu próprio quadro não diz nada — quem
+    ligou quer saber se a pessoa vai atender, e quer poder desistir.
+  */
+  const naSala = useVoiceStore((s) => s.tiles.length);
+  const chamando = emChamadaAqui && estaChamando({ guildId: null, quantosNaSala: naSala });
 
   /*
     Ligar com vídeo é a MESMA chamada, com a câmera já aberta — e não um tipo
@@ -209,7 +219,16 @@ export const DirectMessages: React.FC = () => {
           */}
           {emChamadaAqui && (
             <div className="flex h-80 shrink-0 flex-col border-b border-divisor">
-              <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} />
+              {chamando ? (
+                <Chamando
+                  nome={conversa.user.displayName}
+                  userId={conversa.user.id}
+                  avatarUrl={conversa.user.avatarUrl}
+                  onDesistir={() => void sairDaChamada()}
+                />
+              ) : (
+                <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} />
+              )}
             </div>
           )}
 
@@ -255,6 +274,50 @@ export const DirectMessages: React.FC = () => {
           <AtivosAgora />
         </>
       )}
+    </div>
+  );
+};
+
+/// A cada quanto o "tuut" de espera se repete, pra soar como telefone.
+const INTERVALO_DA_ESPERA_MS = 3_000;
+
+/**
+ * O que quem liga vê enquanto ninguém atendeu.
+ *
+ * Sem isto, quem ligava via a grade da chamada com um quadro só — o próprio —
+ * e nada indicando que havia alguém sendo chamado. Não dava pra distinguir
+ * "estou ligando" de "entrei sozinho num canal vazio".
+ */
+const Chamando: React.FC<{
+  nome: string;
+  userId: string;
+  avatarUrl: string | null;
+  onDesistir: () => void;
+}> = ({ nome, userId, avatarUrl, onDesistir }) => {
+  useEffect(() => {
+    tocarSom("chamando");
+    const espera = setInterval(() => tocarSom("chamando"), INTERVALO_DA_ESPERA_MS);
+
+    return () => clearInterval(espera);
+  }, []);
+
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
+      <span className="relative">
+        <Avatar id={userId} name={nome} url={avatarUrl} size={72} />
+        <span className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
+      </span>
+
+      <p className="text-sm text-ink-muted">
+        Chamando <span className="font-semibold text-ink">{nome}</span>…
+      </p>
+
+      <button
+        onClick={onDesistir}
+        className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+      >
+        <PhoneOff size={15} /> Cancelar
+      </button>
     </div>
   );
 };

@@ -251,6 +251,25 @@ export function registerHandlers(socket: GravaeSocket) {
     return atualizado;
   });
 
+  /*
+    Recusar a chamada. Só existe no privado — num canal de voz de servidor não
+    há ninguém "chamando" você, o canal está lá o tempo todo.
+
+    O `requireChannelAccess` é o que garante que só quem participa da conversa
+    pode recusar: ele valida os `recipients` do canal de DM. Sem isso, qualquer
+    um com um id de canal derrubaria a chamada dos outros.
+  */
+  on(socket, "voice:recusar", async ({ channelId }) => {
+    const { channel } = await accessService.requireChannelAccess(userId, channelId);
+    if (channel.guildId) throw new AppError("Isso só existe numa chamada de privado");
+
+    io()
+      .to(channel.recipients.map(rooms.user))
+      .emit("voice:recusada", { channelId, userId });
+
+    return { channelId };
+  });
+
   on(socket, "voice:kick", async ({ userId: alvoId }) => {
     const estado = await voiceService.get(alvoId);
     if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");

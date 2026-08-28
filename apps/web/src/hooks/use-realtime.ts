@@ -14,6 +14,8 @@ import type {
 } from "@gravae/shared";
 
 import { deveTocar } from "~/lib/chamada-no-privado";
+import { useChamadaStore } from "~/stores/chamada-store";
+import { tocarSom } from "~/lib/ui-sounds";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import type {
@@ -55,6 +57,7 @@ import { onMemberJoined, offMemberJoined } from "~/@core/lib/websocket/on-member
 import { onMemberUpdated, offMemberUpdated } from "~/@core/lib/websocket/on-member-updated";
 import { onMemberLeft, offMemberLeft } from "~/@core/lib/websocket/on-member-left";
 import { onVoiceJoined, offVoiceJoined } from "~/@core/lib/websocket/on-voice-joined";
+import { onVoiceRecusada, offVoiceRecusada } from "~/@core/lib/websocket/on-voice-recusada";
 import { onVoiceLeft, offVoiceLeft } from "~/@core/lib/websocket/on-voice-left";
 import { onVoiceUpdated, offVoiceUpdated } from "~/@core/lib/websocket/on-voice-updated";
 import { onSocketError, offSocketError } from "~/@core/lib/websocket/on-socket-error";
@@ -512,18 +515,51 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
 
       if (!tocar) return;
 
-      toast.info("Chamada recebida — clique para atender", {
-        onClick: () => {
-          navigate(`/dm/${state.channelId}`);
-          void useVoiceStore.getState().join(state.channelId);
-        },
-        autoClose: 20_000,
+      /*
+        Vira uma chamada tocando de verdade, com atender e recusar — o toast
+        de antes deixava atender mas não deixava dizer não, e quem ligava não
+        conseguia distinguir recusa de ausência.
+      */
+      useChamadaStore.getState().receber({
+        channelId: state.channelId,
+        userId: state.userId,
+        comVideo: state.camera,
       });
     };
 
+    /*
+      A pessoa ligou e abriu a câmera logo depois de entrar — o que é o fluxo
+      normal do botão de vídeo, já que a câmera só liga com a sala conectada.
+      Sem isto, uma chamada de vídeo tocaria como se fosse de voz.
+    */
+    const aoMudarNaVoz = (state: VoiceState) => {
+      upsertVoiceState(state);
+      useChamadaStore.getState().atualizarVideo(state.channelId, state.camera);
+    };
+
+    /// Desligou antes de eu atender: para de tocar em vez de ficar até o teto.
+    const aoSairDaVoz = (p: { channelId: string; userId: string }) => {
+      removeVoiceState(p);
+      useChamadaStore.getState().encerrar(p.channelId);
+    };
+
+    const aoRecusarem = ({ channelId, userId: quemRecusou }: { channelId: string; userId: string }) => {
+      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+
+      /// O evento vai para os dois lados da conversa; quem recusou não precisa
+      /// ser avisado de que recusou.
+      if (!meuId || quemRecusou === meuId) return;
+      if (useVoiceStore.getState().channelId !== channelId) return;
+
+      tocarSom("recusada");
+      toast.info("A chamada foi recusada.");
+      void useVoiceStore.getState().leave();
+    };
+
     onVoiceJoined(aoEntrarNaVoz);
-    onVoiceUpdated(upsertVoiceState);
-    onVoiceLeft(removeVoiceState);
+    onVoiceUpdated(aoMudarNaVoz);
+    onVoiceLeft(aoSairDaVoz);
+    onVoiceRecusada(aoRecusarem);
     onSocketError(({ message }) => toast.error(message));
 
     onFriendUpdated(() => {
@@ -572,6 +608,7 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       offVoiceJoined();
       offVoiceUpdated();
       offVoiceLeft();
+      offVoiceRecusada();
       offSocketError();
       offFriendUpdated();
       offDmCreated();

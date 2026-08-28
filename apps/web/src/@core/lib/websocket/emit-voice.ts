@@ -16,6 +16,10 @@ export const moderateVoice = (payload: {
 
 export const kickFromVoice = (userId: string) => emit("voice:kick", { userId });
 
+/// Dizer não a uma chamada de privado. Entrar e sair da sala não comunica
+/// isso: pra quem chamou, recusar e ignorar ficariam idênticos.
+export const recusarChamada = (channelId: string) => emit("voice:recusar", { channelId });
+
 export const moveMember = (userId: string, channelId: string) =>
   emit("voice:moveMember", { userId, channelId });
 

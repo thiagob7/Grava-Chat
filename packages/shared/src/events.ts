@@ -66,6 +66,15 @@ export const clientEventSchemas = {
     serverMute: z.boolean().optional(),
     serverDeaf: z.boolean().optional(),
   }),
+  /*
+    Recusar uma chamada de privado.
+
+    Existe porque entrar na sala e sair de novo NÃO comunica recusa: pra quem
+    chamou, os dois casos são iguais — alguém apareceu e sumiu. Sem um evento
+    próprio, quem liga fica olhando pra "chamando…" sem saber se a pessoa
+    disse não, se está ocupada, ou se o celular está no bolso.
+  */
+  "voice:recusar": z.object({ channelId: objectId }),
   "voice:kick": z.object({ userId: objectId }),
   "voice:moveMember": z.object({ userId: objectId, channelId: objectId }),
   "voice:state": z.object({
@@ -181,6 +190,8 @@ export type ServerToClientEvents = {
   "voice:joined": (state: z.infer<typeof voiceStateSchema>) => void;
   "voice:left": (p: { channelId: string; userId: string }) => void;
   "voice:updated": (state: z.infer<typeof voiceStateSchema>) => void;
+  /// alguém recusou a chamada no privado — o par de "voice:recusar"
+  "voice:recusada": (p: { channelId: string; userId: string }) => void;
 
   "live:started": (p: { channelId: string; userId: string }) => void;
   "live:ended": (p: { channelId: string; userId: string }) => void;
