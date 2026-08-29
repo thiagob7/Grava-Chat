@@ -86,6 +86,8 @@ export const DirectMessages: React.FC = () => {
     ligou quer saber se a pessoa vai atender, e quer poder desistir.
   */
   const naSala = useVoiceStore((s) => s.tiles.length);
+  /// assistindo a uma transmissão, a área precisa de altura; com só rostos, não
+  const assistindo = useVoiceStore((s) => Boolean(s.assistindo));
   const chamando = emChamadaAqui && estaChamando({ guildId: null, quantosNaSala: naSala });
 
   /*
@@ -227,14 +229,25 @@ export const DirectMessages: React.FC = () => {
             — trocar a tela obrigaria a escolher entre as duas coisas.
           */}
           {/*
-            `h-56` e não `h-80`: no privado a chamada é uma fileira de rostos, e
-            cada pixel que ela não usa é pixel que a conversa usa.
-            `overflow-hidden` porque altura fixa sem recorte é convite pro
-            conteúdo vazar por cima do que vem embaixo — era o que fazia os
-            quadros da chamada aparecerem sobre o cabeçalho da conversa.
+            A altura muda com o que está na área, porque as duas coisas pedem
+            proporções opostas.
+
+            Uma fileira de rostos cabe em 224px de sobra, e cada pixel a mais
+            seria pixel roubado da conversa. Um VÍDEO na mesma faixa fica ridículo:
+            a área tem a largura toda da janela, e `object-contain` num retângulo
+            de 6:1 encaixa pela altura — um 16:9 vira uma tira de 364px no meio de
+            duas tarjas pretas enormes.
+
+            `max-h-[50vh]` porque em janela baixa 384px seria metade da tela.
+            `overflow-hidden` porque altura fixa sem recorte já vazou uma vez hoje.
           */}
           {emChamadaAqui && (
-            <div className="flex h-56 shrink-0 flex-col overflow-hidden border-b border-divisor">
+            <div
+              className={cn(
+                "flex shrink-0 flex-col overflow-hidden border-b border-divisor",
+                assistindo ? "h-96 max-h-[50vh]" : "h-56",
+              )}
+            >
               {chamando ? (
                 <Chamando
                   nome={conversa.user.displayName}
