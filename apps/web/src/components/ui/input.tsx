@@ -24,6 +24,32 @@ export const grupoDeCampo =
 export const campoNu =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
 
+/*
+  Campo com um botão colado nele: o link do convite, o nome do amigo a
+  adicionar.
+
+  Antes era um `Input` — que tem borda e fundo próprios — dentro de outra caixa
+  que também tinha fundo. Dava caixa dentro de caixa, com dois cantos
+  arredondados concorrendo, e o botão espremido no que sobrava a ponto de
+  quebrar "Enviar pedido" em duas linhas.
+
+  Aqui a borda é UMA só, a do grupo, e é ela que reage ao foco. O campo por
+  dentro é nu, e o botão tem o espaço que precisa.
+*/
+export const CampoComAcao: React.FC<
+  React.ComponentProps<"input"> & { acao: React.ReactNode }
+> = ({ acao, className, ...props }) => (
+  <div
+    className={cn(
+      "flex items-center gap-2 rounded-lg border border-line bg-campo p-1.5 pl-3 transition",
+      "focus-within:border-campo-foco focus-within:ring-2 focus-within:ring-brand/25",
+    )}
+  >
+    <input className={cn(campoNu, "h-8", className)} {...props} />
+    {acao}
+  </div>
+);
+
 export const cartaoDeEscolha = (escolhido: boolean) =>
   cn(
     "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",

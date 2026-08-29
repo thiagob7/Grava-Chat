@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
+import { CampoComAcao, Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
 interface InviteModalProps {
@@ -174,19 +174,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
               Ou mande o link
             </p>
-            <div className="flex items-center gap-2 rounded bg-surface-0 p-1 pl-3">
-              <Input
-                readOnly
-                value={link ? (escondido ? MASCARA : link) : "Gerando…"}
-                onFocus={() => setRevelado(true)}
-                title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
-                className="bg-transparent px-0"
-              />
-              <Button onClick={() => void copy()} disabled={!link} size="md">
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                {copied ? "Copiado" : "Copiar"}
-              </Button>
-            </div>
+            <CampoComAcao
+              readOnly
+              value={link ? (escondido ? MASCARA : link) : "Gerando…"}
+              onFocus={() => setRevelado(true)}
+              title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
+              acao={
+                <Button size="sm" onClick={() => void copy()} disabled={!link}>
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  {copied ? "Copiado" : "Copiar"}
+                </Button>
+              }
+            />
           </div>
         </DialogBody>
       </DialogContent>
