@@ -5,6 +5,7 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
+import { AvisoDeAtualizacao } from "~/components/AvisoDeAtualizacao";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { EstadoDaConexao } from "~/components/EstadoDaConexao";
 import { ChuvaDeSuperReacao } from "~/components/ChuvaDeSuperReacao";
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
             <ConfirmProvider>
               <AppRoutes />
               <EstadoDaConexao />
+              <AvisoDeAtualizacao />
               <VoiceAudioSink />
               <SeletorDeTela />
               <VisualizadorDeImagem />

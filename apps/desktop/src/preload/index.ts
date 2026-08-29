@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type {
   CodigoDeLogin,
+  EstadoDaAtualizacao,
   EscolhaDeTela,
   EstadoPtt,
   FonteDeTela,
@@ -88,6 +89,20 @@ const ponte: PonteDesktop = {
         .then((rota: string | null) => rota && callback(rota));
 
       return () => ipcRenderer.off("link:abrir", ouvinte);
+    },
+  },
+
+  atualizacao: {
+    estado: () => ipcRenderer.invoke("atualizacao:estado"),
+    procurar: () => ipcRenderer.invoke("atualizacao:procurar"),
+    baixar: () => ipcRenderer.invoke("atualizacao:baixar"),
+    instalar: () => ipcRenderer.invoke("atualizacao:instalar"),
+
+    aoMudar: (callback: (estado: EstadoDaAtualizacao) => void) => {
+      const ouvinte = (_e: unknown, estado: EstadoDaAtualizacao) => callback(estado);
+      ipcRenderer.on("atualizacao:mudou", ouvinte);
+
+      return () => ipcRenderer.off("atualizacao:mudou", ouvinte);
     },
   },
 };

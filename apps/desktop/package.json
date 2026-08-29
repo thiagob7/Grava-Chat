@@ -1,6 +1,6 @@
 {
   "name": "@gravae/desktop",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "private": true,
   "description": "Aplicativo de desktop do Gravaê Chat",
   "productName": "Gravaê Chat",
@@ -9,7 +9,8 @@
     "dev": "tsup && dotenv -e ../../.env -- electron .",
     "build": "tsup",
     "empacotar": "tsup && electron-builder",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "uiohook-napi": "^1.5.5"

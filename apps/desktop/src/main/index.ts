@@ -1,6 +1,7 @@
 import path from "node:path";
 import { app, BrowserWindow, nativeImage } from "electron";
 
+import { registrarAtualizacao } from "./atualizacao-ipc.js";
 import { registrarAvisos } from "./avisos.js";
 import { registrarCapturaDeTela } from "./captura-de-tela.js";
 import { criarJanela } from "./janela.js";
@@ -43,6 +44,12 @@ if (!app.requestSingleInstanceLock()) {
     registrarCapturaDeTela();
     registrarAvisos();
     janela = criarJanela();
+
+    /*
+      Depois da janela existir: o estado da atualização é empurrado pra ela, e
+      empurrar pra ninguém seria conversar com a parede.
+    */
+    registrarAtualizacao(() => janela);
 
     /// No Windows e no Linux o link de abertura chega pela linha de comando,
     /// e nao pelo `open-url` do macOS.

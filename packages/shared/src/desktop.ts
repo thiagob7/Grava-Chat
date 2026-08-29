@@ -77,6 +77,44 @@ export interface PonteLinks {
   aoAbrir: (callback: (rota: string) => void) => () => void;
 }
 
+/**
+ * Estado da atualização do aplicativo.
+ *
+ * O aviso e o botão moram no SITE, e não numa janela nativa, de propósito: o
+ * site se atualiza sozinho, então o texto, o desenho e o comportamento da faixa
+ * podem melhorar depois sem obrigar ninguém a instalar de novo. Só o motor —
+ * checar, baixar, trocar o app — precisa morar na casca.
+ *
+ * Por isso este contrato é mínimo e genérico: cada campo que ele ganha é um
+ * instalador novo para todo mundo, e a graça de existir é justamente acabar
+ * com isso.
+ */
+export interface EstadoDaAtualizacao {
+  /// versão que está rodando agora
+  atual: string;
+  /// versão publicada, quando há uma mais nova; `null` quando estamos em dia
+  disponivel: string | null;
+  fase: "ociosa" | "procurando" | "baixando" | "pronta" | "erro";
+  /// 0 a 1 enquanto baixa
+  progresso: number;
+  /// o que deu errado, quando `fase` é "erro"
+  erro: string | null;
+}
+
+/**
+ * O aplicativo cuidando da própria versão.
+ *
+ * `instalar` troca o app no disco e reabre — só funciona depois que a `fase`
+ * chega em "pronta".
+ */
+export interface PonteAtualizacao {
+  estado: () => Promise<EstadoDaAtualizacao>;
+  aoMudar: (callback: (estado: EstadoDaAtualizacao) => void) => () => void;
+  procurar: () => Promise<EstadoDaAtualizacao>;
+  baixar: () => Promise<EstadoDaAtualizacao>;
+  instalar: () => Promise<void>;
+}
+
 export interface PonteDesktop {
   ehDesktop: true;
   plataforma: string;
@@ -87,6 +125,7 @@ export interface PonteDesktop {
   midia: PonteMidia;
   janela: PonteJanela;
   links: PonteLinks;
+  atualizacao: PonteAtualizacao;
 }
 
 declare global {
