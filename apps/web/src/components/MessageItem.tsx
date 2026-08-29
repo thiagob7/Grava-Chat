@@ -40,6 +40,7 @@ import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { formatTime, formatTimestamp } from "~/lib/format";
 import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
+import { useEdicaoStore } from "~/stores/edicao-store";
 import { useConfirmar } from "~/components/ui/confirm";
 import { Textarea } from "~/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
@@ -117,6 +118,32 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const [revelado, setRevelado] = useState(false);
 
   const [editing, setEditing] = useState(false);
+
+  /*
+    A seta pra cima no campo de escrever deixa um bilhete com o id; a
+    mensagem dona dele abre em edição e recolhe o bilhete na mesma hora —
+    senão ela reabriria toda vez que a lista remontasse.
+  */
+  const pedidoDeEdicao = useEdicaoStore((s) => s.pedido);
+  const recolherPedido = useEdicaoStore((s) => s.recolher);
+
+  useEffect(() => {
+    if (pedidoDeEdicao !== message.id) return;
+
+    setDraft(message.content);
+    setEditing(true);
+    recolherPedido();
+
+    /*
+      Trazer a mensagem à vista, senão o atalho abre uma caixa que ninguém vê.
+
+      Quem aperta a seta costuma estar com a lista rolada — foi assim no teste:
+      a edição abriu corretamente e parecia não ter acontecido nada, porque a
+      mensagem estava abaixo da dobra. Um atalho que funciona sem dar sinal é
+      indistinguível de um que não funciona.
+    */
+    requestAnimationFrame(() => raiz.current?.scrollIntoView({ block: "center" }));
+  }, [pedidoDeEdicao, message.id, message.content, recolherPedido]);
   const [draft, setDraft] = useState(message.content);
 
   useEffect(() => carregarFonte(message.fonte), [message.fonte]);

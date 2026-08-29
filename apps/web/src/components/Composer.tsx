@@ -1,8 +1,14 @@
 import React, { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, FileUp, Plus, Send, Smile, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
 
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
+import { queryKeys } from "~/@core/infra/constants/query-keys";
+import type { MessagePageModel } from "~/@core/domain/models/message-model";
+import type { SelfUserModel } from "~/@core/domain/models/user-model";
+import { mensagemParaEditar } from "~/lib/editar-com-a-seta";
+import { useEdicaoStore } from "~/stores/edicao-store";
 import { invocarComando, startTyping } from "~/@core/lib/websocket/emit-message-actions";
 import { AttachmentTray } from "~/components/AttachmentTray";
 import { CreatePollModal } from "~/components/CreatePollModal";
@@ -65,6 +71,34 @@ export const Composer: React.FC<ComposerProps> = ({
   const anexos = useAttachments();
 
   const [value, setValue] = useState("");
+
+  const queryClient = useQueryClient();
+  const pedirEdicao = useEdicaoStore((s) => s.pedir);
+
+  /*
+    A seta pra cima com o campo vazio abre a última mensagem SUA para editar.
+
+    As mensagens saem direto do cache da consulta em vez de virarem props: a
+    lista já as tem, e passá-las por aqui obrigaria o campo a redesenhar a cada
+    mensagem nova que chegasse no canal — enquanto você digita.
+
+    Quem decide QUAL mensagem é o `lib/editar-com-a-seta.ts`; aqui só se junta
+    o material e se entrega o pedido.
+  */
+  const abrirUltimaParaEditar = () => {
+    const chave = postId ? queryKeys.channel.postMessages(postId) : queryKeys.channel.messages(channelId);
+    const cache = queryClient.getQueryData<{ pages: MessagePageModel[] }>(chave);
+    const eu = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me]);
+
+    /// as páginas vêm da mais recente para a mais antiga; a regra espera o contrário
+    const mensagens = [...(cache?.pages ?? [])].reverse().flatMap((p) => p.messages);
+
+    const alvo = mensagemParaEditar({ rascunho: value, euSou: eu?.id, mensagens });
+    if (!alvo) return false;
+
+    pedirEdicao(alvo);
+    return true;
+  };
   const [arrastando, setArrastando] = useState(false);
   const [seletor, setSeletor] = useState<Aba | null>(null);
   const [criandoEnquete, setCriandoEnquete] = useState(false);
@@ -391,6 +425,18 @@ export const Composer: React.FC<ComposerProps> = ({
               setComando(null);
             }}
             onKeyDown={(e) => {
+              /*
+                Depois das listas de sugestão e antes de tudo o mais: com o
+                menu de comandos ou de menções aberto, a seta é deles — ela
+                escolhe item, e roubá-la ali quebraria a navegação.
+              */
+              if (e.key === "ArrowUp" && !sugestoes.length && !comandos.length) {
+                if (abrirUltimaParaEditar()) {
+                  e.preventDefault();
+                  return;
+                }
+              }
+
               if (e.key === "Escape" && resposta && !sugestoes.length && !comandos.length) {
                 e.preventDefault();
                 cancelarResposta();
