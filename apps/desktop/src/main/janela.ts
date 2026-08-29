@@ -130,27 +130,36 @@ export function criarJanela() {
   });
 
   /*
-    ⚠️ Permissão que falta aqui NÃO vira erro na página: o pedido simplesmente
-    morre, sem evento e sem exceção. Foi o que fez o botão de tela cheia da live
-    parecer quebrado por dois dias — o `requestFullscreen()` do navegador ficava
-    pendente pra sempre, então nem o nosso `catch` com aviso na tela disparava.
+    Permissão: quem manda é a ORIGEM, não uma lista de nomes.
 
-    Por isso o `console.warn` na negativa: da próxima vez que um botão não fizer
-    nada no aplicativo, o motivo está no terminal em vez de em lugar nenhum.
+    A lista de antes (`media`, `display-capture`, …) parecia prudente e era uma
+    armadilha: faltou `fullscreen` nela e o botão de tela cheia ficou morto por
+    duas versões — permissão negada aqui NÃO vira erro na página, o pedido do
+    navegador fica pendente pra sempre, sem evento e sem exceção. Cada permissão
+    nova que o site passasse a usar seria outro botão quebrado, e outro
+    instalador pra todo mundo baixar.
+
+    Esta janela só exibe uma origem: o `will-navigate` manda qualquer outra pro
+    navegador do sistema, e o `setWindowOpenHandler` recusa abrir janela. Então
+    "veio do nosso site" é a mesma garantia que a lista tentava dar — e não
+    envelhece. O que vier de qualquer outro lugar continua negado, e agora
+    aparece no terminal em vez de sumir.
   */
-  const PERMITIDAS = [
-    "media", // microfone e câmera na chamada
-    "display-capture", // compartilhar a tela
-    "clipboard-read", // colar imagem na conversa
-    "notifications", // aviso de mensagem nova
-    "fullscreen", // o vídeo da live ocupando o monitor
-  ];
+  janela.webContents.session.setPermissionRequestHandler((quem, permissao, permitir, detalhes) => {
+    const origem = (() => {
+      try {
+        return new URL(detalhes?.requestingUrl || quem?.getURL() || "").origin;
+      } catch {
+        return null;
+      }
+    })();
 
-  janela.webContents.session.setPermissionRequestHandler((_wc, permissao, permitir) => {
-    const liberada = PERMITIDAS.includes(permissao);
-    if (!liberada) console.warn(`[desktop] permissão negada: ${permissao}`);
+    const nossa = origem === APP_ORIGIN;
+    if (!nossa) {
+      console.warn(`[desktop] permissão "${permissao}" negada para ${origem ?? "origem desconhecida"}`);
+    }
 
-    permitir(liberada);
+    permitir(nossa);
   });
 
   void carregarComEspera(janela);
