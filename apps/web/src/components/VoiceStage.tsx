@@ -33,6 +33,15 @@ interface VoiceStageProps {
   voiceStates?: VoiceState[];
   minhasPermissoes?: Permission[];
   currentUserId?: string;
+  /*
+    Formato de conversa privada: uma fileira de rostos em vez da grade.
+
+    Num servidor a chamada é o assunto da tela inteira. No privado ela divide
+    espaço com a conversa, que continua sendo o principal — e são duas pessoas,
+    não doze. Grade de quadros grandes ali gasta a altura que a conversa precisa
+    e não mostra nada a mais.
+  */
+  compacto?: boolean;
 }
 
 export const VoiceStage: React.FC<VoiceStageProps> = ({
@@ -44,6 +53,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   voiceStates = [],
   minhasPermissoes = [],
   currentUserId,
+  compacto = false,
 }) => {
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
@@ -252,13 +262,47 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     );
   }
 
+  if (compacto) {
+    return (
+      <div
+        ref={palco}
+        className="group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4"
+      >
+        {grade.map((quadro) =>
+          quadro.tipo === "tela" ? (
+            <TileDaLive
+              key={quadro.key}
+              tile={quadro.de.tile}
+              denso
+              onAssistir={() => setAssistindo(quadro.de.identity)}
+            />
+          ) : (
+            <ComMenu key={quadro.key} tile={quadro.de.tile} contexto={contexto}>
+              <RostoNaChamada tile={quadro.de.tile} guildId={guildId} />
+            </ComMenu>
+          ),
+        )}
+
+        {!tiles.length && <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>}
+
+        <VoiceStageControls alvoTelaCheia={palco} />
+      </div>
+    );
+  }
+
   return (
     <div
       ref={palco}
-      className="group relative flex flex-1 items-center justify-center bg-surface-2 p-6"
+      className="group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2 p-6"
     >
+      {/*
+        `min-h-0` e `overflow-hidden` acima, `max-h-full` aqui: sem os três, a
+        grade cresce além da altura reservada e vaza pra fora do palco. Numa
+        conversa privada isso aparecia como os quadros da chamada sobrepondo o
+        cabeçalho da conversa, com o nome de quem escreveu no meio deles.
+      */}
       <div
-        className="grid w-full max-w-5xl gap-4"
+        className="grid max-h-full w-full max-w-5xl gap-4"
         style={{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }}
       >
         {grade.map((quadro) => desenhar(quadro))}
@@ -514,6 +558,54 @@ const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
         <SignalLow size={12} className={aviso.pulsando ? "animate-pulse" : undefined} />
       </span>
     </Tooltip>
+  );
+};
+
+/**
+ * Uma pessoa na chamada de privado: o rosto, e só.
+ *
+ * Sem quadro em volta e sem etiqueta fixa. São duas pessoas numa conversa —
+ * quem está ali já se sabe, e desenhar caixa e nome em volta de cada uma gasta
+ * a altura que a conversa precisa pra dizer o que ninguém ainda sabe.
+ *
+ * O anel de "falando" e o microfone cortado continuam, porque esses mudam.
+ */
+const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile, guildId }) => {
+  const resolver = useParticipante();
+  const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
+
+  return (
+    <div className="group/rosto flex flex-col items-center gap-2">
+      <div className="relative">
+        {tile.cameraTrack ? (
+          <div className="size-20 overflow-hidden rounded-full ring-2 ring-transparent">
+            <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+          </div>
+        ) : (
+          <Avatar
+            id={tile.identity}
+            name={participante.nome}
+            url={participante.avatarUrl}
+            size={80}
+            enfeites={participante.perfil}
+            animar={tile.speaking}
+          />
+        )}
+
+        {!tile.micEnabled && (
+          <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
+            <MicOff size={12} className="text-danger" />
+          </span>
+        )}
+      </div>
+
+      <UserProfilePopover userId={tile.identity} guildId={guildId} side="top">
+        <button className="max-w-28 truncate text-xs font-medium text-ink-muted hover:underline">
+          {participante.nome}
+          {tile.isLocal && " (você)"}
+        </button>
+      </UserProfilePopover>
+    </div>
   );
 };
 

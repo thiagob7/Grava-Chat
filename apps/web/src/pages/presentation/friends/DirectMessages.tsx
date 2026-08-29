@@ -226,8 +226,15 @@ export const DirectMessages: React.FC = () => {
             no privado é falar e continuar mandando link, print e recado no meio
             — trocar a tela obrigaria a escolher entre as duas coisas.
           */}
+          {/*
+            `h-56` e não `h-80`: no privado a chamada é uma fileira de rostos, e
+            cada pixel que ela não usa é pixel que a conversa usa.
+            `overflow-hidden` porque altura fixa sem recorte é convite pro
+            conteúdo vazar por cima do que vem embaixo — era o que fazia os
+            quadros da chamada aparecerem sobre o cabeçalho da conversa.
+          */}
           {emChamadaAqui && (
-            <div className="flex h-80 shrink-0 flex-col border-b border-divisor">
+            <div className="flex h-56 shrink-0 flex-col overflow-hidden border-b border-divisor">
               {chamando ? (
                 <Chamando
                   nome={conversa.user.displayName}
@@ -236,7 +243,7 @@ export const DirectMessages: React.FC = () => {
                   onDesistir={() => void sairDaChamada()}
                 />
               ) : (
-                <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} />
+                <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} compacto />
               )}
             </div>
           )}
