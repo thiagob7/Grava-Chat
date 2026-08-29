@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
 import type {
@@ -20,6 +19,7 @@ import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { VoiceStageControls } from "~/components/VoiceStageControls";
+import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import { useParticipante } from "~/hooks/use-participante";
 import { cn } from "~/lib/utils";
@@ -57,41 +57,14 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 }) => {
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
-  const [telaCheia, setTelaCheia] = useState(false);
   /// qual quadro está em destaque; `null` é a grade igualitária
   const [focado, setFocado] = useState<string | null>(null);
 
   /*
     Tela cheia no QUADRO, não na janela inteira: assim a barra de participantes
     e o resto do app somem, e o vídeo ocupa o monitor.
-
-    O estado vem do evento do navegador, nunca do clique — sair com Esc não
-    passa pelo nosso botão, e sem escutar o evento o ícone ficaria mentindo.
   */
-  useEffect(() => {
-    const sincronizar = () => setTelaCheia(document.fullscreenElement === quadro.current);
-
-    document.addEventListener("fullscreenchange", sincronizar);
-    return () => document.removeEventListener("fullscreenchange", sincronizar);
-  }, []);
-
-  const alternarTelaCheia = async () => {
-    try {
-      if (document.fullscreenElement) return void (await document.exitFullscreen());
-
-      if (!document.fullscreenEnabled) {
-        toast.error("Este navegador não está permitindo tela cheia aqui.");
-        return;
-      }
-
-      await quadro.current?.requestFullscreen();
-    } catch (erro) {
-      /// Silenciar aqui foi o que fez o clique parecer quebrado: sem efeito e
-      /// sem explicação. Se o navegador recusa, ele tem um motivo — mostra.
-      const motivo = erro instanceof Error ? erro.message : String(erro);
-      toast.error(`Não consegui abrir em tela cheia: ${motivo}`);
-    }
-  };
+  const telaCheia = useTelaCheia(quadro);
   const tiles = useVoiceStore((s) => s.tiles);
   const connecting = useVoiceStore((s) => s.connecting);
 
@@ -210,12 +183,12 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             )}
 
             <button
-              onClick={alternarTelaCheia}
-              aria-label={telaCheia ? "Sair da tela cheia" : "Tela cheia"}
-              title={telaCheia ? "Sair da tela cheia (Esc)" : "Tela cheia"}
+              onClick={() => void telaCheia.alternar()}
+              aria-label={telaCheia.ativa ? "Sair da tela cheia" : "Tela cheia"}
+              title={telaCheia.ativa ? "Sair da tela cheia (Esc)" : "Tela cheia"}
               className="ml-auto shrink-0 rounded p-1.5 text-white/80 transition hover:bg-white/15 hover:text-white"
             >
-              {telaCheia ? <Minimize size={16} /> : <Maximize size={16} />}
+              {telaCheia.ativa ? <Minimize size={16} /> : <Maximize size={16} />}
             </button>
           </div>
         </div>

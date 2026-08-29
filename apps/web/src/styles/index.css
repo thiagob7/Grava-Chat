@@ -307,3 +307,19 @@
   -webkit-app-region: no-drag;
   app-region: no-drag;
 }
+
+/*
+  O contrário, para o que FLUTUA por cima de uma região de arrasto.
+
+  A região de arrasto é recortada pelo sistema a partir do RETÂNGULO pintado,
+  e não da árvore do documento: um cartão flutuante que passe por cima de um
+  cabeçalho continua dentro do retângulo dele, e o sistema rouba o clique pra
+  arrastar a janela antes de a página ver qualquer coisa. Foi o que prendeu a
+  janelinha da transmissão quando ela encostava no topo — dava pra ver, não
+  dava pra pegar.
+*/
+.regiao-sem-arrasto,
+.regiao-sem-arrasto * {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}

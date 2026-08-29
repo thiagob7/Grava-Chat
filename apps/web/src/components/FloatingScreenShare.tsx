@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { Maximize2, MonitorUp, MonitorX, X } from "lucide-react";
+import { Expand, Maximize2, MonitorUp, MonitorX, Shrink, X } from "lucide-react";
 
 import { VoiceVideo } from "~/components/VoiceTrack";
+import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { encaixarNoCanto } from "~/lib/cantos";
 import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
@@ -36,6 +37,8 @@ export const FloatingScreenShare: React.FC = () => {
     ),
   );
 
+  const mini = useRef<HTMLDivElement>(null);
+  const telaCheia = useTelaCheia(mini);
   const arrasto = useRef<{ dx: number; dy: number } | null>(null);
   /// enquanto o dedo está na tela o card segue o ponteiro; a transição só entra
   /// no pouso, senão o arrasto fica com atraso elástico
@@ -91,16 +94,29 @@ export const FloatingScreenShare: React.FC = () => {
 
   return (
     <div
-      style={{ left: posicao.x, top: posicao.y, width: LARGURA, height: ALTURA }}
+      ref={mini}
+      /*
+        Em tela cheia a posição e o tamanho fixos sairiam do lugar: o elemento
+        passa a valer a tela inteira, e as coordenadas do canto viram estorvo.
+      */
+      style={telaCheia.ativa ? undefined : { left: posicao.x, top: posicao.y, width: LARGURA, height: ALTURA }}
       className={cn(
-        "group/mini fixed z-40 overflow-hidden rounded-lg bg-black shadow-2xl ring-1 ring-white/10",
-        pousando && "transition-[left,top] duration-200 ease-out",
+        /*
+          `regiao-sem-arrasto` é o que devolve o gesto de pegar a janelinha
+          quando ela encosta num cabeçalho: sem isso o sistema entende o clique
+          como "arrastar a janela do aplicativo" e ela fica presa no lugar.
+        */
+        "group/mini regiao-sem-arrasto fixed z-40 overflow-hidden bg-black",
+        telaCheia.ativa ? "inset-0" : "rounded-lg shadow-2xl ring-1 ring-white/10",
+        pousando && !telaCheia.ativa && "transition-[left,top] duration-200 ease-out",
       )}
     >
       <VoiceVideo track={alvo.screenTrack!} />
 
       <div
         onPointerDown={(e) => {
+          if (telaCheia.ativa) return;
+
           setPousando(false);
           arrasto.current = { dx: e.clientX - posicao.x, dy: e.clientY - posicao.y };
         }}
@@ -110,6 +126,18 @@ export const FloatingScreenShare: React.FC = () => {
         <MonitorUp size={12} className="shrink-0 text-online" />
         <span className="min-w-0 flex-1 truncate text-xs font-medium">{alvo.name}</span>
 
+        <BotaoDaMini
+          label={telaCheia.ativa ? "Sair da tela cheia (Esc)" : "Tela cheia"}
+          onClick={() => void telaCheia.alternar()}
+        >
+          {telaCheia.ativa ? <Shrink size={12} /> : <Expand size={12} />}
+        </BotaoDaMini>
+
+        {/*
+          Duas coisas parecidas e diferentes: a de cima estica a janelinha até
+          ocupar a tela, esta aqui LARGA a janelinha e devolve você para a
+          chamada. Ícones distintos de propósito.
+        */}
         <BotaoDaMini
           label="Voltar para a chamada"
           onClick={() => guildId && channelId && navigate(`/channels/${guildId}/${channelId}`)}
