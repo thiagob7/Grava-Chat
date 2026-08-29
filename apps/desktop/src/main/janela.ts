@@ -3,6 +3,17 @@ import path from "node:path";
 
 import { APP_ORIGIN, APP_URL, ehDev } from "./config.js";
 
+function paginaDeEspera(motivo: string) {
+  return `data:text/html,${encodeURIComponent(
+    `<body style="background:#2b2d31;color:#f2f3f5;font:15px -apple-system,sans-serif;display:grid;place-items:center;height:100vh;margin:0">
+       <div style="text-align:center;max-width:32rem">
+         <p>${motivo}</p>
+         <p style="color:#b5bac1">Tentando de novo sozinho…</p>
+       </div>
+     </body>`,
+  )}`;
+}
+
 async function carregarComEspera(janela: BrowserWindow, tentativas = 40) {
   /*
     O app é uma janela carregando o site, então atualizar o site atualiza o app
@@ -26,14 +37,7 @@ async function carregarComEspera(janela: BrowserWindow, tentativas = 40) {
   }
 
   await janela.loadURL(
-    `data:text/html,${encodeURIComponent(
-      `<body style="background:#2b2d31;color:#f2f3f5;font:15px -apple-system,sans-serif;display:grid;place-items:center;height:100vh;margin:0">
-         <div style="text-align:center">
-           <p>Não consegui falar com o Gravaê em <b>${APP_URL}</b>.</p>
-           <p style="color:#b5bac1">Ele está rodando? (<code>yarn dev</code>)</p>
-         </div>
-       </body>`,
-    )}`,
+    paginaDeEspera(`Não consegui falar com o Gravaê em <b>${APP_URL}</b>.`),
   );
 }
 
@@ -80,9 +84,39 @@ export function criarJanela() {
       console.log(`[front:${evento.level}] ${evento.message}`);
     });
   }
-  janela.webContents.on("did-fail-load", (_e, code, descricao) =>
-    console.error(`[desktop] falhou ao carregar ${APP_URL}: ${descricao} (${code})`),
-  );
+  /*
+    Navegação que falha DEPOIS da abertura deixava a janela preta e vazia.
+
+    A espera com tentativas só corre uma vez, na subida. Se a página recarrega
+    mais tarde — uma publicação nova, o Wi-Fi caindo, a máquina voltando do
+    sono — e essa carga falha, o Electron não desenha nada: nem erro, nem
+    botão, nem menu. A janela fica um retângulo escuro, e a única saída é
+    fechar o app pelo teclado. Foi o que aconteceu no deploy de 29/08.
+
+    Aqui a falha vira uma página que explica o que houve e volta a tentar
+    sozinha, do mesmo jeito que a subida faz.
+  */
+  let tentandoDeNovo: NodeJS.Timeout | null = null;
+
+  janela.webContents.on("did-fail-load", (_e, code, descricao, urlQueFalhou, ehPrincipal) => {
+    console.error(`[desktop] falhou ao carregar ${urlQueFalhou}: ${descricao} (${code})`);
+
+    /// `-3` é navegação abortada pelo próprio app (um redirecionamento nosso,
+    /// por exemplo), e quadro secundário é iframe: nenhum dos dois deixa a
+    /// janela vazia, e recarregar por causa deles seria um laço.
+    if (!ehPrincipal || code === -3 || janela.isDestroyed()) return;
+
+    void janela.loadURL(paginaDeEspera("Perdi a conexão com o Gravaê."));
+
+    if (tentandoDeNovo) clearTimeout(tentandoDeNovo);
+    tentandoDeNovo = setTimeout(() => {
+      if (!janela.isDestroyed()) void janela.loadURL(APP_URL).catch(() => undefined);
+    }, 3_000);
+  });
+
+  janela.on("closed", () => {
+    if (tentandoDeNovo) clearTimeout(tentandoDeNovo);
+  });
 
   janela.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("http")) void shell.openExternal(url);

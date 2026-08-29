@@ -11,6 +11,7 @@ import { VoiceSection } from "~/components/user-settings/VoiceSection";
 import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
+import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
@@ -100,14 +101,22 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           </nav>
 
           <div className="flex-1 overflow-y-auto bg-surface-2 px-8 py-6">
-            {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
-            {secao === "voz" && <VoiceSection />}
-            {secao === "avisos" && <NotificationsSection />}
-            {secao === "bots" && <BotsSection />}
+            {/*
+              Caixa por seção, e a chave é o `secao`: uma tela de configuração
+              que quebra mostra um cartão no lugar dela, e trocar de seção já
+              limpa o estrago. Sem isso, o painel de servidor tropeçando num
+              formato inesperado da API levava a aplicação inteira junto.
+            */}
+            <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
+              {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
+              {secao === "voz" && <VoiceSection />}
+              {secao === "avisos" && <NotificationsSection />}
+              {secao === "bots" && <BotsSection />}
 
-            {secao === "aparencia" && <AppearanceSection />}
-            {secao === "aplicativo" && <AplicativoSection />}
-            {secao === "servidor" && user.admin && <ServidorSection />}
+              {secao === "aparencia" && <AppearanceSection />}
+              {secao === "aplicativo" && <AplicativoSection />}
+              {secao === "servidor" && user.admin && <ServidorSection />}
+            </ErrorBoundary>
           </div>
 
           <DialogPrimitive.Close

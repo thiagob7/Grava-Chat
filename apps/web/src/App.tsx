@@ -5,6 +5,8 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
+import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { EstadoDaConexao } from "~/components/EstadoDaConexao";
 import { ChuvaDeSuperReacao } from "~/components/ChuvaDeSuperReacao";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";
@@ -29,20 +31,35 @@ export const App: React.FC = () => {
   useAparenciaAplicada();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <TooltipProvider>
-          <ConfirmProvider>
-          <AppRoutes />
-          <VoiceAudioSink />
-          <SeletorDeTela />
-          <VisualizadorDeImagem />
-          <ChuvaDeSuperReacao />
-          <ToastContainer position="bottom-center" theme="dark" autoClose={4000} hideProgressBar />
-          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />}
-          </ConfirmProvider>
-        </TooltipProvider>
-      </SessionProvider>
-    </QueryClientProvider>
+    /*
+      A rede de segurança fica por FORA de tudo, inclusive dos provedores: se
+      quem quebrar for um deles, ainda assim aparece uma tela com botão em vez
+      de uma janela preta.
+    */
+    <ErrorBoundary onde="aplicação">
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider>
+          <TooltipProvider>
+            <ConfirmProvider>
+              <AppRoutes />
+              <EstadoDaConexao />
+              <VoiceAudioSink />
+              <SeletorDeTela />
+              <VisualizadorDeImagem />
+              <ChuvaDeSuperReacao />
+              <ToastContainer
+                position="bottom-center"
+                theme="dark"
+                autoClose={4000}
+                hideProgressBar
+              />
+              {import.meta.env.DEV && (
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+              )}
+            </ConfirmProvider>
+          </TooltipProvider>
+        </SessionProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };

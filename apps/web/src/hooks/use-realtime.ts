@@ -69,6 +69,7 @@ import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAusencia } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/stores/typing-store";
 import { useVoiceStore } from "~/stores/voice-store";
+import { useConexaoStore } from "~/stores/conexao-store";
 
 type MessagesCache = { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
 
@@ -571,16 +572,42 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     });
 
     const handleConnect = () => {
+      const caiuAntes = useConexaoStore.getState().jaConectou;
+      useConexaoStore.getState().conectou();
+
       if (currentChannelId) void joinChannel(currentChannelId).catch(() => undefined);
       if (currentGuildId) {
         void queryClient.refetchQueries({ queryKey: queryKeys.guild.find(currentGuildId) });
       }
+
+      /*
+        Enquanto estivemos fora, as mensagens que chegaram não vieram por
+        evento nenhum — ninguém estava ouvindo. Rejuntar o canal não busca o
+        que foi perdido, então a conversa aberta fica com um buraco até trocar
+        de canal. Só na RE-conexão: na primeira vez a própria tela já busca.
+      */
+      if (caiuAntes && currentChannelId) {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.channel.messages(currentChannelId),
+        });
+      }
     };
 
+    const handleDisconnect = () => useConexaoStore.getState().caiu();
+    const handleTentativa = (n: number) => useConexaoStore.getState().tentando(n);
+
     socketInstance.on("connect", handleConnect);
+    socketInstance.on("disconnect", handleDisconnect);
+    socketInstance.io.on("reconnect_attempt", handleTentativa);
+
+    /// O socket pode já estar de pé quando este efeito roda (troca de canal
+    /// remonta o hook): sem isto a barra diria "reconectando" pra sempre.
+    if (socketInstance.connected) useConexaoStore.getState().conectou();
 
     return () => {
       socketInstance.off("connect", handleConnect);
+      socketInstance.off("disconnect", handleDisconnect);
+      socketInstance.io.off("reconnect_attempt", handleTentativa);
       offMessageCreated();
       offMessageUpdated();
       offMessageDeleted();
