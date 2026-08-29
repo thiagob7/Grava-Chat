@@ -129,8 +129,28 @@ export function criarJanela() {
     void shell.openExternal(url);
   });
 
+  /*
+    ⚠️ Permissão que falta aqui NÃO vira erro na página: o pedido simplesmente
+    morre, sem evento e sem exceção. Foi o que fez o botão de tela cheia da live
+    parecer quebrado por dois dias — o `requestFullscreen()` do navegador ficava
+    pendente pra sempre, então nem o nosso `catch` com aviso na tela disparava.
+
+    Por isso o `console.warn` na negativa: da próxima vez que um botão não fizer
+    nada no aplicativo, o motivo está no terminal em vez de em lugar nenhum.
+  */
+  const PERMITIDAS = [
+    "media", // microfone e câmera na chamada
+    "display-capture", // compartilhar a tela
+    "clipboard-read", // colar imagem na conversa
+    "notifications", // aviso de mensagem nova
+    "fullscreen", // o vídeo da live ocupando o monitor
+  ];
+
   janela.webContents.session.setPermissionRequestHandler((_wc, permissao, permitir) => {
-    permitir(["media", "display-capture", "clipboard-read", "notifications"].includes(permissao));
+    const liberada = PERMITIDAS.includes(permissao);
+    if (!liberada) console.warn(`[desktop] permissão negada: ${permissao}`);
+
+    permitir(liberada);
   });
 
   void carregarComEspera(janela);
