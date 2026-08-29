@@ -140,7 +140,10 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     return (
       <div
         ref={palco}
-        className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4"
+        className={cn(
+          "group relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-2",
+          compacto ? "gap-0 p-2" : "gap-3 p-4",
+        )}
       >
         <div ref={quadro} className="relative flex-1 overflow-hidden rounded-lg bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
@@ -153,9 +156,23 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             O degradê existe pra legibilidade: texto branco sobre imagem clara
             some, e uma barra sólida comeria pedaço do vídeo.
           */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/80 to-transparent px-4 pb-8 pt-3">
-            <span className="text-sm font-medium">{sharing.name}</span>
-            <span className="text-sm text-white/60">está transmitindo</span>
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/80 to-transparent px-4",
+              compacto ? "pb-6 pt-2" : "pb-8 pt-3",
+            )}
+          >
+            {/*
+              "Fulano está transmitindo" some no privado: numa conversa de duas
+              pessoas, dizer de quem é a tela é repetir o nome que já está no
+              cabeçalho — e ali o espaço vertical é do vídeo, não da legenda.
+            */}
+            {!compacto && (
+              <>
+                <span className="text-sm font-medium">{sharing.name}</span>
+                <span className="text-sm text-white/60">está transmitindo</span>
+              </>
+            )}
 
             <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-[10px] font-bold tracking-wide">
               AO VIVO
@@ -180,13 +197,17 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
 
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
-            <div className="flex shrink-0 gap-2">
-              {tiles.map((tile) => (
-                <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-                  <Tile tile={tile} guildId={guildId} compact />
-                </ComMenu>
-              ))}
-            </div>
+            {/* as pastilhas de quem está na chamada não cabem no privado, e
+                não fazem falta: são duas pessoas, e uma delas é você */}
+            {!compacto && (
+              <div className="flex shrink-0 gap-2">
+                {tiles.map((tile) => (
+                  <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
+                    <Tile tile={tile} guildId={guildId} compact />
+                  </ComMenu>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={alternarTelaCheia}
