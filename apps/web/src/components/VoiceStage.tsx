@@ -141,11 +141,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       <div
         ref={palco}
         className={cn(
-          "group relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-2",
-          compacto ? "gap-0 p-2" : "gap-3 p-4",
+          "group relative flex min-h-0 flex-1 overflow-hidden bg-surface-2",
+          compacto ? "flex-row gap-2 p-2" : "flex-col gap-3 p-4",
         )}
       >
-        <div ref={quadro} className="relative flex-1 overflow-hidden rounded-lg bg-black">
+        <div ref={quadro} className="relative min-w-0 flex-1 overflow-hidden rounded-lg bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
 
           {/*
@@ -220,6 +220,24 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
         </div>
 
+        {/*
+          Quem está na chamada, numa coluna ao lado do vídeo.
+
+          Assistindo, o vídeo ocupa tudo e some a informação de quem está falando
+          ou mudo. Antes essas pastilhas viviam SOBRE o vídeo, na faixa de baixo —
+          ali elas tapavam justamente o canto onde costuma estar a barra de tarefas
+          de quem transmite. Ao lado, não disputam pixel com nada.
+        */}
+        {compacto && (
+          <div className="flex w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto py-1">
+            {tiles.map((tile) => (
+              <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
+                <RostoDaColuna tile={tile} />
+              </ComMenu>
+            ))}
+          </div>
+        )}
+
         <VoiceStageControls alvoTelaCheia={palco} />
       </div>
     );
@@ -278,6 +296,24 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           ))}
         </div>
 
+        {/*
+          Quem está na chamada, numa coluna ao lado do vídeo.
+
+          Assistindo, o vídeo ocupa tudo e some a informação de quem está falando
+          ou mudo. Antes essas pastilhas viviam SOBRE o vídeo, na faixa de baixo —
+          ali elas tapavam justamente o canto onde costuma estar a barra de tarefas
+          de quem transmite. Ao lado, não disputam pixel com nada.
+        */}
+        {compacto && (
+          <div className="flex w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto py-1">
+            {tiles.map((tile) => (
+              <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
+                <RostoDaColuna tile={tile} />
+              </ComMenu>
+            ))}
+          </div>
+        )}
+
         <VoiceStageControls alvoTelaCheia={palco} />
       </div>
     );
@@ -312,6 +348,24 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         )}
 
         {!tiles.length && <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>}
+
+        {/*
+          Quem está na chamada, numa coluna ao lado do vídeo.
+
+          Assistindo, o vídeo ocupa tudo e some a informação de quem está falando
+          ou mudo. Antes essas pastilhas viviam SOBRE o vídeo, na faixa de baixo —
+          ali elas tapavam justamente o canto onde costuma estar a barra de tarefas
+          de quem transmite. Ao lado, não disputam pixel com nada.
+        */}
+        {compacto && (
+          <div className="flex w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto py-1">
+            {tiles.map((tile) => (
+              <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
+                <RostoDaColuna tile={tile} />
+              </ComMenu>
+            ))}
+          </div>
+        )}
 
         <VoiceStageControls alvoTelaCheia={palco} />
       </div>
@@ -644,6 +698,43 @@ const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile,
           {tile.isLocal && " (você)"}
         </button>
       </UserProfilePopover>
+    </div>
+  );
+};
+
+/**
+ * Um rosto na coluna lateral, enquanto se assiste a uma transmissão.
+ *
+ * Menor que o `RostoNaChamada` e sem nome: aqui o espaço é de 64px e a pergunta
+ * que se responde é outra. Não é "quem está na chamada" — isso o cabeçalho já
+ * diz — é "quem está falando agora, e quem está mudo".
+ */
+const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
+  const resolver = useParticipante();
+  const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
+
+  return (
+    <div className="relative shrink-0" title={participante.nome}>
+      {tile.cameraTrack ? (
+        <div className="size-11 overflow-hidden rounded-full">
+          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+        </div>
+      ) : (
+        <Avatar
+          id={tile.identity}
+          name={participante.nome}
+          url={participante.avatarUrl}
+          size={44}
+          enfeites={participante.perfil}
+          animar={tile.speaking}
+        />
+      )}
+
+      {!tile.micEnabled && (
+        <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
+          <MicOff size={9} className="text-danger" />
+        </span>
+      )}
     </div>
   );
 };
