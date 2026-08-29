@@ -19,6 +19,7 @@ import { Composer } from "~/components/Composer";
 import { ForumChannel } from "~/components/ForumChannel";
 import { ForumPostView } from "~/components/ForumPostView";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
+import { PrimeiroServidor } from "~/components/PrimeiroServidor";
 import { FavoritasPanel } from "~/components/FavoritasPanel";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
@@ -157,13 +158,7 @@ export const Chat: React.FC = () => {
           onOpenFriends={() => navigate("/dm")}
           pendingFriendRequests={pedidosPendentes}
         />
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 bg-surface-2 text-center">
-          <h2 className="text-xl font-semibold">Você ainda não tem servidores</h2>
-          <p className="max-w-sm text-ink-muted">
-            Crie o primeiro no botão <span className="font-semibold text-online">+</span> à esquerda, ou
-            entre em um pelo link de convite que alguém te mandar.
-          </p>
-        </div>
+        <PrimeiroServidor />
       </div>
     );
   }
