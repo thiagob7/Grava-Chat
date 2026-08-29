@@ -244,7 +244,16 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   if (message.tipo === "JOIN") {
     return (
-      <div className="flex items-center gap-2 px-2 py-1 text-sm text-ink-muted @sm:gap-3 @sm:px-4">
+      /*
+        O aviso de entrada precisa de ar em volta. Com `py-1` e nenhuma margem
+        ele colava na mensagem de cima e na de baixo, e a conversa virava um
+        bloco só — a linha do sistema se lia como se fosse fala de alguém.
+
+        `my-2` de cada lado, contra os `mt-4` das mensagens normais: fica
+        separado o bastante pra ser outra coisa, e discreto o bastante pra não
+        virar um anúncio no meio do papo.
+      */
+      <div className="my-2 flex items-center gap-2 px-2 py-1 text-sm text-ink-muted @sm:gap-3 @sm:px-4">
         <UserPlus size={16} className="shrink-0 text-online" />
         <span className="shrink-0 font-medium text-ink">{message.author.displayName}</span>
         <span className="min-w-0 truncate">{message.content.replace(/<@[a-f\d]{24}>/gi, "").trim()}</span>
