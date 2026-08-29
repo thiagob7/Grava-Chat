@@ -257,6 +257,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )
                           ) : channel.type === "FORUM" ? (
                             <MessagesSquare size={18} className="shrink-0 text-ink-faint" />
+                          ) : channel.isPrivate ? (
+                            /* canal de texto fechado tinha o mesmo `#` de um
+                               aberto: quem entra no servidor não tinha como
+                               saber por que só enxerga metade da lista */
+                            <Lock size={18} className="shrink-0 text-ink-faint" />
                           ) : (
                             <Hash size={18} className="shrink-0 text-ink-faint" />
                           )}
@@ -268,6 +273,31 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           </span>
 
                           <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            {/*
+                              A lotação, quando o canal tem limite.
+
+                              O `userLimit` existia no banco e na tela de
+                              configuração, e em lugar nenhum onde ele importa:
+                              não dava pra saber se um canal estava cheio sem
+                              tentar entrar e ser recusado.
+
+                              Só aparece com limite definido — `0` é "sem
+                              limite", e "3/0" não diria nada.
+                            */}
+                            {channel.type === "VOICE" && channel.userLimit > 0 && (
+                              <span
+                                title={`${entradas.length} de ${channel.userLimit}`}
+                                className={cn(
+                                  "text-[11px] font-medium tabular-nums",
+                                  entradas.length >= channel.userLimit
+                                    ? "text-danger"
+                                    : "text-ink-faint",
+                                )}
+                              >
+                                {entradas.length}/{channel.userLimit}
+                              </span>
+                            )}
+
                             {channel.type === "VOICE" && chamadaDesde !== null && !unread && (
                               <CallTimer desde={chamadaDesde} />
                             )}
