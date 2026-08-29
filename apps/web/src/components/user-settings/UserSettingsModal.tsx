@@ -15,7 +15,7 @@ import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
-type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo" | "servidor";
+export type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo" | "servidor";
 
 interface UserSettingsModalProps {
   open: boolean;

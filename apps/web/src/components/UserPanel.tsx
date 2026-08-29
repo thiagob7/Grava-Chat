@@ -11,6 +11,7 @@ import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { ProfileEditorModal } from "~/components/profile/ProfileEditorModal";
 import { StatusModal } from "~/components/profile/StatusModal";
 import { UserSettingsModal } from "~/components/user-settings/UserSettingsModal";
+import { useConfiguracoes } from "~/stores/configuracoes";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
@@ -24,6 +25,10 @@ interface UserPanelProps {
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
   const [configurando, setConfigurando] = useState(false);
+  /// Pedido de abertura vindo de outro canto do app — o popover da supressão de
+  /// ruído, por exemplo, que quer cair direto na aba de voz.
+  const secaoPedida = useConfiguracoes((s) => s.secao);
+  const fecharPedido = useConfiguracoes((s) => s.fechar);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
 
@@ -152,14 +157,20 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
         </Tooltip>
       </div>
 
-      {configurando && (
+      {(configurando || secaoPedida) && (
         <UserSettingsModal
           open
+          key={secaoPedida ?? "conta"}
+          secaoInicial={secaoPedida ?? "conta"}
           user={user}
-          onClose={() => setConfigurando(false)}
+          onClose={() => {
+            setConfigurando(false);
+            fecharPedido();
+          }}
           onLogout={onLogout}
           onEditarPerfil={() => {
             setConfigurando(false);
+            fecharPedido();
             setEditandoPerfil(true);
           }}
         />

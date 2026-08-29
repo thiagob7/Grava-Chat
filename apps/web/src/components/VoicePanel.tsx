@@ -6,11 +6,13 @@ import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/components/SoundboardPanel";
 import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
+import { SupressaoDeRuidoPopover } from "~/components/SupressaoDeRuidoPopover";
 import { VoiceDetailsPopover } from "~/components/VoiceDetailsPopover";
 import { corDoPing, useVoicePing, type PingDaChamada } from "~/hooks/use-voice-ping";
 import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { useConfiguracoes } from "~/stores/configuracoes";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 
@@ -55,6 +57,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
   const { data: config } = useAuthConfig();
 
   const noiseFilter = useVoicePrefs((s) => s.supressaoDeRuido);
+  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
 
   if (!channelId && accountChannelId) {
     const remote = channels.find((c) => c.id === accountChannelId);
@@ -131,31 +134,32 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5">
-          <Tooltip
-            label={
-              noiseFilterBusy
-                ? "Aplicando…"
-                : !noiseFilterAvailable
-                  ? "Supressão avançada indisponível — usando a do navegador"
-                  : noiseFilter
-                    ? "Supressão de ruído ligada (RNNoise)"
-                    : "Supressão de ruído desligada"
-            }
+          {/*
+            O clique ABRE, e não liga. Ligar direto era uma decisão às cegas: a
+            pessoa não sabe o que a supressão faz sem experimentar no meio de
+            uma conversa, e não tinha como conferir o resultado sem perguntar
+            "tá me ouvindo bem?" pra alguém. O interruptor continua ali dentro,
+            a um clique de distância, agora com um medidor ao lado.
+          */}
+          <SupressaoDeRuidoPopover
+            ligada={noiseFilter}
+            disponivel={noiseFilterAvailable}
+            ocupada={noiseFilterBusy}
+            onAlternar={() => void toggleNoiseFilter()}
+            onAbrirAjustes={() => abrirConfiguracoes("voz")}
           >
             <button
-              onClick={() => void toggleNoiseFilter()}
               aria-label="Supressão de ruído"
               aria-pressed={noiseFilter && noiseFilterAvailable}
-              disabled={noiseFilterBusy}
               className={cn(
-                "rounded p-2 transition hover:bg-surface-3 disabled:opacity-50",
+                "rounded p-2 transition hover:bg-surface-3",
                 noiseFilterBusy && "animate-pulse",
                 noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
               )}
             >
               <AudioLines size={18} />
             </button>
-          </Tooltip>
+          </SupressaoDeRuidoPopover>
 
           <Tooltip label="Desconectar">
             <button
