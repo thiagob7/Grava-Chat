@@ -266,7 +266,13 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     return (
       <div
         ref={palco}
-        className="group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4"
+        /*
+          `pb-20` porque a pílula de controles é ancorada em `bottom-4` do
+          palco e tem ~52px de altura: ela ocupa de 16px a 68px do rodapé. Sem
+          essa folga ela pousa em cima dos nomes — foi o que aconteceu, com
+          "Thiago (você)" cortado ao meio.
+        */
+        className="group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4 pb-20"
       >
         {grade.map((quadro) =>
           quadro.tipo === "tela" ? (
@@ -275,6 +281,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
               tile={quadro.de.tile}
               denso
               onAssistir={() => setAssistindo(quadro.de.identity)}
+              className="h-24 shrink-0"
             />
           ) : (
             <ComMenu key={quadro.key} tile={quadro.de.tile} contexto={contexto}>
@@ -432,8 +439,19 @@ const TileDaLive: React.FC<{
   tile: VoiceTile;
   denso?: boolean;
   onAssistir: () => void;
-}> = ({ tile, denso, onAssistir }) => (
-  <div className="group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black/70 ring-1 ring-white/10">
+  /*
+    Na grade o quadro recebe a largura da coluna. Numa FILEIRA flex ele não
+    recebe nada: `aspect-video` sem largura nem altura colapsa pra zero, e a
+    live simplesmente não aparecia. Quem monta a fileira precisa dar o tamanho.
+  */
+  className?: string;
+}> = ({ tile, denso, onAssistir, className }) => (
+  <div
+    className={cn(
+      "group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black/70 ring-1 ring-white/10",
+      className,
+    )}
+  >
     {/*
       A SUA transmissão aparece aberta; a dos outros, não.
 
