@@ -12,6 +12,8 @@ import { usarLottie } from "~/lib/cosmeticos/lottie";
 interface DecoracaoDeArquivoProps {
   decoracao: Decoracao;
   animar: boolean;
+  /// o furo da bolinha de status, já calculado pela folga desta decoração
+  recorte?: React.CSSProperties;
 }
 
 /*
@@ -34,11 +36,13 @@ interface DecoracaoDeArquivoProps {
 export const DecoracaoDeArquivo: React.FC<DecoracaoDeArquivoProps> = ({
   decoracao,
   animar,
+  recorte,
 }) => {
   const inset = folgaDaDecoracao(decoracao);
   const url = imagemDaDecoracao(decoracao);
 
-  if (url) return <ComoImagem key={`imagem:${decoracao}`} url={url} inset={inset} />;
+  if (url)
+    return <ComoImagem key={`imagem:${decoracao}`} url={url} inset={inset} recorte={recorte} />;
 
   return (
     <ComoLottie
@@ -46,6 +50,7 @@ export const DecoracaoDeArquivo: React.FC<DecoracaoDeArquivoProps> = ({
       decoracao={decoracao}
       animar={animar}
       inset={inset}
+      recorte={recorte}
     />
   );
 };
@@ -58,8 +63,12 @@ export const DecoracaoDeArquivo: React.FC<DecoracaoDeArquivoProps> = ({
   tamanho do SVG, ancorado no canto. O span não é substituído: ele estica pelos
   insets, e a imagem preenche o span.
 */
-const ComoImagem: React.FC<{ url: string; inset: string }> = ({ url, inset }) => (
-  <span aria-hidden className="gc-camada" style={{ inset }}>
+const ComoImagem: React.FC<{ url: string; inset: string; recorte?: React.CSSProperties }> = ({
+  url,
+  inset,
+  recorte,
+}) => (
+  <span aria-hidden className="gc-camada" style={{ inset, ...recorte }}>
     <img
       src={url}
       alt=""
@@ -74,7 +83,8 @@ const ComoLottie: React.FC<{
   decoracao: Decoracao;
   animar: boolean;
   inset: string;
-}> = ({ decoracao, animar, inset }) => {
+  recorte?: React.CSSProperties;
+}> = ({ decoracao, animar, inset, recorte }) => {
   const caixa = useRef<HTMLSpanElement>(null);
 
   usarLottie(caixa, {
@@ -87,5 +97,5 @@ const ComoLottie: React.FC<{
 
   /// Sem filhos no JSX de propósito: o conteúdo deste span é do player, e o
   /// React não pode disputar o nó com ele.
-  return <span ref={caixa} aria-hidden className="gc-camada" style={{ inset }} />;
+  return <span ref={caixa} aria-hidden className="gc-camada" style={{ inset, ...recorte }} />;
 };
