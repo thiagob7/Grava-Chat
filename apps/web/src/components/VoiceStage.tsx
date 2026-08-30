@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
+import { QualidadeDaTela } from "~/components/QualidadeDaTela";
+
 import type {
   Channel,
   GuildMember,
@@ -113,12 +115,20 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     return (
       <div
         ref={palco}
+        /*
+          Sem margem em volta do vídeo.
+
+          Os 16px de folga custavam área de tela justamente na hora em que
+          alguém está tentando LER o que o outro compartilha — código, planilha,
+          um jogo. As faixas de cima e de baixo já flutuam sobre o vídeo, então
+          a borda não separava nada: só encolhia.
+        */
         className={cn(
-          "group relative flex min-h-0 flex-1 overflow-hidden bg-surface-2",
-          compacto ? "flex-row gap-2 p-2" : "flex-col gap-3 p-4",
+          "group relative flex min-h-0 flex-1 overflow-hidden bg-black",
+          compacto ? "flex-row gap-2 p-2" : "flex-col",
         )}
       >
-        <div ref={quadro} className="relative min-w-0 flex-1 overflow-hidden rounded-lg bg-black">
+        <div ref={quadro} className="relative min-w-0 flex-1 overflow-hidden bg-black">
           <VoiceVideo track={sharing.screenTrack!} />
 
           {/*
@@ -142,8 +152,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             */}
             {!compacto && (
               <>
-                <span className="text-sm font-medium">{sharing.name}</span>
-                <span className="text-sm text-white/60">está transmitindo</span>
+                <MonitorUp size={14} className="shrink-0 text-white/70" />
+                <span className="text-sm font-medium">Tela de {sharing.name}</span>
+                <QualidadeDaTela track={sharing.screenTrack!} />
               </>
             )}
 
@@ -348,7 +359,18 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   return (
     <div
       ref={palco}
-      className="group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2 p-6"
+      className={cn(
+        "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2",
+        /*
+          Sozinho na chamada, o quadro ocupa a área inteira.
+
+          A margem e o teto de largura existem pra grade não virar uma parede de
+          quadros gigantes quando há gente. Com UM quadro só eles não protegem
+          nada — só deixam um retângulo pequeno no meio de um vazio enorme, que
+          é o que aparecia quando alguém entrava primeiro e esperava os outros.
+        */
+        grade.length === 1 ? "p-0" : "p-6",
+      )}
     >
       {/*
         `min-h-0` e `overflow-hidden` acima, `max-h-full` aqui: sem os três, a
@@ -357,7 +379,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         cabeçalho da conversa, com o nome de quem escreveu no meio deles.
       */}
       <div
-        className="grid max-h-full w-full max-w-5xl gap-4"
+        className={cn("grid size-full max-h-full gap-4", grade.length > 1 && "max-w-5xl")}
         style={{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }}
       >
         {grade.map((quadro) => desenhar(quadro))}
