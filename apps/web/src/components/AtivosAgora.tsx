@@ -1,10 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import { PhoneCall, Volume2 } from "lucide-react";
+import { ChevronRight, PhoneCall, Volume2 } from "lucide-react";
 
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { avatarColor, initials } from "~/lib/format";
 
 /*
   Coluna "Ativo agora", como a do Discord: quem dos seus amigos está num canal
@@ -52,12 +53,46 @@ export const AtivosAgora: React.FC = () => {
         <div className="space-y-3">
           {[...salas.values()].map(({ canal, servidor, gente }) => (
             <div key={canal.id} className="rounded-lg bg-surface-1 p-3">
-              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-                <Volume2 size={12} className="shrink-0 text-online" /> Em voz
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-online">
+                <Volume2 size={12} className="shrink-0" /> Em voz
               </p>
 
-              <p className="mt-1 truncate text-sm font-medium">{canal.nome}</p>
-              <p className="truncate text-xs text-ink-muted">{servidor.nome}</p>
+              {/*
+                Servidor › canal numa linha só, como um caminho.
+
+                Antes eram duas linhas — o canal em cima, o servidor embaixo em
+                cinza — e a segunda parecia legenda de rodapé em vez de "onde
+                isto fica". Em caminho, a hierarquia se lê de uma passada, e
+                sobra altura pro que interessa: as caras e o botão.
+              */}
+              <button
+                onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
+                title={`Abrir ${canal.nome} em ${servidor.nome}`}
+                className="mt-2 flex w-full min-w-0 items-center gap-1.5 text-left"
+              >
+                {servidor.iconUrl ? (
+                  <img
+                    src={servidor.iconUrl}
+                    alt=""
+                    className="size-5 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ backgroundColor: avatarColor(servidor.id) }}
+                  >
+                    {initials(servidor.nome)}
+                  </span>
+                )}
+
+                <ChevronRight size={12} className="shrink-0 text-ink-faint" />
+                <Volume2 size={13} className="shrink-0 text-ink-muted" />
+
+                <span className="min-w-0 truncate text-sm font-medium hover:underline">
+                  {canal.nome}
+                </span>
+              </button>
 
               {/*
                 Rostos sobrepostos, e o nome só quando é uma pessoa só: com duas
@@ -79,9 +114,7 @@ export const AtivosAgora: React.FC = () => {
                 </div>
 
                 <span className="min-w-0 flex-1 truncate text-xs text-ink-muted">
-                  {gente.length === 1
-                    ? gente[0]!.user.displayName
-                    : `${gente.length} pessoas`}
+                  {gente.length === 1 ? gente[0]!.user.displayName : `${gente.length} pessoas`}
                 </span>
               </div>
 
