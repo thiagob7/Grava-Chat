@@ -5,7 +5,7 @@ import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-ma
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
-import { CreateGuildModal } from "~/components/CreateGuildModal";
+import { AdicionarServidorModal } from "~/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { ehDesktop } from "~/lib/desktop";
 import { useConfiguracoes } from "~/stores/configuracoes";
@@ -133,7 +133,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
 
-        <AcaoDoTrilho label="Criar servidor" onClick={() => setCreating(true)}>
+        <AcaoDoTrilho label="Adicionar um servidor" onClick={() => setCreating(true)}>
           <Plus size={22} />
         </AcaoDoTrilho>
 
@@ -148,7 +148,11 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         )}
       </nav>
 
-      <CreateGuildModal open={creating} onClose={() => setCreating(false)} onCreated={onSelect} />
+      <AdicionarServidorModal
+        open={creating}
+        onClose={() => setCreating(false)}
+        onCreated={onSelect}
+      />
     </>
   );
 };
