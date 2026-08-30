@@ -5,6 +5,8 @@ import { ChevronRight, PhoneCall, Volume2 } from "lucide-react";
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { Tooltip } from "~/components/ui/tooltip";
+import { useSession } from "~/contexts/session-context";
 import { avatarColor, initials } from "~/lib/format";
 
 /*
@@ -17,6 +19,8 @@ import { avatarColor, initials } from "~/lib/format";
 */
 export const AtivosAgora: React.FC = () => {
   const { data: ativos = [], isLoading } = useAtivos();
+  const { user } = useSession();
+  const meuId = user?.id;
   const navigate = useNavigate();
 
   /*
@@ -45,8 +49,8 @@ export const AtivosAgora: React.FC = () => {
         <div className="rounded-lg bg-surface-1 p-4">
           <p className="text-sm font-medium">Está quieto por aqui…</p>
           <p className="mt-1 text-sm text-ink-muted">
-            Quando um amigo entrar numa chamada, ele aparece aqui — e dá pra
-            entrar junto com um clique.
+            Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá
+            pra entrar junto com um clique.
           </p>
         </div>
       ) : (
@@ -100,30 +104,54 @@ export const AtivosAgora: React.FC = () => {
                 pra fora do campo de visão — e a cara já diz quem é.
               */}
               <div className="mt-3 flex items-center gap-2">
+                {/*
+                  O nome vive no hover de cada rosto.
+
+                  Com os rostos sobrepostos, escrever os nomes ao lado só
+                  funciona até dois — no terceiro a linha vira "Fulano, Beltrano
+                  e mais 3", que não diz quem são os 3. Passar o mouse responde
+                  isso um por um, sem gastar altura nenhuma.
+                */}
                 <div className="flex -space-x-2">
                   {gente.slice(0, 5).map((ativo) => (
-                    <Avatar
+                    <Tooltip
                       key={ativo.user.id}
-                      id={ativo.user.id}
-                      name={ativo.user.displayName}
-                      url={ativo.user.avatarUrl}
-                      size={28}
-                      className="ring-2 ring-surface-1"
-                    />
+                      label={ativo.user.id === meuId ? "Você" : ativo.user.displayName}
+                    >
+                      <span className="rounded-full">
+                        <Avatar
+                          id={ativo.user.id}
+                          name={ativo.user.displayName}
+                          url={ativo.user.avatarUrl}
+                          size={28}
+                          className="ring-2 ring-surface-1"
+                        />
+                      </span>
+                    </Tooltip>
                   ))}
                 </div>
 
                 <span className="min-w-0 flex-1 truncate text-xs text-ink-muted">
-                  {gente.length === 1 ? gente[0]!.user.displayName : `${gente.length} pessoas`}
+                  {gente.length === 1
+                    ? gente[0]!.user.id === meuId
+                      ? "Só você"
+                      : gente[0]!.user.displayName
+                    : `${gente.length} pessoas`}
                 </span>
               </div>
 
+              {/*
+                "Entrar" numa chamada em que você já está seria mentira — e a
+                pessoa que clica esperando entrar em algum lugar novo se
+                assusta. Estando dentro, o cartão é só o caminho de volta.
+              */}
               <Button
                 size="sm"
                 className="mt-3 w-full"
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
               >
-                <PhoneCall size={14} /> Entrar na chamada
+                <PhoneCall size={14} />
+                {gente.some((a) => a.user.id === meuId) ? "Voltar para a chamada" : "Entrar na chamada"}
               </Button>
             </div>
           ))}

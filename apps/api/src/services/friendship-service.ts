@@ -26,18 +26,35 @@ export const friendshipService = {
     vazar a rotina dele pra fora do lugar onde ele decidiu estar comigo.
   */
   async ativosAgora(userId: string) {
-    const relacoes = await friendshipRepository.findAllForUser(userId);
+    const [relacoes, eu] = await Promise.all([
+      friendshipRepository.findAllForUser(userId),
+      userRepository.findById(userId),
+    ]);
+
     const amigos = relacoes
       .filter((r) => r.status === "ACCEPTED")
       .map((r) => (r.requesterId === userId ? r.addressee : r.requester));
 
-    if (!amigos.length) return [];
+    /*
+      Você entra na própria lista.
 
-    const estados = await Promise.all(amigos.map((a) => voiceService.get(a.id)));
+      Sem isso, quem está numa chamada e volta pras mensagens diretas não vê
+      sinal nenhum de que a chamada existe — a coluna fica dizendo "está quieto
+      por aqui" enquanto a pessoa fala com alguém. E é justamente aí que o
+      cartão vira o caminho de volta pro canal.
 
-    const emVoz = amigos
+      Primeiro da lista de propósito: com amigos na mesma chamada, quem olha
+      procura a si mesmo antes de qualquer coisa.
+    */
+    const pessoas = eu ? [eu, ...amigos] : amigos;
+
+    if (!pessoas.length) return [];
+
+    const estados = await Promise.all(pessoas.map((a) => voiceService.get(a.id)));
+
+    const emVoz = pessoas
       .map((amigo, i) => ({ amigo, canalId: estados[i]?.channelId ?? null }))
-      .filter((x): x is { amigo: (typeof amigos)[number]; canalId: string } => Boolean(x.canalId));
+      .filter((x): x is { amigo: (typeof pessoas)[number]; canalId: string } => Boolean(x.canalId));
 
     if (!emVoz.length) return [];
 
