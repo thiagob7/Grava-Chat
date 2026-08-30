@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { Hash, Menu, MessageSquare, MessagesSquare, Users, Volume2 } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
@@ -19,7 +19,6 @@ import { Composer } from "~/components/Composer";
 import { ForumChannel } from "~/components/ForumChannel";
 import { ForumPostView } from "~/components/ForumPostView";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
-import { PrimeiroServidor } from "~/components/PrimeiroServidor";
 import { FavoritasPanel } from "~/components/FavoritasPanel";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
@@ -156,19 +155,16 @@ export const Chat: React.FC = () => {
     endSession();
   };
 
-  if (guildsLoaded && !guilds.length) {
-    return (
-      <div className="flex h-full">
-        <GuildRail
-          activeGuildId={null}
-          onSelect={(id) => navigate(`/channels/${id}`)}
-          onOpenFriends={() => navigate("/dm")}
-          pendingFriendRequests={pedidosPendentes}
-        />
-        <PrimeiroServidor />
-      </div>
-    );
-  }
+  /*
+    Sem servidor nenhum, quem manda na tela são as mensagens diretas.
+
+    Aqui a rota de servidores montava uma tela própria com o convite de criar o
+    primeiro — e sem servidor não há canal, então essa tela não tinha o que
+    mostrar além do formulário. O convite virou janela e mora no `/dm`, que é o
+    lugar onde quem não tem servidor de fato tem coisa pra fazer: os amigos e as
+    conversas.
+  */
+  if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
 
   /*
     As mesmas duas colunas servem os dois tamanhos de tela. No desktop elas

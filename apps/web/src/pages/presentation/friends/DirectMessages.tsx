@@ -14,6 +14,8 @@ import { Composer } from "~/components/Composer";
 import { AtivosAgora } from "~/components/AtivosAgora";
 import { DmSidebar } from "~/components/DmSidebar";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
+import { PrimeiroServidor } from "~/components/PrimeiroServidor";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { GuildRail } from "~/components/GuildRail";
@@ -62,6 +64,16 @@ export const DirectMessages: React.FC = () => {
 
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
+
+  /*
+    Uma vez por abertura do app, e não uma vez pra sempre: sem servidor, o
+    convite ainda é a coisa mais útil a oferecer. Guardado em estado, e não no
+    armazenamento, porque "não quero agora" não é "não quero nunca" — e
+    perguntar de novo amanhã custa um X.
+  */
+  const { data: guildsDaConta = [], isSuccess: guildsCarregadas } = useFindManyGuilds(true);
+  const [dispensado, setDispensado] = useState(false);
+  const convidando = guildsCarregadas && guildsDaConta.length === 0 && !dispensado;
   /// a coluna de perfil abre por padrão, como no Discord
   const [perfilAberto, setPerfilAberto] = useState(true);
 
@@ -127,6 +139,13 @@ export const DirectMessages: React.FC = () => {
 
   return (
     <div className="flex h-full">
+      {/*
+        Quem ainda não tem servidor nenhum recebe o convite pra criar o
+        primeiro — uma vez por abertura do app, e fechável. Fechou, fica só a
+        tela de amigos e conversas, que é o que a pessoa veio ver.
+      */}
+      <PrimeiroServidor aberto={convidando} onFechar={() => setDispensado(true)} />
+
       {/* Mesma navegação nos dois tamanhos: no fluxo em telas largas, dentro de
           uma gaveta no celular. Ver o comentário equivalente em Chat.tsx. */}
       {telaEstreita ? (

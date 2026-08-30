@@ -8,21 +8,38 @@ import { useCreateChannel } from "~/@core/application/queries/guild/use-create-c
 import { apiErrorMessage } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { codigoDoConvite, MOLDES, type MoldeDeServidor } from "~/lib/moldes-de-servidor";
 
 /**
- * O que a pessoa vê no lugar do vazio, quando ainda não tem servidor nenhum.
+ * O convite pra criar o primeiro servidor, pra quem ainda não tem nenhum.
  *
  * Antes havia só uma frase — "Você ainda não tem servidores" — e uma seta
  * apontando pro `+` da barra. Isso descreve o problema sem oferecer a saída, e
  * quem acabou de criar a conta é exatamente quem menos sabe o que fazer com um
- * botão de mais.
+ * botão de mais. Aqui as duas saídas ficam à vista: criar o seu, ou entrar no
+ * de alguém com um convite. Os moldes existem pra terceira situação, a mais
+ * comum de todas — querer criar e não saber que canais fazem sentido.
  *
- * Aqui as duas saídas reais ficam à vista: criar o seu, ou entrar no de alguém
- * com um convite. Os moldes existem pra terceira situação, a mais comum de
- * todas — querer criar e não saber que canais fazem sentido.
+ * É JANELA, e não tela.
+ *
+ * Como tela, ela tomava o app inteiro e não tinha saída: quem não queria criar
+ * servidor nenhum — porque veio pra conversar no privado com um amigo — ficava
+ * preso num formulário, sem alcançar as mensagens diretas que estavam logo ali
+ * atrás. Fechando no X, o que aparece é o app de verdade, com os amigos e as
+ * conversas, e o `+` da barra continua ali pra quando der vontade.
  */
-export const PrimeiroServidor: React.FC = () => {
+export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void }> = ({
+  aberto,
+  onFechar,
+}) => {
   const navigate = useNavigate();
   const criarServidor = useCreateGuild();
   const criarCanal = useCreateChannel();
@@ -71,14 +88,19 @@ export const PrimeiroServidor: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center overflow-y-auto bg-surface-2 p-6">
-      <div className="w-full max-w-md py-8">
-        <h2 className="text-2xl font-bold">Crie seu primeiro servidor</h2>
-        <p className="mt-1 text-ink-muted">
-          Um servidor é onde você e seus amigos se encontram. Crie o seu e chame a galera.
-        </p>
+    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Crie seu primeiro servidor</DialogTitle>
+          <DialogDescription>
+            Um servidor é onde você e seus amigos se encontram. Crie o seu e
+            chame a galera.
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="mt-6 space-y-2">
+        <DialogBody>
+
+        <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Criar o meu
           </label>
@@ -148,8 +170,9 @@ export const PrimeiroServidor: React.FC = () => {
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+        </DialogBody>
+      </DialogContent>
+    </Dialog>
   );
 };
 
