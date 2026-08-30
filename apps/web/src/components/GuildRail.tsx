@@ -208,9 +208,17 @@ const AcaoDoTrilho: React.FC<{
     <button
       onClick={onClick}
       aria-label={label}
+      /*
+        O hover muda o CONTORNO, não o miolo.
+
+        Preencher de vermelho fazia o botão virar um bloco cheio — igual aos
+        servidores, que é justamente a diferença que o tracejado existe pra
+        marcar. Clareando a linha e fechando um pouco o canto, o botão responde
+        ao mouse e continua sendo o que é: um lugar por fazer.
+      */
       className={cn(
         "flex size-12 items-center justify-center rounded-3xl border-2 border-dashed border-surface-4 text-ink-muted transition-all",
-        "hover:rounded-2xl hover:border-solid hover:border-brand hover:bg-brand hover:text-white",
+        "hover:rounded-2xl hover:border-ink hover:text-ink",
       )}
     >
       {children}

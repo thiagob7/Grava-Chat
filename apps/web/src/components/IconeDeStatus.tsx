@@ -23,7 +23,13 @@ export const IconeDeStatus: React.FC<{
   tamanho: number;
   className?: string;
 }> = ({ tipo, tamanho, className }) => {
-  const id = useId();
+  /*
+    `useId` devolve algo como `:r7:` — e dois-pontos num `url(#…)` de SVG não
+    resolve em navegador nenhum: a máscara silenciosamente não é aplicada, e a
+    meia-lua vira um círculo cheio sem que nada reclame no console. Tirar o que
+    não é letra, número, traço ou sublinhado mantém a unicidade e a validade.
+  */
+  const id = `status${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   const cor =
     tipo === "VOZ" || tipo === "ONLINE"
