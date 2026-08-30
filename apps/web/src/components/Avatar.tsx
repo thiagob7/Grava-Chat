@@ -157,15 +157,15 @@ export const Avatar: React.FC<AvatarProps> = ({
   UMA cor de fundo. Agora o avatar é recortado de verdade: um furo na máscara,
   que deixa passar o que estiver atrás, seja lá o que for.
 
-  O centro fica a 76% do lado, e não sobre a circunferência (85,4%, que é onde
-  a diagonal de 45° cruza a borda). Ali, metade da bolinha ficava pendurada
-  fora do avatar — e quem usa moldura via a bolinha invadindo a asa do enfeite
-  em vez de encostar no rosto. Mais pra dentro, ela morde o próprio avatar, que
-  é o desenho que se reconhece de qualquer app.
+  O centro fica a 82% do lado — montado na borda, e não sobre ela. Sobre a
+  circunferência (85,4%, onde a diagonal de 45° cruza) a bolinha fica pendurada
+  pra fora e invade a asa do enfeite; bem pra dentro (76%) ela parece grudada
+  no meio do rosto. Aqui ela morde a borda, metade dentro e metade fora, que é
+  o desenho que se reconhece de qualquer app.
 */
 function cantoDoStatus(size: number) {
   const lado = Math.max(8, Math.round(size * 0.22));
-  const centro = size * 0.76;
+  const centro = size * 0.82;
   /// folga entre a bolinha e a borda do recorte; acompanha o tamanho pra não
   /// sumir no avatar pequeno nem virar um rombo no grande
   const folga = Math.max(1.25, size * 0.045);
