@@ -12,3 +12,9 @@ release/
 # Anotacoes de sessao e documentos de trabalho: ficam so na maquina
 PROXIMA_SESSAO.md
 docs/
+
+# Next (site de divulgação)
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
