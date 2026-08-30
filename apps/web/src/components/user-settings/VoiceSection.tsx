@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Keyboard, Mic, Volume2 } from "lucide-react";
+import { Keyboard, Mic, ShieldCheck, Volume2 } from "lucide-react";
 
+import { PermissoesDoMac } from "~/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
@@ -134,10 +135,28 @@ export const VoiceSection: React.FC = () => {
   const entradas = dispositivos.filter((d) => d.kind === "audioinput");
   const saidas = dispositivos.filter((d) => d.kind === "audiooutput");
   const suportaTrocaDeSaida = "setSinkId" in HTMLMediaElement.prototype;
+  const ehMac = desktop()?.plataforma === "darwin";
+  const [vendoPermissoes, setVendoPermissoes] = useState(false);
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Voz e vídeo</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-xl font-semibold">Voz e vídeo</h2>
+
+        {/*
+          Só no aplicativo do macOS: no navegador quem manda nas permissões é o
+          próprio navegador, e no Windows não existe esse painel.
+        */}
+        {ehMac && (
+          <Button variant="surface" size="sm" onClick={() => setVendoPermissoes(true)}>
+            <ShieldCheck size={14} /> Permissões do macOS
+          </Button>
+        )}
+      </div>
+
+      {ehMac && (
+        <PermissoesDoMac aberto={vendoPermissoes} onFechar={() => setVendoPermissoes(false)} />
+      )}
 
       <section className="mt-6 grid grid-cols-2 gap-5">
         <label className="block">
