@@ -4,6 +4,7 @@ import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
+import { FundoDaMarca } from "~/components/FundoDaMarca";
 import { desktop } from "~/lib/desktop";
 
 export const SignIn: React.FC = () => {
@@ -28,24 +29,43 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-full items-center justify-center overflow-hidden bg-surface-0 p-6">
-      <img
-        src="/brand/fundo-login.jpg"
-        alt=""
-        aria-hidden
-        className="absolute inset-0 size-full object-cover"
-      />
-      <div className="absolute inset-0 bg-surface-0/85" />
+    <div className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
+      <FundoDaMarca className="pointer-events-none absolute inset-0" />
 
-      <div className="relative w-full max-w-sm rounded-xl border border-white/5 bg-surface-1/95 p-8 shadow-2xl backdrop-blur">
-        <div className="mb-6 text-center">
-          <img
-            src="/brand/logotipo.png"
-            alt="Gravaê"
-            className="mx-auto mb-5 h-9 w-auto"
-          />
-          <h1 className="text-xl font-semibold">Bem-vindo de volta!</h1>
-          <p className="mt-1 text-sm text-ink-muted">Que bom te ver de novo</p>
+      {/*
+        Cartão partido em dois: a marca de um lado, o formulário do outro.
+
+        A versão anterior empilhava tudo numa coluna estreita, e a marca virava
+        um logotipo pequeno espremido em cima dos campos. Numa tela que é a
+        primeira coisa que alguém de fora vê, a marca merece metade do espaço —
+        e o formulário, livre daquele aperto, respira.
+
+        Em tela estreita a divisão vira empilhamento: duas colunas de 200px de
+        largura não seriam nem marca nem formulário.
+      */}
+      <div className="relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-white/10 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+        <aside className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
+          <span className="flex size-24 items-center justify-center rounded-full bg-brand">
+            <img
+              src="/brand/logo%20g%20branco.svg"
+              alt=""
+              className="h-12 w-auto"
+              draggable={false}
+            />
+          </span>
+
+          <img src="/brand/logotipo.png" alt="Gravaê" className="h-7 w-auto" draggable={false} />
+
+          <p className="max-w-[15rem] text-center text-xs leading-relaxed text-ink-faint">
+            Conversa, voz e vídeo com os seus. Sem cobrar, sem anúncio, sem
+            vender o que você fala.
+          </p>
+        </aside>
+
+        <div className="px-8 py-10">
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold">Boas-vindas de volta</h1>
+          <p className="mt-1 text-sm text-ink-muted">Que bom te ver de novo.</p>
         </div>
 
         {ponte ? (
@@ -153,6 +173,7 @@ export const SignIn: React.FC = () => {
             </p>
           </>
         )}
+        </div>
       </div>
     </div>
   );
