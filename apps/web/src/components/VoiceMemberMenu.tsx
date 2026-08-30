@@ -57,6 +57,11 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const volumes = useVoiceStore((s) => s.volumesLocais);
   const setVolumeLocal = useVoiceStore((s) => s.setVolumeLocal);
   const silenciados = useVoiceStore((s) => s.silenciadosLocais);
+  const micEnabled = useVoiceStore((s) => s.micEnabled);
+  const deafened = useVoiceStore((s) => s.deafened);
+  const toggleMic = useVoiceStore((s) => s.toggleMic);
+  const toggleDeafen = useVoiceStore((s) => s.toggleDeafen);
+  const sair = useVoiceStore((s) => s.leave);
   const toggleSilenciarLocal = useVoiceStore((s) => s.toggleSilenciarLocal);
 
   const euMesmo = userId === currentUserId;
@@ -73,7 +78,91 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
       <ContextMenuContent>
-        <ContextMenuItem onSelect={() => navigate(`/channels/${guildId}`)}>Perfil</ContextMenuItem>
+        <ContextMenuItem onSelect={() => navigate(`/channels/${guildId}`)}>
+          {euMesmo ? "Ver meu perfil" : "Perfil"}
+        </ContextMenuItem>
+
+        {/*
+          Clicar em si mesmo nao pode devolver um menu com um item so.
+
+          Tudo aqui era `!euMesmo` — sensato pra moderacao (ninguem se expulsa),
+          mas o resultado era um menu de UMA linha quando a pessoa clicava no
+          proprio quadro. Estas sao as acoes que fazem sentido sobre voce: o que
+          voce ja pode fazer na barra de baixo, so que a um clique de onde seu
+          rosto esta.
+        */}
+        {euMesmo && (
+          <>
+            <ContextMenuItem
+              disabled={!pode("CHANGE_NICKNAME") && !pode("MANAGE_NICKNAMES")}
+              onSelect={() =>
+                void confirmar({
+                  titulo: "Seu apelido neste servidor",
+                  descricao: "Vale só aqui. Em branco, volta a valer seu nome de sempre.",
+                  acao: "Salvar",
+                  destrutivo: false,
+                  campo: { rotulo: "Apelido", placeholder: displayName },
+                }).then(
+                  ({ confirmado, texto }) =>
+                    confirmado && setNickname.mutate({ guildId, userId, nickname: texto || null }),
+                )
+              }
+            >
+              Mudar meu apelido
+            </ContextMenuItem>
+
+            {naChamada && (
+              <>
+                <ContextMenuSeparator />
+
+                <ContextMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    void toggleMic();
+                  }}
+                >
+                  Meu microfone
+                  <input
+                    type="checkbox"
+                    readOnly
+                    checked={micEnabled}
+                    className="size-4 accent-brand"
+                  />
+                </ContextMenuItem>
+
+                <ContextMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    void toggleDeafen();
+                  }}
+                >
+                  Ouvir a chamada
+                  <input
+                    type="checkbox"
+                    readOnly
+                    checked={!deafened}
+                    className="size-4 accent-brand"
+                  />
+                </ContextMenuItem>
+
+                <ContextMenuItem className="text-danger" onSelect={() => void sair()}>
+                  Sair da chamada
+                </ContextMenuItem>
+              </>
+            )}
+
+            <ContextMenuSeparator />
+
+            <ContextMenuItem
+              onSelect={() => {
+                void navigator.clipboard.writeText(userId);
+                toast.success("ID copiado.");
+              }}
+            >
+              Copiar meu ID
+            </ContextMenuItem>
+          </>
+        )}
 
         {!euMesmo && (
           <ContextMenuItem
