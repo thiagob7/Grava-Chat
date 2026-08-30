@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { BarraDeTitulo } from "~/components/BarraDeTitulo";
+import { FaixaDaComunidade } from "~/components/FaixaDaComunidade";
 import { Splash } from "~/components/Splash";
 
 import { ChamadaRecebida } from "~/components/ChamadaRecebida";
@@ -27,6 +28,15 @@ export const AppRoutes: React.FC = () => (
     */}
     <div className="flex h-full flex-col">
       <BarraDeTitulo />
+
+      {/*
+        A faixa empurra o app pra baixo em vez de flutuar por cima: sobreposta,
+        ela taparia a barra de servidores ou o cabeçalho do canal, e o app
+        ficaria com um pedaço permanentemente escondido atrás de um convite.
+      */}
+      <div className="relative">
+        <FaixaDaComunidade />
+      </div>
 
       <div className="min-h-0 flex-1">
     <Routes>

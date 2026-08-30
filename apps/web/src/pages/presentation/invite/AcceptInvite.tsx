@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
+import { FundoDaMarca } from "~/components/FundoDaMarca";
 import { Button } from "~/components/ui/button";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { ehDesktop } from "~/lib/desktop";
@@ -36,8 +37,10 @@ export const AcceptInvite: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-full items-center justify-center bg-surface-2 p-6">
-      <div className="w-full max-w-sm rounded-lg bg-surface-1 p-8 text-center shadow-2xl">
+    <div className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
+      <FundoDaMarca className="pointer-events-none absolute inset-0" />
+
+      <div className="relative w-full max-w-sm rounded-xl bg-surface-1 p-8 text-center shadow-2xl ring-1 ring-white/10">
         {error ? (
           <>
             <h1 className="text-lg font-semibold">Convite inválido</h1>
