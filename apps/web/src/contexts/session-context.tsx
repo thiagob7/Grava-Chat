@@ -113,15 +113,18 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const value: SessionContextValue = {
     user: (me.data as SelfUserModel | undefined) ?? null,
     /*
-      A tela de abertura tem hora pra acabar.
+      A tela de abertura tem hora pra acabar — a abertura INTEIRA.
 
-      `me.isLoading` some quando a consulta responde ou falha — e se ela NÃO
-      fizer nem uma coisa nem outra, o app fica no logotipo sobre o preto pra
-      sempre. Com o prazo do cliente HTTP isso virou quase impossível, mas
-      "quase" numa tela sem saída não serve: passado o teto, seguimos em frente
-      e o app mostra o login, que já sabe dizer que o servidor não responde.
+      O teto precisa cobrir os dois trechos da espera, e não só o segundo. A
+      restauração de sessão tenta quatro vezes antes de desistir; com um
+      servidor que aceita a conexão e não responde, cada tentativa vai até o
+      prazo do cliente HTTP, e a soma passa de dois minutos. Cobrindo só o
+      `me.isLoading`, o logotipo continuava sozinho no preto esse tempo todo.
+
+      Passado o teto, seguimos em frente: o app mostra o login, que já sabe
+      dizer que o servidor não responde e segue tentando por conta.
     */
-    isBooting: isBooting || (hasSession && me.isLoading && !demorouDemais),
+    isBooting: !demorouDemais && (isBooting || (hasSession && me.isLoading)),
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,
     voiceReachable: alcancaOServidorDeVoz(config.data?.voiceUrl),

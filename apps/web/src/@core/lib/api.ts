@@ -39,7 +39,15 @@ let refreshing: Promise<{ accessToken: string; user: unknown }> | null = null;
 
 export function refreshSession<U>(): Promise<{ accessToken: string; user: U }> {
   refreshing ??= api
-    .post<{ accessToken: string; user: unknown }>("/auth/refresh")
+    /*
+      Prazo curto, porque isto roda na ABERTURA e em quatro tentativas: com os
+      30s do cliente, um servidor pendurado segurava o app por mais de dois
+      minutos antes de qualquer tela aparecer. Trocar uma cópia de sessão é uma
+      chamada pequena — oito segundos é muito mais do que ela precisa.
+    */
+    .post<{ accessToken: string; user: unknown }>("/auth/refresh", undefined, {
+      timeout: 8_000,
+    })
     .then((res) => {
       accessToken = res.data.accessToken;
       return res.data;
