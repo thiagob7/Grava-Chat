@@ -1,9 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import { Volume2 } from "lucide-react";
+import { PhoneCall, Volume2 } from "lucide-react";
 
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import { Avatar } from "~/components/Avatar";
+import { Button } from "~/components/ui/button";
 
 /*
   Coluna "Ativo agora", como a do Discord: quem dos seus amigos está num canal
@@ -17,13 +18,29 @@ export const AtivosAgora: React.FC = () => {
   const { data: ativos = [], isLoading } = useAtivos();
   const navigate = useNavigate();
 
+  /*
+    Agrupado por CANAL, e não por pessoa.
+
+    Três amigos na mesma chamada rendiam três cartões repetindo o mesmo canal e
+    o mesmo servidor — e nenhum deles dizia a única coisa que importa ali, que é
+    "tem gente reunida neste lugar". Junto, o cartão vira o convite que ele
+    sempre quis ser: as caras de quem já está, e um botão pra entrar.
+  */
+  const salas = new Map<string, { canal: (typeof ativos)[number]["canal"]; servidor: (typeof ativos)[number]["servidor"]; gente: typeof ativos }>();
+
+  for (const ativo of ativos) {
+    const sala = salas.get(ativo.canal.id);
+    if (sala) sala.gente.push(ativo);
+    else salas.set(ativo.canal.id, { canal: ativo.canal, servidor: ativo.servidor, gente: [ativo] });
+  }
+
   return (
     <aside className="hidden w-72 shrink-0 border-l border-line p-4 xl:block">
       <h2 className="mb-3 text-sm font-semibold">Ativo agora</h2>
 
       {isLoading ? (
         <p className="text-sm text-ink-faint">Vendo quem está por aí…</p>
-      ) : ativos.length === 0 ? (
+      ) : salas.size === 0 ? (
         <div className="rounded-lg bg-surface-1 p-4">
           <p className="text-sm font-medium">Está quieto por aqui…</p>
           <p className="mt-1 text-sm text-ink-muted">
@@ -32,34 +49,50 @@ export const AtivosAgora: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {ativos.map((ativo) => (
-            <button
-              key={ativo.user.id}
-              onClick={() =>
-                navigate(`/channels/${ativo.servidor.id}/${ativo.canal.id}`)
-              }
-              title={`Entrar em ${ativo.canal.nome}`}
-              className="flex w-full items-center gap-3 rounded-lg bg-surface-1 p-3 text-left transition hover:bg-surface-3"
-            >
-              <Avatar
-                id={ativo.user.id}
-                name={ativo.user.displayName}
-                url={ativo.user.avatarUrl}
-                size={36}
-                status={ativo.user.status}
-              />
+        <div className="space-y-3">
+          {[...salas.values()].map(({ canal, servidor, gente }) => (
+            <div key={canal.id} className="rounded-lg bg-surface-1 p-3">
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                <Volume2 size={12} className="shrink-0 text-online" /> Em voz
+              </p>
 
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium">
-                  {ativo.user.displayName}
+              <p className="mt-1 truncate text-sm font-medium">{canal.nome}</p>
+              <p className="truncate text-xs text-ink-muted">{servidor.nome}</p>
+
+              {/*
+                Rostos sobrepostos, e o nome só quando é uma pessoa só: com duas
+                ou mais, a lista de nomes ocupa três linhas e empurra o botão
+                pra fora do campo de visão — e a cara já diz quem é.
+              */}
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {gente.slice(0, 5).map((ativo) => (
+                    <Avatar
+                      key={ativo.user.id}
+                      id={ativo.user.id}
+                      name={ativo.user.displayName}
+                      url={ativo.user.avatarUrl}
+                      size={28}
+                      className="ring-2 ring-surface-1"
+                    />
+                  ))}
+                </div>
+
+                <span className="min-w-0 flex-1 truncate text-xs text-ink-muted">
+                  {gente.length === 1
+                    ? gente[0]!.user.displayName
+                    : `${gente.length} pessoas`}
                 </span>
-                <span className="flex items-center gap-1 truncate text-xs text-ink-muted">
-                  <Volume2 size={12} className="shrink-0 text-online" />
-                  {ativo.canal.nome} · {ativo.servidor.nome}
-                </span>
-              </span>
-            </button>
+              </div>
+
+              <Button
+                size="sm"
+                className="mt-3 w-full"
+                onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
+              >
+                <PhoneCall size={14} /> Entrar na chamada
+              </Button>
+            </div>
           ))}
         </div>
       )}
