@@ -25,6 +25,7 @@ import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
 import { MemberList } from "~/components/MemberList";
 import { MessageList } from "~/components/MessageList";
+import { ConfirmacaoDeVoz } from "~/components/ConfirmacaoDeVoz";
 import { ModeratorView } from "~/components/ModeratorView";
 import { PainelDeBusca } from "~/components/PainelDeBusca";
 import { TypingIndicator } from "~/components/TypingIndicator";
@@ -134,7 +135,11 @@ export const Chat: React.FC = () => {
     const contaJaEstaNesteCanal = (detail?.voiceStates[channelId] ?? []).some(
       (state) => state.userId === user?.id,
     );
-    if (contaJaEstaNesteCanal) return;
+    /*
+      Sua conta já está nesta chamada, noutro aparelho. Antes o clique não
+      fazia NADA — sem resposta e sem explicação. Agora pergunta.
+    */
+    if (contaJaEstaNesteCanal) return setConfirmandoVoz(channelId);
     if (!canInChannel(channelId, "CONNECT")) return;
     if (!voiceReachable) return;
 
@@ -143,6 +148,8 @@ export const Chat: React.FC = () => {
 
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
+  /// canal em que a conta já está por outro aparelho, esperando decisão
+  const [confirmandoVoz, setConfirmandoVoz] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await logout.mutateAsync().catch(() => undefined);
@@ -190,7 +197,6 @@ export const Chat: React.FC = () => {
         }}
           onLogout={() => void handleLogout()}
           accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
-          onMoveCallHere={(channelId) => void joinVoice(channelId).catch(() => undefined)}
           /*
             O ícone de chat abre o canal de voz e o chat dele — sem entrar na
             chamada. Por isso `navigate` direto, e não o `selectChannel`, que
@@ -425,6 +431,20 @@ export const Chat: React.FC = () => {
         disso, duas colunas de 22rem não cabem sem espremer a conversa.
       */}
       <ModeratorView roles={detail?.roles ?? []} />
+
+      <ConfirmacaoDeVoz
+        canal={
+          confirmandoVoz
+            ? (detail?.channels.find((c) => c.id === confirmandoVoz)?.name ?? null)
+            : null
+        }
+        onFechar={() => setConfirmandoVoz(null)}
+        onTrazerParaCa={() => {
+          const alvo = confirmandoVoz;
+          setConfirmandoVoz(null);
+          if (alvo) void joinVoice(alvo).catch(() => undefined);
+        }}
+      />
     </div>
   );
 };

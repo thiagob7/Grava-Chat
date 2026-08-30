@@ -21,10 +21,9 @@ const SECAO_DA_CHAMADA = "mb-2";
 
 interface VoicePanelProps {
   accountChannelId?: string | null;
-  onMoveHere?: (channelId: string) => void;
 }
 
-export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMoveHere }) => {
+export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
   const navigate = useNavigate();
   const {
     channelId,
@@ -59,24 +58,25 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId, onMove
   const noiseFilter = useVoicePrefs((s) => s.supressaoDeRuido);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
 
+  /*
+    Em chamada noutra aba: uma linha, e só.
+
+    Aqui morava um bloco com título, subtítulo e um botão de "trazer a chamada
+    para esta aba" — três elementos disputando atenção com o cartão de quem
+    você é, que é o que esse canto existe pra mostrar. A ação foi pro diálogo
+    que aparece quando você clica no canal, que é o momento em que ela é
+    perguntada de verdade. O que sobra aqui é o lembrete de que o áudio está
+    tocando noutro lugar.
+  */
   if (!channelId && accountChannelId) {
     const remote = channels.find((c) => c.id === accountChannelId);
 
     return (
-      <div className={cn(SECAO_DA_CHAMADA, "px-1 pt-1")}>
-        <p className="flex items-center gap-1.5 text-sm font-medium text-idle">
-          <Signal size={16} /> Em chamada em outra aba
-        </p>
-        <p className="mt-0.5 truncate text-xs text-ink-muted">
-          {remote?.name ?? "…"} {guildName ? `/ ${guildName}` : ""}
-        </p>
-        <button
-          onClick={() => onMoveHere?.(accountChannelId)}
-          className="mt-1.5 text-xs font-medium text-brand hover:underline"
-        >
-          Trazer a chamada para esta aba
-        </button>
-      </div>
+      <p className={cn(SECAO_DA_CHAMADA, "flex items-center gap-1.5 truncate py-2 text-xs text-ink-muted")}>
+        <Signal size={13} className="shrink-0 text-idle" />
+        Em voz noutra aba
+        {remote ? ` · ${remote.name}` : ""}
+      </p>
     );
   }
 

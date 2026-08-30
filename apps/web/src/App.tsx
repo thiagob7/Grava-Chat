@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
 import { AvisoDeAtualizacao } from "~/components/AvisoDeAtualizacao";
+import { AvisoDeNovoDispositivo } from "~/components/AvisoDeNovoDispositivo";
 import { AvisoDePermissoes } from "~/components/AvisoDePermissoes";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { EstadoDaConexao } from "~/components/EstadoDaConexao";
@@ -47,6 +48,7 @@ export const App: React.FC = () => {
               <EstadoDaConexao />
               <AvisoDeAtualizacao />
               <AvisoDePermissoes />
+              <AvisoDeNovoDispositivo />
               <VoiceAudioSink />
               <SeletorDeTela />
               <VisualizadorDeImagem />

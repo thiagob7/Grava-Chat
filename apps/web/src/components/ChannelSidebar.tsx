@@ -48,7 +48,6 @@ interface ChannelSidebarProps {
   onSelectChannel: (channelId: string) => void;
   onLogout: () => void;
   accountVoiceChannelId: string | null;
-  onMoveCallHere: (channelId: string) => void;
   onLeaveGuild: () => void;
   onOpenVoiceChat?: (channelId: string) => void;
 }
@@ -62,7 +61,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   onSelectChannel,
   onLogout,
   accountVoiceChannelId,
-  onMoveCallHere,
   onLeaveGuild,
   onOpenVoiceChat,
 }) => {
@@ -377,7 +375,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           guildId={detail?.guild.id}
           onLogout={onLogout}
           accountChannelId={accountVoiceChannelId}
-          onMoveHere={onMoveCallHere}
         />
         <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
       </aside>
