@@ -1,8 +1,22 @@
 import axios from "axios";
 
+/*
+  Toda chamada tem prazo.
+
+  Sem isto, um servidor que ACEITA a conexão e depois não responde deixa a
+  requisição pendurada pra sempre — e o app fica na tela de abertura, com o
+  logotipo no meio do preto, sem erro e sem saída. Foi o que aconteceu quando a
+  API local travou esperando o banco: o processo estava vivo, a porta aberta, e
+  nada voltava.
+
+  Trinta segundos é folgado para qualquer coisa que a API faça sozinha. O envio
+  de arquivo é a exceção — 25 MB numa conexão ruim passam disso com facilidade —
+  e pede o seu próprio prazo em quem chama.
+*/
 export const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL ?? ""}/api`,
   withCredentials: true,
+  timeout: 30_000,
 });
 
 let accessToken: string | null = null;

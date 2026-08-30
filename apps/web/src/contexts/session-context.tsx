@@ -37,6 +37,10 @@ function alcancaOServidorDeVoz(voiceUrl: string | undefined): boolean {
 
 const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/// Teto da tela de abertura. Generoso de propósito: numa rede ruim, a primeira
+/// resposta demora — e cortar cedo mandaria pro login quem ia entrar bem.
+const TETO_DA_ABERTURA_MS = 20_000;
+
 async function restaurarSessao<U>(tentativas = 4): Promise<U | null> {
   for (let tentativa = 0; tentativa < tentativas; tentativa++) {
     try {
@@ -59,6 +63,13 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const config = useAuthConfig();
   const me = useMe(hasSession);
+
+  const [demorouDemais, setDemorouDemais] = useState(false);
+
+  useEffect(() => {
+    const relogio = setTimeout(() => setDemorouDemais(true), TETO_DA_ABERTURA_MS);
+    return () => clearTimeout(relogio);
+  }, []);
 
   useEffect(() => {
     void restaurarSessao<SelfUserModel>()
@@ -101,7 +112,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const value: SessionContextValue = {
     user: (me.data as SelfUserModel | undefined) ?? null,
-    isBooting: isBooting || (hasSession && me.isLoading),
+    /*
+      A tela de abertura tem hora pra acabar.
+
+      `me.isLoading` some quando a consulta responde ou falha — e se ela NÃO
+      fizer nem uma coisa nem outra, o app fica no logotipo sobre o preto pra
+      sempre. Com o prazo do cliente HTTP isso virou quase impossível, mas
+      "quase" numa tela sem saída não serve: passado o teto, seguimos em frente
+      e o app mostra o login, que já sabe dizer que o servidor não responde.
+    */
+    isBooting: isBooting || (hasSession && me.isLoading && !demorouDemais),
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,
     voiceReachable: alcancaOServidorDeVoz(config.data?.voiceUrl),

@@ -8,6 +8,11 @@ export async function uploadFile(
   const form = new FormData();
   form.append("file", file, file.name);
 
-  const response = await api.post<Attachment>(`/uploads?purpose=${finalidade}`, form);
+  /// Sem prazo: o padrão de 30s do cliente derruba envio grande em conexão
+  /// ruim, e o arquivo já está a caminho — cortar no meio só desperdiça o que
+  /// já subiu.
+  const response = await api.post<Attachment>(`/uploads?purpose=${finalidade}`, form, {
+    timeout: 0,
+  });
   return response.data;
 }
