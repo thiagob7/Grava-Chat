@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Download, Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
@@ -7,7 +7,7 @@ import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { AdicionarServidorModal } from "~/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
-import { ehDesktop } from "~/lib/desktop";
+import { desktop, ehDesktop } from "~/lib/desktop";
 import { useConfiguracoes } from "~/stores/configuracoes";
 
 interface GuildRailProps {
@@ -16,6 +16,12 @@ interface GuildRailProps {
   onOpenFriends: () => void;
   pendingFriendRequests: number;
 }
+
+/// `⌘` no Mac, `Ctrl` no resto: mostrar a tecla errada faz a pessoa tentar o
+/// atalho, não funcionar, e concluir que o atalho é mentira.
+const ehMac =
+  desktop()?.plataforma === "darwin" ||
+  (typeof navigator !== "undefined" && /Mac/.test(navigator.platform));
 
 export const GuildRail: React.FC<GuildRailProps> = ({
   activeGuildId,
@@ -27,6 +33,26 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const [creating, setCreating] = useState(false);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+
+  /*
+    ⌘⇧N (Ctrl no Windows) abre o "adicionar servidor".
+
+    A dica no botão anuncia o atalho, e anunciar um atalho que não existe é
+    pior que não anunciar nada. `preventDefault` porque no navegador essa
+    combinação abre uma janela anônima.
+  */
+  useEffect(() => {
+    const aoTeclar = (evento: KeyboardEvent) => {
+      const comando = evento.metaKey || evento.ctrlKey;
+      if (!comando || !evento.shiftKey || evento.key.toLowerCase() !== "n") return;
+
+      evento.preventDefault();
+      setCreating(true);
+    };
+
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, []);
 
   return (
     <>
@@ -133,7 +159,11 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
 
-        <AcaoDoTrilho label="Adicionar um servidor" onClick={() => setCreating(true)}>
+        <AcaoDoTrilho
+          label="Criar ou entrar num servidor"
+          atalho={[ehMac ? "⌘" : "Ctrl", "Shift", "N"]}
+          onClick={() => setCreating(true)}
+        >
           <Plus size={22} />
         </AcaoDoTrilho>
 
@@ -170,10 +200,11 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 */
 const AcaoDoTrilho: React.FC<{
   label: string;
+  atalho?: string[];
   onClick: () => void;
   children: React.ReactNode;
-}> = ({ label, onClick, children }) => (
-  <Tooltip label={label} side="right">
+}> = ({ label, atalho, onClick, children }) => (
+  <Tooltip label={label} atalho={atalho} side="right">
     <button
       onClick={onClick}
       aria-label={label}

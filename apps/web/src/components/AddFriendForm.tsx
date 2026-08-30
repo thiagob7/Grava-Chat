@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { UserRoundPlus } from "lucide-react";
 
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
 import { Button } from "~/components/ui/button";
@@ -17,13 +18,25 @@ export const AddFriendForm: React.FC = () => {
   };
 
   return (
-    <div className="border-b border-line pb-6">
-      <h2 className="text-base font-semibold uppercase">Adicionar amigo</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+    /*
+      Centralizado, e não colado no topo da página.
+
+      A aba de adicionar amigo é uma tela de UMA tarefa: não há lista, não há
+      nada abaixo. Encostado no topo, o formulário ficava sozinho num canto com
+      uma área vazia enorme embaixo — parecia uma página que não terminou de
+      carregar. No meio, ele é claramente a coisa a fazer ali.
+    */
+    <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+      <span className="flex size-16 items-center justify-center rounded-full bg-brand/15 text-brand">
+        <UserRoundPlus size={30} />
+      </span>
+
+      <h2 className="mt-5 text-xl font-semibold">Adicionar amigo</h2>
+      <p className="mt-1.5 text-sm text-ink-muted">
         Você pode adicionar amigos pelo nome de usuário deles.
       </p>
 
-      <div className="mt-4 max-w-xl">
+      <div className="mt-6 w-full max-w-md text-left">
         <CampoComAcao
           value={username}
           onChange={(e) => setUsername(e.target.value)}
