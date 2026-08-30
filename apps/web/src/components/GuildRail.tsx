@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
@@ -7,6 +7,8 @@ import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { CreateGuildModal } from "~/components/CreateGuildModal";
 import { Tooltip } from "~/components/ui/tooltip";
+import { ehDesktop } from "~/lib/desktop";
+import { useConfiguracoes } from "~/stores/configuracoes";
 
 interface GuildRailProps {
   activeGuildId: string | null;
@@ -24,6 +26,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const { data: guilds = [] } = useFindManyGuilds(true);
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const [creating, setCreating] = useState(false);
+  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
 
   return (
     <>
@@ -130,18 +133,52 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
 
-        <Tooltip label="Criar servidor" side="right">
-          <button
-            onClick={() => setCreating(true)}
-            className="flex size-12 items-center justify-center rounded-3xl bg-surface-1 text-online transition-all hover:rounded-2xl hover:bg-online hover:text-white"
-          >
-            <Plus size={24} />
-          </button>
-        </Tooltip>
+        <AcaoDoTrilho label="Criar servidor" onClick={() => setCreating(true)}>
+          <Plus size={22} />
+        </AcaoDoTrilho>
 
+        {/*
+          Some pra quem já está no app instalado: oferecer download a quem
+          acabou de baixar é um botão pra lugar nenhum.
+        */}
+        {!ehDesktop() && (
+          <AcaoDoTrilho label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
+            <Download size={20} />
+          </AcaoDoTrilho>
+        )}
       </nav>
 
       <CreateGuildModal open={creating} onClose={() => setCreating(false)} onCreated={onSelect} />
     </>
   );
 };
+
+/*
+  Os botões do trilho que NÃO são servidores.
+
+  O círculo tracejado é o que separa as duas naturezas: servidor é um lugar que
+  existe e tem cara própria (foto ou iniciais, quadrado arredondado, cheio);
+  ação é um convite a criar algo que ainda não existe. Antes os dois eram o
+  mesmo bloco cheio, e o "+" lia como mais um servidor da lista — só que verde.
+
+  No hover ele se preenche e vira quadrado arredondado, igual aos servidores:
+  é a mesma linguagem de "isto vai virar um lugar".
+*/
+const AcaoDoTrilho: React.FC<{
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}> = ({ label, onClick, children }) => (
+  <Tooltip label={label} side="right">
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className={cn(
+        "flex size-12 items-center justify-center rounded-3xl border-2 border-dashed border-surface-4 text-ink-muted transition-all",
+        "hover:rounded-2xl hover:border-solid hover:border-brand hover:bg-brand hover:text-white",
+      )}
+    >
+      {children}
+    </button>
+  </Tooltip>
+);
