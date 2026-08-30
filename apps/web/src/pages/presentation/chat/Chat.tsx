@@ -119,6 +119,14 @@ export const Chat: React.FC = () => {
 
   const accountVoiceChannelId = myVoiceState?.channelId ?? null;
 
+  /// Quem está em qualquer canal de voz deste servidor, pra lista de membros
+  /// trocar a bolinha de presença pelo alto-falante.
+  const quemEstaEmVoz = new Set(
+    Object.values(detail?.voiceStates ?? {})
+      .flat()
+      .map((estado) => estado.userId),
+  );
+
   useReconnectVoice(Boolean(user));
 
   const inCallHere = voiceChannelId !== null;
@@ -418,6 +426,7 @@ export const Chat: React.FC = () => {
           ownerId={detail?.guild.ownerId}
           guildId={detail?.guild.id}
           podeModerar={can("MODERATE_MEMBERS")}
+          emVoz={quemEstaEmVoz}
         />
       )}
 

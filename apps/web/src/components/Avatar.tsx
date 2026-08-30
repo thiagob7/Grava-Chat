@@ -2,17 +2,11 @@ import React, { useEffect, useState } from "react";
 import type { PerfilPublico, PresenceStatus } from "@gravae/shared";
 
 import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
+import { IconeDeStatus } from "~/components/IconeDeStatus";
 import { ehDeArquivo } from "~/lib/cosmeticos/decoracoes";
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
-
-const STATUS_COLOR: Record<PresenceStatus, string> = {
-  ONLINE: "bg-online",
-  IDLE: "bg-idle",
-  DND: "bg-dnd",
-  OFFLINE: "bg-ink-faint",
-};
 
 interface AvatarProps {
   id: string;
@@ -20,6 +14,8 @@ interface AvatarProps {
   url?: string | null;
   size?: number;
   status?: PresenceStatus;
+  /// numa chamada agora: troca a bolinha de presença pelo alto-falante
+  emVoz?: boolean;
   speaking?: boolean;
   enfeites?: Pick<PerfilPublico, "decoracao" | "moldura"> | null;
   animar?: boolean;
@@ -32,6 +28,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   url,
   size = 40,
   status,
+  emVoz,
   speaking,
   enfeites,
   animar = false,
@@ -42,6 +39,15 @@ export const Avatar: React.FC<AvatarProps> = ({
   useEffect(() => setFalhou(false), [url]);
 
   const mostrarImagem = Boolean(url) && !falhou;
+
+  /// Sem status e sem voz não há selo — e sem selo não há buraco a abrir.
+  const selo = status || emVoz ? cantoDoStatus(size) : null;
+
+  const recorte = selo
+    ? `radial-gradient(circle ${selo.raio}px at ${selo.centro.x}px ${selo.centro.y}px, transparent ${selo.raio}px, #000 ${selo.raio + 0.5}px)`
+    : undefined;
+
+  const mascara = recorte ? { WebkitMaskImage: recorte, maskImage: recorte } : undefined;
 
   const deArquivo = ehDeArquivo(enfeites?.decoracao);
   const decoracao = deArquivo
@@ -68,12 +74,13 @@ export const Avatar: React.FC<AvatarProps> = ({
           referrerPolicy="no-referrer"
           loading="lazy"
           decoding="async"
+          style={mascara}
           className="size-full rounded-full bg-surface-3 object-cover"
         />
       ) : (
         <div
           className="flex size-full select-none items-center justify-center rounded-full font-semibold text-white"
-          style={{ backgroundColor: avatarColor(id), fontSize: size * 0.38 }}
+          style={{ ...mascara, backgroundColor: avatarColor(id), fontSize: size * 0.38 }}
           aria-label={name}
         >
           {initials(name)}
@@ -91,25 +98,37 @@ export const Avatar: React.FC<AvatarProps> = ({
         <DecoracaoDeArquivo decoracao={enfeites.decoracao} animar={animar} />
       )}
 
-      {status && (
-        <span
-          className={cn("absolute rounded-full", STATUS_COLOR[status])}
-          style={{
-            ...cantoDoStatus(size),
-            borderStyle: "solid",
-            borderColor: "var(--gc-recorte, var(--color-surface-1))",
-          }}
-        />
+      {selo && (
+        <span className="absolute" style={{ left: selo.left, top: selo.top }}>
+          <IconeDeStatus tipo={emVoz ? "VOZ" : status!} tamanho={selo.lado} />
+        </span>
       )}
     </div>
   );
 };
 
+/*
+  Onde a bolinha pousa, e o buraco que ela abre.
+
+  O anel em volta dela era pintado com a cor do fundo (`--gc-recorte`) — o que
+  obriga quem coloca um avatar em qualquer lugar novo a lembrar de declarar
+  essa cor, e falha sem remédio sobre foto, vídeo ou degradê, onde não existe
+  UMA cor de fundo. Agora o avatar é recortado de verdade: um furo na máscara,
+  que deixa passar o que estiver atrás, seja lá o que for.
+*/
 function cantoDoStatus(size: number) {
   const lado = Math.round(size * 0.32);
-  const anel = Math.max(1.5, size / 24);
   const distancia = size / 2;
   const canto = size / 2 + distancia / Math.SQRT2 - lado / 2;
+  /// folga entre a bolinha e a borda do recorte; acompanha o tamanho pra não
+  /// sumir no avatar pequeno nem virar um rombo no grande
+  const folga = Math.max(1.5, size * 0.06);
 
-  return { width: lado, height: lado, left: canto, top: canto, borderWidth: anel };
+  return {
+    lado,
+    left: canto,
+    top: canto,
+    centro: { x: canto + lado / 2, y: canto + lado / 2 },
+    raio: lado / 2 + folga,
+  };
 }

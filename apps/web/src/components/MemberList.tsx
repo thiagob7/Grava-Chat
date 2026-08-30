@@ -14,11 +14,21 @@ interface MemberListProps {
   ownerId: string | undefined;
   guildId?: string;
   podeModerar?: boolean;
+  /*
+    Quem está num canal de voz deste servidor agora.
+
+    A lista de membros diz quem ESTÁ, e a bolinha diz em que estado — mas
+    "online" e "online numa chamada com três pessoas" são coisas bem
+    diferentes na hora de decidir se você entra ou não. O alto-falante responde
+    isso sem precisar caçar canal por canal na barra da esquerda.
+  */
+  emVoz?: Set<string>;
 }
 
 export const MemberList: React.FC<MemberListProps> = ({
   members,
   roles = [],
+  emVoz,
   ownerId,
   guildId,
   podeModerar = false,
@@ -71,6 +81,7 @@ export const MemberList: React.FC<MemberListProps> = ({
             dim={grupo.dim}
             guildId={guildId}
             podeModerar={podeModerar}
+            emVoz={emVoz}
             enfeitesDe={enfeitesDe}
           />
         ))}
@@ -93,6 +104,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
   dim,
   guildId,
   podeModerar = false,
+  emVoz,
   enfeitesDe,
 }) => {
   if (!members.length) return null;
@@ -125,6 +137,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 url={member.user.avatarUrl}
                 size={32}
                 status={member.user.status}
+                emVoz={emVoz?.has(member.user.id)}
                 enfeites={perfil}
               />
               <UserName
