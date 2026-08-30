@@ -45,12 +45,21 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
           <button
             key={item.id}
             onClick={() => setAba(item.id)}
+            /*
+              "Adicionar amigo" é botão, e não aba.
+
+              As outras três filtram uma lista que já está na tela; esta abre um
+              formulário. Vestida igual, ela se perdia no meio das irmãs — e é
+              justamente a única coisa a fazer numa conta que ainda não tem
+              ninguém. Agora é uma pastilha cheia da cor da casa, do jeito que
+              se destaca sem gritar.
+            */
             className={cn(
               "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
               item.id === "adicionar"
                 ? aba === item.id
-                  ? "bg-transparent text-online"
-                  : "text-online hover:bg-online/10"
+                  ? "bg-brand font-medium text-white"
+                  : "font-medium text-brand hover:bg-brand/10"
                 : aba === item.id
                   ? "bg-surface-4 text-ink"
                   : "text-ink-muted hover:bg-surface-3 hover:text-ink",
@@ -106,7 +115,7 @@ const EmptyState: React.FC<{ aba: Aba }> = ({ aba }) => (
           : "Você ainda não tem amigos por aqui."}
     </p>
     <p className="max-w-xs text-sm text-ink-faint">
-      Use a aba <span className="text-online">Adicionar amigo</span> e o nome de usuário da pessoa.
+      Use a aba <span className="font-medium text-brand">Adicionar amigo</span> e o nome de usuário da pessoa.
     </p>
   </div>
 );

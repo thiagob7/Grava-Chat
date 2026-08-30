@@ -243,12 +243,25 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const { colunas, denso } = formatoDaGrade(grade.length);
   const emFoco = focar(grade, focado);
 
-  const desenhar = (quadro: (typeof grade)[number], compacto?: boolean) =>
+  /*
+    `preencher` troca o 16:9 do quadro por "ocupe tudo".
+
+    O `aspect-video` existe pra grade não virar uma colcha de retângulos de
+    alturas diferentes. Com UM quadro só ele vira o problema: o quadro fica com
+    a altura que a largura mandar e sobra uma tira preta embaixo, que foi
+    exatamente o que apareceu quando alguém entrava sozinho na chamada.
+  */
+  const desenhar = (
+    quadro: (typeof grade)[number],
+    compacto?: boolean,
+    preencher?: boolean,
+  ) =>
     quadro.tipo === "tela" ? (
       <TileDaLive
         key={quadro.key}
         tile={quadro.de.tile}
         denso={denso || compacto}
+        className={preencher ? "size-full" : undefined}
         onAssistir={() => setAssistindo(quadro.de.identity)}
       />
     ) : (
@@ -257,6 +270,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           tile={quadro.de.tile}
           guildId={guildId}
           denso={denso || compacto}
+          preencher={preencher}
           onFocar={() => setFocado((atual) => (atual === quadro.key ? null : quadro.key))}
         />
       </ComMenu>
@@ -369,7 +383,16 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           nada — só deixam um retângulo pequeno no meio de um vazio enorme, que
           é o que aparecia quando alguém entrava primeiro e esperava os outros.
         */
-        grade.length === 1 ? "p-0" : "p-6",
+        /*
+          `pb-20` com mais de um quadro: a pílula de controles é ancorada em
+          `bottom-4` do palco e tem ~52px, ocupando de 16 a 68px do rodapé. Sem
+          a folga ela pousa em cima do quadro de baixo — foi o que aconteceu com
+          a miniatura da live, que ficava metade escondida atrás dos botões.
+
+          Com um quadro só a folga não existe de propósito: ali o vídeo vai de
+          ponta a ponta e a pílula flutua por cima, como numa chamada de vídeo.
+        */
+        grade.length === 1 ? "p-0" : "p-6 pb-20",
       )}
     >
       {/*
@@ -379,10 +402,21 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         cabeçalho da conversa, com o nome de quem escreveu no meio deles.
       */}
       <div
-        className={cn("grid size-full max-h-full gap-4", grade.length > 1 && "max-w-5xl")}
-        style={{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }}
+        className={cn(
+          "grid size-full max-h-full gap-4",
+          grade.length > 1 && "max-w-5xl",
+          /// o `div` que o menu de contexto põe em volta também precisa esticar,
+          /// senão o quadro cresce dentro de uma caixa do tamanho antigo
+          grade.length === 1 && "[&>*]:size-full",
+        )}
+        style={{
+          gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
+          /// Só no caso de um quadro: com vários, esticar a linha estouraria o
+          /// 16:9 de cada um.
+          ...(grade.length === 1 ? { gridAutoRows: "minmax(0, 1fr)" } : {}),
+        }}
       >
-        {grade.map((quadro) => desenhar(quadro))}
+        {grade.map((quadro) => desenhar(quadro, false, grade.length === 1))}
       </div>
       {!tiles.length && (
         <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>
@@ -402,11 +436,13 @@ interface TileProps {
   compact?: boolean;
   /// chamada cheia: quadros e avatares encolhem pra caber sem rolagem
   denso?: boolean;
+  /// sozinho na chamada: ocupa a área toda em vez de guardar o 16:9
+  preencher?: boolean;
   /// clicar no quadro alterna o modo destaque
   onFocar?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, onFocar }) => {
+const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, onFocar }) => {
   const resolver = useParticipante();
   const participante = resolver(tile.identity, {
     name: tile.name,
@@ -433,7 +469,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, onFocar }) =
           divide a faixa com o botão de tela cheia, herdar a altura da faixa
           deixava as três espremidas e o avatar minúsculo.
         */
-        compact ? "h-16 w-24 shrink-0" : "aspect-video",
+        compact ? "h-16 w-24 shrink-0" : preencher ? "size-full" : "aspect-video",
       )}
     >
       {tile.cameraTrack ? (

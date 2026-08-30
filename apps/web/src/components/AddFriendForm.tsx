@@ -36,7 +36,7 @@ export const AddFriendForm: React.FC = () => {
         Você pode adicionar amigos pelo nome de usuário deles.
       </p>
 
-      <div className="mt-6 w-full max-w-md text-left">
+      <div className="mt-6 w-full max-w-lg text-left">
         <CampoComAcao
           value={username}
           onChange={(e) => setUsername(e.target.value)}
