@@ -283,8 +283,23 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   */
   if (emFoco) {
     return (
-      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4">
-        <div className="min-h-0 flex-1 [&>*]:size-full">{desenhar(emFoco.destaque)}</div>
+      /*
+        `pb-20`, e não `p-4` nos quatro lados.
+
+        A pílula de controles é ancorada em `bottom-4` do palco e tem ~52px:
+        ocupa de 16 a 68px do rodapé — exatamente onde a faixa de quadros
+        pequenos ficava. O resultado era a miniatura da live escondida atrás dos
+        botões, com metade dela aparecendo pelas bordas.
+      */
+      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4 pb-20">
+        {/*
+          O quadro em destaque PREENCHE. Sem isso ele mantém o 16:9 dentro de
+          uma caixa mais alta, e sobra uma tira preta entre ele e a faixa — o
+          mesmo defeito que aparecia com uma pessoa só na chamada.
+        */}
+        <div className="min-h-0 flex-1 [&>*]:size-full">
+          {desenhar(emFoco.destaque, false, true)}
+        </div>
 
         <div className="flex shrink-0 justify-center gap-2">
           {emFoco.faixa.map((quadro) => (
