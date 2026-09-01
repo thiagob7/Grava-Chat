@@ -9,6 +9,7 @@ import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { useVoiceStore } from "~/stores/voice-store";
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
 import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
+import { useSomDoPainel } from "~/lib/soundboard";
 import { Tooltip } from "~/components/ui/tooltip";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import type { Track } from "livekit-client";
@@ -34,6 +35,9 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   currentUserId,
 }) => {
   const tiles = useVoiceStore((s) => s.tiles);
+  /// Quem apertou um som também "fala": o áudio sai na chamada, e o rosto
+  /// parado enquanto todo mundo ouve deixava sem saber de quem tinha vindo.
+  const somDe = useSomDoPainel((s) => s.quem);
   const falando = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
 
   /*
@@ -89,7 +93,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                   name={name}
                   url={member?.user.avatarUrl}
                   size={24}
-                  speaking={falando.has(state.userId)}
+                  speaking={falando.has(state.userId) || somDe === state.userId}
                 />
               <span
                 className={cn(

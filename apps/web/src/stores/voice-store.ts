@@ -13,6 +13,7 @@ import { proximoAlvo } from "~/lib/assistir";
 import { descreverFonte } from "~/lib/fonte-da-tela";
 import { ProcessadorDeVoz } from "~/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
+import { pararSomDoPainel } from "~/lib/soundboard";
 import { tocarSom, type SomDaInterface } from "~/lib/ui-sounds";
 import { ajustesDe, useVoicePrefs, type VoicePrefs } from "~/stores/voice-prefs";
 import { apiErrorMessage } from "~/@core/lib/api";
@@ -436,6 +437,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     rememberVoiceTab(null);
 
     bipe("sairDaChamada");
+    pararSomDoPainel();
     await room.disconnect();
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
     await leaveVoiceChannel().catch(() => undefined);
@@ -469,6 +471,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const next = !deafened;
 
     if (next) bipe("ensurdecer");
+    /// Ensurdecer cala na hora, inclusive o som do painel que já estava
+    /// tocando — esperar ele acabar seria ouvir o que você mandou parar.
+    if (next) pararSomDoPainel();
     set({ deafened: next });
     if (!next) bipe("desensurdecer");
     if (next) {

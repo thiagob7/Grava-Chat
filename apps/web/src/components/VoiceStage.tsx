@@ -24,6 +24,7 @@ import { VoiceStageControls } from "~/components/VoiceStageControls";
 import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import { useParticipante } from "~/hooks/use-participante";
+import { useSomDoPainel } from "~/lib/soundboard";
 import { cn } from "~/lib/utils";
 
 interface VoiceStageProps {
@@ -459,6 +460,10 @@ interface TileProps {
 
 const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, onFocar }) => {
   const resolver = useParticipante();
+  /// O som do painel acende o rosto igual à fala — quem apertou é quem está
+  /// fazendo barulho na chamada.
+  const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
+  const falando = tile.speaking || tocandoSom;
   const participante = resolver(tile.identity, {
     name: tile.name,
     avatarUrl: tile.avatarUrl,
@@ -488,7 +493,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
       )}
     >
       {tile.cameraTrack ? (
-        <div className={cn("size-full", tile.speaking && "ring-2 ring-online")}>
+        <div className={cn("size-full", falando && "ring-2 ring-online")}>
           <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
         </div>
       ) : (
@@ -498,7 +503,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
           url={participante.avatarUrl}
           size={compact ? 44 : denso ? 52 : 80}
           enfeites={participante.perfil}
-          animar={tile.speaking}
+          animar={falando}
         />
       )}
 
@@ -712,6 +717,10 @@ const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
 const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile, guildId }) => {
   const resolver = useParticipante();
   const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
+  /// O som do painel acende o rosto igual à fala — quem apertou é quem está
+  /// fazendo barulho na chamada.
+  const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
+  const falando = tile.speaking || tocandoSom;
 
   return (
     <div className="group/rosto flex flex-col items-center gap-2">
@@ -727,7 +736,7 @@ const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile,
             url={participante.avatarUrl}
             size={80}
             enfeites={participante.perfil}
-            animar={tile.speaking}
+            animar={falando}
           />
         )}
 
@@ -756,6 +765,10 @@ const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile,
  * diz — é "quem está falando agora, e quem está mudo".
  */
 const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
+  /// O som do painel acende o rosto igual à fala — quem apertou é quem está
+  /// fazendo barulho na chamada.
+  const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
+  const falando = tile.speaking || tocandoSom;
   const resolver = useParticipante();
   const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
 
@@ -772,7 +785,7 @@ const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
           url={participante.avatarUrl}
           size={44}
           enfeites={participante.perfil}
-          animar={tile.speaking}
+          animar={falando}
         />
       )}
 

@@ -3,6 +3,7 @@ import type { z } from "zod";
 import type { PresenceStatus } from "@gravae/shared";
 import {
   clientEventSchemas,
+  LIMITS,
   rooms,
   type Ack,
   type ClientEventName,
@@ -203,6 +204,14 @@ export function registerHandlers(socket: GravaeSocket) {
     if (!estado) throw new AppError("Você não está numa chamada");
 
     /*
+      A trava vem antes de tudo — inclusive antes de ir ao banco buscar o som.
+      Apertar o botão dez vezes seguidas mandava dez sons pra chamada inteira,
+      um por cima do outro; quem estava ouvindo não tinha defesa. O cliente
+      também trava o botão nesse tempo, mas isso é conforto: a garantia é aqui.
+    */
+    if (esperandoParaTocar(userId)) throw new AppError("Espera um pouquinho antes do próximo som");
+
+    /*
       Soundboard, moderação, expulsar e mover são poderes de SERVIDOR: existem
       porque existem cargos e permissões atrás deles. No privado não há nem um
       nem outro — e sem a trava, `requirePermission` receberia um `guildId`
@@ -300,6 +309,32 @@ export function registerHandlers(socket: GravaeSocket) {
 
     return { userId: alvoId, channelId };
   });
+}
+
+/*
+  Quando cada pessoa tocou seu último som.
+
+  Na memória do processo, e não no Redis: são milissegundos, a API é uma só, e
+  perder isso num reinício custa um som a mais na chamada — não vale uma ida à
+  rede a cada clique. A limpeza é oportunista, pra tabela não crescer com quem
+  saiu faz tempo.
+*/
+const ultimoSom = new Map<string, number>();
+
+function esperandoParaTocar(userId: string): boolean {
+  const agora = Date.now();
+  const anterior = ultimoSom.get(userId);
+
+  if (anterior !== undefined && agora - anterior < LIMITS.somEsperaMs) return true;
+
+  if (ultimoSom.size > 500) {
+    for (const [id, quando] of ultimoSom) {
+      if (agora - quando > LIMITS.somEsperaMs) ultimoSom.delete(id);
+    }
+  }
+
+  ultimoSom.set(userId, agora);
+  return false;
 }
 
 async function announceLeave(guildId: string | null, channelId: string, userId: string) {

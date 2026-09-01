@@ -68,6 +68,8 @@ import { avisarDeMensagem } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAusencia } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/stores/typing-store";
+import { tocarSomDoPainel } from "~/lib/soundboard";
+import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 import { useConexaoStore } from "~/stores/conexao-store";
 
@@ -446,13 +448,30 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       void queryClient.invalidateQueries({ queryKey: queryKeys.forum.posts(post.channelId) });
     });
 
-    onVoiceSound(({ channelId, url, volume }) => {
+    onVoiceSound(({ channelId, userId, url, volume }) => {
       const voz = useVoiceStore.getState();
       if (voz.channelId !== channelId || voz.deafened) return;
 
-      const audio = new Audio(url);
-      audio.volume = Math.min(1, Math.max(0, volume));
-      void audio.play().catch(() => undefined);
+      /*
+        Silenciar alguém tem que silenciar TUDO que vem dessa pessoa. O som do
+        painel não passa pela faixa de voz dela — é um áudio à parte, que o
+        navegador toca aqui —, então o silêncio local precisa ser conferido na
+        mão. Sem isso, quem você mutou continuava tocando som no seu ouvido.
+      */
+      if (voz.silenciadosLocais[userId]) return;
+
+      /*
+        Quatro volumes se multiplicam, e cada um responde por uma coisa: o que
+        veio gravado no som (escolha de quem subiu, vale pro servidor
+        inteiro), o que você deu pra essa pessoa, o do painel e o de saída.
+        Antes só o primeiro contava — abaixar a saída não abaixava os sons, e
+        o balão ainda dizia que tocava no volume de saída.
+      */
+      const { somDoPainel, volumeDoPainel, volumeSaida } = useVoicePrefs.getState();
+      if (!somDoPainel) return;
+
+      const daPessoa = voz.volumesLocais[userId] ?? 1;
+      tocarSomDoPainel(url, volume * daPessoa * volumeDoPainel * volumeSaida, userId);
     });
 
     onVoiceMove(({ channelId }) => {
