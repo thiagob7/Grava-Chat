@@ -9,6 +9,13 @@ export interface VoicePrefs extends AjustesDeVoz {
   teclaPtt: string;
   somDaInterface: boolean;
   somDaTela: boolean;
+  /**
+   * O painel de efeitos sonoros: se toca, e em que volume. Fica aqui, e nao
+   * no servidor, porque e escolha de quem ouve — o volume gravado no som vale
+   * pra todo mundo, este so vale pra voce, neste aparelho.
+   */
+  somDoPainel: boolean;
+  volumeDoPainel: number;
 }
 
 const PADRAO: VoicePrefs = {
@@ -19,6 +26,8 @@ const PADRAO: VoicePrefs = {
   teclaPtt: "Space",
   somDaInterface: true,
   somDaTela: true,
+  somDoPainel: true,
+  volumeDoPainel: 1,
 };
 
 const CHAVE = "gravae:voice-prefs";

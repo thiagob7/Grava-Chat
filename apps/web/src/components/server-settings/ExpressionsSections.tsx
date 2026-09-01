@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Play, Trash2, Upload } from "lucide-react";
-import { LIMITS } from "@gravae/shared";
+import { Play, Trash2, Upload, Volume2 } from "lucide-react";
+import { LIMITS, type GuildSound } from "@gravae/shared";
 
 import {
   useCreateEmoji,
@@ -11,19 +11,27 @@ import {
   useDeleteSound,
   useDeleteSticker,
   useFindExpressions,
+  useUpdateSound,
 } from "~/@core/application/queries/expression/use-expressions";
 import { Avatar } from "~/components/Avatar";
+import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
 import { Button } from "~/components/ui/button";
-import { Input, Label } from "~/components/ui/input";
+import { campoBase, Input, Label } from "~/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { useConfirmar } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
 import { uploadArquivo } from "~/lib/upload";
+import { cn } from "~/lib/utils";
 
 interface SecaoProps {
   guildId: string;
   podeGerenciar: boolean;
 }
+
+/// Metade do caminho. O som do painel toca por cima de quem está falando, e
+/// 100% estoura o ouvido de quem está com o fone alto.
+const VOLUME_PADRAO = 0.5;
 
 const nomeSeguro = (texto: string) =>
   texto
@@ -222,15 +230,7 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
               />
             </div>
 
-            <div>
-              <Label htmlFor="fig-emoji">Emoji relacionado</Label>
-              <Input
-                id="fig-emoji"
-                value={emoji}
-                maxLength={8}
-                onChange={(e) => setEmoji(e.target.value)}
-              />
-            </div>
+            <CampoDeEmoji id="fig-emoji" emoji={emoji} onEscolher={setEmoji} />
 
             <div className="flex gap-2">
               <Button
@@ -305,7 +305,9 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
   const [pendente, setPendente] = useState<{ file: File; url: string } | null>(null);
   const [nome, setNome] = useState("");
   const [emoji, setEmoji] = useState("🔊");
-  const [volume, setVolume] = useState(1);
+  /// Metade: som de painel entra por cima da conversa, e 100% costuma
+  /// estourar. Quem subiu ajusta aqui, e depois na lista, quando ouvir.
+  const [volume, setVolume] = useState(VOLUME_PADRAO);
 
   const escolher = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const arquivo = event.target.files?.[0];
@@ -322,6 +324,8 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
 
     setPendente({ file: arquivo, url: anexo.url });
     setNome(arquivo.name.replace(/\.[^.]+$/, "").slice(0, 32));
+    setEmoji("🔊");
+    setVolume(VOLUME_PADRAO);
   };
 
   const restantes = LIMITS.sonsPorServidor - data.sounds.length;
@@ -364,15 +368,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
                 onChange={(e) => setNome(e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="som-emoji">Emoji relacionado</Label>
-              <Input
-                id="som-emoji"
-                value={emoji}
-                maxLength={8}
-                onChange={(e) => setEmoji(e.target.value)}
-              />
-            </div>
+            <CampoDeEmoji id="som-emoji" emoji={emoji} onEscolher={setEmoji} />
           </div>
 
           <div>
@@ -417,7 +413,8 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
       <div className="mt-6 space-y-px">
         {data.sounds.map((som) => (
           <div key={som.id} className="group flex items-center gap-3 border-t border-line py-3">
-            <span className="text-xl">{som.emoji ?? "🔊"}</span>
+            {/* `||`: som sem emoji vem com string vazia, e o `??` deixava um buraco. */}
+            <span className="text-xl">{som.emoji || "🔊"}</span>
             <span className="min-w-0 flex-1 truncate text-sm">{som.name}</span>
 
             {som.createdBy && (
@@ -444,6 +441,8 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
               <Play size={16} />
             </button>
 
+            {podeGerenciar && <VolumeDoSom guildId={guildId} som={som} />}
+
             {podeGerenciar && (
               <button
                 onClick={() =>
@@ -465,6 +464,104 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
         )}
       </div>
     </div>
+  );
+};
+
+/**
+ * O campo de emoji com o seletor do app.
+ *
+ * Era um campo de texto de 8 caracteres: pra colocar um emoji, a pessoa
+ * precisava saber o atalho do teclado do sistema — ou colar de algum lugar. E
+ * o campo aceitava "abc" numa boa, que ia parar na lista como emoji do som.
+ */
+const CampoDeEmoji: React.FC<{
+  id: string;
+  emoji: string;
+  onEscolher: (emoji: string) => void;
+}> = ({ id, emoji, onEscolher }) => (
+  <div>
+    <Label htmlFor={id}>Emoji relacionado</Label>
+    <SeletorDeEmoji onEscolher={onEscolher}>
+      <button
+        id={id}
+        type="button"
+        className={cn(campoBase, "flex h-10 items-center gap-2 py-1 text-left hover:border-campo-foco")}
+      >
+        <span className="text-xl leading-none">{emoji || "😀"}</span>
+        <span className="text-xs text-ink-faint">Trocar</span>
+      </button>
+    </SeletorDeEmoji>
+  </div>
+);
+
+/**
+ * O volume gravado no som, ajustável depois de subir.
+ *
+ * Antes só dava pra escolher na hora do envio, e quem errasse a mão tinha que
+ * apagar e subir de novo — gastando um dos oito espaços no caminho. A gravação
+ * sai quando o dedo solta a faixa, não a cada passo: seriam vinte chamadas
+ * numa arrastada só.
+ */
+const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({ guildId, som }) => {
+  const atualizar = useUpdateSound(guildId);
+  const [volume, setVolume] = useState(som.volume);
+
+  /// Se outra pessoa mexer, a lista chega com o valor novo.
+  useEffect(() => setVolume(som.volume), [som.volume]);
+
+  const salvar = () => {
+    if (volume === som.volume) return;
+    atualizar.mutate({ guildId, soundId: som.id, volume });
+  };
+
+  return (
+    <Popover onOpenChange={(aberto) => !aberto && salvar()}>
+      <PopoverTrigger asChild>
+        <button
+          title={`Volume do som — ${Math.round(som.volume * 100)}%`}
+          className="rounded p-1.5 text-ink-muted transition hover:text-ink"
+        >
+          <Volume2 size={16} />
+        </button>
+      </PopoverTrigger>
+
+      {/*
+        `portal={false}` como no seletor de emoji: as configurações moram num
+        diálogo modal, e o que sai pro `body` nasce com os cliques bloqueados —
+        a faixa apareceria e não mexeria.
+      */}
+      <PopoverContent side="top" align="end" portal={false} className="w-64">
+        <Label>Volume do som — {Math.round(volume * 100)}%</Label>
+        <Slider
+          min={0}
+          max={1}
+          step={0.05}
+          value={volume}
+          preenchido={volume}
+          aria-label={`Volume de ${som.name}`}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          onPointerUp={salvar}
+          onKeyUp={salvar}
+        />
+
+        <button
+          type="button"
+          onClick={() => {
+            const audio = new Audio(som.url);
+            audio.volume = volume;
+            void audio.play().catch(() => undefined);
+          }}
+          className="mt-3 flex items-center gap-1.5 text-xs text-ink-muted transition hover:text-ink"
+        >
+          <Play size={13} /> Ouvir assim
+        </button>
+
+        <p className="mt-3 text-[11px] leading-snug text-ink-faint">
+          Vale pra todo mundo do servidor. Cada pessoa ainda pode abaixar os sons só pra ela, no
+          painel da chamada.
+        </p>
+      </PopoverContent>
+    </Popover>
   );
 };
 

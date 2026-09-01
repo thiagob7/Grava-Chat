@@ -12,6 +12,7 @@ import {
   deleteEmoji,
   deleteSound,
   deleteSticker,
+  updateSound,
 } from "~/@core/application/requests/expression/mutate-expressions";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
@@ -110,6 +111,21 @@ export const useCreateSound = (guildId: string | undefined) => {
       toast.success("Som adicionado.");
     },
     onError: erro("Erro ao subir o som."),
+  });
+};
+
+/**
+ * Sem aviso de sucesso: quem mexe no volume mexe arrastando, e um brinde a
+ * cada solta do dedo empilharia cinco avisos na tela. A lista se atualiza
+ * sozinha, que é a confirmação que importa.
+ */
+export const useUpdateSound = (guildId: string | undefined) => {
+  const invalidar = useInvalidar(guildId);
+
+  return useMutation({
+    mutationFn: updateSound,
+    onSuccess: invalidar,
+    onError: erro("Erro ao mudar o som."),
   });
 };
 

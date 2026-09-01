@@ -49,6 +49,19 @@ export async function createSound({ guildId, ...data }: CreateSoundDTO): Promise
   return response.data;
 }
 
+export interface UpdateSoundDTO {
+  guildId: string;
+  soundId: string;
+  name?: string;
+  emoji?: string | null;
+  volume?: number;
+}
+
+export async function updateSound({ guildId, soundId, ...data }: UpdateSoundDTO): Promise<GuildSound> {
+  const response = await api.patch<GuildSound>(`/guilds/${guildId}/sounds/${soundId}`, data);
+  return response.data;
+}
+
 export async function deleteSound({ guildId, soundId }: { guildId: string; soundId: string }) {
   await api.delete(`/guilds/${guildId}/sounds/${soundId}`);
 }
