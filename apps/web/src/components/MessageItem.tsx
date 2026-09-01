@@ -392,13 +392,18 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </div>
         ) : (
           message.content && (
-            <p
+            /*
+              `<div>`, nao `<p>`: o bloco de codigo e um painel, e o navegador
+              fecha o paragrafo sozinho quando um bloco aparece dentro dele —
+              o "(editado)" acabaria fora do texto.
+            */
+            <div
               className="whitespace-pre-wrap break-words text-ink-muted"
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
-              <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} />
+              <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} blocos />
               {message.editedAt && <span className="ml-1 text-[10px] text-ink-faint">(editado)</span>}
-            </p>
+            </div>
           )
         )}
 

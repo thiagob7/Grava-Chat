@@ -1,7 +1,9 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
+import { BlocoDeCodigo } from "~/components/BlocoDeCodigo";
 import type { ResolverMencoes } from "~/hooks/use-mencoes";
+import { partirEmCodigo } from "~/lib/codigo";
 import { legivel } from "~/lib/cosmeticos/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/lib/links";
@@ -15,6 +17,13 @@ interface MessageContentProps {
   emojis: GuildEmoji[];
   className?: string;
   mencoes?: ResolverMencoes;
+  /**
+   * Desenha as cercas como painel — com a lingua no alto e o botao de copiar.
+   * Fica desligado por padrao porque a busca, as favoritas e a citacao mostram
+   * a mensagem numa linha so: ali o painel estouraria o cartao, e o codigo vai
+   * em `<code>` mesmo, no meio do texto.
+   */
+  blocos?: boolean;
 }
 
 const Pilula: React.FC<{ children: React.ReactNode; cor?: string | null; titulo?: string }> = ({
@@ -99,11 +108,52 @@ function enriquecer(
   return partes;
 }
 
+/// Links, emojis e menções: o texto que sobra depois de tirar o código.
+function corrido(
+  texto: string,
+  porNome: Map<string, GuildEmoji>,
+  chave: string,
+  mencoes?: ResolverMencoes,
+) {
+  const partes: React.ReactNode[] = [];
+  let ultimo = 0;
+
+  for (const casamento of texto.matchAll(LINK)) {
+    if (casamento.index === undefined) continue;
+
+    const url = limparLink(casamento[0]);
+    if (casamento.index > ultimo) {
+      partes.push(...enriquecer(texto.slice(ultimo, casamento.index), porNome, `${chave}-${ultimo}`, mencoes));
+    }
+
+    partes.push(
+      <a
+        key={`${chave}-l${casamento.index}`}
+        href={url}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-brand hover:underline"
+      >
+        {url}
+      </a>,
+    );
+
+    ultimo = casamento.index + url.length;
+  }
+
+  if (ultimo < texto.length) {
+    partes.push(...enriquecer(texto.slice(ultimo), porNome, `${chave}-${ultimo}`, mencoes));
+  }
+
+  return partes;
+}
+
 export const MessageContent: React.FC<MessageContentProps> = ({
   content,
   emojis,
   className,
   mencoes,
+  blocos = false,
 }) => {
   const abrirImagem = useLightbox((s) => s.abrir);
   const abrirImagensDeLinks = useAparencia((s) => s.imagensDeLinks);
@@ -133,35 +183,38 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   }
 
   const porNome = new Map(emojis.map((e) => [e.name, e]));
+  const pedacos = partirEmCodigo(content);
   const partes: React.ReactNode[] = [];
-  let ultimo = 0;
+  let temPainel = false;
 
-  for (const casamento of content.matchAll(LINK)) {
-    if (casamento.index === undefined) continue;
-
-    const url = limparLink(casamento[0]);
-    if (casamento.index > ultimo) {
-      partes.push(...enriquecer(content.slice(ultimo, casamento.index), porNome, `t${ultimo}`, mencoes));
+  pedacos.forEach((pedaco, i) => {
+    if (pedaco.tipo === "texto") {
+      partes.push(...corrido(pedaco.texto, porNome, `t${i}`, mencoes));
+      return;
     }
 
-    partes.push(
-      <a
-        key={`l${casamento.index}`}
-        href={url}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="text-brand hover:underline"
-      >
-        {url}
-      </a>,
-    );
+    /// `assim` no meio da frase, e a cerca quando o painel esta desligado:
+    /// nada de moldura, so a fonte e o fundo. A cerca perde as quebras porque
+    /// quem nao pediu painel mostra a mensagem numa linha so.
+    if (pedaco.tipo === "linha" || !blocos) {
+      const codigo =
+        pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
 
-    ultimo = casamento.index + url.length;
-  }
+      partes.push(
+        <code key={`c${i}`} className="rounded bg-surface-2 px-1 py-px font-mono text-[0.9em]">
+          {codigo}
+        </code>,
+      );
+      return;
+    }
 
-  if (ultimo < content.length) {
-    partes.push(...enriquecer(content.slice(ultimo), porNome, `t${ultimo}`, mencoes));
-  }
+    temPainel = true;
+    partes.push(<BlocoDeCodigo key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
+  });
+
+  /// `<div>` so quando ha painel: um bloco dentro do `<span>` da citacao (ou
+  /// de qualquer linha) fecharia o paragrafo a forca no navegador.
+  if (temPainel) return <div className={className}>{partes}</div>;
 
   return <span className={className}>{partes}</span>;
 };
