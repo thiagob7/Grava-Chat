@@ -4,9 +4,7 @@ import type { Decoracao } from "@gravae/shared";
 import {
   DECORACOES_DE_AVATAR,
   EFEITOS_DO_NOME,
-  EFEITOS_DO_PERFIL,
   FONTES,
-  MOLDURAS_DE_AVATAR,
   PATENTES_DE_PERFIL,
   PLACAS_DE_PERFIL,
 } from "~/lib/cosmeticos/catalogo";
@@ -102,22 +100,12 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         amostra={(id) => <Amostra familia="decoracao" id={id} />}
       />
 
-      <GradeDeOpcoes
-        label="Moldura do avatar"
-        opcoes={MOLDURAS_DE_AVATAR}
-        valor={rascunho.moldura}
-        onEscolher={(id) => definir("moldura", id)}
-        amostra={(id) => <Amostra familia="moldura" id={id} />}
-      />
+      {/*
+        A moldura do avatar e o efeito do cartão saíram da grade por enquanto —
+        veja FAMILIAS_DESLIGADAS no catálogo.
+      */}
 
       <div className="h-px bg-line" />
-
-      <GradeDeOpcoes
-        label="Efeito do cartão"
-        opcoes={EFEITOS_DO_PERFIL}
-        valor={rascunho.efeitoDoPerfil}
-        onEscolher={(id) => definir("efeitoDoPerfil", id)}
-      />
 
       <GradeDeOpcoes
         label="Patente"

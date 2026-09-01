@@ -109,3 +109,11 @@ export const ESTILOS_DO_CARGO: Opcao<EstiloDeCargo>[] = catalogar(ESTILOS_DE_CAR
 });
 
 export const VAZIOS = new Set<string>(["nenhum", "nenhuma", "solido", "padrao"]);
+
+/*
+  Desligadas por enquanto: a moldura do cartao e o efeito do perfil ficaram
+  estranhos no cartao. O catalogo e o CSS continuam de pe — pra religar,
+  esvazie este conjunto e devolva as grades em EnfeitesAba e no menu do
+  ProfileEditorModal.
+*/
+export const FAMILIAS_DESLIGADAS = new Set<string>(["moldura", "perfil"]);

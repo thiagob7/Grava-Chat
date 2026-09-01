@@ -10,11 +10,7 @@ import { Avatar } from "~/components/Avatar";
 import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { StatusModal } from "~/components/profile/StatusModal";
 import { EscolherEnfeiteModal } from "~/components/profile/EscolherEnfeiteModal";
-import {
-  DECORACOES_DE_AVATAR,
-  EFEITOS_DO_PERFIL,
-  MOLDURAS_DE_AVATAR,
-} from "~/lib/cosmeticos/catalogo";
+import { DECORACOES_DE_AVATAR } from "~/lib/cosmeticos/catalogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,9 +37,7 @@ export const ProfileEditorModal: React.FC<{
   const [definindoStatus, setDefinindoStatus] = useState(false);
   const escolherFoto = useRef<HTMLInputElement>(null);
   const escolherFaixa = useRef<HTMLInputElement>(null);
-  const [enfeiteAberto, setEnfeiteAberto] = useState<
-    "efeito" | "moldura" | "decoracao" | null
-  >(null);
+  const [enfeiteAberto, setEnfeiteAberto] = useState<"decoracao" | null>(null);
 
   const salvo = useMemo(() => doUsuario(user), [user]);
   const { rascunho, definir, descartar, sujo } = useRascunho(salvo);
@@ -185,14 +179,8 @@ export const ProfileEditorModal: React.FC<{
                             Trocar a faixa
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("efeito")}>
-                            Alterar o efeito do cartão
-                          </DropdownMenuItem>
                           <DropdownMenuItem onSelect={() => setEnfeiteAberto("decoracao")}>
                             Alterar a decoração do avatar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("moldura")}>
-                            Alterar a moldura do avatar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -246,34 +234,12 @@ export const ProfileEditorModal: React.FC<{
           </DialogPrimitive.Close>
 
           {/*
-            Escolher enfeite vendo so a miniatura da grade e chute: o efeito de
-            cartao e a moldura mudam o conjunto todo. Por isso o cartao inteiro
-            vai junto no modal, montado com o rascunho — mexeu na grade, mudou
-            ali do lado, antes de salvar.
+            Escolher enfeite vendo so a miniatura da grade e chute: a decoracao
+            muda o conjunto todo. Por isso o cartao inteiro vai junto no modal,
+            montado com o rascunho — mexeu na grade, mudou ali do lado, antes de
+            salvar. (Moldura e efeito do cartao estao desligados: veja
+            FAMILIAS_DESLIGADAS no catalogo.)
           */}
-          <EscolherEnfeiteModal
-            open={enfeiteAberto === "efeito"}
-            titulo="Alterar o efeito do cartão"
-            legenda="Seus efeitos"
-            opcoes={EFEITOS_DO_PERFIL}
-            valor={rascunho.efeitoDoPerfil}
-            onEscolher={(id) => definir("efeitoDoPerfil", id)}
-            onClose={() => setEnfeiteAberto(null)}
-            previa={<ProfileCardVisual {...previaDoCartao} />}
-          />
-
-          <EscolherEnfeiteModal
-            open={enfeiteAberto === "moldura"}
-            titulo="Alterar a moldura do avatar"
-            legenda="Suas molduras"
-            opcoes={MOLDURAS_DE_AVATAR}
-            valor={rascunho.moldura}
-            onEscolher={(id) => definir("moldura", id)}
-            onClose={() => setEnfeiteAberto(null)}
-            amostra={(id) => <Amostra familia="moldura" id={id} />}
-            previa={<ProfileCardVisual {...previaDoCartao} />}
-          />
-
           <EscolherEnfeiteModal
             open={enfeiteAberto === "decoracao"}
             titulo="Alterar a decoração do avatar"

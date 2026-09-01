@@ -1,13 +1,13 @@
 import type { CSSProperties } from "react";
 
-import { VAZIOS } from "./catalogo";
+import { FAMILIAS_DESLIGADAS, VAZIOS } from "./catalogo";
 
 export type EstiloCss = CSSProperties & Record<`--${string}`, string | number | undefined>;
 
 export const PARADO = "0s";
 
 export function classeDoEnfeite(familia: string, id: string | null | undefined): string | null {
-  if (!id || VAZIOS.has(id)) return null;
+  if (!id || VAZIOS.has(id) || FAMILIAS_DESLIGADAS.has(familia)) return null;
 
   return `gc-${familia}--${id}`;
 }
