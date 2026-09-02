@@ -23,7 +23,7 @@ import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { GuildRail } from "~/components/GuildRail";
 import { VoiceStage } from "~/components/VoiceStage";
-import { BotaoDeBaixarOApp } from "~/components/BotaoDeBaixarOApp";
+import { BotaoDoAplicativo } from "~/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
 import { PainelDePerfilDoDm } from "~/components/PainelDePerfilDoDm";
@@ -292,7 +292,7 @@ export const DirectMessages: React.FC = () => {
               </Tooltip>
 
               {/* Fecham a fileira, como no canal: valem pro app, não pra conversa. */}
-              <BotaoDeBaixarOApp />
+              <BotaoDoAplicativo />
               <CaixaDeEntrada />
             </div>
           </header>

@@ -43,7 +43,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
 import { useFavoritos } from "~/stores/favoritos";
-import { BotaoDeBaixarOApp } from "~/components/BotaoDeBaixarOApp";
+import { BotaoDoAplicativo } from "~/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
@@ -344,7 +344,7 @@ export const Chat: React.FC = () => {
               Estes dois fecham a fileira, depois da busca: eles não agem sobre
               a conversa aberta, e sim sobre o app inteiro.
             */}
-            <BotaoDeBaixarOApp />
+            <BotaoDoAplicativo />
             <CaixaDeEntrada />
           </div>
         </header>
