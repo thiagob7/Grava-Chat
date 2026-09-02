@@ -1,5 +1,7 @@
 import { prefsDeAparencia } from "~/stores/aparencia";
 
+import notificacaoUrl from "~/assets/sons/notificacao.mp3?url";
+
 let ctx: AudioContext | null = null;
 
 function contexto(): AudioContext | null {
@@ -124,6 +126,90 @@ const SONS = {
 
 export type SomDaInterface = keyof typeof SONS;
 
+/*
+  Sons gravados.
+
+  Todo o resto deste arquivo é oscilador: nota, duração, pronto. Um arquivo é
+  outra coisa — precisa viajar pela rede, ser decodificado e só então tocar. O
+  nome que estiver aqui ganha o arquivo e ignora as notas de `SONS`, que ficam
+  como estavam: se o arquivo não chegar, o som simplesmente não sai, e é melhor
+  silêncio do que um bipe no lugar de uma marca sonora.
+*/
+const GRAVADOS: Partial<Record<SomDaInterface, string>> = {
+  mensagem: notificacaoUrl,
+};
+
+/*
+  Gravado precisa do seu próprio volume. O `VOLUME` de cima é o pico de uma
+  senoide pura; o arquivo é banda cheia e chega quase no talo (pico em -2,8 dB),
+  então o mesmo número daria dois sons de altura bem diferente. Este é o único
+  lugar pra mexer se ficar alto ou baixo demais.
+*/
+const VOLUME_GRAVADO = 0.45;
+
+const bytes = new Map<string, Promise<ArrayBuffer | null>>();
+const decodificados = new Map<string, AudioBuffer>();
+
+/*
+  Baixa uma vez e guarda a promessa, não o resultado: duas mensagens chegando
+  juntas na primeira vez pediriam dois downloads do mesmo arquivo.
+
+  Roda no carregamento do módulo, e de propósito. Deixar pra buscar no primeiro
+  aviso faria justamente o primeiro aviso — o único que a pessoa não está
+  esperando — chegar mudo ou atrasado.
+*/
+function baixar(url: string): Promise<ArrayBuffer | null> {
+  let pendente = bytes.get(url);
+
+  if (!pendente) {
+    pendente = fetch(url)
+      .then((r) => (r.ok ? r.arrayBuffer() : null))
+      .catch(() => null);
+
+    bytes.set(url, pendente);
+  }
+
+  return pendente;
+}
+
+for (const url of Object.values(GRAVADOS)) void baixar(url);
+
+function emitir(audio: AudioContext, buffer: AudioBuffer, volume: number) {
+  const fonte = audio.createBufferSource();
+  const ganho = audio.createGain();
+
+  fonte.buffer = buffer;
+  ganho.gain.value = volume;
+
+  fonte.connect(ganho);
+  ganho.connect(audio.destination);
+
+  fonte.start();
+}
+
+function tocarGravado(url: string, volume: number) {
+  const audio = contexto();
+  if (!audio || volume <= 0) return;
+
+  const pronto = decodificados.get(url);
+  if (pronto) return emitir(audio, pronto, volume);
+
+  void baixar(url).then(async (dados) => {
+    if (!dados) return;
+
+    /*
+      `slice(0)` porque `decodeAudioData` CONSOME o ArrayBuffer que recebe —
+      ele fica com zero bytes depois. Passando o original, a segunda mensagem
+      encontraria um buffer vazio e nunca mais sairia som.
+    */
+    const buffer = await audio.decodeAudioData(dados.slice(0)).catch(() => null);
+    if (!buffer) return;
+
+    decodificados.set(url, buffer);
+    emitir(audio, buffer, volume);
+  });
+}
+
 export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?: boolean } = {}) {
   if (opcoes.mudo) return;
 
@@ -136,6 +222,9 @@ export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?:
   */
   const { modoStreamer, streamerSemSom } = prefsDeAparencia();
   if (modoStreamer && streamerSemSom) return;
+
+  const gravado = GRAVADOS[nome];
+  if (gravado) return tocarGravado(gravado, VOLUME_GRAVADO * (opcoes.volume ?? 1));
 
   tocar(SONS[nome], VOLUME * (opcoes.volume ?? 1));
 }

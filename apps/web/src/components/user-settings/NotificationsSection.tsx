@@ -90,11 +90,13 @@ export const NotificationsSection: React.FC = () => {
 
         <Opcao
           titulo="Som"
-          detalhe="Uma nota curta para mensagem e duas para menção. Não toca no canal que você está lendo."
+          detalhe="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
           ligado={prefs.som}
           onMudar={(v) => {
             prefs.definir({ som: v });
-            if (v) tocarSom("mencao");
+            /// A prévia toca o de MENSAGEM: é o que a pessoa vai ouvir o dia
+            /// inteiro. Mostrar a menção aqui anunciava o som mais raro.
+            if (v) tocarSom("mensagem");
           }}
         />
 
