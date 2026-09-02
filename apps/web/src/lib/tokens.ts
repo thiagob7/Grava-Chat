@@ -85,6 +85,7 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
     tokens: [
       { nome: "--color-campo", rotulo: "Campo" },
       { nome: "--color-campo-foco", rotulo: "Campo em foco" },
+      { nome: "--color-trilho", rotulo: "Trilho da régua", dica: "o trecho ainda não preenchido" },
     ],
   },
 ];

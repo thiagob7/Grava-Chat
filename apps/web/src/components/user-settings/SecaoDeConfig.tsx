@@ -24,8 +24,8 @@ interface SecaoDeConfigProps {
 }
 
 /*
-  Uma seção de configuração, com título grande e um fio acima separando da
-  anterior.
+  Uma seção de configuração: título grande, descrição e um fio fechando o
+  cabeçalho.
 
   O título era uma etiqueta minúscula em CAIXA ALTA e cinza — o tipo de rótulo
   que se lê letra por letra e some no meio dos controles. Numa tela de rolar,
@@ -45,16 +45,23 @@ export const SecaoDeConfig: React.FC<SecaoDeConfigProps> = ({
   const secaoAtual = React.useContext(ContextoDaSecao);
 
   return (
-  <section
-    id={ancora(id)}
-    className={cn("scroll-mt-5 border-t border-line pt-8 first:border-t-0 first:pt-0", className)}
-  >
+  <section id={ancora(id)} className={cn("scroll-mt-5 mt-10 first:mt-0", className)}>
     <h3 className="group/titulo flex items-center gap-1.5 text-lg font-semibold">
       {titulo}
       {secaoAtual && <BotaoDeLink secao={secaoAtual} sub={id} oQue="esta seção" />}
     </h3>
     {detalhe && <p className="mt-1 text-sm text-ink-muted">{detalhe}</p>}
-    <div className="mt-4">{children}</div>
+
+    {/*
+      O fio fica ABAIXO do título, fechando o cabeçalho da seção — e não entre
+      uma seção e outra. É a diferença entre "isto começa aqui" e "isto acabou
+      ali": com o traço em cima, o título parecia pertencer ao que vinha antes.
+
+      Nenhum fio entre itens. A linha marca seção; um traço a cada interruptor
+      transforma a tela numa tabela, e o olho passa a contar linhas em vez de
+      ler nomes.
+    */}
+    <div className="mt-3 border-t border-line pt-5">{children}</div>
   </section>
   );
 };

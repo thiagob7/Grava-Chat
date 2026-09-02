@@ -168,7 +168,12 @@ const ListaDeSons: React.FC = () => {
             {grupo.titulo}
           </p>
 
-          <div className="mt-2 divide-y divide-divisor overflow-hidden rounded-lg border border-line">
+          {/*
+            Sem fio entre os itens. A linha marca SEÇÃO, não linha de lista: um
+            traço a cada item transforma quinze escolhas numa tabela, e o olho
+            passa a contar linhas em vez de ler nomes.
+          */}
+          <div className="mt-2 overflow-hidden rounded-lg border border-line">
             {grupo.sons.map((som) => {
               const ligado = !sonsDesligados[som.nome];
 

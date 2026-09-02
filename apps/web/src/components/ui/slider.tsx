@@ -17,7 +17,15 @@ export const Slider = ({ className, preenchido, ...props }: SliderProps) => (
       className,
     )}
     style={{
-      background: `linear-gradient(to right, var(--color-brand) ${preenchido * 100}%, var(--color-surface-4) ${preenchido * 100}%)`,
+      /*
+        O trecho vazio usa `--color-trilho`, e NÃO uma cor de superfície.
+
+        Era `--color-surface-4` — que é justamente a cor dos menus. Dentro do
+        painel de sons ou do menu de volume, o trilho sumia no fundo e a régua
+        virava uma bolinha solta: dava pra arrastar, mas não pra ver até onde
+        ela ia. Um cinza claro próprio enxerga em qualquer painel.
+      */
+      background: `linear-gradient(to right, var(--color-brand) ${preenchido * 100}%, var(--color-trilho) ${preenchido * 100}%)`,
     }}
     {...props}
   />

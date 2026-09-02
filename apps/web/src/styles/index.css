@@ -32,6 +32,7 @@
   --color-surface-2: #1e1d23;
   --color-surface-3: #232028;
   --color-surface-4: #2a2730;
+  --color-trilho: #bcbcbf;
   --color-line: rgb(201 197 211 / 0.15);
   --color-campo: #242229;
   --color-campo-foco: #2f2c36;
@@ -99,6 +100,7 @@
   --color-surface-2: #020203;
   --color-surface-3: #0f0e12;
   --color-surface-4: #141217;
+  --color-trilho: #b8b8ba;
   --color-line: rgb(162 157 175 / 0.18);
   --color-campo: #100f13;
   --color-campo-foco: #17151a;
@@ -148,6 +150,7 @@
   --color-surface-2: #171011;
   --color-surface-3: #201617;
   --color-surface-4: #2b1e1f;
+  --color-trilho: #bcbcbf;
   --color-line: #2e2021;
   --color-campo: #201617;
   --color-campo-foco: #6b3134;
@@ -196,6 +199,7 @@
   --color-surface-2: #f0f1f3;
   --color-surface-3: #e6e7ea;
   --color-surface-4: #fbfbfc;
+  --color-trilho: #c4c7cc;
   --color-line: rgb(92 99 112 / 0.22);
   --color-campo: #f3f4f5;
   --color-campo-foco: #d8dbdf;
@@ -241,6 +245,7 @@
     --color-surface-2: #1e1d23;
     --color-surface-3: #232028;
     --color-surface-4: #2a2730;
+    --color-trilho: #bcbcbf;
     --color-line: rgb(201 197 211 / 0.15);
     --color-campo: #242229;
     --color-campo-foco: #2f2c36;

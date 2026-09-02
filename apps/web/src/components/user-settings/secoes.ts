@@ -11,7 +11,7 @@ export type Secao =
   | "conta"
   | "voz"
   | "avisos"
-  | "bots"
+  | "aplicativos"
   | "aparencia"
   | "bate-papo"
   | "acessibilidade"
@@ -61,7 +61,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],
 
   /// Sem subdivisão: uma lista só, ou uma tela de um assunto só.
-  bots: [],
+  aplicativos: [],
   aplicativo: [],
   servidor: [],
 };

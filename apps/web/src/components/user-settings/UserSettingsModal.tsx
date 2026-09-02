@@ -3,7 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Accessibility,
   Bell,
-  Bot,
+  Code2,
   ChevronRight,
   Download,
   Languages,
@@ -86,7 +86,6 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         subitens: SUBSECOES.acessibilidade,
       },
       { id: "idioma", label: "Idioma", icone: Languages, subitens: SUBSECOES.idioma },
-      { id: "bots", label: "Bots", icone: Bot, subitens: SUBSECOES.bots },
       /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
       /// de baixar e um convite pra lugar nenhum.
       ...(ehDesktop()
@@ -99,6 +98,25 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
               subitens: SUBSECOES.aplicativo,
             },
           ]),
+    ],
+  },
+  /*
+    O grupo de quem constrói em cima do Gravaê, separado das preferências.
+
+    Aplicativo não é preferência de aparelho: ele existe no servidor, tem
+    token e sobrevive à conta trocar de computador. Misturado com tema e som,
+    estava no lugar errado da lista — e é o único item daqui que outra pessoa
+    pode acabar usando.
+  */
+  {
+    titulo: "Desenvolvedor",
+    itens: [
+      {
+        id: "aplicativos" as const,
+        label: "Aplicativos",
+        icone: Code2,
+        subitens: SUBSECOES.aplicativos,
+      },
     ],
   },
   /// Esconder o item é conforto, não segurança: quem decide é a API, que
@@ -119,7 +137,7 @@ const TITULOS: Record<Secao, string> = {
   conta: "Minha conta",
   voz: "Voz e vídeo",
   avisos: "Notificações",
-  bots: "Bots",
+  aplicativos: "Aplicativos",
   aparencia: "Aparência",
   "bate-papo": "Bate-papo",
   acessibilidade: "Acessibilidade",
@@ -171,10 +189,16 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       .filter((grupo) => grupo.itens.length > 0);
   }, [busca, user.admin]);
 
-  /// Trocar de tela volta a leitura pro alto e zera a seção acesa — senão a
-  /// lateral apontaria uma seção da tela anterior.
+  /*
+    Trocar de tela volta a leitura pro alto e acende a PRIMEIRA seção.
+
+    Zerar deixava a árvore aberta sem nada marcado até a primeira rolagem — e
+    quem abre uma tela e não rola nunca via o fio aceso, como se a lateral
+    estivesse quebrada. Acender a primeira também é verdade: é onde a leitura
+    começa.
+  */
   useEffect(() => {
-    setSubAtiva(null);
+    setSubAtiva(SUBSECOES[secao][0]?.id ?? null);
     rolagem.current?.scrollTo({ top: 0 });
   }, [secao]);
 
@@ -367,7 +391,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
                   {secao === "voz" && <VoiceSection />}
                   {secao === "avisos" && <NotificationsSection />}
-                  {secao === "bots" && <BotsSection />}
+                  {secao === "aplicativos" && <BotsSection />}
 
                   {secao === "aparencia" && <AppearanceSection />}
                   {secao === "bate-papo" && <BatePapoSection />}
