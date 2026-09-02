@@ -14,6 +14,7 @@ import {
   ChatsCircle,
   Hash,
   SpeakerHigh,
+  Star,
   Users,
 } from "@phosphor-icons/react";
 
@@ -41,6 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
+import { useFavoritos } from "~/stores/favoritos";
 import { BotaoDeBaixarOApp } from "~/components/BotaoDeBaixarOApp";
 import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
@@ -287,9 +289,13 @@ export const Chat: React.FC = () => {
             </>
           )}
 
+          {/*
+            A ordem é a da referência, e ela tem lógica: primeiro o que age
+            sobre ESTE canal (avisos, fixadas, favorito), depois o que muda a
+            tela (membros), depois a busca, e por último os dois que valem pro
+            app inteiro.
+          */}
           <div className="ml-auto flex items-center gap-3">
-            {routeGuildId && <CampoDeBusca termo={busca} onBuscar={setBusca} />}
-
             {channel && channel.type !== "VOICE" && <SinoDoCanal channelId={channel.id} />}
 
             {channel && channel.type !== "VOICE" && (
@@ -298,6 +304,8 @@ export const Chat: React.FC = () => {
                 canManage={canInChannel(channel.id, "MANAGE_MESSAGES")}
               />
             )}
+
+            {channel && <EstrelaDoCanal channelId={channel.id} />}
 
             {channel?.type === "VOICE" && (
               <Tooltip label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
@@ -322,6 +330,8 @@ export const Chat: React.FC = () => {
                 <Users size={20} weight="fill" />
               </button>
             </Tooltip>
+
+            {routeGuildId && <CampoDeBusca termo={busca} onBuscar={setBusca} />}
 
             {/*
               Estes dois fecham a fileira, depois da busca: eles não agem sobre
@@ -542,5 +552,29 @@ const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+/**
+ * A estrela: põe o canal no topo da lista, num grupo "Favoritos".
+ *
+ * Vale neste aparelho — favoritar é dizer "quero este à mão", e o que está à
+ * mão no trabalho não é o mesmo que em casa.
+ */
+const EstrelaDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
+  const favorito = useFavoritos((s) => s.canais.includes(channelId));
+  const alternar = useFavoritos((s) => s.alternar);
+
+  return (
+    <Tooltip label={favorito ? "Tirar dos favoritos" : "Favoritar o canal"}>
+      <button
+        onClick={() => alternar(channelId)}
+        aria-label={favorito ? "Tirar dos favoritos" : "Favoritar o canal"}
+        aria-pressed={favorito}
+        className={cn("transition hover:text-ink", favorito ? "text-idle" : "text-ink-muted")}
+      >
+        <Star size={20} weight={favorito ? "fill" : "regular"} />
+      </button>
+    </Tooltip>
   );
 };

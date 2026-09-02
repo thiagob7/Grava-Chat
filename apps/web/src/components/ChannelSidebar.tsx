@@ -23,6 +23,7 @@ import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
 import { ChatsCircle, Hash, SpeakerHigh } from "@phosphor-icons/react";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
+import { useFavoritos } from "~/stores/favoritos";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,7 +94,20 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   }, [channels]);
   const uncategorized = channels.filter((c) => !c.categoryId);
 
+  /*
+    Favoritos no alto, e o canal continua no lugar de origem.
+
+    Tirar ele da categoria faria a estrela "mover" o canal — e aí favoritar
+    viraria uma decisão sobre a organização do servidor, que é de quem manda
+    nele. Aqui a estrela só duplica o atalho pra você.
+  */
+  const favoritos = useFavoritos((s) => s.canais);
+  const canaisFavoritos = channels.filter((c) => favoritos.includes(c.id));
+
   const groups = [
+    ...(canaisFavoritos.length
+      ? [{ id: "favoritos", name: "Favoritos", channels: canaisFavoritos }]
+      : []),
     ...(uncategorized.length ? [{ id: null, name: null, channels: uncategorized }] : []),
     ...(detail?.categories ?? []).map((category) => ({
       id: category.id,
@@ -218,7 +232,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                       <ChevronDown size={12} className={isCollapsed ? "-rotate-90" : ""} />
                       <span className="truncate">{group.name}</span>
                     </button>
-                    {canManageChannels && (
+                    {/*
+                      "Favoritos" não é categoria de verdade: criar canal ali
+                      mandaria `categoryId: "favoritos"` pra API, que não existe.
+                    */}
+                    {canManageChannels && group.id !== "favoritos" && (
                       <button
                         onClick={() => setCreatingIn(group.id)}
                         title="Criar canal"
