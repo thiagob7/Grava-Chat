@@ -79,6 +79,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.inputs.tag || github.ref_name }}
-        # `--clobber` porque rodar de novo tem que substituir o arquivo, não falhar.
-        run: gh release upload "$TAG" ${{ matrix.arquivos }} --clobber
         shell: bash
+        # `--clobber` porque rodar de novo tem que substituir o arquivo, não falhar.
+        #
+        # A release e criada quando nao existe. Disparo pela mao (`workflow_dispatch`)
+        # nao cria nada sozinho — e o `upload` recusava com "release not found",
+        # depois de ja ter empacotado os dois sistemas. Falhar no fim, quando o
+        # trabalho todo ja foi feito, e o pior lugar pra falhar.
+        #
+        # O `|| true` na criacao e por causa da matriz: macOS e Windows rodam ao
+        # mesmo tempo, e os dois tentam criar. O segundo perde a corrida, e
+        # perder essa corrida nao e erro — a release ja esta la, que era o
+        # objetivo.
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "Gravaê Chat ${TAG#v}" --generate-notes \
+            || true
+
+          gh release upload "$TAG" ${{ matrix.arquivos }} --clobber
