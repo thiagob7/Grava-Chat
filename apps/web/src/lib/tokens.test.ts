@@ -23,7 +23,13 @@ function tokensDoTema(): string[] {
   const bloco = /@theme \{([\s\S]*?)\n\}/.exec(css);
   if (!bloco) throw new Error("não achei o bloco @theme no index.css");
 
-  return [...bloco[1].matchAll(/^\s+(--color-[\w-]+):/gm)].map((m) => m[1]);
+  const corpo = bloco[1] ?? "";
+
+  /// `m[1]` é `string | undefined` para o TypeScript mesmo com o grupo sendo
+  /// obrigatório na expressão — o filtro convence, e não um `!`.
+  return [...corpo.matchAll(/^\s+(--color-[\w-]+):/gm)]
+    .map((m) => m[1])
+    .filter((nome): nome is string => Boolean(nome));
 }
 
 describe("catálogo de tokens do estúdio", () => {
