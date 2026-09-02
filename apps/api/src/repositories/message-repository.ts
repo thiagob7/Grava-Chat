@@ -12,6 +12,31 @@ export const messageInclude = {
 } satisfies Prisma.MessageInclude;
 
 export const messageRepository = {
+  /**
+   * As menções recentes a alguém, dentro dos canais que a pessoa pode ver.
+   *
+   * `mentions` guarda os ids citados na mensagem, e é por ele que a busca
+   * anda — não pelo texto. Assim `<@id>` escrito à mão, menção vinda de bot e
+   * resposta com aviso caem todas aqui, sem depender de como o texto ficou.
+   *
+   * Sete dias e cinquenta itens: a caixa de entrada é o que aconteceu agora,
+   * não um arquivo. O que passou disso vive na busca.
+   */
+  findMentions(userId: string, channelIds: string[], desde: Date) {
+    return prisma.message.findMany({
+      where: {
+        deletedAt: null,
+        channelId: { in: channelIds },
+        mentions: { has: userId },
+        authorId: { not: userId },
+        createdAt: { gte: desde },
+      },
+      include: { author: true, reactions: true, sticker: true },
+      orderBy: { id: "desc" },
+      take: 50,
+    });
+  },
+
   findById(id: string) {
     return prisma.message.findUnique({ where: { id } });
   },

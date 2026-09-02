@@ -18,6 +18,20 @@ export const useReadStates = (enabled: boolean) =>
   });
 
 /**
+ * A lista crua, sem virar mapa.
+ *
+ * A caixa de entrada precisa percorrer os canais e mostrar o nome de cada um
+ * — e o `select` do `useReadStates` já reduziu tudo a um dicionário por id,
+ * onde o nome não cabe.
+ */
+export const useReadStatesLista = (enabled: boolean) =>
+  useQuery({
+    queryKey: [queryKeys.message.read_states],
+    queryFn: findReadStates,
+    enabled,
+  });
+
+/**
  * O mesmo estado, somado por servidor.
  *
  * A barra da esquerda não tem a lista de canais dos outros servidores — só o

@@ -7,6 +7,7 @@ import {
   readStateRepository,
 } from "~/repositories/message-repository.js";
 import { toMessage } from "~/lib/serialize.js";
+import { dmRepository } from "~/repositories/friendship-repository.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { redis, keys } from "~/lib/redis.js";
@@ -374,6 +375,42 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, anterior?.id ?? null);
   },
 
+  /**
+   * A caixa de entrada de menções: quem falou com você, e onde.
+   *
+   * Os canais são resolvidos ANTES da busca — os dos servidores em que você
+   * está, mais as conversas privadas. É isso que impede a consulta de
+   * devolver menção de um canal do qual você saiu (a mensagem continua lá, e
+   * o seu id continua na lista de citados dela).
+   */
+  async mentions(userId: string) {
+    const [guildIds, dms] = await Promise.all([
+      memberRepository.guildIdsOf(userId),
+      dmRepository.findManyForUser(userId),
+    ]);
+
+    const canaisDeServidor = await channelRepository.idsByGuilds(guildIds.map((g) => g.guildId));
+    const channelIds = [...canaisDeServidor.map((c) => c.id), ...dms.map((d) => d.id)];
+    if (!channelIds.length) return [];
+
+    const desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const mensagens = await messageRepository.findMentions(userId, channelIds, desde);
+
+    const canais = await channelRepository.findManyByIds([
+      ...new Set(mensagens.map((m) => m.channelId)),
+    ]);
+    const porCanal = new Map(canais.map((c) => [c.id, c]));
+
+    return mensagens.map((m) => ({
+      ...toMessage(m, userId),
+      canal: {
+        id: m.channelId,
+        nome: porCanal.get(m.channelId)?.name ?? "conversa",
+        guildId: porCanal.get(m.channelId)?.guildId ?? null,
+      },
+    }));
+  },
+
   async readStates(userId: string) {
     const states = await readStateRepository.findManyByUser(userId);
 
@@ -384,12 +421,13 @@ export const messageService = {
     /// o não-lido de servidores que nem estão abertos — a lista de canais
     /// deles não está carregada no navegador.
     const canais = await channelRepository.guildIdsOf(states.map((s) => s.channelId));
-    const servidorDoCanal = new Map(canais.map((c) => [c.id, c.guildId]));
+    const dadosDoCanal = new Map(canais.map((c) => [c.id, c]));
 
     return Promise.all(
       states.map(async (s) => ({
         channelId: s.channelId,
-        guildId: servidorDoCanal.get(s.channelId) ?? null,
+        guildId: dadosDoCanal.get(s.channelId)?.guildId ?? null,
+        channelName: dadosDoCanal.get(s.channelId)?.name ?? null,
         lastReadMessageId: s.lastReadMessageId,
         unreadCount: s.lastReadMessageId
           ? await readStateRepository.countUnread(s.channelId, s.lastReadMessageId)

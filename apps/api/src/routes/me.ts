@@ -44,4 +44,7 @@ export async function meRoutes(app: FastifyInstance) {
   });
 
   app.get("/me/read-states", (req) => messageService.readStates(req.userId));
+
+  /// A aba de menções da caixa de entrada.
+  app.get("/me/mentions", (req) => messageService.mentions(req.userId));
 }

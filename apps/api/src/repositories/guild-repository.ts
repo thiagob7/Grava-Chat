@@ -215,12 +215,23 @@ export const channelRepository = {
 
     return prisma.channel.findMany({
       where: { id: { in: channelIds } },
-      select: { id: true, guildId: true },
+      select: { id: true, guildId: true, name: true },
     });
   },
 
   findManyByGuild(guildId: string) {
     return prisma.channel.findMany({ where: { guildId }, orderBy: { position: "asc" } });
+  },
+
+  /// Todos os canais de um punhado de servidores. A caixa de entrada precisa
+  /// disso pra saber onde procurar menção sem varrer o banco inteiro.
+  idsByGuilds(guildIds: string[]) {
+    if (!guildIds.length) return Promise.resolve([]);
+
+    return prisma.channel.findMany({
+      where: { guildId: { in: guildIds } },
+      select: { id: true },
+    });
   },
 
   lastPosition(guildId: string, categoryId: string | null) {

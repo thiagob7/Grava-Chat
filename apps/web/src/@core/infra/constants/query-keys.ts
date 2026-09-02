@@ -64,6 +64,7 @@ export const queryKeys = {
   },
 
   message: {
+    mentions: "find-mentions",
     read_states: "find-read-states",
     favorites: "find-favorite-messages",
     favorite_ids: "find-favorite-message-ids",
@@ -80,6 +81,7 @@ export const queryKeys = {
 
   user: {
     profile: (userId: string) => ["find-profile", userId] as const,
+    emComum: (userId: string) => ["find-em-comum", userId] as const,
   },
 
   friend: {

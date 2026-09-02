@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { Hash, Menu, MessageSquare, MessagesSquare, Users, Volume2 } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  Check,
+  Hash,
+  Menu,
+  MessageSquare,
+  MessagesSquare,
+  Users,
+  Volume2,
+} from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
@@ -19,7 +29,14 @@ import { Composer } from "~/components/Composer";
 import { ForumChannel } from "~/components/ForumChannel";
 import { ForumPostView } from "~/components/ForumPostView";
 import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
-import { FavoritasPanel } from "~/components/FavoritasPanel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
+import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
 import { MemberList } from "~/components/MemberList";
@@ -237,7 +254,7 @@ export const Chat: React.FC = () => {
       )}
 
       <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-        <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
+        <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
           {telaEstreita && (
             <button
               onClick={() => setMenuAberto(true)}
@@ -267,6 +284,8 @@ export const Chat: React.FC = () => {
           <div className="ml-auto flex items-center gap-3">
             {routeGuildId && <CampoDeBusca termo={busca} onBuscar={setBusca} />}
 
+            {channel && channel.type !== "VOICE" && <SinoDoCanal channelId={channel.id} />}
+
             {channel && channel.type !== "VOICE" && (
               <PinnedMessagesPanel
                 channelId={channel.id}
@@ -274,7 +293,7 @@ export const Chat: React.FC = () => {
               />
             )}
 
-            <FavoritasPanel />
+            <CaixaDeEntrada />
 
             {channel?.type === "VOICE" && (
               <Tooltip label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
@@ -387,6 +406,7 @@ export const Chat: React.FC = () => {
                 guildId={channel.guildId ?? undefined}
                 podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
                 podeAnexar={canInChannel(channel.id, "ATTACH_FILES")}
+                modoLento={channel.slowmodeSeconds}
               />
             </RodapeDaConversa>
           </AreaDeConversa>
@@ -451,5 +471,61 @@ export const Chat: React.FC = () => {
         }}
       />
     </div>
+  );
+};
+
+/**
+ * O sino do canal: o que ESTE canal faz com as mensagens que chegam.
+ *
+ * As três escolhas de sempre — tudo, só menções, nada — e uma quarta
+ * que importa mais: "seguir o padrão", que apaga a exceção em vez de gravar
+ * "tudo". Sem ela, mexer no sino uma vez congelaria o canal na escolha de
+ * hoje, mesmo que a preferência geral mudasse depois.
+ *
+ * Vale neste aparelho, como todo o resto dos avisos.
+ */
+const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
+  const modo = useAvisos((s) => s.porCanal[channelId] ?? null);
+  const definirCanal = useAvisos((s) => s.definirCanal);
+
+  const opcoes: { modo: ModoDoCanal | null; rotulo: string; detalhe: string }[] = [
+    { modo: null, rotulo: "Seguir o padrão", detalhe: "o que estiver em Notificações" },
+    { modo: "tudo", rotulo: "Todas as mensagens", detalhe: "avisa de tudo o que chegar" },
+    { modo: "mencoes", rotulo: "Só menções", detalhe: "avisa quando falarem com você" },
+    { modo: "nada", rotulo: "Silenciar canal", detalhe: "nenhum aviso, nenhum som" },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          aria-label="Avisos deste canal"
+          className={cn(
+            "rounded p-1.5 transition hover:bg-surface-3 hover:text-ink",
+            modo === "nada" ? "text-ink-faint" : "text-ink-muted",
+          )}
+        >
+          <Tooltip label={modo === "nada" ? "Canal silenciado" : "Avisos deste canal"}>
+            {modo === "nada" ? <BellOff size={18} /> : <Bell size={18} />}
+          </Tooltip>
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-64">
+        {opcoes.map((opcao) => (
+          <DropdownMenuItem
+            key={opcao.rotulo}
+            onSelect={() => definirCanal(channelId, opcao.modo)}
+            className="flex-col items-start gap-0"
+          >
+            <span className="flex w-full items-center justify-between gap-2">
+              {opcao.rotulo}
+              {modo === opcao.modo && <Check size={15} className="shrink-0 text-brand" />}
+            </span>
+            <span className="text-xs text-ink-faint">{opcao.detalhe}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

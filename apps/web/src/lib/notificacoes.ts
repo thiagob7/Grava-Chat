@@ -79,6 +79,14 @@ export function avisarDeMensagem({
   if (!meuId || message.author.id === meuId || ignorado) return;
 
   const prefs = prefsDeAviso();
+  /*
+    O canal manda mais que a preferência geral: quem silenciou um canal
+    específico não quer ouvi-lo nem quando a regra geral diz "me avise de
+    tudo" — e quem pediu "tudo" num canal não quer perdê-lo por causa do
+    "só menções" global.
+  */
+  const doCanal = prefs.porCanal[message.channelId] ?? null;
+  if (doCanal === "nada") return;
   const emFoco = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();
   const lendoEsteCanal = emFoco && canalAberto === message.channelId;
 
@@ -86,7 +94,8 @@ export function avisarDeMensagem({
   const importante = meMenciona || ehDm;
 
   if (lendoEsteCanal && !meMenciona) return;
-  if (prefs.soMencoes && !importante) return;
+  if (doCanal === "mencoes" && !meMenciona) return;
+  if (doCanal === null && prefs.soMencoes && !importante) return;
 
   if (prefs.som && !lendoEsteCanal) tocarSom(importante ? "mencao" : "mensagem");
 
