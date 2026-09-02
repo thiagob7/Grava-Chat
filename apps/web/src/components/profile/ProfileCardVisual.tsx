@@ -267,7 +267,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           <div className="flex items-center gap-2">
             <p
               className={cn(
-                "min-w-0 truncate text-lg font-bold leading-tight",
+                "min-w-0 truncate text-2xl font-bold leading-tight",
                 placa && "gc-placa",
                 placa,
               )}
@@ -428,7 +428,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           */}
           {(cargos.length > 0 || gerenciaCargos) && (
             <>
-              <p className="mb-1.5 mt-4 text-xs text-ink-faint">
+              <p className="mb-2 mt-5 text-sm font-bold text-ink">
                 {cargos.length === 0
                   ? "Cargos"
                   : cargos.length === 1
@@ -490,8 +490,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {createdAt && (
             <>
-              <p className="mt-4 text-xs text-ink-faint">Membro desde</p>
-              <p className="text-sm text-ink">
+              <p className="mb-1 mt-5 text-sm font-bold text-ink">Membro desde</p>
+              <p className="text-sm text-ink-muted">
                 {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
                   new Date(createdAt),
                 )}

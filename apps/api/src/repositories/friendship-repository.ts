@@ -61,7 +61,7 @@ export const mutualRepository = {
     return deA.map((m) => m.guildId).filter((id) => doB.has(id));
   },
 
-  async friendIdsInCommon(a: string, b: string): Promise<number> {
+  async friendIdsInCommon(a: string, b: string): Promise<string[]> {
     const amigosDe = async (id: string) => {
       const relacoes = await prisma.friendship.findMany({
         where: { status: "ACCEPTED", OR: [{ requesterId: id }, { addresseeId: id }] },
@@ -71,7 +71,7 @@ export const mutualRepository = {
     };
 
     const [deA, deB] = await Promise.all([amigosDe(a), amigosDe(b)]);
-    return [...deA].filter((id) => deB.has(id)).length;
+    return [...deA].filter((id) => deB.has(id));
   },
 };
 

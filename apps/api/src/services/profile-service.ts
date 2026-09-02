@@ -1,7 +1,7 @@
 import type { SelfUser } from "@gravae/shared";
 
 import { AppError, NotFoundError } from "~/lib/http.js";
-import { tagRepository } from "~/repositories/guild-repository.js";
+import { guildRepository, tagRepository } from "~/repositories/guild-repository.js";
 import { noteRepository, userRepository } from "~/repositories/user-repository.js";
 import {
   friendshipRepository,
@@ -30,7 +30,9 @@ export const profileService = {
 
     const [presenca, amigosEmComum, nota, etiquetas] = await Promise.all([
       presenceService.mapFor([userId]),
-      viewerId === userId ? Promise.resolve(0) : mutualRepository.friendIdsInCommon(viewerId, userId),
+      viewerId === userId
+        ? Promise.resolve([] as string[])
+        : mutualRepository.friendIdsInCommon(viewerId, userId),
       viewerId === userId ? Promise.resolve(null) : noteRepository.find(viewerId, userId),
       tagRepository.resolverMuitas(escolhida ? [escolhida] : []),
     ]);
@@ -56,8 +58,49 @@ export const profileService = {
       friendship,
       friendshipId: relacao?.id ?? null,
       mutualGuilds: guildsEmComum.length,
-      mutualFriends: amigosEmComum,
+      mutualFriends: amigosEmComum.length,
       nota: nota?.texto ?? null,
+    };
+  },
+
+  /**
+   * Quem e o que os dois têm em comum — as listas, não só a contagem.
+   *
+   * Rota separada da do perfil de propósito: o cartão abre com a contagem, que
+   * já vem do `view`, e só vai atrás dos nomes e dos ícones quando a pessoa
+   * clica na aba. Carregar tudo junto seria pagar duas buscas a mais em toda
+   * abertura de perfil pra mostrar algo que quase ninguém abre.
+   *
+   * Vale a mesma regra de visibilidade do perfil: sem amizade e sem servidor
+   * em comum, o usuário "não existe" pra quem está olhando.
+   */
+  async emComum(viewerId: string, userId: string) {
+    if (viewerId === userId) return { amigos: [], servidores: [] };
+
+    const [relacao, guildIds] = await Promise.all([
+      friendshipRepository.findBetween(viewerId, userId),
+      mutualRepository.guildIdsInCommon(viewerId, userId),
+    ]);
+
+    if (relacao === null && guildIds.length === 0) throw new NotFoundError("Usuário não encontrado");
+
+    const amigoIds = await mutualRepository.friendIdsInCommon(viewerId, userId);
+    const [amigos, servidores, presenca] = await Promise.all([
+      userRepository.findManyByIds(amigoIds),
+      guildRepository.findManyByIds(guildIds),
+      presenceService.mapFor(amigoIds),
+    ]);
+
+    return {
+      amigos: amigos.map((amigo) => ({
+        ...toPublicUser(amigo),
+        status: presenca[amigo.id] ?? "OFFLINE",
+      })),
+      servidores: servidores.map((guild) => ({
+        id: guild.id,
+        name: guild.name,
+        iconUrl: guild.iconUrl,
+      })),
     };
   },
 

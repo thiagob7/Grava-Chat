@@ -11,6 +11,11 @@ export async function userRoutes(app: FastifyInstance) {
     return profileService.view(req.userId, userId);
   });
 
+  app.get("/users/:userId/em-comum", (req) => {
+    const { userId } = z.object({ userId: objectId }).parse(req.params);
+    return profileService.emComum(req.userId, userId);
+  });
+
   app.put("/users/:userId/nota", (req) => {
     const { userId } = z.object({ userId: objectId }).parse(req.params);
     const { texto } = z.object({ texto: z.string().max(256) }).parse(req.body);

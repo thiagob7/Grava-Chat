@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Role } from "@gravae/shared";
 
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
@@ -10,7 +10,9 @@ import {
   DialogDescription,
   DialogTitle,
 } from "~/components/ui/dialog";
+import { useFindEmComum } from "~/@core/application/queries/user/use-find-em-comum";
 import { corMaisAlta } from "~/lib/cosmeticos/cargo";
+import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
 
 interface FullProfileModalProps {
@@ -20,15 +22,53 @@ interface FullProfileModalProps {
   onClose: () => void;
 }
 
+type Aba = "geral" | "amigos" | "servidores";
+
 export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
   perfil,
   cargos = [],
   onClose,
-}) => (
+}) => {
+  const [aba, setAba] = useState<Aba>("geral");
+  /*
+    As listas só são buscadas quando a aba sai da "Visão geral" — e a
+    contagem, que decide se a aba existe, já veio junto do perfil.
+  */
+  const emComum = useFindEmComum(perfil.id, aba !== "geral");
+
+  const abas: { id: Aba; rotulo: string }[] = [
+    { id: "geral", rotulo: "Visão geral" },
+    ...(perfil.mutualFriends > 0
+      ? [{ id: "amigos" as const, rotulo: `Amigos em comum (${perfil.mutualFriends})` }]
+      : []),
+    ...(perfil.mutualGuilds > 0
+      ? [{ id: "servidores" as const, rotulo: `Servidores em comum (${perfil.mutualGuilds})` }]
+      : []),
+  ];
+
+  return (
   <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
-    <DialogContent className="max-w-lg overflow-hidden p-0">
-      <div className="h-24" style={{ backgroundColor: avatarColor(perfil.id) }} />
+    {/*
+      A borda no acento é de propósito: o cartão de perfil é a única
+      coisa do app que ganha moldura colorida, e é ela que faz o retrato
+      parecer um cartão de verdade em cima da conversa.
+    */}
+    <DialogContent
+      className="max-w-lg overflow-hidden border-2 border-brand p-0"
+      /// o cartão é de leitura: focar a primeira aba na abertura acende um
+      /// anel que parece seleção
+      onOpenAutoFocus={(e) => e.preventDefault()}
+    >
+      <div
+        className="h-28 bg-cover bg-center"
+        style={{
+          backgroundColor: perfil.perfil?.bannerCor ?? avatarColor(perfil.id),
+          ...(perfil.perfil?.bannerUrl
+            ? { backgroundImage: `url(${perfil.perfil.bannerUrl})` }
+            : null),
+        }}
+      />
 
       <div className="px-6 pb-6">
         <div className="-mt-14 mb-4">
@@ -56,26 +96,79 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         </DialogTitle>
         <DialogDescription className="text-base">@{perfil.username}</DialogDescription>
 
-        {(perfil.mutualFriends > 0 || perfil.mutualGuilds > 0) && (
-          <p className="mt-2 text-sm text-ink-faint">
-            {[
-              perfil.mutualFriends > 0 &&
-                `${perfil.mutualFriends} amigo${perfil.mutualFriends > 1 ? "s" : ""} em comum`,
-              perfil.mutualGuilds > 0 &&
-                `${perfil.mutualGuilds} servidor${perfil.mutualGuilds > 1 ? "es" : ""} em comum`,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
+        {abas.length > 1 && (
+          /*
+            A fileira de abas com o sublinhado embaixo da escolhida, como no
+            abas. Ela só aparece quando há o que abrir: sem nada em comum,
+            uma aba sozinha chamada "Visão geral" não informa nada.
+          */
+          <div className="mt-4 flex gap-4 border-b border-line">
+            {abas.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setAba(item.id)}
+                aria-current={aba === item.id}
+                className={cn(
+                  "-mb-px border-b-2 pb-2 text-sm transition",
+                  aba === item.id
+                    ? "border-brand font-medium text-ink"
+                    : "border-transparent text-ink-muted hover:text-ink",
+                )}
+              >
+                {item.rotulo}
+              </button>
+            ))}
+          </div>
         )}
 
-        {perfil.bio && (
+        {aba !== "geral" && emComum.isPending && (
+          <p className="py-8 text-center text-sm text-ink-faint">Carregando…</p>
+        )}
+
+        {aba === "amigos" && emComum.data && (
+          <div className="mt-4 space-y-1">
+            {emComum.data.amigos.map((amigo) => (
+              <div key={amigo.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+                <Avatar
+                  id={amigo.id}
+                  name={amigo.displayName}
+                  url={amigo.avatarUrl}
+                  size={32}
+                  status={amigo.status}
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {amigo.displayName}
+                </span>
+                <span className="shrink-0 text-xs text-ink-faint">@{amigo.username}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {aba === "servidores" && emComum.data && (
+          <div className="mt-4 space-y-1">
+            {emComum.data.servidores.map((servidor) => (
+              <div key={servidor.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+                {servidor.iconUrl ? (
+                  <img src={servidor.iconUrl} alt="" className="size-8 rounded-full object-cover" />
+                ) : (
+                  <span className="flex size-8 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold">
+                    {servidor.name.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{servidor.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {aba === "geral" && perfil.bio && (
           <Bloco titulo="Sobre">
             <p className="whitespace-pre-wrap text-sm text-ink-muted">{perfil.bio}</p>
           </Bloco>
         )}
 
-        {cargos.length > 0 && (
+        {aba === "geral" && cargos.length > 0 && (
           <Bloco titulo="Cargos">
             <div className="flex flex-wrap gap-1.5">
               {cargos.map((cargo) => (
@@ -94,21 +187,26 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
           </Bloco>
         )}
 
-        <Bloco titulo="Membro desde">
-          <p className="text-sm text-ink-muted">
-            {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
-              new Date(perfil.createdAt),
-            )}
-          </p>
-        </Bloco>
+        {aba === "geral" && (
+          <Bloco titulo="Membro desde">
+            <p className="text-sm text-ink-muted">
+              {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
+                new Date(perfil.createdAt),
+              )}
+            </p>
+          </Bloco>
+        )}
       </div>
     </DialogContent>
   </Dialog>
-);
+  );
+};
 
 const Bloco: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
   <section className="mt-5">
-    <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">{titulo}</h3>
+    {/* Mesma tipografia do cartão pequeno: rótulo branco em negrito, e o
+        conteúdo em cinza embaixo. */}
+    <h3 className="mb-1.5 text-sm font-bold text-ink">{titulo}</h3>
     {children}
   </section>
 );
