@@ -245,6 +245,33 @@ export const voiceStateSchema = z.object({
 });
 export type VoiceState = z.infer<typeof voiceStateSchema>;
 
+/*
+  Um canal de voz COM gente dentro, para o trilho de servidores.
+
+  Carrega o nome do canal junto porque quem lê isto — o trilho — não tem os
+  canais dos servidores que não estão abertos. Sem o nome, a dica do servidor
+  saberia quantas pessoas estão em voz e não saberia dizer onde.
+*/
+export const vozNoServidorSchema = z.object({
+  channelId: z.string(),
+  channelName: z.string(),
+  /*
+    Gente, e não `VoiceState` cru.
+
+    O estado de voz guarda id e flags — mudo, surdo, transmitindo —, nada que
+    se possa desenhar. A dica mostra ROSTOS, e resolver nome e avatar no
+    cliente exigiria ter os membros de servidores que nem estão abertos.
+  */
+  pessoas: z.array(
+    z.object({
+      userId: z.string(),
+      displayName: z.string(),
+      avatarUrl: z.string().nullable(),
+    }),
+  ),
+});
+export type VozNoServidor = z.infer<typeof vozNoServidorSchema>;
+
 export const createGuildInput = z.object({
   name: z.string().min(2).max(LIMITS.guildName),
 });

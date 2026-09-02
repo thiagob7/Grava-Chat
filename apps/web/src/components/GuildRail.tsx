@@ -7,6 +7,8 @@ import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { AdicionarServidorModal } from "~/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
+import { DicaDoServidor } from "~/components/DicaDoServidor";
+import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/stores/configuracoes";
@@ -32,6 +34,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 }) => {
   const { data: guilds = [] } = useFindManyGuilds(true);
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
+  const { data: vozes = {} } = useVoiceStates(true);
   const [creating, setCreating] = useState(false);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
   const atualizacao = useAtualizacao();
@@ -122,7 +125,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   active ? "h-10" : temNovidade ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
                 )}
               />
-              <Tooltip label={guild.name} side="right">
+              <DicaDoServidor nome={guild.name} vozes={vozes[guild.id] ?? []}>
                 <button
                   onClick={() => onSelect(guild.id)}
                   className={cn(
@@ -139,7 +142,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                     initials(guild.name)
                   )}
                 </button>
-              </Tooltip>
+              </DicaDoServidor>
 
               {mencoes > 0 && (
                 <span

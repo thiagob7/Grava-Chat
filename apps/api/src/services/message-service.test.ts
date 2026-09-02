@@ -50,9 +50,20 @@ vi.mock("~/services/forum-service.js", () => ({
   forumService: { requirePostAberto: vi.fn(), registrarResposta: vi.fn() },
 }));
 
+/*
+  O mock do Redis envelheceu escondido.
+
+  Ele cobria só o modo lento; depois entrou o controle de vazão
+  (`fluxoDeMensagens`, com `incr` e `expire`) e ninguém atualizou aqui — porque
+  o arquivo inteiro nunca chegava a rodar: o `env.ts` matava o processo na
+  importação, e o vitest só sabia dizer "falhou ao carregar".
+
+  `incr` devolve 1 de propósito: é o primeiro uso da janela, o caso em que a
+  vazão deixa passar. Um teste de mensagem não deve morrer por limite de taxa.
+*/
 vi.mock("~/lib/redis.js", () => ({
-  redis: { set: vi.fn(), ttl: vi.fn() },
-  keys: { slowmode: () => "slow:teste" },
+  redis: { set: vi.fn(), ttl: vi.fn(), incr: vi.fn(async () => 1), expire: vi.fn() },
+  keys: { slowmode: () => "slow:teste", fluxoDeMensagens: () => "fluxo:teste" },
 }));
 
 const { messageService } = await import("~/services/message-service.js");

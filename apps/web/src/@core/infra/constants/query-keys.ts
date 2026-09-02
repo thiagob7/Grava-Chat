@@ -63,6 +63,10 @@ export const queryKeys = {
     pins: (channelId: string) => ["find-pins", channelId] as const,
   },
 
+  voice: {
+    states: "find-voice-states",
+  },
+
   message: {
     mentions: "find-mentions",
     read_states: "find-read-states",

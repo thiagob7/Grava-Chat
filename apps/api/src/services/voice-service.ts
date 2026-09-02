@@ -1,12 +1,16 @@
 import { AccessToken, RoomServiceClient, TrackSource } from "livekit-server-sdk";
-import type { VoiceState } from "@gravae/shared";
+import type { VoiceState, VozNoServidor } from "@gravae/shared";
 import { has, rooms } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError, ForbiddenError } from "~/lib/http.js";
 import { ehOutraAba } from "~/lib/retomada.js";
 import { redis, keys } from "~/lib/redis.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { channelRepository, guildRepository } from "~/repositories/guild-repository.js";
+import {
+  channelRepository,
+  guildRepository,
+  memberRepository,
+} from "~/repositories/guild-repository.js";
 import { accessService } from "./access-service.js";
 
 export const roomName = (channelId: string) => `channel-${channelId}`;
@@ -491,6 +495,75 @@ export const voiceService = {
           .filter((s): s is VoiceState => Boolean(s) && s!.channelId === channelId),
       ]),
     );
+  },
+
+  /*
+    Quem está em voz em TODOS os servidores de uma pessoa.
+
+    O trilho de servidores precisa disso: o detalhe do servidor traz os estados
+    de voz, mas só do servidor aberto — e o trilho mostra todos. Sem uma rota
+    própria, mostrar quem está em chamada num servidor fechado exigiria carregar
+    o detalhe de cada um, que traz canais, membros e últimas mensagens junto.
+
+    Devolve só canal COM gente. Canal vazio não interessa a quem está olhando o
+    trilho, e mandar a lista inteira faria a resposta crescer com o número de
+    canais em vez de com o número de pessoas em chamada.
+  */
+  async statesForUser(userId: string): Promise<Record<string, VozNoServidor[]>> {
+    const membros = await memberRepository.guildIdsOf(userId);
+    const guildIds = membros.map((m) => m.guildId);
+    if (!guildIds.length) return {};
+
+    const canais = await channelRepository.voiceChannelsOfGuilds(guildIds);
+    if (!canais.length) return {};
+
+    const estados = await voiceService.statesForChannels(canais.map((c) => c.id));
+
+    /*
+      Uma consulta só para todos os rostos.
+
+      Resolver por canal daria uma consulta por canal com gente — e quem tem
+      dez servidores com uma chamada em cada pagaria dez idas ao banco pra
+      desenhar uma dica que some ao tirar o mouse.
+    */
+    const ids = [...new Set(Object.values(estados).flatMap((lista) => lista.map((e) => e.userId)))];
+    const usuarios = new Map(
+      (await userRepository.findManyByIds(ids)).map((u) => [
+        u.id,
+        { userId: u.id, displayName: u.displayName, avatarUrl: u.avatarUrl },
+      ]),
+    );
+
+    const porServidor: Record<string, VozNoServidor[]> = {};
+
+    for (const canal of canais) {
+      /*
+        `guildId` é anulável no schema: canal de mensagem direta não tem
+        servidor. A consulta já pede só canais de servidores meus, mas o tipo
+        não sabe disso — e o dia em que um canal de voz existir fora de um
+        servidor, este `continue` é a diferença entre ignorá-lo e escrever numa
+        chave `null`.
+      */
+      const guildId = canal.guildId;
+      const dentro = estados[canal.id] ?? [];
+      if (!guildId || !dentro.length) continue;
+
+      const pessoas = dentro
+        .map((estado) => usuarios.get(estado.userId))
+        .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+      /// Estado no Redis de uma conta apagada deixa a lista vazia: melhor
+      /// omitir o canal do que anunciar uma chamada sem ninguém dentro.
+      if (!pessoas.length) continue;
+
+      (porServidor[guildId] ??= []).push({
+        channelId: canal.id,
+        channelName: canal.name,
+        pessoas,
+      });
+    }
+
+    return porServidor;
   },
 
   /*

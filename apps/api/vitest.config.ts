@@ -8,5 +8,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    /// Sem isto, todo teste que importa um módulo que importa o `env` morre no
+    /// `process.exit(1)` — e o vitest só sabe dizer "falhou ao carregar".
+    setupFiles: ["./vitest.setup.ts"],
   },
 });

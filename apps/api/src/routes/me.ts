@@ -7,6 +7,7 @@ import { rooms } from "@gravae/shared";
 import { toPerfilPublico, toPublicUser } from "~/lib/serialize.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
 import { messageService } from "~/services/message-service.js";
+import { voiceService } from "~/services/voice-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { toSelfUser } from "~/lib/serialize.js";
 import { updateProfileInput } from "~/validations/auth.js";
@@ -44,6 +45,10 @@ export async function meRoutes(app: FastifyInstance) {
   });
 
   app.get("/me/read-states", (req) => messageService.readStates(req.userId));
+
+  /// Quem está em voz em todos os meus servidores — o trilho usa pra dizer,
+  /// na dica de cada servidor, quem está em chamada lá dentro.
+  app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
 
   /// A aba de menções da caixa de entrada.
   app.get("/me/mentions", (req) => messageService.mentions(req.userId));

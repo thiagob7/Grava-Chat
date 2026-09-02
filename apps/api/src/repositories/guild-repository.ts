@@ -223,6 +223,17 @@ export const channelRepository = {
     return prisma.channel.findMany({ where: { guildId }, orderBy: { position: "asc" } });
   },
 
+  /// Os canais de voz de vários servidores de uma vez. O trilho precisa saber
+  /// quem está em chamada em TODOS eles, e não um servidor por consulta.
+  voiceChannelsOfGuilds(guildIds: string[]) {
+    if (!guildIds.length) return Promise.resolve([]);
+
+    return prisma.channel.findMany({
+      where: { guildId: { in: guildIds }, type: "VOICE" },
+      select: { id: true, guildId: true, name: true },
+    });
+  },
+
   /// Todos os canais de um punhado de servidores. A caixa de entrada precisa
   /// disso pra saber onde procurar menção sem varrer o banco inteiro.
   idsByGuilds(guildIds: string[]) {
