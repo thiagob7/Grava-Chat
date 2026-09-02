@@ -14,6 +14,7 @@ import {
 } from "~/stores/aparencia";
 import { cn } from "~/lib/utils";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { ControleDeEscala } from "~/components/user-settings/ControleDeEscala";
 
 interface TemaDaLista {
   id: Tema;
@@ -179,6 +180,36 @@ export const AppearanceSection: React.FC = () => {
             );
           })}
         </div>
+      </Secao>
+
+      <Secao
+        id="zoom-do-app"
+        titulo="Nível de zoom do app"
+        detalhe="Cresce a interface inteira — texto, ícones, avatares e espaçamentos, na mesma proporção."
+      >
+        <ControleDeEscala
+          valor={prefs.zoomDoApp}
+          onMudar={(zoomDoApp) => prefs.definir({ zoomDoApp })}
+          min={50}
+          max={200}
+          passo={5}
+          marcas={[50, 75, 100, 125, 150, 200]}
+        />
+      </Secao>
+
+      <Secao
+        id="escala-da-fonte"
+        titulo="Escala da fonte do chat"
+        detalhe="Cresce só o texto das mensagens. Os menus e a lista de canais ficam como estão."
+      >
+        <ControleDeEscala
+          valor={prefs.escalaDoChat}
+          onMudar={(escalaDoChat) => prefs.definir({ escalaDoChat })}
+          min={80}
+          max={180}
+          passo={5}
+          marcas={[80, 100, 120, 150, 180]}
+        />
       </Secao>
 
       <Secao id="mensagens" titulo="Mensagens">

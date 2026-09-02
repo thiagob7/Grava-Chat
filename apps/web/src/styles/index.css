@@ -342,6 +342,43 @@
 }
 
 /*
+  A escala da fonte do chat.
+
+  Cresce só a conversa, e não a interface inteira: quem lê muito quer a
+  mensagem maior sem que os menus, a lista de canais e os botões engordem
+  junto — para isso existe o zoom do app, que é outra pergunta.
+
+  `em` no filho e o fator no pai: assim tudo que estiver dentro da mensagem
+  (emoji, código na linha, o horário) acompanha na mesma proporção, sem
+  precisar de uma regra para cada pedaço.
+*/
+:root {
+  --gc-escala-do-chat: 1;
+}
+
+[data-mensagem] {
+  font-size: calc(1rem * var(--gc-escala-do-chat));
+}
+
+/*
+  Reduzir animação, por decisão de quem usa.
+
+  O `prefers-reduced-motion` do sistema continua valendo — este atributo é o
+  segundo caminho, para quem não quer mexer no sistema inteiro só por causa do
+  Gravaê. `0.01ms` em vez de `none` de propósito: com `none`, animação que
+  dispara evento de término nunca termina, e o que dependia dele trava.
+*/
+:root[data-animacao="reduzida"],
+:root[data-animacao="reduzida"] *,
+:root[data-animacao="reduzida"] *::before,
+:root[data-animacao="reduzida"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/*
   A partícula da super reação: sobe com o impulso sorteado, gira e some. As
   distâncias vêm em variáveis para cada partícula ter a sua — uma keyframe só
   serve as dezoito.

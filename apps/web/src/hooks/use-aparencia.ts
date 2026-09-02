@@ -15,6 +15,9 @@ export function useAparenciaAplicada() {
   const tema = useAparencia((s) => s.tema);
   const destaque = useAparencia((s) => s.destaque);
   const densidade = useAparencia((s) => s.densidade);
+  const zoomDoApp = useAparencia((s) => s.zoomDoApp);
+  const escalaDoChat = useAparencia((s) => s.escalaDoChat);
+  const reduzirAnimacao = useAparencia((s) => s.reduzirAnimacao);
   /*
     Quem mexeu na marca dentro do estúdio manda mais que a bolinha de destaque:
     é a escolha mais específica das duas. Sem esta trava, as duas escreviam na
@@ -30,6 +33,42 @@ export function useAparenciaAplicada() {
   useEffect(() => {
     document.documentElement.dataset.densidade = densidade;
   }, [densidade]);
+
+  /*
+    O zoom do app.
+
+    `zoom` na raiz, e não `font-size`: o app tem medidas em pixel — o trilho de
+    72px, os avatares, a altura da barra do canal — e com `font-size` só o que
+    está em `rem` cresceria. A tela ficaria com o texto grande dentro de caixas
+    do tamanho antigo.
+  */
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    if (zoomDoApp === 100) raiz.style.removeProperty("zoom");
+    else raiz.style.setProperty("zoom", String(zoomDoApp / 100));
+  }, [zoomDoApp]);
+
+  /// A escala do chat vira variável; quem lê é o CSS da mensagem.
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    if (escalaDoChat === 100) raiz.style.removeProperty("--gc-escala-do-chat");
+    else raiz.style.setProperty("--gc-escala-do-chat", String(escalaDoChat / 100));
+  }, [escalaDoChat]);
+
+  /*
+    Reduzir animação é uma DECISÃO da pessoa, e por isso um atributo próprio —
+    não dá pra escrever em `prefers-reduced-motion`, que é do sistema. O CSS
+    atende os dois: quem pediu no sistema já vinha atendido, e agora quem pede
+    aqui também.
+  */
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    if (reduzirAnimacao) raiz.dataset.animacao = "reduzida";
+    else delete raiz.dataset.animacao;
+  }, [reduzirAnimacao]);
 
   useEffect(() => {
     if (marcaDoEstudio) return;

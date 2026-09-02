@@ -1,6 +1,20 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Bell, Bot, ChevronRight, Download, Mic, Palette, Pencil, Search, Server, User, X } from "lucide-react";
+import {
+  Accessibility,
+  Bell,
+  Bot,
+  ChevronRight,
+  Download,
+  Languages,
+  Mic,
+  Palette,
+  Pencil,
+  Search,
+  Server,
+  User,
+  X,
+} from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -10,6 +24,8 @@ import { NotificationsSection } from "~/components/user-settings/NotificationsSe
 import { VoiceSection } from "~/components/user-settings/VoiceSection";
 import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
+import { AcessibilidadeSection } from "~/components/user-settings/AcessibilidadeSection";
+import { IdiomaSection } from "~/components/user-settings/IdiomaSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -55,6 +71,13 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
       { id: "aparencia", label: "Aparência", icone: Palette, subitens: SUBSECOES.aparencia },
       { id: "voz", label: "Voz e vídeo", icone: Mic, subitens: SUBSECOES.voz },
       { id: "avisos", label: "Notificações", icone: Bell, subitens: SUBSECOES.avisos },
+      {
+        id: "acessibilidade",
+        label: "Acessibilidade",
+        icone: Accessibility,
+        subitens: SUBSECOES.acessibilidade,
+      },
+      { id: "idioma", label: "Idioma", icone: Languages, subitens: SUBSECOES.idioma },
       { id: "bots", label: "Bots", icone: Bot, subitens: SUBSECOES.bots },
       /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
       /// de baixar e um convite pra lugar nenhum.
@@ -90,6 +113,8 @@ const TITULOS: Record<Secao, string> = {
   avisos: "Notificações",
   bots: "Bots",
   aparencia: "Aparência",
+  acessibilidade: "Acessibilidade",
+  idioma: "Idioma",
   aplicativo: "Baixar o app",
   servidor: "Servidor",
 };
@@ -336,6 +361,8 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   {secao === "bots" && <BotsSection />}
 
                   {secao === "aparencia" && <AppearanceSection />}
+                  {secao === "acessibilidade" && <AcessibilidadeSection />}
+                  {secao === "idioma" && <IdiomaSection />}
                   {secao === "aplicativo" && <AplicativoSection />}
                   {secao === "servidor" && user.admin && <ServidorSection />}
                 </ErrorBoundary>

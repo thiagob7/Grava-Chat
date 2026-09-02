@@ -7,7 +7,16 @@
   simplesmente não aconteceria.
 */
 
-export type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo" | "servidor";
+export type Secao =
+  | "conta"
+  | "voz"
+  | "avisos"
+  | "bots"
+  | "aparencia"
+  | "acessibilidade"
+  | "idioma"
+  | "aplicativo"
+  | "servidor";
 
 export interface SubSecao {
   id: string;
@@ -26,6 +35,8 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   aparencia: [
     { id: "tema", label: "Tema" },
     { id: "cor-de-destaque", label: "Cor de destaque" },
+    { id: "zoom-do-app", label: "Nível de zoom do app" },
+    { id: "escala-da-fonte", label: "Escala da fonte do chat" },
     { id: "mensagens", label: "Mensagens" },
     { id: "caixa-de-chat", label: "Caixa de chat" },
     { id: "modo-streamer", label: "Modo streamer" },
@@ -38,6 +49,8 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "qualidade", label: "Qualidade" },
   ],
   avisos: [{ id: "o-que-te-interrompe", label: "O que te interrompe" }],
+  acessibilidade: [{ id: "movimento", label: "Movimento" }],
+  idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],
 
   /// Sem subdivisão: uma lista só, ou uma tela de um assunto só.
   bots: [],

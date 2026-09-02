@@ -113,6 +113,14 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const confirmar = useConfirmar();
 
   const ignorado = useIgnoreStore((s) => s.ignorados).includes(message.author.id);
+  /*
+    Inscrever sem usar o valor é de propósito: quem formata a hora é o
+    `format.ts`, que lê a preferência direto. Sem esta linha, trocar de 24h
+    para AM/PM não mudaria nada na tela até a mensagem redesenhar por outro
+    motivo — e a pessoa concluiria que o botão não funciona.
+  */
+  useAparencia((s) => s.horaEm24h);
+
   const mostrarAvatares = useAparencia((s) => s.avatares);
   const mostrarReacoes = useAparencia((s) => s.reacoes);
   const mostrarPrevia = useAparencia((s) => s.previaDeLinks);

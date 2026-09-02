@@ -17,6 +17,23 @@ export interface PrefsDeAparencia {
   destaque: string | null;
   densidade: Densidade;
 
+  /*
+    Tamanho, em porcentagem.
+
+    `zoomDoApp` cresce a interface inteira; `escalaDoChat` cresce só o texto
+    das mensagens. São perguntas diferentes: quem tem monitor grande quer tudo
+    maior, e quem lê muito quer a conversa maior sem que os menus e a lista de
+    canais engordem junto.
+  */
+  zoomDoApp: number;
+  escalaDoChat: number;
+
+  /// Acessibilidade
+  reduzirAnimacao: boolean;
+
+  /// Idioma e região
+  horaEm24h: boolean;
+
   /// Mensagens
   imagensDeLinks: boolean;
   imagensEnviadas: boolean;
@@ -42,6 +59,15 @@ const PADRAO: PrefsDeAparencia = {
   tema: "escuro",
   destaque: null,
   densidade: "confortavel",
+
+  zoomDoApp: 100,
+  escalaDoChat: 100,
+  reduzirAnimacao: false,
+  /*
+    24h por padrão: é o formato que o Brasil usa falando e escrevendo, e o
+    `Intl` com `pt-BR` já entrega assim. Quem quiser AM/PM desliga.
+  */
+  horaEm24h: true,
 
   imagensDeLinks: true,
   imagensEnviadas: true,
