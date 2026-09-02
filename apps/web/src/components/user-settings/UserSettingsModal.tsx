@@ -413,10 +413,14 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
           */
           "flex w-full items-center gap-2 rounded-lg border px-2.5 py-[5px] text-left text-sm transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+          /*
+            Só o véu branco a 10%, SEM cor de borda. A referência declara um
+            `--settings-selected-border-color` e não o usa aqui: nem o item
+            nem o sub-item acesos ganham borda visível. A de 1px transparente
+            fica só pela altura, pra lista não andar a cada clique.
+          */
           ativo
-            ? /* véu branco a 10% + borda, como na referência — não uma cor chapada,
-                 que num painel claro não teria como acender */
-              "border-borda-ativa bg-selecionado font-medium text-ink"
+            ? "border-transparent bg-selecionado font-medium text-ink"
             : "border-transparent text-ink-muted hover:bg-hover hover:text-ink",
         )}
       >
@@ -474,7 +478,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
                     "relative z-10 truncate rounded-md border px-2.5 py-1 text-left text-[13px] transition",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
                     subAtiva === sub.id
-                      ? "border-borda-ativa bg-selecionado font-semibold text-ink"
+                      ? "border-transparent bg-selecionado font-semibold text-ink"
                       : "border-transparent text-ink-faint hover:bg-hover hover:text-ink-muted",
                   )}
                 >

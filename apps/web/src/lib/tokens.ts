@@ -21,14 +21,23 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Superfícies",
     tokens: [
-      { nome: "--color-surface-0", rotulo: "Fundo mais profundo", dica: "trilho de servidores, balões" },
-      { nome: "--color-surface-1", rotulo: "Barra lateral", dica: "lista de canais, painéis" },
+      { nome: "--color-surface-0", rotulo: "Fundo mais profundo", dica: "trilho de servidores" },
+      { nome: "--color-surface-1", rotulo: "Barra lateral", dica: "lista de canais, configurações" },
       { nome: "--color-surface-2", rotulo: "Área da conversa" },
-      { nome: "--color-surface-3", rotulo: "Elevação leve", dica: "hover, pastilhas" },
-      { nome: "--color-surface-4", rotulo: "Elevação forte" },
-      { nome: "--color-line", rotulo: "Borda" },
-      { nome: "--color-divisor", rotulo: "Divisória", dica: "aceita transparência" },
+      { nome: "--color-surface-3", rotulo: "Elevação leve", dica: "cartões, pastilhas" },
+      { nome: "--color-surface-4", rotulo: "Elevação forte", dica: "menus, balões e dicas" },
+      { nome: "--color-cabecalho", rotulo: "Barra do canal", dica: "a faixa com o nome do canal" },
+      { nome: "--color-composer", rotulo: "Caixa de escrever" },
+      { nome: "--color-painel", rotulo: "Cartão da chamada" },
+    ],
+  },
+  {
+    titulo: "Traços e realces",
+    tokens: [
+      { nome: "--color-line", rotulo: "Borda", dica: "contorno de cartão" },
+      { nome: "--color-divisor", rotulo: "Divisória", dica: "entre painéis; aceita transparência" },
       { nome: "--color-hover", rotulo: "Realce do mouse", dica: "aceita transparência" },
+      { nome: "--color-selecionado", rotulo: "Item escolhido", dica: "canal aberto; aceita transparência" },
     ],
   },
   {
@@ -36,11 +45,11 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
     tokens: [
       { nome: "--color-ink", rotulo: "Texto principal" },
       { nome: "--color-ink-muted", rotulo: "Texto secundário" },
-      { nome: "--color-ink-faint", rotulo: "Texto apagado", dica: "horários, dicas" },
+      { nome: "--color-ink-faint", rotulo: "Texto apagado", dica: "horários, rótulos, dicas" },
     ],
   },
   {
-    titulo: "Marca e acentos",
+    titulo: "Marca e presença",
     tokens: [
       { nome: "--color-brand", rotulo: "Marca" },
       { nome: "--color-brand-hover", rotulo: "Marca no hover" },
@@ -48,16 +57,24 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       { nome: "--color-online", rotulo: "Online" },
       { nome: "--color-idle", rotulo: "Ausente" },
       { nome: "--color-dnd", rotulo: "Não perturbe" },
+    ],
+  },
+  {
+    titulo: "Avisos",
+    tokens: [
       { nome: "--color-danger", rotulo: "Perigo", dica: "excluir, sair, erro" },
-      { nome: "--color-aviso", rotulo: "Aviso" },
+      { nome: "--color-aviso", rotulo: "Atenção" },
     ],
   },
   {
     titulo: "Conversa",
     tokens: [
       { nome: "--color-link", rotulo: "Link" },
-      { nome: "--color-mencao", rotulo: "Menção" },
-      { nome: "--color-mencao-fundo", rotulo: "Fundo da menção", dica: "aceita transparência" },
+      { nome: "--color-mencao", rotulo: "Menção a você" },
+      { nome: "--color-everyone", rotulo: "Menção a @everyone" },
+      { nome: "--color-here", rotulo: "Menção a @here" },
+      { nome: "--color-destaque", rotulo: "Fio de quem te menciona" },
+      { nome: "--color-destaque-fundo", rotulo: "Fundo de quem te menciona", dica: "aceita transparência" },
       { nome: "--color-resposta", rotulo: "Resposta", dica: "o fio da citação" },
       { nome: "--color-codigo", rotulo: "Código na linha" },
       { nome: "--color-codigo-bloco", rotulo: "Bloco de código" },

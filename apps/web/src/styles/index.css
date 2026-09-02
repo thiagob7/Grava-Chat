@@ -39,7 +39,6 @@
   --color-cabecalho: #1e1d23;
   --color-painel: #232028;
   --color-selecionado: rgb(255 255 255 / 0.1);
-  --color-borda-ativa: rgb(184 179 194 / 0.39);
   --color-ink: #f4f4f6;
   --color-ink-muted: #cecbd4;
   --color-ink-faint: #b1acbb;
@@ -107,7 +106,6 @@
   --color-cabecalho: #020203;
   --color-painel: #0f0e12;
   --color-selecionado: rgb(255 255 255 / 0.08);
-  --color-borda-ativa: rgb(172 167 183 / 0.41);
   --color-ink: #f4f4f6;
   --color-ink-muted: #cecbd4;
   --color-ink-faint: #b1acbb;
@@ -205,7 +203,6 @@
   --color-cabecalho: #f0f1f3;
   --color-painel: #e6e7ea;
   --color-selecionado: rgb(23 25 28 / 0.1);
-  --color-borda-ativa: rgb(104 111 126 / 0.44);
   --color-ink: #22252a;
   --color-ink-muted: #616876;
   --color-ink-faint: #6e7686;
@@ -251,7 +248,6 @@
     --color-cabecalho: #1e1d23;
     --color-painel: #232028;
     --color-selecionado: rgb(255 255 255 / 0.1);
-    --color-borda-ativa: rgb(184 179 194 / 0.39);
     --color-ink: #f4f4f6;
     --color-ink-muted: #cecbd4;
     --color-ink-faint: #b1acbb;
