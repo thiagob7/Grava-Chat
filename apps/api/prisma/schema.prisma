@@ -205,6 +205,9 @@ model Guild {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   iconUrl     String?
+  /// A faixa larga no alto da lista de canais. Opcional: sem ela a lista
+  /// começa direto no nome do servidor, como sempre foi.
+  bannerUrl   String?
   description String?
   /// etiqueta de até 4 letras que aparece do lado do nome de quem é membro
   tag       String?

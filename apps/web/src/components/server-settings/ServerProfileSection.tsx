@@ -20,7 +20,9 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
   const [name, setName] = useState(guild.name);
   const [description, setDescription] = useState(guild.description ?? "");
   const [iconUrl, setIconUrl] = useState(guild.iconUrl);
+  const [bannerUrl, setBannerUrl] = useState(guild.bannerUrl ?? null);
   const [economia, setEconomia] = useState<string | null>(null);
+  const inputDaFaixa = useRef<HTMLInputElement>(null);
 
   const escolherIcone = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -38,10 +40,24 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
     );
   };
 
+  /*
+    A faixa é larga e vive no alto da lista de canais — por isso sobe com um
+    teto de largura bem maior que o do ícone, que é um quadradinho.
+  */
+  const escolherFaixa = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    const enviado = await uploadImage.mutateAsync({ file, maxSize: 960 }).catch(() => null);
+    if (enviado) setBannerUrl(enviado.attachment.url);
+  };
+
   const mudou =
     name.trim() !== guild.name ||
     (description.trim() || null) !== (guild.description ?? null) ||
-    iconUrl !== guild.iconUrl;
+    iconUrl !== guild.iconUrl ||
+    bannerUrl !== (guild.bannerUrl ?? null);
 
   const salvar = () =>
     updateGuild.mutate({
@@ -49,6 +65,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
       name: name.trim(),
       description: description.trim() || null,
       iconUrl,
+      bannerUrl,
     });
 
   return (
@@ -108,6 +125,52 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
 
       <div className="my-6 h-px bg-line" />
 
+      <Label>Faixa do topo</Label>
+      <div className="space-y-3">
+        <div
+          className="flex h-32 items-center justify-center overflow-hidden rounded-lg bg-cover bg-center text-xs text-ink-faint"
+          style={{
+            backgroundColor: avatarColor(guild.id),
+            ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
+          }}
+        >
+          {!bannerUrl && "Aparece no alto da lista de canais"}
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            variant="surface"
+            size="sm"
+            onClick={() => inputDaFaixa.current?.click()}
+            disabled={uploadImage.isPending}
+          >
+            <Upload size={14} />
+            {uploadImage.isPending ? "Enviando…" : "Alterar faixa"}
+          </Button>
+
+          {bannerUrl && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setBannerUrl(null)}
+              className="text-danger"
+            >
+              Remover
+            </Button>
+          )}
+
+          <input
+            ref={inputDaFaixa}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            onChange={(e) => void escolherFaixa(e)}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      <div className="my-6 h-px bg-line" />
+
       <Label htmlFor="guild-name">Nome do servidor</Label>
       <Input
         id="guild-name"
@@ -139,6 +202,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
                 setName(guild.name);
                 setDescription(guild.description ?? "");
                 setIconUrl(guild.iconUrl);
+                setBannerUrl(guild.bannerUrl ?? null);
               }}
             >
               Descartar

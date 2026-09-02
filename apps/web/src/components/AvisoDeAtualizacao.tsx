@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Download, RotateCw, Sparkles } from "lucide-react";
-import type { EstadoDaAtualizacao } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
-import { desktop } from "~/lib/desktop";
+import { useAtualizacao } from "~/hooks/use-atualizacao";
 import { cn } from "~/lib/utils";
 
 /*
@@ -18,29 +17,9 @@ import { cn } from "~/lib/utils";
   esta faixa aparece direto em "pronta": clicou, reinicia, acabou.
 */
 export const AvisoDeAtualizacao: React.FC = () => {
-  const [estado, setEstado] = useState<EstadoDaAtualizacao | null>(null);
+  const { estado, ponte, temNovidade, baixando, pronta } = useAtualizacao();
 
-  useEffect(() => {
-    /*
-      `atualizacao` pode não existir: quem está com um aplicativo anterior à
-      v0.2.0 tem uma ponte sem ela. Sem esta guarda, o site novo quebraria
-      justamente no app velho — que é exatamente quem precisa ver este aviso.
-    */
-    const ponte = desktop()?.atualizacao;
-    if (!ponte) return;
-
-    void ponte.estado().then(setEstado);
-    return ponte.aoMudar(setEstado);
-  }, []);
-
-  if (!estado || !estado.disponivel) return null;
-  /// Erro de rede não vira aviso: tenta de novo sozinho daqui a pouco, e uma
-  /// faixa vermelha por causa de Wi-Fi oscilando seria só barulho.
-  if (estado.fase === "erro") return null;
-
-  const ponte = desktop()?.atualizacao;
-  const baixando = estado.fase === "baixando";
-  const pronta = estado.fase === "pronta";
+  if (!estado || !temNovidade) return null;
 
   return (
     <div

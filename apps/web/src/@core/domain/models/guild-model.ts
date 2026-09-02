@@ -14,6 +14,7 @@ export interface GuildModel {
   id: string;
   name: string;
   iconUrl: string | null;
+  bannerUrl?: string | null;
   description?: string | null;
   tag?: string | null;
   tagIcon?: string | null;
