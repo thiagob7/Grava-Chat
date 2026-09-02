@@ -32,7 +32,14 @@ export const Tooltip = ({
         side={side}
         sideOffset={6}
         className={cn(
-          "z-50 rounded bg-surface-4 px-2.5 py-1.5 text-xs font-medium text-ink shadow-lg",
+          /*
+            Medidas da referência: a cor já era a de menu (`surface-4`), mas
+            faltavam a borda de 1px e a sombra baixa e larga — sem elas o balão
+            se dissolve quando cai sobre um painel de cor parecida, que é
+            justamente onde ele mais aparece.
+          */
+          "z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
+          "shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)]",
           "data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0",
         )}
       >
