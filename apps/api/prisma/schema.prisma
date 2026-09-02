@@ -113,6 +113,20 @@ model User {
   perfil              EstiloDePerfil?
   statusPersonalizado StatusPersonalizado?
   lastSeenAt  DateTime?
+
+  /*
+    Privacidade.
+
+    Mora no banco, e não no aparelho como as outras preferências: estas duas
+    valem contra OUTRAS pessoas. Uma escolha que o servidor não conhece não
+    protege ninguém — quem manda o pedido não passa pelo seu navegador.
+
+    Ambas nascem `true` porque é o comportamento que já existia; conta antiga
+    não pode acordar mais fechada do que dormiu.
+  */
+  aceitaPedidos   Boolean @default(true)
+  mostraAtividade Boolean @default(true)
+
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 

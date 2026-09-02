@@ -31,9 +31,21 @@ export const friendshipService = {
       userRepository.findById(userId),
     ]);
 
+    /*
+      Amigo que escondeu a atividade sai da lista.
+
+      A checagem é aqui, e não na tela: "ativos agora" é o que o SERVIDOR conta
+      sobre outras pessoas. Filtrar no cliente entregaria a informação e pediria
+      pra ele não desenhar — que é o mesmo que não esconder nada.
+
+      Você continua se vendo mesmo escondido: a escolha é sobre quem te vê, e
+      perder o próprio caminho de volta pra chamada seria castigo, não
+      privacidade.
+    */
     const amigos = relacoes
       .filter((r) => r.status === "ACCEPTED")
-      .map((r) => (r.requesterId === userId ? r.addressee : r.requester));
+      .map((r) => (r.requesterId === userId ? r.addressee : r.requester))
+      .filter((amigo) => amigo.mostraAtividade);
 
     /*
       Você entra na própria lista.
@@ -143,6 +155,16 @@ export const friendshipService = {
     const alvo = await userRepository.findByUsernamePublic(username.replace(/^@/, "").trim());
     if (!alvo) throw new NotFoundError("Não achei ninguém com esse nome de usuário");
     if (alvo.id === userId) throw new AppError("Você não pode adicionar a si mesmo");
+
+    /*
+      Quem fechou os pedidos não recebe.
+
+      A mensagem é a mesma de quem não existe, de propósito: dizer "essa pessoa
+      não aceita pedidos" confirma que o nome de usuário existe, e transforma a
+      busca de amigos numa forma de descobrir contas. Quem fecha a porta não
+      quer nem que saibam que ela está ali.
+    */
+    if (!alvo.aceitaPedidos) throw new AppError("Não foi possível enviar o pedido");
 
     const existente = await friendshipRepository.findBetween(userId, alvo.id);
 

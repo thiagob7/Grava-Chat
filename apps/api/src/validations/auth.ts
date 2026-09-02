@@ -27,6 +27,12 @@ export const updateProfileInput = z.object({
     .nullable()
     .optional(),
   statusPersonalizado: statusPersonalizadoSchema.nullable().optional(),
+
+  /// Privacidade. Entra pelo mesmo `PATCH /me` do resto do perfil: são
+  /// preferências da CONTA, e uma rota só evita dois caminhos de escrita
+  /// para o mesmo documento.
+  aceitaPedidos: z.boolean().optional(),
+  mostraAtividade: z.boolean().optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 

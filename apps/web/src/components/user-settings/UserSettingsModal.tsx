@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Download,
   Languages,
+  EyeOff,
   MessageSquare,
   Mic,
   Palette,
@@ -28,6 +29,7 @@ import { AplicativoSection } from "~/components/user-settings/AplicativoSection"
 import { AcessibilidadeSection } from "~/components/user-settings/AcessibilidadeSection";
 import { IdiomaSection } from "~/components/user-settings/IdiomaSection";
 import { BatePapoSection } from "~/components/user-settings/BatePapoSection";
+import { PrivacidadeSection } from "~/components/user-settings/PrivacidadeSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -65,7 +67,15 @@ interface Item {
 const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   {
     titulo: "Conta do usuário",
-    itens: [{ id: "conta", label: "Minha conta", icone: User, subitens: SUBSECOES.conta }],
+    itens: [
+      { id: "conta", label: "Minha conta", icone: User, subitens: SUBSECOES.conta },
+      {
+        id: "privacidade",
+        label: "Privacidade",
+        icone: EyeOff,
+        subitens: SUBSECOES.privacidade,
+      },
+    ],
   },
   {
     titulo: "Configurações do aplicativo",
@@ -135,6 +145,7 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
 
 const TITULOS: Record<Secao, string> = {
   conta: "Minha conta",
+  privacidade: "Privacidade",
   voz: "Áudio e vídeo",
   avisos: "Notificações",
   aplicativos: "Aplicativos",
@@ -436,6 +447,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 <ContextoDaSecao.Provider value={secao}>
                 <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
                   {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
+                  {secao === "privacidade" && <PrivacidadeSection user={user} />}
                   {secao === "voz" && <VoiceSection />}
                   {secao === "avisos" && <NotificationsSection />}
                   {secao === "aplicativos" && <BotsSection />}

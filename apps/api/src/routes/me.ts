@@ -50,6 +50,18 @@ export async function meRoutes(app: FastifyInstance) {
   /// na dica de cada servidor, quem está em chamada lá dentro.
   app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
 
+  /// Tudo o que a conta guarda, num JSON. O nome do arquivo sai no cabeçalho
+  /// pra quem baixar não receber um "download" sem extensão.
+  app.get("/me/exportar", async (req, reply) => {
+    const dados = await meService.exportar(req.userId);
+    const dia = new Date().toISOString().slice(0, 10);
+
+    return reply
+      .header("content-disposition", `attachment; filename="gravae-${dia}.json"`)
+      .type("application/json")
+      .send(dados);
+  });
+
   /// A aba de menções da caixa de entrada.
   app.get("/me/mentions", (req) => messageService.mentions(req.userId));
 }

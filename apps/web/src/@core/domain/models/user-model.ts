@@ -25,6 +25,11 @@ export interface SelfUserModel extends PublicUserModel {
   desiredStatus: DesiredStatus;
   /// Vem da API (lista ADMIN_EMAILS). Libera o painel de servidor.
   admin: boolean;
+
+  /// Privacidade: guardada na conta porque vale contra outras pessoas. Quem
+  /// manda o pedido de amizade não passa pelo seu navegador.
+  aceitaPedidos: boolean;
+  mostraAtividade: boolean;
 }
 
 export interface SessionModel {

@@ -33,6 +33,16 @@ export const selfUserSchema = publicUserSchema.extend({
   desiredStatus: z.enum(DESIRED_STATUSES),
   /// Mostra o painel do servidor. Quem decide é a API; o front só obedece.
   admin: z.boolean(),
+
+  /*
+    Privacidade, guardada na conta e não no aparelho.
+
+    As duas valem contra OUTRAS pessoas — quem manda o pedido de amizade não
+    passa pelo seu navegador —, então uma escolha que o servidor não conhece
+    não protegeria ninguém.
+  */
+  aceitaPedidos: z.boolean(),
+  mostraAtividade: z.boolean(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 

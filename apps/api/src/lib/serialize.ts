@@ -95,6 +95,8 @@ export function toSelfUser(
     statusPersonalizado: statusVigente(u),
     desiredStatus,
     admin: ehAdmin(u.email),
+    aceitaPedidos: u.aceitaPedidos,
+    mostraAtividade: u.mostraAtividade,
   };
 }
 

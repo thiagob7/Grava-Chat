@@ -9,6 +9,7 @@
 
 export type Secao =
   | "conta"
+  | "privacidade"
   | "voz"
   | "avisos"
   | "aplicativos"
@@ -32,6 +33,11 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   conta: [
     { id: "detalhes-de-login", label: "Detalhes de login" },
     { id: "sessoes", label: "Sessões" },
+  ],
+  privacidade: [
+    { id: "amigos-e-dms", label: "Amigos e mensagens diretas" },
+    { id: "compartilhamento-de-atividade", label: "Compartilhamento de atividade" },
+    { id: "exportar-dados", label: "Exportar dados" },
   ],
   aparencia: [
     { id: "tema", label: "Tema" },
