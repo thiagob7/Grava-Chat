@@ -53,6 +53,13 @@ export const Tooltip = ({
         ) : (
           label
         )}
+
+        {/*
+          A setinha vem do próprio Radix (`Tooltip.Arrow`), como a do balão —
+          nada desenhado à mão. Ela liga a dica ao botão: sem isso, com dois
+          botões vizinhos, não dá pra saber de quem é a dica.
+        */}
+        <TooltipPrimitive.Arrow width={12} height={6} className="fill-surface-4" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   </TooltipPrimitive.Root>

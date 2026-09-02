@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { AtSign, Menu, Phone, PhoneOff, UserRound, Video } from "lucide-react";
 
@@ -102,6 +103,40 @@ export const DirectMessages: React.FC = () => {
   /// assistindo a uma transmissão, a área precisa de altura; com só rostos, não
   const assistindo = useVoiceStore((s) => Boolean(s.assistindo));
   const chamando = emChamadaAqui && estaChamando({ guildId: null, quantosNaSala: naSala });
+
+  /*
+    Ficar sozinho DEPOIS que alguém entrou é o fim da chamada, não uma nova.
+
+    Sem isto, quem desligava por último deixava o outro lado numa tela de
+    "Chamando…" que tocava a cada três segundos pra sempre — e, pior, o outro
+    continuava dentro da sala, então o telefone voltava a tocar pra quem já
+    tinha desligado. O prazo curto existe pra sobreviver a uma reconexão: cair
+    a rede por um segundo não pode encerrar a conversa.
+  */
+  const alguemEntrou = useRef(false);
+
+  useEffect(() => {
+    if (!emChamadaAqui) {
+      alguemEntrou.current = false;
+      return;
+    }
+
+    if (naSala > 1) {
+      alguemEntrou.current = true;
+      return;
+    }
+
+    if (!alguemEntrou.current) return;
+
+    const prazo = setTimeout(() => {
+      if (useVoiceStore.getState().tiles.length > 1) return;
+
+      void sairDaChamada();
+      toast.info("A chamada terminou.");
+    }, 4000);
+
+    return () => clearTimeout(prazo);
+  }, [emChamadaAqui, naSala, sairDaChamada]);
 
   /*
     Ligar com vídeo é a MESMA chamada, com a câmera já aberta — e não um tipo

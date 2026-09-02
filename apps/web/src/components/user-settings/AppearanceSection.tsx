@@ -26,40 +26,32 @@ interface TemaDaLista {
 }
 
 const TEMAS: TemaDaLista[] = [
-  { id: "claro", nome: "Claro", icone: <Sun size={14} />, amostra: ["#ffffff", "#eeeef2", "#e2e2e8"] },
-  { id: "escuro", nome: "Escuro", icone: <Moon size={14} />, amostra: ["#202024", "#18181b", "#121214"] },
+  {
+    id: "claro",
+    nome: "Claro",
+    icone: <Sun size={14} />,
+    amostra: ["#f0f1f3", "#ebecef", "#e6e7ea"],
+    acento: "#413cdd",
+  },
+  {
+    id: "escuro",
+    nome: "Escuro",
+    icone: <Moon size={14} />,
+    amostra: ["#1e1d23", "#1a181e", "#232028"],
+    acento: "#413cdd",
+  },
   {
     id: "mais-escuro",
     nome: "Mais escuro",
     icone: <Moon size={14} />,
-    amostra: ["#0e0e11", "#08080a", "#000000"],
-  },
-  {
-    id: "indigo",
-    nome: "Índigo",
-    icone: <Sparkles size={14} />,
-    amostra: ["#0c0b0e", "#1a181e", "#232028"],
-    acento: "#413cdd",
-  },
-  {
-    id: "indigo-carvao",
-    nome: "Índigo carvão",
-    icone: <Sparkles size={14} />,
     amostra: ["#020203", "#0f0e12", "#141217"],
-    acento: "#413cdd",
-  },
-  {
-    id: "indigo-claro",
-    nome: "Índigo claro",
-    icone: <Sparkles size={14} />,
-    amostra: ["#fbfbfc", "#ebecef", "#dee0e4"],
     acento: "#413cdd",
   },
   {
     id: "sistema",
     nome: "Seguir o sistema",
     icone: <Monitor size={14} />,
-    amostra: ["#ffffff", "#8a8a94", "#121214"],
+    amostra: ["#ebecef", "#8a8a94", "#1a181e"],
   },
   {
     id: "gravae",

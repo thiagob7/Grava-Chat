@@ -42,9 +42,6 @@ const NOME_DO_TEMA: Record<string, string> = {
   "mais-escuro": "Base mais escura",
   sistema: "Base do sistema",
   gravae: "Base Gravaê",
-  indigo: "Índigo — base escura",
-  "indigo-carvao": "Índigo — base carvão",
-  "indigo-claro": "Índigo — base clara",
 };
 
 export const EstudioDeTemas: React.FC<{ open: boolean; onClose: () => void }> = ({

@@ -17,96 +17,50 @@
 */
 @theme {
   /*
-    Paleta do Gravaê — os mesmos valores do backoffice
-    (`GravaeV2/backoffice/src/styles/global.css`), traduzidos para os nomes que
-    este app já usa. Tudo aqui usa `bg-surface-1`, `text-ink-muted` e afins em
-    vez de cor solta, então trocar a marca é trocar este bloco.
+    A paleta do app.
 
-    Antes eram as cores do Discord, copiadas tal e qual. Os cinzas do Gravaê são
-    mais frios e mais escuros, e o acento é o vermelho da marca.
+    O escuro daqui é o que antes se chamava "Índigo": fundo quase preto com o
+    cinza puxado pro roxo, e o azul-violeta como única cor forte. Os valores
+    saíram token por token do cliente que serviu de referência — cada área com
+    o SEU (barra do canal, conversa e caixa de escrever numa cor; trilho e
+    barras laterais noutra; o cartão da chamada numa terceira).
+
+    Trocar a marca é trocar `--color-brand`: nada na conversa depende dela.
   */
-  --color-surface-0: #121214; /* coluna dos servidores (gray-900) */
-  --color-surface-1: #18181b; /* sidebar de canais    (gray-800) */
-  --color-surface-2: #202024; /* área de chat         (gray-850) */
-  --color-surface-3: #27272a; /* hover, elevação leve (gray-700) */
-  --color-surface-4: #353539; /* elementos elevados   (gray-650) */
-
-  --color-line: #29292e; /* gray-750 — some no fundo, aparece na borda */
-
-  /* campo de formulário: o mesmo par que o backoffice usa (gray-750 / gray-550) */
-  --color-campo: #29292e;
-  --color-campo-foco: #52525b;
-
-  --color-ink: #e1e1e6; /* gray-100 */
-  --color-ink-muted: #a8a8b3; /* gray-300 */
-  --color-ink-faint: #666675; /* gray-400 */
-
-  --color-brand: #d30404; /* red-300 — o vermelho do ponto da marca */
-  --color-brand-hover: #a90303; /* red-400 */
-
-  --color-online: #17c964; /* green-350 */
-  --color-idle: #febc2f; /* orange-100 */
-
-  /*
-    Com a marca em vermelho, "perigo" precisa gritar MAIS ALTO que o botão
-    primário — senão excluir um servidor e confirmar um convite viram o mesmo
-    botão. Este é um tom mais claro do mesmo vermelho, para essa distinção.
-  */
-  --color-dnd: #f13a3a;
-  --color-danger: #f13a3a;
-
-  /*
-    Três tokens que nasceram de `black/20`, `black/10` e `white` espalhados
-    pelo código.
-
-    Enquanto só existia o tema escuro eles funcionavam: preto translúcido
-    sobre cinza escuro vira uma linha discreta. No claro, a mesma linha vira
-    um risco sujo, e a barrinha branca do servidor ativo some no fundo branco.
-    Agora cada um é um nome, e cada tema diz o que ele vale.
-  */
-  --color-divisor: rgb(0 0 0 / 0.25);
-  --color-hover: rgb(0 0 0 / 0.1);
-  --color-pilula: #ffffff;
-
-  /*
-    A conversa tem cores próprias, e nenhuma delas é a da marca.
-
-    Link, menção, resposta e código eram todos `brand` ou cinza — o que
-    significava que trocar o vermelho da marca repintava a conversa inteira, e
-    que uma menção a você e um botão de enviar gritavam na mesma cor. Aqui cada
-    coisa tem o seu nome e cada tema pode dizer o que ele vale.
-  */
-  /*
-    Duas superfícies com nome próprio, porque na referência elas não são nenhum
-    dos cinco degraus: a caixa de escrever e a barra do topo do canal têm
-    tokens só delas. Nos nossos temas antigos apontam pro que já era usado,
-    então nada muda por lá.
-  */
-  --color-composer: var(--color-surface-4);
-  --color-cabecalho: var(--color-surface-2);
-  --color-painel: var(--color-surface-1);
-  --color-selecionado: var(--color-surface-4);
-
+  --color-surface-0: #1a181e;
+  --color-surface-1: #1a181e;
+  --color-surface-2: #1e1d23;
+  --color-surface-3: #232028;
+  --color-surface-4: #2a2730;
+  --color-line: rgb(122 115 140 / 0.2);
+  --color-campo: #242229;
+  --color-campo-foco: #2f2c36;
+  --color-composer: #1e1d23;
+  --color-cabecalho: #1e1d23;
+  --color-painel: #232028;
+  --color-selecionado: rgb(255 255 255 / 0.1);
+  --color-ink: #f4f4f6;
+  --color-ink-muted: #cecbd4;
+  --color-ink-faint: #958fa3;
+  --color-brand: #413cdd;
+  --color-brand-hover: #3732c8;
+  --color-online: #1daf6b;
+  --color-idle: #f6bb09;
+  --color-dnd: #ef4343;
+  --color-danger: #ef4343;
   --color-link: #6ccff9;
-  /*
-    Menção de PESSOA é azul, não dourada. O dourado é outra coisa: é
-    o destaque da mensagem que fala com você (`--color-destaque-*`), e usar a
-    mesma cor pras duas embaralhava "alguém foi citado" com "isto é pra você".
-    @everyone e @here têm cor própria — roxo e âmbar — pelo mesmo motivo.
-  */
   --color-mencao: #6ccff9;
-  --color-mencao-fundo: color-mix(in srgb, var(--color-mencao) 20%, transparent);
-  --color-mencao-borda: color-mix(in srgb, var(--color-mencao) 30%, transparent);
   --color-everyone: #9d8cf2;
-  --color-everyone-fundo: color-mix(in srgb, var(--color-everyone) 14%, transparent);
   --color-here: #f7d56e;
-  --color-here-fundo: color-mix(in srgb, var(--color-here) 14%, transparent);
   --color-destaque: #eac532;
   --color-destaque-fundo: rgb(234 197 50 / 0.1);
   --color-resposta: #3b82f6;
   --color-codigo: #242129;
-  --color-codigo-bloco: #211f26;
+  --color-codigo-bloco: #211e26;
   --color-aviso: #f7c222;
+  --color-divisor: rgb(255 255 255 / 0.05);
+  --color-hover: rgb(255 255 255 / 0.05);
+  --color-pilula: #f4f4f6;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -123,16 +77,40 @@
   atende quem escolheu "seguir o sistema", que não carimba atributo nenhum.
 */
 :root[data-tema="mais-escuro"] {
-  --color-surface-0: #000000;
-  --color-surface-1: #08080a;
-  --color-surface-2: #0e0e11;
-  --color-surface-3: #1a1a1f;
-  --color-surface-4: #26262c;
-  --color-line: #1f1f25;
-  --color-campo: #1f1f25;
-  --color-campo-foco: #4a4a55;
-  --color-divisor: rgb(0 0 0 / 0.5);
+  --color-surface-0: #020203;
+  --color-surface-1: #020203;
+  --color-surface-2: #020203;
+  --color-surface-3: #0f0e12;
+  --color-surface-4: #141217;
+  --color-line: rgb(122 115 140 / 0.2);
+  --color-campo: #100f13;
+  --color-campo-foco: #17151a;
+  --color-composer: #0f0e12;
+  --color-cabecalho: #020203;
+  --color-painel: #0f0e12;
+  --color-selecionado: rgb(255 255 255 / 0.1);
+  --color-ink: #f4f4f6;
+  --color-ink-muted: #cecbd4;
+  --color-ink-faint: #958fa3;
+  --color-brand: #413cdd;
+  --color-brand-hover: #3732c8;
+  --color-online: #1daf6b;
+  --color-idle: #f6bb09;
+  --color-dnd: #ef4343;
+  --color-danger: #ef4343;
+  --color-link: #6ccff9;
+  --color-mencao: #6ccff9;
+  --color-everyone: #9d8cf2;
+  --color-here: #f7d56e;
+  --color-destaque: #eac532;
+  --color-destaque-fundo: rgb(234 197 50 / 0.1);
+  --color-resposta: #3b82f6;
+  --color-codigo: #322f34;
+  --color-codigo-bloco: #0d0c0f;
+  --color-aviso: #f7c222;
+  --color-divisor: rgb(255 255 255 / 0.05);
   --color-hover: rgb(255 255 255 / 0.04);
+  --color-pilula: #f4f4f6;
 }
 
 /*
@@ -164,177 +142,25 @@
   --color-brand: #ff0000;
   --color-brand-hover: #cc0000;
 
+  /*
+    Os tokens do miolo também aqui: sem eles o tema da casa herdava a barra do
+    canal e o cartão da chamada do escuro, e ficava com dois cinzas frios no
+    meio de uma paleta quente.
+  */
+  --color-composer: #171011;
+  --color-cabecalho: #171011;
+  --color-painel: #201617;
+  --color-selecionado: rgb(255 255 255 / 0.08);
+
   --color-divisor: rgb(0 0 0 / 0.45);
   --color-hover: rgb(255 0 0 / 0.06);
   --color-pilula: #ff0000;
 }
 
-/*
-  As três bases do Índigo, token por token.
-
-  Não é imitação de olho: os valores saíram do CSS do próprio cliente
-  do cliente que serviu de referência, onde `:root` é a base escura, `.theme-coal`
-  é o carvão e `.theme-light` é a clara. O que estava em `hsl()` com fator de
-  saturação e `color-mix()` foi resolvido pro hexadecimal equivalente.
-
-  Duas coisas explicam o resto:
-
-  - Cada área tem o SEU token, e não uma escala inventada por mim: o trilho de
-    servidores, a barra lateral e a faixa de título são `--background-secondary`
-    (#1A181E); a conversa e a lista de membros são `--background-secondary-lighter`
-    (#1E1D23) — sim, a conversa é mais CLARA que a barra lateral; o cartão da
-    chamada é `--background-secondary-alt` (#232028); e o canal selecionado é
-    branco a 10% por cima, não uma cor fixa.
-
-  - A conversa não usa a marca em lugar nenhum: link em azul-claro, menção em
-    dourado e resposta em azul são tokens à parte.
-*/
-:root[data-tema="indigo"] {
-  --color-surface-0: #1a181e;
-  --color-surface-1: #1a181e;
-  --color-surface-2: #1e1d23;
-  --color-surface-3: #232028;
-  --color-surface-4: #2a2730;
-  --color-line: rgb(122 115 140 / 0.2);
-  --color-campo: #242229;
-  --color-campo-foco: #2f2c36;
-  --color-composer: #1e1d23;
-  --color-cabecalho: #1e1d23;
-  --color-painel: #232028;
-  --color-selecionado: rgb(255 255 255 / 0.1);
-
-  --color-ink: #f4f4f6;
-  --color-ink-muted: #cecbd4;
-  --color-ink-faint: #958fa3;
-
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-
-  --color-online: #1daf6b;
-  --color-idle: #f6bb09;
-  --color-dnd: #ef4343;
-  --color-danger: #ef4343;
-
-  --color-link: #6ccff9;
-  --color-mencao: #6ccff9;
-  --color-everyone: #9d8cf2;
-  --color-here: #f7d56e;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
-  --color-resposta: #3b82f6;
-  --color-codigo: #242129;
-  --color-codigo-bloco: #211e26;
-  --color-aviso: #f7c222;
-
-  /*
-    A linha que separa painel de painel é o branco a 5% deles, e não a borda
-    lavanda dos formulários. (CSS não tem comentário de uma barra só: `///`
-    aqui vira "unknown word" e derruba o arquivo inteiro no PostCSS.)
-  */
-  --color-divisor: rgb(255 255 255 / 0.05);
-  --color-hover: rgb(255 255 255 / 0.05);
-  --color-pilula: #f4f4f6;
-}
-
-/*
-  Carvão: o mesmo tema com o fundo em 1% de luz, para tela OLED. As três
-  superfícies de baixo colapsam num preto só e a separação passa a ser feita
-  pela borda — por isso `line` e `divisor` continuam visíveis aqui.
-*/
-:root[data-tema="indigo-carvao"] {
-  --color-surface-0: #020203;
-  --color-surface-1: #020203;
-  --color-surface-2: #020203;
-  --color-surface-3: #0f0e12;
-  --color-surface-4: #141217;
-  --color-line: rgb(122 115 140 / 0.2);
-  --color-campo: #100f13;
-  --color-campo-foco: #17151a;
-  --color-composer: #0f0e12;
-  --color-cabecalho: #020203;
-  --color-painel: #0f0e12;
-  --color-selecionado: rgb(255 255 255 / 0.1);
-
-  --color-ink: #f4f4f6;
-  --color-ink-muted: #cecbd4;
-  --color-ink-faint: #958fa3;
-
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-
-  --color-online: #1daf6b;
-  --color-idle: #f6bb09;
-  --color-dnd: #ef4343;
-  --color-danger: #ef4343;
-
-  --color-link: #6ccff9;
-  --color-mencao: #6ccff9;
-  --color-everyone: #9d8cf2;
-  --color-here: #f7d56e;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
-  --color-resposta: #3b82f6;
-  --color-codigo: #322f34;
-  --color-codigo-bloco: #0d0c0f;
-  --color-aviso: #f7c222;
-
-  --color-divisor: rgb(255 255 255 / 0.05);
-  --color-hover: rgb(255 255 255 / 0.04);
-  --color-pilula: #f4f4f6;
-}
-
-/*
-  Clara. O azul do link e os status escurecem; o
-  dourado da menção e o azul da resposta seguem iguais aos do escuro.
-*/
-:root[data-tema="indigo-claro"] {
-  color-scheme: light;
-
-  --color-surface-0: #ebecef;
-  --color-surface-1: #ebecef;
-  --color-surface-2: #f0f1f3;
-  --color-surface-3: #e6e7ea;
-  --color-surface-4: #fbfbfc;
-  --color-line: rgb(92 99 112 / 0.15);
-  --color-campo: #f3f4f5;
-  --color-campo-foco: #d8dbdf;
-  --color-composer: #f0f1f3;
-  --color-cabecalho: #f0f1f3;
-  --color-painel: #e6e7ea;
-  --color-selecionado: rgb(23 25 28 / 0.1);
-
-  --color-ink: #22252a;
-  --color-ink-muted: #616876;
-  --color-ink-faint: #777f90;
-
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-
-  --color-online: #1fad6b;
-  --color-idle: #daa60b;
-  --color-dnd: #d92629;
-  --color-danger: #d92629;
-
-  --color-link: #099ddc;
-  --color-mencao: #099ddc;
-  --color-everyone: #3d22c3;
-  --color-here: #bd830f;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
-  --color-resposta: #3b82f6;
-  --color-codigo: #dbdadf;
-  --color-codigo-bloco: #f9f9fa;
-  --color-aviso: #f7c222;
-
-  --color-divisor: rgb(23 25 28 / 0.05);
-  --color-hover: rgb(23 25 28 / 0.05);
-  --color-pilula: #22252a;
-}
-
 /* A barra de rolagem aqui é cinza translúcida, não a cor da marca. */
-:root[data-tema="indigo"] ::-webkit-scrollbar-thumb,
-:root[data-tema="indigo-carvao"] ::-webkit-scrollbar-thumb,
-:root[data-tema="indigo-claro"] ::-webkit-scrollbar-thumb {
+:root ::-webkit-scrollbar-thumb,
+:root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb,
+:root[data-tema="claro"] ::-webkit-scrollbar-thumb {
   background-color: rgb(121 122 124 / 0.4);
 }
 
@@ -348,46 +174,41 @@
 
 :root[data-tema="claro"],
 :root[data-tema="sistema"] {
-  color-scheme: light;
-
-  --color-surface-0: #e2e2e8;
-  --color-surface-1: #eeeef2;
-  --color-surface-2: #ffffff;
-  --color-surface-3: #e6e6ec;
-  --color-surface-4: #dcdce4;
-  --color-line: #d5d5de;
-  --color-campo: #eaeaf0;
-  --color-campo-foco: #9a9aa8;
-
-  --color-ink: #1b1b20;
-  --color-ink-muted: #4c4c58;
-  --color-ink-faint: #83838f;
-
-  /*
-    O vermelho da marca no claro é o mesmo — ele já nasceu escuro o bastante
-    para se ler em branco. O que muda é o hover, que no escuro escurecia e
-    aqui precisa fazer o contrário.
-  */
-  --color-brand-hover: #a90303;
-
-  /*
-    No claro as cores da conversa escurecem: o azul-claro do link e o dourado
-    da menção se leem em preto, e sumiriam num fundo branco.
-  */
-  --color-link: #1668b8;
-  --color-mencao: #1668b8;
+  --color-surface-0: #ebecef;
+  --color-surface-1: #ebecef;
+  --color-surface-2: #f0f1f3;
+  --color-surface-3: #e6e7ea;
+  --color-surface-4: #fbfbfc;
+  --color-line: rgb(92 99 112 / 0.15);
+  --color-campo: #f3f4f5;
+  --color-campo-foco: #d8dbdf;
+  --color-composer: #f0f1f3;
+  --color-cabecalho: #f0f1f3;
+  --color-painel: #e6e7ea;
+  --color-selecionado: rgb(23 25 28 / 0.1);
+  --color-ink: #22252a;
+  --color-ink-muted: #616876;
+  --color-ink-faint: #777f90;
+  --color-brand: #413cdd;
+  --color-brand-hover: #3732c8;
+  --color-online: #1fad6b;
+  --color-idle: #daa60b;
+  --color-dnd: #d92629;
+  --color-danger: #d92629;
+  --color-link: #099ddc;
+  --color-mencao: #099ddc;
   --color-everyone: #3d22c3;
   --color-here: #bd830f;
-  --color-destaque: #8a6300;
-  --color-destaque-fundo: rgb(234 197 50 / 0.22);
-  --color-resposta: #1f5fce;
-  --color-codigo: #e6e6ec;
-  --color-codigo-bloco: #eeeef2;
-  --color-aviso: #8a6300;
-
-  --color-divisor: rgb(0 0 0 / 0.1);
-  --color-hover: rgb(0 0 0 / 0.045);
-  --color-pilula: #1b1b20;
+  --color-destaque: #eac532;
+  --color-destaque-fundo: rgb(234 197 50 / 0.1);
+  --color-resposta: #3b82f6;
+  --color-codigo: #dbdadf;
+  --color-codigo-bloco: #f9f9fa;
+  --color-aviso: #f7c222;
+  --color-divisor: rgb(23 25 28 / 0.05);
+  --color-hover: rgb(23 25 28 / 0.05);
+  --color-pilula: #22252a;
+  color-scheme: light;
 }
 
 /*
@@ -398,23 +219,40 @@
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
     color-scheme: dark;
-
-    --color-surface-0: #121214;
-    --color-surface-1: #18181b;
-    --color-surface-2: #202024;
-    --color-surface-3: #27272a;
-    --color-surface-4: #353539;
-    --color-line: #29292e;
-    --color-campo: #29292e;
-    --color-campo-foco: #52525b;
-
-    --color-ink: #e1e1e6;
-    --color-ink-muted: #a8a8b3;
-    --color-ink-faint: #666675;
-
-    --color-divisor: rgb(0 0 0 / 0.25);
-    --color-hover: rgb(0 0 0 / 0.1);
-    --color-pilula: #ffffff;
+    --color-surface-0: #1a181e;
+    --color-surface-1: #1a181e;
+    --color-surface-2: #1e1d23;
+    --color-surface-3: #232028;
+    --color-surface-4: #2a2730;
+    --color-line: rgb(122 115 140 / 0.2);
+    --color-campo: #242229;
+    --color-campo-foco: #2f2c36;
+    --color-composer: #1e1d23;
+    --color-cabecalho: #1e1d23;
+    --color-painel: #232028;
+    --color-selecionado: rgb(255 255 255 / 0.1);
+    --color-ink: #f4f4f6;
+    --color-ink-muted: #cecbd4;
+    --color-ink-faint: #958fa3;
+    --color-brand: #413cdd;
+    --color-brand-hover: #3732c8;
+    --color-online: #1daf6b;
+    --color-idle: #f6bb09;
+    --color-dnd: #ef4343;
+    --color-danger: #ef4343;
+    --color-link: #6ccff9;
+    --color-mencao: #6ccff9;
+    --color-everyone: #9d8cf2;
+    --color-here: #f7d56e;
+    --color-destaque: #eac532;
+    --color-destaque-fundo: rgb(234 197 50 / 0.1);
+    --color-resposta: #3b82f6;
+    --color-codigo: #242129;
+    --color-codigo-bloco: #211e26;
+    --color-aviso: #f7c222;
+    --color-divisor: rgb(255 255 255 / 0.05);
+    --color-hover: rgb(255 255 255 / 0.05);
+    --color-pilula: #f4f4f6;
   }
 }
 

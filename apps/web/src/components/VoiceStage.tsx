@@ -338,24 +338,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           ))}
         </div>
 
-        {/*
-          Quem está na chamada, numa coluna ao lado do vídeo.
-
-          Assistindo, o vídeo ocupa tudo e some a informação de quem está falando
-          ou mudo. Antes essas pastilhas viviam SOBRE o vídeo, na faixa de baixo —
-          ali elas tapavam justamente o canto onde costuma estar a barra de tarefas
-          de quem transmite. Ao lado, não disputam pixel com nada.
-        */}
-        {compacto && (
-          <div className="flex w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto py-1">
-            {tiles.map((tile) => (
-              <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-                <RostoDaColuna tile={tile} />
-              </ComMenu>
-            ))}
-          </div>
-        )}
-
         <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
       </div>
     );
@@ -373,41 +355,21 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         */
         className="group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4 pb-20"
       >
-        {grade.map((quadro) =>
-          quadro.tipo === "tela" ? (
-            <TileDaLive
-              key={quadro.key}
-              tile={quadro.de.tile}
-              denso
-              onAssistir={() => setAssistindo(quadro.de.identity)}
-              className="h-24 shrink-0"
-            />
-          ) : (
-            <ComMenu key={quadro.key} tile={quadro.de.tile} contexto={contexto}>
-              <RostoNaChamada tile={quadro.de.tile} guildId={guildId} />
-            </ComMenu>
-          ),
-        )}
+        {/*
+          Cartão, e não retrato solto.
+
+          Os avatares flutuando no vazio não diziam onde uma pessoa acaba e a
+          outra começa — e, quando alguém ligava a câmera, o vídeo entrava num
+          quadro enquanto os outros seguiam soltos, cada um com uma forma.
+          Cartão pra todos: a chamada de duas fica igual à de oito, com dois.
+        */}
+        {grade.map((quadro) => (
+          <div key={quadro.key} className="h-full max-h-56 min-w-0 max-w-md flex-1">
+            {desenhar(quadro, false, true)}
+          </div>
+        ))}
 
         {!tiles.length && <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>}
-
-        {/*
-          Quem está na chamada, numa coluna ao lado do vídeo.
-
-          Assistindo, o vídeo ocupa tudo e some a informação de quem está falando
-          ou mudo. Antes essas pastilhas viviam SOBRE o vídeo, na faixa de baixo —
-          ali elas tapavam justamente o canto onde costuma estar a barra de tarefas
-          de quem transmite. Ao lado, não disputam pixel com nada.
-        */}
-        {compacto && (
-          <div className="flex w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto py-1">
-            {tiles.map((tile) => (
-              <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
-                <RostoDaColuna tile={tile} />
-              </ComMenu>
-            ))}
-          </div>
-        )}
 
         <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
       </div>
@@ -744,59 +706,6 @@ const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
         <SignalLow size={12} className={aviso.pulsando ? "animate-pulse" : undefined} />
       </span>
     </Tooltip>
-  );
-};
-
-/**
- * Uma pessoa na chamada de privado: o rosto, e só.
- *
- * Sem quadro em volta e sem etiqueta fixa. São duas pessoas numa conversa —
- * quem está ali já se sabe, e desenhar caixa e nome em volta de cada uma gasta
- * a altura que a conversa precisa pra dizer o que ninguém ainda sabe.
- *
- * O anel de "falando" e o microfone cortado continuam, porque esses mudam.
- */
-const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile, guildId }) => {
-  const resolver = useParticipante();
-  const espelhar = useVoicePrefs((s) => s.espelharCamera);
-  const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
-  /// O som do painel acende o rosto igual à fala — quem apertou é quem está
-  /// fazendo barulho na chamada.
-  const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
-  const falando = tile.speaking || tocandoSom;
-
-  return (
-    <div className="group/rosto flex flex-col items-center gap-2">
-      <div className="relative">
-        {tile.cameraTrack ? (
-          <div className="size-20 overflow-hidden rounded-full ring-2 ring-transparent">
-            <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
-          </div>
-        ) : (
-          <Avatar
-            id={tile.identity}
-            name={participante.nome}
-            url={participante.avatarUrl}
-            size={80}
-            enfeites={participante.perfil}
-            animar={falando}
-          />
-        )}
-
-        {!tile.micEnabled && (
-          <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
-            <MicOff size={12} className="text-danger" />
-          </span>
-        )}
-      </div>
-
-      <UserProfilePopover userId={tile.identity} guildId={guildId} side="top">
-        <button className="max-w-28 truncate text-xs font-medium text-ink-muted hover:underline">
-          {participante.nome}
-          {tile.isLocal && " (você)"}
-        </button>
-      </UserProfilePopover>
-    </div>
   );
 };
 

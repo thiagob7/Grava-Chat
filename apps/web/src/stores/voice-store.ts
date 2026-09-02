@@ -447,6 +447,14 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     bipe("sairDaChamada");
     pararSomDoPainel();
+    /*
+      A conversa escrita volta ao sair.
+
+      Quem escondeu o chat pra ver a tela cheia e depois desligou ficava com a
+      página inteira preta: o palco tinha sumido junto com a chamada, e a
+      conversa continuava escondida por uma escolha que já não fazia sentido.
+    */
+    set({ chatDaChamada: true });
     await room.disconnect();
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
     await leaveVoiceChannel().catch(() => undefined);
