@@ -1,6 +1,6 @@
 {
   "name": "@gravae/desktop",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Aplicativo de desktop do Gravaê Chat",
   "productName": "Gravaê Chat",

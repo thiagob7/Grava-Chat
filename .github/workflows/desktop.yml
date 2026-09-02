@@ -46,6 +46,27 @@ jobs:
 
       - run: yarn install --frozen-lockfile
 
+      # A tag e a versao do package.json TEM que bater.
+      #
+      # O app compara `app.getVersion()` — que sai do package.json no build —
+      # com a tag da release. Empacotar a 0.2.1 e anexar na v0.2.2 cria um laco:
+      # o app instala, reabre reportando 0.2.1, ve a v0.2.2 de novo e oferece a
+      # atualizacao para sempre. Falhar aqui e barato; descobrir depois de
+      # publicado significa todo mundo em laco ate a proxima release.
+      - name: Conferir a versao
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSAO=$(node -p "require('./apps/desktop/package.json').version")
+
+          if [ "${TAG#v}" != "$VERSAO" ]; then
+            echo "::error::A tag $TAG nao bate com a versao $VERSAO do apps/desktop/package.json."
+            echo "::error::Suba a versao no package.json antes de publicar, senao o app instalado fica em laco de atualizacao."
+            exit 1
+          fi
+
+          echo "tag $TAG = versao $VERSAO"
+
       - name: Empacotar
         env:
           # É embutida no bundle durante o build (tsup), não lida em execução:
