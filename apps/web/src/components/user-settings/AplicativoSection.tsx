@@ -38,7 +38,7 @@ export const AplicativoSection: React.FC = () => (
     </div>
 
     <div className={cn("flex flex-col gap-3", ehWindows() && "flex-col-reverse")}>
-      <div className="rounded-lg border border-line bg-surface-1 p-4">
+      <div className="rounded-lg border border-line bg-surface-2 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
           <Apple size={16} /> macOS — Intel e Apple Silicon
         </p>
@@ -61,7 +61,7 @@ export const AplicativoSection: React.FC = () => (
         </p>
       </div>
 
-      <div className="rounded-lg border border-line bg-surface-1 p-4">
+      <div className="rounded-lg border border-line bg-surface-2 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
           <Monitor size={16} /> Windows — 64 bits
         </p>

@@ -13,6 +13,7 @@ import {
   type Tema,
 } from "~/stores/aparencia";
 import { cn } from "~/lib/utils";
+import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
 interface TemaDaLista {
   id: Tema;
@@ -67,12 +68,12 @@ export const AppearanceSection: React.FC = () => {
   const [estudioAberto, setEstudioAberto] = useState(false);
 
   return (
-    <div className="max-w-2xl">
+    <div>
       <p className="text-sm text-ink-muted">
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao titulo="Tema">
+      <Secao id="tema" titulo="Tema">
         <div className="flex flex-wrap gap-3">
           {TEMAS.map((tema) => (
             <button
@@ -149,6 +150,7 @@ export const AppearanceSection: React.FC = () => {
       </Secao>
 
       <Secao
+        id="cor-de-destaque"
         titulo="Cor de destaque"
         detalhe="A cor dos botões, dos links e de tudo o que o app quer que você veja primeiro."
       >
@@ -179,7 +181,7 @@ export const AppearanceSection: React.FC = () => {
         </div>
       </Secao>
 
-      <Secao titulo="Mensagens">
+      <Secao id="mensagens" titulo="Mensagens">
         <Opcao
           titulo="Imagens e vídeos de links"
           detalhe="Quando alguém cola o endereço de uma imagem ou de um GIF, ele aparece aberto na conversa."
@@ -238,7 +240,7 @@ export const AppearanceSection: React.FC = () => {
         </Linha>
       </Secao>
 
-      <Secao titulo="Caixa de chat">
+      <Secao id="caixa-de-chat" titulo="Caixa de chat">
         <Opcao
           titulo="Sugestões enquanto digita"
           detalhe="A lista que abre no @ para mencionar alguém e no / para os comandos dos bots."
@@ -262,10 +264,11 @@ export const AppearanceSection: React.FC = () => {
       </Secao>
 
       <Secao
+        id="modo-streamer"
         titulo="Modo streamer"
         detalhe="Para quando a sua tela está sendo vista por gente que não está na conversa."
       >
-        <div className="mb-3 flex items-start gap-3 rounded bg-surface-1 p-3">
+        <div className="mb-3 flex items-start gap-3 rounded bg-surface-2 p-3">
           <Video size={18} className={cn("mt-0.5 shrink-0", prefs.modoStreamer ? "text-brand" : "text-ink-faint")} />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">
@@ -319,18 +322,6 @@ export const AppearanceSection: React.FC = () => {
     </div>
   );
 };
-
-const Secao: React.FC<{ titulo: string; detalhe?: string; children: React.ReactNode }> = ({
-  titulo,
-  detalhe,
-  children,
-}) => (
-  <section className="mt-8">
-    <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">{titulo}</h3>
-    {detalhe && <p className="mb-3 mt-1 text-xs text-ink-muted">{detalhe}</p>}
-    <div className={detalhe ? "" : "mt-3"}>{children}</div>
-  </section>
-);
 
 const Opcao: React.FC<{
   titulo: string;

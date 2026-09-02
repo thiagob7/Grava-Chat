@@ -428,6 +428,56 @@
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
 
+/*
+  O fio da subárvore das configurações.
+
+  Duas camadas no mesmo lugar: `::after` é o fio inteiro, apagado, e `::before`
+  é só o trecho da seção em que você está — ele desliza de uma para a outra em
+  vez de piscar, e é o que dá a noção de onde você está dentro de uma tela
+  longa. A posição vem de `--active-top` e `--active-height`, medidas em JS:
+  altura de item não se sabe em CSS, e chutar um valor fixo quebraria no dia em
+  que um rótulo virasse duas linhas.
+*/
+.subarvore-de-config {
+  position: relative;
+}
+
+.subarvore-de-config::after,
+.subarvore-de-config::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 1px;
+  border-radius: 999px;
+}
+
+.subarvore-de-config::after {
+  top: 0;
+  bottom: 0;
+  background: var(--color-line);
+}
+
+.subarvore-de-config::before {
+  top: var(--active-top, 0);
+  height: var(--active-height, 0);
+  z-index: 1;
+  opacity: 0;
+  background: var(--color-ink);
+  transition:
+    top 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.subarvore-de-config[data-tem-ativo="true"]::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subarvore-de-config::before {
+    transition: none;
+  }
+}
+
 .regiao-de-arrasto {
   -webkit-app-region: drag;
   app-region: drag;

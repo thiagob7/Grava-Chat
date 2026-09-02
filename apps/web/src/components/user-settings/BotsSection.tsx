@@ -193,7 +193,7 @@ const CartaoDeBot: React.FC<{
   };
 
   return (
-    <article className="overflow-hidden rounded-lg border border-line bg-surface-1">
+    <article className="overflow-hidden rounded-lg border border-line bg-surface-2">
       <header className="flex items-center gap-3 p-4">
         <button
           onClick={() => escolherFoto.current?.click()}

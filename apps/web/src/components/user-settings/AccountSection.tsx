@@ -7,6 +7,7 @@ import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
 interface AccountSectionProps {
   user: SelfUserModel;
@@ -18,8 +19,14 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
   const [confirmando, setConfirmando] = useState(false);
 
   return (
-    <div className="max-w-xl">
-      <div className="rounded-lg bg-surface-1 p-5">
+    <div>
+      <Secao id="detalhes-de-login" titulo="Detalhes de login">
+        {/*
+          `surface-2`, e não `surface-1`: o painel das configurações passou a
+          ser `surface-1`, e um cartão da mesma cor do fundo é um cartão que
+          não existe.
+        */}
+        <div className="rounded-lg bg-surface-2 p-5">
         <div className="flex items-center gap-4">
           <Avatar id={user.id} name={user.displayName} url={user.avatarUrl} size={64} />
           <div className="min-w-0">
@@ -40,10 +47,12 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
               new Date(user.createdAt),
             )}
           />
+          </div>
         </div>
-      </div>
+      </Secao>
 
-      <div className="mt-6 space-y-3">
+      <Secao id="sessoes" titulo="Sessões">
+        <div className="space-y-3">
         <Button variant="surface" onClick={onLogout} className="w-full justify-start">
           <LogOut size={16} /> Sair desta conta
         </Button>
@@ -75,9 +84,10 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
             className="w-full justify-start text-danger"
           >
             <ShieldAlert size={16} /> Encerrar sessão em todos os aparelhos
-          </Button>
-        )}
-      </div>
+            </Button>
+          )}
+        </div>
+      </Secao>
     </div>
   );
 };

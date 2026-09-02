@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Bell, Bot, Download, Mic, Palette, Pencil, Search, Server, User, X } from "lucide-react";
+import { Bell, Bot, ChevronRight, Download, Mic, Palette, Pencil, Search, Server, User, X } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -15,8 +15,9 @@ import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
+import { SUBSECOES, ancora, type Secao, type SubSecao } from "~/components/user-settings/secoes";
 
-export type Secao = "conta" | "voz" | "avisos" | "bots" | "aparencia" | "aplicativo" | "servidor";
+export type { Secao };
 
 interface UserSettingsModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ interface Item {
   id: Secao;
   label: string;
   icone: React.ComponentType<{ size?: number | string; className?: string }>;
+  subitens: SubSecao[];
 }
 
 /*
@@ -42,24 +44,40 @@ interface Item {
 const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   {
     titulo: "Conta do usuário",
-    itens: [{ id: "conta", label: "Minha conta", icone: User }],
+    itens: [{ id: "conta", label: "Minha conta", icone: User, subitens: SUBSECOES.conta }],
   },
   {
     titulo: "Configurações do aplicativo",
     itens: [
-      { id: "aparencia", label: "Aparência", icone: Palette },
-      { id: "voz", label: "Voz e vídeo", icone: Mic },
-      { id: "avisos", label: "Notificações", icone: Bell },
-      { id: "bots", label: "Bots", icone: Bot },
+      { id: "aparencia", label: "Aparência", icone: Palette, subitens: SUBSECOES.aparencia },
+      { id: "voz", label: "Voz e vídeo", icone: Mic, subitens: SUBSECOES.voz },
+      { id: "avisos", label: "Notificações", icone: Bell, subitens: SUBSECOES.avisos },
+      { id: "bots", label: "Bots", icone: Bot, subitens: SUBSECOES.bots },
       /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
       /// de baixar e um convite pra lugar nenhum.
-      ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app", icone: Download }]),
+      ...(ehDesktop()
+        ? []
+        : [
+            {
+              id: "aplicativo" as const,
+              label: "Baixar o app",
+              icone: Download,
+              subitens: SUBSECOES.aplicativo,
+            },
+          ]),
     ],
   },
   /// Esconder o item é conforto, não segurança: quem decide é a API, que
   /// devolve 404 na rota pra qualquer conta fora da lista.
   ...(admin
-    ? [{ titulo: "Administração", itens: [{ id: "servidor" as const, label: "Servidor", icone: Server }] }]
+    ? [
+        {
+          titulo: "Administração",
+          itens: [
+            { id: "servidor" as const, label: "Servidor", icone: Server, subitens: SUBSECOES.servidor },
+          ],
+        },
+      ]
     : []),
 ];
 
@@ -83,8 +101,17 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 }) => {
   const [secao, setSecao] = useState<Secao>(secaoInicial);
   const [busca, setBusca] = useState("");
+  const [subAtiva, setSubAtiva] = useState<string | null>(null);
+  const rolagem = useRef<HTMLDivElement>(null);
 
-  /// A busca corta itens, não grupos: grupo que ficou sem item some junto.
+  /*
+    A busca corta itens E sub-itens.
+
+    Procurar "qualidade" precisa achar a seção lá dentro de Voz e vídeo — é
+    justamente o que a pessoa não encontra sozinha, e o motivo de existir uma
+    busca numa lista de sete linhas. Item cujo próprio nome casa mantém a lista
+    inteira de sub-itens; grupo que ficou sem item some junto.
+  */
   const grupos = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     const todos = gruposPara(user.admin);
@@ -93,10 +120,63 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     return todos
       .map((grupo) => ({
         ...grupo,
-        itens: grupo.itens.filter((item) => item.label.toLowerCase().includes(termo)),
+        itens: grupo.itens
+          .map((item) => {
+            const casaOItem = item.label.toLowerCase().includes(termo);
+            const subitens = casaOItem
+              ? item.subitens
+              : item.subitens.filter((sub) => sub.label.toLowerCase().includes(termo));
+
+            return { ...item, subitens };
+          })
+          .filter((item) => item.label.toLowerCase().includes(termo) || item.subitens.length > 0),
       }))
       .filter((grupo) => grupo.itens.length > 0);
   }, [busca, user.admin]);
+
+  /// Trocar de tela volta a leitura pro alto e zera a seção acesa — senão a
+  /// lateral apontaria uma seção da tela anterior.
+  useEffect(() => {
+    setSubAtiva(null);
+    rolagem.current?.scrollTo({ top: 0 });
+  }, [secao]);
+
+  const irPara = useCallback((secaoDestino: Secao, sub: string) => {
+    setSecao(secaoDestino);
+    setSubAtiva(sub);
+
+    /*
+      No quadro seguinte: quando a tela muda junto, a seção de destino ainda
+      não existe no DOM na hora do clique, e o `scrollIntoView` não acharia
+      nada. Um quadro é o suficiente porque o React já pintou.
+    */
+    requestAnimationFrame(() => {
+      document.getElementById(ancora(sub))?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  }, []);
+
+  /*
+    Qual seção está sendo lida.
+
+    Vale a ÚLTIMA cujo topo já passou da linha de leitura, e não a primeira
+    visível: rolando devagar, as duas aparecem juntas por um bom tempo, e a
+    lateral ficaria oscilando entre elas. A linha fica um pouco abaixo do topo
+    do painel, onde o olho de fato está.
+  */
+  const aoRolar = useCallback(() => {
+    const painel = rolagem.current;
+    if (!painel) return;
+
+    const linha = painel.getBoundingClientRect().top + 80;
+    let atual: string | null = null;
+
+    for (const sub of SUBSECOES[secao]) {
+      const alvo = document.getElementById(ancora(sub.id));
+      if (alvo && alvo.getBoundingClientRect().top <= linha) atual = sub.id;
+    }
+
+    setSubAtiva(atual ?? SUBSECOES[secao][0]?.id ?? null);
+  }, [secao]);
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
@@ -169,32 +249,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   </p>
 
                   {grupo.itens.map((item) => (
-                    <button
+                    <ItemDaLateral
                       key={item.id}
-                      onClick={() => setSecao(item.id)}
-                      aria-current={secao === item.id}
-                      className={cn(
-                        "flex w-full items-center gap-2 rounded-lg px-2.5 py-[5px] text-left text-sm transition",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
-                        secao === item.id
-                          ? "bg-surface-3 font-medium text-ink"
-                          : "text-ink-muted hover:bg-hover hover:text-ink",
-                      )}
-                    >
-                      {/*
-                        O ícone é o que deixa a lista percorrível de relance —
-                        sete rótulos alinhados só se leem palavra por palavra.
-                        Ele acende junto com o item, senão vira ruído cinza.
-                      */}
-                      <item.icone
-                        size={20}
-                        className={cn(
-                          "shrink-0 transition",
-                          secao === item.id ? "text-ink" : "text-ink-faint",
-                        )}
-                      />
-                      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                    </button>
+                      item={item}
+                      ativo={secao === item.id}
+                      subAtiva={secao === item.id ? subAtiva : null}
+                      onEscolher={() => setSecao(item.id)}
+                      onEscolherSub={(sub) => irPara(item.id, sub)}
+                    />
                   ))}
                 </div>
               ))}
@@ -231,7 +293,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               o olho perde a volta da linha. O teto cresce com a janela, mas
               para: `max(40rem, min(90%, 50rem))`.
             */}
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div ref={rolagem} onScroll={aoRolar} className="min-h-0 flex-1 overflow-y-auto">
               <div className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
                 {/*
                   Caixa por seção, e a chave é o `secao`: uma tela de configuração
@@ -256,5 +318,135 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
+  );
+};
+
+interface ItemDaLateralProps {
+  item: Item;
+  ativo: boolean;
+  subAtiva: string | null;
+  onEscolher: () => void;
+  onEscolherSub: (sub: string) => void;
+}
+
+/*
+  Um item da lateral, com a sua árvore de seções.
+
+  A tela aberta abre a árvore, e não um botão de expandir separado: as duas
+  coisas são a mesma pergunta — "estou nesta tela" —, e separá-las deixaria
+  abrir uma árvore de uma tela que não se está vendo, apontando seções que não
+  existem na página.
+*/
+const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
+  item,
+  ativo,
+  subAtiva,
+  onEscolher,
+  onEscolherSub,
+}) => {
+  const lista = useRef<HTMLDivElement>(null);
+
+  /*
+    Mede o sub-item aceso e entrega a posição ao CSS.
+
+    `useLayoutEffect` e não `useEffect`: medir depois da pintura faria o fio
+    saltar da posição antiga pra nova à vista de todos, no primeiro quadro.
+  */
+  useLayoutEffect(() => {
+    const el = lista.current;
+    if (!el) return;
+
+    const marcado = el.querySelector<HTMLElement>('[data-ativo="true"]');
+
+    if (!marcado) {
+      el.removeAttribute("data-tem-ativo");
+      return;
+    }
+
+    el.setAttribute("data-tem-ativo", "true");
+    el.style.setProperty("--active-top", `${marcado.offsetTop}px`);
+    el.style.setProperty("--active-height", `${marcado.offsetHeight}px`);
+  }, [subAtiva, ativo, item.subitens]);
+
+  const temSub = item.subitens.length > 0;
+
+  return (
+    <div className="flex flex-col">
+      <button
+        onClick={onEscolher}
+        aria-current={ativo}
+        aria-expanded={temSub ? ativo : undefined}
+        className={cn(
+          "flex w-full items-center gap-2 rounded-lg px-2.5 py-[5px] text-left text-sm transition",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+          ativo ? "bg-surface-3 font-medium text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
+        )}
+      >
+        {/*
+          O ícone é o que deixa a lista percorrível de relance — sete rótulos
+          alinhados só se leem palavra por palavra. Ele acende junto com o
+          item, senão vira ruído cinza.
+        */}
+        <item.icone
+          size={20}
+          className={cn("shrink-0 transition", ativo ? "text-ink" : "text-ink-faint")}
+        />
+        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+
+        {temSub && (
+          <ChevronRight
+            size={14}
+            className={cn(
+              "shrink-0 transition-transform duration-200 motion-reduce:transition-none",
+              ativo ? "rotate-90 text-ink" : "text-ink-faint",
+            )}
+          />
+        )}
+      </button>
+
+      {temSub && (
+        /*
+          Abre e fecha por `grid-template-rows`, de `0fr` a `1fr`. É o único
+          jeito de animar até a altura do conteúdo sem saber a altura: com
+          `max-height` chutada, uma árvore mais curta fecharia com atraso e uma
+          mais longa seria cortada.
+        */
+        <div
+          className="grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none"
+          style={{ gridTemplateRows: ativo ? "1fr" : "0fr" }}
+          aria-hidden={!ativo}
+        >
+          <div className="overflow-hidden">
+            {/*
+              As margens saem das medidas da referência: o fio nasce alinhado ao
+              centro do ícone do item de cima (21px), e o rótulo do sub-item
+              alinha com o rótulo do item (mais 7px).
+            */}
+            <div
+              ref={lista}
+              className="subarvore-de-config ml-[21px] mt-[3px] flex flex-col gap-0.5 pl-[7px]"
+            >
+              {item.subitens.map((sub) => (
+                <button
+                  key={sub.id}
+                  data-ativo={subAtiva === sub.id}
+                  tabIndex={ativo ? 0 : -1}
+                  onClick={() => onEscolherSub(sub.id)}
+                  className={cn(
+                    "relative z-10 truncate rounded-md px-2.5 py-1 text-left text-[13px] transition",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+                    subAtiva === sub.id
+                      ? "bg-surface-3 font-semibold text-ink"
+                      : "text-ink-faint hover:bg-hover hover:text-ink-muted",
+                  )}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

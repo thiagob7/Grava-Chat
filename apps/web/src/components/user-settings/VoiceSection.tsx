@@ -12,6 +12,7 @@ import { usePttGlobal } from "~/stores/ptt-global";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
+import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
 function nomeDaTecla(code: string) {
   if (code === "Space") return "Espaço";
@@ -154,7 +155,8 @@ export const VoiceSection: React.FC = () => {
         <PermissoesDoMac aberto={vendoPermissoes} onFechar={() => setVendoPermissoes(false)} />
       )}
 
-      <section className="grid grid-cols-2 gap-5 pt-6 first:pt-0">
+      <Secao id="dispositivos" titulo="Dispositivos">
+        <div className="grid grid-cols-2 gap-5">
         <label className="block">
           <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             <Mic size={13} /> Dispositivo de entrada
@@ -188,7 +190,8 @@ export const VoiceSection: React.FC = () => {
             </p>
           )}
         </label>
-      </section>
+        </div>
+      </Secao>
 
       {semNomes && (
         <Button
@@ -233,10 +236,7 @@ export const VoiceSection: React.FC = () => {
         />
       </section>
 
-      <section className="mt-8">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          Teste do microfone
-        </h3>
+      <Secao id="teste-do-microfone" titulo="Teste do microfone">
         <p className="mt-1 text-sm text-ink-muted">
           Fale alguma coisa. A barra mostra o que o microfone está captando; verde é o que sai
           daqui, cinza é o que o corte segura.
@@ -261,12 +261,9 @@ export const VoiceSection: React.FC = () => {
         {erro && <p className="mt-2 text-xs text-danger">{erro}</p>}
 
         <audio ref={retorno} autoPlay />
-      </section>
+      </Secao>
 
-      <section className="mt-8">
-        <h3 id="modo-de-entrada" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          Modo de entrada
-        </h3>
+      <Secao id="modo-de-entrada" titulo="Modo de entrada">
 
         {/*
           Escolher entre dois é rádio, não dois botões soltos. Como rádio, o
@@ -315,12 +312,9 @@ export const VoiceSection: React.FC = () => {
             <AvisoDoAtalho />
           </div>
         )}
-      </section>
+      </Secao>
 
-      <section className="mt-8">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          Sensibilidade de entrada
-        </h3>
+      <Secao id="sensibilidade" titulo="Sensibilidade de entrada">
 
         <div className="mt-3 flex items-start gap-4">
           <div className="min-w-0 flex-1">
@@ -352,10 +346,9 @@ export const VoiceSection: React.FC = () => {
             </p>
           </div>
         )}
-      </section>
+      </Secao>
 
-      <section className="mt-8">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">Qualidade</h3>
+      <Secao id="qualidade" titulo="Qualidade">
 
         <div className="mt-3 flex items-start gap-4">
           <div className="min-w-0 flex-1">
@@ -402,7 +395,7 @@ export const VoiceSection: React.FC = () => {
             onCheckedChange={(v) => prefs.definir({ somDaTela: v })}
           />
         </div>
-      </section>
+      </Secao>
     </div>
   );
 };

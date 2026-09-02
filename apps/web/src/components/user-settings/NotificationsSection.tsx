@@ -10,6 +10,7 @@ import {
 } from "~/lib/notificacoes";
 import { useAvisos } from "~/stores/notificacoes";
 import { tocarSom } from "~/lib/ui-sounds";
+import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { desktop } from "~/lib/desktop";
 
 export const NotificationsSection: React.FC = () => {
@@ -69,10 +70,7 @@ export const NotificationsSection: React.FC = () => {
         </div>
       )}
 
-      <section className="mt-7">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          O que te interrompe
-        </h3>
+      <Secao id="o-que-te-interrompe" titulo="O que te interrompe">
 
         <Opcao
           titulo="Aviso na tela"
@@ -110,7 +108,7 @@ export const NotificationsSection: React.FC = () => {
           ligado={prefs.contador}
           onMudar={(v) => prefs.definir({ contador: v })}
         />
-      </section>
+      </Secao>
     </div>
   );
 };

@@ -141,7 +141,7 @@ export const ServidorSection: React.FC = () => {
             proporcao={discoUsado / disco.total}
           />
         ) : (
-          <div className="rounded-lg border border-line bg-surface-1 p-4">
+          <div className="rounded-lg border border-line bg-surface-2 p-4">
             <p className="flex items-center gap-2 text-sm font-medium">
               <HardDrive size={16} /> Disco
             </p>
@@ -150,7 +150,7 @@ export const ServidorSection: React.FC = () => {
         )}
       </div>
 
-      <div className="rounded-lg border border-line bg-surface-1 p-4">
+      <div className="rounded-lg border border-line bg-surface-2 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
           <Database size={16} /> Serviços
         </p>
@@ -179,7 +179,7 @@ export const ServidorSection: React.FC = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border border-line bg-surface-1 p-4">
+      <div className="rounded-lg border border-line bg-surface-2 p-4">
         <p className="flex items-center justify-between gap-2 text-sm font-medium">
           <span className="flex items-center gap-2">
             <Radio size={16} /> Chamadas agora
@@ -399,7 +399,7 @@ const Cartao: React.FC<{
   detalhe: string;
   proporcao: number;
 }> = ({ icone, titulo, valor, detalhe, proporcao }) => (
-  <div className="rounded-lg border border-line bg-surface-1 p-4">
+  <div className="rounded-lg border border-line bg-surface-2 p-4">
     <p className="flex items-center gap-2 text-sm font-medium">
       {icone} {titulo}
     </p>
