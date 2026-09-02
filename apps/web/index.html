@@ -8,13 +8,18 @@
     <link rel="icon" type="image/png" href="/brand/icone-512.png" />
 
     <!--
-      A Inter NÃO vem mais de CDN. Ela é importada no `main.tsx` pelo
-      `@fontsource-variable/inter`, empacotada junto do app.
+      A fonte NÃO vem de CDN. A IBM Plex é importada no `main.tsx` pelo
+      `@fontsource`, empacotada junto do app.
 
       O `<link>` que estava aqui falhava no aplicativo de desktop sem internet
       alcançável — e falhava calado, caindo no `system-ui`: o app inteiro
       mudava de cara e nada no console dizia por quê. De brinde, saem dois
       round-trips do carregamento inicial.
+
+      Ficar sem CDN não basta para acertar: o nome da família no `--font-sans`
+      tem que ser o que o pacote registra. A Inter esteve importada aqui por
+      semanas sem nunca aparecer, porque o token dizia "Inter" e o pacote
+      registra "Inter Variable" — o mesmo fracasso silencioso, por outra porta.
     -->
 
     <title>Gravaê Chat</title>

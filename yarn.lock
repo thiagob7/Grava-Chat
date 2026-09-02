@@ -937,10 +937,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.12.tgz#afefe785949f16ac4cdd1e695935a321572dd56a"
   integrity sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==
 
-"@fontsource-variable/inter@^5.3.0":
+"@fontsource-variable/ibm-plex-sans@^5.3.0":
   version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@fontsource-variable/inter/-/inter-5.3.0.tgz#351dd1e02dab63a6cf66d57ec36dcfd10c07f07b"
-  integrity sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/ibm-plex-sans/-/ibm-plex-sans-5.3.0.tgz#61ed443b8f904720fb28049370dc201e152f3ed5"
+  integrity sha512-agG8tXFEo0hD9+J7npa4vbbWult52eMLVaQ6WQRlhs/iCAojrMAoejru85W9HTVXHfyUj96KM7gp/KGAS87XaQ==
 
 "@fontsource/bebas-neue@^5.3.0":
   version "5.3.0"
@@ -951,6 +951,11 @@
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/@fontsource/caveat/-/caveat-5.3.0.tgz#b44c8fe760f6a1af6979e1b8e323d8e788253a31"
   integrity sha512-eHTfzQxFSW9ABERRLNruHoNJmKed2J7pqTUc5lp4a4POMgXGKpxmWj3d9Hz10kmAg6iuTTLe6UagbA4bnsmfQw==
+
+"@fontsource/ibm-plex-mono@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/ibm-plex-mono/-/ibm-plex-mono-5.3.0.tgz#1879699d104602d5331e28e103f33c3b1b766b17"
+  integrity sha512-eTgnZjZEGk1QtD3ZstF+Vclo2HLAni8YMy34/DxllwZvyz1lR/1RF/xTiAquOBO7MvqBx8D2Ig2WCPMVfdZu7Q==
 
 "@fontsource/jetbrains-mono@^5.3.0":
   version "5.3.0"

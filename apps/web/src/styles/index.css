@@ -62,7 +62,24 @@
   --color-hover: rgb(255 255 255 / 0.05);
   --color-pilula: #f4f4f6;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /*
+    As fontes.
+
+    A referência usa IBM Plex — Sans na interface, Mono no código. Lá elas
+    aparecem como "Fluxer Sans" e "Fluxer Mono" porque a cláusula 3 da OFL
+    reserva o nome "Plex" para quem modifica o arquivo; nós usamos o original
+    e sem tocar nele, então fica o nome de verdade.
+
+    O sufixo "Variable" não é enfeite: é com esse nome que o
+    `@fontsource-variable` registra a família. Sem ele o navegador não acha a
+    fonte, cai no `system-ui` e não reclama em lugar nenhum — foi exatamente o
+    que aconteceu com a Inter aqui, que nunca chegou a ser aplicada. O segundo
+    nome é a versão estática, para quem já tiver o Plex instalado no sistema.
+  */
+  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    "Courier New", monospace;
 }
 
 /*
