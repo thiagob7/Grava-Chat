@@ -41,6 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
+import { BotaoDeBaixarOApp } from "~/components/BotaoDeBaixarOApp";
 import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
@@ -298,8 +299,6 @@ export const Chat: React.FC = () => {
               />
             )}
 
-            <CaixaDeEntrada />
-
             {channel?.type === "VOICE" && (
               <Tooltip label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
                 <button
@@ -315,14 +314,21 @@ export const Chat: React.FC = () => {
               </Tooltip>
             )}
 
-          <Tooltip label="Membros">
-            <button
-              onClick={() => setShowMembers((v) => !v)}
-              className={`transition hover:text-ink ${showMembers ? "text-ink" : "text-ink-muted"}`}
-            >
-              <Users size={20} weight="fill" />
-            </button>
-          </Tooltip>
+            <Tooltip label="Membros">
+              <button
+                onClick={() => setShowMembers((v) => !v)}
+                className={`transition hover:text-ink ${showMembers ? "text-ink" : "text-ink-muted"}`}
+              >
+                <Users size={20} weight="fill" />
+              </button>
+            </Tooltip>
+
+            {/*
+              Estes dois fecham a fileira, depois da busca: eles não agem sobre
+              a conversa aberta, e sim sobre o app inteiro.
+            */}
+            <BotaoDeBaixarOApp />
+            <CaixaDeEntrada />
           </div>
         </header>
 
