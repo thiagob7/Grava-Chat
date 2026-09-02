@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Keyboard, Mic, ShieldCheck, Volume2 } from "lucide-react";
+import { AudioLines, Keyboard, Mic, ShieldCheck, Volume2 } from "lucide-react";
 
 import { PermissoesDoMac } from "~/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
@@ -264,22 +264,36 @@ export const VoiceSection: React.FC = () => {
       </section>
 
       <section className="mt-8">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <h3 id="modo-de-entrada" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
           Modo de entrada
         </h3>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        {/*
+          Escolher entre dois é rádio, não dois botões soltos. Como rádio, o
+          grupo inteiro é UMA parada de tabulação e as setas andam entre as
+          opções — quem navega por teclado não precisa tabular por cima da que
+          não quer, e quem usa leitor de tela ouve "1 de 2, marcado".
+        */}
+        <div
+          role="radiogroup"
+          aria-labelledby="modo-de-entrada"
+          className="mt-3 grid grid-cols-2 gap-3"
+        >
           <Opcao
             ativo={prefs.modo === "voz"}
+            icone={AudioLines}
             titulo="Atividade de voz"
             descricao="Transmite quando você fala."
             onClick={() => void aplicarAjustes({ modo: "voz" })}
+            onIrParaOutro={() => void aplicarAjustes({ modo: "ptt" })}
           />
           <Opcao
             ativo={prefs.modo === "ptt"}
+            icone={Keyboard}
             titulo="Push-to-talk"
             descricao="Transmite só com a tecla pressionada."
             onClick={() => void aplicarAjustes({ modo: "ptt" })}
+            onIrParaOutro={() => void aplicarAjustes({ modo: "voz" })}
           />
         </div>
 
@@ -438,20 +452,74 @@ const Controle: React.FC<ControleProps> = ({ titulo, valor, onChange, preenchido
 
 interface OpcaoProps {
   ativo: boolean;
+  icone: React.ComponentType<{ size?: number | string; className?: string }>;
   titulo: string;
   descricao: string;
   onClick: () => void;
+  /// as setas do teclado saltam pra outra opção — e escolher é o que a seta faz
+  onIrParaOutro: () => void;
 }
 
-const Opcao: React.FC<OpcaoProps> = ({ ativo, titulo, descricao, onClick }) => (
+/*
+  Um cartão de escolha do modo de entrada.
+
+  A marcada ganha três sinais ao mesmo tempo — a borda, um fundo com a cor da
+  marca e a bolinha cheia — porque só a borda é frágil: some pra quem enxerga
+  mal, some num monitor mal calibrado e some de vez pra quem não distingue a
+  cor. Antes a marcada ainda ESCURECIA o fundo (`bg-surface-0`), que é o oposto
+  do que se espera: a escolhida deve saltar, não afundar.
+*/
+const Opcao: React.FC<OpcaoProps> = ({
+  ativo,
+  icone: Icone,
+  titulo,
+  descricao,
+  onClick,
+  onIrParaOutro,
+}) => (
   <button
+    role="radio"
+    aria-checked={ativo}
+    /*
+      Tabulação rotativa: só a marcada recebe o Tab, e as setas trocam. É o que
+      transforma dois botões num grupo — sem isto, o Tab pararia nas duas e a
+      seta não faria nada, que é o contrário do que um rádio promete.
+    */
+    tabIndex={ativo ? 0 : -1}
     onClick={onClick}
+    onKeyDown={(e) => {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+
+      e.preventDefault();
+      onIrParaOutro();
+    }}
     className={cn(
-      "rounded border p-3 text-left transition",
-      ativo ? "border-brand bg-surface-0" : "border-line hover:bg-surface-3",
+      "flex items-start gap-3 rounded-lg border p-3 text-left transition",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+      ativo
+        ? "border-brand bg-brand/10"
+        : "border-line hover:border-ink-faint hover:bg-surface-3",
     )}
   >
-    <p className="text-sm font-medium">{titulo}</p>
-    <p className="mt-0.5 text-xs text-ink-faint">{descricao}</p>
+    <Icone
+      size={18}
+      className={cn("mt-px shrink-0 transition", ativo ? "text-brand" : "text-ink-faint")}
+    />
+
+    {/* `span`, e não `p`: parágrafo dentro de botão é HTML inválido. */}
+    <span className="min-w-0 flex-1">
+      <span className="block text-sm font-medium">{titulo}</span>
+      <span className="mt-0.5 block text-xs text-ink-faint">{descricao}</span>
+    </span>
+
+    <span
+      aria-hidden
+      className={cn(
+        "relative mt-px size-4 shrink-0 rounded-full border transition",
+        ativo ? "border-brand" : "border-surface-4",
+      )}
+    >
+      {ativo && <span className="absolute inset-[3px] rounded-full bg-brand" />}
+    </span>
   </button>
 );
