@@ -178,7 +178,14 @@ export const DirectMessages: React.FC = () => {
   );
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-surface-0">
+      {/*
+        `bg-surface-0` só se vê na curva do painel de canais: todo o resto
+        está coberto pelo trilho, pelo painel e pela conversa. É a cor do
+        trilho, pra que a mordida no canto pareça o trilho continuando — sem
+        isto apareceria o fundo do `body`, que é `surface-2` e é mais CLARO
+        que os dois vizinhos.
+      */}
       {/*
         Quem ainda não tem servidor nenhum recebe o convite pra criar o
         primeiro — uma vez por abertura do app, e fechável. Fechou, fica só a
@@ -201,7 +208,7 @@ export const DirectMessages: React.FC = () => {
 
       {conversa ? (
         <div className="flex min-w-0 flex-1">
-        <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
+        <main className="topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2">
           <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
             {telaEstreita && (
               <button

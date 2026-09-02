@@ -69,7 +69,7 @@ export const MemberList: React.FC<MemberListProps> = ({
     puxava a coluna junto.
   */
   return (
-    <aside className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
+    <aside className="topo-do-miolo hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div className="h-full overflow-y-auto px-2 py-4">
         {grupos.map((grupo) => (
           <MemberGroup

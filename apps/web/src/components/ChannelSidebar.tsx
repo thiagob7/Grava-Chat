@@ -125,8 +125,14 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
   return (
     <>
+      {/*
+        `canto-do-miolo` e `topo-do-miolo` estão no `index.css`, e só valem
+        dentro do aplicativo instalado. A curva é do FUNDO, não um recorte: a
+        alça de largura mora em `-right-1`, fora da caixa, e um
+        `overflow-hidden` aqui comeria metade da área de pegar.
+      */}
       <aside
-        className="relative flex shrink-0 flex-col border-r border-divisor bg-surface-1"
+        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
         {/*

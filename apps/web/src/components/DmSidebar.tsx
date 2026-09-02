@@ -75,7 +75,12 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   });
 
   return (
-    <aside className="relative flex shrink-0 flex-col border-r border-divisor bg-surface-1" style={{ width: largura }}>
+    <aside
+      className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+      style={{ width: largura }}
+    >
+      {/* A mesma moldura do painel de canais — trocar de servidor pra mensagem
+          direta não pode endireitar a quina. Regras no `index.css`. */}
       <header className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">
         <h1 className="truncate font-semibold">Mensagens diretas</h1>
       </header>

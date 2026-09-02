@@ -389,6 +389,45 @@
   cada elemento e esquecer metade, o seletor devolve o clique a tudo que é
   interativo por natureza.
 */
+/*
+  A moldura do miolo — só quando há uma janela nossa em volta.
+
+  No aplicativo, o painel de canais curva no alto e um fio corre pelo topo do
+  miolo inteiro (painel, conversa e lista de membros), como numa janela de
+  verdade. No navegador nada disso aparece: o app encosta na borda da aba, e
+  ali a curva fica solta e o fio se perde no topo da tela.
+
+  O fio NÃO vai no container nem na faixa de título. De lá ele seria uma reta
+  única passando por cima de tudo, inclusive do trilho, e cortaria a curva —
+  que foi exatamente o que fez a quina parecer quadrada nas primeiras
+  tentativas. Cada peça desenha o seu pedaço, e o do painel dobra junto com o
+  canto dele.
+*/
+.no-aplicativo .topo-do-miolo {
+  border-top: 1px solid var(--color-divisor);
+}
+
+.no-aplicativo .canto-do-miolo {
+  /* O fallback não é zelo excessivo: o Tailwind 4 só emite `--radius-xl`
+     se alguma utilidade `rounded-xl` sobreviver na varredura. No dia em que
+     a última sumir, a variável some junto e a curva morre sem um aviso. */
+  border-top-left-radius: var(--radius-xl, 0.75rem);
+}
+
+/*
+  O primeiro filho pinta por cima do canto: a faixa do servidor, quando existe;
+  senão o cabeçalho, cujo botão do nome acende `hover:bg-surface-3`. Sem
+  recortar, passar o mouse ali desenharia uma quina quadrada sobre a redonda.
+  `first-child` cobre os dois casos sem um `if` no componente.
+*/
+.no-aplicativo .canto-do-miolo > :first-child {
+  overflow: hidden;
+  /* O fallback não é zelo excessivo: o Tailwind 4 só emite `--radius-xl`
+     se alguma utilidade `rounded-xl` sobreviver na varredura. No dia em que
+     a última sumir, a variável some junto e a curva morre sem um aviso. */
+  border-top-left-radius: var(--radius-xl, 0.75rem);
+}
+
 .regiao-de-arrasto {
   -webkit-app-region: drag;
   app-region: drag;

@@ -32,7 +32,13 @@ export const BarraDeTitulo: React.FC = () => {
   const atual = guilds.find((g) => g.id === rota?.params.guildId);
 
   return (
-    <header className="regiao-de-arrasto flex h-8 shrink-0 items-center justify-center border-b border-divisor bg-surface-0 px-2">
+    <header className="regiao-de-arrasto flex h-8 shrink-0 items-center justify-center bg-surface-0 px-2">
+      {/*
+        Sem fio embaixo: ele atravessava o alto da curva do painel de canais em
+        linha reta e a quina voltava a parecer quadrada. A faixa já se separa
+        do que vem abaixo pela cor — ela é `surface-0`, o painel é `surface-1`
+        e a conversa é `surface-2`.
+      */}
       <span className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
         {atual ? (
           <>
