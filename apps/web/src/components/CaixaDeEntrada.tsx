@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { AtSign, Bell, Bookmark, BookmarkX, Hash, Inbox, PartyPopper } from "lucide-react";
+import { At, Bell, BookmarkSimple, Confetti, Hash, Tray } from "@phosphor-icons/react";
 
 import { useFindMentions } from "~/@core/application/queries/message/use-find-mentions";
 import { useReadStatesLista } from "~/@core/application/queries/message/use-read-states";
@@ -18,9 +18,9 @@ import { cn } from "~/lib/utils";
 type Aba = "nao-lidas" | "salvas" | "mencoes";
 
 const ABAS: { id: Aba; rotulo: string; icone: React.ReactNode }[] = [
-  { id: "nao-lidas", rotulo: "Não lidas", icone: <Bell size={16} /> },
-  { id: "salvas", rotulo: "Salvas", icone: <Bookmark size={16} /> },
-  { id: "mencoes", rotulo: "Menções", icone: <AtSign size={16} /> },
+  { id: "nao-lidas", rotulo: "Não lidas", icone: <Bell size={16} weight="fill" /> },
+  { id: "salvas", rotulo: "Salvas", icone: <BookmarkSimple size={16} weight="fill" /> },
+  { id: "mencoes", rotulo: "Menções", icone: <At size={16} weight="bold" /> },
 ];
 
 /**
@@ -46,7 +46,7 @@ export const CaixaDeEntrada: React.FC = () => {
       <PopoverTrigger asChild>
         <button aria-label="Caixa de entrada" className="relative text-ink-muted transition hover:text-ink">
           <Tooltip label="Caixa de entrada">
-            <Inbox size={20} />
+            <Tray size={20} weight="fill" />
           </Tooltip>
 
           {/* a bolinha só existe quando há algo esperando */}
@@ -109,7 +109,7 @@ const NaoLidas: React.FC<{
   if (!estados.length) {
     return (
       <Vazio
-        icone={<PartyPopper size={40} strokeWidth={1.5} />}
+        icone={<Confetti size={40} />}
         titulo="Você chegou ao fim"
         detalhe="Não há nada por ler. Quando chegar mensagem nova, ela aparece aqui."
       />
@@ -131,7 +131,7 @@ const NaoLidas: React.FC<{
           }}
           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition hover:bg-hover"
         >
-          <Hash size={16} className="shrink-0 text-ink-faint" />
+          <Hash size={16} weight="bold" className="shrink-0 text-ink-faint" />
           <span className="min-w-0 flex-1 truncate text-sm">
             {estado.channelName ?? "conversa"}
           </span>
@@ -157,7 +157,7 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
   if (!favoritas.length) {
     return (
       <Vazio
-        icone={<Bookmark size={40} strokeWidth={1.5} />}
+        icone={<BookmarkSimple size={40} />}
         titulo="Nenhum item salvo"
         detalhe="Segure Shift e clique no marcador de uma mensagem para guardá-la e ver depois."
       />
@@ -197,7 +197,7 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
             aria-label="Tirar dos salvos"
             className="h-fit rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100"
           >
-            <BookmarkX size={16} />
+            <BookmarkSimple size={16} weight="fill" className="text-danger" />
           </button>
         </article>
       ))}
@@ -214,7 +214,7 @@ const Mencoes: React.FC<{ ativo: boolean; onIr: () => void }> = ({ ativo, onIr }
   if (!mencoes.length) {
     return (
       <Vazio
-        icone={<AtSign size={40} strokeWidth={1.5} />}
+        icone={<At size={40} />}
         titulo="Nenhuma menção ainda"
         detalhe="As menções a você aparecem aqui pelos últimos 7 dias."
       />
@@ -252,7 +252,7 @@ const Mencoes: React.FC<{ ativo: boolean; onIr: () => void }> = ({ ativo, onIr }
             </p>
 
             <p className="flex items-center gap-1 text-xs text-ink-faint">
-              <Hash size={11} className="shrink-0" />
+              <Hash size={11} weight="bold" className="shrink-0" />
               {mencao.canal.nome}
             </p>
 

@@ -811,7 +811,12 @@ const Citacao: React.FC<{
     */}
     <span
       aria-hidden
-      className="mb-1.5 h-3 w-5 shrink-0 self-end rounded-tl-md border-l-2 border-t-2 border-line"
+      /*
+        A curva é maior que a linha reta que tinha antes (`rounded-tl-lg`), e o
+        traço desce um pouco além da linha (`-mb-0.5`) pra encostar no avatar
+        de baixo. Sem esse par, o fio parecia um "L" solto pousado ali.
+      */
+      className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
     />
 
     {respondida ? (
@@ -823,11 +828,13 @@ const Citacao: React.FC<{
           size={16}
         />
         {/*
-          O nome vem como menção — "@Fulano" na cor de menção —, que é o que
-          diferencia a citação do texto cinza em volta. Em cinza, como estava,
-          ela se perdia no meio da conversa.
+          "@Fulano" em branco e negrito — não na cor de menção.
+
+          A pílula azul é para uma menção DE VERDADE, que notifica alguém.
+          Aqui o @ é só a forma de dizer de quem é a fala citada; pintar os dois
+          igual fazia parecer que responder marcava a pessoa duas vezes.
         */}
-        <span className="max-w-[7rem] shrink-0 truncate font-medium text-mencao @sm:max-w-[12rem]">
+        <span className="max-w-[7rem] shrink-0 truncate font-medium text-ink @sm:max-w-[12rem]">
           @{respondida.author.displayName}
         </span>
         {/*

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
-  Hash,
+
   Lock,
   LogOut,
   MessageSquare,
-  MessagesSquare,
+
   Plus,
   Settings,
   Trash2,
   UserPlus,
-  Volume2,
+
 } from "lucide-react";
 
 import type { GuildDetailModel, GuildSummaryModel } from "~/@core/domain/models/guild-model";
@@ -21,6 +21,7 @@ import { InviteModal } from "~/components/InviteModal";
 import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
+import { ChatsCircle, Hash, SpeakerHigh } from "@phosphor-icons/react";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import {
   DropdownMenu,
@@ -265,8 +266,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             bloqueado ? (
                               <Lock size={18} className="shrink-0 text-ink-faint" />
                             ) : (
-                              <Volume2
+                              <SpeakerHigh
                                 size={18}
+                                weight="fill"
                                 className={cn(
                                   "shrink-0",
                                   inThisCall ? "text-online" : "text-ink-faint",
@@ -274,14 +276,14 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               />
                             )
                           ) : channel.type === "FORUM" ? (
-                            <MessagesSquare size={18} className="shrink-0 text-ink-faint" />
+                            <ChatsCircle size={18} weight="fill" className="shrink-0 text-ink-faint" />
                           ) : channel.isPrivate ? (
                             /* canal de texto fechado tinha o mesmo `#` de um
                                aberto: quem entra no servidor não tinha como
                                saber por que só enxerga metade da lista */
                             <Lock size={18} className="shrink-0 text-ink-faint" />
                           ) : (
-                            <Hash size={18} className="shrink-0 text-ink-faint" />
+                            <Hash size={18} weight="bold" className="shrink-0 text-ink-faint" />
                           )}
                           <span
                             className="truncate"

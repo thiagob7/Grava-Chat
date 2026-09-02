@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { Check, Menu } from "lucide-react";
+/*
+  Os ícones do cabeçalho e da lista de canais vêm do Phosphor, na variante
+  `fill` — é o mesmo conjunto (e o mesmo peso) do app que serviu de referência.
+  Ele é MIT e entra como dependência: nada foi copiado do código deles, que é
+  AGPL e não daria pra misturar aqui.
+*/
 import {
   Bell,
-  BellOff,
-  Check,
+  BellSlash,
+  ChatCircle,
+  ChatsCircle,
   Hash,
-  Menu,
-  MessageSquare,
-  MessagesSquare,
+  SpeakerHigh,
   Users,
-  Volume2,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
@@ -266,11 +271,11 @@ export const Chat: React.FC = () => {
           )}
 
           {channel?.type === "VOICE" ? (
-            <Volume2 size={20} className="text-ink-faint" />
+            <SpeakerHigh size={20} weight="fill" className="text-ink-faint" />
           ) : channel?.type === "FORUM" ? (
-            <MessagesSquare size={20} className="text-ink-faint" />
+            <ChatsCircle size={20} weight="fill" className="text-ink-faint" />
           ) : (
-            <Hash size={20} className="text-ink-faint" />
+            <Hash size={20} weight="bold" className="text-ink-faint" />
           )}
           <h2 className="font-semibold">{channel?.name ?? "…"}</h2>
 
@@ -305,7 +310,7 @@ export const Chat: React.FC = () => {
                     chatDaVozAberto ? "text-ink" : "text-ink-muted",
                   )}
                 >
-                  <MessageSquare size={20} />
+                  <ChatCircle size={20} weight="fill" />
                 </button>
               </Tooltip>
             )}
@@ -315,7 +320,7 @@ export const Chat: React.FC = () => {
               onClick={() => setShowMembers((v) => !v)}
               className={`transition hover:text-ink ${showMembers ? "text-ink" : "text-ink-muted"}`}
             >
-              <Users size={20} />
+              <Users size={20} weight="fill" />
             </button>
           </Tooltip>
           </div>
@@ -335,7 +340,7 @@ export const Chat: React.FC = () => {
             />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-              <Volume2 size={48} className="text-ink-faint" />
+              <SpeakerHigh size={48} weight="fill" className="text-ink-faint" />
               <h3
                 className="text-lg font-semibold"
                 style={{ fontFamily: familiaDaFonte(channel.fonte) ?? undefined }}
@@ -506,7 +511,11 @@ const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
           )}
         >
           <Tooltip label={modo === "nada" ? "Canal silenciado" : "Avisos deste canal"}>
-            {modo === "nada" ? <BellOff size={18} /> : <Bell size={18} />}
+            {modo === "nada" ? (
+              <BellSlash size={18} weight="fill" />
+            ) : (
+              <Bell size={18} weight="fill" />
+            )}
           </Tooltip>
         </button>
       </DropdownMenuTrigger>

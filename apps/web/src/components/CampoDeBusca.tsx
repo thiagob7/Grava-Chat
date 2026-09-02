@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 interface CampoDeBuscaProps {
   /// o termo que está valendo agora (vazio = painel fechado)
@@ -24,7 +25,7 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
 
   return (
     <div className="relative hidden items-center @2xl:flex">
-      <Search size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
+      <MagnifyingGlass size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
 
       <input
         value={rascunho}

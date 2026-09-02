@@ -1,5 +1,5 @@
 import React from "react";
-import { Pin, PinOff } from "lucide-react";
+import { PushPin, PushPinSlash } from "@phosphor-icons/react";
 
 import { useFindPins, usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { Avatar } from "~/components/Avatar";
@@ -22,21 +22,21 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
       <PopoverTrigger asChild>
         <button aria-label="Mensagens fixadas" className="text-ink-muted transition hover:text-ink">
           <Tooltip label="Mensagens fixadas">
-            <Pin size={20} />
+            <PushPin size={20} weight="fill" />
           </Tooltip>
         </button>
       </PopoverTrigger>
 
       <PopoverContent align="end" className="w-96 p-0">
         <header className="flex items-center gap-2 border-b border-line px-4 py-3">
-          <Pin size={16} />
+          <PushPin size={16} weight="fill" />
           <h3 className="font-semibold">Mensagens fixadas</h3>
         </header>
 
         <div className="max-h-96 overflow-y-auto">
           {!fixadas.length && (
             <div className="px-6 py-10 text-center">
-              <Pin size={32} className="mx-auto text-ink-faint" />
+              <PushPin size={32} weight="fill" className="mx-auto text-ink-faint" />
               <p className="mt-3 text-sm text-ink-muted">
                 Este canal não tem mensagens fixadas… por enquanto.
               </p>
@@ -70,7 +70,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
                   title="Desafixar"
                   className="self-start rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
                 >
-                  <PinOff size={14} />
+                  <PushPinSlash weight="fill" size={14} />
                 </button>
               )}
             </article>

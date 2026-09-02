@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
-import { AtSign, Menu, Phone, PhoneOff, UserRound, Video } from "lucide-react";
+import { Menu } from "lucide-react";
+/// mesmo conjunto do cabeçalho do canal — Phosphor, variante cheia
+import { At, Phone, PhoneSlash, User, VideoCamera } from "@phosphor-icons/react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -208,14 +210,14 @@ export const DirectMessages: React.FC = () => {
                 <Menu size={20} />
               </button>
             )}
-            <AtSign size={20} className="text-ink-faint" />
+            <At weight="bold" size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
 
             {/* na chamada, o estado substitui o @usuário: ali o que importa é
                 o que está acontecendo, não como a pessoa se chama */}
             {emChamadaAqui ? (
               <span className="flex items-center gap-1.5 text-sm text-online">
-                <Phone size={13} /> Em uma chamada
+                <Phone size={13} weight="fill" /> Em uma chamada
               </span>
             ) : (
               <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
@@ -235,7 +237,11 @@ export const DirectMessages: React.FC = () => {
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
-                  {emChamadaAqui ? <PhoneOff size={17} /> : <Phone size={17} />}
+                  {emChamadaAqui ? (
+                    <PhoneSlash size={17} weight="fill" />
+                  ) : (
+                    <Phone size={17} weight="fill" />
+                  )}
                 </button>
               </Tooltip>
 
@@ -250,7 +256,7 @@ export const DirectMessages: React.FC = () => {
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
-                  <Video size={17} />
+                  <VideoCamera size={17} weight="fill" />
                 </button>
               </Tooltip>
 
@@ -272,7 +278,7 @@ export const DirectMessages: React.FC = () => {
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
-                  <UserRound size={17} />
+                  <User weight="fill" size={17} />
                 </button>
               </Tooltip>
             </div>
@@ -409,7 +415,7 @@ const Chamando: React.FC<{
         onClick={onDesistir}
         className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
       >
-        <PhoneOff size={15} /> Cancelar
+        <PhoneSlash size={15} weight="fill" /> Cancelar
       </button>
     </div>
   );
