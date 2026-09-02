@@ -113,7 +113,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
           aria-disabled={surdo}
           onClick={(e) => surdo && e.preventDefault()}
           className={cn(
-            "flex items-center justify-center rounded bg-surface-3 py-2 text-ink-muted transition",
+            "flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition",
             surdo ? "cursor-not-allowed opacity-40" : "hover:bg-surface-4 hover:text-ink",
           )}
         >

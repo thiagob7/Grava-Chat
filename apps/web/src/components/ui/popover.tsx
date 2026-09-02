@@ -16,10 +16,10 @@ export const PopoverAnchor = PopoverPrimitive.Anchor;
  * Vai DENTRO do `PopoverContent` — o Radix a posiciona sozinho no lado que o
  * balão acabou escolhendo, e some se não conseguir apontar pro alvo.
  *
- * `fill-surface-3`, e não a cor do balão: o balão é `surface-0`, quase a mesma
- * tinta do fundo do app, e uma seta dessa cor simplesmente não aparecia — foi
- * o que aconteceu na primeira tentativa. Um tom acima ela se destaca do fundo
- * sem virar uma peça solta do balão.
+ * `fill-surface-4` é a cor do próprio balão. Balão, menu e dica moram no
+ * degrau mais alto — a superfície de formulário —, que é o único
+ * que se destaca da conversa em qualquer um dos temas. Na primeira tentativa
+ * o balão era `surface-0`, a mesma tinta do fundo, e a seta não aparecia.
  */
 export const PopoverArrow = ({
   className,
@@ -28,7 +28,7 @@ export const PopoverArrow = ({
   <PopoverPrimitive.Arrow
     width={14}
     height={7}
-    className={cn("fill-surface-3", className)}
+    className={cn("fill-surface-4", className)}
     {...props}
   />
 );
@@ -45,7 +45,7 @@ export const PopoverContent = ({
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 w-72 rounded-lg bg-surface-0 p-4 shadow-2xl outline-none",
+        "z-50 w-72 rounded-lg bg-surface-4 p-4 shadow-2xl outline-none",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}

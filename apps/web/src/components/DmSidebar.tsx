@@ -75,11 +75,13 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   });
 
   return (
-    <aside className="relative flex shrink-0 flex-col bg-surface-1" style={{ width: largura }}>
+    <aside className="relative flex shrink-0 flex-col border-r border-divisor bg-surface-1" style={{ width: largura }}>
       <header className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">
         <h1 className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 
+      {/* Como na barra de canais: a alça mede só a área acima do rodapé. */}
+      <div className="relative flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto px-2 py-3">
         <div className="relative mb-3">
           <Search size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-ink-faint" />
@@ -96,7 +98,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
           onClick={onOpenFriends}
           className={cn(
             "mb-3 flex w-full items-center gap-3 rounded px-2 py-2 text-sm font-medium transition",
-            activeChannelId ? "text-ink-muted hover:bg-surface-3 hover:text-ink" : "bg-surface-4 text-ink",
+            activeChannelId ? "text-ink-muted hover:bg-surface-3 hover:text-ink" : "bg-selecionado text-ink",
           )}
         >
           <Users size={20} className="text-ink-faint" />
@@ -133,7 +135,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
               className={cn(
                 "mb-0.5 flex w-full items-center gap-2.5 rounded px-2 py-1.5 text-sm transition",
                 ativa
-                  ? "bg-surface-4 text-ink"
+                  ? "bg-selecionado text-ink"
                   : naoLida
                     ? "font-semibold text-ink hover:bg-surface-3"
                     : "text-ink-muted hover:bg-surface-3",
@@ -178,8 +180,16 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
         })}
       </div>
 
+        <AlcaDeLargura
+          borda="direita"
+          arrastando={arrastando}
+          largura={largura}
+          limites={limites}
+          {...alca}
+        />
+      </div>
+
       <RodapeDaBarra user={user} onLogout={onLogout} />
-      <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
     </aside>
   );
 };

@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, FileUp, Plus, Send, Smile, X } from "lucide-react";
+import { BarChart3, FileUp, Plus, Send, Smile, Timer, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
 
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
@@ -47,6 +47,8 @@ interface ComposerProps {
   postId?: string;
   podeEscrever?: boolean;
   podeAnexar?: boolean;
+  /// segundos do modo lento do canal; 0 é desligado
+  modoLento?: number;
 }
 
 export const Composer: React.FC<ComposerProps> = ({
@@ -56,6 +58,7 @@ export const Composer: React.FC<ComposerProps> = ({
   postId,
   podeEscrever = true,
   podeAnexar = true,
+  modoLento = 0,
 }) => {
   const sendMessage = useSendMessage();
   const respostaAberta = useReplyStore((s) => s.alvo);
@@ -182,6 +185,34 @@ export const Composer: React.FC<ComposerProps> = ({
     if (textarea.current) textarea.current.style.height = "auto";
   };
 
+  /*
+    A contagem do modo lento.
+
+    Quem manda a conta é o servidor (ele recusa com 429 e diz quantos segundos
+    faltam) — isto aqui é só o aviso na tela, pra pessoa não escrever um
+    parágrafo inteiro e só então descobrir que ainda falta esperar. Começa no
+    envio; se o envio falhar, o pior que acontece é um aviso a mais por alguns
+    segundos.
+  */
+  const [esperaAte, setEsperaAte] = useState(0);
+  const [agora, setAgora] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (esperaAte <= agora) return;
+
+    const relogio = setInterval(() => setAgora(Date.now()), 250);
+    return () => clearInterval(relogio);
+  }, [esperaAte, agora]);
+
+  /// Trocar de canal zera: o modo lento é por canal, e o de lá não vale aqui.
+  useEffect(() => setEsperaAte(0), [channelId]);
+
+  const faltam = Math.max(0, Math.ceil((esperaAte - agora) / 1000));
+
+  const marcarEspera = () => {
+    if (modoLento > 0) setEsperaAte(Date.now() + modoLento * 1000);
+  };
+
   const submit = () => {
     if (!podeEnviar) return;
 
@@ -224,15 +255,18 @@ export const Composer: React.FC<ComposerProps> = ({
 
     anexos.clear();
     cancelarResposta();
+    marcarEspera();
   };
 
   const enviarFigurinha = (sticker: Sticker) => {
     sendMessage.mutate({ channelId, content: "", stickerId: sticker.id, postId, nonce: crypto.randomUUID() });
+    marcarEspera();
     setSeletor(null);
   };
 
   const enviarGif = (url: string) => {
     sendMessage.mutate({ channelId, content: url, postId, nonce: crypto.randomUUID() });
+    marcarEspera();
     setSeletor(null);
   };
 
@@ -275,7 +309,19 @@ export const Composer: React.FC<ComposerProps> = ({
       Container próprio: a caixa de escrever não está dentro da lista, e é a
       largura DELA que decide o que cabe na fileira de botões.
     */
-    <div className="@container px-2 pb-4 @sm:px-4 @sm:pb-6">
+    <div className="@container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
+      {faltam > 0 && (
+        <Tooltip
+          label={`O modo lento está definido como ${modoLento}s. Aguarde antes de enviar outra mensagem.`}
+        >
+          <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
+            Modo lento ativo ({String(Math.floor(faltam / 60)).padStart(2, "0")}:
+            {String(faltam % 60).padStart(2, "0")})
+            <Timer size={13} />
+          </p>
+        </Tooltip>
+      )}
+
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -290,7 +336,13 @@ export const Composer: React.FC<ComposerProps> = ({
           void anexos.add([...e.dataTransfer.files]);
         }}
         className={cn(
-          "rounded-lg bg-surface-4 transition",
+          /*
+            `bg-campo`, e não `bg-composer`: nos temas escuros a superfície do
+            rodapé é a MESMA cor da conversa, então a caixa pintada com ela
+            sumia — sobrava o texto solto no fim da lista. Quem tem cor própria
+            é o campo (`--background-textarea`), que é o que se enxerga.
+          */
+          "rounded-lg bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >

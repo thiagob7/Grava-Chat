@@ -111,9 +111,23 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   return (
     <>
       <aside
-        className="relative flex shrink-0 flex-col bg-surface-1"
+        className="relative flex shrink-0 flex-col border-r border-divisor bg-surface-1"
         style={{ width: largura }}
       >
+        {/*
+          A faixa do servidor, quando existe: uma imagem larga no alto da
+          lista. O nome continua logo abaixo — pôr o nome POR
+          CIMA da imagem funciona só enquanto a imagem é escura, e a escolha
+          da imagem é de quem manda no servidor, não nossa.
+        */}
+        {detail?.guild.bannerUrl && (
+          <div
+            aria-hidden
+            className="h-28 shrink-0 border-b border-line bg-cover bg-center"
+            style={{ backgroundImage: `url(${detail.guild.bannerUrl})` }}
+          />
+        )}
+
         <header className="regiao-de-arrasto flex h-12 items-center justify-between border-b border-divisor shadow-sm">
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
@@ -180,6 +194,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           )}
         </header>
 
+        {/*
+          Cabeçalho e lista dentro de um mesmo bloco relativo: é a altura DELE
+          que a alça de arrastar ocupa, e por isso o fio para onde o cartão do
+          rodapé começa.
+        */}
+        <div className="relative flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-2 py-3">
           {groups.map((group) => {
             const isCollapsed = group.id ? collapsed[group.id] : false;
@@ -233,7 +253,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           className={cn(
                             "mb-0.5 flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-sm transition",
                             active
-                              ? "bg-surface-4 text-ink"
+                              ? "bg-selecionado text-ink"
                               : bloqueado
                                 ? "text-ink-faint hover:bg-surface-3"
                                 : unread
@@ -308,7 +328,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     "min-w-[18px] rounded-full px-1.5 text-center text-[11px] font-bold leading-[18px]",
                                     mencoes > 0
                                       ? "bg-danger text-white"
-                                      : "bg-surface-4 text-ink-muted",
+                                      : "bg-selecionado text-ink-muted",
                                   )}
                                 >
                                   {naoLidas > 99 ? "99+" : naoLidas}
@@ -370,13 +390,21 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           })}
         </div>
 
+          <AlcaDeLargura
+            borda="direita"
+            arrastando={arrastando}
+            largura={largura}
+            limites={limites}
+            {...alca}
+          />
+        </div>
+
         <RodapeDaBarra
           user={user}
           guildId={detail?.guild.id}
           onLogout={onLogout}
           accountChannelId={accountVoiceChannelId}
         />
-        <AlcaDeLargura borda="direita" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
       </aside>
 
       <CreateChannelModal

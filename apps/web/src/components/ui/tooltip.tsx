@@ -32,7 +32,7 @@ export const Tooltip = ({
         side={side}
         sideOffset={6}
         className={cn(
-          "z-50 rounded bg-surface-0 px-2.5 py-1.5 text-xs font-medium text-ink shadow-lg",
+          "z-50 rounded bg-surface-4 px-2.5 py-1.5 text-xs font-medium text-ink shadow-lg",
           "data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0",
         )}
       >

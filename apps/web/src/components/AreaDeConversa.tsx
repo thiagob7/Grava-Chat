@@ -38,7 +38,16 @@ export const RodapeDaConversa: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   return (
-    <div ref={rodape} className="absolute inset-x-0 bottom-0 z-10 bg-surface-2">
+    /*
+      Sem fundo próprio: quem pinta é a caixa de escrever, logo abaixo.
+
+      Este bloco também abriga a linha de "fulano está digitando", que reserva
+      24px de altura mesmo vazia. Com o fundo aqui, esses 24px viravam uma
+      tira da cor do rodapé por cima da conversa — e a última mensagem parecia
+      cortada no meio por um degrau. Agora a tira é transparente, e o fundo
+      começa exatamente na borda de cima do campo.
+    */
+    <div ref={rodape} className="absolute inset-x-0 bottom-0 z-10">
       {children}
     </div>
   );

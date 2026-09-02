@@ -40,17 +40,26 @@ export const AtivosAgora: React.FC = () => {
   }
 
   return (
-    <aside className="hidden w-72 shrink-0 border-l border-line p-4 xl:block">
+    <aside className="hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block">
       <h2 className="mb-3 text-sm font-semibold">Ativo agora</h2>
 
       {isLoading ? (
         <p className="text-sm text-ink-faint">Vendo quem está por aí…</p>
       ) : salas.size === 0 ? (
-        <div className="rounded-lg bg-surface-1 p-4">
-          <p className="text-sm font-medium">Está quieto por aqui…</p>
-          <p className="mt-1 text-sm text-ink-muted">
-            Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá
-            pra entrar junto com um clique.
+        /*
+          Vazio com desenho: o cartão cinza com duas frases
+          parecia um aviso de erro encostado no canto. O "zZ" grande diz que
+          está tudo bem, só quieto.
+        */
+        <div className="flex flex-col items-center justify-center gap-2 px-2 py-24 text-center">
+          <span aria-hidden className="text-3xl font-bold text-ink-faint/60">
+            z<span className="align-super text-xl">Z</span>
+          </span>
+
+          <p className="text-sm font-semibold">Está tudo tranquilo por enquanto…</p>
+          <p className="text-xs leading-relaxed text-ink-muted">
+            Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá pra entrar junto
+            com um clique.
           </p>
         </div>
       ) : (

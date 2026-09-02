@@ -22,12 +22,22 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
   accountChannelId,
 }) => (
   <>
-    {/* Cartão à parte, acima do da chamada — as mesmas margens pra alinharem. */}
-    <CartaoDaTransmissao className="-ml-16 mb-2 mr-2" />
+    {/*
+      O rodapé cobre o canto inteiro — inclusive os 72px do trilho — mas quem
+      pinta é ESTE invólucro, não o cartão.
 
-    <div className="relative z-30 -ml-16 mb-2 mr-2 rounded-lg bg-surface-2 p-2 shadow-lg shadow-black/30 ring-1 ring-white/[0.04] [--gc-recorte:var(--color-surface-2)]">
-      <VoicePanel accountChannelId={accountChannelId} />
-      {user && <UserPanel user={user} guildId={guildId} onLogout={onLogout} />}
+      É o que resolve as duas coisas de uma vez: o cartão volta a flutuar, com
+      margem em todos os lados, e a borda entre o trilho e a lista de canais
+      não aparece na tira que sobra embaixo dele, porque o invólucro já cobriu
+      aquele pedaço com a cor da barra lateral.
+    */}
+    <div className="relative z-30 -ml-[72px] bg-surface-1 pb-2">
+      <CartaoDaTransmissao className="mx-2 mb-2" />
+
+      <div className="mx-2 rounded-lg bg-painel p-2 shadow-lg shadow-black/30 [--gc-recorte:var(--color-painel)]">
+        <VoicePanel accountChannelId={accountChannelId} />
+        {user && <UserPanel user={user} guildId={guildId} onLogout={onLogout} />}
+      </div>
     </div>
   </>
 );

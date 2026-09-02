@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Download, Plus } from "lucide-react";
+import { ArrowDownToLine, Download, Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
@@ -8,6 +8,7 @@ import { cn } from "~/lib/utils";
 import { AdicionarServidorModal } from "~/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { desktop, ehDesktop } from "~/lib/desktop";
+import { useAtualizacao } from "~/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/stores/configuracoes";
 
 interface GuildRailProps {
@@ -33,6 +34,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const [creating, setCreating] = useState(false);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+  const atualizacao = useAtualizacao();
 
   /*
     ⌘⇧N (Ctrl no Windows) abre o "adicionar servidor".
@@ -56,7 +58,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
   return (
     <>
-      <nav className="trilho-de-servidores flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 pb-36 pt-3">
+      <nav className="trilho-de-servidores flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto border-r border-divisor bg-surface-0 pb-36 pt-3">
         <div className="group relative flex w-full justify-center">
           <span
             className={cn(
@@ -168,13 +170,55 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         </AcaoDoTrilho>
 
         {/*
-          Some pra quem já está no app instalado: oferecer download a quem
-          acabou de baixar é um botão pra lugar nenhum.
+          O mesmo lugar serve pra duas coisas, uma de cada vez: no navegador
+          convida a baixar o app; no app, quando sai versão nova, vira o botão
+          de atualizar. Antes a atualização só existia na faixa flutuante —
+          quem a dispensava ficava sem nenhum caminho até ela.
         */}
-        {!ehDesktop() && (
+        {!ehDesktop() ? (
           <AcaoDoTrilho label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
             <Download size={20} />
           </AcaoDoTrilho>
+        ) : (
+          atualizacao.temNovidade && (
+            <Tooltip
+              side="right"
+              label={
+                atualizacao.pronta
+                  ? `Versão ${atualizacao.estado?.disponivel} pronta — clique para reiniciar`
+                  : atualizacao.baixando
+                    ? `Baixando a versão ${atualizacao.estado?.disponivel}…`
+                    : `Saiu a versão ${atualizacao.estado?.disponivel} — clique para baixar`
+              }
+            >
+              <button
+                aria-label="Atualização do aplicativo"
+                onClick={() =>
+                  void (atualizacao.pronta
+                    ? atualizacao.ponte?.instalar()
+                    : atualizacao.ponte?.baixar())
+                }
+                className={cn(
+                  "relative flex size-12 items-center justify-center rounded-3xl border-2 border-dashed transition-all",
+                  "hover:rounded-2xl",
+                  atualizacao.pronta
+                    ? "border-online text-online hover:bg-online/10"
+                    : "border-surface-4 text-ink-muted hover:border-ink hover:text-ink",
+                )}
+              >
+                {atualizacao.baixando ? (
+                  <ArrowDownToLine size={20} className="animate-pulse" />
+                ) : (
+                  <ArrowDownToLine size={20} />
+                )}
+
+                {/* a bolinha verde diz "tem coisa nova aqui" sem precisar do balão */}
+                {atualizacao.pronta && (
+                  <span className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-0 bg-online" />
+                )}
+              </button>
+            </Tooltip>
+          )
         )}
       </nav>
 

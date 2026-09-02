@@ -52,7 +52,12 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   return (
     <>
-      <div className="flex items-center gap-1 px-1 py-1">
+      {/*
+        `cursor-pointer` na LINHA, não só nos botões: a faixa entre o nome e os
+        ícones é do botão do perfil (ele é `flex-1`), mas as sobras de padding
+        não eram de ninguém — e ali a seta voltava a ser de texto.
+      */}
+      <div className="flex cursor-pointer items-center gap-1 px-1 py-1">
         <Popover>
           <PopoverTrigger asChild>
             <button className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">

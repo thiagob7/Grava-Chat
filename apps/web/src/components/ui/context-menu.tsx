@@ -15,7 +15,7 @@ export const ContextMenuContent = ({
   <ContextMenuPrimitive.Portal>
     <ContextMenuPrimitive.Content
       className={cn(
-        "z-50 max-h-[85vh] min-w-56 overflow-y-auto rounded-lg bg-surface-0 p-1.5 shadow-2xl outline-none",
+        "z-50 max-h-[85vh] min-w-56 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ export const ContextMenuSubContent = ({
   <ContextMenuPrimitive.Portal>
     <ContextMenuPrimitive.SubContent
       className={cn(
-        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-0 p-1.5 shadow-2xl outline-none",
+        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}

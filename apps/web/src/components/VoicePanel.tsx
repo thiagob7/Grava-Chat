@@ -207,7 +207,9 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
     <button
       onClick={onClick}
       aria-label={label}
-      className="flex items-center justify-center rounded bg-surface-3 py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+      /// `bg-hover` é o branco a 5%: sobre o cartão ele vira uma
+      /// pastilha que se lê sem virar um bloco cinza.
+      className="flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
     >
       {children}
     </button>

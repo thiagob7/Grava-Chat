@@ -17,7 +17,7 @@ export const DropdownMenuContent = ({
     <DropdownPrimitive.Content
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-56 rounded-lg bg-surface-0 p-1.5 shadow-2xl outline-none",
+        "z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}
@@ -77,7 +77,7 @@ export const DropdownMenuSubContent = ({
   <DropdownPrimitive.Portal>
     <DropdownPrimitive.SubContent
       className={cn(
-        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-0 p-1.5 shadow-2xl outline-none",
+        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}
