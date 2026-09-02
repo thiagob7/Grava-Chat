@@ -28,6 +28,17 @@ const INTERVALO_MS = 6 * 60 * 60 * 1000;
 /// atualização que chega dez segundos depois não perde nada.
 const ATRASO_INICIAL_MS = 10_000;
 
+/*
+  Intervalo mínimo entre duas perguntas feitas por foco.
+
+  Voltar pro app é o gesto de quem quer estar em dia, e por isso vale perguntar
+  ali — mas alt-tab é um gesto que se repete dezenas de vezes por hora, e sem
+  esta trava cada ida e volta viraria uma consulta à API do GitHub. Quinze
+  minutos é curto o bastante pra parecer instantâneo e longo o bastante pra não
+  virar enxurrada.
+*/
+const INTERVALO_POR_FOCO_MS = 15 * 60 * 1000;
+
 
 /*
   Onde o aplicativo está instalado.
@@ -202,8 +213,12 @@ export function criarAtualizador(aoMudar: (estado: EstadoDaAtualizacao) => void)
       está no disco, conferido e sem quarentena.
     */
     vigiar() {
-      const rodada = () =>
+      let ultima = 0;
+
+      const rodada = () => {
+        ultima = Date.now();
         void procurar().then((atual) => (atual.disponivel ? baixar() : undefined));
+      };
 
       const primeira = setTimeout(rodada, ATRASO_INICIAL_MS);
       const relogio = setInterval(rodada, INTERVALO_MS);
@@ -212,7 +227,27 @@ export function criarAtualizador(aoMudar: (estado: EstadoDaAtualizacao) => void)
       relogio.unref();
       timers.push(primeira, relogio);
 
-      return () => timers.forEach((t) => clearTimeout(t));
+      /*
+        E também ao VOLTAR pro aplicativo.
+
+        Sem isto existe um beco: quem já estava com o app aberto quando a versão
+        saiu fica até seis horas sem descobrir, e não há nada que possa apertar
+        para perguntar antes. Voltar pra janela é justamente o momento em que a
+        pessoa está olhando — e é onde o aviso vale alguma coisa.
+
+        A trava de quinze minutos é o que separa isto de um gatilho por alt-tab.
+      */
+      const aoFocar = () => {
+        if (Date.now() - ultima < INTERVALO_POR_FOCO_MS) return;
+        rodada();
+      };
+
+      app.on("browser-window-focus", aoFocar);
+
+      return () => {
+        timers.forEach((t) => clearTimeout(t));
+        app.off("browser-window-focus", aoFocar);
+      };
     },
   };
 }
