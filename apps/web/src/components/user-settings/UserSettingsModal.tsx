@@ -202,9 +202,21 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     rolagem.current?.scrollTo({ top: 0 });
   }, [secao]);
 
+  /*
+    A seção escolhida no clique, protegida da rolagem.
+
+    Sem isto, clicar num sub-item acendia a seção certa por um instante e a
+    lateral pulava de volta: a rolagem suave dispara o `onScroll` dezenas de
+    vezes no caminho, e o último disparo mandava. Pior no fim da lista, onde a
+    tela não tem quanto rolar — a seção pedida nunca chega à linha de leitura,
+    e a marca voltava para a de cima como se o clique não tivesse funcionado.
+  */
+  const escolhaManual = useRef<string | null>(null);
+
   const irPara = useCallback((secaoDestino: Secao, sub: string) => {
     setSecao(secaoDestino);
     setSubAtiva(sub);
+    escolhaManual.current = sub;
 
     /*
       No quadro seguinte: quando a tela muda junto, a seção de destino ainda
@@ -237,6 +249,11 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     consumirSubInicial();
   }, [open, secaoInicial, subInicial, irPara, consumirSubInicial]);
 
+  /// Rolar de verdade — roda, dedo ou teclado — devolve o comando ao espião.
+  const soltarEscolha = useCallback(() => {
+    escolhaManual.current = null;
+  }, []);
+
   /*
     Qual seção está sendo lida.
 
@@ -249,15 +266,38 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const painel = rolagem.current;
     if (!painel) return;
 
+    /*
+      Enquanto a escolha do clique estiver de pé, quem manda é o clique.
+
+      Ela cai quando VOCÊ rola — roda do mouse, dedo, teclado —, e não depois
+      de um tempo. Prazo não serve: a rolagem suave pode demorar mais que ele
+      num painel longo, e seção curta no pé da lista nunca chega à linha de
+      leitura, então o relógio a devolveria pra anterior sozinho.
+    */
+    if (escolhaManual.current) return;
+
+    const secoes = SUBSECOES[secao];
+
+    /*
+      No fim da rolagem, vale a ÚLTIMA seção — mesmo que ela não tenha chegado
+      à linha de leitura. Seção curta no pé da página nunca sobe o bastante, e
+      sem esta regra ela seria a única impossível de marcar: você rola até o
+      fim, está olhando pra ela, e a lateral aponta a anterior.
+    */
+    if (painel.scrollTop + painel.clientHeight >= painel.scrollHeight - 2) {
+      setSubAtiva(secoes[secoes.length - 1]?.id ?? null);
+      return;
+    }
+
     const linha = painel.getBoundingClientRect().top + 80;
     let atual: string | null = null;
 
-    for (const sub of SUBSECOES[secao]) {
+    for (const sub of secoes) {
       const alvo = document.getElementById(ancora(sub.id));
       if (alvo && alvo.getBoundingClientRect().top <= linha) atual = sub.id;
     }
 
-    setSubAtiva(atual ?? SUBSECOES[secao][0]?.id ?? null);
+    setSubAtiva(atual ?? secoes[0]?.id ?? null);
   }, [secao]);
 
   return (
@@ -378,7 +418,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               o olho perde a volta da linha. O teto cresce com a janela, mas
               para: `max(40rem, min(90%, 50rem))`.
             */}
-            <div ref={rolagem} onScroll={aoRolar} className="min-h-0 flex-1 overflow-y-auto">
+            <div
+              ref={rolagem}
+              onScroll={aoRolar}
+              onWheel={soltarEscolha}
+              onTouchMove={soltarEscolha}
+              onKeyDown={soltarEscolha}
+              className="min-h-0 flex-1 overflow-y-auto"
+            >
               <div className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
                 {/*
                   Caixa por seção, e a chave é o `secao`: uma tela de configuração

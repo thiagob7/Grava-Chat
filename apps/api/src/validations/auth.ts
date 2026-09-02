@@ -1,10 +1,17 @@
 import { z } from "zod";
-import { estiloDePerfilSchema, LIMITS, statusPersonalizadoSchema } from "@gravae/shared";
+import {
+  estiloDePerfilSchema,
+  LIMITS,
+  statusPersonalizadoSchema,
+} from "@gravae/shared";
 import { env } from "~/env.js";
 
 export const r2Url = z
   .url()
-  .refine((u) => u.startsWith(env.R2_PUBLIC_URL), "A imagem precisa ter sido enviada aqui");
+  .refine(
+    (u) => u.startsWith(env.R2_PUBLIC_URL),
+    "A imagem precisa ter sido enviada aqui",
+  );
 
 export const devLoginInput = z.object({
   email: z.email(),
