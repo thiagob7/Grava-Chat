@@ -32,11 +32,11 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
   return (
     <div
       className={cn(
-        "my-1 overflow-hidden rounded-md border border-line bg-surface-1 text-ink",
+        "my-1 overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-line bg-surface-2 px-3 py-1">
+      <div className="flex items-center justify-between gap-2 border-b border-line bg-codigo px-3 py-1">
         <span className="text-[11px] font-medium uppercase tracking-wide text-ink-faint">
           {rotuloDaLingua(lingua)}
         </span>

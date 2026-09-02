@@ -26,18 +26,35 @@ interface MessageContentProps {
   blocos?: boolean;
 }
 
-const Pilula: React.FC<{ children: React.ReactNode; cor?: string | null; titulo?: string }> = ({
-  children,
-  cor,
-  titulo,
-}) => (
+/**
+ * A pílula de menção.
+ *
+ * Três famílias, porque são três coisas diferentes: pessoa e
+ * cargo em azul (ou na cor do cargo, quando ele tem uma), `@everyone` em roxo
+ * e `@here` em âmbar. A borda fina é o que separa a pílula do texto sem
+ * precisar de fundo forte.
+ */
+const Pilula: React.FC<{
+  children: React.ReactNode;
+  cor?: string | null;
+  titulo?: string;
+  familia?: "mencao" | "everyone" | "here";
+}> = ({ children, cor, titulo, familia = "mencao" }) => (
   <span
     title={titulo}
     className="rounded px-1 py-px font-medium"
+    /*
+      Fundo tingido e nada de borda. A borda que estava aqui dava ar de botão —
+      no meio de uma frase, uma pílula com contorno parecia clicável e roubava
+      a linha inteira. O tom do fundo é o que basta pra dizer "isto é menção".
+    */
     style={
       cor
-        ? { color: legivel(cor), backgroundColor: `${legivel(cor)}22` }
-        : { color: "var(--color-brand)", backgroundColor: "color-mix(in oklab, var(--color-brand), transparent 82%)" }
+        ? { color: legivel(cor), backgroundColor: `${legivel(cor)}26` }
+        : {
+            color: `var(--color-${familia})`,
+            backgroundColor: `color-mix(in srgb, var(--color-${familia}) 15%, transparent)`,
+          }
     }
   >
     {children}
@@ -89,7 +106,11 @@ function enriquecer(
       );
     } else if (todos) {
       pedaco = (
-        <Pilula key={k} titulo={todos === "here" ? "Notifica quem está online" : "Notifica o servidor"}>
+        <Pilula
+          key={k}
+          familia={todos === "here" ? "here" : "everyone"}
+          titulo={todos === "here" ? "Notifica quem está online" : "Notifica o servidor"}
+        >
           @{todos}
         </Pilula>
       );
@@ -132,7 +153,7 @@ function corrido(
         href={url}
         target="_blank"
         rel="noreferrer noopener"
-        className="text-brand hover:underline"
+        className="text-link hover:underline"
       >
         {url}
       </a>,
@@ -201,7 +222,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
         pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
 
       partes.push(
-        <code key={`c${i}`} className="rounded bg-surface-2 px-1 py-px font-mono text-[0.9em]">
+        <code key={`c${i}`} className="rounded bg-codigo px-1 py-px font-mono text-[0.9em]">
           {codigo}
         </code>,
       );

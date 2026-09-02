@@ -31,6 +31,7 @@ import {
 } from "~/@core/lib/websocket/emit-message-actions";
 import { Avatar } from "~/components/Avatar";
 import { MessageAttachments } from "~/components/MessageAttachments";
+import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/components/MessageContent";
 import { LinkEmbeds } from "~/components/LinkEmbed";
 import { PollCard } from "~/components/PollCard";
@@ -296,14 +297,21 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       className={cn(
         "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
         !compact && "mt-4",
-        meMenciona && "bg-idle/10 shadow-[inset_2px_0_0_var(--color-idle)] hover:bg-idle/15",
+        /// dourado do destaque, não o amarelo de "ausente": são coisas diferentes
+        meMenciona &&
+          "bg-destaque/10 shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
         destacada && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
         message.pending && "opacity-60",
         message.failed && "bg-danger/10",
       )}
     >
       {message.replyToId && (
-        <Citacao respondida={respondida} emojis={emojis} mencoes={mencoes} />
+        <Citacao
+          respondida={respondida}
+          emojis={emojis}
+          mencoes={mencoes}
+          currentUserId={currentUserId}
+        />
       )}
 
       <div className="w-10 shrink-0">
@@ -770,27 +778,64 @@ const Citacao: React.FC<{
   respondida?: PendingMessageModel;
   emojis: GuildEmoji[];
   mencoes?: ResolverMencoes;
-}> = ({ respondida, emojis, mencoes }) => (
-  <div className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-14 text-xs text-ink-faint @sm:pl-18">
-    <CornerUpLeft size={12} className="shrink-0 -scale-y-100" />
+  currentUserId?: string;
+}> = ({ respondida, emojis, mencoes, currentUserId }) => {
+  /*
+    Respondendo a si mesmo, o retrato vem da sessão, não da mensagem.
+
+    O autor guardado na mensagem é uma fotografia de quando ela foi carregada:
+    quem troca a própria foto continua vendo a antiga na citação até a lista
+    ser buscada de novo — e, quem nunca tinha foto, continua vendo a inicial
+    mesmo depois de subir uma. Pra você mesmo isso dá pra corrigir de graça,
+    porque a sessão está sempre em dia.
+  */
+  const me = useMe(true).data;
+  const souEu = Boolean(currentUserId && respondida?.author.id === currentUserId);
+  const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
+
+  return (
+  /*
+    A citação fica pendurada na mensagem: o fio nasce na altura
+    do avatar (por isso o `pl` bate com a metade da coluna dele) e vira pra
+    direita até encostar na coluna do texto. Tudo numa linha só, cortada com
+    reticências — ela resume o que está sendo respondido, não repete.
+  */
+  <div className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs">
+    {/*
+      A conta do fio, que eu errei duas vezes: este `pl` soma ao `px` da
+      linha, não substitui. A coluna do avatar tem 40px, então o traço
+      vertical sobe no meio dela (20px pra dentro do padding, daí o `pl-5`) e
+      o horizontal vai até a borda direita do avatar (mais 20px, daí o `w-5`)
+      — assim o retrato pequeno da citação começa
+      exatamente onde o avatar grande termina.
+    */}
+    <span
+      aria-hidden
+      className="mb-1.5 h-3 w-5 shrink-0 self-end rounded-tl-md border-l-2 border-t-2 border-line"
+    />
 
     {respondida ? (
       <>
         <Avatar
           id={respondida.author.id}
           name={respondida.author.displayName}
-          url={respondida.author.avatarUrl}
+          url={avatarUrl}
           size={16}
         />
-        <span className="max-w-[7rem] shrink-0 truncate font-medium text-ink-muted @sm:max-w-[12rem]">
-          {respondida.author.displayName}
+        {/*
+          O nome vem como menção — "@Fulano" na cor de menção —, que é o que
+          diferencia a citação do texto cinza em volta. Em cinza, como estava,
+          ela se perdia no meio da conversa.
+        */}
+        <span className="max-w-[7rem] shrink-0 truncate font-medium text-mencao @sm:max-w-[12rem]">
+          @{respondida.author.displayName}
         </span>
         {/*
           O conteúdo pode trazer imagem ou GIF, que o MessageContent desenha
           em tamanho cheio — numa citação isso virava um bloco de 300px de
           altura. Aqui tudo é achatado à altura da linha.
         */}
-        <span className="min-w-0 truncate [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
+        <span className="min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
           {respondida.content ? (
             <MessageContent content={respondida.content} emojis={emojis} mencoes={mencoes} />
           ) : (
@@ -799,7 +844,8 @@ const Citacao: React.FC<{
         </span>
       </>
     ) : (
-      <span className="italic">A mensagem original não está mais aqui.</span>
+      <span className="italic text-ink-faint">A mensagem original não está mais aqui.</span>
     )}
-  </div>
-);
+    </div>
+  );
+};

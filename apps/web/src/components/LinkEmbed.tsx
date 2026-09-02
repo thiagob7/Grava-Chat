@@ -111,7 +111,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
               href={embed.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="mt-0.5 line-clamp-2 block font-semibold text-brand hover:underline"
+              className="mt-0.5 line-clamp-2 block font-semibold text-link hover:underline"
             >
               {embed.titulo}
             </a>
