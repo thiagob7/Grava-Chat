@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Pencil, X } from "lucide-react";
+import { Pencil, Search, X } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -12,6 +12,7 @@ import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 
@@ -26,19 +27,48 @@ interface UserSettingsModalProps {
   onEditarPerfil: () => void;
 }
 
-const itensPara = (admin: boolean): { id: Secao; label: string }[] => [
-  { id: "conta", label: "Minha conta" },
-  { id: "voz", label: "Voz e vídeo" },
-  { id: "avisos", label: "Notificações" },
-  { id: "bots", label: "Bots" },
-  { id: "aparencia", label: "Aparência" },
-  /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
-  /// de baixar e um convite pra lugar nenhum.
-  ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app" }]),
+interface Item {
+  id: Secao;
+  label: string;
+}
+
+/*
+  Os itens em grupos, com o título de cada um.
+
+  Uma lista corrida de sete linhas não diz o que é conta e o que é aparelho —
+  e é justamente a divisão que a pessoa procura quando abre isto aqui.
+*/
+const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
+  {
+    titulo: "Conta do usuário",
+    itens: [{ id: "conta", label: "Minha conta" }],
+  },
+  {
+    titulo: "Configurações do aplicativo",
+    itens: [
+      { id: "aparencia", label: "Aparência" },
+      { id: "voz", label: "Voz e vídeo" },
+      { id: "avisos", label: "Notificações" },
+      { id: "bots", label: "Bots" },
+      /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
+      /// de baixar e um convite pra lugar nenhum.
+      ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app" }]),
+    ],
+  },
   /// Esconder o item é conforto, não segurança: quem decide é a API, que
   /// devolve 404 na rota pra qualquer conta fora da lista.
-  ...(admin ? [{ id: "servidor" as const, label: "Servidor" }] : []),
+  ...(admin ? [{ titulo: "Administração", itens: [{ id: "servidor" as const, label: "Servidor" }] }] : []),
 ];
+
+const TITULOS: Record<Secao, string> = {
+  conta: "Minha conta",
+  voz: "Voz e vídeo",
+  avisos: "Notificações",
+  bots: "Bots",
+  aparencia: "Aparência",
+  aplicativo: "Baixar o app",
+  servidor: "Servidor",
+};
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   open,
@@ -49,21 +79,56 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   onEditarPerfil,
 }) => {
   const [secao, setSecao] = useState<Secao>(secaoInicial);
+  const [busca, setBusca] = useState("");
+
+  /// A busca corta itens, não grupos: grupo que ficou sem item some junto.
+  const grupos = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    const todos = gruposPara(user.admin);
+    if (!termo) return todos;
+
+    return todos
+      .map((grupo) => ({
+        ...grupo,
+        itens: grupo.itens.filter((item) => item.label.toLowerCase().includes(termo)),
+      }))
+      .filter((grupo) => grupo.itens.length > 0);
+  }, [busca, user.admin]);
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
+        {/*
+          Janela grande e centrada, não uma caixinha no meio da tela: quase
+          toda seção daqui é lista longa — dispositivos de áudio, avisos por
+          servidor, temas — e a caixa de antes (896px de largura, 80% de
+          altura) obrigava a rolar pra ver três linhas de cada vez.
+        */}
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[80vh] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
+          className="fixed left-1/2 top-1/2 z-50 flex h-[min(900px,92vh)] w-[min(1240px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
         >
           <DialogPrimitive.Title className="sr-only">Configurações do usuário</DialogPrimitive.Title>
 
-          <nav className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-5">
+          <nav className="flex w-64 shrink-0 flex-col gap-4 overflow-y-auto bg-surface-1 px-3 py-4">
+            <div className="relative">
+              <Search
+                size={15}
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
+              />
+              <Input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Pesquisar configurações"
+                aria-label="Pesquisar configurações"
+                className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-white/15 focus-visible:ring-0"
+              />
+            </div>
+
             <button
               onClick={onEditarPerfil}
-              className="mb-4 flex w-full items-center gap-2.5 rounded px-2 py-2 text-left transition hover:bg-surface-3"
+              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition hover:bg-hover"
             >
               <Avatar
                 id={user.id}
@@ -80,51 +145,72 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </span>
             </button>
 
-            <p className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-              Configurações do usuário
-            </p>
+            {grupos.map((grupo) => (
+              <div key={grupo.titulo}>
+                <p className="mb-1.5 truncate px-2 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                  {grupo.titulo}
+                </p>
 
-            {itensPara(user.admin).map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSecao(item.id)}
-                className={cn(
-                  "mb-0.5 flex w-full items-center rounded px-2.5 py-1.5 text-left text-sm transition",
-                  secao === item.id
-                    ? "bg-surface-4 text-ink"
-                    : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-                )}
-              >
-                {item.label}
-              </button>
+                {grupo.itens.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSecao(item.id)}
+                    aria-current={secao === item.id}
+                    className={cn(
+                      "mb-0.5 flex w-full items-center rounded-lg px-2.5 py-1.5 text-left text-sm transition",
+                      secao === item.id
+                        ? "bg-surface-3 font-medium text-ink"
+                        : "text-ink-muted hover:bg-hover hover:text-ink",
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             ))}
+
+            {!grupos.length && (
+              <p className="px-2 text-xs text-ink-faint">Nada com esse nome por aqui.</p>
+            )}
           </nav>
 
-          <div className="flex-1 overflow-y-auto bg-surface-2 px-8 py-6">
-            {/*
-              Caixa por seção, e a chave é o `secao`: uma tela de configuração
-              que quebra mostra um cartão no lugar dela, e trocar de seção já
-              limpa o estrago. Sem isso, o painel de servidor tropeçando num
-              formato inesperado da API levava a aplicação inteira junto.
-            */}
-            <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
-              {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
-              {secao === "voz" && <VoiceSection />}
-              {secao === "avisos" && <NotificationsSection />}
-              {secao === "bots" && <BotsSection />}
+          {/*
+            O título da seção mora numa barra fixa, com o X ao lado: antes cada
+            seção repetia o próprio nome lá dentro e o X flutuava por cima do
+            conteúdo, encostando no que estivesse no canto.
+          */}
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line px-8 py-4">
+              <h2 className="truncate text-lg font-semibold">{TITULOS[secao]}</h2>
 
-              {secao === "aparencia" && <AppearanceSection />}
-              {secao === "aplicativo" && <AplicativoSection />}
-              {secao === "servidor" && user.admin && <ServidorSection />}
-            </ErrorBoundary>
+              <DialogPrimitive.Close
+                aria-label="Fechar"
+                className="shrink-0 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
+              >
+                <X size={20} />
+              </DialogPrimitive.Close>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
+              {/*
+                Caixa por seção, e a chave é o `secao`: uma tela de configuração
+                que quebra mostra um cartão no lugar dela, e trocar de seção já
+                limpa o estrago. Sem isso, o painel de servidor tropeçando num
+                formato inesperado da API levava a aplicação inteira junto.
+              */}
+              <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
+                {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
+                {secao === "voz" && <VoiceSection />}
+                {secao === "avisos" && <NotificationsSection />}
+                {secao === "bots" && <BotsSection />}
+
+                {secao === "aparencia" && <AppearanceSection />}
+                {secao === "aplicativo" && <AplicativoSection />}
+                {secao === "servidor" && user.admin && <ServidorSection />}
+              </ErrorBoundary>
+            </div>
           </div>
 
-          <DialogPrimitive.Close
-            aria-label="Fechar"
-            className="absolute right-4 top-4 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
-          >
-            <X size={20} />
-          </DialogPrimitive.Close>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

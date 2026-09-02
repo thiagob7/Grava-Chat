@@ -29,8 +29,7 @@ export const NotificationsSection: React.FC = () => {
 
   return (
     <div className="max-w-xl">
-      <h2 className="text-xl font-semibold">Notificações</h2>
-      <p className="mt-2 text-sm text-ink-muted">
+      <p className="text-sm text-ink-muted">
         Vale para este aparelho. A mesma conta aberta no trabalho pode ficar quieta enquanto a de
         casa apita.
       </p>

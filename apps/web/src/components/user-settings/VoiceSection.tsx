@@ -140,25 +140,21 @@ export const VoiceSection: React.FC = () => {
 
   return (
     <div className="max-w-2xl pb-10">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">Voz e vídeo</h2>
-
-        {/*
-          Só no aplicativo do macOS: no navegador quem manda nas permissões é o
-          próprio navegador, e no Windows não existe esse painel.
-        */}
-        {ehMac && (
-          <Button variant="surface" size="sm" onClick={() => setVendoPermissoes(true)}>
-            <ShieldCheck size={14} /> Permissões do macOS
-          </Button>
-        )}
-      </div>
+      {/*
+        Só no aplicativo do macOS: no navegador quem manda nas permissões é o
+        próprio navegador, e no Windows não existe esse painel.
+      */}
+      {ehMac && (
+        <Button variant="surface" size="sm" onClick={() => setVendoPermissoes(true)}>
+          <ShieldCheck size={14} /> Permissões do macOS
+        </Button>
+      )}
 
       {ehMac && (
         <PermissoesDoMac aberto={vendoPermissoes} onFechar={() => setVendoPermissoes(false)} />
       )}
 
-      <section className="mt-6 grid grid-cols-2 gap-5">
+      <section className="grid grid-cols-2 gap-5 pt-6 first:pt-0">
         <label className="block">
           <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             <Mic size={13} /> Dispositivo de entrada

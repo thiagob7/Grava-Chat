@@ -19,9 +19,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
 
   return (
     <div className="max-w-xl">
-      <h2 className="text-xl font-semibold">Minha conta</h2>
-
-      <div className="mt-6 rounded-lg bg-surface-1 p-5">
+      <div className="rounded-lg bg-surface-1 p-5">
         <div className="flex items-center gap-4">
           <Avatar id={user.id} name={user.displayName} url={user.avatarUrl} size={64} />
           <div className="min-w-0">

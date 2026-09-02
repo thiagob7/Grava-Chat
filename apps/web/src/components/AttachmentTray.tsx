@@ -3,6 +3,7 @@ import { AlertCircle, EyeOff, FileText, Loader2, Pencil, X } from "lucide-react"
 
 import type { PendingAttachment } from "~/hooks/use-attachments";
 import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import {
   Dialog,
   DialogBody,
@@ -135,7 +136,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
     <Dialog open onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Modificar anexo</DialogTitle>
+          <DialogTitle>Editar anexo</DialogTitle>
         </DialogHeader>
 
         <DialogBody className="space-y-4">
@@ -159,29 +160,28 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
           </div>
 
           <div>
-            <Label htmlFor="anexo-descricao">Descrição (texto alternativo)</Label>
+            {/* O contador fica na mesma linha do rótulo, à direita: é onde a
+                pessoa já está olhando quando digita. */}
+            <div className="flex items-baseline justify-between gap-3">
+              <Label htmlFor="anexo-descricao">Descrição do texto alternativo</Label>
+              <span className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">
+                {descricao.length}/1024
+              </span>
+            </div>
             <Textarea
               id="anexo-descricao"
               value={descricao}
               maxLength={1024}
               rows={3}
-              placeholder="Adicionar uma descrição"
+              placeholder="Descreva esta mídia para leitores de tela"
               onChange={(e) => setDescricao(e.target.value)}
             />
-            <p className="mt-1 text-xs text-ink-faint">
-              Descreve a imagem para quem usa leitor de tela.
-            </p>
           </div>
 
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={spoiler}
-              onChange={(e) => setSpoiler(e.target.checked)}
-              className="size-4 accent-brand"
-            />
+          <div className="flex items-center justify-between gap-4">
             <span className="text-sm">Marcar como spoiler</span>
-          </label>
+            <Switch checked={spoiler} onCheckedChange={setSpoiler} />
+          </div>
         </DialogBody>
 
         <DialogFooter>

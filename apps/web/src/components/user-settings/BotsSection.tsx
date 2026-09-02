@@ -106,9 +106,7 @@ export const BotsSection: React.FC = () => {
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Bots</h2>
-
-      <p className="mt-1 text-sm text-ink-muted">
+      <p className="text-sm text-ink-muted">
         Configure aqui, mande o <strong className="text-ink">link de convite</strong> pra quem tem
         servidor. O código roda onde você quiser — exemplos prontos em{" "}
         <code className="rounded bg-surface-0 px-1 text-xs">exemplos/</code>.

@@ -18,6 +18,13 @@ export interface PedidoDeConfirmacao {
   acao?: string;
   destrutivo?: boolean;
   campo?: { rotulo: string; placeholder?: string; obrigatorio?: boolean };
+  /**
+   * Mostra a dica de que dá pra pular esta confirmação segurando Shift.
+   *
+   * Só faça isso quando o gesto REALMENTE existir do outro lado: prometer um
+   * atalho que não funciona é pior do que não ter atalho nenhum.
+   */
+  dicaDoShift?: boolean;
 }
 
 type Resposta = { confirmado: boolean; texto: string };
@@ -61,6 +68,13 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
           <DialogHeader>
             <DialogTitle>{pedido?.titulo}</DialogTitle>
             <DialogDescription>{pedido?.descricao}</DialogDescription>
+
+            {pedido?.dicaDoShift && (
+              <p className="mt-2 text-sm text-ink-muted">
+                <span className="font-semibold text-online">Dica:</span> segure Shift ao clicar
+                para pular esta confirmação.
+              </p>
+            )}
           </DialogHeader>
 
           {pedido?.campo && (
