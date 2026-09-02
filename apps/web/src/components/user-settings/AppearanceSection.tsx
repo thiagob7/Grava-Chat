@@ -1,9 +1,10 @@
-import React from "react";
-import { Check, Flame, Monitor, Moon, Sun, Video } from "lucide-react";
+import React, { useState } from "react";
+import { Check, Flame, Monitor, Moon, Palette, Sparkles, Sun, Video } from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
 import { CampoSelect } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
+import { EstudioDeTemas } from "~/components/estudio/EstudioDeTemas";
 import {
   CORES_DE_DESTAQUE,
   useAparencia,
@@ -20,6 +21,8 @@ interface TemaDaLista {
   amostra: string[];
   /// o tema da casa não se explica com três faixas de cinza: ele mostra a marca
   marca?: boolean;
+  /// tema cuja graça é o acento, e não a escala de cinza: ele aparece na amostra
+  acento?: string;
 }
 
 const TEMAS: TemaDaLista[] = [
@@ -30,6 +33,27 @@ const TEMAS: TemaDaLista[] = [
     nome: "Mais escuro",
     icone: <Moon size={14} />,
     amostra: ["#0e0e11", "#08080a", "#000000"],
+  },
+  {
+    id: "indigo",
+    nome: "Índigo",
+    icone: <Sparkles size={14} />,
+    amostra: ["#0c0b0e", "#1a181e", "#232028"],
+    acento: "#413cdd",
+  },
+  {
+    id: "indigo-carvao",
+    nome: "Índigo carvão",
+    icone: <Sparkles size={14} />,
+    amostra: ["#020203", "#0f0e12", "#141217"],
+    acento: "#413cdd",
+  },
+  {
+    id: "indigo-claro",
+    nome: "Índigo claro",
+    icone: <Sparkles size={14} />,
+    amostra: ["#fbfbfc", "#ebecef", "#dee0e4"],
+    acento: "#413cdd",
   },
   {
     id: "sistema",
@@ -48,11 +72,11 @@ const TEMAS: TemaDaLista[] = [
 
 export const AppearanceSection: React.FC = () => {
   const prefs = useAparencia();
+  const [estudioAberto, setEstudioAberto] = useState(false);
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-xl font-semibold">Aparência</h2>
-      <p className="mt-2 text-sm text-ink-muted">
+      <p className="text-sm text-ink-muted">
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
@@ -87,6 +111,13 @@ export const AppearanceSection: React.FC = () => {
                     className="absolute inset-0 m-auto h-8 w-auto drop-shadow"
                   />
                 )}
+
+                {tema.acento && (
+                  <span
+                    className="absolute inset-0 m-auto size-6 rounded-full shadow"
+                    style={{ backgroundColor: tema.acento }}
+                  />
+                )}
               </span>
 
               <span
@@ -107,6 +138,22 @@ export const AppearanceSection: React.FC = () => {
             </button>
           ))}
         </div>
+
+        {/*
+          O tema escolhido é a base; o estúdio é o que se pinta por cima dela.
+          Por isso o botão mora aqui embaixo da grade, e não numa seção sua.
+        */}
+        <div className="mt-4">
+          <Button variant="surface" onClick={() => setEstudioAberto(true)}>
+            <Palette size={16} /> Abrir estúdio de temas…
+          </Button>
+          <p className="mt-1.5 text-xs text-ink-faint">
+            Muda cor por cor em cima do tema base, escreve CSS e guarda o resultado. Vale só neste
+            aparelho.
+          </p>
+        </div>
+
+        <EstudioDeTemas open={estudioAberto} onClose={() => setEstudioAberto(false)} />
       </Secao>
 
       <Secao

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { useAparencia } from "~/stores/aparencia";
+import { useEstudio } from "~/stores/estudio";
 
 /**
  * O tema saindo da preferência e chegando na tela.
@@ -14,6 +15,13 @@ export function useAparenciaAplicada() {
   const tema = useAparencia((s) => s.tema);
   const destaque = useAparencia((s) => s.destaque);
   const densidade = useAparencia((s) => s.densidade);
+  /*
+    Quem mexeu na marca dentro do estúdio manda mais que a bolinha de destaque:
+    é a escolha mais específica das duas. Sem esta trava, as duas escreviam na
+    mesma variável em linha e a última a rodar ganhava — o que, na prática,
+    fazia a cor do estúdio sumir a cada recarga.
+  */
+  const marcaDoEstudio = useEstudio((s) => Boolean(s.substituicoes["--color-brand"]));
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema;
@@ -24,6 +32,8 @@ export function useAparenciaAplicada() {
   }, [densidade]);
 
   useEffect(() => {
+    if (marcaDoEstudio) return;
+
     const raiz = document.documentElement;
 
     if (!destaque) {
@@ -42,5 +52,5 @@ export function useAparenciaAplicada() {
       "--color-brand-hover",
       `color-mix(in oklab, ${destaque}, black 18%)`,
     );
-  }, [destaque]);
+  }, [destaque, marcaDoEstudio]);
 }

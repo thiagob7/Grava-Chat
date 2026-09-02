@@ -1,6 +1,14 @@
 import { create } from "zustand";
 
-export type Tema = "escuro" | "mais-escuro" | "claro" | "sistema" | "gravae";
+export type Tema =
+  | "escuro"
+  | "mais-escuro"
+  | "claro"
+  | "sistema"
+  | "gravae"
+  | "indigo"
+  | "indigo-carvao"
+  | "indigo-claro";
 export type Densidade = "confortavel" | "compacta";
 export type QuandoMostrarSpoiler = "ao-clicar" | "sempre";
 
@@ -63,10 +71,25 @@ const PADRAO: PrefsDeAparencia = {
 
 const CHAVE = "gravae:aparencia";
 
+/*
+  Os temas escuros de acento roxo mudaram de nome depois de já estarem
+  escolhidos em alguns aparelhos. Quem tem o nome antigo guardado continua
+  vendo o mesmo tema — sem isto, o `data-tema` viraria um valor que o CSS não
+  conhece e a pessoa cairia num escuro genérico sem entender por quê.
+*/
+const NOMES_ANTIGOS: Record<string, Tema> = {
+  fluxer: "indigo",
+  "fluxer-carvao": "indigo-carvao",
+  "fluxer-claro": "indigo-claro",
+};
+
 function ler(): PrefsDeAparencia {
   try {
     const salvo = localStorage.getItem(CHAVE);
-    return salvo ? { ...PADRAO, ...(JSON.parse(salvo) as Partial<PrefsDeAparencia>) } : PADRAO;
+    if (!salvo) return PADRAO;
+
+    const prefs = { ...PADRAO, ...(JSON.parse(salvo) as Partial<PrefsDeAparencia>) };
+    return { ...prefs, tema: NOMES_ANTIGOS[prefs.tema] ?? prefs.tema };
   } catch {
     return PADRAO;
   }
