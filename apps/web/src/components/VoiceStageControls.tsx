@@ -332,48 +332,86 @@ export const VoiceStageControls: React.FC<{
 };
 
 /**
- * O volume de saída num balão vertical.
+ * O volume, no canto da barra do palco.
  *
- * Fica solto no canto, longe dos botões que ligam e desligam coisa: é o ajuste
- * que se faz no meio de uma frase de outra pessoa, e por isso não pode dividir
- * alvo com "mutar".
+ * Fica solto, longe dos botões que ligam e desligam coisa: é o ajuste que se
+ * faz no meio de uma frase de outra pessoa, e por isso não pode dividir alvo
+ * com "mutar".
+ *
+ * ASSISTINDO A UMA LIVE, ele mostra DUAS réguas — a da live primeiro.
+ *
+ * Antes era só o volume geral, e sem rótulo: uma faixa em pé num balão, com o
+ * vídeo de alguém ocupando a tela inteira atrás. Quem quer abaixar o jogo do
+ * amigo mira ali, e o que ele encontra abaixa a mesa toda — inclusive as vozes
+ * de quem está falando com ele. O controle certo existia desde sempre, mas
+ * escondido num botão pequeno em cima do quadro; ninguém acha.
+ *
+ * Os dois continuam alcançáveis, e agora dizem o nome: "esta live" e "todo
+ * mundo". A régua sem rótulo era metade do problema.
  */
 const VolumeDaSaida: React.FC = () => {
   const volumeSaida = useVoicePrefs((s) => s.volumeSaida);
   const definir = useVoicePrefs((s) => s.definir);
 
+  const assistindo = useVoiceStore((s) => s.assistindo);
+  const volumeDaLive = useVoiceStore((s) =>
+    assistindo ? Math.min(1, s.volumesDeTela[assistindo] ?? 1) : 1,
+  );
+  const definirVolumeDeTela = useVoiceStore((s) => s.setVolumeDeTela);
+
+  const mudo = assistindo ? volumeDaLive === 0 && volumeSaida === 0 : volumeSaida === 0;
+
   return (
     <Popover>
-      <Tooltip label={`Volume de saída (${Math.round(volumeSaida * 100)}%)`}>
+      <Tooltip
+        label={
+          assistindo
+            ? `Volume · live ${Math.round(volumeDaLive * 100)}% · geral ${Math.round(volumeSaida * 100)}%`
+            : `Volume de saída (${Math.round(volumeSaida * 100)}%)`
+        }
+      >
         <PopoverTrigger asChild>
           <button
-            aria-label="Volume de saída"
+            aria-label="Volume"
             className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
-            {volumeSaida === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            {mudo ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
         </PopoverTrigger>
       </Tooltip>
 
-      <PopoverContent side="top" align="center" className="w-auto p-3">
+      <PopoverContent side="top" align="center" className="w-56 p-3">
         <PopoverArrow />
 
-        {/*
-          A faixa em pé, como no controle de volume de um vídeo: girada 90°,
-          com a caixa reservando a altura que a largura ocupa depois do giro.
-        */}
-        <div className="flex h-32 w-6 items-center justify-center">
-          <Slider
-            min={0}
-            max={1}
-            step={0.05}
-            value={volumeSaida}
-            preenchido={volumeSaida}
-            aria-label="Volume de saída"
-            onChange={(e) => definir({ volumeSaida: Number(e.target.value) })}
-            className="w-32 -rotate-90"
-          />
-        </div>
+        {assistindo && (
+          <div className="mb-4">
+            <p className="mb-2 text-xs font-medium text-ink-muted">
+              Esta live · {Math.round(volumeDaLive * 100)}%
+            </p>
+            <Slider
+              min={0}
+              max={1}
+              step={0.05}
+              value={volumeDaLive}
+              preenchido={volumeDaLive}
+              aria-label="Volume da live"
+              onChange={(e) => definirVolumeDeTela(assistindo, Number(e.target.value))}
+            />
+          </div>
+        )}
+
+        <p className="mb-2 text-xs font-medium text-ink-muted">
+          {assistindo ? "Todo mundo" : "Volume de saída"} · {Math.round(volumeSaida * 100)}%
+        </p>
+        <Slider
+          min={0}
+          max={1}
+          step={0.05}
+          value={volumeSaida}
+          preenchido={volumeSaida}
+          aria-label="Volume de saída"
+          onChange={(e) => definir({ volumeSaida: Number(e.target.value) })}
+        />
       </PopoverContent>
     </Popover>
   );

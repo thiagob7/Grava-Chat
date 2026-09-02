@@ -45,6 +45,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "teste-do-microfone", label: "Teste do microfone" },
     { id: "modo-de-entrada", label: "Modo de entrada" },
     { id: "sensibilidade", label: "Sensibilidade de entrada" },
+    { id: "video", label: "Vídeo" },
     { id: "qualidade", label: "Qualidade" },
   ],
   "bate-papo": [

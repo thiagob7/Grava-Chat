@@ -77,7 +77,7 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         icone: MessageSquare,
         subitens: SUBSECOES["bate-papo"],
       },
-      { id: "voz", label: "Voz e vídeo", icone: Mic, subitens: SUBSECOES.voz },
+      { id: "voz", label: "Áudio e vídeo", icone: Mic, subitens: SUBSECOES.voz },
       { id: "avisos", label: "Notificações", icone: Bell, subitens: SUBSECOES.avisos },
       {
         id: "acessibilidade",
@@ -135,7 +135,7 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
 
 const TITULOS: Record<Secao, string> = {
   conta: "Minha conta",
-  voz: "Voz e vídeo",
+  voz: "Áudio e vídeo",
   avisos: "Notificações",
   aplicativos: "Aplicativos",
   aparencia: "Aparência",

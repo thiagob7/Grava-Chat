@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AudioLines, Keyboard, Mic, ShieldCheck, Volume2 } from "lucide-react";
+import { AudioLines, Keyboard, Mic, ShieldCheck, Video, Volume2 } from "lucide-react";
 
 import { PermissoesDoMac } from "~/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
@@ -96,7 +96,11 @@ export const VoiceSection: React.FC = () => {
 
   const listarDispositivos = async () => {
     const lista = await navigator.mediaDevices.enumerateDevices().catch(() => []);
-    setDispositivos(lista.filter((d) => d.kind === "audioinput" || d.kind === "audiooutput"));
+    setDispositivos(
+      lista.filter(
+        (d) => d.kind === "audioinput" || d.kind === "audiooutput" || d.kind === "videoinput",
+      ),
+    );
   };
 
   useEffect(() => {
@@ -135,6 +139,7 @@ export const VoiceSection: React.FC = () => {
   const semNomes = dispositivos.length > 0 && dispositivos.every((d) => !d.label);
   const entradas = dispositivos.filter((d) => d.kind === "audioinput");
   const saidas = dispositivos.filter((d) => d.kind === "audiooutput");
+  const cameras = dispositivos.filter((d) => d.kind === "videoinput");
   const suportaTrocaDeSaida = "setSinkId" in HTMLMediaElement.prototype;
   const ehMac = desktop()?.plataforma === "darwin";
   const [vendoPermissoes, setVendoPermissoes] = useState(false);
@@ -345,6 +350,39 @@ export const VoiceSection: React.FC = () => {
               Coloque a marca logo acima do barulho de fundo: o que passar dela é transmitido.
             </p>
           </div>
+        )}
+      </Secao>
+
+      <Secao
+        id="video"
+        titulo="Vídeo"
+        detalhe="A câmera que entra quando você liga o vídeo numa chamada."
+      >
+        {/*
+          A escolha ja existia — mas so DENTRO da chamada, na barra de
+          controles. Quem tem duas cameras precisava entrar, descobrir que
+          abriu a errada e trocar na frente de todo mundo. Aqui ela e feita
+          antes, e a barra continua valendo pra trocar no meio.
+        */}
+        <label className="block max-w-sm">
+          <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+            <Video size={13} /> Câmera
+          </span>
+          <CampoSelect
+            valor={prefs.cameraId ?? ""}
+            onEscolher={(id) => prefs.definir({ cameraId: id || null })}
+            opcoes={[
+              { valor: "", rotulo: "Padrão do sistema" },
+              ...cameras.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Câmera" })),
+            ]}
+          />
+        </label>
+
+        {!cameras.length && (
+          <p className="mt-2 text-xs text-ink-faint">
+            Nenhuma câmera encontrada. Os nomes só aparecem depois que você der permissão de
+            vídeo ao Gravaê uma vez.
+          </p>
         )}
       </Secao>
 
