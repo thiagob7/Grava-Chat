@@ -1,7 +1,18 @@
 import React from "react";
 
-import { ancora } from "~/components/user-settings/secoes";
+import { ancora, type Secao } from "~/components/user-settings/secoes";
+import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
 import { cn } from "~/lib/utils";
+
+/*
+  De que tela esta seção faz parte.
+
+  Vem por contexto e não por prop porque quem desenha a seção — a tela de
+  Aparência, a de Voz — não sabe o próprio nome na navegação: ela é montada
+  pelo modal, que é quem sabe. Enfiar o id em cada `<Secao>` seria repetir a
+  mesma informação onze vezes, com onze chances de errar.
+*/
+export const ContextoDaSecao = React.createContext<Secao | null>(null);
 
 interface SecaoDeConfigProps {
   /// o mesmo id que a lateral usa em `SUBSECOES`
@@ -30,13 +41,20 @@ export const SecaoDeConfig: React.FC<SecaoDeConfigProps> = ({
   detalhe,
   className,
   children,
-}) => (
+}) => {
+  const secaoAtual = React.useContext(ContextoDaSecao);
+
+  return (
   <section
     id={ancora(id)}
     className={cn("scroll-mt-5 border-t border-line pt-8 first:border-t-0 first:pt-0", className)}
   >
-    <h3 className="text-lg font-semibold">{titulo}</h3>
+    <h3 className="group/titulo flex items-center gap-1.5 text-lg font-semibold">
+      {titulo}
+      {secaoAtual && <BotaoDeLink secao={secaoAtual} sub={id} oQue="esta seção" />}
+    </h3>
     {detalhe && <p className="mt-1 text-sm text-ink-muted">{detalhe}</p>}
     <div className="mt-4">{children}</div>
   </section>
-);
+  );
+};

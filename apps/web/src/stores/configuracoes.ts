@@ -14,12 +14,23 @@ import type { Secao } from "~/components/user-settings/UserSettingsModal";
 interface ConfiguracoesStore {
   /// `null` = fechado
   secao: Secao | null;
-  abrir: (secao: Secao) => void;
+  /*
+    A seção de dentro da tela, quando quem abriu sabe qual quer.
+
+    É o que um link copiado carrega: abrir "Aparência" e cair no alto não
+    cumpre a promessa de um link que dizia "Modo streamer". Some assim que o
+    modal a consome, senão trocar de tela e voltar pularia de novo pra lá.
+  */
+  subInicial: string | null;
+  abrir: (secao: Secao, sub?: string) => void;
+  consumirSubInicial: () => void;
   fechar: () => void;
 }
 
 export const useConfiguracoes = create<ConfiguracoesStore>((set) => ({
   secao: null,
-  abrir: (secao) => set({ secao }),
-  fechar: () => set({ secao: null }),
+  subInicial: null,
+  abrir: (secao, sub) => set({ secao, subInicial: sub ?? null }),
+  consumirSubInicial: () => set({ subInicial: null }),
+  fechar: () => set({ secao: null, subInicial: null }),
 }));

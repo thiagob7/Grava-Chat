@@ -18,8 +18,14 @@ import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
 import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
 import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
+import { useConfigPorUrl } from "~/hooks/use-config-por-url";
 
-export const AppRoutes: React.FC = () => (
+export const AppRoutes: React.FC = () => {
+  /// A outra ponta do botao de copiar link: um endereco com `?config=` abre as
+  /// configuracoes na tela — e na secao — que ele nomeia.
+  useConfigPorUrl();
+
+  return (
   <BrowserRouter>
     {/*
       A coluna vive AQUI, e não no #root: lá dentro moram também o container de
@@ -93,7 +99,8 @@ export const AppRoutes: React.FC = () => (
     <ChamadaRecebida />
     <LinksDoDesktop />
   </BrowserRouter>
-);
+  );
+};
 
 /// Precisa morar dentro do BrowserRouter — é de lá que sai o `navigate`.
 const LinksDoDesktop: React.FC = () => {

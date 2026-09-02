@@ -16,6 +16,9 @@ import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 import { SUBSECOES, ancora, type Secao, type SubSecao } from "~/components/user-settings/secoes";
+import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
+import { ContextoDaSecao } from "~/components/user-settings/SecaoDeConfig";
+import { useConfiguracoes } from "~/stores/configuracoes";
 
 export type { Secao };
 
@@ -156,6 +159,27 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   }, []);
 
   /*
+    A tela e a seção que o link pediu.
+
+    `secao` nasce de `secaoInicial`, mas nascer não basta: o modal continua
+    montado depois de fechado, então abrir duas vezes seguidas em telas
+    diferentes deixaria a segunda na tela da primeira. E a sub-seção é
+    consumida — trocar de tela e voltar não pode pular de novo pra lá.
+  */
+  const subInicial = useConfiguracoes((s) => s.subInicial);
+  const consumirSubInicial = useConfiguracoes((s) => s.consumirSubInicial);
+
+  useEffect(() => {
+    if (!open) return;
+
+    setSecao(secaoInicial);
+    if (!subInicial) return;
+
+    irPara(secaoInicial, subInicial);
+    consumirSubInicial();
+  }, [open, secaoInicial, subInicial, irPara, consumirSubInicial]);
+
+  /*
     Qual seção está sendo lida.
 
     Vale a ÚLTIMA cujo topo já passou da linha de leitura, e não a primeira
@@ -189,7 +213,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           altura) obrigava a rolar pra ver três linhas de cada vez.
         */}
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[min(900px,92vh)] w-[min(1240px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
+          className="fixed left-1/2 top-1/2 z-50 flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
         >
           <DialogPrimitive.Title className="sr-only">Configurações do usuário</DialogPrimitive.Title>
@@ -274,7 +298,10 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4">
-              <h2 className="truncate text-lg font-semibold">{TITULOS[secao]}</h2>
+              <h2 className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
+                <span className="truncate">{TITULOS[secao]}</span>
+                <BotaoDeLink secao={secao} oQue="esta página" />
+              </h2>
 
               <DialogPrimitive.Close
                 aria-label="Fechar"
@@ -301,6 +328,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   limpa o estrago. Sem isso, o painel de servidor tropeçando num
                   formato inesperado da API levava a aplicação inteira junto.
                 */}
+                <ContextoDaSecao.Provider value={secao}>
                 <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
                   {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
                   {secao === "voz" && <VoiceSection />}
@@ -311,6 +339,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   {secao === "aplicativo" && <AplicativoSection />}
                   {secao === "servidor" && user.admin && <ServidorSection />}
                 </ErrorBoundary>
+                </ContextoDaSecao.Provider>
               </div>
             </div>
           </div>
@@ -377,9 +406,18 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
         aria-current={ativo}
         aria-expanded={temSub ? ativo : undefined}
         className={cn(
-          "flex w-full items-center gap-2 rounded-lg px-2.5 py-[5px] text-left text-sm transition",
+          /*
+            A borda de 1px existe SEMPRE, transparente. Aparecendo só no ativo,
+            o item ganharia 2px de altura ao ser escolhido e a lista inteira
+            andaria um pouco a cada clique.
+          */
+          "flex w-full items-center gap-2 rounded-lg border px-2.5 py-[5px] text-left text-sm transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
-          ativo ? "bg-surface-3 font-medium text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
+          ativo
+            ? /* véu branco a 10% + borda, como na referência — não uma cor chapada,
+                 que num painel claro não teria como acender */
+              "border-borda-ativa bg-selecionado font-medium text-ink"
+            : "border-transparent text-ink-muted hover:bg-hover hover:text-ink",
         )}
       >
         {/*
@@ -433,11 +471,11 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
                   tabIndex={ativo ? 0 : -1}
                   onClick={() => onEscolherSub(sub.id)}
                   className={cn(
-                    "relative z-10 truncate rounded-md px-2.5 py-1 text-left text-[13px] transition",
+                    "relative z-10 truncate rounded-md border px-2.5 py-1 text-left text-[13px] transition",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
                     subAtiva === sub.id
-                      ? "bg-surface-3 font-semibold text-ink"
-                      : "text-ink-faint hover:bg-hover hover:text-ink-muted",
+                      ? "border-borda-ativa bg-selecionado font-semibold text-ink"
+                      : "border-transparent text-ink-faint hover:bg-hover hover:text-ink-muted",
                   )}
                 >
                   {sub.label}
