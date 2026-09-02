@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Download,
   Languages,
+  MessageSquare,
   Mic,
   Palette,
   Pencil,
@@ -26,6 +27,7 @@ import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
 import { AcessibilidadeSection } from "~/components/user-settings/AcessibilidadeSection";
 import { IdiomaSection } from "~/components/user-settings/IdiomaSection";
+import { BatePapoSection } from "~/components/user-settings/BatePapoSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -69,6 +71,12 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
     titulo: "Configurações do aplicativo",
     itens: [
       { id: "aparencia", label: "Aparência", icone: Palette, subitens: SUBSECOES.aparencia },
+      {
+        id: "bate-papo",
+        label: "Bate-papo",
+        icone: MessageSquare,
+        subitens: SUBSECOES["bate-papo"],
+      },
       { id: "voz", label: "Voz e vídeo", icone: Mic, subitens: SUBSECOES.voz },
       { id: "avisos", label: "Notificações", icone: Bell, subitens: SUBSECOES.avisos },
       {
@@ -113,6 +121,7 @@ const TITULOS: Record<Secao, string> = {
   avisos: "Notificações",
   bots: "Bots",
   aparencia: "Aparência",
+  "bate-papo": "Bate-papo",
   acessibilidade: "Acessibilidade",
   idioma: "Idioma",
   aplicativo: "Baixar o app",
@@ -361,6 +370,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   {secao === "bots" && <BotsSection />}
 
                   {secao === "aparencia" && <AppearanceSection />}
+                  {secao === "bate-papo" && <BatePapoSection />}
                   {secao === "acessibilidade" && <AcessibilidadeSection />}
                   {secao === "idioma" && <IdiomaSection />}
                   {secao === "aplicativo" && <AplicativoSection />}

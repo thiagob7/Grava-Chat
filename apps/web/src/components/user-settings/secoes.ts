@@ -13,6 +13,7 @@ export type Secao =
   | "avisos"
   | "bots"
   | "aparencia"
+  | "bate-papo"
   | "acessibilidade"
   | "idioma"
   | "aplicativo"
@@ -37,9 +38,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "cor-de-destaque", label: "Cor de destaque" },
     { id: "zoom-do-app", label: "Nível de zoom do app" },
     { id: "escala-da-fonte", label: "Escala da fonte do chat" },
-    { id: "mensagens", label: "Mensagens" },
-    { id: "caixa-de-chat", label: "Caixa de chat" },
-    { id: "modo-streamer", label: "Modo streamer" },
+    { id: "modo-streamer", label: "Privacidade de transmissão" },
   ],
   voz: [
     { id: "dispositivos", label: "Dispositivos" },
@@ -47,6 +46,11 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "modo-de-entrada", label: "Modo de entrada" },
     { id: "sensibilidade", label: "Sensibilidade de entrada" },
     { id: "qualidade", label: "Qualidade" },
+  ],
+  "bate-papo": [
+    { id: "exibicao", label: "Exibição" },
+    { id: "entrada", label: "Entrada" },
+    { id: "midia", label: "Mídia" },
   ],
   avisos: [{ id: "o-que-te-interrompe", label: "O que te interrompe" }],
   acessibilidade: [{ id: "movimento", label: "Movimento" }],
