@@ -38,6 +38,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "amigos-e-dms", label: "Amigos e mensagens diretas" },
     { id: "compartilhamento-de-atividade", label: "Compartilhamento de atividade" },
     { id: "exportar-dados", label: "Exportar dados" },
+    { id: "exclusao-de-dados", label: "Exclusão de dados" },
   ],
   aparencia: [
     { id: "tema", label: "Tema" },

@@ -43,6 +43,15 @@ export const selfUserSchema = publicUserSchema.extend({
   */
   aceitaPedidos: z.boolean(),
   mostraAtividade: z.boolean(),
+
+  /*
+    Quando esta conta some de vez, ou `null` se ela está viva.
+
+    Com data, o app mostra a tela de recuperação em vez da conversa: até lá nada
+    foi destruído, e a pessoa precisa dizer que voltou — descobrir por acidente
+    que ainda está dentro seria pior do que a porta trancada.
+  */
+  excluirEm: z.iso.datetime().nullable(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 

@@ -97,6 +97,7 @@ export function toSelfUser(
     admin: ehAdmin(u.email),
     aceitaPedidos: u.aceitaPedidos,
     mostraAtividade: u.mostraAtividade,
+    excluirEm: u.excluirEm ? u.excluirEm.toISOString() : null,
   };
 }
 

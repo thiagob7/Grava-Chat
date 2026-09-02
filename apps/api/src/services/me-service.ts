@@ -1,5 +1,6 @@
 import type { UpdateProfileInput } from "~/validations/auth.js";
 import { AppError } from "~/lib/http.js";
+import { authService } from "./auth-service.js";
 import { redis } from "~/lib/redis.js";
 import { prisma } from "~/lib/prisma.js";
 import { memberRepository, tagRepository } from "~/repositories/guild-repository.js";
@@ -18,6 +19,15 @@ const POR_JANELA = 10;
 */
 const TETO_DE_MENSAGENS = 10_000;
 
+/*
+  Quantos dias a conta fica recuperável antes de sumir de verdade.
+
+  Nada é destruído nesse tempo — nem mensagem, nem amizade, nem participação em
+  servidor. É o que torna a volta possível: prometer recuperação e ter apagado
+  no caminho seria mentira.
+*/
+const DIAS_DE_ARREPENDIMENTO = 15;
+
 export const meService = {
   /*
     Tudo o que a conta tem, num arquivo.
@@ -30,6 +40,48 @@ export const meService = {
     dos servidores em que você está. Exportar dados seus não pode virar um jeito
     de extrair os dos outros.
   */
+  /*
+    Marca a conta para exclusão, com prazo de arrependimento.
+
+    Não apaga nada. Desativa: derruba as sessões de todos os aparelhos e crava
+    a data. Entrar de novo cai na tela de recuperação, que é o oposto de uma
+    porta trancada — a pessoa precisa dizer que voltou, e não descobrir por
+    acidente que ainda está dentro.
+  */
+  async pedirExclusao(userId: string) {
+    const donoDe = await prisma.guild.findMany({
+      where: { ownerId: userId },
+      select: { name: true, _count: { select: { members: true } } },
+    });
+
+    /*
+      Servidor com OUTRA gente dentro trava a exclusão.
+
+      Sumir sozinho é decisão sua; deixar um servidor sem dono é decisão sobre
+      os outros. Servidor onde você é o único membro não trava: ali não há
+      ninguém para ficar órfão.
+    */
+    const comGente = donoDe.filter((g) => g._count.members > 1).map((g) => g.name);
+
+    if (comGente.length) {
+      throw new AppError(
+        `Você ainda é dono de ${comGente.length === 1 ? "um servidor" : "servidores"} com outras pessoas (${comGente.join(", ")}). Passe a posse ou exclua ${comGente.length === 1 ? "ele" : "eles"} antes.`,
+      );
+    }
+
+    const excluirEm = new Date(Date.now() + DIAS_DE_ARREPENDIMENTO * 24 * 60 * 60 * 1000);
+
+    await userRepository.update(userId, { excluirEm });
+    await authService.revokeAll(userId);
+
+    return { excluirEm: excluirEm.toISOString() };
+  },
+
+  /// Cancela a exclusão. Como nada foi apagado, voltar é só limpar a data.
+  async cancelarExclusao(userId: string) {
+    await userRepository.update(userId, { excluirEm: null });
+  },
+
   async exportar(userId: string) {
     const [usuario, membros, amizades, mensagens, quantasMensagens] = await Promise.all([
       userRepository.findById(userId),

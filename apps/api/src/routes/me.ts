@@ -50,6 +50,19 @@ export async function meRoutes(app: FastifyInstance) {
   /// na dica de cada servidor, quem está em chamada lá dentro.
   app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
 
+  /*
+    Exclusão da conta, em duas rotas e nenhuma delas apaga nada.
+
+    `POST` marca e derruba as sessões; `DELETE` desmarca. O prazo de
+    arrependimento existe justamente para que "excluir" não seja um botão de
+    ida sem volta apertado numa noite ruim.
+  */
+  app.post("/me/exclusao", (req) => meService.pedirExclusao(req.userId));
+  app.delete("/me/exclusao", async (req) => {
+    await meService.cancelarExclusao(req.userId);
+    return { ok: true };
+  });
+
   /// Tudo o que a conta guarda, num JSON. O nome do arquivo sai no cabeçalho
   /// pra quem baixar não receber um "download" sem extensão.
   app.get("/me/exportar", async (req, reply) => {

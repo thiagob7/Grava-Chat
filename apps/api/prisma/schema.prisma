@@ -127,6 +127,16 @@ model User {
   aceitaPedidos   Boolean @default(true)
   mostraAtividade Boolean @default(true)
 
+  /*
+    Quando esta conta deve ser apagada de verdade.
+
+    `null` = conta viva. Com data, ela está desativada e o relógio corre: até lá
+    NADA é destruído — nem mensagem, nem amizade, nem participação em servidor.
+    É o que torna a volta possível, e é a única forma honesta de prometer
+    recuperação: dizer "dá pra voltar" e ter apagado no caminho é mentira.
+  */
+  excluirEm DateTime?
+
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 

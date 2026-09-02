@@ -30,6 +30,10 @@ export interface SelfUserModel extends PublicUserModel {
   /// manda o pedido de amizade não passa pelo seu navegador.
   aceitaPedidos: boolean;
   mostraAtividade: boolean;
+
+  /// Quando a conta some de vez, ou `null` se está viva. Com data, o app mostra
+  /// a tela de recuperação no lugar da conversa.
+  excluirEm: string | null;
 }
 
 export interface SessionModel {

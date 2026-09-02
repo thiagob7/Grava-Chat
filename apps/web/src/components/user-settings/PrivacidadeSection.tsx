@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "react-toastify";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
+import { usePedirExclusao } from "~/@core/application/queries/conta/use-exclusao";
 import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { Opcao } from "~/components/user-settings/campos-de-config";
 
@@ -110,6 +112,90 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({ user }) 
           </Button>
         </div>
       </Secao>
+
+      <Secao
+        id="exclusao-de-dados"
+        titulo="Exclusão de dados"
+        detalhe="Sair de vez — com quinze dias para mudar de ideia."
+      >
+        <ExcluirConta nome={user.displayName} />
+      </Secao>
+    </div>
+  );
+};
+
+/*
+  O pedido de exclusão, atrás de uma confirmação que se digita.
+
+  Digitar o próprio nome não é burocracia: é o único jeito de garantir que o
+  clique foi deliberado. Botão de confirmar se aperta por reflexo — quem digita
+  seis letras já leu o que está fazendo.
+
+  O texto insiste no prazo porque ele muda a natureza do botão: sem prazo isto
+  seria irreversível, com prazo é uma decisão que dorme quinze noites.
+*/
+const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
+  const [confirmando, setConfirmando] = useState(false);
+  const [digitado, setDigitado] = useState("");
+  const excluir = usePedirExclusao();
+
+  const confere = digitado.trim().toLowerCase() === nome.trim().toLowerCase();
+
+  if (!confirmando) {
+    return (
+      <div className="flex items-start gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">Excluir a minha conta</p>
+          <p className="mt-0.5 text-xs text-ink-faint">
+            A conta é desativada na hora e apagada em quinze dias. Nesse tempo nada é destruído:
+            entrar de novo mostra a tela de recuperação, e tudo volta inteiro.
+          </p>
+        </div>
+
+        <Button variant="danger" onClick={() => setConfirmando(true)}>
+          <ShieldAlert size={16} /> Excluir
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-lg border border-danger/40 bg-danger/5 p-4">
+      <p className="text-sm font-medium text-ink">
+        Para confirmar, escreva <span className="font-semibold">{nome}</span> abaixo.
+      </p>
+      <p className="mt-1 text-xs text-ink-muted">
+        Você sai de todos os aparelhos agora. Se voltar dentro de quinze dias, encontra tudo como
+        deixou — mensagens, amigos e servidores.
+      </p>
+
+      <Input
+        value={digitado}
+        onChange={(e) => setDigitado(e.target.value)}
+        placeholder={nome}
+        aria-label="Confirme escrevendo o seu nome"
+        className="mt-3"
+      />
+
+      <div className="mt-3 flex gap-2">
+        <Button
+          variant="danger"
+          disabled={!confere || excluir.isPending}
+          onClick={() => excluir.mutate()}
+        >
+          {excluir.isPending ? "Excluindo…" : "Excluir a minha conta"}
+        </Button>
+
+        <Button
+          variant="surface"
+          onClick={() => {
+            setConfirmando(false);
+            setDigitado("");
+          }}
+        >
+          Cancelar
+        </Button>
+      </div>
     </div>
   );
 };
