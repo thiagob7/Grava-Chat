@@ -90,6 +90,7 @@ export const DirectMessages: React.FC = () => {
   const sairDaChamada = useVoiceStore((s) => s.leave);
   const ligarCamera = useVoiceStore((s) => s.toggleCamera);
   const cameraLigada = useVoiceStore((s) => s.cameraEnabled);
+  const chatDaChamada = useVoiceStore((s) => s.chatDaChamada);
   const emChamadaAqui = Boolean(channelId) && canalEmChamada === channelId;
 
   /*
@@ -262,9 +263,16 @@ export const DirectMessages: React.FC = () => {
           */}
           {emChamadaAqui && (
             <div
+              /*
+                Sem a conversa escrita, a chamada fica com a tela toda — que é
+                o que se quer quando alguém está mostrando a tela e ninguém
+                está escrevendo. O botão que liga isso vive no proprio palco.
+              */
               className={cn(
-                "flex shrink-0 flex-col overflow-hidden border-b border-divisor",
-                assistindo ? "h-96 max-h-[50vh]" : "h-56",
+                "flex flex-col overflow-hidden border-b border-divisor",
+                chatDaChamada
+                  ? cn("shrink-0", assistindo ? "h-96 max-h-[50vh]" : "h-56")
+                  : "min-h-0 flex-1",
               )}
             >
               {chamando ? (
@@ -280,6 +288,7 @@ export const DirectMessages: React.FC = () => {
             </div>
           )}
 
+          {chatDaChamada && (
           <AreaDeConversa>
           <MessageList
             channelId={conversa.id}
@@ -307,6 +316,7 @@ export const DirectMessages: React.FC = () => {
             <Composer channelId={conversa.id} channelName={conversa.user.displayName} />
           </RodapeDaConversa>
           </AreaDeConversa>
+          )}
         </main>
 
         {/*

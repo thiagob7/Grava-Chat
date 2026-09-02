@@ -11,6 +11,7 @@ import type {
   VoiceState,
 } from "@gravae/shared";
 
+import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
 import { focar, formatoDaGrade, montarGrade } from "~/lib/grade-da-call";
 import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
@@ -68,7 +69,20 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     e o resto do app somem, e o vídeo ocupa o monitor.
   */
   const telaCheia = useTelaCheia(quadro);
-  const tiles = useVoiceStore((s) => s.tiles);
+  const todosOsTiles = useVoiceStore((s) => s.tiles);
+  const mostrarSemVideo = useVoicePrefs((s) => s.mostrarSemVideo);
+
+  /*
+    Quem está sem câmera e sem tela pode sair da grade.
+
+    Numa chamada de oito pessoas com duas câmeras ligadas, os seis retratos
+    parados espremem justamente o que tem imagem. Quem desliga isso continua
+    ouvindo todo mundo — some da GRADE, não da chamada. O local nunca some:
+    sumir a si mesmo confunde mais do que ajuda.
+  */
+  const tiles = mostrarSemVideo
+    ? todosOsTiles
+    : todosOsTiles.filter((t) => t.isLocal || t.cameraTrack || t.screenTrack);
   const connecting = useVoiceStore((s) => s.connecting);
 
   const assistindo = useVoiceStore((s) => s.assistindo);
@@ -130,7 +144,21 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         )}
       >
         <div ref={quadro} className="relative min-w-0 flex-1 overflow-hidden bg-black">
-          <VoiceVideo track={sharing.screenTrack!} />
+          {/*
+            O vídeo inteiro é o botão de voltar.
+
+            Assistir é um estado, não uma tela sem saída: o caminho de volta
+            precisa ser tão grande quanto o de ida. O botão "Parar de assistir"
+            continua na faixa de cima pra quem procura por um botão — este é
+            pra quem só quer sair.
+          */}
+          <button
+            onClick={() => setAssistindo(null)}
+            aria-label="Voltar para os quadros da chamada"
+            className="absolute inset-0 size-full cursor-pointer"
+          >
+            <VoiceVideo track={sharing.screenTrack!} />
+          </button>
 
           {/*
             Duas faixas sobre o vídeo, como no Discord: quem transmite em cima,
@@ -223,7 +251,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
         )}
 
-        <VoiceStageControls alvoTelaCheia={palco} />
+        <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
       </div>
     );
   }
@@ -328,7 +356,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
         )}
 
-        <VoiceStageControls alvoTelaCheia={palco} />
+        <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
       </div>
     );
   }
@@ -381,7 +409,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
         )}
 
-        <VoiceStageControls alvoTelaCheia={palco} />
+        <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
       </div>
     );
   }
@@ -438,7 +466,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>
       )}
 
-      <VoiceStageControls alvoTelaCheia={palco} />
+      <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
     </div>
   );
 };
@@ -460,6 +488,7 @@ interface TileProps {
 
 const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, onFocar }) => {
   const resolver = useParticipante();
+  const espelhar = useVoicePrefs((s) => s.espelharCamera);
   /// O som do painel acende o rosto igual à fala — quem apertou é quem está
   /// fazendo barulho na chamada.
   const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
@@ -494,7 +523,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
     >
       {tile.cameraTrack ? (
         <div className={cn("size-full", falando && "ring-2 ring-online")}>
-          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
         </div>
       ) : (
         <Avatar
@@ -612,16 +641,29 @@ const TileDaLive: React.FC<{
         </span>
       </button>
     ) : (
+      /*
+        O selo "ao vivo" fica SEMPRE; o convite, só com o mouse em cima.
+
+        São dois papéis: o selo informa (tem gente transmitindo ali), o convite
+        propõe (clique pra ver). Com os dois acesos o tempo todo, a grade de
+        quatro quadros virava quatro botões piscando disputando o clique.
+      */
       <button
         onClick={onAssistir}
-        className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition hover:bg-white/5"
+        className="absolute inset-0 flex items-center justify-center transition hover:bg-white/5"
       >
-        <span className="flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
         </span>
 
-        <span className={cn("flex items-center gap-1.5 font-medium", denso ? "text-xs" : "text-sm")}>
-          <Play size={denso ? 14 : 16} /> Assistir a {tile.name}
+        <span
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 font-medium text-white shadow-lg",
+            "opacity-0 transition group-hover/live:opacity-100",
+            denso ? "text-xs" : "text-sm",
+          )}
+        >
+          <Play size={denso ? 14 : 16} /> Assistir à transmissão
         </span>
       </button>
     )}
@@ -716,6 +758,7 @@ const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
  */
 const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile, guildId }) => {
   const resolver = useParticipante();
+  const espelhar = useVoicePrefs((s) => s.espelharCamera);
   const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
   /// O som do painel acende o rosto igual à fala — quem apertou é quem está
   /// fazendo barulho na chamada.
@@ -727,7 +770,7 @@ const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile,
       <div className="relative">
         {tile.cameraTrack ? (
           <div className="size-20 overflow-hidden rounded-full ring-2 ring-transparent">
-            <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+            <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
           </div>
         ) : (
           <Avatar
@@ -765,6 +808,7 @@ const RostoNaChamada: React.FC<{ tile: VoiceTile; guildId?: string }> = ({ tile,
  * diz — é "quem está falando agora, e quem está mudo".
  */
 const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
+  const espelhar = useVoicePrefs((s) => s.espelharCamera);
   /// O som do painel acende o rosto igual à fala — quem apertou é quem está
   /// fazendo barulho na chamada.
   const tocandoSom = useSomDoPainel((s) => s.quem === tile.identity);
@@ -776,7 +820,7 @@ const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
     <div className="relative shrink-0" title={participante.nome}>
       {tile.cameraTrack ? (
         <div className="size-11 overflow-hidden rounded-full">
-          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal} />
+          <VoiceVideo track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
         </div>
       ) : (
         <Avatar

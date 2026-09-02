@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as DropdownPrimitive from "@radix-ui/react-dropdown-menu";
 
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
@@ -41,6 +41,72 @@ export const DropdownMenuItem = ({ className, danger, ...props }: ItemProps) => 
     )}
     {...props}
   />
+);
+
+/**
+ * Título de um bloco dentro do menu ("Dispositivo de entrada").
+ *
+ * Sem ele, uma lista de microfones colada numa lista de volumes vira uma coisa
+ * só e ninguém sabe onde uma acaba.
+ */
+export const DropdownMenuLabel = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownPrimitive.Label>) => (
+  <DropdownPrimitive.Label
+    className={cn("px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint", className)}
+    {...props}
+  />
+);
+
+export const DropdownMenuRadioGroup = DropdownPrimitive.RadioGroup;
+
+/// Escolha entre várias: o ponto à direita, como no resto do app.
+export const DropdownMenuRadioItem = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownPrimitive.RadioItem>) => (
+  <DropdownPrimitive.RadioItem
+    className={cn(
+      "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
+      className,
+    )}
+    {...props}
+  >
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+
+    <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint">
+      <DropdownPrimitive.ItemIndicator>
+        <span className="block size-2 rounded-full bg-brand" />
+      </DropdownPrimitive.ItemIndicator>
+    </span>
+  </DropdownPrimitive.RadioItem>
+);
+
+/// Liga/desliga dentro do menu, com o tique à direita.
+export const DropdownMenuCheckboxItem = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownPrimitive.CheckboxItem>) => (
+  <DropdownPrimitive.CheckboxItem
+    className={cn(
+      "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
+      className,
+    )}
+    {...props}
+  >
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+
+    <span className="flex size-4 shrink-0 items-center justify-center rounded border border-ink-faint">
+      <DropdownPrimitive.ItemIndicator>
+        <Check size={12} />
+      </DropdownPrimitive.ItemIndicator>
+    </span>
+  </DropdownPrimitive.CheckboxItem>
 );
 
 export const DropdownMenuSeparator = ({

@@ -90,6 +90,14 @@ type VoiceStore = {
   toggleNoiseFilter: () => Promise<void>;
   assistir: (identity: string | null) => void;
   definirPalcoVisivel: (visivel: boolean) => void;
+  /**
+   * A conversa escrita ao lado da chamada, no privado.
+   *
+   * Mora aqui, e não na página, porque quem liga e desliga é um botão DENTRO
+   * do palco — e o palco não conhece o layout da página que o hospeda.
+   */
+  chatDaChamada: boolean;
+  alternarChatDaChamada: () => void;
   setVolumeLocal: (userId: string, volume: number) => void;
   setVolumeDeTela: (userId: string, volume: number) => void;
   definirFonteDaTela: (fonte: { nome: string; icone: string | null } | null) => void;
@@ -285,6 +293,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   noiseFilterAvailable: true,
   noiseFilterBusy: false,
   deafened: false,
+  chatDaChamada: true,
   cameraEnabled: false,
   screenEnabled: false,
   tiles: [],
@@ -489,7 +498,13 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (!room) return;
 
     const next = !cameraEnabled;
-    await room.localParticipant.setCameraEnabled(next);
+    /// A câmera escolhida vale desde o primeiro quadro: ligar na errada e
+    /// trocar depois faz a pessoa aparecer com a webcam errada pra sala toda.
+    const { cameraId } = useVoicePrefs.getState();
+    await room.localParticipant.setCameraEnabled(
+      next,
+      cameraId ? { deviceId: { exact: cameraId } } : undefined,
+    );
     set({ cameraEnabled: next, tiles: snapshot(room) });
     await updateVoiceState({ camera: next }).catch(() => undefined);
   },
@@ -501,6 +516,8 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   },
 
   assistir: (identity) => set({ assistindo: identity }),
+  alternarChatDaChamada: () => set({ chatDaChamada: !store().chatDaChamada }),
+
   definirPalcoVisivel: (visivel) => set({ palcoVisivel: visivel }),
   definirFonteDaTela: (fonte) => set({ fonteDaTela: fonte }),
 

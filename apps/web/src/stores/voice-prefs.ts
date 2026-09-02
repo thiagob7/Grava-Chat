@@ -5,6 +5,12 @@ import { AJUSTES_PADRAO, type AjustesDeVoz, type ModoDeEntrada } from "~/lib/aud
 export interface VoicePrefs extends AjustesDeVoz {
   entradaId: string | null;
   saidaId: string | null;
+  /// a câmera escolhida; nulo = a que o navegador der
+  cameraId: string | null;
+  /// o seu próprio vídeo espelhado, como num espelho de verdade
+  espelharCamera: boolean;
+  /// mostrar na grade quem está na chamada sem câmera nem tela
+  mostrarSemVideo: boolean;
   volumeSaida: number;
   teclaPtt: string;
   somDaInterface: boolean;
@@ -22,6 +28,9 @@ const PADRAO: VoicePrefs = {
   ...AJUSTES_PADRAO,
   entradaId: null,
   saidaId: null,
+  cameraId: null,
+  espelharCamera: true,
+  mostrarSemVideo: true,
   volumeSaida: 1,
   teclaPtt: "Space",
   somDaInterface: true,
