@@ -1,4 +1,5 @@
 import { prefsDeAparencia } from "~/stores/aparencia";
+import { useAvisos } from "~/stores/notificacoes";
 
 import notificacaoUrl from "~/assets/sons/notificacao.mp3?url";
 
@@ -126,6 +127,10 @@ const SONS = {
 
 export type SomDaInterface = keyof typeof SONS;
 
+/// Os nomes que o app sabe tocar. Exportado para o catálogo poder ser
+/// conferido contra a fonte, em vez de contra um número escrito à mão.
+export const NOMES_DOS_SONS = Object.keys(SONS) as SomDaInterface[];
+
 /*
   Sons gravados.
 
@@ -223,8 +228,77 @@ export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?:
   const { modoStreamer, streamerSemSom } = prefsDeAparencia();
   if (modoStreamer && streamerSemSom) return;
 
+  /*
+    Sons desligados um a um, e a checagem mora AQUI pelo mesmo motivo do modo
+    streamer: este é o portão único por onde os treze passam. Espalhada por
+    quem toca, ela seria esquecida no próximo som novo — e o esquecimento só
+    apareceria pra quem tinha desligado, que é justo quem mais se incomoda.
+  */
+  if (useAvisos.getState().sonsDesligados[nome]) return;
+
   const gravado = GRAVADOS[nome];
   if (gravado) return tocarGravado(gravado, VOLUME_GRAVADO * (opcoes.volume ?? 1));
 
   tocar(SONS[nome], VOLUME * (opcoes.volume ?? 1));
 }
+
+export interface SomDoCatalogo {
+  nome: SomDaInterface;
+  rotulo: string;
+  quando: string;
+}
+
+export interface GrupoDeSons {
+  titulo: string;
+  sons: SomDoCatalogo[];
+}
+
+/*
+  Os sons com nome de gente, pra tela de Notificações.
+
+  `SONS` é indexado por identificador — "desensurdecer" não diz nada a quem
+  está decidindo o que quer ouvir. Aqui cada um ganha nome e, principalmente,
+  QUANDO toca: a pergunta real de quem abre essa lista não é "o que é este
+  som", é "quando é que ele me interrompe".
+
+  Um teste garante que os dois lados não divirjam.
+*/
+export const GRUPOS_DE_SONS: GrupoDeSons[] = [
+  {
+    titulo: "Conversa",
+    sons: [
+      { nome: "mensagem", rotulo: "Mensagem nova", quando: "Chegou mensagem num canal que te avisa." },
+      { nome: "mencao", rotulo: "Menção a você", quando: "Alguém escreveu o seu nome." },
+    ],
+  },
+  {
+    titulo: "Chamada",
+    sons: [
+      { nome: "chamando", rotulo: "Chamando", quando: "Você ligou e está esperando atender." },
+      { nome: "tocando", rotulo: "Tocando", quando: "Estão te ligando." },
+      { nome: "recusada", rotulo: "Recusada", quando: "A pessoa não atendeu ou desligou." },
+      { nome: "entrarNaChamada", rotulo: "Você entrou", quando: "Ao conectar no canal de voz." },
+      { nome: "sairDaChamada", rotulo: "Você saiu", quando: "Ao desconectar." },
+      { nome: "alguemEntrou", rotulo: "Alguém entrou", quando: "Outra pessoa chegou na chamada." },
+      { nome: "alguemSaiu", rotulo: "Alguém saiu", quando: "Outra pessoa deixou a chamada." },
+    ],
+  },
+  {
+    titulo: "Microfone e som",
+    sons: [
+      { nome: "mutar", rotulo: "Microfone desligado", quando: "Ao se calar." },
+      { nome: "desmutar", rotulo: "Microfone ligado", quando: "Ao voltar a falar." },
+      { nome: "ensurdecer", rotulo: "Som desligado", quando: "Ao parar de ouvir todo mundo." },
+      { nome: "desensurdecer", rotulo: "Som ligado", quando: "Ao voltar a ouvir." },
+    ],
+  },
+  {
+    titulo: "Transmissão",
+    sons: [
+      { nome: "liveNoAr", rotulo: "Live começou", quando: "Alguém do canal abriu uma transmissão." },
+      { nome: "liveEncerrada", rotulo: "Live acabou", quando: "A transmissão terminou." },
+    ],
+  },
+];
+
+export const TODOS_OS_SONS = GRUPOS_DE_SONS.flatMap((g) => g.sons);

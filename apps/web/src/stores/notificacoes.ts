@@ -26,6 +26,15 @@ export interface PrefsDeAviso {
    * trabalho não tem por que calar o celular.
    */
   porCanal: Record<string, ModoDoCanal>;
+  /**
+   * Sons desligados um a um.
+   *
+   * Só o que foge do padrão mora aqui, como no `porCanal`: som ausente do mapa
+   * está ligado. Guardar os treze com `true` engordaria o armazenamento e, pior,
+   * congelaria a lista — som novo no app nasceria DESLIGADO para quem já tem
+   * preferência salva, e ninguém entenderia por quê.
+   */
+  sonsDesligados: Record<string, boolean>;
 }
 
 const PADRAO: PrefsDeAviso = {
@@ -34,6 +43,7 @@ const PADRAO: PrefsDeAviso = {
   som: true,
   contador: true,
   porCanal: {},
+  sonsDesligados: {},
 };
 
 const CHAVE = "gravae:avisos";
@@ -50,6 +60,7 @@ function ler(): PrefsDeAviso {
 interface StoreDeAvisos extends PrefsDeAviso {
   definir: (mudanca: Partial<PrefsDeAviso>) => void;
   definirCanal: (channelId: string, modo: ModoDoCanal | null) => void;
+  definirSom: (nome: string, ligado: boolean) => void;
 }
 
 export const useAvisos = create<StoreDeAvisos>((set, store) => ({
@@ -59,14 +70,28 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
     set(mudanca);
 
     try {
-      const { definir, definirCanal, ...prefs } = store();
+      const { definir, definirCanal, definirSom, ...prefs } = store();
       void definir;
       void definirCanal;
+      void definirSom;
       localStorage.setItem(CHAVE, JSON.stringify(prefs));
     } catch {
     }
   },
 
+  /*
+    Liga ou desliga um som. Ligar APAGA a entrada em vez de gravar `false`:
+    o mapa guarda só o que foge do padrão, então o que está ligado não precisa
+    estar escrito em lugar nenhum.
+  */
+  definirSom: (nome, ligado) => {
+    const sonsDesligados = { ...store().sonsDesligados };
+
+    if (ligado) delete sonsDesligados[nome];
+    else sonsDesligados[nome] = true;
+
+    store().definir({ sonsDesligados });
+  },
   definirCanal: (channelId, modo) => {
     const porCanal = { ...store().porCanal };
 

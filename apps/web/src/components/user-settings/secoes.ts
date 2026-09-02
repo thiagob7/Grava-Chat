@@ -52,7 +52,11 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "entrada", label: "Entrada" },
     { id: "midia", label: "Mídia" },
   ],
-  avisos: [{ id: "o-que-te-interrompe", label: "O que te interrompe" }],
+  avisos: [
+    { id: "geral", label: "Geral" },
+    { id: "preferencia-de-mencao", label: "Preferência de menção" },
+    { id: "sons", label: "Sons" },
+  ],
   acessibilidade: [{ id: "movimento", label: "Movimento" }],
   idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],
 

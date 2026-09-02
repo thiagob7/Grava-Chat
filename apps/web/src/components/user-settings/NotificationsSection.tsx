@@ -9,7 +9,8 @@ import {
   type PermissaoDeAviso,
 } from "~/lib/notificacoes";
 import { useAvisos } from "~/stores/notificacoes";
-import { tocarSom } from "~/lib/ui-sounds";
+import { GRUPOS_DE_SONS, tocarSom } from "~/lib/ui-sounds";
+import { Play } from "lucide-react";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { desktop } from "~/lib/desktop";
 
@@ -70,32 +71,13 @@ export const NotificationsSection: React.FC = () => {
         </div>
       )}
 
-      <Secao id="o-que-te-interrompe" titulo="O que te interrompe">
+      <Secao id="geral" titulo="Geral" detalhe="O que te interrompe enquanto o Gravaê está atrás de outra coisa.">
 
         <Opcao
           titulo="Aviso na tela"
           detalhe="A janelinha do sistema quando chega mensagem com o Gravaê atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
           ligado={prefs.aviso}
           onMudar={(v) => prefs.definir({ aviso: v })}
-        />
-
-        <Opcao
-          titulo="Só quando me chamarem"
-          detalhe="Menção direta, cargo seu, @everyone e conversas privadas. O resto passa em silêncio."
-          ligado={prefs.soMencoes}
-          onMudar={(v) => prefs.definir({ soMencoes: v })}
-        />
-
-        <Opcao
-          titulo="Som"
-          detalhe="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
-          ligado={prefs.som}
-          onMudar={(v) => {
-            prefs.definir({ som: v });
-            /// A prévia toca o de MENSAGEM: é o que a pessoa vai ouvir o dia
-            /// inteiro. Mostrar a menção aqui anunciava o som mais raro.
-            if (v) tocarSom("mensagem");
-          }}
         />
 
         <Opcao
@@ -108,6 +90,39 @@ export const NotificationsSection: React.FC = () => {
           ligado={prefs.contador}
           onMudar={(v) => prefs.definir({ contador: v })}
         />
+      </Secao>
+
+      <Secao
+        id="preferencia-de-mencao"
+        titulo="Preferência de menção"
+        detalhe="O que conta como te chamar — e o que passa em silêncio."
+      >
+        <Opcao
+          titulo="Só quando me chamarem"
+          detalhe="Menção direta, cargo seu, @everyone e conversas privadas. O resto passa em silêncio."
+          ligado={prefs.soMencoes}
+          onMudar={(v) => prefs.definir({ soMencoes: v })}
+        />
+
+      </Secao>
+
+      <Secao
+        id="sons"
+        titulo="Sons"
+        detalhe="O interruptor de cima cala todos. Abaixo dele, cada um por vez — clique no nome para ouvir."
+      >
+        <Opcao
+          titulo="Som"
+          detalhe="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
+          ligado={prefs.som}
+          onMudar={(v) => {
+            prefs.definir({ som: v });
+            /// A prévia toca o de MENSAGEM: é o que a pessoa vai ouvir o dia
+            /// inteiro. Mostrar a menção aqui anunciava o som mais raro.
+            if (v) tocarSom("mensagem");
+          }}
+        />
+        <ListaDeSons />
       </Secao>
     </div>
   );
@@ -127,3 +142,63 @@ const Opcao: React.FC<{
     <Switch checked={ligado} onCheckedChange={onMudar} />
   </div>
 );
+
+/*
+  Os sons, um a um.
+
+  Clicar no nome TOCA. É a única forma honesta de escolher: ninguém sabe o que
+  é "desensurdecer" pelo nome, e a pergunta real de quem abre esta lista é
+  "qual desses é aquele que me irrita".
+
+  Tocar ignora o interruptor do próprio som de propósito — quem está prestes a
+  desligar precisa ouvir antes o que vai perder, e um botão de ouvir que não
+  toca por causa da preferência que a pessoa está justamente avaliando seria
+  uma armadilha.
+*/
+const ListaDeSons: React.FC = () => {
+  const sonsDesligados = useAvisos((s) => s.sonsDesligados);
+  const definirSom = useAvisos((s) => s.definirSom);
+  const somGeral = useAvisos((s) => s.som);
+
+  return (
+    <div className={somGeral ? "" : "pointer-events-none opacity-50"}>
+      {GRUPOS_DE_SONS.map((grupo) => (
+        <div key={grupo.titulo} className="mt-6 first:mt-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            {grupo.titulo}
+          </p>
+
+          <div className="mt-2 divide-y divide-divisor overflow-hidden rounded-lg border border-line">
+            {grupo.sons.map((som) => {
+              const ligado = !sonsDesligados[som.nome];
+
+              return (
+                <div key={som.nome} className="flex items-center gap-3 px-3 py-2.5">
+                  <button
+                    type="button"
+                    onClick={() => tocarSom(som.nome)}
+                    aria-label={`Ouvir ${som.rotulo}`}
+                    className="flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-ink-faint transition hover:border-ink-faint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
+                  >
+                    <Play size={12} />
+                  </button>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium">{som.rotulo}</p>
+                    <p className="mt-0.5 text-xs text-ink-faint">{som.quando}</p>
+                  </div>
+
+                  <Switch
+                    checked={ligado}
+                    onCheckedChange={(v) => definirSom(som.nome, v)}
+                    aria-label={`Tocar ${som.rotulo}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
