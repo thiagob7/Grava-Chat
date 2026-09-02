@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Pencil, Search, X } from "lucide-react";
+import { Bell, Bot, Download, Mic, Palette, Pencil, Search, Server, User, X } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
@@ -30,6 +30,7 @@ interface UserSettingsModalProps {
 interface Item {
   id: Secao;
   label: string;
+  icone: React.ComponentType<{ size?: number | string; className?: string }>;
 }
 
 /*
@@ -41,23 +42,25 @@ interface Item {
 const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   {
     titulo: "Conta do usuário",
-    itens: [{ id: "conta", label: "Minha conta" }],
+    itens: [{ id: "conta", label: "Minha conta", icone: User }],
   },
   {
     titulo: "Configurações do aplicativo",
     itens: [
-      { id: "aparencia", label: "Aparência" },
-      { id: "voz", label: "Voz e vídeo" },
-      { id: "avisos", label: "Notificações" },
-      { id: "bots", label: "Bots" },
+      { id: "aparencia", label: "Aparência", icone: Palette },
+      { id: "voz", label: "Voz e vídeo", icone: Mic },
+      { id: "avisos", label: "Notificações", icone: Bell },
+      { id: "bots", label: "Bots", icone: Bot },
       /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
       /// de baixar e um convite pra lugar nenhum.
-      ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app" }]),
+      ...(ehDesktop() ? [] : [{ id: "aplicativo" as const, label: "Baixar o app", icone: Download }]),
     ],
   },
   /// Esconder o item é conforto, não segurança: quem decide é a API, que
   /// devolve 404 na rota pra qualquer conta fora da lista.
-  ...(admin ? [{ titulo: "Administração", itens: [{ id: "servidor" as const, label: "Servidor" }] }] : []),
+  ...(admin
+    ? [{ titulo: "Administração", itens: [{ id: "servidor" as const, label: "Servidor", icone: Server }] }]
+    : []),
 ];
 
 const TITULOS: Record<Secao, string> = {
@@ -106,12 +109,25 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           altura) obrigava a rolar pra ver três linhas de cada vez.
         */}
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[min(900px,92vh)] w-[min(1240px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
+          className="fixed left-1/2 top-1/2 z-50 flex h-[min(900px,92vh)] w-[min(1240px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
         >
           <DialogPrimitive.Title className="sr-only">Configurações do usuário</DialogPrimitive.Title>
 
-          <nav className="flex w-64 shrink-0 flex-col gap-4 overflow-y-auto bg-surface-1 px-3 py-4">
+          {/*
+            Barra lateral MAIS CLARA que o conteúdo, e não mais escura.
+
+            É a inversão que a referência faz e que dá o desenho: a navegação
+            sobe pra cor de menu (`surface-4`) e o conteúdo desce pra cor de
+            barra lateral (`surface-1`). Antes as duas colunas eram `surface-1`
+            e `surface-2` — dois quase-pretos separados por 4 pontos de brilho,
+            e a janela lia como um bloco só.
+
+            A largura acompanha a janela em vez de ser fixa: numa tela estreita
+            a lateral não pode comer o conteúdo, e numa larga não pode virar
+            uma tira de rótulos truncados.
+          */}
+          <nav className="flex w-[max(15.75rem,min(24svw,20rem))] shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4">
             <div className="relative">
               <Search
                 size={15}
@@ -145,29 +161,44 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </span>
             </button>
 
-            {grupos.map((grupo) => (
-              <div key={grupo.titulo}>
-                <p className="mb-1.5 truncate px-2 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-                  {grupo.titulo}
-                </p>
+            <div className="flex flex-col gap-2">
+              {grupos.map((grupo) => (
+                <div key={grupo.titulo} className="flex flex-col gap-[3px]">
+                  <p className="truncate px-2.5 pb-[3px] pt-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint">
+                    {grupo.titulo}
+                  </p>
 
-                {grupo.itens.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSecao(item.id)}
-                    aria-current={secao === item.id}
-                    className={cn(
-                      "mb-0.5 flex w-full items-center rounded-lg px-2.5 py-1.5 text-left text-sm transition",
-                      secao === item.id
-                        ? "bg-surface-3 font-medium text-ink"
-                        : "text-ink-muted hover:bg-hover hover:text-ink",
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            ))}
+                  {grupo.itens.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSecao(item.id)}
+                      aria-current={secao === item.id}
+                      className={cn(
+                        "flex w-full items-center gap-2 rounded-lg px-2.5 py-[5px] text-left text-sm transition",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+                        secao === item.id
+                          ? "bg-surface-3 font-medium text-ink"
+                          : "text-ink-muted hover:bg-hover hover:text-ink",
+                      )}
+                    >
+                      {/*
+                        O ícone é o que deixa a lista percorrível de relance —
+                        sete rótulos alinhados só se leem palavra por palavra.
+                        Ele acende junto com o item, senão vira ruído cinza.
+                      */}
+                      <item.icone
+                        size={20}
+                        className={cn(
+                          "shrink-0 transition",
+                          secao === item.id ? "text-ink" : "text-ink-faint",
+                        )}
+                      />
+                      <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
 
             {!grupos.length && (
               <p className="px-2 text-xs text-ink-faint">Nada com esse nome por aqui.</p>
@@ -180,34 +211,45 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             conteúdo, encostando no que estivesse no canto.
           */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line px-8 py-4">
+            <div className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4">
               <h2 className="truncate text-lg font-semibold">{TITULOS[secao]}</h2>
 
               <DialogPrimitive.Close
                 aria-label="Fechar"
-                className="shrink-0 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
+                className="flex size-[34px] shrink-0 items-center justify-center rounded-lg text-ink-faint transition hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
               >
                 <X size={20} />
               </DialogPrimitive.Close>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
-              {/*
-                Caixa por seção, e a chave é o `secao`: uma tela de configuração
-                que quebra mostra um cartão no lugar dela, e trocar de seção já
-                limpa o estrago. Sem isso, o painel de servidor tropeçando num
-                formato inesperado da API levava a aplicação inteira junto.
-              */}
-              <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
-                {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
-                {secao === "voz" && <VoiceSection />}
-                {secao === "avisos" && <NotificationsSection />}
-                {secao === "bots" && <BotsSection />}
+            {/*
+              A coluna de leitura tem teto e é centrada.
 
-                {secao === "aparencia" && <AppearanceSection />}
-                {secao === "aplicativo" && <AplicativoSection />}
-                {secao === "servidor" && user.admin && <ServidorSection />}
-              </ErrorBoundary>
+              Sem isto o conteúdo se esparramava por toda a largura da janela:
+              numa janela de 1240px sobravam quase 400px de vazio à direita, e
+              cada linha de texto atravessava a tela inteira — largura em que
+              o olho perde a volta da linha. O teto cresce com a janela, mas
+              para: `max(40rem, min(90%, 50rem))`.
+            */}
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
+                {/*
+                  Caixa por seção, e a chave é o `secao`: uma tela de configuração
+                  que quebra mostra um cartão no lugar dela, e trocar de seção já
+                  limpa o estrago. Sem isso, o painel de servidor tropeçando num
+                  formato inesperado da API levava a aplicação inteira junto.
+                */}
+                <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
+                  {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
+                  {secao === "voz" && <VoiceSection />}
+                  {secao === "avisos" && <NotificationsSection />}
+                  {secao === "bots" && <BotsSection />}
+
+                  {secao === "aparencia" && <AppearanceSection />}
+                  {secao === "aplicativo" && <AplicativoSection />}
+                  {secao === "servidor" && user.admin && <ServidorSection />}
+                </ErrorBoundary>
+              </div>
             </div>
           </div>
 
