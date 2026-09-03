@@ -102,6 +102,8 @@ function todoOCodigo(): string {
   é falso: mexer neles muda a tela em cada um dos lugares que usa a classe.
 */
 const PELO_TAILWIND: Record<string, RegExp> = {
+  "--font-sans": /\bfont-sans\b/,
+  "--font-mono": /\bfont-mono\b/,
   "--shadow-sm": /\bshadow-sm\b/,
   "--shadow-md": /\bshadow-md\b/,
   "--shadow-lg": /\bshadow-lg\b/,
@@ -114,16 +116,47 @@ const PELO_TAILWIND: Record<string, RegExp> = {
   "--radius-full": /\brounded-full\b/,
 };
 
-function ehLido(nome: string, codigo: string): boolean {
+/*
+  Quem, dentro da própria camada, lê quem.
+
+  `--font-sans` termina em `var(--font-fallback-sans)`, e a cauda nunca vai
+  aparecer no código do app — ela é lida pela fonte principal, que é lida pelo
+  Tailwind. Sem enxergar esse caminho, o teste chamaria de "não ligado" um
+  token que muda a tela de verdade.
+*/
+function referenciasDaCamada(): Record<string, string[]> {
+  const mapa: Record<string, string[]> = {};
+
+  for (const [, dono, valor] of camada.matchAll(/^\s+(--[\w-]+):([^;]*);/gm)) {
+    for (const [, lido] of (valor ?? "").matchAll(/var\((--[\w-]+)/g)) {
+      if (!lido || !dono) continue;
+      (mapa[lido] ??= []).push(dono);
+    }
+  }
+
+  return mapa;
+}
+
+function ehLido(nome: string, codigo: string, vistos = new Set<string>()): boolean {
+  /// Ciclo entre tokens não é erro (um pode cair no outro por `var(x, y)`),
+  /// mas percorrê-lo duas vezes é laço infinito.
+  if (vistos.has(nome)) return false;
+  vistos.add(nome);
+
   const pelaUtilidade = PELO_TAILWIND[nome];
-  if (pelaUtilidade) return pelaUtilidade.test(codigo);
+  if (pelaUtilidade?.test(codigo)) return true;
 
   /// Os `--color-*` viram utilidade com o nome no meio (`bg-surface-2`), então
   /// procurar pelo token inteiro basta: ele aparece no `@theme` e nos temas.
-  if (nome.startsWith("--color-")) return codigo.includes(nome);
+  if (nome.startsWith("--color-") && codigo.includes(nome)) return true;
 
-  return codigo.includes(`var(${nome})`);
+  if (codigo.includes(`var(${nome})`)) return true;
+
+  /// Por tabela: alguém na camada lê este token, e esse alguém é lido.
+  return (referencias[nome] ?? []).some((dono) => ehLido(dono, codigo, vistos));
 }
+
+const referencias = referenciasDaCamada();
 
 describe("catálogo de tokens do estúdio", () => {
   it("cobre todo token de cor que o @theme declara", () => {

@@ -19,13 +19,66 @@
   foi resolvido com fator 1 e virou hex, que é o que o seletor de cor do estúdio
   entende. Onde o nosso tema já tinha valor próprio, o valor daqui é o nosso.
 
-  **Seis tokens ficaram de fora, de propósito:** `--font-sans` e `--font-mono`
-  (usamos a IBM Plex com o nome verdadeiro, não com o nome que eles dão a ela),
-  os dois `--font-fallback-*` (listas de fontes que não empacotamos),
-  `--saturation-factor` (só faz efeito dentro de `hsl()`, e aqui tudo já é hex)
-  e `--user-select`, que é comportamento e não tema.
+  **As fontes entram pelo slot dele com o valor NOSSO.** Excluir `--font-sans`,
+  `--font-mono` e os dois `--font-fallback-*` foi erro: o que não queríamos era
+  o VALOR dele (que nomeia "Fluxer Sans", uma fonte que não temos), não o
+  nome do token. Com eles aqui, trocar a fonte do app virou uma linha no
+  estúdio — e o `font-sans` do Tailwind lê exatamente esta variável.
+
+  **`--saturation-factor` continua de fora, e é o único.** Lá ele funciona
+  porque toda cor é `hsl(h, calc(s% * var(--saturation-factor)), l%)` e o fator
+  entra no meio do cálculo. Aqui as cores já são hex — o fator não teria onde
+  agir, e um botão que aceita o valor e não muda nada é pior que a ausência
+  dele. Voltar a ter isso significa manter a paleta em `hsl()`, e aí o seletor
+  de cor do estúdio para de funcionar: é um ou o outro.
 */
 :root {
+  /*
+    A fonte da interface e a do código.
+
+    É a IBM Plex nos dois casos — a mesma da referência, com o nome de verdade:
+    a cláusula 3 da OFL reserva o nome "Plex" a quem modifica o arquivo, e nós
+    não modificamos. O sufixo "Variable" não é enfeite, é o nome com que o
+    `@fontsource-variable` registra a família; sem ele o navegador não acha a
+    fonte, cai no `system-ui` e não reclama em lugar nenhum.
+  */
+  --font-sans:
+    "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", var(--font-fallback-sans);
+  --font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    var(--font-fallback-mono);
+
+  /*
+    O fim das duas listas: emoji e os alfabetos que a Plex não cobre.
+
+    Fica separado da fonte principal de propósito — é a parte que muda por
+    sistema operacional, e misturar as duas faria toda troca de fonte ter que
+    recopiar a cauda inteira.
+  */
+  --font-fallback-sans:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Noto Sans",
+    "Nirmala UI", sans-serif;
+  --font-fallback-mono: "Noto Sans Mono", var(--font-fallback-sans);
+
+  /*
+    O tamanho base da conversa.
+
+    Não é constante: `--gc-escala-do-chat` é o que a régua de "escala da fonte
+    do chat" escreve, e ela vai de 0,8 a 1,4. Deixar o token aqui em vez de
+    `1rem` fixo é o que faz o estúdio mostrar o tamanho de VERDADE, o que a
+    pessoa escolheu, e não um número que não corresponde à tela.
+  */
+  --font-size: calc(1rem * var(--gc-escala-do-chat, 1));
+
+  /*
+    Se dá pra selecionar texto com o mouse.
+
+    `none` no app inteiro e `text` de volta onde faz sentido (mensagem, campo)
+    é o que separa um aplicativo de uma página — arrastar numa lista de canais
+    não deveria pintar tudo de azul.
+  */
+  --user-select: auto;
   --font-keybind: -apple-system, BlinkMacSystemFont, var(--font-sans);
   --z-index-base: 0;
   --z-index-elevated-1: 10;

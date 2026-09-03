@@ -76,23 +76,18 @@
   --color-pilula: #f4f4f6;
 
   /*
-    As fontes.
+    As fontes moram no `tokens.css`, com o resto dos tokens.
 
-    A referência usa IBM Plex — Sans na interface, Mono no código. Lá elas
-    aparecem como "Fluxer Sans" e "Fluxer Mono" porque a cláusula 3 da OFL
-    reserva o nome "Plex" para quem modifica o arquivo; nós usamos o original
-    e sem tocar nele, então fica o nome de verdade.
+    Elas estavam aqui e foram para lá inteiras — mesma IBM Plex, mesmos nomes
+    com o sufixo "Variable" que o `@fontsource-variable` exige. O que mudou é
+    que agora elas são editáveis pelo estúdio como qualquer outro token, e que
+    a cauda de emoji e alfabetos não cobertos virou `--font-fallback-sans`,
+    separada da fonte principal.
 
-    O sufixo "Variable" não é enfeite: é com esse nome que o
-    `@fontsource-variable` registra a família. Sem ele o navegador não acha a
-    fonte, cai no `system-ui` e não reclama em lugar nenhum — foi exatamente o
-    que aconteceu com a Inter aqui, que nunca chegou a ser aplicada. O segundo
-    nome é a versão estática, para quem já tiver o Plex instalado no sistema.
+    O Tailwind continua gerando `font-sans` e `font-mono`: a utilidade lê
+    `var(--font-sans)`, e é o `tokens.css` que responde por ela — regra sem
+    camada ganha de regra em camada.
   */
-  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
-    "Courier New", monospace;
 }
 
 /*
@@ -385,8 +380,20 @@
   --gc-escala-do-chat: 1;
 }
 
+/*
+  Seleção de texto, e onde ela vale.
+
+  O token existe pra ser desligado no aplicativo: arrastar o mouse numa lista
+  de canais pintando tudo de azul é o gesto que denuncia uma página fingindo
+  ser um programa. Fica em `auto` porque é assim que está hoje — o que muda é
+  que agora há um lugar único para trocar.
+*/
+body {
+  user-select: var(--user-select);
+}
+
 [data-mensagem] {
-  font-size: calc(1rem * var(--gc-escala-do-chat));
+  font-size: var(--font-size);
 }
 
 /*
@@ -549,7 +556,18 @@
   app-region: drag;
 }
 
-.regiao-de-arrasto :is(button, a, input, select, textarea, label, [role="button"], [role="tab"], [contenteditable]) {
+.regiao-de-arrasto
+  :is(
+    button,
+    a,
+    input,
+    select,
+    textarea,
+    label,
+    [role="button"],
+    [role="tab"],
+    [contenteditable]
+  ) {
   -webkit-app-region: no-drag;
   app-region: no-drag;
 }

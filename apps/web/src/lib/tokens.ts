@@ -32,6 +32,35 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Tipografia",
     tokens: [
+      {
+        nome: "--font-sans",
+        rotulo: "Fonte da interface",
+        dica: "IBM Plex Sans — a mesma da referência, com o nome de verdade",
+        ligado: true,
+      },
+      {
+        nome: "--font-mono",
+        rotulo: "Fonte do código",
+        dica: "IBM Plex Mono",
+        ligado: true,
+      },
+      {
+        nome: "--font-fallback-sans",
+        rotulo: "Cauda da fonte da interface",
+        dica: "emoji e os alfabetos que a Plex não cobre",
+        ligado: true,
+      },
+      {
+        nome: "--font-fallback-mono",
+        rotulo: "Cauda da fonte do código",
+        ligado: true,
+      },
+      {
+        nome: "--font-size",
+        rotulo: "Tamanho da fonte da conversa",
+        dica: "acompanha a régua de escala do chat",
+        ligado: true,
+      },
       { nome: "--font-keybind", rotulo: "Atalho (fonte)" },
       { nome: "--font-size-xs", rotulo: "Tamanho minúsculo (fonte)" },
     ],
@@ -1487,6 +1516,12 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Outros",
     tokens: [
+      {
+        nome: "--user-select",
+        rotulo: "Seleção de texto com o mouse",
+        dica: "auto seleciona; none faz o app parecer programa, não página",
+        ligado: true,
+      },
       {
         nome: "--keybind-hint-default-background",
         rotulo: "Fundo (dica de atalho) — padrão",
