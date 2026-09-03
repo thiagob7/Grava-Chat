@@ -1,6 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+/*
+  O i18next é importado ANTES do App.
+
+  Ele se inicializa na importação, e o detector precisa ter escolhido o idioma
+  antes do primeiro componente renderizar — senão a primeira pintura sai no
+  idioma padrão e troca na segunda, com a tela piscando.
+*/
+import "~/traducao";
+
 import { App, queryClient } from "~/App";
 import { socket } from "~/@core/lib/websocket";
 import { getAccessToken } from "~/@core/lib/api";

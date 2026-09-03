@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "~/traducao";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Accessibility,
@@ -68,7 +69,10 @@ interface UserSettingsModalProps {
 
 interface Item {
   id: Secao;
-  label: string;
+  /// Chave do catálogo, não texto. O mesmo motivo do `secoes.ts`: título de
+  /// tela em português com a lateral em inglês seriam duas metades do mesmo
+  /// modal em idiomas diferentes.
+  chave: string;
   icone: React.ComponentType<{ size?: number | string; className?: string }>;
   subitens: SubSecao[];
 }
@@ -79,36 +83,36 @@ interface Item {
   Uma lista corrida de sete linhas não diz o que é conta e o que é aparelho —
   e é justamente a divisão que a pessoa procura quando abre isto aqui.
 */
-const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
+const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
   {
-    titulo: "Conta do usuário",
+    chave: "configuracoes.grupos.conta",
     itens: [
       {
         id: "conta",
-        label: "Minha conta",
+        chave: "configuracoes.telas.conta",
         icone: User,
         subitens: SUBSECOES.conta,
       },
       {
         id: "privacidade",
-        label: "Privacidade",
+        chave: "configuracoes.telas.privacidade",
         icone: EyeOff,
         subitens: SUBSECOES.privacidade,
       },
     ],
   },
   {
-    titulo: "Configurações do aplicativo",
+    chave: "configuracoes.grupos.app",
     itens: [
       {
         id: "aparencia",
-        label: "Aparência",
+        chave: "configuracoes.telas.aparencia",
         icone: Palette,
         subitens: SUBSECOES.aparencia,
       },
       {
         id: "bate-papo",
-        label: "Bate-papo",
+        chave: "configuracoes.telas.batePapo",
         icone: MessageSquare,
         subitens: SUBSECOES["bate-papo"],
       },
@@ -122,11 +126,16 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
       */
       {
         id: "conexoes",
-        label: "Conexões",
+        chave: "configuracoes.telas.conexoes",
         icone: Link2,
         subitens: SUBSECOES.conexoes,
       },
-      { id: "voz", label: "Áudio", icone: Mic, subitens: SUBSECOES.voz },
+      {
+        id: "voz",
+        chave: "configuracoes.telas.voz",
+        icone: Mic,
+        subitens: SUBSECOES.voz,
+      },
       /*
         Vídeo em tela própria.
 
@@ -135,22 +144,27 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         para te ver. Juntos faziam uma tela de seis seções em que a que
         interessa está sempre no meio da rolagem.
       */
-      { id: "video", label: "Vídeo", icone: Video, subitens: SUBSECOES.video },
+      {
+        id: "video",
+        chave: "configuracoes.telas.video",
+        icone: Video,
+        subitens: SUBSECOES.video,
+      },
       {
         id: "avisos",
-        label: "Notificações",
+        chave: "configuracoes.telas.avisos",
         icone: Bell,
         subitens: SUBSECOES.avisos,
       },
       {
         id: "acessibilidade",
-        label: "Acessibilidade",
+        chave: "configuracoes.telas.acessibilidade",
         icone: Accessibility,
         subitens: SUBSECOES.acessibilidade,
       },
       {
         id: "idioma",
-        label: "Idioma",
+        chave: "configuracoes.telas.idioma",
         icone: Languages,
         subitens: SUBSECOES.idioma,
       },
@@ -161,7 +175,7 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         : [
             {
               id: "aplicativo" as const,
-              label: "Baixar o app",
+              chave: "configuracoes.telas.aplicativo",
               icone: Download,
               subitens: SUBSECOES.aplicativo,
             },
@@ -177,11 +191,11 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
     pode acabar usando.
   */
   {
-    titulo: "Desenvolvedor",
+    chave: "configuracoes.grupos.desenvolvedor",
     itens: [
       {
         id: "aplicativos" as const,
-        label: "Aplicativos",
+        chave: "configuracoes.telas.aplicativos",
         icone: Code2,
         subitens: SUBSECOES.aplicativos,
       },
@@ -192,11 +206,11 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   ...(admin
     ? [
         {
-          titulo: "Administração",
+          chave: "configuracoes.grupos.administracao",
           itens: [
             {
               id: "servidor" as const,
-              label: "Servidor",
+              chave: "configuracoes.telas.servidor",
               icone: Server,
               subitens: SUBSECOES.servidor,
             },
@@ -206,20 +220,27 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
     : []),
 ];
 
+/*
+  O título de cada tela, por chave.
+
+  Existe separado da lista de itens porque nem toda tela está na lista: "Baixar
+  o app" some do menu no aplicativo instalado, e a de servidor só aparece para
+  quem administra. O cabeçalho precisa saber o nome de todas.
+*/
 const TITULOS: Record<Secao, string> = {
-  conta: "Minha conta",
-  privacidade: "Privacidade",
-  conexoes: "Conexões",
-  voz: "Áudio",
-  video: "Vídeo",
-  avisos: "Notificações",
-  aplicativos: "Aplicativos",
-  aparencia: "Aparência",
-  "bate-papo": "Bate-papo",
-  acessibilidade: "Acessibilidade",
-  idioma: "Idioma",
-  aplicativo: "Baixar o app",
-  servidor: "Servidor",
+  conta: "configuracoes.telas.conta",
+  privacidade: "configuracoes.telas.privacidade",
+  conexoes: "configuracoes.telas.conexoes",
+  voz: "configuracoes.telas.voz",
+  video: "configuracoes.telas.video",
+  avisos: "configuracoes.telas.avisos",
+  aplicativos: "configuracoes.telas.aplicativos",
+  aparencia: "configuracoes.telas.aparencia",
+  "bate-papo": "configuracoes.telas.batePapo",
+  acessibilidade: "configuracoes.telas.acessibilidade",
+  idioma: "configuracoes.telas.idioma",
+  aplicativo: "configuracoes.telas.aplicativo",
+  servidor: "configuracoes.telas.servidor",
 };
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -230,6 +251,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   secaoInicial = "conta",
   onEditarPerfil,
 }) => {
+  const { t } = useTranslation();
   const [secao, setSecao] = useState<Secao>(secaoInicial);
   const [busca, setBusca] = useState("");
   const [subAtiva, setSubAtiva] = useState<string | null>(null);
@@ -253,23 +275,23 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
         ...grupo,
         itens: grupo.itens
           .map((item) => {
-            const casaOItem = item.label.toLowerCase().includes(termo);
+            const casaOItem = t(item.chave).toLowerCase().includes(termo);
             const subitens = casaOItem
               ? item.subitens
               : item.subitens.filter((sub) =>
-                  sub.label.toLowerCase().includes(termo),
+                  t(sub.chave).toLowerCase().includes(termo),
                 );
 
             return { ...item, subitens };
           })
           .filter(
             (item) =>
-              item.label.toLowerCase().includes(termo) ||
+              t(item.chave).toLowerCase().includes(termo) ||
               item.subitens.length > 0,
           ),
       }))
       .filter((grupo) => grupo.itens.length > 0);
-  }, [busca, user.admin]);
+  }, [busca, user.admin, t]);
 
   /*
     Trocar de tela volta a leitura pro alto e acende a PRIMEIRA seção.
@@ -456,9 +478,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
             <div className="flex flex-col gap-2">
               {grupos.map((grupo) => (
-                <div key={grupo.titulo} className="flex flex-col gap-[3px]">
+                <div key={grupo.chave} className="flex flex-col gap-[3px]">
                   <p className="truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint">
-                    {grupo.titulo}
+                    {t(grupo.chave)}
                   </p>
 
                   {grupo.itens.map((item) => (
@@ -490,7 +512,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4">
               <h2 className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
-                <span className="truncate">{TITULOS[secao]}</span>
+                <span className="truncate">{t(TITULOS[secao])}</span>
                 <BotaoDeLink secao={secao} oQue="esta página" />
               </h2>
 
@@ -584,6 +606,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
   onEscolher,
   onEscolherSub,
 }) => {
+  const { t } = useTranslation();
   const lista = useRef<HTMLDivElement>(null);
 
   /*
@@ -647,7 +670,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
             ativo ? "text-ink" : "text-ink-faint",
           )}
         />
-        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+        <span className="min-w-0 flex-1 truncate">{t(item.chave)}</span>
 
         {temSub && (
           <ChevronRight
@@ -696,7 +719,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
                       : "border-transparent text-ink-faint hover:bg-hover hover:text-ink-muted",
                   )}
                 >
-                  {sub.label}
+                  {t(sub.chave)}
                 </button>
               ))}
             </div>

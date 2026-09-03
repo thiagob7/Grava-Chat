@@ -24,7 +24,15 @@ export type Secao =
 
 export interface SubSecao {
   id: string;
-  label: string;
+  /*
+    A chave da tradução, não o texto.
+
+    Aqui só vive a ESTRUTURA — que telas existem e que âncoras cada uma tem. O
+    texto mora no catálogo, com os outros, porque a lateral em português e o
+    título da tela em inglês seriam duas metades do mesmo modal em idiomas
+    diferentes. Um mapa não é lugar de texto de interface.
+  */
+  chave: string;
 }
 
 /// O id do elemento que a rolagem procura. Prefixo pra não colidir com nada
@@ -33,58 +41,82 @@ export const ancora = (id: string) => `config-${id}`;
 
 export const SUBSECOES: Record<Secao, SubSecao[]> = {
   conta: [
-    { id: "detalhes-de-login", label: "Detalhes de login" },
-    { id: "dispositivos", label: "Dispositivos" },
-    { id: "usuarios-bloqueados", label: "Usuários bloqueados" },
-    { id: "aplicativos-autorizados", label: "Aplicativos autorizados" },
-    { id: "sessoes", label: "Sessões" },
+    { id: "detalhes-de-login", chave: "configuracoes.secoes.detalhesDeLogin" },
+    { id: "dispositivos", chave: "configuracoes.secoes.dispositivos" },
+    {
+      id: "usuarios-bloqueados",
+      chave: "configuracoes.secoes.usuariosBloqueados",
+    },
+    {
+      id: "aplicativos-autorizados",
+      chave: "configuracoes.secoes.aplicativosAutorizados",
+    },
+    { id: "sessoes", chave: "configuracoes.secoes.sessoes" },
   ],
   privacidade: [
-    { id: "amigos-e-dms", label: "Amigos e mensagens diretas" },
+    { id: "amigos-e-dms", chave: "configuracoes.secoes.amigosEDms" },
     {
       id: "compartilhamento-de-atividade",
-      label: "Compartilhamento de atividade",
+      chave: "configuracoes.secoes.compartilhamentoDeAtividade",
     },
-    { id: "visibilidade-do-perfil", label: "Visibilidade do perfil" },
-    { id: "exportar-dados", label: "Exportar dados" },
-    { id: "exclusao-de-dados", label: "Exclusão de dados" },
+    {
+      id: "visibilidade-do-perfil",
+      chave: "configuracoes.secoes.visibilidadeDoPerfil",
+    },
+    { id: "exportar-dados", chave: "configuracoes.secoes.exportarDados" },
+    { id: "exclusao-de-dados", chave: "configuracoes.secoes.exclusaoDeDados" },
   ],
   aparencia: [
-    { id: "tema", label: "Tema" },
-    { id: "cor-de-destaque", label: "Cor de destaque" },
-    { id: "interface", label: "Interface" },
-    { id: "lista-de-canais", label: "Lista de canais" },
-    { id: "zoom-do-app", label: "Nível de zoom do app" },
-    { id: "escala-da-fonte", label: "Escala da fonte do chat" },
-    { id: "modo-streamer", label: "Privacidade de transmissão" },
+    { id: "tema", chave: "configuracoes.secoes.tema" },
+    { id: "cor-de-destaque", chave: "configuracoes.secoes.corDeDestaque" },
+    { id: "interface", chave: "configuracoes.secoes.interface" },
+    { id: "lista-de-canais", chave: "configuracoes.secoes.listaDeCanais" },
+    { id: "zoom-do-app", chave: "configuracoes.secoes.zoomDoApp" },
+    { id: "escala-da-fonte", chave: "configuracoes.secoes.escalaDaFonte" },
+    { id: "modo-streamer", chave: "configuracoes.secoes.modoStreamer" },
   ],
   voz: [
-    { id: "dispositivos", label: "Dispositivos" },
-    { id: "teste-do-microfone", label: "Teste do microfone" },
-    { id: "modo-de-entrada", label: "Modo de entrada" },
-    { id: "sensibilidade", label: "Sensibilidade de entrada" },
-    { id: "qualidade", label: "Qualidade" },
+    /// Chave própria, e não a mesma de Conta: as duas dizem "Dispositivos" em
+    /// português por coincidência — uma é aparelho conectado à conta, a outra
+    /// é microfone e caixa de som. Compartilhar a chave amarraria as duas.
+    { id: "dispositivos", chave: "configuracoes.secoes.dispositivosDeVoz" },
+    {
+      id: "teste-do-microfone",
+      chave: "configuracoes.secoes.testeDoMicrofone",
+    },
+    { id: "modo-de-entrada", chave: "configuracoes.secoes.modoDeEntrada" },
+    { id: "sensibilidade", chave: "configuracoes.secoes.sensibilidade" },
+    { id: "qualidade", chave: "configuracoes.secoes.qualidade" },
   ],
   video: [
-    { id: "video", label: "Câmera" },
-    { id: "transmissao", label: "Transmissão" },
+    { id: "video", chave: "configuracoes.secoes.camera" },
+    { id: "transmissao", chave: "configuracoes.secoes.transmissao" },
   ],
   "bate-papo": [
-    { id: "exibicao", label: "Exibição" },
-    { id: "entrada", label: "Entrada" },
-    { id: "midia", label: "Mídia" },
+    { id: "exibicao", chave: "configuracoes.secoes.exibicao" },
+    { id: "entrada", chave: "configuracoes.secoes.entrada" },
+    { id: "midia", chave: "configuracoes.secoes.midia" },
   ],
   avisos: [
-    { id: "geral", label: "Geral" },
-    { id: "preferencia-de-mencao", label: "Preferência de menção" },
-    { id: "sons", label: "Sons" },
+    { id: "geral", chave: "configuracoes.secoes.geral" },
+    {
+      id: "preferencia-de-mencao",
+      chave: "configuracoes.secoes.preferenciaDeMencao",
+    },
+    { id: "sons", chave: "configuracoes.secoes.sons" },
   ],
   acessibilidade: [
-    { id: "movimento", label: "Movimento" },
-    { id: "texto-em-voz", label: "Texto em voz" },
-    { id: "teclado", label: "Teclado" },
+    { id: "movimento", chave: "configuracoes.secoes.movimento" },
+    { id: "texto-em-voz", chave: "configuracoes.secoes.textoEmVoz" },
+    { id: "teclado", chave: "configuracoes.secoes.teclado" },
   ],
-  idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],
+  idioma: [
+    {
+      id: "idioma-da-interface",
+      chave: "configuracoes.secoes.idiomaDaInterface",
+    },
+    { id: "formato-da-hora", chave: "configuracoes.secoes.formatoDaHora" },
+  ],
 
   /// Sem subdivisão: uma lista só, ou uma tela de um assunto só.
   aplicativos: [],
