@@ -63,6 +63,21 @@ void i18next
       aparecer como tela sem texto, não como carregando.
     */
     resources: { [fallbackLng]: { [defaultNS]: ptBR } },
+    /*
+      Esta linha é o que faz os outros trinta e três idiomas EXISTIREM.
+
+      O `resources` acima e o backend de `import()` não convivem por padrão: o
+      `loadResources` do i18next começa com `if (!this.options.resources ||
+      this.options.partialBundledLanguages)`. Com o português entregue pronto e
+      sem esta opção, a condição é falsa e o backend NUNCA é chamado — os
+      trinta e três pedaços eram recortados no build e jamais buscados.
+
+      E o sintoma não é erro nenhum: `changeLanguage("ja")` resolve, o `lang`
+      do documento troca, o app redesenha inteiro — e todo texto cai no
+      fallback, que é o português. A tela fica idêntica, como se o botão de
+      idioma não fizesse nada.
+    */
+    partialBundledLanguages: true,
     /// O React já escapa tudo o que interpola. Escapar de novo transformaria
     /// aspas e acentos em entidades no meio da frase.
     interpolation: { escapeValue: false },
