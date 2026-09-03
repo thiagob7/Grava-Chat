@@ -28,9 +28,19 @@ function tokensDoTema(): string[] {
 
   /// `m[1]` é `string | undefined` para o TypeScript mesmo com o grupo sendo
   /// obrigatório na expressão — o filtro convence, e não um `!`.
-  return [...corpo.matchAll(/^\s+(--color-[\w-]+):/gm)]
+  /*
+    Cor, tamanho de fonte e peso. Os três são escolha de tema — e os dois
+    últimos entraram depois, junto com a escala: sem eles aqui, criar um degrau
+    novo no `@theme` não faria o estúdio nem piscar.
+
+    O `--text-N--line-height` fica de fora: é o par do tamanho, não um token
+    separado, e oferecê-lo na tela seria pedir pra alguém desalinhar a linha
+    do texto sem entender por quê.
+  */
+  return [...corpo.matchAll(/^\s+(--(?:color|text|font-weight)-[\w-]+):/gm)]
     .map((m) => m[1])
-    .filter((nome): nome is string => Boolean(nome));
+    .filter((nome): nome is string => Boolean(nome))
+    .filter((nome) => !nome.includes("--line-height"));
 }
 
 /// Os nomes da referência, do bloco `:root` do `tokens.css`. Só o primeiro
@@ -137,7 +147,11 @@ function referenciasDaCamada(): Record<string, string[]> {
   return mapa;
 }
 
-function ehLido(nome: string, codigo: string, vistos = new Set<string>()): boolean {
+function ehLido(
+  nome: string,
+  codigo: string,
+  vistos = new Set<string>(),
+): boolean {
   /// Ciclo entre tokens não é erro (um pode cair no outro por `var(x, y)`),
   /// mas percorrê-lo duas vezes é laço infinito.
   if (vistos.has(nome)) return false;
@@ -149,6 +163,18 @@ function ehLido(nome: string, codigo: string, vistos = new Set<string>()): boole
   /// Os `--color-*` viram utilidade com o nome no meio (`bg-surface-2`), então
   /// procurar pelo token inteiro basta: ele aparece no `@theme` e nos temas.
   if (nome.startsWith("--color-") && codigo.includes(nome)) return true;
+
+  /*
+    A escala e os pesos viram utilidade com o número no nome: `--text-13` é a
+    classe `text-13`, `--font-weight-semibold` é `font-semibold`. Procurar pela
+    classe é a única prova de que o degrau tem uso — um degrau declarado que
+    ninguém aplica é peso morto na escala, e a escala só serve enxuta.
+  */
+  const utilidade = nome
+    .replace(/^--text-/, "text-")
+    .replace(/^--font-weight-/, "font-");
+  if (utilidade !== nome && new RegExp(`\\b${utilidade}\\b`).test(codigo))
+    return true;
 
   if (codigo.includes(`var(${nome})`)) return true;
 

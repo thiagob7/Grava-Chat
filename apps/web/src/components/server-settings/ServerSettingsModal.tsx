@@ -156,7 +156,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
               return (
                 <div key={grupo.titulo ?? "principal"} className="mb-3">
                   {grupo.titulo && (
-                    <p className="mb-1 mt-3 px-2 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                    <p className="mb-1 mt-3 px-2 text-11 font-semibold uppercase tracking-wide text-ink-faint">
                       {grupo.titulo}
                     </p>
                   )}
@@ -273,7 +273,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             <span className="flex size-9 items-center justify-center rounded-full border-2 border-ink-faint">
               <X size={18} />
             </span>
-            <span className="text-[10px] font-semibold">ESC</span>
+            <span className="text-10 font-semibold">ESC</span>
           </button>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

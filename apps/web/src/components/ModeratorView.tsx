@@ -406,7 +406,7 @@ const MensagemDaLista: React.FC<{
 
       <button
         onClick={onIr}
-        className="rounded bg-surface-3 px-1.5 py-0.5 text-[11px] opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
+        className="rounded bg-surface-3 px-1.5 py-0.5 text-11 opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
       >
         Ir para mensagem
       </button>
@@ -518,7 +518,7 @@ const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
         <span className="block truncate text-xs font-medium text-brand">
           {embed?.titulo ?? url}
         </span>
-        <span className="block truncate text-[11px] text-ink-faint">
+        <span className="block truncate text-11 text-ink-faint">
           {embed?.site ?? dominio}
         </span>
       </span>

@@ -66,7 +66,7 @@ export const AtivosAgora: React.FC = () => {
         <div className="space-y-3">
           {[...salas.values()].map(({ canal, servidor, gente }) => (
             <div key={canal.id} className="rounded-lg bg-surface-1 p-3">
-              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-online">
+              <p className="flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-online">
                 <Volume2 size={12} className="shrink-0" /> Em voz
               </p>
 
@@ -92,7 +92,7 @@ export const AtivosAgora: React.FC = () => {
                 ) : (
                   <span
                     aria-hidden
-                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-10 font-bold text-white"
                     style={{ backgroundColor: avatarColor(servidor.id) }}
                   >
                     {initials(servidor.nome)}

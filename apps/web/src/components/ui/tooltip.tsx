@@ -50,7 +50,7 @@ export const Tooltip = ({
               {atalho.map((tecla) => (
                 <kbd
                   key={tecla}
-                  className="rounded border border-white/10 bg-surface-3 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-ink-muted"
+                  className="rounded border border-white/10 bg-surface-3 px-1.5 py-0.5 text-10 font-semibold uppercase text-ink-muted"
                 >
                   {tecla}
                 </kbd>

@@ -45,7 +45,7 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
     </div>
 
     <div className="mt-2 flex items-center justify-between">
-      <div className="flex gap-4 text-[11px] tabular-nums text-ink-faint">
+      <div className="flex gap-4 text-11 tabular-nums text-ink-faint">
         {marcas.map((marca) => (
           <button
             key={marca}

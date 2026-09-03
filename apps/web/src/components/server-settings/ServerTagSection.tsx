@@ -103,7 +103,7 @@ const PreviaDeFala: React.FC<{ nome: string; texto: string; tag?: string; icone?
       <p className="flex items-center gap-1.5 text-sm font-medium">
         {nome}
         {tag && (
-          <span className="flex items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+          <span className="flex items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-10 font-semibold text-brand">
             {icone} {tag}
           </span>
         )}

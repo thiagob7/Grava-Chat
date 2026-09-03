@@ -44,7 +44,7 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
         <h2 className="min-w-0 flex-1 truncate font-semibold">{post.title}</h2>
 
         {post.closedAt && (
-          <span className="flex items-center gap-1 rounded bg-surface-0 px-2 py-0.5 text-[11px] uppercase text-ink-faint">
+          <span className="flex items-center gap-1 rounded bg-surface-0 px-2 py-0.5 text-11 uppercase text-ink-faint">
             <Lock size={11} /> fechado
           </span>
         )}

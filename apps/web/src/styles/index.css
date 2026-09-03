@@ -76,6 +76,67 @@
   --color-pilula: #f4f4f6;
 
   /*
+    A escala de tamanhos.
+
+    Antes não havia uma: usávamos a que vem na caixa do Tailwind, desenhada
+    para sites. Faltavam dois degraus que um app de conversa densa usa o tempo
+    todo — 13px, que na referência é o terceiro tamanho mais frequente, e os
+    10 e 11px, que existiam aqui só escritos na mão (`text-[11px]`, 55 vezes,
+    sem nome e sem lugar único para trocar).
+
+    Os números no nome, e não "sm"/"lg", porque a escala é fechada de
+    propósito: com onze degraus abstratos a decisão é sempre "o próximo maior";
+    com nove degraus com o tamanho no nome, a pergunta vira "quantos pixels
+    isto tem que ter", que é a pergunta certa.
+
+    Os apelidos abaixo mantêm as 700 e poucas classes que já existem
+    funcionando, apontando para os mesmos valores de sempre — o `text-sm` de
+    hoje continua 14px, só que agora 14px tem nome.
+  */
+  --text-10: 0.625rem;
+  --text-10--line-height: 0.75rem;
+  --text-11: 0.6875rem;
+  --text-11--line-height: 0.875rem;
+  --text-12: 0.75rem;
+  --text-12--line-height: 1rem;
+  --text-13: 0.8125rem;
+  --text-13--line-height: 1.125rem;
+  --text-14: 0.875rem;
+  --text-14--line-height: 1.25rem;
+  --text-16: 1rem;
+  --text-16--line-height: 1.5rem;
+  --text-18: 1.125rem;
+  --text-20: 1.25rem;
+  --text-24: 1.5rem;
+
+  /*
+    Os apelidos do Tailwind, agora apontando para a escala.
+
+    Os valores são idênticos aos que o Tailwind já usava — nada muda de
+    tamanho. O que muda é que existe UM lugar onde 14px é definido, em vez de
+    um número dentro da biblioteca. A altura da linha continua sendo a do
+    Tailwind para estes: mexer nela seria outra mudança, e maior.
+  */
+  --text-xs: var(--text-12);
+  --text-sm: var(--text-14);
+  --text-base: var(--text-16);
+  --text-lg: var(--text-18);
+  --text-xl: var(--text-20);
+  --text-2xl: var(--text-24);
+
+  /*
+    Os pesos.
+
+    Ficam aqui para poderem ser trocados de um lugar só — a distribuição que
+    temos hoje já é praticamente a da referência (52% contra 51% de semibold),
+    então os valores são os de sempre. O que faltava era o nome.
+  */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /*
     As fontes moram no `tokens.css`, com o resto dos tokens.
 
     Elas estavam aqui e foram para lá inteiras — mesma IBM Plex, mesmos nomes

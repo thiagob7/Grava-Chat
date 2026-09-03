@@ -61,7 +61,7 @@ export const UserName: React.FC<UserNameProps> = ({
 };
 
 export const SeloDeApp: React.FC = () => (
-  <span className="shrink-0 rounded bg-brand px-1 py-px text-[9px] font-bold uppercase leading-tight text-white">
+  <span className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-white">
     app
   </span>
 );

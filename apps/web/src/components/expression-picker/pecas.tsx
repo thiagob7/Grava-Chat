@@ -83,7 +83,7 @@ export const IconeDoServidor: React.FC<{
   ) : (
     <span
       className={cn(
-        "flex items-center justify-center rounded-full bg-surface-4 text-[10px] font-bold uppercase text-ink",
+        "flex items-center justify-center rounded-full bg-surface-4 text-10 font-bold uppercase text-ink",
         className,
       )}
     >

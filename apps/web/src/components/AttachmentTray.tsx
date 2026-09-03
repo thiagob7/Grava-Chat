@@ -67,7 +67,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
             </div>
 
             {item.attachment?.spoiler && (
-              <span className="absolute left-1 top-1 z-10 flex items-center gap-1 rounded bg-surface-2/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-ink-muted">
+              <span className="absolute left-1 top-1 z-10 flex items-center gap-1 rounded bg-surface-2/90 px-1.5 py-0.5 text-10 font-semibold uppercase text-ink-muted">
                 <EyeOff size={10} /> spoiler
               </span>
             )}
@@ -92,7 +92,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               {item.filename}
             </p>
 
-            <p className={cn("truncate text-[11px]", item.error ? "text-danger" : "text-ink-faint")}>
+            <p className={cn("truncate text-11", item.error ? "text-danger" : "text-ink-faint")}>
               {item.error ? (
                 <span className="flex items-center gap-1">
                   <AlertCircle size={11} /> {item.error}

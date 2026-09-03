@@ -144,7 +144,7 @@ const Cartao: React.FC<{
     </span>
 
     {selo !== undefined && selo > 0 && (
-      <span className="absolute right-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+      <span className="absolute right-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-10 font-semibold text-white">
         {selo}
       </span>
     )}

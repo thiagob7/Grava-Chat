@@ -98,7 +98,7 @@ const GraficoDePing: React.FC<{ historico: (number | null)[] }> = ({ historico }
         />
       </svg>
 
-      <div className="pointer-events-none absolute inset-y-2 right-2 flex flex-col justify-between text-[10px] leading-none text-ink-faint">
+      <div className="pointer-events-none absolute inset-y-2 right-2 flex flex-col justify-between text-10 leading-none text-ink-faint">
         <span>{TETO_MS}</span>
         <span>{TETO_MS / 2}</span>
         <span>0</span>

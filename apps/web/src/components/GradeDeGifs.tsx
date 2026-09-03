@@ -38,7 +38,7 @@ export const GradeDeGifs: React.FC<{ busca: string; onGif: (gif: GifModel) => vo
 
   return (
     <>
-      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+      <p className="mb-2 flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
         {termo.trim() ? <Search size={12} /> : <TrendingUp size={12} />}
         {termo.trim() ? `Resultados para "${termo}"` : "GIFs em alta"}
       </p>

@@ -185,7 +185,7 @@ const ListaDeDispositivos: React.FC = () => {
             <p className="flex items-center gap-2 text-sm font-medium">
               <span className="truncate">{nomeDoAparelho(sessao.userAgent)}</span>
               {sessao.atual && (
-                <span className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-online">
+                <span className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-10 font-semibold uppercase tracking-wide text-online">
                   este aparelho
                 </span>
               )}

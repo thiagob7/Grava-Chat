@@ -93,7 +93,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 draggable={false}
               />
               {pendingFriendRequests > 0 && (
-                <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-0 bg-danger text-[10px] font-bold text-white">
+                <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-0 bg-danger text-10 font-bold text-white">
                   {pendingFriendRequests}
                 </span>
               )}
@@ -153,7 +153,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                     arredondado, e qualquer selo desenhado lá dentro sumiria
                     junto com o canto.
                   */
-                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-0 bg-danger px-1 text-[11px] font-bold leading-4 text-white"
+                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-0 bg-danger px-1 text-11 font-bold leading-4 text-white"
                 >
                   {mencoes > 99 ? "99+" : mencoes}
                 </span>

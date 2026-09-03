@@ -37,7 +37,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b border-line bg-codigo px-3 py-1">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-ink-faint">
+        <span className="text-11 font-medium uppercase tracking-wide text-ink-faint">
           {rotuloDaLingua(lingua)}
         </span>
 
@@ -45,7 +45,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
           type="button"
           onClick={copiar}
           aria-label={copiado ? "Código copiado" : "Copiar o código"}
-          className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-ink-faint transition hover:bg-hover hover:text-ink"
+          className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-11 text-ink-faint transition hover:bg-hover hover:text-ink"
         >
           {copiado ? <Check size={12} /> : <Copy size={12} />}
           {copiado ? "Copiado" : "Copiar"}
@@ -58,7 +58,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
         recuo do código some. Quebrar é papel da barra de rolagem.
       */}
       <pre className="overflow-x-auto px-3 py-2">
-        <code className="whitespace-pre font-mono text-[13px] leading-relaxed">
+        <code className="whitespace-pre font-mono text-13 leading-relaxed">
           {codigo}
         </code>
       </pre>

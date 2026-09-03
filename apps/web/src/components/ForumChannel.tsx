@@ -81,7 +81,7 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
               <p className="flex items-center gap-2">
                 <span className="truncate font-semibold">{post.title}</span>
                 {post.closedAt && (
-                  <span className="flex shrink-0 items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-[10px] uppercase text-ink-faint">
+                  <span className="flex shrink-0 items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-10 uppercase text-ink-faint">
                     <Lock size={10} /> fechado
                   </span>
                 )}

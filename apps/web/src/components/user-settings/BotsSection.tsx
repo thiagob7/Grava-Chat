@@ -219,7 +219,7 @@ const CartaoDeBot: React.FC<{
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-2 font-semibold">
             <span className="truncate">{bot.usuario.displayName}</span>
-            <span className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+            <span className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
               app
             </span>
           </p>
@@ -681,7 +681,7 @@ const Servidores: React.FC<{ botId: string; link: string }> = ({ botId, link }) 
           {servidor.iconUrl ? (
             <img src={servidor.iconUrl} alt="" className="size-6 shrink-0 rounded-full object-cover" />
           ) : (
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-4 text-[10px] font-bold uppercase">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-4 text-10 font-bold uppercase">
               {servidor.name.slice(0, 2)}
             </span>
           )}

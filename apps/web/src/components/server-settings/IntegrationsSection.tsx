@@ -105,7 +105,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
 
         <div className="grid flex-1 grid-cols-2 gap-3">
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+            <span className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
               Nome
             </span>
             <Input
@@ -122,7 +122,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+            <span className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
               Canal
             </span>
             <CampoSelect

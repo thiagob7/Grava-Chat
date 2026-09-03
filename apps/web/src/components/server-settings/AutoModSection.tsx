@@ -89,7 +89,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
                       {existente.acoes.map((acao) => (
                         <span
                           key={acao}
-                          className="rounded bg-surface-0 px-1.5 py-0.5 text-[10px] uppercase text-ink-faint"
+                          className="rounded bg-surface-0 px-1.5 py-0.5 text-10 uppercase text-ink-faint"
                         >
                           {acao === "BLOCK"
                             ? "bloquear mensagem"

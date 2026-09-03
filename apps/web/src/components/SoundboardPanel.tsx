@@ -215,7 +215,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                   className={somDoPainel ? undefined : "opacity-50"}
                 />
 
-                <p className="mt-2.5 text-[11px] leading-snug text-ink-faint">
+                <p className="mt-2.5 text-11 leading-snug text-ink-faint">
                   {somDoPainel
                     ? "Vale só pra você. Clique no alto-falante pra desativar os sons."
                     : "Os sons estão desativados. Clique no alto-falante pra ouvir de novo."}

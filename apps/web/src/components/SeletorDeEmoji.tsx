@@ -126,7 +126,7 @@ const Secao: React.FC<{
   children: ReactNode;
 }> = ({ titulo, icone, children }) => (
   <section className="mb-2">
-    <p className="mb-1 flex items-center gap-1 px-1 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+    <p className="mb-1 flex items-center gap-1 px-1 text-11 font-semibold uppercase tracking-wide text-ink-faint">
       {icone} {titulo}
     </p>
     <div className="grid grid-cols-8 gap-0.5">{children}</div>

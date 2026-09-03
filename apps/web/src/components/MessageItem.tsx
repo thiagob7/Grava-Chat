@@ -324,7 +324,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
       <div className="w-10 shrink-0">
         {compact || !mostrarAvatares ? (
-          <span className="hidden text-[10px] leading-6 text-ink-faint group-hover:block">
+          <span className="hidden text-10 leading-6 text-ink-faint group-hover:block">
             {formatTime(message.createdAt)}
           </span>
         ) : (
@@ -369,7 +369,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               <span className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
             </span>
             {message.pinnedAt && (
-              <span className="flex shrink-0 items-center gap-1 text-[10px] text-ink-faint">
+              <span className="flex shrink-0 items-center gap-1 text-10 text-ink-faint">
                 <Pin size={10} /> fixada
               </span>
             )}
@@ -418,7 +418,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
               <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} blocos />
-              {message.editedAt && <span className="ml-1 text-[10px] text-ink-faint">(editado)</span>}
+              {message.editedAt && <span className="ml-1 text-10 text-ink-faint">(editado)</span>}
             </div>
           )
         )}

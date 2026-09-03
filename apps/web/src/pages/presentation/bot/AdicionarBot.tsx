@@ -62,7 +62,7 @@ export const AdicionarBot: React.FC = () => {
 
         <h1 className="mt-4 flex items-center gap-2 text-xl font-semibold">
           {bot.usuario.displayName}
-          <span className="rounded bg-brand px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+          <span className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
             app
           </span>
         </h1>

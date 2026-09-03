@@ -332,7 +332,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               <span
                                 title={`${entradas.length} de ${channel.userLimit}`}
                                 className={cn(
-                                  "text-[11px] font-medium tabular-nums",
+                                  "text-11 font-medium tabular-nums",
                                   entradas.length >= channel.userLimit
                                     ? "text-danger"
                                     : "text-ink-faint",
@@ -351,7 +351,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 <span
                                   title={mencoes > 0 ? `${mencoes} menção(ões) a você` : undefined}
                                   className={cn(
-                                    "min-w-[18px] rounded-full px-1.5 text-center text-[11px] font-bold leading-[18px]",
+                                    "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
                                     mencoes > 0
                                       ? "bg-danger text-white"
                                       : "bg-selecionado text-ink-muted",

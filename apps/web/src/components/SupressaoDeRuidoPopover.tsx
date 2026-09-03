@@ -116,7 +116,7 @@ const TesteDoMicrofone: React.FC<{ aberto: boolean }> = ({ aberto }) => {
         />
       </div>
 
-      <p className="mt-1.5 text-[11px] text-ink-faint">
+      <p className="mt-1.5 text-11 text-ink-faint">
         {passando ? "Estão te ouvindo agora." : "Verde quando sua voz passa."}
       </p>
     </div>

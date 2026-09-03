@@ -187,7 +187,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
               </>
             )}
 
-            <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-[10px] font-bold tracking-wide">
+            <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-10 font-bold tracking-wide">
               AO VIVO
             </span>
 
@@ -529,7 +529,7 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
                 um passar de mouse de distância.
               */
               compact
-                ? "w-0 overflow-hidden text-[10px] opacity-0 transition-all group-hover/tile:w-auto group-hover/tile:opacity-100"
+                ? "w-0 overflow-hidden text-10 opacity-0 transition-all group-hover/tile:w-auto group-hover/tile:opacity-100"
                 : "text-xs",
             )}
           >
@@ -598,7 +598,7 @@ const TileDaLive: React.FC<{
       <button onClick={onAssistir} className="absolute inset-0 size-full">
         <VoiceVideo track={tile.screenTrack} />
 
-        <span className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
           <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
         </span>
       </button>
@@ -614,7 +614,7 @@ const TileDaLive: React.FC<{
         onClick={onAssistir}
         className="absolute inset-0 flex items-center justify-center transition hover:bg-white/5"
       >
-        <span className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
           <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
         </span>
 

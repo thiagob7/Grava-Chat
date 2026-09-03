@@ -107,7 +107,7 @@ export const AutorizarApp: React.FC = () => {
 
       <h1 className="mt-4 text-center text-lg">
         <span className="font-semibold">{bot.usuario.displayName}</span>{" "}
-        <span className="rounded bg-brand px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+        <span className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
           app
         </span>
         <span className="mt-1 block text-sm text-ink-muted">quer acessar sua conta</span>

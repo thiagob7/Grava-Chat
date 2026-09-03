@@ -556,7 +556,7 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({ guildId, 
           <Play size={13} /> Ouvir assim
         </button>
 
-        <p className="mt-3 text-[11px] leading-snug text-ink-faint">
+        <p className="mt-3 text-11 leading-snug text-ink-faint">
           Vale pra todo mundo do servidor. Cada pessoa ainda pode abaixar os sons só pra ela, no
           painel da chamada.
         </p>

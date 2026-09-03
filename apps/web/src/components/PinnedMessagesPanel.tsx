@@ -55,7 +55,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
               <div className="min-w-0 flex-1">
                 <p className="flex items-baseline gap-2">
                   <span className="truncate text-sm font-medium">{mensagem.author.displayName}</span>
-                  <span className="shrink-0 text-[11px] text-ink-faint">
+                  <span className="shrink-0 text-11 text-ink-faint">
                     {formatTimestamp(mensagem.createdAt)}
                   </span>
                 </p>

@@ -377,7 +377,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             <div className="flex flex-col gap-2">
               {grupos.map((grupo) => (
                 <div key={grupo.titulo} className="flex flex-col gap-[3px]">
-                  <p className="truncate px-2.5 pb-[3px] pt-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint">
+                  <p className="truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint">
                     {grupo.titulo}
                   </p>
 
@@ -595,7 +595,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
                   tabIndex={ativo ? 0 : -1}
                   onClick={() => onEscolherSub(sub.id)}
                   className={cn(
-                    "relative z-10 truncate rounded-md border px-2.5 py-1 text-left text-[13px] transition",
+                    "relative z-10 truncate rounded-md border px-2.5 py-1 text-left text-13 transition",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
                     subAtiva === sub.id
                       ? "border-transparent bg-selecionado font-semibold text-ink"

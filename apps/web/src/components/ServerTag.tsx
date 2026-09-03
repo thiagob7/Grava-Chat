@@ -11,7 +11,7 @@ interface ServerTagProps {
   interativo?: boolean;
 }
 
-const SELO = "flex shrink-0 items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-brand";
+const SELO = "flex shrink-0 items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-10 font-semibold uppercase text-brand";
 
 export const ServerTag: React.FC<ServerTagProps> = ({ etiqueta, interativo = true }) => {
   const [aberto, setAberto] = useState(false);

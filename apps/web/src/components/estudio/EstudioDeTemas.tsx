@@ -311,7 +311,7 @@ const LinhaDeToken: React.FC<{
           {!token.ligado && (
             <span
               title="Este token existe e tem valor, mas nenhum componente lê ele ainda."
-              className="shrink-0 rounded-full bg-surface-3 px-1.5 py-px text-[10px] font-normal uppercase tracking-wide text-ink-faint"
+              className="shrink-0 rounded-full bg-surface-3 px-1.5 py-px text-10 font-normal uppercase tracking-wide text-ink-faint"
             >
               não ligado
             </span>
@@ -417,7 +417,7 @@ const AbaDeCss: React.FC = () => {
           spellCheck={false}
           placeholder={"/* Ex.: */\n.gc-cartao { border-radius: 1rem; }"}
           aria-label="CSS personalizado"
-          className="size-full resize-none rounded-lg border border-line bg-surface-1 p-4 font-mono text-[13px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus-visible:border-campo-foco"
+          className="size-full resize-none rounded-lg border border-line bg-surface-1 p-4 font-mono text-13 leading-relaxed text-ink outline-none placeholder:text-ink-faint focus-visible:border-campo-foco"
         />
       </div>
 

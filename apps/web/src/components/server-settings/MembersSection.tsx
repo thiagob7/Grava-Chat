@@ -182,7 +182,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {member.nickname ?? member.user.displayName}
                         {ehDono && <Crown size={13} className="text-idle" />}
                         {deCastigo && (
-                          <span className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-[10px] text-danger">
+                          <span className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
                             <Clock size={10} /> de castigo
                           </span>
                         )}
@@ -201,7 +201,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                     {cargos.map((role) => (
                       <span
                         key={role.id}
-                        className="flex items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-[11px] text-ink-muted"
+                        className="flex items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-11 text-ink-muted"
                       >
                         <span
                           className="size-1.5 rounded-full"
