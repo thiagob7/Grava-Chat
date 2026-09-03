@@ -373,12 +373,12 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         dica: "entre painéis; aceita transparência",
         ligado: true,
       },
-      { nome: "--radius-sm", rotulo: "Pequeno (canto)" },
-      { nome: "--radius-md", rotulo: "Médio (canto)" },
-      { nome: "--radius-lg", rotulo: "Grande (canto)" },
-      { nome: "--radius-xl", rotulo: "Extra grande (canto)" },
-      { nome: "--radius-2xl", rotulo: "Enorme (canto)" },
-      { nome: "--radius-full", rotulo: "Total (canto)" },
+      { nome: "--radius-sm", rotulo: "Pequeno (canto)", ligado: true },
+      { nome: "--radius-md", rotulo: "Médio (canto)", ligado: true },
+      { nome: "--radius-lg", rotulo: "Grande (canto)", ligado: true },
+      { nome: "--radius-xl", rotulo: "Extra grande (canto)", ligado: true },
+      { nome: "--radius-2xl", rotulo: "Enorme (canto)", ligado: true },
+      { nome: "--radius-full", rotulo: "Total (canto)", ligado: true },
       { nome: "--footer-box-radius", rotulo: "Canto (rodapé da conversa)" },
       {
         nome: "--outline-frame-border-width",
@@ -1079,6 +1079,7 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       {
         nome: "--layout-guild-list-width",
         rotulo: "Largura do guild lista (layout)",
+        ligado: true,
       },
       {
         nome: "--layout-sidebar-width",
@@ -1407,9 +1408,21 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         nome: "--scroller-spacer-height",
         rotulo: "Altura do espaçador (rolagem)",
       },
-      { nome: "--scrollbar-thumb-bg", rotulo: "Punho da barra de rolagem" },
-      { nome: "--scrollbar-thumb-bg-hover", rotulo: "Punho da barra no mouse" },
-      { nome: "--scrollbar-track-bg", rotulo: "Trilho da barra de rolagem" },
+      {
+        nome: "--scrollbar-thumb-bg",
+        rotulo: "Punho da barra de rolagem",
+        ligado: true,
+      },
+      {
+        nome: "--scrollbar-thumb-bg-hover",
+        rotulo: "Punho da barra no mouse",
+        ligado: true,
+      },
+      {
+        nome: "--scrollbar-track-bg",
+        rotulo: "Trilho da barra de rolagem",
+        ligado: true,
+      },
     ],
   },
   {
@@ -1423,10 +1436,10 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Sombras",
     tokens: [
-      { nome: "--shadow-sm", rotulo: "Sombra pequena" },
-      { nome: "--shadow-md", rotulo: "Sombra média" },
-      { nome: "--shadow-lg", rotulo: "Sombra grande" },
-      { nome: "--shadow-xl", rotulo: "Sombra enorme" },
+      { nome: "--shadow-sm", rotulo: "Sombra pequena", ligado: true },
+      { nome: "--shadow-md", rotulo: "Sombra média", ligado: true },
+      { nome: "--shadow-lg", rotulo: "Sombra grande", ligado: true },
+      { nome: "--shadow-xl", rotulo: "Sombra enorme", ligado: true },
     ],
   },
   {

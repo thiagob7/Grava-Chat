@@ -68,7 +68,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         remonta a quina quadrada por cima do arredondado. Do lado de lá, ele
         segue a curva.
       */}
-      <nav className="trilho-de-servidores flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 pb-36 pt-3">
+      <nav className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 pb-36 pt-3">
         <div className="group relative flex w-full justify-center">
           <span
             className={cn(

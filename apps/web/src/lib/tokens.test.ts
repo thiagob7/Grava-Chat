@@ -93,6 +93,38 @@ function todoOCodigo(): string {
   return partes.join("\n");
 }
 
+/*
+  Tokens que o Tailwind lê por nós.
+
+  `shadow-lg` e `rounded-md` são utilidades que leem `var(--shadow-lg)` e
+  `var(--radius-md)` — o `var()` está dentro do Tailwind, e nunca vai aparecer
+  no nosso código. Sem esta lista eles seriam marcados como não ligados, o que
+  é falso: mexer neles muda a tela em cada um dos lugares que usa a classe.
+*/
+const PELO_TAILWIND: Record<string, RegExp> = {
+  "--shadow-sm": /\bshadow-sm\b/,
+  "--shadow-md": /\bshadow-md\b/,
+  "--shadow-lg": /\bshadow-lg\b/,
+  "--shadow-xl": /\bshadow-xl\b/,
+  "--radius-sm": /\brounded-sm\b/,
+  "--radius-md": /\brounded-md\b/,
+  "--radius-lg": /\brounded-lg\b/,
+  "--radius-xl": /\brounded-xl\b/,
+  "--radius-2xl": /\brounded-2xl\b/,
+  "--radius-full": /\brounded-full\b/,
+};
+
+function ehLido(nome: string, codigo: string): boolean {
+  const pelaUtilidade = PELO_TAILWIND[nome];
+  if (pelaUtilidade) return pelaUtilidade.test(codigo);
+
+  /// Os `--color-*` viram utilidade com o nome no meio (`bg-surface-2`), então
+  /// procurar pelo token inteiro basta: ele aparece no `@theme` e nos temas.
+  if (nome.startsWith("--color-")) return codigo.includes(nome);
+
+  return codigo.includes(`var(${nome})`);
+}
+
 describe("catálogo de tokens do estúdio", () => {
   it("cobre todo token de cor que o @theme declara", () => {
     const nomes = new Set(TODOS_OS_TOKENS.map((t) => t.nome));
@@ -125,11 +157,9 @@ describe("catálogo de tokens do estúdio", () => {
   */
   it("só marca como ligado o token que alguma coisa realmente lê", () => {
     const codigo = todoOCodigo();
-
-    const mentindo = TODOS_OS_TOKENS.filter((t) => t.ligado).filter((t) => {
-      if (t.nome.startsWith("--color-")) return !codigo.includes(t.nome);
-      return !codigo.includes(`var(${t.nome})`);
-    });
+    const mentindo = TODOS_OS_TOKENS.filter((t) => t.ligado).filter(
+      (t) => !ehLido(t.nome, codigo),
+    );
 
     expect(mentindo.map((t) => t.nome)).toEqual([]);
   });
