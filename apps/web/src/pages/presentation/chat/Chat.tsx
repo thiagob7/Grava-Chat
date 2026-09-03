@@ -487,6 +487,7 @@ export const Chat: React.FC = () => {
           {showMembers && !chatDaVozVisivel && !busca && (
             <MemberList
               members={detail?.members ?? []}
+              carregando={!detail}
               roles={detail?.roles ?? []}
               ownerId={detail?.guild.ownerId}
               guildId={detail?.guild.id}

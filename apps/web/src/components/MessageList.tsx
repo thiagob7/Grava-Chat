@@ -12,6 +12,7 @@ import { MessageItem, shouldGroup } from "~/components/MessageItem";
 import { useEnfeites } from "~/hooks/use-enfeites";
 import { useMencoes } from "~/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
+import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 
 interface MessageListProps {
@@ -187,9 +188,53 @@ export const MessageList: React.FC<MessageListProps> = ({
     });
   };
 
+  /*
+    O esqueleto da conversa, no lugar da frase "Carregando mensagens…".
+
+    O `aria-busy` e o `aria-label` fazem o trabalho que os blocos cinza não
+    fazem: eles são decorativos, e sem esta região quem usa leitor de tela
+    ouviria silêncio no lugar onde antes havia uma frase dizendo que algo vinha.
+
+    O número de mensagens falsas é fixo em oito porque não dá pra saber quantas
+    virão — e oito é o que enche a altura típica sem sobrar tanto que a entrada
+    das mensagens de verdade pareça um corte.
+  */
   if (isLoading) {
     return (
-      <div className="flex-1 p-6 text-sm text-ink-faint">{t("conversa.lista.carregando")}</div>
+      <div
+        aria-busy
+        aria-label={t("conversa.lista.carregando")}
+        className="@container flex-1 overflow-hidden pt-4"
+      >
+        {Array.from({ length: 8 }, (_, i) => (
+          <div key={i} className="mt-4 flex gap-x-2 px-2 @sm:gap-x-4 @sm:px-4">
+            <Skeleton className="size-10 shrink-0 rounded-full" />
+
+            <div className="min-w-0 flex-1 space-y-2 py-1">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-3.5 w-28 rounded-sm" />
+                <Skeleton className="h-2.5 w-16 rounded-sm" />
+              </div>
+
+              {/*
+                Uma linha, ou duas: mensagem real quase nunca tem a mesma
+                altura da vizinha, e um esqueleto de blocos idênticos lê como
+                tabela, não como conversa.
+              */}
+              <Skeleton
+                className="h-3 rounded-sm"
+                style={{ width: larguraDaLinha(i) }}
+              />
+              {i % 3 !== 1 && (
+                <Skeleton
+                  className="h-3 rounded-sm"
+                  style={{ width: larguraDaLinha(i + 3) }}
+                />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 

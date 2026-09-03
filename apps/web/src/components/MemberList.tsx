@@ -7,10 +7,13 @@ import { UserName } from "~/components/UserName";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { useEnfeites, type ResolverEnfeites } from "~/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
+import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
+import { useTranslation } from "~/traducao";
 import { useAparencia } from "~/stores/aparencia";
 
 interface MemberListProps {
   members: GuildMember[];
+  carregando?: boolean;
   roles?: Role[];
   ownerId: string | undefined;
   guildId?: string;
@@ -28,12 +31,14 @@ interface MemberListProps {
 
 export const MemberList: React.FC<MemberListProps> = ({
   members,
+  carregando = false,
   roles = [],
   emVoz,
   ownerId,
   guildId,
   podeModerar = false,
 }) => {
+  const { t } = useTranslation();
   const enfeitesDe = useEnfeites(guildId);
 
   /*
@@ -87,8 +92,41 @@ export const MemberList: React.FC<MemberListProps> = ({
   */
   if (!mostrar) return null;
 
+  /*
+    A lista de membros não tinha estado de carregamento nenhum: ela nascia
+    vazia e as pessoas apareciam de uma vez. Numa entrada de servidor grande
+    isso é uma coluna em branco por um segundo, indistinguível de um servidor
+    sem ninguém.
+  */
+  if (carregando) {
+    return (
+      <aside
+        aria-busy
+        aria-label={t("comum.carregando")}
+        className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block"
+      >
+        <div className="h-full overflow-hidden px-2 py-4">
+          <Skeleton className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
+
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="flex items-center gap-2 px-2 py-1.5">
+              <Skeleton className="size-8 shrink-0 rounded-full" />
+              <Skeleton className="h-3 rounded-sm" style={{ width: larguraDaLinha(i) }} />
+            </div>
+          ))}
+        </div>
+      </aside>
+    );
+  }
+
+  /*
+    Sem `topo-do-miolo` desde que o cabeçalho passou a atravessar a largura
+    toda: o fio de 1px daquela classe marca o alto do MIOLO, e o alto do miolo
+    agora é o cabeçalho. Mantê-lo aqui desenharia um segundo fio logo abaixo do
+    primeiro.
+  */
   return (
-    <aside className="topo-do-miolo hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
+    <aside className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div className="h-full overflow-y-auto px-2 py-4">
         {grupos.map((grupo) => (
           <MemberGroup
