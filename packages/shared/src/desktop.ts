@@ -94,10 +94,21 @@ export interface EstadoDaAtualizacao {
   atual: string;
   /// versão publicada, quando há uma mais nova; `null` quando estamos em dia
   disponivel: string | null;
-  fase: "ociosa" | "procurando" | "baixando" | "pronta" | "erro";
+  /*
+    "instalando" existe porque entre o clique e o app fechar há segundos de
+    nada: o roteiro de troca precisa ser escrito no disco e o processo de fora
+    precisa nascer. Sem uma fase para isso, o botão ficava intacto e a pessoa
+    clicava de novo achando que não tinha pegado.
+  */
+  fase: "ociosa" | "procurando" | "baixando" | "pronta" | "instalando" | "erro";
   /// 0 a 1 enquanto baixa
   progresso: number;
-  /// o que deu errado, quando `fase` é "erro"
+  /*
+    O que deu errado. Nem sempre acompanha a fase "erro": quando a troca falha
+    ao começar, o app baixado continua no disco e a fase volta pra "pronta" —
+    dá pra tentar de novo, e a mensagem é o que explica por que não foi da
+    primeira vez.
+  */
   erro: string | null;
 }
 
@@ -105,7 +116,8 @@ export interface EstadoDaAtualizacao {
  * O aplicativo cuidando da própria versão.
  *
  * `instalar` troca o app no disco e reabre — só funciona depois que a `fase`
- * chega em "pronta".
+ * chega em "pronta". Ele não devolve sucesso nem falha: quando dá certo, o app
+ * morre antes de responder; quando não dá, a resposta vem pelo estado.
  */
 export interface PonteAtualizacao {
   estado: () => Promise<EstadoDaAtualizacao>;

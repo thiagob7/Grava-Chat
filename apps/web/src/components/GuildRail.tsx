@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowDownToLine, Download, Plus } from "lucide-react";
+import { ArrowDownToLine, Download, Plus, RotateCw } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
@@ -194,15 +194,22 @@ export const GuildRail: React.FC<GuildRailProps> = ({
             <Tooltip
               side="right"
               label={
-                atualizacao.pronta
-                  ? `Versão ${atualizacao.estado?.disponivel} pronta — clique para reiniciar`
-                  : atualizacao.baixando
-                    ? `Baixando a versão ${atualizacao.estado?.disponivel}…`
-                    : `Saiu a versão ${atualizacao.estado?.disponivel} — clique para baixar`
+                atualizacao.instalando
+                  ? `Instalando a versão ${atualizacao.estado?.disponivel}…`
+                  : atualizacao.estado?.erro && atualizacao.pronta
+                    ? `${atualizacao.estado.erro} Clique para tentar de novo.`
+                    : atualizacao.pronta
+                      ? `Versão ${atualizacao.estado?.disponivel} pronta — clique para reiniciar`
+                      : atualizacao.baixando
+                        ? `Baixando a versão ${atualizacao.estado?.disponivel}…`
+                        : `Saiu a versão ${atualizacao.estado?.disponivel} — clique para baixar`
               }
             >
               <button
                 aria-label="Atualização do aplicativo"
+                /// travado enquanto instala: sem isto o clique cairia no
+                /// `baixar` e recomeçaria o download da versão que já está no disco
+                disabled={atualizacao.baixando || atualizacao.instalando}
                 onClick={() =>
                   void (atualizacao.pronta
                     ? atualizacao.ponte?.instalar()
@@ -210,13 +217,17 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 }
                 className={cn(
                   "relative flex size-12 items-center justify-center rounded-3xl border-2 border-dashed transition-all",
-                  "hover:rounded-2xl",
-                  atualizacao.pronta
-                    ? "border-online text-online hover:bg-online/10"
-                    : "border-surface-4 text-ink-muted hover:border-ink hover:text-ink",
+                  "hover:rounded-2xl disabled:cursor-default",
+                  atualizacao.estado?.erro && atualizacao.pronta
+                    ? "border-danger text-danger hover:bg-danger/10"
+                    : atualizacao.pronta || atualizacao.instalando
+                      ? "border-online text-online hover:bg-online/10"
+                      : "border-surface-4 text-ink-muted hover:border-ink hover:text-ink",
                 )}
               >
-                {atualizacao.baixando ? (
+                {atualizacao.instalando ? (
+                  <RotateCw size={20} className="animate-spin" />
+                ) : atualizacao.baixando ? (
                   <ArrowDownToLine size={20} className="animate-pulse" />
                 ) : (
                   <ArrowDownToLine size={20} />

@@ -104,7 +104,7 @@ export const AplicativoSection: React.FC = () => (
   ler três coisas pra descobrir qual vale.
 */
 const Atualizacao: React.FC = () => {
-  const { estado, ponte, baixando, pronta } = useAtualizacao();
+  const { estado, ponte, baixando, pronta, instalando } = useAtualizacao();
 
   if (!ponte) {
     /// Aplicativo anterior à v0.2.0: a ponte não tem esta parte. Dizer isso é
@@ -130,23 +130,35 @@ const Atualizacao: React.FC = () => {
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">
-            {pronta
-              ? `Versão ${estado?.disponivel} pronta para instalar`
-              : baixando
-                ? `Baixando a versão ${estado?.disponivel}…`
-                : temNovidade
-                  ? `Saiu a versão ${estado?.disponivel}`
-                  : estado?.fase === "procurando"
-                    ? "Procurando…"
-                    : "Você está em dia"}
+            {instalando
+              ? `Instalando a versão ${estado?.disponivel}…`
+              : pronta
+                ? `Versão ${estado?.disponivel} pronta para instalar`
+                : baixando
+                  ? `Baixando a versão ${estado?.disponivel}…`
+                  : temNovidade
+                    ? `Saiu a versão ${estado?.disponivel}`
+                    : estado?.fase === "procurando"
+                      ? "Procurando…"
+                      : "Você está em dia"}
           </p>
 
-          <p className="mt-0.5 text-xs text-ink-faint">
-            {pronta
-              ? "O aplicativo fecha, troca a versão e reabre sozinho. Sai da chamada se você estiver em uma."
-              : estado?.fase === "erro"
-                ? (estado.erro ?? "Não consegui falar com o servidor de versões.")
-                : "O aplicativo procura sozinho na abertura e a cada seis horas."}
+          {/*
+            O erro tem prioridade sobre a explicação de sempre — inclusive na
+            fase "pronta", que é onde a troca que falhou antes de começar
+            aterrissa. Antes só a fase "erro" mostrava a mensagem, e a falha do
+            botão de instalar não passava por ela.
+          */}
+          <p className={cn("mt-0.5 text-xs", estado?.erro ? "text-danger" : "text-ink-faint")}>
+            {estado?.erro
+              ? estado.erro
+              : instalando
+                ? "O aplicativo vai fechar em instantes."
+                : pronta
+                  ? "O aplicativo fecha, troca a versão e reabre sozinho. Sai da chamada se você estiver em uma."
+                  : estado?.fase === "erro"
+                    ? "Não consegui falar com o servidor de versões."
+                    : "O aplicativo procura sozinho na abertura e a cada seis horas."}
           </p>
 
           {baixando && (
@@ -159,9 +171,13 @@ const Atualizacao: React.FC = () => {
           )}
         </div>
 
-        {pronta ? (
+        {instalando ? (
+          <Button variant="surface" disabled>
+            <Loader2 size={16} className="animate-spin" /> Instalando
+          </Button>
+        ) : pronta ? (
           <Button onClick={() => void ponte.instalar()}>
-            <RefreshCw size={16} /> Instalar e reiniciar
+            <RefreshCw size={16} /> {estado?.erro ? "Tentar de novo" : "Instalar e reiniciar"}
           </Button>
         ) : baixando ? (
           <Button variant="surface" disabled>

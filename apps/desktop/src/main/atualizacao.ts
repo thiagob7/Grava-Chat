@@ -56,6 +56,29 @@ function pacoteInstalado(): string | null {
   return pacote.endsWith(".app") ? pacote : null;
 }
 
+/*
+  Solta o processo que vai trocar o app e só devolve quando o sistema confirma
+  que ele nasceu.
+
+  `spawn` não avisa na hora: se o programa não existe ou não pode rodar, o erro
+  chega depois, num evento. Antes disso a gente matava as janelas e saía do app
+  na sequência do `spawn`, então uma falha aqui virava exatamente o pior caso —
+  app fechado, versão não trocada e ninguém pra contar o que houve.
+*/
+function disparar(programa: string, argumentos: string[]): Promise<void> {
+  return new Promise((resolver, rejeitar) => {
+    const processo = spawn(programa, argumentos, { detached: true, stdio: "ignore" });
+
+    /// Solto do nosso processo: ele precisa continuar vivo depois que o app morre.
+    processo.once("spawn", () => {
+      processo.unref();
+      resolver();
+    });
+
+    processo.once("error", rejeitar);
+  });
+}
+
 interface Publicada {
   versao: string;
   url: string;
@@ -178,19 +201,54 @@ export function criarAtualizador(aoMudar: (estado: EstadoDaAtualizacao) => void)
     }
   }
 
+  /*
+    Instalar é o único passo sem volta, e era o único que não dizia nada.
+
+    Ele saía calado por três motivos diferentes — fase que não era "pronta",
+    `.app` não encontrado, roteiro de troca falhando — e em todos eles o clique
+    parecia não ter acontecido. Agora cada saída tem mensagem, e a falha que
+    ocorre ANTES da troca começar devolve a fase pra "pronta": o app baixado
+    continua no disco, então tentar de novo é a coisa certa a oferecer.
+  */
   async function instalar() {
-    if (!preparado || estado.fase !== "pronta") return;
+    /// Clique repetido enquanto o processo de fora nasce não recomeça nada.
+    if (estado.fase === "instalando") return;
 
-    if (process.platform === "darwin") {
-      const pacote = pacoteInstalado();
-      if (!pacote) return;
+    if (!preparado || estado.fase !== "pronta") {
+      mudar({ fase: "erro", erro: "Não há versão preparada para instalar. Baixe de novo." });
+      return;
+    }
 
-      const roteiro = await escreverTroca(pacote, preparado);
-      spawn("/bin/sh", [roteiro], { detached: true, stdio: "ignore" }).unref();
-    } else {
-      /// O instalador do Windows sabe se virar sozinho: `/S` é o modo calado do
-      /// NSIS, e ele reabre o app no fim.
-      spawn(preparado, ["/S"], { detached: true, stdio: "ignore" }).unref();
+    mudar({ fase: "instalando", erro: null });
+
+    try {
+      if (process.platform === "darwin") {
+        const pacote = pacoteInstalado();
+
+        /*
+          Sem pacote não há o que trocar. Acontece de verdade: app rodando de
+          dentro do .dmg, ou movido pra um lugar onde o caminho do executável
+          não termina em `.app`.
+        */
+        if (!pacote) {
+          throw new Error(
+            "Não achei o Gravaê Chat.app no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
+          );
+        }
+
+        const roteiro = await escreverTroca(pacote, preparado);
+        await disparar("/bin/sh", [roteiro]);
+      } else {
+        /// O instalador do Windows sabe se virar sozinho: `/S` é o modo calado do
+        /// NSIS, e ele reabre o app no fim.
+        await disparar(preparado, ["/S"]);
+      }
+    } catch (erro) {
+      mudar({
+        fase: "pronta",
+        erro: erro instanceof Error ? erro.message : String(erro),
+      });
+      return;
     }
 
     /// Sair de verdade, e não esconder: o roteiro espera o processo morrer pra

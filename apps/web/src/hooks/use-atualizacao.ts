@@ -35,5 +35,9 @@ export function useAtualizacao() {
     temNovidade: Boolean(estado?.disponivel) && estado?.fase !== "erro",
     baixando: estado?.fase === "baixando",
     pronta: estado?.fase === "pronta",
+    /// Os segundos entre o clique e o app fechar. Curto quando dá certo, e é
+    /// justamente por ser curto que ele precisa aparecer: sem isso o clique
+    /// não tinha resposta nenhuma.
+    instalando: estado?.fase === "instalando",
   };
 }

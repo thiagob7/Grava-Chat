@@ -25,7 +25,7 @@ import { cn } from "~/lib/utils";
 */
 export const BotaoDoAplicativo: React.FC = () => {
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
-  const { estado, ponte, temNovidade, baixando, pronta } = useAtualizacao();
+  const { estado, ponte, temNovidade, baixando, pronta, instalando } = useAtualizacao();
 
   if (!ehDesktop()) {
     return (
@@ -46,33 +46,40 @@ export const BotaoDoAplicativo: React.FC = () => {
   /*
     Baixado é INSTALAR; ainda não baixado é BAIXAR.
 
-    O `instalar` do lado de lá recusa em silêncio se a fase não for "pronta" —
-    um clique que não faz nada e não diz nada. Escolher a ação pela fase é o que
-    garante que o botão sempre cumpra o que o balão promete.
+    O `instalar` do lado de lá não faz nada se a fase não for "pronta" —
+    escolher a ação pela fase é o que garante que o botão sempre cumpra o que o
+    balão promete. Enquanto instala não há terceira ação: o botão trava, senão
+    o clique cairia no `baixar` e a versão seria baixada de novo do zero.
   */
   const aoClicar = () => void (pronta ? ponte.instalar() : ponte.baixar());
 
   return (
     <Tooltip
       label={
-        pronta
-          ? `Instalar a versão ${estado?.disponivel} e reiniciar`
-          : baixando
-            ? `Baixando a versão ${estado?.disponivel}…`
-            : `Saiu a versão ${estado?.disponivel} — clique para baixar`
+        instalando
+          ? `Instalando a versão ${estado?.disponivel}…`
+          : estado?.erro && pronta
+            ? `${estado.erro} Clique para tentar de novo.`
+            : pronta
+              ? `Instalar a versão ${estado?.disponivel} e reiniciar`
+              : baixando
+                ? `Baixando a versão ${estado?.disponivel}…`
+                : `Saiu a versão ${estado?.disponivel} — clique para baixar`
       }
     >
       <button
         onClick={aoClicar}
-        disabled={baixando}
+        disabled={baixando || instalando}
         aria-label="Atualização do aplicativo"
         className={cn(
-          "relative text-online transition hover:brightness-125 disabled:cursor-default",
+          "relative transition hover:brightness-125 disabled:cursor-default",
+          /// o vermelho é do erro que já aconteceu; o verde, do que ainda pode dar certo
+          estado?.erro && pronta ? "text-danger" : "text-online",
           baixando && "animate-pulse",
         )}
       >
-        {pronta ? (
-          <ArrowClockwise size={20} weight="bold" />
+        {pronta || instalando ? (
+          <ArrowClockwise size={20} weight="bold" className={cn(instalando && "animate-spin")} />
         ) : (
           <DownloadSimple size={20} weight="bold" />
         )}
