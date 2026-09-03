@@ -206,10 +206,24 @@ export const DirectMessages: React.FC = () => {
         navegacao
       )}
 
+      {/*
+        O cabeçalho por CIMA da coluna de perfil, como no Discord — e como
+        na tela de servidor, que fez a mesma mudança junto. O nome de quem
+        está do outro lado vale para a coluna inteira, e não só para a
+        conversa: com o cabeçalho parando na borda, ele e o topo do perfil
+        liam como dois cabeçalhos de coisas diferentes na mesma altura.
+      */}
       {conversa ? (
-        <div className="flex min-w-0 flex-1">
-        <main className="topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2">
-          <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
+        <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
+          {/*
+            A cor é do cabeçalho agora, e não herdada.
+
+            Ela vinha do `bg-surface-2` do `<main>`, de quem ele era filho.
+            Fora dali ele ficaria transparente e mostraria o fundo da página,
+            que é o do trilho — mais escuro. Quem sai de dentro de um pai
+            colorido leva a cor junto.
+          */}
+          <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
             {telaEstreita && (
               <button
                 onClick={() => setMenuAberto(true)}
@@ -297,6 +311,9 @@ export const DirectMessages: React.FC = () => {
             </div>
           </header>
 
+          <div className="flex min-h-0 flex-1">
+            <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
+
           {/*
             A chamada fica ACIMA da conversa, e não no lugar dela: o combinado
             no privado é falar e continuar mandando link, print e recado no meio
@@ -371,14 +388,15 @@ export const DirectMessages: React.FC = () => {
           </RodapeDaConversa>
           </AreaDeConversa>
           )}
-        </main>
+            </main>
 
         {/*
           A coluna de perfil fica FORA do `main` e não dentro: dentro, ela
           dividiria a altura com a lista de mensagens e o campo de escrever,
           em vez de ficar do lado deles.
         */}
-        {perfilAberto && <PainelDePerfilDoDm userId={conversa.user.id} />}
+            {perfilAberto && <PainelDePerfilDoDm userId={conversa.user.id} />}
+          </div>
         </div>
       ) : (
         <>

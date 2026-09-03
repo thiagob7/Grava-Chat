@@ -268,7 +268,21 @@ export const Chat: React.FC = () => {
         navegacao
       )}
 
-      <main className="topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2">
+      {/*
+        O cabeçalho por CIMA da lista de membros, como no Discord.
+
+        Antes ele morava dentro do `<main>` e parava na borda da conversa: a
+        lista de membros tinha uma faixa própria ao lado, e as duas juntas
+        liam como dois cabeçalhos de coisas diferentes, na mesma altura, com
+        um corte no meio. O nome do canal vale para a coluna inteira — a
+        conversa E quem está nela.
+
+        Daí esta coluna: cabeçalho em cima ocupando tudo, e embaixo a linha
+        com a conversa e os painéis da direita. O `min-h-0` na linha é o que
+        deixa a conversa rolar; sem ele o flex cresce até o conteúdo e a
+        rolagem vaza para a página.
+      */}
+      <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
         <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
           {telaEstreita && (
             <button
@@ -348,6 +362,9 @@ export const Chat: React.FC = () => {
             <CaixaDeEntrada />
           </div>
         </header>
+
+        <div className="flex min-h-0 flex-1">
+          <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
         {channel?.type === "VOICE" ? (
           voiceChannelId === channel.id ? (
@@ -441,49 +458,51 @@ export const Chat: React.FC = () => {
         ) : (
           <div className="flex-1" />
         )}
-      </main>
+          </main>
 
-      {chatDaVozVisivel && channel && detail && (
-        <VoiceChatPanel
-          channelId={channel.id}
-          channelName={channel.name}
-          guildId={detail.guild.id}
-          currentUserId={user?.id}
-          isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
-          podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
-          onClose={() => setChatDaVozAberto(false)}
-        />
-      )}
+          {chatDaVozVisivel && channel && detail && (
+            <VoiceChatPanel
+              channelId={channel.id}
+              channelName={channel.name}
+              guildId={detail.guild.id}
+              currentUserId={user?.id}
+              isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
+              podeEscrever={canInChannel(channel.id, "SEND_MESSAGES")}
+              onClose={() => setChatDaVozAberto(false)}
+            />
+          )}
 
-      {busca && routeGuildId && !chatDaVozVisivel && (
-        <PainelDeBusca
-          guildId={routeGuildId}
-          termo={busca}
-          currentUserId={user?.id}
-          onFechar={() => setBusca("")}
-          onIr={(channelId, messageId) =>
-            navigate(`/channels/${routeGuildId}/${channelId}?m=${messageId}`)
-          }
-        />
-      )}
+          {busca && routeGuildId && !chatDaVozVisivel && (
+            <PainelDeBusca
+              guildId={routeGuildId}
+              termo={busca}
+              currentUserId={user?.id}
+              onFechar={() => setBusca("")}
+              onIr={(channelId, messageId) =>
+                navigate(`/channels/${routeGuildId}/${channelId}?m=${messageId}`)
+              }
+            />
+          )}
 
-      {showMembers && !chatDaVozVisivel && !busca && (
-        <MemberList
-          members={detail?.members ?? []}
-          roles={detail?.roles ?? []}
-          ownerId={detail?.guild.ownerId}
-          guildId={detail?.guild.id}
-          podeModerar={can("MODERATE_MEMBERS")}
-          emVoz={quemEstaEmVoz}
-        />
-      )}
+          {showMembers && !chatDaVozVisivel && !busca && (
+            <MemberList
+              members={detail?.members ?? []}
+              roles={detail?.roles ?? []}
+              ownerId={detail?.guild.ownerId}
+              guildId={detail?.guild.id}
+              podeModerar={can("MODERATE_MEMBERS")}
+              emVoz={quemEstaEmVoz}
+            />
+          )}
 
-      {/*
-        Por último na fila, à direita de tudo: a ficha empurra a lista de
-        membros para o lado em vez de tapá-la. Só a partir de `xl` — abaixo
-        disso, duas colunas de 22rem não cabem sem espremer a conversa.
-      */}
-      <ModeratorView roles={detail?.roles ?? []} />
+          {/*
+            Por último na fila, à direita de tudo: a ficha empurra a lista de
+            membros para o lado em vez de tapá-la. Só a partir de `xl` — abaixo
+            disso, duas colunas de 22rem não cabem sem espremer a conversa.
+          */}
+          <ModeratorView roles={detail?.roles ?? []} />
+        </div>
+      </div>
 
       <ConfirmacaoDeVoz
         canal={
