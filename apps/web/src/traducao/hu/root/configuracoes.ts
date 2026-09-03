@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Kijelentkezés",
+  versoes: {
+    copiar: "Kattints a másoláshoz",
+    copiado: "Másolva",
+  },
   telas: {
     conta: "Fiókom",
     privacidade: "Adatvédelem",

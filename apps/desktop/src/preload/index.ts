@@ -8,6 +8,7 @@ import type {
   OpcoesPtt,
   PonteDesktop,
   TipoDeMidia,
+  VersoesDoAplicativo,
 } from "@gravae/shared";
 
 const ponte: PonteDesktop = {
@@ -15,6 +16,8 @@ const ponte: PonteDesktop = {
   plataforma: process.platform,
   nomeNoSistema:
     process.argv.find((a) => a.startsWith("--gravae-nome="))?.split("=")[1] ?? "Gravaê",
+
+  versoes: (): Promise<VersoesDoAplicativo> => ipcRenderer.invoke("app:versoes"),
 
   ptt: {
     configurar: (opcoes: OpcoesPtt): Promise<EstadoPtt> =>

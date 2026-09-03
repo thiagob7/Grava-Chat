@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "退出登录",
+  versoes: {
+    copiar: "点击复制",
+    copiado: "已复制",
+  },
   telas: {
     conta: "我的账号",
     privacidade: "隐私",

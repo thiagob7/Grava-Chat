@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Atsijungti",
+  versoes: {
+    copiar: "Spustelėkite, kad nukopijuotumėte",
+    copiado: "Nukopijuota",
+  },
   telas: {
     conta: "Mano paskyra",
     privacidade: "Privatumas",

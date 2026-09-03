@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Log out",
+  versoes: {
+    copiar: "Click to copy",
+    copiado: "Copied",
+  },
   telas: {
     conta: "My account",
     privacidade: "Privacy",

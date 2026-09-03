@@ -2,6 +2,11 @@
 /// pedaço traduzido porque é o mais denso de texto e o mais fácil de conferir:
 /// dá pra ver as treze telas de uma vez trocando o idioma.
 export const configuracoes = {
+  sair: "Sair",
+  versoes: {
+    copiar: "Clique para copiar",
+    copiado: "Copiado",
+  },
   telas: {
     conta: "Minha conta",
     privacidade: "Privacidade",

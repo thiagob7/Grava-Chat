@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Изход",
+  versoes: {
+    copiar: "Щракни, за да копираш",
+    copiado: "Копирано",
+  },
   telas: {
     conta: "Моят акаунт",
     privacidade: "Поверителност",

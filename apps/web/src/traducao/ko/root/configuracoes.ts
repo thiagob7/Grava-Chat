@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "로그아웃",
+  versoes: {
+    copiar: "클릭해서 복사",
+    copiado: "복사됨",
+  },
   telas: {
     conta: "내 계정",
     privacidade: "개인정보",

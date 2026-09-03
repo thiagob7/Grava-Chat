@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Çıkış yap",
+  versoes: {
+    copiar: "Kopyalamak için tıkla",
+    copiado: "Kopyalandı",
+  },
   telas: {
     conta: "Hesabım",
     privacidade: "Gizlilik",

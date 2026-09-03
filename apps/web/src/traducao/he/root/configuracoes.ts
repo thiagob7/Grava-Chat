@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "התנתקות",
+  versoes: {
+    copiar: "לחץ כדי להעתיק",
+    copiado: "הועתק",
+  },
   telas: {
     conta: "החשבון שלי",
     privacidade: "פרטיות",

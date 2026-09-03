@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Odjava",
+  versoes: {
+    copiar: "Klikni za kopiranje",
+    copiado: "Kopirano",
+  },
   telas: {
     conta: "Moj račun",
     privacidade: "Privatnost",

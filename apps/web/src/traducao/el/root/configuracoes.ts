@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Αποσύνδεση",
+  versoes: {
+    copiar: "Κάνε κλικ για αντιγραφή",
+    copiado: "Αντιγράφηκε",
+  },
   telas: {
     conta: "Ο λογαριασμός μου",
     privacidade: "Απόρρητο",

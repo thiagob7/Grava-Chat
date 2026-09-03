@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Uitloggen",
+  versoes: {
+    copiar: "Klik om te kopiëren",
+    copiado: "Gekopieerd",
+  },
   telas: {
     conta: "Mijn account",
     privacidade: "Privacy",

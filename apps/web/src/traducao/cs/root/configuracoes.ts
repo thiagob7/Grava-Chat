@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Odhlásit se",
+  versoes: {
+    copiar: "Klikni pro kopírování",
+    copiado: "Zkopírováno",
+  },
   telas: {
     conta: "Můj účet",
     privacidade: "Soukromí",

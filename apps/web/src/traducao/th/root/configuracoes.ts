@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "ออกจากระบบ",
+  versoes: {
+    copiar: "คลิกเพื่อคัดลอก",
+    copiado: "คัดลอกแล้ว",
+  },
   telas: {
     conta: "บัญชีของฉัน",
     privacidade: "ความเป็นส่วนตัว",

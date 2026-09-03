@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Kirjaudu ulos",
+  versoes: {
+    copiar: "Kopioi napsauttamalla",
+    copiado: "Kopioitu",
+  },
   telas: {
     conta: "Oma tili",
     privacidade: "Yksityisyys",

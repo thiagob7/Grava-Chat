@@ -9,6 +9,7 @@ import { registrarLinks } from "./links.js";
 import { registrarLoginDesktop } from "./login-desktop.js";
 import { registrarPermissoesDeMidia } from "./permissoes.js";
 import { registrarPushToTalk } from "./push-to-talk.js";
+import { registrarVersoes } from "./versoes-ipc.js";
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -31,6 +32,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   const pushToTalk = registrarPushToTalk();
+  registrarVersoes();
 
   app.on("will-quit", () => pushToTalk.encerrar());
 

@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Keluar",
+  versoes: {
+    copiar: "Klik untuk menyalin",
+    copiado: "Disalin",
+  },
   telas: {
     conta: "Akun saya",
     privacidade: "Privasi",

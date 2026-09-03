@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "ログアウト",
+  versoes: {
+    copiar: "クリックでコピー",
+    copiado: "コピーしました",
+  },
   telas: {
     conta: "アカウント",
     privacidade: "プライバシー",

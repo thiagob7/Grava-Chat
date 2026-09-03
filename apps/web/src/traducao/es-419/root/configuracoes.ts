@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Cerrar sesión",
+  versoes: {
+    copiar: "Haz clic para copiar",
+    copiado: "Copiado",
+  },
   telas: {
     conta: "Mi cuenta",
     privacidade: "Privacidad",

@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "साइन आउट",
+  versoes: {
+    copiar: "कॉपी करने के लिए क्लिक करें",
+    copiado: "कॉपी हो गया",
+  },
   telas: {
     conta: "मेरा खाता",
     privacidade: "गोपनीयता",

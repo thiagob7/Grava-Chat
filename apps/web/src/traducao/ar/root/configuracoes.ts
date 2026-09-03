@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "تسجيل الخروج",
+  versoes: {
+    copiar: "انقر للنسخ",
+    copiado: "تم النسخ",
+  },
   telas: {
     conta: "حسابي",
     privacidade: "الخصوصية",

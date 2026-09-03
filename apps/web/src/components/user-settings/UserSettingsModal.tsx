@@ -26,6 +26,7 @@ import {
   Server,
   User,
   X,
+  LogOut,
 } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
@@ -53,6 +54,7 @@ import {
   type SubSecao,
 } from "~/components/user-settings/secoes";
 import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
+import { RodapeDeVersoes } from "~/components/user-settings/RodapeDeVersoes";
 import { ContextoDaSecao } from "~/components/user-settings/SecaoDeConfig";
 import { useConfiguracoes } from "~/stores/configuracoes";
 
@@ -520,6 +522,31 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 Nada com esse nome por aqui.
               </p>
             )}
+
+            {/*
+              Sair e as versões, no pé — e fora do filtro da busca.
+
+              Sair já existe dentro da tela de Conta, e continua lá: quem vai
+              deliberadamente encerrar a sessão passa pelo lugar onde estão as
+              sessões e os aparelhos. Aqui é o outro gesto, o de quem quer
+              apenas sair e não quer caçar onde. Duas portas para a mesma ação
+              não são duplicidade quando os caminhos até elas são diferentes.
+
+              `mt-auto` empurra o bloco para baixo mesmo com a lista curta, e o
+              `pb-3` existe porque a `<nav>` tem `pb-0` — sem ele o rodapé
+              encosta na borda da janela.
+            */}
+            <div className="mt-auto flex flex-col pb-3 pt-2">
+              <button
+                onClick={onLogout}
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-danger transition hover:bg-danger/10"
+              >
+                <LogOut size={16} className="shrink-0" />
+                {t("configuracoes.sair")}
+              </button>
+
+              <RodapeDeVersoes />
+            </div>
           </nav>
 
           {/*

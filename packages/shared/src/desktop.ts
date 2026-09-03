@@ -127,10 +127,29 @@ export interface PonteAtualizacao {
   instalar: () => Promise<void>;
 }
 
+/**
+ * O que roda por baixo, para o rodapé das configurações.
+ *
+ * Só texto pronto para ler: quem monta cada linha é o processo principal, que
+ * é o único que sabe a versão do aplicativo (`app.getVersion()`) e a do
+ * sistema. Devolver os pedaços crus obrigaria a tela a saber que o macOS 26 se
+ * chama assim mas se reporta como Darwin 26 — e essa tradução não é assunto
+ * de uma tela de configuração.
+ */
+export interface VersoesDoAplicativo {
+  /// a do aplicativo, como está no `package.json` que foi empacotado
+  app: string;
+  electron: string;
+  chrome: string;
+  /// "macOS 26.1.0 (arm64)", já escrito
+  sistema: string;
+}
+
 export interface PonteDesktop {
   ehDesktop: true;
   plataforma: string;
   nomeNoSistema: string;
+  versoes: () => Promise<VersoesDoAplicativo>;
   ptt: PontePtt;
   tela: PonteTela;
   login: PonteLogin;

@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "登出",
+  versoes: {
+    copiar: "點一下複製",
+    copiado: "已複製",
+  },
   telas: {
     conta: "我的帳號",
     privacidade: "隱私",

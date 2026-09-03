@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Вийти",
+  versoes: {
+    copiar: "Натисніть, щоб копіювати",
+    copiado: "Скопійовано",
+  },
   telas: {
     conta: "Мій обліковий запис",
     privacidade: "Конфіденційність",

@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Deconectare",
+  versoes: {
+    copiar: "Dă clic ca să copiezi",
+    copiado: "Copiat",
+  },
   telas: {
     conta: "Contul meu",
     privacidade: "Confidențialitate",

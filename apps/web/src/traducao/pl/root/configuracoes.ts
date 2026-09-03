@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Wyloguj się",
+  versoes: {
+    copiar: "Kliknij, aby skopiować",
+    copiado: "Skopiowano",
+  },
   telas: {
     conta: "Moje konto",
     privacidade: "Prywatność",

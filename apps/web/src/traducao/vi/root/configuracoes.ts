@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Đăng xuất",
+  versoes: {
+    copiar: "Nhấn để sao chép",
+    copiado: "Đã sao chép",
+  },
   telas: {
     conta: "Tài khoản của tôi",
     privacidade: "Quyền riêng tư",

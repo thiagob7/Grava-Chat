@@ -1,4 +1,9 @@
 export const configuracoes = {
+  sair: "Logg ut",
+  versoes: {
+    copiar: "Klikk for å kopiere",
+    copiado: "Kopiert",
+  },
   telas: {
     conta: "Min konto",
     privacidade: "Personvern",
