@@ -42,6 +42,7 @@ import { useVoiceStore } from "~/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/stores/aparencia";
 import { useCategoriasFechadas } from "~/hooks/use-categorias-fechadas";
+import { useProporcaoDaFaixa } from "~/hooks/use-proporcao-da-faixa";
 
 interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
@@ -132,6 +133,15 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     borda: "direita",
   });
 
+  const comFaixa = Boolean(detail?.guild.bannerUrl) && faixaDoServidor;
+
+  /*
+    A altura da faixa sai da LARGURA da barra dividida pela proporção da
+    imagem — e não de um número fixo. A barra é redimensionável: altura fixa
+    daria tarja numa largura e corte na outra.
+  */
+  const proporcao = useProporcaoDaFaixa(comFaixa ? detail?.guild.bannerUrl : null);
+
   return (
     <>
       {/*
@@ -145,27 +155,85 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         style={{ width: largura }}
       >
         {/*
-          A faixa do servidor, quando existe: uma imagem larga no alto da
-          lista. O nome continua logo abaixo — pôr o nome POR
-          CIMA da imagem funciona só enquanto a imagem é escura, e a escolha
-          da imagem é de quem manda no servidor, não nossa.
-        */}
-        {detail?.guild.bannerUrl && faixaDoServidor && (
-          <div
-            aria-hidden
-            className="h-28 shrink-0 border-b border-line bg-cover bg-center"
-            style={{ backgroundImage: `url(${detail.guild.bannerUrl})` }}
-          />
-        )}
+          A faixa do servidor e o nome são o MESMO bloco, não dois empilhados.
 
-        <header className="regiao-de-arrasto flex h-12 items-center justify-between border-b border-divisor shadow-sm">
+          Antes eram: uma tira de altura fixa em cima, o cabeçalho embaixo. Duas
+          alturas fixas para uma imagem de proporção qualquer — daí a tarja preta
+          de quem manda uma faixa mais larga que alta, e o corte pelo meio de
+          quem manda uma mais alta.
+
+          Agora a altura sai da LARGURA da barra: a faixa ocupa a proporção
+          inteira, e o nome flutua por cima do alto dela. O véu escuro e a sombra
+          no texto existem porque a imagem é escolha de quem manda no servidor —
+          sem eles, nome branco sobre faixa clara some.
+        */}
+        <header
+          className={cn(
+            "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
+            !comFaixa && "h-12",
+          )}
+          style={
+            comFaixa
+              ? {
+                  height: largura / proporcao,
+                  /*
+                    Os limites do Fluxer, só que em CSS: `min-height` vence
+                    `max-height` na cascata, então isto é o mesmo que
+                    `max(48, min(ideal, 30vh))` — sem precisar de um ouvinte de
+                    `resize` para saber a altura da janela.
+                  */
+                  minHeight: "3rem",
+                  maxHeight: "30vh",
+                }
+              : undefined
+          }
+        >
+          {comFaixa && (
+            <>
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-cover bg-top bg-no-repeat"
+                style={{ backgroundImage: `url(${detail!.guild.bannerUrl})` }}
+              />
+              {/*
+                O véu cobre só a faixa de cima, onde o nome mora — escurecer a
+                imagem inteira seria estragá-la para proteger uma linha de texto.
+              */}
+              <div
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/30 to-transparent"
+              />
+            </>
+          )}
+
+          <div className="relative z-10 flex h-12 w-full items-center justify-between">
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
-              <button className="flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition hover:bg-surface-3">
-                <h1 className="truncate font-semibold">
+              <button
+                className={cn(
+                  "flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition",
+                  /// Sobre a faixa não há realce de passagem: pintar um retângulo
+                  /// cinza por cima da imagem é pior que não realçar nada.
+                  !comFaixa && "hover:bg-surface-3",
+                )}
+              >
+                <h1
+                  className={cn(
+                    "truncate font-semibold",
+                    comFaixa && "text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
+                  )}
+                >
                   {detail?.guild.name ?? "…"}
                 </h1>
-                <ChevronDown size={16} className="shrink-0 text-ink-muted" />
+                <ChevronDown
+                  size={16}
+                  className={cn(
+                    "shrink-0",
+                    comFaixa
+                      ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                      : "text-ink-muted",
+                  )}
+                />
               </button>
             </DropdownMenuTrigger>
 
@@ -225,12 +293,18 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             <Tooltip label="Convidar amigos">
               <button
                 onClick={() => setInviting(true)}
-                className="mr-4 shrink-0 text-ink-muted transition hover:text-ink"
+                className={cn(
+                  "mr-4 shrink-0 transition",
+                  comFaixa
+                    ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-white/80"
+                    : "text-ink-muted hover:text-ink",
+                )}
               >
                 <UserPlus size={18} />
               </button>
             </Tooltip>
           )}
+          </div>
         </header>
 
         {/*
