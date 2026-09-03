@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Učitavanje…",
   salvar: "Spremi",
   salvando: "Spremanje…",
   descartar: "Odbaci",

@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Wczytywanie…",
   salvar: "Zapisz",
   salvando: "Zapisywanie…",
   descartar: "Odrzuć",

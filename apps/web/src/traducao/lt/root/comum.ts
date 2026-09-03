@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Įkeliama…",
   salvar: "Išsaugoti",
   salvando: "Išsaugoma…",
   descartar: "Atmesti",

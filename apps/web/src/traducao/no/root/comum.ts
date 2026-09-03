@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Laster…",
   salvar: "Lagre",
   salvando: "Lagrer…",
   descartar: "Forkast",

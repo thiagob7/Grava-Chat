@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Indlæser…",
   salvar: "Gem",
   salvando: "Gemmer…",
   descartar: "Kassér",

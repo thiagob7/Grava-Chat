@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Betöltés…",
   salvar: "Mentés",
   salvando: "Mentés…",
   descartar: "Elvetés",

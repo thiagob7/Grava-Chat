@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Φόρτωση…",
   salvar: "Αποθήκευση",
   salvando: "Αποθήκευση…",
   descartar: "Απόρριψη",

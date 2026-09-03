@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "جارٍ التحميل…",
   salvar: "حفظ",
   salvando: "جارٍ الحفظ…",
   descartar: "تجاهل",

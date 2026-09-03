@@ -10,6 +10,7 @@
   traduzida, não antes.
 */
 export const comum = {
+  carregando: "Carregando…",
   salvar: "Salvar",
   salvando: "Salvando…",
   descartar: "Descartar",

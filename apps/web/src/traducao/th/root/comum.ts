@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "กำลังโหลด…",
   salvar: "บันทึก",
   salvando: "กำลังบันทึก…",
   descartar: "ทิ้ง",

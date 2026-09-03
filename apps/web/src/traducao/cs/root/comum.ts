@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "Načítání…",
   salvar: "Uložit",
   salvando: "Ukládání…",
   descartar: "Zahodit",

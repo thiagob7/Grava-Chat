@@ -1,4 +1,5 @@
 export const comum = {
+  carregando: "불러오는 중…",
   salvar: "저장",
   salvando: "저장 중…",
   descartar: "취소",
