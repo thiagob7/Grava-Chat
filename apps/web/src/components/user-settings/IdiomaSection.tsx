@@ -37,7 +37,9 @@ export const IdiomaSection: React.FC = () => {
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Relógio</p>
-            <p className="mt-0.5 text-xs text-ink-faint">Agora seriam {agora}.</p>
+            <p className="mt-0.5 text-xs text-ink-faint">
+              Agora seriam {agora}.
+            </p>
           </div>
 
           <div className="w-52 shrink-0">

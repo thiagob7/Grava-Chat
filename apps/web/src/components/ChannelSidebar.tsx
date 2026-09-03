@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
-
   Lock,
   LogOut,
   MessageSquare,
-
   Plus,
   Settings,
   Trash2,
   UserPlus,
-
 } from "lucide-react";
 
-import type { GuildDetailModel, GuildSummaryModel } from "~/@core/domain/models/guild-model";
+import type {
+  GuildDetailModel,
+  GuildSummaryModel,
+} from "~/@core/domain/models/guild-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSettingsModal";
 import { CreateChannelModal } from "~/components/CreateChannelModal";
@@ -40,12 +40,17 @@ import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/stores/server-settings-store";
 import { useVoiceStore } from "~/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { useAparencia } from "~/stores/aparencia";
+import { useCategoriasFechadas } from "~/hooks/use-categorias-fechadas";
 
 interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
   summary: GuildSummaryModel | undefined;
   activeChannelId: string | undefined;
-  readStates: Record<string, { lido: string | null; naoLidas: number; mencoes: number }>;
+  readStates: Record<
+    string,
+    { lido: string | null; naoLidas: number; mencoes: number }
+  >;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
   onLogout: () => void;
@@ -67,7 +72,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   onOpenVoiceChat,
 }) => {
   const voiceChannelId = useVoiceStore((s) => s.channelId);
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
+  const [collapsed, setCollapsed] = useCategoriasFechadas();
   const [creatingIn, setCreatingIn] = useState<string | null | false>(false);
   const [inviting, setInviting] = useState(false);
   const configuracoes = useServerSettingsStore();
@@ -75,7 +81,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   /// O pedido pode ter nascido no servidor anterior: quem clicou em
   /// "Adicionar emoji" e trocou de servidor no meio do caminho não quer cair
   /// nas configurações deste aqui.
-  const configurando = configuracoes.aberto && configuracoes.guildId === detail?.guild.id;
+  const configurando =
+    configuracoes.aberto && configuracoes.guildId === detail?.guild.id;
   const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
 
   const { can, canInChannel } = usePermissions(detail);
@@ -108,7 +115,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     ...(canaisFavoritos.length
       ? [{ id: "favoritos", name: "Favoritos", channels: canaisFavoritos }]
       : []),
-    ...(uncategorized.length ? [{ id: null, name: null, channels: uncategorized }] : []),
+    ...(uncategorized.length
+      ? [{ id: null, name: null, channels: uncategorized }]
+      : []),
     ...(detail?.categories ?? []).map((category) => ({
       id: category.id,
       name: category.name,
@@ -141,7 +150,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           CIMA da imagem funciona só enquanto a imagem é escura, e a escolha
           da imagem é de quem manda no servidor, não nossa.
         */}
-        {detail?.guild.bannerUrl && (
+        {detail?.guild.bannerUrl && faixaDoServidor && (
           <div
             aria-hidden
             className="h-28 shrink-0 border-b border-line bg-cover bg-center"
@@ -153,7 +162,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
               <button className="flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition hover:bg-surface-3">
-                <h1 className="truncate font-semibold">{detail?.guild.name ?? "…"}</h1>
+                <h1 className="truncate font-semibold">
+                  {detail?.guild.name ?? "…"}
+                </h1>
                 <ChevronDown size={16} className="shrink-0 text-ink-muted" />
               </button>
             </DropdownMenuTrigger>
@@ -166,7 +177,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               )}
 
               {podeConfigurar && (
-                <DropdownMenuItem onSelect={() => configuracoes.abrir(detail!.guild.id)}>
+                <DropdownMenuItem
+                  onSelect={() => configuracoes.abrir(detail!.guild.id)}
+                >
                   Configurações do servidor <Settings size={16} />
                 </DropdownMenuItem>
               )}
@@ -192,7 +205,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
               <DropdownMenuSeparator />
               {isOwner ? (
-                <DropdownMenuItem danger onSelect={() => configuracoes.abrir(detail!.guild.id, "excluir")}>
+                <DropdownMenuItem
+                  danger
+                  onSelect={() =>
+                    configuracoes.abrir(detail!.guild.id, "excluir")
+                  }
+                >
                   Excluir servidor <Trash2 size={16} />
                 </DropdownMenuItem>
               ) : (
@@ -221,103 +239,134 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           rodapé começa.
         */}
         <div className="relative flex min-h-0 flex-1 flex-col">
-        <div className="flex-1 overflow-y-auto px-2 py-3">
-          {groups.map((group) => {
-            const isCollapsed = group.id ? collapsed[group.id] : false;
+          <div className="flex-1 overflow-y-auto px-2 py-3">
+            {groups.map((group) => {
+              const isCollapsed = group.id ? collapsed[group.id] : false;
 
-            return (
-              <section key={group.id ?? "sem-categoria"} className="mb-4">
-                {group.name && (
-                  <div className="group flex items-center justify-between px-1">
-                    <button
-                      onClick={() =>
-                        group.id && setCollapsed((c) => ({ ...c, [group.id!]: !c[group.id!] }))
-                      }
-                      className="flex flex-1 items-center gap-0.5 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
-                    >
-                      <ChevronDown size={12} className={isCollapsed ? "-rotate-90" : ""} />
-                      <span className="truncate">{group.name}</span>
-                    </button>
-                    {/*
+              return (
+                <section key={group.id ?? "sem-categoria"} className="mb-4">
+                  {group.name && (
+                    <div className="group flex items-center justify-between px-1">
+                      <button
+                        onClick={() =>
+                          group.id &&
+                          setCollapsed({
+                            ...collapsed,
+                            [group.id]: !collapsed[group.id],
+                          })
+                        }
+                        className="flex flex-1 items-center gap-0.5 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
+                      >
+                        <ChevronDown
+                          size={12}
+                          className={isCollapsed ? "-rotate-90" : ""}
+                        />
+                        <span className="truncate">{group.name}</span>
+                      </button>
+                      {/*
                       "Favoritos" não é categoria de verdade: criar canal ali
                       mandaria `categoryId: "favoritos"` pra API, que não existe.
                     */}
-                    {canManageChannels && group.id !== "favoritos" && (
-                      <button
-                        onClick={() => setCreatingIn(group.id)}
-                        title="Criar canal"
-                        className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {!isCollapsed &&
-                  group.channels.map((channel) => {
-                    const active = channel.id === activeChannelId;
-                    const leitura = readStates[channel.id];
-                    const unread =
-                      !active && channel.lastMessageId && channel.lastMessageId !== leitura?.lido;
-                    const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
-                    const mencoes = unread ? (leitura?.mencoes ?? 0) : 0;
-                    const inThisCall = voiceChannelId === channel.id;
-                    const bloqueado =
-                      channel.type === "VOICE" && !canInChannel(channel.id, "CONNECT");
-
-                    const entradas = (detail?.voiceStates[channel.id] ?? [])
-                      .map((v) => v.joinedAt)
-                      .filter((t): t is number => Number.isFinite(t));
-                    const chamadaDesde = entradas.length ? Math.min(...entradas) : null;
-
-                    return (
-                      <div key={channel.id} className="group/canal relative">
+                      {canManageChannels && group.id !== "favoritos" && (
                         <button
-                          onClick={() => onSelectChannel(channel.id)}
-                          className={cn(
-                            "mb-0.5 flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-sm transition",
-                            active
-                              ? "bg-selecionado text-ink"
-                              : bloqueado
-                                ? "text-ink-faint hover:bg-surface-3"
-                                : unread
-                                  ? "font-semibold text-ink hover:bg-surface-3"
-                                  : "text-ink-muted hover:bg-surface-3",
-                          )}
+                          onClick={() => setCreatingIn(group.id)}
+                          title="Criar canal"
+                          className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
                         >
-                          {channel.type === "VOICE" ? (
-                            bloqueado ? (
-                              <Lock size={18} className="shrink-0 text-ink-faint" />
-                            ) : (
-                              <SpeakerHigh
+                          <Plus size={16} />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {!isCollapsed &&
+                    group.channels.map((channel) => {
+                      const active = channel.id === activeChannelId;
+                      const leitura = readStates[channel.id];
+                      const unread =
+                        !active &&
+                        channel.lastMessageId &&
+                        channel.lastMessageId !== leitura?.lido;
+                      const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
+                      const mencoes = unread ? (leitura?.mencoes ?? 0) : 0;
+                      const inThisCall = voiceChannelId === channel.id;
+                      const bloqueado =
+                        channel.type === "VOICE" &&
+                        !canInChannel(channel.id, "CONNECT");
+
+                      const entradas = (detail?.voiceStates[channel.id] ?? [])
+                        .map((v) => v.joinedAt)
+                        .filter((t): t is number => Number.isFinite(t));
+                      const chamadaDesde = entradas.length
+                        ? Math.min(...entradas)
+                        : null;
+
+                      return (
+                        <div key={channel.id} className="group/canal relative">
+                          <button
+                            onClick={() => onSelectChannel(channel.id)}
+                            className={cn(
+                              "mb-0.5 flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-sm transition",
+                              active
+                                ? "bg-selecionado text-ink"
+                                : bloqueado
+                                  ? "text-ink-faint hover:bg-surface-3"
+                                  : unread
+                                    ? "font-semibold text-ink hover:bg-surface-3"
+                                    : "text-ink-muted hover:bg-surface-3",
+                            )}
+                          >
+                            {channel.type === "VOICE" ? (
+                              bloqueado ? (
+                                <Lock
+                                  size={18}
+                                  className="shrink-0 text-ink-faint"
+                                />
+                              ) : (
+                                <SpeakerHigh
+                                  size={18}
+                                  weight="fill"
+                                  className={cn(
+                                    "shrink-0",
+                                    inThisCall
+                                      ? "text-online"
+                                      : "text-ink-faint",
+                                  )}
+                                />
+                              )
+                            ) : channel.type === "FORUM" ? (
+                              <ChatsCircle
                                 size={18}
                                 weight="fill"
-                                className={cn(
-                                  "shrink-0",
-                                  inThisCall ? "text-online" : "text-ink-faint",
-                                )}
+                                className="shrink-0 text-ink-faint"
                               />
-                            )
-                          ) : channel.type === "FORUM" ? (
-                            <ChatsCircle size={18} weight="fill" className="shrink-0 text-ink-faint" />
-                          ) : channel.isPrivate ? (
-                            /* canal de texto fechado tinha o mesmo `#` de um
+                            ) : channel.isPrivate ? (
+                              /* canal de texto fechado tinha o mesmo `#` de um
                                aberto: quem entra no servidor não tinha como
                                saber por que só enxerga metade da lista */
-                            <Lock size={18} className="shrink-0 text-ink-faint" />
-                          ) : (
-                            <Hash size={18} weight="bold" className="shrink-0 text-ink-faint" />
-                          )}
-                          <span
-                            className="truncate"
-                            style={{ fontFamily: familiaDaFonte(channel.fonte) ?? undefined }}
-                          >
-                            {channel.name}
-                          </span>
+                              <Lock
+                                size={18}
+                                className="shrink-0 text-ink-faint"
+                              />
+                            ) : (
+                              <Hash
+                                size={18}
+                                weight="bold"
+                                className="shrink-0 text-ink-faint"
+                              />
+                            )}
+                            <span
+                              className="truncate"
+                              style={{
+                                fontFamily:
+                                  familiaDaFonte(channel.fonte) ?? undefined,
+                              }}
+                            >
+                              {channel.name}
+                            </span>
 
-                          <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
-                            {/*
+                            <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                              {/*
                               A lotação, quando o canal tem limite.
 
                               O `userLimit` existia no banco e na tela de
@@ -328,93 +377,100 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               Só aparece com limite definido — `0` é "sem
                               limite", e "3/0" não diria nada.
                             */}
-                            {channel.type === "VOICE" && channel.userLimit > 0 && (
-                              <span
-                                title={`${entradas.length} de ${channel.userLimit}`}
-                                className={cn(
-                                  "text-11 font-medium tabular-nums",
-                                  entradas.length >= channel.userLimit
-                                    ? "text-danger"
-                                    : "text-ink-faint",
+                              {channel.type === "VOICE" &&
+                                channel.userLimit > 0 && (
+                                  <span
+                                    title={`${entradas.length} de ${channel.userLimit}`}
+                                    className={cn(
+                                      "text-11 font-medium tabular-nums",
+                                      entradas.length >= channel.userLimit
+                                        ? "text-danger"
+                                        : "text-ink-faint",
+                                    )}
+                                  >
+                                    {entradas.length}/{channel.userLimit}
+                                  </span>
                                 )}
+
+                              {channel.type === "VOICE" &&
+                                chamadaDesde !== null &&
+                                !unread && <CallTimer desde={chamadaDesde} />}
+
+                              {unread &&
+                                (naoLidas > 0 ? (
+                                  <span
+                                    title={
+                                      mencoes > 0
+                                        ? `${mencoes} menção(ões) a você`
+                                        : undefined
+                                    }
+                                    className={cn(
+                                      "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
+                                      mencoes > 0
+                                        ? "bg-danger text-white"
+                                        : "bg-selecionado text-ink-muted",
+                                    )}
+                                  >
+                                    {naoLidas > 99 ? "99+" : naoLidas}
+                                  </span>
+                                ) : (
+                                  <span className="size-2 rounded-full bg-ink" />
+                                ))}
+                            </span>
+                          </button>
+
+                          <div className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
+                            {channel.type === "VOICE" && (
+                              <button
+                                onClick={() => onOpenVoiceChat?.(channel.id)}
+                                title="Abrir chat"
+                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                {entradas.length}/{channel.userLimit}
-                              </span>
+                                <MessageSquare size={14} />
+                              </button>
                             )}
 
-                            {channel.type === "VOICE" && chamadaDesde !== null && !unread && (
-                              <CallTimer desde={chamadaDesde} />
+                            {can("CREATE_INVITE") && (
+                              <button
+                                onClick={() => setInviting(true)}
+                                title="Convidar pessoas"
+                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                              >
+                                <UserPlus size={14} />
+                              </button>
                             )}
 
-                            {unread &&
-                              (naoLidas > 0 ? (
-                                <span
-                                  title={mencoes > 0 ? `${mencoes} menção(ões) a você` : undefined}
-                                  className={cn(
-                                    "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
-                                    mencoes > 0
-                                      ? "bg-danger text-white"
-                                      : "bg-selecionado text-ink-muted",
-                                  )}
-                                >
-                                  {naoLidas > 99 ? "99+" : naoLidas}
-                                </span>
-                              ) : (
-                                <span className="size-2 rounded-full bg-ink" />
-                              ))}
-                          </span>
-                        </button>
+                            {(canManageChannels || canManageRoles) && (
+                              <button
+                                onClick={() => setEditandoCanal(channel.id)}
+                                title="Editar canal"
+                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                              >
+                                <Settings size={14} />
+                              </button>
+                            )}
+                          </div>
 
-                        <div className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                           {channel.type === "VOICE" && (
-                            <button
-                              onClick={() => onOpenVoiceChat?.(channel.id)}
-                              title="Abrir chat"
-                              className="rounded p-0.5 text-ink-faint transition hover:text-ink"
-                            >
-                              <MessageSquare size={14} />
-                            </button>
-                          )}
-
-                          {can("CREATE_INVITE") && (
-                            <button
-                              onClick={() => setInviting(true)}
-                              title="Convidar pessoas"
-                              className="rounded p-0.5 text-ink-faint transition hover:text-ink"
-                            >
-                              <UserPlus size={14} />
-                            </button>
-                          )}
-
-                          {(canManageChannels || canManageRoles) && (
-                            <button
-                              onClick={() => setEditandoCanal(channel.id)}
-                              title="Editar canal"
-                              className="rounded p-0.5 text-ink-faint transition hover:text-ink"
-                            >
-                              <Settings size={14} />
-                            </button>
+                            <VoiceMembers
+                              states={detail?.voiceStates[channel.id] ?? []}
+                              members={detail?.members ?? []}
+                              guildId={detail?.guild.id}
+                              roles={detail?.roles}
+                              canaisDeVoz={channels.filter(
+                                (c) => c.type === "VOICE",
+                              )}
+                              minhasPermissoes={detail?.permissions}
+                              currentUserId={user?.id}
+                            />
                           )}
                         </div>
-
-                        {channel.type === "VOICE" && (
-                          <VoiceMembers
-                            states={detail?.voiceStates[channel.id] ?? []}
-                            members={detail?.members ?? []}
-                            guildId={detail?.guild.id}
-                            roles={detail?.roles}
-                            canaisDeVoz={channels.filter((c) => c.type === "VOICE")}
-                            minhasPermissoes={detail?.permissions}
-                            currentUserId={user?.id}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-              </section>
-            );
-          })}
-        </div>
+                      );
+                    })}
+                </section>
+              );
+            })}
+          </div>
 
           <AlcaDeLargura
             borda="direita"

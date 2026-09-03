@@ -22,11 +22,18 @@ interface BotaoDeLinkProps {
   título, e são muitos títulos numa tela só. Quem navega por teclado alcança
   pelo Tab, e aí ele se revela.
 */
-export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({ secao, sub, oQue }) => {
+export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({
+  secao,
+  sub,
+  oQue,
+}) => {
   const [copiado, setCopiado] = useState(false);
 
   return (
-    <Tooltip label={copiado ? "Link copiado" : `Copiar link para ${oQue}`} side="top">
+    <Tooltip
+      label={copiado ? "Link copiado" : `Copiar link para ${oQue}`}
+      side="top"
+    >
       <button
         type="button"
         aria-label={`Copiar link para ${oQue}`}

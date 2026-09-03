@@ -97,7 +97,9 @@ export const ServidorSection: React.FC = () => {
           <span
             className={cn(
               "rounded px-1.5 py-0.5 text-xs font-semibold",
-              ehProducao ? "bg-online/15 text-online" : "bg-amber-500/15 text-amber-400",
+              ehProducao
+                ? "bg-online/15 text-online"
+                : "bg-amber-500/15 text-amber-400",
             )}
           >
             {ehProducao ? "produção" : "desenvolvimento"}
@@ -145,7 +147,9 @@ export const ServidorSection: React.FC = () => {
             <p className="flex items-center gap-2 text-sm font-medium">
               <HardDrive size={16} /> Disco
             </p>
-            <p className="mt-2 text-sm text-ink-faint">não deu pra medir aqui</p>
+            <p className="mt-2 text-sm text-ink-faint">
+              não deu pra medir aqui
+            </p>
           </div>
         )}
       </div>
@@ -226,7 +230,13 @@ export const ServidorSection: React.FC = () => {
                   </span>
 
                   <span className="shrink-0 text-xs text-ink-faint">
-                    há {duracao(Math.max(0, Math.round(Date.now() / 1000 - sala.criadaEm)))}
+                    há{" "}
+                    {duracao(
+                      Math.max(
+                        0,
+                        Math.round(Date.now() / 1000 - sala.criadaEm),
+                      ),
+                    )}
                   </span>
                 </div>
 
@@ -285,7 +295,12 @@ export const ServidorSection: React.FC = () => {
 
 const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
   <div className="flex items-center gap-2">
-    <Avatar id={pessoa.id} name={pessoa.nome} url={pessoa.avatarUrl} size={24} />
+    <Avatar
+      id={pessoa.id}
+      name={pessoa.nome}
+      url={pessoa.avatarUrl}
+      size={24}
+    />
 
     <span className="min-w-0 flex-1 truncate text-sm">{pessoa.nome}</span>
 
@@ -326,7 +341,10 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
   da linha — mas quando é preciso, é preciso inteiro e sem erro de digitação,
   então o clique copia em vez de pedir seleção com o mouse.
 */
-const Identificador: React.FC<{ id: string; oQueE: string }> = ({ id, oQueE }) => (
+const Identificador: React.FC<{ id: string; oQueE: string }> = ({
+  id,
+  oQueE,
+}) => (
   <Tooltip label={`${oQueE} ${id} · clique para copiar`}>
     <button
       type="button"
@@ -381,7 +399,10 @@ const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
     <Identificador id={fantasma.id} oQueE="usuário" />
 
     {fantasma.aguardandoVolta && (
-      <span className="shrink-0 text-ink-faint" title="Caiu e está na janela de reconexão">
+      <span
+        className="shrink-0 text-ink-faint"
+        title="Caiu e está na janela de reconexão"
+      >
         reconectando
       </span>
     )}
@@ -410,7 +431,11 @@ const Cartao: React.FC<{
       <div
         className={cn(
           "h-full rounded-full transition-all",
-          proporcao > 0.85 ? "bg-danger" : proporcao > 0.6 ? "bg-amber-500" : "bg-online",
+          proporcao > 0.85
+            ? "bg-danger"
+            : proporcao > 0.6
+              ? "bg-amber-500"
+              : "bg-online",
         )}
         style={{ width: `${Math.round(proporcao * 100)}%` }}
       />

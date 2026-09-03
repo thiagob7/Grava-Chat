@@ -11,6 +11,7 @@ export type Secao =
   | "conta"
   | "privacidade"
   | "voz"
+  | "video"
   | "avisos"
   | "aplicativos"
   | "aparencia"
@@ -38,13 +39,18 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   ],
   privacidade: [
     { id: "amigos-e-dms", label: "Amigos e mensagens diretas" },
-    { id: "compartilhamento-de-atividade", label: "Compartilhamento de atividade" },
+    {
+      id: "compartilhamento-de-atividade",
+      label: "Compartilhamento de atividade",
+    },
     { id: "exportar-dados", label: "Exportar dados" },
     { id: "exclusao-de-dados", label: "Exclusão de dados" },
   ],
   aparencia: [
     { id: "tema", label: "Tema" },
     { id: "cor-de-destaque", label: "Cor de destaque" },
+    { id: "interface", label: "Interface" },
+    { id: "lista-de-canais", label: "Lista de canais" },
     { id: "zoom-do-app", label: "Nível de zoom do app" },
     { id: "escala-da-fonte", label: "Escala da fonte do chat" },
     { id: "modo-streamer", label: "Privacidade de transmissão" },
@@ -54,8 +60,11 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "teste-do-microfone", label: "Teste do microfone" },
     { id: "modo-de-entrada", label: "Modo de entrada" },
     { id: "sensibilidade", label: "Sensibilidade de entrada" },
-    { id: "video", label: "Vídeo" },
     { id: "qualidade", label: "Qualidade" },
+  ],
+  video: [
+    { id: "video", label: "Câmera" },
+    { id: "transmissao", label: "Transmissão" },
   ],
   "bate-papo": [
     { id: "exibicao", label: "Exibição" },
@@ -67,7 +76,10 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
     { id: "preferencia-de-mencao", label: "Preferência de menção" },
     { id: "sons", label: "Sons" },
   ],
-  acessibilidade: [{ id: "movimento", label: "Movimento" }],
+  acessibilidade: [
+    { id: "movimento", label: "Movimento" },
+    { id: "teclado", label: "Teclado" },
+  ],
   idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],
 
   /// Sem subdivisão: uma lista só, ou uma tela de um assunto só.

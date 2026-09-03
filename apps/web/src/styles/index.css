@@ -563,6 +563,32 @@ body {
 }
 
 /*
+  Cantos retos, para quem prefere.
+
+  Desfaz só a curva, e não o fio do topo: o fio separa a faixa de título do
+  miolo e continua fazendo falta com o canto reto. Foi tentador desligar os
+  dois juntos e é errado — são duas coisas que só por acaso nasceram na mesma
+  regra.
+*/
+:root[data-cantos="retos"] .canto-do-miolo,
+:root[data-cantos="retos"] .canto-do-miolo > :first-child {
+  border-top-left-radius: 0;
+}
+
+/*
+  O anel de foco em todo clique, e não só na navegação por teclado.
+
+  `:focus-visible` é o padrão do navegador e esconde o anel de quem usa o
+  mouse — é a escolha certa para a maioria. Quem liga isto está dizendo que
+  perde o fio de onde está, e para essa pessoa o anel sumindo é a diferença
+  entre saber e adivinhar qual botão responde ao Enter.
+*/
+:root[data-foco="sempre"] :focus {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+/*
   O fio da subárvore das configurações.
 
   Duas camadas no mesmo lugar: `::after` é o fio inteiro, apagado, e `::before`

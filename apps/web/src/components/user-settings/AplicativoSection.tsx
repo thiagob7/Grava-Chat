@@ -48,49 +48,54 @@ export const AplicativoSection: React.FC = () => (
       titulo="Aplicativo de desktop"
       detalhe="A mesma conta e as mesmas conversas, numa janela só. Push-to-talk global e compartilhamento de tela funcionam melhor por aqui do que no navegador."
     >
-    <div className={cn("flex flex-col gap-3", ehWindows() && "flex-col-reverse")}>
-      <div className="rounded-lg border border-line bg-surface-2 p-4">
-        <p className="flex items-center gap-2 text-sm font-medium">
-          <Apple size={16} /> macOS — Intel e Apple Silicon
-        </p>
+      <div
+        className={cn("flex flex-col gap-3", ehWindows() && "flex-col-reverse")}
+      >
+        <div className="rounded-lg border border-line bg-surface-2 p-4">
+          <p className="flex items-center gap-2 text-sm font-medium">
+            <Apple size={16} /> macOS — Intel e Apple Silicon
+          </p>
 
-        <Button asChild className="mt-3 w-full">
-          <a href={MAC}>
-            <Download size={16} /> Baixar
-          </a>
-        </Button>
+          <Button asChild className="mt-3 w-full">
+            <a href={MAC}>
+              <Download size={16} /> Baixar
+            </a>
+          </Button>
 
-        {/*
+          {/*
           Este aviso não é detalhe: sem conta de desenvolvedor da Apple o app
           não é notarizado, e o macOS recusa a primeira abertura com uma
           mensagem que parece "app quebrado". Quem lê isto antes não desinstala
           achando que é.
         */}
-        <p className="mt-3 text-xs text-ink-faint">
-          Na primeira vez: <b>Ajustes do Sistema → Privacidade e Segurança →
-          Abrir Assim Mesmo</b>.
-        </p>
-      </div>
+          <p className="mt-3 text-xs text-ink-faint">
+            Na primeira vez:{" "}
+            <b>
+              Ajustes do Sistema → Privacidade e Segurança → Abrir Assim Mesmo
+            </b>
+            .
+          </p>
+        </div>
 
-      <div className="rounded-lg border border-line bg-surface-2 p-4">
-        <p className="flex items-center gap-2 text-sm font-medium">
-          <Monitor size={16} /> Windows — 64 bits
-        </p>
+        <div className="rounded-lg border border-line bg-surface-2 p-4">
+          <p className="flex items-center gap-2 text-sm font-medium">
+            <Monitor size={16} /> Windows — 64 bits
+          </p>
 
-        <Button asChild className="mt-3 w-full">
-          <a href={WINDOWS}>
-            <Download size={16} /> Baixar
-          </a>
-        </Button>
+          <Button asChild className="mt-3 w-full">
+            <a href={WINDOWS}>
+              <Download size={16} /> Baixar
+            </a>
+          </Button>
 
-        {/* Mesma história do macOS, outro guardião: sem certificado de
+          {/* Mesma história do macOS, outro guardião: sem certificado de
             assinatura o SmartScreen barra a primeira execução. */}
-        <p className="mt-3 text-xs text-ink-faint">
-          Se o Windows avisar, clique em <b>Mais informações → Executar assim
-          mesmo</b>.
-        </p>
+          <p className="mt-3 text-xs text-ink-faint">
+            Se o Windows avisar, clique em{" "}
+            <b>Mais informações → Executar assim mesmo</b>.
+          </p>
+        </div>
       </div>
-    </div>
     </Secao>
   </div>
 );
@@ -112,8 +117,8 @@ const Atualizacao: React.FC = () => {
     return (
       <Secao id="atualizacao" titulo="Atualização">
         <p className="text-sm text-ink-muted">
-          Esta versão do aplicativo não sabe se atualizar sozinha. Baixe o instalador mais novo
-          abaixo e instale por cima.
+          Esta versão do aplicativo não sabe se atualizar sozinha. Baixe o
+          instalador mais novo abaixo e instale por cima.
         </p>
       </Secao>
     );
@@ -149,7 +154,12 @@ const Atualizacao: React.FC = () => {
             aterrissa. Antes só a fase "erro" mostrava a mensagem, e a falha do
             botão de instalar não passava por ela.
           */}
-          <p className={cn("mt-0.5 text-xs", estado?.erro ? "text-danger" : "text-ink-faint")}>
+          <p
+            className={cn(
+              "mt-0.5 text-xs",
+              estado?.erro ? "text-danger" : "text-ink-faint",
+            )}
+          >
             {estado?.erro
               ? estado.erro
               : instalando
@@ -165,7 +175,9 @@ const Atualizacao: React.FC = () => {
             <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-trilho">
               <div
                 className="h-full rounded-full bg-brand transition-all"
-                style={{ width: `${Math.round((estado?.progresso ?? 0) * 100)}%` }}
+                style={{
+                  width: `${Math.round((estado?.progresso ?? 0) * 100)}%`,
+                }}
               />
             </div>
           )}
@@ -177,7 +189,8 @@ const Atualizacao: React.FC = () => {
           </Button>
         ) : pronta ? (
           <Button onClick={() => void ponte.instalar()}>
-            <RefreshCw size={16} /> {estado?.erro ? "Tentar de novo" : "Instalar e reiniciar"}
+            <RefreshCw size={16} />{" "}
+            {estado?.erro ? "Tentar de novo" : "Instalar e reiniciar"}
           </Button>
         ) : baixando ? (
           <Button variant="surface" disabled>

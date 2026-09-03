@@ -7,7 +7,10 @@ import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { useEncerrarSessao, useSessoes } from "~/@core/application/queries/sessao/use-sessoes";
+import {
+  useEncerrarSessao,
+  useSessoes,
+} from "~/@core/application/queries/sessao/use-sessoes";
 import {
   useAplicativosAutorizados,
   useRevogarAplicativo,
@@ -21,7 +24,10 @@ interface AccountSectionProps {
   onLogout: () => void;
 }
 
-export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }) => {
+export const AccountSection: React.FC<AccountSectionProps> = ({
+  user,
+  onLogout,
+}) => {
   const logoutAll = useLogoutAll();
   const [confirmando, setConfirmando] = useState(false);
 
@@ -34,26 +40,39 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
           não existe.
         */}
         <div className="rounded-lg bg-surface-2 p-5">
-        <div className="flex items-center gap-4">
-          <Avatar id={user.id} name={user.displayName} url={user.avatarUrl} size={64} />
-          <div className="min-w-0">
-            <p className="truncate text-lg font-semibold">{user.displayName}</p>
-            <p className="truncate text-sm text-ink-muted">@{user.username}</p>
+          <div className="flex items-center gap-4">
+            <Avatar
+              id={user.id}
+              name={user.displayName}
+              url={user.avatarUrl}
+              size={64}
+            />
+            <div className="min-w-0">
+              <p className="truncate text-lg font-semibold">
+                {user.displayName}
+              </p>
+              <p className="truncate text-sm text-ink-muted">
+                @{user.username}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-5 space-y-4">
-          <Campo rotulo="E-mail" valor={user.email} sigiloso />
-          <Campo
-            rotulo="Entrar com"
-            valor={user.providers.includes("google") ? "Conta Google" : "Login de desenvolvimento"}
-          />
-          <Campo
-            rotulo="Membro desde"
-            valor={new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
-              new Date(user.createdAt),
-            )}
-          />
+          <div className="mt-5 space-y-4">
+            <Campo rotulo="E-mail" valor={user.email} sigiloso />
+            <Campo
+              rotulo="Entrar com"
+              valor={
+                user.providers.includes("google")
+                  ? "Conta Google"
+                  : "Login de desenvolvimento"
+              }
+            />
+            <Campo
+              rotulo="Membro desde"
+              valor={new Intl.DateTimeFormat("pt-BR", {
+                dateStyle: "long",
+              }).format(new Date(user.createdAt))}
+            />
           </div>
         </div>
       </Secao>
@@ -76,37 +95,46 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
 
       <Secao id="sessoes" titulo="Sessões">
         <div className="space-y-3">
-        <Button variant="surface" onClick={onLogout} className="w-full justify-start">
-          <LogOut size={16} /> Sair desta conta
-        </Button>
-
-        {confirmando ? (
-          <div className="rounded border border-danger/40 bg-danger/10 p-4">
-            <p className="text-sm">
-              Isto derruba a sessão em <strong>todos</strong> os aparelhos, inclusive este. Serve
-              para quando você esqueceu a conta aberta em outro computador.
-            </p>
-            <div className="mt-3 flex gap-2">
-              <Button
-                variant="danger"
-                size="sm"
-                disabled={logoutAll.isPending}
-                onClick={() => void logoutAll.mutateAsync().finally(onLogout)}
-              >
-                Encerrar em todos
-              </Button>
-              <Button variant="surface" size="sm" onClick={() => setConfirmando(false)}>
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        ) : (
           <Button
-            variant="ghost"
-            onClick={() => setConfirmando(true)}
-            className="w-full justify-start text-danger"
+            variant="surface"
+            onClick={onLogout}
+            className="w-full justify-start"
           >
-            <ShieldAlert size={16} /> Encerrar sessão em todos os aparelhos
+            <LogOut size={16} /> Sair desta conta
+          </Button>
+
+          {confirmando ? (
+            <div className="rounded border border-danger/40 bg-danger/10 p-4">
+              <p className="text-sm">
+                Isto derruba a sessão em <strong>todos</strong> os aparelhos,
+                inclusive este. Serve para quando você esqueceu a conta aberta
+                em outro computador.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <Button
+                  variant="danger"
+                  size="sm"
+                  disabled={logoutAll.isPending}
+                  onClick={() => void logoutAll.mutateAsync().finally(onLogout)}
+                >
+                  Encerrar em todos
+                </Button>
+                <Button
+                  variant="surface"
+                  size="sm"
+                  onClick={() => setConfirmando(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              onClick={() => setConfirmando(true)}
+              className="w-full justify-start text-danger"
+            >
+              <ShieldAlert size={16} /> Encerrar sessão em todos os aparelhos
             </Button>
           )}
         </div>
@@ -123,18 +151,21 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
  * também precisa ler o próprio e-mail de vez em quando; o que ele não pode é
  * que ele apareça sem ninguém ter pedido.
  */
-const Campo: React.FC<{ rotulo: string; valor: string; sigiloso?: boolean }> = ({
-  rotulo,
-  valor,
-  sigiloso = false,
-}) => {
+const Campo: React.FC<{
+  rotulo: string;
+  valor: string;
+  sigiloso?: boolean;
+}> = ({ rotulo, valor, sigiloso = false }) => {
   const [revelado, setRevelado] = useState(false);
   const prefs = useAparencia();
-  const escondido = sigiloso && !revelado && prefs.modoStreamer && prefs.streamerEscondeDados;
+  const escondido =
+    sigiloso && !revelado && prefs.modoStreamer && prefs.streamerEscondeDados;
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">{rotulo}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        {rotulo}
+      </p>
 
       {escondido ? (
         <button
@@ -169,7 +200,9 @@ const ListaDeDispositivos: React.FC = () => {
   if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!sessoes.length) {
-    return <p className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>;
+    return (
+      <p className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>
+    );
   }
 
   return (
@@ -183,7 +216,9 @@ const ListaDeDispositivos: React.FC = () => {
 
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-2 text-sm font-medium">
-              <span className="truncate">{nomeDoAparelho(sessao.userAgent)}</span>
+              <span className="truncate">
+                {nomeDoAparelho(sessao.userAgent)}
+              </span>
               {sessao.atual && (
                 <span className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-10 font-semibold uppercase tracking-wide text-online">
                   este aparelho
@@ -192,9 +227,10 @@ const ListaDeDispositivos: React.FC = () => {
             </p>
             <p className="mt-0.5 truncate text-xs text-ink-faint">
               {sessao.ip ?? "IP desconhecido"} · desde{" "}
-              {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
-                new Date(sessao.criadaEm),
-              )}
+              {new Intl.DateTimeFormat("pt-BR", {
+                dateStyle: "short",
+                timeStyle: "short",
+              }).format(new Date(sessao.criadaEm))}
             </p>
           </div>
 
@@ -229,9 +265,10 @@ const ESCOPOS: Record<string, string> = {
 };
 
 const quando = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
-    new Date(iso),
-  );
+  new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(iso));
 
 /**
  * As aplicações de terceiros com acesso à conta.
@@ -273,7 +310,9 @@ const ListaDeAplicativos: React.FC = () => {
             />
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{app.usuario.displayName}</p>
+              <p className="truncate text-sm font-medium">
+                {app.usuario.displayName}
+              </p>
               <p className="mt-0.5 truncate text-xs text-ink-faint">
                 {app.autorizadoEm
                   ? `Autorizado em ${quando(app.autorizadoEm)}`
@@ -293,7 +332,9 @@ const ListaDeAplicativos: React.FC = () => {
                     "O aplicativo perde o acesso à sua conta agora, em todos os lugares onde você o autorizou. Ele pode pedir de novo, e você decide de novo.",
                   acao: "Revogar",
                   destrutivo: true,
-                }).then(({ confirmado }) => confirmado && revogar.mutate(app.id))
+                }).then(
+                  ({ confirmado }) => confirmado && revogar.mutate(app.id),
+                )
               }
               className="shrink-0 text-danger"
             >
@@ -309,7 +350,10 @@ const ListaDeAplicativos: React.FC = () => {
           */}
           <ul className="mt-2.5 space-y-1 border-t border-divisor pt-2.5">
             {app.escopos.map((escopo) => (
-              <li key={escopo} className="flex items-start gap-2 text-xs text-ink-muted">
+              <li
+                key={escopo}
+                className="flex items-start gap-2 text-xs text-ink-muted"
+              >
                 <Check size={13} className="mt-0.5 shrink-0 text-ink-faint" />
                 {ESCOPOS[escopo] ?? escopo}
               </li>

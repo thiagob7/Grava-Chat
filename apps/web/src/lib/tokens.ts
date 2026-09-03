@@ -562,6 +562,7 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         nome: "--focus-primary",
         rotulo: "Anel de foco",
         dica: "o contorno de quem navega por teclado",
+        ligado: true,
       },
       { nome: "--border-color", rotulo: "Cor da borda" },
       { nome: "--panel-control-border", rotulo: "Borda do cartão da chamada" },

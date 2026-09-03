@@ -16,7 +16,9 @@ import { desktop } from "~/lib/desktop";
 
 export const NotificationsSection: React.FC = () => {
   const prefs = useAvisos();
-  const [permissao, setPermissao] = useState<PermissaoDeAviso>(() => permissaoDeAviso());
+  const [permissao, setPermissao] = useState<PermissaoDeAviso>(() =>
+    permissaoDeAviso(),
+  );
 
   /// A permissão pode mudar fora daqui (o cadeado da barra de endereço), e
   /// nada avisa a página. Reler ao voltar para a aba é o mais perto de um
@@ -32,8 +34,8 @@ export const NotificationsSection: React.FC = () => {
   return (
     <div className="max-w-xl">
       <p className="text-sm text-ink-muted">
-        Vale para este aparelho. A mesma conta aberta no trabalho pode ficar quieta enquanto a de
-        casa apita.
+        Vale para este aparelho. A mesma conta aberta no trabalho pode ficar
+        quieta enquanto a de casa apita.
       </p>
 
       {permissao === "perguntar" && (
@@ -42,8 +44,9 @@ export const NotificationsSection: React.FC = () => {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Falta o sistema deixar</p>
             <p className="mt-0.5 text-xs text-ink-muted">
-              O aviso na tela precisa de uma autorização do {ponte ? "sistema" : "navegador"}. Sem
-              ela, o som e o contador no título continuam funcionando.
+              O aviso na tela precisa de uma autorização do{" "}
+              {ponte ? "sistema" : "navegador"}. Sem ela, o som e o contador no
+              título continuam funcionando.
             </p>
             <Button
               size="sm"
@@ -71,8 +74,11 @@ export const NotificationsSection: React.FC = () => {
         </div>
       )}
 
-      <Secao id="geral" titulo="Geral" detalhe="O que te interrompe enquanto o Gravaê está atrás de outra coisa.">
-
+      <Secao
+        id="geral"
+        titulo="Geral"
+        detalhe="O que te interrompe enquanto o Gravaê está atrás de outra coisa."
+      >
         <Opcao
           titulo="Aviso na tela"
           detalhe="A janelinha do sistema quando chega mensagem com o Gravaê atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
@@ -103,7 +109,6 @@ export const NotificationsSection: React.FC = () => {
           ligado={prefs.soMencoes}
           onMudar={(v) => prefs.definir({ soMencoes: v })}
         />
-
       </Secao>
 
       <Secao
@@ -178,7 +183,10 @@ const ListaDeSons: React.FC = () => {
               const ligado = !sonsDesligados[som.nome];
 
               return (
-                <div key={som.nome} className="flex items-center gap-3 px-3 py-2.5">
+                <div
+                  key={som.nome}
+                  className="flex items-center gap-3 px-3 py-2.5"
+                >
                   <button
                     type="button"
                     onClick={() => tocarSom(som.nome)}
@@ -190,7 +198,9 @@ const ListaDeSons: React.FC = () => {
 
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{som.rotulo}</p>
-                    <p className="mt-0.5 text-xs text-ink-faint">{som.quando}</p>
+                    <p className="mt-0.5 text-xs text-ink-faint">
+                      {som.quando}
+                    </p>
                   </div>
 
                   <Switch

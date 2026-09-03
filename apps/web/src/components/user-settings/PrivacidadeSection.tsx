@@ -15,7 +15,9 @@ interface PrivacidadeSectionProps {
   user: SelfUserModel;
 }
 
-export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({ user }) => {
+export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
+  user,
+}) => {
   const salvar = useUpdateProfile();
   const [baixando, setBaixando] = useState(false);
 
@@ -53,8 +55,8 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({ user }) 
   return (
     <div>
       <p className="text-sm text-ink-muted">
-        Estas escolhas ficam na conta, e não no aparelho — elas valem contra outras pessoas, então
-        quem precisa conhecê-las é o servidor.
+        Estas escolhas ficam na conta, e não no aparelho — elas valem contra
+        outras pessoas, então quem precisa conhecê-las é o servidor.
       </p>
 
       <Secao
@@ -74,8 +76,8 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({ user }) 
           interruptor: fingir que dá pra mudar seria pior do que não mostrar.
         */}
         <p className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
-          Mensagem direta só entre amigos, sempre. Não há como abrir conversa com quem não aceitou
-          o seu pedido — isso não é ajustável.
+          Mensagem direta só entre amigos, sempre. Não há como abrir conversa
+          com quem não aceitou o seu pedido — isso não é ajustável.
         </p>
       </Secao>
 
@@ -101,13 +103,22 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({ user }) 
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Baixar os meus dados</p>
             <p className="mt-0.5 text-xs text-ink-faint">
-              Conta, servidores em que você está, amigos e as suas mensagens, em JSON. Só o que é
-              seu: mensagens de outras pessoas e listas de membros ficam de fora.
+              Conta, servidores em que você está, amigos e as suas mensagens, em
+              JSON. Só o que é seu: mensagens de outras pessoas e listas de
+              membros ficam de fora.
             </p>
           </div>
 
-          <Button variant="surface" onClick={() => void exportar()} disabled={baixando}>
-            {baixando ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+          <Button
+            variant="surface"
+            onClick={() => void exportar()}
+            disabled={baixando}
+          >
+            {baixando ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
             {baixando ? "Gerando…" : "Baixar"}
           </Button>
         </div>
@@ -147,8 +158,9 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">Excluir a minha conta</p>
           <p className="mt-0.5 text-xs text-ink-faint">
-            A conta é desativada na hora e apagada em quinze dias. Nesse tempo nada é destruído:
-            entrar de novo mostra a tela de recuperação, e tudo volta inteiro.
+            A conta é desativada na hora e apagada em quinze dias. Nesse tempo
+            nada é destruído: entrar de novo mostra a tela de recuperação, e
+            tudo volta inteiro.
           </p>
         </div>
 
@@ -162,11 +174,12 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
   return (
     <div className="rounded-lg border border-danger/40 bg-danger/5 p-4">
       <p className="text-sm font-medium text-ink">
-        Para confirmar, escreva <span className="font-semibold">{nome}</span> abaixo.
+        Para confirmar, escreva <span className="font-semibold">{nome}</span>{" "}
+        abaixo.
       </p>
       <p className="mt-1 text-xs text-ink-muted">
-        Você sai de todos os aparelhos agora. Se voltar dentro de quinze dias, encontra tudo como
-        deixou — mensagens, amigos e servidores.
+        Você sai de todos os aparelhos agora. Se voltar dentro de quinze dias,
+        encontra tudo como deixou — mensagens, amigos e servidores.
       </p>
 
       <Input

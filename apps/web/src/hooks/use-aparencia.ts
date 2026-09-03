@@ -18,13 +18,17 @@ export function useAparenciaAplicada() {
   const zoomDoApp = useAparencia((s) => s.zoomDoApp);
   const escalaDoChat = useAparencia((s) => s.escalaDoChat);
   const reduzirAnimacao = useAparencia((s) => s.reduzirAnimacao);
+  const cantosArredondados = useAparencia((s) => s.cantosArredondados);
+  const focoSempreVisivel = useAparencia((s) => s.focoSempreVisivel);
   /*
     Quem mexeu na marca dentro do estúdio manda mais que a bolinha de destaque:
     é a escolha mais específica das duas. Sem esta trava, as duas escreviam na
     mesma variável em linha e a última a rodar ganhava — o que, na prática,
     fazia a cor do estúdio sumir a cada recarga.
   */
-  const marcaDoEstudio = useEstudio((s) => Boolean(s.substituicoes["--color-brand"]));
+  const marcaDoEstudio = useEstudio((s) =>
+    Boolean(s.substituicoes["--color-brand"]),
+  );
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema;
@@ -54,7 +58,8 @@ export function useAparenciaAplicada() {
     const raiz = document.documentElement;
 
     if (escalaDoChat === 100) raiz.style.removeProperty("--gc-escala-do-chat");
-    else raiz.style.setProperty("--gc-escala-do-chat", String(escalaDoChat / 100));
+    else
+      raiz.style.setProperty("--gc-escala-do-chat", String(escalaDoChat / 100));
   }, [escalaDoChat]);
 
   /*
@@ -69,6 +74,28 @@ export function useAparenciaAplicada() {
     if (reduzirAnimacao) raiz.dataset.animacao = "reduzida";
     else delete raiz.dataset.animacao;
   }, [reduzirAnimacao]);
+
+  /*
+    Cantos retos, quando pedidos.
+
+    O atributo é a AUSÊNCIA do arredondado, e não a presença: no navegador não
+    há canto nenhum para arredondar, e um atributo que diz "arredondado" ali
+    seria uma promessa que a tela não cumpre. Assim o CSS só precisa saber
+    desfazer, e desfaz onde há o que desfazer.
+  */
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    if (cantosArredondados) delete raiz.dataset.cantos;
+    else raiz.dataset.cantos = "retos";
+  }, [cantosArredondados]);
+
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    if (focoSempreVisivel) raiz.dataset.foco = "sempre";
+    else delete raiz.dataset.foco;
+  }, [focoSempreVisivel]);
 
   useEffect(() => {
     if (marcaDoEstudio) return;

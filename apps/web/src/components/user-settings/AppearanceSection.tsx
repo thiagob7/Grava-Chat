@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Check, Flame, Monitor, Moon, Palette, Sparkles, Sun, Video } from "lucide-react";
+import {
+  Check,
+  Flame,
+  Monitor,
+  Moon,
+  Palette,
+  Sparkles,
+  Sun,
+  Video,
+} from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
 import { CampoSelect } from "~/components/ui/select";
@@ -13,6 +22,7 @@ import {
   type Tema,
 } from "~/stores/aparencia";
 import { cn } from "~/lib/utils";
+import { ehDesktop } from "~/lib/desktop";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { ControleDeEscala } from "~/components/user-settings/ControleDeEscala";
 import { Linha, Opcao } from "~/components/user-settings/campos-de-config";
@@ -96,7 +106,11 @@ export const AppearanceSection: React.FC = () => {
               */}
               <span className="relative flex h-14" aria-hidden>
                 {tema.amostra.map((cor) => (
-                  <span key={cor} className="flex-1" style={{ backgroundColor: cor }} />
+                  <span
+                    key={cor}
+                    className="flex-1"
+                    style={{ backgroundColor: cor }}
+                  />
                 ))}
 
                 {tema.marca && (
@@ -143,12 +157,15 @@ export const AppearanceSection: React.FC = () => {
             <Palette size={16} /> Abrir estúdio de temas…
           </Button>
           <p className="mt-1.5 text-xs text-ink-faint">
-            Muda cor por cor em cima do tema base, escreve CSS e guarda o resultado. Vale só neste
-            aparelho.
+            Muda cor por cor em cima do tema base, escreve CSS e guarda o
+            resultado. Vale só neste aparelho.
           </p>
         </div>
 
-        <EstudioDeTemas open={estudioAberto} onClose={() => setEstudioAberto(false)} />
+        <EstudioDeTemas
+          open={estudioAberto}
+          onClose={() => setEstudioAberto(false)}
+        />
       </Secao>
 
       <Secao
@@ -173,7 +190,8 @@ export const AppearanceSection: React.FC = () => {
                 style={{ backgroundColor: cor.valor }}
                 className={cn(
                   "flex size-8 items-center justify-center rounded-full text-white transition hover:scale-110",
-                  escolhida && "ring-2 ring-ink ring-offset-2 ring-offset-surface-2",
+                  escolhida &&
+                    "ring-2 ring-ink ring-offset-2 ring-offset-surface-2",
                 )}
               >
                 {escolhida && <Check size={14} />}
@@ -214,19 +232,78 @@ export const AppearanceSection: React.FC = () => {
       </Secao>
 
       <Secao
+        id="interface"
+        titulo="Interface"
+        detalhe="O contorno da janela e as colunas que ficam em volta da conversa."
+      >
+        {/*
+          Só no aplicativo: no navegador o miolo encosta na aba e não há canto
+          para arredondar. Mostrar um interruptor que não muda nada seria pior
+          que não mostrar — quem clica conclui que está quebrado.
+        */}
+        {ehDesktop() && (
+          <Opcao
+            titulo="Cantos arredondados"
+            detalhe="A curva no alto à esquerda do miolo, onde ele encontra a faixa de título."
+            ligado={prefs.cantosArredondados}
+            onMudar={(cantosArredondados) =>
+              prefs.definir({ cantosArredondados })
+            }
+          />
+        )}
+
+        <Opcao
+          titulo="Lista de membros"
+          detalhe="A coluna da direita com quem está no servidor. Ela já some sozinha em tela estreita; isto é para quem tem tela larga e prefere a conversa ocupando tudo."
+          ligado={prefs.listaDeMembros}
+          onMudar={(listaDeMembros) => prefs.definir({ listaDeMembros })}
+        />
+      </Secao>
+
+      <Secao
+        id="lista-de-canais"
+        titulo="Lista de canais"
+        detalhe="A coluna da esquerda, dentro de um servidor."
+      >
+        <Opcao
+          titulo="Faixa do servidor"
+          detalhe="A imagem larga no alto da lista, quando o servidor tem uma. O nome continua logo abaixo de qualquer jeito."
+          ligado={prefs.faixaDoServidor}
+          onMudar={(faixaDoServidor) => prefs.definir({ faixaDoServidor })}
+        />
+
+        <Opcao
+          titulo="Lembrar categorias fechadas"
+          detalhe="Fechar uma categoria passa a valer na próxima vez que você abrir o app. Desligado, tudo volta aberto a cada recarga."
+          ligado={prefs.lembrarCategoriasFechadas}
+          onMudar={(lembrarCategoriasFechadas) =>
+            prefs.definir({ lembrarCategoriasFechadas })
+          }
+        />
+      </Secao>
+
+      <Secao
         id="modo-streamer"
         titulo="Privacidade de transmissão"
         detalhe="Para quando a sua tela está sendo vista por gente que não está na conversa."
       >
         <div className="mb-3 flex items-start gap-3 rounded bg-surface-2 p-3">
-          <Video size={18} className={cn("mt-0.5 shrink-0", prefs.modoStreamer ? "text-brand" : "text-ink-faint")} />
+          <Video
+            size={18}
+            className={cn(
+              "mt-0.5 shrink-0",
+              prefs.modoStreamer ? "text-brand" : "text-ink-faint",
+            )}
+          />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">
-              {prefs.modoStreamer ? "Ligado — a tela está protegida" : "Desligado"}
+              {prefs.modoStreamer
+                ? "Ligado — a tela está protegida"
+                : "Desligado"}
             </p>
             <p className="mt-0.5 text-xs text-ink-muted">
-              Ligue antes de começar a transmitir. O que estiver marcado abaixo some da tela
-              enquanto ele estiver de pé.
+              Ligue antes de começar a transmitir. O que estiver marcado abaixo
+              some da tela enquanto ele estiver de pé.
             </p>
           </div>
           <Switch
@@ -272,5 +349,3 @@ export const AppearanceSection: React.FC = () => {
     </div>
   );
 };
-
-

@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AudioLines, Keyboard, Mic, ShieldCheck, Video, Volume2 } from "lucide-react";
+import {
+  AudioLines,
+  Keyboard,
+  Mic,
+  ShieldCheck,
+  Video,
+  Volume2,
+} from "lucide-react";
 
 import { PermissoesDoMac } from "~/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
@@ -31,8 +38,9 @@ const AvisoDoAtalho: React.FC = () => {
   if (!ponte) {
     return (
       <p className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
-        No navegador, o push-to-talk só funciona com esta aba em foco. Com o jogo em primeiro plano
-        a tecla não chega até aqui — isso o aplicativo para computador resolve.
+        No navegador, o push-to-talk só funciona com esta aba em foco. Com o
+        jogo em primeiro plano a tecla não chega até aqui — isso o aplicativo
+        para computador resolve.
       </p>
     );
   }
@@ -41,8 +49,9 @@ const AvisoDoAtalho: React.FC = () => {
     return (
       <div className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
         <p>
-          Falta liberar o <b>{ponte.nomeNoSistema}</b> em <b>Ajustes do Sistema → Privacidade e
-          Segurança → Acessibilidade</b>. Sem isso o macOS não entrega a tecla quando a janela está atrás do
+          Falta liberar o <b>{ponte.nomeNoSistema}</b> em{" "}
+          <b>Ajustes do Sistema → Privacidade e Segurança → Acessibilidade</b>.
+          Sem isso o macOS não entrega a tecla quando a janela está atrás do
           jogo — e o push-to-talk volta a valer só com o Gravaê em foco.
         </p>
         <Button
@@ -57,7 +66,9 @@ const AvisoDoAtalho: React.FC = () => {
         >
           Abrir os ajustes
         </Button>
-        <p className="mt-2 text-ink-faint">Depois de marcar a caixinha, reabra o Gravaê.</p>
+        <p className="mt-2 text-ink-faint">
+          Depois de marcar a caixinha, reabra o Gravaê.
+        </p>
       </div>
     );
   }
@@ -65,8 +76,8 @@ const AvisoDoAtalho: React.FC = () => {
   if (estado?.indisponivel) {
     return (
       <p className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
-        Não consegui ligar o atalho global nesta máquina. O push-to-talk continua funcionando com a
-        janela do Gravaê em foco.
+        Não consegui ligar o atalho global nesta máquina. O push-to-talk
+        continua funcionando com a janela do Gravaê em foco.
       </p>
     );
   }
@@ -78,7 +89,22 @@ const AvisoDoAtalho: React.FC = () => {
   );
 };
 
-export const VoiceSection: React.FC = () => {
+/*
+  Áudio e vídeo eram uma tela só, e viraram duas.
+
+  Não é organização por gosto: microfone e câmera são configurados em momentos
+  diferentes — o microfone antes de entrar na primeira chamada, a câmera na
+  primeira vez que alguém pede para te ver — e juntos faziam uma tela em que
+  seis seções desciam sem fim, com a que interessa sempre no meio.
+
+  O componente continua sendo um só de propósito. Ele lê o mesmo estado de
+  dispositivos, o mesmo `getUserMedia` e as mesmas permissões do macOS;
+  quebrá-lo em dois arquivos duplicaria tudo isso para separar o que já se
+  separa com um `if`.
+*/
+export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
+  parte = "audio",
+}) => {
   const prefs = useVoicePrefs();
   const aplicarAjustes = useVoiceStore((s) => s.aplicarAjustes);
   const emChamada = useVoiceStore((s) => s.channelId !== null);
@@ -91,14 +117,20 @@ export const VoiceSection: React.FC = () => {
 
   const retorno = useRef<HTMLAudioElement>(null);
 
-  const medindo = testando || (!prefs.sensibilidadeAutomatica && !emChamada) || emChamada;
+  const medindo =
+    testando || (!prefs.sensibilidadeAutomatica && !emChamada) || emChamada;
   const { nivel, aberto, erro, stream } = useVoiceMeter(medindo);
 
   const listarDispositivos = async () => {
-    const lista = await navigator.mediaDevices.enumerateDevices().catch(() => []);
+    const lista = await navigator.mediaDevices
+      .enumerateDevices()
+      .catch(() => []);
     setDispositivos(
       lista.filter(
-        (d) => d.kind === "audioinput" || d.kind === "audiooutput" || d.kind === "videoinput",
+        (d) =>
+          d.kind === "audioinput" ||
+          d.kind === "audiooutput" ||
+          d.kind === "videoinput",
       ),
     );
   };
@@ -106,7 +138,11 @@ export const VoiceSection: React.FC = () => {
   useEffect(() => {
     void listarDispositivos();
     navigator.mediaDevices.addEventListener("devicechange", listarDispositivos);
-    return () => navigator.mediaDevices.removeEventListener("devicechange", listarDispositivos);
+    return () =>
+      navigator.mediaDevices.removeEventListener(
+        "devicechange",
+        listarDispositivos,
+      );
   }, []);
 
   useEffect(() => {
@@ -133,10 +169,12 @@ export const VoiceSection: React.FC = () => {
     };
 
     window.addEventListener("keydown", capturar, { capture: true });
-    return () => window.removeEventListener("keydown", capturar, { capture: true });
+    return () =>
+      window.removeEventListener("keydown", capturar, { capture: true });
   }, [capturandoTecla, aplicarAjustes]);
 
-  const semNomes = dispositivos.length > 0 && dispositivos.every((d) => !d.label);
+  const semNomes =
+    dispositivos.length > 0 && dispositivos.every((d) => !d.label);
   const entradas = dispositivos.filter((d) => d.kind === "audioinput");
   const saidas = dispositivos.filter((d) => d.kind === "audiooutput");
   const cameras = dispositivos.filter((d) => d.kind === "videoinput");
@@ -151,289 +189,355 @@ export const VoiceSection: React.FC = () => {
         próprio navegador, e no Windows não existe esse painel.
       */}
       {ehMac && (
-        <Button variant="surface" size="sm" onClick={() => setVendoPermissoes(true)}>
+        <Button
+          variant="surface"
+          size="sm"
+          onClick={() => setVendoPermissoes(true)}
+        >
           <ShieldCheck size={14} /> Permissões do macOS
         </Button>
       )}
 
       {ehMac && (
-        <PermissoesDoMac aberto={vendoPermissoes} onFechar={() => setVendoPermissoes(false)} />
+        <PermissoesDoMac
+          aberto={vendoPermissoes}
+          onFechar={() => setVendoPermissoes(false)}
+        />
       )}
 
-      <Secao id="dispositivos" titulo="Dispositivos">
-        <div className="grid grid-cols-2 gap-5">
-        <label className="block">
-          <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-            <Mic size={13} /> Dispositivo de entrada
-          </span>
-          <CampoSelect
-            valor={prefs.entradaId ?? ""}
-            onEscolher={(id) => void aplicarAjustes({ entradaId: id || null })}
-            opcoes={[
-              { valor: "", rotulo: "Padrão do sistema" },
-              ...entradas.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Microfone" })),
-            ]}
-          />
-        </label>
+      {parte === "audio" && (
+        <>
+          <Secao id="dispositivos" titulo="Dispositivos">
+            <div className="grid grid-cols-2 gap-5">
+              <label className="block">
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  <Mic size={13} /> Dispositivo de entrada
+                </span>
+                <CampoSelect
+                  valor={prefs.entradaId ?? ""}
+                  onEscolher={(id) =>
+                    void aplicarAjustes({ entradaId: id || null })
+                  }
+                  opcoes={[
+                    { valor: "", rotulo: "Padrão do sistema" },
+                    ...entradas.map((d) => ({
+                      valor: d.deviceId,
+                      rotulo: d.label || "Microfone",
+                    })),
+                  ]}
+                />
+              </label>
 
-        <label className="block">
-          <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-            <Volume2 size={13} /> Dispositivo de saída
-          </span>
-          <CampoSelect
-            valor={prefs.saidaId ?? ""}
-            disabled={!suportaTrocaDeSaida}
-            onEscolher={(id) => void aplicarAjustes({ saidaId: id || null })}
-            opcoes={[
-              { valor: "", rotulo: "Padrão do sistema" },
-              ...saidas.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Alto-falante" })),
-            ]}
-          />
-          {!suportaTrocaDeSaida && (
-            <p className="mt-1.5 text-xs text-ink-faint">
-              Este navegador não deixa escolher a saída — quem manda é o padrão do sistema.
+              <label className="block">
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  <Volume2 size={13} /> Dispositivo de saída
+                </span>
+                <CampoSelect
+                  valor={prefs.saidaId ?? ""}
+                  disabled={!suportaTrocaDeSaida}
+                  onEscolher={(id) =>
+                    void aplicarAjustes({ saidaId: id || null })
+                  }
+                  opcoes={[
+                    { valor: "", rotulo: "Padrão do sistema" },
+                    ...saidas.map((d) => ({
+                      valor: d.deviceId,
+                      rotulo: d.label || "Alto-falante",
+                    })),
+                  ]}
+                />
+                {!suportaTrocaDeSaida && (
+                  <p className="mt-1.5 text-xs text-ink-faint">
+                    Este navegador não deixa escolher a saída — quem manda é o
+                    padrão do sistema.
+                  </p>
+                )}
+              </label>
+            </div>
+          </Secao>
+
+          {semNomes && (
+            <Button
+              variant="surface"
+              size="sm"
+              className="mt-3"
+              onClick={() =>
+                void navigator.mediaDevices
+                  .getUserMedia({ audio: true })
+                  .then((s) => {
+                    s.getTracks().forEach((t) => t.stop());
+                    return listarDispositivos();
+                  })
+                  .catch(() => undefined)
+              }
+            >
+              Mostrar os nomes dos dispositivos
+            </Button>
+          )}
+
+          <section className="mt-7 grid grid-cols-2 gap-5">
+            <Controle
+              titulo="Volume de entrada"
+              valor={`${Math.round(prefs.ganhoEntrada * 100)}%`}
+              min={0}
+              max={2}
+              step={0.05}
+              value={prefs.ganhoEntrada}
+              preenchido={prefs.ganhoEntrada / 2}
+              onChange={(v) => void aplicarAjustes({ ganhoEntrada: v })}
+            />
+
+            <Controle
+              titulo="Volume de saída"
+              valor={`${Math.round(prefs.volumeSaida * 100)}%`}
+              min={0}
+              max={1}
+              step={0.05}
+              value={prefs.volumeSaida}
+              preenchido={prefs.volumeSaida}
+              onChange={(v) => void aplicarAjustes({ volumeSaida: v })}
+            />
+          </section>
+
+          <Secao id="teste-do-microfone" titulo="Teste do microfone">
+            <p className="mt-1 text-sm text-ink-muted">
+              Fale alguma coisa. A barra mostra o que o microfone está captando;
+              verde é o que sai daqui, cinza é o que o corte segura.
             </p>
-          )}
-        </label>
-        </div>
-      </Secao>
 
-      {semNomes && (
-        <Button
-          variant="surface"
-          size="sm"
-          className="mt-3"
-          onClick={() =>
-            void navigator.mediaDevices
-              .getUserMedia({ audio: true })
-              .then((s) => {
-                s.getTracks().forEach((t) => t.stop());
-                return listarDispositivos();
-              })
-              .catch(() => undefined)
-          }
-        >
-          Mostrar os nomes dos dispositivos
-        </Button>
-      )}
+            <div className="mt-3 flex items-center gap-3">
+              <Button
+                variant="surface"
+                size="sm"
+                onClick={() => setTestando((v) => !v)}
+              >
+                {testando ? "Parar o teste" : "Vamos verificar"}
+              </Button>
 
-      <section className="mt-7 grid grid-cols-2 gap-5">
-        <Controle
-          titulo="Volume de entrada"
-          valor={`${Math.round(prefs.ganhoEntrada * 100)}%`}
-          min={0}
-          max={2}
-          step={0.05}
-          value={prefs.ganhoEntrada}
-          preenchido={prefs.ganhoEntrada / 2}
-          onChange={(v) => void aplicarAjustes({ ganhoEntrada: v })}
-        />
+              {testando && !emChamada && (
+                <label className="flex items-center gap-2 text-sm text-ink-muted">
+                  <Switch
+                    checked={ouvindoAVozPropria}
+                    onCheckedChange={setOuvindoAVozPropria}
+                  />
+                  Ouvir minha voz
+                </label>
+              )}
 
-        <Controle
-          titulo="Volume de saída"
-          valor={`${Math.round(prefs.volumeSaida * 100)}%`}
-          min={0}
-          max={1}
-          step={0.05}
-          value={prefs.volumeSaida}
-          preenchido={prefs.volumeSaida}
-          onChange={(v) => void aplicarAjustes({ volumeSaida: v })}
-        />
-      </section>
+              {emChamada && (
+                <span className="text-xs text-ink-faint">
+                  Lendo da chamada em andamento.
+                </span>
+              )}
+            </div>
 
-      <Secao id="teste-do-microfone" titulo="Teste do microfone">
-        <p className="mt-1 text-sm text-ink-muted">
-          Fale alguma coisa. A barra mostra o que o microfone está captando; verde é o que sai
-          daqui, cinza é o que o corte segura.
-        </p>
+            <Medidor nivel={nivel} aberto={aberto} className="mt-3" />
+            {erro && <p className="mt-2 text-xs text-danger">{erro}</p>}
 
-        <div className="mt-3 flex items-center gap-3">
-          <Button variant="surface" size="sm" onClick={() => setTestando((v) => !v)}>
-            {testando ? "Parar o teste" : "Vamos verificar"}
-          </Button>
+            <audio ref={retorno} autoPlay />
+          </Secao>
 
-          {testando && !emChamada && (
-            <label className="flex items-center gap-2 text-sm text-ink-muted">
-              <Switch checked={ouvindoAVozPropria} onCheckedChange={setOuvindoAVozPropria} />
-              Ouvir minha voz
-            </label>
-          )}
-
-          {emChamada && <span className="text-xs text-ink-faint">Lendo da chamada em andamento.</span>}
-        </div>
-
-        <Medidor nivel={nivel} aberto={aberto} className="mt-3" />
-        {erro && <p className="mt-2 text-xs text-danger">{erro}</p>}
-
-        <audio ref={retorno} autoPlay />
-      </Secao>
-
-      <Secao id="modo-de-entrada" titulo="Modo de entrada">
-
-        {/*
+          <Secao id="modo-de-entrada" titulo="Modo de entrada">
+            {/*
           Escolher entre dois é rádio, não dois botões soltos. Como rádio, o
           grupo inteiro é UMA parada de tabulação e as setas andam entre as
           opções — quem navega por teclado não precisa tabular por cima da que
           não quer, e quem usa leitor de tela ouve "1 de 2, marcado".
         */}
-        <div
-          role="radiogroup"
-          aria-labelledby="modo-de-entrada"
-          className="mt-3 grid grid-cols-2 gap-3"
-        >
-          <Opcao
-            ativo={prefs.modo === "voz"}
-            icone={AudioLines}
-            titulo="Atividade de voz"
-            descricao="Transmite quando você fala."
-            onClick={() => void aplicarAjustes({ modo: "voz" })}
-            onIrParaOutro={() => void aplicarAjustes({ modo: "ptt" })}
-          />
-          <Opcao
-            ativo={prefs.modo === "ptt"}
-            icone={Keyboard}
-            titulo="Push-to-talk"
-            descricao="Transmite só com a tecla pressionada."
-            onClick={() => void aplicarAjustes({ modo: "ptt" })}
-            onIrParaOutro={() => void aplicarAjustes({ modo: "voz" })}
-          />
-        </div>
-
-        {prefs.modo === "ptt" && (
-          <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-              Atalho
-            </p>
-
-            <Button
-              variant={capturandoTecla ? "primary" : "surface"}
-              size="sm"
-              onClick={() => setCapturandoTecla(true)}
+            <div
+              role="radiogroup"
+              aria-labelledby="modo-de-entrada"
+              className="mt-3 grid grid-cols-2 gap-3"
             >
-              <Keyboard size={14} />
-              {capturandoTecla ? "Aperte uma tecla…" : nomeDaTecla(prefs.teclaPtt)}
-            </Button>
+              <Opcao
+                ativo={prefs.modo === "voz"}
+                icone={AudioLines}
+                titulo="Atividade de voz"
+                descricao="Transmite quando você fala."
+                onClick={() => void aplicarAjustes({ modo: "voz" })}
+                onIrParaOutro={() => void aplicarAjustes({ modo: "ptt" })}
+              />
+              <Opcao
+                ativo={prefs.modo === "ptt"}
+                icone={Keyboard}
+                titulo="Push-to-talk"
+                descricao="Transmite só com a tecla pressionada."
+                onClick={() => void aplicarAjustes({ modo: "ptt" })}
+                onIrParaOutro={() => void aplicarAjustes({ modo: "voz" })}
+              />
+            </div>
 
-            <AvisoDoAtalho />
-          </div>
-        )}
-      </Secao>
+            {prefs.modo === "ptt" && (
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  Atalho
+                </p>
 
-      <Secao id="sensibilidade" titulo="Sensibilidade de entrada">
+                <Button
+                  variant={capturandoTecla ? "primary" : "surface"}
+                  size="sm"
+                  onClick={() => setCapturandoTecla(true)}
+                >
+                  <Keyboard size={14} />
+                  {capturandoTecla
+                    ? "Aperte uma tecla…"
+                    : nomeDaTecla(prefs.teclaPtt)}
+                </Button>
 
-        <div className="mt-3 flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Determinar automaticamente</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
-              O corte se ajusta sozinho ao barulho do ambiente.
-            </p>
-          </div>
-          <Switch
-            checked={prefs.sensibilidadeAutomatica}
-            onCheckedChange={(v) => void aplicarAjustes({ sensibilidadeAutomatica: v })}
-          />
-        </div>
+                <AvisoDoAtalho />
+              </div>
+            )}
+          </Secao>
 
-        {!prefs.sensibilidadeAutomatica && (
-          <div className="mt-4">
-            <Medidor nivel={nivel} aberto={aberto} limiar={prefs.limiar} />
-            <Slider
-              className="mt-2"
-              min={0}
-              max={0.5}
-              step={0.005}
-              value={prefs.limiar}
-              preenchido={prefs.limiar / 0.5}
-              onChange={(e) => void aplicarAjustes({ limiar: Number(e.target.value) })}
-            />
-            <p className="mt-2 text-xs text-ink-faint">
-              Coloque a marca logo acima do barulho de fundo: o que passar dela é transmitido.
-            </p>
-          </div>
-        )}
-      </Secao>
+          <Secao id="sensibilidade" titulo="Sensibilidade de entrada">
+            <div className="mt-3 flex items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">
+                  Determinar automaticamente
+                </p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  O corte se ajusta sozinho ao barulho do ambiente.
+                </p>
+              </div>
+              <Switch
+                checked={prefs.sensibilidadeAutomatica}
+                onCheckedChange={(v) =>
+                  void aplicarAjustes({ sensibilidadeAutomatica: v })
+                }
+              />
+            </div>
 
-      <Secao
-        id="video"
-        titulo="Vídeo"
-        detalhe="A câmera que entra quando você liga o vídeo numa chamada."
-      >
-        {/*
+            {!prefs.sensibilidadeAutomatica && (
+              <div className="mt-4">
+                <Medidor nivel={nivel} aberto={aberto} limiar={prefs.limiar} />
+                <Slider
+                  className="mt-2"
+                  min={0}
+                  max={0.5}
+                  step={0.005}
+                  value={prefs.limiar}
+                  preenchido={prefs.limiar / 0.5}
+                  onChange={(e) =>
+                    void aplicarAjustes({ limiar: Number(e.target.value) })
+                  }
+                />
+                <p className="mt-2 text-xs text-ink-faint">
+                  Coloque a marca logo acima do barulho de fundo: o que passar
+                  dela é transmitido.
+                </p>
+              </div>
+            )}
+          </Secao>
+
+          <Secao id="qualidade" titulo="Qualidade">
+            <div className="mt-3 flex items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">
+                  Supressão de ruído avançada
+                </p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  {noiseFilterAvailable
+                    ? "Remove ventilador, teclado e obra na rua. RNNoise, rodando aqui no seu aparelho."
+                    : "Indisponível neste navegador — segue valendo a supressão do próprio navegador."}
+                </p>
+              </div>
+              <Switch
+                checked={prefs.supressaoDeRuido && noiseFilterAvailable}
+                disabled={!noiseFilterAvailable}
+                onCheckedChange={(v) =>
+                  void aplicarAjustes({ supressaoDeRuido: v })
+                }
+              />
+            </div>
+
+            <div className="mt-4 flex items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">Sons da interface</p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  Bipes curtos ao entrar e sair da chamada, mutar e começar a
+                  transmitir. Quem está gravando ou transmitindo costuma
+                  preferir desligado.
+                </p>
+              </div>
+              <Switch
+                checked={prefs.somDaInterface}
+                onCheckedChange={(v) => prefs.definir({ somDaInterface: v })}
+              />
+            </div>
+          </Secao>
+        </>
+      )}
+
+      {parte === "video" && (
+        <>
+          <Secao
+            id="video"
+            titulo="Vídeo"
+            detalhe="A câmera que entra quando você liga o vídeo numa chamada."
+          >
+            {/*
           A escolha ja existia — mas so DENTRO da chamada, na barra de
           controles. Quem tem duas cameras precisava entrar, descobrir que
           abriu a errada e trocar na frente de todo mundo. Aqui ela e feita
           antes, e a barra continua valendo pra trocar no meio.
         */}
-        <label className="block max-w-sm">
-          <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-            <Video size={13} /> Câmera
-          </span>
-          <CampoSelect
-            valor={prefs.cameraId ?? ""}
-            onEscolher={(id) => prefs.definir({ cameraId: id || null })}
-            opcoes={[
-              { valor: "", rotulo: "Padrão do sistema" },
-              ...cameras.map((d) => ({ valor: d.deviceId, rotulo: d.label || "Câmera" })),
-            ]}
-          />
-        </label>
+            <label className="block max-w-sm">
+              <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                <Video size={13} /> Câmera
+              </span>
+              <CampoSelect
+                valor={prefs.cameraId ?? ""}
+                onEscolher={(id) => prefs.definir({ cameraId: id || null })}
+                opcoes={[
+                  { valor: "", rotulo: "Padrão do sistema" },
+                  ...cameras.map((d) => ({
+                    valor: d.deviceId,
+                    rotulo: d.label || "Câmera",
+                  })),
+                ]}
+              />
+            </label>
 
-        {!cameras.length && (
-          <p className="mt-2 text-xs text-ink-faint">
-            Nenhuma câmera encontrada. Os nomes só aparecem depois que você der permissão de
-            vídeo ao Gravaê uma vez.
-          </p>
-        )}
-      </Secao>
+            {!cameras.length && (
+              <p className="mt-2 text-xs text-ink-faint">
+                Nenhuma câmera encontrada. Os nomes só aparecem depois que você
+                der permissão de vídeo ao Gravaê uma vez.
+              </p>
+            )}
+          </Secao>
 
-      <Secao id="qualidade" titulo="Qualidade">
+          {/*
+        O som do sistema fica com o VÍDEO, e não com o áudio.
 
-        <div className="mt-3 flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Supressão de ruído avançada</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
-              {noiseFilterAvailable
-                ? "Remove ventilador, teclado e obra na rua. RNNoise, rodando aqui no seu aparelho."
-                : "Indisponível neste navegador — segue valendo a supressão do próprio navegador."}
-            </p>
-          </div>
-          <Switch
-            checked={prefs.supressaoDeRuido && noiseFilterAvailable}
-            disabled={!noiseFilterAvailable}
-            onCheckedChange={(v) => void aplicarAjustes({ supressaoDeRuido: v })}
-          />
-        </div>
-
-        <div className="mt-4 flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Sons da interface</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
-              Bipes curtos ao entrar e sair da chamada, mutar e começar a transmitir. Quem está
-              gravando ou transmitindo costuma preferir desligado.
-            </p>
-          </div>
-          <Switch
-            checked={prefs.somDaInterface}
-            onCheckedChange={(v) => prefs.definir({ somDaInterface: v })}
-          />
-        </div>
-
-        <div className="mt-4 flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Compartilhar o som do sistema</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
-              Manda o áudio do computador junto com a tela — é o que faz assistir vídeo em conjunto
-              funcionar. <strong className="text-ink">Se você ouve a chamada pelas caixas</strong>, o
-              que sai delas é capturado e volta pra sala: todo mundo se escuta em eco. De fone, não
-              acontece.
-            </p>
-          </div>
-          <Switch
-            checked={prefs.somDaTela}
-            onCheckedChange={(v) => prefs.definir({ somDaTela: v })}
-          />
-        </div>
-      </Secao>
+        Parece áudio pelo nome e não é: ele só existe quando há tela sendo
+        compartilhada, e a pergunta que responde é "o que vai junto com a minha
+        tela". Deixá-lo entre o microfone e a supressão de ruído era o jeito
+        certo de alguém ligar achando que melhora a própria voz.
+      */}
+          <Secao id="transmissao" titulo="Transmissão">
+            <div className="flex items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">
+                  Compartilhar o som do sistema
+                </p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  Manda o áudio do computador junto com a tela — é o que faz
+                  assistir vídeo em conjunto funcionar.{" "}
+                  <strong className="text-ink">
+                    Se você ouve a chamada pelas caixas
+                  </strong>
+                  , o que sai delas é capturado e volta pra sala: todo mundo se
+                  escuta em eco. De fone, não acontece.
+                </p>
+              </div>
+              <Switch
+                checked={prefs.somDaTela}
+                onCheckedChange={(v) => prefs.definir({ somDaTela: v })}
+              />
+            </div>
+          </Secao>
+        </>
+      )}
     </div>
   );
 };
@@ -445,10 +549,23 @@ interface MedidorProps {
   className?: string;
 }
 
-const Medidor: React.FC<MedidorProps> = ({ nivel, aberto, limiar, className }) => (
-  <div className={cn("relative h-2.5 w-full overflow-hidden rounded-full bg-surface-0", className)}>
+const Medidor: React.FC<MedidorProps> = ({
+  nivel,
+  aberto,
+  limiar,
+  className,
+}) => (
+  <div
+    className={cn(
+      "relative h-2.5 w-full overflow-hidden rounded-full bg-surface-0",
+      className,
+    )}
+  >
     <div
-      className={cn("h-full rounded-full transition-[width] duration-75", aberto ? "bg-online" : "bg-surface-4")}
+      className={cn(
+        "h-full rounded-full transition-[width] duration-75",
+        aberto ? "bg-online" : "bg-surface-4",
+      )}
       style={{ width: `${Math.min(100, nivel * 100)}%` }}
     />
 
@@ -472,12 +589,22 @@ interface ControleProps {
   onChange: (valor: number) => void;
 }
 
-const Controle: React.FC<ControleProps> = ({ titulo, valor, onChange, preenchido, ...props }) => (
+const Controle: React.FC<ControleProps> = ({
+  titulo,
+  valor,
+  onChange,
+  preenchido,
+  ...props
+}) => (
   <label className="block">
     <span className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-ink-muted">
       {titulo} <span className="text-ink-faint">{valor}</span>
     </span>
-    <Slider {...props} preenchido={preenchido} onChange={(e) => onChange(Number(e.target.value))} />
+    <Slider
+      {...props}
+      preenchido={preenchido}
+      onChange={(e) => onChange(Number(e.target.value))}
+    />
   </label>
 );
 
@@ -519,7 +646,8 @@ const Opcao: React.FC<OpcaoProps> = ({
     tabIndex={ativo ? 0 : -1}
     onClick={onClick}
     onKeyDown={(e) => {
-      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key))
+        return;
 
       e.preventDefault();
       onIrParaOutro();
@@ -534,7 +662,10 @@ const Opcao: React.FC<OpcaoProps> = ({
   >
     <Icone
       size={18}
-      className={cn("mt-px shrink-0 transition", ativo ? "text-brand" : "text-ink-faint")}
+      className={cn(
+        "mt-px shrink-0 transition",
+        ativo ? "text-brand" : "text-ink-faint",
+      )}
     />
 
     {/* `span`, e não `p`: parágrafo dentro de botão é HTML inválido. */}

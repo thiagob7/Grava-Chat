@@ -28,8 +28,31 @@ export interface PrefsDeAparencia {
   zoomDoApp: number;
   escalaDoChat: number;
 
+  /*
+    Interface.
+
+    `cantosArredondados` só tem efeito no aplicativo: no navegador o miolo não
+    tem canto para arredondar, ele encosta na aba. `listaDeMembros` é a coluna
+    da direita, que hoje aparece sozinha em tela larga e não tinha como sumir.
+  */
+  cantosArredondados: boolean;
+  listaDeMembros: boolean;
+
+  /// Lista de canais
+  faixaDoServidor: boolean;
+  lembrarCategoriasFechadas: boolean;
+
   /// Acessibilidade
   reduzirAnimacao: boolean;
+  /*
+    O anel de foco em TODO clique, e não só na navegação por teclado.
+
+    O padrão do navegador é `:focus-visible`, que esconde o anel de quem clica
+    com o mouse — é bonito e é a escolha certa para a maioria. Para quem se
+    perde de onde está, o anel sempre visível é a diferença entre saber e
+    adivinhar qual botão vai responder ao Enter.
+  */
+  focoSempreVisivel: boolean;
 
   /// Idioma e região
   horaEm24h: boolean;
@@ -62,7 +85,16 @@ const PADRAO: PrefsDeAparencia = {
 
   zoomDoApp: 100,
   escalaDoChat: 100,
+
+  cantosArredondados: true,
+  listaDeMembros: true,
+  faixaDoServidor: true,
+  /// Ligado: fechar uma categoria é uma decisão, e refazê-la a cada recarga
+  /// era o app esquecendo o que a pessoa acabou de dizer.
+  lembrarCategoriasFechadas: true,
+
   reduzirAnimacao: false,
+  focoSempreVisivel: false,
   /*
     24h por padrão: é o formato que o Brasil usa falando e escrevendo, e o
     `Intl` com `pt-BR` já entrega assim. Quem quiser AM/PM desliga.
@@ -110,7 +142,10 @@ function ler(): PrefsDeAparencia {
     const salvo = localStorage.getItem(CHAVE);
     if (!salvo) return PADRAO;
 
-    const prefs = { ...PADRAO, ...(JSON.parse(salvo) as Partial<PrefsDeAparencia>) };
+    const prefs = {
+      ...PADRAO,
+      ...(JSON.parse(salvo) as Partial<PrefsDeAparencia>),
+    };
     return { ...prefs, tema: NOMES_ANTIGOS[prefs.tema] ?? prefs.tema };
   } catch {
     return PADRAO;
@@ -133,8 +168,7 @@ export const useAparencia = create<StoreDeAparencia>((set, store) => ({
       void definir;
       void restaurarPadrao;
       localStorage.setItem(CHAVE, JSON.stringify(prefs));
-    } catch {
-    }
+    } catch {}
   },
 
   restaurarPadrao: () => store().definir(PADRAO),

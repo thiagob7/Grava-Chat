@@ -3,7 +3,11 @@ import React from "react";
 import { CampoSelect } from "~/components/ui/select";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { Linha, Opcao } from "~/components/user-settings/campos-de-config";
-import { useAparencia, type Densidade, type QuandoMostrarSpoiler } from "~/stores/aparencia";
+import {
+  useAparencia,
+  type Densidade,
+  type QuandoMostrarSpoiler,
+} from "~/stores/aparencia";
 
 /*
   O bate-papo, separado da aparência.
@@ -26,7 +30,11 @@ export const BatePapoSection: React.FC = () => {
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao id="exibicao" titulo="Exibição" detalhe="O que aparece em volta de cada mensagem.">
+      <Secao
+        id="exibicao"
+        titulo="Exibição"
+        detalhe="O que aparece em volta de cada mensagem."
+      >
         <Opcao
           titulo="Reações"
           detalhe="As pílulas de emoji embaixo das mensagens. Desligado, elas somem — e o atalho de reagir também."
@@ -44,7 +52,9 @@ export const BatePapoSection: React.FC = () => {
         <Linha titulo="Mostrar spoilers">
           <CampoSelect
             valor={prefs.spoilers}
-            onEscolher={(v) => prefs.definir({ spoilers: v as QuandoMostrarSpoiler })}
+            onEscolher={(v) =>
+              prefs.definir({ spoilers: v as QuandoMostrarSpoiler })
+            }
             opcoes={[
               { valor: "ao-clicar", rotulo: "Ao clicar" },
               { valor: "sempre", rotulo: "Sempre" },
@@ -64,7 +74,11 @@ export const BatePapoSection: React.FC = () => {
         </Linha>
       </Secao>
 
-      <Secao id="entrada" titulo="Entrada" detalhe="O que a caixa de escrever faz enquanto você digita.">
+      <Secao
+        id="entrada"
+        titulo="Entrada"
+        detalhe="O que a caixa de escrever faz enquanto você digita."
+      >
         <Opcao
           titulo="Sugestões enquanto digita"
           detalhe="A lista que abre no @ para mencionar alguém e no / para os comandos dos bots."

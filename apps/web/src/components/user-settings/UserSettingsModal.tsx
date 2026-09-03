@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Accessibility,
@@ -10,6 +17,7 @@ import {
   EyeOff,
   MessageSquare,
   Mic,
+  Video,
   Palette,
   Pencil,
   Search,
@@ -35,7 +43,12 @@ import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
-import { SUBSECOES, ancora, type Secao, type SubSecao } from "~/components/user-settings/secoes";
+import {
+  SUBSECOES,
+  ancora,
+  type Secao,
+  type SubSecao,
+} from "~/components/user-settings/secoes";
 import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
 import { ContextoDaSecao } from "~/components/user-settings/SecaoDeConfig";
 import { useConfiguracoes } from "~/stores/configuracoes";
@@ -68,7 +81,12 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   {
     titulo: "Conta do usuário",
     itens: [
-      { id: "conta", label: "Minha conta", icone: User, subitens: SUBSECOES.conta },
+      {
+        id: "conta",
+        label: "Minha conta",
+        icone: User,
+        subitens: SUBSECOES.conta,
+      },
       {
         id: "privacidade",
         label: "Privacidade",
@@ -80,22 +98,46 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
   {
     titulo: "Configurações do aplicativo",
     itens: [
-      { id: "aparencia", label: "Aparência", icone: Palette, subitens: SUBSECOES.aparencia },
+      {
+        id: "aparencia",
+        label: "Aparência",
+        icone: Palette,
+        subitens: SUBSECOES.aparencia,
+      },
       {
         id: "bate-papo",
         label: "Bate-papo",
         icone: MessageSquare,
         subitens: SUBSECOES["bate-papo"],
       },
-      { id: "voz", label: "Áudio e vídeo", icone: Mic, subitens: SUBSECOES.voz },
-      { id: "avisos", label: "Notificações", icone: Bell, subitens: SUBSECOES.avisos },
+      { id: "voz", label: "Áudio", icone: Mic, subitens: SUBSECOES.voz },
+      /*
+        Vídeo em tela própria.
+
+        Microfone e câmera se configuram em momentos diferentes — o microfone
+        antes da primeira chamada, a câmera na primeira vez que alguém pede
+        para te ver. Juntos faziam uma tela de seis seções em que a que
+        interessa está sempre no meio da rolagem.
+      */
+      { id: "video", label: "Vídeo", icone: Video, subitens: SUBSECOES.video },
+      {
+        id: "avisos",
+        label: "Notificações",
+        icone: Bell,
+        subitens: SUBSECOES.avisos,
+      },
       {
         id: "acessibilidade",
         label: "Acessibilidade",
         icone: Accessibility,
         subitens: SUBSECOES.acessibilidade,
       },
-      { id: "idioma", label: "Idioma", icone: Languages, subitens: SUBSECOES.idioma },
+      {
+        id: "idioma",
+        label: "Idioma",
+        icone: Languages,
+        subitens: SUBSECOES.idioma,
+      },
       /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
       /// de baixar e um convite pra lugar nenhum.
       ...(ehDesktop()
@@ -136,7 +178,12 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         {
           titulo: "Administração",
           itens: [
-            { id: "servidor" as const, label: "Servidor", icone: Server, subitens: SUBSECOES.servidor },
+            {
+              id: "servidor" as const,
+              label: "Servidor",
+              icone: Server,
+              subitens: SUBSECOES.servidor,
+            },
           ],
         },
       ]
@@ -146,7 +193,8 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
 const TITULOS: Record<Secao, string> = {
   conta: "Minha conta",
   privacidade: "Privacidade",
-  voz: "Áudio e vídeo",
+  voz: "Áudio",
+  video: "Vídeo",
   avisos: "Notificações",
   aplicativos: "Aplicativos",
   aparencia: "Aparência",
@@ -191,11 +239,17 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             const casaOItem = item.label.toLowerCase().includes(termo);
             const subitens = casaOItem
               ? item.subitens
-              : item.subitens.filter((sub) => sub.label.toLowerCase().includes(termo));
+              : item.subitens.filter((sub) =>
+                  sub.label.toLowerCase().includes(termo),
+                );
 
             return { ...item, subitens };
           })
-          .filter((item) => item.label.toLowerCase().includes(termo) || item.subitens.length > 0),
+          .filter(
+            (item) =>
+              item.label.toLowerCase().includes(termo) ||
+              item.subitens.length > 0,
+          ),
       }))
       .filter((grupo) => grupo.itens.length > 0);
   }, [busca, user.admin]);
@@ -235,7 +289,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       nada. Um quadro é o suficiente porque o React já pintou.
     */
     requestAnimationFrame(() => {
-      document.getElementById(ancora(sub))?.scrollIntoView({ block: "start", behavior: "smooth" });
+      document
+        .getElementById(ancora(sub))
+        ?.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   }, []);
 
@@ -312,7 +368,10 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   }, [secao]);
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => !next && onClose()}
+    >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         {/*
@@ -325,7 +384,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           className="fixed left-1/2 top-1/2 z-50 flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
         >
-          <DialogPrimitive.Title className="sr-only">Configurações do usuário</DialogPrimitive.Title>
+          <DialogPrimitive.Title className="sr-only">
+            Configurações do usuário
+          </DialogPrimitive.Title>
 
           {/*
             Barra lateral MAIS CLARA que o conteúdo, e não mais escura.
@@ -367,7 +428,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 enfeites={user.perfil}
               />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold">{user.displayName}</span>
+                <span className="block truncate text-sm font-semibold">
+                  {user.displayName}
+                </span>
                 <span className="flex items-center gap-1 text-xs text-ink-muted">
                   Editar perfil <Pencil size={11} />
                 </span>
@@ -396,7 +459,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             </div>
 
             {!grupos.length && (
-              <p className="px-2 text-xs text-ink-faint">Nada com esse nome por aqui.</p>
+              <p className="px-2 text-xs text-ink-faint">
+                Nada com esse nome por aqui.
+              </p>
             )}
           </nav>
 
@@ -445,25 +510,33 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   formato inesperado da API levava a aplicação inteira junto.
                 */}
                 <ContextoDaSecao.Provider value={secao}>
-                <ErrorBoundary key={secao} onde={`configurações · ${secao}`} compacto>
-                  {secao === "conta" && <AccountSection user={user} onLogout={onLogout} />}
-                  {secao === "privacidade" && <PrivacidadeSection user={user} />}
-                  {secao === "voz" && <VoiceSection />}
-                  {secao === "avisos" && <NotificationsSection />}
-                  {secao === "aplicativos" && <BotsSection />}
+                  <ErrorBoundary
+                    key={secao}
+                    onde={`configurações · ${secao}`}
+                    compacto
+                  >
+                    {secao === "conta" && (
+                      <AccountSection user={user} onLogout={onLogout} />
+                    )}
+                    {secao === "privacidade" && (
+                      <PrivacidadeSection user={user} />
+                    )}
+                    {secao === "voz" && <VoiceSection parte="audio" />}
+                    {secao === "video" && <VoiceSection parte="video" />}
+                    {secao === "avisos" && <NotificationsSection />}
+                    {secao === "aplicativos" && <BotsSection />}
 
-                  {secao === "aparencia" && <AppearanceSection />}
-                  {secao === "bate-papo" && <BatePapoSection />}
-                  {secao === "acessibilidade" && <AcessibilidadeSection />}
-                  {secao === "idioma" && <IdiomaSection />}
-                  {secao === "aplicativo" && <AplicativoSection />}
-                  {secao === "servidor" && user.admin && <ServidorSection />}
-                </ErrorBoundary>
+                    {secao === "aparencia" && <AppearanceSection />}
+                    {secao === "bate-papo" && <BatePapoSection />}
+                    {secao === "acessibilidade" && <AcessibilidadeSection />}
+                    {secao === "idioma" && <IdiomaSection />}
+                    {secao === "aplicativo" && <AplicativoSection />}
+                    {secao === "servidor" && user.admin && <ServidorSection />}
+                  </ErrorBoundary>
                 </ContextoDaSecao.Provider>
               </div>
             </div>
           </div>
-
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
@@ -551,7 +624,10 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
         */}
         <item.icone
           size={20}
-          className={cn("shrink-0 transition", ativo ? "text-ink" : "text-ink-faint")}
+          className={cn(
+            "shrink-0 transition",
+            ativo ? "text-ink" : "text-ink-faint",
+          )}
         />
         <span className="min-w-0 flex-1 truncate">{item.label}</span>
 

@@ -7,6 +7,7 @@ import { UserName } from "~/components/UserName";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { useEnfeites, type ResolverEnfeites } from "~/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
+import { useAparencia } from "~/stores/aparencia";
 
 interface MemberListProps {
   members: GuildMember[];
@@ -35,6 +36,16 @@ export const MemberList: React.FC<MemberListProps> = ({
 }) => {
   const enfeitesDe = useEnfeites(guildId);
 
+  /*
+    A coluna some por decisão de quem usa, e não só por largura de tela.
+
+    Ela já sumia sozinha abaixo de `lg` — o que faltava era o caso de quem tem
+    tela larga e prefere a conversa ocupando tudo. A guarda vem depois dos
+    hooks de propósito: sair antes deles muda a quantidade de hooks entre uma
+    renderização e outra, que é o erro que o React não perdoa.
+  */
+  const mostrar = useAparencia((s) => s.listaDeMembros);
+
   const grupos = useMemo(() => {
     const hoisted = roles
       .filter((r) => r.hoist && !r.isEveryone)
@@ -45,10 +56,16 @@ export const MemberList: React.FC<MemberListProps> = ({
     const jaListados = new Set<string>();
 
     const seccoes = hoisted.map((role) => {
-      const doCargo = online.filter((m) => !jaListados.has(m.id) && m.roleIds.includes(role.id));
+      const doCargo = online.filter(
+        (m) => !jaListados.has(m.id) && m.roleIds.includes(role.id),
+      );
       doCargo.forEach((m) => jaListados.add(m.id));
 
-      return { titulo: `${role.name} — ${doCargo.length}`, membros: doCargo, dim: false };
+      return {
+        titulo: `${role.name} — ${doCargo.length}`,
+        membros: doCargo,
+        dim: false,
+      };
     });
 
     const restante = online.filter((m) => !jaListados.has(m.id));
@@ -68,6 +85,8 @@ export const MemberList: React.FC<MemberListProps> = ({
     alça ficava colada na barra de rolagem do chat, então arrastar a rolagem
     puxava a coluna junto.
   */
+  if (!mostrar) return null;
+
   return (
     <aside className="topo-do-miolo hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div className="h-full overflow-y-auto px-2 py-4">
@@ -111,7 +130,9 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
 
   return (
     <section className="mb-5">
-      <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">{title}</h3>
+      <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        {title}
+      </h3>
       {members.map((member) => {
         const { perfil, corDoCargo } = enfeitesDe(member.user.id);
 
@@ -150,8 +171,13 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                   corDoCargo || perfil?.nome ? "" : "text-ink-muted",
                 )}
               />
-              <ServerTag etiqueta={perfil?.etiquetaDoServidor} interativo={false} />
-              {member.user.id === ownerId && <span title="Dono do servidor">👑</span>}
+              <ServerTag
+                etiqueta={perfil?.etiquetaDoServidor}
+                interativo={false}
+              />
+              {member.user.id === ownerId && (
+                <span title="Dono do servidor">👑</span>
+              )}
             </button>
           </UserProfilePopover>
         );
