@@ -314,7 +314,7 @@ export const VoiceStageControls: React.FC<{
 
       <div className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
         <div className="flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
-        <VolumeDaSaida />
+        <VolumeDaLive />
 
         <Tooltip label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}>
           <button
@@ -332,86 +332,65 @@ export const VoiceStageControls: React.FC<{
 };
 
 /**
- * O volume, no canto da barra do palco.
+ * O volume DA LIVE, no canto da barra do palco.
  *
- * Fica solto, longe dos botões que ligam e desligam coisa: é o ajuste que se
- * faz no meio de uma frase de outra pessoa, e por isso não pode dividir alvo
- * com "mutar".
+ * Só existe enquanto você assiste a alguém — e isso não é economia de tela, é
+ * o que o controle de fato alcança: o som da transmissão só toca para quem
+ * está assistindo àquela transmissão (ver `VoiceAudioSink`). Fora daí não há
+ * som de live no seu computador para subir ou baixar.
  *
- * ASSISTINDO A UMA LIVE, ele mostra DUAS réguas — a da live primeiro.
- *
- * Antes era só o volume geral, e sem rótulo: uma faixa em pé num balão, com o
- * vídeo de alguém ocupando a tela inteira atrás. Quem quer abaixar o jogo do
- * amigo mira ali, e o que ele encontra abaixa a mesa toda — inclusive as vozes
- * de quem está falando com ele. O controle certo existia desde sempre, mas
- * escondido num botão pequeno em cima do quadro; ninguém acha.
- *
- * Os dois continuam alcançáveis, e agora dizem o nome: "esta live" e "todo
- * mundo". A régua sem rótulo era metade do problema.
+ * Antes daqui saía o VOLUME GERAL, que multiplica a voz de todo mundo. Com o
+ * vídeo de alguém ocupando a tela inteira atrás, era nele que se mirava para
+ * abaixar o jogo do amigo — e o que se encontrava abaixava a mesa toda,
+ * inclusive as vozes de quem estava falando com você. O volume geral continua
+ * existindo, em Configurações › Áudio e vídeo, que é onde se procura por ele
+ * quando o problema é "o Gravaê está alto demais".
  */
-const VolumeDaSaida: React.FC = () => {
-  const volumeSaida = useVoicePrefs((s) => s.volumeSaida);
-  const definir = useVoicePrefs((s) => s.definir);
-
+const VolumeDaLive: React.FC = () => {
   const assistindo = useVoiceStore((s) => s.assistindo);
-  const volumeDaLive = useVoiceStore((s) =>
-    assistindo ? Math.min(1, s.volumesDeTela[assistindo] ?? 1) : 1,
+  const volume = useVoiceStore((s) =>
+    s.assistindo ? Math.min(1, s.volumesDeTela[s.assistindo] ?? 1) : 1,
   );
-  const definirVolumeDeTela = useVoiceStore((s) => s.setVolumeDeTela);
+  const definir = useVoiceStore((s) => s.setVolumeDeTela);
 
-  const mudo = assistindo ? volumeDaLive === 0 && volumeSaida === 0 : volumeSaida === 0;
+  if (!assistindo) return null;
 
   return (
     <Popover>
       <Tooltip
         label={
-          assistindo
-            ? `Volume · live ${Math.round(volumeDaLive * 100)}% · geral ${Math.round(volumeSaida * 100)}%`
-            : `Volume de saída (${Math.round(volumeSaida * 100)}%)`
+          volume === 0 ? "Live sem som" : `Volume da live (${Math.round(volume * 100)}%)`
         }
       >
         <PopoverTrigger asChild>
           <button
-            aria-label="Volume"
+            aria-label="Volume da live"
             className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
-            {mudo ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
         </PopoverTrigger>
       </Tooltip>
 
-      <PopoverContent side="top" align="center" className="w-56 p-3">
+      <PopoverContent side="top" align="center" className="w-auto p-3">
         <PopoverArrow />
 
-        {assistindo && (
-          <div className="mb-4">
-            <p className="mb-2 text-xs font-medium text-ink-muted">
-              Esta live · {Math.round(volumeDaLive * 100)}%
-            </p>
-            <Slider
-              min={0}
-              max={1}
-              step={0.05}
-              value={volumeDaLive}
-              preenchido={volumeDaLive}
-              aria-label="Volume da live"
-              onChange={(e) => definirVolumeDeTela(assistindo, Number(e.target.value))}
-            />
-          </div>
-        )}
-
-        <p className="mb-2 text-xs font-medium text-ink-muted">
-          {assistindo ? "Todo mundo" : "Volume de saída"} · {Math.round(volumeSaida * 100)}%
-        </p>
-        <Slider
-          min={0}
-          max={1}
-          step={0.05}
-          value={volumeSaida}
-          preenchido={volumeSaida}
-          aria-label="Volume de saída"
-          onChange={(e) => definir({ volumeSaida: Number(e.target.value) })}
-        />
+        {/*
+          A faixa em pé, como no controle de volume de um vídeo: girada 90°,
+          com a caixa reservando a altura que a largura ocupa depois do giro.
+        */}
+        <div className="flex h-32 w-6 items-center justify-center">
+          <Slider
+            min={0}
+            max={1}
+            step={0.05}
+            value={volume}
+            preenchido={volume}
+            aria-label="Volume da live"
+            onChange={(e) => definir(assistindo, Number(e.target.value))}
+            className="w-32 -rotate-90"
+          />
+        </div>
       </PopoverContent>
     </Popover>
   );
