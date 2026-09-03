@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { AudioLines, Loader2, SlidersHorizontal } from "lucide-react";
 
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverArrow,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/hooks/use-voice-meter";
 import { cn } from "~/lib/utils";
@@ -42,6 +47,13 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
       <PopoverContent side="top" align="end" className="w-80 p-4">
+        {/*
+          O gatilho é um ícone no meio de uma fileira de ícones, e o balão sai
+          alinhado pela ponta direita: sem a seta, ele é um cartão que aparece
+          perto de quatro botões e não diz de qual deles saiu.
+        */}
+        <PopoverArrow />
+
         <div className="flex items-start justify-between gap-3">
           <h3 className="flex items-center gap-2 text-sm font-semibold">
             <AudioLines size={16} className={ligada && disponivel ? "text-online" : undefined} />
