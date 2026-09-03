@@ -4,6 +4,7 @@ import type { Role } from "@gravae/shared";
 
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface SeletorDeCargosProps {
   /// So os cargos que quem esta olhando pode mesmo dar — a hierarquia ja vem
@@ -28,6 +29,7 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
   onAlternar,
   desabilitado = false,
 }) => {
+  const { t } = useTranslation();
   const [busca, setBusca] = useState("");
   const listaRef = useRef<HTMLDivElement>(null);
 
@@ -62,8 +64,8 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
         <button
           type="button"
           disabled={desabilitado}
-          aria-label="Adicionar cargo"
-          title="Adicionar cargo"
+          aria-label={t("perfil.cargos.adicionar")}
+          title={t("perfil.cargos.adicionar")}
           className="flex size-[22px] items-center justify-center rounded bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
         >
           <Plus size={14} />
@@ -78,8 +80,8 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
               autoFocus
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Procurar cargo"
-              aria-label="Procurar cargo"
+              placeholder={t("perfil.cargos.procurar")}
+              aria-label={t("perfil.cargos.procurar")}
               className="w-full bg-transparent py-1.5 text-sm text-ink outline-none placeholder:text-ink-faint"
             />
           </div>

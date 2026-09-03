@@ -16,35 +16,44 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
+import { i18next, useTranslation } from "~/traducao";
 
+/*
+  A lista guarda a CHAVE, e não o texto.
+
+  Ela vive fora do componente — é uma constante de módulo, avaliada uma vez na
+  carga do arquivo. Com o texto escrito aqui, ele seria o texto do idioma que
+  estava valendo naquele instante e nunca mais mudaria; trocar de idioma
+  redesenharia o menu inteiro com os quatro estados ainda em português.
+*/
 const ESTADOS: {
   id: DesiredStatus;
-  rotulo: string;
-  descricao?: string;
+  chave: string;
+  detalhe?: string;
   cor: string;
 }[] = [
-  { id: "ONLINE", rotulo: "Disponível", cor: "bg-online" },
-  { id: "IDLE", rotulo: "Ausente", cor: "bg-idle" },
+  { id: "ONLINE", chave: "disponivel", cor: "bg-online" },
+  { id: "IDLE", chave: "ausente", cor: "bg-idle" },
   {
     id: "DND",
-    rotulo: "Não perturbar",
-    descricao: "Você não recebe aviso de mensagem nova",
+    chave: "naoPerturbar",
+    detalhe: "naoPerturbarDetalhe",
     cor: "bg-dnd",
   },
   {
     id: "INVISIBLE",
-    rotulo: "Invisível",
-    descricao: "Você aparece offline para os outros",
+    chave: "invisivel",
+    detalhe: "invisivelDetalhe",
     cor: "bg-ink-faint",
   },
 ];
 
-export const ROTULO_DO_ESTADO: Record<DesiredStatus, string> = {
-  ONLINE: "Disponível",
-  IDLE: "Ausente",
-  DND: "Não perturbar",
-  INVISIBLE: "Invisível",
-};
+/// Usado pelo `UserPanel`, que mostra o estado embaixo do nome. Função e não
+/// mapa, pelo mesmo motivo da lista acima: mapa de módulo congela o idioma.
+export function rotuloDoEstado(id: DesiredStatus): string {
+  const estado = ESTADOS.find((e) => e.id === id) ?? ESTADOS[0]!;
+  return i18next.t(`perfil.presenca.${estado.chave}`);
+}
 
 interface MenuDoProprioCartaoProps {
   user: SelfUserModel;
@@ -57,20 +66,21 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
   onEditarPerfil,
   onGerenciarContas,
 }) => {
+  const { t } = useTranslation();
   const atual = user.desiredStatus;
   const estadoAtual = ESTADOS.find((e) => e.id === atual) ?? ESTADOS[0]!;
 
   return (
     <div className="mt-4 space-y-1 rounded bg-surface-1 p-1.5">
       <ItemDoMenu icone={<Pencil size={15} />} onClick={onEditarPerfil}>
-        Editar perfil
+        {t("perfil.editar")}
       </ItemDoMenu>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
             <span className={cn("size-3 shrink-0 rounded-full", estadoAtual.cor)} />
-            <span className="flex-1">{estadoAtual.rotulo}</span>
+            <span className="flex-1">{t(`perfil.presenca.${estadoAtual.chave}`)}</span>
             <span className="text-ink-faint">›</span>
           </button>
         </DropdownMenuTrigger>
@@ -80,9 +90,11 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
             <DropdownMenuItem key={estado.id} onSelect={() => void updatePresence(estado.id)}>
               <span className={cn("size-2.5 shrink-0 rounded-full", estado.cor)} />
               <span className="min-w-0 flex-1">
-                <span className="block">{estado.rotulo}</span>
-                {estado.descricao && (
-                  <span className="block text-xs text-ink-faint">{estado.descricao}</span>
+                <span className="block">{t(`perfil.presenca.${estado.chave}`)}</span>
+                {estado.detalhe && (
+                  <span className="block text-xs text-ink-faint">
+                    {t(`perfil.presenca.${estado.detalhe}`)}
+                  </span>
                 )}
               </span>
               {atual === estado.id && <Check size={14} />}
@@ -97,7 +109,7 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
         <DropdownMenuTrigger asChild>
           <button className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
             <UserCircle size={15} className="shrink-0" />
-            <span className="flex-1">Mudar de conta</span>
+            <span className="flex-1">{t("perfil.menu.mudarDeConta")}</span>
             <span className="text-ink-faint">›</span>
           </button>
         </DropdownMenuTrigger>
@@ -111,7 +123,7 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
           <DropdownMenuSeparator />
 
           <DropdownMenuItem onSelect={onGerenciarContas}>
-            Gerenciar contas <Settings size={14} />
+            {t("perfil.menu.gerenciarContas")} <Settings size={14} />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -120,10 +132,10 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
         icone={<IdCard size={15} />}
         onClick={() => {
           void navigator.clipboard.writeText(user.id);
-          toast.success("ID copiado.");
+          toast.success(t("perfil.idCopiado"));
         }}
       >
-        Copiar ID do usuário
+        {t("perfil.copiarId")}
       </ItemDoMenu>
     </div>
   );

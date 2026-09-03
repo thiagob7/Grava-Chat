@@ -73,6 +73,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { useEnfeites } from "~/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
 import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
+import { useTranslation } from "~/traducao";
 
 interface UserProfilePopoverProps {
   userId: string;
@@ -93,6 +94,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   roleIds = [],
   podeModerar = false,
 }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
   const { data: perfil, isLoading } = useFindProfile(aberto ? userId : null);
 
@@ -105,7 +107,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
         className="max-h-[80vh] w-80 overflow-y-auto p-0"
       >
         {isLoading || !perfil ? (
-          <div className="p-6 text-sm text-ink-faint">Carregando…</div>
+          <div className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
         ) : (
           <ProfileCard
             perfil={perfil}
@@ -129,6 +131,7 @@ const ProfileCard: React.FC<{
   roleIds: string[];
   podeModerar: boolean;
 }> = ({ perfil, onFechar, guildId, roles, roleIds, podeModerar }) => {
+  const { t } = useTranslation();
   const [perfilCompleto, setPerfilCompleto] = useState(false);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
@@ -215,12 +218,12 @@ const ProfileCard: React.FC<{
           content: link,
           nonce: crypto.randomUUID(),
         });
-        return aviso.success(`Convite enviado para ${perfil.displayName}.`);
+        return aviso.success(t("perfil.conviteEnviado", { nome: perfil.displayName }));
       }
     }
 
     await navigator.clipboard.writeText(link);
-    aviso.info("Vocês não são amigos — o link foi copiado para você mandar.");
+    aviso.info(t("perfil.amizade.linkCopiado"));
   };
   const navigate = useNavigate();
   const requestFriend = useRequestFriend();
@@ -231,10 +234,10 @@ const ProfileCard: React.FC<{
 
   const desfazerAmizade = async () => {
     const { confirmado } = await confirmar({
-      titulo: `Desfazer amizade com ${perfil.displayName}?`,
+      titulo: t("perfil.amizade.desfazerTitulo", { nome: perfil.displayName }),
       descricao:
-        "Vocês deixam de ser amigos. A conversa privada continua no histórico, e dá pra adicionar de novo depois.",
-      acao: "Desfazer amizade",
+        t("perfil.amizade.desfazerDescricao"),
+      acao: t("perfil.amizade.desfazer"),
     });
 
     if (confirmado && perfil.friendshipId)
@@ -243,10 +246,10 @@ const ProfileCard: React.FC<{
 
   const bloquearUsuario = async () => {
     const { confirmado } = await confirmar({
-      titulo: `Bloquear ${perfil.displayName}?`,
+      titulo: t("perfil.amizade.bloquearTitulo", { nome: perfil.displayName }),
       descricao:
-        "Vocês deixam de ser amigos, a conversa privada para de aceitar mensagens e ele não consegue mais te mandar pedido de amizade.",
-      acao: "Bloquear",
+        t("perfil.amizade.bloquearDescricao"),
+      acao: t("perfil.amizade.bloquear"),
     });
 
     if (confirmado) {
@@ -278,7 +281,7 @@ const ProfileCard: React.FC<{
     <>
       {perfil.friendship === "SELF" ? (
         <Button size="sm" onClick={() => setEditandoPerfil(true)}>
-          <Pencil size={14} /> Editar perfil
+          <Pencil size={14} /> {t("perfil.editar")}
         </Button>
       ) : (
         <>
@@ -288,13 +291,13 @@ const ProfileCard: React.FC<{
               onClick={() => void conversar()}
               disabled={ocupado}
             >
-              <MessageSquare size={14} /> Mensagem
+              <MessageSquare size={14} /> {t("perfil.mensagem")}
             </Button>
           )}
 
           {podeModerar && guildId && (
             <BotaoRedondo
-              label="Abrir na visualização de moderador"
+              label={t("perfil.moderador")}
               onClick={() => {
                 useModeracao.getState().abrir({
                   guildId,
@@ -320,7 +323,7 @@ const ProfileCard: React.FC<{
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                aria-label="Mais"
+                aria-label={t("perfil.mais")}
                 className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
               >
                 <MoreHorizontal size={16} />
@@ -331,19 +334,19 @@ const ProfileCard: React.FC<{
               {perfil.friendship === "ACCEPTED" && (
                 <>
                   <DropdownMenuItem onSelect={() => void conversar()}>
-                    Abrir conversa <MessageSquare size={14} />
+                    {t("perfil.abrirConversa")} <MessageSquare size={14} />
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
               )}
 
               <DropdownMenuItem onSelect={() => setPerfilCompleto(true)}>
-                Ver perfil completo <User size={14} />
+                {t("perfil.verCompleto")} <User size={14} />
               </DropdownMenuItem>
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  Convidar para o servidor
+                  {t("perfil.convidarParaServidor")}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   {guilds.data?.length ? (
@@ -357,7 +360,7 @@ const ProfileCard: React.FC<{
                     ))
                   ) : (
                     <DropdownMenuItem disabled>
-                      Você não tem servidores
+                      {t("perfil.semServidores")}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuSubContent>
@@ -366,12 +369,12 @@ const ProfileCard: React.FC<{
               <DropdownMenuSeparator />
 
               <DropdownMenuItem onSelect={() => alternarIgnorado(perfil.id)}>
-                {ignorado ? "Deixar de ignorar" : "Ignorar"}
+                {t(ignorado ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
                 {ignorado ? <Eye size={14} /> : <EyeOff size={14} />}
               </DropdownMenuItem>
 
               <DropdownMenuItem danger onSelect={() => void bloquearUsuario()}>
-                Bloquear <Ban size={14} />
+                {t("perfil.amizade.bloquear")} <Ban size={14} />
               </DropdownMenuItem>
 
               {perfil.friendship === "ACCEPTED" && (
@@ -379,7 +382,7 @@ const ProfileCard: React.FC<{
                   danger
                   onSelect={() => void desfazerAmizade()}
                 >
-                  Desfazer amizade <UserX size={14} />
+                  {t("perfil.amizade.desfazer")} <UserX size={14} />
                 </DropdownMenuItem>
               )}
 
@@ -388,10 +391,10 @@ const ProfileCard: React.FC<{
               <DropdownMenuItem
                 onSelect={() => {
                   void navigator.clipboard.writeText(perfil.id);
-                  aviso.success("ID copiado.");
+                  aviso.success(t("perfil.idCopiado"));
                 }}
               >
-                Copiar ID do usuário <Copy size={14} />
+                {t("perfil.copiarId")} <Copy size={14} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -482,7 +485,7 @@ const ProfileCard: React.FC<{
               {perfil.friendship === "PENDING_IN" && (
                 <>
                   <p className="mb-1 text-center text-xs text-ink-faint">
-                    Te mandou um pedido de amizade
+                    {t("perfil.amizade.teMandouPedido")}
                   </p>
                   <Button
                     variant="success"
@@ -496,7 +499,7 @@ const ProfileCard: React.FC<{
                     disabled={ocupado}
                     className="w-full"
                   >
-                    <Check size={16} /> Aceitar
+                    <Check size={16} /> {t("perfil.amizade.aceitar")}
                   </Button>
                 </>
               )}
@@ -516,6 +519,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   userId,
   username,
 }) => {
+  const { t } = useTranslation();
   const openDm = useOpenDm();
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -539,7 +543,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
       setEnviada(true);
       setTimeout(() => setEnviada(false), 2500);
     } catch {
-      toast.error("Não deu pra enviar. Tente pela conversa.");
+      toast.error(t("perfil.recado.falhou"));
     } finally {
       setEnviando(false);
     }
@@ -557,14 +561,14 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
               void enviar();
             }
           }}
-          placeholder={`Conversar com @${username}`}
+          placeholder={t("perfil.recado.escrever", { usuario: username })}
           disabled={enviando}
           className="border-0 bg-transparent text-sm"
         />
         <button
           onClick={() => void enviar()}
           disabled={!texto.trim() || enviando}
-          aria-label="Enviar"
+          aria-label={t("perfil.recado.enviar")}
           className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
         >
           <SendHorizontal size={16} />
@@ -573,7 +577,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
 
       {enviada && (
         <p className="mt-1.5 flex items-center gap-1 text-xs text-online">
-          <Check size={12} /> Mensagem enviada
+          <Check size={12} /> {t("perfil.recado.enviada")}
         </p>
       )}
     </div>
@@ -602,9 +606,11 @@ const BotaoDeAmizade: React.FC<{
   perfil: ProfileModel;
   onAdicionar: () => void;
 }> = ({ perfil, onAdicionar }) => {
+  const { t } = useTranslation();
+
   if (perfil.friendship === "ACCEPTED") {
     return (
-      <BotaoRedondo label="Amigo" desabilitado>
+      <BotaoRedondo label={t("perfil.amizade.amigo")} desabilitado>
         <UserCheck size={16} className="text-online" />
       </BotaoRedondo>
     );
@@ -612,7 +618,7 @@ const BotaoDeAmizade: React.FC<{
 
   if (perfil.friendship === "PENDING_OUT") {
     return (
-      <BotaoRedondo label="Pedido de amizade enviado" desabilitado>
+      <BotaoRedondo label={t("perfil.amizade.pedidoEnviado")} desabilitado>
         <Clock size={16} />
       </BotaoRedondo>
     );
@@ -620,14 +626,14 @@ const BotaoDeAmizade: React.FC<{
 
   if (perfil.friendship === "PENDING_IN") {
     return (
-      <BotaoRedondo label="Te mandou um pedido — responda abaixo" desabilitado>
+      <BotaoRedondo label={t("perfil.amizade.respondaAbaixo")} desabilitado>
         <UserPlus size={16} className="text-idle" />
       </BotaoRedondo>
     );
   }
 
   return (
-    <BotaoRedondo label="Adicionar amigo" onClick={onAdicionar}>
+    <BotaoRedondo label={t("perfil.amizade.adicionar")} onClick={onAdicionar}>
       <UserPlus size={16} />
     </BotaoRedondo>
   );
@@ -645,6 +651,7 @@ const BotaoDeAmizade: React.FC<{
  * então nada que não seja `https://` de um domínio conhecido chega aqui.
  */
 const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
+  const { t } = useTranslation();
   const validas = (conexoes ?? [])
     .map((conexao) => ({ conexao, endereco: enderecoDaConexao(conexao) }))
     .filter(
@@ -656,7 +663,7 @@ const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
   return (
     <div className="mt-3">
       <p className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
-        Conexões
+        {t("perfil.conexoes")}
       </p>
 
       <div className="flex flex-wrap gap-1.5">

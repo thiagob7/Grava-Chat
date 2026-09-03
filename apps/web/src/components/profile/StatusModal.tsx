@@ -11,36 +11,37 @@ import { cn } from "~/lib/utils";
 import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { EstiloDePerfil } from "@gravae/shared";
+import { i18next, idiomaAtual, useTranslation } from "~/traducao";
 
 const PRAZOS = [
-  { id: "nunca", rotulo: "Não limpar", minutos: null },
-  { id: "30m", rotulo: "Limpar em 30 minutos", minutos: 30 },
-  { id: "1h", rotulo: "Limpar em 1 hora", minutos: 60 },
-  { id: "4h", rotulo: "Limpar em 4 horas", minutos: 240 },
+  { id: "nunca", chave: "naoLimpar", minutos: null },
+  { id: "30m", chave: "limpar30m", minutos: 30 },
+  { id: "1h", chave: "limpar1h", minutos: 60 },
+  { id: "4h", chave: "limpar4h", minutos: 240 },
   {
     id: "hoje",
-    rotulo: "Limpar hoje",
+    chave: "limparHoje",
     minutos: null as number | null,
     ateOFimDoDia: true,
   },
-  { id: "amanha", rotulo: "Limpar amanhã", minutos: 24 * 60 },
+  { id: "amanha", chave: "limparAmanha", minutos: 24 * 60 },
 ] as const;
 
-const PLACEHOLDER = "No que você está pensando?";
 
 /// "Limpar amanhã" nao diz nada; "Limpar amanhã às 21:11" diz. O horario e
 /// calculado com o mesmo `calcularExpiracao` que grava o valor, entao o rotulo
 /// nunca mente sobre o que vai acontecer.
 function rotuloComHora(prazo: (typeof PRAZOS)[number]): string {
+  const nome = i18next.t(`perfil.status.${prazo.chave}`);
   const iso = calcularExpiracao(prazo);
-  if (!iso) return prazo.rotulo;
+  if (!iso) return nome;
 
-  const hora = new Date(iso).toLocaleTimeString("pt-BR", {
+  const hora = new Date(iso).toLocaleTimeString(idiomaAtual(), {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  return `${prazo.rotulo} às ${hora}`;
+  return i18next.t("perfil.status.comHora", { prazo: nome, hora });
 }
 
 interface StatusModalProps {
@@ -60,6 +61,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
   onSalvar,
   salvando = false,
 }) => {
+  const { t } = useTranslation();
   const atual = user.statusPersonalizado;
   const [texto, setTexto] = useState(atual?.texto ?? "");
   const [emoji, setEmoji] = useState(atual?.emoji ?? "");
@@ -75,7 +77,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
     vai parar antes de digitar qualquer coisa.
   */
   const previaNoCartao: StatusPersonalizado = previa ?? {
-    texto: PLACEHOLDER,
+    texto: t("perfil.status.oQuePensa"),
     emoji: null,
     expiraEm: null,
   };
@@ -91,7 +93,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
     <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
       <DialogContent className="max-w-md p-5">
         <DialogTitle className="text-lg font-semibold">
-          Definir seu status
+          {t("perfil.status.definir")}
         </DialogTitle>
 
         <div className="mt-4">
@@ -107,13 +109,13 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         </div>
 
         <div className="mt-5">
-          <Label htmlFor="status-texto">Status</Label>
+          <Label htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
 
           <div className={cn(grupoDeCampo, "gap-1 px-1.5")}>
             <SeletorDeEmoji onEscolher={setEmoji}>
               <button
                 type="button"
-                aria-label="Escolher emoji"
+                aria-label={t("perfil.status.escolherEmoji")}
                 className="flex size-8 shrink-0 items-center justify-center rounded text-lg text-ink-faint transition hover:bg-surface-3 hover:text-ink"
               >
                 {emoji || <Smile size={16} />}
@@ -126,7 +128,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               maxLength={LIMITS.statusPersonalizado}
-              placeholder={PLACEHOLDER}
+              placeholder={t("perfil.status.oQuePensa")}
               className={campoNu}
             />
 
@@ -134,7 +136,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               <button
                 type="button"
                 onClick={() => setEmoji("")}
-                aria-label="Tirar o emoji"
+                aria-label={t("perfil.status.tirarEmoji")}
                 className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink"
               >
                 <X size={14} />
@@ -152,7 +154,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
           />
 
           <Button onClick={salvar} disabled={salvando}>
-            {salvando ? "Salvando…" : "Salvar"}
+            {t(salvando ? "comum.salvando" : "comum.salvar")}
           </Button>
         </div>
 
@@ -161,7 +163,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             onClick={() => onSalvar(null)}
             className="mt-3 text-xs text-ink-faint transition hover:text-danger"
           >
-            Limpar status agora
+            {t("perfil.status.limparAgora")}
           </button>
         )}
       </DialogContent>

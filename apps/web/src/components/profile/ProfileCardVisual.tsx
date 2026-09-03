@@ -22,6 +22,7 @@ import {
 } from "~/lib/cosmeticos/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { idiomaAtual, useTranslation } from "~/traducao";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -102,6 +103,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   onEditarFoto,
   onBio,
 }) => {
+  const { t } = useTranslation();
   const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
   const [editandoBio, setEditandoBio] = useState(false);
 
@@ -163,8 +165,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           <button
             type="button"
             onClick={onEditarFaixa}
-            aria-label="Trocar a faixa do cartão"
-            title="Trocar a faixa"
+            aria-label={t("perfil.cartao.trocarFaixa")}
+            title={t("perfil.cartao.trocarFaixaCurto")}
             className="absolute right-3 top-3 rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
           >
             <Pencil size={15} />
@@ -201,8 +203,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             <button
               type="button"
               onClick={onEditarFoto}
-              aria-label="Trocar a foto de perfil"
-              title="Trocar a foto"
+              aria-label={t("perfil.cartao.trocarFoto")}
+              title={t("perfil.cartao.trocarFotoCurto")}
               className="absolute inset-0 flex items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition hover:opacity-100 focus-visible:opacity-100"
             >
               <Camera size={22} />
@@ -243,7 +245,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   ) : (
                     <>
                       <PlusCircle size={14} className="shrink-0" />
-                      <span className="truncate italic">Adicionar status</span>
+                      <span className="truncate italic">{t("perfil.cartao.adicionarStatus")}</span>
                     </>
                   )}
                 </button>
@@ -299,14 +301,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     }
                     maxLength={LIMITS.etiqueta}
                     placeholder="etiqueta"
-                    aria-label="Sua etiqueta"
+                    aria-label={t("perfil.cartao.suaEtiqueta")}
                     size={LIMITS.etiqueta}
                     className="w-16 rounded bg-surface-3 px-1.5 py-0 text-sm font-semibold text-ink outline-none ring-ink-faint/70 transition focus:ring-2"
                   />
                 ) : (
                   <button
                     onClick={() => setEditandoEtiqueta(true)}
-                    title="Clique para editar sua etiqueta"
+                    title={t("perfil.cartao.editarEtiqueta")}
                     className="rounded px-1 font-semibold text-ink transition hover:bg-surface-3"
                   >
                     {perfil?.etiqueta || (
@@ -395,7 +397,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   onChange={(e) => onBio(e.target.value)}
                   onBlur={() => setEditandoBio(false)}
                   maxLength={LIMITS.bio}
-                  placeholder="Conte algo sobre você"
+                  placeholder={t("perfil.cartao.conteAlgo")}
                   className="w-full resize-none rounded-lg border border-brand/70 bg-surface-1 px-3 py-2 text-sm text-ink outline-none ring-2 ring-brand/25 placeholder:text-ink-faint"
                 />
                 <p className="mt-1 text-right text-xs text-ink-faint">
@@ -412,7 +414,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   <span className="whitespace-pre-wrap text-ink">{bio}</span>
                 ) : (
                   <span className="italic text-ink-faint">
-                    Clique para adicionar uma descrição
+                    {t("perfil.cartao.adicionarDescricao")}
                   </span>
                 )}
               </button>
@@ -430,10 +432,10 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             <>
               <p className="mb-2 mt-5 text-sm font-bold text-ink">
                 {cargos.length === 0
-                  ? "Cargos"
+                  ? t("perfil.cartao.cargos")
                   : cargos.length === 1
-                    ? "Cargo"
-                    : `Cargos — ${cargos.length}`}
+                    ? t("perfil.cartao.cargo")
+                    : t("perfil.cartao.cargosCom", { quantidade: cargos.length })}
               </p>
 
               <div className="flex flex-wrap items-center gap-1.5">
@@ -466,8 +468,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                         type="button"
                         onClick={() => onAlternarCargo(cargo.id)}
                         disabled={salvandoCargos}
-                        aria-label={`Tirar o cargo ${cargo.name}`}
-                        title={`Tirar o cargo ${cargo.name}`}
+                        aria-label={t("perfil.cartao.tirarCargo", { cargo: cargo.name })}
+                        title={t("perfil.cartao.tirarCargo", { cargo: cargo.name })}
                         className="-mr-1 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
                       >
                         <X size={11} />
@@ -490,9 +492,9 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {createdAt && (
             <>
-              <p className="mb-1 mt-5 text-sm font-bold text-ink">Membro desde</p>
+              <p className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
               <p className="text-sm text-ink-muted">
-                {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
+                {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
                   new Date(createdAt),
                 )}
               </p>

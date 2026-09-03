@@ -14,6 +14,7 @@ import { useFindEmComum } from "~/@core/application/queries/user/use-find-em-com
 import { corMaisAlta } from "~/lib/cosmeticos/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
+import { idiomaAtual, useTranslation } from "~/traducao";
 
 interface FullProfileModalProps {
   open: boolean;
@@ -30,6 +31,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   cargos = [],
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [aba, setAba] = useState<Aba>("geral");
   /*
     As listas só são buscadas quando a aba sai da "Visão geral" — e a
@@ -38,12 +40,12 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   const emComum = useFindEmComum(perfil.id, aba !== "geral");
 
   const abas: { id: Aba; rotulo: string }[] = [
-    { id: "geral", rotulo: "Visão geral" },
+    { id: "geral" as const, rotulo: t("perfil.visaoGeral") },
     ...(perfil.mutualFriends > 0
-      ? [{ id: "amigos" as const, rotulo: `Amigos em comum (${perfil.mutualFriends})` }]
+      ? [{ id: "amigos" as const, rotulo: t("perfil.amigosEmComum", { quantidade: perfil.mutualFriends }) }]
       : []),
     ...(perfil.mutualGuilds > 0
-      ? [{ id: "servidores" as const, rotulo: `Servidores em comum (${perfil.mutualGuilds})` }]
+      ? [{ id: "servidores" as const, rotulo: t("perfil.servidoresEmComum", { quantidade: perfil.mutualGuilds }) }]
       : []),
   ];
 
@@ -122,7 +124,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {aba !== "geral" && emComum.isPending && (
-          <p className="py-8 text-center text-sm text-ink-faint">Carregando…</p>
+          <p className="py-8 text-center text-sm text-ink-faint">{t("perfil.carregando")}</p>
         )}
 
         {aba === "amigos" && emComum.data && (
@@ -163,13 +165,13 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {aba === "geral" && perfil.bio && (
-          <Bloco titulo="Sobre">
+          <Bloco titulo={t("perfil.sobre")}>
             <p className="whitespace-pre-wrap text-sm text-ink-muted">{perfil.bio}</p>
           </Bloco>
         )}
 
         {aba === "geral" && cargos.length > 0 && (
-          <Bloco titulo="Cargos">
+          <Bloco titulo={t("perfil.cargosTitulo")}>
             <div className="flex flex-wrap gap-1.5">
               {cargos.map((cargo) => (
                 <span
@@ -188,9 +190,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {aba === "geral" && (
-          <Bloco titulo="Membro desde">
+          <Bloco titulo={t("perfil.membroDesde")}>
             <p className="text-sm text-ink-muted">
-              {new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
+              {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
                 new Date(perfil.createdAt),
               )}
             </p>

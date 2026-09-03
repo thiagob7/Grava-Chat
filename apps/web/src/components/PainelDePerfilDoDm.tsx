@@ -4,6 +4,7 @@ import { useFindProfile } from "~/@core/application/queries/user/use-find-profil
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { FullProfileModal } from "~/components/FullProfileModal";
+import { idiomaAtual, useTranslation } from "~/traducao";
 
 /**
  * A coluna de perfil ao lado da conversa privada.
@@ -17,6 +18,7 @@ import { FullProfileModal } from "~/components/FullProfileModal";
  * servidor — nada de rota nova.
  */
 export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => {
+  const { t } = useTranslation();
   const { data: perfil, isLoading } = useFindProfile(userId);
   const [completo, setCompleto] = useState(false);
 
@@ -63,10 +65,10 @@ export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => 
         <dl className="mt-4 space-y-2 border-t border-divisor pt-3 text-sm">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-              Membro desde
+              {t("perfil.membroDesde")}
             </dt>
             <dd className="mt-0.5">
-              {new Date(perfil.createdAt).toLocaleDateString("pt-BR", {
+              {new Date(perfil.createdAt).toLocaleDateString(idiomaAtual(), {
                 day: "2-digit",
                 month: "long",
                 year: "numeric",
@@ -92,7 +94,7 @@ export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => 
         </dl>
 
         <Button variant="surface" className="mb-4 mt-4 w-full" onClick={() => setCompleto(true)}>
-          Ver perfil completo
+          {t("perfil.verCompleto")}
         </Button>
       </div>
 

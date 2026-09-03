@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import { useSalvarNota } from "~/@core/application/queries/user/use-salvar-nota";
+import { useTranslation } from "~/traducao";
 
 export const CampoDeNota: React.FC<{ userId: string; nota: string | null }> = ({ userId, nota }) => {
+  const { t } = useTranslation();
   const salvar = useSalvarNota(userId);
   const [texto, setTexto] = useState(nota ?? "");
 
@@ -10,12 +12,12 @@ export const CampoDeNota: React.FC<{ userId: string; nota: string | null }> = ({
 
   return (
     <div className="mt-3">
-      <p className="mb-1 text-xs font-semibold uppercase text-ink-faint">Nota (só você vê)</p>
+      <p className="mb-1 text-xs font-semibold uppercase text-ink-faint">{t("perfil.nota.rotulo")}</p>
       <textarea
         value={texto}
         rows={2}
         maxLength={256}
-        placeholder="Clique para anotar algo"
+        placeholder={t("perfil.nota.vazia")}
         onChange={(e) => setTexto(e.target.value)}
         onBlur={() => {
           if (texto.trim() !== (nota ?? "").trim()) salvar.mutate(texto.trim());

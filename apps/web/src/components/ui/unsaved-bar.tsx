@@ -2,6 +2,7 @@ import React from "react";
 
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface UnsavedBarProps {
   visivel: boolean;
@@ -18,10 +19,12 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
   salvando = false,
   onDescartar,
   onSalvar,
-  texto = "Você tem alterações não salvas.",
+  texto,
   flutuante = false,
-  acaoDescartar = "Descartar",
+  acaoDescartar,
 }) => {
+  const { t } = useTranslation();
+
   if (!visivel) return null;
 
   return (
@@ -34,9 +37,9 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
           : "sticky bottom-0 mt-6",
       )}
     >
-      <p className="flex-1 text-sm">{texto}</p>
+      <p className="flex-1 text-sm">{texto ?? t("comum.naoSalvo")}</p>
       <Button variant="ghost" size="sm" onClick={onDescartar}>
-        {acaoDescartar}
+        {acaoDescartar ?? t("comum.descartar")}
       </Button>
       <Button
         variant="success"
@@ -44,7 +47,7 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
         disabled={salvando}
         onClick={onSalvar}
       >
-        {salvando ? "Salvando…" : "Salvar"}
+        {t(salvando ? "comum.salvando" : "comum.salvar")}
       </Button>
     </footer>
   );

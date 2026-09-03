@@ -173,7 +173,7 @@ describe("catálogos de tradução", () => {
     const pedidas = new Set(
       varrer(join(raiz, "..")).flatMap((src) =>
         [
-          ...src.matchAll(/"((?:configuracoes|conversa|idioma)\.[\w.]+)"/g),
+          ...src.matchAll(/"((?:comum|configuracoes|conversa|idioma|perfil)\.[\w.]+)"/g),
         ].map((m) => m[1]!),
       ),
     );
@@ -181,5 +181,42 @@ describe("catálogos de tradução", () => {
     const semTraducao = [...pedidas].filter((chave) => !(chave in origem));
 
     expect(semTraducao).toEqual([]);
+  });
+
+  /*
+    As chaves que a tela MONTA, e que a varredura acima nunca vê.
+
+    Duas listas do perfil vivem fora do componente — os quatro estados de
+    presença e os seis prazos do status — e guardam a chave, não o texto,
+    justamente para não congelar o idioma na carga do arquivo. O preço é que
+    elas chegam ao `t` como `perfil.presenca.${estado.chave}`: uma interpolação,
+    que nenhum grep de literal enxerga.
+
+    Errar a letra de uma delas não quebra nada — o i18next devolve a própria
+    chave, e o menu passa a mostrar "perfil.presenca.disponivel" no lugar de
+    "Disponível".
+
+    O teste LÊ AS CHAVES DO ARQUIVO, e não de uma lista repetida aqui. A
+    primeira versão trazia os dez nomes escritos à mão e conferia se existiam
+    no catálogo: passava com o componente quebrado, porque conferia a lista
+    contra si mesma. Guarda que não sabe o que o código faz não guarda nada.
+  */
+  it("tem tradução para as chaves que a tela monta por interpolação", () => {
+    const raiz = dirname(fileURLToPath(import.meta.url));
+    const fontes: [string, string][] = [
+      ["perfil.presenca", join(raiz, "..", "components", "profile", "MenuDoProprioCartao.tsx")],
+      ["perfil.status", join(raiz, "..", "components", "profile", "StatusModal.tsx")],
+    ];
+
+    const montadas = fontes.flatMap(([prefixo, caminho]) =>
+      [
+        ...readFileSync(caminho, "utf8").matchAll(/\b(?:chave|detalhe): "(\w+)"/g),
+      ].map((m) => `${prefixo}.${m[1]}`),
+    );
+
+    /// Se um dia a lista mudar de forma e o `matchAll` não achar nada, o teste
+    /// passaria vazio e calado — daí a conferência de que ele achou algo.
+    expect(montadas.length).toBeGreaterThan(8);
+    expect(montadas.filter((chave) => !(chave in origem))).toEqual([]);
   });
 });

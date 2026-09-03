@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { useVestirEmblemas } from "~/@core/application/queries/guild/use-emblemas";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface EscolherEmblemasProps {
   guildId: string;
@@ -16,6 +17,7 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
   disponiveis,
   vestidos,
 }) => {
+  const { t } = useTranslation();
   const vestir = useVestirEmblemas(guildId);
   if (!disponiveis.length) return null;
 
@@ -26,7 +28,7 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
 
     if (proximos.has(id)) proximos.delete(id);
     else if (proximos.size >= LIMITS.emblemasPorMembro) {
-      return toast.info(`Dá pra vestir até ${LIMITS.emblemasPorMembro} emblemas.`);
+      return toast.info(t("perfil.emblemas.limite", { quantidade: LIMITS.emblemasPorMembro }));
     } else proximos.add(id);
 
     vestir.mutate([...proximos]);
@@ -35,7 +37,7 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
   return (
     <div className="mt-3">
       <p className="mb-1.5 text-xs font-semibold uppercase text-ink-faint">
-        Emblemas deste servidor
+        {t("perfil.emblemas.doServidor")}
       </p>
 
       <div className="flex flex-wrap gap-1.5">

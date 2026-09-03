@@ -6,7 +6,7 @@ import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { UserName } from "~/components/UserName";
-import { MenuDoProprioCartao, ROTULO_DO_ESTADO } from "~/components/profile/MenuDoProprioCartao";
+import { MenuDoProprioCartao, rotuloDoEstado } from "~/components/profile/MenuDoProprioCartao";
 import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
 import { ProfileEditorModal } from "~/components/profile/ProfileEditorModal";
 import { StatusModal } from "~/components/profile/StatusModal";
@@ -99,7 +99,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                         )}
                       </span>
                     ) : (
-                      (user.statusPersonalizado?.texto ?? ROTULO_DO_ESTADO[user.desiredStatus])
+                      (user.statusPersonalizado?.texto ?? rotuloDoEstado(user.desiredStatus))
                     )}
                   </span>
 

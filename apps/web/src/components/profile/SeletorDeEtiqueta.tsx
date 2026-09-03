@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface SeletorDeEtiquetaProps {
   atual: string | null | undefined;
@@ -17,6 +18,7 @@ interface SeletorDeEtiquetaProps {
 }
 
 export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onEscolher }) => {
+  const { t } = useTranslation();
   const { data: guilds } = useFindManyGuilds(true);
   const comEtiqueta = (guilds ?? []).filter((g) => g.tag);
 
@@ -27,7 +29,7 @@ export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onE
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-1 rounded px-1 py-0.5 transition hover:bg-surface-3"
-          aria-label="Escolher a etiqueta de servidor"
+          aria-label={t("perfil.etiqueta.escolher")}
         >
           {escolhido ? (
             <ServerTag
@@ -44,7 +46,7 @@ export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onE
 
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuItem onSelect={() => onEscolher(null)}>
-          <span className={cn("flex-1 italic", !atual && "text-ink")}>Nenhuma tag do servidor</span>
+          <span className={cn("flex-1 italic", !atual && "text-ink")}>{t("perfil.etiqueta.nenhuma")}</span>
           {!atual && <Check size={14} />}
         </DropdownMenuItem>
 
@@ -59,7 +61,7 @@ export const SeletorDeEtiqueta: React.FC<SeletorDeEtiquetaProps> = ({ atual, onE
         ))}
 
         {!comEtiqueta.length && (
-          <DropdownMenuItem disabled>Nenhum dos seus servidores tem etiqueta</DropdownMenuItem>
+          <DropdownMenuItem disabled>{t("perfil.etiqueta.semEtiqueta")}</DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

@@ -27,12 +27,14 @@ import {
   paraPerfil,
 } from "~/components/user-settings/perfil/rascunho";
 import { useRascunho } from "~/hooks/use-rascunho";
+import { useTranslation } from "~/traducao";
 
 export const ProfileEditorModal: React.FC<{
   open: boolean;
   user: SelfUserModel;
   onClose: () => void;
 }> = ({ open, user, onClose }) => {
+  const { t } = useTranslation();
   const updateProfile = useUpdateProfile();
   const [definindoStatus, setDefinindoStatus] = useState(false);
   const escolherFoto = useRef<HTMLInputElement>(null);
@@ -94,14 +96,14 @@ export const ProfileEditorModal: React.FC<{
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
           className="fixed left-1/2 top-1/2 z-50 flex h-[78vh] w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
-          aria-label="Editar perfil"
+          aria-label={t("perfil.editar")}
         >
           <DialogPrimitive.Title className="sr-only">
-            Editar perfil
+            {t("perfil.editar")}
           </DialogPrimitive.Title>
 
           <aside className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
-            <h2 className="mb-4 text-sm font-semibold">Perfil principal</h2>
+            <h2 className="mb-4 text-sm font-semibold">{t("perfil.editor.principal")}</h2>
 
             <div className="space-y-6">
               <IdentidadeAba
@@ -180,7 +182,7 @@ export const ProfileEditorModal: React.FC<{
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onSelect={() => setEnfeiteAberto("decoracao")}>
-                            Alterar a decoração do avatar
+                            {t("perfil.editor.decoracao")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -242,7 +244,7 @@ export const ProfileEditorModal: React.FC<{
           */}
           <EscolherEnfeiteModal
             open={enfeiteAberto === "decoracao"}
-            titulo="Alterar a decoração do avatar"
+            titulo={t("perfil.editor.decoracao")}
             legenda="Suas decorações"
             opcoes={DECORACOES_DE_AVATAR}
             valor={rascunho.decoracao}
@@ -269,8 +271,8 @@ export const ProfileEditorModal: React.FC<{
           salvando={updateProfile.isPending}
           onDescartar={descartar}
           onSalvar={salvar}
-          texto="Não se esqueça de salvar suas alterações!"
-          acaoDescartar="Redefinir"
+          texto={t("perfil.editor.naoSalvo")}
+          acaoDescartar={t("comum.redefinir")}
           flutuante
         />
       </DialogPrimitive.Portal>
