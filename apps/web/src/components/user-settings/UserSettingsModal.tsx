@@ -56,6 +56,7 @@ import {
 import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
 import { RodapeDeVersoes } from "~/components/user-settings/RodapeDeVersoes";
 import { ContextoDaSecao } from "~/components/user-settings/SecaoDeConfig";
+import { subSecaoAtiva } from "~/components/user-settings/espiao-da-rolagem";
 import { useConfiguracoes } from "~/stores/configuracoes";
 
 export type { Secao };
@@ -385,45 +386,20 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     if (escolhaManual.current) return;
 
     const secoes = SUBSECOES[secao];
+    const topoDoPainel = painel.getBoundingClientRect().top;
 
-    /*
-      Tela que não rola não tem "seção atual" — tem a primeira.
-
-      Esta guarda é o conserto de um bug que aparecia só nas telas curtas: sem
-      rolagem, `scrollTop + clientHeight` já é `scrollHeight` na abertura, a
-      regra do fim disparava de cara e a lateral marcava a ÚLTIMA seção para
-      sempre. Em Bate-papo, com Exibição, Entrada e Mídia cabendo juntas na
-      tela, dava exatamente o que se via: o miolo mostrando Exibição e a
-      lateral apontando Mídia, sem nunca passar por Entrada.
-
-      Os oito pixels de folga são para a rolagem que existe só no papel — uma
-      borda, uma sombra — e que ninguém consegue rolar.
-    */
-    if (painel.scrollHeight - painel.clientHeight <= 8) {
-      setSubAtiva(secoes[0]?.id ?? null);
-      return;
-    }
-
-    /*
-      No fim da rolagem, vale a ÚLTIMA seção — mesmo que ela não tenha chegado
-      à linha de leitura. Seção curta no pé da página nunca sobe o bastante, e
-      sem esta regra ela seria a única impossível de marcar: você rola até o
-      fim, está olhando pra ela, e a lateral aponta a anterior.
-    */
-    if (painel.scrollTop + painel.clientHeight >= painel.scrollHeight - 2) {
-      setSubAtiva(secoes[secoes.length - 1]?.id ?? null);
-      return;
-    }
-
-    const linha = painel.getBoundingClientRect().top + 80;
-    let atual: string | null = null;
-
-    for (const sub of secoes) {
-      const alvo = document.getElementById(ancora(sub.id));
-      if (alvo && alvo.getBoundingClientRect().top <= linha) atual = sub.id;
-    }
-
-    setSubAtiva(atual ?? secoes[0]?.id ?? null);
+    setSubAtiva(
+      subSecaoAtiva({
+        ancoras: secoes.flatMap((sub) => {
+          const alvo = document.getElementById(ancora(sub.id));
+          return alvo ? [{ id: sub.id, topo: alvo.getBoundingClientRect().top - topoDoPainel }] : [];
+        }),
+        /// A linha fica um pouco abaixo do topo do painel, onde o olho de fato
+        /// está — não na borda, onde o texto ainda está entrando.
+        linha: 80,
+        rolagemTotal: painel.scrollHeight - painel.clientHeight,
+      }),
+    );
   }, [secao]);
 
   return (
