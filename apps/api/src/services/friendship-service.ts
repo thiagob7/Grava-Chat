@@ -110,8 +110,24 @@ export const friendshipService = {
     });
   },
 
+  /**
+   * As minhas relações — amizades, pedidos e quem EU bloqueei.
+   *
+   * O bloqueio da outra pessoa fica de fora, e isso não é detalhe: a relação
+   * mora numa linha só, e ela aparecia dos dois lados. Quem tinha sido
+   * bloqueado recebia a linha com status `BLOCKED` e podia deduzir o que o
+   * bloqueio existe justamente para não anunciar.
+   *
+   * A tela nunca desenhou isso — as abas filtram por `ACCEPTED` e `PENDING`,
+   * então a linha caía no vazio. Mas "o cliente não desenha" não é privacidade:
+   * o dado saía do servidor, e quem olhasse a resposta da rede via.
+   */
   async list(userId: string): Promise<FriendshipView[]> {
-    const relacoes = await friendshipRepository.findAllForUser(userId);
+    const todas = await friendshipRepository.findAllForUser(userId);
+    const relacoes = todas.filter(
+      (r) => r.status !== "BLOCKED" || r.requesterId === userId,
+    );
+
     const outros = relacoes.map((r) => (r.requesterId === userId ? r.addressee : r.requester));
     const presenca = await presenceService.mapFor(outros.map((u) => u.id));
 

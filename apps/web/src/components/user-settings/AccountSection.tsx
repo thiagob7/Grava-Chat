@@ -16,6 +16,8 @@ import {
   useRevogarAplicativo,
 } from "~/@core/application/queries/aplicativo/use-aplicativos-autorizados";
 import { useConfirmar } from "~/components/ui/confirm";
+import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
+import { useUnblockUser } from "~/@core/application/queries/friend/use-block-user";
 import { nomeDoAparelho } from "~/lib/aparelho";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
@@ -83,6 +85,14 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         detalhe="Onde a sua conta está aberta agora. Não reconheceu algum? Desconecte."
       >
         <ListaDeDispositivos />
+      </Secao>
+
+      <Secao
+        id="usuarios-bloqueados"
+        titulo="Usuários bloqueados"
+        detalhe="Quem você bloqueou não te manda mensagem nem pedido de amizade. Desbloquear não refaz a amizade — só tira o bloqueio."
+      >
+        <ListaDeBloqueados />
       </Secao>
 
       <Secao
@@ -359,6 +369,67 @@ const ListaDeAplicativos: React.FC = () => {
               </li>
             ))}
           </ul>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Quem eu bloqueei.
+ *
+ * A lista sai da mesma consulta das amizades — bloqueio É uma relação, e o
+ * servidor já mandava. O que faltava era um lugar que a desenhasse: as abas de
+ * Amigos filtram por `ACCEPTED` e `PENDING`, então quem bloqueava alguém e
+ * mudava de ideia só tinha um caminho de volta, que era achar a pessoa e abrir
+ * o perfil dela. Achar quem você bloqueou é justamente o que é difícil.
+ */
+const ListaDeBloqueados: React.FC = () => {
+  /// `true`: quem abriu esta seção quer ver a lista agora. O parâmetro existe
+  /// para as telas que montam antes de saber se vão precisar dela.
+  const { data: relacoes = [], isLoading } = useFindFriends(true);
+  const desbloquear = useUnblockUser();
+
+  const bloqueados = relacoes.filter((relacao) => relacao.status === "BLOCKED");
+
+  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+
+  if (!bloqueados.length) {
+    return <p className="text-sm text-ink-faint">Você não bloqueou ninguém.</p>;
+  }
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-line">
+      {bloqueados.map((relacao) => (
+        <div
+          key={relacao.id}
+          className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
+        >
+          <Avatar
+            id={relacao.user.id}
+            name={relacao.user.displayName}
+            url={relacao.user.avatarUrl}
+            size={32}
+          />
+
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">
+              {relacao.user.displayName}
+            </p>
+            <p className="truncate text-xs text-ink-faint">
+              @{relacao.user.username}
+            </p>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={desbloquear.isPending}
+            onClick={() => desbloquear.mutate(relacao.user.id)}
+            className="shrink-0"
+          >
+            Desbloquear
+          </Button>
         </div>
       ))}
     </div>
