@@ -323,14 +323,28 @@ const LinhaDeToken: React.FC<{
               lista, `rgb(255 255 255 / 0.05)` e `rgb(255 255 255 / 0.1)` davam
               exatamente o mesmo quadradinho — dois tokens diferentes com a
               mesma aparência. Com o xadrez atrás, a diferença aparece.
+
+              As duas coisas são CAMADAS DE FUNDO do mesmo elemento, e essa é a
+              parte que eu errei na primeira tentativa: o xadrez estava no botão
+              e a cor num `span` dentro dele. Aí não havia um quadrado, havia
+              dois — um de 28px com canto de 6px, outro de 26px com canto de
+              3px, porque o `span` mora dentro da borda. Sobrava um anel
+              xadrezado em volta da cor, pior nos cantos, onde os dois raios
+              divergem mais. E como a borda é branca a 10%, o xadrez ainda
+              aparecia ATRAVÉS dela.
+
+              Numa camada só existe um raio, uma borda e nenhum encontro pra
+              errar. A ordem é a do CSS: a primeira imagem fica por cima, então
+              a cor vem antes do xadrez. `background-color` não serviria — ele
+              pinta debaixo de toda imagem, e o xadrez taparia a cor.
             */
-            className="size-7 shrink-0 cursor-pointer rounded-md border border-white/10 bg-[repeating-conic-gradient(rgb(255_255_255_/_0.14)_0_25%,transparent_0_50%)] bg-[length:8px_8px] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <span
-              className="block size-full rounded-[3px]"
-              style={{ backgroundColor: valor }}
-            />
-          </button>
+            style={{
+              backgroundImage: `linear-gradient(${valor}, ${valor}),
+                repeating-conic-gradient(rgb(255 255 255 / 0.14) 0 25%, transparent 0 50%)`,
+              backgroundSize: "auto, 8px 8px",
+            }}
+            className="size-7 shrink-0 cursor-pointer rounded-md border border-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+          />
         </PopoverTrigger>
 
         <PopoverContent align="start" className="w-60 p-3">
