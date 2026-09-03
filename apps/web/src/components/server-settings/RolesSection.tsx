@@ -3,7 +3,10 @@ import { GripVertical, Plus, ShieldQuestion } from "lucide-react";
 import type { GuildMember, Permission } from "@gravae/shared";
 
 import { useFindRoles } from "~/@core/application/queries/role/use-find-roles";
-import { useCreateRole, useReorderRoles } from "~/@core/application/queries/role/use-save-role";
+import {
+  useCreateRole,
+  useReorderRoles,
+} from "~/@core/application/queries/role/use-save-role";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { RoleEditor } from "~/components/server-settings/RoleEditor";
 import { Button } from "~/components/ui/button";
@@ -41,7 +44,8 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
   const lista = ordem ?? ordenados;
   const atual = roles.find((r) => r.id === selecionado) ?? everyone ?? roles[0];
 
-  const podeEditar = (role: RoleModel) => isOwner || role.position < minhaPosicao;
+  const podeEditar = (role: RoleModel) =>
+    isOwner || role.position < minhaPosicao;
 
   const soltar = (alvoId: string) => {
     if (!arrastando || arrastando === alvoId) return setArrastando(null);
@@ -57,7 +61,10 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
     setOrdem(base);
     setArrastando(null);
 
-    const posicoes = base.map((role, indice) => ({ id: role.id, position: base.length - indice }));
+    const posicoes = base.map((role, indice) => ({
+      id: role.id,
+      position: base.length - indice,
+    }));
 
     reorderRoles.mutate(
       { guildId, roles: posicoes },
@@ -71,8 +78,9 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
         <div className="flex-1">
           <h2 className="text-xl font-semibold">Cargos</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Cargos dão nome, cor e poderes. Quem está mais alto na lista manda em quem está abaixo —
-            e ninguém mexe em cargo igual ou acima do próprio.
+            Cargos dão nome, cor e poderes. Quem está mais alto na lista manda
+            em quem está abaixo — e ninguém mexe em cargo igual ou acima do
+            próprio.
           </p>
         </div>
 
@@ -105,7 +113,9 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
               onClick={() => setSelecionado(role.id)}
               className={cn(
                 "group mb-0.5 flex w-full items-center gap-2 rounded px-2 py-2 text-left text-sm transition",
-                atual?.id === role.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
+                atual?.id === role.id
+                  ? "bg-surface-4 text-ink"
+                  : "text-ink-muted hover:bg-surface-3",
                 arrastando === role.id && "opacity-40",
               )}
             >
@@ -113,7 +123,9 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
                 size={14}
                 className={cn(
                   "shrink-0 text-ink-faint transition",
-                  podeEditar(role) ? "opacity-0 group-hover:opacity-100" : "opacity-0",
+                  podeEditar(role)
+                    ? "opacity-0 group-hover:opacity-100"
+                    : "opacity-0",
                 )}
               />
               <span
@@ -121,7 +133,9 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
                 style={{ backgroundColor: role.color ?? "#99aab5" }}
               />
               <span className="truncate">{role.name}</span>
-              <span className="ml-auto shrink-0 text-xs text-ink-faint">{role.memberCount ?? 0}</span>
+              <span className="ml-auto shrink-0 text-xs text-ink-faint">
+                {role.memberCount ?? 0}
+              </span>
             </button>
           ))}
 

@@ -7,10 +7,10 @@ import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 
-export const DeleteGuildSection: React.FC<{ guild: GuildModel; onClose: () => void }> = ({
-  guild,
-  onClose,
-}) => {
+export const DeleteGuildSection: React.FC<{
+  guild: GuildModel;
+  onClose: () => void;
+}> = ({ guild, onClose }) => {
   const deleteGuild = useDeleteGuild();
   const navigate = useNavigate();
   const [confirmacao, setConfirmacao] = useState("");
@@ -34,15 +34,17 @@ export const DeleteGuildSection: React.FC<{ guild: GuildModel; onClose: () => vo
         <div className="text-sm text-ink-muted">
           <p className="font-medium text-ink">Isso não pode ser desfeito.</p>
           <p className="mt-1">
-            Todos os canais, mensagens e convites de <strong>{guild.name}</strong> serão apagados
-            para os {guild.memberCount} membros. Ninguém consegue recuperar depois.
+            Todos os canais, mensagens e convites de{" "}
+            <strong>{guild.name}</strong> serão apagados para os{" "}
+            {guild.memberCount} membros. Ninguém consegue recuperar depois.
           </p>
         </div>
       </div>
 
       <div className="mt-6">
         <Label htmlFor="confirmar">
-          Digite <strong className="text-ink">{guild.name}</strong> para confirmar
+          Digite <strong className="text-ink">{guild.name}</strong> para
+          confirmar
         </Label>
         <Input
           id="confirmar"
@@ -59,7 +61,9 @@ export const DeleteGuildSection: React.FC<{ guild: GuildModel; onClose: () => vo
         disabled={!confere || deleteGuild.isPending}
         className="mt-4"
       >
-        {deleteGuild.isPending ? "Excluindo…" : "Excluir servidor permanentemente"}
+        {deleteGuild.isPending
+          ? "Excluindo…"
+          : "Excluir servidor permanentemente"}
       </Button>
     </div>
   );

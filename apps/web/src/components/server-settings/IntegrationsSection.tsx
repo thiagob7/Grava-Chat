@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Check, Copy, Eye, EyeOff, Plus, Trash2, Webhook as WebhookIcon } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Eye,
+  EyeOff,
+  Plus,
+  Trash2,
+  Webhook as WebhookIcon,
+} from "lucide-react";
 import type { Channel } from "@gravae/shared";
 
 import {
@@ -21,11 +29,16 @@ interface IntegrationsSectionProps {
   channels: Channel[];
 }
 
-export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({ guildId, channels }) => {
+export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
+  guildId,
+  channels,
+}) => {
   const { data: webhooks = [], isLoading } = useFindWebhooks(guildId);
   const criar = useCreateWebhook(guildId);
 
-  const canaisDeTexto = channels.filter((c) => c.type === "TEXT" || c.type === "FORUM");
+  const canaisDeTexto = channels.filter(
+    (c) => c.type === "TEXT" || c.type === "FORUM",
+  );
 
   return (
     <div className="max-w-2xl pb-10">
@@ -33,9 +46,9 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({ guildI
         <div className="flex-1">
           <h2 className="text-xl font-semibold">Integrações</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Um webhook é um endereço que posta num canal sem precisar de conta. Serve pra avisar
-            quando um build passa, quando alguém abre um chamado, ou o que você quiser mandar de um
-            script.
+            Um webhook é um endereço que posta num canal sem precisar de conta.
+            Serve pra avisar quando um build passa, quando alguém abre um
+            chamado, ou o que você quiser mandar de um script.
           </p>
         </div>
 
@@ -43,7 +56,11 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({ guildI
           size="sm"
           disabled={criar.isPending || !canaisDeTexto.length}
           onClick={() =>
-            criar.mutate({ guildId, name: "Webhook", channelId: canaisDeTexto[0]!.id })
+            criar.mutate({
+              guildId,
+              name: "Webhook",
+              channelId: canaisDeTexto[0]!.id,
+            })
           }
         >
           <Plus size={16} /> Novo webhook
@@ -57,7 +74,8 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({ guildI
           <div className="rounded-lg border border-dashed border-line px-6 py-10 text-center">
             <WebhookIcon size={28} className="mx-auto text-ink-faint" />
             <p className="mt-3 text-sm text-ink-muted">
-              Nenhum webhook ainda. Crie um e cole a URL onde quiser que a mensagem venha.
+              Nenhum webhook ainda. Crie um e cole a URL onde quiser que a
+              mensagem venha.
             </p>
           </div>
         )}
@@ -83,7 +101,11 @@ interface CartaoProps {
   canais: Channel[];
 }
 
-const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) => {
+const CartaoDoWebhook: React.FC<CartaoProps> = ({
+  guildId,
+  webhook,
+  canais,
+}) => {
   const salvar = useUpdateWebhook(guildId);
   const apagar = useDeleteWebhook(guildId);
 
@@ -101,7 +123,12 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
   return (
     <div className="rounded-lg bg-surface-1 p-4">
       <div className="flex items-center gap-3">
-        <Avatar id={webhook.bot.id} name={nome || webhook.name} url={webhook.avatarUrl} size={40} />
+        <Avatar
+          id={webhook.bot.id}
+          name={nome || webhook.name}
+          url={webhook.avatarUrl}
+          size={40}
+        />
 
         <div className="grid flex-1 grid-cols-2 gap-3">
           <label className="block">
@@ -114,7 +141,11 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
               onChange={(e) => setNome(e.target.value)}
               onBlur={() => {
                 if (nome.trim() && nome !== webhook.name) {
-                  salvar.mutate({ guildId, webhookId: webhook.id, name: nome.trim() });
+                  salvar.mutate({
+                    guildId,
+                    webhookId: webhook.id,
+                    name: nome.trim(),
+                  });
                 }
               }}
               className="py-1.5 text-sm"
@@ -127,8 +158,13 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
             </span>
             <CampoSelect
               valor={webhook.channelId}
-              onEscolher={(channelId) => salvar.mutate({ guildId, webhookId: webhook.id, channelId })}
-              opcoes={canais.map((canal) => ({ valor: canal.id, rotulo: `#${canal.name}` }))}
+              onEscolher={(channelId) =>
+                salvar.mutate({ guildId, webhookId: webhook.id, channelId })
+              }
+              opcoes={canais.map((canal) => ({
+                valor: canal.id,
+                rotulo: `#${canal.name}`,
+              }))}
             />
           </label>
         </div>
@@ -140,7 +176,10 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
               descricao:
                 "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
               acao: "Apagar webhook",
-            }).then(({ confirmado }) => confirmado && apagar.mutate({ guildId, webhookId: webhook.id }))
+            }).then(
+              ({ confirmado }) =>
+                confirmado && apagar.mutate({ guildId, webhookId: webhook.id }),
+            )
           }
           title="Apagar webhook"
           className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
@@ -156,7 +195,9 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
             mostrandoUrl ? "text-ink-muted" : "text-ink-faint",
           )}
         >
-          {mostrandoUrl ? webhook.url : webhook.url.replace(/\/[^/]+$/, "/••••••••••••••••")}
+          {mostrandoUrl
+            ? webhook.url
+            : webhook.url.replace(/\/[^/]+$/, "/••••••••••••••••")}
         </code>
 
         <button
@@ -177,17 +218,18 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({ guildId, webhook, canais }) =>
         Quem tem essa URL posta neste canal — trate como senha. Criado por{" "}
         {webhook.createdBy.displayName}.
       </p>
-
     </div>
   );
 };
 
 const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => (
   <section className="mt-8">
-    <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">Como usar</h3>
+    <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+      Como usar
+    </h3>
     <p className="mt-2 text-sm text-ink-muted">
-      Mande um POST com JSON. O formato é o mesmo do Discord, então script que já existe por aí
-      funciona sem mudança:
+      Mande um POST com JSON. O formato é o mesmo do Discord, então script que
+      já existe por aí funciona sem mudança:
     </p>
 
     <pre className="mt-3 overflow-x-auto rounded bg-surface-0 p-4 text-xs text-ink-muted">
@@ -197,8 +239,8 @@ const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => (
     </pre>
 
     <p className="mt-2 text-xs text-ink-faint">
-      <code>username</code> e <code>avatar_url</code> são opcionais e valem por mensagem. O limite é
-      de 5 mensagens a cada 5 segundos.
+      <code>username</code> e <code>avatar_url</code> são opcionais e valem por
+      mensagem. O limite é de 5 mensagens a cada 5 segundos.
     </p>
   </section>
 );

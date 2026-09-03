@@ -17,7 +17,11 @@ import { Avatar } from "~/components/Avatar";
 import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
 import { Button } from "~/components/ui/button";
 import { campoBase, Input, Label } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { useConfirmar } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
@@ -40,7 +44,10 @@ const nomeSeguro = (texto: string) =>
     .replace(/[^a-zA-Z0-9_]/g, "_")
     .slice(0, 32);
 
-export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
+export const EmojiSection: React.FC<SecaoProps> = ({
+  guildId,
+  podeGerenciar,
+}) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateEmoji(guildId);
   const confirmar = useConfirmar();
@@ -79,13 +86,19 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
     <div className="max-w-3xl pb-10">
       <h2 className="text-xl font-semibold">Emoji</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Adicione até {LIMITS.emojisPorServidor} emojis que todo mundo pode usar neste servidor.
-        Digite <code className="rounded bg-surface-0 px-1">:nome:</code> no chat para mandar.
+        Adicione até {LIMITS.emojisPorServidor} emojis que todo mundo pode usar
+        neste servidor. Digite{" "}
+        <code className="rounded bg-surface-0 px-1">:nome:</code> no chat para
+        mandar.
       </p>
 
       {podeGerenciar && (
         <>
-          <Button className="mt-4" disabled={subindo || restantes <= 0} onClick={() => input.current?.click()}>
+          <Button
+            className="mt-4"
+            disabled={subindo || restantes <= 0}
+            onClick={() => input.current?.click()}
+          >
             <Upload size={16} /> {subindo ? "Enviando…" : "Enviar emoji"}
           </Button>
 
@@ -99,7 +112,8 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
           />
 
           <p className="mt-2 text-xs text-ink-faint">
-            O nome vem do arquivo — dá pra subir vários de uma vez. {restantes} espaços disponíveis.
+            O nome vem do arquivo — dá pra subir vários de uma vez. {restantes}{" "}
+            espaços disponíveis.
           </p>
         </>
       )}
@@ -117,7 +131,11 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
           {data.emojis.map((emoji) => (
             <tr key={emoji.id} className="group border-b border-line">
               <td className="py-2">
-                <img src={emoji.url} alt={emoji.name} className="size-8 object-contain" />
+                <img
+                  src={emoji.url}
+                  alt={emoji.name}
+                  className="size-8 object-contain"
+                />
               </td>
               <td className="py-2 text-sm">:{emoji.name}:</td>
               <td className="py-2">
@@ -137,9 +155,12 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
                 {podeGerenciar && (
                   <button
                     onClick={() =>
-                      void confirmar(pedidoDeExclusao("emoji", emoji.name)).then(
+                      void confirmar(
+                        pedidoDeExclusao("emoji", emoji.name),
+                      ).then(
                         ({ confirmado }) =>
-                          confirmado && apagar.mutate({ guildId, emojiId: emoji.id }),
+                          confirmado &&
+                          apagar.mutate({ guildId, emojiId: emoji.id }),
                       )
                     }
                     title="Apagar"
@@ -155,19 +176,26 @@ export const EmojiSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) =
       </table>
 
       {!data.emojis.length && (
-        <p className="py-10 text-center text-sm text-ink-faint">Nenhum emoji ainda.</p>
+        <p className="py-10 text-center text-sm text-ink-faint">
+          Nenhum emoji ainda.
+        </p>
       )}
     </div>
   );
 };
 
-export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
+export const StickersSection: React.FC<SecaoProps> = ({
+  guildId,
+  podeGerenciar,
+}) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSticker(guildId);
   const confirmar = useConfirmar();
   const apagar = useDeleteSticker(guildId);
   const input = useRef<HTMLInputElement>(null);
-  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(null);
+  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(
+    null,
+  );
   const [nome, setNome] = useState("");
   const [emoji, setEmoji] = useState("😀");
 
@@ -177,7 +205,9 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
     if (!arquivo) return;
 
     if (arquivo.size > LIMITS.figurinhaBytes) {
-      toast.error(`A figurinha passa de ${formatBytes(LIMITS.figurinhaBytes)}.`);
+      toast.error(
+        `A figurinha passa de ${formatBytes(LIMITS.figurinhaBytes)}.`,
+      );
       return;
     }
 
@@ -200,7 +230,11 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
 
       {podeGerenciar && (
         <>
-          <Button className="mt-4" disabled={restantes <= 0} onClick={() => input.current?.click()}>
+          <Button
+            className="mt-4"
+            disabled={restantes <= 0}
+            onClick={() => input.current?.click()}
+          >
             <Upload size={16} /> Enviar figurinha
           </Button>
           <input
@@ -210,13 +244,19 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
             onChange={(e) => void escolher(e)}
             className="hidden"
           />
-          <p className="mt-2 text-xs text-ink-faint">{restantes} espaços disponíveis.</p>
+          <p className="mt-2 text-xs text-ink-faint">
+            {restantes} espaços disponíveis.
+          </p>
         </>
       )}
 
       {pendente && (
         <div className="mt-4 flex items-start gap-4 rounded-lg bg-surface-1 p-4">
-          <img src={pendente.url} alt="" className="size-24 rounded object-contain bg-surface-0" />
+          <img
+            src={pendente.url}
+            alt=""
+            className="size-24 rounded object-contain bg-surface-0"
+          />
 
           <div className="flex-1 space-y-3">
             <div>
@@ -251,7 +291,11 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
               >
                 Enviar
               </Button>
-              <Button variant="surface" size="sm" onClick={() => setPendente(null)}>
+              <Button
+                variant="surface"
+                size="sm"
+                onClick={() => setPendente(null)}
+              >
                 Deixa pra lá
               </Button>
             </div>
@@ -261,16 +305,28 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
 
       <div className="mt-6 grid grid-cols-5 gap-3">
         {data.stickers.map((sticker) => (
-          <div key={sticker.id} className="group relative rounded-lg bg-surface-1 p-3">
-            <img src={sticker.url} alt={sticker.name} className="aspect-square w-full object-contain" />
-            <p className="mt-2 truncate text-center text-xs text-ink-muted">{sticker.name}</p>
+          <div
+            key={sticker.id}
+            className="group relative rounded-lg bg-surface-1 p-3"
+          >
+            <img
+              src={sticker.url}
+              alt={sticker.name}
+              className="aspect-square w-full object-contain"
+            />
+            <p className="mt-2 truncate text-center text-xs text-ink-muted">
+              {sticker.name}
+            </p>
 
             {podeGerenciar && (
               <button
                 onClick={() =>
-                  void confirmar(pedidoDeExclusao("figurinha", sticker.name)).then(
+                  void confirmar(
+                    pedidoDeExclusao("figurinha", sticker.name),
+                  ).then(
                     ({ confirmado }) =>
-                      confirmado && apagar.mutate({ guildId, stickerId: sticker.id }),
+                      confirmado &&
+                      apagar.mutate({ guildId, stickerId: sticker.id }),
                   )
                 }
                 title="Apagar"
@@ -295,14 +351,19 @@ export const StickersSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }
   );
 };
 
-export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar }) => {
+export const SoundboardSection: React.FC<SecaoProps> = ({
+  guildId,
+  podeGerenciar,
+}) => {
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSound(guildId);
   const confirmar = useConfirmar();
   const apagar = useDeleteSound(guildId);
   const input = useRef<HTMLInputElement>(null);
 
-  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(null);
+  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(
+    null,
+  );
   const [nome, setNome] = useState("");
   const [emoji, setEmoji] = useState("🔊");
   /// Metade: som de painel entra por cima da conversa, e 100% costuma
@@ -334,13 +395,18 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
     <div className="max-w-2xl pb-10">
       <h2 className="text-xl font-semibold">Painel de efeitos sonoros</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Sons que qualquer pessoa na chamada pode tocar. Até {LIMITS.sonsPorServidor}, de no máximo{" "}
-        {formatBytes(LIMITS.somBytes)} cada.
+        Sons que qualquer pessoa na chamada pode tocar. Até{" "}
+        {LIMITS.sonsPorServidor}, de no máximo {formatBytes(LIMITS.somBytes)}{" "}
+        cada.
       </p>
 
       {podeGerenciar && (
         <>
-          <Button className="mt-4" disabled={restantes <= 0} onClick={() => input.current?.click()}>
+          <Button
+            className="mt-4"
+            disabled={restantes <= 0}
+            onClick={() => input.current?.click()}
+          >
             <Upload size={16} /> Enviar som
           </Button>
           <input
@@ -403,7 +469,11 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
             >
               Enviar
             </Button>
-            <Button variant="surface" size="sm" onClick={() => setPendente(null)}>
+            <Button
+              variant="surface"
+              size="sm"
+              onClick={() => setPendente(null)}
+            >
               Deixa pra lá
             </Button>
           </div>
@@ -412,7 +482,10 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
 
       <div className="mt-6 space-y-px">
         {data.sounds.map((som) => (
-          <div key={som.id} className="group flex items-center gap-3 border-t border-line py-3">
+          <div
+            key={som.id}
+            className="group flex items-center gap-3 border-t border-line py-3"
+          >
             {/* `||`: som sem emoji vem com string vazia, e o `??` deixava um buraco. */}
             <span className="text-xl">{som.emoji || "🔊"}</span>
             <span className="min-w-0 flex-1 truncate text-sm">{som.name}</span>
@@ -447,7 +520,8 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
               <button
                 onClick={() =>
                   void confirmar(pedidoDeExclusao("som", som.name)).then(
-                    ({ confirmado }) => confirmado && apagar.mutate({ guildId, soundId: som.id }),
+                    ({ confirmado }) =>
+                      confirmado && apagar.mutate({ guildId, soundId: som.id }),
                   )
                 }
                 title="Apagar"
@@ -460,7 +534,9 @@ export const SoundboardSection: React.FC<SecaoProps> = ({ guildId, podeGerenciar
         ))}
 
         {!data.sounds.length && (
-          <p className="py-10 text-center text-sm text-ink-faint">Nenhum som ainda.</p>
+          <p className="py-10 text-center text-sm text-ink-faint">
+            Nenhum som ainda.
+          </p>
         )}
       </div>
     </div>
@@ -485,7 +561,10 @@ const CampoDeEmoji: React.FC<{
       <button
         id={id}
         type="button"
-        className={cn(campoBase, "flex h-10 items-center gap-2 py-1 text-left hover:border-campo-foco")}
+        className={cn(
+          campoBase,
+          "flex h-10 items-center gap-2 py-1 text-left hover:border-campo-foco",
+        )}
       >
         <span className="text-xl leading-none">{emoji || "😀"}</span>
         <span className="text-xs text-ink-faint">Trocar</span>
@@ -502,7 +581,10 @@ const CampoDeEmoji: React.FC<{
  * sai quando o dedo solta a faixa, não a cada passo: seriam vinte chamadas
  * numa arrastada só.
  */
-const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({ guildId, som }) => {
+const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
+  guildId,
+  som,
+}) => {
   const atualizar = useUpdateSound(guildId);
   const [volume, setVolume] = useState(som.volume);
 
@@ -557,8 +639,8 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({ guildId, 
         </button>
 
         <p className="mt-3 text-11 leading-snug text-ink-faint">
-          Vale pra todo mundo do servidor. Cada pessoa ainda pode abaixar os sons só pra ela, no
-          painel da chamada.
+          Vale pra todo mundo do servidor. Cada pessoa ainda pode abaixar os
+          sons só pra ela, no painel da chamada.
         </p>
       </PopoverContent>
     </Popover>

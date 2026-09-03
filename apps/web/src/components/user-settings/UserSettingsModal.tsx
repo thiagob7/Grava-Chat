@@ -385,6 +385,24 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const secoes = SUBSECOES[secao];
 
     /*
+      Tela que não rola não tem "seção atual" — tem a primeira.
+
+      Esta guarda é o conserto de um bug que aparecia só nas telas curtas: sem
+      rolagem, `scrollTop + clientHeight` já é `scrollHeight` na abertura, a
+      regra do fim disparava de cara e a lateral marcava a ÚLTIMA seção para
+      sempre. Em Bate-papo, com Exibição, Entrada e Mídia cabendo juntas na
+      tela, dava exatamente o que se via: o miolo mostrando Exibição e a
+      lateral apontando Mídia, sem nunca passar por Entrada.
+
+      Os oito pixels de folga são para a rolagem que existe só no papel — uma
+      borda, uma sombra — e que ninguém consegue rolar.
+    */
+    if (painel.scrollHeight - painel.clientHeight <= 8) {
+      setSubAtiva(secoes[0]?.id ?? null);
+      return;
+    }
+
+    /*
       No fim da rolagem, vale a ÚLTIMA seção — mesmo que ela não tenha chegado
       à linha de leitura. Seção curta no pé da página nunca sobe o bastante, e
       sem esta regra ela seria a única impossível de marcar: você rola até o

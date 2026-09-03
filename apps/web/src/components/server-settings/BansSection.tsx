@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Search, ShieldOff } from "lucide-react";
 
-import { useFindBans, useUnbanMember } from "~/@core/application/queries/moderation/use-moderation";
+import {
+  useFindBans,
+  useUnbanMember,
+} from "~/@core/application/queries/moderation/use-moderation";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -25,7 +28,8 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
     <div className="max-w-2xl pb-10">
       <h2 className="text-xl font-semibold">Lista de banimentos do servidor</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Quem está aqui não entra nem com convite novo. Desbanir devolve o acesso na hora.
+        Quem está aqui não entra nem com convite novo. Desbanir devolve o acesso
+        na hora.
       </p>
 
       <div className="mt-4 flex items-center gap-2 rounded bg-surface-0 px-3">
@@ -56,10 +60,17 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
             key={ban.user.id}
             className="flex items-center gap-3 border-t border-line px-2 py-3"
           >
-            <Avatar id={ban.user.id} name={ban.user.displayName} url={ban.user.avatarUrl} size={36} />
+            <Avatar
+              id={ban.user.id}
+              name={ban.user.displayName}
+              url={ban.user.avatarUrl}
+              size={36}
+            />
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{ban.user.displayName}</p>
+              <p className="truncate text-sm font-medium">
+                {ban.user.displayName}
+              </p>
               <p className="truncate text-xs text-ink-faint">
                 @{ban.user.username}
                 {ban.reason ? ` · ${ban.reason}` : ""}

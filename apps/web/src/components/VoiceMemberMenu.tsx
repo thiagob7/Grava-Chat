@@ -1,13 +1,24 @@
 import React from "react";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
+import type {
+  Channel,
+  GuildMember,
+  Permission,
+  Role,
+  VoiceState,
+} from "@gravae/shared";
 import { has } from "@gravae/shared";
 
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import { useSetNickname } from "~/@core/application/queries/moderation/use-moderation";
-import { kickFromVoice, moderateVoice, moveMember } from "~/@core/lib/websocket/emit-voice";
+import {
+  kickFromVoice,
+  moderateVoice,
+  moveMember,
+} from "~/@core/lib/websocket/emit-voice";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -98,13 +109,19 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               onSelect={() =>
                 void confirmar({
                   titulo: "Seu apelido neste servidor",
-                  descricao: "Vale só aqui. Em branco, volta a valer seu nome de sempre.",
+                  descricao:
+                    "Vale só aqui. Em branco, volta a valer seu nome de sempre.",
                   acao: "Salvar",
                   destrutivo: false,
                   campo: { rotulo: "Apelido", placeholder: displayName },
                 }).then(
                   ({ confirmado, texto }) =>
-                    confirmado && setNickname.mutate({ guildId, userId, nickname: texto || null }),
+                    confirmado &&
+                    setNickname.mutate({
+                      guildId,
+                      userId,
+                      nickname: texto || null,
+                    }),
                 )
               }
             >
@@ -122,12 +139,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   }}
                 >
                   Meu microfone
-                  <input
-                    type="checkbox"
-                    readOnly
-                    checked={micEnabled}
-                    className="size-4 accent-brand"
-                  />
+                  <Checkbox readOnly checked={micEnabled} />
                 </ContextMenuItem>
 
                 <ContextMenuItem
@@ -137,15 +149,13 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   }}
                 >
                   Ouvir a chamada
-                  <input
-                    type="checkbox"
-                    readOnly
-                    checked={!deafened}
-                    className="size-4 accent-brand"
-                  />
+                  <Checkbox readOnly checked={!deafened} />
                 </ContextMenuItem>
 
-                <ContextMenuItem className="text-danger" onSelect={() => void sair()}>
+                <ContextMenuItem
+                  className="text-danger"
+                  onSelect={() => void sair()}
+                >
                   Sair da chamada
                 </ContextMenuItem>
               </>
@@ -179,8 +189,13 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
         {!euMesmo && naChamada && (
           <>
             <ContextMenuSeparator />
-            <ContextMenuLabel>Volume · {Math.round(volume * 100)}%</ContextMenuLabel>
-            <div className="px-2.5 pb-2 pt-1" onClick={(e) => e.stopPropagation()}>
+            <ContextMenuLabel>
+              Volume · {Math.round(volume * 100)}%
+            </ContextMenuLabel>
+            <div
+              className="px-2.5 pb-2 pt-1"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Slider
                 min={0}
                 max={1}
@@ -198,7 +213,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               }}
             >
               Silenciar
-              <input type="checkbox" readOnly checked={Boolean(silenciados[userId])} className="size-4 accent-brand" />
+              <Checkbox readOnly checked={Boolean(silenciados[userId])} />
             </ContextMenuItem>
           </>
         )}
@@ -212,13 +227,19 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               onSelect={() =>
                 void confirmar({
                   titulo: `Apelido de ${displayName}`,
-                  descricao: "Vale só neste servidor. Deixe em branco para voltar ao nome original.",
+                  descricao:
+                    "Vale só neste servidor. Deixe em branco para voltar ao nome original.",
                   acao: "Salvar",
                   destrutivo: false,
                   campo: { rotulo: "Apelido", placeholder: displayName },
                 }).then(
                   ({ confirmado, texto }) =>
-                    confirmado && setNickname.mutate({ guildId, userId, nickname: texto || null }),
+                    confirmado &&
+                    setNickname.mutate({
+                      guildId,
+                      userId,
+                      nickname: texto || null,
+                    }),
                 )
               }
             >
@@ -240,7 +261,9 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                           onSelect={(e) => {
                             e.preventDefault();
                             const roleIds = tem
-                              ? (member?.roleIds ?? []).filter((id) => id !== role.id)
+                              ? (member?.roleIds ?? []).filter(
+                                  (id) => id !== role.id,
+                                )
                               : [...(member?.roleIds ?? []), role.id];
 
                             setRoles.mutate({ guildId, userId, roleIds });
@@ -249,17 +272,21 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                           <span className="flex items-center gap-2">
                             <span
                               className="size-2.5 rounded-full"
-                              style={{ backgroundColor: role.color ?? "#99aab5" }}
+                              style={{
+                                backgroundColor: role.color ?? "#99aab5",
+                              }}
                             />
                             {role.name}
                           </span>
-                          <input type="checkbox" readOnly checked={tem} className="size-4 accent-brand" />
+                          <Checkbox readOnly checked={tem} />
                         </ContextMenuItem>
                       );
                     })}
 
                   {roles.filter((r) => !r.isEveryone).length === 0 && (
-                    <ContextMenuItem disabled>Nenhum cargo criado</ContextMenuItem>
+                    <ContextMenuItem disabled>
+                      Nenhum cargo criado
+                    </ContextMenuItem>
                   )}
                 </ContextMenuSubContent>
               </ContextMenuSub>
@@ -275,7 +302,9 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                       <ContextMenuItem
                         key={canal.id}
                         onSelect={() =>
-                          void moveMember(userId, canal.id).catch((e: Error) => toast.error(e.message))
+                          void moveMember(userId, canal.id).catch((e: Error) =>
+                            toast.error(e.message),
+                          )
                         }
                       >
                         {canal.name}
@@ -294,17 +323,16 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   danger={voiceState?.serverMute}
                   onSelect={(e) => {
                     e.preventDefault();
-                    void moderateVoice({ userId, serverMute: !voiceState?.serverMute }).catch(
-                      (erro: Error) => toast.error(erro.message),
-                    );
+                    void moderateVoice({
+                      userId,
+                      serverMute: !voiceState?.serverMute,
+                    }).catch((erro: Error) => toast.error(erro.message));
                   }}
                 >
                   Silenciar voz no servidor
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     readOnly
                     checked={Boolean(voiceState?.serverMute)}
-                    className="size-4 accent-danger"
                   />
                 </ContextMenuItem>
 
@@ -313,17 +341,16 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   danger={voiceState?.serverDeaf}
                   onSelect={(e) => {
                     e.preventDefault();
-                    void moderateVoice({ userId, serverDeaf: !voiceState?.serverDeaf }).catch(
-                      (erro: Error) => toast.error(erro.message),
-                    );
+                    void moderateVoice({
+                      userId,
+                      serverDeaf: !voiceState?.serverDeaf,
+                    }).catch((erro: Error) => toast.error(erro.message));
                   }}
                 >
                   Desativar áudio no servidor
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     readOnly
                     checked={Boolean(voiceState?.serverDeaf)}
-                    className="size-4 accent-danger"
                   />
                 </ContextMenuItem>
 
@@ -331,7 +358,9 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   danger
                   disabled={!pode("MOVE_MEMBERS")}
                   onSelect={() =>
-                    void kickFromVoice(userId).catch((erro: Error) => toast.error(erro.message))
+                    void kickFromVoice(userId).catch((erro: Error) =>
+                      toast.error(erro.message),
+                    )
                   }
                 >
                   Desconectar

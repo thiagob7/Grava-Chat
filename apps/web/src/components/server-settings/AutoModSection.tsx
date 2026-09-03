@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { AtSign, Link2, Plus, ShieldAlert, TextCursorInput, Trash2 } from "lucide-react";
+import { Checkbox } from "~/components/ui/checkbox";
+import {
+  AtSign,
+  Link2,
+  Plus,
+  ShieldAlert,
+  TextCursorInput,
+  Trash2,
+} from "lucide-react";
 import type { Channel, Role } from "@gravae/shared";
 
 import {
@@ -42,7 +50,9 @@ const GATILHOS = [
   },
 ];
 
-const novaRegra = (trigger: AutoModRuleModel["trigger"]): Omit<AutoModRuleModel, "id" | "guildId"> => ({
+const novaRegra = (
+  trigger: AutoModRuleModel["trigger"],
+): Omit<AutoModRuleModel, "id" | "guildId"> => ({
   name: GATILHOS.find((g) => g.valor === trigger)!.titulo,
   enabled: true,
   trigger,
@@ -54,7 +64,11 @@ const novaRegra = (trigger: AutoModRuleModel["trigger"]): Omit<AutoModRuleModel,
   cargosIsentos: [],
 });
 
-export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channels, roles }) => {
+export const AutoModSection: React.FC<AutoModSectionProps> = ({
+  guildId,
+  channels,
+  roles,
+}) => {
   const { data: regras = [] } = useFindAutoModRules(guildId);
   const salvar = useSaveAutoModRule(guildId);
   const confirmar = useConfirmar();
@@ -67,8 +81,8 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
     <div className="max-w-2xl pb-10">
       <h2 className="text-xl font-semibold">AutoMod</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Filtros que moderam sozinhos, antes de a mensagem existir. Quem administra o servidor nunca
-        é filtrado — e cargos isentos passam direto.
+        Filtros que moderam sozinhos, antes de a mensagem existir. Quem
+        administra o servidor nunca é filtrado — e cargos isentos passam direto.
       </p>
 
       <section className="mt-6 space-y-3">
@@ -78,11 +92,16 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
           return (
             <div key={gatilho.valor} className="rounded-lg bg-surface-1 p-4">
               <div className="flex items-start gap-3">
-                <gatilho.icone size={20} className="mt-0.5 shrink-0 text-ink-faint" />
+                <gatilho.icone
+                  size={20}
+                  className="mt-0.5 shrink-0 text-ink-faint"
+                />
 
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold">{gatilho.titulo}</p>
-                  <p className="mt-0.5 text-xs text-ink-faint">{gatilho.descricao}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">
+                    {gatilho.descricao}
+                  </p>
 
                   {existente && (
                     <div className="mt-2 flex flex-wrap gap-1">
@@ -107,10 +126,19 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
                     <Switch
                       checked={existente.enabled}
                       onCheckedChange={(v) =>
-                        salvar.mutate({ ...existente, guildId, ruleId: existente.id, enabled: v })
+                        salvar.mutate({
+                          ...existente,
+                          guildId,
+                          ruleId: existente.id,
+                          enabled: v,
+                        })
                       }
                     />
-                    <Button variant="surface" size="sm" onClick={() => setEditando(existente)}>
+                    <Button
+                      variant="surface"
+                      size="sm"
+                      onClick={() => setEditando(existente)}
+                    >
                       Definir
                     </Button>
                     <button
@@ -122,7 +150,8 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({ guildId, channel
                           acao: "Excluir regra",
                         }).then(
                           ({ confirmado }) =>
-                            confirmado && apagar.mutate({ guildId, ruleId: existente.id }),
+                            confirmado &&
+                            apagar.mutate({ guildId, ruleId: existente.id }),
                         )
                       }
                       title="Apagar regra"
@@ -179,7 +208,13 @@ interface EditorProps {
   onSalvar: (regra: AutoModRuleModel) => void;
 }
 
-const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, onSalvar }) => {
+const EditorDeRegra: React.FC<EditorProps> = ({
+  regra,
+  canais,
+  roles,
+  onFechar,
+  onSalvar,
+}) => {
   const [rascunho, setRascunho] = useState(regra);
   const [palavra, setPalavra] = useState("");
 
@@ -223,7 +258,12 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
 
                   setRascunho((atual) => ({
                     ...atual,
-                    palavras: [...new Set([...atual.palavras, palavra.trim().toLowerCase()])],
+                    palavras: [
+                      ...new Set([
+                        ...atual.palavras,
+                        palavra.trim().toLowerCase(),
+                      ]),
+                    ],
                   }));
                   setPalavra("");
                 }}
@@ -248,22 +288,29 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
             </div>
 
             <p className="mt-2 text-xs text-ink-faint">
-              A comparação ignora maiúscula, acento e pontuação — e não pega palavra dentro de
-              outra ("burro" não bloqueia "burrocracia").
+              A comparação ignora maiúscula, acento e pontuação — e não pega
+              palavra dentro de outra ("burro" não bloqueia "burrocracia").
             </p>
           </div>
         )}
 
         {rascunho.trigger === "MENTION_SPAM" && (
           <div>
-            <Label htmlFor="regra-mencoes">Bloquear a partir de quantas menções</Label>
+            <Label htmlFor="regra-mencoes">
+              Bloquear a partir de quantas menções
+            </Label>
             <Input
               id="regra-mencoes"
               type="number"
               min={2}
               max={50}
               value={rascunho.limiteMencoes ?? 5}
-              onChange={(e) => setRascunho({ ...rascunho, limiteMencoes: Number(e.target.value) })}
+              onChange={(e) =>
+                setRascunho({
+                  ...rascunho,
+                  limiteMencoes: Number(e.target.value),
+                })
+              }
             />
           </div>
         )}
@@ -282,14 +329,14 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
                 key={acao}
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded px-3 py-2 transition",
-                  rascunho.acoes.includes(acao) ? "bg-surface-4" : "bg-surface-0 hover:bg-surface-4/60",
+                  rascunho.acoes.includes(acao)
+                    ? "bg-surface-4"
+                    : "bg-surface-0 hover:bg-surface-4/60",
                 )}
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={rascunho.acoes.includes(acao)}
                   onChange={() => alternarAcao(acao)}
-                  className="size-4 accent-brand"
                 />
                 <span className="text-sm">{rotulo}</span>
               </label>
@@ -303,10 +350,15 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
             <CampoSelect
               id="regra-canal"
               valor={rascunho.alertChannelId ?? ""}
-              onEscolher={(id) => setRascunho({ ...rascunho, alertChannelId: id || null })}
+              onEscolher={(id) =>
+                setRascunho({ ...rascunho, alertChannelId: id || null })
+              }
               opcoes={[
                 { valor: "", rotulo: "Escolha um canal" },
-                ...canais.map((canal) => ({ valor: canal.id, rotulo: `#${canal.name}` })),
+                ...canais.map((canal) => ({
+                  valor: canal.id,
+                  rotulo: `#${canal.name}`,
+                })),
               ]}
             />
           </div>
@@ -322,7 +374,10 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
               max={10080}
               value={(rascunho.timeoutSeconds ?? 300) / 60}
               onChange={(e) =>
-                setRascunho({ ...rascunho, timeoutSeconds: Number(e.target.value) * 60 })
+                setRascunho({
+                  ...rascunho,
+                  timeoutSeconds: Number(e.target.value) * 60,
+                })
               }
             />
           </div>
@@ -349,7 +404,9 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
                     }
                     className={cn(
                       "rounded px-2 py-1 text-xs transition",
-                      isento ? "bg-brand text-white" : "bg-surface-0 text-ink-muted hover:text-ink",
+                      isento
+                        ? "bg-brand text-white"
+                        : "bg-surface-0 text-ink-muted hover:text-ink",
                     )}
                   >
                     {role.name}
@@ -358,7 +415,9 @@ const EditorDeRegra: React.FC<EditorProps> = ({ regra, canais, roles, onFechar, 
               })}
 
             {roles.filter((r) => !r.isEveryone).length === 0 && (
-              <p className="text-xs text-ink-faint">Nenhum cargo criado ainda.</p>
+              <p className="text-xs text-ink-faint">
+                Nenhum cargo criado ainda.
+              </p>
             )}
           </div>
         </div>

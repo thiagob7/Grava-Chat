@@ -46,7 +46,9 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
               />
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{convite.inviter.displayName}</p>
+                <p className="truncate text-sm font-medium">
+                  {convite.inviter.displayName}
+                </p>
                 <code className="text-xs text-ink-faint">{convite.code}</code>
               </div>
 
@@ -71,14 +73,16 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
                       titulo: "Revogar convite?",
                       descricao: (
                         <>
-                          O link <strong>{convite.code}</strong> para de funcionar na hora. Quem já
-                          entrou por ele continua no servidor.
+                          O link <strong>{convite.code}</strong> para de
+                          funcionar na hora. Quem já entrou por ele continua no
+                          servidor.
                         </>
                       ),
                       acao: "Revogar",
                     }).then(
                       ({ confirmado }) =>
-                        confirmado && deleteInvite.mutate({ guildId, inviteId: convite.id }),
+                        confirmado &&
+                        deleteInvite.mutate({ guildId, inviteId: convite.id }),
                     )
                   }
                   className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"

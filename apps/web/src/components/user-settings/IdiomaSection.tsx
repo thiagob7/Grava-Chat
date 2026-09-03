@@ -1,32 +1,47 @@
 import React, { useMemo, useState } from "react";
-import { Check, Search } from "lucide-react";
 
 import { CampoSelect } from "~/components/ui/select";
-import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
-import {
-  IDIOMAS,
-  idiomaAtual,
-  trocarIdioma,
-  useTranslation,
-  type Idioma,
-} from "~/traducao";
+import { IDIOMAS, idiomaAtual, trocarIdioma, useTranslation } from "~/traducao";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 import { useAparencia } from "~/stores/aparencia";
-import { formatTime } from "~/lib/format";
 
 export const IdiomaSection: React.FC = () => {
   const prefs = useAparencia();
   const { t } = useTranslation();
 
   /*
-    Um exemplo com a hora de AGORA, e não uma hora inventada.
+    Os exemplos saem do relógio, e nos DOIS formatos ao mesmo tempo.
 
-    "13:45" e "1:45 PM" explicam a diferença, mas uma hora que não é a sua faz
-    a pessoa conferir duas vezes se entendeu. Com a hora atual, o exemplo é
-    verificável de relance — basta olhar o relógio.
+    "14:30" e "2:30 PM" explicam a diferença, mas uma hora que não é a sua faz
+    a pessoa conferir duas vezes se entendeu. Com a hora de agora, o exemplo é
+    verificável de relance — basta olhar o relógio do sistema.
+
+    `useMemo` sem dependência de propósito: a hora é lida uma vez por abertura.
+    Sem ele, cada renderização traria um minuto novo, e o exemplo mudaria
+    embaixo do dedo de quem está escolhendo.
   */
-  const agora = formatTime(new Date().toISOString());
+  const exemplos = useMemo(() => {
+    const agora = new Date();
+
+    return {
+      "idioma.formatoDaHora.vinteQuatro": agora.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+      "idioma.formatoDaHora.dozeHoras": agora.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    } as Record<string, string>;
+  }, []);
+
+  const FORMATOS = FORMATOS_BASE.map((formato) => ({
+    ...formato,
+    exemplo: exemplos[formato.chave] ?? "",
+  }));
 
   return (
     <div>
@@ -48,142 +63,130 @@ export const IdiomaSection: React.FC = () => {
         detalhe={t("idioma.formatoDaHora.detalhe")}
       >
         {/*
-          A caixa de largura fixa não é enfeite: o `SelectTrigger` é `w-full`,
-          e solto numa linha flexível ele cresce por cima do texto à esquerda —
-          foi o que escondeu o "Agora seriam..." atrás do seletor. É a mesma
-          medida que as outras telas usam, pra tudo alinhar na mesma coluna.
-        */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Relógio</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
-              Agora seriam {agora}.
-            </p>
-          </div>
+          Rádio com o EXEMPLO embaixo de cada opção, e não uma caixa de
+          seleção com dois rótulos.
 
-          <div className="w-52 shrink-0">
-            <CampoSelect
-              valor={prefs.horaEm24h ? "24h" : "12h"}
-              onEscolher={(v) => prefs.definir({ horaEm24h: v === "24h" })}
-              opcoes={[
-                { valor: "24h", rotulo: t("idioma.formatoDaHora.vinteQuatro") },
-                { valor: "12h", rotulo: t("idioma.formatoDaHora.dozeHoras") },
-              ]}
-            />
-          </div>
+          "24 horas" e "12 horas" explicam a diferença para quem já sabe qual
+          quer. Quem não sabe precisa VER — e ver "14:30" contra "2:30 PM"
+          decide num relance o que dois rótulos não decidem. A referência faz
+          assim pelo mesmo motivo.
+        */}
+        <div
+          role="radiogroup"
+          aria-label={t("idioma.formatoDaHora.titulo")}
+          className="space-y-2"
+        >
+          {FORMATOS.map((formato) => {
+            const escolhido = prefs.horaEm24h === formato.vinteQuatro;
+
+            return (
+              <button
+                key={formato.chave}
+                type="button"
+                role="radio"
+                aria-checked={escolhido}
+                onClick={() =>
+                  prefs.definir({ horaEm24h: formato.vinteQuatro })
+                }
+                className={cn(
+                  "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition",
+                  escolhido
+                    ? "border-brand bg-brand/5"
+                    : "border-line hover:bg-surface-3",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className={cn(
+                    "relative mt-0.5 size-4 shrink-0 rounded-full border transition",
+                    escolhido ? "border-brand" : "border-surface-4",
+                  )}
+                >
+                  {escolhido && (
+                    <span className="absolute inset-[3px] rounded-full bg-brand" />
+                  )}
+                </span>
+
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">
+                    {t(formato.chave)}
+                  </span>
+                  {/*
+                    O exemplo é a hora de AGORA no formato da opção, e não uma
+                    hora inventada: uma hora que não é a sua faz a pessoa
+                    conferir duas vezes se entendeu. Com a hora atual, basta
+                    olhar o relógio.
+                  */}
+                  <span className="mt-0.5 block font-mono text-xs text-ink-faint">
+                    {formato.exemplo}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </Secao>
     </div>
   );
 };
 
+/*
+  As duas formas de escrever a hora, com o exemplo tirado do relógio.
+
+  Ficam fora do componente porque o exemplo depende de `agora`, que é lido a
+  cada renderização — a lista é montada dentro, e só a forma mora aqui.
+*/
+const FORMATOS_BASE = [
+  { chave: "idioma.formatoDaHora.vinteQuatro", vinteQuatro: true },
+  { chave: "idioma.formatoDaHora.dozeHoras", vinteQuatro: false },
+] as const;
+
 /**
- * A escolha do idioma, no desenho da referência.
+ * A escolha do idioma, no formato da referência: uma caixa de seleção.
  *
- * Caixa com BUSCA, e não uma lista de rádios: com três idiomas a lista seria
- * mais simples, mas a referência tem trinta e quatro, e a estrutura que
- * aguenta trinta e quatro é a mesma que aguenta três. Trocar depois seria
- * refazer a tela justamente no dia em que ela ficar difícil de usar.
+ * Era uma lista aberta com trinta e quatro linhas, e trinta e quatro linhas
+ * empurravam o "Formato da hora" para fora da tela — a tela de Idioma virava a
+ * tela de escolher idioma. Fechada, ela ocupa uma linha e abre com tudo.
  *
- * Cada linha traz bandeira, nome NATIVO e nome traduzido, nessa ordem. Quem
- * procura o próprio idioma numa lista procura pela palavra que ele usa —
- * "Español" acha quem fala espanhol, "Espanhol" só acha quem já lê português.
+ * Cada opção traz o nome NATIVO à esquerda e o nome traduzido com a bandeira à
+ * direita, como na referência. O nativo é o que a pessoa procura: "Español"
+ * acha quem fala espanhol, "Espanhol" acha quem já lê português — e quem já lê
+ * português não precisa desta tela.
  */
 const EscolherIdioma: React.FC = () => {
   const { t } = useTranslation();
-  const [busca, setBusca] = useState("");
   const [atual, setAtual] = useState(idiomaAtual);
-
-  const encontrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    if (!termo) return IDIOMAS;
-
-    /// A busca cobre nome nativo, nome traduzido e o código: quem sabe que
-    /// quer "pt-BR" digita "pt-BR", e não "Português do Brasil".
-    return IDIOMAS.filter((idioma) =>
-      `${idioma.nativo} ${idioma.nome} ${idioma.lng}`
-        .toLowerCase()
-        .includes(termo),
-    );
-  }, [busca]);
-
-  const escolher = (lng: Idioma) => {
-    setAtual(lng);
-    void trocarIdioma(lng);
-  };
 
   return (
     <div>
       {/*
-        O aviso vem antes da lista: quem troca o idioma e encontra metade da
-        tela em português conclui que o app está quebrado. Dizer antes
-        transforma um bug aparente numa expectativa correta.
+        O aviso vem antes: quem troca o idioma e encontra metade da tela em
+        português conclui que o app está quebrado. Dizer antes transforma um
+        bug aparente numa expectativa correta.
       */}
       <p className="mb-3 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
         {t("idioma.emAndamento")}
       </p>
 
-      <div className="relative mb-2">
-        <Search
-          size={15}
-          className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
-        />
-        <Input
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          placeholder={t("idioma.procurar")}
-          aria-label={t("idioma.escolher")}
-          className="h-9 pl-8 text-sm"
-        />
-      </div>
-
-      <div
-        role="radiogroup"
-        aria-label={t("idioma.escolher")}
-        className="overflow-hidden rounded-lg border border-line"
-      >
-        {encontrados.map((idioma) => (
-          <button
-            key={idioma.lng}
-            type="button"
-            role="radio"
-            aria-checked={atual === idioma.lng}
-            onClick={() => escolher(idioma.lng)}
-            className={cn(
-              "flex w-full items-center gap-3 border-b border-divisor px-3 py-2.5 text-left transition last:border-b-0",
-              atual === idioma.lng ? "bg-selecionado" : "hover:bg-surface-3",
-            )}
-          >
-            {/*
-              A bandeira é o emoji do sistema, não uma imagem. Uma imagem por
-              idioma seria uma requisição por linha e um arquivo a manter, para
-              desenhar o que a fonte do sistema já desenha.
-            */}
-            <span aria-hidden className="shrink-0 text-lg leading-none">
-              {idioma.bandeira}
-            </span>
-
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium">
-                {idioma.nativo}
-              </span>
-              <span className="block truncate text-11 text-ink-faint">
-                {idioma.nome} · {idioma.lng}
+      <CampoSelect
+        valor={atual}
+        onEscolher={(lng) => {
+          setAtual(lng);
+          void trocarIdioma(lng);
+        }}
+        opcoes={IDIOMAS.map((idioma) => ({
+          valor: idioma.lng,
+          rotulo: (
+            <span className="flex w-full min-w-0 items-center gap-3">
+              <span className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
+              <span className="shrink-0 text-ink-faint">{idioma.nome}</span>
+              <span aria-hidden className="shrink-0 text-base leading-none">
+                {idioma.bandeira}
               </span>
             </span>
-
-            {atual === idioma.lng && (
-              <Check size={16} className="shrink-0 text-brand" />
-            )}
-          </button>
-        ))}
-
-        {!encontrados.length && (
-          <p className="px-3 py-6 text-center text-sm text-ink-faint">
-            {t("idioma.nenhum")}
-          </p>
-        )}
-      </div>
+          ),
+        }))}
+      />
     </div>
   );
 };

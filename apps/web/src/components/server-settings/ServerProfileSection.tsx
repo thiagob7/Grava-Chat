@@ -12,7 +12,9 @@ import { formatBytes } from "~/lib/image";
 
 const ICONE_MAX_PX = 256;
 
-export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild }) => {
+export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
+  guild,
+}) => {
   const updateGuild = useUpdateGuild();
   const uploadImage = useUploadImage();
   const inputArquivo = useRef<HTMLInputElement>(null);
@@ -29,7 +31,9 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
     event.target.value = "";
     if (!file) return;
 
-    const enviado = await uploadImage.mutateAsync({ file, maxSize: ICONE_MAX_PX }).catch(() => null);
+    const enviado = await uploadImage
+      .mutateAsync({ file, maxSize: ICONE_MAX_PX })
+      .catch(() => null);
     if (!enviado) return;
 
     setIconUrl(enviado.attachment.url);
@@ -49,7 +53,9 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
     event.target.value = "";
     if (!file) return;
 
-    const enviado = await uploadImage.mutateAsync({ file, maxSize: 960 }).catch(() => null);
+    const enviado = await uploadImage
+      .mutateAsync({ file, maxSize: 960 })
+      .catch(() => null);
     if (enviado) setBannerUrl(enviado.attachment.url);
   };
 
@@ -80,7 +86,11 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
       <Label>Ícone</Label>
       <div className="flex items-center gap-4">
         {iconUrl ? (
-          <img src={iconUrl} alt="" className="size-20 rounded-3xl object-cover" />
+          <img
+            src={iconUrl}
+            alt=""
+            className="size-20 rounded-3xl object-cover"
+          />
         ) : (
           <div
             className="flex size-20 items-center justify-center rounded-3xl text-2xl font-bold text-white"
@@ -103,14 +113,21 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
             </Button>
 
             {iconUrl && (
-              <Button variant="ghost" size="sm" onClick={() => setIconUrl(null)} className="text-danger">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIconUrl(null)}
+                className="text-danger"
+              >
                 Remover
               </Button>
             )}
           </div>
 
           <p className="mt-1.5 text-xs text-ink-faint">
-            {economia ? `Comprimido antes de subir: ${economia}` : "A imagem é reduzida no navegador."}
+            {economia
+              ? `Comprimido antes de subir: ${economia}`
+              : "A imagem é reduzida no navegador."}
           </p>
 
           <input
@@ -193,7 +210,9 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
 
       {mudou && (
         <div className="mt-6 flex items-center justify-between rounded-lg bg-surface-0 px-4 py-3">
-          <p className="text-sm text-ink-muted">Você tem alterações não salvas.</p>
+          <p className="text-sm text-ink-muted">
+            Você tem alterações não salvas.
+          </p>
           <div className="flex gap-2">
             <Button
               variant="ghost"
@@ -207,7 +226,11 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
             >
               Descartar
             </Button>
-            <Button size="sm" onClick={salvar} disabled={updateGuild.isPending || !name.trim()}>
+            <Button
+              size="sm"
+              onClick={salvar}
+              disabled={updateGuild.isPending || !name.trim()}
+            >
               {updateGuild.isPending ? "Salvando…" : "Salvar"}
             </Button>
           </div>

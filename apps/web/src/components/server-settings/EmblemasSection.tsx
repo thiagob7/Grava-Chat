@@ -2,7 +2,10 @@ import React, { useRef, useState } from "react";
 import { ImageUp, Trash2 } from "lucide-react";
 import { LIMITS, type Emblema } from "@gravae/shared";
 
-import { useCriarEmblema, useRemoverEmblema } from "~/@core/application/queries/guild/use-emblemas";
+import {
+  useCriarEmblema,
+  useRemoverEmblema,
+} from "~/@core/application/queries/guild/use-emblemas";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import { Button } from "~/components/ui/button";
 import { useConfirmar } from "~/components/ui/confirm";
@@ -43,7 +46,11 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
     if (!file) return;
 
     const resultado = await uploadImage
-      .mutateAsync({ file, maxSize: EMBLEMA_MAX_PX, finalidade: "iconeDeCargo" })
+      .mutateAsync({
+        file,
+        maxSize: EMBLEMA_MAX_PX,
+        finalidade: "iconeDeCargo",
+      })
       .catch(() => null);
 
     if (resultado) {
@@ -58,8 +65,8 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
     <div className="max-w-xl">
       <h2 className="text-xl font-semibold">Emblemas</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Ícones que qualquer membro pode vestir ao lado do nome. Você cria aqui; cada um escolhe
-        quais usar no próprio cartão de perfil.
+        Ícones que qualquer membro pode vestir ao lado do nome. Você cria aqui;
+        cada um escolhe quais usar no próprio cartão de perfil.
       </p>
 
       <div className="mt-6 space-y-2">
@@ -72,20 +79,30 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               {emblema.emoji ? (
                 <span className="text-lg leading-none">{emblema.emoji}</span>
               ) : emblema.iconUrl ? (
-                <img src={emblema.iconUrl} alt="" className="size-6 object-contain" />
+                <img
+                  src={emblema.iconUrl}
+                  alt=""
+                  className="size-6 object-contain"
+                />
               ) : null}
             </span>
 
-            <span className="min-w-0 flex-1 truncate text-sm font-medium">{emblema.nome}</span>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+              {emblema.nome}
+            </span>
 
             {editavel && (
               <button
                 onClick={() =>
                   void confirmar({
                     titulo: `Apagar o emblema ${emblema.nome}?`,
-                    descricao: "Ele sai de quem estiver usando. Não dá pra desfazer.",
+                    descricao:
+                      "Ele sai de quem estiver usando. Não dá pra desfazer.",
                     acao: "Apagar",
-                  }).then(({ confirmado }) => confirmado && remover.mutate(emblema.id))
+                  }).then(
+                    ({ confirmado }) =>
+                      confirmado && remover.mutate(emblema.id),
+                  )
                 }
                 aria-label={`Apagar ${emblema.nome}`}
                 className="rounded p-1.5 text-ink-faint transition hover:bg-surface-3 hover:text-danger"
@@ -142,10 +159,16 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               disabled={uploadImage.isPending}
             >
               <ImageUp size={14} />
-              {uploadImage.isPending ? "Enviando…" : iconUrl ? "Trocar imagem" : "Usar imagem"}
+              {uploadImage.isPending
+                ? "Enviando…"
+                : iconUrl
+                  ? "Trocar imagem"
+                  : "Usar imagem"}
             </Button>
 
-            {iconUrl && <img src={iconUrl} alt="" className="size-6 object-contain" />}
+            {iconUrl && (
+              <img src={iconUrl} alt="" className="size-6 object-contain" />
+            )}
 
             <input
               ref={arquivo}
@@ -171,7 +194,8 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
           </div>
 
           <p className="mt-2 text-xs text-ink-faint">
-            Emoji ou imagem, não os dois. Até {LIMITS.emblemasPorServidor} emblemas por servidor.
+            Emoji ou imagem, não os dois. Até {LIMITS.emblemasPorServidor}{" "}
+            emblemas por servidor.
           </p>
         </div>
       )}

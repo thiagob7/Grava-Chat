@@ -69,7 +69,10 @@ const FILTROS = [
   { valor: "guild", label: "Servidor" },
 ];
 
-export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, members }) => {
+export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
+  guildId,
+  members,
+}) => {
   const [actorId, setActorId] = useState("");
   const [action, setAction] = useState("");
 
@@ -91,7 +94,10 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, membe
             className="mt-1 w-44 font-normal normal-case"
             opcoes={[
               { valor: "", rotulo: "Todos os usuários" },
-              ...members.map((m) => ({ valor: m.user.id, rotulo: m.user.displayName })),
+              ...members.map((m) => ({
+                valor: m.user.id,
+                rotulo: m.user.displayName,
+              })),
             ]}
           />
         </label>
@@ -126,7 +132,9 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({ guildId, membe
 
 const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
   const [aberto, setAberto] = useState(false);
-  const Icone = ICONES[entrada.targetType] ?? (entrada.action.includes("ban") ? Ban : Trash2);
+  const Icone =
+    ICONES[entrada.targetType] ??
+    (entrada.action.includes("ban") ? Ban : Trash2);
 
   const frase =
     FRASES[entrada.action]?.(entrada.targetName ?? "algo") ??
@@ -154,9 +162,14 @@ const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
 
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm">
-            <strong className="font-medium text-ink">{entrada.actor.displayName}</strong> {frase}
+            <strong className="font-medium text-ink">
+              {entrada.actor.displayName}
+            </strong>{" "}
+            {frase}
           </span>
-          <span className="block text-xs text-ink-faint">{formatTimestamp(entrada.createdAt)}</span>
+          <span className="block text-xs text-ink-faint">
+            {formatTimestamp(entrada.createdAt)}
+          </span>
         </span>
       </button>
 
@@ -170,8 +183,8 @@ const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
 
           {mudancas.map(([campo, valor]) => (
             <p key={campo}>
-              <span className="text-ink-faint">{campo}:</span> {formatar(valor.de)} →{" "}
-              {formatar(valor.para)}
+              <span className="text-ink-faint">{campo}:</span>{" "}
+              {formatar(valor.de)} → {formatar(valor.para)}
             </p>
           ))}
         </div>

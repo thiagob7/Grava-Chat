@@ -6,21 +6,39 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, Label } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
-const INSIGNIAS = ["🍃", "⚔️", "💜", "🔥", "💧", "💀", "🌙", "⚡", "✨", "🎮", "🎧", "🏆"];
+const INSIGNIAS = [
+  "🍃",
+  "⚔️",
+  "💜",
+  "🔥",
+  "💧",
+  "💀",
+  "🌙",
+  "⚡",
+  "✨",
+  "🎮",
+  "🎧",
+  "🏆",
+];
 
-export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => {
+export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
+  guild,
+}) => {
   const salvar = useUpdateGuild();
   const [tag, setTag] = useState(guild.tag ?? "");
   const [icone, setIcone] = useState(guild.tagIcon ?? INSIGNIAS[0]!);
 
-  const mudou = (tag.trim() || null) !== (guild.tag ?? null) || icone !== (guild.tagIcon ?? INSIGNIAS[0]);
+  const mudou =
+    (tag.trim() || null) !== (guild.tag ?? null) ||
+    icone !== (guild.tagIcon ?? INSIGNIAS[0]);
 
   return (
     <div className="max-w-2xl pb-10">
       <h2 className="text-xl font-semibold">Tag do servidor</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Uma etiqueta de até 4 letras que aparece ao lado do nome de quem é membro — no chat e na
-        lista de pessoas. Aqui é de graça: sem impulso, sem nível.
+        Uma etiqueta de até 4 letras que aparece ao lado do nome de quem é
+        membro — no chat e na lista de pessoas. Aqui é de graça: sem impulso,
+        sem nível.
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-8">
@@ -32,9 +50,15 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => 
               value={tag}
               maxLength={4}
               placeholder="GVE"
-              onChange={(e) => setTag(e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase())}
+              onChange={(e) =>
+                setTag(
+                  e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase(),
+                )
+              }
             />
-            <p className="mt-1 text-xs text-ink-faint">No máximo 4 caracteres, letras e números.</p>
+            <p className="mt-1 text-xs text-ink-faint">
+              No máximo 4 caracteres, letras e números.
+            </p>
           </div>
 
           <div>
@@ -57,7 +81,9 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => 
         </div>
 
         <div className="rounded-lg bg-surface-1 p-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">Prévia</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            Prévia
+          </p>
 
           <div className="space-y-3">
             <PreviaDeFala nome="Leonardo" texto="alguém aí pra jogar?" />
@@ -91,12 +117,12 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({ guild }) => 
   );
 };
 
-const PreviaDeFala: React.FC<{ nome: string; texto: string; tag?: string; icone?: string }> = ({
-  nome,
-  texto,
-  tag,
-  icone,
-}) => (
+const PreviaDeFala: React.FC<{
+  nome: string;
+  texto: string;
+  tag?: string;
+  icone?: string;
+}> = ({ nome, texto, tag, icone }) => (
   <div className="flex items-start gap-2">
     <span className="mt-0.5 size-7 shrink-0 rounded-full bg-surface-4" />
     <div className="min-w-0">

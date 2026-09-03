@@ -95,7 +95,8 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   permissoes,
   secaoInicial,
 }) => {
-  const pode = (p: string) => permissoes.has("ADMINISTRATOR") || permissoes.has(p);
+  const pode = (p: string) =>
+    permissoes.has("ADMINISTRATOR") || permissoes.has(p);
   const [secao, setSecao] = useState<Secao>(canManage ? "perfil" : "membros");
 
   /// Só na abertura. Aplicar a cada render desfaria o clique de quem navega
@@ -108,7 +109,9 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   const minhaPosicao = isOwner
     ? Number.POSITIVE_INFINITY
     : (() => {
-        const meus = detail.members.find((m) => m.user.id === currentUserId)?.roleIds ?? [];
+        const meus =
+          detail.members.find((m) => m.user.id === currentUserId)?.roleIds ??
+          [];
         return detail.roles
           .filter((r) => meus.includes(r.id))
           .reduce((maior, r) => Math.max(maior, r.position), 0);
@@ -133,7 +136,10 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   };
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => !next && onClose()}
+    >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
         <DialogPrimitive.Content
@@ -191,31 +197,47 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
           </nav>
 
           <div className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
-            {secao === "perfil" && <ServerProfileSection guild={detail.guild} />}
+            {secao === "perfil" && (
+              <ServerProfileSection guild={detail.guild} />
+            )}
 
             {secao === "tag" && <ServerTagSection guild={detail.guild} />}
 
             {secao === "engajamento" && (
-              <EngagementSection guild={detail.guild} channels={detail.channels} />
+              <EngagementSection
+                guild={detail.guild}
+                channels={detail.channels}
+              />
             )}
 
             {secao === "emoji" && (
-              <EmojiSection guildId={detail.guild.id} podeGerenciar={pode("MANAGE_EXPRESSIONS")} />
+              <EmojiSection
+                guildId={detail.guild.id}
+                podeGerenciar={pode("MANAGE_EXPRESSIONS")}
+              />
             )}
 
             {secao === "figurinhas" && (
-              <StickersSection guildId={detail.guild.id} podeGerenciar={pode("MANAGE_EXPRESSIONS")} />
+              <StickersSection
+                guildId={detail.guild.id}
+                podeGerenciar={pode("MANAGE_EXPRESSIONS")}
+              />
             )}
 
             {secao === "sons" && (
-              <SoundboardSection guildId={detail.guild.id} podeGerenciar={pode("MANAGE_EXPRESSIONS")} />
+              <SoundboardSection
+                guildId={detail.guild.id}
+                podeGerenciar={pode("MANAGE_EXPRESSIONS")}
+              />
             )}
 
             {secao === "auditoria" && (
               <AuditLogSection guildId={detail.guild.id} members={members} />
             )}
 
-            {secao === "banimentos" && <BansSection guildId={detail.guild.id} />}
+            {secao === "banimentos" && (
+              <BansSection guildId={detail.guild.id} />
+            )}
 
             {secao === "automod" && (
               <AutoModSection
@@ -246,9 +268,13 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
               />
             )}
 
-            {secao === "convites" && <InvitesSection guildId={detail.guild.id} />}
+            {secao === "convites" && (
+              <InvitesSection guildId={detail.guild.id} />
+            )}
 
-            {secao === "excluir" && <DeleteGuildSection guild={detail.guild} onClose={onClose} />}
+            {secao === "excluir" && (
+              <DeleteGuildSection guild={detail.guild} onClose={onClose} />
+            )}
 
             {secao === "cargos" && (
               <RolesSection
@@ -261,7 +287,10 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "integracoes" && (
-              <IntegrationsSection guildId={detail.guild.id} channels={detail.channels} />
+              <IntegrationsSection
+                guildId={detail.guild.id}
+                channels={detail.channels}
+              />
             )}
           </div>
 

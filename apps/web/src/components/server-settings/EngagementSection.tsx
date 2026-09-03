@@ -15,7 +15,10 @@ interface EngagementSectionProps {
   channels: Channel[];
 }
 
-export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, channels }) => {
+export const EngagementSection: React.FC<EngagementSectionProps> = ({
+  guild,
+  channels,
+}) => {
   const salvar = useUpdateGuild();
   const [welcome, setWelcome] = useState(guild.welcomeEnabled ?? true);
   const [canal, setCanal] = useState(guild.systemChannelId ?? "");
@@ -41,7 +44,8 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
     <div className="max-w-2xl pb-10">
       <h2 className="text-xl font-semibold">Engajamento</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        O que o servidor faz sozinho para não parecer vazio quando chega gente nova.
+        O que o servidor faz sozinho para não parecer vazio quando chega gente
+        nova.
       </p>
 
       <section className="mt-6">
@@ -55,7 +59,8 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
               Enviar uma mensagem de boas-vindas quando alguém entrar
             </p>
             <p className="mt-0.5 text-xs text-ink-faint">
-              Sem texto próprio embaixo, a frase é sorteada — sempre a mesma cansa rápido.
+              Sem texto próprio embaixo, a frase é sorteada — sempre a mesma
+              cansa rápido.
             </p>
           </div>
           <Switch checked={welcome} onCheckedChange={setWelcome} />
@@ -69,7 +74,10 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
             onEscolher={setCanal}
             opcoes={[
               { valor: "", rotulo: "Sem canal de sistema" },
-              ...canaisDeTexto.map((c) => ({ valor: c.id, rotulo: `#${c.name}` })),
+              ...canaisDeTexto.map((c) => ({
+                valor: c.id,
+                rotulo: `#${c.name}`,
+              })),
             ]}
           />
           {/*
@@ -77,7 +85,12 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
             terminar nela sem perceber: a chave acima aparece ligada por padrão
             e o aviso era cinza como qualquer outra legenda.
           */}
-          <p className={cn("mt-1.5 text-xs", welcome && !canal ? "text-idle" : "text-ink-faint")}>
+          <p
+            className={cn(
+              "mt-1.5 text-xs",
+              welcome && !canal ? "text-idle" : "text-ink-faint",
+            )}
+          >
             {welcome && !canal
               ? "Escolha um canal — sem ele a chave acima não envia nada."
               : "Sem canal escolhido, a boas-vindas não é enviada."}
@@ -114,8 +127,12 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({ guild, cha
 
           {welcome && (
             <div className="mt-3 rounded bg-surface-0 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">Prévia</p>
-              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-ink-muted">{previa}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                Prévia
+              </p>
+              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-ink-muted">
+                {previa}
+              </p>
             </div>
           )}
         </div>

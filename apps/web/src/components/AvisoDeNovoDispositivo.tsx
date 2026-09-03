@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Checkbox } from "~/components/ui/checkbox";
 import { Headphones } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -110,7 +111,10 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
   const fechar = () => {
     if (naoSugerir) {
       try {
-        localStorage.setItem(CHAVE, JSON.stringify([...lerIgnorados(), novo.nome]));
+        localStorage.setItem(
+          CHAVE,
+          JSON.stringify([...lerIgnorados(), novo.nome]),
+        );
       } catch {
         /* sem armazenamento: ele volta a sugerir, e tudo bem */
       }
@@ -120,7 +124,9 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
   };
 
   const trocar = () => {
-    void aplicarAjustes(ehEntrada ? { entradaId: novo.id } : { saidaId: novo.id });
+    void aplicarAjustes(
+      ehEntrada ? { entradaId: novo.id } : { saidaId: novo.id },
+    );
     setNovo(null);
   };
 
@@ -130,7 +136,9 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Headphones size={18} className="text-brand" />
-            {ehEntrada ? "Microfone novo por aqui" : "Saída de áudio nova por aqui"}
+            {ehEntrada
+              ? "Microfone novo por aqui"
+              : "Saída de áudio nova por aqui"}
           </DialogTitle>
         </DialogHeader>
 
@@ -142,11 +150,9 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
           </p>
 
           <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-ink-muted">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={naoSugerir}
               onChange={(e) => setNaoSugerir(e.target.checked)}
-              className="size-4 accent-brand"
             />
             Não sugerir este aparelho de novo
           </label>

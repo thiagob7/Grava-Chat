@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { ArrowUpDown, Ban, Clock, Crown, MoreVertical, Search, UserX } from "lucide-react";
+import { Checkbox } from "~/components/ui/checkbox";
+import {
+  ArrowUpDown,
+  Ban,
+  Clock,
+  Crown,
+  MoreVertical,
+  Search,
+  UserX,
+} from "lucide-react";
 import type { GuildMember, Role } from "@gravae/shared";
 
 import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-member";
@@ -61,21 +70,23 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordem>("recentes");
 
-  const nomeDe = (member: GuildMember) => member.nickname ?? member.user.displayName;
+  const nomeDe = (member: GuildMember) =>
+    member.nickname ?? member.user.displayName;
 
   const expulsar = async (member: GuildMember) => {
     const { confirmado } = await confirmar({
       titulo: `Expulsar ${nomeDe(member)}?`,
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong> sai de {guild.name} na hora. Pode entrar de novo com um
-          convite — expulsar não impede a volta.
+          <strong>{nomeDe(member)}</strong> sai de {guild.name} na hora. Pode
+          entrar de novo com um convite — expulsar não impede a volta.
         </>
       ),
       acao: "Expulsar",
     });
 
-    if (confirmado) removeMember.mutate({ guildId: guild.id, userId: member.user.id });
+    if (confirmado)
+      removeMember.mutate({ guildId: guild.id, userId: member.user.id });
   };
 
   const banirMembro = async (member: GuildMember) => {
@@ -83,16 +94,24 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       titulo: `Banir ${nomeDe(member)}?`,
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong> sai de {guild.name} e <strong>não consegue voltar</strong>,
-          nem com convite, até ser desbanido.
+          <strong>{nomeDe(member)}</strong> sai de {guild.name} e{" "}
+          <strong>não consegue voltar</strong>, nem com convite, até ser
+          desbanido.
         </>
       ),
       acao: "Banir",
-      campo: { rotulo: "Motivo (opcional)", placeholder: "Fica registrado na auditoria" },
+      campo: {
+        rotulo: "Motivo (opcional)",
+        placeholder: "Fica registrado na auditoria",
+      },
     });
 
     if (confirmado) {
-      banir.mutate({ guildId: guild.id, userId: member.user.id, reason: texto || null });
+      banir.mutate({
+        guildId: guild.id,
+        userId: member.user.id,
+        reason: texto || null,
+      });
     }
   };
 
@@ -108,7 +127,8 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       : [...members];
 
     return filtrados.sort((a, b) => {
-      if (ordem === "nome") return a.user.displayName.localeCompare(b.user.displayName);
+      if (ordem === "nome")
+        return a.user.displayName.localeCompare(b.user.displayName);
 
       const tempoA = new Date(a.joinedAt).getTime();
       const tempoB = new Date(b.joinedAt).getTime();
@@ -119,7 +139,9 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
   return (
     <div className="max-w-4xl pb-10">
-      <h2 className="text-xl font-semibold">Membros do servidor — {members.length}</h2>
+      <h2 className="text-xl font-semibold">
+        Membros do servidor — {members.length}
+      </h2>
 
       <div className="mt-4 flex items-center gap-3">
         <div className="flex flex-1 items-center gap-2 rounded bg-surface-0 px-3">
@@ -137,12 +159,20 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
           size="sm"
           onClick={() =>
             setOrdem((atual) =>
-              atual === "recentes" ? "antigos" : atual === "antigos" ? "nome" : "recentes",
+              atual === "recentes"
+                ? "antigos"
+                : atual === "antigos"
+                  ? "nome"
+                  : "recentes",
             )
           }
         >
           <ArrowUpDown size={14} />
-          {ordem === "recentes" ? "Mais recentes" : ordem === "antigos" ? "Mais antigos" : "Nome"}
+          {ordem === "recentes"
+            ? "Mais recentes"
+            : ordem === "antigos"
+              ? "Mais antigos"
+              : "Nome"}
         </Button>
       </div>
 
@@ -160,14 +190,19 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
           {lista.map((member) => {
             const ehDono = member.user.id === guild.ownerId;
             const euMesmo = member.user.id === currentUserId;
-            const cargos = roles.filter((r) => !r.isEveryone && member.roleIds.includes(r.id));
+            const cargos = roles.filter(
+              (r) => !r.isEveryone && member.roleIds.includes(r.id),
+            );
             const deCastigo =
               member.timeoutUntil && new Date(member.timeoutUntil) > new Date()
                 ? new Date(member.timeoutUntil)
                 : null;
 
             return (
-              <tr key={member.id} className="group border-b border-line align-middle">
+              <tr
+                key={member.id}
+                className="group border-b border-line align-middle"
+              >
                 <td className="py-3">
                   <div className="flex items-center gap-3">
                     <Avatar
@@ -187,13 +222,17 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                           </span>
                         )}
                       </p>
-                      <p className="truncate text-xs text-ink-faint">@{member.user.username}</p>
+                      <p className="truncate text-xs text-ink-faint">
+                        @{member.user.username}
+                      </p>
                     </div>
                   </div>
                 </td>
 
                 <td className="py-3 text-sm text-ink-muted">
-                  {new Intl.DateTimeFormat("pt-BR").format(new Date(member.joinedAt))}
+                  {new Intl.DateTimeFormat("pt-BR").format(
+                    new Date(member.joinedAt),
+                  )}
                 </td>
 
                 <td className="py-3">
@@ -210,7 +249,9 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {role.name}
                       </span>
                     ))}
-                    {!cargos.length && <span className="text-xs text-ink-faint">—</span>}
+                    {!cargos.length && (
+                      <span className="text-xs text-ink-faint">—</span>
+                    )}
                   </div>
                 </td>
 
@@ -242,7 +283,9 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                       guildId: guild.id,
                                       userId: member.user.id,
                                       roleIds: tem
-                                        ? member.roleIds.filter((id) => id !== role.id)
+                                        ? member.roleIds.filter(
+                                            (id) => id !== role.id,
+                                          )
                                         : [...member.roleIds, role.id],
                                     });
                                   }}
@@ -250,16 +293,14 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                   <span className="flex items-center gap-2">
                                     <span
                                       className="size-2.5 rounded-full"
-                                      style={{ backgroundColor: role.color ?? "#99aab5" }}
+                                      style={{
+                                        backgroundColor:
+                                          role.color ?? "#99aab5",
+                                      }}
                                     />
                                     {role.name}
                                   </span>
-                                  <input
-                                    type="checkbox"
-                                    readOnly
-                                    checked={tem}
-                                    className="size-4 accent-brand"
-                                  />
+                                  <Checkbox readOnly checked={tem} />
                                 </DropdownMenuItem>
                               );
                             })}
@@ -328,7 +369,9 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       </table>
 
       {!lista.length && (
-        <p className={cn("py-10 text-center text-sm text-ink-faint")}>Ninguém encontrado.</p>
+        <p className={cn("py-10 text-center text-sm text-ink-faint")}>
+          Ninguém encontrado.
+        </p>
       )}
     </div>
   );

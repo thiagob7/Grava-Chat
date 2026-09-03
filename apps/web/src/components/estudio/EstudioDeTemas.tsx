@@ -275,6 +275,16 @@ const LinhaDeToken: React.FC<{
   /// O valor do tema é lido do documento, e muda quando a base muda — daí o
   /// `tema` na dependência.
   const doTema = useMemo(() => valorDoTema(token.nome), [token.nome, tema]);
+
+  /*
+    O valor do TEMA é placeholder; só a substituição é conteúdo.
+
+    Antes ele vinha preenchido no campo, e isso mentia duas vezes: parecia que
+    a pessoa tinha escrito aquilo, e dava pra apagar — deixando o campo vazio
+    como se o token não tivesse valor, quando o que existe é um padrão que não
+    se remove. Como placeholder, o padrão fica à vista, o campo nasce vazio, e
+    apagar o que você escreveu volta ao padrão em vez de virar nada.
+  */
   const valor = substituido ?? doTema;
   const hex = comoHex(valor);
 
@@ -324,9 +334,11 @@ const LinhaDeToken: React.FC<{
       </div>
 
       <Input
-        value={valor}
-        onChange={(e) => definir(token.nome, e.target.value)}
+        value={substituido ?? ""}
+        placeholder={doTema}
+        onChange={(e) => definir(token.nome, e.target.value || null)}
         aria-label={`Valor de ${token.rotulo}`}
+        title={substituido ? `Padrão do tema: ${doTema}` : "Padrão do tema"}
         className={cn(
           "h-8 w-48 shrink-0 font-mono text-xs",
           substituido && "border-brand/60",
