@@ -21,7 +21,7 @@ import { InviteModal } from "~/components/InviteModal";
 import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
-import { ChatsCircle, Hash, SpeakerHigh } from "@phosphor-icons/react";
+import { CaretDown, ChatsCircle, Hash, SpeakerHigh } from "@phosphor-icons/react";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import { useFavoritos } from "~/stores/favoritos";
 import {
@@ -329,11 +329,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             [group.id]: !collapsed[group.id],
                           })
                         }
-                        className="flex flex-1 items-center gap-0.5 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
+                        className="flex flex-1 items-center gap-1 py-1.5 text-sm font-semibold leading-5 text-ink-faint transition hover:text-ink"
                       >
-                        <ChevronDown
+                        <CaretDown
                           size={12}
-                          className={isCollapsed ? "-rotate-90" : ""}
+                          weight="bold"
+                          className={cn("shrink-0 transition-transform", isCollapsed && "-rotate-90")}
                         />
                         <span className="truncate">{group.name}</span>
                       </button>
@@ -380,25 +381,25 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           <button
                             onClick={() => onSelectChannel(channel.id)}
                             className={cn(
-                              "mb-0.5 flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-sm transition",
+                              "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
                               active
                                 ? "bg-selecionado text-ink"
                                 : bloqueado
-                                  ? "text-ink-faint hover:bg-surface-3"
+                                  ? "text-ink-faint hover:bg-hover"
                                   : unread
-                                    ? "font-semibold text-ink hover:bg-surface-3"
-                                    : "text-ink-muted hover:bg-surface-3",
+                                    ? "font-semibold text-ink hover:bg-hover"
+                                    : "text-ink-faint hover:bg-hover hover:text-ink",
                             )}
                           >
                             {channel.type === "VOICE" ? (
                               bloqueado ? (
                                 <Lock
-                                  size={18}
+                                  size={20}
                                   className="shrink-0 text-ink-faint"
                                 />
                               ) : (
                                 <SpeakerHigh
-                                  size={18}
+                                  size={20}
                                   weight="fill"
                                   className={cn(
                                     "shrink-0",
@@ -410,7 +411,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               )
                             ) : channel.type === "FORUM" ? (
                               <ChatsCircle
-                                size={18}
+                                size={20}
                                 weight="fill"
                                 className="shrink-0 text-ink-faint"
                               />
@@ -419,12 +420,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                aberto: quem entra no servidor não tinha como
                                saber por que só enxerga metade da lista */
                               <Lock
-                                size={18}
+                                size={20}
                                 className="shrink-0 text-ink-faint"
                               />
                             ) : (
                               <Hash
-                                size={18}
+                                size={20}
                                 weight="bold"
                                 className="shrink-0 text-ink-faint"
                               />

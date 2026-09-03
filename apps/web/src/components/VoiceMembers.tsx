@@ -89,7 +89,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
               roleIds={member?.roleIds ?? []}
               podeModerar={podeModerar}
             >
-              <button className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition hover:bg-surface-3">
+              <button className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left transition hover:bg-hover">
                 <Avatar
                   id={state.userId}
                   name={name}
@@ -99,7 +99,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 />
               <span
                 className={cn(
-                  "min-w-0 flex-1 truncate text-sm",
+                  "min-w-0 flex-1 truncate text-sm font-medium leading-5",
                   state.selfMute ? "text-ink-faint" : "text-ink-muted",
                 )}
               >
