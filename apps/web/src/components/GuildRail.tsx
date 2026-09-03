@@ -68,7 +68,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         remonta a quina quadrada por cima do arredondado. Do lado de lá, ele
         segue a curva.
       */}
-      <nav className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-0 pb-36 pt-3">
+      <nav className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3">
         <div className="group relative flex w-full justify-center">
           <span
             className={cn(
@@ -83,7 +83,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 "relative flex size-12 items-center justify-center text-xl font-bold transition-all",
                 activeGuildId === null
                   ? "rounded-2xl bg-brand"
-                  : "rounded-3xl bg-surface-1 hover:rounded-2xl hover:bg-brand",
+                  : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
               )}
             >
               <img
@@ -93,7 +93,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 draggable={false}
               />
               {pendingFriendRequests > 0 && (
-                <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-0 bg-danger text-10 font-bold text-white">
+                <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-white">
                   {pendingFriendRequests}
                 </span>
               )}
@@ -132,7 +132,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                     "flex size-12 items-center justify-center overflow-hidden font-semibold transition-all",
                     active
                       ? "rounded-2xl bg-brand"
-                      : "rounded-3xl bg-surface-1 hover:rounded-2xl hover:bg-brand",
+                      : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
                   )}
                   style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
                 >
@@ -153,7 +153,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                     arredondado, e qualquer selo desenhado lá dentro sumiria
                     junto com o canto.
                   */
-                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-0 bg-danger px-1 text-11 font-bold leading-4 text-white"
+                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-white"
                 >
                   {mencoes > 99 ? "99+" : mencoes}
                 </span>
@@ -235,7 +235,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
                 {/* a bolinha verde diz "tem coisa nova aqui" sem precisar do balão */}
                 {atualizacao.pronta && (
-                  <span className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-0 bg-online" />
+                  <span className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
                 )}
               </button>
             </Tooltip>

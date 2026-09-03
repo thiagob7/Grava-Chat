@@ -179,13 +179,13 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       {
         nome: "--color-surface-0",
         rotulo: "Fundo mais profundo",
-        dica: "trilho de servidores",
+        dica: "ícones do trilho, faixa de título, campos e poços",
         ligado: true,
       },
       {
         nome: "--color-surface-1",
         rotulo: "Barra lateral",
-        dica: "lista de canais, configurações",
+        dica: "trilho de servidores, lista de canais e de conversas",
         ligado: true,
       },
       { nome: "--color-surface-2", rotulo: "Área da conversa", ligado: true },
