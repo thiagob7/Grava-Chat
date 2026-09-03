@@ -145,11 +145,25 @@ export interface VersoesDoAplicativo {
   sistema: string;
 }
 
+/*
+  A ponte que o aplicativo instalado oferece.
+
+  **Tudo que entrar aqui depois de uma release precisa ser opcional.** O front
+  vem do site a cada abertura; a casca só troca quando alguém instala uma
+  versão nova. Então o normal — não a exceção — é este código rodar dentro de
+  um aplicativo mais VELHO do que ele, onde o membro novo simplesmente não
+  existe no objeto.
+
+  Chamar um membro ausente estoura de forma síncrona (`x is not a function`),
+  antes de existir promessa nenhuma: nenhum `.catch()` pega isso. Marcado como
+  opcional, o TypeScript obriga quem chama a decidir o que fazer sem ele.
+*/
 export interface PonteDesktop {
   ehDesktop: true;
   plataforma: string;
   nomeNoSistema: string;
-  versoes: () => Promise<VersoesDoAplicativo>;
+  /// chegou depois da v0.2.4 — ver o aviso acima
+  versoes?: () => Promise<VersoesDoAplicativo>;
   ptt: PontePtt;
   tela: PonteTela;
   login: PonteLogin;

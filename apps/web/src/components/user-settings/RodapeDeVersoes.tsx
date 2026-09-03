@@ -37,20 +37,27 @@ export const RodapeDeVersoes: React.FC = () => {
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte) return;
+    /*
+      Duas defesas, para duas falhas diferentes — e a primeira faltava.
+
+      1. `pedir` pode ser `undefined`. O aplicativo instalado é mais VELHO que
+         este código: o front vem do site a cada abertura, a casca só troca
+         quando alguém instala. Numa v0.2.4 o `versoes` não existe na ponte, e
+         `ponte.versoes()` estourava na hora, de forma SÍNCRONA — derrubando as
+         configurações inteiras por causa de um rodapé. O `catch` de baixo
+         nunca via esse erro: quando ele acontece, não chegou a existir
+         promessa.
+
+      2. O `catch` cobre o outro caso: a ponte tem o método, mas o canal do
+         outro lado rejeita. Aí o rodapé fica só com a linha do front, que é
+         degradar direito.
+    */
+    const pedir = desktop()?.versoes;
+    if (!pedir) return;
 
     let vivo = true;
 
-    /*
-      O `catch` engole de propósito e o rodapé fica só com a linha do front.
-
-      Um aplicativo mais velho que este código não tem o canal `app:versoes` do
-      outro lado, e o `invoke` fica pendurado ou rejeita. Nenhuma das duas
-      coisas pode derrubar as configurações inteiras por causa de um rodapé.
-    */
-    void ponte
-      .versoes()
+    void pedir()
       .then((v) => vivo && setDoApp(v))
       .catch(() => undefined);
 

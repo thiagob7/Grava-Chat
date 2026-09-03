@@ -521,7 +521,19 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 {t("configuracoes.sair")}
               </button>
 
-              <RodapeDeVersoes />
+              {/*
+                O rodapé também dentro de uma barreira.
+
+                A das seções já existia, mas ela cobre o miolo — e a lateral
+                ficava de fora. Foi por aqui que um rodapé de quatro linhas
+                derrubou o aplicativo inteiro: ele lê a ponte do desktop, e num
+                aplicativo instalado mais VELHO que este código o método que ele
+                chama simplesmente não existe. `compacto` porque, se falhar de
+                novo, o que cabe aqui é uma linha discreta e não um cartão.
+              */}
+              <ErrorBoundary onde="configurações · versões" compacto>
+                <RodapeDeVersoes />
+              </ErrorBoundary>
             </div>
           </nav>
 
