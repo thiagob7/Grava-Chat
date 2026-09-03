@@ -10,6 +10,7 @@ import {
 
 import { BotoesDeDownload } from "~/components/BotoesDeDownload";
 import { Cabecalho } from "~/components/Cabecalho";
+import { PalcoDoApp } from "~/components/PalcoDoApp";
 import { Rodape } from "~/components/Rodape";
 import { VersaoPublicada } from "~/components/VersaoPublicada";
 
@@ -91,13 +92,26 @@ export default function Home() {
       <Cabecalho />
 
       <main>
-        <section className="relative overflow-hidden px-6 py-20 text-center sm:py-28">
+        <section className="relative overflow-hidden px-6 pb-8 pt-20 text-center sm:pt-24">
           <div className="mx-auto max-w-3xl">
-            <p className="text-sm font-medium text-brand">Feito no Brasil, para conversar</p>
+            {/*
+              A tarja em vez da linha solta de antes.
 
-            <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">
+              A bolinha verde não é enfeite: é a mesma cor de "no ar" da página
+              de status, e dizer que o serviço está de pé logo antes do botão de
+              baixar responde a pergunta que todo mundo faz sem escrever.
+            */}
+            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-1 px-3 py-1 text-xs font-medium text-ink-muted">
+              <span className="size-1.5 rounded-full bg-online" />
+              Feito no Brasil, para conversar
+            </p>
+
+            <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-6xl">
               O lugar dos seus amigos,
-              <br /> sem alugar de ninguém
+              <br />{" "}
+              <span className="bg-gradient-to-b from-white to-ink-muted bg-clip-text text-transparent">
+                sem alugar de ninguém
+              </span>
             </h1>
 
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-muted">
@@ -115,6 +129,8 @@ export default function Home() {
             </p>
           </div>
 
+          <PalcoDoApp />
+
           {/*
             O brilho vermelho atrás do título fica ATRÁS do conteúdo e sem
             captura de clique: é decoração, e decoração que rouba o clique do
@@ -124,9 +140,13 @@ export default function Home() {
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-0 -z-10 h-80 w-[42rem] -translate-x-1/2 rounded-full bg-brand/20 blur-[120px]"
           />
+
+          {/* A grade vive ABAIXO do brilho (`-z-20` contra `-z-10`): por cima
+              dele, os fios cortariam o borrão e ele deixaria de parecer luz. */}
+          <div aria-hidden className="grade-do-heroi pointer-events-none absolute inset-0 -z-20" />
         </section>
 
-        <section id="recursos" className="border-t border-line bg-surface-1 px-6 py-20">
+        <section id="recursos" className="bg-surface-1 px-6 py-20">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-center text-3xl font-bold">O que ele já faz</h2>
             <p className="mx-auto mt-3 max-w-lg text-center text-sm leading-relaxed text-ink-muted">
