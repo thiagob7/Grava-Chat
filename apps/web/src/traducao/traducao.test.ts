@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -112,9 +112,19 @@ describe("catálogos de tradução", () => {
   /*
     Deixar o texto em português dentro de outro idioma é o erro mais fácil de
     cometer numa tradução em lote — e o mais difícil de ver, porque a tela
-    continua funcionando. Aqui só valem os casos em que a palavra é REALMENTE
-    igual entre os dois idiomas; se um dia forem muitos, é sinal de catálogo
-    copiado e não traduzido.
+    continua funcionando.
+
+    A conta é uma PROPORÇÃO, e não um número de chaves, e isso custou um teste
+    vermelho para ficar claro. Com sessenta e cinco textos, "menos de vinte
+    iguais" parecia generoso; ao passar de cento e oitenta, o espanhol bateu
+    nele — e nenhuma daquelas linhas estava por traduzir. "Mostrar",
+    "cancelar", "Copiar", "Enviar", "Ver" e "spoiler" se escrevem igual nos
+    dois idiomas, e a lista só cresce junto com o catálogo. Um limite absoluto
+    transformaria cada rodada de tradução numa negociação com o teste.
+
+    Quarenta por cento é o ponto onde a coincidência acaba e o descuido começa:
+    o espanhol, que é o mais próximo de todos, mora perto dos vinte; um
+    catálogo copiado e não traduzido nasce acima dos oitenta.
   */
   it("não deixa um idioma inteiro em português", () => {
     for (const [idioma, catalogo] of Object.entries(catalogos)) {
@@ -124,9 +134,11 @@ describe("catálogos de tradução", () => {
         ([chave, texto]) => catalogo[chave] === texto,
       );
 
-      expect({ idioma, iguais: iguais.length < 20 }).toEqual({
+      const proporcao = iguais.length / Object.keys(origem).length;
+
+      expect({ idioma, traduzido: proporcao < 0.4 }).toEqual({
         idioma,
-        iguais: true,
+        traduzido: true,
       });
     }
   });
@@ -134,23 +146,35 @@ describe("catálogos de tradução", () => {
   /*
     Toda chave que a tela pede tem que existir.
 
-    O `secoes.ts` e o modal guardam o caminho como string, e string errada não
-    é erro de tipo: o i18next devolve a própria chave, e a lateral passa a
-    mostrar "configuracoes.telas.conta" no lugar de "Minha conta".
+    A chave viaja como string, e string errada não é erro de tipo: o i18next
+    devolve a própria chave, e a lateral passa a mostrar
+    "configuracoes.telas.conta" no lugar de "Minha conta".
+
+    A varredura é do `src` inteiro, e não de uma lista de arquivos. A lista
+    existia enquanto só as configurações traduziam — três caminhos escritos à
+    mão. Com a conversa, viraram doze componentes, e uma lista de arquivos que
+    alguém precisa lembrar de aumentar é uma guarda que envelhece calada: o
+    componente novo entra, ninguém o inscreve, e o teste continua verde
+    olhando para o lugar errado.
   */
   it("tem tradução para toda chave que a tela pede", () => {
     const raiz = dirname(fileURLToPath(import.meta.url));
-    const fontes = [
-      join(raiz, "..", "components", "user-settings", "secoes.ts"),
-      join(raiz, "..", "components", "user-settings", "UserSettingsModal.tsx"),
-      join(raiz, "..", "components", "user-settings", "IdiomaSection.tsx"),
-    ].map((caminho) => readFileSync(caminho, "utf8"));
+
+    /// O próprio `traducao/` fica de fora: lá as chaves são a definição, não o
+    /// pedido, e o teste acima já cuida delas.
+    const varrer = (pasta: string): string[] =>
+      readdirSync(pasta, { withFileTypes: true }).flatMap((item) => {
+        const caminho = join(pasta, item.name);
+
+        if (item.isDirectory()) return item.name === "traducao" ? [] : varrer(caminho);
+        return /\.tsx?$/.test(item.name) ? [readFileSync(caminho, "utf8")] : [];
+      });
 
     const pedidas = new Set(
-      fontes.flatMap((src) =>
-        [...src.matchAll(/"((?:configuracoes|idioma)\.[\w.]+)"/g)].map(
-          (m) => m[1]!,
-        ),
+      varrer(join(raiz, "..")).flatMap((src) =>
+        [
+          ...src.matchAll(/"((?:configuracoes|conversa|idioma)\.[\w.]+)"/g),
+        ].map((m) => m[1]!),
       ),
     );
 

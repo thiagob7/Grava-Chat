@@ -6,6 +6,7 @@ import { Avatar } from "~/components/Avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
 interface PinnedMessagesPanelProps {
   channelId: string;
@@ -13,6 +14,7 @@ interface PinnedMessagesPanelProps {
 }
 
 export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channelId, canManage }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = React.useState(false);
   const { data: fixadas = [] } = useFindPins(channelId, aberto);
   const pinMessage = usePinMessage(channelId);
@@ -20,8 +22,11 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
   return (
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>
-        <button aria-label="Mensagens fixadas" className="text-ink-muted transition hover:text-ink">
-          <Tooltip label="Mensagens fixadas">
+        <button
+          aria-label={t("conversa.fixadas.titulo")}
+          className="text-ink-muted transition hover:text-ink"
+        >
+          <Tooltip label={t("conversa.fixadas.titulo")}>
             <PushPin size={20} weight="fill" />
           </Tooltip>
         </button>
@@ -30,16 +35,14 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
       <PopoverContent align="end" className="w-96 p-0">
         <header className="flex items-center gap-2 border-b border-line px-4 py-3">
           <PushPin size={16} weight="fill" />
-          <h3 className="font-semibold">Mensagens fixadas</h3>
+          <h3 className="font-semibold">{t("conversa.fixadas.titulo")}</h3>
         </header>
 
         <div className="max-h-96 overflow-y-auto">
           {!fixadas.length && (
             <div className="px-6 py-10 text-center">
               <PushPin size={32} weight="fill" className="mx-auto text-ink-faint" />
-              <p className="mt-3 text-sm text-ink-muted">
-                Este canal não tem mensagens fixadas… por enquanto.
-              </p>
+              <p className="mt-3 text-sm text-ink-muted">{t("conversa.fixadas.vazio")}</p>
             </div>
           )}
 
@@ -60,14 +63,19 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
                   </span>
                 </p>
                 <p className="mt-0.5 line-clamp-3 whitespace-pre-wrap break-words text-sm text-ink-muted">
-                  {mensagem.content || (mensagem.attachments.length ? "(anexo)" : "(enquete)")}
+                  {mensagem.content ||
+                    t(
+                      mensagem.attachments.length
+                        ? "conversa.fixadas.anexo"
+                        : "conversa.fixadas.enquete",
+                    )}
                 </p>
               </div>
 
               {canManage && (
                 <button
                   onClick={() => pinMessage.mutate({ messageId: mensagem.id, pin: false })}
-                  title="Desafixar"
+                  title={t("conversa.fixadas.desafixar")}
                   className="self-start rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
                 >
                   <PushPinSlash weight="fill" size={14} />
@@ -78,8 +86,8 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
         </div>
 
         <p className="px-4 py-3 text-xs text-ink-faint">
-          <span className="font-semibold text-online">FICA A DICA:</span> quem tem a permissão
-          “Gerenciar mensagens” pode fixar direto no menu da mensagem.
+          <span className="font-semibold text-online">{t("conversa.fixadas.dicaRotulo")}</span>{" "}
+          {t("conversa.fixadas.dica")}
         </p>
       </PopoverContent>
     </Popover>

@@ -4,6 +4,7 @@ import { Check, Copy } from "lucide-react";
 import { rotuloDaLingua } from "~/lib/codigo";
 import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface BlocoDeCodigoProps {
   codigo: string;
@@ -16,6 +17,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
   lingua,
   className,
 }) => {
+  const { t } = useTranslation();
   const [copiado, setCopiado] = useState(false);
   const relogio = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -44,11 +46,11 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
         <button
           type="button"
           onClick={copiar}
-          aria-label={copiado ? "Código copiado" : "Copiar o código"}
+          aria-label={t(copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria")}
           className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-11 text-ink-faint transition hover:bg-hover hover:text-ink"
         >
           {copiado ? <Check size={12} /> : <Copy size={12} />}
-          {copiado ? "Copiado" : "Copiar"}
+          {t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}
         </button>
       </div>
 

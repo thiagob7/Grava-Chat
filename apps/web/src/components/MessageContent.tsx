@@ -9,6 +9,7 @@ import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/stores/aparencia";
+import { i18next, useTranslation } from "~/traducao";
 
 const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
 
@@ -94,14 +95,14 @@ function enriquecer(
     } else if (cargoId) {
       const cargo = mencoes?.cargos.get(cargoId);
       pedaco = (
-        <Pilula key={k} cor={cargo?.color} titulo="Menção de cargo">
-          @{cargo?.name ?? "cargo"}
+        <Pilula key={k} cor={cargo?.color} titulo={i18next.t("conversa.mencao.cargo")}>
+          @{cargo?.name ?? i18next.t("conversa.mencao.cargoSemNome")}
         </Pilula>
       );
     } else if (usuarioId) {
       pedaco = (
-        <Pilula key={k} titulo="Menção">
-          @{mencoes?.nomes.get(usuarioId) ?? "alguém"}
+        <Pilula key={k} titulo={i18next.t("conversa.mencao.pessoa")}>
+          @{mencoes?.nomes.get(usuarioId) ?? i18next.t("conversa.mencao.alguem")}
         </Pilula>
       );
     } else if (todos) {
@@ -109,7 +110,9 @@ function enriquecer(
         <Pilula
           key={k}
           familia={todos === "here" ? "here" : "everyone"}
-          titulo={todos === "here" ? "Notifica quem está online" : "Notifica o servidor"}
+          titulo={i18next.t(
+            todos === "here" ? "conversa.mencao.here" : "conversa.mencao.everyone",
+          )}
         >
           @{todos}
         </Pilula>
@@ -176,6 +179,15 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   mencoes,
   blocos = false,
 }) => {
+  /*
+    O `t` aqui é a inscrição, não o tradutor.
+
+    Quem traduz as pílulas de menção é o `i18next.t` lá dentro do `enriquecer`,
+    que não é componente e não tem hook. Sem esta linha, o texto delas só
+    trocaria de idioma quando a mensagem redesenhasse por outro motivo.
+  */
+  useTranslation();
+
   const abrirImagem = useLightbox((s) => s.abrir);
   const abrirImagensDeLinks = useAparencia((s) => s.imagensDeLinks);
 
@@ -186,7 +198,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
     return (
       <button
         onClick={() => abrirImagem(sozinho)}
-        aria-label="Ver imagem"
+        aria-label={i18next.t("conversa.cartao.verImagem")}
         className="mt-1 block overflow-hidden rounded transition hover:brightness-110"
       >
         <img

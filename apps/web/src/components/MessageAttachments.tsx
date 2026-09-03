@@ -5,6 +5,7 @@ import type { Attachment } from "@gravae/shared";
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/stores/aparencia";
+import { useTranslation } from "~/traducao";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
@@ -39,6 +40,7 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
   anexo,
   children,
 }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
   const quando = useAparencia((s) => s.spoilers);
 
@@ -48,13 +50,13 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
     <button
       onClick={() => setAberto(true)}
       className="group relative overflow-hidden rounded-lg"
-      aria-label={`Mostrar spoiler: ${anexo.filename}`}
+      aria-label={t("conversa.anexos.mostrarSpoiler", { arquivo: anexo.filename })}
     >
       <div className="pointer-events-none blur-xl brightness-50">{children}</div>
 
       <span className="absolute inset-0 flex items-center justify-center">
         <span className="flex items-center gap-1.5 rounded-full bg-surface-0/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink transition group-hover:bg-surface-0">
-          <EyeOff size={13} /> Spoiler
+          <EyeOff size={13} /> {t("conversa.anexos.spoilerTitulo")}
         </span>
       </span>
     </button>
@@ -62,6 +64,7 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
 };
 
 const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
+  const { t } = useTranslation();
   const abrir = useLightbox((s) => s.abrir);
 
   const medida =
@@ -83,7 +86,7 @@ const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   return (
     <button
       onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
-      aria-label={`Ver ${anexo.filename}`}
+      aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
       className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
       style={medida ? { width: medida.largura } : { maxWidth: MAX_W }}
     >

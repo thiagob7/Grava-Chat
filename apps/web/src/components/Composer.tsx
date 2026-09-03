@@ -38,6 +38,7 @@ import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/stores/reply-store";
 import { useAparencia } from "~/stores/aparencia";
 import { converterEmoticons } from "~/lib/emoticons";
+import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
 
 interface ComposerProps {
@@ -60,6 +61,7 @@ export const Composer: React.FC<ComposerProps> = ({
   podeAnexar = true,
   modoLento = 0,
 }) => {
+  const { t } = useTranslation();
   const sendMessage = useSendMessage();
   const respostaAberta = useReplyStore((s) => s.alvo);
   const mencionarAoResponder = useReplyStore((s) => s.mencionar);
@@ -311,12 +313,11 @@ export const Composer: React.FC<ComposerProps> = ({
     */
     <div className="@container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
       {faltam > 0 && (
-        <Tooltip
-          label={`O modo lento está definido como ${modoLento}s. Aguarde antes de enviar outra mensagem.`}
-        >
+        <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
           <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
-            Modo lento ativo ({String(Math.floor(faltam / 60)).padStart(2, "0")}:
-            {String(faltam % 60).padStart(2, "0")})
+            {t("conversa.caixa.modoLento", {
+              tempo: `${String(Math.floor(faltam / 60)).padStart(2, "0")}:${String(faltam % 60).padStart(2, "0")}`,
+            })}
             <Timer size={13} />
           </p>
         </Tooltip>
@@ -349,17 +350,18 @@ export const Composer: React.FC<ComposerProps> = ({
         {resposta && (
           <div className="flex items-center gap-2 rounded-t-lg bg-surface-3 px-3 py-1.5 text-sm @sm:px-4">
             <span className="min-w-0 flex-1 truncate text-ink-muted">
-              Respondendo para <span className="font-semibold text-ink">{resposta.autor}</span>
+              {t("conversa.caixa.respondendoPara")}{" "}
+              <span className="font-semibold text-ink">{resposta.autor}</span>
             </span>
 
             <button
               type="button"
               onClick={alternarMencao}
-              title={
+              title={t(
                 mencionarAoResponder
-                  ? "A pessoa vai ser notificada"
-                  : "A pessoa não vai ser notificada"
-              }
+                  ? "conversa.caixa.vaiNotificar"
+                  : "conversa.caixa.naoVaiNotificar",
+              )}
               className={cn(
                 "shrink-0 rounded px-1.5 py-0.5 text-xs font-bold uppercase transition",
                 mencionarAoResponder
@@ -367,13 +369,13 @@ export const Composer: React.FC<ComposerProps> = ({
                   : "text-ink-faint hover:bg-surface-4 hover:text-ink-muted",
               )}
             >
-              @ {mencionarAoResponder ? "ligado" : "desligado"}
+              @ {t(mencionarAoResponder ? "conversa.caixa.ligado" : "conversa.caixa.desligado")}
             </button>
 
             <button
               type="button"
               onClick={cancelarResposta}
-              aria-label="Parar de responder"
+              aria-label={t("conversa.caixa.pararDeResponder")}
               className="shrink-0 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink"
             >
               <X size={14} />
@@ -421,7 +423,7 @@ export const Composer: React.FC<ComposerProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!podeEscrever}>
               <button
-                aria-label="Mais"
+                aria-label={t("conversa.caixa.mais")}
                 className="py-3 text-ink-muted transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <Plus size={22} />
@@ -430,10 +432,10 @@ export const Composer: React.FC<ComposerProps> = ({
 
             <DropdownMenuContent align="start" side="top" className="w-56">
               <DropdownMenuItem disabled={!podeAnexar} onSelect={() => inputArquivo.current?.click()}>
-                Enviar um arquivo <FileUp size={16} />
+                {t("conversa.caixa.enviarArquivo")} <FileUp size={16} />
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setCriandoEnquete(true)}>
-                Criar enquete <BarChart3 size={16} />
+                {t("conversa.caixa.criarEnquete")} <BarChart3 size={16} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -457,10 +459,12 @@ export const Composer: React.FC<ComposerProps> = ({
             disabled={!podeEscrever}
             placeholder={
               !podeEscrever
-                ? "Você não tem permissão para enviar mensagens neste canal"
+                ? t("conversa.caixa.semPermissao")
                 : arrastando
-                  ? "Solte para anexar"
-                  : `Conversar em ${channelName ? `#${channelName}` : ""}`
+                  ? t("conversa.caixa.solteParaAnexar")
+                  : channelName
+                    ? t("conversa.caixa.escrever", { canal: channelName })
+                    : t("conversa.caixa.escreverSemCanal")
             }
             onPaste={colar}
             onChange={(e) => {
@@ -588,7 +592,7 @@ export const Composer: React.FC<ComposerProps> = ({
               <PopoverTrigger asChild>
                 <span className="flex items-center">
                   <BotaoDeExpressao
-                    label="Emoji, GIF e figurinhas"
+                    label={t("conversa.caixa.expressoes")}
                     ativo={seletor !== null}
                     onClick={() => setSeletor(seletor ? null : "emoji")}
                   >
@@ -612,11 +616,15 @@ export const Composer: React.FC<ComposerProps> = ({
             </Popover>
 
             {mostrarBotaoDeEnviar && (
-              <Tooltip label={anexos.subindo ? "Aguardando o upload" : "Enviar"}>
+              <Tooltip
+                label={t(
+                  anexos.subindo ? "conversa.caixa.aguardandoEnvio" : "conversa.caixa.enviar",
+                )}
+              >
                 <button
                   onClick={submit}
                   disabled={!podeEnviar}
-                  aria-label="Enviar"
+                  aria-label={t("conversa.caixa.enviar")}
                   className="flex size-9 shrink-0 items-center justify-center rounded text-ink-muted transition hover:text-brand disabled:opacity-30"
                 >
                   <Send size={20} />

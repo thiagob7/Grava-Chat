@@ -15,6 +15,7 @@ import {
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface AttachmentTrayProps {
   items: PendingAttachment[];
@@ -26,6 +27,7 @@ interface AttachmentTrayProps {
 }
 
 export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove, onPatch }) => {
+  const { t } = useTranslation();
   const [editando, setEditando] = useState<PendingAttachment | null>(null);
 
   if (!items.length) return null;
@@ -51,7 +53,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               {item.attachment && (
                 <button
                   onClick={() => setEditando(item)}
-                  aria-label={`Modificar ${item.filename}`}
+                  aria-label={t("conversa.anexos.modificar", { arquivo: item.filename })}
                   className="rounded bg-surface-2 p-1 text-ink-muted transition hover:text-ink"
                 >
                   <Pencil size={14} />
@@ -59,7 +61,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               )}
               <button
                 onClick={() => onRemove(item.id)}
-                aria-label={`Remover ${item.filename}`}
+                aria-label={t("conversa.anexos.remover", { arquivo: item.filename })}
                 className="rounded bg-surface-2 p-1 text-ink-muted transition hover:text-danger"
               >
                 <X size={14} />
@@ -68,7 +70,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
 
             {item.attachment?.spoiler && (
               <span className="absolute left-1 top-1 z-10 flex items-center gap-1 rounded bg-surface-2/90 px-1.5 py-0.5 text-10 font-semibold uppercase text-ink-muted">
-                <EyeOff size={10} /> spoiler
+                <EyeOff size={10} /> {t("conversa.anexos.spoiler")}
               </span>
             )}
 
@@ -98,7 +100,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                   <AlertCircle size={11} /> {item.error}
                 </span>
               ) : subindo ? (
-                "Enviando…"
+                t("conversa.anexos.enviando")
               ) : (
                 economizou
               )}
@@ -128,6 +130,7 @@ interface ModificarAnexoProps {
 }
 
 const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar }) => {
+  const { t } = useTranslation();
   const [filename, setFilename] = useState(item.filename);
   const [descricao, setDescricao] = useState(item.attachment?.description ?? "");
   const [spoiler, setSpoiler] = useState(Boolean(item.attachment?.spoiler));
@@ -136,7 +139,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
     <Dialog open onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Editar anexo</DialogTitle>
+          <DialogTitle>{t("conversa.anexos.editarTitulo")}</DialogTitle>
         </DialogHeader>
 
         <DialogBody className="space-y-4">
@@ -149,7 +152,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
           )}
 
           <div>
-            <Label htmlFor="anexo-nome">Nome do arquivo</Label>
+            <Label htmlFor="anexo-nome">{t("conversa.anexos.nomeDoArquivo")}</Label>
             <Input
               id="anexo-nome"
               autoFocus
@@ -163,7 +166,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
             {/* O contador fica na mesma linha do rótulo, à direita: é onde a
                 pessoa já está olhando quando digita. */}
             <div className="flex items-baseline justify-between gap-3">
-              <Label htmlFor="anexo-descricao">Descrição do texto alternativo</Label>
+              <Label htmlFor="anexo-descricao">{t("conversa.anexos.descricao")}</Label>
               <span className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">
                 {descricao.length}/1024
               </span>
@@ -173,20 +176,20 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
               value={descricao}
               maxLength={1024}
               rows={3}
-              placeholder="Descreva esta mídia para leitores de tela"
+              placeholder={t("conversa.anexos.descricaoDica")}
               onChange={(e) => setDescricao(e.target.value)}
             />
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Marcar como spoiler</span>
+            <span className="text-sm">{t("conversa.anexos.marcarSpoiler")}</span>
             <Switch checked={spoiler} onCheckedChange={setSpoiler} />
           </div>
         </DialogBody>
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cancelar
+            {t("conversa.anexos.cancelar")}
           </Button>
           <Button
             onClick={() =>
@@ -197,7 +200,7 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
               })
             }
           >
-            Salvar
+            {t("conversa.anexos.salvar")}
           </Button>
         </DialogFooter>
       </DialogContent>

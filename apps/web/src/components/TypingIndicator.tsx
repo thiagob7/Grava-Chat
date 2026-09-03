@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useTypingStore } from "~/stores/typing-store";
+import { useTranslation } from "~/traducao";
 
 interface TypingIndicatorProps {
   channelId: string;
@@ -8,6 +9,7 @@ interface TypingIndicatorProps {
 }
 
 export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, currentUserId }) => {
+  const { t } = useTranslation();
   const byChannel = useTypingStore((s) => s.byChannel);
   const activeIn = useTypingStore((s) => s.activeIn);
 
@@ -24,10 +26,10 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
   const names = users.map((entry) => entry.user.displayName);
   const text =
     names.length === 1
-      ? `${names[0]} está digitando…`
+      ? t("conversa.digitando.um", { nome: names[0] })
       : names.length === 2
-        ? `${names[0]} e ${names[1]} estão digitando…`
-        : `${names.length} pessoas estão digitando…`;
+        ? t("conversa.digitando.dois", { primeiro: names[0], segundo: names[1] })
+        : t("conversa.digitando.varios", { quantidade: names.length });
 
   return (
     <div className="flex h-6 items-center gap-2 px-3 text-xs text-ink-muted">

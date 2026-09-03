@@ -6,6 +6,7 @@ import type { EmbedModel } from "~/@core/application/requests/embed/embeds";
 import { extrairLinks } from "~/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 /**
  * Os cartões dos links de uma mensagem.
@@ -75,6 +76,7 @@ function useMedida(endereco: string | null) {
 }
 
 const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
+  const { t } = useTranslation();
   const [tocando, setTocando] = useState(false);
   const medida = useMedida(embed.imagem);
 
@@ -134,7 +136,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
         {!capaGrande && embed.imagem && medida && (
           <button
             onClick={abrir}
-            aria-label={`Abrir ${embed.site ?? embed.url}`}
+            aria-label={t("conversa.cartao.abrir", { destino: embed.site ?? embed.url })}
             className="size-20 shrink-0 overflow-hidden rounded transition hover:brightness-110"
           >
             <img
@@ -153,7 +155,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
           {tocando && embed.player ? (
             <iframe
               src={embed.player}
-              title={embed.titulo ?? "Tocador"}
+              title={embed.titulo ?? t("conversa.cartao.tocador")}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
               className="aspect-video w-full rounded border-0 bg-black"
@@ -171,32 +173,40 @@ const Capa: React.FC<{ embed: EmbedModel; pronta: boolean; onAbrir: () => void }
   embed,
   pronta,
   onAbrir,
-}) => (
-  <button
-    onClick={onAbrir}
-    aria-label={embed.player ? `Tocar ${embed.titulo ?? "vídeo"}` : `Abrir ${embed.url}`}
-    className={cn(
-      "group/capa relative block w-full overflow-hidden rounded transition hover:brightness-110",
-      !pronta && "hidden",
-    )}
-  >
-    <img
-      src={embed.imagem ?? ""}
-      alt={embed.titulo ?? ""}
-      referrerPolicy="no-referrer"
-      loading="lazy"
-      className="block max-h-[15rem] w-full object-cover"
-    />
+}) => {
+  const { t } = useTranslation();
 
-    {embed.player && (
-      <span className="absolute inset-0 flex items-center justify-center">
-        <span className="flex size-12 items-center justify-center rounded-full bg-black/60 text-white transition group-hover/capa:bg-brand">
-          <Play size={22} className="ml-0.5 fill-current" />
+  return (
+    <button
+      onClick={onAbrir}
+      aria-label={
+        embed.player
+          ? t("conversa.cartao.tocar", { titulo: embed.titulo ?? t("conversa.cartao.video") })
+          : t("conversa.cartao.abrir", { destino: embed.url })
+      }
+      className={cn(
+        "group/capa relative block w-full overflow-hidden rounded transition hover:brightness-110",
+        !pronta && "hidden",
+      )}
+    >
+      <img
+        src={embed.imagem ?? ""}
+        alt={embed.titulo ?? ""}
+        referrerPolicy="no-referrer"
+        loading="lazy"
+        className="block max-h-[15rem] w-full object-cover"
+      />
+
+      {embed.player && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-black/60 text-white transition group-hover/capa:bg-brand">
+            <Play size={22} className="ml-0.5 fill-current" />
+          </span>
         </span>
-      </span>
-    )}
-  </button>
-);
+      )}
+    </button>
+  );
+};
 
 /// O ícone do site não pode derrubar a linha do nome dele: se não carregar,
 /// some e o nome fica no lugar.
@@ -219,6 +229,7 @@ const Favicon: React.FC<{ url: string }> = ({ url }) => {
 /// Endereço que serve imagem sem terminar em `.png` — o do R2, por exemplo.
 /// Cartão nenhum: é a imagem, do mesmo tamanho das outras da conversa.
 const ImagemSozinha: React.FC<{ url: string; destino: string }> = ({ url, destino }) => {
+  const { t } = useTranslation();
   const abrirImagem = useLightbox((s) => s.abrir);
   const medida = useMedida(url);
 
@@ -227,7 +238,7 @@ const ImagemSozinha: React.FC<{ url: string; destino: string }> = ({ url, destin
   return (
     <button
       onClick={() => abrirImagem(destino)}
-      aria-label="Ver imagem"
+      aria-label={t("conversa.cartao.verImagem")}
       className="block max-w-full overflow-hidden rounded transition hover:brightness-110"
       style={{ width: Math.min(medida.largura, 420) }}
     >

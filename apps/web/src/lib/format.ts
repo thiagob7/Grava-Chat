@@ -1,37 +1,64 @@
+import { i18next, idiomaAtual } from "~/traducao";
 import { prefsDeAparencia } from "~/stores/aparencia";
 
 /*
-  A hora, no formato que a pessoa escolheu.
+  A hora, no formato que a pessoa escolheu e no idioma que ela lê.
 
-  Um `Intl.DateTimeFormat` por formato, guardado: montar o objeto custa, e o
-  horário é desenhado em toda mensagem da tela. Perguntar a preferência a cada
-  chamada é barato; construir o formatador não é.
+  Um `Intl.DateTimeFormat` guardado por (idioma, formato): montar o objeto
+  custa, e o horário é desenhado em toda mensagem da tela. Perguntar a
+  preferência a cada chamada é barato; construir o formatador não é.
 
-  `hour12: false` NÃO é o mesmo que omitir: com `pt-BR` e 2 dígitos, o padrão
-  já é 24h, mas ser explícito deixa os dois caminhos simétricos e evita que
-  uma mudança de locale escolha por nós.
+  `hour12` explícito não é redundância. Em muitos idiomas o padrão de 12 ou 24
+  horas já vem do locale, e omitir a opção deixaria o locale decidir por cima
+  da pessoa — que é justamente a escolha que a tela de Idioma oferece.
 */
-const formatadores = new Map<boolean, Intl.DateTimeFormat>();
+const formatadores = new Map<string, Intl.DateTimeFormat>();
 
-function formatadorDeHora(): Intl.DateTimeFormat {
-  const em24h = prefsDeAparencia().horaEm24h;
-  let pronto = formatadores.get(em24h);
+/*
+  A chave junta idioma e formato, porque os dois mudam sem avisar.
+
+  Antes ela era só o `horaEm24h`, e a data nascia sempre em `pt-BR`. Quem
+  escolhesse japonês continuava vendo "02/09/2026" e "hoje às" — o texto da
+  tela trocava e o relógio não, que é a metade pior de traduzir: parece
+  descuido, não idioma faltando.
+*/
+function guardado(sufixo: string, montar: () => Intl.DateTimeFormat): Intl.DateTimeFormat {
+  const chave = `${idiomaAtual()}|${sufixo}`;
+  let pronto = formatadores.get(chave);
 
   if (!pronto) {
-    pronto = new Intl.DateTimeFormat("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: !em24h,
-    });
-
-    formatadores.set(em24h, pronto);
+    pronto = montar();
+    formatadores.set(chave, pronto);
   }
 
   return pronto;
 }
 
+function formatadorDeHora(): Intl.DateTimeFormat {
+  const em24h = prefsDeAparencia().horaEm24h;
+
+  return guardado(em24h ? "24h" : "12h", () =>
+    new Intl.DateTimeFormat(idiomaAtual(), {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: !em24h,
+    }),
+  );
+}
+
 const time = { format: (d: Date) => formatadorDeHora().format(d) };
-const dayMonth = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+const dayMonth = {
+  format: (d: Date) =>
+    guardado(
+      "dia-mes",
+      () =>
+        new Intl.DateTimeFormat(idiomaAtual(), {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+    ).format(d),
+};
 
 const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 
@@ -41,8 +68,9 @@ export function formatTimestamp(iso: string) {
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
 
-  if (isSameDay(d, now)) return `hoje às ${time.format(d)}`;
-  if (isSameDay(d, yesterday)) return `ontem às ${time.format(d)}`;
+  if (isSameDay(d, now)) return i18next.t("conversa.data.hojeAs", { hora: time.format(d) });
+  if (isSameDay(d, yesterday))
+    return i18next.t("conversa.data.ontemAs", { hora: time.format(d) });
   return `${dayMonth.format(d)} ${time.format(d)}`;
 }
 
@@ -54,9 +82,18 @@ export function formatDayDivider(iso: string) {
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
 
-  if (isSameDay(d, now)) return "Hoje";
-  if (isSameDay(d, yesterday)) return "Ontem";
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric" }).format(d);
+  if (isSameDay(d, now)) return i18next.t("conversa.data.hoje");
+  if (isSameDay(d, yesterday)) return i18next.t("conversa.data.ontem");
+
+  return guardado(
+    "dia-por-extenso",
+    () =>
+      new Intl.DateTimeFormat(idiomaAtual(), {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }),
+  ).format(d);
 }
 
 const AVATAR_COLORS = ["#5865f2", "#3ba55c", "#faa61a", "#ed4245", "#eb459e", "#00a8fc", "#9b59b6"];

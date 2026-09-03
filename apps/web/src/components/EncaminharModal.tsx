@@ -9,6 +9,7 @@ import { Avatar } from "~/components/Avatar";
 import { Dialog, DialogBody, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface Destino {
   id: string;
@@ -35,6 +36,7 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
   mensagem,
   guildId,
 }) => {
+  const { t } = useTranslation();
   const [busca, setBusca] = useState("");
   const [enviandoPara, setEnviandoPara] = useState<string | null>(null);
 
@@ -67,7 +69,7 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
     sendMessage.mutate(
       {
         channelId: destino.id,
-        content: mensagem.content || "(mensagem sem texto)",
+        content: mensagem.content || t("conversa.encaminhar.semTexto"),
         nonce: crypto.randomUUID(),
       },
       { onSettled: () => (setEnviandoPara(null), onFechar()) },
@@ -79,7 +81,7 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
       <DialogContent className="max-w-md">
-        <DialogTitle>Encaminhar mensagem</DialogTitle>
+        <DialogTitle>{t("conversa.encaminhar.titulo")}</DialogTitle>
 
         <DialogBody>
           <div className={grupoDeCampo}>
@@ -88,25 +90,30 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
               autoFocus
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Para onde?"
+              placeholder={t("conversa.encaminhar.paraOnde")}
               className={campoNu}
             />
           </div>
 
           <p className="mt-3 line-clamp-2 rounded bg-surface-0 px-3 py-2 text-xs text-ink-faint">
-            {mensagem.content || "(mensagem sem texto)"}
+            {mensagem.content || t("conversa.encaminhar.semTexto")}
           </p>
 
           <div className="mt-3 max-h-64 space-y-3 overflow-y-auto">
             {vazio && (
               <p className="py-8 text-center text-sm text-ink-faint">
-                Nenhum lugar com esse nome.
+                {t("conversa.encaminhar.nenhumLugar")}
               </p>
             )}
 
-            <Grupo titulo="Canais" itens={destinos.canais} enviandoPara={enviandoPara} onEscolher={encaminhar} />
             <Grupo
-              titulo="Conversas"
+              titulo={t("conversa.encaminhar.canais")}
+              itens={destinos.canais}
+              enviandoPara={enviandoPara}
+              onEscolher={encaminhar}
+            />
+            <Grupo
+              titulo={t("conversa.encaminhar.conversas")}
               itens={destinos.conversas}
               enviandoPara={enviandoPara}
               onEscolher={encaminhar}

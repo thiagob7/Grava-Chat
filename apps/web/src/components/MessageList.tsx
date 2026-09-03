@@ -12,6 +12,7 @@ import { MessageItem, shouldGroup } from "~/components/MessageItem";
 import { useEnfeites } from "~/hooks/use-enfeites";
 import { useMencoes } from "~/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
 interface MessageListProps {
   channelId: string;
@@ -32,6 +33,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   postId,
   header,
 }) => {
+  const { t } = useTranslation();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFindMessages(
     channelId,
     postId,
@@ -186,7 +188,9 @@ export const MessageList: React.FC<MessageListProps> = ({
   };
 
   if (isLoading) {
-    return <div className="flex-1 p-6 text-sm text-ink-faint">Carregando mensagens…</div>;
+    return (
+      <div className="flex-1 p-6 text-sm text-ink-faint">{t("conversa.lista.carregando")}</div>
+    );
   }
 
   /// A citação precisa da mensagem respondida, e ela quase sempre já está
@@ -219,7 +223,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       <div ref={conteudo} className="pb-[var(--gc-rodape,1rem)]">
       {hasNextPage ? (
         <p className="py-3 text-center text-xs text-ink-faint">
-          {isFetchingNextPage ? "Carregando…" : "Role para cima para ver mais"}
+          {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}
         </p>
       ) : (
         (header ?? (
@@ -233,16 +237,19 @@ export const MessageList: React.FC<MessageListProps> = ({
             </div>
             {semHistorico ? (
               <>
-                <h2 className="text-2xl font-bold">Histórico indisponível</h2>
+                <h2 className="text-2xl font-bold">{t("conversa.lista.semHistorico")}</h2>
                 <p className="mt-1 text-ink-muted">
-                  Seu cargo não tem permissão para ler o histórico de #{channelName}. As mensagens
-                  novas continuam aparecendo enquanto você estiver aqui.
+                  {t("conversa.lista.semHistoricoDetalhe", { canal: channelName })}
                 </p>
               </>
             ) : (
               <>
-                <h2 className="text-2xl font-bold">Bem-vindo a #{channelName}</h2>
-                <p className="mt-1 text-ink-muted">Este é o começo do canal #{channelName}.</p>
+                <h2 className="text-2xl font-bold">
+                  {t("conversa.lista.boasVindas", { canal: channelName })}
+                </h2>
+                <p className="mt-1 text-ink-muted">
+                  {t("conversa.lista.boasVindasDetalhe", { canal: channelName })}
+                </p>
               </>
             )}
           </div>

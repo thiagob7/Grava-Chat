@@ -66,6 +66,7 @@ import { ExpressionPicker } from "~/components/ExpressionPicker";
 import { EncaminharModal } from "~/components/EncaminharModal";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/stores/aparencia";
+import { useTranslation } from "~/traducao";
 
 const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];
 
@@ -110,6 +111,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onRetry,
   onPin,
 }) => {
+  const { t } = useTranslation();
   const confirmar = useConfirmar();
 
   const ignorado = useIgnoreStore((s) => s.ignorados).includes(message.author.id);
@@ -205,7 +207,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   const copiar = (texto: string, aviso: string) => {
     void copiarTexto(texto).then((deu) =>
-      deu ? toast.success(aviso) : toast.error("Seu navegador não deixou copiar."),
+      deu ? toast.success(aviso) : toast.error(t("conversa.mensagem.naoDeuParaCopiar")),
     );
   };
 
@@ -216,14 +218,14 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   const marcarNaoLido = () => {
     unreadFromMessage(message.channelId, message.id);
-    toast.success("Não lidas a partir daqui.");
+    toast.success(t("conversa.mensagem.naoLidasDaqui"));
   };
 
   const apagar = () =>
     void confirmar({
-      titulo: "Apagar mensagem?",
-      descricao: "Ela some para todo mundo do canal. Não dá pra recuperar.",
-      acao: "Apagar",
+      titulo: t("conversa.mensagem.apagarTitulo"),
+      descricao: t("conversa.mensagem.apagarDescricao"),
+      acao: t("conversa.mensagem.apagarAcao"),
     }).then(({ confirmado }) => confirmado && void deleteMessage(message.id).catch(() => undefined));
 
   const iniciarResposta = () =>
@@ -249,7 +251,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <span className="max-w-[8rem] truncate font-medium text-ink @sm:max-w-none">
           {message.author.displayName}
         </span>
-        <span className="hidden @xs:inline">usou</span>
+        <span className="hidden @xs:inline">{t("conversa.mensagem.usou")}</span>
         <span className="min-w-0 truncate text-xs text-ink-muted">
           <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} />
         </span>
@@ -267,8 +269,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           <button
             type="button"
             onClick={apagar}
-            title="Apagar"
-            aria-label="Apagar"
+            title={t("conversa.acoes.apagar")}
+            aria-label={t("conversa.acoes.apagar")}
             className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-danger group-hover:opacity-100"
           >
             <Trash2 size={14} />
@@ -370,7 +372,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             </span>
             {message.pinnedAt && (
               <span className="flex shrink-0 items-center gap-1 text-10 text-ink-faint">
-                <Pin size={10} /> fixada
+                <Pin size={10} /> {t("conversa.mensagem.fixada")}
               </span>
             )}
           </div>
@@ -378,9 +380,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
         {ignorado && !revelado ? (
           <p className="my-1 flex items-center gap-2 text-sm italic text-ink-faint">
-            Mensagem de alguém que você ignora.
+            {t("conversa.mensagem.ignorada")}
             <button onClick={() => setRevelado(true)} className="not-italic text-brand hover:underline">
-              Mostrar
+              {t("conversa.mensagem.mostrar")}
             </button>
           </p>
         ) : editing ? (
@@ -399,11 +401,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               rows={Math.min(6, draft.split("\n").length)}
             />
             <p className="mt-1 text-xs text-ink-faint">
-              Esc para{" "}
+              {t("conversa.mensagem.escPara")}{" "}
               <button onClick={() => setEditing(false)} className="text-brand hover:underline">
-                cancelar
+                {t("conversa.mensagem.cancelar")}
               </button>{" "}
-              · Enter para salvar
+              · {t("conversa.mensagem.enterParaSalvar")}
             </p>
           </div>
         ) : (
@@ -418,7 +420,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
               <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} blocos />
-              {message.editedAt && <span className="ml-1 text-10 text-ink-faint">(editado)</span>}
+              {message.editedAt && (
+                <span className="ml-1 text-10 text-ink-faint">
+                  {t("conversa.mensagem.editado")}
+                </span>
+              )}
             </div>
           )
         )}
@@ -457,7 +463,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             onClick={() => onRetry(message)}
             className="mt-1 flex items-center gap-1 text-xs text-danger hover:underline"
           >
-            <RotateCw size={12} /> Não foi enviada. Tentar de novo
+            <RotateCw size={12} /> {t("conversa.mensagem.falhou")}
           </button>
         )}
 
@@ -510,7 +516,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           {mostrarReacoes && (
           <Popover open={reagindo} onOpenChange={setReagindo}>
             <PopoverTrigger asChild>
-              <AcaoDaBarra titulo="Reagir">
+              <AcaoDaBarra titulo={t("conversa.acoes.reagir")}>
                 <SmilePlus size={16} />
               </AcaoDaBarra>
             </PopoverTrigger>
@@ -526,11 +532,15 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </Popover>
           )}
 
-          <AcaoDaBarra titulo="Responder" onClick={iniciarResposta}>
+          <AcaoDaBarra titulo={t("conversa.acoes.responder")} onClick={iniciarResposta}>
             <CornerUpLeft size={16} />
           </AcaoDaBarra>
 
-          <AcaoDaBarra titulo="Encaminhar" className="hidden @sm:block" onClick={() => setEncaminhando(true)}>
+          <AcaoDaBarra
+            titulo={t("conversa.acoes.encaminhar")}
+            className="hidden @sm:block"
+            onClick={() => setEncaminhando(true)}
+          >
             <Forward size={16} />
           </AcaoDaBarra>
 
@@ -541,29 +551,35 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           {shift && (
             <>
               <AcaoDaBarra
-                titulo={favorita ? "Tirar dos favoritos" : "Favoritar mensagem"}
+                titulo={t(
+                  favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar",
+                )}
                 onClick={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
                 className={cn("hidden @md:block", favorita && "text-brand")}
               >
                 <Bookmark size={16} className={favorita ? "fill-current" : undefined} />
               </AcaoDaBarra>
 
-              <AcaoDaBarra titulo="Marcar como não lida" className="hidden @md:block" onClick={marcarNaoLido}>
+              <AcaoDaBarra
+                titulo={t("conversa.acoes.marcarNaoLida")}
+                className="hidden @md:block"
+                onClick={marcarNaoLido}
+              >
                 <MailOpen size={16} />
               </AcaoDaBarra>
 
               <AcaoDaBarra
-                titulo="Copiar link da mensagem"
+                titulo={t("conversa.acoes.copiarLink")}
                 className="hidden @md:block"
-                onClick={() => copiar(linkDaMensagem(), "Link copiado.")}
+                onClick={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
               >
                 <Link2 size={16} />
               </AcaoDaBarra>
 
               <AcaoDaBarra
-                titulo="Copiar ID da mensagem"
+                titulo={t("conversa.acoes.copiarId")}
                 className="hidden @md:block"
-                onClick={() => copiar(message.id, "ID copiado.")}
+                onClick={() => copiar(message.id, t("conversa.mensagem.idCopiado"))}
               >
                 <Hash size={16} />
               </AcaoDaBarra>
@@ -572,7 +588,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
           {canPin && (
             <AcaoDaBarra
-              titulo={message.pinnedAt ? "Desafixar" : "Fixar mensagem"}
+              titulo={t(message.pinnedAt ? "conversa.acoes.desafixar" : "conversa.acoes.fixar")}
               className="hidden @sm:block"
               onClick={() => onPin?.(message, !message.pinnedAt)}
             >
@@ -582,7 +598,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
           {isOwn && (
             <AcaoDaBarra
-              titulo="Editar"
+              titulo={t("conversa.acoes.editar")}
               className="hidden @sm:block"
               onClick={() => {
                 setDraft(message.content);
@@ -594,35 +610,40 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           )}
 
           {canDelete && (
-            <AcaoDaBarra titulo="Apagar" onClick={apagar} className="hidden hover:text-danger @sm:block">
+            <AcaoDaBarra
+              titulo={t("conversa.acoes.apagar")}
+              onClick={apagar}
+              className="hidden hover:text-danger @sm:block"
+            >
               <Trash2 size={16} />
             </AcaoDaBarra>
           )}
 
           <DropdownMenu open={menuAberto} onOpenChange={setMenuAberto}>
             <DropdownMenuTrigger asChild>
-              <AcaoDaBarra titulo="Mais">
+              <AcaoDaBarra titulo={t("conversa.acoes.mais")}>
                 <MoreHorizontal size={16} />
               </AcaoDaBarra>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-60">
               <DropdownMenuItem onSelect={iniciarResposta}>
-                Responder <CornerUpLeft size={16} />
+                {t("conversa.acoes.responder")} <CornerUpLeft size={16} />
               </DropdownMenuItem>
 
               <DropdownMenuItem onSelect={() => setEncaminhando(true)}>
-                Encaminhar <Forward size={16} />
+                {t("conversa.acoes.encaminhar")} <Forward size={16} />
               </DropdownMenuItem>
 
               {mostrarReacoes && (
                 <>
                   <DropdownMenuItem onSelect={() => setReagindo(true)}>
-                    Adicionar reação <SmilePlus size={16} />
+                    {t("conversa.acoes.adicionarReacao")} <SmilePlus size={16} />
                   </DropdownMenuItem>
 
                   <DropdownMenuItem onSelect={() => superReagir(SUPER_PADRAO)}>
-                    Super reagir com {SUPER_PADRAO} <Sparkles size={16} />
+                    {t("conversa.acoes.superReagirCom", { emoji: SUPER_PADRAO })}{" "}
+                    <Sparkles size={16} />
                   </DropdownMenuItem>
                 </>
               )}
@@ -631,7 +652,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
               {canPin && (
                 <DropdownMenuItem onSelect={() => onPin?.(message, !message.pinnedAt)}>
-                  {message.pinnedAt ? "Desafixar mensagem" : "Fixar mensagem"}
+                  {t(
+                    message.pinnedAt
+                      ? "conversa.acoes.desafixarMensagem"
+                      : "conversa.acoes.fixarMensagem",
+                  )}
                   {message.pinnedAt ? <PinOff size={16} /> : <Pin size={16} />}
                 </DropdownMenuItem>
               )}
@@ -643,36 +668,40 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     setEditing(true);
                   }}
                 >
-                  Editar mensagem <Pencil size={16} />
+                  {t("conversa.acoes.editarMensagem")} <Pencil size={16} />
                 </DropdownMenuItem>
               )}
 
               <DropdownMenuItem
                 onSelect={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
               >
-                {favorita ? "Tirar dos favoritos" : "Favoritar mensagem"}
+                {t(favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar")}
                 <Bookmark size={16} className={favorita ? "fill-current text-brand" : undefined} />
               </DropdownMenuItem>
 
               <DropdownMenuItem onSelect={marcarNaoLido}>
-                Marcar como não lida <MailOpen size={16} />
+                {t("conversa.acoes.marcarNaoLida")} <MailOpen size={16} />
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onSelect={() => copiar(linkDaMensagem(), "Link copiado.")}>
-                Copiar link da mensagem <Link2 size={16} />
+              <DropdownMenuItem
+                onSelect={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
+              >
+                {t("conversa.acoes.copiarLink")} <Link2 size={16} />
               </DropdownMenuItem>
 
-              <DropdownMenuItem onSelect={() => copiar(message.id, "ID copiado.")}>
-                Copiar ID da mensagem <Copy size={16} />
+              <DropdownMenuItem
+                onSelect={() => copiar(message.id, t("conversa.mensagem.idCopiado"))}
+              >
+                {t("conversa.acoes.copiarId")} <Copy size={16} />
               </DropdownMenuItem>
 
               {canDelete && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={apagar} className="text-danger focus:text-danger">
-                    Apagar mensagem <Trash2 size={16} />
+                    {t("conversa.acoes.apagarMensagem")} <Trash2 size={16} />
                   </DropdownMenuItem>
                 </>
               )}
@@ -744,35 +773,43 @@ const AtalhoDeReacao: React.FC<{
   className?: string;
   onReagir: () => void;
   onSuper: () => void;
-}> = ({ emoji, className, onReagir, onSuper }) => (
-  <button
-    {...useSegurar(onReagir, onSuper)}
-    title={`Reagir com ${emoji} — segure para super reagir`}
-    className={cn("rounded px-1.5 py-1 text-base hover:bg-surface-3", className)}
-  >
-    {emoji}
-  </button>
-);
+}> = ({ emoji, className, onReagir, onSuper }) => {
+  const { t } = useTranslation();
+
+  return (
+    <button
+      {...useSegurar(onReagir, onSuper)}
+      title={t("conversa.mensagem.reagirCom", { emoji })}
+      className={cn("rounded px-1.5 py-1 text-base hover:bg-surface-3", className)}
+    >
+      {emoji}
+    </button>
+  );
+};
 
 const PilulaDeReacao: React.FC<{
   reaction: Message["reactions"][number];
   emojis: GuildEmoji[];
   onReagir: () => void;
   onSuper: () => void;
-}> = ({ reaction, emojis, onReagir, onSuper }) => (
-  <button
-    {...useSegurar(onReagir, onSuper)}
-    title={`${reaction.emoji} — segure para super reagir`}
-    className={cn(
-      "flex max-w-full shrink-0 items-center gap-1 rounded border px-2 py-0.5 text-sm transition",
-      reaction.me ? "border-brand bg-brand/20" : "border-transparent bg-surface-3 hover:border-ink-faint",
-      reaction.burst && "shadow-[0_0_0_1px_var(--color-idle),0_0_10px_-2px_var(--color-idle)]",
-    )}
-  >
-    <EmojiDaReacao emoji={reaction.emoji} doServidor={emojis} />
-    <span className="text-xs font-medium text-ink-muted">{reaction.count}</span>
-  </button>
-);
+}> = ({ reaction, emojis, onReagir, onSuper }) => {
+  const { t } = useTranslation();
+
+  return (
+    <button
+      {...useSegurar(onReagir, onSuper)}
+      title={t("conversa.mensagem.segureParaSuper", { emoji: reaction.emoji })}
+      className={cn(
+        "flex max-w-full shrink-0 items-center gap-1 rounded border px-2 py-0.5 text-sm transition",
+        reaction.me ? "border-brand bg-brand/20" : "border-transparent bg-surface-3 hover:border-ink-faint",
+        reaction.burst && "shadow-[0_0_0_1px_var(--color-idle),0_0_10px_-2px_var(--color-idle)]",
+      )}
+    >
+      <EmojiDaReacao emoji={reaction.emoji} doServidor={emojis} />
+      <span className="text-xs font-medium text-ink-muted">{reaction.count}</span>
+    </button>
+  );
+};
 
 /**
  * A linha de citação acima de uma resposta. Uma linha, sempre: ela resume o
@@ -788,6 +825,8 @@ const Citacao: React.FC<{
   mencoes?: ResolverMencoes;
   currentUserId?: string;
 }> = ({ respondida, emojis, mencoes, currentUserId }) => {
+  const { t } = useTranslation();
+
   /*
     Respondendo a si mesmo, o retrato vem da sessão, não da mensagem.
 
@@ -854,12 +893,12 @@ const Citacao: React.FC<{
           {respondida.content ? (
             <MessageContent content={respondida.content} emojis={emojis} mencoes={mencoes} />
           ) : (
-            "clique para ver o anexo"
+            t("conversa.mensagem.citacaoAnexo")
           )}
         </span>
       </>
     ) : (
-      <span className="italic text-ink-faint">A mensagem original não está mais aqui.</span>
+      <span className="italic text-ink-faint">{t("conversa.mensagem.citacaoSumiu")}</span>
     )}
     </div>
   );

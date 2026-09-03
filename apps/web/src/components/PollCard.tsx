@@ -4,6 +4,7 @@ import type { Poll } from "@gravae/shared";
 
 import { closePoll, votePoll } from "~/@core/lib/websocket/emit-message-actions";
 import { cn } from "~/lib/utils";
+import { idiomaAtual, useTranslation } from "~/traducao";
 
 interface PollCardProps {
   messageId: string;
@@ -13,6 +14,7 @@ interface PollCardProps {
 }
 
 export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUserId, isAuthor }) => {
+  const { t } = useTranslation();
   const total = poll.opcoes.reduce((soma, o) => soma + o.userIds.length, 0);
   const expirou = Boolean(poll.expiresAt && new Date(poll.expiresAt) < new Date());
   const encerrada = Boolean(poll.closedAt) || expirou;
@@ -23,7 +25,13 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
     <div className="mt-1 max-w-md rounded-lg border border-line bg-surface-1 p-4">
       <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
         <BarChart3 size={13} />
-        {encerrada ? "Enquete encerrada" : poll.multiSelect ? "Enquete — várias respostas" : "Enquete"}
+        {t(
+          encerrada
+            ? "conversa.enquete.encerrada"
+            : poll.multiSelect
+              ? "conversa.enquete.variasRespostas"
+              : "conversa.enquete.titulo",
+        )}
       </p>
 
       <p className="mt-1.5 font-semibold">{poll.pergunta}</p>
@@ -59,7 +67,10 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
                 {eu && <Check size={14} className="shrink-0 text-brand" />}
                 <span className="min-w-0 flex-1 truncate">{opcao.texto}</span>
                 <span className="shrink-0 text-xs text-ink-faint">
-                  {votos} {votos === 1 ? "voto" : "votos"} · {porcento}%
+                  {t(votos === 1 ? "conversa.enquete.umVoto" : "conversa.enquete.votos", {
+                    quantidade: votos,
+                  })}{" "}
+                  · {porcento}%
                 </span>
               </span>
             </button>
@@ -69,11 +80,21 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
 
       <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
         <span>
-          {total} {total === 1 ? "voto no total" : "votos no total"}
+          {t(total === 1 ? "conversa.enquete.umVotoNoTotal" : "conversa.enquete.votosNoTotal", {
+            quantidade: total,
+          })}
         </span>
 
         {!encerrada && poll.expiresAt && (
-          <span>· encerra {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(poll.expiresAt))}</span>
+          <span>
+            ·{" "}
+            {t("conversa.enquete.encerraEm", {
+              quando: new Intl.DateTimeFormat(idiomaAtual(), {
+                dateStyle: "short",
+                timeStyle: "short",
+              }).format(new Date(poll.expiresAt)),
+            })}
+          </span>
         )}
 
         {!encerrada && isAuthor && (
@@ -81,7 +102,7 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
             onClick={() => void closePoll(messageId).catch(() => undefined)}
             className="ml-auto text-brand hover:underline"
           >
-            Encerrar agora
+            {t("conversa.enquete.encerrarAgora")}
           </button>
         )}
       </div>
