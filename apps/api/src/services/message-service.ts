@@ -414,7 +414,7 @@ export const messageService = {
   async readStates(userId: string) {
     const states = await readStateRepository.findManyByUser(userId);
 
-    const memberships = await memberRepository.rolesOf(userId);
+    const memberships = await memberRepository.membershipsOf(userId);
     const meusCargos = [...new Set(memberships.flatMap((m) => m.roleIds))];
 
     /// De que servidor é cada canal: é o que deixa a barra da esquerda somar
@@ -423,7 +423,7 @@ export const messageService = {
     const canais = await channelRepository.guildIdsOf(states.map((s) => s.channelId));
     const dadosDoCanal = new Map(canais.map((c) => [c.id, c]));
 
-    return Promise.all(
+    const lidos = await Promise.all(
       states.map(async (s) => ({
         channelId: s.channelId,
         guildId: dadosDoCanal.get(s.channelId)?.guildId ?? null,
@@ -442,12 +442,95 @@ export const messageService = {
           : 0,
       })),
     );
+
+    const nunca = await mencoesEmCanalNuncaAberto(
+      userId,
+      new Set(states.map((s) => s.channelId)),
+      memberships,
+      meusCargos,
+    );
+
+    return [...lidos, ...nunca];
   },
 
   get pageSize() {
     return LIMITS.messagePageSize;
   },
 };
+
+/**
+ * As menções em canal que a pessoa nunca abriu.
+ *
+ * O `ReadState` só nasce quando alguém LÊ um canal. Antes disso não existe
+ * linha nenhuma, e o cálculo de cima — que percorre os `ReadState` — passa
+ * direto: quem entrou num servidor, nunca abriu o `#geral` e foi citado lá não
+ * via selo nenhum. Ao vivo funcionava, porque o evento do socket soma na tela;
+ * bastava um F5 para a menção sumir, e quem foi citado com o app fechado nunca
+ * chegou a ver.
+ *
+ * O piso é a data de entrada no servidor, como no Discord: o que foi dito
+ * antes de você chegar não é menção sua por ler.
+ *
+ * A lista de canais vem do `listenableChannels`, o MESMO cálculo que decide em
+ * que salas o socket entra. Enumerar os canais de outro jeito abriria a porta
+ * para contar menção em canal privado que a pessoa não pode abrir — e um selo
+ * que não leva a lugar nenhum já é, por si só, contar que ela foi citada ali.
+ */
+async function mencoesEmCanalNuncaAberto(
+  userId: string,
+  jaTemEstado: Set<string>,
+  memberships: { guildId: string; roleIds: string[]; joinedAt: Date }[],
+  meusCargos: string[],
+) {
+  if (!memberships.length) return [];
+
+  const visiveis = await accessService.listenableChannels(
+    userId,
+    memberships.map((m) => m.guildId),
+  );
+
+  const novos = visiveis.filter((id) => !jaTemEstado.has(id));
+  if (!novos.length) return [];
+
+  const canais = await channelRepository.guildIdsOf(novos);
+  const entrada = new Map(memberships.map((m) => [m.guildId, m.joinedAt]));
+
+  /// Só canal de servidor. Conversa direta não tem "data de entrada" que sirva
+  /// de piso, e o selo que este cálculo alimenta é o do trilho de servidores.
+  const porServidor = new Map<string, string[]>();
+  for (const canal of canais) {
+    if (!canal.guildId || !entrada.has(canal.guildId)) continue;
+    porServidor.set(canal.guildId, [...(porServidor.get(canal.guildId) ?? []), canal.id]);
+  }
+
+  const contagens = await Promise.all(
+    [...porServidor].map(([guildId, ids]) =>
+      readStateRepository.mentionsSince(ids, entrada.get(guildId)!, userId, meusCargos),
+    ),
+  );
+
+  const porId = new Map(canais.map((c) => [c.id, c]));
+
+  return contagens.flatMap((parcial) =>
+    [...parcial].map(([channelId, mentionCount]) => ({
+      channelId,
+      guildId: porId.get(channelId)?.guildId ?? null,
+      channelName: porId.get(channelId)?.name ?? null,
+      lastReadMessageId: null as string | null,
+      /*
+        Zero de propósito, e não o número de mensagens desde a entrada.
+
+        Contar o não-lido de todo canal nunca aberto acenderia a bolinha branca
+        em tudo que a pessoa nunca abriu, de uma vez — decisão maior que a
+        pedida aqui, que é o selo vermelho de menção. Quem quiser o outro
+        comportamento, é trocar este zero por um `countUnread` a partir da
+        mesma data de entrada.
+      */
+      unreadCount: 0,
+      mentionCount,
+    })),
+  );
+}
 
 function requireNaoEstaDeCastigo(contexto: Contexto) {
   const ate = contexto.member?.timeoutUntil;

@@ -8,6 +8,11 @@ const updateMessage = vi.fn();
 const createMessage = vi.fn();
 const markRead = vi.fn();
 const requireChannelAccess = vi.fn();
+const estadosDeLeitura = vi.fn();
+const mencoesDesde = vi.fn();
+const canaisQueEscuta = vi.fn();
+const canaisPorId = vi.fn();
+const participacoes = vi.fn();
 
 vi.mock("~/repositories/message-repository.js", () => ({
   messageRepository: {
@@ -17,16 +22,31 @@ vi.mock("~/repositories/message-repository.js", () => ({
     create: (...a: unknown[]) => createMessage(...a),
   },
   reactionRepository: { findManyByMessage: vi.fn(), add: vi.fn(), remove: vi.fn() },
-  readStateRepository: { markRead: (...a: unknown[]) => markRead(...a), findManyByUser: vi.fn() },
+  readStateRepository: {
+    markRead: (...a: unknown[]) => markRead(...a),
+    findManyByUser: (...a: unknown[]) => estadosDeLeitura(...a),
+    countUnread: vi.fn(),
+    countMentions: vi.fn(),
+    mentionsSince: (...a: unknown[]) => mencoesDesde(...a),
+  },
 }));
 
 vi.mock("~/services/access-service.js", () => ({
-  accessService: { requireChannelAccess: (...a: unknown[]) => requireChannelAccess(...a) },
+  accessService: {
+    requireChannelAccess: (...a: unknown[]) => requireChannelAccess(...a),
+    listenableChannels: (...a: unknown[]) => canaisQueEscuta(...a),
+  },
 }));
 
 vi.mock("~/repositories/guild-repository.js", () => ({
-  channelRepository: { findById: vi.fn() },
-  memberRepository: { find: vi.fn() },
+  channelRepository: {
+    findById: vi.fn(),
+    guildIdsOf: (...a: unknown[]) => canaisPorId(...a),
+  },
+  memberRepository: {
+    find: vi.fn(),
+    membershipsOf: (...a: unknown[]) => participacoes(...a),
+  },
   guildRepository: { findById: vi.fn() },
   categoryRepository: {},
 }));
@@ -273,5 +293,90 @@ describe("apagar", () => {
 
     await messageService.remove(OUTRO, "m1");
     expect(softDelete).toHaveBeenCalledWith("m1");
+  });
+});
+
+describe("o selo de menção nos canais que ninguém abriu", () => {
+  const SERVIDOR = "6a8781db7415b08f427be100";
+  const NUNCA_ABERTO = "6a8781db7415b08f427be101";
+  const JA_LIDO = "6a8781db7415b08f427be102";
+  const ENTROU_EM = new Date("2026-08-01T12:00:00Z");
+
+  beforeEach(() => {
+    estadosDeLeitura.mockResolvedValue([]);
+    participacoes.mockResolvedValue([
+      { guildId: SERVIDOR, roleIds: [CARGO_MENCIONAVEL], joinedAt: ENTROU_EM },
+    ]);
+    canaisQueEscuta.mockResolvedValue([NUNCA_ABERTO]);
+    canaisPorId.mockResolvedValue([
+      { id: NUNCA_ABERTO, guildId: SERVIDOR, name: "geral" },
+    ]);
+    mencoesDesde.mockResolvedValue(new Map([[NUNCA_ABERTO, 2]]));
+  });
+
+  /*
+    O caso que não existia: o `ReadState` só nasce quando alguém LÊ o canal.
+    Quem entrou no servidor, nunca abriu o `#geral` e foi citado lá não tinha
+    linha nenhuma para o cálculo percorrer — e o selo sumia no primeiro F5.
+  */
+  it("conta menção em canal sem estado de leitura nenhum", async () => {
+    const estados = await messageService.readStates(AUTHOR);
+
+    expect(estados).toEqual([
+      {
+        channelId: NUNCA_ABERTO,
+        guildId: SERVIDOR,
+        channelName: "geral",
+        lastReadMessageId: null,
+        unreadCount: 0,
+        mentionCount: 2,
+      },
+    ]);
+  });
+
+  it("procura a partir da data de entrada no servidor, e com os cargos de quem pergunta", async () => {
+    await messageService.readStates(AUTHOR);
+
+    expect(mencoesDesde).toHaveBeenCalledWith(
+      [NUNCA_ABERTO],
+      ENTROU_EM,
+      AUTHOR,
+      [CARGO_MENCIONAVEL],
+    );
+  });
+
+  /// O canal que já tem estado de leitura é contado pelo caminho de cima; se
+  /// entrasse nos dois, a menção apareceria em dobro no trilho.
+  it("não conta duas vezes o canal que já tem estado", async () => {
+    estadosDeLeitura.mockResolvedValue([
+      { channelId: JA_LIDO, lastReadMessageId: null },
+    ]);
+    canaisQueEscuta.mockResolvedValue([JA_LIDO, NUNCA_ABERTO]);
+    canaisPorId.mockResolvedValue([{ id: NUNCA_ABERTO, guildId: SERVIDOR, name: "geral" }]);
+
+    await messageService.readStates(AUTHOR);
+
+    expect(mencoesDesde).toHaveBeenCalledWith([NUNCA_ABERTO], ENTROU_EM, AUTHOR, [
+      CARGO_MENCIONAVEL,
+    ]);
+  });
+
+  /*
+    A lista vem do MESMO cálculo que decide em que salas o socket entra. Um
+    canal privado que a pessoa não pode abrir não pode virar selo: o selo já
+    conta, sozinho, que alguém a citou ali.
+  */
+  it("não olha canal que a pessoa não pode ver", async () => {
+    canaisQueEscuta.mockResolvedValue([]);
+
+    expect(await messageService.readStates(AUTHOR)).toEqual([]);
+    expect(mencoesDesde).not.toHaveBeenCalled();
+  });
+
+  it("não vai ao banco quando a pessoa não está em servidor nenhum", async () => {
+    participacoes.mockResolvedValue([]);
+
+    expect(await messageService.readStates(AUTHOR)).toEqual([]);
+    expect(canaisQueEscuta).not.toHaveBeenCalled();
   });
 });

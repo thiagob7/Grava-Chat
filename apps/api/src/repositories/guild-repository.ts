@@ -118,8 +118,14 @@ export const memberRepository = {
     );
   },
 
-  rolesOf(userId: string) {
-    return prisma.guildMember.findMany({ where: { userId }, select: { roleIds: true } });
+  /// Onde a pessoa está, com que cargos e desde quando. O `joinedAt` é o piso
+  /// das menções em canal nunca aberto: o que foi dito antes de ela chegar no
+  /// servidor não é menção dela por ler.
+  membershipsOf(userId: string) {
+    return prisma.guildMember.findMany({
+      where: { userId },
+      select: { guildId: true, roleIds: true, joinedAt: true },
+    });
   },
 
   create(data: {

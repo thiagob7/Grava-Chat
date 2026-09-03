@@ -201,6 +201,20 @@ export const reactionRepository = {
   },
 };
 
+/*
+  O menor ObjectId de um instante.
+
+  Os quatro primeiros bytes do `_id` do Mongo são o segundo em que o documento
+  nasceu; o resto só desempata. Então "mensagem escrita depois de tal hora" se
+  pergunta comparando o próprio `id` com um ObjectId de máquina e contador
+  zerados — sem índice novo em `createdAt`, que num Atlas M0 custa espaço que
+  não sobra.
+*/
+const idNoInstante = (quando: Date) =>
+  Math.floor(quando.getTime() / 1000)
+    .toString(16)
+    .padStart(8, "0") + "0".repeat(16);
+
 export const readStateRepository = {
   findManyByUser(userId: string) {
     return prisma.readState.findMany({ where: { userId } });
@@ -225,6 +239,45 @@ export const readStateRepository = {
         ],
       },
     });
+  },
+
+  /**
+   * As menções em vários canais de uma vez, a partir de um instante.
+   *
+   * Um `findMany` para o servidor inteiro, e não um `count` por canal: a data
+   * de entrada é a mesma para todos os canais do mesmo servidor, e menção é
+   * coisa rara — o que volta são poucas linhas, contadas aqui em memória. Com
+   * um `count` por canal seriam dezenas de idas ao banco a cada abertura do
+   * app, e nenhuma delas devolveria nada na esmagadora maioria das vezes.
+   */
+  async mentionsSince(
+    channelIds: string[],
+    desde: Date,
+    userId: string,
+    roleIds: string[],
+  ): Promise<Map<string, number>> {
+    const porCanal = new Map<string, number>();
+    if (!channelIds.length) return porCanal;
+
+    const mensagens = await prisma.message.findMany({
+      where: {
+        channelId: { in: channelIds },
+        id: { gt: idNoInstante(desde) },
+        authorId: { not: userId },
+        OR: [
+          { mentions: { has: userId } },
+          { mentionEveryone: true },
+          ...(roleIds.length ? [{ mentionRoleIds: { hasSome: roleIds } }] : []),
+        ],
+      },
+      select: { channelId: true },
+    });
+
+    for (const { channelId } of mensagens) {
+      porCanal.set(channelId, (porCanal.get(channelId) ?? 0) + 1);
+    }
+
+    return porCanal;
   },
 
   /*
