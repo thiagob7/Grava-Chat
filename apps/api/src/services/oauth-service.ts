@@ -28,6 +28,12 @@ interface TokenGuardado {
   userId: string;
   botId: string;
   escopos: Escopo[];
+  /*
+    Quando a pessoa autorizou. Opcional porque tokens emitidos antes desta
+    lista existir não têm o campo — eles continuam valendo até vencer, e a
+    tela só não sabe dizer a data deles.
+  */
+  criadoEm?: number;
 }
 
 /// Comparação que não vaza o segredo pelo tempo de resposta. Com `===`, um
@@ -124,11 +130,141 @@ export const oauthService = {
       userId: codigo.userId,
       botId: codigo.botId,
       escopos: codigo.escopos,
+      criadoEm: Date.now(),
     };
 
-    await redis.set(keys.oauthToken(token), JSON.stringify(guardado), "EX", TOKEN_TTL);
+    /*
+      O token e o índice da pessoa nascem juntos, num pipeline só: um token
+      fora do índice é um acesso que ninguém consegue ver nem revogar, e é
+      exatamente o buraco que esta lista existe para fechar.
+
+      O `expire` no conjunto é renovado a cada autorização de propósito — ele
+      só precisa sobreviver ao token mais novo que guarda. Sem isso, o Redis
+      ficaria com um conjunto por pessoa para sempre, cheio de token morto.
+    */
+    await redis
+      .multi()
+      .set(keys.oauthToken(token), JSON.stringify(guardado), "EX", TOKEN_TTL)
+      .sadd(keys.oauthDaPessoa(codigo.userId), token)
+      .expire(keys.oauthDaPessoa(codigo.userId), TOKEN_TTL)
+      .exec();
 
     return { access_token: token, token_type: "Bearer", expires_in: TOKEN_TTL, scope: codigo.escopos.join(" ") };
+  },
+
+  /**
+   * Quais aplicações têm acesso à conta, agrupadas por aplicação.
+   *
+   * Agrupadas porque o token é detalhe de implementação: quem autoriza duas
+   * vezes o mesmo painel — trocou de máquina, refez o login — tem dois tokens
+   * vivos, e ver "Meu Painel" duas vezes na lista não ajuda ninguém a decidir
+   * o que revogar.
+   *
+   * A varrida aproveita para PODAR: token que venceu some da chave sozinho,
+   * mas continua no conjunto. Sem esta limpeza, o índice só cresce, e uma
+   * aplicação já vencida ficaria pra sempre na tela dizendo que tem acesso.
+   */
+  async listarAutorizadas(userId: string) {
+    const chave = keys.oauthDaPessoa(userId);
+    const tokens = await redis.smembers(chave);
+    if (!tokens.length) return [];
+
+    const brutos = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
+
+    const mortos: string[] = [];
+    const vivos: TokenGuardado[] = [];
+
+    tokens.forEach((token, i) => {
+      const bruto = brutos[i];
+      if (!bruto) return mortos.push(token);
+
+      const dados = JSON.parse(bruto) as TokenGuardado;
+
+      /// Token que não é desta pessoa não pode ter entrado aqui. Se entrou,
+      /// é sujeira — e devolvê-lo mostraria o acesso de outra conta.
+      if (dados.userId !== userId) return mortos.push(token);
+
+      vivos.push(dados);
+    });
+
+    if (mortos.length) await redis.srem(chave, ...mortos);
+    if (!vivos.length) return [];
+
+    /// Um bot por aplicação, e a mesma aplicação pode aparecer em vários
+    /// tokens: os escopos somam e a data é a da autorização mais recente.
+    const porBot = new Map<string, { escopos: Set<Escopo>; criadoEm: number | null }>();
+
+    for (const dados of vivos) {
+      const atual = porBot.get(dados.botId) ?? { escopos: new Set<Escopo>(), criadoEm: null };
+
+      dados.escopos.forEach((e) => atual.escopos.add(e));
+
+      if (dados.criadoEm && (!atual.criadoEm || dados.criadoEm > atual.criadoEm)) {
+        atual.criadoEm = dados.criadoEm;
+      }
+
+      porBot.set(dados.botId, atual);
+    }
+
+    const lista = await Promise.all(
+      [...porBot].map(async ([botId, { escopos, criadoEm }]) => {
+        const bot = await botRepository.findById(botId);
+
+        /// Aplicação apagada com token ainda vivo. Não dá pra desenhar um
+        /// cartão sem nome nem avatar, e o acesso morre com o TTL.
+        if (!bot) return null;
+
+        return {
+          id: bot.id,
+          usuario: toPublicUser(bot.usuario),
+          descricao: bot.descricao,
+          escopos: [...escopos],
+          autorizadoEm: criadoEm ? new Date(criadoEm).toISOString() : null,
+          expiraEm: criadoEm ? new Date(criadoEm + TOKEN_TTL * 1000).toISOString() : null,
+        };
+      }),
+    );
+
+    return lista
+      .filter((a) => a !== null)
+      .sort((a, b) => (b.autorizadoEm ?? "").localeCompare(a.autorizadoEm ?? ""));
+  },
+
+  /**
+   * Tirar o acesso de uma aplicação.
+   *
+   * Apaga TODOS os tokens dela, e não só um: revogar pela metade é pior que
+   * não revogar, porque a tela diz que acabou e o painel do dev continua
+   * respondendo com o token da outra máquina.
+   */
+  async revogarAplicacao(userId: string, botId: string) {
+    const chave = keys.oauthDaPessoa(userId);
+    const tokens = await redis.smembers(chave);
+    if (!tokens.length) throw new NotFoundError("Essa aplicação não tem acesso à sua conta");
+
+    const brutos = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
+
+    const alvos = tokens.filter((_, i) => {
+      const bruto = brutos[i];
+      if (!bruto) return false;
+
+      const dados = JSON.parse(bruto) as TokenGuardado;
+
+      /// O `userId` entra na comparação junto com o bot: o id da aplicação é
+      /// público, e sem ele um pedido forjado derrubaria a autorização de
+      /// outra pessoa se o token tivesse escorregado pro índice errado.
+      return dados.botId === botId && dados.userId === userId;
+    });
+
+    if (!alvos.length) throw new NotFoundError("Essa aplicação não tem acesso à sua conta");
+
+    await redis
+      .multi()
+      .del(...alvos.map((t) => keys.oauthToken(t)))
+      .srem(chave, ...alvos)
+      .exec();
+
+    return { revogados: alvos.length };
   },
 
   async resolverToken(token: string): Promise<TokenGuardado> {

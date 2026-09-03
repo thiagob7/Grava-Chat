@@ -36,4 +36,13 @@ export const keys = {
   /// OAuth2 das aplicações: o código de uso único e o token que ele vira.
   oauthCode: (codigo: string) => `oauth:code:${codigo}`,
   oauthToken: (token: string) => `oauth:token:${token}`,
+  /*
+    Quais tokens de OAuth existem por pessoa.
+
+    O token é a CHAVE (`oauth:token:<token>`), e chave não se pergunta pelo
+    conteúdo: sem este conjunto não havia como responder "quais aplicações têm
+    acesso à minha conta" sem varrer o Redis inteiro. Ele é índice, não fonte —
+    quem manda continua sendo a chave do token, que expira sozinha.
+  */
+  oauthDaPessoa: (userId: string) => `oauth:usuario:${userId}`,
 } as const;

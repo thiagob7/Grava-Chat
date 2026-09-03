@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { z } from "zod";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { meService } from "~/services/me-service.js";
 import { presenceService } from "~/services/presence-service.js";
@@ -11,6 +12,8 @@ import { voiceService } from "~/services/voice-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { toSelfUser } from "~/lib/serialize.js";
 import { updateProfileInput } from "~/validations/auth.js";
+import { objectId } from "~/validations/common.js";
+import { oauthService } from "~/services/oauth-service.js";
 
 export async function meRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -65,6 +68,22 @@ export async function meRoutes(app: FastifyInstance) {
     const { id } = req.params as { id: string };
 
     await authService.revogarSessao(req.userId, id, req.cookies[REFRESH_COOKIE]);
+    return { ok: true };
+  });
+
+  /*
+    As aplicações que têm acesso à conta pelo OAuth.
+
+    Vizinhas dos aparelhos porque respondem à mesma pergunta — "quem está
+    dentro da minha conta agora?" —, só que do lado de fora: aparelho é a
+    pessoa, aplicação é um programa de terceiro agindo em nome dela.
+  */
+  app.get("/me/aplicativos", (req) => oauthService.listarAutorizadas(req.userId));
+
+  app.delete("/me/aplicativos/:botId", async (req) => {
+    const { botId } = z.object({ botId: objectId }).parse(req.params);
+
+    await oauthService.revogarAplicacao(req.userId, botId);
     return { ok: true };
   });
 

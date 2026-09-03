@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LogOut, Monitor, ShieldAlert } from "lucide-react";
+import { Check, LogOut, Monitor, ShieldAlert } from "lucide-react";
 
 import { useAparencia } from "~/stores/aparencia";
 
@@ -8,6 +8,11 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { useEncerrarSessao, useSessoes } from "~/@core/application/queries/sessao/use-sessoes";
+import {
+  useAplicativosAutorizados,
+  useRevogarAplicativo,
+} from "~/@core/application/queries/aplicativo/use-aplicativos-autorizados";
+import { useConfirmar } from "~/components/ui/confirm";
 import { nomeDoAparelho } from "~/lib/aparelho";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
@@ -59,6 +64,14 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
         detalhe="Onde a sua conta está aberta agora. Não reconheceu algum? Desconecte."
       >
         <ListaDeDispositivos />
+      </Secao>
+
+      <Secao
+        id="aplicativos-autorizados"
+        titulo="Aplicativos autorizados"
+        detalhe="Programas de fora que você deixou entrar na sua conta. Revogar corta o acesso na hora."
+      >
+        <ListaDeAplicativos />
       </Secao>
 
       <Secao id="sessoes" titulo="Sessões">
@@ -196,6 +209,112 @@ const ListaDeDispositivos: React.FC = () => {
               Desconectar
             </Button>
           )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/*
+  Como cada escopo soa pra quem não escreveu a aplicação.
+
+  O nome técnico não diz o que está em jogo: "guilds" não avisa ninguém de que
+  o programa vê a lista inteira dos servidores dela. Escopo desconhecido cai no
+  próprio nome — é melhor mostrar "identify" cru do que esconder um acesso que
+  esta tela ainda não sabe traduzir.
+*/
+const ESCOPOS: Record<string, string> = {
+  identify: "Ver seu nome, apelido e foto",
+  guilds: "Ver seus servidores e o que você pode fazer em cada um",
+};
+
+const quando = (iso: string) =>
+  new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
+    new Date(iso),
+  );
+
+/**
+ * As aplicações de terceiros com acesso à conta.
+ *
+ * A lista sai do índice por pessoa no Redis, que passou a existir junto com
+ * esta tela: antes o token era só uma chave, e chave não se pergunta pelo
+ * conteúdo — não havia como responder "quem tem acesso à minha conta" sem
+ * varrer o banco inteiro.
+ *
+ * Por isso ela começa vazia para todo mundo: autorização dada antes do índice
+ * continua valendo e não aparece aqui. Como o token dura sete dias, a lista
+ * fica completa sozinha em uma semana.
+ */
+const ListaDeAplicativos: React.FC = () => {
+  const { data: apps = [], isLoading } = useAplicativosAutorizados();
+  const revogar = useRevogarAplicativo();
+  const confirmar = useConfirmar();
+
+  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+
+  if (!apps.length) {
+    return (
+      <p className="text-sm text-ink-faint">
+        Nenhum aplicativo tem acesso à sua conta.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {apps.map((app) => (
+        <div key={app.id} className="rounded-lg border border-line p-3">
+          <div className="flex items-center gap-3">
+            <Avatar
+              id={app.usuario.id}
+              name={app.usuario.displayName}
+              url={app.usuario.avatarUrl}
+              size={36}
+            />
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{app.usuario.displayName}</p>
+              <p className="mt-0.5 truncate text-xs text-ink-faint">
+                {app.autorizadoEm
+                  ? `Autorizado em ${quando(app.autorizadoEm)}`
+                  : "Autorizado antes desta lista existir"}
+                {app.expiraEm && ` · o acesso vence em ${quando(app.expiraEm)}`}
+              </p>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={revogar.isPending}
+              onClick={() =>
+                void confirmar({
+                  titulo: `Revogar o acesso de ${app.usuario.displayName}?`,
+                  descricao:
+                    "O aplicativo perde o acesso à sua conta agora, em todos os lugares onde você o autorizou. Ele pode pedir de novo, e você decide de novo.",
+                  acao: "Revogar",
+                  destrutivo: true,
+                }).then(({ confirmado }) => confirmado && revogar.mutate(app.id))
+              }
+              className="shrink-0 text-danger"
+            >
+              Revogar
+            </Button>
+          </div>
+
+          {/*
+            Os escopos ficam à mostra, e não atrás de um "ver detalhes": eles
+            são a única coisa que separa um app que lê o seu nome de um que lê
+            a lista inteira dos seus servidores. É o que a pessoa precisa pra
+            decidir se revoga.
+          */}
+          <ul className="mt-2.5 space-y-1 border-t border-divisor pt-2.5">
+            {app.escopos.map((escopo) => (
+              <li key={escopo} className="flex items-start gap-2 text-xs text-ink-muted">
+                <Check size={13} className="mt-0.5 shrink-0 text-ink-faint" />
+                {ESCOPOS[escopo] ?? escopo}
+              </li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>

@@ -33,6 +33,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   conta: [
     { id: "detalhes-de-login", label: "Detalhes de login" },
     { id: "dispositivos", label: "Dispositivos" },
+    { id: "aplicativos-autorizados", label: "Aplicativos autorizados" },
     { id: "sessoes", label: "Sessões" },
   ],
   privacidade: [

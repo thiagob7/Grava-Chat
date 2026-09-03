@@ -67,6 +67,10 @@ export const queryKeys = {
     lista: "find-sessoes",
   },
 
+  aplicativo: {
+    autorizados: "find-aplicativos-autorizados",
+  },
+
   voice: {
     states: "find-voice-states",
   },

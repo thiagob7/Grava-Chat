@@ -1,0 +1,25 @@
+import { api } from "~/@core/lib/api";
+
+import type { PublicUserModel } from "~/@core/domain/models/user-model";
+
+/// Uma aplicação de terceiro com acesso à conta — não confundir com as
+/// aplicações que EU criei, que vivem na tela de Desenvolvedor.
+export interface AplicativoAutorizadoModel {
+  id: string;
+  usuario: PublicUserModel;
+  descricao: string | null;
+  escopos: string[];
+  /// `null` em autorização anterior à lista existir: o acesso é real, só não
+  /// dá pra dizer de quando.
+  autorizadoEm: string | null;
+  expiraEm: string | null;
+}
+
+export async function findAplicativosAutorizados(): Promise<AplicativoAutorizadoModel[]> {
+  const response = await api.get<AplicativoAutorizadoModel[]>("/me/aplicativos");
+  return response.data;
+}
+
+export async function revogarAplicativo(botId: string): Promise<void> {
+  await api.delete(`/me/aplicativos/${botId}`);
+}
