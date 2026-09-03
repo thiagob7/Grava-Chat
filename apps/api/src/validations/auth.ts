@@ -33,6 +33,8 @@ export const updateProfileInput = z.object({
   /// para o mesmo documento.
   aceitaPedidos: z.boolean().optional(),
   mostraAtividade: z.boolean().optional(),
+  mostraServidoresEmComum: z.boolean().optional(),
+  mostraAmigosEmComum: z.boolean().optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 

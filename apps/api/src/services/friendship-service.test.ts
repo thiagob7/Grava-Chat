@@ -4,7 +4,9 @@ const findAllForUser = vi.fn();
 const mapFor = vi.fn();
 
 vi.mock("~/repositories/friendship-repository.js", () => ({
-  friendshipRepository: { findAllForUser: (...a: unknown[]) => findAllForUser(...a) },
+  friendshipRepository: {
+    findAllForUser: (...a: unknown[]) => findAllForUser(...a),
+  },
 }));
 
 vi.mock("~/services/presence-service.js", () => ({
@@ -73,6 +75,10 @@ describe("lista de relações", () => {
 
     const lista = await friendshipService.list("eu");
 
-    expect(lista.map((r) => r.status)).toEqual(["ACCEPTED", "PENDING_OUT", "PENDING_IN"]);
+    expect(lista.map((r) => r.status)).toEqual([
+      "ACCEPTED",
+      "PENDING_OUT",
+      "PENDING_IN",
+    ]);
   });
 });

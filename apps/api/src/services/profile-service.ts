@@ -84,10 +84,29 @@ export const profileService = {
 
     if (relacao === null && guildIds.length === 0) throw new NotFoundError("Usuário não encontrado");
 
-    const amigoIds = await mutualRepository.friendIdsInCommon(viewerId, userId);
+    /*
+      O dono do perfil decide o que a aba mostra.
+
+      A checagem é aqui, e não na tela: se o servidor devolvesse a lista e
+      pedisse pro cliente não desenhar, quem olhasse a resposta da rede veria
+      tudo — que é o mesmo que não esconder nada. Já foi assim com o bloqueio,
+      e o remendo é o mesmo: quem esconde, esconde no servidor.
+
+      As duas listas são perguntas diferentes. A de servidores desenha a
+      rotina de alguém; a de amigos, a rede. Quem fecha uma raramente quer
+      fechar a outra, então são dois interruptores e não um.
+    */
+    const dono = await userRepository.findById(userId);
+
+    const amigoIds = dono?.mostraAmigosEmComum
+      ? await mutualRepository.friendIdsInCommon(viewerId, userId)
+      : [];
+
+    const idsDeServidores = dono?.mostraServidoresEmComum ? guildIds : [];
+
     const [amigos, servidores, presenca] = await Promise.all([
       userRepository.findManyByIds(amigoIds),
-      guildRepository.findManyByIds(guildIds),
+      guildRepository.findManyByIds(idsDeServidores),
       presenceService.mapFor(amigoIds),
     ]);
 

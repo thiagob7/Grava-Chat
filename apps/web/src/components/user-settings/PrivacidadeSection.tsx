@@ -95,6 +95,39 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
       </Secao>
 
       <Secao
+        id="visibilidade-do-perfil"
+        titulo="Visibilidade do perfil"
+        detalhe="O que o seu perfil conta sobre você para quem abre ele."
+      >
+        <Opcao
+          titulo="Mostrar servidores em comum"
+          detalhe="A aba que diz de quais servidores vocês dois participam. A lista desenha a sua rotina — onde você passa o dia, de que comunidade faz parte. Desligado, ela vem vazia para todo mundo; a sua continua completa."
+          ligado={user.mostraServidoresEmComum}
+          onMudar={(mostraServidoresEmComum) =>
+            salvar.mutate({ mostraServidoresEmComum })
+          }
+        />
+
+        <Opcao
+          titulo="Mostrar amigos em comum"
+          detalhe="A aba com as pessoas que vocês dois conhecem. É a sua rede, e é uma pergunta diferente da de cima — por isso são dois interruptores, e não um."
+          ligado={user.mostraAmigosEmComum}
+          onMudar={(mostraAmigosEmComum) =>
+            salvar.mutate({ mostraAmigosEmComum })
+          }
+        />
+
+        {/*
+          A checagem mora no servidor, e vale dizer isso: é a diferença entre
+          esconder e pedir para o outro app não mostrar.
+        */}
+        <p className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
+          Quem esconde, esconde no servidor: com o interruptor desligado a lista
+          nem sai daqui. Não é a outra tela deixando de desenhar.
+        </p>
+      </Secao>
+
+      <Secao
         id="exportar-dados"
         titulo="Exportar dados"
         detalhe="Um arquivo com o que a sua conta guarda aqui."

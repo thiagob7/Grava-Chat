@@ -43,6 +43,8 @@ export const selfUserSchema = publicUserSchema.extend({
   */
   aceitaPedidos: z.boolean(),
   mostraAtividade: z.boolean(),
+  mostraServidoresEmComum: z.boolean(),
+  mostraAmigosEmComum: z.boolean(),
 
   /*
     Quando esta conta some de vez, ou `null` se ela está viva.

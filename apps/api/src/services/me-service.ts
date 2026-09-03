@@ -119,6 +119,8 @@ export const meService = {
         criadaEm: usuario.createdAt.toISOString(),
         aceitaPedidos: usuario.aceitaPedidos,
         mostraAtividade: usuario.mostraAtividade,
+        mostraServidoresEmComum: usuario.mostraServidoresEmComum,
+        mostraAmigosEmComum: usuario.mostraAmigosEmComum,
       },
       servidores: membros.map((m) => ({
         id: m.guild.id,
@@ -157,6 +159,12 @@ export const meService = {
     return userRepository.update(userId, {
       ...(input.aceitaPedidos !== undefined ? { aceitaPedidos: input.aceitaPedidos } : {}),
       ...(input.mostraAtividade !== undefined ? { mostraAtividade: input.mostraAtividade } : {}),
+      ...(input.mostraServidoresEmComum !== undefined
+        ? { mostraServidoresEmComum: input.mostraServidoresEmComum }
+        : {}),
+      ...(input.mostraAmigosEmComum !== undefined
+        ? { mostraAmigosEmComum: input.mostraAmigosEmComum }
+        : {}),
       ...(input.displayName !== undefined ? { displayName: input.displayName } : {}),
       ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
       ...(input.bio !== undefined ? { bio: input.bio } : {}),

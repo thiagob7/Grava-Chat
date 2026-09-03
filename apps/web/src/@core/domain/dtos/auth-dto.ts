@@ -16,6 +16,8 @@ export interface UpdateProfileDTO {
   /// conta, e um caminho só de escrita evita dois lugares pra manter.
   aceitaPedidos?: boolean;
   mostraAtividade?: boolean;
+  mostraServidoresEmComum?: boolean;
+  mostraAmigosEmComum?: boolean;
 }
 
 export interface DesktopLoginDTO {

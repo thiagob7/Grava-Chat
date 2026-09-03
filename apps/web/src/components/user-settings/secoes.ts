@@ -44,6 +44,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
       id: "compartilhamento-de-atividade",
       label: "Compartilhamento de atividade",
     },
+    { id: "visibilidade-do-perfil", label: "Visibilidade do perfil" },
     { id: "exportar-dados", label: "Exportar dados" },
     { id: "exclusao-de-dados", label: "Exclusão de dados" },
   ],

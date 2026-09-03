@@ -128,6 +128,21 @@ model User {
   mostraAtividade Boolean @default(true)
 
   /*
+    O que o SEU perfil conta sobre você para quem o abre.
+
+    Servidores em comum e amigos em comum parecem a mesma pergunta e nao sao:
+    a lista de servidores desenha a sua rotina — onde voce passa o dia, o que
+    joga, de que comunidade faz parte —, e a de amigos desenha a sua rede.
+    Quem quer esconder uma raramente quer esconder a outra.
+
+    Valem so contra terceiros: a sua propria aba continua completa, porque
+    esconder de voce mesmo o que voce escolheu esconder dos outros e so
+    confundir.
+  */
+  mostraServidoresEmComum Boolean @default(true)
+  mostraAmigosEmComum     Boolean @default(true)
+
+  /*
     Quando esta conta deve ser apagada de verdade.
 
     `null` = conta viva. Com data, ela está desativada e o relógio corre: até lá
