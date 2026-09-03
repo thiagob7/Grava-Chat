@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS non ha ancora autorizzato la registrazione dello schermo. Senza, la condivisione esce nera.",
     marque: "Spunta",
     reabra: "in Registrazione schermo e riapri l'applicazione.",
+    jaMarcado: "Se è già spuntato, il permesso è scaduto con l'ultimo aggiornamento: togli la spunta, rimettila e riapri.",
   },
   ruido: {
     titulo: "Soppressione del rumore",

@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS 还没有允许屏幕录制。没有它，共享出来是黑的。",
     marque: "请勾选",
     reabra: "在“屏幕录制”里打开，然后重新打开应用。",
+    jaMarcado: "如果已经勾上了，说明权限在上次更新时失效了：取消勾选，重新勾上，然后重新打开应用。",
   },
   ruido: {
     titulo: "降噪",

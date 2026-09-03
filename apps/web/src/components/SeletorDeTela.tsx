@@ -84,6 +84,10 @@ export const SeletorDeTela: React.FC = () => {
                 {t("chamada.gravacaoDeTela.marque")} <b>{desktop()?.nomeNoSistema}</b>{" "}
                 {t("chamada.gravacaoDeTela.reabra")}
               </p>
+
+              <p className="mt-1.5 text-ink-faint">
+                {t("chamada.gravacaoDeTela.jaMarcado")}
+              </p>
             </div>
           )}
 

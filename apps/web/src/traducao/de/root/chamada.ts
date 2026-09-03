@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS hat die Bildschirmaufnahme noch nicht erlaubt. Ohne sie kommt die Freigabe schwarz heraus.",
     marque: "Setze den Haken bei",
     reabra: "unter Bildschirmaufnahme und öffne die App neu.",
+    jaMarcado: "Wenn der Haken schon gesetzt ist, ist die Berechtigung beim letzten Update veraltet: Haken entfernen, neu setzen und die App neu öffnen.",
   },
   ruido: {
     titulo: "Rauschunterdrückung",

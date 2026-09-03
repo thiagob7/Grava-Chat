@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "A macOS még nem engedélyezte a képernyőfelvételt. Enélkül a megosztás feketén jön ki.",
     marque: "Pipáld ki:",
     reabra: "a Képernyőfelvételnél, és nyisd meg újra az alkalmazást.",
+    jaMarcado: "Ha már be van pipálva, az engedély elavult a legutóbbi frissítéskor: vedd ki a pipát, tedd vissza, és nyisd meg újra az alkalmazást.",
   },
   ruido: {
     titulo: "Zajszűrés",

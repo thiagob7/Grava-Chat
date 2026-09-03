@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS dar neleido įrašyti ekrano. Be to bendrinimas išeina juodas.",
     marque: "Pažymėkite",
     reabra: "skiltyje „Ekrano įrašymas“ ir iš naujo atidarykite programą.",
+    jaMarcado: "Jei jau pažymėta, leidimas paseno per paskutinį atnaujinimą: nuimkite žymę, pažymėkite iš naujo ir atidarykite programą dar kartą.",
   },
   ruido: {
     titulo: "Triukšmo slopinimas",

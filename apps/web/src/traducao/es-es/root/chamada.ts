@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS aún no ha permitido la grabación de pantalla. Sin eso, lo compartido sale en negro.",
     marque: "Marca",
     reabra: "en Grabación de Pantalla y vuelve a abrir la aplicación.",
+    jaMarcado: "Si ya está marcado, el permiso caducó en la última actualización: desmárcalo, márcalo otra vez y vuelve a abrir.",
   },
   ruido: {
     titulo: "Supresión de ruido",

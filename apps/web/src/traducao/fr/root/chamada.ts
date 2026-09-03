@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS n'a pas encore autorisé l'enregistrement de l'écran. Sans ça, le partage sort en noir.",
     marque: "Cochez",
     reabra: "dans Enregistrement de l'écran, puis rouvrez l'application.",
+    jaMarcado: "S'il est déjà coché, la permission a vieilli à la dernière mise à jour : décochez, recochez et rouvrez.",
   },
   ruido: {
     titulo: "Suppression du bruit",

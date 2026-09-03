@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS har inte tillåtit skärminspelning än. Utan det blir delningen svart.",
     marque: "Kryssa i",
     reabra: "under Skärminspelning och öppna appen igen.",
+    jaMarcado: "Om det redan är ikryssat har behörigheten blivit inaktuell vid senaste uppdateringen: kryssa ur, kryssa i igen och öppna appen på nytt.",
   },
   ruido: {
     titulo: "Brusreducering",

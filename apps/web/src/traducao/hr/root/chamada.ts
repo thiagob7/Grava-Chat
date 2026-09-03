@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS još nije dopustio snimanje zaslona. Bez toga dijeljenje izlazi crno.",
     marque: "Označi",
     reabra: "u Snimanju zaslona i ponovno otvori aplikaciju.",
+    jaMarcado: "Ako je već označeno, dopuštenje je zastarjelo pri zadnjem ažuriranju: odznači, označi ponovno i otvori aplikaciju iznova.",
   },
   ruido: {
     titulo: "Uklanjanje šuma",

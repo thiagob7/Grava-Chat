@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS încă nu a permis înregistrarea ecranului. Fără ea, partajarea iese neagră.",
     marque: "Bifează",
     reabra: "la Înregistrarea ecranului și redeschide aplicația.",
+    jaMarcado: "Dacă e deja bifat, permisiunea s-a învechit la ultima actualizare: debifează, bifează din nou și redeschide aplicația.",
   },
   ruido: {
     titulo: "Reducerea zgomotului",

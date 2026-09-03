@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS jeszcze nie zezwolił na nagrywanie ekranu. Bez tego udostępnianie wychodzi czarne.",
     marque: "Zaznacz",
     reabra: "w Nagrywanie ekranu i otwórz aplikację ponownie.",
+    jaMarcado: "Jeśli już jest zaznaczone, uprawnienie zdezaktualizowało się przy ostatniej aktualizacji: odznacz, zaznacz ponownie i otwórz aplikację na nowo.",
   },
   ruido: {
     titulo: "Redukcja szumów",

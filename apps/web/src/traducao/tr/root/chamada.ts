@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS ekran kaydına henüz izin vermedi. O olmadan paylaşım siyah çıkar.",
     marque: "Şunu işaretle:",
     reabra: "Ekran Kaydı altında aç ve uygulamayı yeniden başlat.",
+    jaMarcado: "Zaten işaretliyse, izin son güncellemede eskidi: işareti kaldır, yeniden işaretle ve uygulamayı yeniden aç.",
   },
   ruido: {
     titulo: "Gürültü engelleme",

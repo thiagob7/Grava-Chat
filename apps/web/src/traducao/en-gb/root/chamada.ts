@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS has not allowed screen recording yet. Without it the share comes out black.",
     marque: "Tick",
     reabra: "under Screen Recording and reopen the app.",
+    jaMarcado: "If it is already ticked, the permission went stale on the last update: untick it, tick it again and reopen.",
   },
   ruido: {
     titulo: "Noise suppression",

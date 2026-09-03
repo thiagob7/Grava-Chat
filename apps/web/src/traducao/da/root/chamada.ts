@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS har ikke tilladt skærmoptagelse endnu. Uden det bliver delingen sort.",
     marque: "Sæt flueben ved",
     reabra: "under Skærmoptagelse, og åbn appen igen.",
+    jaMarcado: "Hvis der allerede er flueben, er tilladelsen blevet forældet ved sidste opdatering: fjern fluebenet, sæt det igen, og åbn appen på ny.",
   },
   ruido: {
     titulo: "Støjreduktion",

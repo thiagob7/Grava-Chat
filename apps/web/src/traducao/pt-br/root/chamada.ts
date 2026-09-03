@@ -115,6 +115,18 @@ export const chamada = {
       "O macOS ainda não liberou a gravação de tela. Sem isso o compartilhamento sai preto.",
     marque: "Marque o",
     reabra: "em Gravação de Tela e reabra o aplicativo.",
+    /*
+      O caso que a mensagem antiga não cobria, e que é o MAIS comum aqui.
+
+      A assinatura do aplicativo é ad-hoc, e ela muda a cada build. O macOS
+      amarra a permissão de tela à assinatura, então depois de uma atualização
+      o interruptor continua ligado — o registro é que deixou de conferir. A
+      pessoa olha os ajustes, vê tudo marcado, e o app insiste que não tem
+      permissão. Desmarcar e marcar de novo reescreve o registro com a
+      assinatura de agora.
+    */
+    jaMarcado:
+      "Se já estiver marcado, a permissão envelheceu na última atualização: desmarque, marque de novo e reabra.",
   },
   ruido: {
     titulo: "Supressão de ruído",

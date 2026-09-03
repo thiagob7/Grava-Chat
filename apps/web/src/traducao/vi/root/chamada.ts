@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS chưa cho phép ghi màn hình. Không có nó thì màn hình chia sẻ ra đen.",
     marque: "Hãy tích",
     reabra: "trong mục Ghi Màn hình rồi mở lại ứng dụng.",
+    jaMarcado: "Nếu đã tích rồi thì quyền đã cũ đi từ lần cập nhật trước: bỏ tích, tích lại rồi mở lại ứng dụng.",
   },
   ruido: {
     titulo: "Khử tiếng ồn",

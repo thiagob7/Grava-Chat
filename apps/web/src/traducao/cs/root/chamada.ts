@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS zatím nepovolil nahrávání obrazovky. Bez toho vyjde sdílení černé.",
     marque: "Zaškrtni",
     reabra: "v Nahrávání obrazovky a otevři aplikaci znovu.",
+    jaMarcado: "Pokud už je zaškrtnuto, oprávnění zastaralo při poslední aktualizaci: odškrtni, zaškrtni znovu a otevři aplikaci znovu.",
   },
   ruido: {
     titulo: "Potlačení šumu",

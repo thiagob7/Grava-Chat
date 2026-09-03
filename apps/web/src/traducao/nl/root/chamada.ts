@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS heeft schermopname nog niet toegestaan. Zonder dat komt het delen zwart uit.",
     marque: "Vink",
     reabra: "aan bij Schermopname en open de app opnieuw.",
+    jaMarcado: "Staat het al aan, dan is de toestemming verouderd bij de laatste update: zet het uit, weer aan, en open opnieuw.",
   },
   ruido: {
     titulo: "Ruisonderdrukking",

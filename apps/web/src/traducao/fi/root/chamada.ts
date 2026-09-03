@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS ei ole vielä sallinut näytön tallennusta. Ilman sitä jako tulee mustana.",
     marque: "Rastita",
     reabra: "kohdassa Näytön tallennus ja avaa sovellus uudelleen.",
+    jaMarcado: "Jos se on jo rastitettu, käyttöoikeus vanheni viime päivityksessä: poista rasti, laita se uudelleen ja avaa sovellus uudestaan.",
   },
   ruido: {
     titulo: "Melunvaimennus",

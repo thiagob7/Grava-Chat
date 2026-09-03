@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS har ikke tillatt skjermopptak ennå. Uten det blir delingen svart.",
     marque: "Kryss av for",
     reabra: "under Skjermopptak og åpne appen på nytt.",
+    jaMarcado: "Hvis det allerede er krysset av, ble tillatelsen utdatert ved siste oppdatering: fjern krysset, sett det på nytt og åpne appen igjen.",
   },
   ruido: {
     titulo: "Støyreduksjon",

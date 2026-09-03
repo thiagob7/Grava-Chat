@@ -99,6 +99,7 @@ export const chamada = {
     bloqueada: "macOS belum mengizinkan perekaman layar. Tanpa itu, hasil berbaginya hitam.",
     marque: "Centang",
     reabra: "di Perekaman Layar lalu buka ulang aplikasinya.",
+    jaMarcado: "Kalau sudah dicentang, izinnya basi sejak pembaruan terakhir: hapus centangnya, centang lagi, lalu buka ulang aplikasinya.",
   },
   ruido: {
     titulo: "Peredam bising",
