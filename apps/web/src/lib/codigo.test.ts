@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { partirEmCodigo, rotuloDaLingua } from "./codigo";
+import { partirEmCodigo, rotuloDaLingua,
+  adivinharLingua,
+  pareceCodigo,
+} from "./codigo";
 
 describe("partirEmCodigo", () => {
   it("texto sem crase sai inteiro, num pedaço só", () => {
@@ -84,3 +87,136 @@ describe("rotuloDaLingua", () => {
     expect(rotuloDaLingua("")).toBe("Código");
   });
 });
+
+/*
+  ————————————————————————————————————————————————————————————————————————
+  Reconhecer código colado SEM cerca.
+
+  Esta tabela é a especificação do `pareceCodigo`, e não uma ilustração dele:
+  os pesos foram ajustados CONTRA ela, caso a caso. Os dois grupos têm o mesmo
+  peso, mas não o mesmo custo — deixar de reconhecer um trecho de Rust é um
+  bloco a menos, e reconhecer a lista de preços de alguém é a mensagem dela
+  desfigurada. Na dúvida, o erro barato.
+  ————————————————————————————————————————————————————————————————————————
+*/
+const CODIGO: Record<string, string> = {
+  "o TypeScript do print": `import { cameraTimeline } from "@gravae/ai-analytics";
+
+// mínimo — só path e result
+await cameraTimeline({
+  path: { left: "/capturas/cam01", right: "/capturas/cam02" },
+  result: (ev) => { if (ev.switched) console.log(ev.t, ev.camera); },
+});`,
+  json: `{
+  "mcpServers": {
+    "shadcn": { "command": "npx" }
+  }
+}`,
+  python: `def somar(a, b):
+    total = a + b
+    return total`,
+  shell: `cd ~/projeto
+yarn install
+yarn dev --port 5173`,
+  css: `.botao {
+  color: red;
+  padding: 4px;
+}`,
+  html: `<div class="cartao">
+  <span>oi</span>
+</div>`,
+  sql: `SELECT nome, idade
+FROM pessoas
+WHERE idade > 18;`,
+};
+
+const NAO_CODIGO: Record<string, string> = {
+  "parágrafo": `Oi gente, tudo bem com vocês?
+Queria avisar que amanhã não vou conseguir participar da reunião.
+Se alguém puder anotar o que foi decidido eu agradeço muito.`,
+  "lista com traços": `- comprar pão
+- passar no banco
+- ligar pro dentista`,
+  "lista numerada": `1. primeiro a gente alinha o escopo
+2. depois eu mando o orçamento
+3. e aí você me diz se fecha`,
+  "endereços": `https://gravae.io
+https://github.com/thiagob7
+https://gravae-chat.vercel.app`,
+  "conversa colada": `Thiago: bom dia
+Leonardo: bom dia, chefe
+Thiago: conseguiu ver aquilo?`,
+  "letra de música": `Eu sei que vou te amar
+Por toda a minha vida eu vou te amar
+Em cada despedida eu vou te amar`,
+};
+
+describe("reconhecer código sem cerca", () => {
+  for (const [nome, texto] of Object.entries(CODIGO)) {
+    it(`reconhece: ${nome}`, () => expect(pareceCodigo(texto)).toBe(true));
+  }
+  for (const [nome, texto] of Object.entries(NAO_CODIGO)) {
+    it(`NÃO reconhece: ${nome}`, () => expect(pareceCodigo(texto)).toBe(false));
+  }
+});
+
+describe("adivinhar a língua", () => {
+  it.each([
+    ["json", CODIGO.json],
+    ["py", CODIGO.python],
+    ["sh", CODIGO.shell],
+    ["html", CODIGO.html],
+    ["sql", CODIGO.sql],
+  ])("%s", (esperada, texto) => expect(adivinharLingua(texto!)).toBe(esperada));
+});
+
+const DIFICEIS: Record<string, string> = {
+  "valores em reais": `Total: R$ 1.200,00
+Desconto: R$ 200,00
+Final: R$ 1.000,00`,
+  "ficha de cadastro": `Nome: Thiago Barbosa
+Idade: 30
+Cidade: São Paulo`,
+  "horários": `Segunda: 09:00 às 18:00
+Terça: 09:00 às 18:00
+Quarta: 09:00 às 12:00`,
+  "caminhos de arquivo": `/Users/thbp7/Documents/gravae-chat
+/Users/thbp7/Documents/GRAVAEZAP
+/Users/thbp7/oracle-a1`,
+  "texto com parênteses": `Olha, eu acho (e posso estar errado) que a gente devia esperar.
+O cliente ainda não respondeu (mandei ontem de novo).
+Se ele não responder até sexta (o que é bem provável), a gente remarca.`,
+  "placar": `Flamengo 2 x 1 Palmeiras
+Corinthians 0 x 0 São Paulo
+Grêmio 3 x 2 Internacional`,
+  "emojis e pontuação": `Genteee 😂😂 vocês viram isso?!
+Não acredito que ele fez isso... de novo!!
+Alguém me explica pfv 🙏`,
+};
+
+const AINDA_CODIGO: Record<string, string> = {
+  "erro de pilha": `TypeError: Cannot read properties of undefined (reading 'map')
+    at MessageList (MessageList.tsx:214:31)
+    at renderWithHooks (react-dom.development.js:15486:18)`,
+  "yaml": `services:
+  api:
+    image: node:22
+    ports:
+      - "3333:3333"`,
+  "env": `GRAVAE_BOT_TOKEN=abc123
+GRAVAE_CLIENT_ID=456
+GRAVAE_FONTE=soundcloud`,
+};
+
+describe("não promove mensagem comum a código", () => {
+  for (const [nome, texto] of Object.entries(DIFICEIS)) {
+    it(nome, () => expect(pareceCodigo(texto)).toBe(false));
+  }
+});
+
+describe("mas continua pegando o que é código", () => {
+  for (const [nome, texto] of Object.entries(AINDA_CODIGO)) {
+    it(nome, () => expect(pareceCodigo(texto)).toBe(true));
+  }
+});
+

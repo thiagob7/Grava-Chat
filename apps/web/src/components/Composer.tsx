@@ -37,6 +37,7 @@ import { familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/stores/reply-store";
 import { useAparencia } from "~/stores/aparencia";
+import { cercarCodigo, pareceCodigo } from "~/lib/codigo";
 import { converterEmoticons } from "~/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
@@ -298,12 +299,60 @@ export const Composer: React.FC<ComposerProps> = ({
     void startTyping(channelId).catch(() => undefined);
   };
 
+  /*
+    Colar código põe a cerca sozinho.
+
+    O bloco com o nome da linguagem e o botão de copiar existe desde sempre, e
+    quase nunca aparecia: ele depende de ``` e ninguém digita ``` ao colar
+    trinta linhas de TypeScript. O resultado era código virando parágrafo, na
+    fonte de texto, no meio da conversa.
+
+    O palpite mora AQUI, e não na hora de desenhar a mensagem, e a diferença é
+    quem paga pelo erro. Aqui a cerca aparece no campo, à vista, antes de
+    mandar — e `Ctrl+Z` desfaz. Do outro lado seria o app decidindo sozinho na
+    conversa dos outros, onde um falso positivo transforma a lista de preços de
+    alguém em bloco de código para sempre. Por isso o `pareceCodigo` também
+    prefere errar para o lado de não reconhecer.
+  */
   const colar = (evento: React.ClipboardEvent) => {
     const arquivos = [...evento.clipboardData.files];
-    if (!arquivos.length) return;
+
+    if (arquivos.length) {
+      evento.preventDefault();
+      void anexos.add(arquivos);
+      return;
+    }
+
+    const texto = evento.clipboardData.getData("text");
+    if (!texto || !pareceCodigo(texto)) return;
+
+    const cercado = cercarCodigo(texto);
+    const campo = textarea.current;
+    const inicio = campo?.selectionStart ?? value.length;
+    const fim = campo?.selectionEnd ?? value.length;
+    const proximo = value.slice(0, inicio) + cercado + value.slice(fim);
+
+    /// Passar do limite é assunto do servidor, e o `maxLength` do campo não
+    /// vale para o que a gente escreve por código. Melhor deixar o navegador
+    /// colar do jeito dele — cru, e cortado no limite — do que montar uma
+    /// mensagem que vai ser recusada.
+    if (proximo.length > LIMITS.messageLength) return;
 
     evento.preventDefault();
-    void anexos.add(arquivos);
+    setValue(proximo);
+
+    requestAnimationFrame(() => {
+      if (!campo) return;
+
+      const cursor = inicio + cercado.length;
+      campo.focus();
+      campo.setSelectionRange(cursor, cursor);
+
+      /// A caixa cresceu de uma vez; sem isto ela ficaria de uma linha com o
+      /// bloco inteiro escondido dentro.
+      campo.style.height = "auto";
+      campo.style.height = `${Math.min(campo.scrollHeight, window.innerHeight / 2)}px`;
+    });
   };
 
   return (
