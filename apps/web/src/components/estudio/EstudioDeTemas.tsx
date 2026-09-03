@@ -21,13 +21,19 @@ import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
 import {
-  comoHex,
   GRUPOS_DE_TOKENS,
   TODOS_OS_TOKENS,
   valorDoTema,
 } from "~/lib/tokens";
 import type { TokenDoTema } from "~/lib/tokens";
 import { Switch } from "~/components/ui/switch";
+import { lerCor, SeletorDeCor } from "~/components/ui/color-picker";
+import {
+  Popover,
+  PopoverArrow,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { copiarTexto } from "~/lib/copiar";
 import { uploadArquivo } from "~/lib/upload";
 import { useAparencia } from "~/stores/aparencia";
@@ -286,28 +292,58 @@ const LinhaDeToken: React.FC<{
     apagar o que você escreveu volta ao padrão em vez de virar nada.
   */
   const valor = substituido ?? doTema;
-  const hex = comoHex(valor);
+
+  /*
+    Antes quem dizia se dava pra escolher a cor era o `comoHex`, e ele só
+    aceitava `#rrggbb`: os vinte e três tokens escritos em `rgb(r g b / a)` —
+    as bordas, os fundos que dependem de transparência — nasciam com o quadrado
+    desligado e um aviso mandando editar no campo de texto. O seletor novo lê
+    qualquer cor que o CSS aceite e sabe escrever a opacidade de volta, então a
+    pergunta virou outra: dá pra LER esta cor? Se der, dá pra escolher.
+  */
+  const legivel = lerCor(valor);
 
   return (
     <div className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
-      <label
-        className="size-7 shrink-0 cursor-pointer overflow-hidden rounded-md border border-white/10"
-        style={{ backgroundColor: valor }}
-        title={
-          hex
-            ? "Escolher a cor"
-            : "Esta cor não é hexadecimal — edite no campo ao lado"
-        }
-      >
-        <input
-          type="color"
-          value={hex ?? "#000000"}
-          disabled={!hex}
-          onChange={(e) => definir(token.nome, e.target.value)}
-          aria-label={`Cor de ${token.rotulo}`}
-          className="size-full cursor-pointer opacity-0"
-        />
-      </label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            disabled={!legivel}
+            aria-label={`Cor de ${token.rotulo}`}
+            title={
+              legivel
+                ? "Escolher a cor"
+                : "Esta cor o seletor não sabe ler — edite no campo ao lado"
+            }
+            /*
+              O xadrez por baixo da cor, e não só a cor.
+
+              Metade destes tokens é translúcida. Pintados sobre a linha da
+              lista, `rgb(255 255 255 / 0.05)` e `rgb(255 255 255 / 0.1)` davam
+              exatamente o mesmo quadradinho — dois tokens diferentes com a
+              mesma aparência. Com o xadrez atrás, a diferença aparece.
+            */
+            className="size-7 shrink-0 cursor-pointer rounded-md border border-white/10 bg-[repeating-conic-gradient(rgb(255_255_255_/_0.14)_0_25%,transparent_0_50%)] bg-[length:8px_8px] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <span
+              className="block size-full rounded-[3px]"
+              style={{ backgroundColor: valor }}
+            />
+          </button>
+        </PopoverTrigger>
+
+        <PopoverContent align="start" className="w-60 p-3">
+          <PopoverArrow />
+
+          {legivel && (
+            <SeletorDeCor
+              valor={valor}
+              onMudar={(nova) => definir(token.nome, nova)}
+            />
+          )}
+        </PopoverContent>
+      </Popover>
 
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-2 truncate text-sm font-medium">

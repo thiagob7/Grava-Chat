@@ -1670,15 +1670,3 @@ export function valorDoTema(nome: string): string {
   return doTema;
 }
 
-/// `<input type="color">` só entende `#rrggbb`. O resto (rgb, oklab, nome de
-/// cor) continua editável no campo de texto ao lado.
-export function comoHex(valor: string): string | null {
-  const limpo = valor.trim();
-  if (/^#[0-9a-f]{6}$/i.test(limpo)) return limpo;
-  if (/^#[0-9a-f]{3}$/i.test(limpo)) {
-    const [r, g, b] = [limpo[1], limpo[2], limpo[3]];
-    return `#${r}${r}${g}${g}${b}${b}`;
-  }
-
-  return null;
-}
