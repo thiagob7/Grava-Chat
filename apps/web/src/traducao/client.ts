@@ -1,7 +1,7 @@
 import { useTranslation as useTranslationOriginal } from "react-i18next";
 
 import i18next from "./i18next";
-import { fallbackLng, languages, type Idioma } from "./settings";
+import { ehRtl, fallbackLng, languages, type Idioma } from "./settings";
 
 export const useTranslation = useTranslationOriginal;
 
@@ -27,4 +27,18 @@ export async function trocarIdioma(idioma: Idioma): Promise<void> {
     sotaque português — o tipo de coisa que só quem depende dele percebe.
   */
   document.documentElement.lang = idioma;
+
+  /*
+    A direção da escrita, junto com o idioma.
+
+    Árabe e hebraico se escrevem da direita para a esquerda, e `dir="rtl"` no
+    documento é o que espelha o layout inteiro — margens, ordem dos ícones,
+    de que lado a barra de rolagem nasce. Trocar só o texto daria as palavras
+    certas num desenho invertido, que é pior que não ter o idioma.
+
+    É apagado em vez de virar "ltr" nos outros: `ltr` é o padrão do HTML, e um
+    atributo que repete o padrão só serve para alguém achar que ele faz algo.
+  */
+  if (ehRtl(idioma)) document.documentElement.dir = "rtl";
+  else document.documentElement.removeAttribute("dir");
 }

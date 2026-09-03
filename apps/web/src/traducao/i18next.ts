@@ -3,13 +3,36 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next/initReactI18next";
 
+import { ptBR } from "./pt-br";
 import {
   defaultNS,
   fallbackLng,
   languages,
-  resources,
+  pastaDoIdioma,
   storageKey,
 } from "./settings";
+
+/*
+  Cada idioma chega por `import()`, e não todos empacotados juntos.
+
+  Com três idiomas, empacotar tudo era mais simples e igual de rápido. Com
+  trinta e quatro, é mandar trinta e três catálogos para quem vai ler um — e
+  o custo cresce junto com a tradução, que hoje tem sessenta e cinco textos e
+  vai ter mil e trezentos. O Vite lê este padrão e recorta um arquivo por
+  pasta sozinho.
+
+  O português é a exceção: ele vem junto, sempre, porque é o `fallbackLng`.
+  Carregá-lo por rede significaria uma tela sem texto nenhum no primeiro
+  instante — e é justamente ele que preenche o que os outros ainda não têm.
+*/
+const carregar = resourcesToBackend(async (lng: string) => {
+  if (lng === fallbackLng) return ptBR;
+
+  const modulo = (await import(`./${pastaDoIdioma(lng)}/index.ts`)) as {
+    default: typeof ptBR;
+  };
+  return modulo.default;
+});
 
 /*
   A ordem do detector importa, e é a mesma do backoffice.
@@ -25,19 +48,28 @@ import {
 void i18next
   .use(initReactI18next)
   .use(LanguageDetector)
-  .use(resourcesToBackend(resources))
+  .use(carregar)
   .init({
     supportedLngs: languages,
     fallbackLng,
     fallbackNS: defaultNS,
     defaultNS,
+    ns: [defaultNS],
+    /*
+      O português entra pronto, antes de qualquer rede.
+
+      Sem isto, a primeira pintura de quem está em português esperaria uma
+      promessa resolver — e o `useSuspense: false` abaixo faz essa espera
+      aparecer como tela sem texto, não como carregando.
+    */
+    resources: { [fallbackLng]: { [defaultNS]: ptBR } },
     /// O React já escapa tudo o que interpola. Escapar de novo transformaria
     /// aspas e acentos em entidades no meio da frase.
     interpolation: { escapeValue: false },
     /*
-      Sem Suspense: os recursos são objetos já empacotados, não requisições —
-      não há espera para suspender. Com ele ligado, cada componente que traduz
-      vira um limite de Suspense a mais por nada.
+      Sem Suspense: cada componente que traduz viraria um limite de Suspense a
+      mais. Quem troca de idioma vê o texto antigo por um instante e depois o
+      novo, que é melhor que a tela inteira sumir e voltar.
     */
     react: { useSuspense: false },
     detection: {
