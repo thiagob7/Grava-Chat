@@ -8,8 +8,10 @@ import { Switch } from "~/components/ui/switch";
 import { desktop } from "~/lib/desktop";
 import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 export const SeletorDeTela: React.FC = () => {
+  const { t } = useTranslation();
   const [fontes, setFontes] = useState<FonteDeTela[] | null>(null);
   const [escolhido, setEscolhido] = useState<string | null>(null);
   const [comAudio, setComAudio] = useState(true);
@@ -61,15 +63,14 @@ export const SeletorDeTela: React.FC = () => {
     <Dialog open onOpenChange={(aberto) => !aberto && responder(null, fontes)}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Compartilhar tela</DialogTitle>
+          <DialogTitle>{t("chamada.tela.compartilhar")}</DialogTitle>
         </DialogHeader>
 
         <div className="max-h-[55vh] overflow-y-auto px-5 py-4">
           {semPermissao && (
             <div className="mb-4 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
               <p>
-                O macOS ainda não liberou a gravação de tela. Sem isso o compartilhamento sai
-                preto.
+                {t("chamada.gravacaoDeTela.bloqueada")}
               </p>
               <Button
                 className="mt-2"
@@ -77,30 +78,30 @@ export const SeletorDeTela: React.FC = () => {
                 size="sm"
                 onClick={() => desktop()?.midia.abrirAjustes("screen")}
               >
-                Abrir os ajustes
+                {t("chamada.microfone.abrirAjustes")}
               </Button>
               <p className="mt-2 text-ink-faint">
-                Marque o <b>{desktop()?.nomeNoSistema}</b> em Gravação de Tela e reabra o
-                aplicativo.
+                {t("chamada.gravacaoDeTela.marque")} <b>{desktop()?.nomeNoSistema}</b>{" "}
+                {t("chamada.gravacaoDeTela.reabra")}
               </p>
             </div>
           )}
 
           {fontes.length === 0 && !semPermissao && (
             <p className="py-8 text-center text-sm text-ink-muted">
-              O sistema não devolveu nenhuma tela ou janela para compartilhar.
+              {t("chamada.tela.semFontes")}
             </p>
           )}
 
           <Grupo
-            titulo="Telas"
+            titulo={t("chamada.tela.telas")}
             icone={<Monitor size={13} />}
             fontes={telas}
             escolhido={escolhido}
             onEscolher={setEscolhido}
           />
           <Grupo
-            titulo="Janelas"
+            titulo={t("chamada.tela.janelas")}
             icone={<AppWindow size={13} />}
             fontes={janelas}
             escolhido={escolhido}
@@ -112,19 +113,19 @@ export const SeletorDeTela: React.FC = () => {
           <label className="flex items-center gap-2.5 text-sm text-ink-muted">
             <Switch checked={comAudio} onCheckedChange={setComAudio} />
             <span className="flex items-center gap-1.5">
-              <Volume2 size={14} /> Levar o som do sistema junto
+              <Volume2 size={14} /> {t("chamada.tela.somDoSistema")}
             </span>
           </label>
 
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => responder(null, fontes)}>
-              Cancelar
+              {t("chamada.tela.cancelar")}
             </Button>
             <Button
               disabled={!escolhido}
               onClick={() => escolhido && responder({ id: escolhido, comAudio }, fontes)}
             >
-              Compartilhar
+              {t("chamada.tela.compartilharAcao")}
             </Button>
           </div>
         </DialogFooter>

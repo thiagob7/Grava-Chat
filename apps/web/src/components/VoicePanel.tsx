@@ -12,6 +12,7 @@ import { corDoPing, useVoicePing, type PingDaChamada } from "~/hooks/use-voice-p
 import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/stores/configuracoes";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
@@ -24,6 +25,7 @@ interface VoicePanelProps {
 }
 
 export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const {
     channelId,
@@ -95,7 +97,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
               "Detalhes de Voz" sem que o mouse tivesse encostado no texto.
             */}
             <button
-              aria-label="Detalhes de voz"
+              aria-label={t("chamada.detalhes.abrir")}
               className="group/voz flex w-full items-center gap-1.5 text-left text-sm font-semibold"
             >
               {/*
@@ -112,7 +114,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
                   {conversa ? "Em uma chamada" : "Voz conectada"}
                 </span>
                 <span className="col-start-1 row-start-1 translate-y-full truncate text-ink opacity-0 transition duration-200 ease-out group-hover/voz:translate-y-0 group-hover/voz:opacity-100">
-                  Detalhes de Voz
+                  {t("chamada.detalhes.titulo")}
                 </span>
               </span>
             </button>
@@ -124,7 +126,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
                 : guildId && navigate(`/channels/${guildId}/${channelId}`)
             }
             disabled={!guildId && !conversa}
-            title="Voltar para a chamada"
+            title={t("chamada.voltar")}
             className="block max-w-full truncate text-left text-xs text-ink-muted transition hover:text-ink hover:underline disabled:cursor-default disabled:no-underline"
           >
             {conversa
@@ -149,7 +151,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
             onAbrirAjustes={() => abrirConfiguracoes("voz")}
           >
             <button
-              aria-label="Supressão de ruído"
+              aria-label={t("chamada.ruido.titulo")}
               aria-pressed={noiseFilter && noiseFilterAvailable}
               className={cn(
                 "rounded p-2 transition hover:bg-surface-3",
@@ -161,7 +163,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
             </button>
           </SupressaoDeRuidoPopover>
 
-          <Tooltip label="Desconectar">
+          <Tooltip label={t("chamada.desconectar")}>
             <button
               onClick={() => void leave()}
               className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
@@ -177,7 +179,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
       <div className="grid grid-cols-3 gap-1">
         <SoundboardPanel guildId={guildId ?? undefined} podeUsar={podeUsarSons} />
 
-        <VoiceControl label="Câmera" onClick={() => void toggleCamera()}>
+        <VoiceControl label={t("chamada.aparelhos.camera")} onClick={() => void toggleCamera()}>
           {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}
         </VoiceControl>
 
@@ -217,6 +219,7 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
 );
 
 const AvisoMicrofoneBloqueado: React.FC = () => {
+  const { t } = useTranslation();
   const ponte = desktop();
   const [statusDoSistema, setStatusDoSistema] = useState<string | null>(null);
 
@@ -228,7 +231,7 @@ const AvisoMicrofoneBloqueado: React.FC = () => {
   if (!ponte) {
     return (
       <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
-        Microfone bloqueado — você está só ouvindo. Libere o acesso nas permissões do navegador.
+        {t("chamada.microfone.bloqueado")}
       </p>
     );
   }
@@ -237,24 +240,23 @@ const AvisoMicrofoneBloqueado: React.FC = () => {
     return (
       <div className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
         <p>
-          O macOS está bloqueando o microfone. Marque o <b>{ponte.nomeNoSistema}</b> em{" "}
-          <b>Ajustes do Sistema → Privacidade e Segurança → Microfone</b>.
+          {t("chamada.microfone.bloqueadoNoMac")} <b>{ponte.nomeNoSistema}</b> em{" "}
+          <b>{t("chamada.microfone.caminhoNoMac")}</b>.
         </p>
         <button
           onClick={() => ponte.midia.abrirAjustes("microphone")}
           className="mt-1.5 rounded bg-danger/25 px-2 py-1 font-medium transition hover:bg-danger/40"
         >
-          Abrir os ajustes
+          {t("chamada.microfone.abrirAjustes")}
         </button>
-        <p className="mt-1.5 text-ink-faint">O macOS vai pedir pra reabrir o aplicativo.</p>
+        <p className="mt-1.5 text-ink-faint">{t("chamada.microfone.vaiReabrir")}</p>
       </div>
     );
   }
 
   return (
     <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
-      Não deu pra abrir o microfone — você está só ouvindo. Confira o dispositivo em Configurações
-      → Voz e vídeo.
+      {t("chamada.microfone.naoAbriu")}
     </p>
   );
 };

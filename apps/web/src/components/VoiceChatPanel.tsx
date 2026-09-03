@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "~/traducao";
 import { MessageSquare, X } from "lucide-react";
 
 import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
@@ -25,6 +26,7 @@ export const VoiceChatPanel: React.FC<VoiceChatPanelProps> = ({
   podeEscrever,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("chat-da-voz", {
     padrao: 384,
     min: 280,
@@ -44,7 +46,7 @@ export const VoiceChatPanel: React.FC<VoiceChatPanelProps> = ({
 
       <button
         onClick={onClose}
-        aria-label="Fechar chat"
+        aria-label={t("chamada.fecharChat")}
         className="text-ink-muted transition hover:text-ink"
       >
         <X size={18} />

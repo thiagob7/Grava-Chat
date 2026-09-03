@@ -14,6 +14,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface VoiceMembersProps {
   states: VoiceState[];
@@ -34,6 +35,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   minhasPermissoes = [],
   currentUserId,
 }) => {
+  const { t } = useTranslation();
   const tiles = useVoiceStore((s) => s.tiles);
   /// Quem apertou um som também "fala": o áudio sai na chamada, e o rosto
   /// parado enquanto todo mundo ouve deixava sem saber de quem tinha vindo.
@@ -170,6 +172,7 @@ const ConviteParaLive: React.FC<{
   onAssistir: () => void;
   children: React.ReactNode;
 }> = ({ ativo, nome, transmissao, onAssistir, children }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
 
   if (!ativo) return <div>{children}</div>;
@@ -204,7 +207,7 @@ const ConviteParaLive: React.FC<{
             <VoiceVideo track={transmissao} />
           ) : (
             <div className="flex size-full items-center justify-center text-xs text-ink-faint">
-              Carregando a prévia…
+              {t("chamada.carregandoPrevia")}
             </div>
           )}
         </div>
@@ -217,7 +220,7 @@ const ConviteParaLive: React.FC<{
           className="flex w-full items-center justify-center gap-2 rounded bg-surface-3 px-2 py-1.5 text-sm font-medium transition hover:bg-surface-4"
         >
           <Play size={14} className="text-online" />
-          Assistir a {nome}
+          {t("chamada.live.assistirPessoa", { nome })}
         </button>
       </PopoverContent>
     </Popover>

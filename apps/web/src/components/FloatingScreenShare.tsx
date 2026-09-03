@@ -7,12 +7,14 @@ import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { encaixarNoCanto } from "~/lib/cantos";
 import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 const MARGEM = 8;
 const LARGURA = 320;
 const ALTURA = 180;
 
 export const FloatingScreenShare: React.FC = () => {
+  const { t } = useTranslation();
   const tiles = useVoiceStore((s) => s.tiles);
   const assistindo = useVoiceStore((s) => s.assistindo);
   const palcoVisivel = useVoiceStore((s) => s.palcoVisivel);
@@ -139,7 +141,7 @@ export const FloatingScreenShare: React.FC = () => {
           chamada. Ícones distintos de propósito.
         */}
         <BotaoDaMini
-          label="Voltar para a chamada"
+          label={t("chamada.voltar")}
           onClick={() => guildId && channelId && navigate(`/channels/${guildId}/${channelId}`)}
         >
           <Maximize2 size={12} />
@@ -155,12 +157,12 @@ export const FloatingScreenShare: React.FC = () => {
           saída que só aparece quando o mouse passa por cima não é uma saída.
         */}
         {alvo.isLocal && (
-          <BotaoDaMini label="Encerrar a transmissão" onClick={() => void encerrarTransmissao()}>
+          <BotaoDaMini label={t("chamada.tela.encerrarTransmissao")} onClick={() => void encerrarTransmissao()}>
             <MonitorX size={12} className="text-danger" />
           </BotaoDaMini>
         )}
 
-        <BotaoDaMini label="Parar de assistir" onClick={() => parar(null)}>
+        <BotaoDaMini label={t("chamada.live.pararDeAssistir")} onClick={() => parar(null)}>
           <X size={12} />
         </BotaoDaMini>
       </div>

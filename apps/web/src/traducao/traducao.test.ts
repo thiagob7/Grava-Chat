@@ -173,7 +173,7 @@ describe("catálogos de tradução", () => {
     const pedidas = new Set(
       varrer(join(raiz, "..")).flatMap((src) =>
         [
-          ...src.matchAll(/"((?:comum|configuracoes|conversa|idioma|perfil)\.[\w.]+)"/g),
+          ...src.matchAll(/"((?:chamada|comum|configuracoes|conversa|idioma|perfil)\.[\w.]+)"/g),
         ].map((m) => m[1]!),
       ),
     );

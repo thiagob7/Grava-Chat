@@ -33,6 +33,7 @@ import {
 import { Slider } from "~/components/ui/slider";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useVoiceStore } from "~/stores/voice-store";
+import { useTranslation } from "~/traducao";
 
 interface VoiceMemberMenuProps {
   children: React.ReactNode;
@@ -59,6 +60,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   minhasPermissoes,
   currentUserId,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const openDm = useOpenDm();
   const setRoles = useSetMemberRoles(guildId);
@@ -108,12 +110,11 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               disabled={!pode("CHANGE_NICKNAME") && !pode("MANAGE_NICKNAMES")}
               onSelect={() =>
                 void confirmar({
-                  titulo: "Seu apelido neste servidor",
-                  descricao:
-                    "Vale só aqui. Em branco, volta a valer seu nome de sempre.",
-                  acao: "Salvar",
+                  titulo: t("chamada.membro.apelidoTitulo"),
+                  descricao: t("chamada.membro.apelidoDicaPropria"),
+                  acao: t("comum.salvar"),
                   destrutivo: false,
-                  campo: { rotulo: "Apelido", placeholder: displayName },
+                  campo: { rotulo: t("chamada.membro.apelidoCampo"), placeholder: displayName },
                 }).then(
                   ({ confirmado, texto }) =>
                     confirmado &&
@@ -125,7 +126,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                 )
               }
             >
-              Mudar meu apelido
+              {t("chamada.membro.mudarMeuApelido")}
             </ContextMenuItem>
 
             {naChamada && (
@@ -138,7 +139,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     void toggleMic();
                   }}
                 >
-                  Meu microfone
+                  {t("chamada.membro.meuMicrofone")}
                   <Checkbox readOnly checked={micEnabled} />
                 </ContextMenuItem>
 
@@ -148,7 +149,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     void toggleDeafen();
                   }}
                 >
-                  Ouvir a chamada
+                  {t("chamada.membro.ouvirChamada")}
                   <Checkbox readOnly checked={!deafened} />
                 </ContextMenuItem>
 
@@ -156,7 +157,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   className="text-danger"
                   onSelect={() => void sair()}
                 >
-                  Sair da chamada
+                  {t("chamada.sair")}
                 </ContextMenuItem>
               </>
             )}
@@ -166,10 +167,10 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
             <ContextMenuItem
               onSelect={() => {
                 void navigator.clipboard.writeText(userId);
-                toast.success("ID copiado.");
+                toast.success(t("chamada.membro.idCopiado"));
               }}
             >
-              Copiar meu ID
+              {t("chamada.membro.copiarMeuId")}
             </ContextMenuItem>
           </>
         )}
@@ -212,7 +213,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                 toggleSilenciarLocal(userId);
               }}
             >
-              Silenciar
+              {t("chamada.membro.silenciar")}
               <Checkbox readOnly checked={Boolean(silenciados[userId])} />
             </ContextMenuItem>
           </>
@@ -226,12 +227,11 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               disabled={!pode("MANAGE_NICKNAMES")}
               onSelect={() =>
                 void confirmar({
-                  titulo: `Apelido de ${displayName}`,
-                  descricao:
-                    "Vale só neste servidor. Deixe em branco para voltar ao nome original.",
-                  acao: "Salvar",
+                  titulo: t("chamada.membro.apelidoDeAlguem", { nome: displayName }),
+                  descricao: t("chamada.membro.apelidoDicaDeOutro"),
+                  acao: t("comum.salvar"),
                   destrutivo: false,
-                  campo: { rotulo: "Apelido", placeholder: displayName },
+                  campo: { rotulo: t("chamada.membro.apelidoCampo"), placeholder: displayName },
                 }).then(
                   ({ confirmado, texto }) =>
                     confirmado &&
@@ -243,12 +243,12 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                 )
               }
             >
-              Alterar apelido
+              {t("chamada.membro.alterarApelido")}
             </ContextMenuItem>
 
             {pode("MANAGE_ROLES") && (
               <ContextMenuSub>
-                <ContextMenuSubTrigger>Cargos</ContextMenuSubTrigger>
+                <ContextMenuSubTrigger>{t("chamada.membro.cargos")}</ContextMenuSubTrigger>
                 <ContextMenuSubContent>
                   {roles
                     .filter((r) => !r.isEveryone)
@@ -285,7 +285,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
                   {roles.filter((r) => !r.isEveryone).length === 0 && (
                     <ContextMenuItem disabled>
-                      Nenhum cargo criado
+                      {t("chamada.membro.semCargo")}
                     </ContextMenuItem>
                   )}
                 </ContextMenuSubContent>
@@ -294,7 +294,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
             {naChamada && pode("MOVE_MEMBERS") && (
               <ContextMenuSub>
-                <ContextMenuSubTrigger>Mover para</ContextMenuSubTrigger>
+                <ContextMenuSubTrigger>{t("chamada.membro.moverPara")}</ContextMenuSubTrigger>
                 <ContextMenuSubContent>
                   {canaisDeVoz
                     .filter((c) => c.id !== voiceState?.channelId)
@@ -329,7 +329,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     }).catch((erro: Error) => toast.error(erro.message));
                   }}
                 >
-                  Silenciar voz no servidor
+                  {t("chamada.membro.silenciarNoServidor")}
                   <Checkbox
                     readOnly
                     checked={Boolean(voiceState?.serverMute)}
@@ -347,7 +347,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     }).catch((erro: Error) => toast.error(erro.message));
                   }}
                 >
-                  Desativar áudio no servidor
+                  {t("chamada.membro.desativarAudioNoServidor")}
                   <Checkbox
                     readOnly
                     checked={Boolean(voiceState?.serverDeaf)}
@@ -363,7 +363,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     )
                   }
                 >
-                  Desconectar
+                  {t("chamada.membro.desconectar")}
                 </ContextMenuItem>
               </>
             )}

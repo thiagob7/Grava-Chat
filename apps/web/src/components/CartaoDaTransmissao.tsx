@@ -4,6 +4,7 @@ import { Monitor, MonitorX } from "lucide-react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/stores/voice-store";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 /**
  * O que você está transmitindo, num cartão PRÓPRIO acima do bloco da chamada.
@@ -18,6 +19,7 @@ import { cn } from "~/lib/utils";
  * quadradinho com o monitor faz o papel dele.
  */
 export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ className }) => {
+  const { t } = useTranslation();
   const fonte = useVoiceStore((s) => s.fonteDaTela);
   const transmitindo = useVoiceStore((s) => s.screenEnabled);
   const encerrar = useVoiceStore((s) => s.toggleScreen);
@@ -59,10 +61,10 @@ export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ classNam
         {fonte.nome}
       </span>
 
-      <Tooltip label="Parar de compartilhar">
+      <Tooltip label={t("chamada.tela.pararDeCompartilhar")}>
         <button
           onClick={() => void encerrar()}
-          aria-label="Parar de compartilhar"
+          aria-label={t("chamada.tela.pararDeCompartilhar")}
           className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-danger"
         >
           <MonitorX size={14} />

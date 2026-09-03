@@ -1,3 +1,4 @@
+import { chamada } from "./root/chamada";
 import { comum } from "./root/comum";
 import { configuracoes } from "./root/configuracoes";
 import { conversa } from "./root/conversa";
@@ -12,6 +13,7 @@ import { perfil } from "./root/perfil";
   faria ele procurar `traducao.configuracoes.telas.conta` e não achar nada.
 */
 const catalogo = {
+  chamada,
   comum,
   configuracoes,
   conversa,

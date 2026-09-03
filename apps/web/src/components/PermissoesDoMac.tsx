@@ -13,6 +13,7 @@ import { Button } from "~/components/ui/button";
 import { desktop } from "~/lib/desktop";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 type Estado = "concedida" | "negada" | "indefinida";
 
@@ -26,14 +27,13 @@ interface Linha {
   ajustes: () => void;
 }
 
-const MIDIAS: { tipo: TipoDeMidia; titulo: string; descricao: string }[] = [
-  { tipo: "microphone", titulo: "Microfone", descricao: "Falar nas chamadas e testar sua entrada." },
-  { tipo: "camera", titulo: "Câmera", descricao: "Ligar o vídeo na chamada." },
-  {
-    tipo: "screen",
-    titulo: "Gravação de tela",
-    descricao: "Compartilhar a tela e as janelas.",
-  },
+/// A lista guarda a CHAVE, e não o texto: é constante de módulo, avaliada uma
+/// vez na carga do arquivo, e o texto escrito aqui congelaria o idioma daquele
+/// instante.
+const MIDIAS: { tipo: TipoDeMidia; chave: string }[] = [
+  { tipo: "microphone", chave: "microfone" },
+  { tipo: "camera", chave: "camera" },
+  { tipo: "screen", chave: "tela" },
 ];
 
 /*
@@ -54,6 +54,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
   aberto,
   onFechar,
 }) => {
+  const { t } = useTranslation();
   const ponte = desktop();
   const teclaPtt = useVoicePrefs((s) => s.teclaPtt);
   const [midias, setMidias] = useState<Record<string, Estado>>({});
@@ -93,10 +94,10 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
   if (!ponte) return null;
 
   const linhas: Linha[] = [
-    ...MIDIAS.map(({ tipo, titulo, descricao }) => ({
+    ...MIDIAS.map(({ tipo, chave }) => ({
       chave: tipo,
-      titulo,
-      descricao,
+      titulo: t(`chamada.permissoes.${chave}`),
+      descricao: t(`chamada.permissoes.${chave}Detalhe`),
       estado: midias[tipo] ?? "indefinida",
       conceder:
         tipo === "screen"
@@ -109,8 +110,8 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
     })),
     {
       chave: "ptt",
-      titulo: "Monitoramento de entrada",
-      descricao: "Usar o push-to-talk mesmo com o Gravaê em segundo plano.",
+      titulo: t("chamada.permissoes.monitoramento"),
+      descricao: t("chamada.permissoes.monitoramentoDetalhe"),
       estado: ptt,
       conceder: async () => {
         await ponte.ptt.pedirPermissao({ ativo: false, tecla: teclaPtt });
@@ -124,7 +125,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
     <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Permissões do macOS</DialogTitle>
+          <DialogTitle>{t("chamada.permissoes.titulo")}</DialogTitle>
         </DialogHeader>
 
         <DialogBody>
@@ -146,7 +147,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
 
                 {linha.estado === "concedida" ? (
                   <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-online/10 px-2.5 py-1.5 text-xs font-medium text-online">
-                    <Check size={14} /> Concedida
+                    <Check size={14} /> {t("chamada.permissoes.concedida")}
                   </span>
                 ) : (
                   <div className="flex shrink-0 items-center gap-2">
@@ -159,7 +160,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
                       )}
                     >
                       {linha.estado === "negada" ? <X size={14} /> : null}
-                      {linha.estado === "negada" ? "Negada" : "Não pedida"}
+                      {t(linha.estado === "negada" ? "chamada.permissoes.negada" : "chamada.permissoes.naoPedida")}
                     </span>
 
                     {/*

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Button } from "~/components/ui/button";
+import { useTranslation } from "~/traducao";
 import {
   Dialog,
   DialogBody,
@@ -16,7 +17,7 @@ interface Props {
 }
 
 /*
-  Você já está nesta chamada, em outro lugar. E agora?
+  {t("chamada.jaConectado.titulo")}, em outro lugar. E agora?
 
   Antes o clique no canal simplesmente NÃO FAZIA NADA nesse caso — a única
   pista era uma caixinha no rodapé da barra lateral, que competia por atenção
@@ -30,11 +31,14 @@ interface Props {
   "entrar mantendo as outras conexões" não existe aqui. Oferecer um botão que
   o servidor não sustenta seria inventar um recurso na tela.
 */
-export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerParaCa }) => (
+export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerParaCa }) => {
+  const { t } = useTranslation();
+
+  return (
   <Dialog open={Boolean(canal)} onOpenChange={(v) => !v && onFechar()}>
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>Você já está nesta chamada</DialogTitle>
+        <DialogTitle>{t("chamada.jaConectado.titulo")}</DialogTitle>
       </DialogHeader>
 
       <DialogBody>
@@ -45,11 +49,11 @@ export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerPar
 
         <div className="mt-5 space-y-2">
           <Button className="w-full" onClick={onTrazerParaCa}>
-            Trazer a chamada para cá
+            {t("chamada.jaConectado.trazer")}
           </Button>
 
           <Button variant="surface" className="w-full" onClick={onFechar}>
-            Deixar como está
+            {t("chamada.jaConectado.deixar")}
           </Button>
         </div>
 
@@ -60,4 +64,5 @@ export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerPar
       </DialogBody>
     </DialogContent>
   </Dialog>
-);
+  );
+};

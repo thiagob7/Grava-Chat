@@ -27,6 +27,7 @@ import { VoiceVideo } from "~/components/VoiceTrack";
 import { useParticipante } from "~/hooks/use-participante";
 import { useSomDoPainel } from "~/lib/soundboard";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface VoiceStageProps {
   channelName: string;
@@ -59,6 +60,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   currentUserId,
   compacto = false,
 }) => {
+  const { t } = useTranslation();
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
   /// qual quadro está em destaque; `null` é a grade igualitária
@@ -98,7 +100,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   if (error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
-        <p className="font-medium text-danger">Não deu pra entrar na chamada</p>
+        <p className="font-medium text-danger">{t("chamada.naoEntrou")}</p>
         <p className="max-w-sm text-sm text-ink-muted">{error}</p>
       </div>
     );
@@ -107,7 +109,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   if (connecting) {
     return (
       <div className="flex flex-1 items-center justify-center text-ink-muted">
-        Conectando à chamada…
+        {t("chamada.conectando")}
       </div>
     );
   }
@@ -154,7 +156,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           */}
           <button
             onClick={() => setAssistindo(null)}
-            aria-label="Voltar para os quadros da chamada"
+            aria-label={t("chamada.voltarAosQuadros")}
             className="absolute inset-0 size-full cursor-pointer"
           >
             <VoiceVideo track={sharing.screenTrack!} />
@@ -188,7 +190,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             )}
 
             <span className="ml-auto rounded bg-danger px-1.5 py-0.5 text-10 font-bold tracking-wide">
-              AO VIVO
+              {t("chamada.live.etiquetaMaiuscula")}
             </span>
 
             {/*
@@ -205,7 +207,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
               onClick={() => setAssistindo(null)}
               className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-white/25"
             >
-              <X size={14} /> Parar de assistir
+              <X size={14} /> {t("chamada.live.pararDeAssistir")}
             </button>
           </div>
 
@@ -449,6 +451,7 @@ interface TileProps {
 }
 
 const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, onFocar }) => {
+  const { t } = useTranslation();
   const resolver = useParticipante();
   const espelhar = useVoicePrefs((s) => s.espelharCamera);
   /// O som do painel acende o rosto igual à fala — quem apertou é quem está
@@ -562,7 +565,10 @@ const TileDaLive: React.FC<{
     live simplesmente não aparecia. Quem monta a fileira precisa dar o tamanho.
   */
   className?: string;
-}> = ({ tile, denso, onAssistir, className }) => (
+}> = ({ tile, denso, onAssistir, className }) => {
+  const { t } = useTranslation();
+
+  return (
   <div
     className={cn(
       "group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black/70 ring-1 ring-white/10",
@@ -599,7 +605,7 @@ const TileDaLive: React.FC<{
         <VoiceVideo track={tile.screenTrack} />
 
         <span className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
-          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+          <span className="size-1.5 animate-pulse rounded-full bg-white" /> {t("chamada.live.etiqueta")}
         </span>
       </button>
     ) : (
@@ -615,7 +621,7 @@ const TileDaLive: React.FC<{
         className="absolute inset-0 flex items-center justify-center transition hover:bg-white/5"
       >
         <span className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
-          <span className="size-1.5 animate-pulse rounded-full bg-white" /> Ao vivo
+          <span className="size-1.5 animate-pulse rounded-full bg-white" /> {t("chamada.live.etiqueta")}
         </span>
 
         <span
@@ -625,7 +631,7 @@ const TileDaLive: React.FC<{
             denso ? "text-xs" : "text-sm",
           )}
         >
-          <Play size={denso ? 14 : 16} /> Assistir à transmissão
+          <Play size={denso ? 14 : 16} /> {t("chamada.live.assistir")}
         </span>
       </button>
     )}
@@ -641,7 +647,8 @@ const TileDaLive: React.FC<{
     {/* som da própria tela não volta pra você — não há o que regular */}
     {!tile.isLocal && <ControleDeVolumeDaLive identity={tile.identity} className="absolute bottom-2 right-2" />}
   </div>
-);
+  );
+};
 
 /**
  * O volume da transmissão, separado do volume da voz de quem transmite.

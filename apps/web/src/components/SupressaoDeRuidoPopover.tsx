@@ -10,6 +10,7 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/hooks/use-voice-meter";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface Props {
   children: React.ReactNode;
@@ -40,6 +41,7 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
   onAlternar,
   onAbrirAjustes,
 }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
 
   return (
@@ -57,7 +59,7 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
         <div className="flex items-start justify-between gap-3">
           <h3 className="flex items-center gap-2 text-sm font-semibold">
             <AudioLines size={16} className={ligada && disponivel ? "text-online" : undefined} />
-            Supressão de ruído
+            {t("chamada.ruido.titulo")}
           </h3>
 
           <Switch
@@ -69,13 +71,13 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
 
         <p className="mt-2 text-xs leading-relaxed text-ink-muted">
           {disponivel
-            ? "Tire o barulho de fundo da sua voz. Tente bater palmas ou arrastar o teclado enquanto fala — quem está na chamada só ouve você."
-            : "Este navegador não roda a supressão avançada. Continua valendo a do próprio navegador, que é mais fraca."}
+            ? t("chamada.ruido.explicacao")
+            : t("chamada.ruido.semSuporte")}
         </p>
 
         {ocupada && (
           <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-faint">
-            <Loader2 size={12} className="animate-spin" /> Aplicando na chamada…
+            <Loader2 size={12} className="animate-spin" /> {t("chamada.ruido.aplicando")}
           </p>
         )}
 
@@ -83,7 +85,7 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
 
         <div className="mt-4 flex items-center justify-between border-t border-divisor pt-3">
           <span className="text-xs text-ink-faint">
-            Feito com <span className="text-ink-muted">RNNoise</span>, aqui no seu aparelho
+            {t("chamada.ruido.feitoCom")} <span className="text-ink-muted">RNNoise</span>{t("chamada.ruido.aquiNoAparelho")}
           </span>
 
           <button
@@ -93,7 +95,7 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
             }}
             className="flex shrink-0 items-center gap-1.5 rounded p-1.5 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
-            <SlidersHorizontal size={13} /> Ajustes
+            <SlidersHorizontal size={13} /> {t("chamada.ruido.ajustes")}
           </button>
         </div>
       </PopoverContent>
@@ -109,6 +111,7 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
   assusta com razão.
 */
 const TesteDoMicrofone: React.FC<{ aberto: boolean }> = ({ aberto }) => {
+  const { t } = useTranslation();
   const { nivel, aberto: passando, erro } = useVoiceMeter(aberto);
 
   if (erro)
@@ -116,7 +119,7 @@ const TesteDoMicrofone: React.FC<{ aberto: boolean }> = ({ aberto }) => {
 
   return (
     <div className="mt-3">
-      <p className="mb-1.5 text-xs font-medium text-ink-muted">Fale para testar</p>
+      <p className="mb-1.5 text-xs font-medium text-ink-muted">{t("chamada.ruido.faleParaTestar")}</p>
 
       <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-surface-0">
         <div
@@ -129,7 +132,7 @@ const TesteDoMicrofone: React.FC<{ aberto: boolean }> = ({ aberto }) => {
       </div>
 
       <p className="mt-1.5 text-11 text-ink-faint">
-        {passando ? "Estão te ouvindo agora." : "Verde quando sua voz passa."}
+        {t(passando ? "chamada.ruido.teOuvindo" : "chamada.ruido.verdeQuandoPassa")}
       </p>
     </div>
   );

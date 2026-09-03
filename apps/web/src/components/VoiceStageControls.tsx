@@ -41,6 +41,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { nomeDoDispositivo, useDispositivos } from "~/hooks/use-dispositivos";
 import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/stores/configuracoes";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
@@ -58,6 +59,7 @@ export const VoiceStageControls: React.FC<{
   /// só no privado, onde a conversa escrita divide a tela com a chamada
   mostrarChat?: boolean;
 }> = ({ alvoTelaCheia, mostrarChat }) => {
+  const { t } = useTranslation();
   const telaCheia = useTelaCheia(alvoTelaCheia);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
 
@@ -116,29 +118,29 @@ export const VoiceStageControls: React.FC<{
       <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
         <Controle
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
-          labelDoMenu="Configurações de entrada"
+          labelDoMenu={t("chamada.aparelhos.configEntrada")}
           onClick={() => void toggleMic()}
           ativo={micEnabled && !micBlocked}
           menu={
             <>
-              <DropdownMenuLabel>Dispositivo de entrada</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("chamada.aparelhos.entrada")}</DropdownMenuLabel>
               <DropdownMenuRadioGroup
                 value={prefs.entradaId ?? "padrao"}
                 onValueChange={(valor) =>
                   prefs.definir({ entradaId: valor === "padrao" ? null : valor })
                 }
               >
-                <DropdownMenuRadioItem value="padrao">O do sistema</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
                 {entradas.map((aparelho, i) => (
                   <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
-                    {nomeDoDispositivo(aparelho, i, "Microfone")}
+                    {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.microfone"))}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
 
               <DropdownMenuSeparator />
               <FaixaDeVolume
-                rotulo="Volume de entrada"
+                rotulo={t("chamada.volume.entrada")}
                 valor={prefs.ganhoEntrada}
                 max={2}
                 onMudar={(v) => prefs.definir({ ganhoEntrada: v })}
@@ -146,7 +148,7 @@ export const VoiceStageControls: React.FC<{
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                Configurações de entrada <Settings size={15} />
+                {t("chamada.aparelhos.configEntrada")} <Settings size={15} />
               </DropdownMenuItem>
             </>
           }
@@ -156,12 +158,12 @@ export const VoiceStageControls: React.FC<{
 
         <Controle
           label={deafened ? "Ouvir" : "Ficar surdo"}
-          labelDoMenu="Configurações de saída"
+          labelDoMenu={t("chamada.aparelhos.configSaida")}
           onClick={() => void toggleDeafen()}
           ativo={!deafened}
           menu={
             <>
-              <DropdownMenuLabel>Dispositivo de saída</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("chamada.aparelhos.saida")}</DropdownMenuLabel>
               {podeTrocarSaida ? (
                 <DropdownMenuRadioGroup
                   value={prefs.saidaId ?? "padrao"}
@@ -169,10 +171,10 @@ export const VoiceStageControls: React.FC<{
                     prefs.definir({ saidaId: valor === "padrao" ? null : valor })
                   }
                 >
-                  <DropdownMenuRadioItem value="padrao">O do sistema</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
                   {saidas.map((aparelho, i) => (
                     <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
-                      {nomeDoDispositivo(aparelho, i, "Saída")}
+                      {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.saidaCurto"))}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
@@ -184,7 +186,7 @@ export const VoiceStageControls: React.FC<{
 
               <DropdownMenuSeparator />
               <FaixaDeVolume
-                rotulo="Volume de saída"
+                rotulo={t("chamada.volume.saida")}
                 valor={prefs.volumeSaida}
                 max={1}
                 onMudar={(v) => prefs.definir({ volumeSaida: v })}
@@ -192,7 +194,7 @@ export const VoiceStageControls: React.FC<{
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                Configurações de saída <Settings size={15} />
+                {t("chamada.aparelhos.configSaida")} <Settings size={15} />
               </DropdownMenuItem>
             </>
           }
@@ -202,22 +204,22 @@ export const VoiceStageControls: React.FC<{
 
         <Controle
           label={cameraEnabled ? "Desligar a câmera" : "Ligar a câmera"}
-          labelDoMenu="Configurações da câmera"
+          labelDoMenu={t("chamada.aparelhos.configCamera")}
           onClick={() => void toggleCamera()}
           ativo={cameraEnabled}
           menu={
             <>
-              <DropdownMenuLabel>Câmera</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("chamada.aparelhos.camera")}</DropdownMenuLabel>
               <DropdownMenuRadioGroup
                 value={prefs.cameraId ?? "padrao"}
                 onValueChange={(valor) =>
                   prefs.definir({ cameraId: valor === "padrao" ? null : valor })
                 }
               >
-                <DropdownMenuRadioItem value="padrao">A do sistema</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.aDoSistema")}</DropdownMenuRadioItem>
                 {cameras.map((aparelho, i) => (
                   <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
-                    {nomeDoDispositivo(aparelho, i, "Câmera")}
+                    {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.camera"))}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
@@ -227,12 +229,12 @@ export const VoiceStageControls: React.FC<{
                 checked={prefs.espelharCamera}
                 onCheckedChange={(marcado) => prefs.definir({ espelharCamera: marcado })}
               >
-                Espelhar a minha câmera
+                {t("chamada.aparelhos.espelhar")}
               </DropdownMenuCheckboxItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                Configurações da câmera <Settings size={15} />
+                {t("chamada.aparelhos.configCamera")} <Settings size={15} />
               </DropdownMenuItem>
             </>
           }
@@ -241,23 +243,23 @@ export const VoiceStageControls: React.FC<{
         </Controle>
 
         <Controle
-          label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
-          labelDoMenu="Configurações de compartilhamento"
+          label={screenEnabled ? t("chamada.tela.pararDeCompartilhar") : t("chamada.tela.compartilhar")}
+          labelDoMenu={t("chamada.tela.configCompartilhamento")}
           onClick={() => void toggleScreen()}
           ativo={screenEnabled}
           menu={
             <>
-              <DropdownMenuLabel>Compartilhar tela</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("chamada.tela.compartilhar")}</DropdownMenuLabel>
               <DropdownMenuCheckboxItem
                 checked={prefs.somDaTela}
                 onCheckedChange={(marcado) => prefs.definir({ somDaTela: marcado })}
               >
-                Levar o som do computador junto
+                {t("chamada.tela.somDoComputador")}
               </DropdownMenuCheckboxItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                Configurações de compartilhamento <Settings size={15} />
+                {t("chamada.tela.configCompartilhamento")} <Settings size={15} />
               </DropdownMenuItem>
             </>
           }
@@ -268,10 +270,10 @@ export const VoiceStageControls: React.FC<{
         </Controle>
 
         <DropdownMenu>
-          <Tooltip label="Mais opções">
+          <Tooltip label={t("chamada.maisOpcoes")}>
             <DropdownMenuTrigger asChild>
               <button
-                aria-label="Mais opções"
+                aria-label={t("chamada.maisOpcoes")}
                 className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
               >
                 <MoreHorizontal size={18} />
@@ -284,7 +286,7 @@ export const VoiceStageControls: React.FC<{
               checked={prefs.mostrarSemVideo}
               onCheckedChange={(marcado) => prefs.definir({ mostrarSemVideo: marcado })}
             >
-              Mostrar quem está sem vídeo
+              {t("chamada.tela.mostrarSemVideo")}
             </DropdownMenuCheckboxItem>
 
             <DropdownMenuSeparator />
@@ -294,17 +296,17 @@ export const VoiceStageControls: React.FC<{
             </DropdownMenuItem>
 
             <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-              Configurações de áudio e vídeo <Settings size={15} />
+              {t("chamada.aparelhos.configAudioEVideo")} <Settings size={15} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <span className="mx-0.5 h-6 w-px bg-white/10" aria-hidden />
 
-        <Tooltip label="Sair da chamada de voz">
+        <Tooltip label={t("chamada.sairDaVoz")}>
           <button
             onClick={() => void leave()}
-            aria-label="Sair da chamada de voz"
+            aria-label={t("chamada.sairDaVoz")}
             className="flex size-10 items-center justify-center rounded-full bg-danger text-white transition hover:brightness-110"
           >
             <PhoneOff size={18} />
@@ -347,6 +349,7 @@ export const VoiceStageControls: React.FC<{
  * quando o problema é "o Gravaê está alto demais".
  */
 const VolumeDaLive: React.FC = () => {
+  const { t } = useTranslation();
   const assistindo = useVoiceStore((s) => s.assistindo);
   const volume = useVoiceStore((s) =>
     s.assistindo ? Math.min(1, s.volumesDeTela[s.assistindo] ?? 1) : 1,
@@ -359,12 +362,14 @@ const VolumeDaLive: React.FC = () => {
     <Popover>
       <Tooltip
         label={
-          volume === 0 ? "Live sem som" : `Volume da live (${Math.round(volume * 100)}%)`
+          volume === 0
+            ? t("chamada.volume.liveSemSom")
+            : t("chamada.volume.liveComPorcento", { porcento: Math.round(volume * 100) })
         }
       >
         <PopoverTrigger asChild>
           <button
-            aria-label="Volume da live"
+            aria-label={t("chamada.volume.live")}
             className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
             {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -386,7 +391,7 @@ const VolumeDaLive: React.FC = () => {
             step={0.05}
             value={volume}
             preenchido={volume}
-            aria-label="Volume da live"
+            aria-label={t("chamada.volume.live")}
             onChange={(e) => definir(assistindo, Number(e.target.value))}
             className="w-32 -rotate-90"
           />

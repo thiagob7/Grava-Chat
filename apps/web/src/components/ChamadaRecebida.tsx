@@ -8,6 +8,7 @@ import { recusarChamada } from "~/@core/lib/websocket/emit-voice";
 import { tocarSom } from "~/lib/ui-sounds";
 import { useChamadaStore } from "~/stores/chamada-store";
 import { useVoiceStore } from "~/stores/voice-store";
+import { useTranslation } from "~/traducao";
 
 /**
  * Quanto tempo o telefone toca antes de desistir sozinho.
@@ -34,6 +35,7 @@ const INTERVALO_DO_TOQUE_MS = 2_400;
  * servidor qualquer, ou na tela de amigos.
  */
 export const ChamadaRecebida: React.FC = () => {
+  const { t } = useTranslation();
   const chamada = useChamadaStore((s) => s.tocando);
   const encerrar = useChamadaStore((s) => s.encerrar);
   const entrarNaChamada = useVoiceStore((s) => s.join);
@@ -54,6 +56,7 @@ export const ChamadaRecebida: React.FC = () => {
     const desistir = setTimeout(() => encerrar(channelId), TEMPO_TOCANDO_MS);
 
     return () => {
+  const { t } = useTranslation();
       clearInterval(toque);
       clearTimeout(desistir);
     };
@@ -61,7 +64,7 @@ export const ChamadaRecebida: React.FC = () => {
 
   if (!chamada) return null;
 
-  const nome = perfil?.displayName ?? "Alguém";
+  const nome = perfil?.displayName ?? t("chamada.alguem");
 
   const atender = async (comVideo: boolean) => {
     encerrar(chamada.channelId);
@@ -90,7 +93,7 @@ export const ChamadaRecebida: React.FC = () => {
           <span className="block truncate font-semibold">{nome}</span>
           <span className="flex items-center gap-1.5 text-xs text-ink-muted">
             {chamada.comVideo ? <Video size={12} /> : <Phone size={12} />}
-            {chamada.comVideo ? "Chamada de vídeo" : "Chamada de voz"}
+            {t(chamada.comVideo ? "chamada.deVideo" : "chamada.deVoz")}
           </span>
         </span>
       </div>
