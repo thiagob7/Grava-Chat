@@ -1,0 +1,1551 @@
+/*
+  A camada de tokens da referência — os 451 nomes que o cliente que serve de
+  referência declara, com os nossos valores.
+
+  **De onde ela veio.** Do CSS PUBLICADO (`web.canary.fluxer.app` → o bundle em
+  `fluxerstatic.com`), nunca do repositório: aquele é AGPL e copiá-lo
+  contaminaria este código. O CSS servido ao navegador é outra coisa — é o que
+  qualquer pessoa que abre o site recebe, e ler valor de cor de uma página é o
+  mesmo que abrir o inspetor.
+
+  **Por que uma camada separada do `@theme`.** Estes nomes são a lista COMPLETA
+  do que dá pra vestir num cliente deste tipo: superfícies, texto, botões,
+  bordas, marcação, código, mensagens, formulários e as medidas do layout. O
+  `@theme` do `index.css` continua sendo a nossa paleta em português, e o que
+  ele faz agora é APONTAR pra cá onde os dois dizem a mesma coisa — assim editar
+  um token no estúdio muda o app de verdade, em vez de mexer numa lista paralela.
+
+  **Os valores são os nossos, não os deles.** `hsl(h, calc(s% * var(...)), l%)`
+  foi resolvido com fator 1 e virou hex, que é o que o seletor de cor do estúdio
+  entende. Onde o nosso tema já tinha valor próprio, o valor daqui é o nosso.
+
+  **Seis tokens ficaram de fora, de propósito:** `--font-sans` e `--font-mono`
+  (usamos a IBM Plex com o nome verdadeiro, não com o nome que eles dão a ela),
+  os dois `--font-fallback-*` (listas de fontes que não empacotamos),
+  `--saturation-factor` (só faz efeito dentro de `hsl()`, e aqui tudo já é hex)
+  e `--user-select`, que é comportamento e não tema.
+*/
+:root {
+  --font-keybind: -apple-system, BlinkMacSystemFont, var(--font-sans);
+  --z-index-base: 0;
+  --z-index-elevated-1: 10;
+  --z-index-elevated-2: 20;
+  --z-index-elevated-3: 30;
+  --z-index-modal: 10000;
+  --z-index-popout: 15000;
+  --z-index-modal-swap: 25000;
+  --z-index-popout-above-swap: 30000;
+  --z-index-overlay: 40000;
+  --z-index-contextmenu: 44000;
+  --z-index-tooltip: 45000;
+  --z-index-toast: 50000;
+  --z-index-titlebar: 100000;
+  --native-titlebar-height: 2rem;
+  --macos-traffic-light-inset: 78px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 624.938rem;
+  --media-border-radius: 0.25rem;
+  --input-container-padding: 0.625rem;
+  --list-row-min-height: 4.5rem;
+  --input-wrapper-padding-x: 0.5rem;
+  --input-wrapper-padding-bottom: 0.5rem;
+  --textarea-top-bar-height: 2.5rem;
+  --chat-horizontal-padding-default: 1rem;
+  --message-compact-horizontal-padding: min(
+    var(--chat-horizontal-padding, var(--chat-horizontal-padding-default)),
+    1rem
+  );
+  --textarea-font-size: var(--font-size, 1rem);
+  --textarea-button-height: 2rem;
+  --textarea-button-icon-size: 1.375rem;
+  --textarea-button-compact-height: 2rem;
+  --textarea-button-compact-icon-size: 1.25rem;
+  --textarea-container-padding-x: 0px;
+  --textarea-line-height: calc(var(--textarea-font-size) * 1.375);
+  --textarea-content-offset: max(
+    0rem,
+    calc((var(--textarea-button-height) - var(--textarea-line-height)) / 2)
+  );
+  --textarea-upload-gap: var(--message-gutter, 1rem);
+  --textarea-side-button-padding: max(
+    0px,
+    calc(
+      (var(--message-avatar-size, 2.5rem) - var(--textarea-button-height)) / 2
+    )
+  );
+  --footer-box-height: 3.625rem;
+  --footer-box-inset: 0.375rem;
+  --footer-box-inset-inline: var(--footer-box-inset);
+  --footer-box-radius: var(--radius-lg);
+  --footer-box-inner-inset: 0.5rem;
+  --outline-frame-border-width: 0.0625rem;
+  --composer-mobile-box-height: 3rem;
+  --composer-action-gap: 0.25rem;
+  --composer-surface-color: var(--background-secondary-lighter);
+  --composer-status-line-height: 1.125rem;
+  --composer-status-safe-gap: 0.5rem;
+  --composer-status-safe-area: calc(
+    var(--composer-status-line-height) + var(--composer-status-safe-gap) +
+      var(--composer-status-safe-gap)
+  );
+  --guild-list-item-box-size: 3rem;
+  --guild-list-item-gap: 0.375rem;
+  --guild-list-item-target-size: calc(
+    var(--guild-list-item-box-size) + var(--guild-list-item-gap)
+  );
+  --guild-list-item-target-half-extra: calc(
+    (var(--guild-list-item-target-size) - var(--guild-list-item-box-size)) / 2
+  );
+  --guild-folder-expanded-surface-size: var(--guild-list-item-box-size);
+  --folder-radius: calc(var(--guild-folder-expanded-surface-size) * 0.3);
+  --mention-badge-small-size: 1.25rem;
+  --mention-badge-medium-size: 1.5rem;
+  --outline-frame-radius-native: clamp(0.5rem, 1.2vw, 0.875rem);
+  --guild-list-divider-line-size: 0.125rem;
+  --guild-list-divider-base-gap: var(--guild-list-item-gap);
+  --guild-members-columns: minmax(15rem, 2.2fr) minmax(7.5rem, 1fr)
+    minmax(7.5rem, 1fr) minmax(9.375rem, 1.15fr) minmax(10rem, 1.35fr) 4.5rem;
+  --guild-members-min-width: calc(
+    15rem + 7.5rem + 7.5rem + 9.375rem + 10rem + 4.5rem
+  );
+  --guild-members-select-column-width: 2.75rem;
+  --guild-members-columns-selectable: var(--guild-members-select-column-width)
+    var(--guild-members-columns);
+  --guild-members-min-width-selectable: calc(
+    var(--guild-members-select-column-width) + var(--guild-members-min-width)
+  );
+  --floating-surface-ring-color: color-mix(
+    in srgb,
+    var(--background-modifier-accent) 20%,
+    transparent
+  );
+  --floating-surface-ring-color-strong: color-mix(
+    in srgb,
+    var(--background-modifier-accent) 45%,
+    transparent
+  );
+  --skeleton-chrome-border-color: color-mix(
+    in srgb,
+    var(--background-modifier-accent) 25%,
+    transparent
+  );
+  --skeleton-chrome-border: 0.0625rem solid var(--skeleton-chrome-border-color);
+  --skeleton-opacity-strong: 0.55;
+  --skeleton-opacity-default: 0.45;
+  --skeleton-opacity-muted: 0.35;
+  --footer-box-padding-y: max(
+    0rem,
+    calc((var(--footer-box-height) - var(--textarea-button-height, 2rem)) / 2)
+  );
+  --composer-mobile-padding-y: max(
+    0rem,
+    calc(
+      (
+          var(--composer-mobile-box-height) -
+            var(--textarea-button-height, 2rem)
+        ) /
+        2
+    )
+  );
+  --footer-row-height: calc(
+    var(--footer-box-height) + var(--footer-box-inset) * 2
+  );
+  --input-container-min-height: var(--footer-row-height);
+  --textarea-min-height: var(--footer-box-height);
+  --textarea-padding-y: var(--footer-box-padding-y);
+  --composer-box-inset: max(
+    0rem,
+    calc((var(--input-container-min-height) - var(--textarea-min-height)) / 2)
+  );
+  --messages-bottom-clearance: var(--composer-status-safe-area);
+  --composer-box-inset-inline: min(
+    var(--footer-box-inset),
+    var(--chat-horizontal-padding, var(--chat-horizontal-padding-default))
+  );
+  --composer-box-padding-inline: max(
+    0rem,
+    calc(
+      var(--chat-horizontal-padding, var(--chat-horizontal-padding-default)) -
+        var(--composer-box-inset-inline)
+    )
+  );
+  --typing-indicator-height: 1rem;
+  --typing-pill-height: 1rem;
+  --slowmode-indicator-height: 1rem;
+  --message-filler-padding-bottom: 0.75rem;
+  --scroller-spacer-height: 1.75rem;
+  --typing-avatar-size: 0.75rem;
+  --typing-indicator-animation-size: 1rem;
+  --typing-indicator-gap: 0px;
+  --spoiler-border-radius: 0.375rem;
+  --markup-restricted-inline-icon-baseline-shift: -0.125em;
+  --markup-restricted-inline-emoji-size: 1.25em;
+  --markup-restricted-inline-emoji-baseline-shift: -0.18em;
+  --font-size-xs: 0.75rem;
+  --emoji-size-emoji: 1.5em;
+  --emoji-size-jumbo-emoji: 3rem;
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-1-5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --layout-guild-list-width: 4.5rem;
+  --layout-sidebar-width: 20rem;
+  --layout-header-height: 3.5rem;
+  --layout-user-area-height: var(--footer-box-height);
+  --layout-user-area-reserved-height: 0px;
+  --layout-voice-connection-height: 0px;
+  --layout-mobile-bottom-nav-reserved-height: 0px;
+  --user-area-box-inset-block-end: calc(
+    var(--footer-box-inset) + var(--outline-frame-border-width)
+  );
+  --user-area-content-height: var(--textarea-button-height, 2rem);
+  --user-area-padding-y: var(--footer-box-padding-y);
+  --user-area-padding-x: var(--footer-box-inner-inset);
+  --user-area-avatar-lead: max(
+    var(--footer-box-inner-inset),
+    calc(
+      var(--layout-guild-list-width)/2 - var(--footer-box-inset-inline) -
+        var(--user-area-content-height)/2
+    )
+  );
+  --voice-connection-padding-y: var(--spacing-2);
+  --voice-connection-padding-x: var(--footer-box-inner-inset);
+  --layout-header-popout-width: calc(
+    var(--layout-sidebar-width) - (var(--spacing-4) * 2)
+  );
+  --layout-gap: var(--spacing-4);
+  --layout-gap-sm: var(--spacing-2);
+  --layout-gap-lg: var(--spacing-6);
+  --content-padding: var(--spacing-4);
+  --content-padding-sm: var(--spacing-3);
+  --content-padding-lg: var(--spacing-6);
+  --guild-icon-size: 2.75rem;
+  --guild-icon-gap: var(--spacing-2);
+  --mobile-bottom-nav-height: 3.75rem;
+  --message-compact-text-indent-from-username: 2rem;
+  --guilds-layout-item-bg: var(--guild-list-foreground);
+  --guild-badge-surface: var(--background-secondary);
+  --layout-member-list-width: 16.5rem;
+  --layout-header-height-mobile: 4rem;
+  --channel-header-gap: var(--spacing-4);
+  --channel-header-padding-inline: var(--spacing-4);
+  --channel-header-action-size: 2rem;
+  --channel-header-action-size-mobile: 2.5rem;
+  --channel-header-actions-gap: var(--spacing-2);
+  --channel-header-back-button-size: 2rem;
+  --channel-header-back-button-gap: var(--spacing-3);
+  --channel-header-icon-size: 1.5rem;
+  --channel-header-back-icon-size: 1.5rem;
+  --channel-header-caret-size: 1rem;
+  --channel-header-action-icon-size: 1.5rem;
+  --channel-header-name-gap: var(--spacing-3);
+  --channel-header-name-gap-group-dm: var(--spacing-2);
+  --channel-header-caret-gap: var(--spacing-1);
+  --channel-header-topic-divider-gap: var(--spacing-2);
+  --chat-mobile-horizontal-padding: 0.75rem;
+  --dm-sidebar-mobile-header-height: 3.5rem;
+  --message-search-bar-width: 15.25rem;
+  --message-search-bar-height: 2.25rem;
+  --message-search-bar-icon-size: 1rem;
+  --message-search-bar-icon-gap: 0.5rem;
+  --member-list-item-content-height: 2rem;
+  --member-list-item-padding-block: 0.25rem;
+  --member-list-item-padding-inline: 0.5rem;
+  --member-list-item-content-gap: 0.625rem;
+  --member-list-item-name-line-height: 1.25rem;
+  --member-list-item-status-line-height: 0.875rem;
+  --member-list-row-gap: 0.125rem;
+  --member-list-group-spacer-height: 0.25rem;
+  --member-list-scroller-padding-block-start: 0.25rem;
+  --member-list-scroller-padding-block-end: var(--spacing-4);
+  --member-list-scroller-padding-inline: var(--spacing-2);
+  --friend-row-padding-block: 0.75rem;
+  --friend-row-padding-inline: 1rem;
+  --friend-row-separator-inset: 0 0.4rem 0 var(--spacing-2);
+  --friend-row-separator-radius: 0.375rem;
+  --friend-row-content-gap: 0.75rem;
+  --friend-row-name-line-height: 1.25rem;
+  --friend-row-subtext-line-height: 1rem;
+  --friend-row-subtext-offset: -0.0625rem;
+  --friend-row-avatar-size: 2.25rem;
+  --friend-row-action-size: 2.25rem;
+  --friend-row-action-gap: 0.5rem;
+  --avatar-stack-extra-height: 0.375rem;
+  --active-now-sidebar-width: 22rem;
+  --active-now-sidebar-header-padding-inline: 1rem;
+  --active-now-sidebar-header-padding-block-start: 1rem;
+  --active-now-sidebar-header-padding-block-end: 0.75rem;
+  --active-now-sidebar-content-gap: 0.5rem;
+  --active-now-sidebar-content-padding-inline: 0.75rem;
+  --active-now-sidebar-content-padding-block-end: 0.75rem;
+  --active-now-card-gap: 0.75rem;
+  --active-now-card-padding-block: 0.75rem;
+  --active-now-card-padding-inline: 0.875rem;
+  --active-now-card-radius: var(--radius-md);
+  --active-now-card-shadow: 0 0.375rem 1.125rem rgba(0, 0, 0, 0.08);
+  --active-now-context-gap: 0.375rem;
+  --active-now-action-height: 2rem;
+  --active-now-action-radius: 0.5rem;
+  --active-now-action-gap: 0.375rem;
+  --active-now-action-padding-block: 0.3125rem;
+  --active-now-action-padding-inline: 0.625rem;
+  --discovery-card-description-min-height: 5.25rem;
+  --guild-list-indicator-inset: -0.15rem;
+  --guild-list-indicator-track-width: 0.5rem;
+  --guild-list-indicator-bar-width: 0.35rem;
+  --count-indicator-gap: 0.25rem;
+  --guild-members-table-row-min-height: 3rem;
+  --guild-members-table-row-border-width: 0.0625rem;
+  --form-surface-background: var(--background-tertiary);
+  --message-preview-card-background: rgba(255, 255, 255, 0.024);
+  --message-preview-card-border: rgba(255, 255, 255, 0.07);
+  --message-preview-card-divider: rgba(255, 255, 255, 0.05);
+  --surface-interactive-hover-bg: var(--background-modifier-hover);
+  --surface-interactive-selected-bg: var(--background-modifier-selected);
+  --surface-interactive-selected-color: var(--text-primary);
+  --scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
+  --scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
+  --scrollbar-track-bg: transparent;
+  --focus-primary: #00b0f4;
+  --text-primary: #f4f4f6;
+  --text-secondary: #e5e4e9;
+  --text-tertiary: #b1acbb;
+  --text-link: #6ccff9;
+  --border-color: rgb(122 115 140 / 0.2);
+  --background-primary: #0c0b0e;
+  --background-secondary: #1a181e;
+  --background-secondary-lighter: #1e1d23;
+  --background-secondary-alt: #232028;
+  --background-tertiary: #2a2730;
+  --background-channel-header: #26242c;
+  --guild-list-foreground: #29262f;
+  --background-header-secondary: #2f2c36;
+  --background-header-primary: #2f2c36;
+  --background-textarea: #242229;
+  --background-header-primary-hover: #3a3642;
+  --text-tertiary-secondary: #958fa3;
+  --text-tertiary-muted: #9d97aa;
+  --text-primary-muted: #cecbd4;
+  --text-chat-muted: #cecbd4;
+  --text-chat: #eeedf0;
+  --panel-control-bg: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 90%,
+    hsl(258, 10%, 2%) 10%
+  );
+  --panel-control-border: rgb(155 139 193 / 0.45);
+  --panel-control-divider: rgb(126 106 175 / 0.35);
+  --panel-control-highlight: rgba(255, 255, 255, 0.04);
+  --background-modifier-hover: rgb(255 255 255 / 0.05);
+  --background-modifier-selected: rgb(255 255 255 / 0.1);
+  --background-modifier-accent: rgb(201 197 211 / 0.15);
+  --background-modifier-accent-focus: rgb(201 197 211 / 0.22);
+  --control-button-normal-bg: transparent;
+  --control-button-normal-text: var(--text-primary-muted);
+  --control-button-hover-bg: #36323e;
+  --control-button-hover-text: var(--text-primary);
+  --control-button-active-bg: #3b3743;
+  --control-button-active-text: var(--text-primary);
+  --control-button-danger-text: #e84d4a;
+  --control-button-danger-hover-bg: #5a0d0c;
+  --brand-primary: #413cdd;
+  --brand-secondary: #3732c8;
+  --brand-primary-light: #b0adff;
+  --brand-primary-fill: #fff;
+  --status-online: #1daf6b;
+  --status-idle: #f6bb09;
+  --status-dnd: #ef4343;
+  --status-offline: #9ca3b0;
+  --status-danger: #e53734;
+  --status-warning: var(--status-idle);
+  --text-warning: #f7c222;
+  --plutonium: var(--brand-primary);
+  --plutonium-hover: var(--brand-secondary);
+  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium-icon: #f59f0a;
+  --invite-verified-icon-color: var(--text-on-brand-primary);
+  --text-on-brand-primary: #fafafa;
+  --code-text: color-mix(
+    in srgb,
+    var(--text-secondary) 82%,
+    hsl(340, 50%, 90%) 18%
+  );
+  --text-code: var(--code-text);
+  --code-muted: color-mix(
+    in srgb,
+    var(--text-code) 42%,
+    var(--text-tertiary) 58%
+  );
+  --code-inline-bg: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 88%,
+    var(--background-tertiary) 12%
+  );
+  --bg-code: var(--code-inline-bg);
+  --code-block-bg: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    var(--background-primary) 8%
+  );
+  --bg-code-block: var(--code-block-bg);
+  --code-block-border: color-mix(
+    in srgb,
+    var(--border-color) 90%,
+    var(--text-code) 10%
+  );
+  --code-block-highlight: color-mix(
+    in srgb,
+    var(--text-primary) 10%,
+    transparent
+  );
+  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-bg: var(--text-code);
+  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+  --ansi-fg-red: color-mix(in srgb, hsl(0, 88%, 62%) 92%, var(--text-code) 8%);
+  --ansi-fg-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+  --ansi-fg-bright-black: color-mix(
+    in srgb,
+    gray 86%,
+    var(--text-tertiary) 14%
+  );
+  --ansi-fg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 88%,
+    var(--text-primary) 12%
+  );
+  --ansi-fg-bright-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-white: var(--text-primary);
+  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+  --ansi-bg-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-black: color-mix(
+    in srgb,
+    gray 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, var(--code-block-bg) 8%);
+  --text-selection: rgb(108 207 249 / 0.35);
+  --markup-mention-text: var(--text-link);
+  --markup-mention-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+  --markup-mention-border: rgb(108 207 249 / 0.3);
+  --markup-jump-link-text: var(--text-link);
+  --markup-jump-link-fill: color-mix(
+    in srgb,
+    var(--text-link) 12%,
+    transparent
+  );
+  --markup-jump-link-hover-fill: color-mix(
+    in srgb,
+    var(--text-link) 20%,
+    transparent
+  );
+  --markup-everyone-text: #9d8cf2;
+  --markup-everyone-fill: color-mix(
+    in srgb,
+    hsl(250, 80%, 75%) 18%,
+    transparent
+  );
+  --markup-everyone-border: rgb(157 140 242 / 0.3);
+  --markup-here-text: #f7d56e;
+  --markup-here-fill: color-mix(in srgb, hsl(45, 90%, 70%) 18%, transparent);
+  --markup-here-border: rgb(247 213 110 / 0.3);
+  --markup-interactive-hover-text: var(--text-link);
+  --markup-interactive-hover-fill: color-mix(
+    in srgb,
+    var(--text-link) 30%,
+    transparent
+  );
+  --interactive-muted: color-mix(
+    in oklab,
+    hsl(228, 10%, 35%) 100%,
+    hsl(245, 100%, 80%) 40%
+  );
+  --interactive-active: color-mix(
+    in oklab,
+    hsl(0, 0%, 100%) 100%,
+    hsl(245, 100%, 80%) 40%
+  );
+  --button-primary-fill: #32ae5a;
+  --button-primary-active-fill: #279b46;
+  --button-primary-text: #fff;
+  --button-secondary-fill: rgba(255, 255, 255, 0.1);
+  --button-secondary-active-fill: rgba(255, 255, 255, 0.15);
+  --button-secondary-text: #fff;
+  --button-secondary-active-text: var(--button-secondary-text);
+  --button-danger-fill: #dc383a;
+  --button-danger-active-fill: #bd282b;
+  --button-danger-text: #fff;
+  --button-danger-outline-border: 1px solid hsl(359, 70%, 54%);
+  --button-danger-outline-text: #fff;
+  --button-danger-outline-active-fill: #ca2b2d;
+  --button-danger-outline-active-border: transparent;
+  --button-ghost-text: #fff;
+  --button-inverted-fill: #fff;
+  --button-inverted-text: #000;
+  --button-outline-border: 1px solid rgba(255, 255, 255, 0.3);
+  --button-outline-text: #fff;
+  --button-outline-active-fill: rgba(255, 255, 255, 0.15);
+  --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.4);
+  --theme-border: transparent;
+  --theme-border-width: 0px;
+  --bg-primary: var(--background-primary);
+  --bg-secondary: var(--background-secondary);
+  --bg-tertiary: var(--background-tertiary);
+  --bg-hover: var(--background-modifier-hover);
+  --bg-active: var(--background-modifier-selected);
+  --bg-blockquote: var(--background-secondary-alt);
+  --bg-table-header: var(--background-tertiary);
+  --bg-table-row-odd: var(--background-primary);
+  --bg-table-row-even: var(--background-secondary);
+  --border-color-hover: rgb(122 115 140 / 0.3);
+  --border-color-focus: rgb(108 207 249 / 0.45);
+  --accent-primary: var(--brand-primary);
+  --accent-success: var(--status-online);
+  --accent-warning: var(--status-idle);
+  --accent-danger: var(--status-dnd);
+  --accent-info: var(--text-link);
+  --accent-purple: #ba5af2;
+  --alert-note-color: #6ccff9;
+  --alert-tip-color: #20c578;
+  --alert-important-color: #ba5af2;
+  --alert-warning-color: #f7c222;
+  --alert-caution-color: #e64c4f;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 10px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --spoiler-overlay-color: rgba(0, 0, 0, 0.2);
+  --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
+  --user-area-divider-color: color-mix(
+    in srgb,
+    var(--background-modifier-hover) 70%,
+    transparent
+  );
+  --message-avatar-size: 2.5rem;
+  --message-avatar-size-compact: 1rem;
+  --message-gutter: 0.75rem;
+  --message-spacing-y: 0.125rem;
+  --message-line-height: 1.375rem;
+  --message-timestamp-font-size: 0.75rem;
+  --message-timestamp-compact-font-size: 0.6875rem;
+  --message-timestamp-compact-height: 1.25rem;
+  --message-compact-timestamp-width: 3.5rem;
+  --message-compact-gap: 0.25rem;
+  --message-compact-indent: calc(3.5rem + 0.25rem);
+  --message-compact-username-gap: 0.45rem;
+  --message-compact-container-margin: calc(3.5rem + 0.25rem);
+  --message-compact-table-max-inline-size: 100%;
+  --message-compact-table-min-cell-width: 5rem;
+  --message-compact-markdown-block-gap: 0.5rem;
+  --message-compact-markdown-blockquote-gap: 0.25rem;
+  --message-compact-markdown-blockquote-divider-margin-end: 0.35rem;
+  --message-compact-markdown-alert-padding-inline: 0.75rem;
+  --message-compact-markdown-alert-padding-block: 0.35rem;
+  --system-message-icon-size: 1.125rem;
+  --message-reply-spacing: 0.25rem;
+  --message-reply-height: 1.125rem;
+  --message-reply-font-size: 0.875rem;
+  --message-reply-spine-width: 0.125rem;
+  --message-reply-spine-radius: 0.375rem;
+  --message-container-gap: 0.25rem;
+  --message-container-padding-y: 0.125rem;
+  --message-edited-font-size: 0.75rem;
+  --message-edited-label-font-size: 0.625rem;
+  --message-mobile-margin: 0.75rem;
+  --message-action-bar-offset: 3rem;
+  --message-icon-size-sm: 0.875rem;
+  --message-icon-size-md: 1rem;
+  --message-icon-size-lg: 1.25rem;
+  --message-failed-indicator-gap: 0.375rem;
+  --message-failed-indicator-font-size: 0.75rem;
+  --message-typing-gap: 0.35rem;
+  --message-typing-pill-gap: 0.2rem;
+  --message-typing-pill-padding: 0.45rem;
+  --message-typing-avatar-margin: 0.2rem;
+  --message-typing-text-font-size: 0.6875rem;
+  --message-avatar-align-offset: clamp(
+    0px,
+    calc((1.375rem * 2 - 2.5rem) / 2),
+    0.5rem
+  );
+  --message-timestamp-color: var(--text-primary-muted);
+  --system-message-icon-opacity: 0.6;
+  --message-highlight-bar-width: 0.125rem;
+  --message-mention-color: #eac532;
+  --message-mention-bg: rgba(234, 197, 50, 0.1);
+  --message-mention-bg-hover: rgba(234, 197, 50, 0.14);
+  --message-reply-color: #3b82f6;
+  --message-reply-bg: rgba(59, 130, 246, 0.1);
+  --message-sending-opacity: 0.5;
+  --message-sending-link-opacity: 0.7;
+  --message-failed-opacity: 0.5;
+  --message-replied-username-opacity: 0.64;
+  --message-unknown-warning-color: #f93;
+  --message-transition-highlight: 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  --keybind-hint-default-background: #2e2e2e;
+  --keybind-hint-default-color: var(--text-on-brand-primary);
+}
+
+/// Mais escuro — os 90 tokens que a base escura não serve.
+:root[data-tema="mais-escuro"] {
+  --scrollbar-thumb-bg: rgba(160, 160, 160, 0.35);
+  --scrollbar-thumb-bg-hover: rgba(200, 200, 200, 0.55);
+  --scrollbar-track-bg: rgba(0, 0, 0, 0.45);
+  --background-primary: #020203;
+  --background-secondary: var(--background-primary);
+  --background-secondary-lighter: var(--background-primary);
+  --background-secondary-alt: #0f0e12;
+  --background-tertiary: #141217;
+  --background-channel-header: #121114;
+  --guild-list-foreground: #131216;
+  --background-header-secondary: #17151a;
+  --background-header-primary: #17151a;
+  --background-textarea: #100f13;
+  --background-header-primary-hover: #1d1b21;
+  --panel-control-bg: color-mix(
+    in srgb,
+    var(--background-primary) 90%,
+    hsl(258, 10%, 0%) 10%
+  );
+  --panel-control-border: rgb(70 61 92 / 0.35);
+  --panel-control-divider: rgb(59 51 76 / 0.28);
+  --panel-control-highlight: rgba(255, 255, 255, 0.06);
+  --background-modifier-hover: rgb(255 255 255 / 0.04);
+  --background-modifier-selected: rgb(255 255 255 / 0.08);
+  --background-modifier-accent: rgb(162 157 175 / 0.18);
+  --background-modifier-accent-focus: rgb(175 171 186 / 0.26);
+  --control-button-normal-bg: transparent;
+  --control-button-normal-text: var(--text-primary-muted);
+  --control-button-hover-bg: #1d1c22;
+  --control-button-hover-text: var(--text-primary);
+  --control-button-active-bg: #222027;
+  --control-button-active-text: var(--text-primary);
+  --code-text: color-mix(
+    in srgb,
+    var(--text-secondary) 82%,
+    hsl(340, 50%, 90%) 18%
+  );
+  --text-code: var(--code-text);
+  --code-muted: color-mix(
+    in srgb,
+    var(--text-code) 42%,
+    var(--text-tertiary) 58%
+  );
+  --code-inline-bg: color-mix(
+    in srgb,
+    var(--background-tertiary) 86%,
+    var(--text-code) 14%
+  );
+  --bg-code: var(--code-inline-bg);
+  --code-block-bg: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 84%,
+    #000 16%
+  );
+  --bg-code-block: var(--code-block-bg);
+  --code-block-border: color-mix(
+    in srgb,
+    var(--border-color) 84%,
+    var(--text-code) 16%
+  );
+  --code-block-highlight: color-mix(
+    in srgb,
+    var(--text-primary) 10%,
+    transparent
+  );
+  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-bg: var(--text-code);
+  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+  --ansi-fg-red: color-mix(in srgb, hsl(0, 88%, 62%) 92%, var(--text-code) 8%);
+  --ansi-fg-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+  --ansi-fg-bright-black: color-mix(
+    in srgb,
+    gray 86%,
+    var(--text-tertiary) 14%
+  );
+  --ansi-fg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 88%,
+    var(--text-primary) 12%
+  );
+  --ansi-fg-bright-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 94%,
+    var(--text-primary) 6%
+  );
+  --ansi-fg-bright-white: var(--text-primary);
+  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+  --ansi-bg-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-black: color-mix(
+    in srgb,
+    gray 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 88%, 62%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-green: color-mix(
+    in srgb,
+    hsl(99, 29%, 47%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-yellow: color-mix(
+    in srgb,
+    hsl(41, 53%, 67%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-blue: color-mix(
+    in srgb,
+    hsl(207, 61%, 59%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-magenta: color-mix(
+    in srgb,
+    hsl(305, 35%, 65%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-cyan: color-mix(
+    in srgb,
+    hsl(168, 53%, 55%) 92%,
+    var(--code-block-bg) 8%
+  );
+  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, var(--code-block-bg) 8%);
+  --button-secondary-fill: rgba(255, 255, 255, 0.04);
+  --button-secondary-active-fill: rgba(255, 255, 255, 0.07);
+  --button-secondary-text: var(--text-primary);
+  --button-secondary-active-text: var(--text-primary);
+  --button-outline-border: 1px solid rgba(255, 255, 255, 0.08);
+  --button-outline-active-fill: rgba(255, 255, 255, 0.12);
+  --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.16);
+  --bg-primary: var(--background-primary);
+  --bg-secondary: var(--background-secondary);
+  --bg-tertiary: var(--background-tertiary);
+  --bg-hover: var(--background-modifier-hover);
+  --bg-active: var(--background-modifier-selected);
+  --bg-blockquote: var(--background-secondary);
+  --bg-table-header: var(--background-tertiary);
+  --bg-table-row-odd: var(--background-primary);
+  --bg-table-row-even: var(--background-secondary);
+  --spoiler-overlay-color: rgba(255, 255, 255, 0.08);
+  --spoiler-overlay-hover-color: rgba(255, 255, 255, 0.14);
+  --user-area-divider-color: color-mix(
+    in srgb,
+    var(--background-modifier-hover) 80%,
+    transparent
+  );
+}
+
+/*
+  Claro, e também "seguir o sistema" enquanto o sistema estiver no claro.
+
+  Os 144 daqui são os que mudam de verdade entre um tema e outro; o resto
+  herda da base, que é o jeito de o tema claro não virar uma segunda cópia da
+  paleta inteira, com metade das linhas iguais e a outra metade desatualizada.
+*/
+:root[data-tema="claro"],
+:root[data-tema="sistema"] {
+  --guilds-layout-item-bg: color-mix(
+    in srgb,
+    var(--guild-list-foreground) 72%,
+    var(--background-primary) 28%
+  );
+  --form-surface-background: var(--background-primary);
+  --message-preview-card-background: #fff;
+  --message-preview-card-border: rgba(0, 0, 0, 0.07);
+  --message-preview-card-divider: rgba(0, 0, 0, 0.05);
+  --surface-interactive-hover-bg: var(--background-modifier-hover);
+  --surface-interactive-selected-bg: var(--background-modifier-selected);
+  --surface-interactive-selected-color: var(--text-primary);
+  --scrollbar-thumb-bg: color-mix(
+    in srgb,
+    var(--background-header-secondary) 40%,
+    var(--text-secondary) 60%
+  );
+  --scrollbar-thumb-bg-hover: color-mix(
+    in srgb,
+    var(--background-header-secondary) 30%,
+    var(--text-primary) 70%
+  );
+  --scrollbar-track-bg: color-mix(
+    in srgb,
+    var(--background-secondary) 50%,
+    transparent
+  );
+  --text-primary: #22252a;
+  --text-secondary: #4e535f;
+  --text-tertiary: #6e7686;
+  --text-link: #099ddc;
+  --border-color: rgb(92 99 112 / 0.15);
+  --background-primary: #fbfbfc;
+  --background-secondary: #ebecef;
+  --background-secondary-lighter: #f0f1f3;
+  --background-secondary-alt: #e6e7ea;
+  --background-tertiary: #dee0e4;
+  --background-channel-header: #e1e2e6;
+  --guild-list-foreground: #dcdee2;
+  --background-header-secondary: #d9dbe0;
+  --background-header-primary: #d8dbdf;
+  --background-textarea: #f3f4f5;
+  --background-header-primary-hover: #d8dadf;
+  --text-tertiary-secondary: #777f90;
+  --text-tertiary-muted: #7c8393;
+  --text-primary-muted: #616876;
+  --text-chat-muted: #616876;
+  --text-chat: #30343b;
+  --panel-control-bg: color-mix(
+    in srgb,
+    var(--background-secondary) 65%,
+    #fff 35%
+  );
+  --panel-control-border: rgb(86 105 143 / 0.25);
+  --panel-control-divider: rgb(62 80 116 / 0.2);
+  --panel-control-highlight: rgba(255, 255, 255, 0.65);
+  --background-modifier-hover: rgb(23 25 28 / 0.05);
+  --background-modifier-selected: rgb(23 25 28 / 0.1);
+  --background-modifier-accent: rgb(92 99 112 / 0.22);
+  --background-modifier-accent-focus: rgb(92 99 112 / 0.32);
+  --control-button-normal-bg: transparent;
+  --control-button-normal-text: #737b8c;
+  --control-button-hover-bg: #dddfe3;
+  --control-button-hover-text: #2e3138;
+  --control-button-active-bg: #d5d7dd;
+  --control-button-active-text: #22252a;
+  --control-button-danger-text: #d92629;
+  --control-button-danger-hover-bg: #fbe9ea;
+  --status-online: #1fad6b;
+  --status-idle: #daa60b;
+  --status-dnd: #d92629;
+  --status-offline: #818c98;
+  --plutonium: var(--brand-primary);
+  --plutonium-hover: var(--brand-secondary);
+  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium-icon: #dc8f09;
+  --invite-verified-icon-color: var(--brand-primary);
+  --code-text: color-mix(
+    in srgb,
+    var(--text-secondary) 72%,
+    hsl(340, 50%, 38%) 28%
+  );
+  --text-code: var(--code-text);
+  --code-muted: color-mix(
+    in srgb,
+    var(--text-code) 34%,
+    var(--text-tertiary) 66%
+  );
+  --code-inline-bg: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    var(--text-code) 8%
+  );
+  --bg-code: var(--code-inline-bg);
+  --code-block-bg: color-mix(
+    in srgb,
+    var(--background-primary) 88%,
+    var(--background-secondary) 12%
+  );
+  --bg-code-block: var(--code-block-bg);
+  --code-block-border: color-mix(
+    in srgb,
+    var(--border-color) 92%,
+    var(--text-code) 8%
+  );
+  --code-block-highlight: rgba(255, 255, 255, 0.82);
+  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-bg: var(--text-code);
+  --ansi-fg-black: var(--text-primary);
+  --ansi-fg-red: color-mix(in srgb, hsl(0, 62%, 50%) 92%, var(--text-code) 8%);
+  --ansi-fg-green: color-mix(
+    in srgb,
+    hsl(120, 100%, 25%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-yellow: color-mix(
+    in srgb,
+    hsl(37, 52%, 31%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-blue: color-mix(
+    in srgb,
+    hsl(211, 95%, 33%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-magenta: color-mix(
+    in srgb,
+    hsl(288, 100%, 43%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-cyan: color-mix(
+    in srgb,
+    hsl(192, 95%, 38%) 92%,
+    var(--text-code) 8%
+  );
+  --ansi-fg-white: color-mix(in srgb, #545454 88%, var(--text-secondary) 12%);
+  --ansi-fg-bright-black: color-mix(
+    in srgb,
+    #666 88%,
+    var(--text-tertiary) 12%
+  );
+  --ansi-fg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 62%, 50%) 92%,
+    var(--text-primary) 8%
+  );
+  --ansi-fg-bright-green: color-mix(
+    in srgb,
+    hsl(120, 82%, 44%) 90%,
+    var(--text-primary) 10%
+  );
+  --ansi-fg-bright-yellow: color-mix(
+    in srgb,
+    hsl(62, 100%, 36%) 90%,
+    var(--text-primary) 10%
+  );
+  --ansi-fg-bright-blue: color-mix(
+    in srgb,
+    hsl(211, 95%, 33%) 92%,
+    var(--text-primary) 8%
+  );
+  --ansi-fg-bright-magenta: color-mix(
+    in srgb,
+    hsl(300, 95%, 38%) 92%,
+    var(--text-primary) 8%
+  );
+  --ansi-fg-bright-cyan: color-mix(
+    in srgb,
+    hsl(192, 95%, 38%) 92%,
+    var(--text-primary) 8%
+  );
+  --ansi-fg-bright-white: color-mix(
+    in srgb,
+    #a6a6a6 86%,
+    var(--text-primary) 14%
+  );
+  --ansi-bg-black: color-mix(in srgb, #000 86%, var(--code-block-bg) 14%);
+  --ansi-bg-red: color-mix(
+    in srgb,
+    hsl(0, 62%, 50%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-green: color-mix(
+    in srgb,
+    hsl(120, 100%, 25%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-yellow: color-mix(
+    in srgb,
+    hsl(37, 52%, 31%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-blue: color-mix(
+    in srgb,
+    hsl(211, 95%, 33%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-magenta: color-mix(
+    in srgb,
+    hsl(288, 100%, 43%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-cyan: color-mix(
+    in srgb,
+    hsl(192, 95%, 38%) 86%,
+    var(--code-block-bg) 14%
+  );
+  --ansi-bg-white: color-mix(in srgb, #e6e6e6 86%, var(--code-block-bg) 14%);
+  --ansi-bg-bright-black: color-mix(
+    in srgb,
+    #666 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-red: color-mix(
+    in srgb,
+    hsl(0, 62%, 50%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-green: color-mix(
+    in srgb,
+    hsl(120, 82%, 44%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-yellow: color-mix(
+    in srgb,
+    hsl(62, 100%, 36%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-blue: color-mix(
+    in srgb,
+    hsl(211, 95%, 33%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-magenta: color-mix(
+    in srgb,
+    hsl(300, 95%, 38%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-cyan: color-mix(
+    in srgb,
+    hsl(192, 95%, 38%) 88%,
+    var(--code-block-bg) 12%
+  );
+  --ansi-bg-bright-white: color-mix(
+    in srgb,
+    #e6e6e6 90%,
+    var(--code-block-bg) 10%
+  );
+  --text-selection: rgb(13 127 242 / 0.2);
+  --markup-mention-border: rgb(9 157 220 / 0.4);
+  --markup-jump-link-fill: color-mix(in srgb, var(--text-link) 8%, transparent);
+  --markup-everyone-text: #3d22c3;
+  --markup-everyone-fill: color-mix(
+    in srgb,
+    hsl(250, 70%, 45%) 12%,
+    transparent
+  );
+  --markup-everyone-border: rgb(61 34 195 / 0.4);
+  --markup-here-text: #bd830f;
+  --markup-here-fill: color-mix(in srgb, hsl(40, 85%, 40%) 12%, transparent);
+  --markup-here-border: rgb(189 131 15 / 0.4);
+  --button-secondary-fill: rgb(23 25 28 / 0.1);
+  --button-secondary-active-fill: rgb(23 25 28 / 0.15);
+  --button-secondary-text: #22252a;
+  --button-secondary-active-text: #17191c;
+  --button-danger-outline-border: 1px solid hsl(359, 70%, 50%);
+  --button-danger-outline-text: #c32225;
+  --button-danger-outline-active-fill: #d92629;
+  --button-ghost-text: #2e3138;
+  --button-inverted-fill: #fff;
+  --button-inverted-text: #1a1a1a;
+  --button-outline-border: 1px solid hsla(220, 10%, 40%, 0.3);
+  --button-outline-text: #2e3138;
+  --button-outline-active-fill: rgb(23 25 28 / 0.1);
+  --button-outline-active-border: 1px solid hsla(220, 10%, 40%, 0.5);
+  --bg-primary: var(--background-primary);
+  --bg-secondary: var(--background-secondary);
+  --bg-tertiary: var(--background-tertiary);
+  --bg-hover: var(--background-modifier-hover);
+  --bg-active: var(--background-modifier-selected);
+  --bg-blockquote: var(--background-secondary-alt);
+  --bg-table-header: var(--background-tertiary);
+  --bg-table-row-odd: var(--background-primary);
+  --bg-table-row-even: var(--background-secondary);
+  --border-color-hover: rgb(92 99 112 / 0.25);
+  --border-color-focus: rgb(13 127 242 / 0.4);
+  --alert-note-color: #099ddc;
+  --alert-tip-color: #12a159;
+  --alert-important-color: #9c13ec;
+  --alert-warning-color: #daa60b;
+  --alert-caution-color: #e61920;
+  --spoiler-overlay-color: rgba(0, 0, 0, 0.1);
+  --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.15);
+  --user-area-divider-color: rgb(92 99 112 / 0.2);
+  --keybind-hint-default-background: #2e2e2e;
+  --keybind-hint-default-color: var(--text-on-brand-primary);
+  color-scheme: light;
+}
+
+/*
+  "Seguir o sistema" no escuro: devolve a base.
+
+  O bloco de cima já respondeu por `sistema` com o claro, então aqui só é
+  preciso desfazer o que ele fez — cada token que o claro sobrescreve volta ao
+  valor da base.
+*/
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="sistema"] {
+    color-scheme: dark;
+    --guilds-layout-item-bg: var(--guild-list-foreground);
+    --form-surface-background: var(--background-tertiary);
+    --message-preview-card-background: rgba(255, 255, 255, 0.024);
+    --message-preview-card-border: rgba(255, 255, 255, 0.07);
+    --message-preview-card-divider: rgba(255, 255, 255, 0.05);
+    --surface-interactive-hover-bg: var(--background-modifier-hover);
+    --surface-interactive-selected-bg: var(--background-modifier-selected);
+    --surface-interactive-selected-color: var(--text-primary);
+    --scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
+    --scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
+    --scrollbar-track-bg: transparent;
+    --text-primary: #f4f4f6;
+    --text-secondary: #e5e4e9;
+    --text-tertiary: #b1acbb;
+    --text-link: #6ccff9;
+    --border-color: rgb(122 115 140 / 0.2);
+    --background-primary: #0c0b0e;
+    --background-secondary: #1a181e;
+    --background-secondary-lighter: #1e1d23;
+    --background-secondary-alt: #232028;
+    --background-tertiary: #2a2730;
+    --background-channel-header: #26242c;
+    --guild-list-foreground: #29262f;
+    --background-header-secondary: #2f2c36;
+    --background-header-primary: #2f2c36;
+    --background-textarea: #242229;
+    --background-header-primary-hover: #3a3642;
+    --text-tertiary-secondary: #958fa3;
+    --text-tertiary-muted: #9d97aa;
+    --text-primary-muted: #cecbd4;
+    --text-chat-muted: #cecbd4;
+    --text-chat: #eeedf0;
+    --panel-control-bg: color-mix(
+      in srgb,
+      var(--background-secondary-alt) 90%,
+      hsl(258, 10%, 2%) 10%
+    );
+    --panel-control-border: rgb(155 139 193 / 0.45);
+    --panel-control-divider: rgb(126 106 175 / 0.35);
+    --panel-control-highlight: rgba(255, 255, 255, 0.04);
+    --background-modifier-hover: rgb(255 255 255 / 0.05);
+    --background-modifier-selected: rgb(255 255 255 / 0.1);
+    --background-modifier-accent: rgb(201 197 211 / 0.15);
+    --background-modifier-accent-focus: rgb(201 197 211 / 0.22);
+    --control-button-normal-bg: transparent;
+    --control-button-normal-text: var(--text-primary-muted);
+    --control-button-hover-bg: #36323e;
+    --control-button-hover-text: var(--text-primary);
+    --control-button-active-bg: #3b3743;
+    --control-button-active-text: var(--text-primary);
+    --control-button-danger-text: #e84d4a;
+    --control-button-danger-hover-bg: #5a0d0c;
+    --status-online: #1daf6b;
+    --status-idle: #f6bb09;
+    --status-dnd: #ef4343;
+    --status-offline: #9ca3b0;
+    --plutonium: var(--brand-primary);
+    --plutonium-hover: var(--brand-secondary);
+    --plutonium-text: var(--text-on-brand-primary);
+    --plutonium-icon: #f59f0a;
+    --invite-verified-icon-color: var(--text-on-brand-primary);
+    --code-text: color-mix(
+      in srgb,
+      var(--text-secondary) 82%,
+      hsl(340, 50%, 90%) 18%
+    );
+    --text-code: var(--code-text);
+    --code-muted: color-mix(
+      in srgb,
+      var(--text-code) 42%,
+      var(--text-tertiary) 58%
+    );
+    --code-inline-bg: color-mix(
+      in srgb,
+      var(--background-secondary-alt) 88%,
+      var(--background-tertiary) 12%
+    );
+    --bg-code: var(--code-inline-bg);
+    --code-block-bg: color-mix(
+      in srgb,
+      var(--background-secondary-alt) 92%,
+      var(--background-primary) 8%
+    );
+    --bg-code-block: var(--code-block-bg);
+    --code-block-border: color-mix(
+      in srgb,
+      var(--border-color) 90%,
+      var(--text-code) 10%
+    );
+    --code-block-highlight: color-mix(
+      in srgb,
+      var(--text-primary) 10%,
+      transparent
+    );
+    --ansi-inverse-text: var(--code-block-bg);
+    --ansi-inverse-bg: var(--text-code);
+    --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+    --ansi-fg-red: color-mix(
+      in srgb,
+      hsl(0, 88%, 62%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-green: color-mix(
+      in srgb,
+      hsl(99, 29%, 47%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-yellow: color-mix(
+      in srgb,
+      hsl(41, 53%, 67%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-blue: color-mix(
+      in srgb,
+      hsl(207, 61%, 59%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-magenta: color-mix(
+      in srgb,
+      hsl(305, 35%, 65%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-cyan: color-mix(
+      in srgb,
+      hsl(168, 53%, 55%) 92%,
+      var(--text-code) 8%
+    );
+    --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+    --ansi-fg-bright-black: color-mix(
+      in srgb,
+      gray 86%,
+      var(--text-tertiary) 14%
+    );
+    --ansi-fg-bright-red: color-mix(
+      in srgb,
+      hsl(0, 88%, 62%) 94%,
+      var(--text-primary) 6%
+    );
+    --ansi-fg-bright-green: color-mix(
+      in srgb,
+      hsl(99, 29%, 47%) 88%,
+      var(--text-primary) 12%
+    );
+    --ansi-fg-bright-yellow: color-mix(
+      in srgb,
+      hsl(41, 53%, 67%) 94%,
+      var(--text-primary) 6%
+    );
+    --ansi-fg-bright-blue: color-mix(
+      in srgb,
+      hsl(207, 61%, 59%) 94%,
+      var(--text-primary) 6%
+    );
+    --ansi-fg-bright-magenta: color-mix(
+      in srgb,
+      hsl(305, 35%, 65%) 94%,
+      var(--text-primary) 6%
+    );
+    --ansi-fg-bright-cyan: color-mix(
+      in srgb,
+      hsl(168, 53%, 55%) 94%,
+      var(--text-primary) 6%
+    );
+    --ansi-fg-bright-white: var(--text-primary);
+    --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+    --ansi-bg-red: color-mix(
+      in srgb,
+      hsl(0, 88%, 62%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-green: color-mix(
+      in srgb,
+      hsl(99, 29%, 47%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-yellow: color-mix(
+      in srgb,
+      hsl(41, 53%, 67%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-blue: color-mix(
+      in srgb,
+      hsl(207, 61%, 59%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-magenta: color-mix(
+      in srgb,
+      hsl(305, 35%, 65%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-cyan: color-mix(
+      in srgb,
+      hsl(168, 53%, 55%) 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+    --ansi-bg-bright-black: color-mix(
+      in srgb,
+      gray 88%,
+      var(--code-block-bg) 12%
+    );
+    --ansi-bg-bright-red: color-mix(
+      in srgb,
+      hsl(0, 88%, 62%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-green: color-mix(
+      in srgb,
+      hsl(99, 29%, 47%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-yellow: color-mix(
+      in srgb,
+      hsl(41, 53%, 67%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-blue: color-mix(
+      in srgb,
+      hsl(207, 61%, 59%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-magenta: color-mix(
+      in srgb,
+      hsl(305, 35%, 65%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-cyan: color-mix(
+      in srgb,
+      hsl(168, 53%, 55%) 92%,
+      var(--code-block-bg) 8%
+    );
+    --ansi-bg-bright-white: color-mix(
+      in srgb,
+      #fff 92%,
+      var(--code-block-bg) 8%
+    );
+    --text-selection: rgb(108 207 249 / 0.35);
+    --markup-mention-border: rgb(108 207 249 / 0.3);
+    --markup-jump-link-fill: color-mix(
+      in srgb,
+      var(--text-link) 12%,
+      transparent
+    );
+    --markup-everyone-text: #9d8cf2;
+    --markup-everyone-fill: color-mix(
+      in srgb,
+      hsl(250, 80%, 75%) 18%,
+      transparent
+    );
+    --markup-everyone-border: rgb(157 140 242 / 0.3);
+    --markup-here-text: #f7d56e;
+    --markup-here-fill: color-mix(in srgb, hsl(45, 90%, 70%) 18%, transparent);
+    --markup-here-border: rgb(247 213 110 / 0.3);
+    --button-secondary-fill: rgba(255, 255, 255, 0.1);
+    --button-secondary-active-fill: rgba(255, 255, 255, 0.15);
+    --button-secondary-text: #fff;
+    --button-secondary-active-text: var(--button-secondary-text);
+    --button-danger-outline-border: 1px solid hsl(359, 70%, 54%);
+    --button-danger-outline-text: #fff;
+    --button-danger-outline-active-fill: #ca2b2d;
+    --button-ghost-text: #fff;
+    --button-inverted-fill: #fff;
+    --button-inverted-text: #000;
+    --button-outline-border: 1px solid rgba(255, 255, 255, 0.3);
+    --button-outline-text: #fff;
+    --button-outline-active-fill: rgba(255, 255, 255, 0.15);
+    --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.4);
+    --bg-primary: var(--background-primary);
+    --bg-secondary: var(--background-secondary);
+    --bg-tertiary: var(--background-tertiary);
+    --bg-hover: var(--background-modifier-hover);
+    --bg-active: var(--background-modifier-selected);
+    --bg-blockquote: var(--background-secondary-alt);
+    --bg-table-header: var(--background-tertiary);
+    --bg-table-row-odd: var(--background-primary);
+    --bg-table-row-even: var(--background-secondary);
+    --border-color-hover: rgb(122 115 140 / 0.3);
+    --border-color-focus: rgb(108 207 249 / 0.45);
+    --alert-note-color: #6ccff9;
+    --alert-tip-color: #20c578;
+    --alert-important-color: #ba5af2;
+    --alert-warning-color: #f7c222;
+    --alert-caution-color: #e64c4f;
+    --spoiler-overlay-color: rgba(0, 0, 0, 0.2);
+    --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
+    --user-area-divider-color: color-mix(
+      in srgb,
+      var(--background-modifier-hover) 70%,
+      transparent
+    );
+    --keybind-hint-default-background: #2e2e2e;
+    --keybind-hint-default-color: var(--text-on-brand-primary);
+  }
+}

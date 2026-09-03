@@ -11,6 +11,18 @@
 @import "./cosmeticos.css";
 
 /*
+  A camada de tokens da referência, com os quatro temas. Vem ANTES do `@theme`
+  de propósito: o `@theme` do Tailwind é declarado dentro de uma `@layer`, e
+  regra sem camada ganha de regra em camada — então o que está no `tokens.css`
+  vale, e é ele que o estúdio edita.
+
+  A troca que isso traz de graça: `--shadow-sm/md/lg/xl` passam a ser os da
+  referência, mais rasos que os do Tailwind. `--radius-*` também passam a vir
+  daqui, mas com os mesmos valores que o Tailwind já usava — nada muda de forma.
+*/
+@import "./tokens.css";
+
+/*
   Tokens do tema. Tudo no app usa estes nomes (bg-surface-1, text-muted...)
   em vez de cor solta tipo bg-[#313338]: quando quisermos tema claro ou
   customizar por servidor, muda so aqui.
