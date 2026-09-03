@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { lerEmVoz } from "~/lib/ler-em-voz";
 import { useNavigate } from "react-router";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -26,21 +27,63 @@ import type {
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
-import { onMessageCreated, offMessageCreated } from "~/@core/lib/websocket/on-message-created";
-import { onMessageUpdated, offMessageUpdated } from "~/@core/lib/websocket/on-message-updated";
-import { onMessageDeleted, offMessageDeleted } from "~/@core/lib/websocket/on-message-deleted";
-import { onMessageReactions, offMessageReactions } from "~/@core/lib/websocket/on-message-reactions";
-import { onMessageSuper, offMessageSuper } from "~/@core/lib/websocket/on-message-super";
+import {
+  onMessageCreated,
+  offMessageCreated,
+} from "~/@core/lib/websocket/on-message-created";
+import {
+  onMessageUpdated,
+  offMessageUpdated,
+} from "~/@core/lib/websocket/on-message-updated";
+import {
+  onMessageDeleted,
+  offMessageDeleted,
+} from "~/@core/lib/websocket/on-message-deleted";
+import {
+  onMessageReactions,
+  offMessageReactions,
+} from "~/@core/lib/websocket/on-message-reactions";
+import {
+  onMessageSuper,
+  offMessageSuper,
+} from "~/@core/lib/websocket/on-message-super";
 import { useSuperReacao } from "~/stores/super-reacao";
-import { onTypingStarted, offTypingStarted } from "~/@core/lib/websocket/on-typing-started";
-import { onPresenceChanged, offPresenceChanged } from "~/@core/lib/websocket/on-presence-changed";
-import { onPresenceSelf, offPresenceSelf } from "~/@core/lib/websocket/on-presence-self";
-import { onChannelCreated, offChannelCreated } from "~/@core/lib/websocket/on-channel-created";
-import { onChannelUpdated, offChannelUpdated } from "~/@core/lib/websocket/on-channel-updated";
-import { onChannelDeleted, offChannelDeleted } from "~/@core/lib/websocket/on-channel-deleted";
-import { onGuildUpdated, offGuildUpdated } from "~/@core/lib/websocket/on-guild-updated";
-import { onGuildDeleted, offGuildDeleted } from "~/@core/lib/websocket/on-guild-deleted";
-import { onGuildRefresh, offGuildRefresh } from "~/@core/lib/websocket/on-guild-refresh";
+import {
+  onTypingStarted,
+  offTypingStarted,
+} from "~/@core/lib/websocket/on-typing-started";
+import {
+  onPresenceChanged,
+  offPresenceChanged,
+} from "~/@core/lib/websocket/on-presence-changed";
+import {
+  onPresenceSelf,
+  offPresenceSelf,
+} from "~/@core/lib/websocket/on-presence-self";
+import {
+  onChannelCreated,
+  offChannelCreated,
+} from "~/@core/lib/websocket/on-channel-created";
+import {
+  onChannelUpdated,
+  offChannelUpdated,
+} from "~/@core/lib/websocket/on-channel-updated";
+import {
+  onChannelDeleted,
+  offChannelDeleted,
+} from "~/@core/lib/websocket/on-channel-deleted";
+import {
+  onGuildUpdated,
+  offGuildUpdated,
+} from "~/@core/lib/websocket/on-guild-updated";
+import {
+  onGuildDeleted,
+  offGuildDeleted,
+} from "~/@core/lib/websocket/on-guild-deleted";
+import {
+  onGuildRefresh,
+  offGuildRefresh,
+} from "~/@core/lib/websocket/on-guild-refresh";
 import {
   onCommandsChanged,
   offCommandsChanged,
@@ -49,20 +92,56 @@ import {
   onExpressionsChanged,
   offExpressionsChanged,
 } from "~/@core/lib/websocket/on-expressions-changed";
-import { onPostCreated, offPostCreated } from "~/@core/lib/websocket/on-post-created";
-import { onPostUpdated, offPostUpdated } from "~/@core/lib/websocket/on-post-updated";
-import { onVoiceSound, offVoiceSound } from "~/@core/lib/websocket/on-voice-sound";
+import {
+  onPostCreated,
+  offPostCreated,
+} from "~/@core/lib/websocket/on-post-created";
+import {
+  onPostUpdated,
+  offPostUpdated,
+} from "~/@core/lib/websocket/on-post-updated";
+import {
+  onVoiceSound,
+  offVoiceSound,
+} from "~/@core/lib/websocket/on-voice-sound";
 import { onVoiceMove, offVoiceMove } from "~/@core/lib/websocket/on-voice-move";
-import { onMemberJoined, offMemberJoined } from "~/@core/lib/websocket/on-member-joined";
-import { onMemberUpdated, offMemberUpdated } from "~/@core/lib/websocket/on-member-updated";
-import { onMemberLeft, offMemberLeft } from "~/@core/lib/websocket/on-member-left";
-import { onVoiceJoined, offVoiceJoined } from "~/@core/lib/websocket/on-voice-joined";
-import { onVoiceRecusada, offVoiceRecusada } from "~/@core/lib/websocket/on-voice-recusada";
+import {
+  onMemberJoined,
+  offMemberJoined,
+} from "~/@core/lib/websocket/on-member-joined";
+import {
+  onMemberUpdated,
+  offMemberUpdated,
+} from "~/@core/lib/websocket/on-member-updated";
+import {
+  onMemberLeft,
+  offMemberLeft,
+} from "~/@core/lib/websocket/on-member-left";
+import {
+  onVoiceJoined,
+  offVoiceJoined,
+} from "~/@core/lib/websocket/on-voice-joined";
+import {
+  onVoiceRecusada,
+  offVoiceRecusada,
+} from "~/@core/lib/websocket/on-voice-recusada";
 import { onVoiceLeft, offVoiceLeft } from "~/@core/lib/websocket/on-voice-left";
-import { onVoiceUpdated, offVoiceUpdated } from "~/@core/lib/websocket/on-voice-updated";
-import { onSocketError, offSocketError } from "~/@core/lib/websocket/on-socket-error";
-import { onUserUpdated, offUserUpdated } from "~/@core/lib/websocket/on-user-updated";
-import { onFriendUpdated, offFriendUpdated } from "~/@core/lib/websocket/on-friend-updated";
+import {
+  onVoiceUpdated,
+  offVoiceUpdated,
+} from "~/@core/lib/websocket/on-voice-updated";
+import {
+  onSocketError,
+  offSocketError,
+} from "~/@core/lib/websocket/on-socket-error";
+import {
+  onUserUpdated,
+  offUserUpdated,
+} from "~/@core/lib/websocket/on-user-updated";
+import {
+  onFriendUpdated,
+  offFriendUpdated,
+} from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
 import { avisarDeMensagem } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
@@ -73,55 +152,81 @@ import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 import { useConexaoStore } from "~/stores/conexao-store";
 
-type MessagesCache = { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
+type MessagesCache =
+  { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
 
 const cache = {
   appendMessage(queryClient: QueryClient, message: PendingMessageModel) {
-    queryClient.setQueryData(queryKeys.channel.messages(message.channelId), (old: MessagesCache) => {
-      if (!old?.pages.length) return old;
+    queryClient.setQueryData(
+      queryKeys.channel.messages(message.channelId),
+      (old: MessagesCache) => {
+        if (!old?.pages.length) return old;
 
-      const [newest, ...rest] = old.pages;
-      if (!newest) return old;
+        const [newest, ...rest] = old.pages;
+        if (!newest) return old;
 
-      const withoutOptimistic = message.nonce
-        ? newest.messages.filter((m) => (m as PendingMessageModel).nonce !== message.nonce)
-        : newest.messages;
+        const withoutOptimistic = message.nonce
+          ? newest.messages.filter(
+              (m) => (m as PendingMessageModel).nonce !== message.nonce,
+            )
+          : newest.messages;
 
-      if (withoutOptimistic.some((m) => m.id === message.id)) return old;
+        if (withoutOptimistic.some((m) => m.id === message.id)) return old;
 
-      return {
-        ...old,
-        pages: [{ ...newest, messages: [...withoutOptimistic, message] }, ...rest],
-      };
-    });
+        return {
+          ...old,
+          pages: [
+            { ...newest, messages: [...withoutOptimistic, message] },
+            ...rest,
+          ],
+        };
+      },
+    );
   },
 
-  patchMessage(queryClient: QueryClient, channelId: string, messageId: string, patch: Partial<Message>) {
-    queryClient.setQueryData(queryKeys.channel.messages(channelId), (old: MessagesCache) => {
-      if (!old) return old;
+  patchMessage(
+    queryClient: QueryClient,
+    channelId: string,
+    messageId: string,
+    patch: Partial<Message>,
+  ) {
+    queryClient.setQueryData(
+      queryKeys.channel.messages(channelId),
+      (old: MessagesCache) => {
+        if (!old) return old;
 
-      return {
-        ...old,
-        pages: old.pages.map((page) => ({
-          ...page,
-          messages: page.messages.map((m) => (m.id === messageId ? { ...m, ...patch } : m)),
-        })),
-      };
-    });
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            messages: page.messages.map((m) =>
+              m.id === messageId ? { ...m, ...patch } : m,
+            ),
+          })),
+        };
+      },
+    );
   },
 
-  removeMessage(queryClient: QueryClient, channelId: string, messageId: string) {
-    queryClient.setQueryData(queryKeys.channel.messages(channelId), (old: MessagesCache) => {
-      if (!old) return old;
+  removeMessage(
+    queryClient: QueryClient,
+    channelId: string,
+    messageId: string,
+  ) {
+    queryClient.setQueryData(
+      queryKeys.channel.messages(channelId),
+      (old: MessagesCache) => {
+        if (!old) return old;
 
-      return {
-        ...old,
-        pages: old.pages.map((page) => ({
-          ...page,
-          messages: page.messages.filter((m) => m.id !== messageId),
-        })),
-      };
-    });
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            messages: page.messages.filter((m) => m.id !== messageId),
+          })),
+        };
+      },
+    );
   },
 
   /**
@@ -138,26 +243,37 @@ const cache = {
     guildId: string | null,
     mencionou: boolean,
   ) {
-    queryClient.setQueryData([queryKeys.message.read_states], (old: ReadStateModel[] | undefined) => {
-      const atual = (old ?? []).find((s) => s.channelId === channelId);
+    queryClient.setQueryData(
+      [queryKeys.message.read_states],
+      (old: ReadStateModel[] | undefined) => {
+        const atual = (old ?? []).find((s) => s.channelId === channelId);
 
-      const proximo: ReadStateModel = {
-        channelId,
-        /// O que já estava guardado manda: o servidor veio do banco, e o
-        /// evento pode chegar de um canal cujo servidor não está carregado.
-        guildId: atual?.guildId ?? guildId,
-        lastReadMessageId: atual?.lastReadMessageId ?? null,
-        unreadCount: (atual?.unreadCount ?? 0) + 1,
-        mentionCount: (atual?.mentionCount ?? 0) + (mencionou ? 1 : 0),
-      };
+        const proximo: ReadStateModel = {
+          channelId,
+          /// O que já estava guardado manda: o servidor veio do banco, e o
+          /// evento pode chegar de um canal cujo servidor não está carregado.
+          guildId: atual?.guildId ?? guildId,
+          lastReadMessageId: atual?.lastReadMessageId ?? null,
+          unreadCount: (atual?.unreadCount ?? 0) + 1,
+          mentionCount: (atual?.mentionCount ?? 0) + (mencionou ? 1 : 0),
+        };
 
-      return [...(old ?? []).filter((s) => s.channelId !== channelId), proximo];
-    });
+        return [
+          ...(old ?? []).filter((s) => s.channelId !== channelId),
+          proximo,
+        ];
+      },
+    );
   },
 
-  patchGuild(queryClient: QueryClient, guildId: string, patch: (g: GuildDetailModel) => GuildDetailModel) {
-    queryClient.setQueryData(queryKeys.guild.find(guildId), (old: GuildDetailModel | undefined) =>
-      old ? patch(old) : old,
+  patchGuild(
+    queryClient: QueryClient,
+    guildId: string,
+    patch: (g: GuildDetailModel) => GuildDetailModel,
+  ) {
+    queryClient.setQueryData(
+      queryKeys.guild.find(guildId),
+      (old: GuildDetailModel | undefined) => (old ? patch(old) : old),
     );
   },
 
@@ -174,7 +290,10 @@ const cache = {
   },
 };
 
-export function useRealtime(currentGuildId: string | undefined, currentChannelId: string | undefined) {
+export function useRealtime(
+  currentGuildId: string | undefined,
+  currentChannelId: string | undefined,
+) {
   useAusencia(true);
 
   const queryClient = useQueryClient();
@@ -237,6 +356,15 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         );
       }
 
+      /*
+        A voz vem ANTES do aviso sonoro e depois da contagem.
+
+        Antes do aviso porque os dois disputam o mesmo alto-falante e a voz é a
+        que carrega conteúdo — o bipe só diz "chegou algo", e ouvir o bipe por
+        cima da primeira palavra da frase é perder a frase.
+      */
+      lerEmVoz(message, eu?.id, currentChannelId);
+
       avisarDeMensagem({
         message,
         meuId: eu?.id,
@@ -264,15 +392,27 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         (g) => ({
           ...g,
           channels: g.channels.map((c) =>
-            c.id === message.channelId ? { ...c, lastMessageId: message.id } : c,
+            c.id === message.channelId
+              ? { ...c, lastMessageId: message.id }
+              : c,
           ),
         }),
       );
       useTypingStore.getState().clear(message.channelId, message.author.id);
     };
 
-    const handlePresence = ({ userId, status }: { userId: string; status: PresenceStatus }) => {
-      if (userId === queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id) return;
+    const handlePresence = ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: PresenceStatus;
+    }) => {
+      if (
+        userId ===
+        queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id
+      )
+        return;
 
       cache.patchGuildsWhere(
         queryClient,
@@ -286,7 +426,13 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       );
     };
 
-    const handleUserUpdated = ({ user, perfil }: { user: PublicUser; perfil: PerfilPublico }) => {
+    const handleUserUpdated = ({
+      user,
+      perfil,
+    }: {
+      user: PublicUser;
+      perfil: PerfilPublico;
+    }) => {
       const temEnfeite = Object.keys(perfil).length > 0;
 
       cache.patchGuildsWhere(
@@ -301,23 +447,30 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
             ...g,
             profiles,
             members: g.members.map((m) =>
-              m.user.id === user.id ? { ...m, user: { ...user, status: m.user.status } } : m,
+              m.user.id === user.id
+                ? { ...m, user: { ...user, status: m.user.status } }
+                : m,
             ),
           };
         },
       );
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.user.profile(user.id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.user.profile(user.id),
+      });
     };
 
     const handlePresenceSelf = ({ status }: { status: DesiredStatus }) => {
-      const projetado: PresenceStatus = status === "INVISIBLE" ? "OFFLINE" : status;
+      const projetado: PresenceStatus =
+        status === "INVISIBLE" ? "OFFLINE" : status;
 
       queryClient.setQueryData([queryKeys.auth.me], (eu?: SelfUserModel) =>
         eu ? { ...eu, desiredStatus: status, status: projetado } : eu,
       );
 
-      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+      const meuId = queryClient.getQueryData<SelfUserModel>([
+        queryKeys.auth.me,
+      ])?.id;
       if (!meuId) return;
 
       cache.patchGuildsWhere(
@@ -326,7 +479,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         (g) => ({
           ...g,
           members: g.members.map((m) =>
-            m.user.id === meuId ? { ...m, user: { ...m.user, status: projetado } } : m,
+            m.user.id === meuId
+              ? { ...m, user: { ...m.user, status: projetado } }
+              : m,
           ),
         }),
       );
@@ -348,13 +503,21 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
             voiceStates: {
               ...g.voiceStates,
               [state.channelId]: [
-                ...(g.voiceStates[state.channelId] ?? []).filter((v) => v.userId !== state.userId),
+                ...(g.voiceStates[state.channelId] ?? []).filter(
+                  (v) => v.userId !== state.userId,
+                ),
                 state,
               ],
             },
           }));
 
-    const removeVoiceState = ({ channelId, userId }: { channelId: string; userId: string }) =>
+    const removeVoiceState = ({
+      channelId,
+      userId,
+    }: {
+      channelId: string;
+      userId: string;
+    }) =>
       cache.patchGuildsWhere(
         queryClient,
         (g) => Boolean(g.voiceStates[channelId]),
@@ -362,7 +525,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
           ...g,
           voiceStates: {
             ...g.voiceStates,
-            [channelId]: (g.voiceStates[channelId] ?? []).filter((v) => v.userId !== userId),
+            [channelId]: (g.voiceStates[channelId] ?? []).filter(
+              (v) => v.userId !== userId,
+            ),
           },
         }),
       );
@@ -373,20 +538,29 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       cache.patchGuild(queryClient, channel.guildId, (g) => ({
         ...g,
         channels: g.channels.some((c) => c.id === channel.id)
-          ? g.channels.map((c) => (c.id === channel.id ? { ...c, ...channel } : c))
+          ? g.channels.map((c) =>
+              c.id === channel.id ? { ...c, ...channel } : c,
+            )
           : [...g.channels, { ...channel, lastMessageId: null }],
       }));
     };
 
     onMessageCreated(handleMessageCreated);
-    onMessageUpdated((message) => cache.patchMessage(queryClient, message.channelId, message.id, message));
-    onMessageDeleted(({ channelId, messageId }) => cache.removeMessage(queryClient, channelId, messageId));
+    onMessageUpdated((message) =>
+      cache.patchMessage(queryClient, message.channelId, message.id, message),
+    );
+    onMessageDeleted(({ channelId, messageId }) =>
+      cache.removeMessage(queryClient, channelId, messageId),
+    );
     onMessageReactions(({ channelId, messageId, reactions }) =>
       cache.patchMessage(queryClient, channelId, messageId, {
         reactions: reactions.map((r) => ({
           emoji: r.emoji,
           count: r.userIds.length,
-          me: r.userIds.includes(queryClient.getQueryData<{ id: string }>([queryKeys.auth.me])?.id ?? ""),
+          me: r.userIds.includes(
+            queryClient.getQueryData<{ id: string }>([queryKeys.auth.me])?.id ??
+              "",
+          ),
           burst: r.burst,
         })),
       }),
@@ -395,7 +569,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     /// não estiver, a store cai no rodapé sozinha. Quem super-reagiu já viu a
     /// animação na hora do clique, então não repete pra ele.
     onMessageSuper(({ messageId, emoji, userId: quem }) => {
-      const meuId = queryClient.getQueryData<{ id: string }>([queryKeys.auth.me])?.id;
+      const meuId = queryClient.getQueryData<{ id: string }>([
+        queryKeys.auth.me,
+      ])?.id;
       if (quem === meuId) return;
 
       const alvo = document.querySelector(`[data-mensagem="${messageId}"]`);
@@ -405,11 +581,15 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         .getState()
         .disparar(
           emoji,
-          caixa ? { x: caixa.left + caixa.width / 2, y: caixa.bottom } : undefined,
+          caixa
+            ? { x: caixa.left + caixa.width / 2, y: caixa.bottom }
+            : undefined,
         );
     });
 
-    onTypingStarted(({ channelId, user }) => useTypingStore.getState().add(channelId, user));
+    onTypingStarted(({ channelId, user }) =>
+      useTypingStore.getState().add(channelId, user),
+    );
     onPresenceChanged(handlePresence);
     onPresenceSelf(handlePresenceSelf);
     onChannelCreated(handleChannelUpsert);
@@ -421,31 +601,50 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       })),
     );
     onGuildUpdated((guild) => {
-      cache.patchGuild(queryClient, guild.id, (g) => ({ ...g, guild: { ...g.guild, ...guild } }));
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
+      cache.patchGuild(queryClient, guild.id, (g) => ({
+        ...g,
+        guild: { ...g.guild, ...guild },
+      }));
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.guild.find_many],
+      });
     });
 
     onGuildRefresh(({ guildId }) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.role.find_many(guildId) });
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.guild.find(guildId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.role.find_many(guildId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.guild.find_many],
+      });
     });
 
     onExpressionsChanged(({ guildId }) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.expression.find_many(guildId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.expression.find_many(guildId),
+      });
     });
 
     onCommandsChanged(({ guildId }) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.comando.find_many(guildId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.comando.find_many(guildId),
+      });
     });
 
     onPostCreated((post) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.forum.posts(post.channelId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.forum.posts(post.channelId),
+      });
     });
 
     onPostUpdated((post) => {
       queryClient.setQueryData(queryKeys.forum.post(post.id), post);
-      void queryClient.invalidateQueries({ queryKey: queryKeys.forum.posts(post.channelId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.forum.posts(post.channelId),
+      });
     });
 
     onVoiceSound(({ channelId, userId, url, volume }) => {
@@ -467,11 +666,16 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
         Antes só o primeiro contava — abaixar a saída não abaixava os sons, e
         o balão ainda dizia que tocava no volume de saída.
       */
-      const { somDoPainel, volumeDoPainel, volumeSaida } = useVoicePrefs.getState();
+      const { somDoPainel, volumeDoPainel, volumeSaida } =
+        useVoicePrefs.getState();
       if (!somDoPainel) return;
 
       const daPessoa = voz.volumesLocais[userId] ?? 1;
-      tocarSomDoPainel(url, volume * daPessoa * volumeDoPainel * volumeSaida, userId);
+      tocarSomDoPainel(
+        url,
+        volume * daPessoa * volumeDoPainel * volumeSaida,
+        userId,
+      );
     });
 
     onVoiceMove(({ channelId }) => {
@@ -489,14 +693,18 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
 
     onGuildDeleted(({ guildId }) => {
       queryClient.removeQueries({ queryKey: queryKeys.guild.find(guildId) });
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.guild.find_many],
+      });
       toast.info("Este servidor foi apagado.");
     });
 
     onMemberJoined((member: GuildMember) =>
       cache.patchGuild(queryClient, member.guildId, (g) => ({
         ...g,
-        members: g.members.some((m) => m.id === member.id) ? g.members : [...g.members, member],
+        members: g.members.some((m) => m.id === member.id)
+          ? g.members
+          : [...g.members, member],
       })),
     );
     onMemberUpdated((member: GuildMember) =>
@@ -522,7 +730,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     const aoEntrarNaVoz = (state: VoiceState) => {
       upsertVoiceState(state);
 
-      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+      const meuId = queryClient.getQueryData<SelfUserModel>([
+        queryKeys.auth.me,
+      ])?.id;
       if (!meuId) return;
 
       const tocar = deveTocar({
@@ -563,8 +773,16 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       useChamadaStore.getState().encerrar(p.channelId);
     };
 
-    const aoRecusarem = ({ channelId, userId: quemRecusou }: { channelId: string; userId: string }) => {
-      const meuId = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id;
+    const aoRecusarem = ({
+      channelId,
+      userId: quemRecusou,
+    }: {
+      channelId: string;
+      userId: string;
+    }) => {
+      const meuId = queryClient.getQueryData<SelfUserModel>([
+        queryKeys.auth.me,
+      ])?.id;
 
       /// O evento vai para os dois lados da conversa; quem recusou não precisa
       /// ser avisado de que recusou.
@@ -583,7 +801,9 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     onSocketError(({ message }) => toast.error(message));
 
     onFriendUpdated(() => {
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.friend.find_many] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.friend.find_many],
+      });
     });
 
     onDmCreated(() => {
@@ -594,9 +814,12 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
       const caiuAntes = useConexaoStore.getState().jaConectou;
       useConexaoStore.getState().conectou();
 
-      if (currentChannelId) void joinChannel(currentChannelId).catch(() => undefined);
+      if (currentChannelId)
+        void joinChannel(currentChannelId).catch(() => undefined);
       if (currentGuildId) {
-        void queryClient.refetchQueries({ queryKey: queryKeys.guild.find(currentGuildId) });
+        void queryClient.refetchQueries({
+          queryKey: queryKeys.guild.find(currentGuildId),
+        });
       }
 
       /*
@@ -613,7 +836,8 @@ export function useRealtime(currentGuildId: string | undefined, currentChannelId
     };
 
     const handleDisconnect = () => useConexaoStore.getState().caiu();
-    const handleTentativa = (n: number) => useConexaoStore.getState().tentando(n);
+    const handleTentativa = (n: number) =>
+      useConexaoStore.getState().tentando(n);
 
     socketInstance.on("connect", handleConnect);
     socketInstance.on("disconnect", handleDisconnect);

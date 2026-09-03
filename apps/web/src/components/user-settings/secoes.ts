@@ -80,6 +80,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   ],
   acessibilidade: [
     { id: "movimento", label: "Movimento" },
+    { id: "texto-em-voz", label: "Texto em voz" },
     { id: "teclado", label: "Teclado" },
   ],
   idioma: [{ id: "formato-da-hora", label: "Formato da hora" }],

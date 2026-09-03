@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import type { ModoDeLeitura } from "~/lib/voz";
+
 export type Tema = "escuro" | "mais-escuro" | "claro" | "sistema" | "gravae";
 export type Densidade = "confortavel" | "compacta";
 export type QuandoMostrarSpoiler = "ao-clicar" | "sempre";
@@ -54,6 +56,20 @@ export interface PrefsDeAparencia {
   */
   focoSempreVisivel: boolean;
 
+  /*
+    Ler mensagem em voz alta.
+
+    Três modos e não um interruptor: "todos os canais" numa conta com dez
+    servidores é uma voz que não para, e "nunca" é o padrão porque voz que
+    começa sozinha assusta. O do meio — só o canal que está aberto — é o único
+    que serve pro dia a dia.
+  */
+  lerEmVozAlta: ModoDeLeitura;
+  /// O nome da voz do sistema. `null` = a que o navegador escolher.
+  vozDaLeitura: string | null;
+  /// 0,5 a 2. O padrão do navegador é 1.
+  velocidadeDaLeitura: number;
+
   /// Idioma e região
   horaEm24h: boolean;
 
@@ -95,6 +111,9 @@ const PADRAO: PrefsDeAparencia = {
 
   reduzirAnimacao: false,
   focoSempreVisivel: false,
+  lerEmVozAlta: "nunca",
+  vozDaLeitura: null,
+  velocidadeDaLeitura: 1,
   /*
     24h por padrão: é o formato que o Brasil usa falando e escrevendo, e o
     `Intl` com `pt-BR` já entrega assim. Quem quiser AM/PM desliga.
