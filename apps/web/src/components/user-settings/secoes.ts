@@ -14,6 +14,7 @@ export type Secao =
   | "video"
   | "avisos"
   | "aplicativos"
+  | "conexoes"
   | "aparencia"
   | "bate-papo"
   | "acessibilidade"
@@ -87,6 +88,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
 
   /// Sem subdivisão: uma lista só, ou uma tela de um assunto só.
   aplicativos: [],
+  conexoes: [],
   aplicativo: [],
   servidor: [],
 };

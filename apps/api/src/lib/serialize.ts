@@ -29,7 +29,11 @@ export function toPublicUser(u: UserRow): PublicUser {
   };
 }
 
-export type EtiquetaResolvida = { guildId: string; tag: string; tagIcon: string | null };
+export type EtiquetaResolvida = {
+  guildId: string;
+  tag: string;
+  tagIcon: string | null;
+};
 
 export function toPerfilPublico(
   u: UserRow,
@@ -44,10 +48,21 @@ export function toPerfilPublico(
     ...(etiquetaDoServidor ? { etiquetaDoServidor } : {}),
     ...(emblemas.length ? { emblemas } : {}),
     ...(p?.patente ? { patente: p.patente as PerfilPublico["patente"] } : {}),
-    ...(p?.decoracao ? { decoracao: p.decoracao as PerfilPublico["decoracao"] } : {}),
+    ...(p?.decoracao
+      ? { decoracao: p.decoracao as PerfilPublico["decoracao"] }
+      : {}),
     ...(p?.moldura ? { moldura: p.moldura as PerfilPublico["moldura"] } : {}),
     ...(p?.placa ? { placa: p.placa as PerfilPublico["placa"] } : {}),
     ...(statusVigente(u) ? { status: statusVigente(u) } : {}),
+    /*
+      As conexões saem inteiras porque não há o que esconder nelas: quem as
+      escreveu escreveu para serem vistas, e a tela de Conexões diz isso antes
+      de aceitar a primeira. O que NÃO sai é conexão que não vira endereço —
+      mas essa nem chega a ser guardada, o `me-service` filtra na escrita.
+    */
+    ...(p?.conexoes?.length
+      ? { conexoes: p.conexoes as NonNullable<PerfilPublico["conexoes"]> }
+      : {}),
   };
 }
 
@@ -75,7 +90,9 @@ function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
 /// Comparação em minúsculas e sem espaço: e-mail digitado no .env com maiúscula
 /// ou espaço depois da vírgula é erro fácil de cometer e chato de diagnosticar.
 const ADMINS = new Set(
-  env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean),
+  env.ADMIN_EMAILS.split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean),
 );
 
 export const ehAdmin = (email: string) => ADMINS.has(email.toLowerCase());
@@ -140,7 +157,9 @@ export function toRole(r: Prisma.RoleGetPayload<object>): Role {
   };
 }
 
-export function toMember(m: Prisma.GuildMemberGetPayload<{ include: { user: true } }>): GuildMember {
+export function toMember(
+  m: Prisma.GuildMemberGetPayload<{ include: { user: true } }>,
+): GuildMember {
   return {
     id: m.id,
     guildId: m.guildId,
@@ -157,7 +176,10 @@ type MessageRow = Prisma.MessageGetPayload<{
 }>;
 
 export function toMessage(m: MessageRow, viewerId: string): Message {
-  const grouped = new Map<string, { count: number; me: boolean; burst: boolean }>();
+  const grouped = new Map<
+    string,
+    { count: number; me: boolean; burst: boolean }
+  >();
 
   for (const r of m.reactions) {
     const entry = grouped.get(r.emoji) ?? { count: 0, me: false, burst: false };
@@ -228,12 +250,29 @@ export function toSticker(s: Prisma.GuildStickerGetPayload<object>): Sticker {
   };
 }
 
-export function toGuildEmoji(e: Prisma.GuildEmojiGetPayload<object>): GuildEmoji {
-  return { id: e.id, guildId: e.guildId, name: e.name, url: e.url, animated: e.animated };
+export function toGuildEmoji(
+  e: Prisma.GuildEmojiGetPayload<object>,
+): GuildEmoji {
+  return {
+    id: e.id,
+    guildId: e.guildId,
+    name: e.name,
+    url: e.url,
+    animated: e.animated,
+  };
 }
 
-export function toGuildSound(s: Prisma.GuildSoundGetPayload<object>): GuildSound {
-  return { id: s.id, guildId: s.guildId, name: s.name, emoji: s.emoji, url: s.url, volume: s.volume };
+export function toGuildSound(
+  s: Prisma.GuildSoundGetPayload<object>,
+): GuildSound {
+  return {
+    id: s.id,
+    guildId: s.guildId,
+    name: s.name,
+    emoji: s.emoji,
+    url: s.url,
+    volume: s.volume,
+  };
 }
 
 export const messageInclude = {

@@ -313,6 +313,18 @@ type EstiloDePerfil {
   bannerCor      String?
   temaPrimario   String?
   temaSecundario String?
+  /// As contas de fora que a pessoa DECLARA. Nao sao verificadas — ver
+  /// `packages/shared/src/conexoes.ts` para o porque de guardar o handle e nao
+  /// a URL.
+  conexoes       Conexao[]
+}
+
+/// Uma conta de fora, declarada pela pessoa. `servico` vem da lista fechada em
+/// `SERVICOS`; `valor` e o nome de usuario, ou o endereco quando o servico e
+/// "site".
+type Conexao {
+  servico String
+  valor   String
 }
 
 /// Status personalizado. `expiraEm` nulo = nao expira.

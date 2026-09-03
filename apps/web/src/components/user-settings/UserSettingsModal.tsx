@@ -16,6 +16,7 @@ import {
   Languages,
   EyeOff,
   MessageSquare,
+  Link2,
   Mic,
   Video,
   Palette,
@@ -32,6 +33,7 @@ import { AccountSection } from "~/components/user-settings/AccountSection";
 import { AppearanceSection } from "~/components/user-settings/AppearanceSection";
 import { NotificationsSection } from "~/components/user-settings/NotificationsSection";
 import { VoiceSection } from "~/components/user-settings/VoiceSection";
+import { ConexoesSection } from "~/components/user-settings/ConexoesSection";
 import { BotsSection } from "~/components/user-settings/BotsSection";
 import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
 import { AcessibilidadeSection } from "~/components/user-settings/AcessibilidadeSection";
@@ -109,6 +111,20 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
         label: "Bate-papo",
         icone: MessageSquare,
         subitens: SUBSECOES["bate-papo"],
+      },
+      /*
+        Conexões fica com Privacidade e não com Perfil.
+
+        Ela parece enfeite de perfil e não é: a pergunta que resolve é "o que
+        eu conto de mim para quem me abre" — a mesma de Visibilidade do perfil,
+        que está logo acima. Enfeite é como o nome é pintado; isto é o que ele
+        entrega.
+      */
+      {
+        id: "conexoes",
+        label: "Conexões",
+        icone: Link2,
+        subitens: SUBSECOES.conexoes,
       },
       { id: "voz", label: "Áudio", icone: Mic, subitens: SUBSECOES.voz },
       /*
@@ -193,6 +209,7 @@ const gruposPara = (admin: boolean): { titulo: string; itens: Item[] }[] => [
 const TITULOS: Record<Secao, string> = {
   conta: "Minha conta",
   privacidade: "Privacidade",
+  conexoes: "Conexões",
   voz: "Áudio",
   video: "Vídeo",
   avisos: "Notificações",
@@ -521,6 +538,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "privacidade" && (
                       <PrivacidadeSection user={user} />
                     )}
+                    {secao === "conexoes" && <ConexoesSection user={user} />}
                     {secao === "voz" && <VoiceSection parte="audio" />}
                     {secao === "video" && <VoiceSection parte="video" />}
                     {secao === "avisos" && <NotificationsSection />}

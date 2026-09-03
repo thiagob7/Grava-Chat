@@ -1,5 +1,11 @@
 import React, { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
+import {
+  comoSeLe,
+  enderecoDaConexao,
+  NOMES_DOS_SERVICOS,
+  type Conexao,
+} from "@gravae/shared";
 import { toast } from "react-toastify";
 import {
   Ban,
@@ -8,6 +14,7 @@ import {
   Copy,
   Eye,
   EyeOff,
+  Link2,
   MessageSquare,
   MoreHorizontal,
   Pencil,
@@ -57,7 +64,11 @@ import { useIgnoreStore } from "~/stores/ignore-store";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useEnfeites } from "~/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
@@ -89,7 +100,10 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
-      <PopoverContent side={side} className="max-h-[80vh] w-80 overflow-y-auto p-0">
+      <PopoverContent
+        side={side}
+        className="max-h-[80vh] w-80 overflow-y-auto p-0"
+      >
         {isLoading || !perfil ? (
           <div className="p-6 text-sm text-ink-faint">Carregando…</div>
         ) : (
@@ -158,7 +172,8 @@ const ProfileCard: React.FC<{
     inclusive na pessoa, que nao pode estar acima de quem esta mexendo.
   */
   const souDono = Boolean(eu && detalheDoServidor?.guild.ownerId === eu.id);
-  const meusIds = membrosDoServidor.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
+  const meusIds =
+    membrosDoServidor.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
   const minhaPosicao = souDono
     ? Number.POSITIVE_INFINITY
     : highestPosition(cargosDoServidor.filter((r) => meusIds.includes(r.id)));
@@ -168,7 +183,9 @@ const ProfileCard: React.FC<{
 
   const cargosQuePossoDar =
     guildId && can("MANAGE_ROLES") && podeMexerNaPessoa
-      ? cargosDoServidor.filter((r) => !r.isEveryone && r.position < minhaPosicao)
+      ? cargosDoServidor.filter(
+          (r) => !r.isEveryone && r.position < minhaPosicao,
+        )
       : [];
 
   const alternarCargo = (roleId: string) => {
@@ -182,7 +199,9 @@ const ProfileCard: React.FC<{
   };
 
   const convidarPara = async (targetGuildId: string) => {
-    const convite = await criarConvite.mutateAsync({ guildId: targetGuildId }).catch(() => null);
+    const convite = await criarConvite
+      .mutateAsync({ guildId: targetGuildId })
+      .catch(() => null);
     if (!convite) return;
 
     const link = `${window.location.origin}/invite/${convite.code}`;
@@ -191,7 +210,11 @@ const ProfileCard: React.FC<{
       const canal = await openDm.mutateAsync(perfil.id).catch(() => null);
 
       if (canal) {
-        await sendMessage({ channelId: canal.id, content: link, nonce: crypto.randomUUID() });
+        await sendMessage({
+          channelId: canal.id,
+          content: link,
+          nonce: crypto.randomUUID(),
+        });
         return aviso.success(`Convite enviado para ${perfil.displayName}.`);
       }
     }
@@ -214,7 +237,8 @@ const ProfileCard: React.FC<{
       acao: "Desfazer amizade",
     });
 
-    if (confirmado && perfil.friendshipId) removeFriend.mutate(perfil.friendshipId);
+    if (confirmado && perfil.friendshipId)
+      removeFriend.mutate(perfil.friendshipId);
   };
 
   const bloquearUsuario = async () => {
@@ -240,7 +264,10 @@ const ProfileCard: React.FC<{
   };
 
   const ocupado =
-    requestFriend.isPending || respondFriend.isPending || removeFriend.isPending || openDm.isPending;
+    requestFriend.isPending ||
+    respondFriend.isPending ||
+    removeFriend.isPending ||
+    openDm.isPending;
 
   /*
     Fila de acoes no corpo do cartao, embaixo do @username — o mesmo lugar do
@@ -248,121 +275,139 @@ const ProfileCard: React.FC<{
     escondia parte do banner e deixava o botao principal la no rodape.
   */
   const acoes = (
-          <>
-            {perfil.friendship === "SELF" ? (
-              <Button size="sm" onClick={() => setEditandoPerfil(true)}>
-                <Pencil size={14} /> Editar perfil
-              </Button>
-            ) : (
-              <>
-            {perfil.friendship === "ACCEPTED" && (
-              <Button size="sm" onClick={() => void conversar()} disabled={ocupado}>
-                <MessageSquare size={14} /> Mensagem
-              </Button>
-            )}
+    <>
+      {perfil.friendship === "SELF" ? (
+        <Button size="sm" onClick={() => setEditandoPerfil(true)}>
+          <Pencil size={14} /> Editar perfil
+        </Button>
+      ) : (
+        <>
+          {perfil.friendship === "ACCEPTED" && (
+            <Button
+              size="sm"
+              onClick={() => void conversar()}
+              disabled={ocupado}
+            >
+              <MessageSquare size={14} /> Mensagem
+            </Button>
+          )}
 
-            {podeModerar && guildId && (
-              <BotaoRedondo
-                label="Abrir na visualização de moderador"
-                onClick={() => {
-                  useModeracao.getState().abrir({
-                    guildId,
-                    userId: perfil.id,
-                    displayName: perfil.displayName,
-                    username: perfil.username,
-                    avatarUrl: perfil.avatarUrl,
-                  });
-                  /// O cartão sai da frente: a ficha abre na coluna, e os dois
-                  /// abertos ao mesmo tempo seriam a mesma pessoa em dobro.
-                  onFechar();
+          {podeModerar && guildId && (
+            <BotaoRedondo
+              label="Abrir na visualização de moderador"
+              onClick={() => {
+                useModeracao.getState().abrir({
+                  guildId,
+                  userId: perfil.id,
+                  displayName: perfil.displayName,
+                  username: perfil.username,
+                  avatarUrl: perfil.avatarUrl,
+                });
+                /// O cartão sai da frente: a ficha abre na coluna, e os dois
+                /// abertos ao mesmo tempo seriam a mesma pessoa em dobro.
+                onFechar();
+              }}
+            >
+              <ShieldAlert size={16} />
+            </BotaoRedondo>
+          )}
+
+          <BotaoDeAmizade
+            perfil={perfil}
+            onAdicionar={() => requestFriend.mutate(perfil.username)}
+          />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                aria-label="Mais"
+                className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+              {perfil.friendship === "ACCEPTED" && (
+                <>
+                  <DropdownMenuItem onSelect={() => void conversar()}>
+                    Abrir conversa <MessageSquare size={14} />
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              <DropdownMenuItem onSelect={() => setPerfilCompleto(true)}>
+                Ver perfil completo <User size={14} />
+              </DropdownMenuItem>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  Convidar para o servidor
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {guilds.data?.length ? (
+                    guilds.data.map((servidor) => (
+                      <DropdownMenuItem
+                        key={servidor.id}
+                        onSelect={() => void convidarPara(servidor.id)}
+                      >
+                        {servidor.name}
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem disabled>
+                      Você não tem servidores
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onSelect={() => alternarIgnorado(perfil.id)}>
+                {ignorado ? "Deixar de ignorar" : "Ignorar"}
+                {ignorado ? <Eye size={14} /> : <EyeOff size={14} />}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem danger onSelect={() => void bloquearUsuario()}>
+                Bloquear <Ban size={14} />
+              </DropdownMenuItem>
+
+              {perfil.friendship === "ACCEPTED" && (
+                <DropdownMenuItem
+                  danger
+                  onSelect={() => void desfazerAmizade()}
+                >
+                  Desfazer amizade <UserX size={14} />
+                </DropdownMenuItem>
+              )}
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onSelect={() => {
+                  void navigator.clipboard.writeText(perfil.id);
+                  aviso.success("ID copiado.");
                 }}
               >
-                <ShieldAlert size={16} />
-              </BotaoRedondo>
-            )}
-
-            <BotaoDeAmizade perfil={perfil} onAdicionar={() => requestFriend.mutate(perfil.username)} />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  aria-label="Mais"
-                  className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
-                >
-                  <MoreHorizontal size={16} />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                {perfil.friendship === "ACCEPTED" && (
-                  <>
-                    <DropdownMenuItem onSelect={() => void conversar()}>
-                      Abrir conversa <MessageSquare size={14} />
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-
-                <DropdownMenuItem onSelect={() => setPerfilCompleto(true)}>
-                  Ver perfil completo <User size={14} />
-                </DropdownMenuItem>
-
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>Convidar para o servidor</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    {guilds.data?.length ? (
-                      guilds.data.map((servidor) => (
-                        <DropdownMenuItem
-                          key={servidor.id}
-                          onSelect={() => void convidarPara(servidor.id)}
-                        >
-                          {servidor.name}
-                        </DropdownMenuItem>
-                      ))
-                    ) : (
-                      <DropdownMenuItem disabled>Você não tem servidores</DropdownMenuItem>
-                    )}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem onSelect={() => alternarIgnorado(perfil.id)}>
-                  {ignorado ? "Deixar de ignorar" : "Ignorar"}
-                  {ignorado ? <Eye size={14} /> : <EyeOff size={14} />}
-                </DropdownMenuItem>
-
-                <DropdownMenuItem danger onSelect={() => void bloquearUsuario()}>
-                  Bloquear <Ban size={14} />
-                </DropdownMenuItem>
-
-                {perfil.friendship === "ACCEPTED" && (
-                  <DropdownMenuItem danger onSelect={() => void desfazerAmizade()}>
-                    Desfazer amizade <UserX size={14} />
-                  </DropdownMenuItem>
-                )}
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem
-                  onSelect={() => {
-                    void navigator.clipboard.writeText(perfil.id);
-                    aviso.success("ID copiado.");
-                  }}
-                >
-                  Copiar ID do usuário <Copy size={14} />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-              </>
-            )}
-          </>
+                Copiar ID do usuário <Copy size={14} />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
+      )}
+    </>
   );
 
   return (
     <>
       {editandoPerfil && eu && (
-        <ProfileEditorModal open user={eu} onClose={() => setEditandoPerfil(false)} />
+        <ProfileEditorModal
+          open
+          user={eu}
+          onClose={() => setEditandoPerfil(false)}
+        />
       )}
 
       {definindoStatus && eu && (
@@ -408,12 +453,20 @@ const ProfileCard: React.FC<{
         cargosDisponiveis={cargosQuePossoDar}
         onAlternarCargo={cargosQuePossoDar.length ? alternarCargo : undefined}
         salvandoCargos={setRoles.isPending}
-        onStatus={perfil.friendship === "SELF" ? () => setDefinindoStatus(true) : undefined}
+        onStatus={
+          perfil.friendship === "SELF"
+            ? () => setDefinindoStatus(true)
+            : undefined
+        }
         emblemas={emblemas}
         acoes={acoes}
         className="rounded-none"
       >
-        {perfil.friendship !== "SELF" && <CampoDeNota userId={perfil.id} nota={perfil.nota} />}
+        <ConexoesDoPerfil conexoes={perfil.perfil?.conexoes} />
+
+        {perfil.friendship !== "SELF" && (
+          <CampoDeNota userId={perfil.id} nota={perfil.nota} />
+        )}
 
         {perfil.friendship === "SELF" && guildId && (
           <EscolherEmblemas
@@ -435,7 +488,10 @@ const ProfileCard: React.FC<{
                     variant="success"
                     onClick={() =>
                       perfil.friendshipId &&
-                      respondFriend.mutate({ friendshipId: perfil.friendshipId, accept: true })
+                      respondFriend.mutate({
+                        friendshipId: perfil.friendshipId,
+                        accept: true,
+                      })
                     }
                     disabled={ocupado}
                     className="w-full"
@@ -473,7 +529,11 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
 
     try {
       const canal = await openDm.mutateAsync(userId);
-      await sendMessage({ channelId: canal.id, content: conteudo, nonce: crypto.randomUUID() });
+      await sendMessage({
+        channelId: canal.id,
+        content: conteudo,
+        nonce: crypto.randomUUID(),
+      });
 
       setTexto("");
       setEnviada(true);
@@ -538,10 +598,10 @@ const BotaoRedondo: React.FC<{
   </Tooltip>
 );
 
-const BotaoDeAmizade: React.FC<{ perfil: ProfileModel; onAdicionar: () => void }> = ({
-  perfil,
-  onAdicionar,
-}) => {
+const BotaoDeAmizade: React.FC<{
+  perfil: ProfileModel;
+  onAdicionar: () => void;
+}> = ({ perfil, onAdicionar }) => {
   if (perfil.friendship === "ACCEPTED") {
     return (
       <BotaoRedondo label="Amigo" desabilitado>
@@ -570,5 +630,50 @@ const BotaoDeAmizade: React.FC<{ perfil: ProfileModel; onAdicionar: () => void }
     <BotaoRedondo label="Adicionar amigo" onClick={onAdicionar}>
       <UserPlus size={16} />
     </BotaoRedondo>
+  );
+};
+
+/**
+ * As contas de fora que a pessoa declarou, no cartão de perfil.
+ *
+ * O `rel="noreferrer noopener"` não é enfeite: sem `noopener` a página aberta
+ * ganha `window.opener` e pode trocar a aba de origem por uma cópia da tela de
+ * login. É um link que a PESSOA DO PERFIL escolheu e alguém clica — a mesma
+ * situação em que o ataque funciona.
+ *
+ * O endereço é montado no `shared` a partir do handle, nunca guardado inteiro,
+ * então nada que não seja `https://` de um domínio conhecido chega aqui.
+ */
+const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
+  const validas = (conexoes ?? [])
+    .map((conexao) => ({ conexao, endereco: enderecoDaConexao(conexao) }))
+    .filter(
+      (c): c is { conexao: Conexao; endereco: string } => c.endereco !== null,
+    );
+
+  if (!validas.length) return null;
+
+  return (
+    <div className="mt-3">
+      <p className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
+        Conexões
+      </p>
+
+      <div className="flex flex-wrap gap-1.5">
+        {validas.map(({ conexao, endereco }, indice) => (
+          <a
+            key={`${conexao.servico}-${indice}`}
+            href={endereco}
+            target="_blank"
+            rel="noreferrer noopener"
+            title={`${NOMES_DOS_SERVICOS[conexao.servico]} — ${comoSeLe(conexao)}`}
+            className="flex max-w-full items-center gap-1.5 rounded-md bg-surface-3 px-2 py-1 text-11 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+          >
+            <Link2 size={12} className="shrink-0" />
+            <span className="truncate">{comoSeLe(conexao)}</span>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 };
