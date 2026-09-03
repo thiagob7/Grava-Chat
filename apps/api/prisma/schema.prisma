@@ -834,3 +834,32 @@ model Bot {
 
   @@index([ownerId])
 }
+
+/*
+  Um registro por PEÇA e por DIA, e não uma linha por medição.
+
+  Medir de minuto em minuto, quatro peças, dá 5.760 documentos por dia — meio
+  milhão em noventa dias. O banco é um Atlas M0 de 512 MB, e gastar isso com
+  histórico de status seria trocar a conversa das pessoas por barrinha verde.
+
+  Guardando contadores, o mesmo período cabe em 360 documentos, e a conta que a
+  página precisa — quanto por cento do dia a peça respondeu — sai de uma
+  divisão. O que se perde é saber a hora exata de uma queda dentro do dia; o
+  que se ganha é o histórico existir.
+*/
+model StatusDoDia {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  /// "api" | "banco" | "cache" | "sfu"
+  peca    String
+  /// "2026-09-03", em UTC — o dia é o balde, e fuso de visitante não pode movê-lo
+  dia     String
+  medidas Int    @default(0)
+  falhas  Int    @default(0)
+  /// soma dos tempos de resposta, pra média sair sem guardar cada um
+  msSoma  Int    @default(0)
+
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([peca, dia])
+  @@index([dia])
+}

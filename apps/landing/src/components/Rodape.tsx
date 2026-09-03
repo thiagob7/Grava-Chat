@@ -63,6 +63,11 @@ export const Rodape = () => (
               Novidades de cada versão
             </a>
           </li>
+          <li>
+            <Link href="/status" className="transition hover:text-ink">
+              Status da plataforma
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

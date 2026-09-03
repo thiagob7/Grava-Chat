@@ -4,10 +4,12 @@ import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { createGateway } from "~/realtime/gateway.js";
 import { exclusaoService } from "~/services/exclusao-service.js";
+import { statusService } from "~/services/status-service.js";
 
 const app = await buildApp();
 
 let pararDeVigiarExclusoes: (() => void) | null = null;
+let pararDeVigiarStatus: (() => void) | null = null;
 
 try {
   await createGateway(app);
@@ -17,6 +19,7 @@ try {
   /// O relógio que apaga as contas cujo prazo de quinze dias venceu. É a única
   /// parte irreversível do fluxo — tudo antes dela é reversível de propósito.
   pararDeVigiarExclusoes = exclusaoService.vigiar(app.log);
+  pararDeVigiarStatus = statusService.vigiar(app.log);
 } catch (err) {
   app.log.error(err);
   process.exit(1);
@@ -25,6 +28,7 @@ try {
 const shutdown = async (signal: string) => {
   app.log.info({ signal }, "encerrando");
   pararDeVigiarExclusoes?.();
+  pararDeVigiarStatus?.();
   await app.close();
   await Promise.allSettled([prisma.$disconnect(), redis.quit()]);
   process.exit(0);
