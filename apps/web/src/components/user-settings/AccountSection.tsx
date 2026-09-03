@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LogOut, ShieldAlert } from "lucide-react";
+import { LogOut, Monitor, ShieldAlert } from "lucide-react";
 
 import { useAparencia } from "~/stores/aparencia";
 
@@ -7,6 +7,8 @@ import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { useEncerrarSessao, useSessoes } from "~/@core/application/queries/sessao/use-sessoes";
+import { nomeDoAparelho } from "~/lib/aparelho";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
 interface AccountSectionProps {
@@ -49,6 +51,14 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ user, onLogout }
           />
           </div>
         </div>
+      </Secao>
+
+      <Secao
+        id="dispositivos"
+        titulo="Dispositivos"
+        detalhe="Onde a sua conta está aberta agora. Não reconheceu algum? Desconecte."
+      >
+        <ListaDeDispositivos />
       </Secao>
 
       <Secao id="sessoes" titulo="Sessões">
@@ -123,6 +133,71 @@ const Campo: React.FC<{ rotulo: string; valor: string; sigiloso?: boolean }> = (
       ) : (
         <p className="mt-0.5 text-sm">{valor}</p>
       )}
+    </div>
+  );
+};
+
+/*
+  Os aparelhos em que a conta está aberta.
+
+  A lista existe por um motivo de segurança e não de curiosidade: é o único
+  lugar onde alguém descobre que a conta está aberta num computador que não é
+  dela. Por isso o IP fica visível ao lado do nome — quando o palpite do
+  `user-agent` erra, é o IP que denuncia o que não devia estar ali.
+
+  O aparelho ATUAL não tem botão. Encerrá-lo por aqui deixaria o app com um
+  cookie morto na mão, sem saber que perdeu a sessão; sair daqui é o botão de
+  sair, logo abaixo, que limpa o cookie junto.
+*/
+const ListaDeDispositivos: React.FC = () => {
+  const { data: sessoes = [], isLoading } = useSessoes();
+  const encerrar = useEncerrarSessao();
+
+  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+
+  if (!sessoes.length) {
+    return <p className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>;
+  }
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-line">
+      {sessoes.map((sessao) => (
+        <div
+          key={sessao.id}
+          className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
+        >
+          <Monitor size={18} className="shrink-0 text-ink-faint" />
+
+          <div className="min-w-0 flex-1">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <span className="truncate">{nomeDoAparelho(sessao.userAgent)}</span>
+              {sessao.atual && (
+                <span className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-online">
+                  este aparelho
+                </span>
+              )}
+            </p>
+            <p className="mt-0.5 truncate text-xs text-ink-faint">
+              {sessao.ip ?? "IP desconhecido"} · desde{" "}
+              {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
+                new Date(sessao.criadaEm),
+              )}
+            </p>
+          </div>
+
+          {!sessao.atual && (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={encerrar.isPending}
+              onClick={() => encerrar.mutate(sessao.id)}
+              className="shrink-0 text-danger"
+            >
+              Desconectar
+            </Button>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

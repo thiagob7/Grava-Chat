@@ -63,6 +63,10 @@ export const queryKeys = {
     pins: (channelId: string) => ["find-pins", channelId] as const,
   },
 
+  sessao: {
+    lista: "find-sessoes",
+  },
+
   voice: {
     states: "find-voice-states",
   },

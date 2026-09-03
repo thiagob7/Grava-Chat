@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { UnauthorizedError } from "~/lib/http.js";
+import { AppError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
 import { accountRepository } from "~/repositories/account-repository.js";
@@ -45,6 +45,52 @@ export const authService = {
 
   async revoke(raw: string) {
     await sessionRepository.revoke(hashToken(raw));
+  },
+
+  /*
+    As sessões vivas, com a atual marcada.
+
+    Saber qual é a atual não é enfeite: sem isso a pessoa desconecta a si mesma
+    achando que está fechando o computador do trabalho, e leva um logout que
+    parece bug. O `raw` vem do cookie de quem está pedindo — é a única forma de
+    o servidor reconhecer o próprio aparelho de quem chama.
+  */
+  async listarSessoes(userId: string, raw: string | undefined) {
+    const atual = raw ? hashToken(raw) : null;
+    const sessoes = await sessionRepository.findAtivasForUser(userId);
+
+    /*
+      A comparação é por HASH, e o hash não sai daqui.
+
+      Devolver o hash da sessão pro cliente entregaria o material de um ataque
+      de repetição a quem conseguisse ler a resposta. O que sai é um booleano.
+    */
+    const daAtual = atual
+      ? await sessionRepository.findByHash(atual).then((s) => s?.id ?? null)
+      : null;
+
+    return sessoes.map((s) => ({
+      id: s.id,
+      userAgent: s.userAgent,
+      ip: s.ip,
+      criadaEm: s.createdAt.toISOString(),
+      expiraEm: s.expiresAt.toISOString(),
+      atual: s.id === daAtual,
+    }));
+  },
+
+  /// Derruba UMA sessão. A atual não passa: sair daqui é o botão de sair, que
+  /// limpa o cookie junto — por esta rota o app ficaria com um cookie morto na
+  /// mão, sem saber que perdeu a sessão.
+  async revogarSessao(userId: string, id: string, raw: string | undefined) {
+    const atual = raw ? await sessionRepository.findByHash(hashToken(raw)) : null;
+
+    if (atual?.id === id) {
+      throw new AppError("Esta é a sessão deste aparelho. Use 'Sair desta conta'.");
+    }
+
+    const deu = await sessionRepository.revokeById(userId, id);
+    if (!deu) throw new NotFoundError("Sessão não encontrada");
   },
 
   async revokeAll(userId: string) {

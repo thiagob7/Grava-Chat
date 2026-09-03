@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { authService } from "~/services/auth-service.js";
+import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { meService } from "~/services/me-service.js";
 import { presenceService } from "~/services/presence-service.js";
 import { io } from "~/realtime/io.js";
@@ -49,6 +49,24 @@ export async function meRoutes(app: FastifyInstance) {
   /// Quem está em voz em todos os meus servidores — o trilho usa pra dizer,
   /// na dica de cada servidor, quem está em chamada lá dentro.
   app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
+
+  /*
+    Os aparelhos conectados.
+
+    Ficam sob `/me` e não sob `/auth` porque, pra quem usa, isto é "a minha
+    conta" e não "autenticação" — e o cookie de refresh, que identifica o
+    aparelho de quem pergunta, chega igual nos dois.
+  */
+  app.get("/me/sessoes", (req) =>
+    authService.listarSessoes(req.userId, req.cookies[REFRESH_COOKIE]),
+  );
+
+  app.delete("/me/sessoes/:id", async (req) => {
+    const { id } = req.params as { id: string };
+
+    await authService.revogarSessao(req.userId, id, req.cookies[REFRESH_COOKIE]);
+    return { ok: true };
+  });
 
   /*
     Exclusão da conta, em duas rotas e nenhuma delas apaga nada.
