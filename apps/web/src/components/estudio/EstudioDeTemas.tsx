@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "react-toastify";
 import {
+  ChevronRight,
   Copy,
   Download,
   FileCode2,
@@ -19,7 +20,14 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
-import { comoHex, GRUPOS_DE_TOKENS, TODOS_OS_TOKENS, valorDoTema } from "~/lib/tokens";
+import {
+  comoHex,
+  GRUPOS_DE_TOKENS,
+  TODOS_OS_TOKENS,
+  valorDoTema,
+} from "~/lib/tokens";
+import type { TokenDoTema } from "~/lib/tokens";
+import { Switch } from "~/components/ui/switch";
 import { copiarTexto } from "~/lib/copiar";
 import { uploadArquivo } from "~/lib/upload";
 import { useAparencia } from "~/stores/aparencia";
@@ -33,7 +41,11 @@ const ABAS: { id: Aba; nome: string; icone: React.ReactNode }[] = [
   { id: "tokens", nome: "Tokens", icone: <SlidersHorizontal size={16} /> },
   { id: "css", nome: "CSS rápido", icone: <FileCode2 size={16} /> },
   { id: "ativos", nome: "Ativos", icone: <ImageIcon size={16} /> },
-  { id: "configuracoes", nome: "Configurações", icone: <Settings2 size={16} /> },
+  {
+    id: "configuracoes",
+    nome: "Configurações",
+    icone: <Settings2 size={16} />,
+  },
 ];
 
 const NOME_DO_TEMA: Record<string, string> = {
@@ -44,15 +56,18 @@ const NOME_DO_TEMA: Record<string, string> = {
   gravae: "Base Gravaê",
 };
 
-export const EstudioDeTemas: React.FC<{ open: boolean; onClose: () => void }> = ({
-  open,
-  onClose,
-}) => {
+export const EstudioDeTemas: React.FC<{
+  open: boolean;
+  onClose: () => void;
+}> = ({ open, onClose }) => {
   const [aba, setAba] = useState<Aba>("tokens");
   const tema = useAparencia((s) => s.tema);
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => !next && onClose()}
+    >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
@@ -62,7 +77,9 @@ export const EstudioDeTemas: React.FC<{ open: boolean; onClose: () => void }> = 
           /// como se estivesse selecionado
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <DialogPrimitive.Title className="sr-only">Estúdio de temas</DialogPrimitive.Title>
+          <DialogPrimitive.Title className="sr-only">
+            Estúdio de temas
+          </DialogPrimitive.Title>
 
           <nav className="flex w-56 shrink-0 flex-col justify-between bg-surface-1 p-3">
             <div>
@@ -112,23 +129,44 @@ export const EstudioDeTemas: React.FC<{ open: boolean; onClose: () => void }> = 
 
 const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
+  const [soLigados, setSoLigados] = useState(false);
+
+  /*
+    Grupo fechado por padrão.
+
+    Com trinta e cinco tokens a lista aberta cabia na tela; com quase
+    quinhentos ela vira uma parede de rolagem em que nada se acha. Fechado, o
+    que aparece é o índice — vinte títulos com a contagem ao lado — e a busca
+    passa a ser o caminho normal até um token.
+  */
+  const [abertos, setAbertos] = useState<Record<string, boolean>>({});
+
   const substituicoes = useEstudio((s) => s.substituicoes);
   const limpar = useEstudio((s) => s.limparSubstituicoes);
 
   const grupos = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-    if (!termo) return GRUPOS_DE_TOKENS;
 
     return GRUPOS_DE_TOKENS.map((grupo) => ({
       ...grupo,
-      tokens: grupo.tokens.filter(
-        (token) =>
-          token.rotulo.toLowerCase().includes(termo) || token.nome.toLowerCase().includes(termo),
-      ),
+      tokens: grupo.tokens.filter((token) => {
+        if (soLigados && !token.ligado) return false;
+        if (!termo) return true;
+
+        return (
+          token.rotulo.toLowerCase().includes(termo) ||
+          token.nome.toLowerCase().includes(termo)
+        );
+      }),
     })).filter((grupo) => grupo.tokens.length > 0);
-  }, [busca]);
+  }, [busca, soLigados]);
+
+  /// Procurar é dizer "me mostra"; manter os grupos fechados aí seria esconder
+  /// justamente o que a pessoa acabou de pedir.
+  const buscando = Boolean(busca.trim());
 
   const quantas = Object.keys(substituicoes).length;
+  const totalMostrado = grupos.reduce((soma, g) => soma + g.tokens.length, 0);
 
   return (
     <>
@@ -146,34 +184,81 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
           />
         </div>
 
+        {/*
+          O filtro existe porque a maioria dos tokens ainda não é lida por
+          componente nenhum: eles têm valor nos quatro temas, mas mexer neles
+          não muda a tela. Quem quer VER efeito liga isto e fica só com os que
+          pintam; quem quer conferir a lista inteira desliga.
+        */}
+        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-ink-muted">
+          <Switch checked={soLigados} onCheckedChange={setSoLigados} />
+          Só os que já pintam
+        </label>
+
         <p className="ml-auto shrink-0 text-xs text-ink-faint">
-          {quantas} {quantas === 1 ? "substituição" : "substituições"} · {GRUPOS_DE_TOKENS.length}{" "}
-          grupos · {TODOS_OS_TOKENS.length} tokens
+          {quantas} {quantas === 1 ? "substituição" : "substituições"} ·{" "}
+          {grupos.length} grupos · {totalMostrado} de {TODOS_OS_TOKENS.length}{" "}
+          tokens
         </p>
 
-        <Button variant="surface" size="sm" disabled={!quantas} onClick={limpar}>
+        <Button
+          variant="surface"
+          size="sm"
+          disabled={!quantas}
+          onClick={limpar}
+        >
           <RotateCcw size={14} /> Redefinir tudo
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
-        {grupos.map((grupo) => (
-          <section key={grupo.titulo} className="mb-6">
-            <h3 className="mb-2 flex items-center justify-between text-sm font-semibold">
-              {grupo.titulo}
-              <span className="text-xs font-normal text-ink-faint">{grupo.tokens.length}</span>
-            </h3>
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-2">
+        {grupos.map((grupo) => {
+          const aberto = buscando || abertos[grupo.titulo] === true;
 
-            <div className="overflow-hidden rounded-lg border border-line">
-              {grupo.tokens.map((token) => (
-                <LinhaDeToken key={token.nome} token={token} tema={tema} />
-              ))}
-            </div>
-          </section>
-        ))}
+          return (
+            <section
+              key={grupo.titulo}
+              className="border-b border-divisor last:border-b-0"
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setAbertos((atual) => ({
+                    ...atual,
+                    [grupo.titulo]: !atual[grupo.titulo],
+                  }))
+                }
+                aria-expanded={aberto}
+                className="flex w-full items-center gap-2 py-3 text-left text-sm font-semibold transition hover:text-brand"
+              >
+                <ChevronRight
+                  size={14}
+                  className={cn(
+                    "shrink-0 transition-transform",
+                    aberto && "rotate-90",
+                  )}
+                />
+                {grupo.titulo}
+                <span className="ml-auto text-xs font-normal text-ink-faint">
+                  {grupo.tokens.length}
+                </span>
+              </button>
+
+              {aberto && (
+                <div className="mb-3 overflow-hidden rounded-lg border border-line">
+                  {grupo.tokens.map((token) => (
+                    <LinhaDeToken key={token.nome} token={token} tema={tema} />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
 
         {!grupos.length && (
-          <p className="py-10 text-center text-sm text-ink-faint">Nenhum token com esse nome.</p>
+          <p className="py-10 text-center text-sm text-ink-faint">
+            Nenhum token com esse nome.
+          </p>
         )}
       </div>
     </>
@@ -181,7 +266,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
 };
 
 const LinhaDeToken: React.FC<{
-  token: { nome: string; rotulo: string; dica?: string };
+  token: TokenDoTema;
   tema: string;
 }> = ({ token, tema }) => {
   const substituido = useEstudio((s) => s.substituicoes[token.nome]);
@@ -198,7 +283,11 @@ const LinhaDeToken: React.FC<{
       <label
         className="size-7 shrink-0 cursor-pointer overflow-hidden rounded-md border border-white/10"
         style={{ backgroundColor: valor }}
-        title={hex ? "Escolher a cor" : "Esta cor não é hexadecimal — edite no campo ao lado"}
+        title={
+          hex
+            ? "Escolher a cor"
+            : "Esta cor não é hexadecimal — edite no campo ao lado"
+        }
       >
         <input
           type="color"
@@ -211,7 +300,23 @@ const LinhaDeToken: React.FC<{
       </label>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{token.rotulo}</p>
+        <p className="flex items-center gap-2 truncate text-sm font-medium">
+          <span className="truncate">{token.rotulo}</span>
+
+          {/*
+            Dizer que não pinta é o mínimo. Sem esta marca, mexer num token
+            destes é um seletor de cor que aceita o clique e não muda nada na
+            tela — e a conclusão de quem tenta é que o estúdio está quebrado.
+          */}
+          {!token.ligado && (
+            <span
+              title="Este token existe e tem valor, mas nenhum componente lê ele ainda."
+              className="shrink-0 rounded-full bg-surface-3 px-1.5 py-px text-[10px] font-normal uppercase tracking-wide text-ink-faint"
+            >
+              não ligado
+            </span>
+          )}
+        </p>
         <p className="truncate font-mono text-xs text-ink-faint">
           {token.nome}
           {token.dica && <span className="font-sans"> — {token.dica}</span>}
@@ -252,7 +357,11 @@ const AbaDeCss: React.FC = () => {
   return (
     <>
       <div className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button variant="surface" size="sm" onClick={() => arquivo.current?.click()}>
+        <Button
+          variant="surface"
+          size="sm"
+          onClick={() => arquivo.current?.click()}
+        >
           <Upload size={14} /> Importar CSS
         </Button>
         <input
@@ -267,14 +376,20 @@ const AbaDeCss: React.FC = () => {
           }}
         />
 
-        <Button variant="surface" size="sm" onClick={() => baixar("tema.css", css, "text/css")}>
+        <Button
+          variant="surface"
+          size="sm"
+          onClick={() => baixar("tema.css", css, "text/css")}
+        >
           <Download size={14} /> Baixar
         </Button>
 
         <Button
           variant="surface"
           size="sm"
-          onClick={() => void copiarTexto(css).then(() => toast.success("CSS copiado."))}
+          onClick={() =>
+            void copiarTexto(css).then(() => toast.success("CSS copiado."))
+          }
         >
           Copiar
         </Button>
@@ -307,8 +422,8 @@ const AbaDeCss: React.FC = () => {
       </div>
 
       <p className="shrink-0 border-t border-line px-6 py-2 text-xs text-ink-faint">
-        {linhas} {linhas === 1 ? "linha" : "linhas"} · {css.length} caracteres — aplicado na hora,
-        neste aparelho.
+        {linhas} {linhas === 1 ? "linha" : "linhas"} · {css.length} caracteres —
+        aplicado na hora, neste aparelho.
       </p>
     </>
   );
@@ -329,7 +444,11 @@ const AbaDaBiblioteca: React.FC = () => {
   return (
     <>
       <div className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button variant="surface" size="sm" onClick={() => arquivo.current?.click()}>
+        <Button
+          variant="surface"
+          size="sm"
+          onClick={() => arquivo.current?.click()}
+        >
           <Upload size={14} /> Importar tema
         </Button>
         <input
@@ -388,14 +507,15 @@ const AbaDaBiblioteca: React.FC = () => {
             </Button>
           </div>
           <p className="mt-2 text-xs text-ink-faint">
-            Guarda as substituições e o CSS de agora. Fica neste aparelho — pra levar pra outro,
-            exporte.
+            Guarda as substituições e o CSS de agora. Fica neste aparelho — pra
+            levar pra outro, exporte.
           </p>
         </div>
 
         {!biblioteca.length && (
           <p className="py-10 text-center text-sm text-ink-faint">
-            Nenhum tema salvo ainda. Mexa nos tokens e salve aqui pra poder voltar.
+            Nenhum tema salvo ainda. Mexa nos tokens e salve aqui pra poder
+            voltar.
           </p>
         )}
 
@@ -412,7 +532,11 @@ const AbaDaBiblioteca: React.FC = () => {
               </p>
             </div>
 
-            <Button variant="surface" size="sm" onClick={() => aplicar(tema.id)}>
+            <Button
+              variant="surface"
+              size="sm"
+              onClick={() => aplicar(tema.id)}
+            >
               Aplicar
             </Button>
 
@@ -420,7 +544,8 @@ const AbaDaBiblioteca: React.FC = () => {
               onClick={() =>
                 void confirmar({
                   titulo: `Apagar "${tema.nome}"?`,
-                  descricao: "Some deste aparelho. Se ele não foi exportado, não tem volta.",
+                  descricao:
+                    "Some deste aparelho. Se ele não foi exportado, não tem volta.",
                   acao: "Apagar",
                 }).then(({ confirmado }) => confirmado && apagar(tema.id))
               }
@@ -463,13 +588,22 @@ const AbaDeAtivos: React.FC = () => {
 
     if (!anexo) return toast.error("Não deu pra subir o arquivo.");
 
-    guardarAtivo({ nome: escolhido.name, url: anexo.url, tipo: escolhido.type });
+    guardarAtivo({
+      nome: escolhido.name,
+      url: anexo.url,
+      tipo: escolhido.type,
+    });
   };
 
   return (
     <>
       <div className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button variant="surface" size="sm" disabled={subindo} onClick={() => arquivo.current?.click()}>
+        <Button
+          variant="surface"
+          size="sm"
+          disabled={subindo}
+          onClick={() => arquivo.current?.click()}
+        >
           <Upload size={14} /> {subindo ? "Enviando…" : "Carregar arquivo"}
         </Button>
         <input
@@ -479,30 +613,42 @@ const AbaDeAtivos: React.FC = () => {
           className="hidden"
           onChange={(e) => void escolher(e)}
         />
-        <p className="text-xs text-ink-faint">Imagem ou fonte, pra usar no CSS rápido.</p>
+        <p className="text-xs text-ink-faint">
+          Imagem ou fonte, pra usar no CSS rápido.
+        </p>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {!ativos.length && (
           <p className="py-10 text-center text-sm text-ink-faint">
-            Nenhum arquivo ainda. Suba uma imagem e cole o <code className="font-mono">url(…)</code>{" "}
-            no seu CSS.
+            Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
+            <code className="font-mono">url(…)</code> no seu CSS.
           </p>
         )}
 
         <div className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
           {ativos.map((ativo) => (
-            <div key={ativo.id} className="overflow-hidden rounded-lg border border-line">
+            <div
+              key={ativo.id}
+              className="overflow-hidden rounded-lg border border-line"
+            >
               <div className="flex h-28 items-center justify-center bg-surface-1">
                 {ativo.tipo.startsWith("image/") ? (
-                  <img src={ativo.url} alt="" className="max-h-full max-w-full object-contain" />
+                  <img
+                    src={ativo.url}
+                    alt=""
+                    className="max-h-full max-w-full object-contain"
+                  />
                 ) : (
                   <FileCode2 size={28} className="text-ink-faint" />
                 )}
               </div>
 
               <div className="flex items-center gap-2 p-2">
-                <p className="min-w-0 flex-1 truncate text-xs" title={ativo.nome}>
+                <p
+                  className="min-w-0 flex-1 truncate text-xs"
+                  title={ativo.nome}
+                >
                   {ativo.nome}
                 </p>
 
@@ -526,7 +672,9 @@ const AbaDeAtivos: React.FC = () => {
                       descricao:
                         "O CSS que usa este endereço para de achar o arquivo. O arquivo em si continua onde está.",
                       acao: "Tirar",
-                    }).then(({ confirmado }) => confirmado && apagarAtivo(ativo.id))
+                    }).then(
+                      ({ confirmado }) => confirmado && apagarAtivo(ativo.id),
+                    )
                   }
                   aria-label={`Tirar ${ativo.nome}`}
                   className="rounded p-1 text-ink-faint transition hover:text-danger"
@@ -551,13 +699,16 @@ const AbaDeConfiguracoes: React.FC = () => {
     <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
       <h3 className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
       <p className="mb-4 text-sm text-ink-muted">
-        Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste aparelho.
+        Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
+        aparelho.
       </p>
 
       <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
         <div className="flex items-center gap-4 p-4">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Limpar as substituições de token</p>
+            <p className="text-sm font-medium">
+              Limpar as substituições de token
+            </p>
             <p className="text-xs text-ink-faint">
               As cores voltam a ser as do tema. A biblioteca e o CSS ficam.
             </p>
