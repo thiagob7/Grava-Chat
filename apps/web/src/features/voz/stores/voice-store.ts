@@ -225,6 +225,12 @@ function bipe(nome: SomDaInterface) {
 
 let store_: () => VoiceStore;
 
+const avisarOServidor = (patch: Parameters<typeof updateVoiceState>[0]) => {
+  if (!store_().channelId) return Promise.resolve(null);
+
+  return updateVoiceState(patch).catch(() => null);
+};
+
 export const useVoiceStore = create<VoiceStore>((set, store) => {
   store_ = store;
 
@@ -291,10 +297,10 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         set({ tiles, cameraEnabled: camera, screenEnabled: tela });
 
         if (camera !== cameraEnabled || tela !== screenEnabled) {
-          void updateVoiceState({
+          void avisarOServidor({
             ...(camera !== cameraEnabled ? { camera } : {}),
             ...(tela !== screenEnabled ? { screenShare: tela } : {}),
-          }).catch(() => undefined);
+          });
 
           if (tela !== screenEnabled) bipe(tela ? "liveNoAr" : "liveEncerrada");
         }
@@ -368,7 +374,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         | undefined;
 
       if (estado?.guildId) set({ guildId: estado.guildId });
-      await updateVoiceState({ selfMute: !store().micEnabled, selfDeaf: store().deafened });
+      await avisarOServidor({ selfMute: !store().micEnabled, selfDeaf: store().deafened });
     } catch (err) {
       set({ connecting: false, channelId: null, error: apiErrorMessage(err, "Não deu pra entrar na chamada") });
       throw err;
@@ -409,7 +415,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       return;
     }
 
-    await updateVoiceState({ selfMute: !next }).catch(() => undefined);
+    await avisarOServidor({ selfMute: !next });
   },
 
   toggleDeafen: async () => {
@@ -425,7 +431,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       await room?.localParticipant.setMicrophoneEnabled(false);
     }
 
-    await updateVoiceState({ selfDeaf: next, selfMute: next ? true : undefined }).catch(() => undefined);
+    await avisarOServidor({ selfDeaf: next, selfMute: next ? true : undefined });
   },
 
   toggleCamera: async () => {
@@ -439,7 +445,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       cameraId ? { deviceId: { exact: cameraId } } : undefined,
     );
     set({ cameraEnabled: next, tiles: snapshot(room) });
-    await updateVoiceState({ camera: next }).catch(() => undefined);
+    await avisarOServidor({ camera: next });
   },
 
   reset: () => {
@@ -540,7 +546,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
           : null,
       });
       bipe(next ? "liveNoAr" : "liveEncerrada");
-      await updateVoiceState({ screenShare: next }).catch(() => undefined);
+      await avisarOServidor({ screenShare: next });
     } catch {
       set({ screenEnabled: false, fonteDaTela: null });
     }
