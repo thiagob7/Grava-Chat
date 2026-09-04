@@ -2280,6 +2280,11 @@
   resolved "https://registry.yarnpkg.com/@turbo/windows-arm64/-/windows-arm64-2.10.11.tgz#cec8a1e503c411d12630623a5793f75c5ddd6c3c"
   integrity sha512-m8tJkIrTrbQ9O1uHxV0GUq623Zg1678xGna8eMsy4KbygUX/wVFgdZDYV/AxyoyaW/U7nyKoBvaDVwm22p9xqA==
 
+"@twemoji/svg@^15.0.0":
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@twemoji/svg/-/svg-15.0.0.tgz#0e3828c654726f1848fe11f31ef4e8a75854cc7f"
+  integrity sha512-ZSPef2B6nBaYnfgdTbAy4jgW95o7pi2xPGwGCU+WMTxo7J6B1lMPTWwSq/wTuiMq+N0khQ90CcvYp1wFoQpo/w==
+
 "@tybys/wasm-util@^0.10.2", "@tybys/wasm-util@^0.10.3":
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/@tybys/wasm-util/-/wasm-util-0.10.3.tgz#015cba9e9dd47ce14d03d2a8c5d547bfb169665d"

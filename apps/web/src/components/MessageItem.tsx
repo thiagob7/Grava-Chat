@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import type { GuildEmoji, Message } from "@gravae/shared";
 
+import { Emoji } from "~/components/Emoji";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
 import type { EnfeitesDaPessoa } from "~/hooks/use-enfeites";
 import type { ResolverMencoes } from "~/hooks/use-mencoes";
@@ -741,7 +742,7 @@ const EmojiDaReacao: React.FC<{ emoji: string; doServidor: GuildEmoji[] }> = ({
   const nome = /^:([\w~-]+):$/.exec(emoji)?.[1];
   const achado = nome ? doServidor.find((e) => e.name === nome) : undefined;
 
-  if (!achado) return <span>{emoji}</span>;
+  if (!achado) return <Emoji emoji={emoji} className="size-5" />;
 
   return <img src={achado.url} alt={emoji} title={emoji} className="size-5 object-contain" />;
 };

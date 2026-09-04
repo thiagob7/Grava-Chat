@@ -353,3 +353,21 @@ cuidam só das mudanças dali pra frente.
 - [ ] Fase 6 — deploy no VPS com Cloudflare
 
 Backlog detalhado: `PROXIMA_SESSAO.md`
+
+## Emoji
+
+Os emoji são do **[Twemoji](https://github.com/jdecked/twemoji)**, o mesmo
+conjunto que o Discord usa — e por um motivo prático, não estético: sem um
+conjunto próprio, quem desenha é a fonte do sistema (`Apple Color Emoji`,
+`Segoe UI Emoji`), e o MESMO emoji chega diferente para cada pessoa da conversa.
+
+Os SVGs vêm do pacote `@twemoji/svg` e são copiados para `apps/web/public/emoji/`
+pelo `scripts/copiar-emoji.mjs`, que roda sozinho no `predev` e no `prebuild`.
+A pasta é derivada e **não entra no git** (16 MB, 3.723 arquivos).
+
+**Licença, e ela importa:** o pacote npm declara MIT, mas isso é do
+empacotamento. A ARTE do Twemoji é **CC-BY 4.0** (Twitter, Inc. e outros
+colaboradores), e CC-BY exige atribuição visível a quem usa o produto. Hoje esta
+seção é a única atribuição que existe — falta a versão dentro do app (uma tela
+de licenças, como a do Discord). Trocar o conjunto por um sem essa obrigação
+(Noto Color Emoji, SIL OFL; Fluent Emoji, MIT) também resolve.

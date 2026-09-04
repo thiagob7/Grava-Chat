@@ -1,6 +1,9 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
+import { Emoji } from "~/components/Emoji";
+import { EMOJI } from "~/lib/twemoji";
+
 import { BlocoDeCodigo } from "~/components/BlocoDeCodigo";
 import type { ResolverMencoes } from "~/hooks/use-mencoes";
 import { partirEmCodigo } from "~/lib/codigo";
@@ -62,6 +65,38 @@ const Pilula: React.FC<{
   </span>
 );
 
+/*
+  Troca os emoji do texto pelo desenho do Twemoji.
+
+  Roda sobre os PEDAÇOS DE TEXTO que sobram depois do `enriquecer` — nunca sobre
+  o texto cru com marcação dentro. Assim ele não tem chance de encostar num
+  `:nome:` de emoji do servidor nem no miolo de uma menção, que já viraram
+  elementos antes de chegar aqui.
+
+  Volta o texto intacto quando não há emoji nenhum: a esmagadora maioria das
+  mensagens não tem, e devolver um vetor de um item só para cada linha de
+  conversa seria trabalho de React à toa.
+*/
+function comTwemoji(texto: string, chave: string): React.ReactNode[] {
+  const achados = [...texto.matchAll(EMOJI)];
+  if (!achados.length) return [texto];
+
+  const partes: React.ReactNode[] = [];
+  let ultimo = 0;
+
+  for (const achado of achados) {
+    const inicio = achado.index!;
+    if (inicio > ultimo) partes.push(texto.slice(ultimo, inicio));
+
+    partes.push(<Emoji key={`${chave}-e${inicio}`} emoji={achado[0]} />);
+    ultimo = inicio + achado[0].length;
+  }
+
+  if (ultimo < texto.length) partes.push(texto.slice(ultimo));
+
+  return partes;
+}
+
 function enriquecer(
   texto: string,
   porNome: Map<string, GuildEmoji>,
@@ -121,13 +156,13 @@ function enriquecer(
 
     if (!pedaco) continue;
 
-    if (anterior) partes.push(anterior);
+    if (anterior) partes.push(...comTwemoji(anterior, `${k}-a`));
     partes.push(pedaco);
     ultimo = casamento.index + inteiro.length;
   }
 
-  if (!partes.length) return [texto];
-  if (ultimo < texto.length) partes.push(texto.slice(ultimo));
+  if (!partes.length) return comTwemoji(texto, chave);
+  if (ultimo < texto.length) partes.push(...comTwemoji(texto.slice(ultimo), `${chave}-f`));
 
   return partes;
 }

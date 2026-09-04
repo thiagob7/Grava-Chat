@@ -21,6 +21,7 @@ import {
   Vazio,
   type AtalhoDaBarra,
 } from "~/components/expression-picker/pecas";
+import { Emoji } from "~/components/Emoji";
 import { useColapso } from "~/components/expression-picker/use-colapso";
 import { useSecoes } from "~/components/expression-picker/use-secoes";
 import { useServidores } from "~/components/expression-picker/use-servidores";
@@ -157,7 +158,7 @@ export const AbaEmoji: React.FC<{
                       key={emoji}
                       emoji={emoji}
                       onClick={() => escolher(emoji, true)}
-                      onApontar={() => setApontado({ amostra: emoji, titulo: emoji })}
+                      onApontar={() => setApontado({ amostra: <Emoji emoji={emoji} className="size-7" />, titulo: emoji })}
                     />
                   ))}
                 </div>
@@ -227,7 +228,7 @@ export const AbaEmoji: React.FC<{
                       onClick={() => escolher(item.emoji, true)}
                       onApontar={() =>
                         setApontado({
-                          amostra: item.emoji,
+                          amostra: <Emoji emoji={item.emoji} className="size-7" />,
                           titulo: `:${item.slug}:`,
                           detalhe: item.name,
                         })
@@ -263,8 +264,8 @@ const BotaoEmoji: React.FC<{ emoji: string; onClick: () => void; onApontar: () =
     onClick={onClick}
     onMouseEnter={onApontar}
     onFocus={onApontar}
-    className="flex size-9 items-center justify-center rounded text-2xl leading-none transition hover:bg-surface-3"
+    className="flex size-9 items-center justify-center rounded transition hover:bg-surface-3"
   >
-    {emoji}
+    <Emoji emoji={emoji} className="size-7" />
   </button>
 );

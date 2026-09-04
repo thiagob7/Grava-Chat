@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Clock, Loader2, Search } from "lucide-react";
 
+import { Emoji } from "~/components/Emoji";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -141,8 +142,8 @@ const Botao: React.FC<{
   <button
     onClick={onClick}
     title={title}
-    className="flex size-8 items-center justify-center rounded text-xl transition hover:bg-surface-3"
+    className="flex size-8 items-center justify-center rounded transition hover:bg-surface-3"
   >
-    {emoji}
+    <Emoji emoji={emoji} className="size-6" />
   </button>
 );

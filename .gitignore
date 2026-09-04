@@ -18,3 +18,6 @@ docs/
 out/
 next-env.d.ts
 *.tsbuildinfo
+
+# Twemoji: derivado do @twemoji/svg pelo scripts/copiar-emoji.mjs (16 MB)
+apps/web/public/emoji/
