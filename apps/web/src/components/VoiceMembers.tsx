@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Mic, MicOff, MonitorUp, Play, SignalLow, Video } from "lucide-react";
+import { Play } from "lucide-react";
+/*
+  Mesma família e mesmo peso da lista de canais logo acima: eram ícones lucide
+  de contorno a 13px pendurados numa lista de Phosphor `fill` a 20px.
+*/
+import {
+  CellSignalLow,
+  MicrophoneSlash,
+  MonitorArrowUp,
+  SpeakerSlash,
+  VideoCamera,
+} from "@phosphor-icons/react";
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 
@@ -109,18 +120,34 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 {conexao && (
                   <Tooltip label={conexao.rotulo}>
                     <span className={cn("flex items-center", conexao.cor)} aria-label={conexao.rotulo}>
-                      <SignalLow size={13} className={conexao.pulsando ? "animate-pulse" : undefined} />
+                      <CellSignalLow
+                        size={14}
+                        weight="fill"
+                        className={conexao.pulsando ? "animate-pulse" : undefined}
+                      />
                     </span>
                   </Tooltip>
                 )}
-                {state.screenShare && <MonitorUp size={13} className="text-online" />}
-                {state.camera && <Video size={13} className="text-online" />}
-                {state.serverMute ? (
-                  <MicOff size={13} className="text-danger" />
-                ) : state.selfMute ? (
-                  <MicOff size={13} className="text-danger" />
-                ) : (
-                  <Mic size={13} />
+                {state.screenShare && (
+                  <MonitorArrowUp size={14} weight="fill" className="text-online" />
+                )}
+                {state.camera && <VideoCamera size={14} weight="fill" className="text-online" />}
+
+                {/*
+                  Só o que está DESLIGADO aparece.
+
+                  Antes, quem estava com o microfone aberto — o caso normal —
+                  ganhava um ícone de microfone do mesmo jeito. Numa chamada de
+                  oito pessoas isso são oito ícones dizendo "está tudo certo",
+                  e o único que importa, o de quem está mudo, se perde no meio
+                  deles. É o que a referência faz: silêncio quando não há nada
+                  a avisar.
+                */}
+                {(state.serverMute || state.selfMute) && (
+                  <MicrophoneSlash size={14} weight="fill" className="text-danger" />
+                )}
+                {(state.serverDeaf || state.selfDeaf) && (
+                  <SpeakerSlash size={14} weight="fill" className="text-danger" />
                 )}
                 </span>
               </button>

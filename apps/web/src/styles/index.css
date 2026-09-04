@@ -696,10 +696,58 @@ body {
   container-type: size;
 }
 
+/*
+  A grade com VÁRIOS quadros, na conta da referência.
+
+  A largura de cada quadro é o MENOR entre o que sobra na horizontal dividido
+  pelas colunas e o que a altura disponível comporta em 16:9 dividida pelas
+  linhas — `min(columnWidth, rowHeight * 16/9)`, do
+  `VoiceGridLayoutMetrics.ts`. A altura sai da proporção.
+
+  Sem isso, as linhas da grade tinham a altura do CONTEÚDO: os quadros ficavam
+  do tamanho do avatar, empilhados no alto, com metade da tela vazia embaixo. E
+  numa chamada de quatro, esticados, a distância entre eles crescia junto.
+
+  `justify-content` e `align-content` centrados são o que põe o conjunto no meio
+  da área — a grade agora tem o tamanho que a conta deu, e não o da caixa.
+
+  As folgas entram na conta na mão porque `100cqw`/`100cqh` medem a caixa de
+  BORDA do palco, não a de conteúdo. A dos controles é a tira que a pílula
+  ocupa embaixo, a mesma do quadro sozinho.
+*/
+.grade-de-varios {
+  --espaco: 0.75rem;
+  --folga-lateral: 0.75rem;
+  --folga-do-topo: 0.875rem;
+  --folga-dos-controles: 5rem;
+
+  --largura-do-quadro: min(
+    calc(
+      (100cqw - 2 * var(--folga-lateral) - var(--espaco) * (var(--colunas) - 1)) /
+        var(--colunas)
+    ),
+    calc(
+      (
+          (
+              100cqh - var(--folga-do-topo) - var(--folga-dos-controles) - var(--espaco) *
+                (var(--linhas) - 1)
+            ) / var(--linhas)
+        ) * 16 / 9
+    )
+  );
+
+  display: grid;
+  gap: var(--espaco);
+  grid-template-columns: repeat(var(--colunas), var(--largura-do-quadro));
+  grid-auto-rows: calc(var(--largura-do-quadro) * 9 / 16);
+  justify-content: center;
+  align-content: center;
+}
+
 .quadro-de-um {
   --folga-lateral: 0.75rem;
   --folga-do-topo: 0.875rem;
-  /// a tira dos controles: a pílula é ancorada em `bottom-4` e tem ~52px
+  /* a tira dos controles: a pílula é ancorada em `bottom-4` e tem ~52px */
   --folga-dos-controles: 5rem;
 
   aspect-ratio: 16 / 9;
@@ -707,4 +755,97 @@ body {
     calc(100cqw - 2 * var(--folga-lateral)),
     calc((100cqh - var(--folga-do-topo) - var(--folga-dos-controles)) * 16 / 9)
   );
+}
+
+/*
+  Ampliado (o quadro clicado, sozinho na chamada): a MESMA conta, sem folga.
+
+  Crescer não é abandonar o 16:9 — é só devolver ao quadro a folga que o estado
+  normal reserva. A referência faz exatamente isso: o `.focusLayoutMain` dela
+  mantém `aspect-ratio: 16/9` e, quando não há mais ninguém na chamada, troca o
+  teto de altura por `max-height: 100%`. O preto em cima e embaixo continua lá,
+  porque continua sendo o resto da divisão entre a área e a proporção do vídeo.
+
+  Eu já tentei fazer o ampliado PREENCHER a área, sem proporção. Fica maior, e
+  fica errado: o quadro deixa de ter a forma do vídeo, e o cartão vira o fundo.
+
+  As folgas são zeradas aqui, e não no `.quadro-de-um`, porque o palco também
+  precisa perder o `padding` — `100cqw`/`100cqh` medem a caixa de BORDA, então
+  folga em CSS e folga nesta conta têm que andar juntas.
+*/
+.quadro-de-um-ampliado {
+  --folga-lateral: 0px;
+  --folga-do-topo: 0px;
+  --folga-dos-controles: 0px;
+}
+
+/*
+  O conteúdo de dentro do painel assentando UM POR UM.
+
+  O deslize lateral diz "veio de outra etapa"; a cascata diz "e é isto aqui".
+  Cada bloco desce 10px com um atraso a mais que o anterior, na ordem em que se
+  lê — rótulo e campo, rótulo e campo, aviso. Todos de uma vez seria um bloco
+  só piscando; um por um faz o olho percorrer a etapa nova em vez de encarar
+  ela pronta.
+
+  `backwards` é o que segura cada bloco escondido DURANTE o atraso dele. Sem
+  isso os três apareceriam juntos e só então começariam a descer, que é o
+  contrário do que a cascata quer dizer.
+
+  Seis níveis bastam: passado isso o último a entrar demoraria meio segundo, e
+  aí a cascata deixa de ser leitura e vira espera.
+*/
+@keyframes bloco-desce {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.625rem, 0);
+  }
+}
+
+.cascata > * {
+  animation: bloco-desce 0.28s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.cascata > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.cascata > *:nth-child(2) {
+  animation-delay: 0.11s;
+}
+
+.cascata > *:nth-child(3) {
+  animation-delay: 0.17s;
+}
+
+.cascata > *:nth-child(4) {
+  animation-delay: 0.23s;
+}
+
+.cascata > *:nth-child(5) {
+  animation-delay: 0.29s;
+}
+
+.cascata > *:nth-child(n + 6) {
+  animation-delay: 0.35s;
+}
+
+/*
+  A referência tem um caminho próprio pra isto: o `reducedMotionVariants` dela
+  troca o deslize por só opacidade. O deslize das etapas segue esse caminho
+  dentro do `CarrosselDeEtapas`, pelo `useReducedMotion` da `motion`; o que
+  sobra pra cá é a cascata e o balão do combobox, que são CSS puro.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .cascata > * {
+    animation-name: apenas-aparece;
+    animation-delay: 0s;
+  }
+
+}
+
+@keyframes apenas-aparece {
+  from {
+    opacity: 0;
+  }
 }

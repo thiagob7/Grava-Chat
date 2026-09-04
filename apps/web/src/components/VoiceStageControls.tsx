@@ -86,11 +86,35 @@ export const VoiceStageControls: React.FC<{
   const podeTrocarSaida =
     typeof HTMLMediaElement !== "undefined" && "setSinkId" in HTMLMediaElement.prototype;
 
+  /*
+    Quantos menus estão abertos agora.
+
+    A barra vive escondida e só aparece com o mouse em cima do palco
+    (`group-hover`). Um menu aberto, porém, mora num PORTAL: ele sobrevive ao
+    sumiço de quem o abriu. O resultado era a lista de dispositivos flutuando
+    sozinha no meio do preto, sem os botões embaixo — e ela sumia no caminho
+    entre o botão e a opção que a pessoa ia clicar.
+
+    `focus-within` não cobre isso: o conteúdo do menu está FORA desta árvore, no
+    portal, então o foco nunca está "dentro" daqui. Contar na mão é o que
+    funciona — e é contador, não booleano, porque fechar um menu enquanto outro
+    abre chega em ordem imprevisível, e um `false` atrasado apagaria a barra com
+    menu ainda aberto.
+  */
+  const [menusAbertos, setMenusAbertos] = React.useState(0);
+  const aoAlternarMenu = React.useCallback(
+    (aberto: boolean) => setMenusAbertos((n) => Math.max(0, n + (aberto ? 1 : -1))),
+    [],
+  );
+
   return (
     <div
       className={cn(
         "pointer-events-none absolute inset-x-0 bottom-4 flex items-center gap-2 px-4",
-        "opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100",
+        "transition-opacity duration-150",
+        menusAbertos > 0
+          ? "opacity-100"
+          : "opacity-0 focus-within:opacity-100 group-hover:opacity-100",
       )}
     >
       {/*
@@ -117,6 +141,7 @@ export const VoiceStageControls: React.FC<{
 
       <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
         <Controle
+          onOpenChange={aoAlternarMenu}
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
           labelDoMenu={t("chamada.aparelhos.configEntrada")}
           onClick={() => void toggleMic()}
@@ -157,6 +182,7 @@ export const VoiceStageControls: React.FC<{
         </Controle>
 
         <Controle
+          onOpenChange={aoAlternarMenu}
           label={deafened ? "Ouvir" : "Ficar surdo"}
           labelDoMenu={t("chamada.aparelhos.configSaida")}
           onClick={() => void toggleDeafen()}
@@ -203,6 +229,7 @@ export const VoiceStageControls: React.FC<{
         </Controle>
 
         <Controle
+          onOpenChange={aoAlternarMenu}
           label={cameraEnabled ? "Desligar a câmera" : "Ligar a câmera"}
           labelDoMenu={t("chamada.aparelhos.configCamera")}
           onClick={() => void toggleCamera()}
@@ -243,6 +270,7 @@ export const VoiceStageControls: React.FC<{
         </Controle>
 
         <Controle
+          onOpenChange={aoAlternarMenu}
           label={screenEnabled ? t("chamada.tela.pararDeCompartilhar") : t("chamada.tela.compartilhar")}
           labelDoMenu={t("chamada.tela.configCompartilhamento")}
           onClick={() => void toggleScreen()}
@@ -269,7 +297,7 @@ export const VoiceStageControls: React.FC<{
           {screenEnabled ? <MonitorX size={18} /> : <MonitorUp size={18} />}
         </Controle>
 
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={aoAlternarMenu}>
           <Tooltip label={t("chamada.maisOpcoes")}>
             <DropdownMenuTrigger asChild>
               <button
@@ -323,7 +351,7 @@ export const VoiceStageControls: React.FC<{
         sobre o vídeo. O realce é o ícone clareando, como nos cantos de cima.
       */}
       <div className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
-        <VolumeDaLive />
+        <VolumeDaLive onOpenChange={aoAlternarMenu} />
 
         <Tooltip label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}>
           <button
@@ -354,7 +382,9 @@ export const VoiceStageControls: React.FC<{
  * existindo, em Configurações › Áudio e vídeo, que é onde se procura por ele
  * quando o problema é "o Gravaê está alto demais".
  */
-const VolumeDaLive: React.FC = () => {
+const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
+  onOpenChange,
+}) => {
   const { t } = useTranslation();
   const assistindo = useVoiceStore((s) => s.assistindo);
   const volume = useVoiceStore((s) =>
@@ -365,7 +395,7 @@ const VolumeDaLive: React.FC = () => {
   if (!assistindo) return null;
 
   return (
-    <Popover>
+    <Popover onOpenChange={onOpenChange}>
       <Tooltip
         label={
           volume === 0
@@ -420,7 +450,9 @@ const Controle: React.FC<{
   onClick: () => void;
   ativo?: boolean;
   menu: React.ReactNode;
-}> = ({ children, label, labelDoMenu, onClick, ativo, menu }) => (
+  /// avisa a barra que há menu aberto, pra ela não sumir com o mouse
+  onOpenChange?: (aberto: boolean) => void;
+}> = ({ children, label, labelDoMenu, onClick, ativo, menu, onOpenChange }) => (
   <div className="relative">
     <Tooltip label={label}>
       <button
@@ -438,7 +470,7 @@ const Controle: React.FC<{
       </button>
     </Tooltip>
 
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={onOpenChange}>
       <Tooltip label={labelDoMenu}>
         <DropdownMenuTrigger asChild>
           <button

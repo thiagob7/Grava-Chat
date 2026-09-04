@@ -107,4 +107,17 @@ describe("focar", () => {
   it("foco em quadro que sumiu volta pra grade normal", () => {
     expect(focar(quadros, "alguem-que-saiu")).toBeNull();
   });
+
+  /*
+    Sozinho na chamada o foco CONTINUA valendo, com a faixa vazia — é o que a
+    referência faz: o clique alterna sempre, e é a faixa que some quando não há
+    ninguém pra pôr nela. Quem lê isto daqui é o palco, que sem faixa desenha o
+    quadro de ponta a ponta em vez de dividir a altura com uma tira vazia.
+  */
+  it("quadro sozinho vira destaque com faixa vazia", () => {
+    const foco = focar(montarGrade([pessoa("ana")]), "ana");
+
+    expect(foco?.destaque.key).toBe("ana");
+    expect(foco?.faixa).toEqual([]);
+  });
 });

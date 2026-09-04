@@ -100,8 +100,23 @@ const CantosDaChamada: React.FC<{
     fundo da cápsula, então quem passasse o mouse via a caixa acender, não o
     botão.
   */
+  /*
+    O botão do HUD da chamada, na medida da referência.
+
+    Lido do `VoiceCallView.module.css` do Fluxer (`.voiceHeaderIconButton`):
+    34px, raio de 13px, fundo preto sólido, borda branca a 8% e um fio de luz
+    por dentro (`inset 0 1px 0` a 5,5%). No hover e no ligado, a borda sobe pra
+    14%, o fundo pra `#111` e o ícone pra branco cheio.
+
+    O ícone solto com sombra que estava aqui dependia do que houvesse atrás pra
+    ser legível: sobre um vídeo claro ele sumia. O fundo preto resolve isso de
+    uma vez, que é a razão de a referência ter um.
+
+    `aria-pressed` faz o estado ligado: o mesmo atributo que já dizia isso pra
+    quem usa leitor de tela agora também pinta o botão, sem classe extra.
+  */
   const botao =
-    "pointer-events-auto flex size-9 shrink-0 items-center justify-center rounded-full text-white/70 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-white";
+    "pointer-events-auto flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.8125rem] border border-white/[0.08] bg-black text-white/[0.84] shadow-[inset_0_1px_0_rgba(255,255,255,0.055)] transition-colors duration-75 hover:border-white/[0.14] hover:bg-[#111] hover:text-white aria-pressed:border-white/[0.14] aria-pressed:bg-[#111] aria-pressed:text-white";
 
   return (
     <>
@@ -145,9 +160,9 @@ const CantosDaChamada: React.FC<{
               onClick={onAlternarChat}
               aria-pressed={chatAberto}
               aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-              /// Aberto, ele fica no branco cheio — o mesmo estado do mouse em
-              /// cima, que é como se diz "isto está ligado" sem caixa nenhuma.
-              className={cn(botao, chatAberto && "text-white")}
+              /// Aberto, ele acende sozinho: o `aria-pressed` acima é o que o
+              /// `botao` já usa pra pintar o estado ligado.
+              className={botao}
             >
               <ChatCircle size={20} weight="fill" />
             </button>
@@ -177,6 +192,21 @@ const CantosDaChamada: React.FC<{
       )}
     </>
   );
+};
+
+/*
+  O espaço entre os quadros encolhe conforme a chamada enche.
+
+  É a tabela da referência (`getVoiceGridGap`), e a razão dela é simples: com
+  muita gente, folga é espaço que não virou rosto. Doze pixels entre dois
+  quadros é respiro; entre vinte, é um quinto da tela gasto em vão.
+*/
+const espacoDaGrade = (quadros: number) => {
+  if (quadros >= 40) return 4;
+  if (quadros >= 24) return 6;
+  if (quadros >= 12) return 8;
+  if (quadros >= 6) return 10;
+  return 12;
 };
 
 export const VoiceStage: React.FC<VoiceStageProps> = ({
@@ -410,6 +440,16 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const emFoco = focar(grade, focado);
 
   /*
+    Ampliado: o quadro foi clicado e não há ninguém pra pôr na faixa de baixo.
+
+    A referência não reserva a tira quando ela ficaria vazia — lá a faixa só
+    existe se houver um segundo quadro. Sem essa distinção, clicar sozinho caía
+    no layout de destaque e o quadro encolhia até virar um selo, dividindo a
+    altura com uma tira que não tinha nada dentro.
+  */
+  const ampliado = emFoco?.faixa.length === 0;
+
+  /*
     `preencher` troca o 16:9 do quadro por "ocupe tudo".
 
     O `aspect-video` existe pra grade não virar uma colcha de retângulos de
@@ -421,6 +461,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     quadro: (typeof grade)[number],
     compacto?: boolean,
     preencher?: boolean,
+    semCanto?: boolean,
   ) =>
     quadro.tipo === "tela" ? (
       <TileDaLive
@@ -437,6 +478,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           guildId={guildId}
           denso={denso || compacto}
           preencher={preencher}
+          semCanto={semCanto}
           onFocar={() => setFocado((atual) => (atual === quadro.key ? null : quadro.key))}
         />
       </ComMenu>
@@ -447,7 +489,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     novo desfaz. A grade igualitária dá o mesmo espaço pra todo mundo mesmo
     quando só uma pessoa interessa naquele instante; o foco é o que resolve.
   */
-  if (emFoco) {
+  if (emFoco && emFoco.faixa.length) {
     return (
       /*
         `pb-20`, e não `p-4` nos quatro lados.
@@ -570,17 +612,31 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       ref={palco}
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
-        "pb-20",
         /*
-          Com um quadro só, o palco é o preto em volta e a folga é igual dos
-          quatro lados — o desenho da referência. As medidas vivem no
-          `.quadro-de-um` do `index.css`, que precisa saber destes mesmos
-          valores para fazer a conta do 16:9.
+          Ampliado é o que o clique promete: o quadro toma o palco de ponta a
+          ponta e os controles passam a flutuar por cima, em vez de terem tira
+          reservada embaixo. Sem isso, com uma pessoa só, clicar não mudava
+          nada na tela — e era exatamente esse o pedido.
+
+          No normal, com um quadro só, o palco é o preto em volta e a folga é
+          igual dos quatro lados. As medidas vivem no `.quadro-de-um` do
+          `index.css`, que precisa saber destes mesmos valores pra fazer a conta
+          do 16:9.
 
           Com vários, a margem lateral e o teto de largura existem pra grade não
           virar uma parede de quadros gigantes.
         */
-        grade.length === 1 ? "palco-de-um bg-black px-3 pt-3.5" : "bg-surface-2 px-6",
+        ampliado
+          ? "palco-de-um bg-black"
+          : grade.length === 1
+            ? "palco-de-um bg-black px-3 pb-20 pt-3.5"
+            /*
+              Com vários, o palco também vira contêiner de consulta: a conta da
+              grade usa a ALTURA dele, e largura em CSS não enxerga altura de
+              pai. As folgas são as mesmas do quadro sozinho, porque a conta que
+              as desconta é a mesma.
+            */
+            : "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5",
       )}
     >
         <CantosDaChamada
@@ -598,19 +654,32 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       */}
       <div
         className={cn(
-          "grid max-h-full gap-4",
-          grade.length > 1 && "size-full max-w-5xl",
-          /// Um quadro só: a conta do 16:9 mora no `.quadro-de-um`.
-          grade.length === 1 && "quadro-de-um [&>*]:size-full",
+          grade.length > 1 && "grade-de-varios",
+          /// Um quadro só: a conta do 16:9 mora no `.quadro-de-um`. O `grid` e o
+          /// `max-h-full` estavam na base de todos e vieram junto pra cá — a
+          /// grade de vários tem os seus próprios, no `.grade-de-varios`.
+          grade.length === 1 && "grid max-h-full quadro-de-um [&>*]:size-full",
+          /// Ampliado é o mesmo quadro com as folgas em zero; o canto reto vem
+          /// pelo `semCanto`, porque `[&>*]` aqui pararia no `ComMenu`.
+          ampliado && "quadro-de-um-ampliado",
         )}
-        style={{
-          gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
-          /// Só no caso de um quadro: com vários, esticar a linha estouraria o
-          /// 16:9 de cada um.
-          ...(grade.length === 1 ? { gridAutoRows: "minmax(0, 1fr)" } : {}),
-        }}
+        style={
+          grade.length > 1
+            ? /*
+                Colunas, linhas e o espaço entre elas vão como variáveis porque
+                a conta do tamanho do quadro precisa dos três. O espaço encolhe
+                com a lotação, como na referência: com muita gente, folga é
+                espaço que não vira rosto.
+              */
+              ({
+                "--colunas": colunas,
+                "--linhas": Math.ceil(grade.length / colunas),
+                "--espaco": `${espacoDaGrade(grade.length)}px`,
+              } as React.CSSProperties)
+            : { gridTemplateColumns: "repeat(1, minmax(0, 1fr))", gridAutoRows: "minmax(0, 1fr)" }
+        }
       >
-        {grade.map((quadro) => desenhar(quadro, false, grade.length === 1))}
+        {grade.map((quadro) => desenhar(quadro, false, grade.length === 1, ampliado))}
       </div>
       {!tiles.length && (
         <p className="text-ink-muted">Ninguém em {channelName} ainda.</p>
@@ -639,11 +708,27 @@ interface TileProps {
   denso?: boolean;
   /// sozinho na chamada: ocupa a área toda em vez de guardar o 16:9
   preencher?: boolean;
+  /*
+    Canto reto: só no quadro ampliado.
+
+    É o que a referência faz — no modo foco ela zera o raio do quadro. E aqui
+    tem motivo próprio: sem folga em volta, o canto arredondado encosta na borda
+    da área e deixa quatro mordidas pretas à vista.
+  */
+  semCanto?: boolean;
   /// clicar no quadro alterna o modo destaque
   onFocar?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, onFocar }) => {
+const Tile: React.FC<TileProps> = ({
+  tile,
+  guildId,
+  compact,
+  denso,
+  preencher,
+  semCanto,
+  onFocar,
+}) => {
   const { t } = useTranslation();
   const resolver = useParticipante();
   const espelhar = useVoicePrefs((s) => s.espelharCamera);
@@ -671,13 +756,16 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
       className={cn(
         "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
         /*
-          O canto arredondado vale sempre, inclusive no quadro sozinho.
+          O canto arredondado vale sempre que há folga em volta — inclusive no
+          quadro sozinho, que continua sendo um cartão pousado no preto. Já
+          cheguei a tirá-lo achando que o quadro virava fundo; não vira.
+          `rounded-xl` é o raio da referência.
 
-          Cheguei a tirá-lo achando que o quadro virava fundo — mas ele não
-          vira: com a folga em volta ele continua sendo um cartão pousado no
-          preto, e é assim que a referência desenha. `rounded-xl` é o raio dela.
+          A exceção é o ampliado (`semCanto`), onde a folga é zero: ali a
+          referência também zera o raio, e sem folga o canto arredondado só
+          deixaria quatro mordidas pretas encostadas na borda.
         */
-        "rounded-xl",
+        !semCanto && "rounded-xl",
         onFocar && "cursor-pointer",
         /*
           A pastilha tem tamanho fixo em vez de `aspect-video h-full`: como ela
