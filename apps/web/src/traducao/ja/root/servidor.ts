@@ -1,4 +1,8 @@
 export const servidor = {
+  trilho: {
+    transmitindo: "Someone is streaming",
+    emChamada: "{{count}} in a call",
+  },
   titulo: "サーバー設定",
   auditoria: {
     todasAsAcoes: "すべての操作",

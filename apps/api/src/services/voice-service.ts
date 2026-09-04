@@ -427,6 +427,7 @@ export const voiceService = {
       (porServidor[guildId] ??= []).push({
         channelId: canal.id,
         channelName: canal.name,
+        transmitindo: dentro.some((estado) => estado.screenShare),
         pessoas,
       });
     }

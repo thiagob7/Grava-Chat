@@ -1,5 +1,9 @@
 
 export const servidor = {
+  trilho: {
+    transmitindo: "Alguém transmitindo",
+    emChamada: "{{count}} em chamada",
+  },
   titulo: "Configurações do servidor",
 
   abas: {

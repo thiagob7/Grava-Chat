@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ArrowDownToLine, Download, Plus, RotateCw } from "lucide-react";
+import { Headphones, MonitorPlay } from "@phosphor-icons/react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 import { AdicionarServidorModal } from "~/features/servidor/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
@@ -30,6 +32,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   onOpenFriends,
   pendingFriendRequests,
 }) => {
+  const { t } = useTranslation();
   const { data: guilds = [] } = useFindManyGuilds(true);
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const { data: vozes = {} } = useVoiceStates(true);
@@ -90,6 +93,9 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         {guilds.map((guild) => {
           const active = guild.id === activeGuildId;
           const { naoLidas = 0, mencoes = 0 } = porServidor[guild.id] ?? {};
+          const emVoz = vozes[guild.id] ?? [];
+          const transmitindo = emVoz.some((canal) => canal.transmitindo);
+          const naChamada = emVoz.reduce((total, canal) => total + canal.pessoas.length, 0);
 
           const temNovidade = !active && naoLidas > 0;
 
@@ -119,6 +125,23 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   )}
                 </button>
               </DicaDoServidor>
+
+              {naChamada > 0 && (
+                <span
+                  title={
+                    transmitindo
+                      ? t("servidor.trilho.transmitindo")
+                      : t("servidor.trilho.emChamada", { count: naChamada })
+                  }
+                  className="pointer-events-none absolute -top-0.5 right-2 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-surface-0 text-ink"
+                >
+                  {transmitindo ? (
+                    <MonitorPlay size={11} weight="fill" />
+                  ) : (
+                    <Headphones size={11} weight="fill" />
+                  )}
+                </span>
+              )}
 
               {mencoes > 0 && (
                 <span

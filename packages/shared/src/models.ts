@@ -235,6 +235,7 @@ export type VoiceState = z.infer<typeof voiceStateSchema>;
 export const vozNoServidorSchema = z.object({
   channelId: z.string(),
   channelName: z.string(),
+  transmitindo: z.boolean(),
   pessoas: z.array(
     z.object({
       userId: z.string(),

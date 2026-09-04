@@ -1,4 +1,8 @@
 export const servidor = {
+  trilho: {
+    transmitindo: "Someone is streaming",
+    emChamada: "{{count}} in a call",
+  },
   titulo: "Setările serverului",
   auditoria: {
     todasAsAcoes: "Toate acțiunile",
