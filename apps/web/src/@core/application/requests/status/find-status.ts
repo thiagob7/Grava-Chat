@@ -45,6 +45,22 @@ export interface ChecagemDeServico {
   ms: number;
 }
 
+/// A outra VM: a que roda o LiveKit. Vem do agente de `infra/sfu/`, porque a
+/// API só consegue se auto-medir — `os.loadavg()` não atravessa a rede.
+export interface MaquinaDeVoz {
+  indisponivel?: false;
+  host: string;
+  nucleos: number;
+  carga: { um: number; cinco: number; quinze: number };
+  memoria: { total: number; livre: number; disponivel: number };
+  disco: { total: number; livre: number };
+  uptimeDaMaquina: number;
+  livekit: { noAr: boolean; residente: number };
+  /// Ida e volta até o agente. Rede lenta entre as VMs aparece aqui antes de
+  /// aparecer como chamada picotada.
+  ms: number;
+}
+
 export interface StatusDoServidor {
   api: {
     host: string;
@@ -59,6 +75,9 @@ export interface StatusDoServidor {
     node: string;
   };
   gateway: { conexoes: number; pessoas: number; bots: number } | null;
+  /// `null` = não há segunda máquina configurada (desenvolvimento). O objeto com
+  /// `indisponivel` é outra coisa: existe e não respondeu.
+  voz: MaquinaDeVoz | { indisponivel: true } | null;
   mongo: ChecagemDeServico;
   redis: ChecagemDeServico;
   sfu: {

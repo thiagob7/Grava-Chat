@@ -1,0 +1,37 @@
+# Caddy da VM do SFU (instance-20260826-1426, 129.148.39.110).
+#
+# Producao. O infra/livekit/livekit.yaml ao lado deste diretorio e o de
+# DESENVOLVIMENTO — nao confunda os dois.
+
+gravaechat-sfu.duckdns.org {
+	# --- metricas da maquina, so pra API ------------------------------------
+	#
+	# Passa por aqui em vez de ter porta propria porque uma porta nova exigiria
+	# regra na security list da Oracle (testado: a sub-rede NAO alcanca portas
+	# fora das ja publicadas — 22, 80, 443, 7881, 7882). A 443 ja esta aberta e
+	# ja tem TLS, entao o caminho de menos superficie e reaproveita-la.
+	#
+	# Os dois enderecos sao a MESMA maquina, a da API: o publico e o que o Caddy
+	# ve quando o pedido sai pelo internet gateway e volta, o privado cobre o
+	# caso de a chamada passar a ser feita direto pelo IP interno.
+	@maquina {
+		path /interno/maquina
+		remote_ip 129.148.31.163 10.0.0.143
+	}
+
+	handle @maquina {
+		reverse_proxy 127.0.0.1:9101
+	}
+
+	# --- todo o resto e o LiveKit -------------------------------------------
+	#
+	# Tambem e o que responde /interno/maquina pra QUEM NAO E A API: o pedido
+	# nao casa o matcher, cai aqui e o LiveKit devolve 404 — igualzinho a
+	# qualquer caminho inexistente. Um `respond 403` aqui seria pior: confirmaria
+	# pra quem estivesse tateando que existe algo nesse endereco.
+	handle {
+		# 7880 e a sinalizacao do LiveKit: WebSocket do cliente + API HTTP que a
+		# nossa API usa via RoomServiceClient. O Caddy faz o upgrade sozinho.
+		reverse_proxy localhost:7880
+	}
+}

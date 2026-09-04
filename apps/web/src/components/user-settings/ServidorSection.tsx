@@ -1,7 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
 import {
-  Activity,
   Cpu,
   Database,
   Hash,
@@ -56,37 +55,8 @@ export const ServidorSection: React.FC = () => {
   if (isError || !data)
     return <p className="text-sm text-danger">Não consegui falar com a API.</p>;
 
-  const {
-    host,
-    ambiente,
-    carga,
-    nucleos,
-    memoria,
-    residente,
-    disco,
-    uptimeDoProcesso,
-    uptimeDaMaquina,
-    node,
-  } = data.api;
+  const { ambiente, node, uptimeDoProcesso } = data.api;
   const ehProducao = ambiente === "production";
-
-  /*
-    A carga do Linux conta processos esperando CPU, não porcentagem. Dividir
-    pelos núcleos é o que transforma o número em algo que dá pra ler: 1.0 numa
-    máquina de 2 threads é 50% ocupado, não "no limite".
-  */
-  const ocupacao = Math.min(carga.um / nucleos, 1);
-
-  /*
-    Uso de RAM contra o que o kernel diz que consegue entregar, não contra o
-    "livre". Cache de disco conta como usado no `freemem` e é devolvido na
-    hora que alguém precisa — medir por ali faz a VM parecer sempre cheia.
-  */
-  const usada = memoria.total - memoria.disponivel;
-  const proporcaoDeRam = usada / memoria.total;
-
-  const discoUsado = disco ? disco.total - disco.livre : 0;
-
   const salas = data.sfu.salas;
 
   return (
@@ -104,9 +74,7 @@ export const ServidorSection: React.FC = () => {
           >
             {ehProducao ? "produção" : "desenvolvimento"}
           </span>
-          <code className="text-ink">{host}</code>
-          <span>· Node {node}</span>
-          <span>· atualiza a cada 5 s</span>
+          <span>atualiza a cada 5 s</span>
         </p>
 
         {!ehProducao && (
@@ -117,42 +85,60 @@ export const ServidorSection: React.FC = () => {
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Cartao
-          icone={<Cpu size={16} />}
-          titulo="CPU"
-          valor={`${Math.round(ocupacao * 100)}%`}
-          detalhe={`carga ${carga.um.toFixed(2)} · ${carga.cinco.toFixed(2)} · ${carga.quinze.toFixed(2)} em ${nucleos} threads`}
-          proporcao={ocupacao}
-        />
+      {/*
+        Produção são DUAS VMs, e o painel mostrava só uma. A que aparecia era
+        sempre esta primeira, porque ela é a própria API se medindo; a de voz
+        existia aqui só como "no ar" lá embaixo, que é um teste de alcance e não
+        diz nada sobre carga, RAM ou disco da caixa.
+      */}
+      <Maquina
+        caixa={{
+          titulo: "API",
+          host: data.api.host,
+          legenda: `Node ${node} · no ar há ${duracao(uptimeDoProcesso)}`,
+          carga: data.api.carga,
+          nucleos: data.api.nucleos,
+          memoria: data.api.memoria,
+          disco: data.api.disco,
+          residente: { rotulo: "API", bytes: data.api.residente },
+          uptimeDaMaquina: data.api.uptimeDaMaquina,
+        }}
+      />
 
-        <Cartao
-          icone={<MemoryStick size={16} />}
-          titulo="Memória"
-          valor={tamanho(usada)}
-          detalhe={`de ${tamanho(memoria.total)} · ${tamanho(memoria.disponivel)} disponíveis · API ${tamanho(residente)}`}
-          proporcao={proporcaoDeRam}
-        />
-
-        {disco ? (
-          <Cartao
-            icone={<HardDrive size={16} />}
-            titulo="Disco"
-            valor={tamanho(discoUsado)}
-            detalhe={`de ${tamanho(disco.total)} · ${tamanho(disco.livre)} livres`}
-            proporcao={discoUsado / disco.total}
+      {data.voz?.indisponivel === true ? (
+        /*
+          Sumir com o bloco aqui deixaria a tela idêntica à de quando está tudo
+          bem — e o `null` (sem segunda máquina configurada) já ocupa esse
+          significado. Some só em desenvolvimento; em produção, aparece a falha.
+        */
+        <div className="rounded-lg border border-danger/30 bg-danger/5 p-4">
+          <p className="text-sm font-medium">Voz</p>
+          <p className="mt-1 text-sm text-danger">
+            A máquina do SFU não respondeu.
+          </p>
+          <p className="mt-1 text-xs text-ink-faint">
+            Não quer dizer que as chamadas caíram: quem as segura é o LiveKit, e
+            ele é medido separado, em Serviços. Isto aqui é o agente de métricas
+            da caixa.
+          </p>
+        </div>
+      ) : (
+        data.voz && (
+          <Maquina
+            caixa={{
+              titulo: "Voz",
+              host: data.voz.host,
+              legenda: `LiveKit ${data.voz.livekit.noAr ? "no ar" : "parado"} · ${data.voz.ms} ms daqui`,
+              carga: data.voz.carga,
+              nucleos: data.voz.nucleos,
+              memoria: data.voz.memoria,
+              disco: data.voz.disco,
+              residente: { rotulo: "LiveKit", bytes: data.voz.livekit.residente },
+              uptimeDaMaquina: data.voz.uptimeDaMaquina,
+            }}
           />
-        ) : (
-          <div className="rounded-lg border border-line bg-surface-2 p-4">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <HardDrive size={16} /> Disco
-            </p>
-            <p className="mt-2 text-sm text-ink-faint">
-              não deu pra medir aqui
-            </p>
-          </div>
-        )}
-      </div>
+        )
+      )}
 
       <div className="rounded-lg border border-line bg-surface-2 p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
@@ -284,11 +270,6 @@ export const ServidorSection: React.FC = () => {
         )}
       </div>
 
-      <p className="flex items-center gap-2 text-xs text-ink-faint">
-        <Activity size={14} className="shrink-0" />
-        API no ar há {duracao(uptimeDoProcesso)} · máquina ligada há{" "}
-        {duracao(uptimeDaMaquina)}
-      </p>
     </div>
   );
 };
@@ -412,6 +393,92 @@ const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
     </span>
   </div>
 );
+
+/*
+  Um bloco por máquina, e os dois idênticos de propósito.
+
+  São duas VMs do mesmo tamanho (E2.1.Micro: 2 threads, 954 MB), e a pergunta
+  que se faz olhando pra elas é quase sempre comparativa — "qual das duas está
+  sofrendo?". Isso só se responde de relance se cada número estiver na mesma
+  posição nos dois blocos.
+*/
+interface Caixa {
+  titulo: string;
+  host: string;
+  legenda: string;
+  carga: { um: number; cinco: number; quinze: number };
+  nucleos: number;
+  memoria: { total: number; livre: number; disponivel: number };
+  disco: { total: number; livre: number } | null;
+  /// Quanto o NOSSO processo come, contra o que a máquina inteira come: é o que
+  /// separa "a VM está cheia" de "somos nós que estamos enchendo ela".
+  residente: { rotulo: string; bytes: number };
+  uptimeDaMaquina: number;
+}
+
+const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
+  /*
+    A carga do Linux conta processos esperando CPU, não porcentagem. Dividir
+    pelos núcleos é o que transforma o número em algo que dá pra ler: 1.0 numa
+    máquina de 2 threads é 50% ocupado, não "no limite".
+  */
+  const ocupacao = Math.min(caixa.carga.um / caixa.nucleos, 1);
+
+  /*
+    Uso de RAM contra o que o kernel diz que consegue entregar, não contra o
+    "livre". Cache de disco conta como usado no `freemem` e é devolvido na
+    hora que alguém precisa — medir por ali faz a VM parecer sempre cheia.
+  */
+  const usada = caixa.memoria.total - caixa.memoria.disponivel;
+  const discoUsado = caixa.disco ? caixa.disco.total - caixa.disco.livre : 0;
+
+  return (
+    <div>
+      <p className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+        <span className="font-medium">{caixa.titulo}</span>
+        <code className="text-xs text-ink-muted">{caixa.host}</code>
+        <span className="text-xs text-ink-faint">
+          · {caixa.legenda} · ligada há {duracao(caixa.uptimeDaMaquina)}
+        </span>
+      </p>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Cartao
+          icone={<Cpu size={16} />}
+          titulo="CPU"
+          valor={`${Math.round(ocupacao * 100)}%`}
+          detalhe={`carga ${caixa.carga.um.toFixed(2)} · ${caixa.carga.cinco.toFixed(2)} · ${caixa.carga.quinze.toFixed(2)} em ${caixa.nucleos} threads`}
+          proporcao={ocupacao}
+        />
+
+        <Cartao
+          icone={<MemoryStick size={16} />}
+          titulo="Memória"
+          valor={tamanho(usada)}
+          detalhe={`de ${tamanho(caixa.memoria.total)} · ${tamanho(caixa.memoria.disponivel)} disponíveis · ${caixa.residente.rotulo} ${tamanho(caixa.residente.bytes)}`}
+          proporcao={usada / caixa.memoria.total}
+        />
+
+        {caixa.disco ? (
+          <Cartao
+            icone={<HardDrive size={16} />}
+            titulo="Disco"
+            valor={tamanho(discoUsado)}
+            detalhe={`de ${tamanho(caixa.disco.total)} · ${tamanho(caixa.disco.livre)} livres`}
+            proporcao={discoUsado / caixa.disco.total}
+          />
+        ) : (
+          <div className="rounded-lg border border-line bg-surface-2 p-4">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <HardDrive size={16} /> Disco
+            </p>
+            <p className="mt-2 text-sm text-ink-faint">não deu pra medir aqui</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Cartao: React.FC<{
   icone: React.ReactNode;

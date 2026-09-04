@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#
+# Responde, em JSON, o estado da MAQUINA do SFU: carga, memoria, disco, LiveKit.
+#
+# Existe porque o painel de servidor do app e a API se auto-medindo — `os.loadavg()`
+# e `/proc/meminfo` so sabem da maquina onde o processo roda. A VM do LiveKit nao
+# tem processo nosso, entao ate aqui ninguem sabia se ela estava folgada ou no talo:
+# o painel dizia "LiveKit (SFU) no ar", que so significa "respondeu ao listRooms".
+#
+# Isto NAO e um servidor. Quem escuta e o systemd (gravae-maquina.socket); este
+# script nasce a cada conexao, escreve a resposta e morre. Numa VM de 954 MB
+# dividida com o LiveKit, deixar um Node parado gastando 40 MB pra responder de 5
+# em 5 segundos custaria mais do que entrega.
+set -uo pipefail
+
+# stdin/stdout SAO o socket (Accept=yes no .socket). Um `echo` solto vira corpo de
+# resposta HTTP quebrado, entao todo diagnostico daqui pra frente vai pro journal.
+avisar() { echo "$*" >&2; }
+
+responder() {
+  local codigo="$1" corpo="$2"
+  printf 'HTTP/1.1 %s\r\nContent-Type: application/json\r\nContent-Length: %d\r\nConnection: close\r\nCache-Control: no-store\r\n\r\n%s' \
+    "$codigo" "${#corpo}" "$corpo"
+}
+
+# Compara pelo sha256 em vez de `=`. O `=` do shell para no primeiro byte
+# diferente, e o tempo dessa parada vaza o prefixo certo pra quem cronometrar.
+# Aqui os dois lados viram sempre 64 caracteres antes da comparacao.
+digerir() { printf '%s' "$1" | sha256sum | cut -d' ' -f1; }
+
+# --- lê o pedido -------------------------------------------------------------
+# So o cabecalho interessa; corpo de GET nao existe. O -t 3 e o que impede uma
+# conexao que abre e nao fala nada de segurar o processo (e o slot do socket).
+enviado=""
+caminho=""
+while IFS= read -r -t 3 linha; do
+  linha=${linha%$'\r'}
+  [ -z "$linha" ] && break
+
+  case "$linha" in
+    GET\ */*) caminho=$(printf '%s' "$linha" | cut -d' ' -f2) ;;
+    [Aa]uthorization:*) enviado=${linha#*: }; enviado=${enviado#[Bb]earer } ;;
+  esac
+done
+
+esperado="${GRAVAE_MAQUINA_TOKEN:-}"
+
+if [ -z "$esperado" ]; then
+  # Sem token configurado o certo e recusar TUDO. Responder mesmo assim
+  # transformaria um erro de instalacao numa porta aberta silenciosa.
+  avisar "GRAVAE_MAQUINA_TOKEN vazio: recusando"
+  responder "503 Service Unavailable" '{"erro":"sem token configurado"}'
+  exit 0
+fi
+
+if [ "$(digerir "$enviado")" != "$(digerir "$esperado")" ]; then
+  avisar "token invalido (caminho: ${caminho:-?})"
+  responder "404 Not Found" '{"erro":"nao encontrado"}'
+  exit 0
+fi
+
+# --- mede --------------------------------------------------------------------
+# Memoria em bytes e com MemAvailable, pelo mesmo motivo que a API faz isso: no
+# Linux "livre" e so o que ninguem encostou, e o kernel usa quase toda a sobra de
+# cache de disco. Sem MemAvailable, esta VM pareceria 93% cheia estando folgada.
+read -r mem_total mem_livre mem_disponivel < <(
+  awk '/^MemTotal:/{t=$2} /^MemFree:/{f=$2} /^MemAvailable:/{a=$2}
+       END{printf "%d %d %d", t*1024, f*1024, (a?a:f)*1024}' /proc/meminfo
+)
+
+read -r disco_total disco_livre < <(
+  df -B1 --output=size,avail / 2>/dev/null | tail -1 | awk '{printf "%d %d", $1, $2}'
+)
+
+read -r carga1 carga5 carga15 _ < /proc/loadavg
+read -r uptime_bruto _ < /proc/uptime
+uptime_segundos=${uptime_bruto%.*}
+
+# O RSS do LiveKit separa "a maquina esta cheia" de "somos nos que estamos
+# enchendo ela" — a mesma pergunta que o "API 111 MB" responde do outro lado.
+livekit_pid=$(pgrep -x livekit-server 2>/dev/null | head -1)
+livekit_rss=0
+if [ -n "$livekit_pid" ]; then
+  livekit_rss=$(awk '/^VmRSS:/{print $2*1024}' "/proc/$livekit_pid/status" 2>/dev/null || echo 0)
+fi
+
+# Todo valor tem um padrao: uma medicao que falhou deixaria o campo vazio, e
+# `"carga":{"um":,...}` nao e JSON — o painel do outro lado engoliria o erro de
+# parse e mostraria a maquina como fora do ar, mentindo sobre o motivo.
+responder "200 OK" "$(cat <<JSON
+{"host":"$(hostname)","nucleos":$(nproc),"carga":{"um":${carga1:-0},"cinco":${carga5:-0},"quinze":${carga15:-0}},"memoria":{"total":${mem_total:-0},"livre":${mem_livre:-0},"disponivel":${mem_disponivel:-0}},"disco":{"total":${disco_total:-0},"livre":${disco_livre:-0}},"uptimeDaMaquina":${uptime_segundos:-0},"livekit":{"noAr":$([ -n "$livekit_pid" ] && echo true || echo false),"residente":${livekit_rss:-0}}}
+JSON
+)"

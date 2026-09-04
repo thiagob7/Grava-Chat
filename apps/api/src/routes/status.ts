@@ -69,6 +69,63 @@ async function disco() {
 }
 
 /*
+  A MÁQUINA onde o LiveKit roda — a outra VM.
+
+  Todo o resto deste arquivo é a API se auto-medindo: `os.loadavg()` e
+  `/proc/meminfo` só sabem da caixa onde este processo está. A do SFU é outra, e
+  a única forma de saber dela é perguntar. Quem responde é o agente de
+  `infra/sfu/`, servido pelo Caddy de lá atrás de filtro por IP de origem.
+
+  Não confunda com o `sfu` lá embaixo: aquele é o CONTEÚDO do LiveKit (salas e
+  quem está dentro), este é o estado do hardware que o segura. Dá pra ter os
+  dois discordando — LiveKit respondendo lisinho numa máquina com o disco cheio.
+*/
+async function maquinaDeVoz(): Promise<MaquinaDeVoz | { indisponivel: true } | null> {
+  /*
+    `null` e "não respondeu" são coisas DIFERENTES e a tela precisa dos dois.
+
+    Sem SFU_STATUS_URL não existe segunda máquina pra mostrar (o caso de
+    desenvolvimento) e o bloco some. Configurada e muda é pane, e sumir com o
+    bloco aí seria o pior resultado possível: o painel ficaria idêntico ao de
+    quando está tudo bem.
+  */
+  if (!env.SFU_STATUS_URL || !env.SFU_STATUS_TOKEN) return null;
+
+  const comeco = performance.now();
+
+  try {
+    /*
+      2 s contra os 5 s de recarga do painel. Esta é a única medição que depende
+      da rede: sem teto, uma VM travada (que responde o SYN e mais nada) seguraria
+      o /status inteiro e o painel pararia de contar até o mongo e o redis —
+      justamente quando alguém está olhando pra ele pra entender uma pane.
+    */
+    const resposta = await fetch(env.SFU_STATUS_URL, {
+      headers: { authorization: `Bearer ${env.SFU_STATUS_TOKEN}` },
+      signal: AbortSignal.timeout(2_000),
+    });
+
+    if (!resposta.ok) return { indisponivel: true };
+
+    const dados = (await resposta.json()) as Omit<MaquinaDeVoz, "ms">;
+    return { ...dados, ms: Math.round(performance.now() - comeco) };
+  } catch {
+    return { indisponivel: true };
+  }
+}
+
+interface MaquinaDeVoz {
+  host: string;
+  nucleos: number;
+  carga: { um: number; cinco: number; quinze: number };
+  memoria: { total: number; livre: number; disponivel: number };
+  disco: { total: number; livre: number };
+  uptimeDaMaquina: number;
+  livekit: { noAr: boolean; residente: number };
+  ms: number;
+}
+
+/*
   Quem está pendurado no gateway agora.
 
   Conexão não é pessoa: a mesma pessoa com o app aberto no desktop e no
@@ -99,12 +156,13 @@ export async function statusRoutes(app: FastifyInstance) {
     const user = await authService.requireUser(req.userId);
     if (!ehAdmin(user.email)) return reply.notFound();
 
-    const [db, cache, salas, ram, hd] = await Promise.all([
+    const [db, cache, salas, ram, hd, voz] = await Promise.all([
       medir("mongo", () => prisma.$runCommandRaw({ ping: 1 })),
       medir("redis", () => redis.ping()),
       voiceService.estadoDoSfu().catch(() => null),
       memoria(),
       disco(),
+      maquinaDeVoz(),
     ]);
 
     /*
@@ -135,6 +193,9 @@ export async function statusRoutes(app: FastifyInstance) {
         node: process.version,
       },
       gateway: gateway(),
+      /// `null` = não configurado (é o caso em desenvolvimento, onde só existe
+      /// uma máquina). A tela some com o bloco em vez de pintá-lo de vermelho.
+      voz,
       mongo: db,
       redis: cache,
       sfu: salas ?? {

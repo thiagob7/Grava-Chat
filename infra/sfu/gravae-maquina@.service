@@ -1,0 +1,35 @@
+[Unit]
+Description=Metricas da maquina do SFU (conexao %i)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/gravae-maquina
+
+# stdin e stdout SAO a conexao TCP; o script escreve o HTTP na mao. stderr vai
+# pro journal, que e o unico lugar onde da pra ver erro daqui — qualquer coisa
+# escrita em stdout vira resposta corrompida.
+StandardInput=socket
+StandardOutput=socket
+StandardError=journal
+
+# O systemd le o EnvironmentFile como root ANTES de baixar pro usuario dinamico.
+# E o que deixa o arquivo do token continuar 0600 root:root com o script rodando
+# sem privilegio nenhum.
+EnvironmentFile=/etc/gravae/maquina.env
+
+# Um UID diferente e descartavel a cada conexao. O token fica no /proc/<pid>/environ
+# do processo, e sem isto qualquer outro processo do mesmo usuario poderia le-lo.
+DynamicUser=yes
+
+# Medir a maquina leva milissegundos. Se passou disto, o pedido travou e o certo
+# e derrubar: conexao pendurada aqui e slot a menos no MaxConnections.
+RuntimeMaxSec=5
+
+NoNewPrivileges=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET
+# Nao ha nada pra escrever: o agente so le /proc, /sys e o disco.
+ProtectSystem=strict
+ProtectHome=true

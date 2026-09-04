@@ -1,0 +1,22 @@
+[Unit]
+Description=Metricas da maquina do SFU (socket)
+Documentation=https://github.com/gravae/gravae-chat/blob/master/infra/sfu/LEIAME.md
+
+[Socket]
+# 127.0.0.1 de proposito: nem a sub-rede alcanca isto direto. Quem expoe e o
+# Caddy, que ja termina TLS na 443 e sabe filtrar por IP de origem — assim nao
+# existe porta nova pra abrir na security list da Oracle, e o agente fica
+# inalcancavel de fora mesmo que a regra do Caddy seja apagada por engano.
+ListenStream=127.0.0.1:9101
+
+# Um processo por conexao. E o que permite o agente ser um script que nasce,
+# responde e morre, em vez de um servico parado ocupando RAM 24h por dia.
+Accept=yes
+
+# A VM tem 954 MB e o LiveKit e o inquilino que importa. Se algo enlouquecer e
+# despejar conexoes aqui, a fila para em 8 em vez de virar centenas de processos.
+MaxConnections=8
+MaxConnectionsPerSource=4
+
+[Install]
+WantedBy=sockets.target
