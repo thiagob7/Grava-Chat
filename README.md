@@ -1,6 +1,6 @@
 # Gravaê Chat
 
-Um Discord self-hosted: servidores, canais de texto e voz, webcam, compartilhamento
+Um chat de comunidades self-hosted: servidores, canais de texto e voz, webcam, compartilhamento
 de tela e live por RTMP. Roda no navegador e como app desktop (Electron).
 
 ## Rodar
@@ -31,6 +31,10 @@ não achar nada. Aconteceu aqui.
 Segue os padrões do Gravaê: `@core` + React Query no front (como o **backoffice**)
 e repository + service + validations no backend (como o **gravae-hub**).
 
+No front, o que é de um assunto só mora em `features/<assunto>/`; o que mais de
+uma feature usa fica na raiz (`components/ui`, `hooks`, `lib`, `stores`). A
+pergunta que decide é "quem importa isto?", não o nome do arquivo.
+
 ```
 apps/api/src/
 ├── routes/         controllers finos: validam, chamam o service, publicam o evento
@@ -47,11 +51,20 @@ apps/web/src/
 │   ├── domain/{models,dtos}/   *-model.ts e *-dto.ts
 │   ├── infra/constants/        query-keys.ts
 │   └── lib/                    api.ts (axios) e websocket/{on,off,emit}-*.ts
-├── components/     componentes do app + ui/ (shadcn com o NOSSO tema)
-├── pages/presentation/  telas por feature
+├── features/       cada assunto com o SEU componente, hook, store e lib juntos
+│   ├── voz/            chamada, palco, dispositivos, push-to-talk
+│   ├── servidor/       trilho, canais, membros, moderação, convites
+│   ├── conversa/       mensagens, compositor, busca, enquete, fórum
+│   ├── perfil/         cartão, avatar, enfeites, presença
+│   ├── configuracoes/  telas de ajuste e o estúdio de temas
+│   ├── expressao/      emoji, gifs, figurinhas
+│   ├── app/            casca da janela: barra de título, avisos, conexão
+│   └── amizades/       amigos e conversas privadas
+├── components/     só o compartilhado: ui/ (primitivas) e widgets de imagem
+├── pages/presentation/  as telas que montam as features
 ├── contexts/       session-context
-├── hooks/          use-realtime (socket → cache do React Query)
-└── stores/         só estado efêmero de cliente: voz (LiveKit) e "digitando"
+├── hooks/          o que TODAS as features perguntam: permissões, realtime
+└── stores/         estado de cliente que não é de uma feature só
 
 apps/desktop/src/
 ├── main/           processo principal: janela, push-to-talk global, captura
@@ -193,7 +206,7 @@ Gatekeeper.
 A paleta vem do backoffice (`GravaeV2/backoffice/src/styles/global.css`) e mora
 num lugar só: o bloco `@theme` de `apps/web/src/styles/index.css`. Todo o app usa
 `bg-surface-1`, `text-ink-muted` e afins em vez de cor solta, então trocar a
-identidade é trocar aquele bloco. Antes eram as cores do Discord, copiadas tal e
+identidade é trocar aquele bloco. Antes eram cores emprestadas de outro produto, copiadas tal e
 qual.
 
 Uma decisão que o vermelho da marca obrigou: **`danger` não pode ser o mesmo
@@ -357,7 +370,7 @@ Backlog detalhado: `PROXIMA_SESSAO.md`
 ## Emoji
 
 Os emoji são do **[Twemoji](https://github.com/jdecked/twemoji)**, o mesmo
-conjunto que o Discord usa — e por um motivo prático, não estético: sem um
+conjunto mais usado em apps de chat — e por um motivo prático, não estético: sem um
 conjunto próprio, quem desenha é a fonte do sistema (`Apple Color Emoji`,
 `Segoe UI Emoji`), e o MESMO emoji chega diferente para cada pessoa da conversa.
 

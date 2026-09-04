@@ -96,7 +96,7 @@ const falar = (channelId, content) =>
   pedirHttp(`/bot/canais/${channelId}/mensagens`, { metodo: "POST", corpo: { content } });
 ```
 
-É a divisão que o Discord faz. O ganho prático apareceu no primeiro erro: um
+É a divisão que o app de referência faz. O ganho prático apareceu no primeiro erro: um
 `emit` que falha some, um `POST` que falha devolve um status e aparece no log.
 
 ## Como o som chega no canal

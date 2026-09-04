@@ -268,7 +268,7 @@ tile pequeno ou em segundo plano passa a receber 0,4 Mbps em vez de 2,5. Numa
 sala de 10 onde metade só escuta, é a maior economia isolada.
 
 > `adaptiveStream` e `dynacast` **já estão ligados** ✅
-> (`apps/web/src/stores/voice-store.ts`). Eles é que aproveitam a camada baixa —
+> (`apps/web/src/features/voz/stores/voice-store.ts`). Eles é que aproveitam a camada baixa —
 > sem ela, não têm para onde baixar.
 
 **5. Áudio `speech` (24 kbps) em vez de `music` (48 kbps)** 🔧 — **–50% no

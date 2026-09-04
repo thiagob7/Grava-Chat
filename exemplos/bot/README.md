@@ -1,7 +1,7 @@
 # Um bot do Gravaê
 
 O bot **não roda dentro do Gravaê**. Ele roda onde você quiser e se conecta de
-fora pelo WebSocket, do mesmo jeito que um bot do Discord. A gente entrega o
+fora pelo WebSocket, do mesmo jeito que um bot de outro app de chat. A gente entrega o
 token e o endereço; a hospedagem é sua.
 
 ## Como põe de pé
