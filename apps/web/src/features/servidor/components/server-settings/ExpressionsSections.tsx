@@ -14,7 +14,7 @@ import {
   useUpdateSound,
 } from "~/@core/application/queries/expression/use-expressions";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
+import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
 import { Button } from "~/components/ui/button";
 import { campoBase, Input, Label } from "~/components/ui/input";
 import {

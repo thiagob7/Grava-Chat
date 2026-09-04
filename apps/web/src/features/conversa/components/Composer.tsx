@@ -12,7 +12,7 @@ import { useEdicaoStore } from "~/features/conversa/stores/edicao-store";
 import { invocarComando, startTyping } from "~/@core/lib/websocket/emit-message-actions";
 import { AttachmentTray } from "~/features/conversa/components/AttachmentTray";
 import { CreatePollModal } from "~/features/conversa/components/CreatePollModal";
-import { ExpressionPicker, type Aba } from "~/components/ExpressionPicker";
+import { ExpressionPicker, type Aba } from "~/features/expressao/components/ExpressionPicker";
 import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
 import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
 import {

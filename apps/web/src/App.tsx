@@ -10,7 +10,7 @@ import { AvisoDeNovoDispositivo } from "~/components/AvisoDeNovoDispositivo";
 import { AvisoDePermissoes } from "~/components/AvisoDePermissoes";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { EstadoDaConexao } from "~/components/EstadoDaConexao";
-import { ChuvaDeSuperReacao } from "~/components/ChuvaDeSuperReacao";
+import { ChuvaDeSuperReacao } from "~/features/expressao/components/ChuvaDeSuperReacao";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";
 import { VoiceAudioSink } from "~/features/voz/components/VoiceAudioSink";

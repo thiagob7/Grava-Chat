@@ -1,8 +1,8 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
-import { Emoji } from "~/components/Emoji";
-import { EMOJI } from "~/lib/twemoji";
+import { Emoji } from "~/features/expressao/components/Emoji";
+import { EMOJI } from "~/features/expressao/lib/twemoji";
 
 import { BlocoDeCodigo } from "~/features/conversa/components/BlocoDeCodigo";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowLeft, ImagePlus, Search, Sparkles } from "lucide-react";
 
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
-import { GradeDeGifs } from "~/components/GradeDeGifs";
+import { GradeDeGifs } from "~/features/expressao/components/GradeDeGifs";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";

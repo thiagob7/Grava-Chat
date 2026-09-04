@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import type { GuildEmoji, Message } from "@gravae/shared";
 
-import { Emoji } from "~/components/Emoji";
+import { Emoji } from "~/features/expressao/components/Emoji";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
 import type { EnfeitesDaPessoa } from "~/features/perfil/hooks/use-enfeites";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
@@ -62,8 +62,8 @@ import { copiarTexto } from "~/lib/copiar";
 import { useShiftPressionado } from "~/hooks/use-shift";
 import { useSegurar } from "~/hooks/use-segurar";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
-import { useSuperReacao } from "~/stores/super-reacao";
-import { ExpressionPicker } from "~/components/ExpressionPicker";
+import { useSuperReacao } from "~/features/expressao/stores/super-reacao";
+import { ExpressionPicker } from "~/features/expressao/components/ExpressionPicker";
 import { EncaminharModal } from "~/features/conversa/components/EncaminharModal";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/stores/aparencia";

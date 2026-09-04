@@ -9,11 +9,11 @@ import {
   Secao,
   Vazio,
   type AtalhoDaBarra,
-} from "~/components/expression-picker/pecas";
-import { useColapso } from "~/components/expression-picker/use-colapso";
-import { useSecoes } from "~/components/expression-picker/use-secoes";
-import { useServidores } from "~/components/expression-picker/use-servidores";
-import { figurinhasRecentes, registrarFigurinha } from "~/lib/expressoes-recentes";
+} from "~/features/expressao/components/seletor/pecas";
+import { useColapso } from "~/features/expressao/components/seletor/use-colapso";
+import { useSecoes } from "~/features/expressao/components/seletor/use-secoes";
+import { useServidores } from "~/features/expressao/components/seletor/use-servidores";
+import { figurinhasRecentes, registrarFigurinha } from "~/features/expressao/lib/expressoes-recentes";
 
 type ComAutor = Sticker & { createdBy: { displayName: string } | null };
 

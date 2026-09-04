@@ -1,6 +1,6 @@
 import React from "react";
 
-import { urlDoEmoji } from "~/lib/twemoji";
+import { urlDoEmoji } from "~/features/expressao/lib/twemoji";
 import { cn } from "~/lib/utils";
 
 interface EmojiProps {

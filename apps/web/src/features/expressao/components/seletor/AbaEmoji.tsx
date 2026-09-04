@@ -20,18 +20,18 @@ import {
   Secao,
   Vazio,
   type AtalhoDaBarra,
-} from "~/components/expression-picker/pecas";
-import { Emoji } from "~/components/Emoji";
-import { useColapso } from "~/components/expression-picker/use-colapso";
-import { useSecoes } from "~/components/expression-picker/use-secoes";
-import { useServidores } from "~/components/expression-picker/use-servidores";
+} from "~/features/expressao/components/seletor/pecas";
+import { Emoji } from "~/features/expressao/components/Emoji";
+import { useColapso } from "~/features/expressao/components/seletor/use-colapso";
+import { useSecoes } from "~/features/expressao/components/seletor/use-secoes";
+import { useServidores } from "~/features/expressao/components/seletor/use-servidores";
 import {
   carregarEmojis,
   combina,
   emojisRecentes,
   registrarUso,
   type GrupoDeEmoji,
-} from "~/lib/emoji";
+} from "~/features/expressao/lib/emoji";
 
 const ICONES: Record<string, React.ReactNode> = {
   smileys_emotion: <Smile size={18} />,

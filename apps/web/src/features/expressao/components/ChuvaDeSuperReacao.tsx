@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 
-import { useSuperReacao, type Explosao } from "~/stores/super-reacao";
+import { useSuperReacao, type Explosao } from "~/features/expressao/stores/super-reacao";
 
 const PARTICULAS = 18;
 const DURACAO = 1400;

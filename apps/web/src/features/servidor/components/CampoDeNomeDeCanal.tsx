@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Smile } from "lucide-react";
 import type { FonteDeNome } from "@gravae/shared";
 
-import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
+import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
 import { IconeDeFonte } from "~/components/SeletorDeFonte";
 import {
   DropdownMenu,

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Clock, Loader2, Search } from "lucide-react";
 
-import { Emoji } from "~/components/Emoji";
+import { Emoji } from "~/features/expressao/components/Emoji";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -14,7 +14,7 @@ import {
   emojisRecentes,
   registrarUso,
   type GrupoDeEmoji,
-} from "~/lib/emoji";
+} from "~/features/expressao/lib/emoji";
 
 interface SeletorDeEmojiProps {
   children: ReactNode;

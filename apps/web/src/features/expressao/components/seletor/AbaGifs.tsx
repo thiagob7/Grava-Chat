@@ -10,7 +10,7 @@ import {
   useTrendingGifs,
 } from "~/@core/application/queries/gif/use-gifs";
 import type { CategoriaDeGifModel, GifModel } from "~/@core/application/requests/gif/gifs";
-import { Carregando, Vazio } from "~/components/expression-picker/pecas";
+import { Carregando, Vazio } from "~/features/expressao/components/seletor/pecas";
 import { cn } from "~/lib/utils";
 
 type Secao = { tipo: "favoritos" } | { tipo: "alta" } | { tipo: "termo"; termo: string } | null;

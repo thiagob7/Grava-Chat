@@ -47,7 +47,7 @@ import {
   onMessageSuper,
   offMessageSuper,
 } from "~/@core/lib/websocket/on-message-super";
-import { useSuperReacao } from "~/stores/super-reacao";
+import { useSuperReacao } from "~/features/expressao/stores/super-reacao";
 import {
   onTypingStarted,
   offTypingStarted,

@@ -8,7 +8,7 @@ import { CampoSelect } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { Label, campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
-import { SeletorDeEmoji } from "~/components/SeletorDeEmoji";
+import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { EstiloDePerfil } from "@gravae/shared";
 import { i18next, idiomaAtual, useTranslation } from "~/traducao";

@@ -4,9 +4,9 @@ import type { Sticker } from "@gravae/shared";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
-import { AbaEmoji } from "~/components/expression-picker/AbaEmoji";
-import { AbaFigurinhas } from "~/components/expression-picker/AbaFigurinhas";
-import { AbaGifs } from "~/components/expression-picker/AbaGifs";
+import { AbaEmoji } from "~/features/expressao/components/seletor/AbaEmoji";
+import { AbaFigurinhas } from "~/features/expressao/components/seletor/AbaFigurinhas";
+import { AbaGifs } from "~/features/expressao/components/seletor/AbaGifs";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
