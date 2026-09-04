@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import {
   closePost,
   createPost,
-  findPost,
   findPosts,
 } from "~/@core/application/requests/forum/forum";
 import { apiErrorMessage } from "~/@core/lib/api";
@@ -15,13 +14,6 @@ export const useFindPosts = (channelId: string | undefined, enabled = true) =>
     queryKey: queryKeys.forum.posts(channelId ?? ""),
     queryFn: () => findPosts(channelId!),
     enabled: Boolean(channelId) && enabled,
-  });
-
-export const useFindPost = (postId: string | undefined) =>
-  useQuery({
-    queryKey: queryKeys.forum.post(postId ?? ""),
-    queryFn: () => findPost(postId!),
-    enabled: Boolean(postId),
   });
 
 export const useCreatePost = (channelId: string | undefined) => {
