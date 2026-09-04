@@ -5,7 +5,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { useRespondFriend } from "~/@core/application/queries/friend/use-respond-friend";
 import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-friend";
 import type { FriendshipModel } from "~/@core/domain/models/friend-model";
-import { AddFriendForm } from "~/components/AddFriendForm";
+import { AddFriendForm } from "~/features/amizades/components/AddFriendForm";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { useConfirmar } from "~/components/ui/confirm";

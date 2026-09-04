@@ -5,7 +5,7 @@ import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { statusDaConversa } from "~/lib/status-da-conversa";
+import { statusDaConversa } from "~/features/amizades/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
