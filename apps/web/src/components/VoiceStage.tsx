@@ -61,15 +61,6 @@ interface VoiceStageProps {
   chatAberto?: boolean;
   onAlternarChat?: () => void;
   podeConvidar?: boolean;
-  /*
-    O que o cabeçalho carregava e continua precisando existir.
-
-    Num canal de voz a faixa do topo deixa de ser desenhada, e com ela iriam
-    embora a estrela do canal, a caixa de entrada e o botão do aplicativo. Eles
-    chegam por aqui, prontos, porque são da tela — o palco não sabe o que é uma
-    caixa de entrada, e não precisa saber.
-  */
-  acoes?: React.ReactNode;
 }
 
 /**
@@ -93,8 +84,7 @@ const CantosDaChamada: React.FC<{
   chatAberto?: boolean;
   onAlternarChat?: () => void;
   onConvidar?: () => void;
-  acoes?: React.ReactNode;
-}> = ({ nome, chatAberto, onAlternarChat, onConvidar, acoes }) => {
+}> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
   const { t } = useTranslation();
 
   const botao =
@@ -120,26 +110,21 @@ const CantosDaChamada: React.FC<{
           <span className="truncate">{nome}</span>
         </span>
 
-        {/* O grupo devolve o clique de uma vez: dentro dele tudo é botão. */}
-        <span className="pointer-events-auto flex shrink-0 items-center gap-3">
-          {acoes}
-
-          {onAlternarChat && (
-            <Tooltip
-              label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-              side="left"
+        {onAlternarChat && (
+          <Tooltip
+            label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+            side="left"
+          >
+            <button
+              onClick={onAlternarChat}
+              aria-pressed={chatAberto}
+              aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+              className={cn(botao, chatAberto && "bg-white/20")}
             >
-              <button
-                onClick={onAlternarChat}
-                aria-pressed={chatAberto}
-                aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-                className={cn(botao, chatAberto && "bg-white/20")}
-              >
-                <ChatCircle size={20} weight="fill" />
-              </button>
-            </Tooltip>
-          )}
-        </span>
+              <ChatCircle size={20} weight="fill" />
+            </button>
+          </Tooltip>
+        )}
       </div>
 
       {onConvidar && (
@@ -176,7 +161,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   chatAberto,
   onAlternarChat,
   podeConvidar = false,
-  acoes,
 }) => {
   const { t } = useTranslation();
   const palco = useRef<HTMLDivElement>(null);
@@ -460,7 +444,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             chatAberto={chatAberto}
             onAlternarChat={onAlternarChat}
             onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
-            acoes={acoes}
           />
         )}
 
@@ -568,7 +551,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           chatAberto={chatAberto}
           onAlternarChat={onAlternarChat}
           onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
-          acoes={acoes}
         />
 
       {/*

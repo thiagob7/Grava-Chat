@@ -250,22 +250,6 @@ export const Chat: React.FC = () => {
     </>
   );
 
-  /*
-    O que sobra do cabeçalho quando ele não existe.
-
-    A estrela age sobre ESTE canal; a caixa de entrada e o botão do aplicativo
-    valem pro app inteiro e não têm outra porta. Sem o cabeçalho, entrar numa
-    chamada esconderia os três — e a caixa de entrada some justamente de quem
-    está ocupado e não vai sair da chamada pra ler recado.
-  */
-  const acoesDoPalco = channel ? (
-    <>
-      <EstrelaDoCanal channelId={channel.id} />
-      <BotaoDoAplicativo />
-      <CaixaDeEntrada />
-    </>
-  ) : null;
-
   return (
     <div className="flex h-full bg-surface-0">
       {/*
@@ -427,19 +411,15 @@ export const Chat: React.FC = () => {
               chatAberto={chatDaVozAberto}
               onAlternarChat={() => setChatDaVozAberto((aberto) => !aberto)}
               podeConvidar={can("CREATE_INVITE")}
-              acoes={semCabecalho ? acoesDoPalco : null}
             />
           ) : (
             <div className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
               {/*
-                A tela de "entrar na chamada" perde o cabeçalho junto com o
-                palco: sem isto, os três botões apareceriam ao entrar e
-                sumiriam ao sair, e a barra do topo piscaria a cada clique.
+                A tira de arrasto continua, mesmo vazia: sem cabeçalho é ela
+                que sobra pra arrastar a janela pelo alto, no aplicativo.
               */}
               {semCabecalho && (
-                <div className="regiao-de-arrasto absolute inset-x-0 top-0 flex items-center justify-end gap-3 p-3">
-                  {acoesDoPalco}
-                </div>
+                <div className="regiao-de-arrasto absolute inset-x-0 top-0 h-12" />
               )}
 
               <SpeakerHigh size={48} weight="fill" className="text-ink-faint" />
@@ -546,7 +526,16 @@ export const Chat: React.FC = () => {
             />
           )}
 
-          {showMembers && !chatDaVozVisivel && !busca && (
+          {/*
+            No canal de voz não há lista de membros.
+
+            Quem está na chamada já são os quadros do palco, com o nome, o
+            microfone e a câmera de cada um — a coluna da direita repetiria os
+            mesmos nomes numa lista, e ainda estreitaria o palco pra fazer
+            isso. Quem está no servidor e NÃO está na chamada não interessa a
+            quem está dentro dela.
+          */}
+          {showMembers && channel?.type !== "VOICE" && !chatDaVozVisivel && !busca && (
             <MemberList
               members={detail?.members ?? []}
               carregando={!detail}
