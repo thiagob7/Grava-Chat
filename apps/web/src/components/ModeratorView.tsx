@@ -44,6 +44,7 @@ import {
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 type Detalhe = "todas" | "links" | "midia" | null;
 
@@ -57,6 +58,7 @@ type Detalhe = "todas" | "links" | "midia" | null;
  * pessoa para a outra.
  */
 export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const alvo = useModeracao((s) => s.alvo);
   const fechar = useModeracao((s) => s.fechar);
@@ -96,8 +98,8 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
             </div>
             <button
               onClick={fechar}
-              aria-label="Fechar"
-              title="Fechar (Esc)"
+              aria-label={t("comum.fechar")}
+              title={t("servidor.moderacao.fecharEsc")}
               className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
             >
               <X size={20} />
@@ -126,52 +128,52 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
           ) : (
             <div className="p-4">
               <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-                <ShieldAlert size={16} className="text-brand" /> Visualização de moderador
+                <ShieldAlert size={16} className="text-brand" /> {t("servidor.moderacao.titulo")}
               </p>
 
               {error && (
                 <p className="rounded bg-danger/10 p-3 text-sm text-danger">
-                  Você precisa da permissão “Moderar membros” para ver isto.
+                  {t("servidor.moderacao.semPermissao")}
                 </p>
               )}
 
-              {isLoading && <p className="py-8 text-center text-sm text-ink-muted">Carregando…</p>}
+              {isLoading && <p className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
 
               {data && (
                 <>
-                  <Secao titulo="Atividade no servidor">
+                  <Secao titulo={t("servidor.moderacao.atividade")}>
                     <Linha
                       icone={<MessageSquare size={15} />}
-                      rotulo="Mensagens"
+                      rotulo={t("servidor.moderacao.mensagens")}
                       valor={data.atividade.mensagens}
                       onClick={data.atividade.mensagens ? () => setDetalhe("todas") : undefined}
                     />
                     <Linha
                       icone={<Link2 size={15} />}
-                      rotulo="Links"
+                      rotulo={t("servidor.moderacao.links")}
                       valor={data.atividade.links}
                       onClick={data.atividade.links ? () => setDetalhe("links") : undefined}
                     />
                     <Linha
                       icone={<ImageIcon size={15} />}
-                      rotulo="Mídia"
+                      rotulo={t("servidor.moderacao.midia")}
                       valor={data.atividade.midia}
                       onClick={data.atividade.midia ? () => setDetalhe("midia") : undefined}
                     />
                     <Linha
                       icone={<FileText size={15} />}
-                      rotulo="Ações na auditoria"
+                      rotulo={t("servidor.moderacao.acoesNaAuditoria")}
                       valor={data.auditoria.feitas}
                     />
                     <Linha
                       icone={<ShieldAlert size={15} />}
-                      rotulo="Moderações sofridas"
+                      rotulo={t("servidor.moderacao.moderacoesSofridas")}
                       valor={data.auditoria.sofridas}
                       alerta={data.auditoria.sofridas > 0}
                     />
                   </Secao>
 
-                  <Secao titulo={`Permissões (${data.permissoes.length})`}>
+                  <Secao titulo={t("servidor.moderacao.permissoes", { quantas: data.permissoes.length })}>
                     <div className="flex flex-wrap gap-1.5 p-3">
                       {data.permissoes.length ? (
                         data.permissoes.map((p) => (
@@ -183,12 +185,12 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-ink-faint">Nenhuma permissão especial.</span>
+                        <span className="text-xs text-ink-faint">{t("servidor.moderacao.semPermissaoEspecial")}</span>
                       )}
                     </div>
                   </Secao>
 
-                  <Secao titulo="Cargos">
+                  <Secao titulo={t("servidor.cargos.titulo")}>
                     <EditorDeCargos
                       guildId={guildId}
                       userId={userId}
@@ -197,15 +199,15 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                     />
                   </Secao>
 
-                  <Secao titulo="Conta">
-                    <Linha rotulo="Entrou no servidor" valor={data.entrouNoServidor} data />
-                    <Linha rotulo="Conta criada em" valor={data.entrouNoGravae} data />
+                  <Secao titulo={t("servidor.moderacao.conta")}>
+                    <Linha rotulo={t("servidor.moderacao.entrouNoServidor")} valor={data.entrouNoServidor} data />
+                    <Linha rotulo={t("servidor.moderacao.contaCriadaEm")} valor={data.entrouNoGravae} data />
                     {data.timeoutUntil && (
-                      <Linha rotulo="De castigo até" valor={data.timeoutUntil} data alerta />
+                      <Linha rotulo={t("servidor.moderacao.deCastigoAte")} valor={data.timeoutUntil} data alerta />
                     )}
                     <Linha
                       icone={<Ticket size={15} />}
-                      rotulo="Forma de adesão"
+                      rotulo={t("servidor.moderacao.formaDeAdesao")}
                       valor={
                         data.adesao.inviteCode
                           ? `${data.adesao.inviteCode}${
@@ -230,6 +232,7 @@ const BarraDeAcoes: React.FC<{
   displayName: string;
   onFechar: () => void;
 }> = ({ guildId, userId, displayName, onFechar }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const confirmar = useConfirmar();
   const openDm = useOpenDm();
@@ -239,7 +242,7 @@ const BarraDeAcoes: React.FC<{
 
   const conversar = async () => {
     const canal = await openDm.mutateAsync(userId).catch(() => null);
-    if (!canal) return toast.error("Vocês precisam ser amigos para conversar.");
+    if (!canal) return toast.error(t("servidor.moderacao.precisaSerAmigo"));
 
     onFechar();
     navigate(`/dm/${canal.id}`);
@@ -247,8 +250,8 @@ const BarraDeAcoes: React.FC<{
 
   const expulsar = async () => {
     const { confirmado } = await confirmar({
-      titulo: `Expulsar ${displayName}?`,
-      descricao: "Sai do servidor na hora, mas pode voltar com um convite.",
+      titulo: t("servidor.membros.expulsarTitulo", { nome: displayName }),
+      descricao: t("servidor.moderacao.expulsarDescricao"),
       acao: "Expulsar",
     });
 
@@ -260,10 +263,10 @@ const BarraDeAcoes: React.FC<{
 
   const banirMembro = async () => {
     const { confirmado, texto } = await confirmar({
-      titulo: `Banir ${displayName}?`,
-      descricao: "Sai do servidor e não consegue voltar, nem com convite, até ser desbanido.",
+      titulo: t("servidor.membros.banirTitulo", { nome: displayName }),
+      descricao: t("servidor.moderacao.banirDescricao"),
       acao: "Banir",
-      campo: { rotulo: "Motivo (opcional)", placeholder: "Fica registrado na auditoria" },
+      campo: { rotulo: t("servidor.membros.motivo"), placeholder: t("servidor.membros.motivoDica") },
     });
 
     if (confirmado) {
@@ -274,17 +277,17 @@ const BarraDeAcoes: React.FC<{
 
   const castigarMembro = async () => {
     const { confirmado, texto } = await confirmar({
-      titulo: `Castigar ${displayName}?`,
-      descricao: "Enquanto durar, não escreve nem fala em nenhum canal do servidor.",
-      acao: "Aplicar castigo",
-      campo: { rotulo: "Duração em minutos", placeholder: "60", obrigatorio: true },
+      titulo: t("servidor.moderacao.castigarTitulo", { nome: displayName }),
+      descricao: t("servidor.moderacao.castigoDescricao"),
+      acao: t("servidor.moderacao.aplicarCastigo"),
+      campo: { rotulo: t("servidor.moderacao.duracao"), placeholder: "60", obrigatorio: true },
     });
 
     if (!confirmado) return;
 
     const minutos = Number(texto);
     if (!Number.isFinite(minutos) || minutos <= 0) {
-      return toast.error("Informe a duração em minutos.");
+      return toast.error(t("servidor.moderacao.informeDuracao"));
     }
 
     castigar.mutate({ guildId, userId, minutos });
@@ -293,24 +296,24 @@ const BarraDeAcoes: React.FC<{
 
   const copiarId = async () => {
     await navigator.clipboard.writeText(userId);
-    toast.success("ID copiado.");
+    toast.success(t("servidor.moderacao.idCopiado"));
   };
 
   return (
     <div className="grid grid-cols-5 gap-1 border-t border-divisor p-2">
-      <AcaoDoTopo label="Mensagem" onClick={() => void conversar()}>
+      <AcaoDoTopo label={t("servidor.moderacao.mensagem")} onClick={() => void conversar()}>
         <MessageSquare size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label="Expulsar" onClick={() => void expulsar()} perigo>
+      <AcaoDoTopo label={t("servidor.membros.expulsar")} onClick={() => void expulsar()} perigo>
         <UserMinus size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label="Banir" onClick={() => void banirMembro()} perigo>
+      <AcaoDoTopo label={t("servidor.membros.banir")} onClick={() => void banirMembro()} perigo>
         <Gavel size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label="Castigo" onClick={() => void castigarMembro()} perigo>
+      <AcaoDoTopo label={t("servidor.moderacao.castigo")} onClick={() => void castigarMembro()} perigo>
         <Clock size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label="Copiar ID" onClick={() => void copiarId()}>
+      <AcaoDoTopo label={t("servidor.moderacao.copiarId")} onClick={() => void copiarId()}>
         <IdCard size={18} />
       </AcaoDoTopo>
     </div>
@@ -337,10 +340,12 @@ const AcaoDoTopo: React.FC<{
   </Tooltip>
 );
 
+/// Chaves, e não frases: é constante de módulo — ver o mesmo aviso no
+/// `VISIBILIDADES` e no `GATILHOS`.
 const TITULOS: Record<"todas" | "links" | "midia", string> = {
-  todas: "Mensagens",
-  links: "Links",
-  midia: "Mídia",
+  todas: "servidor.moderacao.mensagens",
+  links: "servidor.moderacao.links",
+  midia: "servidor.moderacao.midia",
 };
 
 const ListaDeMensagens: React.FC<{
@@ -350,6 +355,7 @@ const ListaDeMensagens: React.FC<{
   onVoltar: () => void;
   onIrParaMensagem: (channelId: string, messageId: string) => void;
 }> = ({ guildId, userId, filtro, onVoltar, onIrParaMensagem }) => {
+  const { t } = useTranslation();
   const { data, isLoading } = useModerationMessages(guildId, userId, filtro);
 
   return (
@@ -359,10 +365,10 @@ const ListaDeMensagens: React.FC<{
           onClick={onVoltar}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-ink"
         >
-          <ArrowLeft size={16} /> Voltar
+          <ArrowLeft size={16} /> {t("servidor.moderacao.voltar")}
         </button>
         <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          {TITULOS[filtro]}
+          {t(TITULOS[filtro])}
         </span>
       </div>
 
@@ -370,7 +376,7 @@ const ListaDeMensagens: React.FC<{
         {isLoading && <p className="py-8 text-center text-sm text-ink-muted">Carregando…</p>}
 
         {data && !data.length && (
-          <p className="py-8 text-center text-sm text-ink-muted">Nada por aqui.</p>
+          <p className="py-8 text-center text-sm text-ink-muted">{t("servidor.moderacao.vazio")}</p>
         )}
 
         {data?.map((mensagem) => (
@@ -384,7 +390,7 @@ const ListaDeMensagens: React.FC<{
 
         {data && data.length >= 50 && (
           <p className="pt-2 text-center text-xs text-ink-faint">
-            Mostrando as 50 mais recentes.
+            {t("servidor.moderacao.cinquenta")}
           </p>
         )}
       </div>
@@ -396,7 +402,10 @@ const MensagemDaLista: React.FC<{
   mensagem: ModerationMessageModel;
   filtro: "todas" | "links" | "midia";
   onIr: () => void;
-}> = ({ mensagem, filtro, onIr }) => (
+}> = ({ mensagem, filtro, onIr }) => {
+  const { t } = useTranslation();
+
+  return (
   <article className="group/msg rounded-lg bg-surface-1 p-3">
     <header className="mb-1.5 flex items-center gap-1.5 text-xs text-ink-faint">
       {mensagem.channelType === "VOICE" ? <Volume2 size={12} /> : <Hash size={12} />}
@@ -408,7 +417,7 @@ const MensagemDaLista: React.FC<{
         onClick={onIr}
         className="rounded bg-surface-3 px-1.5 py-0.5 text-11 opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
       >
-        Ir para mensagem
+        {t("servidor.moderacao.irParaMensagem")}
       </button>
 
       <time dateTime={mensagem.createdAt}>
@@ -461,9 +470,11 @@ const MensagemDaLista: React.FC<{
       </div>
     )}
   </article>
-);
+  );
+};
 
 const LinksDaMensagem: React.FC<{ conteudo: string }> = ({ conteudo }) => {
+  const { t } = useTranslation();
   const links = extrairLinks(conteudo, 5);
   if (!links.length) return null;
 
@@ -543,6 +554,7 @@ interface LinhaProps {
 }
 
 const Linha: React.FC<LinhaProps> = ({ icone, rotulo, valor, data, alerta, onClick }) => {
+  const { t } = useTranslation();
   const conteudo = (
     <>
       {icone && <span className="shrink-0 text-ink-faint">{icone}</span>}
@@ -573,6 +585,7 @@ const EditorDeCargos: React.FC<{
   roles: Role[];
   atuais: string[];
 }> = ({ guildId, userId, roles, atuais }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const setRoles = useSetMemberRoles(guildId);
 
@@ -608,12 +621,12 @@ const EditorDeCargos: React.FC<{
         </span>
       ))}
 
-      {!marcados.length && <span className="text-xs text-ink-faint">Só o @everyone.</span>}
+      {!marcados.length && <span className="text-xs text-ink-faint">{t("servidor.moderacao.soEveryone")}</span>}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            aria-label="Adicionar cargo"
+            aria-label={t("servidor.moderacao.adicionarCargo")}
             disabled={setRoles.isPending}
             className="rounded-full bg-surface-3 p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
           >
@@ -653,7 +666,7 @@ const EditorDeCargos: React.FC<{
               );
             })
           ) : (
-            <DropdownMenuItem disabled>Nenhum cargo criado</DropdownMenuItem>
+            <DropdownMenuItem disabled>{t("servidor.moderacao.semCargos")}</DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>

@@ -2,6 +2,7 @@ import React from "react";
 import type { Channel, GuildMember, Permission, Role } from "@gravae/shared";
 
 import { ChannelPermissionsBoard } from "~/components/ChannelPermissionsModal";
+import { useTranslation } from "~/traducao";
 
 interface ChannelPermissionsSectionProps {
   guildId: string;
@@ -17,13 +18,20 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
   roles,
   members,
   minhasPermissoes,
-}) => (
+}) => {
+  const { t } = useTranslation();
+
+  return (
   <div className="max-w-3xl pb-10">
-    <h2 className="text-xl font-semibold">Permissões</h2>
-    <p className="mt-1 text-sm text-ink-muted">
-      Aqui você muda o que vale <strong>neste canal</strong>. O que ficar em “herdar” continua
-      seguindo o cargo.
-    </p>
+    <h2 className="text-xl font-semibold">{t("servidor.cargos.abaPermissoes")}</h2>
+    {/*
+      Uma chave só, sem o negrito no "neste canal".
+
+      Era uma frase partida por um `<strong>` no meio, e frase partida não se
+      traduz aos pedaços — cada idioma põe as partes noutra ordem. Perde-se o
+      grifo; a frase certa em 34 idiomas vale mais.
+    */}
+    <p className="mt-1 text-sm text-ink-muted">{t("servidor.canal.permissoesDescricao")}</p>
 
     <div className="mt-6">
       <ChannelPermissionsBoard
@@ -36,4 +44,5 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
       />
     </div>
   </div>
-);
+  );
+};

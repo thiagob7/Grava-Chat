@@ -8,6 +8,7 @@ import { ChannelOverviewSection } from "~/components/channel-settings/ChannelOve
 import { ChannelPermissionsSection } from "~/components/channel-settings/ChannelPermissionsSection";
 import { DeleteChannelSection } from "~/components/channel-settings/DeleteChannelSection";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 type Secao = "visao" | "permissoes" | "convites" | "excluir";
 
@@ -34,15 +35,16 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
   canManageChannels,
   canManageRoles,
 }) => {
+  const { t } = useTranslation();
   const [secao, setSecao] = useState<Secao>("visao");
 
   type Item = { id: Secao; label: string; visivel: boolean; danger?: boolean };
 
   const itens: Item[] = ([
-    { id: "visao", label: "Visão geral", visivel: canManageChannels },
-    { id: "permissoes", label: "Permissões", visivel: canManageRoles },
-    { id: "convites", label: "Convites", visivel: true },
-    { id: "excluir", label: "Excluir canal", visivel: canManageChannels, danger: true },
+    { id: "visao", label: t("servidor.canal.visaoGeral"), visivel: canManageChannels },
+    { id: "permissoes", label: t("servidor.cargos.abaPermissoes"), visivel: canManageRoles },
+    { id: "convites", label: t("servidor.convites.titulo"), visivel: true },
+    { id: "excluir", label: t("servidor.canal.excluir.titulo"), visivel: canManageChannels, danger: true },
   ] satisfies Item[]).filter((item) => item.visivel);
 
   const prefixo = channel.type === "VOICE" ? "CANAIS DE VOZ" : "CANAIS DE TEXTO";
@@ -102,7 +104,7 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
 
           <button
             onClick={onClose}
-            aria-label="Fechar"
+            aria-label={t("comum.fechar")}
             className="absolute right-10 top-12 flex flex-col items-center gap-1 text-ink-muted transition hover:text-ink"
           >
             <span className="flex size-9 items-center justify-center rounded-full border-2 border-current">

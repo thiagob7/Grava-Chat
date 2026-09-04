@@ -36,17 +36,19 @@ export const DeleteGuildSection: React.FC<{
         <div className="text-sm text-ink-muted">
           <p className="font-medium text-ink">{t("servidor.excluir.aviso")}</p>
           <p className="mt-1">
-            Todos os canais, mensagens e convites de{" "}
-            <strong>{guild.name}</strong> serão apagados para os{" "}
-            {guild.memberCount} membros. Ninguém consegue recuperar depois.
+            {t("servidor.excluir.tudoVai", {
+              servidor: guild.name,
+              membros: guild.memberCount,
+            })}
           </p>
         </div>
       </div>
 
       <div className="mt-6">
+        {/* Interpolação, e não um `<strong>` no meio: frase partida por
+            elemento não se traduz aos pedaços. */}
         <Label htmlFor="confirmar">
-          Digite <strong className="text-ink">{guild.name}</strong> para
-          confirmar
+          {t("servidor.excluir.digite", { servidor: guild.name })}
         </Label>
         <Input
           id="confirmar"

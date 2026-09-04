@@ -5,6 +5,7 @@ import type { Channel } from "@gravae/shared";
 import { useDeleteChannel } from "~/@core/application/queries/guild/use-update-channel";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { useTranslation } from "~/traducao";
 
 interface DeleteChannelSectionProps {
   guildId: string;
@@ -17,6 +18,7 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
   channel,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const apagar = useDeleteChannel(guildId);
   const [confirmacao, setConfirmacao] = useState("");
 
@@ -24,20 +26,27 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
 
   return (
     <div className="max-w-xl">
-      <h2 className="text-xl font-semibold text-danger">Excluir canal</h2>
+      <h2 className="text-xl font-semibold text-danger">{t("servidor.canal.excluir.titulo")}</h2>
 
       <div className="mt-6 rounded-lg border border-danger/40 bg-danger/10 p-5">
         <p className="flex items-center gap-2 font-semibold">
-          <AlertTriangle size={18} className="text-danger" /> Isso não pode ser desfeito.
+          <AlertTriangle size={18} className="text-danger" /> {t("servidor.excluir.aviso")}
         </p>
+        {/*
+          O nome do canal por interpolação, e não num `<strong>` no meio.
+
+          Frase partida por elemento não se traduz aos pedaços: cada idioma
+          ordena as partes do seu jeito. Perde-se o negrito no nome — ele
+          continua na frase, e a frase continua certa em 34 idiomas.
+        */}
         <p className="mt-2 text-sm text-ink-muted">
-          Todo o histórico de <strong>{channel.name}</strong> vai junto, para todo mundo.
+          {t("servidor.canal.excluir.historico", { canal: channel.name })}
         </p>
       </div>
 
       <div className="mt-6">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          Digite <span className="text-ink">{channel.name}</span> para confirmar
+          {t("servidor.canal.excluir.digite", { canal: channel.name })}
         </p>
         <Input
           value={confirmacao}

@@ -9,6 +9,7 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { GrupoSegmentado, Label, OpcaoEmCartao, Textarea } from "~/components/ui/input";
 import { CampoDeNomeDeCanal } from "~/components/CampoDeNomeDeCanal";
 import { Slider } from "~/components/ui/slider";
+import { useTranslation } from "~/traducao";
 
 interface ChannelOverviewSectionProps {
   guildId: string;
@@ -22,22 +23,23 @@ function rotuloDoModoLento(segundos: number) {
   return `${segundos / 3600} h`;
 }
 
+/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
+/// resolveria antes de o idioma existir e ficaria congelada.
 const VISIBILIDADES = [
   {
     valor: "DEFAULT" as const,
-    titulo: "Padrão",
-    descricao: "O conteúdo do canal fica sempre visível.",
+    titulo: "servidor.canal.padrao",
+    descricao: "servidor.canal.padraoDica",
   },
   {
     valor: "SPOILER" as const,
-    titulo: "Canal de spoiler",
-    descricao:
-      "Marque este canal como contendo spoilers, para que plot twists e assuntos pesados fiquem ocultos até alguém escolher ver.",
+    titulo: "servidor.canal.spoiler",
+    descricao: "servidor.canal.spoilerDica",
   },
   {
     valor: "AGE_RESTRICTED" as const,
-    titulo: "Canal com restrição de idade",
-    descricao: "Quem entrar precisa confirmar que é maior de idade para ver o conteúdo.",
+    titulo: "servidor.canal.idade",
+    descricao: "servidor.canal.idadeDica",
   },
 ];
 
@@ -45,6 +47,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
   guildId,
   channel,
 }) => {
+  const { t } = useTranslation();
   const salvar = useUpdateChannel(guildId);
 
   const [name, setName] = useState(channel.name);
@@ -70,11 +73,11 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Visão geral</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.canal.visaoGeral")}</h2>
 
       <div className="mt-6 space-y-6">
         <div>
-          <Label htmlFor="canal-nome">Nome do canal</Label>
+          <Label htmlFor="canal-nome">{t("servidor.canal.nome")}</Label>
           <CampoDeNomeDeCanal
             id="canal-nome"
             valor={name}
@@ -87,13 +90,13 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
         {!ehVoz && (
           <div>
-            <Label htmlFor="canal-topico">Tópico do canal</Label>
+            <Label htmlFor="canal-topico">{t("servidor.canal.topico")}</Label>
             <Textarea
               id="canal-topico"
               value={topic}
               maxLength={512}
               rows={3}
-              placeholder="Do que se fala aqui?"
+              placeholder={t("servidor.canal.topicoDica")}
               onChange={(e) => setTopic(e.target.value)}
             />
           </div>
@@ -111,21 +114,20 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
             }))}
           />
           <p className="mt-1.5 text-xs text-ink-faint">
-            Cada pessoa só manda uma mensagem por intervalo. Quem gerencia mensagens ou canais passa
-            direto.
+            {t("servidor.canal.modoLento")}
           </p>
         </div>
 
         <div>
-          <Label>Visibilidade do conteúdo</Label>
+          <Label>{t("servidor.canal.visibilidade")}</Label>
           <div className="space-y-2">
             {VISIBILIDADES.map((opcao) => (
               <OpcaoEmCartao
                 key={opcao.valor}
                 escolhido={visibilidade === opcao.valor}
                 onEscolher={() => setVisibilidade(opcao.valor)}
-                titulo={opcao.titulo}
-                descricao={opcao.descricao}
+                titulo={t(opcao.titulo)}
+                descricao={t(opcao.descricao)}
               />
             ))}
           </div>
@@ -144,17 +146,17 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
                 onChange={(e) => setBitrate(Number(e.target.value))}
               />
               <p className="mt-1.5 text-xs text-ink-faint">
-                Passar de 64 kbps pode atrapalhar quem tem internet ruim.
+                {t("servidor.canal.bitrateDica")}
               </p>
             </div>
 
             <div>
-              <Label>Qualidade do vídeo</Label>
+              <Label>{t("servidor.canal.qualidadeDeVideo")}</Label>
               <GrupoSegmentado
                 valor={videoQuality}
                 onEscolher={setVideoQuality}
                 opcoes={[
-                  { valor: "AUTO" as const, rotulo: "Automática" },
+                  { valor: "AUTO" as const, rotulo: t("servidor.canal.automatica") },
                   { valor: "HD" as const, rotulo: "720p" },
                 ]}
               />
@@ -162,7 +164,11 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
             <div>
               <Label>
-                Limite de usuários — {userLimit ? `${userLimit} pessoas` : "sem limite"}
+                {t("servidor.canal.limite", {
+                  valor: userLimit
+                    ? t("servidor.canal.pessoas", { quantos: userLimit })
+                    : t("servidor.canal.semLimite"),
+                })}
               </Label>
               <Slider
                 min={0}

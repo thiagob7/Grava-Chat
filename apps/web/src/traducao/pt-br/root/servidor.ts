@@ -34,6 +34,9 @@ export const servidor = {
   excluir: {
     titulo: "Excluir servidor",
     aviso: "Isso não pode ser desfeito.",
+    tudoVai:
+      "Todos os canais, mensagens e convites de {{servidor}} serão apagados para os {{membros}} membros. Ninguém consegue recuperar depois.",
+    digite: "Digite {{servidor}} para confirmar",
   },
 
   emblemas: {
@@ -220,5 +223,74 @@ export const servidor = {
     excluirTitulo: "Excluir {{tipo}} \"{{nome}}\"?",
     excluirDescricao:
       "Some do servidor para todo mundo. As mensagens que já usaram continuam como estão.",
+  },
+
+  canal: {
+    visaoGeral: "Visão geral",
+    nome: "Nome do canal",
+    topico: "Tópico do canal",
+    topicoDica: "Do que se fala aqui?",
+    modoLento:
+      "Cada pessoa só manda uma mensagem por intervalo. Quem gerencia mensagens ou canais passa direto.",
+    visibilidade: "Visibilidade do conteúdo",
+    padrao: "Padrão",
+    padraoDica: "O conteúdo do canal fica sempre visível.",
+    spoiler: "Canal de spoiler",
+    spoilerDica:
+      "Marque este canal como contendo spoilers, para que plot twists e assuntos pesados fiquem ocultos até alguém escolher ver.",
+    idade: "Canal com restrição de idade",
+    idadeDica: "Quem entrar precisa confirmar que é maior de idade para ver o conteúdo.",
+    bitrateDica: "Passar de 64 kbps pode atrapalhar quem tem internet ruim.",
+    qualidadeDeVideo: "Qualidade do vídeo",
+    automatica: "Automática",
+    limite: "Limite de usuários — {{valor}}",
+    pessoas: "{{quantos}} pessoas",
+    semLimite: "sem limite",
+    permissoesDescricao:
+      "Aqui você muda o que vale neste canal. O que ficar em “herdar” continua seguindo o cargo.",
+    excluir: {
+      titulo: "Excluir canal",
+      historico: "Todo o histórico de {{canal}} vai junto, para todo mundo.",
+      digite: "Digite {{canal}} para confirmar",
+    },
+  },
+
+  moderacao: {
+    titulo: "Visualização de moderador",
+    semPermissao: "Você precisa da permissão “Moderar membros” para ver isto.",
+    fecharEsc: "Fechar (Esc)",
+    atividade: "Atividade no servidor",
+    mensagens: "Mensagens",
+    links: "Links",
+    midia: "Mídia",
+    acoesNaAuditoria: "Ações na auditoria",
+    moderacoesSofridas: "Moderações sofridas",
+    permissoes: "Permissões ({{quantas}})",
+    semPermissaoEspecial: "Nenhuma permissão especial.",
+    conta: "Conta",
+    entrouNoServidor: "Entrou no servidor",
+    contaCriadaEm: "Conta criada em",
+    deCastigoAte: "De castigo até",
+    formaDeAdesao: "Forma de adesão",
+    mensagem: "Mensagem",
+    castigo: "Castigo",
+    copiarId: "Copiar ID",
+    idCopiado: "ID copiado.",
+    adicionarCargo: "Adicionar cargo",
+    semCargos: "Nenhum cargo criado",
+    soEveryone: "Só o @everyone.",
+    voltar: "Voltar",
+    vazio: "Nada por aqui.",
+    cinquenta: "Mostrando as 50 mais recentes.",
+    irParaMensagem: "Ir para mensagem",
+    precisaSerAmigo: "Vocês precisam ser amigos para conversar.",
+    expulsarDescricao: "Sai do servidor na hora, mas pode voltar com um convite.",
+    banirDescricao:
+      "Sai do servidor e não consegue voltar, nem com convite, até ser desbanido.",
+    castigarTitulo: "Castigar {{nome}}?",
+    castigoDescricao: "Enquanto durar, não escreve nem fala em nenhum canal do servidor.",
+    aplicarCastigo: "Aplicar castigo",
+    duracao: "Duração em minutos",
+    informeDuracao: "Informe a duração em minutos.",
   },
 };
