@@ -315,7 +315,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           />
         )}
 
-        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black">
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2">
           <div className="aspect-video w-full max-h-full [&>*]:size-full">
             {desenhar(emFoco.destaque, false, true)}
           </div>
@@ -366,9 +366,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
         ampliado
-          ? "palco-de-um bg-black"
+          ? "palco-de-um bg-surface-2"
           : grade.length === 1
-            ? "palco-de-um bg-black px-3 pb-20 pt-3.5"
+            ? "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5"
             : "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5",
       )}
     >
