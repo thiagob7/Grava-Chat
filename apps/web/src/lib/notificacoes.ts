@@ -1,7 +1,7 @@
 import type { Message } from "@gravae/shared";
 
 import { prefsDeAviso } from "~/stores/notificacoes";
-import { prefsDeAparencia } from "~/stores/aparencia";
+import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
 import { tocarSom } from "~/lib/ui-sounds";
 
 export type PermissaoDeAviso = "concedida" | "negada" | "perguntar" | "indisponivel";

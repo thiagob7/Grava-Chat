@@ -16,7 +16,7 @@ import { AppRoutes } from "~/routes";
 import { VoiceAudioSink } from "~/features/voz/components/VoiceAudioSink";
 import { SeletorDeTela } from "~/features/voz/components/SeletorDeTela";
 import { VisualizadorDeImagem } from "~/components/VisualizadorDeImagem";
-import { useAparenciaAplicada } from "~/hooks/use-aparencia";
+import { useAparenciaAplicada } from "~/features/configuracoes/hooks/use-aparencia";
 import { usePushToTalk } from "~/features/voz/hooks/use-push-to-talk";
 
 export const queryClient = new QueryClient({

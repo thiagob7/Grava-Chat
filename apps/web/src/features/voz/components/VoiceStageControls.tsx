@@ -42,7 +42,7 @@ import { nomeDoDispositivo, useDispositivos } from "~/features/voz/hooks/use-dis
 import { useTelaCheia } from "~/features/voz/hooks/use-tela-cheia";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 

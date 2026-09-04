@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
-import { useAparencia } from "~/stores/aparencia";
-import { useEstudio } from "~/stores/estudio";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useEstudio } from "~/features/configuracoes/stores/estudio";
 
 export function useAparenciaAplicada() {
   const tema = useAparencia((s) => s.tema);

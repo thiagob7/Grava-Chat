@@ -1,4 +1,4 @@
-import { prefsDeAparencia } from "~/stores/aparencia";
+import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useAvisos } from "~/stores/notificacoes";
 
 import notificacaoUrl from "~/assets/sons/notificacao.mp3?url";

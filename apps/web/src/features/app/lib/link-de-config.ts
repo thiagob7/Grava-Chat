@@ -1,4 +1,4 @@
-import type { Secao } from "~/components/user-settings/secoes";
+import type { Secao } from "~/features/configuracoes/components/secoes";
 
 const PARAMETRO = "config";
 

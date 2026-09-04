@@ -4,7 +4,7 @@ import type { Attachment } from "@gravae/shared";
 
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { useLightbox } from "~/stores/lightbox";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
 
 interface MessageAttachmentsProps {

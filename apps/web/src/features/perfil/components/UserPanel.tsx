@@ -10,8 +10,8 @@ import { MenuDoProprioCartao, rotuloDoEstado } from "~/features/perfil/component
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
-import { UserSettingsModal } from "~/components/user-settings/UserSettingsModal";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { UserSettingsModal } from "~/features/configuracoes/components/UserSettingsModal";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";

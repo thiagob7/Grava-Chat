@@ -14,7 +14,7 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 const TETO = 8;
 

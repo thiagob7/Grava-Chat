@@ -4,7 +4,7 @@ import { Link2 } from "lucide-react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { copiarTexto } from "~/lib/copiar";
 import { linkDaSecao } from "~/features/app/lib/link-de-config";
-import type { Secao } from "~/components/user-settings/secoes";
+import type { Secao } from "~/features/configuracoes/components/secoes";
 import { cn } from "~/lib/utils";
 
 interface BotaoDeLinkProps {

@@ -11,7 +11,7 @@ import {
 import { useAvisos } from "~/stores/notificacoes";
 import { GRUPOS_DE_SONS, tocarSom } from "~/lib/ui-sounds";
 import { Play } from "lucide-react";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { desktop } from "~/lib/desktop";
 
 export const NotificationsSection: React.FC = () => {

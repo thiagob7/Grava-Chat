@@ -31,18 +31,18 @@ import {
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { AccountSection } from "~/components/user-settings/AccountSection";
-import { AppearanceSection } from "~/components/user-settings/AppearanceSection";
-import { NotificationsSection } from "~/components/user-settings/NotificationsSection";
-import { VoiceSection } from "~/components/user-settings/VoiceSection";
-import { ConexoesSection } from "~/components/user-settings/ConexoesSection";
-import { BotsSection } from "~/components/user-settings/BotsSection";
-import { AplicativoSection } from "~/components/user-settings/AplicativoSection";
-import { AcessibilidadeSection } from "~/components/user-settings/AcessibilidadeSection";
-import { IdiomaSection } from "~/components/user-settings/IdiomaSection";
-import { BatePapoSection } from "~/components/user-settings/BatePapoSection";
-import { PrivacidadeSection } from "~/components/user-settings/PrivacidadeSection";
-import { ServidorSection } from "~/components/user-settings/ServidorSection";
+import { AccountSection } from "~/features/configuracoes/components/AccountSection";
+import { AppearanceSection } from "~/features/configuracoes/components/AppearanceSection";
+import { NotificationsSection } from "~/features/configuracoes/components/NotificationsSection";
+import { VoiceSection } from "~/features/configuracoes/components/VoiceSection";
+import { ConexoesSection } from "~/features/configuracoes/components/ConexoesSection";
+import { BotsSection } from "~/features/configuracoes/components/BotsSection";
+import { AplicativoSection } from "~/features/configuracoes/components/AplicativoSection";
+import { AcessibilidadeSection } from "~/features/configuracoes/components/AcessibilidadeSection";
+import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection";
+import { BatePapoSection } from "~/features/configuracoes/components/BatePapoSection";
+import { PrivacidadeSection } from "~/features/configuracoes/components/PrivacidadeSection";
+import { ServidorSection } from "~/features/configuracoes/components/ServidorSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
@@ -52,12 +52,12 @@ import {
   ancora,
   type Secao,
   type SubSecao,
-} from "~/components/user-settings/secoes";
-import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
-import { RodapeDeVersoes } from "~/components/user-settings/RodapeDeVersoes";
-import { ContextoDaSecao } from "~/components/user-settings/SecaoDeConfig";
-import { subSecaoAtiva } from "~/components/user-settings/espiao-da-rolagem";
-import { useConfiguracoes } from "~/stores/configuracoes";
+} from "~/features/configuracoes/components/secoes";
+import { BotaoDeLink } from "~/features/configuracoes/components/BotaoDeLink";
+import { RodapeDeVersoes } from "~/features/configuracoes/components/RodapeDeVersoes";
+import { ContextoDaSecao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { subSecaoAtiva } from "~/features/configuracoes/components/espiao-da-rolagem";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 
 export type { Secao };
 

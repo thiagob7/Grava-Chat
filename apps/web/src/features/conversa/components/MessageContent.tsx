@@ -11,7 +11,7 @@ import { legivel } from "~/features/perfil/lib/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { i18next, useTranslation } from "~/traducao";
 
 const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;

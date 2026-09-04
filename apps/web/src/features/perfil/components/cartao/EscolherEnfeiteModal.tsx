@@ -2,7 +2,7 @@ import React, { type ReactNode } from "react";
 
 import type { Opcao } from "~/features/perfil/lib/catalogo";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { GradeDeOpcoes } from "~/components/user-settings/perfil/campos";
+import { GradeDeOpcoes } from "~/features/configuracoes/components/perfil/campos";
 
 interface EscolherEnfeiteModalProps<T extends string> {
   open: boolean;

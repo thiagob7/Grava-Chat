@@ -66,7 +66,7 @@ import { useSuperReacao } from "~/features/expressao/stores/super-reacao";
 import { ExpressionPicker } from "~/features/expressao/components/ExpressionPicker";
 import { EncaminharModal } from "~/features/conversa/components/EncaminharModal";
 import { useIgnoreStore } from "~/stores/ignore-store";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
 
 const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];

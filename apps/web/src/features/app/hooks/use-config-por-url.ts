@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
 import { lerPedidoDaUrl, limparPedidoDaUrl } from "~/features/app/lib/link-de-config";
-import { SUBSECOES } from "~/components/user-settings/secoes";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { SUBSECOES } from "~/features/configuracoes/components/secoes";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 
 export function useConfigPorUrl(): void {
   useEffect(() => {

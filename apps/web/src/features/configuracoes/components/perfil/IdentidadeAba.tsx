@@ -8,8 +8,8 @@ import { SeletorDeImagem } from "~/components/SeletorDeImagem";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
-import { CampoDeCor } from "~/components/user-settings/perfil/campos";
-import type { RascunhoDePerfil } from "~/components/user-settings/perfil/rascunho";
+import { CampoDeCor } from "~/features/configuracoes/components/perfil/campos";
+import type { RascunhoDePerfil } from "~/features/configuracoes/components/perfil/rascunho";
 import { toast } from "react-toastify";
 
 interface IdentidadeAbaProps {

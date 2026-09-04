@@ -14,7 +14,7 @@ import {
 } from "~/features/servidor/components/ConfiguracoesDoConvite";
 import { copiarTexto } from "~/lib/copiar";
 import { formatTimestamp } from "~/lib/format";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

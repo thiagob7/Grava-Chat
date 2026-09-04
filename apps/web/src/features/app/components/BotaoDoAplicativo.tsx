@@ -4,7 +4,7 @@ import { ArrowClockwise, DownloadSimple } from "@phosphor-icons/react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { cn } from "~/lib/utils";
 
 export const BotaoDoAplicativo: React.FC = () => {

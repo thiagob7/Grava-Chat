@@ -1,13 +1,13 @@
 import React from "react";
 
 import { CampoSelect } from "~/components/ui/select";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
-import { Linha, Opcao } from "~/components/user-settings/campos-de-config";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { Linha, Opcao } from "~/features/configuracoes/components/campos-de-config";
 import {
   useAparencia,
   type Densidade,
   type QuandoMostrarSpoiler,
-} from "~/stores/aparencia";
+} from "~/features/configuracoes/stores/aparencia";
 
 export const BatePapoSection: React.FC = () => {
   const prefs = useAparencia();

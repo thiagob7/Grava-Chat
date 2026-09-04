@@ -40,7 +40,7 @@ import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
 

@@ -36,7 +36,7 @@ import { detectarMencao, useMencoes, type Mencionavel } from "~/features/convers
 import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";

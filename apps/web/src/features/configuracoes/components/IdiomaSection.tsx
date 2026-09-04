@@ -3,8 +3,8 @@ import React, { useMemo, useState } from "react";
 import { CampoSelect } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import { IDIOMAS, idiomaAtual, trocarIdioma, useTranslation } from "~/traducao";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
-import { useAparencia } from "~/stores/aparencia";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 
 export const IdiomaSection: React.FC = () => {
   const prefs = useAparencia();

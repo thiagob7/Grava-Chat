@@ -1,7 +1,7 @@
 import React from "react";
 
-import { ancora, type Secao } from "~/components/user-settings/secoes";
-import { BotaoDeLink } from "~/components/user-settings/BotaoDeLink";
+import { ancora, type Secao } from "~/features/configuracoes/components/secoes";
+import { BotaoDeLink } from "~/features/configuracoes/components/BotaoDeLink";
 import { cn } from "~/lib/utils";
 
 export const ContextoDaSecao = React.createContext<Secao | null>(null);

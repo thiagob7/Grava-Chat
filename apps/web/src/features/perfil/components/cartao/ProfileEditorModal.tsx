@@ -20,12 +20,12 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { UserName } from "~/features/perfil/components/UserName";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Amostra, EnfeitesAba } from "~/components/user-settings/perfil/EnfeitesAba";
-import { IdentidadeAba } from "~/components/user-settings/perfil/IdentidadeAba";
+import { Amostra, EnfeitesAba } from "~/features/configuracoes/components/perfil/EnfeitesAba";
+import { IdentidadeAba } from "~/features/configuracoes/components/perfil/IdentidadeAba";
 import {
   doUsuario,
   paraPerfil,
-} from "~/components/user-settings/perfil/rascunho";
+} from "~/features/configuracoes/components/perfil/rascunho";
 import { useRascunho } from "~/features/perfil/hooks/use-rascunho";
 import { useTranslation } from "~/traducao";
 

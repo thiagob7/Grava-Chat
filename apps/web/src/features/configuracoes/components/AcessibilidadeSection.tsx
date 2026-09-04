@@ -12,8 +12,8 @@ import {
   vozesDisponiveis,
   type ModoDeLeitura,
 } from "~/lib/voz";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
-import { useAparencia } from "~/stores/aparencia";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 
 export const AcessibilidadeSection: React.FC = () => {
   const prefs = useAparencia();

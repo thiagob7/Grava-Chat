@@ -1,5 +1,5 @@
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { comoSeFala, falar } from "~/lib/voz";
 

@@ -19,7 +19,7 @@ import { usePttGlobal } from "~/features/voz/stores/ptt-global";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 function nomeDaTecla(code: string) {
   if (code === "Space") return "Espaço";

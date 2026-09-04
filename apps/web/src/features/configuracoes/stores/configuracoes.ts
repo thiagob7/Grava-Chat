@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Secao } from "~/components/user-settings/UserSettingsModal";
+import type { Secao } from "~/features/configuracoes/components/UserSettingsModal";
 
 interface ConfiguracoesStore {
   secao: Secao | null;

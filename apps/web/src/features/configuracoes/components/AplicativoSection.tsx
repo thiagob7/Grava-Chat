@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";
 

@@ -9,7 +9,7 @@ import { useEnfeites, type ResolverEnfeites } from "~/features/perfil/hooks/use-
 import { cn } from "~/lib/utils";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 
 interface MemberListProps {
   members: GuildMember[];

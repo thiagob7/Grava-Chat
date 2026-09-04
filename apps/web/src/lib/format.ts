@@ -1,5 +1,5 @@
 import { i18next, idiomaAtual } from "~/traducao";
-import { prefsDeAparencia } from "~/stores/aparencia";
+import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
 
 const formatadores = new Map<string, Intl.DateTimeFormat>();
 

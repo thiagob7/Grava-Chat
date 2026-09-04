@@ -8,8 +8,8 @@ import { usePedirExclusao } from "~/@core/application/queries/conta/use-exclusao
 import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
-import { Opcao } from "~/components/user-settings/campos-de-config";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { Opcao } from "~/features/configuracoes/components/campos-de-config";
 
 interface PrivacidadeSectionProps {
   user: SelfUserModel;

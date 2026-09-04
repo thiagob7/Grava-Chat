@@ -13,7 +13,7 @@ import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 

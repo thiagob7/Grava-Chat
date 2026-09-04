@@ -13,19 +13,19 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { CampoSelect } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
-import { EstudioDeTemas } from "~/components/estudio/EstudioDeTemas";
+import { EstudioDeTemas } from "~/features/configuracoes/components/estudio/EstudioDeTemas";
 import {
   CORES_DE_DESTAQUE,
   useAparencia,
   type Densidade,
   type QuandoMostrarSpoiler,
   type Tema,
-} from "~/stores/aparencia";
+} from "~/features/configuracoes/stores/aparencia";
 import { cn } from "~/lib/utils";
 import { ehDesktop } from "~/lib/desktop";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
-import { ControleDeEscala } from "~/components/user-settings/ControleDeEscala";
-import { Linha, Opcao } from "~/components/user-settings/campos-de-config";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { ControleDeEscala } from "~/features/configuracoes/components/ControleDeEscala";
+import { Linha, Opcao } from "~/features/configuracoes/components/campos-de-config";
 
 interface TemaDaLista {
   id: Tema;

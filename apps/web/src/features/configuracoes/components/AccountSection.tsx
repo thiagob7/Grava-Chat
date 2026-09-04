@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Check, LogOut, Monitor, ShieldAlert } from "lucide-react";
 
-import { useAparencia } from "~/stores/aparencia";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 
 import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
@@ -19,7 +19,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useUnblockUser } from "~/@core/application/queries/friend/use-block-user";
 import { nomeDoAparelho } from "~/lib/aparelho";
-import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
+import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 interface AccountSectionProps {
   user: SelfUserModel;

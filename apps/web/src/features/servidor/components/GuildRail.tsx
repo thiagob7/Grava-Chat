@@ -11,7 +11,7 @@ import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { useConfiguracoes } from "~/stores/configuracoes";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 
 interface GuildRailProps {
   activeGuildId: string | null;

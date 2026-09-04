@@ -16,8 +16,8 @@ import { estiloDoNome } from "~/features/perfil/lib/nome";
 import {
   CampoDeCor,
   GradeDeOpcoes,
-} from "~/components/user-settings/perfil/campos";
-import type { RascunhoDePerfil } from "~/components/user-settings/perfil/rascunho";
+} from "~/features/configuracoes/components/perfil/campos";
+import type { RascunhoDePerfil } from "~/features/configuracoes/components/perfil/rascunho";
 import { cn } from "~/lib/utils";
 
 interface EnfeitesAbaProps {

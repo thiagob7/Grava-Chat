@@ -36,8 +36,8 @@ import {
 } from "~/components/ui/popover";
 import { copiarTexto } from "~/lib/copiar";
 import { uploadArquivo } from "~/lib/upload";
-import { useAparencia } from "~/stores/aparencia";
-import { useEstudio } from "~/stores/estudio";
+import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useEstudio } from "~/features/configuracoes/stores/estudio";
 import { cn } from "~/lib/utils";
 
 type Aba = "biblioteca" | "tokens" | "css" | "ativos" | "configuracoes";
