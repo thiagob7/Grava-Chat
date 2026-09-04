@@ -660,6 +660,37 @@ body {
 }
 
 /*
+  Com QUALQUER coisa aberta por cima, não há região de arrasto nenhuma.
+
+  Esta é a correção de raiz para uma família de bug que já apareceu três vezes —
+  a janelinha da transmissão, os menus, os diálogos. O padrão é sempre o mesmo:
+  algo em portal cai sobre um cabeçalho `regiao-de-arrasto`, e o sistema leva o
+  clique antes de a página ver.
+
+  Por que não basta marcar o que flutua como `no-drag`, que era o que se vinha
+  fazendo: o `-webkit-app-region` é recortado pela caixa de LAYOUT e IGNORA
+  transformações. O Radix posiciona todo menu e balão com `transform` no
+  invólucro do popper — então o buraco de "não arrastar" é aberto onde o
+  elemento estaria SEM o transform, e não onde ele aparece. O recorte cai no
+  lugar errado, e o acerto vira sorte.
+
+  Desligar a região é imune a isso: não há geometria envolvida.
+
+  Como se sabe que há algo aberto, sem o CSS conhecer componente nenhum:
+  - `[data-radix-popper-content-wrapper]` existe enquanto um menu, balão ou
+    lista está aberto. O `:not([role="tooltip"])` deixa as dicas de fora — elas
+    aparecem só de passar o mouse, e travar o arrasto da janela por causa de uma
+    dica seria pior que o bug.
+  - `data-scroll-locked` é posto no `body` pelo `react-remove-scroll` enquanto um
+    diálogo modal está aberto. Diálogo não usa popper, por isso os dois.
+*/
+body:has([data-radix-popper-content-wrapper] > :not([role="tooltip"])) .regiao-de-arrasto,
+body[data-scroll-locked] .regiao-de-arrasto {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/*
   O contrário, para o que FLUTUA por cima de uma região de arrasto.
 
   A região de arrasto é recortada pelo sistema a partir do RETÂNGULO pintado,
