@@ -822,14 +822,27 @@ const TileDaLive: React.FC<{
           <span className="size-1.5 animate-pulse rounded-full bg-white" /> {t("chamada.live.etiqueta")}
         </span>
 
+        {/*
+          No quadro pequeno, só o triângulo.
+
+          A frase inteira não cabia numa miniatura: ela quebrava em duas linhas
+          e o botão tomava quase o quadro todo, tapando justamente a imagem que
+          ele convida a ver. O triângulo sozinho diz a mesma coisa no espaço que
+          existe — o rótulo continua no `title`, para quem passa o mouse e para
+          quem lê a tela.
+        */}
         <span
+          title={t("chamada.live.assistir")}
           className={cn(
-            "flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 font-medium text-white shadow-lg",
+            "flex items-center justify-center bg-brand font-medium text-white shadow-lg",
             "opacity-0 transition group-hover/live:opacity-100",
-            denso ? "text-xs" : "text-sm",
+            denso
+              ? "size-9 rounded-full"
+              : "gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm",
           )}
         >
-          <Play size={denso ? 14 : 16} /> {t("chamada.live.assistir")}
+          <Play size={denso ? 16 : 16} />
+          {!denso && t("chamada.live.assistir")}
         </span>
       </button>
     )}

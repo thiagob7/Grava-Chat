@@ -93,7 +93,12 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
             </DialogBody>
           )}
 
-          <DialogFooter>
+          {/*
+            Sem campo, o rodapé vem logo depois do cabeçalho — e o `DialogFooter`
+            só tem folga embaixo, então os botões encostavam na linha divisória.
+            O `pt-5` iguala o respiro que o corpo daria se existisse.
+          */}
+          <DialogFooter className={pedido?.campo ? undefined : "pt-5"}>
             <Button variant="surface" onClick={() => responder(false)}>
               Cancelar
             </Button>
