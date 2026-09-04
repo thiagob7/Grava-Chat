@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Revenir à l'appel",
   voltarAosQuadros: "Revenir aux vignettes de l'appel",
   fecharChat: "Fermer le chat",
+  mostrarChat: "Afficher le chat",
+  convidar: "Inviter à l'appel",
   carregandoPrevia: "Chargement de l'aperçu…",
   maisOpcoes: "Plus d'options",
   deVideo: "Appel vidéo",

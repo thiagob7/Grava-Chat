@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Natrag na poziv",
   voltarAosQuadros: "Natrag na pločice poziva",
   fecharChat: "Zatvori razgovor",
+  mostrarChat: "Prikaži chat",
+  convidar: "Pozovi u poziv",
   carregandoPrevia: "Učitavanje pretpregleda…",
   maisOpcoes: "Više opcija",
   deVideo: "Videopoziv",

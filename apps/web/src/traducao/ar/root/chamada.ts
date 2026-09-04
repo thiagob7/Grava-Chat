@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "العودة إلى المكالمة",
   voltarAosQuadros: "العودة إلى مربّعات المكالمة",
   fecharChat: "إغلاق الدردشة",
+  mostrarChat: "إظهار الدردشة",
+  convidar: "دعوة إلى المكالمة",
   carregandoPrevia: "جارٍ تحميل المعاينة…",
   maisOpcoes: "خيارات أخرى",
   deVideo: "مكالمة فيديو",

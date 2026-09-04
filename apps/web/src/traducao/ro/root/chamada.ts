@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Înapoi la apel",
   voltarAosQuadros: "Înapoi la cadrele apelului",
   fecharChat: "Închide chatul",
+  mostrarChat: "Afișează chatul",
+  convidar: "Invită la apel",
   carregandoPrevia: "Se încarcă previzualizarea…",
   maisOpcoes: "Mai multe",
   deVideo: "Apel video",

@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "กลับไปที่สาย",
   voltarAosQuadros: "กลับไปที่ช่องของสาย",
   fecharChat: "ปิดแชท",
+  mostrarChat: "แสดงแชท",
+  convidar: "เชิญเข้าร่วมสาย",
   carregandoPrevia: "กำลังโหลดตัวอย่าง…",
   maisOpcoes: "ตัวเลือกเพิ่มเติม",
   deVideo: "สายวิดีโอ",

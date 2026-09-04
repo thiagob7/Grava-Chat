@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Aramaya dön",
   voltarAosQuadros: "Arama karolarına dön",
   fecharChat: "Sohbeti kapat",
+  mostrarChat: "Sohbeti göster",
+  convidar: "Aramaya davet et",
   carregandoPrevia: "Önizleme yükleniyor…",
   maisOpcoes: "Diğer seçenekler",
   deVideo: "Görüntülü arama",

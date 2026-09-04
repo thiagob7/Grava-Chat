@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Вернуться к звонку",
   voltarAosQuadros: "Вернуться к плиткам звонка",
   fecharChat: "Закрыть чат",
+  mostrarChat: "Показать чат",
+  convidar: "Пригласить в звонок",
   carregandoPrevia: "Загрузка превью…",
   maisOpcoes: "Ещё",
   deVideo: "Видеозвонок",

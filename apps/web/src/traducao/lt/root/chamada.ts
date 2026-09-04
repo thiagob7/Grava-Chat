@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Grįžti į skambutį",
   voltarAosQuadros: "Grįžti į skambučio langelius",
   fecharChat: "Uždaryti pokalbį",
+  mostrarChat: "Rodyti pokalbį",
+  convidar: "Pakviesti į skambutį",
   carregandoPrevia: "Įkeliama peržiūra…",
   maisOpcoes: "Daugiau",
   deVideo: "Vaizdo skambutis",

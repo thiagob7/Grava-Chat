@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Terug naar het gesprek",
   voltarAosQuadros: "Terug naar de gespreksvakken",
   fecharChat: "Chat sluiten",
+  mostrarChat: "Chat tonen",
+  convidar: "Uitnodigen voor het gesprek",
   carregandoPrevia: "Voorbeeld laden…",
   maisOpcoes: "Meer opties",
   deVideo: "Videogesprek",

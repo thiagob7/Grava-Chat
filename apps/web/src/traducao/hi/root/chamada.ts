@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "कॉल पर लौटें",
   voltarAosQuadros: "कॉल के टाइल पर लौटें",
   fecharChat: "चैट बंद करें",
+  mostrarChat: "चैट दिखाएँ",
+  convidar: "कॉल में आमंत्रित करें",
   carregandoPrevia: "झलक लोड हो रही है…",
   maisOpcoes: "और विकल्प",
   deVideo: "वीडियो कॉल",

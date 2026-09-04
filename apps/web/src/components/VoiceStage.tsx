@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
+import { ChatCircle, SpeakerHigh, UserPlus } from "@phosphor-icons/react";
+
+import { InviteModal } from "~/components/InviteModal";
 import { QualidadeDaTela } from "~/components/QualidadeDaTela";
 
 import type {
@@ -47,7 +50,94 @@ interface VoiceStageProps {
     e não mostra nada a mais.
   */
   compacto?: boolean;
+  /// o nome do servidor, só pro diálogo de convite saber pra onde convida
+  guildName?: string;
+  /*
+    O chat da chamada é estado da TELA, não do palco: quem desenha o painel
+    escrito ao lado é o `Chat.tsx`, e o mesmo interruptor já existe no
+    cabeçalho. O palco só ganha um segundo caminho até ele, no canto de cima —
+    dois botões para o mesmo estado, e não dois estados.
+  */
+  chatAberto?: boolean;
+  onAlternarChat?: () => void;
+  podeConvidar?: boolean;
 }
+
+/**
+ * Os cantos da chamada: nome do canal, chat e convite.
+ *
+ * Flutuam SOBRE o palco em vez de morar numa barra própria. Uma barra roubaria
+ * altura justamente de onde ela é mais cara — a chamada é a tela inteira, e
+ * cada faixa fixa é uma fileira de rostos a menos. Sobre o palco, os três só
+ * ocupam o canto que já era vazio.
+ *
+ * A camada inteira é `pointer-events-none` e cada botão devolve o clique com
+ * `pointer-events-auto`: sem isso, um retângulo invisível cobriria o topo da
+ * grade e comeria o clique de quem quisesse destacar o quadro de cima.
+ *
+ * O texto leva sombra porque o que está atrás não é sempre o fundo escuro do
+ * palco: com uma pessoa só, o vídeo vai de ponta a ponta, e branco sobre
+ * imagem clara some.
+ */
+const CantosDaChamada: React.FC<{
+  nome: string;
+  chatAberto?: boolean;
+  onAlternarChat?: () => void;
+  onConvidar?: () => void;
+}> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
+  const { t } = useTranslation();
+
+  const botao =
+    "pointer-events-auto flex size-9 shrink-0 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60";
+
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3">
+        <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
+          <SpeakerHigh
+            size={20}
+            weight="fill"
+            className="shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+          />
+          <span className="truncate">{nome}</span>
+        </span>
+
+        {onAlternarChat && (
+          <Tooltip
+            label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+            side="left"
+          >
+            <button
+              onClick={onAlternarChat}
+              aria-pressed={chatAberto}
+              aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+              className={cn(botao, chatAberto && "bg-white/20")}
+            >
+              <ChatCircle size={20} weight="fill" />
+            </button>
+          </Tooltip>
+        )}
+      </div>
+
+      {onConvidar && (
+        <Tooltip label={t("chamada.convidar")} side="right">
+          <button
+            onClick={onConvidar}
+            aria-label={t("chamada.convidar")}
+            /*
+              Canto de baixo à esquerda, onde a pílula de controles não chega:
+              ela é centralizada e ancorada na mesma altura (`bottom-4`), então
+              os dois convivem sem se cobrir em tela nenhuma.
+            */
+            className={cn(botao, "absolute bottom-4 left-4 z-10")}
+          >
+            <UserPlus size={20} weight="fill" />
+          </button>
+        </Tooltip>
+      )}
+    </>
+  );
+};
 
 export const VoiceStage: React.FC<VoiceStageProps> = ({
   channelName,
@@ -59,12 +149,17 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   minhasPermissoes = [],
   currentUserId,
   compacto = false,
+  guildName,
+  chatAberto,
+  onAlternarChat,
+  podeConvidar = false,
 }) => {
   const { t } = useTranslation();
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
   /// qual quadro está em destaque; `null` é a grade igualitária
   const [focado, setFocado] = useState<string | null>(null);
+  const [convidando, setConvidando] = useState(false);
 
   /*
     Tela cheia no QUADRO, não na janela inteira: assim a barra de participantes
@@ -322,7 +417,28 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         pequenos ficava. O resultado era a miniatura da live escondida atrás dos
         botões, com metade dela aparecendo pelas bordas.
       */
-      <div ref={palco} className="group relative flex flex-1 flex-col gap-3 bg-surface-2 p-4 pb-20">
+      <div
+        ref={palco}
+        /*
+          A folga de cima só existe quando os cantos existem. No privado eles
+          não aparecem — o nome de quem está do outro lado já está no cabeçalho
+          da conversa, a um centímetro dali, e repeti-lo sobre o vídeo seria
+          gastar altura pra dizer duas vezes a mesma coisa.
+        */
+        className={cn(
+          "group relative flex flex-1 flex-col gap-3 bg-surface-2 pb-20",
+          compacto ? "p-4 pb-20" : "px-4 pt-14",
+        )}
+      >
+        {!compacto && (
+          <CantosDaChamada
+            nome={channelName}
+            chatAberto={chatAberto}
+            onAlternarChat={onAlternarChat}
+            onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
+          />
+        )}
+
         {/*
           O quadro em destaque PREENCHE. Sem isso ele mantém o 16:9 dentro de
           uma caixa mais alta, e sobra uma tira preta entre ele e a faixa — o
@@ -341,6 +457,18 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         </div>
 
         <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
+
+        {/*
+          O diálogo mora nos dois ramos que mostram o botão, e não no topo do
+          componente: cada `return` do palco é uma árvore diferente, e um
+          diálogo pendurado num ramo que não renderizou não abre.
+        */}
+        <InviteModal
+          open={convidando}
+          guildId={guildId}
+          guildName={guildName}
+          onClose={() => setConvidando(false)}
+        />
       </div>
     );
   }
@@ -400,9 +528,23 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           Com um quadro só a folga não existe de propósito: ali o vídeo vai de
           ponta a ponta e a pílula flutua por cima, como numa chamada de vídeo.
         */
-        grade.length === 1 ? "p-0" : "p-6 pb-20",
+        /*
+          `pt-14` e não `pt-6`: o nome do canal flutua no alto à esquerda, e
+          com a folga antiga ele pousava em cima do primeiro quadro. Com um
+          quadro só a folga não existe de propósito — ali o vídeo vai de ponta
+          a ponta e os cantos flutuam por cima dele, como numa chamada de
+          vídeo.
+        */
+        grade.length === 1 ? "p-0" : "px-6 pb-20 pt-14",
       )}
     >
+        <CantosDaChamada
+          nome={channelName}
+          chatAberto={chatAberto}
+          onAlternarChat={onAlternarChat}
+          onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
+        />
+
       {/*
         `min-h-0` e `overflow-hidden` acima, `max-h-full` aqui: sem os três, a
         grade cresce além da altura reservada e vaza pra fora do palco. Numa
@@ -431,6 +573,13 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       )}
 
       <VoiceStageControls alvoTelaCheia={palco} mostrarChat={compacto} />
+
+      <InviteModal
+        open={convidando}
+        guildId={guildId}
+        guildName={guildName}
+        onClose={() => setConvidando(false)}
+      />
     </div>
   );
 };

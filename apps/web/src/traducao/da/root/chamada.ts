@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Tilbage til opkaldet",
   voltarAosQuadros: "Tilbage til opkaldsfelterne",
   fecharChat: "Luk chatten",
+  mostrarChat: "Vis chatten",
+  convidar: "Inviter til opkaldet",
   carregandoPrevia: "Indlæser forhåndsvisningen…",
   maisOpcoes: "Flere muligheder",
   deVideo: "Videoopkald",

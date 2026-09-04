@@ -371,12 +371,24 @@ export const Chat: React.FC = () => {
             <VoiceStage
               channelName={channel.name}
               guildId={detail?.guild.id}
+              guildName={detail?.guild.name}
               members={detail?.members}
               roles={detail?.roles}
               canaisDeVoz={detail?.channels.filter((c) => c.type === "VOICE")}
               voiceStates={detail?.voiceStates[channel.id]}
               minhasPermissoes={detail?.permissions}
               currentUserId={user?.id}
+              /*
+                O MESMO estado do botão do cabeçalho, e não um segundo.
+
+                São dois caminhos até o mesmo interruptor — o de cima, para quem
+                procura na barra do canal, e o do canto do palco, para quem está
+                dentro da chamada. Dois estados fariam o chat abrir por um e
+                continuar "fechado" para o outro.
+              */
+              chatAberto={chatDaVozAberto}
+              onAlternarChat={() => setChatDaVozAberto((aberto) => !aberto)}
+              podeConvidar={can("CREATE_INVITE")}
             />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">

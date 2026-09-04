@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Zpět do hovoru",
   voltarAosQuadros: "Zpět na dlaždice hovoru",
   fecharChat: "Zavřít chat",
+  mostrarChat: "Zobrazit chat",
+  convidar: "Pozvat do hovoru",
   carregandoPrevia: "Načítání náhledu…",
   maisOpcoes: "Další možnosti",
   deVideo: "Videohovor",

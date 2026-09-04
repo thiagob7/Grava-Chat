@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "Zurück zum Anruf",
   voltarAosQuadros: "Zurück zu den Anrufkacheln",
   fecharChat: "Chat schließen",
+  mostrarChat: "Chat anzeigen",
+  convidar: "Zum Anruf einladen",
   carregandoPrevia: "Vorschau wird geladen…",
   maisOpcoes: "Mehr Optionen",
   deVideo: "Videoanruf",

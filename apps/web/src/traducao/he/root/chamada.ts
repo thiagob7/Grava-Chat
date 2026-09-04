@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "חזרה לשיחה",
   voltarAosQuadros: "חזרה למשבצות השיחה",
   fecharChat: "סגירת הצ׳אט",
+  mostrarChat: "הצגת הצ׳אט",
+  convidar: "הזמנה לשיחה",
   carregandoPrevia: "טוען תצוגה מקדימה…",
   maisOpcoes: "אפשרויות נוספות",
   deVideo: "שיחת וידאו",

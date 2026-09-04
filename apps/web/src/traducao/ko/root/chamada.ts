@@ -7,6 +7,8 @@ export const chamada = {
   voltar: "통화로 돌아가기",
   voltarAosQuadros: "통화 타일로 돌아가기",
   fecharChat: "채팅 닫기",
+  mostrarChat: "채팅 표시",
+  convidar: "통화에 초대",
   carregandoPrevia: "미리보기를 불러오는 중…",
   maisOpcoes: "더 보기",
   deVideo: "영상 통화",
