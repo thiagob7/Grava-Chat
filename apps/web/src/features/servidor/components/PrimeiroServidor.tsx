@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { codigoDoConvite, MOLDES, type MoldeDeServidor } from "~/lib/moldes-de-servidor";
+import { codigoDoConvite, MOLDES, type MoldeDeServidor } from "~/features/servidor/lib/moldes-de-servidor";
 
 export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void }> = ({
   aberto,

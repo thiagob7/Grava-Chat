@@ -11,7 +11,7 @@ import { CarrosselDeEtapas } from "~/components/ui/carrossel-de-etapas";
 import {
   ConfiguracoesDoConvite,
   type OpcoesDoConvite,
-} from "~/components/ConfiguracoesDoConvite";
+} from "~/features/servidor/components/ConfiguracoesDoConvite";
 import { copiarTexto } from "~/lib/copiar";
 import { formatTimestamp } from "~/lib/format";
 import { useAparencia } from "~/stores/aparencia";

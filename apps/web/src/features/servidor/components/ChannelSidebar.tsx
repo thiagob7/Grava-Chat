@@ -6,9 +6,9 @@ import type {
   GuildSummaryModel,
 } from "~/@core/domain/models/guild-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSettingsModal";
-import { CreateChannelModal } from "~/components/CreateChannelModal";
-import { InviteModal } from "~/components/InviteModal";
+import { ChannelSettingsModal } from "~/features/servidor/components/channel-settings/ChannelSettingsModal";
+import { CreateChannelModal } from "~/features/servidor/components/CreateChannelModal";
+import { InviteModal } from "~/features/servidor/components/InviteModal";
 import { CallTimer } from "~/features/voz/components/CallTimer";
 import { VoiceMembers } from "~/features/voz/components/VoiceMembers";
 import { useVoiceSync } from "~/features/voz/hooks/use-voice-sync";
@@ -22,7 +22,7 @@ import {
   UserPlus,
 } from "@phosphor-icons/react";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
-import { useFavoritos } from "~/stores/favoritos";
+import { useFavoritos } from "~/features/servidor/stores/favoritos";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,19 +30,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { ServerSettingsModal } from "~/components/server-settings/ServerSettingsModal";
+import { ServerSettingsModal } from "~/features/servidor/components/server-settings/ServerSettingsModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { usePermissions } from "~/hooks/use-permissions";
 import { copiarTexto } from "~/lib/copiar";
 import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 import { toast } from "react-toastify";
-import { useServerSettingsStore } from "~/stores/server-settings-store";
+import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/stores/aparencia";
-import { useCategoriasFechadas } from "~/hooks/use-categorias-fechadas";
-import { useProporcaoDaFaixa } from "~/hooks/use-proporcao-da-faixa";
+import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
+import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
 
 interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;

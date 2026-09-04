@@ -8,7 +8,7 @@ import {
   useReorderRoles,
 } from "~/@core/application/queries/role/use-save-role";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
-import { RoleEditor } from "~/components/server-settings/RoleEditor";
+import { RoleEditor } from "~/features/servidor/components/server-settings/RoleEditor";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";

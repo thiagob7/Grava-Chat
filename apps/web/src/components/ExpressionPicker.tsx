@@ -9,7 +9,7 @@ import { AbaFigurinhas } from "~/components/expression-picker/AbaFigurinhas";
 import { AbaGifs } from "~/components/expression-picker/AbaGifs";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
-import { useServerSettingsStore } from "~/stores/server-settings-store";
+import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useTranslation } from "~/traducao";
 
 export type Aba = "gifs" | "figurinhas" | "emoji";

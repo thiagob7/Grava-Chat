@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { BarraDeTitulo } from "~/components/BarraDeTitulo";
-import { FaixaDaComunidade } from "~/components/FaixaDaComunidade";
+import { FaixaDaComunidade } from "~/features/servidor/components/FaixaDaComunidade";
 import { Splash } from "~/components/Splash";
 
 import { ChamadaRecebida } from "~/features/voz/components/ChamadaRecebida";

@@ -1,7 +1,7 @@
 import React from "react";
 import type { Channel, GuildMember, Permission, Role } from "@gravae/shared";
 
-import { ChannelPermissionsBoard } from "~/components/ChannelPermissionsModal";
+import { ChannelPermissionsBoard } from "~/features/servidor/components/ChannelPermissionsModal";
 import { useTranslation } from "~/traducao";
 
 interface ChannelPermissionsSectionProps {

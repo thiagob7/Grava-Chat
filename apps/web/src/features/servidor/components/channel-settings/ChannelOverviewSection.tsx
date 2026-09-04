@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { GrupoSegmentado, Label, OpcaoEmCartao, Textarea } from "~/components/ui/input";
-import { CampoDeNomeDeCanal } from "~/components/CampoDeNomeDeCanal";
+import { CampoDeNomeDeCanal } from "~/features/servidor/components/CampoDeNomeDeCanal";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/traducao";
 

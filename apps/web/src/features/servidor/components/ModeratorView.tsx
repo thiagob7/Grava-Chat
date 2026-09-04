@@ -29,7 +29,7 @@ import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-me
 import { useBanMember, useTimeoutMember } from "~/@core/application/queries/moderation/use-moderation";
 import type { ModerationMessageModel } from "~/@core/domain/models/moderation-model";
 import { Avatar } from "~/components/Avatar";
-import { useModeracao } from "~/stores/moderacao";
+import { useModeracao } from "~/features/servidor/stores/moderacao";
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import { copiarTexto } from "~/lib/copiar";
 import { extrairLinks } from "~/features/conversa/lib/links";

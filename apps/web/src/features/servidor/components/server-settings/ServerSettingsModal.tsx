@@ -4,23 +4,23 @@ import { Trash2, X } from "lucide-react";
 import type { GuildMember, Permission } from "@gravae/shared";
 
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
-import { DeleteGuildSection } from "~/components/server-settings/DeleteGuildSection";
-import { InvitesSection } from "~/components/server-settings/InvitesSection";
-import { MembersSection } from "~/components/server-settings/MembersSection";
-import { IntegrationsSection } from "~/components/server-settings/IntegrationsSection";
-import { AuditLogSection } from "~/components/server-settings/AuditLogSection";
-import { AutoModSection } from "~/components/server-settings/AutoModSection";
-import { BansSection } from "~/components/server-settings/BansSection";
-import { EmblemasSection } from "~/components/server-settings/EmblemasSection";
-import { EngagementSection } from "~/components/server-settings/EngagementSection";
+import { DeleteGuildSection } from "~/features/servidor/components/server-settings/DeleteGuildSection";
+import { InvitesSection } from "~/features/servidor/components/server-settings/InvitesSection";
+import { MembersSection } from "~/features/servidor/components/server-settings/MembersSection";
+import { IntegrationsSection } from "~/features/servidor/components/server-settings/IntegrationsSection";
+import { AuditLogSection } from "~/features/servidor/components/server-settings/AuditLogSection";
+import { AutoModSection } from "~/features/servidor/components/server-settings/AutoModSection";
+import { BansSection } from "~/features/servidor/components/server-settings/BansSection";
+import { EmblemasSection } from "~/features/servidor/components/server-settings/EmblemasSection";
+import { EngagementSection } from "~/features/servidor/components/server-settings/EngagementSection";
 import {
   EmojiSection,
   SoundboardSection,
   StickersSection,
-} from "~/components/server-settings/ExpressionsSections";
-import { RolesSection } from "~/components/server-settings/RolesSection";
-import { ServerTagSection } from "~/components/server-settings/ServerTagSection";
-import { ServerProfileSection } from "~/components/server-settings/ServerProfileSection";
+} from "~/features/servidor/components/server-settings/ExpressionsSections";
+import { RolesSection } from "~/features/servidor/components/server-settings/RolesSection";
+import { ServerTagSection } from "~/features/servidor/components/server-settings/ServerTagSection";
+import { ServerProfileSection } from "~/features/servidor/components/server-settings/ServerProfileSection";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

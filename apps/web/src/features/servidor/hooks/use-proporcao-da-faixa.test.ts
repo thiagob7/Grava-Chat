@@ -4,7 +4,7 @@ import {
   apertarProporcao,
   PROPORCAO_MAIS_ESTREITA,
   PROPORCAO_PADRAO,
-} from "~/hooks/use-proporcao-da-faixa";
+} from "~/features/servidor/hooks/use-proporcao-da-faixa";
 
 describe("a proporção da faixa do servidor", () => {
   it("usa a proporção da imagem quando ela cabe no intervalo", () => {

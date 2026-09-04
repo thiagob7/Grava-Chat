@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Label, cartaoDeEscolha } from "~/components/ui/input";
-import { CampoDeNomeDeCanal } from "~/components/CampoDeNomeDeCanal";
+import { CampoDeNomeDeCanal } from "~/features/servidor/components/CampoDeNomeDeCanal";
 import { Switch } from "~/components/ui/switch";
 import { cn } from "~/lib/utils";
 

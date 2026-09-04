@@ -3,7 +3,7 @@ import { Mic, MicOff, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X }
 
 import { ChatCircle, SpeakerHigh, UserPlus } from "@phosphor-icons/react";
 
-import { InviteModal } from "~/components/InviteModal";
+import { InviteModal } from "~/features/servidor/components/InviteModal";
 import { QualidadeDaTela } from "~/features/voz/components/QualidadeDaTela";
 
 import type {

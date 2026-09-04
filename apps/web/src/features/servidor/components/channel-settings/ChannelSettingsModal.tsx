@@ -3,10 +3,10 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Trash2, X } from "lucide-react";
 import type { Channel, GuildMember, Role } from "@gravae/shared";
 
-import { InvitesSection } from "~/components/server-settings/InvitesSection";
-import { ChannelOverviewSection } from "~/components/channel-settings/ChannelOverviewSection";
-import { ChannelPermissionsSection } from "~/components/channel-settings/ChannelPermissionsSection";
-import { DeleteChannelSection } from "~/components/channel-settings/DeleteChannelSection";
+import { InvitesSection } from "~/features/servidor/components/server-settings/InvitesSection";
+import { ChannelOverviewSection } from "~/features/servidor/components/channel-settings/ChannelOverviewSection";
+import { ChannelPermissionsSection } from "~/features/servidor/components/channel-settings/ChannelPermissionsSection";
+import { DeleteChannelSection } from "~/features/servidor/components/channel-settings/DeleteChannelSection";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

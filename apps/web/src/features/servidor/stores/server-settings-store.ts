@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Secao } from "~/components/server-settings/ServerSettingsModal";
+import type { Secao } from "~/features/servidor/components/server-settings/ServerSettingsModal";
 
 interface ServerSettingsState {
   guildId: string | null;

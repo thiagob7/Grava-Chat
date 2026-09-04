@@ -5,9 +5,9 @@ import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-ma
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
-import { AdicionarServidorModal } from "~/components/AdicionarServidorModal";
+import { AdicionarServidorModal } from "~/features/servidor/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
-import { DicaDoServidor } from "~/components/DicaDoServidor";
+import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/hooks/use-atualizacao";

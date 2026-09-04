@@ -35,7 +35,7 @@ import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { highestPosition, type Role } from "@gravae/shared";
 
-import { useModeracao } from "~/stores/moderacao";
+import { useModeracao } from "~/features/servidor/stores/moderacao";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
