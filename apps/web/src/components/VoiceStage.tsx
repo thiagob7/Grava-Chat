@@ -479,7 +479,9 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           sozinho de que lado sobra preto: numa área larga sobra dos lados, numa
           alta sobra em cima e embaixo — o que estiver mais apertado manda.
         */}
-        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg bg-black">
+        {/* Sem canto arredondado: quem emoldura aqui é o preto em volta, e um
+            cartão com quina no meio dele deixa quatro mordidas à vista. */}
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black">
           {/*
             `w-full` é o que dá base para a proporção crescer, e `max-h-full` é
             o teto. Só com os dois máximos a caixa não tem de onde partir e
@@ -554,30 +556,26 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
         /*
-          Só a tira de baixo é reservada.
+          As duas tiras pretas: a de cima com o nome do canal, a de baixo com a
+          pílula de controles.
 
-          A pílula de controles é ancorada em `bottom-4` e tem ~52px: ocupa de
-          16 a 68px do rodapé. Sem a folga ela pousa em cima do quadro — foi o
-          que aconteceu com a miniatura da live, que ficava metade escondida
-          atrás dos botões.
+          A de baixo tem medida concreta — a pílula é ancorada em `bottom-4` e
+          tem ~52px, ocupando de 16 a 68px do rodapé; sem a folga ela pousa em
+          cima do quadro. A de cima é a mesma ideia para o nome.
 
-          EM CIMA não se reserva nada. Cheguei a reservar, para o nome do canal
-          não flutuar sobre a imagem, e ficou errado: o quadro encolhia e sobrava
-          uma tira preta entre o nome e ele. O nome já tem véu e sombra próprios
-          — ele se defende sobre imagem clara sem roubar altura do vídeo.
-
-          A tira preta em VOLTA do quadro é outra coisa, e é do destaque: quando
-          se clica num quadro para ampliá-lo, ele guarda a proporção e o que
-          sobra fica preto. Ali a tarja tem motivo; aqui não tinha.
+          O que estragou na primeira tentativa não foram as tiras: era o quadro
+          continuar arredondado dentro delas, o que desenhava um cartão
+          flutuando no preto em vez de uma imagem emoldurada. Sem o canto, as
+          duas tiras leem como moldura — que é o que a referência faz.
         */
-        "pb-20",
+        "pb-20 pt-14",
         /*
           A margem lateral e o teto de largura existem pra grade não virar uma
           parede de quadros gigantes quando há gente. Com UM quadro só eles não
           protegem nada — deixariam um retângulo pequeno num vazio enorme, que
           é o que aparecia quando alguém entrava primeiro e esperava os outros.
         */
-        grade.length === 1 ? "bg-black" : "bg-surface-2 px-6 pt-14",
+        grade.length === 1 ? "bg-black" : "bg-surface-2 px-6",
       )}
     >
         <CantosDaChamada
@@ -667,7 +665,16 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
       */
       onClick={onFocar}
       className={cn(
-        "group/tile relative flex items-center justify-center overflow-hidden rounded-lg bg-surface-1 transition",
+        "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
+        /*
+          Canto arredondado só quando o quadro é UM CARTÃO entre outros.
+
+          Preenchendo a área inteira ele deixa de ser cartão e passa a ser o
+          fundo: arredondar ali desenha um contorno em volta de nada — quatro
+          mordidas nos cantos, com preto aparecendo por trás. É o que o Discord
+          faz, e é o que fica bem: a cor do quadro, e mais nada.
+        */
+        !preencher && "rounded-lg",
         onFocar && "cursor-pointer",
         /*
           A pastilha tem tamanho fixo em vez de `aspect-video h-full`: como ela
