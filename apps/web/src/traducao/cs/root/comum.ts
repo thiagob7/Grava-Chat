@@ -10,4 +10,10 @@ export const comum = {
   nome: "Název",
   emoji: "Emoji",
   previa: "Náhled",
+  cancelar: "Zrušit",
+  enviar: "Odeslat",
+  apagar: "Smazat",
+  excluir: "Smazat",
+  remover: "Odebrat",
+  trocar: "Změnit",
 };

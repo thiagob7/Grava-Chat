@@ -10,4 +10,10 @@ export const comum = {
   nome: "Όνομα",
   emoji: "Emoji",
   previa: "Προεπισκόπηση",
+  cancelar: "Άκυρο",
+  enviar: "Αποστολή",
+  apagar: "Διαγραφή",
+  excluir: "Διαγραφή",
+  remover: "Αφαίρεση",
+  trocar: "Αλλαγή",
 };

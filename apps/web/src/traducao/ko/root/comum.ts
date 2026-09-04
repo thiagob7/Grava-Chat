@@ -10,4 +10,10 @@ export const comum = {
   nome: "이름",
   emoji: "이모지",
   previa: "미리 보기",
+  cancelar: "취소",
+  enviar: "보내기",
+  apagar: "삭제",
+  excluir: "삭제",
+  remover: "빼기",
+  trocar: "바꾸기",
 };

@@ -9,12 +9,14 @@ import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { avatarColor, initials } from "~/lib/format";
 import { formatBytes } from "~/lib/image";
+import { useTranslation } from "~/traducao";
 
 const ICONE_MAX_PX = 256;
 
 export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
   guild,
 }) => {
+  const { t } = useTranslation();
   const updateGuild = useUpdateGuild();
   const uploadImage = useUploadImage();
   const inputArquivo = useRef<HTMLInputElement>(null);
@@ -76,14 +78,14 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-xl font-semibold">Perfil do servidor</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.perfil.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        É assim que seu servidor aparece na lista e nos links de convite.
+        {t("servidor.perfil.descricao")}
       </p>
 
       <div className="my-6 h-px bg-line" />
 
-      <Label>Ícone</Label>
+      <Label>{t("servidor.perfil.icone")}</Label>
       <div className="flex items-center gap-4">
         {iconUrl ? (
           <img
@@ -119,14 +121,14 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
                 onClick={() => setIconUrl(null)}
                 className="text-danger"
               >
-                Remover
+                {t("comum.remover")}
               </Button>
             )}
           </div>
 
           <p className="mt-1.5 text-xs text-ink-faint">
             {economia
-              ? `Comprimido antes de subir: ${economia}`
+              ? t("servidor.perfil.comprimido", { economia })
               : "A imagem é reduzida no navegador."}
           </p>
 
@@ -142,7 +144,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
 
       <div className="my-6 h-px bg-line" />
 
-      <Label>Faixa do topo</Label>
+      <Label>{t("servidor.perfil.faixa")}</Label>
       <div className="space-y-3">
         <div
           className="flex h-32 items-center justify-center overflow-hidden rounded-lg bg-cover bg-center text-xs text-ink-faint"
@@ -188,7 +190,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
 
       <div className="my-6 h-px bg-line" />
 
-      <Label htmlFor="guild-name">Nome do servidor</Label>
+      <Label htmlFor="guild-name">{t("servidor.perfil.nomeDoServidor")}</Label>
       <Input
         id="guild-name"
         value={name}
@@ -197,21 +199,21 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
       />
 
       <div className="mt-5">
-        <Label htmlFor="guild-description">Descrição</Label>
+        <Label htmlFor="guild-description">{t("servidor.perfil.campoDescricao")}</Label>
         <Textarea
           id="guild-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           maxLength={512}
           rows={3}
-          placeholder="Do que é esse servidor?"
+          placeholder={t("servidor.perfil.doQueE")}
         />
       </div>
 
       {mudou && (
         <div className="mt-6 flex items-center justify-between rounded-lg bg-surface-0 px-4 py-3">
           <p className="text-sm text-ink-muted">
-            Você tem alterações não salvas.
+            {t("comum.naoSalvo")}
           </p>
           <div className="flex gap-2">
             <Button
@@ -224,7 +226,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
                 setBannerUrl(guild.bannerUrl ?? null);
               }}
             >
-              Descartar
+              {t("comum.descartar")}
             </Button>
             <Button
               size="sm"

@@ -10,4 +10,10 @@ export const comum = {
   nome: "Ad",
   emoji: "Emoji",
   previa: "Önizleme",
+  cancelar: "Vazgeç",
+  enviar: "Gönder",
+  apagar: "Sil",
+  excluir: "Sil",
+  remover: "Kaldır",
+  trocar: "Değiştir",
 };

@@ -21,4 +21,10 @@ export const comum = {
   nome: "Nome",
   emoji: "Emoji",
   previa: "Prévia",
+  cancelar: "Cancelar",
+  enviar: "Enviar",
+  apagar: "Apagar",
+  excluir: "Excluir",
+  remover: "Remover",
+  trocar: "Trocar",
 };

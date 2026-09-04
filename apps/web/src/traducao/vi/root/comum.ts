@@ -10,4 +10,10 @@ export const comum = {
   nome: "Tên",
   emoji: "Biểu tượng cảm xúc",
   previa: "Xem trước",
+  cancelar: "Hủy",
+  enviar: "Gửi",
+  apagar: "Xóa",
+  excluir: "Xóa",
+  remover: "Gỡ",
+  trocar: "Đổi",
 };

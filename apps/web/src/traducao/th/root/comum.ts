@@ -10,4 +10,10 @@ export const comum = {
   nome: "ชื่อ",
   emoji: "อีโมจิ",
   previa: "ตัวอย่าง",
+  cancelar: "ยกเลิก",
+  enviar: "ส่ง",
+  apagar: "ลบ",
+  excluir: "ลบ",
+  remover: "เอาออก",
+  trocar: "เปลี่ยน",
 };

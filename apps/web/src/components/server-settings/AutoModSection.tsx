@@ -22,6 +22,7 @@ import { Input, Label } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
+import { i18next, useTranslation } from "~/traducao";
 
 interface AutoModSectionProps {
   guildId: string;
@@ -29,31 +30,40 @@ interface AutoModSectionProps {
   roles: Role[];
 }
 
+/*
+  A lista guarda a CHAVE, não a frase.
+
+  Ela é uma constante de módulo: se chamasse `t()` aqui, a tradução seria
+  resolvida uma vez, na hora de carregar o arquivo — antes de o idioma estar
+  pronto, e congelada para sempre depois. Quem desenha é que traduz.
+*/
 const GATILHOS = [
   {
     valor: "WORDS" as const,
     icone: TextCursorInput,
-    titulo: "Bloquear palavras personalizadas",
-    descricao: "Sua lista de palavras que ninguém pode escrever.",
+    titulo: "servidor.automod.palavras.titulo",
+    descricao: "servidor.automod.palavras.descricao",
   },
   {
     valor: "MENTION_SPAM" as const,
     icone: AtSign,
-    titulo: "Bloquear spam de menções",
-    descricao: "Bloqueia mensagem com menções demais de uma vez.",
+    titulo: "servidor.automod.mencoes.titulo",
+    descricao: "servidor.automod.mencoes.descricao",
   },
   {
     valor: "LINKS" as const,
     icone: Link2,
-    titulo: "Bloquear links",
-    descricao: "Segura qualquer endereço colado no chat.",
+    titulo: "servidor.automod.links.titulo",
+    descricao: "servidor.automod.links.descricao",
   },
 ];
 
 const novaRegra = (
   trigger: AutoModRuleModel["trigger"],
 ): Omit<AutoModRuleModel, "id" | "guildId"> => ({
-  name: GATILHOS.find((g) => g.valor === trigger)!.titulo,
+  /// O nome da regra é gravado no banco: aqui a frase precisa existir de
+  /// verdade, e `i18next.t` resolve no idioma de quem clicou.
+  name: i18next.t(GATILHOS.find((g) => g.valor === trigger)!.titulo),
   enabled: true,
   trigger,
   palavras: [],
@@ -69,6 +79,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
   channels,
   roles,
 }) => {
+  const { t } = useTranslation();
   const { data: regras = [] } = useFindAutoModRules(guildId);
   const salvar = useSaveAutoModRule(guildId);
   const confirmar = useConfirmar();
@@ -79,10 +90,9 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">AutoMod</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.automod.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Filtros que moderam sozinhos, antes de a mensagem existir. Quem
-        administra o servidor nunca é filtrado — e cargos isentos passam direto.
+        {t("servidor.automod.descricao")}
       </p>
 
       <section className="mt-6 space-y-3">
@@ -98,9 +108,9 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                 />
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold">{gatilho.titulo}</p>
+                  <p className="text-sm font-semibold">{t(gatilho.titulo)}</p>
                   <p className="mt-0.5 text-xs text-ink-faint">
-                    {gatilho.descricao}
+                    {t(gatilho.descricao)}
                   </p>
 
                   {existente && (
@@ -139,22 +149,22 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                       size="sm"
                       onClick={() => setEditando(existente)}
                     >
-                      Definir
+                      {t("servidor.automod.definir")}
                     </Button>
                     <button
                       onClick={() =>
                         void confirmar({
-                          titulo: "Excluir regra do AutoMod?",
+                          titulo: t("servidor.automod.excluirTitulo"),
                           descricao:
-                            "O servidor deixa de filtrar por ela na hora. Dá pra criar de novo, mas a configuração atual se perde.",
-                          acao: "Excluir regra",
+                            t("servidor.automod.excluirDescricao"),
+                          acao: t("servidor.automod.excluirAcao"),
                         }).then(
                           ({ confirmado }) =>
                             confirmado &&
                             apagar.mutate({ guildId, ruleId: existente.id }),
                         )
                       }
-                      title="Apagar regra"
+                      title={t("servidor.automod.apagar")}
                       className="rounded p-1.5 text-ink-faint transition hover:text-danger"
                     >
                       <Trash2 size={16} />
@@ -171,7 +181,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                       })
                     }
                   >
-                    <Plus size={14} /> Criar
+                    <Plus size={14} /> {t("comum.criar")}
                   </Button>
                 )}
               </div>
@@ -215,6 +225,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
   onFechar,
   onSalvar,
 }) => {
+  const { t } = useTranslation();
   const [rascunho, setRascunho] = useState(regra);
   const [palavra, setPalavra] = useState("");
 
@@ -234,7 +245,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
 
       <div className="mt-4 space-y-4">
         <div>
-          <Label htmlFor="regra-nome">Nome da regra</Label>
+          <Label htmlFor="regra-nome">{t("servidor.automod.nomeDaRegra")}</Label>
           <Input
             id="regra-nome"
             value={rascunho.name}
@@ -245,12 +256,12 @@ const EditorDeRegra: React.FC<EditorProps> = ({
 
         {rascunho.trigger === "WORDS" && (
           <div>
-            <Label htmlFor="regra-palavra">Palavras bloqueadas</Label>
+            <Label htmlFor="regra-palavra">{t("servidor.automod.bloqueadas")}</Label>
             <div className="flex gap-2">
               <Input
                 id="regra-palavra"
                 value={palavra}
-                placeholder="Digite e aperte Enter"
+                placeholder={t("servidor.automod.digiteEnter")}
                 onChange={(e) => setPalavra(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key !== "Enter" || !palavra.trim()) return;
@@ -288,8 +299,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
             </div>
 
             <p className="mt-2 text-xs text-ink-faint">
-              A comparação ignora maiúscula, acento e pontuação — e não pega
-              palavra dentro de outra ("burro" não bloqueia "burrocracia").
+              {t("servidor.automod.comparacao")}
             </p>
           </div>
         )}
@@ -297,7 +307,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         {rascunho.trigger === "MENTION_SPAM" && (
           <div>
             <Label htmlFor="regra-mencoes">
-              Bloquear a partir de quantas menções
+              {t("servidor.automod.aPartirDe")}
             </Label>
             <Input
               id="regra-mencoes"
@@ -316,7 +326,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         )}
 
         <div>
-          <Label>O que fazer</Label>
+          <Label>{t("servidor.automod.oQueFazer")}</Label>
           <div className="space-y-2">
             {(
               [
@@ -346,7 +356,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
 
         {rascunho.acoes.includes("ALERT") && (
           <div>
-            <Label htmlFor="regra-canal">Canal do alerta</Label>
+            <Label htmlFor="regra-canal">{t("servidor.automod.canalDoAlerta")}</Label>
             <CampoSelect
               id="regra-canal"
               valor={rascunho.alertChannelId ?? ""}
@@ -354,7 +364,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
                 setRascunho({ ...rascunho, alertChannelId: id || null })
               }
               opcoes={[
-                { valor: "", rotulo: "Escolha um canal" },
+                { valor: "", rotulo: t("servidor.automod.escolhaCanal") },
                 ...canais.map((canal) => ({
                   valor: canal.id,
                   rotulo: `#${canal.name}`,
@@ -366,7 +376,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
 
         {rascunho.acoes.includes("TIMEOUT") && (
           <div>
-            <Label htmlFor="regra-castigo">Castigo (minutos)</Label>
+            <Label htmlFor="regra-castigo">{t("servidor.automod.castigo")}</Label>
             <Input
               id="regra-castigo"
               type="number"
@@ -384,7 +394,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         )}
 
         <div>
-          <Label>Cargos isentos</Label>
+          <Label>{t("servidor.automod.isentos")}</Label>
           <div className="flex flex-wrap gap-1.5">
             {roles
               .filter((r) => !r.isEveryone)
@@ -416,7 +426,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
 
             {roles.filter((r) => !r.isEveryone).length === 0 && (
               <p className="text-xs text-ink-faint">
-                Nenhum cargo criado ainda.
+                {t("servidor.automod.semCargos")}
               </p>
             )}
           </div>
@@ -430,10 +440,10 @@ const EditorDeRegra: React.FC<EditorProps> = ({
           disabled={!rascunho.acoes.length}
           onClick={() => onSalvar(rascunho)}
         >
-          Salvar regra
+          {t("servidor.automod.salvarRegra")}
         </Button>
         <Button variant="ghost" size="sm" onClick={onFechar}>
-          Cancelar
+          {t("comum.cancelar")}
         </Button>
       </div>
     </div>

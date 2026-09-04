@@ -5,6 +5,7 @@ import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-gui
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, Label } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 const INSIGNIAS = [
   "🍃",
@@ -24,6 +25,7 @@ const INSIGNIAS = [
 export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
   guild,
 }) => {
+  const { t } = useTranslation();
   const salvar = useUpdateGuild();
   const [tag, setTag] = useState(guild.tag ?? "");
   const [icone, setIcone] = useState(guild.tagIcon ?? INSIGNIAS[0]!);
@@ -34,17 +36,15 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Tag do servidor</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.etiqueta.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Uma etiqueta de até 4 letras que aparece ao lado do nome de quem é
-        membro — no chat e na lista de pessoas. Aqui é de graça: sem impulso,
-        sem nível.
+        {t("servidor.etiqueta.descricao")}
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-8">
         <div className="space-y-5">
           <div>
-            <Label htmlFor="tag">Escolha um nome</Label>
+            <Label htmlFor="tag">{t("servidor.etiqueta.escolhaNome")}</Label>
             <Input
               id="tag"
               value={tag}
@@ -57,12 +57,12 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
               }
             />
             <p className="mt-1 text-xs text-ink-faint">
-              No máximo 4 caracteres, letras e números.
+              {t("servidor.etiqueta.limite")}
             </p>
           </div>
 
           <div>
-            <Label>Escolha uma insígnia</Label>
+            <Label>{t("servidor.etiqueta.escolhaInsignia")}</Label>
             <div className="flex flex-wrap gap-2">
               {INSIGNIAS.map((item) => (
                 <button
@@ -82,18 +82,18 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
 
         <div className="rounded-lg bg-surface-1 p-4">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-            Prévia
+            {t("comum.previa")}
           </p>
 
           <div className="space-y-3">
-            <PreviaDeFala nome="Leonardo" texto="alguém aí pra jogar?" />
+            <PreviaDeFala nome="Leonardo" texto={t("servidor.etiqueta.fala1")} />
             <PreviaDeFala
-              nome="Você"
-              texto="dá uma olhada na minha tag!"
+              nome={t("servidor.etiqueta.voce")}
+              texto={t("servidor.etiqueta.fala2")}
               tag={tag.trim() || undefined}
               icone={icone}
             />
-            <PreviaDeFala nome="Max" texto="eita, como conseguiu isso" />
+            <PreviaDeFala nome="Max" texto={t("servidor.etiqueta.fala3")} />
           </div>
         </div>
       </div>

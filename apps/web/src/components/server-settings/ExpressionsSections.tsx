@@ -27,6 +27,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
 import { uploadArquivo } from "~/lib/upload";
 import { cn } from "~/lib/utils";
+import { i18next, useTranslation } from "~/traducao";
 
 interface SecaoProps {
   guildId: string;
@@ -48,6 +49,7 @@ export const EmojiSection: React.FC<SecaoProps> = ({
   guildId,
   podeGerenciar,
 }) => {
+  const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateEmoji(guildId);
   const confirmar = useConfirmar();
@@ -84,12 +86,17 @@ export const EmojiSection: React.FC<SecaoProps> = ({
 
   return (
     <div className="max-w-3xl pb-10">
-      <h2 className="text-xl font-semibold">Emoji</h2>
+      <h2 className="text-xl font-semibold">{t("comum.emoji")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Adicione até {LIMITS.emojisPorServidor} emojis que todo mundo pode usar
-        neste servidor. Digite{" "}
-        <code className="rounded bg-surface-0 px-1">:nome:</code> no chat para
-        mandar.
+        {/*
+          Uma chave só, com o `:nome:` dentro dela.
+
+          Antes eram três pedaços — texto, um `<code>` e mais texto — e cada
+          idioma põe as partes numa ordem. Traduzir os pedaços separados daria
+          frase remontada errada em metade dos idiomas; o que se perde é a
+          moldura cinza do `:nome:`, e a frase inteira vale mais que ela.
+        */}
+        {t("servidor.expressoes.comoUsar", { limite: LIMITS.emojisPorServidor })}
       </p>
 
       {podeGerenciar && (
@@ -121,9 +128,9 @@ export const EmojiSection: React.FC<SecaoProps> = ({
       <table className="mt-6 w-full">
         <thead>
           <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
-            <th className="pb-2 font-semibold">Imagem</th>
-            <th className="pb-2 font-semibold">Nome</th>
-            <th className="pb-2 font-semibold">Enviado por</th>
+            <th className="pb-2 font-semibold">{t("servidor.expressoes.imagem")}</th>
+            <th className="pb-2 font-semibold">{t("comum.nome")}</th>
+            <th className="pb-2 font-semibold">{t("servidor.expressoes.enviadoPor")}</th>
             <th />
           </tr>
         </thead>
@@ -163,7 +170,7 @@ export const EmojiSection: React.FC<SecaoProps> = ({
                           apagar.mutate({ guildId, emojiId: emoji.id }),
                       )
                     }
-                    title="Apagar"
+                    title={t("comum.apagar")}
                     className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
                   >
                     <Trash2 size={16} />
@@ -177,7 +184,7 @@ export const EmojiSection: React.FC<SecaoProps> = ({
 
       {!data.emojis.length && (
         <p className="py-10 text-center text-sm text-ink-faint">
-          Nenhum emoji ainda.
+          {t("servidor.expressoes.semEmoji")}
         </p>
       )}
     </div>
@@ -188,6 +195,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
   guildId,
   podeGerenciar,
 }) => {
+  const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSticker(guildId);
   const confirmar = useConfirmar();
@@ -206,13 +214,13 @@ export const StickersSection: React.FC<SecaoProps> = ({
 
     if (arquivo.size > LIMITS.figurinhaBytes) {
       toast.error(
-        `A figurinha passa de ${formatBytes(LIMITS.figurinhaBytes)}.`,
+        t("servidor.expressoes.figurinhaGrande", { limite: formatBytes(LIMITS.figurinhaBytes) }),
       );
       return;
     }
 
     const anexo = await uploadArquivo(arquivo).catch(() => null);
-    if (!anexo) return toast.error("Não deu pra subir o arquivo.");
+    if (!anexo) return toast.error(t("servidor.expressoes.falhaEnvio"));
 
     setPendente({ file: arquivo, url: anexo.url });
     setNome(arquivo.name.replace(/\.[^.]+$/, "").slice(0, 30));
@@ -222,7 +230,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Figurinhas</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.expressoes.figurinhas")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
         Até {LIMITS.figurinhasPorServidor} figurinhas, de no máximo{" "}
         {formatBytes(LIMITS.figurinhaBytes)} cada (PNG, APNG, GIF ou WebP).
@@ -235,7 +243,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
             disabled={restantes <= 0}
             onClick={() => input.current?.click()}
           >
-            <Upload size={16} /> Enviar figurinha
+            <Upload size={16} /> {t("servidor.expressoes.enviarFigurinha")}
           </Button>
           <input
             ref={input}
@@ -260,13 +268,13 @@ export const StickersSection: React.FC<SecaoProps> = ({
 
           <div className="flex-1 space-y-3">
             <div>
-              <Label htmlFor="fig-nome">Nome da figurinha</Label>
+              <Label htmlFor="fig-nome">{t("servidor.expressoes.nomeDaFigurinha")}</Label>
               <Input
                 id="fig-nome"
                 value={nome}
                 maxLength={30}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="Ex: abraço de gatinho"
+                placeholder={t("servidor.expressoes.exemploFigurinha")}
               />
             </div>
 
@@ -289,14 +297,14 @@ export const StickersSection: React.FC<SecaoProps> = ({
                   )
                 }
               >
-                Enviar
+                {t("comum.enviar")}
               </Button>
               <Button
                 variant="surface"
                 size="sm"
                 onClick={() => setPendente(null)}
               >
-                Deixa pra lá
+                {t("servidor.expressoes.deixaPraLa")}
               </Button>
             </div>
           </div>
@@ -355,6 +363,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
   guildId,
   podeGerenciar,
 }) => {
+  const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSound(guildId);
   const confirmar = useConfirmar();
@@ -376,7 +385,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
     if (!arquivo) return;
 
     if (arquivo.size > LIMITS.somBytes) {
-      toast.error(`O som passa de ${formatBytes(LIMITS.somBytes)}.`);
+      toast.error(t("servidor.expressoes.somGrande", { limite: formatBytes(LIMITS.somBytes) }));
       return;
     }
 
@@ -393,7 +402,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Painel de efeitos sonoros</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.expressoes.sons")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
         Sons que qualquer pessoa na chamada pode tocar. Até{" "}
         {LIMITS.sonsPorServidor}, de no máximo {formatBytes(LIMITS.somBytes)}{" "}
@@ -407,7 +416,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
             disabled={restantes <= 0}
             onClick={() => input.current?.click()}
           >
-            <Upload size={16} /> Enviar som
+            <Upload size={16} /> {t("servidor.expressoes.enviarSom")}
           </Button>
           <input
             ref={input}
@@ -426,7 +435,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
         <div className="mt-4 space-y-3 rounded-lg bg-surface-1 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="som-nome">Nome do som</Label>
+              <Label htmlFor="som-nome">{t("servidor.expressoes.nomeDoSom")}</Label>
               <Input
                 id="som-nome"
                 value={nome}
@@ -508,7 +517,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
                 audio.volume = som.volume;
                 void audio.play().catch(() => undefined);
               }}
-              title="Ouvir"
+              title={t("servidor.expressoes.ouvir")}
               className="rounded p-1.5 text-ink-muted transition hover:text-ink"
             >
               <Play size={16} />
@@ -535,7 +544,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
 
         {!data.sounds.length && (
           <p className="py-10 text-center text-sm text-ink-faint">
-            Nenhum som ainda.
+            {t("servidor.expressoes.semSom")}
           </p>
         )}
       </div>
@@ -554,9 +563,12 @@ const CampoDeEmoji: React.FC<{
   id: string;
   emoji: string;
   onEscolher: (emoji: string) => void;
-}> = ({ id, emoji, onEscolher }) => (
+}> = ({ id, emoji, onEscolher }) => {
+  const { t } = useTranslation();
+
+  return (
   <div>
-    <Label htmlFor={id}>Emoji relacionado</Label>
+    <Label htmlFor={id}>{t("servidor.expressoes.emojiRelacionado")}</Label>
     <SeletorDeEmoji onEscolher={onEscolher}>
       <button
         id={id}
@@ -567,11 +579,12 @@ const CampoDeEmoji: React.FC<{
         )}
       >
         <span className="text-xl leading-none">{emoji || "😀"}</span>
-        <span className="text-xs text-ink-faint">Trocar</span>
+        <span className="text-xs text-ink-faint">{t("comum.trocar")}</span>
       </button>
     </SeletorDeEmoji>
   </div>
-);
+  );
+};
 
 /**
  * O volume gravado no som, ajustável depois de subir.
@@ -585,6 +598,7 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
   guildId,
   som,
 }) => {
+  const { t } = useTranslation();
   const atualizar = useUpdateSound(guildId);
   const [volume, setVolume] = useState(som.volume);
 
@@ -620,7 +634,7 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
           step={0.05}
           value={volume}
           preenchido={volume}
-          aria-label={`Volume de ${som.name}`}
+          aria-label={t("servidor.expressoes.volumeDe", { nome: som.name })}
           onChange={(e) => setVolume(Number(e.target.value))}
           onPointerUp={salvar}
           onKeyUp={salvar}
@@ -635,22 +649,23 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
           }}
           className="mt-3 flex items-center gap-1.5 text-xs text-ink-muted transition hover:text-ink"
         >
-          <Play size={13} /> Ouvir assim
+          <Play size={13} /> {t("servidor.expressoes.ouvirAssim")}
         </button>
 
         <p className="mt-3 text-11 leading-snug text-ink-faint">
-          Vale pra todo mundo do servidor. Cada pessoa ainda pode abaixar os
-          sons só pra ela, no painel da chamada.
+          {t("servidor.expressoes.volumeDica")}
         </p>
       </PopoverContent>
     </Popover>
   );
 };
 
+/// Função solta, não componente: não há gancho aqui, e `i18next.t` resolve no
+/// idioma de quem clicou — que é quando ela roda.
 function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
   return {
-    titulo: `Excluir ${tipo} "${nome}"?`,
-    descricao: `Some do servidor para todo mundo. As mensagens que já usaram continuam como estão.`,
-    acao: "Excluir",
+    titulo: i18next.t("servidor.expressoes.excluirTitulo", { tipo, nome }),
+    descricao: i18next.t("servidor.expressoes.excluirDescricao"),
+    acao: i18next.t("comum.excluir"),
   } as const;
 }

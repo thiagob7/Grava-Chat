@@ -10,4 +10,10 @@ export const comum = {
   nome: "नाम",
   emoji: "इमोजी",
   previa: "झलक",
+  cancelar: "रद्द करें",
+  enviar: "भेजें",
+  apagar: "मिटाएँ",
+  excluir: "मिटाएँ",
+  remover: "हटाएँ",
+  trocar: "बदलें",
 };

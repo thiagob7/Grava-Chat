@@ -10,4 +10,10 @@ export const comum = {
   nome: "שם",
   emoji: "אימוג'י",
   previa: "תצוגה מקדימה",
+  cancelar: "ביטול",
+  enviar: "שליחה",
+  apagar: "מחיקה",
+  excluir: "מחיקה",
+  remover: "הסרה",
+  trocar: "החלפה",
 };

@@ -10,4 +10,10 @@ export const comum = {
   nome: "名前",
   emoji: "絵文字",
   previa: "プレビュー",
+  cancelar: "キャンセル",
+  enviar: "送信",
+  apagar: "削除",
+  excluir: "削除",
+  remover: "外す",
+  trocar: "変更",
 };

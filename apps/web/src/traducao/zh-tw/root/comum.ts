@@ -10,4 +10,10 @@ export const comum = {
   nome: "名稱",
   emoji: "表情符號",
   previa: "預覽",
+  cancelar: "取消",
+  enviar: "傳送",
+  apagar: "刪除",
+  excluir: "刪除",
+  remover: "移除",
+  trocar: "更換",
 };

@@ -30,6 +30,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface MembersSectionProps {
   guild: GuildModel;
@@ -44,11 +45,13 @@ interface MembersSectionProps {
 
 type Ordem = "recentes" | "antigos" | "nome";
 
+/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
+/// resolveria antes de o idioma existir e ficaria congelada.
 const CASTIGOS = [
-  { minutos: 5, label: "5 minutos" },
-  { minutos: 60, label: "1 hora" },
-  { minutos: 60 * 24, label: "1 dia" },
-  { minutos: 60 * 24 * 7, label: "1 semana" },
+  { minutos: 5, chave: "servidor.membros.castigo5min" },
+  { minutos: 60, chave: "servidor.membros.castigo1h" },
+  { minutos: 60 * 24, chave: "servidor.membros.castigo1d" },
+  { minutos: 60 * 24 * 7, chave: "servidor.membros.castigo1s" },
 ];
 
 export const MembersSection: React.FC<MembersSectionProps> = ({
@@ -61,6 +64,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   canTimeout,
   canManageRoles,
 }) => {
+  const { t } = useTranslation();
   const confirmar = useConfirmar();
   const removeMember = useRemoveMember();
   const banir = useBanMember(guild.id);
@@ -75,14 +79,23 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
   const expulsar = async (member: GuildMember) => {
     const { confirmado } = await confirmar({
-      titulo: `Expulsar ${nomeDe(member)}?`,
+      titulo: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
+      /*
+        O nome em negrito, e o RESTO da frase numa chave só.
+
+        Ela tinha três pedaços em português — o nome, "sai de X na hora" e o
+        fecho — e cada idioma ordena isso do seu jeito. Traduzindo os pedaços
+        separados, metade das línguas remontaria a frase errada. Com o resto
+        inteiro numa chave, quem traduz recebe a frase completa; só o nome fica
+        de fora, no lugar onde ele começa.
+      */
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong> sai de {guild.name} na hora. Pode
-          entrar de novo com um convite — expulsar não impede a volta.
+          <strong>{nomeDe(member)}</strong>{" "}
+          {t("servidor.membros.expulsarDescricao", { servidor: guild.name })}
         </>
       ),
-      acao: "Expulsar",
+      acao: t("servidor.membros.expulsar"),
     });
 
     if (confirmado)
@@ -91,18 +104,17 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
   const banirMembro = async (member: GuildMember) => {
     const { confirmado, texto } = await confirmar({
-      titulo: `Banir ${nomeDe(member)}?`,
+      titulo: t("servidor.membros.banirTitulo", { nome: nomeDe(member) }),
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong> sai de {guild.name} e{" "}
-          <strong>não consegue voltar</strong>, nem com convite, até ser
-          desbanido.
+          <strong>{nomeDe(member)}</strong>{" "}
+          {t("servidor.membros.banirDescricao", { servidor: guild.name })}
         </>
       ),
-      acao: "Banir",
+      acao: t("servidor.membros.banir"),
       campo: {
-        rotulo: "Motivo (opcional)",
-        placeholder: "Fica registrado na auditoria",
+        rotulo: t("servidor.membros.motivo"),
+        placeholder: t("servidor.membros.motivoDica"),
       },
     });
 
@@ -149,7 +161,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
           <Input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="Pesquisar pelo nome ou usuário"
+            placeholder={t("servidor.membros.procurar")}
             className="bg-transparent px-0"
           />
         </div>
@@ -179,9 +191,9 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       <table className="mt-4 w-full">
         <thead>
           <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
-            <th className="pb-2 font-semibold">Nome</th>
-            <th className="pb-2 font-semibold">Membro desde</th>
-            <th className="pb-2 font-semibold">Cargos</th>
+            <th className="pb-2 font-semibold">{t("comum.nome")}</th>
+            <th className="pb-2 font-semibold">{t("servidor.membros.membroDesde")}</th>
+            <th className="pb-2 font-semibold">{t("servidor.cargos.titulo")}</th>
             <th />
           </tr>
         </thead>
@@ -218,7 +230,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {ehDono && <Crown size={13} className="text-idle" />}
                         {deCastigo && (
                           <span className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
-                            <Clock size={10} /> de castigo
+                            <Clock size={10} /> {t("servidor.membros.deCastigo")}
                           </span>
                         )}
                       </p>
@@ -260,7 +272,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
-                          aria-label={`Ações para ${member.user.displayName}`}
+                          aria-label={t("servidor.membros.acoesPara", { nome: member.user.displayName })}
                           className="rounded p-1.5 text-ink-muted opacity-0 transition group-hover:opacity-100 hover:bg-surface-0 hover:text-ink"
                         >
                           <MoreVertical size={16} />
@@ -318,7 +330,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                   })
                                 }
                               >
-                                Tirar do castigo <Clock size={14} />
+                                {t("servidor.membros.tirarCastigo")} <Clock size={14} />
                               </DropdownMenuItem>
                             ) : (
                               CASTIGOS.map((opcao) => (
@@ -332,7 +344,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                     })
                                   }
                                 >
-                                  Castigo de {opcao.label}
+                                  Castigo de {t(opcao.chave)}
                                 </DropdownMenuItem>
                               ))
                             )}
@@ -370,7 +382,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
       {!lista.length && (
         <p className={cn("py-10 text-center text-sm text-ink-faint")}>
-          Ninguém encontrado.
+          {t("servidor.membros.vazio")}
         </p>
       )}
     </div>

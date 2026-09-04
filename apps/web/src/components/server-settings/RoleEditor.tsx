@@ -18,6 +18,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { ESTILOS_DO_CARGO } from "~/lib/cosmeticos/catalogo";
 import { estiloDoCargo } from "~/lib/cosmeticos/cargo";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 export const CORES = [
   "#1abc9c",
@@ -51,6 +52,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   editavel,
   onDeleted,
 }) => {
+  const { t } = useTranslation();
   const updateRole = useUpdateRole(guildId);
   const deleteRole = useDeleteRole(guildId);
   const setMemberRoles = useSetMemberRoles(guildId);
@@ -139,11 +141,11 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   const abas: { id: Aba; label: string }[] = [
     ...(role.isEveryone
       ? []
-      : [{ id: "exibicao" as const, label: "Exibição" }]),
-    { id: "permissoes", label: "Permissões" },
+      : [{ id: "exibicao" as const, label: t("servidor.cargos.abaExibicao") }]),
+    { id: "permissoes", label: t("servidor.cargos.abaPermissoes") },
     ...(role.isEveryone
       ? []
-      : [{ id: "membros" as const, label: `Membros — ${comOCargo.length}` }]),
+      : [{ id: "membros" as const, label: t("servidor.cargos.abaMembros", { quantos: comOCargo.length }) }]),
   ];
 
   const abaAtiva = abas.some((a) => a.id === aba) ? aba : "permissoes";
@@ -163,10 +165,10 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
           <button
             onClick={() =>
               void confirmar({
-                titulo: `Excluir cargo "${role.name}"?`,
+                titulo: t("servidor.cargos.excluirTitulo", { nome: role.name }),
                 descricao:
-                  "Quem tem esse cargo perde tudo o que ele dava. Não dá pra desfazer.",
-                acao: "Excluir cargo",
+                  t("servidor.cargos.excluirDescricao"),
+                acao: t("servidor.cargos.excluirAcao"),
               }).then(
                 ({ confirmado }) =>
                   confirmado &&
@@ -177,7 +179,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               )
             }
             className="ml-auto rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
-            title="Apagar cargo"
+            title={t("servidor.cargos.apagar")}
           >
             <Trash2 size={18} />
           </button>
@@ -186,8 +188,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
       {role.isEveryone && (
         <p className="mt-1 text-xs text-ink-faint">
-          Vale para todo mundo no servidor. É a base sobre a qual os outros
-          cargos somam.
+          {t("servidor.cargos.everyone")}
         </p>
       )}
 
@@ -213,7 +214,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
           <div className="max-w-md space-y-6">
             <label className="block">
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Nome do cargo
+                {t("servidor.cargos.nomeDoCargo")}
               </span>
               <Input
                 value={nome}
@@ -225,10 +226,10 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Cor do cargo
+                {t("servidor.cargos.cor")}
               </span>
               <p className="mb-3 text-xs text-ink-faint">
-                Pinta o nome de quem tem o cargo na lista de membros e no chat.
+                {t("servidor.cargos.corDica")}
               </p>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -238,7 +239,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     "flex size-8 items-center justify-center rounded border border-line bg-surface-0 text-ink-faint transition",
                     cor === null && "ring-2 ring-brand",
                   )}
-                  title="Sem cor"
+                  title={t("servidor.cargos.semCor")}
                 >
                   <X size={14} />
                 </button>
@@ -263,14 +264,14 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   disabled={!editavel}
                   onChange={(e) => setCor(e.target.value)}
                   className={cn(campoDeCor, "size-8 rounded")}
-                  title="Cor personalizada"
+                  title={t("servidor.cargos.corPersonalizada")}
                 />
               </div>
             </div>
 
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Estilo do nome
+                {t("servidor.cargos.estilo")}
               </span>
 
               <div className="mb-3 grid grid-cols-3 gap-2">
@@ -293,7 +294,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
               {estilo !== "solido" && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-ink-muted">Segunda cor</span>
+                  <span className="text-xs text-ink-muted">{t("servidor.cargos.segundaCor")}</span>
                   <input
                     type="color"
                     value={cor2 ?? "#a855f7"}
@@ -305,13 +306,13 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     <button
                       onClick={() => setCor2(null)}
                       className="rounded p-1 text-ink-faint transition hover:text-ink"
-                      aria-label="Limpar segunda cor"
+                      aria-label={t("servidor.cargos.limparSegundaCor")}
                     >
                       <X size={14} />
                     </button>
                   )}
                   <span className="text-xs text-ink-faint">
-                    Sem ela, o gradiente cai para cor sólida — não some.
+                    {t("servidor.cargos.segundaCorDica")}
                   </span>
                 </div>
               )}
@@ -319,7 +320,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Ícone
+                {t("servidor.cargos.icone")}
               </span>
               <Input
                 value={emoji}
@@ -330,13 +331,13 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                 className="w-24"
               />
               <p className="mt-1 text-xs text-ink-faint">
-                Aparece ao lado do cargo no cartão de perfil de quem o tem.
+                {t("servidor.cargos.iconeDica")}
               </p>
             </div>
 
             <div>
               <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Prévia
+                {t("comum.previa")}
               </span>
 
               <div className="space-y-2 rounded bg-surface-0 p-3">
@@ -357,16 +358,16 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
             </div>
 
             <Linha
-              titulo="Exibir separado dos outros membros"
-              descricao="O cargo ganha uma seção própria na lista de membros."
+              titulo={t("servidor.cargos.exibirSeparado")}
+              descricao={t("servidor.cargos.exibirSeparadoDica")}
               checked={hoist}
               disabled={!editavel}
               onChange={setHoist}
             />
 
             <Linha
-              titulo="Permitir mencionar este cargo"
-              descricao="Qualquer um poderá notificar todo mundo que tem o cargo."
+              titulo={t("servidor.cargos.permitirMencionar")}
+              descricao={t("servidor.cargos.permitirMencionarDica")}
               checked={mentionable}
               disabled={!editavel}
               onChange={setMentionable}
@@ -393,7 +394,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                         titulo={rotulo.nome}
                         descricao={
                           bloqueado && editavel
-                            ? `${rotulo.descricao} (você não tem esta permissão para conceder)`
+                            ? t("servidor.cargos.semPoderDeConceder", { descricao: rotulo.descricao })
                             : rotulo.descricao
                         }
                         checked={permissoes.includes(permissao)}
@@ -421,7 +422,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               <Input
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Adicionar alguém a este cargo"
+                placeholder={t("servidor.cargos.adicionar")}
                 className="bg-transparent px-0"
                 disabled={!editavel}
               />
@@ -476,7 +477,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   {editavel && (
                     <button
                       onClick={() => mudarCargoDe(m, false)}
-                      title="Tirar o cargo"
+                      title={t("servidor.cargos.tirar")}
                       className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
                     >
                       <UserMinus size={16} />
@@ -487,7 +488,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
               {!comOCargo.length && (
                 <p className="py-8 text-center text-sm text-ink-faint">
-                  Ninguém tem este cargo ainda.
+                  {t("servidor.cargos.semNinguem")}
                 </p>
               )}
             </div>

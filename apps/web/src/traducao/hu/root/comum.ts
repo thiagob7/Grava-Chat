@@ -10,4 +10,10 @@ export const comum = {
   nome: "Név",
   emoji: "Emodzsi",
   previa: "Előnézet",
+  cancelar: "Mégse",
+  enviar: "Küldés",
+  apagar: "Törlés",
+  excluir: "Törlés",
+  remover: "Eltávolítás",
+  trocar: "Csere",
 };

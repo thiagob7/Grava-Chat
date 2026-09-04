@@ -11,6 +11,7 @@ import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { RoleEditor } from "~/components/server-settings/RoleEditor";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface RolesSectionProps {
   guildId: string;
@@ -27,6 +28,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
   minhaPosicao,
   isOwner,
 }) => {
+  const { t } = useTranslation();
   const { data: roles = [], isLoading } = useFindRoles(guildId);
   const createRole = useCreateRole(guildId);
   const reorderRoles = useReorderRoles(guildId);
@@ -76,11 +78,9 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
     <div className="flex h-full max-w-5xl flex-col">
       <header className="flex items-start gap-4">
         <div className="flex-1">
-          <h2 className="text-xl font-semibold">Cargos</h2>
+          <h2 className="text-xl font-semibold">{t("servidor.cargos.titulo")}</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Cargos dão nome, cor e poderes. Quem está mais alto na lista manda
-            em quem está abaixo — e ninguém mexe em cargo igual ou acima do
-            próprio.
+            {t("servidor.cargos.descricao")}
           </p>
         </div>
 
@@ -94,13 +94,13 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
             )
           }
         >
-          <Plus size={16} /> Criar cargo
+          <Plus size={16} /> {t("servidor.cargos.criar")}
         </Button>
       </header>
 
       <div className="mt-6 flex min-h-0 flex-1 gap-8">
         <aside className="w-56 shrink-0 overflow-y-auto">
-          {isLoading && <p className="text-sm text-ink-faint">Carregando…</p>}
+          {isLoading && <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
           {lista.map((role) => (
             <button
@@ -165,7 +165,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
             onDeleted={() => setSelecionado(null)}
           />
         ) : (
-          <p className="text-sm text-ink-faint">Nenhum cargo ainda.</p>
+          <p className="text-sm text-ink-faint">{t("servidor.cargos.vazio")}</p>
         )}
       </div>
     </div>

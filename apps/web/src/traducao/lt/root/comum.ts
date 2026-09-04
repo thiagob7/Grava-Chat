@@ -10,4 +10,10 @@ export const comum = {
   nome: "Pavadinimas",
   emoji: "Jaustukas",
   previa: "Peržiūra",
+  cancelar: "Atšaukti",
+  enviar: "Siųsti",
+  apagar: "Ištrinti",
+  excluir: "Ištrinti",
+  remover: "Pašalinti",
+  trocar: "Pakeisti",
 };
