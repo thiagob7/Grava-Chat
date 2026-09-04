@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { lerPedidoDaUrl, limparPedidoDaUrl } from "~/lib/link-de-config";
+import { lerPedidoDaUrl, limparPedidoDaUrl } from "~/features/app/lib/link-de-config";
 import { SUBSECOES } from "~/components/user-settings/secoes";
 import { useConfiguracoes } from "~/stores/configuracoes";
 

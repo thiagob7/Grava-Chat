@@ -5,11 +5,11 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
-import { AvisoDeAtualizacao } from "~/components/AvisoDeAtualizacao";
-import { AvisoDeNovoDispositivo } from "~/components/AvisoDeNovoDispositivo";
-import { AvisoDePermissoes } from "~/components/AvisoDePermissoes";
-import { ErrorBoundary } from "~/components/ErrorBoundary";
-import { EstadoDaConexao } from "~/components/EstadoDaConexao";
+import { AvisoDeAtualizacao } from "~/features/app/components/AvisoDeAtualizacao";
+import { AvisoDeNovoDispositivo } from "~/features/app/components/AvisoDeNovoDispositivo";
+import { AvisoDePermissoes } from "~/features/app/components/AvisoDePermissoes";
+import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
+import { EstadoDaConexao } from "~/features/app/components/EstadoDaConexao";
 import { ChuvaDeSuperReacao } from "~/features/expressao/components/ChuvaDeSuperReacao";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";

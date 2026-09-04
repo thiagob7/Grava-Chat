@@ -10,7 +10,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
-import { useAtualizacao } from "~/hooks/use-atualizacao";
+import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/stores/configuracoes";
 
 interface GuildRailProps {

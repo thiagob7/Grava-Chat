@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { PermissoesDoMac } from "~/components/PermissoesDoMac";
+import { PermissoesDoMac } from "~/features/app/components/PermissoesDoMac";
 import { desktop } from "~/lib/desktop";
 
 const CHAVE = "gravae:permissoes-vistas";

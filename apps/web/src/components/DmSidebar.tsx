@@ -8,7 +8,7 @@ import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { statusDaConversa } from "~/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { RodapeDaBarra } from "~/components/RodapeDaBarra";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 

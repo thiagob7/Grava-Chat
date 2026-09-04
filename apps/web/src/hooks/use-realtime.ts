@@ -150,7 +150,7 @@ import { useTypingStore } from "~/features/conversa/stores/typing-store";
 import { tocarSomDoPainel } from "~/features/voz/lib/soundboard";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { useConexaoStore } from "~/stores/conexao-store";
+import { useConexaoStore } from "~/features/app/stores/conexao-store";
 
 type MessagesCache =
   { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;

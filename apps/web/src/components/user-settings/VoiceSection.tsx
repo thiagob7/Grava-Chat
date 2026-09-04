@@ -8,7 +8,7 @@ import {
   Volume2,
 } from "lucide-react";
 
-import { PermissoesDoMac } from "~/components/PermissoesDoMac";
+import { PermissoesDoMac } from "~/features/app/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";

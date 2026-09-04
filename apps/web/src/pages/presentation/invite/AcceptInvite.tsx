@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
-import { FundoDaMarca } from "~/components/FundoDaMarca";
+import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { Button } from "~/components/ui/button";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { ehDesktop } from "~/lib/desktop";

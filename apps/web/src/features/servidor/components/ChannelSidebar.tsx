@@ -21,7 +21,7 @@ import {
   SpeakerHigh,
   UserPlus,
 } from "@phosphor-icons/react";
-import { RodapeDaBarra } from "~/components/RodapeDaBarra";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { useFavoritos } from "~/features/servidor/stores/favoritos";
 import {
   DropdownMenu,

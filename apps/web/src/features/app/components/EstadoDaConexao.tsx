@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
-import { Splash } from "~/components/Splash";
+import { Splash } from "~/features/app/components/Splash";
 import { Button } from "~/components/ui/button";
 import { ehDesktop } from "~/lib/desktop";
-import { useConexaoStore } from "~/stores/conexao-store";
+import { useConexaoStore } from "~/features/app/stores/conexao-store";
 import { cn } from "~/lib/utils";
 
 const SILENCIO_MS = 1_500;

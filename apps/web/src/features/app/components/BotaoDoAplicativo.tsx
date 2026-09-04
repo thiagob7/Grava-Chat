@@ -3,7 +3,7 @@ import { ArrowClockwise, DownloadSimple } from "@phosphor-icons/react";
 
 import { Tooltip } from "~/components/ui/tooltip";
 import { ehDesktop } from "~/lib/desktop";
-import { useAtualizacao } from "~/hooks/use-atualizacao";
+import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/stores/configuracoes";
 import { cn } from "~/lib/utils";
 

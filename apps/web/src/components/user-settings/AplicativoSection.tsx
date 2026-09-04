@@ -4,7 +4,7 @@ import { Apple, Download, Loader2, Monitor, RefreshCw } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { ehDesktop } from "~/lib/desktop";
-import { useAtualizacao } from "~/hooks/use-atualizacao";
+import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
 const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";

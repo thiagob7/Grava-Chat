@@ -37,7 +37,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
 import { useFavoritos } from "~/features/servidor/stores/favoritos";
-import { BotaoDoAplicativo } from "~/components/BotaoDoAplicativo";
+import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/features/voz/components/VoiceChatPanel";
 import { GuildRail } from "~/features/servidor/components/GuildRail";

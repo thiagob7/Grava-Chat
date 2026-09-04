@@ -43,7 +43,7 @@ import { IdiomaSection } from "~/components/user-settings/IdiomaSection";
 import { BatePapoSection } from "~/components/user-settings/BatePapoSection";
 import { PrivacidadeSection } from "~/components/user-settings/PrivacidadeSection";
 import { ServidorSection } from "~/components/user-settings/ServidorSection";
-import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";

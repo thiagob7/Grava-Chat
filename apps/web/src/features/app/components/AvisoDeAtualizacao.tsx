@@ -2,7 +2,7 @@ import React from "react";
 import { Download, Loader2, RotateCw, Sparkles, TriangleAlert } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { useAtualizacao } from "~/hooks/use-atualizacao";
+import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { cn } from "~/lib/utils";
 
 export const AvisoDeAtualizacao: React.FC = () => {

@@ -4,7 +4,7 @@ import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
-import { FundoDaMarca } from "~/components/FundoDaMarca";
+import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { desktop } from "~/lib/desktop";
 
 export const SignIn: React.FC = () => {

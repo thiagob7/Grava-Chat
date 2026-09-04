@@ -22,7 +22,7 @@ import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
-import { BotaoDoAplicativo } from "~/components/BotaoDoAplicativo";
+import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { PinnedMessagesPanel } from "~/features/conversa/components/PinnedMessagesPanel";
 import { PainelDePerfilDoDm } from "~/features/perfil/components/PainelDePerfilDoDm";
