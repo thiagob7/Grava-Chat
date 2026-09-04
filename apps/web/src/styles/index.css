@@ -1,44 +1,11 @@
 @import "tailwindcss";
 
-/*
-  Os enfeites de perfil, cargo e nome. Fica em arquivo separado porque nada ali
-  é Tailwind: são classes estáticas com custom property, o único jeito de um
-  valor escolhido em runtime virar CSS de verdade no Tailwind 4.
-
-  O `@import` tem que vir aqui em cima — o CSS exige que todo `@import` preceda
-  qualquer regra, e a primeira regra deste arquivo é o `@theme` logo abaixo.
-*/
 @import "./cosmeticos.css";
 
-/*
-  A camada de tokens da referência, com os quatro temas. Vem ANTES do `@theme`
-  de propósito: o `@theme` do Tailwind é declarado dentro de uma `@layer`, e
-  regra sem camada ganha de regra em camada — então o que está no `tokens.css`
-  vale, e é ele que o estúdio edita.
-
-  A troca que isso traz de graça: `--shadow-sm/md/lg/xl` passam a ser os da
-  referência, mais rasos que os do Tailwind. `--radius-*` também passam a vir
-  daqui, mas com os mesmos valores que o Tailwind já usava — nada muda de forma.
-*/
 @import "./tokens.css";
 
-/*
-  Tokens do tema. Tudo no app usa estes nomes (bg-surface-1, text-muted...)
-  em vez de cor solta tipo bg-[#313338]: quando quisermos tema claro ou
-  customizar por servidor, muda so aqui.
-*/
 @theme {
-  /*
-    A paleta do app.
 
-    O escuro daqui é o que antes se chamava "Índigo": fundo quase preto com o
-    cinza puxado pro roxo, e o azul-violeta como única cor forte. Os valores
-    saíram token por token do cliente que serviu de referência — cada área com
-    o SEU (barra do canal, conversa e caixa de escrever numa cor; trilho e
-    barras laterais noutra; o cartão da chamada numa terceira).
-
-    Trocar a marca é trocar `--color-brand`: nada na conversa depende dela.
-  */
   --color-surface-0: #1a181e;
   --color-surface-1: #1a181e;
   --color-surface-2: #1e1d23;
@@ -75,24 +42,6 @@
   --color-hover: rgb(255 255 255 / 0.05);
   --color-pilula: #f4f4f6;
 
-  /*
-    A escala de tamanhos.
-
-    Antes não havia uma: usávamos a que vem na caixa do Tailwind, desenhada
-    para sites. Faltavam dois degraus que um app de conversa densa usa o tempo
-    todo — 13px, que na referência é o terceiro tamanho mais frequente, e os
-    10 e 11px, que existiam aqui só escritos na mão (`text-[11px]`, 55 vezes,
-    sem nome e sem lugar único para trocar).
-
-    Os números no nome, e não "sm"/"lg", porque a escala é fechada de
-    propósito: com onze degraus abstratos a decisão é sempre "o próximo maior";
-    com nove degraus com o tamanho no nome, a pergunta vira "quantos pixels
-    isto tem que ter", que é a pergunta certa.
-
-    Os apelidos abaixo mantêm as 700 e poucas classes que já existem
-    funcionando, apontando para os mesmos valores de sempre — o `text-sm` de
-    hoje continua 14px, só que agora 14px tem nome.
-  */
   --text-10: 0.625rem;
   --text-10--line-height: 0.75rem;
   --text-11: 0.6875rem;
@@ -109,14 +58,6 @@
   --text-20: 1.25rem;
   --text-24: 1.5rem;
 
-  /*
-    Os apelidos do Tailwind, agora apontando para a escala.
-
-    Os valores são idênticos aos que o Tailwind já usava — nada muda de
-    tamanho. O que muda é que existe UM lugar onde 14px é definido, em vez de
-    um número dentro da biblioteca. A altura da linha continua sendo a do
-    Tailwind para estes: mexer nela seria outra mudança, e maior.
-  */
   --text-xs: var(--text-12);
   --text-sm: var(--text-14);
   --text-base: var(--text-16);
@@ -124,44 +65,13 @@
   --text-xl: var(--text-20);
   --text-2xl: var(--text-24);
 
-  /*
-    Os pesos.
-
-    Ficam aqui para poderem ser trocados de um lugar só — a distribuição que
-    temos hoje já é praticamente a da referência (52% contra 51% de semibold),
-    então os valores são os de sempre. O que faltava era o nome.
-  */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /*
-    As fontes moram no `tokens.css`, com o resto dos tokens.
-
-    Elas estavam aqui e foram para lá inteiras — mesma IBM Plex, mesmos nomes
-    com o sufixo "Variable" que o `@fontsource-variable` exige. O que mudou é
-    que agora elas são editáveis pelo estúdio como qualquer outro token, e que
-    a cauda de emoji e alfabetos não cobertos virou `--font-fallback-sans`,
-    separada da fonte principal.
-
-    O Tailwind continua gerando `font-sans` e `font-mono`: a utilidade lê
-    `var(--font-sans)`, e é o `tokens.css` que responde por ela — regra sem
-    camada ganha de regra em camada.
-  */
 }
 
-/*
-  Os temas.
-
-  O Tailwind 4 escreve os tokens do `@theme` como variáveis no `:root`, e toda
-  utilidade (`bg-surface-2`, `text-ink`) lê a variável — não o valor. Então
-  trocar de tema é redeclarar as mesmas variáveis num seletor mais específico,
-  sem recompilar nada e sem uma classe a mais em lugar nenhum.
-
-  `data-tema` no `<html>` é escrito pelo app; o bloco de `prefers-color-scheme`
-  atende quem escolheu "seguir o sistema", que não carimba atributo nenhum.
-*/
 :root[data-tema="mais-escuro"] {
   --color-surface-0: #020203;
   --color-surface-1: #020203;
@@ -200,18 +110,6 @@
   --color-pilula: #f4f4f6;
 }
 
-/*
-  Modo Gravaê — o app vestido com a marca.
-
-  Não é "escuro com o vermelho por cima": os cinzas inteiros foram puxados
-  para o quente, então o preto do fundo é o mesmo preto do logotipo, e não um
-  cinza-azulado que briga com ele. O vermelho é o do ponto da marca (#ff0000),
-  o mais forte da paleta — aqui ele pode, porque tudo em volta foi calibrado
-  para deixar ele gritar sozinho.
-
-  A barrinha do servidor ativo também vira vermelha: é o único tema em que ela
-  não é branca, e é o detalhe que faz a barra da esquerda parecer da marca.
-*/
 :root[data-tema="gravae"] {
   --color-surface-0: #0b0708;
   --color-surface-1: #120c0d;
@@ -230,11 +128,6 @@
   --color-brand: #ff0000;
   --color-brand-hover: #cc0000;
 
-  /*
-    Os tokens do miolo também aqui: sem eles o tema da casa herdava a barra do
-    canal e o cartão da chamada do escuro, e ficava com dois cinzas frios no
-    meio de uma paleta quente.
-  */
   --color-composer: #171011;
   --color-cabecalho: #171011;
   --color-painel: #201617;
@@ -245,13 +138,6 @@
   --color-pilula: #ff0000;
 }
 
-/*
-  A barra de rolagem aqui é cinza translúcida, não a cor da marca.
-
-  O valor vem do token, e não solto: era exatamente o mesmo cinza que a camada
-  da referência já declarava, então o que mudou foi só quem manda nele — agora
-  dá pra trocar a barra de rolagem pelo estúdio.
-*/
 :root ::-webkit-scrollbar-thumb,
 :root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb,
 :root[data-tema="claro"] ::-webkit-scrollbar-thumb {
@@ -264,10 +150,6 @@
   background-color: var(--scrollbar-thumb-bg-hover);
 }
 
-/*
-  A barra de rolagem também é da marca neste tema — é o tipo de detalhe que
-  ninguém aponta, mas que faz o resto parecer descuidado quando falta.
-*/
 :root[data-tema="gravae"] ::-webkit-scrollbar-thumb {
   background-color: color-mix(in oklab, var(--color-brand), transparent 55%);
 }
@@ -312,11 +194,6 @@
   color-scheme: light;
 }
 
-/*
-  "Seguir o sistema" não escolhe cor nenhuma — quem escolhe é o sistema. Por
-  isso o bloco de cima já responde por `sistema` (o claro), e este devolve o
-  escuro quando o sistema está no escuro.
-*/
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
     color-scheme: dark;
@@ -365,14 +242,6 @@
     height: 100%;
   }
 
-  /*
-    A moldura da janela.
-
-    `box-shadow` interno, e não `border`: borda de verdade entraria na conta do
-    tamanho e empurraria a aplicação inteira um pixel pra dentro, o que reabre
-    a briga de layout com o trilho e as barras. A sombra pinta por cima, no
-    mesmo branco a 5% que separa os painéis.
-  */
   #root {
     box-shadow: inset 0 0 0 1px var(--color-divisor);
   }
@@ -383,10 +252,6 @@
     overscroll-behavior: none;
   }
 
-  /**
-   * O Tailwind 4 tirou o `cursor: pointer` padrão dos botões. Sem isto, metade
-   * do app parece morta ao passar o mouse — a mão só aparecia em link.
-   */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   summary,
@@ -395,8 +260,6 @@
     cursor: pointer;
   }
 
-  /* Scrollbar fina estilo Discord — sem isso a barra branca do Mac destoa
-     completamente do tema escuro. */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -409,14 +272,6 @@
   }
 }
 
-/*
-  Exibição compacta.
-
-  O Discord chama de "densidade" e muda a altura das linhas de mensagem. Aqui
-  é a mesma ideia por um atributo na raiz: quem quer mais conversa na tela
-  perde o respiro entre as mensagens, não o tamanho da letra — encolher a
-  fonte é o caminho rápido para não conseguir ler nada.
-*/
 :root[data-densidade="compacta"] [data-mensagem] {
   padding-top: 0;
   padding-bottom: 0;
@@ -426,29 +281,10 @@
   margin-top: 0.5rem;
 }
 
-/*
-  A escala da fonte do chat.
-
-  Cresce só a conversa, e não a interface inteira: quem lê muito quer a
-  mensagem maior sem que os menus, a lista de canais e os botões engordem
-  junto — para isso existe o zoom do app, que é outra pergunta.
-
-  `em` no filho e o fator no pai: assim tudo que estiver dentro da mensagem
-  (emoji, código na linha, o horário) acompanha na mesma proporção, sem
-  precisar de uma regra para cada pedaço.
-*/
 :root {
   --gc-escala-do-chat: 1;
 }
 
-/*
-  Seleção de texto, e onde ela vale.
-
-  O token existe pra ser desligado no aplicativo: arrastar o mouse numa lista
-  de canais pintando tudo de azul é o gesto que denuncia uma página fingindo
-  ser um programa. Fica em `auto` porque é assim que está hoje — o que muda é
-  que agora há um lugar único para trocar.
-*/
 body {
   user-select: var(--user-select);
 }
@@ -457,14 +293,6 @@ body {
   font-size: var(--font-size);
 }
 
-/*
-  Reduzir animação, por decisão de quem usa.
-
-  O `prefers-reduced-motion` do sistema continua valendo — este atributo é o
-  segundo caminho, para quem não quer mexer no sistema inteiro só por causa do
-  Gravaê. `0.01ms` em vez de `none` de propósito: com `none`, animação que
-  dispara evento de término nunca termina, e o que dependia dele trava.
-*/
 :root[data-animacao="reduzida"],
 :root[data-animacao="reduzida"] *,
 :root[data-animacao="reduzida"] *::before,
@@ -475,11 +303,6 @@ body {
   scroll-behavior: auto !important;
 }
 
-/*
-  A partícula da super reação: sobe com o impulso sorteado, gira e some. As
-  distâncias vêm em variáveis para cada partícula ter a sua — uma keyframe só
-  serve as dezoito.
-*/
 @keyframes gc-super {
   0% {
     opacity: 0;
@@ -495,7 +318,6 @@ body {
   }
 }
 
-/* Quem pediu menos movimento não leva chuva de emoji na cara. */
 @media (prefers-reduced-motion: reduce) {
   @keyframes gc-super {
     0%,
@@ -509,95 +331,31 @@ body {
   }
 }
 
-/*
-  Faixa de arrastar a janela (só faz efeito no aplicativo de desktop; o
-  navegador ignora a propriedade).
-
-  Com `titleBarStyle: "hiddenInset"` o Electron esconde a barra de título, e sem
-  uma região de arrasto a janela fica presa: não dá pra mover nem para dar dois
-  cliques e maximizar. O `drag` devolve os dois gestos, que são nativos do
-  sistema — não precisamos implementar nenhum deles.
-
-  A segunda regra é o que torna isso seguro: dentro de uma região de arrasto,
-  TODO clique vira arrasto, inclusive em botão. Em vez de marcar `no-drag` em
-  cada elemento e esquecer metade, o seletor devolve o clique a tudo que é
-  interativo por natureza.
-*/
-/*
-  A moldura do miolo — só quando há uma janela nossa em volta.
-
-  No aplicativo, o painel de canais curva no alto e um fio corre pelo topo do
-  miolo inteiro (painel, conversa e lista de membros), como numa janela de
-  verdade. No navegador nada disso aparece: o app encosta na borda da aba, e
-  ali a curva fica solta e o fio se perde no topo da tela.
-
-  O fio NÃO vai no container nem na faixa de título. De lá ele seria uma reta
-  única passando por cima de tudo, inclusive do trilho, e cortaria a curva —
-  que foi exatamente o que fez a quina parecer quadrada nas primeiras
-  tentativas. Cada peça desenha o seu pedaço, e o do painel dobra junto com o
-  canto dele.
-*/
 .no-aplicativo .topo-do-miolo {
   border-top: 1px solid var(--color-divisor);
 }
 
 .no-aplicativo .canto-do-miolo {
-  /* O fallback não é zelo excessivo: o Tailwind 4 só emite `--radius-xl`
-     se alguma utilidade `rounded-xl` sobreviver na varredura. No dia em que
-     a última sumir, a variável some junto e a curva morre sem um aviso. */
+
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
 
-/*
-  O primeiro filho pinta por cima do canto: a faixa do servidor, quando existe;
-  senão o cabeçalho, cujo botão do nome acende `hover:bg-surface-3`. Sem
-  recortar, passar o mouse ali desenharia uma quina quadrada sobre a redonda.
-  `first-child` cobre os dois casos sem um `if` no componente.
-*/
 .no-aplicativo .canto-do-miolo > :first-child {
   overflow: hidden;
-  /* O fallback não é zelo excessivo: o Tailwind 4 só emite `--radius-xl`
-     se alguma utilidade `rounded-xl` sobreviver na varredura. No dia em que
-     a última sumir, a variável some junto e a curva morre sem um aviso. */
+
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
 
-/*
-  Cantos retos, para quem prefere.
-
-  Desfaz só a curva, e não o fio do topo: o fio separa a faixa de título do
-  miolo e continua fazendo falta com o canto reto. Foi tentador desligar os
-  dois juntos e é errado — são duas coisas que só por acaso nasceram na mesma
-  regra.
-*/
 :root[data-cantos="retos"] .canto-do-miolo,
 :root[data-cantos="retos"] .canto-do-miolo > :first-child {
   border-top-left-radius: 0;
 }
 
-/*
-  O anel de foco em todo clique, e não só na navegação por teclado.
-
-  `:focus-visible` é o padrão do navegador e esconde o anel de quem usa o
-  mouse — é a escolha certa para a maioria. Quem liga isto está dizendo que
-  perde o fio de onde está, e para essa pessoa o anel sumindo é a diferença
-  entre saber e adivinhar qual botão responde ao Enter.
-*/
 :root[data-foco="sempre"] :focus {
   outline: 2px solid var(--focus-primary);
   outline-offset: 2px;
 }
 
-/*
-  O fio da subárvore das configurações.
-
-  Duas camadas no mesmo lugar: `::after` é o fio inteiro, apagado, e `::before`
-  é só o trecho da seção em que você está — ele desliza de uma para a outra em
-  vez de piscar, e é o que dá a noção de onde você está dentro de uma tela
-  longa. A posição vem de `--active-top` e `--active-height`, medidas em JS:
-  altura de item não se sabe em CSS, e chutar um valor fixo quebraria no dia em
-  que um rótulo virasse duas linhas.
-*/
 .subarvore-de-config {
   position: relative;
 }
@@ -659,93 +417,22 @@ body {
   app-region: no-drag;
 }
 
-/*
-  Com QUALQUER coisa aberta por cima, não há região de arrasto nenhuma.
-
-  Esta é a correção de raiz para uma família de bug que já apareceu três vezes —
-  a janelinha da transmissão, os menus, os diálogos. O padrão é sempre o mesmo:
-  algo em portal cai sobre um cabeçalho `regiao-de-arrasto`, e o sistema leva o
-  clique antes de a página ver.
-
-  Por que não basta marcar o que flutua como `no-drag`, que era o que se vinha
-  fazendo: o `-webkit-app-region` é recortado pela caixa de LAYOUT e IGNORA
-  transformações. O Radix posiciona todo menu e balão com `transform` no
-  invólucro do popper — então o buraco de "não arrastar" é aberto onde o
-  elemento estaria SEM o transform, e não onde ele aparece. O recorte cai no
-  lugar errado, e o acerto vira sorte.
-
-  Desligar a região é imune a isso: não há geometria envolvida.
-
-  Como se sabe que há algo aberto, sem o CSS conhecer componente nenhum:
-  - `[data-radix-popper-content-wrapper]` existe enquanto um menu, balão ou
-    lista está aberto. O `:not([role="tooltip"])` deixa as dicas de fora — elas
-    aparecem só de passar o mouse, e travar o arrasto da janela por causa de uma
-    dica seria pior que o bug.
-  - `data-scroll-locked` é posto no `body` pelo `react-remove-scroll` enquanto um
-    diálogo modal está aberto. Diálogo não usa popper, por isso os dois.
-*/
 body:has([data-radix-popper-content-wrapper] > :not([role="tooltip"])) .regiao-de-arrasto,
 body[data-scroll-locked] .regiao-de-arrasto {
   -webkit-app-region: no-drag;
   app-region: no-drag;
 }
 
-/*
-  O contrário, para o que FLUTUA por cima de uma região de arrasto.
-
-  A região de arrasto é recortada pelo sistema a partir do RETÂNGULO pintado,
-  e não da árvore do documento: um cartão flutuante que passe por cima de um
-  cabeçalho continua dentro do retângulo dele, e o sistema rouba o clique pra
-  arrastar a janela antes de a página ver qualquer coisa. Foi o que prendeu a
-  janelinha da transmissão quando ela encostava no topo — dava pra ver, não
-  dava pra pegar.
-*/
 .regiao-sem-arrasto,
 .regiao-sem-arrasto * {
   -webkit-app-region: no-drag;
   app-region: no-drag;
 }
 
-/*
-  O quadro sozinho na chamada: 16:9 inteiro, centrado, com preto em volta.
-
-  É o desenho da referência — e a conta que ela faz. A largura é o MENOR entre
-  o que sobra na horizontal e o que a altura disponível comporta em 16:9; a
-  altura sai da proporção. Assim o preto aparece dos lados numa área alta e em
-  cima e embaixo numa área larga, e some quando a área está na proporção do
-  vídeo.
-
-  Precisa de `container-type: size` no palco porque a conta usa a ALTURA dele,
-  e largura em CSS não enxerga altura de pai — `100cqh` é o único jeito de
-  trazer esse número para dentro de um `min()`.
-
-  E as folgas entram na conta na mão: `100cqw`/`100cqh` medem a caixa de borda
-  do palco, não a de conteúdo, então o `padding` precisa ser descontado aqui.
-  Conferi os dois casos medindo a caixa no navegador antes de escrever.
-*/
 .palco-de-um {
   container-type: size;
 }
 
-/*
-  A grade com VÁRIOS quadros, na conta da referência.
-
-  A largura de cada quadro é o MENOR entre o que sobra na horizontal dividido
-  pelas colunas e o que a altura disponível comporta em 16:9 dividida pelas
-  linhas — `min(columnWidth, rowHeight * 16/9)`, do
-  `VoiceGridLayoutMetrics.ts`. A altura sai da proporção.
-
-  Sem isso, as linhas da grade tinham a altura do CONTEÚDO: os quadros ficavam
-  do tamanho do avatar, empilhados no alto, com metade da tela vazia embaixo. E
-  numa chamada de quatro, esticados, a distância entre eles crescia junto.
-
-  `justify-content` e `align-content` centrados são o que põe o conjunto no meio
-  da área — a grade agora tem o tamanho que a conta deu, e não o da caixa.
-
-  As folgas entram na conta na mão porque `100cqw`/`100cqh` medem a caixa de
-  BORDA do palco, não a de conteúdo. A dos controles é a tira que a pílula
-  ocupa embaixo, a mesma do quadro sozinho.
-*/
 .grade-de-varios {
   --espaco: 0.75rem;
   --folga-lateral: 0.75rem;
@@ -778,7 +465,7 @@ body[data-scroll-locked] .regiao-de-arrasto {
 .quadro-de-um {
   --folga-lateral: 0.75rem;
   --folga-do-topo: 0.875rem;
-  /* a tira dos controles: a pílula é ancorada em `bottom-4` e tem ~52px */
+
   --folga-dos-controles: 5rem;
 
   aspect-ratio: 16 / 9;
@@ -788,44 +475,12 @@ body[data-scroll-locked] .regiao-de-arrasto {
   );
 }
 
-/*
-  Ampliado (o quadro clicado, sozinho na chamada): a MESMA conta, sem folga.
-
-  Crescer não é abandonar o 16:9 — é só devolver ao quadro a folga que o estado
-  normal reserva. A referência faz exatamente isso: o `.focusLayoutMain` dela
-  mantém `aspect-ratio: 16/9` e, quando não há mais ninguém na chamada, troca o
-  teto de altura por `max-height: 100%`. O preto em cima e embaixo continua lá,
-  porque continua sendo o resto da divisão entre a área e a proporção do vídeo.
-
-  Eu já tentei fazer o ampliado PREENCHER a área, sem proporção. Fica maior, e
-  fica errado: o quadro deixa de ter a forma do vídeo, e o cartão vira o fundo.
-
-  As folgas são zeradas aqui, e não no `.quadro-de-um`, porque o palco também
-  precisa perder o `padding` — `100cqw`/`100cqh` medem a caixa de BORDA, então
-  folga em CSS e folga nesta conta têm que andar juntas.
-*/
 .quadro-de-um-ampliado {
   --folga-lateral: 0px;
   --folga-do-topo: 0px;
   --folga-dos-controles: 0px;
 }
 
-/*
-  O conteúdo de dentro do painel assentando UM POR UM.
-
-  O deslize lateral diz "veio de outra etapa"; a cascata diz "e é isto aqui".
-  Cada bloco desce 10px com um atraso a mais que o anterior, na ordem em que se
-  lê — rótulo e campo, rótulo e campo, aviso. Todos de uma vez seria um bloco
-  só piscando; um por um faz o olho percorrer a etapa nova em vez de encarar
-  ela pronta.
-
-  `backwards` é o que segura cada bloco escondido DURANTE o atraso dele. Sem
-  isso os três apareceriam juntos e só então começariam a descer, que é o
-  contrário do que a cascata quer dizer.
-
-  Seis níveis bastam: passado isso o último a entrar demoraria meio segundo, e
-  aí a cascata deixa de ser leitura e vira espera.
-*/
 @keyframes bloco-desce {
   from {
     opacity: 0;
@@ -861,12 +516,6 @@ body[data-scroll-locked] .regiao-de-arrasto {
   animation-delay: 0.35s;
 }
 
-/*
-  A referência tem um caminho próprio pra isto: o `reducedMotionVariants` dela
-  troca o deslize por só opacidade. O deslize das etapas segue esse caminho
-  dentro do `CarrosselDeEtapas`, pelo `useReducedMotion` da `motion`; o que
-  sobra pra cá é a cascata e o balão do combobox, que são CSS puro.
-*/
 @media (prefers-reduced-motion: reduce) {
   .cascata > * {
     animation-name: apenas-aparece;

@@ -1,47 +1,7 @@
-/*
-  Os enfeites, inteiros.
-
-  Aqui não há arte comprada: no Discord uma decoração de avatar é um APNG
-  hospedado; aqui é gradiente e máscara. Isso significa zero arquivo pra
-  hospedar, zero link pra quebrar, e tudo funcionando offline no aplicativo de
-  desktop — que é onde a moldura ilustrada de um concorrente vira quadrado
-  vazio.
-
-  Três regras mandam neste arquivo:
-
-  1. **Classe estática.** O Tailwind 4 só gera classe que existe escrita no
-     código-fonte, então nada aqui é utilitário montado em runtime. O que varia
-     entra por custom property: `--gc-cor-1`, `--gc-cor-2`, `--gc-fonte`.
-
-  2. **`--gc-vel` é 0s por padrão.** Cem membros na lista, cada um com um efeito
-     rodando, engasga a rolagem — e quem paga é quem só queria ler quem está
-     online. A MESMA classe anda no cartão de perfil porque lá o JavaScript
-     manda um `--gc-vel` de verdade. Uma classe, dois comportamentos, nenhuma
-     duplicação.
-
-  3. **Só `transform`, `opacity`, `filter`, `background-position` e `color`.**
-     São as propriedades que o compositor resolve sem refazer layout. Animar
-     qualquer outra coisa numa lista de cem itens é jank garantido.
-*/
-
-/* ------------------------------------------------------------------ nome */
-
-/*
-  A família vem do JavaScript (`lib/cosmeticos/fontes.ts`) e não daqui: cada
-  declaração de lá já termina em `var(--font-sans)`, então o chunk de fonte que
-  não carregar cai na fonte do app em vez de sumir. Uma fonte por id em CSS
-  seria a mesma lista escrita duas vezes.
-*/
 .gc-fonte {
   font-family: var(--gc-fonte, var(--font-sans));
 }
 
-/*
-  Gradiente e brilho recortam o texto, e o `lib/cosmeticos/nome.ts` só os libera
-  em tamanho `md`+. O `color: transparent` é obrigatório: sem ele o glifo opaco
-  fica na frente do próprio fundo. O `-webkit-text-fill-color` é o que faz o
-  Safari concordar.
-*/
 .gc-nome--gradiente {
   background-image: linear-gradient(
     100deg,
@@ -57,11 +17,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-/*
-  Neon é text-shadow puro justamente por NÃO recortar o texto: o antialiasing
-  continua inteiro, então é o único efeito colorido que pode aparecer numa
-  linha de chat a 14px sem ficar mais fino que o vizinho.
-*/
 .gc-nome--neon {
   color: var(--gc-cor-1, var(--color-ink));
   text-shadow:
@@ -72,15 +27,6 @@
   animation: gc-pulsar var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
-/*
-  Duas camadas de fundo: o lampejo por cima, a cor chapada por baixo. É o que
-  permite o brilho passar sem apagar a cor de quem escolheu — com uma camada só,
-  o `color: transparent` deixaria o nome invisível entre uma passada e outra.
-
-  A posição inicial deixa o lampejo FORA do texto: com `--gc-vel: 0s` a
-  animação não roda, e o nome tem que ficar parecendo cor sólida, não um nome
-  com um risco branco no meio.
-*/
 .gc-nome--brilho {
   background-image:
     linear-gradient(
@@ -129,12 +75,6 @@
   }
 }
 
-/* ------------------------------------------------------------------ cargo */
-
-/*
-  Mesma família do nome, aplicada ao nome do CARGO (aba de cargos, título da
-  seção na lista de membros, etiqueta).
-*/
 .gc-cargo--gradiente {
   background-image: linear-gradient(
     100deg,
@@ -147,12 +87,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-/*
-  Holográfico NÃO recorta o texto — anima a própria `color` entre as duas cores.
-  É de propósito: cargo aparece na lista de membros a 14px, e um holográfico
-  recortado ali teria o mesmo emagrecimento do gradiente. Assim ele vale em
-  qualquer tamanho.
-*/
 .gc-cargo--holografico {
   color: var(--gc-cor-1, var(--color-ink));
   text-shadow: 0 0 10px
@@ -173,16 +107,6 @@
   }
 }
 
-/* ----------------------------------------------------------------- avatar */
-
-/*
-  Decoração e moldura são CAMADAS, nunca borda.
-
-  A caixa do avatar continua tendo exatamente o `size` que quem chamou pediu: o
-  `inset: -16%` faz o enfeite crescer PRA FORA, sem empurrar nada. Se a caixa
-  crescesse, a lista de membros inteira mudaria de altura no dia em que a
-  primeira pessoa escolhesse uma moldura.
-*/
 .gc-camada {
   position: absolute;
   inset: -16%;
@@ -190,39 +114,6 @@
   pointer-events: none;
 }
 
-/*
-  Como o Discord faz e como fazemos aqui.
-
-  Lá, decoração de avatar é um APNG — arte desenhada, animada quadro a quadro, e
-  comprada na loja. Efeito de perfil é uma folha de sprites tocada por cima do
-  cartão. Os dois são ARQUIVO: alguém desenhou, alguém hospeda, alguém paga.
-
-  Aqui não há loja, então também não há arte. O que dá pra fazer com gradiente,
-  máscara e mistura é o que existe — e a troca não é só de custo: nada pra
-  hospedar, nada pra quebrar, e funciona offline no aplicativo de desktop, que é
-  onde a moldura ilustrada de um concorrente vira quadrado vazio.
-
-  A regra pra parecer arte e não CSS: NUNCA uma camada só. Um anel de uma cor
-  parece o que é. Três camadas com velocidades diferentes — uma girando, uma
-  pulsando, um brilho por trás — o olho lê como profundidade.
-*/
-
-/*
-  ⚠️ A máscara do elemento recorta os FILHOS junto.
-  
-  Por isso nenhuma decoração com mais de uma camada põe `mask` no elemento: ela
-  vai em cada `::before`/`::after` separadamente, e o elemento fica só com o que
-  não pode ser recortado (o halo, o brilho) e com a animação que gira o conjunto.
-  Com a máscara no pai, o halo virava um anel fino e a camada de dentro sumia
-  inteira — dois enfeites "que não funcionavam" pelo mesmo motivo invisível.
-*/
-
-/*
-  Aurora: fita de cor girando com um halo desfocado por trás. O desfoque é o que
-  separa as duas em profundidade — sem ele são dois anéis; com ele, um halo com
-  uma fita dentro. A fita gira mais rápido que o halo porque as rotações se
-  somam: o filho anda no quadro já girado do pai.
-*/
 .gc-decoracao--aurora {
   background: conic-gradient(
     from 180deg,
@@ -263,11 +154,6 @@
   animation: gc-girar calc(var(--gc-vel, 0s) * 2) linear infinite;
 }
 
-/*
-  Chamas: três focos de calor de tamanhos diferentes, cada um no seu tempo. Fogo
-  não pulsa junto — é a dessincronia que faz parecer chama, e não uma luz
-  piscando.
-*/
 .gc-decoracao--chamas {
   background:
     radial-gradient(
@@ -293,11 +179,6 @@
     alternate-reverse;
 }
 
-/*
-  Circuito: traços curtos girando sobre um anel fino contínuo, com o verde
-  vazando pra fora. O anel de baixo é o que dá a leitura de "placa" — sem ele os
-  traços viram poeira.
-*/
 .gc-decoracao--circuito {
   box-shadow: 0 0 12px rgb(52 211 153 / 0.45);
   border-radius: 9999px;
@@ -334,11 +215,6 @@
   box-shadow: inset 0 0 0 1px rgb(52 211 153 / 0.4);
 }
 
-/*
-  Pétalas: duas voltas de pontos em sentidos opostos. Uma volta sozinha é um
-  anel girando; duas em sentidos contrários dão a sensação de algo caindo em
-  volta.
-*/
 .gc-decoracao--petalas {
   animation: gc-girar var(--gc-vel, 0s) linear infinite reverse;
 }
@@ -388,11 +264,6 @@
   animation: gc-girar calc(var(--gc-vel, 0s) * 2.5) linear infinite;
 }
 
-/*
-  Órbita: dois satélites em anéis diferentes, com rastro. Um ponto girando
-  sozinho parece bug de renderização; dois, em velocidades diferentes e com
-  rastro, leem como órbita.
-*/
 .gc-decoracao--orbita {
   animation: gc-girar var(--gc-vel, 0s) linear infinite;
 }
@@ -426,15 +297,6 @@
   animation: gc-girar calc(var(--gc-vel, 0s) * 1.6) linear infinite reverse;
 }
 
-/*
-  Moldura emoldura o CARTÃO, não o avatar — quem cerca o avatar é a decoração.
-  A distinção importa porque as duas competem pelo mesmo espaço visual: uma
-  moldura em volta do retrato brigava com a decoração e não sobrava nada pro
-  cartão, que é a peça grande.
-
-  Todas trabalham como CAMADA sobre o cartão: `inset: 0`, raio herdado e sem
-  captura de clique. Nenhuma usa `border`, porque borda empurra o conteúdo.
-*/
 .gc-camada--cartao {
   position: absolute;
   inset: 0;
@@ -451,21 +313,6 @@
   animation: gc-pulsar var(--gc-vel, 0s) ease-in-out infinite alternate;
 }
 
-/*
-  A faixa metálica vira moldura pelo truque das duas máscaras: a de fora pinta
-  o retângulo inteiro, a de dentro (content-box) é subtraída — sobra só a borda.
-  É o equivalente retangular do `radial-gradient` que a versão circular usava.
-
-  O brilho corre girando o ÂNGULO DO GRADIENTE, e nunca o elemento.
-
-  Antes ela usava o `gc-girar`, que é `transform: rotate(360deg)`. Num anel isso
-  é inofensivo — círculo girado continua o mesmo círculo — mas a moldura é um
-  retângulo do tamanho do cartão: girá-la joga os cantos pra fora, o
-  `overflow: hidden` do cartão corta o que sobra, e o que aparece é uma mancha
-  dourada atravessada em vez de uma borda. O `@property` abaixo é o que permite
-  interpolar um ângulo em custom property; sem ele o navegador trata
-  `--gc-giro` como texto e não anima nada.
-*/
 @property --gc-giro {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -509,10 +356,6 @@
   background: linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 40%);
 }
 
-/*
-  Pixel abre mão do arredondamento de propósito: canto serrilhado sobre canto
-  redondo não lê como pixel art, lê como bug de renderização.
-*/
 .gc-moldura--pixel {
   border-radius: 0;
   box-shadow: inset 0 0 0 3px var(--gc-cor-1, #a3e635);
@@ -532,7 +375,6 @@
   );
 }
 
-/* Espinhos: serrilha fina na borda, com base sólida atrás pra não flutuar. */
 .gc-moldura--espinhos {
   padding: 4px;
   background:
@@ -552,19 +394,6 @@
   -webkit-mask-composite: xor;
 }
 
-/*
-  Prisma: arco-íris correndo pela borda.
-
-  A varredura é LINEAR e deslizando, não cônica. O `conic-gradient` distribui
-  cor por ângulo a partir do centro; num cartão largo os lados esquerdo e
-  direito ocupam poucos graus e o topo e a base ocupam muitos, então as cores
-  amontoam nas pontas e esticam no meio — ficava visivelmente torto. Um
-  gradiente linear de 300% de largura deslizando não tem centro, então trata os
-  quatro lados igual.
-
-  A primeira e a última parada são a mesma cor: é o que faz a volta fechar sem
-  emenda quando a posição salta de 200% pra 0%.
-*/
 .gc-moldura--prisma {
   padding: 2px;
   background: linear-gradient(
@@ -594,19 +423,6 @@
   }
 }
 
-/*
-  Estelar: faixa de céu profundo com estrelas.
-
-  As estrelas são LADRILHADAS, não posicionadas em porcentagem. Com posições
-  soltas pelo quadro, quase todas caíam no miolo e a máscara comia o campo
-  inteiro — sobrava uma borda azul lisa. Ladrilho garante estrela na faixa
-  qualquer que seja o tamanho do cartão, e três passos primos entre si
-  (17x13, 23x19, 29x23) evitam o alinhamento que denuncia a repetição.
-
-  Os pontos levam raio em PIXEL (`0 1.2px`) e não parada em porcentagem: com
-  `1.3px 1.3px ... 50%` a estrela ficava com 0,65px de raio e o antialiasing
-  simplesmente a apagava — a faixa lia como azul liso.
-*/
 .gc-moldura--estelar {
   padding: 6px;
   background:
@@ -625,14 +441,6 @@
   animation: gc-pulsar calc(var(--gc-vel, 0s) * 1.4) ease-in-out infinite alternate;
 }
 
-/*
-  Filete: dois fios finos com uma folga entre eles, sem brilho e sem movimento.
-
-  É a única discreta do conjunto, e existe porque cartão de perfil não é
-  vitrine: quem escreveu uma bio longa quer moldura que emoldure, não que
-  dispute. Sem máscara — dois `inset` de sombra bastam, e sombra não come o
-  arredondamento do cartão.
-*/
 .gc-moldura--filete {
   box-shadow:
     inset 0 0 0 1px var(--gc-cor-1, #d4af37),
@@ -640,41 +448,12 @@
     inset 0 0 0 5px color-mix(in oklab, var(--gc-cor-1, #d4af37), transparent 62%);
 }
 
-/*
-  Rosas: a primeira moldura DESENHADA, e não composta de gradiente.
-
-  Usa `border-image`, que é a ferramenta certa pra ornamento: ele fatia o SVG
-  em 9 pedaços, joga os quatro cantos inteiros nos cantos do cartão e ladrilha
-  as beiras ao longo dos lados. Uma imagem esticada em `background-size` faria
-  a rosa do canto virar oval num cartão alto.
-
-  A borda transparente é só pra reservar a área — `border-image` precisa de uma
-  largura de borda pra ocupar, e o desenho é pintado por cima dela. Como a
-  camada é `inset: 0` com `box-sizing: border-box`, a borda não empurra nada.
-
-  `round` e não `repeat`: o `round` ajusta a escala do ladrilho pra caber um
-  número inteiro de repetições, então nunca corta uma rosa no meio.
-
-  A faixa é FINA e mora SOBRE a borda do cartão — não é uma moldura em volta
-  dele. Uma faixa grossa tapava o banner e o texto; uma moldura por fora obrigava
-  o conteúdo a encolher ou o popover a crescer. Sobre a borda não custa nem um
-  nem outro.
-
-  A espessura sai de `--gc-borda` porque a amostra do seletor tem 28px de
-  altura: com os 20px do cartão, as bordas de cima e de baixo se sobrepunham e
-  a amostra virava um borrão. Quem desenha em miniatura reduz a variável.
-*/
 .gc-moldura--rosas {
   border: var(--gc-borda, 20px) solid transparent;
   border-image: url("../assets/molduras/rosas.svg") 48 / var(--gc-borda, 20px) / 0
     round;
 }
 
-
-/*
-  As três abaixo são a mesma técnica da rosas, trocando só o desenho: fatia de
-  48, faixa de 20px, `round` pra nunca cortar um motivo no meio.
-*/
 .gc-moldura--arabesco {
   border: var(--gc-borda, 20px) solid transparent;
   border-image: url("../assets/molduras/arabesco.svg") 48 / var(--gc-borda, 20px) / 0
@@ -710,13 +489,6 @@
   }
 }
 
-/* ----------------------------------------------------------------- perfil */
-
-/*
-  Efeito de perfil é a camada que cobre o cartão inteiro. Ao contrário dos
-  outros, este só existe onde há UM de cada vez na tela — por isso pode animar
-  sem pedir licença.
-*/
 .gc-perfil {
   position: absolute;
   inset: 0;
@@ -724,14 +496,6 @@
   pointer-events: none;
 }
 
-/*
-  Efeito de cartão: duas camadas com velocidades diferentes.
-  
-  A de trás anda devagar e desfocada, a da frente rápida e nítida — é o mesmo
-  truque do parallax, e é o que separa "tem partícula aqui" de "tem
-  profundidade aqui". Com uma camada só, qualquer um destes vira um papel de
-  parede pontilhado.
-*/
 .gc-perfil--poeira {
   background-image:
     radial-gradient(
@@ -785,10 +549,6 @@
   animation: gc-descer calc(var(--gc-vel, 0s) * 1.8) linear infinite;
 }
 
-/*
-  Brasa sobe e APAGA no caminho — por isso a máscara em degradê no topo. Sem
-  ela as fagulhas somem de repente na borda, e o olho lê o corte, não o fogo.
-*/
 .gc-perfil--brasas {
   background-image:
     radial-gradient(2px 2px at 25% 90%, #fb923c, transparent),
@@ -831,20 +591,6 @@
   }
 }
 
-/* ------------------------------------------------------------------ placa */
-
-/*
-  A placa é o fundo que fica ATRÁS do nome no cartão de perfil, não uma etiqueta
-  ao lado dele.
-
-  Como etiqueta ela precisaria de um texto próprio, e não existe campo pra isso:
-  sairia escrito o id do enfeite ("fita") ao lado do nome da pessoa. Como fundo
-  ela é o que sempre foi no Discord — uma placa sob o nome — e não disputa
-  espaço com a etiqueta do servidor, que fica na mesma linha.
-
-  Herda tamanho e peso da fonte de quem a embrulha: a placa emoldura o nome, não
-  redefine como ele é escrito.
-*/
 .gc-placa {
   display: inline-flex;
   align-items: center;
@@ -883,20 +629,8 @@
   backdrop-filter: blur(4px);
 }
 
-/* ---------------------------------------------------------------- respeito */
-
-/*
-  Quem pediu menos movimento no sistema recebe o catálogo inteiro parado — não
-  uma versão "mais lenta". Enfeite animado é o caso de uso exato dessa
-  preferência, e ela vem de gente com enxaqueca e distúrbio vestibular.
-*/
 @media (prefers-reduced-motion: reduce) {
-  /*
-    Os `::before`/`::after` entram na lista: agora quase todo enfeite tem camada
-    animada em pseudo-elemento, e uma regra que só alcança o elemento pai
-    deixaria metade do movimento de pé — o pior resultado possível pra quem
-    pediu menos movimento.
-  */
+
   .gc-nome--neon,
   .gc-nome--brilho,
   .gc-cargo--holografico,

@@ -1,47 +1,5 @@
-/*
-  A camada de tokens da referência — os 451 nomes que o cliente que serve de
-  referência declara, com os nossos valores.
-
-  **De onde ela veio.** Do CSS PUBLICADO (`web.canary.fluxer.app` → o bundle em
-  `fluxerstatic.com`), nunca do repositório: aquele é AGPL e copiá-lo
-  contaminaria este código. O CSS servido ao navegador é outra coisa — é o que
-  qualquer pessoa que abre o site recebe, e ler valor de cor de uma página é o
-  mesmo que abrir o inspetor.
-
-  **Por que uma camada separada do `@theme`.** Estes nomes são a lista COMPLETA
-  do que dá pra vestir num cliente deste tipo: superfícies, texto, botões,
-  bordas, marcação, código, mensagens, formulários e as medidas do layout. O
-  `@theme` do `index.css` continua sendo a nossa paleta em português, e o que
-  ele faz agora é APONTAR pra cá onde os dois dizem a mesma coisa — assim editar
-  um token no estúdio muda o app de verdade, em vez de mexer numa lista paralela.
-
-  **Os valores são os nossos, não os deles.** `hsl(h, calc(s% * var(...)), l%)`
-  foi resolvido com fator 1 e virou hex, que é o que o seletor de cor do estúdio
-  entende. Onde o nosso tema já tinha valor próprio, o valor daqui é o nosso.
-
-  **As fontes entram pelo slot dele com o valor NOSSO.** Excluir `--font-sans`,
-  `--font-mono` e os dois `--font-fallback-*` foi erro: o que não queríamos era
-  o VALOR dele (que nomeia "Fluxer Sans", uma fonte que não temos), não o
-  nome do token. Com eles aqui, trocar a fonte do app virou uma linha no
-  estúdio — e o `font-sans` do Tailwind lê exatamente esta variável.
-
-  **`--saturation-factor` continua de fora, e é o único.** Lá ele funciona
-  porque toda cor é `hsl(h, calc(s% * var(--saturation-factor)), l%)` e o fator
-  entra no meio do cálculo. Aqui as cores já são hex — o fator não teria onde
-  agir, e um botão que aceita o valor e não muda nada é pior que a ausência
-  dele. Voltar a ter isso significa manter a paleta em `hsl()`, e aí o seletor
-  de cor do estúdio para de funcionar: é um ou o outro.
-*/
 :root {
-  /*
-    A fonte da interface e a do código.
 
-    É a IBM Plex nos dois casos — a mesma da referência, com o nome de verdade:
-    a cláusula 3 da OFL reserva o nome "Plex" a quem modifica o arquivo, e nós
-    não modificamos. O sufixo "Variable" não é enfeite, é o nome com que o
-    `@fontsource-variable` registra a família; sem ele o navegador não acha a
-    fonte, cai no `system-ui` e não reclama em lugar nenhum.
-  */
   --font-sans:
     "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", var(--font-fallback-sans);
@@ -49,35 +7,13 @@
     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     var(--font-fallback-mono);
 
-  /*
-    O fim das duas listas: emoji e os alfabetos que a Plex não cobre.
-
-    Fica separado da fonte principal de propósito — é a parte que muda por
-    sistema operacional, e misturar as duas faria toda troca de fonte ter que
-    recopiar a cauda inteira.
-  */
   --font-fallback-sans:
     "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Noto Sans",
     "Nirmala UI", sans-serif;
   --font-fallback-mono: "Noto Sans Mono", var(--font-fallback-sans);
 
-  /*
-    O tamanho base da conversa.
-
-    Não é constante: `--gc-escala-do-chat` é o que a régua de "escala da fonte
-    do chat" escreve, e ela vai de 0,8 a 1,4. Deixar o token aqui em vez de
-    `1rem` fixo é o que faz o estúdio mostrar o tamanho de VERDADE, o que a
-    pessoa escolheu, e não um número que não corresponde à tela.
-  */
   --font-size: calc(1rem * var(--gc-escala-do-chat, 1));
 
-  /*
-    Se dá pra selecionar texto com o mouse.
-
-    `none` no app inteiro e `text` de volta onde faz sentido (mensagem, campo)
-    é o que separa um aplicativo de uma página — arrastar numa lista de canais
-    não deveria pintar tudo de azul.
-  */
   --user-select: auto;
   --font-keybind: -apple-system, BlinkMacSystemFont, var(--font-sans);
   --z-index-base: 0;
@@ -764,7 +700,6 @@
   --keybind-hint-default-color: var(--text-on-brand-primary);
 }
 
-/* Mais escuro — os 90 tokens que a base escura não serve. */
 :root[data-tema="mais-escuro"] {
   --scrollbar-thumb-bg: rgba(160, 160, 160, 0.35);
   --scrollbar-thumb-bg-hover: rgba(200, 200, 200, 0.55);
@@ -990,13 +925,6 @@
   );
 }
 
-/*
-  Claro, e também "seguir o sistema" enquanto o sistema estiver no claro.
-
-  Os 144 daqui são os que mudam de verdade entre um tema e outro; o resto
-  herda da base, que é o jeito de o tema claro não virar uma segunda cópia da
-  paleta inteira, com metade das linhas iguais e a outra metade desatualizada.
-*/
 :root[data-tema="claro"],
 :root[data-tema="sistema"] {
   --guilds-layout-item-bg: color-mix(
@@ -1298,13 +1226,6 @@
   color-scheme: light;
 }
 
-/*
-  "Seguir o sistema" no escuro: devolve a base.
-
-  O bloco de cima já respondeu por `sistema` com o claro, então aqui só é
-  preciso desfazer o que ele fez — cada token que o claro sobrescreve volta ao
-  valor da base.
-*/
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
     color-scheme: dark;
