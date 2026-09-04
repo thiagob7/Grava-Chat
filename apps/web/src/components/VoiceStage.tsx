@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Maximize, Mic, MicOff, Minimize, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
+import { Mic, MicOff, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
 import { ChatCircle, SpeakerHigh, UserPlus } from "@phosphor-icons/react";
 
@@ -25,7 +25,6 @@ import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
 import { VoiceStageControls } from "~/components/VoiceStageControls";
-import { useTelaCheia } from "~/hooks/use-tela-cheia";
 import { VoiceVideo } from "~/components/VoiceTrack";
 import { useParticipante } from "~/hooks/use-participante";
 import { useSomDoPainel } from "~/lib/soundboard";
@@ -231,11 +230,6 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const [focado, setFocado] = useState<string | null>(null);
   const [convidando, setConvidando] = useState(false);
 
-  /*
-    Tela cheia no QUADRO, não na janela inteira: assim a barra de participantes
-    e o resto do app somem, e o vídeo ocupa o monitor.
-  */
-  const telaCheia = useTelaCheia(quadro);
   const todosOsTiles = useVoiceStore((s) => s.tiles);
   const mostrarSemVideo = useVoicePrefs((s) => s.mostrarSemVideo);
 
@@ -376,10 +370,27 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             </button>
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
-            {/* as pastilhas de quem está na chamada não cabem no privado, e
-                não fazem falta: são duas pessoas, e uma delas é você */}
-            {!compacto && (
+          {/*
+            A faixa de baixo tinha um SEGUNDO botão de tela cheia, e ele saiu.
+
+            Os dois NÃO faziam a mesma coisa, e era esse o problema: este punha
+            em tela cheia só o `quadro` do vídeo, e o do `VoiceStageControls` põe
+            o `palco` inteiro. Dois botões idênticos, lado a lado, com alvos
+            diferentes e nada na tela dizendo qual era qual. A referência tem
+            dois botões nesse canto, não três: som e tela cheia.
+
+            Ficou o do palco, e não este, por uma razão prática: o
+            `VoiceStageControls` mora DENTRO do `palco`, então em tela cheia os
+            controles vão junto e continuam alcançáveis. Em tela cheia só do
+            quadro eles ficavam de fora, e a única saída era o Esc — que
+            funciona, mas ninguém descobre sozinho.
+
+            Com o botão fora, a faixa passa a existir só pelas pastilhas de quem
+            está na chamada; no privado elas não aparecem, e uma faixa de degradê
+            vazia sobre o vídeo seria sombra por nada.
+          */}
+          {!compacto && (
+            <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
               <div className="flex shrink-0 gap-2">
                 {tiles.map((tile) => (
                   <ComMenu key={tile.identity} tile={tile} contexto={contexto}>
@@ -387,17 +398,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
                   </ComMenu>
                 ))}
               </div>
-            )}
-
-            <button
-              onClick={() => void telaCheia.alternar()}
-              aria-label={telaCheia.ativa ? "Sair da tela cheia" : "Tela cheia"}
-              title={telaCheia.ativa ? "Sair da tela cheia (Esc)" : "Tela cheia"}
-              className="ml-auto shrink-0 rounded p-1.5 text-white/80 transition hover:bg-white/15 hover:text-white"
-            >
-              {telaCheia.ativa ? <Minimize size={16} /> : <Maximize size={16} />}
-            </button>
-          </div>
+            </div>
+          )}
         </div>
 
         {/*
