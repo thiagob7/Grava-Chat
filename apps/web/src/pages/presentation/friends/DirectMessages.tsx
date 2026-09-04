@@ -197,7 +197,7 @@ export const DirectMessages: React.FC = () => {
           uma gaveta no celular. Ver o comentário equivalente em Chat.tsx. */}
       {telaEstreita ? (
         <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
-          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0 data-[state=open]:slide-in-from-left">
+          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
             <SheetTitle className="sr-only">Conversas</SheetTitle>
             {navegacao}
           </SheetContent>

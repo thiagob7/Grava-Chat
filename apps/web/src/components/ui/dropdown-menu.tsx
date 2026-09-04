@@ -30,7 +30,6 @@ export const DropdownMenuContent = ({
           menu abre, destaca no hover e simplesmente não obedece.
         */
         "regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
-        "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}
       {...props}

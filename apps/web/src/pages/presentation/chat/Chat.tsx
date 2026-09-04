@@ -263,7 +263,7 @@ export const Chat: React.FC = () => {
         <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
           {/* O Sheet nasce à direita; aqui ele vira gaveta da esquerda, que é
               de onde a navegação sai em qualquer app de celular. */}
-          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0 data-[state=open]:slide-in-from-left">
+          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
             <SheetTitle className="sr-only">Servidores e canais</SheetTitle>
             {navegacao}
           </SheetContent>

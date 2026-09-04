@@ -55,7 +55,6 @@ export const SelectContent = ({
                 /// Portal flutua por cima de cabeçalho, que é região de arrasto — sem
         /// isto o sistema rouba o clique. Veja o porquê em `dropdown-menu.tsx`.
         "regiao-sem-arrasto z-[60] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-hidden rounded-lg border border-white/5 bg-surface-2 shadow-2xl",
-        "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         className,
       )}

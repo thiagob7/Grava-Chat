@@ -41,7 +41,6 @@ export const Tooltip = ({
           */
           "z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
           "shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)]",
-          "data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0",
         )}
       >
         {atalho ? (

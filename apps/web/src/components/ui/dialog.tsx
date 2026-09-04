@@ -23,7 +23,7 @@ export const DialogContent = ({
       transformava o fundo numa mancha. O bastante pra desfocar, pouco o
       bastante pra ainda se reconhecer o que está atrás.
     */}
-    <DialogPrimitive.Overlay className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px] data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+    <DialogPrimitive.Overlay className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px]" />
     <DialogPrimitive.Content
       className={cn(
         /*

@@ -34,7 +34,7 @@ export const DicaDoServidor: React.FC<DicaDoServidorProps> = ({ nome, vozes, chi
       <TooltipPrimitive.Content
         side="right"
         sideOffset={8}
-        className="z-50 max-w-64 rounded-md border border-line bg-surface-4 px-3 py-2.5 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)] data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0"
+        className="z-50 max-w-64 rounded-md border border-line bg-surface-4 px-3 py-2.5 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)]"
       >
         <p className="truncate text-sm font-semibold text-ink">{nome}</p>
 
