@@ -100,7 +100,20 @@ const CantosDaChamada: React.FC<{
         arrastar a janela pela tela. O CSS já devolve o clique a botões e
         links de dentro, então os cantos continuam clicáveis.
       */}
-      <div className="regiao-de-arrasto pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3">
+      <div
+        className={cn(
+          "regiao-de-arrasto pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3",
+          /*
+            Somem com o mouse, como a pílula de controles.
+
+            É a mesma regra dela, palavra por palavra — e tem de ser: dois
+            grupos de botões flutuando sobre o mesmo vídeo, um que some e outro
+            que fica, é pior que os dois ficarem. `focus-within` para que quem
+            navega por teclado consiga chegar neles sem mouse nenhum.
+          */
+          "opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100",
+        )}
+      >
         <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
           <SpeakerHigh
             size={20}
@@ -137,7 +150,11 @@ const CantosDaChamada: React.FC<{
               ela é centralizada e ancorada na mesma altura (`bottom-4`), então
               os dois convivem sem se cobrir em tela nenhuma.
             */
-            className={cn(botao, "absolute bottom-4 left-4 z-10")}
+            className={cn(
+              botao,
+              "absolute bottom-4 left-4 z-10",
+              "opacity-0 transition-opacity duration-150 focus-visible:opacity-100 group-hover:opacity-100",
+            )}
           >
             <UserPlus size={20} weight="fill" />
           </button>
@@ -448,12 +465,29 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         )}
 
         {/*
-          O quadro em destaque PREENCHE. Sem isso ele mantém o 16:9 dentro de
-          uma caixa mais alta, e sobra uma tira preta entre ele e a faixa — o
-          mesmo defeito que aparecia com uma pessoa só na chamada.
+          O quadro em destaque guarda a proporção, com preto em volta.
+
+          Antes ele PREENCHIA a área: esticava a imagem até os cantos e cortava
+          o que sobrava. Ampliar deixava de mostrar a mesma coisa maior — passava
+          a mostrar um pedaço dela.
+
+          A tira preta em cima e embaixo é o que a referência faz, e não é
+          desperdício de tela: é a área que não pertence à imagem. Fingir que
+          pertence custa pedaço do vídeo.
+
+          `aspect-video` com os dois tetos (`max-h-full` e `max-w-full`) resolve
+          sozinho de que lado sobra preto: numa área larga sobra dos lados, numa
+          alta sobra em cima e embaixo — o que estiver mais apertado manda.
         */}
-        <div className="min-h-0 flex-1 [&>*]:size-full">
-          {desenhar(emFoco.destaque, false, true)}
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg bg-black">
+          {/*
+            `w-full` é o que dá base para a proporção crescer, e `max-h-full` é
+            o teto. Só com os dois máximos a caixa não tem de onde partir e
+            encolhe até o conteúdo — vira um selo no meio do preto.
+          */}
+          <div className="aspect-video w-full max-h-full [&>*]:size-full">
+            {desenhar(emFoco.destaque, false, true)}
+          </div>
         </div>
 
         <div className="flex shrink-0 justify-center gap-2">
