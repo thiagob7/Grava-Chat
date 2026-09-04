@@ -14,7 +14,7 @@
   Roda no `predev` e no `prebuild`, e sai na hora se já estiver tudo lá — o
   atraso na subida do dev server é o preço de um `readdir`.
 */
-import { cp, mkdir, readdir } from "node:fs/promises";
+import { cp, mkdir, readdir, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -60,12 +60,40 @@ if (!naOrigem) {
   process.exit(1);
 }
 
-if ((await quantos(DESTINO)) === naOrigem) {
+/*
+  `>=` e não `===`: o NOTICE abaixo mora no destino e não existe na origem, então
+  a contagem nunca bate exatamente. Com `===`, a cópia dos 16 MB rodaria a cada
+  `yarn dev`.
+*/
+if ((await quantos(DESTINO)) >= naOrigem) {
   console.log(`emoji: ${naOrigem} arquivos já em public/emoji`);
   process.exit(0);
 }
 
 await mkdir(DESTINO, { recursive: true });
 await cp(ORIGEM, DESTINO, { recursive: true });
+
+/*
+  O aviso de licença viaja COM os arquivos.
+
+  A pasta é derivada e fica fora do git, então quem topa com ela — num servidor,
+  num build, num zip do `dist` — não tem como saber de onde os SVGs vieram nem
+  sob que licença. A referência faz o mesmo: o `NOTICE.md` dela mora dentro do
+  diretório de emoji, não só no índice de licenças.
+*/
+await writeFile(
+  join(DESTINO, "NOTICE.md"),
+  [
+    "# Emoji — Twemoji",
+    "",
+    "Estes SVGs são gráficos do Twemoji (https://github.com/jdecked/twemoji),",
+    "licenciados sob CC-BY-4.0. Copyright © Twitter, Inc. e outros colaboradores.",
+    "",
+    "Atribuição completa e texto da licença: `/licencas/twemoji-NOTICE.md`.",
+    "",
+    "Pasta gerada por `apps/web/scripts/copiar-emoji.mjs` — não edite à mão.",
+    "",
+  ].join("\n"),
+);
 
 console.log(`emoji: ${naOrigem} arquivos copiados para public/emoji`);

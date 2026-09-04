@@ -367,7 +367,8 @@ A pasta é derivada e **não entra no git** (16 MB, 3.723 arquivos).
 
 **Licença, e ela importa:** o pacote npm declara MIT, mas isso é do
 empacotamento. A ARTE do Twemoji é **CC-BY 4.0** (Twitter, Inc. e outros
-colaboradores), e CC-BY exige atribuição visível a quem usa o produto. Hoje esta
-seção é a única atribuição que existe — falta a versão dentro do app (uma tela
-de licenças, como a do Discord). Trocar o conjunto por um sem essa obrigação
-(Noto Color Emoji, SIL OFL; Fluent Emoji, MIT) também resolve.
+colaboradores), e CC-BY exige atribuição.
+
+A atribuição vive em [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) e em
+`apps/web/public/licencas/`, que é publicado junto com o app — em produção,
+`/licencas/twemoji-NOTICE.md`.
