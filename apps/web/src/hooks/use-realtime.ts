@@ -723,7 +723,7 @@ export function useRealtime(
     onVoiceUpdated(aoMudarNaVoz);
     onVoiceLeft(aoSairDaVoz);
     onVoiceRecusada(aoRecusarem);
-    onSocketError(({ message }) => toast.error(message));
+    onSocketError(({ message }) => toast.error(message, { toastId: message }));
 
     onFriendUpdated(() => {
       void queryClient.invalidateQueries({
