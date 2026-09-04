@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Canal",
     apagar: "Eliminar webhook",
     comoUsar: "Cómo se usa",
-    comoUsarTexto: "Manda un POST con JSON. El formato es el mismo que el de Discord, así que un script que ya exista por ahí funciona sin cambios:",
+    comoUsarTexto: "Manda un POST con JSON:",
   },
   engajamento: {
     semCanal: "Sin canal de sistema",

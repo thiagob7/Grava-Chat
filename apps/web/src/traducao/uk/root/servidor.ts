@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Канал",
     apagar: "Видалити вебхук",
     comoUsar: "Як користуватися",
-    comoUsarTexto: "Надішліть POST із JSON. Формат той самий, що в Discord, тож наявний скрипт запрацює без змін:",
+    comoUsarTexto: "Надішліть POST із JSON:",
   },
   engajamento: {
     semCanal: "Без системного каналу",

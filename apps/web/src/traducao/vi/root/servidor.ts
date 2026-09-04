@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kênh",
     apagar: "Xóa webhook",
     comoUsar: "Cách dùng",
-    comoUsarTexto: "Gửi một POST kèm JSON. Định dạng giống hệt của Discord, nên script đã có sẵn chạy được mà không cần sửa:",
+    comoUsarTexto: "Gửi một POST kèm JSON:",
   },
   engajamento: {
     semCanal: "Không có kênh hệ thống",

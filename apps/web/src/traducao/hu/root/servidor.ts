@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Csatorna",
     apagar: "Webhook törlése",
     comoUsar: "Használat",
-    comoUsarTexto: "Küldj egy POST-ot JSON-nal. A formátum ugyanaz, mint a Discordé, így egy már létező szkript változtatás nélkül működik:",
+    comoUsarTexto: "Küldj egy POST-ot JSON-nal:",
   },
   engajamento: {
     semCanal: "Nincs rendszercsatorna",

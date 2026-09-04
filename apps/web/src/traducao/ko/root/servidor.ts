@@ -52,7 +52,7 @@ export const servidor = {
     canal: "채널",
     apagar: "웹훅 삭제",
     comoUsar: "사용법",
-    comoUsarTexto: "JSON으로 POST를 보내세요. 형식은 Discord와 같아서 이미 있는 스크립트가 그대로 동작합니다:",
+    comoUsarTexto: "JSON으로 POST를 보내세요:",
   },
   engajamento: {
     semCanal: "시스템 채널 없음",

@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanava",
     apagar: "Poista webhook",
     comoUsar: "Näin sitä käytetään",
-    comoUsarTexto: "Lähetä POST JSONilla. Muoto on sama kuin Discordissa, joten valmiina oleva skripti toimii sellaisenaan:",
+    comoUsarTexto: "Lähetä POST JSONilla:",
   },
   engajamento: {
     semCanal: "Ei järjestelmäkanavaa",

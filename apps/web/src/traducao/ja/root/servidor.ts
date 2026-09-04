@@ -52,7 +52,7 @@ export const servidor = {
     canal: "チャンネル",
     apagar: "Webhook を削除",
     comoUsar: "使い方",
-    comoUsarTexto: "JSON を付けて POST を送ってください。形式は Discord と同じなので、すでにあるスクリプトがそのまま動きます：",
+    comoUsarTexto: "JSON を付けて POST を送ってください：",
   },
   engajamento: {
     semCanal: "システムチャンネルなし",

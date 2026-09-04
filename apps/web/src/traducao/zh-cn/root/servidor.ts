@@ -52,7 +52,7 @@ export const servidor = {
     canal: "频道",
     apagar: "删除 Webhook",
     comoUsar: "怎么用",
-    comoUsarTexto: "发送带 JSON 的 POST。格式与 Discord 相同，所以现成的脚本无需改动即可使用：",
+    comoUsarTexto: "发送带 JSON 的 POST：",
   },
   engajamento: {
     semCanal: "没有系统频道",

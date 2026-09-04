@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanal",
     apagar: "Obriši webhook",
     comoUsar: "Kako se koristi",
-    comoUsarTexto: "Pošalji POST s JSON-om. Format je isti kao Discordov, pa skripta koja već postoji radi bez promjena:",
+    comoUsarTexto: "Pošalji POST s JSON-om:",
   },
   engajamento: {
     semCanal: "Bez sustavnog kanala",

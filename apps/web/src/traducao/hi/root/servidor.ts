@@ -52,7 +52,7 @@ export const servidor = {
     canal: "चैनल",
     apagar: "वेबहुक मिटाएँ",
     comoUsar: "कैसे इस्तेमाल करें",
-    comoUsarTexto: "JSON के साथ POST भेजिए। प्रारूप Discord जैसा ही है, इसलिए पहले से मौजूद स्क्रिप्ट बिना बदलाव के चलती है:",
+    comoUsarTexto: "JSON के साथ POST भेजिए:",
   },
   engajamento: {
     semCanal: "कोई सिस्टम चैनल नहीं",

@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanal",
     apagar: "Hapus webhook",
     comoUsar: "Cara memakai",
-    comoUsarTexto: "Kirim POST berisi JSON. Formatnya sama dengan Discord, jadi skrip yang sudah ada berjalan tanpa diubah:",
+    comoUsarTexto: "Kirim POST berisi JSON:",
   },
   engajamento: {
     semCanal: "Tanpa kanal sistem",

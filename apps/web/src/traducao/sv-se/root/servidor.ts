@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanal",
     apagar: "Radera webhook",
     comoUsar: "Så använder du det",
-    comoUsarTexto: "Skicka en POST med JSON. Formatet är detsamma som Discords, så ett skript som redan finns fungerar oförändrat:",
+    comoUsarTexto: "Skicka en POST med JSON:",
   },
   engajamento: {
     semCanal: "Ingen systemkanal",

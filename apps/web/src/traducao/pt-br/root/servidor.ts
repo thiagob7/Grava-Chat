@@ -70,7 +70,7 @@ export const servidor = {
     apagar: "Apagar webhook",
     comoUsar: "Como usar",
     comoUsarTexto:
-      "Mande um POST com JSON. O formato é o mesmo do Discord, então script que já existe por aí funciona sem mudança:",
+      "Mande um POST com JSON:",
     opcionais:
       "username e avatar_url são opcionais e valem por mensagem. O limite é de 5 mensagens a cada 5 segundos.",
     apagarDescricao:

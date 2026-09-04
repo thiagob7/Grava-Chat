@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanal",
     apagar: "Webhook löschen",
     comoUsar: "So geht's",
-    comoUsarTexto: "Schick ein POST mit JSON. Das Format ist dasselbe wie bei Discord, ein Skript von dort funktioniert also unverändert:",
+    comoUsarTexto: "Schick ein POST mit JSON:",
   },
   engajamento: {
     semCanal: "Kein Systemkanal",

@@ -52,7 +52,7 @@ export const servidor = {
     canal: "ช่อง",
     apagar: "ลบเว็บฮุค",
     comoUsar: "วิธีใช้",
-    comoUsarTexto: "ส่ง POST เป็น JSON รูปแบบเหมือนของ Discord สคริปต์ที่มีอยู่แล้วจึงใช้ได้โดยไม่ต้องแก้:",
+    comoUsarTexto: "ส่ง POST เป็น JSON:",
   },
   engajamento: {
     semCanal: "ไม่มีช่องระบบ",

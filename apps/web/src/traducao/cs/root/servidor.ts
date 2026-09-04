@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanál",
     apagar: "Smazat webhook",
     comoUsar: "Jak na to",
-    comoUsarTexto: "Pošli POST s JSON. Formát je stejný jako u Discordu, takže skript, který už někde existuje, funguje beze změny:",
+    comoUsarTexto: "Pošli POST s JSON:",
   },
   engajamento: {
     semCanal: "Bez systémového kanálu",

@@ -52,7 +52,7 @@ export const servidor = {
     canal: "القناة",
     apagar: "حذف الويب هوك",
     comoUsar: "طريقة الاستخدام",
-    comoUsarTexto: "أرسل POST بصيغة JSON. الصيغة نفسها التي يستعملها Discord، فالسكربت الموجود مسبقًا يعمل دون تغيير:",
+    comoUsarTexto: "أرسل POST بصيغة JSON:",
   },
   engajamento: {
     semCanal: "بلا قناة نظام",

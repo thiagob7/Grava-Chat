@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Κανάλι",
     apagar: "Διαγραφή webhook",
     comoUsar: "Πώς χρησιμοποιείται",
-    comoUsarTexto: "Στείλε ένα POST με JSON. Η μορφή είναι ίδια με του Discord, οπότε ένα script που ήδη υπάρχει δουλεύει χωρίς αλλαγή:",
+    comoUsarTexto: "Στείλε ένα POST με JSON:",
   },
   engajamento: {
     semCanal: "Χωρίς κανάλι συστήματος",

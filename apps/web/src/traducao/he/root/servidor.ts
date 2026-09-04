@@ -52,7 +52,7 @@ export const servidor = {
     canal: "ערוץ",
     apagar: "מחיקת הוובהוק",
     comoUsar: "איך משתמשים",
-    comoUsarTexto: "שלח POST עם JSON. הפורמט זהה לזה של Discord, כך שסקריפט שכבר קיים עובד בלי שינוי:",
+    comoUsarTexto: "שלח POST עם JSON:",
   },
   engajamento: {
     semCanal: "אין ערוץ מערכת",

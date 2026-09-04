@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Canal",
     apagar: "Șterge webhookul",
     comoUsar: "Cum se folosește",
-    comoUsarTexto: "Trimite un POST cu JSON. Formatul e același ca la Discord, așa că un script care există deja funcționează nemodificat:",
+    comoUsarTexto: "Trimite un POST cu JSON:",
   },
   engajamento: {
     semCanal: "Fără canal de sistem",

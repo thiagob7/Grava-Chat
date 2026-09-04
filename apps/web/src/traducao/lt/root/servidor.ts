@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanalas",
     apagar: "Ištrinti webhook",
     comoUsar: "Kaip naudoti",
-    comoUsarTexto: "Siųsk POST su JSON. Formatas toks pat kaip Discord, tad jau esantis scenarijus veiks be pakeitimų:",
+    comoUsarTexto: "Siųsk POST su JSON:",
   },
   engajamento: {
     semCanal: "Nėra sistemos kanalo",

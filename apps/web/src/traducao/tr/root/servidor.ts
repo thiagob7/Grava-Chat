@@ -52,7 +52,7 @@ export const servidor = {
     canal: "Kanal",
     apagar: "Webhook'u sil",
     comoUsar: "Nasıl kullanılır",
-    comoUsarTexto: "JSON ile bir POST gönder. Biçim Discord'unkiyle aynı, yani hâlihazırda var olan bir betik değişiklik olmadan çalışır:",
+    comoUsarTexto: "JSON ile bir POST gönder:",
   },
   engajamento: {
     semCanal: "Sistem kanalı yok",
