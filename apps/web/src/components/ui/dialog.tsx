@@ -39,18 +39,26 @@ export const DialogContent = ({
           rente, uma sombra curta e uma longa. Só `shadow-2xl` deixava a caixa
           boiando sem recorte contra um fundo escuro.
         */
-                /*
-          `regiao-sem-arrasto` não é enfeite: sem ela o diálogo fica parcialmente
-          inclicável.
+        /*
+          Centralizado por `inset-0 m-auto`, e NÃO por `translate` — junto com
+          o `regiao-sem-arrasto`, é o que faz o diálogo obedecer ao clique.
 
-          O sistema recorta a região de arrasto pelo RETÂNGULO PINTADO, não pela
-          árvore do documento. Um diálogo grande, num portal, passa por cima do
-          cabeçalho do servidor (que com faixa chega a 30vh), do da conversa e da
-          barra de título — e dentro desses retângulos o sistema leva o clique
-          pra arrastar a janela antes de a página ver. Era o "X" de fechar e os
-          itens do alto da coluna de configurações que não obedeciam.
+          O `-webkit-app-region` do Electron IGNORA transformações: a região de
+          "não arrastar" é recortada pela caixa de LAYOUT do elemento. Com
+          `left-1/2 top-1/2 -translate-1/2`, o layout põe a caixa começando no
+          centro da janela e o `translate` só desloca a PINTURA — o recorte
+          ficava meia caixa fora de lugar, e a parte de cima do diálogo continuava
+          sendo barra de título para o sistema. Sintoma: duplo clique no
+          cabeçalho maximizava a janela e o "X" não respondia.
+
+          `inset-0 m-auto` centraliza pelo próprio layout, então a caixa está
+          onde parece estar.
+
+          E o `regiao-sem-arrasto` continua necessário: o diálogo mora num
+          portal e passa por cima do cabeçalho do servidor (que com faixa chega
+          a 30vh), do cabeçalho da conversa e da barra de título.
         */
-        "regiao-sem-arrasto fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 outline-none",
+        "regiao-sem-arrasto fixed inset-0 z-50 m-auto h-fit max-h-[92vh] w-full max-w-md outline-none",
         "rounded-xl border border-line bg-surface-1",
         /*
           Sombra rasa. A da referência (0.25 e 0.2 de preto, espalhando 1.5rem

@@ -95,7 +95,7 @@ export const ProfileEditorModal: React.FC<{
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
-          className="regiao-sem-arrasto fixed left-1/2 top-1/2 z-50 flex h-[78vh] w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
+          className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[78vh] w-full max-w-6xl overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
           aria-label={t("perfil.editar")}
         >
           <DialogPrimitive.Title className="sr-only">
