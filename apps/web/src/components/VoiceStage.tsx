@@ -87,8 +87,21 @@ const CantosDaChamada: React.FC<{
 }> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
   const { t } = useTranslation();
 
+  /*
+    Só o ícone, sem cápsula.
+
+    A bolinha escura em volta existia para o ícone branco não sumir sobre vídeo
+    claro — mas ela é uma peça a mais desenhada sobre a imagem, e são duas
+    (chat e convite) nos cantos. A sombra faz o mesmo trabalho sem ocupar
+    espaço: o ícone continua legível sobre qualquer fundo.
+
+    E o realce do mouse é o ícone CLAREANDO, como na referência: em repouso ele
+    fica a 70% do branco, e sob o mouse vai a 100%. Antes o que mudava era o
+    fundo da cápsula, então quem passasse o mouse via a caixa acender, não o
+    botão.
+  */
   const botao =
-    "pointer-events-auto flex size-9 shrink-0 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60";
+    "pointer-events-auto flex size-9 shrink-0 items-center justify-center rounded-full text-white/70 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-white";
 
   return (
     <>
@@ -132,7 +145,9 @@ const CantosDaChamada: React.FC<{
               onClick={onAlternarChat}
               aria-pressed={chatAberto}
               aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-              className={cn(botao, chatAberto && "bg-white/20")}
+              /// Aberto, ele fica no branco cheio — o mesmo estado do mouse em
+              /// cima, que é como se diz "isto está ligado" sem caixa nenhuma.
+              className={cn(botao, chatAberto && "text-white")}
             >
               <ChatCircle size={20} weight="fill" />
             </button>
