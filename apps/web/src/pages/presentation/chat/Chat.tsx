@@ -180,6 +180,10 @@ export const Chat: React.FC = () => {
 
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
+
+  /// Canal de voz na tela larga não tem cabeçalho — ver o comentário lá embaixo,
+  /// onde ele deixa de ser desenhado.
+  const semCabecalho = channel?.type === "VOICE" && !telaEstreita;
   /// canal em que a conta já está por outro aparelho, esperando decisão
   const [confirmandoVoz, setConfirmandoVoz] = useState<string | null>(null);
 
@@ -246,6 +250,22 @@ export const Chat: React.FC = () => {
     </>
   );
 
+  /*
+    O que sobra do cabeçalho quando ele não existe.
+
+    A estrela age sobre ESTE canal; a caixa de entrada e o botão do aplicativo
+    valem pro app inteiro e não têm outra porta. Sem o cabeçalho, entrar numa
+    chamada esconderia os três — e a caixa de entrada some justamente de quem
+    está ocupado e não vai sair da chamada pra ler recado.
+  */
+  const acoesDoPalco = channel ? (
+    <>
+      <EstrelaDoCanal channelId={channel.id} />
+      <BotaoDoAplicativo />
+      <CaixaDeEntrada />
+    </>
+  ) : null;
+
   return (
     <div className="flex h-full bg-surface-0">
       {/*
@@ -283,6 +303,23 @@ export const Chat: React.FC = () => {
         rolagem vaza para a página.
       */}
       <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
+        {/*
+          Canal de voz não tem cabeçalho, como no Discord e no Fluxer.
+
+          A chamada é a tela inteira, e o nome do canal já flutua no canto de
+          cima do palco. Uma faixa de 48px repetindo esse nome custa uma fileira
+          de rostos e não diz nada de novo.
+
+          Na tela estreita ele FICA: é ali que mora o botão que abre a gaveta de
+          servidores e canais, e sem cabeçalho quem entrasse numa chamada pelo
+          celular não teria como voltar para a lista.
+
+          O que a faixa carregava e não cabe no canal de voz — a estrela, a
+          caixa de entrada, o botão do aplicativo — desce para o canto do palco
+          pelo `acoesDoPalco`. Sumir com eles seria trocar um pedido de desenho
+          por uma perda de função.
+        */}
+        {!semCabecalho && (
         <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
           {telaEstreita && (
             <button
@@ -362,6 +399,7 @@ export const Chat: React.FC = () => {
             <CaixaDeEntrada />
           </div>
         </header>
+        )}
 
         <div className="flex min-h-0 flex-1">
           <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
@@ -389,9 +427,21 @@ export const Chat: React.FC = () => {
               chatAberto={chatDaVozAberto}
               onAlternarChat={() => setChatDaVozAberto((aberto) => !aberto)}
               podeConvidar={can("CREATE_INVITE")}
+              acoes={semCabecalho ? acoesDoPalco : null}
             />
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+            <div className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
+              {/*
+                A tela de "entrar na chamada" perde o cabeçalho junto com o
+                palco: sem isto, os três botões apareceriam ao entrar e
+                sumiriam ao sair, e a barra do topo piscaria a cada clique.
+              */}
+              {semCabecalho && (
+                <div className="regiao-de-arrasto absolute inset-x-0 top-0 flex items-center justify-end gap-3 p-3">
+                  {acoesDoPalco}
+                </div>
+              )}
+
               <SpeakerHigh size={48} weight="fill" className="text-ink-faint" />
               <h3
                 className="text-lg font-semibold"

@@ -61,6 +61,15 @@ interface VoiceStageProps {
   chatAberto?: boolean;
   onAlternarChat?: () => void;
   podeConvidar?: boolean;
+  /*
+    O que o cabeçalho carregava e continua precisando existir.
+
+    Num canal de voz a faixa do topo deixa de ser desenhada, e com ela iriam
+    embora a estrela do canal, a caixa de entrada e o botão do aplicativo. Eles
+    chegam por aqui, prontos, porque são da tela — o palco não sabe o que é uma
+    caixa de entrada, e não precisa saber.
+  */
+  acoes?: React.ReactNode;
 }
 
 /**
@@ -84,7 +93,8 @@ const CantosDaChamada: React.FC<{
   chatAberto?: boolean;
   onAlternarChat?: () => void;
   onConvidar?: () => void;
-}> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
+  acoes?: React.ReactNode;
+}> = ({ nome, chatAberto, onAlternarChat, onConvidar, acoes }) => {
   const { t } = useTranslation();
 
   const botao =
@@ -92,7 +102,15 @@ const CantosDaChamada: React.FC<{
 
   return (
     <>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3">
+      {/*
+        A faixa de cima é `regiao-de-arrasto`.
+
+        Sem cabeçalho, esta é a única tira livre no alto da janela — e no
+        aplicativo, num macOS de barra escondida, ela é o que sobra pra
+        arrastar a janela pela tela. O CSS já devolve o clique a botões e
+        links de dentro, então os cantos continuam clicáveis.
+      */}
+      <div className="regiao-de-arrasto pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3">
         <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
           <SpeakerHigh
             size={20}
@@ -102,21 +120,26 @@ const CantosDaChamada: React.FC<{
           <span className="truncate">{nome}</span>
         </span>
 
-        {onAlternarChat && (
-          <Tooltip
-            label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-            side="left"
-          >
-            <button
-              onClick={onAlternarChat}
-              aria-pressed={chatAberto}
-              aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
-              className={cn(botao, chatAberto && "bg-white/20")}
+        {/* O grupo devolve o clique de uma vez: dentro dele tudo é botão. */}
+        <span className="pointer-events-auto flex shrink-0 items-center gap-3">
+          {acoes}
+
+          {onAlternarChat && (
+            <Tooltip
+              label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+              side="left"
             >
-              <ChatCircle size={20} weight="fill" />
-            </button>
-          </Tooltip>
-        )}
+              <button
+                onClick={onAlternarChat}
+                aria-pressed={chatAberto}
+                aria-label={chatAberto ? t("chamada.fecharChat") : t("chamada.mostrarChat")}
+                className={cn(botao, chatAberto && "bg-white/20")}
+              >
+                <ChatCircle size={20} weight="fill" />
+              </button>
+            </Tooltip>
+          )}
+        </span>
       </div>
 
       {onConvidar && (
@@ -153,6 +176,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   chatAberto,
   onAlternarChat,
   podeConvidar = false,
+  acoes,
 }) => {
   const { t } = useTranslation();
   const palco = useRef<HTMLDivElement>(null);
@@ -436,6 +460,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             chatAberto={chatAberto}
             onAlternarChat={onAlternarChat}
             onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
+            acoes={acoes}
           />
         )}
 
@@ -543,6 +568,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           chatAberto={chatAberto}
           onAlternarChat={onAlternarChat}
           onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
+          acoes={acoes}
         />
 
       {/*
