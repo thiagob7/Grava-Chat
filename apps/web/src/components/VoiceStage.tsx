@@ -554,29 +554,30 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
         /*
-          O quadro NÃO passa por baixo do nome nem da pílula de controles.
+          Só a tira de baixo é reservada.
 
-          Antes, com uma pessoa só, ele ia de ponta a ponta e os dois flutuavam
-          por cima do vídeo. Parecia certo até a imagem ser clara: aí o nome
-          sumia no fundo, e a pílula ficava encostada em cima do rosto de quem
-          está na chamada.
+          A pílula de controles é ancorada em `bottom-4` e tem ~52px: ocupa de
+          16 a 68px do rodapé. Sem a folga ela pousa em cima do quadro — foi o
+          que aconteceu com a miniatura da live, que ficava metade escondida
+          atrás dos botões.
 
-          A referência reserva as duas tiras — a de cima com o nome, a de baixo
-          com os controles — e pinta as duas de preto. É preto e não `surface-2`
-          porque o que fica em volta de vídeo é preto: é a cor que não disputa
-          com a imagem, seja ela clara ou escura.
+          EM CIMA não se reserva nada. Cheguei a reservar, para o nome do canal
+          não flutuar sobre a imagem, e ficou errado: o quadro encolhia e sobrava
+          uma tira preta entre o nome e ele. O nome já tem véu e sombra próprios
+          — ele se defende sobre imagem clara sem roubar altura do vídeo.
 
-          `pt-14` é a altura do nome; `pb-20` é a da pílula, que é ancorada em
-          `bottom-4` e tem ~52px — ocupa de 16 a 68px do rodapé.
+          A tira preta em VOLTA do quadro é outra coisa, e é do destaque: quando
+          se clica num quadro para ampliá-lo, ele guarda a proporção e o que
+          sobra fica preto. Ali a tarja tem motivo; aqui não tinha.
         */
-        "pb-20 pt-14",
+        "pb-20",
         /*
           A margem lateral e o teto de largura existem pra grade não virar uma
           parede de quadros gigantes quando há gente. Com UM quadro só eles não
           protegem nada — deixariam um retângulo pequeno num vazio enorme, que
           é o que aparecia quando alguém entrava primeiro e esperava os outros.
         */
-        grade.length === 1 ? "bg-black" : "bg-surface-2 px-6",
+        grade.length === 1 ? "bg-black" : "bg-surface-2 px-6 pt-14",
       )}
     >
         <CantosDaChamada
