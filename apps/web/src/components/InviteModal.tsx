@@ -12,6 +12,7 @@ import {
   ConfiguracoesDoConvite,
   type OpcoesDoConvite,
 } from "~/components/ConfiguracoesDoConvite";
+import { copiarTexto } from "~/lib/copiar";
 import { formatTimestamp } from "~/lib/format";
 import { useAparencia } from "~/stores/aparencia";
 import { Button } from "~/components/ui/button";
@@ -131,7 +132,14 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
   const copy = async () => {
     if (!link) return;
-    await navigator.clipboard.writeText(link);
+
+    /// Só diz "copiado" se copiou. O aviso saía antes de qualquer confirmação, e
+    /// no Windows ele aparecia com a área de transferência vazia.
+    if (!(await copiarTexto(link))) {
+      toast.error("Não deu pra copiar. Selecione o link e copie na mão.");
+      return;
+    }
+
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

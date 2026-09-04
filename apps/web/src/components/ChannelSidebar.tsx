@@ -40,6 +40,7 @@ import {
 import { ServerSettingsModal } from "~/components/server-settings/ServerSettingsModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { usePermissions } from "~/hooks/use-permissions";
+import { copiarTexto } from "~/lib/copiar";
 import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 import { toast } from "react-toastify";
@@ -294,7 +295,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => {
-                  void navigator.clipboard.writeText(detail?.guild.id ?? "");
+                  void copiarTexto(detail?.guild.id ?? "");
                   toast.success("ID copiado.");
                 }}
               >

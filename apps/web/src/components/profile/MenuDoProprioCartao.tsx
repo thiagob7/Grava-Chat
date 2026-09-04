@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { i18next, useTranslation } from "~/traducao";
 
@@ -142,7 +143,7 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
       <ItemDoMenu
         icone={<IdCard size={15} />}
         onClick={() => {
-          void navigator.clipboard.writeText(user.id);
+          void copiarTexto(user.id);
           toast.success(t("perfil.idCopiado"));
         }}
       >

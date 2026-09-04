@@ -22,6 +22,7 @@ import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
+import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -115,7 +116,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
   const confirmar = useConfirmar();
 
   const copiar = async () => {
-    await navigator.clipboard.writeText(webhook.url).catch(() => undefined);
+    await copiarTexto(webhook.url);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);
   };

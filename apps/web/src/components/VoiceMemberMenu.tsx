@@ -34,6 +34,7 @@ import { Slider } from "~/components/ui/slider";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useVoiceStore } from "~/stores/voice-store";
 import { useTranslation } from "~/traducao";
+import { copiarTexto } from "~/lib/copiar";
 
 interface VoiceMemberMenuProps {
   children: React.ReactNode;
@@ -166,7 +167,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
             <ContextMenuItem
               onSelect={() => {
-                void navigator.clipboard.writeText(userId);
+                void copiarTexto(userId);
                 toast.success(t("chamada.membro.idCopiado"));
               }}
             >

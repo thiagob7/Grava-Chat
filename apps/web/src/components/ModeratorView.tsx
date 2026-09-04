@@ -31,6 +31,7 @@ import type { ModerationMessageModel } from "~/@core/domain/models/moderation-mo
 import { Avatar } from "~/components/Avatar";
 import { useModeracao } from "~/stores/moderacao";
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
+import { copiarTexto } from "~/lib/copiar";
 import { extrairLinks } from "~/lib/links";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirmar } from "~/components/ui/confirm";
@@ -295,7 +296,7 @@ const BarraDeAcoes: React.FC<{
   };
 
   const copiarId = async () => {
-    await navigator.clipboard.writeText(userId);
+    await copiarTexto(userId);
     toast.success(t("servidor.moderacao.idCopiado"));
   };
 

@@ -24,6 +24,7 @@ import type {
 import { useStatus } from "~/@core/application/queries/status/use-status";
 import { Avatar } from "~/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
+import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 
 const duracao = (s: number) => {
@@ -330,7 +331,7 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
     <button
       type="button"
       onClick={() => {
-        void navigator.clipboard.writeText(id);
+        void copiarTexto(id);
         toast.success("ID copiado.");
       }}
       className="shrink-0 text-ink-faint transition hover:text-ink"

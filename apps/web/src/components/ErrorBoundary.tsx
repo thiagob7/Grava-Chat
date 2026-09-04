@@ -2,6 +2,7 @@ import React from "react";
 import { RotateCcw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { copiarTexto } from "~/lib/copiar";
 
 /*
   Rede de segurança da árvore inteira.
@@ -71,7 +72,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
         <button
           type="button"
-          onClick={() => void navigator.clipboard.writeText(this.detalhes())}
+          onClick={() => void copiarTexto(this.detalhes())}
           className="text-xs text-ink-muted underline-offset-2 hover:underline"
         >
           Copiar detalhes

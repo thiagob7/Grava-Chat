@@ -508,7 +508,16 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           gastar altura pra dizer duas vezes a mesma coisa.
         */
         className={cn(
-          "group relative flex flex-1 flex-col gap-3 bg-surface-2 pb-20",
+          /*
+            `min-h-0` e `overflow-hidden` são o que impedem o app de ganhar
+            barra de rolagem ao destacar um quadro.
+
+            Item de flex não encolhe abaixo do próprio conteúdo por padrão
+            (`min-height: auto`): com o quadro grande em cima e a faixa de
+            miniaturas embaixo, o palco crescia além da janela e empurrava a
+            página inteira. Os filhos daqui já tinham os seus; faltava no palco.
+          */
+          "group relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden bg-surface-2 pb-20",
           compacto ? "p-4 pb-20" : "px-4 pt-14",
         )}
       >

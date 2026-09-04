@@ -72,6 +72,7 @@ import {
 import { useConfirmar } from "~/components/ui/confirm";
 import { useEnfeites } from "~/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
+import { copiarTexto } from "~/lib/copiar";
 import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
 import { useTranslation } from "~/traducao";
 
@@ -222,7 +223,7 @@ const ProfileCard: React.FC<{
       }
     }
 
-    await navigator.clipboard.writeText(link);
+    await copiarTexto(link);
     aviso.info(t("perfil.amizade.linkCopiado"));
   };
   const navigate = useNavigate();
@@ -390,7 +391,7 @@ const ProfileCard: React.FC<{
 
               <DropdownMenuItem
                 onSelect={() => {
-                  void navigator.clipboard.writeText(perfil.id);
+                  void copiarTexto(perfil.id);
                   aviso.success(t("perfil.idCopiado"));
                 }}
               >
