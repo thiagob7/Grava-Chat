@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { AJUSTES_PADRAO, type AjustesDeVoz, type ModoDeEntrada } from "~/lib/audio-gate";
+import { AJUSTES_PADRAO, type AjustesDeVoz, type ModoDeEntrada } from "~/features/voz/lib/audio-gate";
 
 export interface VoicePrefs extends AjustesDeVoz {
   entradaId: string | null;

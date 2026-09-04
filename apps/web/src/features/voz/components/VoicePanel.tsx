@@ -3,19 +3,19 @@ import { useNavigate } from "react-router";
 import { AudioLines, MonitorUp, MonitorX, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
-import { SoundboardPanel } from "~/components/SoundboardPanel";
+import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
 import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
-import { SupressaoDeRuidoPopover } from "~/components/SupressaoDeRuidoPopover";
-import { VoiceDetailsPopover } from "~/components/VoiceDetailsPopover";
-import { corDoPing, useVoicePing, type PingDaChamada } from "~/hooks/use-voice-ping";
+import { SupressaoDeRuidoPopover } from "~/features/voz/components/SupressaoDeRuidoPopover";
+import { VoiceDetailsPopover } from "~/features/voz/components/VoiceDetailsPopover";
+import { corDoPing, useVoicePing, type PingDaChamada } from "~/features/voz/hooks/use-voice-ping";
 import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/stores/configuracoes";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 const SECAO_DA_CHAMADA = "mb-2";
 

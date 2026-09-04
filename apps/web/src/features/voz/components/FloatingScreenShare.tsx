@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Expand, Maximize2, MonitorUp, MonitorX, Shrink, X } from "lucide-react";
 
-import { VoiceVideo } from "~/components/VoiceTrack";
-import { useTelaCheia } from "~/hooks/use-tela-cheia";
+import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
+import { useTelaCheia } from "~/features/voz/hooks/use-tela-cheia";
 import { encaixarNoCanto } from "~/lib/cantos";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

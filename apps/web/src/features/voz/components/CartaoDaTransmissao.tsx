@@ -2,7 +2,7 @@ import React from "react";
 import { Monitor, MonitorX } from "lucide-react";
 
 import { Tooltip } from "~/components/ui/tooltip";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

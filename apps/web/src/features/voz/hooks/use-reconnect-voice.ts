@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { useVoiceStore, voiceTabChannelId } from "~/stores/voice-store";
+import { useVoiceStore, voiceTabChannelId } from "~/features/voz/stores/voice-store";
 
 export function useReconnectVoice(enabled: boolean) {
   const join = useVoiceStore((s) => s.join);

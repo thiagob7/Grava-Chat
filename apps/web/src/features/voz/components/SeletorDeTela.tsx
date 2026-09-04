@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
 import { Switch } from "~/components/ui/switch";
 import { desktop } from "~/lib/desktop";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

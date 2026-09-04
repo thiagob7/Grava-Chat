@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Switch } from "~/components/ui/switch";
-import { useVoiceMeter } from "~/hooks/use-voice-meter";
+import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { criarMedidorDeTeste } from "~/lib/audio-gate";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { criarMedidorDeTeste } from "~/features/voz/lib/audio-gate";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 interface Medicao {
   nivel: number;

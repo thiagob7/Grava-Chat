@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { Track } from "livekit-client";
 
-import { useVoiceStore } from "~/stores/voice-store";
-import { useVoicePrefs } from "~/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 
 export function VoiceVideo({ track, mirrored }: { track: Track; mirrored?: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);

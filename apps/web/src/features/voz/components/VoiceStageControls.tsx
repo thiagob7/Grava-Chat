@@ -38,13 +38,13 @@ import {
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { Tooltip } from "~/components/ui/tooltip";
-import { nomeDoDispositivo, useDispositivos } from "~/hooks/use-dispositivos";
-import { useTelaCheia } from "~/hooks/use-tela-cheia";
+import { nomeDoDispositivo, useDispositivos } from "~/features/voz/hooks/use-dispositivos";
+import { useTelaCheia } from "~/features/voz/hooks/use-tela-cheia";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/stores/configuracoes";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 export const VoiceStageControls: React.FC<{
   alvoTelaCheia?: React.RefObject<HTMLElement | null>;

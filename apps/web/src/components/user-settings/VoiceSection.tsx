@@ -13,11 +13,11 @@ import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
 import { Switch } from "~/components/ui/switch";
-import { useVoiceMeter } from "~/hooks/use-voice-meter";
+import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
 import { desktop } from "~/lib/desktop";
-import { usePttGlobal } from "~/stores/ptt-global";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { usePttGlobal } from "~/features/voz/stores/ptt-global";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 

@@ -6,7 +6,7 @@ import "~/traducao";
 import { App, queryClient } from "~/App";
 import { socket } from "~/@core/lib/websocket";
 import { getAccessToken } from "~/@core/lib/api";
-import { useVoiceStore, voiceTabChannelId } from "~/stores/voice-store";
+import { useVoiceStore, voiceTabChannelId } from "~/features/voz/stores/voice-store";
 import { useTypingStore } from "~/stores/typing-store";
 import "@fontsource-variable/ibm-plex-sans";
 import "@fontsource-variable/ibm-plex-sans/wght-italic.css";

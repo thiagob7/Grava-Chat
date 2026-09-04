@@ -4,7 +4,7 @@ import { Phone, Search, Users, Volume2 } from "lucide-react";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { statusDaConversa } from "~/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/components/Avatar";

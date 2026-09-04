@@ -14,8 +14,8 @@ import type {
   VoiceState,
 } from "@gravae/shared";
 
-import { deveTocar } from "~/lib/chamada-no-privado";
-import { useChamadaStore } from "~/stores/chamada-store";
+import { deveTocar } from "~/features/voz/lib/chamada-no-privado";
+import { useChamadaStore } from "~/features/voz/stores/chamada-store";
 import { tocarSom } from "~/lib/ui-sounds";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
@@ -147,9 +147,9 @@ import { avisarDeMensagem } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAusencia } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/stores/typing-store";
-import { tocarSomDoPainel } from "~/lib/soundboard";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { tocarSomDoPainel } from "~/features/voz/lib/soundboard";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useConexaoStore } from "~/stores/conexao-store";
 
 type MessagesCache =

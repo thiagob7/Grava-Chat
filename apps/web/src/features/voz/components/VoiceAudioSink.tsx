@@ -1,7 +1,7 @@
 import React from "react";
 
-import { VoiceAudio } from "~/components/VoiceTrack";
-import { useVoiceStore } from "~/stores/voice-store";
+import { VoiceAudio } from "~/features/voz/components/VoiceTrack";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 export const VoiceAudioSink: React.FC = () => {
   const tiles = useVoiceStore((s) => s.tiles);

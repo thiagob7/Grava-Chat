@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { useVoiceStore } from "~/stores/voice-store";
-import { useVoicePrefs } from "~/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 
 const CHAVE = "gravae:dispositivos-ignorados";
 

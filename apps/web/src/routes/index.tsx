@@ -5,8 +5,8 @@ import { BarraDeTitulo } from "~/components/BarraDeTitulo";
 import { FaixaDaComunidade } from "~/components/FaixaDaComunidade";
 import { Splash } from "~/components/Splash";
 
-import { ChamadaRecebida } from "~/components/ChamadaRecebida";
-import { FloatingScreenShare } from "~/components/FloatingScreenShare";
+import { ChamadaRecebida } from "~/features/voz/components/ChamadaRecebida";
+import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/hooks/use-aviso-no-titulo";
 import { useConviteDeAviso } from "~/hooks/use-convite-de-aviso";

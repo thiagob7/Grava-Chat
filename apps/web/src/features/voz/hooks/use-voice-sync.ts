@@ -4,7 +4,7 @@ import type { VoiceState } from "@gravae/shared";
 
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 export function useVoiceSync(guildId: string | undefined, currentUserId?: string) {
   const queryClient = useQueryClient();

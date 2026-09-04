@@ -15,7 +15,7 @@ import { useConfiguracoes } from "~/stores/configuracoes";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 interface UserPanelProps {
   user: SelfUserModel;

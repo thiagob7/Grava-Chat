@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
 import { desktop } from "~/lib/desktop";
-import { usePttGlobal } from "~/stores/ptt-global";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { usePttGlobal } from "~/features/voz/stores/ptt-global";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 function estaDigitando(alvo: EventTarget | null) {
   if (!(alvo instanceof HTMLElement)) return false;

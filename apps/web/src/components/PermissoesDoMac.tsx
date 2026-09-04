@@ -11,7 +11,7 @@ import {
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import { desktop } from "~/lib/desktop";
-import { useVoicePrefs } from "~/stores/voice-prefs";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

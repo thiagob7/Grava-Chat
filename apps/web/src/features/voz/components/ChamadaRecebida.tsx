@@ -6,8 +6,8 @@ import { useFindProfile } from "~/@core/application/queries/user/use-find-profil
 import { Avatar } from "~/components/Avatar";
 import { recusarChamada } from "~/@core/lib/websocket/emit-voice";
 import { tocarSom } from "~/lib/ui-sounds";
-import { useChamadaStore } from "~/stores/chamada-store";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useChamadaStore } from "~/features/voz/stores/chamada-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useTranslation } from "~/traducao";
 
 const TEMPO_TOCANDO_MS = 45_000;

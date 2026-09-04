@@ -12,13 +12,13 @@ import { has } from "@gravae/shared";
 
 import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
-import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
-import { useVoiceStore } from "~/stores/voice-store";
+import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
-import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
-import { useSomDoPainel } from "~/lib/soundboard";
+import { avisoDeQualidade } from "~/features/voz/lib/qualidade-da-conexao";
+import { useSomDoPainel } from "~/features/voz/lib/soundboard";
 import { Tooltip } from "~/components/ui/tooltip";
-import { VoiceVideo } from "~/components/VoiceTrack";
+import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";

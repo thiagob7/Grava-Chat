@@ -32,7 +32,7 @@ import {
 } from "~/components/ui/context-menu";
 import { Slider } from "~/components/ui/slider";
 import { useConfirmar } from "~/components/ui/confirm";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useTranslation } from "~/traducao";
 import { copiarTexto } from "~/lib/copiar";
 

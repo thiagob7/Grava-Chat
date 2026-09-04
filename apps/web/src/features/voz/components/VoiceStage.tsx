@@ -4,7 +4,7 @@ import { Mic, MicOff, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X }
 import { ChatCircle, SpeakerHigh, UserPlus } from "@phosphor-icons/react";
 
 import { InviteModal } from "~/components/InviteModal";
-import { QualidadeDaTela } from "~/components/QualidadeDaTela";
+import { QualidadeDaTela } from "~/features/voz/components/QualidadeDaTela";
 
 import type {
   Channel,
@@ -14,20 +14,20 @@ import type {
   VoiceState,
 } from "@gravae/shared";
 
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore, type VoiceTile } from "~/stores/voice-store";
-import { focar, formatoDaGrade, montarGrade } from "~/lib/grade-da-call";
-import { avisoDeQualidade } from "~/lib/qualidade-da-conexao";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore, type VoiceTile } from "~/features/voz/stores/voice-store";
+import { focar, formatoDaGrade, montarGrade } from "~/features/voz/lib/grade-da-call";
+import { avisoDeQualidade } from "~/features/voz/lib/qualidade-da-conexao";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { Tooltip } from "~/components/ui/tooltip";
 import { Avatar } from "~/components/Avatar";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
-import { VoiceMemberMenu } from "~/components/VoiceMemberMenu";
-import { VoiceStageControls } from "~/components/VoiceStageControls";
-import { VoiceVideo } from "~/components/VoiceTrack";
+import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
+import { VoiceStageControls } from "~/features/voz/components/VoiceStageControls";
+import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import { useParticipante } from "~/hooks/use-participante";
-import { useSomDoPainel } from "~/lib/soundboard";
+import { useSomDoPainel } from "~/features/voz/lib/soundboard";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

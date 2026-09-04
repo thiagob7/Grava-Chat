@@ -9,9 +9,9 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { ChannelSettingsModal } from "~/components/channel-settings/ChannelSettingsModal";
 import { CreateChannelModal } from "~/components/CreateChannelModal";
 import { InviteModal } from "~/components/InviteModal";
-import { CallTimer } from "~/components/CallTimer";
-import { VoiceMembers } from "~/components/VoiceMembers";
-import { useVoiceSync } from "~/hooks/use-voice-sync";
+import { CallTimer } from "~/features/voz/components/CallTimer";
+import { VoiceMembers } from "~/features/voz/components/VoiceMembers";
+import { useVoiceSync } from "~/features/voz/hooks/use-voice-sync";
 import {
   CaretDown,
   ChatCircle,
@@ -38,7 +38,7 @@ import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/stores/server-settings-store";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/stores/aparencia";
 import { useCategoriasFechadas } from "~/hooks/use-categorias-fechadas";

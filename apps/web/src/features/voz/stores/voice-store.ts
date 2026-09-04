@@ -11,11 +11,11 @@ import {
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
 import { proximoAlvo } from "~/lib/assistir";
 import { descreverFonte } from "~/lib/fonte-da-tela";
-import { ProcessadorDeVoz } from "~/lib/audio-gate";
+import { ProcessadorDeVoz } from "~/features/voz/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
-import { pararSomDoPainel } from "~/lib/soundboard";
+import { pararSomDoPainel } from "~/features/voz/lib/soundboard";
 import { tocarSom, type SomDaInterface } from "~/lib/ui-sounds";
-import { ajustesDe, useVoicePrefs, type VoicePrefs } from "~/stores/voice-prefs";
+import { ajustesDe, useVoicePrefs, type VoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { apiErrorMessage } from "~/@core/lib/api";
 import {
   joinVoiceChannel,

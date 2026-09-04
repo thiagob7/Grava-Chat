@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ConnectionQuality, Track, type LocalTrack } from "livekit-client";
 
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 const INTERVALO_MS = 3000;
 

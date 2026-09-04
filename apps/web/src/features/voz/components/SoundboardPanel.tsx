@@ -15,8 +15,8 @@ import {
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { Tooltip } from "~/components/ui/tooltip";
-import { useVoicePrefs } from "~/stores/voice-prefs";
-import { useVoiceStore } from "~/stores/voice-store";
+import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 
 interface SoundboardPanelProps {

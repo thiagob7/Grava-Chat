@@ -1,7 +1,7 @@
 import React from "react";
 import { ShieldCheck } from "lucide-react";
 
-import { corDoPing, type PingDaChamada } from "~/hooks/use-voice-ping";
+import { corDoPing, type PingDaChamada } from "~/features/voz/hooks/use-voice-ping";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 
 interface VoiceDetailsPopoverProps {
