@@ -9,7 +9,7 @@ import {
   type LocalAudioTrack,
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
-import { proximoAlvo } from "~/lib/assistir";
+import { proximoAlvo } from "~/features/voz/lib/assistir";
 import { descreverFonte } from "~/lib/fonte-da-tela";
 import { ProcessadorDeVoz } from "~/features/voz/lib/audio-gate";
 import { desktop } from "~/lib/desktop";

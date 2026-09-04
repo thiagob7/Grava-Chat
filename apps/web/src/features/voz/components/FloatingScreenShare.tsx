@@ -4,7 +4,7 @@ import { Expand, Maximize2, MonitorUp, MonitorX, Shrink, X } from "lucide-react"
 
 import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import { useTelaCheia } from "~/features/voz/hooks/use-tela-cheia";
-import { encaixarNoCanto } from "~/lib/cantos";
+import { encaixarNoCanto } from "~/features/voz/lib/cantos";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";

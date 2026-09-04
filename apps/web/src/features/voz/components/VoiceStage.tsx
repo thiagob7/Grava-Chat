@@ -26,7 +26,7 @@ import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
 import { VoiceStageControls } from "~/features/voz/components/VoiceStageControls";
 import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
-import { useParticipante } from "~/hooks/use-participante";
+import { useParticipante } from "~/features/voz/hooks/use-participante";
 import { useSomDoPainel } from "~/features/voz/lib/soundboard";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
