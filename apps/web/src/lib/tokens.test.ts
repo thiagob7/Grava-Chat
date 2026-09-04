@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -31,17 +31,11 @@ function tokensDaCamada(): string[] {
     .filter((nome): nome is string => Boolean(nome));
 }
 
-const fontes = [
-  "components",
-  "lib",
-  "hooks",
-  "stores",
-  "styles",
-  "pages",
-  "@core",
-]
-  .map((pasta) => join(raiz, "..", pasta))
-  .filter((caminho) => existsSync(caminho));
+const IGNORADAS = new Set(["traducao", "assets"]);
+
+const fontes = readdirSync(join(raiz, ".."), { withFileTypes: true })
+  .filter((item) => item.isDirectory() && !IGNORADAS.has(item.name))
+  .map((item) => join(raiz, "..", item.name));
 
 function todoOCodigo(): string {
   const partes: string[] = [];
