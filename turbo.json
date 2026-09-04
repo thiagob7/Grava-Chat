@@ -36,6 +36,11 @@
         "^build"
       ],
       "cache": false
+    },
+    "css:check": {
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }

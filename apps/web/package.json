@@ -10,6 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "css:check": "node scripts/checar-css.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "emoji": "node scripts/copiar-emoji.mjs"
