@@ -23,7 +23,7 @@ export const DialogContent = ({
       transformava o fundo numa mancha. O bastante pra desfocar, pouco o
       bastante pra ainda se reconhecer o que está atrás.
     */}
-    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px] data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+    <DialogPrimitive.Overlay className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px] data-[state=open]:animate-in data-[state=open]:fade-in-0" />
     <DialogPrimitive.Content
       className={cn(
         /*
@@ -39,7 +39,18 @@ export const DialogContent = ({
           rente, uma sombra curta e uma longa. Só `shadow-2xl` deixava a caixa
           boiando sem recorte contra um fundo escuro.
         */
-        "fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 outline-none",
+                /*
+          `regiao-sem-arrasto` não é enfeite: sem ela o diálogo fica parcialmente
+          inclicável.
+
+          O sistema recorta a região de arrasto pelo RETÂNGULO PINTADO, não pela
+          árvore do documento. Um diálogo grande, num portal, passa por cima do
+          cabeçalho do servidor (que com faixa chega a 30vh), do da conversa e da
+          barra de título — e dentro desses retângulos o sistema leva o clique
+          pra arrastar a janela antes de a página ver. Era o "X" de fechar e os
+          itens do alto da coluna de configurações que não obedeciam.
+        */
+        "regiao-sem-arrasto fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 outline-none",
         "rounded-xl border border-line bg-surface-1",
         /*
           Sombra rasa. A da referência (0.25 e 0.2 de preto, espalhando 1.5rem

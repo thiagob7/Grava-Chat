@@ -77,7 +77,7 @@ export const EstudioDeTemas: React.FC<{
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[min(900px,94vh)] w-[min(1320px,96vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
+          className="regiao-sem-arrasto fixed left-1/2 top-1/2 z-50 flex h-[min(900px,94vh)] w-[min(1320px,96vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
           aria-label="Estúdio de temas"
           /// sem isto o primeiro item do trilho abre com o anel de foco aceso,
           /// como se estivesse selecionado

@@ -156,7 +156,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
         <DialogPrimitive.Content
-          className="fixed inset-0 z-50 flex outline-none"
+          className="regiao-sem-arrasto fixed inset-0 z-50 flex outline-none"
           aria-label={t("servidor.titulo")}
         >
           <DialogPrimitive.Title className="sr-only">

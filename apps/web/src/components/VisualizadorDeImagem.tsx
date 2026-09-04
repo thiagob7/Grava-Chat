@@ -18,7 +18,7 @@ export const VisualizadorDeImagem: React.FC = () => {
 
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 p-10 outline-none"
+          className="regiao-sem-arrasto fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 p-10 outline-none"
           onClick={(e) => e.target === e.currentTarget && fechar()}
         >
           <DialogPrimitive.Title className="sr-only">{alt || "Imagem"}</DialogPrimitive.Title>

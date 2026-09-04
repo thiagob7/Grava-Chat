@@ -53,7 +53,7 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
     <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
-        <DialogPrimitive.Content className="fixed inset-0 z-50 flex outline-none">
+        <DialogPrimitive.Content className="regiao-sem-arrasto fixed inset-0 z-50 flex outline-none">
           <DialogPrimitive.Title className="sr-only">
             Configurações de {channel.name}
           </DialogPrimitive.Title>

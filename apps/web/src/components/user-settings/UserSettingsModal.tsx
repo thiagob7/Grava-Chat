@@ -416,7 +416,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           altura) obrigava a rolar pra ver três linhas de cada vez.
         */}
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-1/2 z-50 flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
+          className="regiao-sem-arrasto fixed left-1/2 top-1/2 z-50 flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
         >
           <DialogPrimitive.Title className="sr-only">
