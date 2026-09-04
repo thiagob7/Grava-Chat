@@ -556,19 +556,18 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
         /*
-          As duas tiras pretas: a de cima com o nome do canal, a de baixo com a
-          pílula de controles.
+          Só a tira dos controles é RESERVADA; a de cima é o que sobra.
 
-          A de baixo tem medida concreta — a pílula é ancorada em `bottom-4` e
-          tem ~52px, ocupando de 16 a 68px do rodapé; sem a folga ela pousa em
-          cima do quadro. A de cima é a mesma ideia para o nome.
+          A de baixo tem medida concreta: a pílula é ancorada em `bottom-4` e
+          tem ~52px, ocupando de 16 a 68px do rodapé. Sem a folga ela pousa em
+          cima do quadro.
 
-          O que estragou na primeira tentativa não foram as tiras: era o quadro
-          continuar arredondado dentro delas, o que desenhava um cartão
-          flutuando no preto em vez de uma imagem emoldurada. Sem o canto, as
-          duas tiras leem como moldura — que é o que a referência faz.
+          Em cima não se reserva altura fixa. O quadro guarda o 16:9, e o preto
+          que aparece é o que sobra da área — então ele engorda quando a barra
+          de canais é alargada e some quando a área fica na proporção do vídeo.
+          Era isso que faltava: com tira fixa, o preto não respondia à lateral.
         */
-        "pb-20 pt-14",
+        "pb-20",
         /*
           A margem lateral e o teto de largura existem pra grade não virar uma
           parede de quadros gigantes quando há gente. Com UM quadro só eles não
@@ -593,11 +592,20 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       */}
       <div
         className={cn(
-          "grid size-full max-h-full gap-4",
-          grade.length > 1 && "max-w-5xl",
-          /// o `div` que o menu de contexto põe em volta também precisa esticar,
-          /// senão o quadro cresce dentro de uma caixa do tamanho antigo
-          grade.length === 1 && "[&>*]:size-full",
+          "grid max-h-full gap-4",
+          grade.length > 1 && "size-full max-w-5xl",
+          /*
+            Um quadro só guarda a proporção, e o preto em volta é o que sobra.
+
+            `aspect-video` com `w-full` de base e `max-h-full` de teto: numa área
+            larga o que sobra vai para cima e para baixo; numa área na proporção
+            do vídeo não sobra nada. É por isso que a tarja preta acompanha a
+            largura da barra de canais em vez de ficar do mesmo tamanho sempre.
+
+            Esticar era o que fazia o preto não responder: o quadro tomava a
+            área inteira e as tiras eram só o `padding` fixo do palco.
+          */
+          grade.length === 1 && "aspect-video w-full [&>*]:size-full",
         )}
         style={{
           gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
