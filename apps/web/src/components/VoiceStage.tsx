@@ -570,26 +570,17 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       ref={palco}
       className={cn(
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
-        /*
-          Só a tira dos controles é RESERVADA; a de cima é o que sobra.
-
-          A de baixo tem medida concreta: a pílula é ancorada em `bottom-4` e
-          tem ~52px, ocupando de 16 a 68px do rodapé. Sem a folga ela pousa em
-          cima do quadro.
-
-          Em cima não se reserva altura fixa. O quadro guarda o 16:9, e o preto
-          que aparece é o que sobra da área — então ele engorda quando a barra
-          de canais é alargada e some quando a área fica na proporção do vídeo.
-          Era isso que faltava: com tira fixa, o preto não respondia à lateral.
-        */
         "pb-20",
         /*
-          A margem lateral e o teto de largura existem pra grade não virar uma
-          parede de quadros gigantes quando há gente. Com UM quadro só eles não
-          protegem nada — deixariam um retângulo pequeno num vazio enorme, que
-          é o que aparecia quando alguém entrava primeiro e esperava os outros.
+          Com um quadro só, o palco é o preto em volta e a folga é igual dos
+          quatro lados — o desenho da referência. As medidas vivem no
+          `.quadro-de-um` do `index.css`, que precisa saber destes mesmos
+          valores para fazer a conta do 16:9.
+
+          Com vários, a margem lateral e o teto de largura existem pra grade não
+          virar uma parede de quadros gigantes.
         */
-        grade.length === 1 ? "bg-black" : "bg-surface-2 px-6",
+        grade.length === 1 ? "palco-de-um bg-black px-3 pt-3.5" : "bg-surface-2 px-6",
       )}
     >
         <CantosDaChamada
@@ -609,18 +600,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         className={cn(
           "grid max-h-full gap-4",
           grade.length > 1 && "size-full max-w-5xl",
-          /*
-            Um quadro só guarda a proporção, e o preto em volta é o que sobra.
-
-            `aspect-video` com `w-full` de base e `max-h-full` de teto: numa área
-            larga o que sobra vai para cima e para baixo; numa área na proporção
-            do vídeo não sobra nada. É por isso que a tarja preta acompanha a
-            largura da barra de canais em vez de ficar do mesmo tamanho sempre.
-
-            Esticar era o que fazia o preto não responder: o quadro tomava a
-            área inteira e as tiras eram só o `padding` fixo do palco.
-          */
-          grade.length === 1 && "aspect-video w-full [&>*]:size-full",
+          /// Um quadro só: a conta do 16:9 mora no `.quadro-de-um`.
+          grade.length === 1 && "quadro-de-um [&>*]:size-full",
         )}
         style={{
           gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
@@ -690,14 +671,13 @@ const Tile: React.FC<TileProps> = ({ tile, guildId, compact, denso, preencher, o
       className={cn(
         "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
         /*
-          Canto arredondado só quando o quadro é UM CARTÃO entre outros.
+          O canto arredondado vale sempre, inclusive no quadro sozinho.
 
-          Preenchendo a área inteira ele deixa de ser cartão e passa a ser o
-          fundo: arredondar ali desenha um contorno em volta de nada — quatro
-          mordidas nos cantos, com preto aparecendo por trás. É o que o Discord
-          faz, e é o que fica bem: a cor do quadro, e mais nada.
+          Cheguei a tirá-lo achando que o quadro virava fundo — mas ele não
+          vira: com a folga em volta ele continua sendo um cartão pousado no
+          preto, e é assim que a referência desenha. `rounded-xl` é o raio dela.
         */
-        !preencher && "rounded-lg",
+        "rounded-xl",
         onFocar && "cursor-pointer",
         /*
           A pastilha tem tamanho fixo em vez de `aspect-video h-full`: como ela

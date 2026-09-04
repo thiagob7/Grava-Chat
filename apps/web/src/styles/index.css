@@ -674,3 +674,37 @@ body {
   -webkit-app-region: no-drag;
   app-region: no-drag;
 }
+
+/*
+  O quadro sozinho na chamada: 16:9 inteiro, centrado, com preto em volta.
+
+  É o desenho da referência — e a conta que ela faz. A largura é o MENOR entre
+  o que sobra na horizontal e o que a altura disponível comporta em 16:9; a
+  altura sai da proporção. Assim o preto aparece dos lados numa área alta e em
+  cima e embaixo numa área larga, e some quando a área está na proporção do
+  vídeo.
+
+  Precisa de `container-type: size` no palco porque a conta usa a ALTURA dele,
+  e largura em CSS não enxerga altura de pai — `100cqh` é o único jeito de
+  trazer esse número para dentro de um `min()`.
+
+  E as folgas entram na conta na mão: `100cqw`/`100cqh` medem a caixa de borda
+  do palco, não a de conteúdo, então o `padding` precisa ser descontado aqui.
+  Conferi os dois casos medindo a caixa no navegador antes de escrever.
+*/
+.palco-de-um {
+  container-type: size;
+}
+
+.quadro-de-um {
+  --folga-lateral: 0.75rem;
+  --folga-do-topo: 0.875rem;
+  /// a tira dos controles: a pílula é ancorada em `bottom-4` e tem ~52px
+  --folga-dos-controles: 5rem;
+
+  aspect-ratio: 16 / 9;
+  width: min(
+    calc(100cqw - 2 * var(--folga-lateral)),
+    calc((100cqh - var(--folga-do-topo) - var(--folga-dos-controles)) * 16 / 9)
+  );
+}

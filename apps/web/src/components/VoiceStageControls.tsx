@@ -314,20 +314,26 @@ export const VoiceStageControls: React.FC<{
         </Tooltip>
       </div>
 
+      {/*
+        Estes dois são só o ícone, sem a cápsula escura.
+
+        A pílula do meio tem motivo pra existir: ela agrupa os controles da
+        chamada, que andam juntos. Aqui são dois botões soltos no canto — a
+        cápsula em volta deles não agrupava nada, só desenhava uma caixa a mais
+        sobre o vídeo. O realce é o ícone clareando, como nos cantos de cima.
+      */}
       <div className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
-        <div className="flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
         <VolumeDaLive />
 
         <Tooltip label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}>
           <button
             onClick={() => void telaCheia.alternar()}
             aria-label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}
-            className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+            className="flex size-10 items-center justify-center rounded-full text-ink-muted drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-ink"
           >
             {telaCheia.ativa ? <Minimize size={18} /> : <Maximize size={18} />}
           </button>
         </Tooltip>
-        </div>
       </div>
     </div>
   );
@@ -370,7 +376,7 @@ const VolumeDaLive: React.FC = () => {
         <PopoverTrigger asChild>
           <button
             aria-label={t("chamada.volume.live")}
-            className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+            className="flex size-10 items-center justify-center rounded-full text-ink-muted drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-ink"
           >
             {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
