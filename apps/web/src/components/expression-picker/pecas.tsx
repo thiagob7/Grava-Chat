@@ -20,27 +20,67 @@ interface BarraLateralProps {
   onIr: (id: string) => void;
 }
 
-export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr }) => (
-  <nav className="flex w-12 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-line bg-surface-0/60 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-    {atalhos.map((atalho) => (
-      <button
-        key={atalho.id}
-        onClick={() => onIr(atalho.id)}
-        title={atalho.titulo}
-        aria-label={atalho.titulo}
-        aria-current={ativo === atalho.id}
-        className={cn(
-          "relative flex size-8 shrink-0 items-center justify-center rounded-lg transition",
-          ativo === atalho.id
-            ? "bg-surface-3 text-ink"
-            : "text-ink-faint hover:bg-surface-3/60 hover:text-ink-muted",
-        )}
-      >
-        {atalho.icone}
-      </button>
-    ))}
-  </nav>
-);
+export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr }) => {
+  const trilha = React.useRef<HTMLElement>(null);
+
+  /*
+    A coluna acompanha a rolagem da lista.
+
+    Ela já sabia QUEM é o ativo e o destacava — mas nada a rolava, e ela também
+    tem barra de rolagem própria: com os nove grupos de emoji mais um ícone por
+    servidor, o ativo sai de vista. Rolando a lista até "Bandeiras", o destaque
+    ficava num botão fora da área visível da coluna, e ela parecia congelada
+    enquanto a lista descia.
+
+    Rolo a `nav` na mão em vez de usar `scrollIntoView` porque ele sobe por
+    todos os ancestrais roláveis: aqui isso mexeria também na lista de emoji, e
+    a coluna acabaria empurrando o conteúdo que ela só deveria acompanhar.
+  */
+  React.useEffect(() => {
+    const nav = trilha.current;
+    if (!nav || !ativo) return;
+
+    const alvo = nav.querySelector<HTMLElement>(`[data-secao="${ativo}"]`);
+    if (!alvo) return;
+
+    const acima = alvo.offsetTop < nav.scrollTop;
+    const abaixo = alvo.offsetTop + alvo.offsetHeight > nav.scrollTop + nav.clientHeight;
+    if (!acima && !abaixo) return;
+
+    /// Centraliza em vez de encostar na borda: assim dá pra ver o que vem antes
+    /// e depois, e a coluna não fica dando pulinhos de um item a cada seção.
+    nav.scrollTo({
+      top: alvo.offsetTop - nav.clientHeight / 2 + alvo.offsetHeight / 2,
+      behavior: "smooth",
+    });
+  }, [ativo]);
+
+  return (
+    <nav
+      ref={trilha}
+      className="flex w-12 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-line bg-surface-0/60 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {atalhos.map((atalho) => (
+        <button
+          key={atalho.id}
+          data-secao={atalho.id}
+          onClick={() => onIr(atalho.id)}
+          title={atalho.titulo}
+          aria-label={atalho.titulo}
+          aria-current={ativo === atalho.id}
+          className={cn(
+            "relative flex size-8 shrink-0 items-center justify-center rounded-lg transition",
+            ativo === atalho.id
+              ? "bg-surface-3 text-ink"
+              : "text-ink-faint hover:bg-surface-3/60 hover:text-ink-muted",
+          )}
+        >
+          {atalho.icone}
+        </button>
+      ))}
+    </nav>
+  );
+};
 
 /**
  * O rodapé que mostra o que está sob o cursor. Fica sempre com a mesma
