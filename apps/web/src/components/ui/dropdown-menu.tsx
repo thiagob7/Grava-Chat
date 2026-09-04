@@ -17,7 +17,19 @@ export const DropdownMenuContent = ({
     <DropdownPrimitive.Content
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+        /*
+          `regiao-sem-arrasto` não é enfeite: sem ela o menu fica inclicável em
+          boa parte do app.
+
+          Menu flutuante vive num portal, fora da árvore de quem o abriu — mas o
+          sistema recorta a região de arrasto pelo RETÂNGULO PINTADO, não pelo
+          DOM. Cabeçalho de servidor, de conversa e de DM são todos
+          `regiao-de-arrasto`, e o do servidor com faixa chega a 30vh: o menu
+          aberto ali cai inteiro dentro do retângulo e o sistema leva o clique
+          pra arrastar a janela antes de a página enxergar qualquer coisa. O
+          menu abre, destaca no hover e simplesmente não obedece.
+        */
+        "regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}
@@ -143,7 +155,8 @@ export const DropdownMenuSubContent = ({
   <DropdownPrimitive.Portal>
     <DropdownPrimitive.SubContent
       className={cn(
-        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+        /// Mesmo motivo do menu principal, logo acima.
+        "regiao-sem-arrasto z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}

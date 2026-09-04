@@ -15,7 +15,9 @@ export const ContextMenuContent = ({
   <ContextMenuPrimitive.Portal>
     <ContextMenuPrimitive.Content
       className={cn(
-        "z-50 max-h-[85vh] min-w-56 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+                /// Portal flutua por cima de cabeçalho, que é região de arrasto — sem
+        /// isto o sistema rouba o clique. Veja o porquê em `dropdown-menu.tsx`.
+        "regiao-sem-arrasto z-50 max-h-[85vh] min-w-56 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}
@@ -66,7 +68,9 @@ export const ContextMenuSubContent = ({
   <ContextMenuPrimitive.Portal>
     <ContextMenuPrimitive.SubContent
       className={cn(
-        "z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+                /// Portal flutua por cima de cabeçalho, que é região de arrasto — sem
+        /// isto o sistema rouba o clique. Veja o porquê em `dropdown-menu.tsx`.
+        "regiao-sem-arrasto z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}

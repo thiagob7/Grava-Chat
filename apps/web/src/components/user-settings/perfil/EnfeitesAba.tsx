@@ -6,7 +6,6 @@ import {
   EFEITOS_DO_NOME,
   FONTES,
   PATENTES_DE_PERFIL,
-  PLACAS_DE_PERFIL,
 } from "~/lib/cosmeticos/catalogo";
 import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
 import { PatenteAnimada } from "~/components/PatenteAnimada";
@@ -101,8 +100,8 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
       />
 
       {/*
-        A moldura do avatar e o efeito do cartão saíram da grade por enquanto —
-        veja FAMILIAS_DESLIGADAS no catálogo.
+        A moldura do avatar, o efeito do cartão e a placa do nome saíram da
+        grade por enquanto — veja FAMILIAS_DESLIGADAS no catálogo.
       */}
 
       <div className="h-px bg-line" />
@@ -115,20 +114,6 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         amostra={(id) => <PatenteAnimada patente={id} animar altura={24} />}
       />
 
-      <GradeDeOpcoes
-        label="Placa do nome"
-        opcoes={PLACAS_DE_PERFIL}
-        valor={rascunho.placa}
-        onEscolher={(id) => definir("placa", id)}
-        amostra={(id) => {
-          const placa = classeDoEnfeite("placa", id);
-          return (
-            <span className={cn("text-xs", placa && "gc-placa", placa)}>
-              Ana
-            </span>
-          );
-        }}
-      />
     </div>
   );
 };

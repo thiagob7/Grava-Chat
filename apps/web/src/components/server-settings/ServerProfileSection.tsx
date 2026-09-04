@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { ImageUp, Upload, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { avatarColor, initials } from "~/lib/format";
 import { formatBytes } from "~/lib/image";
+import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
 const ICONE_MAX_PX = 256;
@@ -50,16 +51,22 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
     A faixa é larga e vive no alto da lista de canais — por isso sobe com um
     teto de largura bem maior que o do ícone, que é um quadradinho.
   */
-  const escolherFaixa = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
+  /// Recebe o arquivo, e não o evento: o mesmo envio serve ao clique no seletor
+  /// e ao arquivo largado em cima da faixa.
+  const enviarFaixa = async (file: File) => {
     const enviado = await uploadImage
       .mutateAsync({ file, maxSize: 960 })
       .catch(() => null);
     if (enviado) setBannerUrl(enviado.attachment.url);
   };
+
+  const escolherFaixa = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) await enviarFaixa(file);
+  };
+
+  const [arrastando, setArrastando] = useState(false);
 
   const mudou =
     name.trim() !== guild.name ||
@@ -145,47 +152,104 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
       <div className="my-6 h-px bg-line" />
 
       <Label>{t("servidor.perfil.faixa")}</Label>
-      <div className="space-y-3">
-        <div
-          className="flex h-32 items-center justify-center overflow-hidden rounded-lg bg-cover bg-center text-xs text-ink-faint"
-          style={{
-            backgroundColor: avatarColor(guild.id),
-            ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
-          }}
-        >
-          {!bannerUrl && "Aparece no alto da lista de canais"}
-        </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant="surface"
-            size="sm"
+      {/*
+        A área da imagem É o campo.
+
+        Antes ela era um retângulo decorativo com o botão embaixo: a coisa que
+        parecia clicável não era, e a que era ficava fora dela. Agora clicar na
+        faixa abre o seletor, arrastar um arquivo em cima envia, e o "remover"
+        mora no canto da própria imagem — que é onde se procura por ele.
+      */}
+      <div className="space-y-2">
+        <div className="relative">
+          <button
+            type="button"
             onClick={() => inputDaFaixa.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setArrastando(true);
+            }}
+            onDragLeave={() => setArrastando(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setArrastando(false);
+              const arquivo = e.dataTransfer.files?.[0];
+              /// Largar uma pasta, um .zip ou um texto aqui não é erro de quem
+              /// larga — mas mandar isso pro upload é erro nosso.
+              if (arquivo?.type.startsWith("image/")) void enviarFaixa(arquivo);
+            }}
             disabled={uploadImage.isPending}
+            aria-label={
+              bannerUrl ? "Alterar a faixa do servidor" : "Enviar a faixa do servidor"
+            }
+            className={cn(
+              "group/faixa relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-cover bg-center outline-none transition",
+              "focus-visible:border-brand",
+              /// Tracejado só enquanto está vazia: é o desenho universal de
+              /// "solte algo aqui". Com imagem dentro, tracejado vira sujeira
+              /// por cima da foto de quem manda no servidor.
+              arrastando
+                ? "border-solid border-brand"
+                : bannerUrl
+                  ? "border-solid border-transparent hover:border-line"
+                  : "border-dashed border-line hover:border-ink-faint",
+              uploadImage.isPending && "cursor-wait opacity-70",
+            )}
+            style={{
+              backgroundColor: avatarColor(guild.id),
+              ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
+            }}
           >
-            <Upload size={14} />
-            {uploadImage.isPending ? "Enviando…" : "Alterar faixa"}
-          </Button>
-
-          {bannerUrl && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setBannerUrl(null)}
-              className="text-danger"
+            {/*
+              O véu só aparece com o mouse em cima, e só quando JÁ existe faixa:
+              escurecer uma imagem que a pessoa acabou de escolher, o tempo todo,
+              é mentir sobre como ela vai aparecer no alto da lista de canais.
+            */}
+            <span
+              className={cn(
+                "flex flex-col items-center gap-1.5 rounded-lg px-4 py-3 text-xs transition",
+                bannerUrl
+                  ? "bg-black/60 text-white opacity-0 group-hover/faixa:opacity-100"
+                  : "text-white/80",
+              )}
             >
-              {t("comum.remover")}
-            </Button>
-          )}
+              <ImageUp size={20} />
+              {uploadImage.isPending
+                ? "Enviando…"
+                : arrastando
+                  ? "Solte a imagem aqui"
+                  : bannerUrl
+                    ? "Alterar faixa"
+                    : "Clique ou arraste uma imagem"}
+            </span>
+          </button>
 
-          <input
-            ref={inputDaFaixa}
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void escolherFaixa(e)}
-            className="hidden"
-          />
+          {bannerUrl && !uploadImage.isPending && (
+            <button
+              type="button"
+              onClick={() => setBannerUrl(null)}
+              aria-label={t("comum.remover")}
+              title={t("comum.remover")}
+              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur transition hover:bg-danger hover:text-white"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
+
+        <p className="text-xs text-ink-faint">
+          Aparece no alto da lista de canais. PNG, JPG, WEBP ou GIF — a imagem é
+          reduzida no navegador.
+        </p>
+
+        <input
+          ref={inputDaFaixa}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          onChange={(e) => void escolherFaixa(e)}
+          className="hidden"
+        />
       </div>
 
       <div className="my-6 h-px bg-line" />

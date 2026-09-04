@@ -764,7 +764,7 @@
   --keybind-hint-default-color: var(--text-on-brand-primary);
 }
 
-/// Mais escuro — os 90 tokens que a base escura não serve.
+/* Mais escuro — os 90 tokens que a base escura não serve. */
 :root[data-tema="mais-escuro"] {
   --scrollbar-thumb-bg: rgba(160, 160, 160, 0.35);
   --scrollbar-thumb-bg-hover: rgba(200, 200, 200, 0.55);

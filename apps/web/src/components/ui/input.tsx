@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 // O anel no foco e o que faltava: so a borda mudando de cinza pra cinza mais
 // claro passa despercebido, ainda mais em tema escuro.
 export const campoBase =
-  "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-campo-foco focus-visible:ring-2 focus-visible:ring-brand/25 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
+  "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-ink-faint/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
 export const Input = ({ className, ...props }: React.ComponentProps<"input">) => (
   <input className={cn(campoBase, "h-10 py-1", className)} {...props} />
@@ -19,7 +19,7 @@ export const campoDeCor =
   "shrink-0 cursor-pointer rounded-lg border border-white/5 bg-campo p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export const grupoDeCampo =
-  "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition focus-within:border-campo-foco focus-within:ring-2 focus-within:ring-brand/25";
+  "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition focus-within:border-ink-faint/40";
 
 export const campoNu =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
@@ -42,7 +42,7 @@ export const CampoComAcao: React.FC<
   <div
     className={cn(
       "flex items-center gap-2 rounded-lg border border-line bg-campo p-1.5 pl-3 transition",
-      "focus-within:border-campo-foco focus-within:ring-2 focus-within:ring-brand/25",
+      "focus-within:border-ink-faint/40",
     )}
   >
     <input className={cn(campoNu, "h-8", className)} {...props} />

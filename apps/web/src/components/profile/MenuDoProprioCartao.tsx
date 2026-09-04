@@ -10,9 +10,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
@@ -71,7 +68,16 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
   const estadoAtual = ESTADOS.find((e) => e.id === atual) ?? ESTADOS[0]!;
 
   return (
-    <div className="mt-4 space-y-1 rounded bg-surface-1 p-1.5">
+    /*
+      Sem caixa em volta: os itens moram no cartão, não num cartão dentro dele.
+
+      Este bloco pintava o próprio `bg-surface-1` e ganhava padding, e o que
+      aparecia era um segundo cartão encaixado no primeiro — dois retângulos com
+      dois fundos diferentes, um dentro do outro, sem nada os separando a não ser
+      a mudança de cor. Um traço fino em cima já diz "daqui pra baixo são
+      ações", que era a única coisa que a caixa estava tentando dizer.
+    */
+    <div className="mt-3 space-y-0.5 border-t border-line pt-3">
       <ItemDoMenu icone={<Pencil size={15} />} onClick={onEditarPerfil}>
         {t("perfil.editar")}
       </ItemDoMenu>
@@ -103,7 +109,12 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DropdownMenuSeparator />
+      {/*
+        Traço simples, e não o `DropdownMenuSeparator`: aquele é o separador do
+        Radix e pertence a um menu aberto. Aqui não há menu nenhum — estes itens
+        são o conteúdo do cartão.
+      */}
+      <div className="my-1 h-px bg-line" />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

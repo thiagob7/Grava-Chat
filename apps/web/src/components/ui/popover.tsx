@@ -56,7 +56,9 @@ export const PopoverContent = ({
           `border-0` antes desta linha existir: eles desenham a própria moldura,
           e continuam mandando.
         */
-        "z-50 w-72 rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
+                /// Portal flutua por cima de cabeçalho, que é região de arrasto — sem
+        /// isto o sistema rouba o clique. Veja o porquê em `dropdown-menu.tsx`.
+        "regiao-sem-arrasto z-50 w-72 rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}

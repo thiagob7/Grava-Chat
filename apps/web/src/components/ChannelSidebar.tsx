@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  ChevronDown,
-  Lock,
-  LogOut,
-  MessageSquare,
-  Plus,
-  Settings,
-  Trash2,
-  UserPlus,
-} from "lucide-react";
+import { ChevronDown, Lock, LogOut, Plus, Settings, Trash2 } from "lucide-react";
 
 import type {
   GuildDetailModel,
@@ -21,7 +12,22 @@ import { InviteModal } from "~/components/InviteModal";
 import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
-import { CaretDown, ChatsCircle, Hash, SpeakerHigh } from "@phosphor-icons/react";
+/*
+  Os ícones da lista de canais são Phosphor, no peso `fill` — o mesmo conjunto e
+  o mesmo peso da referência. Os três botões de ação da linha eram lucide de
+  contorno a 14px, encostados num Phosphor cheio de 20px: duas famílias, dois
+  pesos e dois tamanhos na mesma linha, que é o que fazia a lista parecer
+  remendada.
+*/
+import {
+  CaretDown,
+  ChatCircle,
+  ChatsCircle,
+  GearSix,
+  Hash,
+  SpeakerHigh,
+  UserPlus,
+} from "@phosphor-icons/react";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import { useFavoritos } from "~/stores/favoritos";
 import {
@@ -206,15 +212,33 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </>
           )}
 
-          <div className="relative z-10 flex h-12 w-full items-center justify-between">
+          <div className="relative z-10 flex h-12 w-full items-center justify-between px-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={!detail}>
               <button
                 className={cn(
-                  "flex h-full min-w-0 flex-1 items-center gap-1 px-4 text-left transition",
-                  /// Sobre a faixa não há realce de passagem: pintar um retângulo
-                  /// cinza por cima da imagem é pior que não realçar nada.
-                  !comFaixa && "hover:bg-surface-3",
+                  /*
+                    Pastilha do tamanho do NOME, não da barra inteira.
+
+                    Antes o gatilho era `flex-1 h-full`: o realce de passagem
+                    pintava a faixa toda, de ponta a ponta, e o mouse no vazio
+                    do lado direito acendia o botão como se o nome estivesse
+                    sob o cursor. Agora a área clicável é o que se vê — nome
+                    mais seta — e é ela que acende.
+                  */
+                  "group/nome flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition",
+                  /*
+                    Sobre a faixa o realce é preto translúcido, não cinza.
+
+                    Já foi decidido aqui que não haveria realce nenhum sobre a
+                    imagem — mas aquilo valia pro retângulo da largura inteira,
+                    que virava uma tarja cinza atravessando a foto. Uma pastilha
+                    escura do tamanho do nome faz o contrário: escurece só onde
+                    o texto já precisa de contraste.
+                  */
+                  comFaixa
+                    ? "hover:bg-black/35 data-[state=open]:bg-black/35"
+                    : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
                 )}
               >
                 <h1
@@ -225,10 +249,16 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 >
                   {detail?.guild.name ?? "…"}
                 </h1>
+                {/*
+                  A seta vira de cabeça pra baixo com o menu aberto. Quem dá o
+                  estado é o próprio Radix, no `data-state` do gatilho — sem
+                  guardar "aberto" em lugar nenhum e sem o risco de a seta e o
+                  menu discordarem.
+                */}
                 <ChevronDown
                   size={16}
                   className={cn(
-                    "shrink-0",
+                    "shrink-0 transition-transform duration-150 group-data-[state=open]/nome:rotate-180",
                     comFaixa
                       ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                       : "text-ink-muted",
@@ -294,13 +324,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               <button
                 onClick={() => setInviting(true)}
                 className={cn(
-                  "mr-4 shrink-0 transition",
+                  "shrink-0 rounded-lg p-1.5 transition",
                   comFaixa
                     ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-white/80"
                     : "text-ink-muted hover:text-ink",
                 )}
               >
-                <UserPlus size={18} />
+                <UserPlus size={18} weight="fill" />
               </button>
             </Tooltip>
           )}
@@ -501,7 +531,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 title="Abrir chat"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <MessageSquare size={14} />
+                                <ChatCircle size={16} weight="fill" />
                               </button>
                             )}
 
@@ -511,7 +541,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 title="Convidar pessoas"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <UserPlus size={14} />
+                                <UserPlus size={16} weight="fill" />
                               </button>
                             )}
 
@@ -521,7 +551,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 title="Editar canal"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <Settings size={14} />
+                                <GearSix size={16} weight="fill" />
                               </button>
                             )}
                           </div>
