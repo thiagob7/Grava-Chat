@@ -3,6 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, FileUp, Plus, Send, Smile, Timer, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
 
+import { EspelhoDoCompositor } from "~/features/conversa/components/EspelhoDoCompositor";
+
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { MessagePageModel } from "~/@core/domain/models/message-model";
@@ -99,6 +101,7 @@ export const Composer: React.FC<ComposerProps> = ({
   const [escolhido, setEscolhido] = useState(0);
   const lastTypingSent = useRef(0);
   const textarea = useRef<HTMLTextAreaElement>(null);
+  const espelho = useRef<HTMLDivElement>(null);
   const inputArquivo = useRef<HTMLInputElement>(null);
 
   const { data: detail } = useFindGuild(guildId);
@@ -419,6 +422,14 @@ export const Composer: React.FC<ComposerProps> = ({
             className="hidden"
           />
 
+          <div className="relative min-w-0 flex-1">
+          <EspelhoDoCompositor
+            ref={espelho}
+            texto={value}
+            fontFamily={familiaDaFonte(fonte) ?? undefined}
+            className="py-3"
+          />
+
           <textarea
             ref={textarea}
             value={value}
@@ -517,9 +528,13 @@ export const Composer: React.FC<ComposerProps> = ({
                 submit();
               }
             }}
+            onScroll={(e) => {
+              if (espelho.current) espelho.current.scrollTop = e.currentTarget.scrollTop;
+            }}
             style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
-            className="max-h-[50vh] min-w-0 flex-1 resize-none bg-transparent py-3 text-ink outline-none placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed"
+            className="relative block max-h-[50vh] w-full resize-none bg-transparent py-3 text-transparent caret-ink outline-none selection:bg-brand/40 placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed"
           />
+          </div>
 
           <div className="mb-1.5 flex shrink-0 items-center gap-1 @sm:gap-3">
             <span className="hidden @sm:flex">
