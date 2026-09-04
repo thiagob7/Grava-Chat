@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "伺服器設定",
+  auditoria: {
+    titulo: "稽核紀錄",
+    porUsuario: "依人篩選",
+    porAcao: "依動作篩選",
+    vazio: "此篩選條件下還沒有任何紀錄。",
+    motivo: "原因：",
+  },
+  banimentos: {
+    titulo: "伺服器封鎖名單",
+    descricao: "名單上的人即使拿到新邀請也進不來。解除封鎖會立刻恢復存取。",
+    procurar: "以使用者名稱搜尋封鎖",
+    vazioTitulo: "沒有封鎖",
+    vazio: "你還沒封鎖過任何人……但真需要時，別猶豫。",
+    desbanir: "解除封鎖",
+  },
+  excluir: {
+    titulo: "刪除伺服器",
+    aviso: "此動作無法復原。",
+  },
+  emblemas: {
+    titulo: "徽章",
+    vazio: "還沒有徽章。",
+    novo: "新徽章",
+  },
+  convites: {
+    titulo: "邀請",
+    descricao: "此伺服器所有有效的邀請連結。",
+    vazio: "還沒有建立任何邀請。",
+    revogar: "撤銷邀請",
+  },
+  integracoes: {
+    titulo: "整合",
+    descricao: "Webhook 是一個不需帳號就能向頻道發訊的位址。適合用來通報建置通過、有人開了工單，或任何你想從腳本送出的內容。",
+    novo: "新增 Webhook",
+    vazio: "還沒有 Webhook。建立一個，把 URL 貼到你希望訊息來源的地方。",
+    canal: "頻道",
+    apagar: "刪除 Webhook",
+    comoUsar: "怎麼用",
+    comoUsarTexto: "送出帶 JSON 的 POST。格式與 Discord 相同，因此現成的腳本不必修改即可使用：",
+  },
+  engajamento: {
+    titulo: "活躍度",
+    descricao: "有新人來時，伺服器自己做點什麼才不會顯得冷清。",
+    sistema: "系統訊息",
+    boasVindas: "有人加入時傳送歡迎訊息",
+    sorteio: "下面沒有自己的文案時，句子會隨機抽選——老是同一句很快就膩了。",
+    canalDoSistema: "系統訊息頻道",
+    mensagem: "歡迎訊息",
+    deixeVazio: "留空則從現成的句子中抽選",
+  },
+};

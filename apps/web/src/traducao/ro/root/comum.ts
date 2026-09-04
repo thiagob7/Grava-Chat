@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Renunță",
   redefinir: "Resetează",
   naoSalvo: "Ai modificări nesalvate.",
+  fechar: "Închide",
+  criar: "Creează",
+  nome: "Nume",
+  emoji: "Emoji",
+  previa: "Previzualizare",
 };

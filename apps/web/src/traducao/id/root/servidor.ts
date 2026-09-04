@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Pengaturan server",
+  auditoria: {
+    titulo: "Log tindakan",
+    porUsuario: "Saring berdasarkan orang",
+    porAcao: "Saring berdasarkan tindakan",
+    vazio: "Belum ada yang tercatat dengan saringan ini.",
+    motivo: "Alasan:",
+  },
+  banimentos: {
+    titulo: "Daftar cekal server",
+    descricao: "Yang ada di sini tidak bisa masuk lagi, bahkan dengan undangan baru. Mencabut cekal mengembalikan akses seketika.",
+    procurar: "Cari cekal berdasarkan nama pengguna",
+    vazioTitulo: "Tidak ada cekal",
+    vazio: "Kamu belum mencekal siapa pun… tapi kalau suatu saat perlu, jangan ragu.",
+    desbanir: "Cabut cekal",
+  },
+  excluir: {
+    titulo: "Hapus server",
+    aviso: "Ini tidak bisa dibatalkan.",
+  },
+  emblemas: {
+    titulo: "Lencana",
+    vazio: "Belum ada lencana.",
+    novo: "Lencana baru",
+  },
+  convites: {
+    titulo: "Undangan",
+    descricao: "Semua tautan undangan aktif server ini.",
+    vazio: "Belum ada undangan yang dibuat.",
+    revogar: "Cabut undangan",
+  },
+  integracoes: {
+    titulo: "Integrasi",
+    descricao: "Webhook adalah alamat yang memposting ke sebuah kanal tanpa perlu akun. Berguna untuk mengabari bahwa build lolos, ada yang membuka tiket, atau apa pun yang ingin kamu kirim dari skrip.",
+    novo: "Webhook baru",
+    vazio: "Belum ada webhook. Buat satu dan tempel URL-nya di tempat kamu ingin pesannya berasal.",
+    canal: "Kanal",
+    apagar: "Hapus webhook",
+    comoUsar: "Cara memakai",
+    comoUsarTexto: "Kirim POST berisi JSON. Formatnya sama dengan Discord, jadi skrip yang sudah ada berjalan tanpa diubah:",
+  },
+  engajamento: {
+    titulo: "Keterlibatan",
+    descricao: "Apa yang server lakukan sendiri agar tidak terasa kosong saat ada orang baru datang.",
+    sistema: "Pesan sistem",
+    boasVindas: "Kirim pesan selamat datang saat ada yang bergabung",
+    sorteio: "Tanpa teksmu sendiri di bawah, kalimatnya diundi — yang itu-itu saja cepat membosankan.",
+    canalDoSistema: "Kanal pesan sistem",
+    mensagem: "Pesan selamat datang",
+    deixeVazio: "Biarkan kosong untuk mengundi dari kalimat yang sudah ada",
+  },
+};

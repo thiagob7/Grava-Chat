@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Cài đặt máy chủ",
+  auditoria: {
+    titulo: "Nhật ký hoạt động",
+    porUsuario: "Lọc theo người",
+    porAcao: "Lọc theo hành động",
+    vazio: "Chưa có gì được ghi lại với bộ lọc này.",
+    motivo: "Lý do:",
+  },
+  banimentos: {
+    titulo: "Danh sách cấm của máy chủ",
+    descricao: "Ai ở đây thì không vào lại được, kể cả có lời mời mới. Bỏ cấm là trả lại quyền vào ngay.",
+    procurar: "Tìm lệnh cấm theo tên người dùng",
+    vazioTitulo: "Không có ai bị cấm",
+    vazio: "Bạn chưa cấm ai… nhưng nếu có lúc cần, đừng ngần ngại.",
+    desbanir: "Bỏ cấm",
+  },
+  excluir: {
+    titulo: "Xóa máy chủ",
+    aviso: "Việc này không thể hoàn tác.",
+  },
+  emblemas: {
+    titulo: "Huy hiệu",
+    vazio: "Chưa có huy hiệu nào.",
+    novo: "Huy hiệu mới",
+  },
+  convites: {
+    titulo: "Lời mời",
+    descricao: "Tất cả liên kết mời đang hoạt động của máy chủ này.",
+    vazio: "Chưa tạo lời mời nào.",
+    revogar: "Thu hồi lời mời",
+  },
+  integracoes: {
+    titulo: "Tích hợp",
+    descricao: "Webhook là một địa chỉ đăng bài vào kênh mà không cần tài khoản. Tiện để báo khi bản dựng chạy xong, khi ai đó mở phiếu, hay bất cứ thứ gì bạn muốn gửi từ một script.",
+    novo: "Webhook mới",
+    vazio: "Chưa có webhook nào. Tạo một cái và dán URL vào nơi bạn muốn tin nhắn đi ra.",
+    canal: "Kênh",
+    apagar: "Xóa webhook",
+    comoUsar: "Cách dùng",
+    comoUsarTexto: "Gửi một POST kèm JSON. Định dạng giống hệt của Discord, nên script đã có sẵn chạy được mà không cần sửa:",
+  },
+  engajamento: {
+    titulo: "Sức sống",
+    descricao: "Những gì máy chủ tự làm để không trông trống trải khi có người mới đến.",
+    sistema: "Tin nhắn hệ thống",
+    boasVindas: "Gửi lời chào khi có người tham gia",
+    sorteio: "Không có chữ của bạn ở dưới thì câu sẽ được bốc ngẫu nhiên — cùng một câu mãi thì mau chán.",
+    canalDoSistema: "Kênh tin nhắn hệ thống",
+    mensagem: "Lời chào mừng",
+    deixeVazio: "Để trống để bốc trong những câu có sẵn",
+  },
+};

@@ -5,4 +5,9 @@ export const comum = {
   descartar: "ทิ้ง",
   redefinir: "รีเซ็ต",
   naoSalvo: "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
+  fechar: "ปิด",
+  criar: "สร้าง",
+  nome: "ชื่อ",
+  emoji: "อีโมจิ",
+  previa: "ตัวอย่าง",
 };

@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "サーバー設定",
+  auditoria: {
+    titulo: "監査ログ",
+    porUsuario: "人で絞り込む",
+    porAcao: "操作で絞り込む",
+    vazio: "この絞り込みではまだ何も記録されていません。",
+    motivo: "理由：",
+  },
+  banimentos: {
+    titulo: "サーバーのBANリスト",
+    descricao: "ここにいる人は新しい招待でも戻れません。BANを解除すればすぐにアクセスが戻ります。",
+    procurar: "ユーザー名でBANを検索",
+    vazioTitulo: "BANはありません",
+    vazio: "まだ誰もBANしていません…でも必要になったら、ためらわずに。",
+    desbanir: "BANを解除",
+  },
+  excluir: {
+    titulo: "サーバーを削除",
+    aviso: "これは取り消せません。",
+  },
+  emblemas: {
+    titulo: "バッジ",
+    vazio: "バッジはまだありません。",
+    novo: "新しいバッジ",
+  },
+  convites: {
+    titulo: "招待",
+    descricao: "このサーバーの有効な招待リンクすべて。",
+    vazio: "招待はまだ作られていません。",
+    revogar: "招待を取り消す",
+  },
+  integracoes: {
+    titulo: "連携",
+    descricao: "Webhook はアカウントなしでチャンネルに投稿できるアドレスです。ビルドが通ったとき、誰かが問い合わせを開いたとき、あるいはスクリプトから送りたい何かを知らせるのに使えます。",
+    novo: "新しい Webhook",
+    vazio: "Webhook はまだありません。ひとつ作って、メッセージの発信元にしたい場所に URL を貼ってください。",
+    canal: "チャンネル",
+    apagar: "Webhook を削除",
+    comoUsar: "使い方",
+    comoUsarTexto: "JSON を付けて POST を送ってください。形式は Discord と同じなので、すでにあるスクリプトがそのまま動きます：",
+  },
+  engajamento: {
+    titulo: "にぎわい",
+    descricao: "新しい人が来たとき空っぽに見えないよう、サーバーが自分でやること。",
+    sistema: "システムメッセージ",
+    boasVindas: "誰かが参加したら歓迎メッセージを送る",
+    sorteio: "下に自分の文章がない場合、文はランダムに選ばれます — 同じ文ばかりだとすぐ飽きます。",
+    canalDoSistema: "システムメッセージのチャンネル",
+    mensagem: "歓迎メッセージ",
+    deixeVazio: "空のままにすると、用意された文から抽選します",
+  },
+};

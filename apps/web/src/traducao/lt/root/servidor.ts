@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Serverio nustatymai",
+  auditoria: {
+    titulo: "Veiksmų žurnalas",
+    porUsuario: "Filtruoti pagal žmogų",
+    porAcao: "Filtruoti pagal veiksmą",
+    vazio: "Su šiuo filtru dar nieko neužfiksuota.",
+    motivo: "Priežastis:",
+  },
+  banimentos: {
+    titulo: "Serverio užblokuotųjų sąrašas",
+    descricao: "Kas čia yra, nebeįeis nė su nauju pakvietimu. Atblokavus prieiga grąžinama iškart.",
+    procurar: "Ieškoti blokavimų pagal naudotojo vardą",
+    vazioTitulo: "Blokavimų nėra",
+    vazio: "Dar nieko neužblokavai… bet jei prireiks, nedvejok.",
+    desbanir: "Atblokuoti",
+  },
+  excluir: {
+    titulo: "Ištrinti serverį",
+    aviso: "To atšaukti nebegalima.",
+  },
+  emblemas: {
+    titulo: "Ženkleliai",
+    vazio: "Ženklelių dar nėra.",
+    novo: "Naujas ženklelis",
+  },
+  convites: {
+    titulo: "Pakvietimai",
+    descricao: "Visos aktyvios šio serverio pakvietimo nuorodos.",
+    vazio: "Dar nesukurta nė vieno pakvietimo.",
+    revogar: "Atšaukti pakvietimą",
+  },
+  integracoes: {
+    titulo: "Integracijos",
+    descricao: "Webhook yra adresas, kuris rašo į kanalą be paskyros. Pravartu pranešti, kad kompiliavimas praėjo, kad kažkas atidarė užklausą, ar ką dar norėtum siųsti iš scenarijaus.",
+    novo: "Naujas webhook",
+    vazio: "Webhook dar nėra. Sukurk vieną ir įklijuok URL ten, iš kur nori, kad ateitų žinutė.",
+    canal: "Kanalas",
+    apagar: "Ištrinti webhook",
+    comoUsar: "Kaip naudoti",
+    comoUsarTexto: "Siųsk POST su JSON. Formatas toks pat kaip Discord, tad jau esantis scenarijus veiks be pakeitimų:",
+  },
+  engajamento: {
+    titulo: "Įsitraukimas",
+    descricao: "Ką serveris daro pats, kad neatrodytų tuščias, kai ateina kas nors naujas.",
+    sistema: "Sistemos žinutės",
+    boasVindas: "Siųsti pasisveikinimą, kai kas nors prisijungia",
+    sorteio: "Be savo teksto apačioje sakinys traukiamas atsitiktinai — tas pats greitai nusibosta.",
+    canalDoSistema: "Sistemos žinučių kanalas",
+    mensagem: "Pasisveikinimo žinutė",
+    deixeVazio: "Palik tuščią, kad būtų traukiama iš paruoštų sakinių",
+  },
+};

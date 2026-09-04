@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Verwerpen",
   redefinir: "Herstellen",
   naoSalvo: "Je hebt niet-opgeslagen wijzigingen.",
+  fechar: "Sluiten",
+  criar: "Aanmaken",
+  nome: "Naam",
+  emoji: "Emoji",
+  previa: "Voorbeeld",
 };

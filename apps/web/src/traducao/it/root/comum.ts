@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Annulla",
   redefinir: "Reimposta",
   naoSalvo: "Hai modifiche non salvate.",
+  fechar: "Chiudi",
+  criar: "Crea",
+  nome: "Nome",
+  emoji: "Emoji",
+  previa: "Anteprima",
 };

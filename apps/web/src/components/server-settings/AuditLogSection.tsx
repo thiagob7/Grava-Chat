@@ -16,6 +16,7 @@ import type { AuditEntryModel } from "~/@core/application/requests/moderation/mo
 import { Avatar } from "~/components/Avatar";
 import { CampoSelect } from "~/components/ui/select";
 import { formatTimestamp } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
 interface AuditLogSectionProps {
   guildId: string;
@@ -73,6 +74,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
   guildId,
   members,
 }) => {
+  const { t } = useTranslation();
   const [actorId, setActorId] = useState("");
   const [action, setAction] = useState("");
 
@@ -84,10 +86,10 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
   return (
     <div className="max-w-3xl pb-10">
       <div className="flex items-end gap-4">
-        <h2 className="flex-1 text-xl font-semibold">Registro de auditoria</h2>
+        <h2 className="flex-1 text-xl font-semibold">{t("servidor.auditoria.titulo")}</h2>
 
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          Filtrar por usuário
+          {t("servidor.auditoria.porUsuario")}
           <CampoSelect
             valor={actorId}
             onEscolher={setActorId}
@@ -103,7 +105,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
         </label>
 
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          Filtrar por ação
+          {t("servidor.auditoria.porAcao")}
           <CampoSelect
             valor={action}
             onEscolher={setAction}
@@ -114,11 +116,11 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
       </div>
 
       <div className="mt-6 space-y-2">
-        {isLoading && <p className="text-sm text-ink-faint">Carregando…</p>}
+        {isLoading && <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
         {!isLoading && !data?.entries.length && (
           <p className="py-10 text-center text-sm text-ink-faint">
-            Nada registrado ainda com esse filtro.
+            {t("servidor.auditoria.vazio")}
           </p>
         )}
 
@@ -131,6 +133,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
 };
 
 const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
+  const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
   const Icone =
     ICONES[entrada.targetType] ??
@@ -177,7 +180,7 @@ const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
         <div className="border-t border-line px-3 py-2 text-xs text-ink-muted">
           {entrada.reason && (
             <p className="mb-1">
-              <span className="text-ink-faint">Motivo:</span> {entrada.reason}
+              <span className="text-ink-faint">{t("servidor.auditoria.motivo")}</span> {entrada.reason}
             </p>
           )}
 

@@ -6,11 +6,13 @@ import { useDeleteGuild } from "~/@core/application/queries/guild/use-delete-gui
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
+import { useTranslation } from "~/traducao";
 
 export const DeleteGuildSection: React.FC<{
   guild: GuildModel;
   onClose: () => void;
 }> = ({ guild, onClose }) => {
+  const { t } = useTranslation();
   const deleteGuild = useDeleteGuild();
   const navigate = useNavigate();
   const [confirmacao, setConfirmacao] = useState("");
@@ -27,12 +29,12 @@ export const DeleteGuildSection: React.FC<{
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-xl font-semibold text-danger">Excluir servidor</h2>
+      <h2 className="text-xl font-semibold text-danger">{t("servidor.excluir.titulo")}</h2>
 
       <div className="mt-4 flex gap-3 rounded-lg bg-danger/10 p-4">
         <AlertTriangle size={20} className="shrink-0 text-danger" />
         <div className="text-sm text-ink-muted">
-          <p className="font-medium text-ink">Isso não pode ser desfeito.</p>
+          <p className="font-medium text-ink">{t("servidor.excluir.aviso")}</p>
           <p className="mt-1">
             Todos os canais, mensagens e convites de{" "}
             <strong>{guild.name}</strong> serão apagados para os{" "}

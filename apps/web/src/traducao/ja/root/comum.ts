@@ -5,4 +5,9 @@ export const comum = {
   descartar: "破棄",
   redefinir: "リセット",
   naoSalvo: "保存していない変更があります。",
+  fechar: "閉じる",
+  criar: "作成",
+  nome: "名前",
+  emoji: "絵文字",
+  previa: "プレビュー",
 };

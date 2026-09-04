@@ -7,26 +7,28 @@ import { Avatar } from "~/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
+  const { t } = useTranslation();
   const { data: convites = [], isLoading } = useFindGuildInvites(guildId, true);
   const confirmar = useConfirmar();
   const deleteInvite = useDeleteInvite();
 
   return (
     <div className="max-w-3xl">
-      <h2 className="text-xl font-semibold">Convites</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.convites.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Todos os links de convite ativos deste servidor.
+        {t("servidor.convites.descricao")}
       </p>
 
       <div className="my-6 h-px bg-line" />
 
       {isLoading ? (
-        <p className="text-sm text-ink-faint">Carregando…</p>
+        <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>
       ) : !convites.length ? (
         <p className="py-8 text-center text-sm text-ink-faint">
-          Nenhum convite criado ainda.
+          {t("servidor.convites.vazio")}
         </p>
       ) : (
         <div className="space-y-px">
@@ -66,7 +68,7 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
                 </p>
               </div>
 
-              <Tooltip label="Revogar convite">
+              <Tooltip label={t("servidor.convites.revogar")}>
                 <button
                   onClick={() =>
                     void confirmar({

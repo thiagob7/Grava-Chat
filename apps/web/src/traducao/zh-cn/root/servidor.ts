@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "服务器设置",
+  auditoria: {
+    titulo: "审计日志",
+    porUsuario: "按人筛选",
+    porAcao: "按操作筛选",
+    vazio: "此筛选条件下还没有任何记录。",
+    motivo: "原因：",
+  },
+  banimentos: {
+    titulo: "服务器封禁名单",
+    descricao: "名单上的人即使拿到新邀请也进不来。解除封禁会立刻恢复访问。",
+    procurar: "按用户名搜索封禁",
+    vazioTitulo: "没有封禁",
+    vazio: "你还没封禁过任何人……但真需要的时候，别犹豫。",
+    desbanir: "解除封禁",
+  },
+  excluir: {
+    titulo: "删除服务器",
+    aviso: "此操作无法撤销。",
+  },
+  emblemas: {
+    titulo: "徽章",
+    vazio: "还没有徽章。",
+    novo: "新徽章",
+  },
+  convites: {
+    titulo: "邀请",
+    descricao: "该服务器所有有效的邀请链接。",
+    vazio: "还没有创建任何邀请。",
+    revogar: "撤销邀请",
+  },
+  integracoes: {
+    titulo: "集成",
+    descricao: "Webhook 是一个无需账号就能向频道发消息的地址。适合用来通报构建通过、有人开了工单，或任何你想从脚本里发出的内容。",
+    novo: "新建 Webhook",
+    vazio: "还没有 Webhook。创建一个，把 URL 贴到你希望消息来源的地方。",
+    canal: "频道",
+    apagar: "删除 Webhook",
+    comoUsar: "怎么用",
+    comoUsarTexto: "发送带 JSON 的 POST。格式与 Discord 相同，所以现成的脚本无需改动即可使用：",
+  },
+  engajamento: {
+    titulo: "活跃度",
+    descricao: "新人到来时，服务器自己做点什么才不会显得冷清。",
+    sistema: "系统消息",
+    boasVindas: "有人加入时发送欢迎消息",
+    sorteio: "下面不写自己的文案时，句子会随机抽选——总是同一句很快就腻了。",
+    canalDoSistema: "系统消息频道",
+    mensagem: "欢迎消息",
+    deixeVazio: "留空则从现成的句子中抽选",
+  },
+};

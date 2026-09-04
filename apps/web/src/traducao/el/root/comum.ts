@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Απόρριψη",
   redefinir: "Επαναφορά",
   naoSalvo: "Έχεις μη αποθηκευμένες αλλαγές.",
+  fechar: "Κλείσιμο",
+  criar: "Δημιουργία",
+  nome: "Όνομα",
+  emoji: "Emoji",
+  previa: "Προεπισκόπηση",
 };

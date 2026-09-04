@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Kassér",
   redefinir: "Nulstil",
   naoSalvo: "Du har ugemte ændringer.",
+  fechar: "Luk",
+  criar: "Opret",
+  nome: "Navn",
+  emoji: "Emoji",
+  previa: "Forhåndsvisning",
 };

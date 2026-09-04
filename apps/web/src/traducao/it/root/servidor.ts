@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Impostazioni del server",
+  auditoria: {
+    titulo: "Registro delle azioni",
+    porUsuario: "Filtra per utente",
+    porAcao: "Filtra per azione",
+    vazio: "Ancora nulla registrato con questo filtro.",
+    motivo: "Motivo:",
+  },
+  banimentos: {
+    titulo: "Elenco dei banditi del server",
+    descricao: "Chi è qui non rientra nemmeno con un invito nuovo. Togliere il ban restituisce l'accesso all'istante.",
+    procurar: "Cerca ban per nome utente",
+    vazioTitulo: "Nessun ban",
+    vazio: "Non hai ancora bandito nessuno… ma se e quando servirà, non esitare.",
+    desbanir: "Togli il ban",
+  },
+  excluir: {
+    titulo: "Elimina il server",
+    aviso: "Non si può tornare indietro.",
+  },
+  emblemas: {
+    titulo: "Distintivi",
+    vazio: "Ancora nessun distintivo.",
+    novo: "Nuovo distintivo",
+  },
+  convites: {
+    titulo: "Inviti",
+    descricao: "Tutti i link d'invito attivi di questo server.",
+    vazio: "Ancora nessun invito creato.",
+    revogar: "Revoca l'invito",
+  },
+  integracoes: {
+    titulo: "Integrazioni",
+    descricao: "Un webhook è un indirizzo che pubblica in un canale senza bisogno di un account. Serve per avvisare quando una build passa, quando qualcuno apre un ticket, o qualunque cosa tu voglia mandare da uno script.",
+    novo: "Nuovo webhook",
+    vazio: "Ancora nessun webhook. Creane uno e incolla l'URL dove vuoi che arrivi il messaggio.",
+    canal: "Canale",
+    apagar: "Elimina il webhook",
+    comoUsar: "Come si usa",
+    comoUsarTexto: "Manda un POST con JSON. Il formato è lo stesso di Discord, quindi uno script che esiste già funziona senza modifiche:",
+  },
+  engajamento: {
+    titulo: "Coinvolgimento",
+    descricao: "Quello che il server fa da solo per non sembrare vuoto quando arriva gente nuova.",
+    sistema: "Messaggi di sistema",
+    boasVindas: "Manda un messaggio di benvenuto quando qualcuno entra",
+    sorteio: "Senza un testo tuo qui sotto la frase viene sorteggiata — sempre la stessa stanca in fretta.",
+    canalDoSistema: "Canale dei messaggi di sistema",
+    mensagem: "Messaggio di benvenuto",
+    deixeVazio: "Lascia vuoto per sorteggiare tra le frasi già pronte",
+  },
+};

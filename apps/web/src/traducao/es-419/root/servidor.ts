@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Configuración del servidor",
+  auditoria: {
+    titulo: "Registro de auditoría",
+    porUsuario: "Filtrar por usuario",
+    porAcao: "Filtrar por acción",
+    vazio: "Nada registrado todavía con este filtro.",
+    motivo: "Motivo:",
+  },
+  banimentos: {
+    titulo: "Lista de baneos del servidor",
+    descricao: "Quien está acá no entra ni con una invitación nueva. Quitar el baneo devuelve el acceso al instante.",
+    procurar: "Buscar baneos por nombre de usuario",
+    vazioTitulo: "Sin baneos",
+    vazio: "Todavía no baneaste a nadie… pero si algún día hace falta, no lo dudes.",
+    desbanir: "Quitar el baneo",
+  },
+  excluir: {
+    titulo: "Eliminar servidor",
+    aviso: "Esto no se puede deshacer.",
+  },
+  emblemas: {
+    titulo: "Insignias",
+    vazio: "Todavía no hay insignias.",
+    novo: "Nueva insignia",
+  },
+  convites: {
+    titulo: "Invitaciones",
+    descricao: "Todos los enlaces de invitación activos de este servidor.",
+    vazio: "Todavía no se creó ninguna invitación.",
+    revogar: "Revocar invitación",
+  },
+  integracoes: {
+    titulo: "Integraciones",
+    descricao: "Un webhook es una dirección que publica en un canal sin necesitar cuenta. Sirve para avisar cuando pasa una compilación, cuando alguien abre un ticket, o lo que quieras mandar desde un script.",
+    novo: "Nuevo webhook",
+    vazio: "Todavía no hay webhooks. Creá uno y pegá la URL donde quieras que llegue el mensaje.",
+    canal: "Canal",
+    apagar: "Eliminar webhook",
+    comoUsar: "Cómo se usa",
+    comoUsarTexto: "Mandá un POST con JSON. El formato es el mismo que el de Discord, así que un script que ya exista por ahí funciona sin cambios:",
+  },
+  engajamento: {
+    titulo: "Participación",
+    descricao: "Lo que el servidor hace solo para no parecer vacío cuando llega gente nueva.",
+    sistema: "Mensajes del sistema",
+    boasVindas: "Enviar un mensaje de bienvenida cuando alguien entre",
+    sorteio: "Sin texto propio abajo, la frase se sortea — siempre la misma cansa rápido.",
+    canalDoSistema: "Canal de mensajes del sistema",
+    mensagem: "Mensaje de bienvenida",
+    deixeVazio: "Dejalo vacío para sortear entre las frases hechas",
+  },
+};

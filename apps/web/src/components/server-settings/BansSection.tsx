@@ -9,8 +9,10 @@ import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { formatTimestamp } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
 export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
+  const { t } = useTranslation();
   const { data: bans = [], isLoading } = useFindBans(guildId);
   const desbanir = useUnbanMember(guildId);
   const [busca, setBusca] = useState("");
@@ -26,10 +28,9 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Lista de banimentos do servidor</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.banimentos.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Quem está aqui não entra nem com convite novo. Desbanir devolve o acesso
-        na hora.
+        {t("servidor.banimentos.descricao")}
       </p>
 
       <div className="mt-4 flex items-center gap-2 rounded bg-surface-0 px-3">
@@ -37,19 +38,19 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
         <Input
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          placeholder="Procurar banimentos por nome de usuário"
+          placeholder={t("servidor.banimentos.procurar")}
           className="bg-transparent px-0"
         />
       </div>
 
-      {isLoading && <p className="mt-6 text-sm text-ink-faint">Carregando…</p>}
+      {isLoading && <p className="mt-6 text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
       {!isLoading && !bans.length && (
         <div className="mt-6 rounded-lg border border-dashed border-line px-6 py-12 text-center">
           <ShieldOff size={28} className="mx-auto text-ink-faint" />
-          <p className="mt-3 text-sm font-semibold">Sem banimentos</p>
+          <p className="mt-3 text-sm font-semibold">{t("servidor.banimentos.vazioTitulo")}</p>
           <p className="mt-1 text-sm text-ink-muted">
-            Você ainda não baniu ninguém… mas se e quando precisar, não hesite.
+            {t("servidor.banimentos.vazio")}
           </p>
         </div>
       )}
@@ -88,7 +89,7 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
               disabled={desbanir.isPending}
               onClick={() => desbanir.mutate({ guildId, userId: ban.user.id })}
             >
-              Desbanir
+              {t("servidor.banimentos.desbanir")}
             </Button>
           </div>
         ))}

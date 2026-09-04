@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Sunucu ayarları",
+  auditoria: {
+    titulo: "Denetim kaydı",
+    porUsuario: "Kişiye göre süz",
+    porAcao: "İşleme göre süz",
+    vazio: "Bu süzgeçle henüz hiçbir şey kaydedilmedi.",
+    motivo: "Gerekçe:",
+  },
+  banimentos: {
+    titulo: "Sunucunun yasak listesi",
+    descricao: "Burada olan yeni davetle bile giremez. Yasağı kaldırmak erişimi anında geri verir.",
+    procurar: "Yasakları kullanıcı adına göre ara",
+    vazioTitulo: "Yasak yok",
+    vazio: "Henüz kimseyi yasaklamadın… ama gerekirse çekinme.",
+    desbanir: "Yasağı kaldır",
+  },
+  excluir: {
+    titulo: "Sunucuyu sil",
+    aviso: "Bu geri alınamaz.",
+  },
+  emblemas: {
+    titulo: "Rozetler",
+    vazio: "Henüz rozet yok.",
+    novo: "Yeni rozet",
+  },
+  convites: {
+    titulo: "Davetler",
+    descricao: "Bu sunucunun tüm etkin davet bağlantıları.",
+    vazio: "Henüz davet oluşturulmadı.",
+    revogar: "Daveti iptal et",
+  },
+  integracoes: {
+    titulo: "Entegrasyonlar",
+    descricao: "Webhook, hesap gerekmeden bir kanala yazan bir adrestir. Bir derleme geçtiğinde, biri kayıt açtığında ya da bir betikten göndermek istediğin her şeyi duyurmak için işe yarar.",
+    novo: "Yeni webhook",
+    vazio: "Henüz webhook yok. Bir tane oluştur ve URL'yi mesajın gelmesini istediğin yere yapıştır.",
+    canal: "Kanal",
+    apagar: "Webhook'u sil",
+    comoUsar: "Nasıl kullanılır",
+    comoUsarTexto: "JSON ile bir POST gönder. Biçim Discord'unkiyle aynı, yani hâlihazırda var olan bir betik değişiklik olmadan çalışır:",
+  },
+  engajamento: {
+    titulo: "Canlandırma",
+    descricao: "Yeni biri geldiğinde boş görünmemesi için sunucunun kendi başına yaptıkları.",
+    sistema: "Sistem mesajları",
+    boasVindas: "Biri katıldığında karşılama mesajı gönder",
+    sorteio: "Aşağıda kendi metnin olmazsa cümle kurayla seçilir — hep aynısı çabuk bıktırır.",
+    canalDoSistema: "Sistem mesajları kanalı",
+    mensagem: "Karşılama mesajı",
+    deixeVazio: "Hazır cümleler arasından çekilsin diye boş bırak",
+  },
+};

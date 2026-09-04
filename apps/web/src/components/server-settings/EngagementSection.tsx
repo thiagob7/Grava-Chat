@@ -9,6 +9,7 @@ import { Label, Textarea } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface EngagementSectionProps {
   guild: GuildModel;
@@ -19,6 +20,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
   guild,
   channels,
 }) => {
+  const { t } = useTranslation();
   const salvar = useUpdateGuild();
   const [welcome, setWelcome] = useState(guild.welcomeEnabled ?? true);
   const [canal, setCanal] = useState(guild.systemChannelId ?? "");
@@ -42,32 +44,30 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Engajamento</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.engajamento.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        O que o servidor faz sozinho para não parecer vazio quando chega gente
-        nova.
+        {t("servidor.engajamento.descricao")}
       </p>
 
       <section className="mt-6">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-          Mensagens do sistema
+          {t("servidor.engajamento.sistema")}
         </h3>
 
         <div className="mt-3 flex items-start gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">
-              Enviar uma mensagem de boas-vindas quando alguém entrar
+              {t("servidor.engajamento.boasVindas")}
             </p>
             <p className="mt-0.5 text-xs text-ink-faint">
-              Sem texto próprio embaixo, a frase é sorteada — sempre a mesma
-              cansa rápido.
+              {t("servidor.engajamento.sorteio")}
             </p>
           </div>
           <Switch checked={welcome} onCheckedChange={setWelcome} />
         </div>
 
         <div className="mt-5">
-          <Label htmlFor="canal-sistema">Canal de mensagens do sistema</Label>
+          <Label htmlFor="canal-sistema">{t("servidor.engajamento.canalDoSistema")}</Label>
           <CampoSelect
             id="canal-sistema"
             valor={canal}
@@ -98,7 +98,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
         </div>
 
         <div className="mt-5">
-          <Label htmlFor="texto-boas-vindas">Mensagem de boas-vindas</Label>
+          <Label htmlFor="texto-boas-vindas">{t("servidor.engajamento.mensagem")}</Label>
 
           <Textarea
             id="texto-boas-vindas"
@@ -107,7 +107,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
             maxLength={500}
             rows={2}
             disabled={!welcome}
-            placeholder="Deixe vazio para sortear entre as frases prontas"
+            placeholder={t("servidor.engajamento.deixeVazio")}
           />
 
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -128,7 +128,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
           {welcome && (
             <div className="mt-3 rounded bg-surface-0 p-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                Prévia
+                {t("comum.previa")}
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words text-sm text-ink-muted">
                 {previa}

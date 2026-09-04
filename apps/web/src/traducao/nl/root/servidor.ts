@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Serverinstellingen",
+  auditoria: {
+    titulo: "Auditlogboek",
+    porUsuario: "Filteren op gebruiker",
+    porAcao: "Filteren op actie",
+    vazio: "Nog niets vastgelegd met dit filter.",
+    motivo: "Reden:",
+  },
+  banimentos: {
+    titulo: "Banlijst van de server",
+    descricao: "Wie hier staat komt er niet meer in, ook niet met een nieuwe uitnodiging. Ontbannen geeft de toegang meteen terug.",
+    procurar: "Bans zoeken op gebruikersnaam",
+    vazioTitulo: "Geen bans",
+    vazio: "Je hebt nog niemand verbannen… maar als het ooit nodig is, aarzel niet.",
+    desbanir: "Ontbannen",
+  },
+  excluir: {
+    titulo: "Server verwijderen",
+    aviso: "Dit kan niet ongedaan worden gemaakt.",
+  },
+  emblemas: {
+    titulo: "Badges",
+    vazio: "Nog geen badges.",
+    novo: "Nieuwe badge",
+  },
+  convites: {
+    titulo: "Uitnodigingen",
+    descricao: "Alle actieve uitnodigingslinks van deze server.",
+    vazio: "Nog geen uitnodiging aangemaakt.",
+    revogar: "Uitnodiging intrekken",
+  },
+  integracoes: {
+    titulo: "Integraties",
+    descricao: "Een webhook is een adres dat in een kanaal post zonder account. Handig om te melden dat een build geslaagd is, dat iemand een ticket opent, of wat je verder vanuit een script wilt sturen.",
+    novo: "Nieuwe webhook",
+    vazio: "Nog geen webhooks. Maak er een en plak de URL waar je het bericht vandaan wilt laten komen.",
+    canal: "Kanaal",
+    apagar: "Webhook verwijderen",
+    comoUsar: "Zo gebruik je het",
+    comoUsarTexto: "Stuur een POST met JSON. Het formaat is hetzelfde als dat van Discord, dus een script dat al bestaat werkt zonder aanpassing:",
+  },
+  engajamento: {
+    titulo: "Betrokkenheid",
+    descricao: "Wat de server uit zichzelf doet zodat het niet leeg aanvoelt als er iemand nieuw binnenkomt.",
+    sistema: "Systeemberichten",
+    boasVindas: "Een welkomstbericht sturen als iemand binnenkomt",
+    sorteio: "Zonder eigen tekst hieronder wordt de zin geloot — steeds dezelfde gaat snel vervelen.",
+    canalDoSistema: "Kanaal voor systeemberichten",
+    mensagem: "Welkomstbericht",
+    deixeVazio: "Laat leeg om te loten tussen de kant-en-klare zinnen",
+  },
+};

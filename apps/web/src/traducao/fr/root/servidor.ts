@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Paramètres du serveur",
+  auditoria: {
+    titulo: "Journal d'audit",
+    porUsuario: "Filtrer par utilisateur",
+    porAcao: "Filtrer par action",
+    vazio: "Rien d'enregistré pour l'instant avec ce filtre.",
+    motivo: "Motif :",
+  },
+  banimentos: {
+    titulo: "Liste des bannis du serveur",
+    descricao: "Ceux qui sont ici ne reviennent pas, même avec une nouvelle invitation. Débannir rend l'accès immédiatement.",
+    procurar: "Rechercher un banni par nom d'utilisateur",
+    vazioTitulo: "Aucun banni",
+    vazio: "Vous n'avez encore banni personne… mais si un jour il le faut, n'hésitez pas.",
+    desbanir: "Débannir",
+  },
+  excluir: {
+    titulo: "Supprimer le serveur",
+    aviso: "Ceci est irréversible.",
+  },
+  emblemas: {
+    titulo: "Badges",
+    vazio: "Aucun badge pour l'instant.",
+    novo: "Nouveau badge",
+  },
+  convites: {
+    titulo: "Invitations",
+    descricao: "Tous les liens d'invitation actifs de ce serveur.",
+    vazio: "Aucune invitation créée pour l'instant.",
+    revogar: "Révoquer l'invitation",
+  },
+  integracoes: {
+    titulo: "Intégrations",
+    descricao: "Un webhook est une adresse qui publie dans un salon sans avoir besoin de compte. Pratique pour annoncer qu'un build est passé, qu'un ticket vient d'être ouvert, ou ce que vous voulez envoyer depuis un script.",
+    novo: "Nouveau webhook",
+    vazio: "Aucun webhook pour l'instant. Créez-en un et collez l'URL là où vous voulez que le message parte.",
+    canal: "Salon",
+    apagar: "Supprimer le webhook",
+    comoUsar: "Comment s'en servir",
+    comoUsarTexto: "Envoyez un POST en JSON. Le format est le même que celui de Discord, donc un script qui existe déjà fonctionne sans rien changer :",
+  },
+  engajamento: {
+    titulo: "Animation",
+    descricao: "Ce que le serveur fait tout seul pour ne pas paraître vide quand quelqu'un de nouveau arrive.",
+    sistema: "Messages système",
+    boasVindas: "Envoyer un message de bienvenue quand quelqu'un arrive",
+    sorteio: "Sans texte à vous en dessous, la phrase est tirée au sort — toujours la même, ça lasse vite.",
+    canalDoSistema: "Salon des messages système",
+    mensagem: "Message de bienvenue",
+    deixeVazio: "Laissez vide pour tirer au sort parmi les phrases toutes prêtes",
+  },
+};

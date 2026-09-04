@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Ustawienia serwera",
+  auditoria: {
+    titulo: "Dziennik zdarzeń",
+    porUsuario: "Filtruj po osobie",
+    porAcao: "Filtruj po działaniu",
+    vazio: "Nic jeszcze nie zapisano z tym filtrem.",
+    motivo: "Powód:",
+  },
+  banimentos: {
+    titulo: "Lista banów serwera",
+    descricao: "Kto tu jest, nie wróci nawet z nowym zaproszeniem. Zdjęcie bana od razu przywraca dostęp.",
+    procurar: "Szukaj banów po nazwie użytkownika",
+    vazioTitulo: "Brak banów",
+    vazio: "Nikogo jeszcze nie zbanowałeś… ale gdy zajdzie potrzeba, nie wahaj się.",
+    desbanir: "Zdejmij bana",
+  },
+  excluir: {
+    titulo: "Usuń serwer",
+    aviso: "Tego nie da się cofnąć.",
+  },
+  emblemas: {
+    titulo: "Odznaki",
+    vazio: "Jeszcze nie ma odznak.",
+    novo: "Nowa odznaka",
+  },
+  convites: {
+    titulo: "Zaproszenia",
+    descricao: "Wszystkie aktywne linki zapraszające tego serwera.",
+    vazio: "Nie utworzono jeszcze żadnego zaproszenia.",
+    revogar: "Unieważnij zaproszenie",
+  },
+  integracoes: {
+    titulo: "Integracje",
+    descricao: "Webhook to adres, który pisze na kanale bez potrzeby posiadania konta. Przydaje się, by ogłosić, że build przeszedł, że ktoś otworzył zgłoszenie, albo cokolwiek chcesz wysłać ze skryptu.",
+    novo: "Nowy webhook",
+    vazio: "Nie ma jeszcze webhooków. Utwórz jeden i wklej URL tam, skąd ma przychodzić wiadomość.",
+    canal: "Kanał",
+    apagar: "Usuń webhook",
+    comoUsar: "Jak używać",
+    comoUsarTexto: "Wyślij POST z JSON-em. Format jest taki sam jak w Discordzie, więc skrypt, który już gdzieś istnieje, zadziała bez zmian:",
+  },
+  engajamento: {
+    titulo: "Zaangażowanie",
+    descricao: "Co serwer robi sam, żeby nie wyglądał pusto, gdy przychodzi ktoś nowy.",
+    sistema: "Wiadomości systemowe",
+    boasVindas: "Wyślij powitanie, gdy ktoś dołączy",
+    sorteio: "Bez własnego tekstu poniżej zdanie jest losowane — wciąż to samo szybko się nudzi.",
+    canalDoSistema: "Kanał wiadomości systemowych",
+    mensagem: "Wiadomość powitalna",
+    deixeVazio: "Zostaw puste, by losować spośród gotowych zdań",
+  },
+};

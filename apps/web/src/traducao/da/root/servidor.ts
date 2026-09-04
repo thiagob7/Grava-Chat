@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Serverindstillinger",
+  auditoria: {
+    titulo: "Handlingslog",
+    porUsuario: "Filtrér på person",
+    porAcao: "Filtrér på handling",
+    vazio: "Der er ikke logget noget endnu med dette filter.",
+    motivo: "Årsag:",
+  },
+  banimentos: {
+    titulo: "Serverens bandlysningsliste",
+    descricao: "Den, der står her, kommer ikke ind igen — heller ikke med en ny invitation. At ophæve bandlysningen giver adgangen tilbage med det samme.",
+    procurar: "Søg bandlysninger på brugernavn",
+    vazioTitulo: "Ingen bandlysninger",
+    vazio: "Du har ikke bandlyst nogen endnu … men hvis og når det bliver nødvendigt, så tøv ikke.",
+    desbanir: "Ophæv bandlysning",
+  },
+  excluir: {
+    titulo: "Slet server",
+    aviso: "Det her kan ikke fortrydes.",
+  },
+  emblemas: {
+    titulo: "Mærker",
+    vazio: "Ingen mærker endnu.",
+    novo: "Nyt mærke",
+  },
+  convites: {
+    titulo: "Invitationer",
+    descricao: "Alle aktive invitationslinks til denne server.",
+    vazio: "Der er ikke oprettet nogen invitation endnu.",
+    revogar: "Tilbagekald invitation",
+  },
+  integracoes: {
+    titulo: "Integrationer",
+    descricao: "En webhook er en adresse, der poster i en kanal uden at skulle have en konto. God til at melde, at et build gik igennem, at nogen har åbnet en sag, eller hvad du ellers vil sende fra et script.",
+    novo: "Ny webhook",
+    vazio: "Ingen webhooks endnu. Opret en, og indsæt URL'en der, hvor beskeden skal komme fra.",
+    canal: "Kanal",
+    apagar: "Slet webhook",
+    comoUsar: "Sådan bruger du det",
+    comoUsarTexto: "Send en POST med JSON. Formatet er det samme som Discords, så et script, der allerede findes, virker uændret:",
+  },
+  engajamento: {
+    titulo: "Engagement",
+    descricao: "Hvad serveren gør af sig selv, så den ikke virker tom, når der kommer en ny.",
+    sistema: "Systembeskeder",
+    boasVindas: "Send en velkomstbesked, når nogen kommer ind",
+    sorteio: "Uden din egen tekst nedenunder trækkes sætningen tilfældigt — den samme hver gang bliver hurtigt træls.",
+    canalDoSistema: "Kanal til systembeskeder",
+    mensagem: "Velkomstbesked",
+    deixeVazio: "Lad stå tom for at trække blandt de færdige sætninger",
+  },
+};

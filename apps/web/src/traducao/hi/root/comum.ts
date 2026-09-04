@@ -5,4 +5,9 @@ export const comum = {
   descartar: "छोड़ें",
   redefinir: "रीसेट करें",
   naoSalvo: "आपके पास बिना सहेजे बदलाव हैं।",
+  fechar: "बंद करें",
+  criar: "बनाएँ",
+  nome: "नाम",
+  emoji: "इमोजी",
+  previa: "झलक",
 };

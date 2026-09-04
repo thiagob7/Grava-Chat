@@ -16,4 +16,9 @@ export const comum = {
   descartar: "Descartar",
   redefinir: "Redefinir",
   naoSalvo: "Você tem alterações não salvas.",
+  fechar: "Fechar",
+  criar: "Criar",
+  nome: "Nome",
+  emoji: "Emoji",
+  previa: "Prévia",
 };

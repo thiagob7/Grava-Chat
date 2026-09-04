@@ -23,6 +23,7 @@ import { CampoSelect } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 interface IntegrationsSectionProps {
   guildId: string;
@@ -33,6 +34,7 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
   guildId,
   channels,
 }) => {
+  const { t } = useTranslation();
   const { data: webhooks = [], isLoading } = useFindWebhooks(guildId);
   const criar = useCreateWebhook(guildId);
 
@@ -44,11 +46,9 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
     <div className="max-w-2xl pb-10">
       <header className="flex items-start gap-4">
         <div className="flex-1">
-          <h2 className="text-xl font-semibold">Integrações</h2>
+          <h2 className="text-xl font-semibold">{t("servidor.integracoes.titulo")}</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Um webhook é um endereço que posta num canal sem precisar de conta.
-            Serve pra avisar quando um build passa, quando alguém abre um
-            chamado, ou o que você quiser mandar de um script.
+            {t("servidor.integracoes.descricao")}
           </p>
         </div>
 
@@ -63,19 +63,18 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
             })
           }
         >
-          <Plus size={16} /> Novo webhook
+          <Plus size={16} /> {t("servidor.integracoes.novo")}
         </Button>
       </header>
 
       <div className="mt-6 space-y-3">
-        {isLoading && <p className="text-sm text-ink-faint">Carregando…</p>}
+        {isLoading && <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
         {!isLoading && !webhooks.length && (
           <div className="rounded-lg border border-dashed border-line px-6 py-10 text-center">
             <WebhookIcon size={28} className="mx-auto text-ink-faint" />
             <p className="mt-3 text-sm text-ink-muted">
-              Nenhum webhook ainda. Crie um e cole a URL onde quiser que a
-              mensagem venha.
+              {t("servidor.integracoes.vazio")}
             </p>
           </div>
         )}
@@ -106,6 +105,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
   webhook,
   canais,
 }) => {
+  const { t } = useTranslation();
   const salvar = useUpdateWebhook(guildId);
   const apagar = useDeleteWebhook(guildId);
 
@@ -133,7 +133,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
         <div className="grid flex-1 grid-cols-2 gap-3">
           <label className="block">
             <span className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
-              Nome
+              {t("comum.nome")}
             </span>
             <Input
               value={nome}
@@ -154,7 +154,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
 
           <label className="block">
             <span className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
-              Canal
+              {t("servidor.integracoes.canal")}
             </span>
             <CampoSelect
               valor={webhook.channelId}
@@ -181,7 +181,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
                 confirmado && apagar.mutate({ guildId, webhookId: webhook.id }),
             )
           }
-          title="Apagar webhook"
+          title={t("servidor.integracoes.apagar")}
           className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
         >
           <Trash2 size={18} />
@@ -222,14 +222,16 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
   );
 };
 
-const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => (
+const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => {
+  const { t } = useTranslation();
+
+  return (
   <section className="mt-8">
     <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-      Como usar
+      {t("servidor.integracoes.comoUsar")}
     </h3>
     <p className="mt-2 text-sm text-ink-muted">
-      Mande um POST com JSON. O formato é o mesmo do Discord, então script que
-      já existe por aí funciona sem mudança:
+      {t("servidor.integracoes.comoUsarTexto")}
     </p>
 
     <pre className="mt-3 overflow-x-auto rounded bg-surface-0 p-4 text-xs text-ink-muted">
@@ -243,4 +245,5 @@ const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => (
       mensagem. O limite é de 5 mensagens a cada 5 segundos.
     </p>
   </section>
-);
+  );
+};

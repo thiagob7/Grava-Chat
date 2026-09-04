@@ -5,4 +5,9 @@ export const comum = {
   descartar: "בטל",
   redefinir: "אפס",
   naoSalvo: "יש לך שינויים שלא נשמרו.",
+  fechar: "סגירה",
+  criar: "יצירה",
+  nome: "שם",
+  emoji: "אימוג'י",
+  previa: "תצוגה מקדימה",
 };

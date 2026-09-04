@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Palvelimen asetukset",
+  auditoria: {
+    titulo: "Toimintaloki",
+    porUsuario: "Suodata henkilön mukaan",
+    porAcao: "Suodata toiminnon mukaan",
+    vazio: "Tällä suodattimella ei ole vielä kirjattu mitään.",
+    motivo: "Syy:",
+  },
+  banimentos: {
+    titulo: "Palvelimen porttikieltolista",
+    descricao: "Täällä oleva ei pääse takaisin edes uudella kutsulla. Porttikiellon poisto palauttaa pääsyn heti.",
+    procurar: "Etsi porttikieltoja käyttäjänimellä",
+    vazioTitulo: "Ei porttikieltoja",
+    vazio: "Et ole vielä antanut kenellekään porttikieltoa… mutta jos ja kun tarvitset, älä epäröi.",
+    desbanir: "Poista porttikielto",
+  },
+  excluir: {
+    titulo: "Poista palvelin",
+    aviso: "Tätä ei voi perua.",
+  },
+  emblemas: {
+    titulo: "Merkit",
+    vazio: "Ei vielä merkkejä.",
+    novo: "Uusi merkki",
+  },
+  convites: {
+    titulo: "Kutsut",
+    descricao: "Kaikki tämän palvelimen voimassa olevat kutsulinkit.",
+    vazio: "Yhtään kutsua ei ole vielä luotu.",
+    revogar: "Peru kutsu",
+  },
+  integracoes: {
+    titulo: "Integraatiot",
+    descricao: "Webhook on osoite, joka kirjoittaa kanavalle ilman tiliä. Kätevä ilmoittamaan, että käännös meni läpi, että joku avasi tiketin, tai mitä ikinä haluat lähettää skriptistä.",
+    novo: "Uusi webhook",
+    vazio: "Ei vielä webhookeja. Luo yksi ja liitä URL sinne, mistä haluat viestin tulevan.",
+    canal: "Kanava",
+    apagar: "Poista webhook",
+    comoUsar: "Näin sitä käytetään",
+    comoUsarTexto: "Lähetä POST JSONilla. Muoto on sama kuin Discordissa, joten valmiina oleva skripti toimii sellaisenaan:",
+  },
+  engajamento: {
+    titulo: "Aktiivisuus",
+    descricao: "Mitä palvelin tekee itsekseen, ettei se tuntuisi tyhjältä, kun joku uusi saapuu.",
+    sistema: "Järjestelmäviestit",
+    boasVindas: "Lähetä tervetuloviesti, kun joku liittyy",
+    sorteio: "Ilman omaa tekstiä alla lause arvotaan — sama joka kerta puuduttaa nopeasti.",
+    canalDoSistema: "Järjestelmäviestien kanava",
+    mensagem: "Tervetuloviesti",
+    deixeVazio: "Jätä tyhjäksi, niin arvotaan valmiista lauseista",
+  },
+};

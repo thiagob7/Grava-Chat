@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Nastavení serveru",
+  auditoria: {
+    titulo: "Záznam akcí",
+    porUsuario: "Filtrovat podle člověka",
+    porAcao: "Filtrovat podle akce",
+    vazio: "S tímto filtrem zatím nic nezaznamenáno.",
+    motivo: "Důvod:",
+  },
+  banimentos: {
+    titulo: "Seznam banů serveru",
+    descricao: "Kdo je tady, nedostane se zpět ani s novou pozvánkou. Odbanování vrátí přístup okamžitě.",
+    procurar: "Hledat bany podle uživatelského jména",
+    vazioTitulo: "Žádné bany",
+    vazio: "Ještě jsi nikoho nezabanoval… ale až to bude potřeba, neváhej.",
+    desbanir: "Odbanovat",
+  },
+  excluir: {
+    titulo: "Smazat server",
+    aviso: "Tohle nejde vzít zpět.",
+  },
+  emblemas: {
+    titulo: "Odznaky",
+    vazio: "Zatím žádné odznaky.",
+    novo: "Nový odznak",
+  },
+  convites: {
+    titulo: "Pozvánky",
+    descricao: "Všechny aktivní pozvánkové odkazy tohoto serveru.",
+    vazio: "Zatím nebyla vytvořena žádná pozvánka.",
+    revogar: "Zrušit pozvánku",
+  },
+  integracoes: {
+    titulo: "Integrace",
+    descricao: "Webhook je adresa, která píše do kanálu bez potřeby účtu. Hodí se oznámit, že build prošel, že někdo otevřel ticket, nebo cokoli chceš poslat ze skriptu.",
+    novo: "Nový webhook",
+    vazio: "Zatím žádné webhooky. Vytvoř jeden a vlož URL tam, odkud má zpráva přicházet.",
+    canal: "Kanál",
+    apagar: "Smazat webhook",
+    comoUsar: "Jak na to",
+    comoUsarTexto: "Pošli POST s JSON. Formát je stejný jako u Discordu, takže skript, který už někde existuje, funguje beze změny:",
+  },
+  engajamento: {
+    titulo: "Zapojení",
+    descricao: "Co server dělá sám, aby nepůsobil prázdně, když přijde někdo nový.",
+    sistema: "Systémové zprávy",
+    boasVindas: "Poslat uvítání, když někdo přijde",
+    sorteio: "Bez vlastního textu níž se věta losuje — pořád stejná rychle omrzí.",
+    canalDoSistema: "Kanál systémových zpráv",
+    mensagem: "Uvítací zpráva",
+    deixeVazio: "Nech prázdné, ať se losuje z hotových vět",
+  },
+};

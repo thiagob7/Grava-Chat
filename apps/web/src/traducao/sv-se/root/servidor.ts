@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Serverinställningar",
+  auditoria: {
+    titulo: "Händelselogg",
+    porUsuario: "Filtrera på person",
+    porAcao: "Filtrera på åtgärd",
+    vazio: "Inget loggat än med det här filtret.",
+    motivo: "Orsak:",
+  },
+  banimentos: {
+    titulo: "Serverns bannlista",
+    descricao: "Den som står här kommer inte in igen, inte ens med en ny inbjudan. Att häva bannlysningen ger tillbaka åtkomsten direkt.",
+    procurar: "Sök bannlysningar på användarnamn",
+    vazioTitulo: "Inga bannlysningar",
+    vazio: "Du har inte bannlyst någon än… men om och när det behövs, tveka inte.",
+    desbanir: "Häv bannlysning",
+  },
+  excluir: {
+    titulo: "Radera server",
+    aviso: "Det här går inte att ångra.",
+  },
+  emblemas: {
+    titulo: "Märken",
+    vazio: "Inga märken än.",
+    novo: "Nytt märke",
+  },
+  convites: {
+    titulo: "Inbjudningar",
+    descricao: "Alla aktiva inbjudningslänkar för den här servern.",
+    vazio: "Ingen inbjudan har skapats än.",
+    revogar: "Återkalla inbjudan",
+  },
+  integracoes: {
+    titulo: "Integrationer",
+    descricao: "En webhook är en adress som postar i en kanal utan att behöva ett konto. Bra för att meddela att ett bygge gick igenom, att någon öppnat ett ärende, eller vad du nu vill skicka från ett skript.",
+    novo: "Ny webhook",
+    vazio: "Inga webhookar än. Skapa en och klistra in URL:en där du vill att meddelandet ska komma ifrån.",
+    canal: "Kanal",
+    apagar: "Radera webhook",
+    comoUsar: "Så använder du det",
+    comoUsarTexto: "Skicka en POST med JSON. Formatet är detsamma som Discords, så ett skript som redan finns fungerar oförändrat:",
+  },
+  engajamento: {
+    titulo: "Engagemang",
+    descricao: "Vad servern gör på egen hand så att den inte känns tom när någon ny kommer.",
+    sistema: "Systemmeddelanden",
+    boasVindas: "Skicka ett välkomstmeddelande när någon går med",
+    sorteio: "Utan egen text nedanför lottas meningen fram — samma varje gång tröttnar man snabbt på.",
+    canalDoSistema: "Kanal för systemmeddelanden",
+    mensagem: "Välkomstmeddelande",
+    deixeVazio: "Lämna tomt för att lotta bland de färdiga meningarna",
+  },
+};

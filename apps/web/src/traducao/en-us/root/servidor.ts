@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Server settings",
+  auditoria: {
+    titulo: "Audit log",
+    porUsuario: "Filter by user",
+    porAcao: "Filter by action",
+    vazio: "Nothing logged yet with this filter.",
+    motivo: "Reason:",
+  },
+  banimentos: {
+    titulo: "Server ban list",
+    descricao: "People here can't get back in, not even with a new invite. Unbanning restores access right away.",
+    procurar: "Search bans by username",
+    vazioTitulo: "No bans",
+    vazio: "You haven't banned anyone yet… but if and when you need to, don't hesitate.",
+    desbanir: "Unban",
+  },
+  excluir: {
+    titulo: "Delete server",
+    aviso: "This can't be undone.",
+  },
+  emblemas: {
+    titulo: "Badges",
+    vazio: "No badges yet.",
+    novo: "New badge",
+  },
+  convites: {
+    titulo: "Invites",
+    descricao: "Every active invite link for this server.",
+    vazio: "No invites created yet.",
+    revogar: "Revoke invite",
+  },
+  integracoes: {
+    titulo: "Integrations",
+    descricao: "A webhook is an address that posts to a channel without needing an account. Handy for announcing when a build passes, when someone opens a ticket, or whatever you want to send from a script.",
+    novo: "New webhook",
+    vazio: "No webhooks yet. Create one and paste the URL wherever you want the message to come from.",
+    canal: "Channel",
+    apagar: "Delete webhook",
+    comoUsar: "How to use",
+    comoUsarTexto: "Send a POST with JSON. The format is the same as Discord's, so a script that already exists out there works unchanged:",
+  },
+  engajamento: {
+    titulo: "Engagement",
+    descricao: "What the server does on its own so it doesn't feel empty when someone new arrives.",
+    sistema: "System messages",
+    boasVindas: "Send a welcome message when someone joins",
+    sorteio: "With no text of your own below, the line is picked at random — always the same one gets old fast.",
+    canalDoSistema: "System message channel",
+    mensagem: "Welcome message",
+    deixeVazio: "Leave empty to pick from the ready-made lines",
+  },
+};

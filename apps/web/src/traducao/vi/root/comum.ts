@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Bỏ",
   redefinir: "Đặt lại",
   naoSalvo: "Bạn có thay đổi chưa lưu.",
+  fechar: "Đóng",
+  criar: "Tạo",
+  nome: "Tên",
+  emoji: "Biểu tượng cảm xúc",
+  previa: "Xem trước",
 };

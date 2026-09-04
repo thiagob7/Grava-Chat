@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Atmesti",
   redefinir: "Atstatyti",
   naoSalvo: "Turite neišsaugotų pakeitimų.",
+  fechar: "Uždaryti",
+  criar: "Sukurti",
+  nome: "Pavadinimas",
+  emoji: "Jaustukas",
+  previa: "Peržiūra",
 };

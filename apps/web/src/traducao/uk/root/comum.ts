@@ -5,4 +5,9 @@ export const comum = {
   descartar: "Скасувати",
   redefinir: "Скинути",
   naoSalvo: "У вас є незбережені зміни.",
+  fechar: "Закрити",
+  criar: "Створити",
+  nome: "Назва",
+  emoji: "Емодзі",
+  previa: "Перегляд",
 };

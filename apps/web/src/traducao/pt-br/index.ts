@@ -4,6 +4,7 @@ import { configuracoes } from "./root/configuracoes";
 import { conversa } from "./root/conversa";
 import { idioma } from "./root/idioma";
 import { perfil } from "./root/perfil";
+import { servidor } from "./root/servidor";
 
 /*
   O catálogo é o conteúdo do namespace, sem envelope.
@@ -19,6 +20,7 @@ const catalogo = {
   conversa,
   idioma,
   perfil,
+  servidor,
 };
 
 export default catalogo;

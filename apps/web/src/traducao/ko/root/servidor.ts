@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "서버 설정",
+  auditoria: {
+    titulo: "감사 기록",
+    porUsuario: "사람으로 거르기",
+    porAcao: "동작으로 거르기",
+    vazio: "이 필터로는 아직 기록된 것이 없습니다.",
+    motivo: "사유:",
+  },
+  banimentos: {
+    titulo: "서버 차단 목록",
+    descricao: "여기 있는 사람은 새 초대로도 다시 들어오지 못합니다. 차단을 풀면 바로 접근이 돌아옵니다.",
+    procurar: "사용자 이름으로 차단 검색",
+    vazioTitulo: "차단 없음",
+    vazio: "아직 아무도 차단하지 않았습니다… 하지만 필요할 때가 오면 망설이지 마세요.",
+    desbanir: "차단 해제",
+  },
+  excluir: {
+    titulo: "서버 삭제",
+    aviso: "되돌릴 수 없습니다.",
+  },
+  emblemas: {
+    titulo: "배지",
+    vazio: "아직 배지가 없습니다.",
+    novo: "새 배지",
+  },
+  convites: {
+    titulo: "초대",
+    descricao: "이 서버의 유효한 초대 링크 전부.",
+    vazio: "아직 만든 초대가 없습니다.",
+    revogar: "초대 취소",
+  },
+  integracoes: {
+    titulo: "연동",
+    descricao: "웹훅은 계정 없이도 채널에 글을 올리는 주소입니다. 빌드가 통과했을 때, 누군가 문의를 열었을 때, 또는 스크립트에서 보내고 싶은 무엇이든 알리는 데 씁니다.",
+    novo: "새 웹훅",
+    vazio: "아직 웹훅이 없습니다. 하나 만들고 메시지가 오길 원하는 곳에 URL을 붙여넣으세요.",
+    canal: "채널",
+    apagar: "웹훅 삭제",
+    comoUsar: "사용법",
+    comoUsarTexto: "JSON으로 POST를 보내세요. 형식은 Discord와 같아서 이미 있는 스크립트가 그대로 동작합니다:",
+  },
+  engajamento: {
+    titulo: "활기",
+    descricao: "새로운 사람이 왔을 때 비어 보이지 않도록 서버가 알아서 하는 일.",
+    sistema: "시스템 메시지",
+    boasVindas: "누군가 들어오면 환영 메시지 보내기",
+    sorteio: "아래에 직접 쓴 문구가 없으면 문장이 무작위로 뽑힙니다 — 늘 같은 문장은 금세 질립니다.",
+    canalDoSistema: "시스템 메시지 채널",
+    mensagem: "환영 메시지",
+    deixeVazio: "준비된 문장 중에서 뽑으려면 비워 두세요",
+  },
+};

@@ -4,6 +4,7 @@ import { configuracoes } from "./root/configuracoes";
 import { conversa } from "./root/conversa";
 import { idioma } from "./root/idioma";
 import { perfil } from "./root/perfil";
+import { servidor } from "./root/servidor";
 
 const catalogo = {
   chamada,
@@ -12,6 +13,7 @@ const catalogo = {
   conversa,
   idioma,
   perfil,
+  servidor,
 };
 
 export default catalogo;

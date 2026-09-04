@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Szerverbeállítások",
+  auditoria: {
+    titulo: "Naplózott műveletek",
+    porUsuario: "Szűrés személyre",
+    porAcao: "Szűrés műveletre",
+    vazio: "Ezzel a szűrővel még semmi sincs naplózva.",
+    motivo: "Indok:",
+  },
+  banimentos: {
+    titulo: "A szerver kitiltási listája",
+    descricao: "Aki itt van, új meghívóval sem jut be. A kitiltás feloldása azonnal visszaadja a hozzáférést.",
+    procurar: "Kitiltottak keresése felhasználónév szerint",
+    vazioTitulo: "Nincs kitiltás",
+    vazio: "Még senkit sem tiltottál ki… de ha egyszer kell, ne habozz.",
+    desbanir: "Kitiltás feloldása",
+  },
+  excluir: {
+    titulo: "Szerver törlése",
+    aviso: "Ez nem vonható vissza.",
+  },
+  emblemas: {
+    titulo: "Jelvények",
+    vazio: "Még nincsenek jelvények.",
+    novo: "Új jelvény",
+  },
+  convites: {
+    titulo: "Meghívók",
+    descricao: "A szerver összes aktív meghívólinkje.",
+    vazio: "Még nem készült meghívó.",
+    revogar: "Meghívó visszavonása",
+  },
+  integracoes: {
+    titulo: "Integrációk",
+    descricao: "A webhook egy cím, amely fiók nélkül ír egy csatornába. Jó arra, hogy jelezze, ha egy build lement, ha valaki hibajegyet nyitott, vagy bármi másra, amit szkriptből küldenél.",
+    novo: "Új webhook",
+    vazio: "Még nincs webhook. Hozz létre egyet, és illeszd be az URL-t oda, ahonnan az üzenetet várod.",
+    canal: "Csatorna",
+    apagar: "Webhook törlése",
+    comoUsar: "Használat",
+    comoUsarTexto: "Küldj egy POST-ot JSON-nal. A formátum ugyanaz, mint a Discordé, így egy már létező szkript változtatás nélkül működik:",
+  },
+  engajamento: {
+    titulo: "Élénkítés",
+    descricao: "Amit a szerver magától tesz, hogy ne tűnjön üresnek, amikor új ember érkezik.",
+    sistema: "Rendszerüzenetek",
+    boasVindas: "Üdvözlő üzenet küldése, amikor valaki belép",
+    sorteio: "Ha nem írsz saját szöveget alá, a mondat sorsolva lesz — ugyanaz gyorsan megunható.",
+    canalDoSistema: "Rendszerüzenetek csatornája",
+    mensagem: "Üdvözlő üzenet",
+    deixeVazio: "Hagyd üresen, hogy a kész mondatok közül sorsoljon",
+  },
+};

@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Servereinstellungen",
+  auditoria: {
+    titulo: "Audit-Log",
+    porUsuario: "Nach Person filtern",
+    porAcao: "Nach Aktion filtern",
+    vazio: "Mit diesem Filter ist noch nichts protokolliert.",
+    motivo: "Grund:",
+  },
+  banimentos: {
+    titulo: "Bannliste des Servers",
+    descricao: "Wer hier steht, kommt auch mit neuer Einladung nicht rein. Entbannen gibt den Zugang sofort zurück.",
+    procurar: "Banns nach Benutzernamen durchsuchen",
+    vazioTitulo: "Keine Banns",
+    vazio: "Du hast noch niemanden gebannt … aber falls es nötig wird, zögere nicht.",
+    desbanir: "Entbannen",
+  },
+  excluir: {
+    titulo: "Server löschen",
+    aviso: "Das lässt sich nicht rückgängig machen.",
+  },
+  emblemas: {
+    titulo: "Abzeichen",
+    vazio: "Noch keine Abzeichen.",
+    novo: "Neues Abzeichen",
+  },
+  convites: {
+    titulo: "Einladungen",
+    descricao: "Alle aktiven Einladungslinks dieses Servers.",
+    vazio: "Noch keine Einladung erstellt.",
+    revogar: "Einladung widerrufen",
+  },
+  integracoes: {
+    titulo: "Integrationen",
+    descricao: "Ein Webhook ist eine Adresse, die in einen Kanal postet, ohne ein Konto zu brauchen. Praktisch, um zu melden, dass ein Build durchgelaufen ist, dass jemand ein Ticket aufgemacht hat, oder was du sonst aus einem Skript schicken willst.",
+    novo: "Neuer Webhook",
+    vazio: "Noch keine Webhooks. Erstell einen und füge die URL dort ein, wo die Nachricht herkommen soll.",
+    canal: "Kanal",
+    apagar: "Webhook löschen",
+    comoUsar: "So geht's",
+    comoUsarTexto: "Schick ein POST mit JSON. Das Format ist dasselbe wie bei Discord, ein Skript von dort funktioniert also unverändert:",
+  },
+  engajamento: {
+    titulo: "Belebung",
+    descricao: "Was der Server von allein tut, damit er nicht leer wirkt, wenn jemand Neues kommt.",
+    sistema: "Systemnachrichten",
+    boasVindas: "Eine Willkommensnachricht schicken, wenn jemand beitritt",
+    sorteio: "Ohne eigenen Text darunter wird der Satz ausgelost — immer derselbe nutzt sich schnell ab.",
+    canalDoSistema: "Kanal für Systemnachrichten",
+    mensagem: "Willkommensnachricht",
+    deixeVazio: "Leer lassen, um aus den fertigen Sätzen auszulosen",
+  },
+};

@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Postavke poslužitelja",
+  auditoria: {
+    titulo: "Zapisnik radnji",
+    porUsuario: "Filtriraj po osobi",
+    porAcao: "Filtriraj po radnji",
+    vazio: "S ovim filtrom još ništa nije zabilježeno.",
+    motivo: "Razlog:",
+  },
+  banimentos: {
+    titulo: "Popis zabrana poslužitelja",
+    descricao: "Tko je ovdje ne ulazi ni s novom pozivnicom. Ukidanje zabrane vraća pristup odmah.",
+    procurar: "Traži zabrane po korisničkom imenu",
+    vazioTitulo: "Nema zabrana",
+    vazio: "Još nikoga nisi zabranio… ali ako i kad zatreba, ne oklijevaj.",
+    desbanir: "Ukini zabranu",
+  },
+  excluir: {
+    titulo: "Obriši poslužitelj",
+    aviso: "Ovo se ne može poništiti.",
+  },
+  emblemas: {
+    titulo: "Bedževi",
+    vazio: "Još nema bedževa.",
+    novo: "Novi bedž",
+  },
+  convites: {
+    titulo: "Pozivnice",
+    descricao: "Sve aktivne poveznice s pozivnicom ovog poslužitelja.",
+    vazio: "Još nije stvorena nijedna pozivnica.",
+    revogar: "Opozovi pozivnicu",
+  },
+  integracoes: {
+    titulo: "Integracije",
+    descricao: "Webhook je adresa koja objavljuje u kanalu bez potrebe za računom. Služi da javi kad build prođe, kad netko otvori prijavu, ili što god želiš poslati iz skripte.",
+    novo: "Novi webhook",
+    vazio: "Još nema webhookova. Stvori jedan i zalijepi URL ondje odakle želiš da poruka stiže.",
+    canal: "Kanal",
+    apagar: "Obriši webhook",
+    comoUsar: "Kako se koristi",
+    comoUsarTexto: "Pošalji POST s JSON-om. Format je isti kao Discordov, pa skripta koja već postoji radi bez promjena:",
+  },
+  engajamento: {
+    titulo: "Uključenost",
+    descricao: "Što poslužitelj radi sam da ne djeluje prazno kad dođe netko nov.",
+    sistema: "Sustavne poruke",
+    boasVindas: "Pošalji dobrodošlicu kad netko uđe",
+    sorteio: "Bez vlastitog teksta ispod, rečenica se izvlači — uvijek ista brzo dosadi.",
+    canalDoSistema: "Kanal sustavnih poruka",
+    mensagem: "Poruka dobrodošlice",
+    deixeVazio: "Ostavi prazno da se izvlači između gotovih rečenica",
+  },
+};

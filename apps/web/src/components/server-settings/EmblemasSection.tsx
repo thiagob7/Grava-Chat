@@ -10,6 +10,7 @@ import { useUploadImage } from "~/@core/application/queries/upload/use-upload-im
 import { Button } from "~/components/ui/button";
 import { useConfirmar } from "~/components/ui/confirm";
 import { Input, Label } from "~/components/ui/input";
+import { useTranslation } from "~/traducao";
 
 const EMBLEMA_MAX_PX = 64;
 
@@ -24,6 +25,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
   emblemas,
   editavel,
 }) => {
+  const { t } = useTranslation();
   const criar = useCriarEmblema(guildId);
   const remover = useRemoverEmblema(guildId);
   const uploadImage = useUploadImage();
@@ -63,7 +65,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
 
   return (
     <div className="max-w-xl">
-      <h2 className="text-xl font-semibold">Emblemas</h2>
+      <h2 className="text-xl font-semibold">{t("servidor.emblemas.titulo")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
         Ícones que qualquer membro pode vestir ao lado do nome. Você cria aqui;
         cada um escolhe quais usar no próprio cartão de perfil.
@@ -115,18 +117,18 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
 
         {!emblemas.length && (
           <p className="rounded bg-surface-1 px-3 py-6 text-center text-sm text-ink-faint">
-            Nenhum emblema ainda.
+            {t("servidor.emblemas.vazio")}
           </p>
         )}
       </div>
 
       {editavel && emblemas.length < LIMITS.emblemasPorServidor && (
         <div className="mt-6 rounded bg-surface-1 p-4">
-          <p className="mb-3 text-sm font-medium">Novo emblema</p>
+          <p className="mb-3 text-sm font-medium">{t("servidor.emblemas.novo")}</p>
 
           <div className="flex gap-3">
             <div className="flex-1">
-              <Label htmlFor="emblema-nome">Nome</Label>
+              <Label htmlFor="emblema-nome">{t("comum.nome")}</Label>
               <Input
                 id="emblema-nome"
                 value={nome}
@@ -137,7 +139,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             </div>
 
             <div className="w-24">
-              <Label htmlFor="emblema-emoji">Emoji</Label>
+              <Label htmlFor="emblema-emoji">{t("comum.emoji")}</Label>
               <Input
                 id="emblema-emoji"
                 value={emoji}
@@ -189,7 +191,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
                 )
               }
             >
-              Criar
+              {t("comum.criar")}
             </Button>
           </div>
 

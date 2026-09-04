@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Serverinnstillinger",
+  auditoria: {
+    titulo: "Hendelseslogg",
+    porUsuario: "Filtrer på person",
+    porAcao: "Filtrer på handling",
+    vazio: "Ingenting logget ennå med dette filteret.",
+    motivo: "Grunn:",
+  },
+  banimentos: {
+    titulo: "Serverens utestengingsliste",
+    descricao: "Den som står her kommer ikke inn igjen, ikke engang med ny invitasjon. Å oppheve utestengingen gir tilgangen tilbake med en gang.",
+    procurar: "Søk i utestenginger på brukernavn",
+    vazioTitulo: "Ingen utestenginger",
+    vazio: "Du har ikke utestengt noen ennå … men om og når det trengs, ikke nøl.",
+    desbanir: "Opphev utestenging",
+  },
+  excluir: {
+    titulo: "Slett server",
+    aviso: "Dette kan ikke angres.",
+  },
+  emblemas: {
+    titulo: "Merker",
+    vazio: "Ingen merker ennå.",
+    novo: "Nytt merke",
+  },
+  convites: {
+    titulo: "Invitasjoner",
+    descricao: "Alle aktive invitasjonslenker for denne serveren.",
+    vazio: "Ingen invitasjon er laget ennå.",
+    revogar: "Trekk tilbake invitasjon",
+  },
+  integracoes: {
+    titulo: "Integrasjoner",
+    descricao: "En webhook er en adresse som poster i en kanal uten å trenge konto. Nyttig for å melde at et bygg gikk gjennom, at noen åpnet en sak, eller hva du nå vil sende fra et skript.",
+    novo: "Ny webhook",
+    vazio: "Ingen webhooker ennå. Lag en og lim inn URL-en der du vil at meldingen skal komme fra.",
+    canal: "Kanal",
+    apagar: "Slett webhook",
+    comoUsar: "Slik bruker du det",
+    comoUsarTexto: "Send en POST med JSON. Formatet er det samme som Discords, så et skript som allerede finnes virker uendret:",
+  },
+  engajamento: {
+    titulo: "Engasjement",
+    descricao: "Hva serveren gjør av seg selv så den ikke virker tom når noen ny kommer.",
+    sistema: "Systemmeldinger",
+    boasVindas: "Send en velkomstmelding når noen blir med",
+    sorteio: "Uten egen tekst under trekkes setningen tilfeldig — den samme hver gang blir fort kjedelig.",
+    canalDoSistema: "Kanal for systemmeldinger",
+    mensagem: "Velkomstmelding",
+    deixeVazio: "La stå tom for å trekke blant de ferdige setningene",
+  },
+};

@@ -1,0 +1,53 @@
+export const servidor = {
+  titulo: "Setările serverului",
+  auditoria: {
+    titulo: "Jurnalul acțiunilor",
+    porUsuario: "Filtrează după persoană",
+    porAcao: "Filtrează după acțiune",
+    vazio: "Încă nu s-a înregistrat nimic cu acest filtru.",
+    motivo: "Motiv:",
+  },
+  banimentos: {
+    titulo: "Lista de interdicții a serverului",
+    descricao: "Cine e aici nu mai intră nici cu invitație nouă. Ridicarea interdicției redă accesul pe loc.",
+    procurar: "Caută interdicții după nume de utilizator",
+    vazioTitulo: "Fără interdicții",
+    vazio: "Încă nu ai interzis pe nimeni… dar dacă și când va fi nevoie, nu ezita.",
+    desbanir: "Ridică interdicția",
+  },
+  excluir: {
+    titulo: "Șterge serverul",
+    aviso: "Asta nu se poate anula.",
+  },
+  emblemas: {
+    titulo: "Insigne",
+    vazio: "Încă nu există insigne.",
+    novo: "Insignă nouă",
+  },
+  convites: {
+    titulo: "Invitații",
+    descricao: "Toate linkurile de invitație active ale acestui server.",
+    vazio: "Încă nu s-a creat nicio invitație.",
+    revogar: "Revocă invitația",
+  },
+  integracoes: {
+    titulo: "Integrări",
+    descricao: "Un webhook e o adresă care postează într-un canal fără să aibă nevoie de cont. E util ca să anunțe că un build a trecut, că cineva a deschis un tichet, sau orice vrei să trimiți dintr-un script.",
+    novo: "Webhook nou",
+    vazio: "Încă nu există webhookuri. Creează unul și lipește URL-ul acolo de unde vrei să vină mesajul.",
+    canal: "Canal",
+    apagar: "Șterge webhookul",
+    comoUsar: "Cum se folosește",
+    comoUsarTexto: "Trimite un POST cu JSON. Formatul e același ca la Discord, așa că un script care există deja funcționează nemodificat:",
+  },
+  engajamento: {
+    titulo: "Implicare",
+    descricao: "Ce face serverul de unul singur ca să nu pară gol când vine cineva nou.",
+    sistema: "Mesaje de sistem",
+    boasVindas: "Trimite un mesaj de bun venit când intră cineva",
+    sorteio: "Fără text propriu dedesubt, fraza se trage la sorți — mereu aceeași plictisește repede.",
+    canalDoSistema: "Canalul mesajelor de sistem",
+    mensagem: "Mesaj de bun venit",
+    deixeVazio: "Lasă gol ca să se tragă la sorți dintre frazele gata făcute",
+  },
+};

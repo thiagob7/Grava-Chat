@@ -22,6 +22,7 @@ import { RolesSection } from "~/components/server-settings/RolesSection";
 import { ServerTagSection } from "~/components/server-settings/ServerTagSection";
 import { ServerProfileSection } from "~/components/server-settings/ServerProfileSection";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 export type Secao =
   | "perfil"
@@ -95,6 +96,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   permissoes,
   secaoInicial,
 }) => {
+  const { t } = useTranslation();
   const pode = (p: string) =>
     permissoes.has("ADMINISTRATOR") || permissoes.has(p);
   const [secao, setSecao] = useState<Secao>(canManage ? "perfil" : "membros");
@@ -144,7 +146,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
         <DialogPrimitive.Content
           className="fixed inset-0 z-50 flex outline-none"
-          aria-label="Configurações do servidor"
+          aria-label={t("servidor.titulo")}
         >
           <DialogPrimitive.Title className="sr-only">
             Configurações de {detail.guild.name}
@@ -296,7 +298,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
 
           <button
             onClick={onClose}
-            aria-label="Fechar"
+            aria-label={t("comum.fechar")}
             className="absolute right-10 top-12 flex flex-col items-center gap-1 text-ink-muted transition hover:text-ink"
           >
             <span className="flex size-9 items-center justify-center rounded-full border-2 border-ink-faint">

@@ -5,4 +5,9 @@ export const comum = {
   descartar: "취소",
   redefinir: "초기화",
   naoSalvo: "저장하지 않은 변경 사항이 있습니다.",
+  fechar: "닫기",
+  criar: "만들기",
+  nome: "이름",
+  emoji: "이모지",
+  previa: "미리 보기",
 };
