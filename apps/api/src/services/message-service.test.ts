@@ -151,6 +151,67 @@ describe("menções", () => {
     expect(gravado().mentions).toEqual([OUTRO]);
   });
 
+  /*
+    Responder notifica sem escrever nada no texto.
+
+    Antes o app grudava um `<@id>` na frente do conteúdo só para conseguir o
+    aviso, e a pessoa via a pílula azul repetindo, dentro da própria mensagem,
+    o nome que a citação logo acima já mostra. Agora o aviso vem do responder.
+  */
+  it("responder com aviso menciona o autor citado, sem mexer no texto", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: "eae joão",
+      replyToId: "m9",
+      mencionarAutor: true,
+    });
+
+    expect(gravado().mentions).toEqual([OUTRO]);
+    expect(gravado().content).toBe("eae joão");
+  });
+
+  it("responder sem o aviso não menciona ninguém", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: "eae joão",
+      replyToId: "m9",
+    });
+
+    expect(gravado().mentions).toEqual([]);
+  });
+
+  /// A si mesmo não se notifica: o aviso existe para avisar OUTRA pessoa.
+  it("responder a si mesmo não se menciona", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: AUTHOR });
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: "complementando",
+      replyToId: "m9",
+      mencionarAutor: true,
+    });
+
+    expect(gravado().mentions).toEqual([]);
+  });
+
+  /// E não duplica: quem já escreveu o `<@id>` na mão continua com um só.
+  it("não repete o autor citado quando ele já está no texto", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: `<@${OUTRO}> olha isso`,
+      replyToId: "m9",
+      mencionarAutor: true,
+    });
+
+    expect(gravado().mentions).toEqual([OUTRO]);
+  });
+
   it("não confunde menção de cargo com menção de pessoa", async () => {
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,

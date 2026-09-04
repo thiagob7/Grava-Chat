@@ -247,8 +247,17 @@ export const Composer: React.FC<ComposerProps> = ({
 
     sendMessage.mutate({
       channelId,
-      content:
-        resposta && mencionarAoResponder ? `<@${resposta.autorId}> ${content}`.trim() : content,
+      content,
+      /*
+        O aviso é do RESPONDER, não do texto.
+
+        Antes o "@" ligado grudava um `<@id>` na frente do conteúdo só pra
+        conseguir a notificação — e a pessoa via a pílula azul no começo da
+        própria mensagem, repetindo o nome que a citação logo acima já mostra.
+        O servidor agora acrescenta o autor citado à lista de menções, e o
+        texto vai como foi escrito.
+      */
+      mencionarAutor: Boolean(resposta && mencionarAoResponder),
       ...(fonte !== "padrao" ? { fonte } : {}),
       attachments: anexos.prontos,
       replyToId: resposta?.messageId ?? null,

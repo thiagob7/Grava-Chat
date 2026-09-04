@@ -324,6 +324,18 @@ export const sendMessageInput = z.object({
   stickerId: objectId.optional(),
   postId: objectId.nullable().optional(),
   replyToId: objectId.nullable().optional(),
+  /*
+    Avisar quem está sendo respondido, sem escrever a menção no texto.
+
+    Antes o app grudava um `<@id>` na frente do conteúdo para conseguir a
+    notificação — e a pessoa via um "@Fulano" de pílula azul no começo da
+    própria mensagem, repetindo o nome que a citação logo acima já mostra.
+
+    A notificação é do RESPONDER, não do texto. Com este campo o servidor
+    acrescenta o autor da mensagem citada à lista de menções e o conteúdo fica
+    como foi escrito.
+  */
+  mencionarAutor: z.boolean().optional(),
   nonce: z.string().max(64).optional(),
 });
 

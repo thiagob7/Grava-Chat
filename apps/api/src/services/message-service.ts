@@ -173,6 +173,24 @@ export const messageService = {
       });
     }
 
+    /*
+      Responder notifica sem escrever a menção no texto.
+
+      O autor da mensagem citada entra na lista de menções, e não no conteúdo:
+      é o mesmo aviso, sem a pílula azul repetindo, dentro da mensagem, o nome
+      que a citação logo acima já mostra.
+
+      A si mesmo não se notifica, e a mensagem citada pode ter sumido — daí o
+      `catch` e a comparação com quem está mandando.
+    */
+    const autorRespondido =
+      input.mencionarAutor && input.replyToId
+        ? await messageRepository
+            .findById(input.replyToId)
+            .then((m) => (m && m.authorId !== userId ? m.authorId : null))
+            .catch(() => null)
+        : null;
+
     const created = await messageRepository.create({
       channelId: input.channelId,
       authorId: userId,
@@ -189,7 +207,10 @@ export const messageService = {
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
-      mentions: extractMentions(content),
+      mentions: unicos([
+        ...extractMentions(content),
+        ...(autorRespondido ? [autorRespondido] : []),
+      ]),
       ...(await resolverMencoes(content, channel.guildId, contexto)),
     });
 

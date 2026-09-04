@@ -868,22 +868,33 @@ const Citacao: React.FC<{
 
     {respondida ? (
       <>
-        <Avatar
-          id={respondida.author.id}
-          name={respondida.author.displayName}
-          url={avatarUrl}
-          size={16}
-        />
         {/*
-          "@Fulano" em branco e negrito — não na cor de menção.
+          O retrato e o nome abrem o cartão de perfil, como na mensagem inteira.
 
-          A pílula azul é para uma menção DE VERDADE, que notifica alguém.
-          Aqui o @ é só a forma de dizer de quem é a fala citada; pintar os dois
-          igual fazia parecer que responder marcava a pessoa duas vezes.
+          Eles pareciam clicáveis desde sempre — é um rosto e um "@Fulano" — e
+          não eram. Um botão só para os dois, e não dois: eles estão colados, e
+          quem mira ali está mirando a pessoa, não a metade dela.
         */}
-        <span className="max-w-[7rem] shrink-0 truncate font-medium text-ink @sm:max-w-[12rem]">
-          @{respondida.author.displayName}
-        </span>
+        <UserProfilePopover userId={respondida.author.id}>
+          <button className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
+            <Avatar
+              id={respondida.author.id}
+              name={respondida.author.displayName}
+              url={avatarUrl}
+              size={16}
+            />
+            {/*
+              "@Fulano" em branco e negrito — não na cor de menção.
+
+              A pílula azul é para uma menção DE VERDADE, que notifica alguém.
+              Aqui o @ é só a forma de dizer de quem é a fala citada; pintar os
+              dois igual fazia parecer que responder marcava a pessoa duas vezes.
+            */}
+            <span className="max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]">
+              @{respondida.author.displayName}
+            </span>
+          </button>
+        </UserProfilePopover>
         {/*
           O conteúdo pode trazer imagem ou GIF, que o MessageContent desenha
           em tamanho cheio — numa citação isso virava um bloco de 300px de

@@ -15,6 +15,9 @@ interface SendMessageVariables {
   channelId: string;
   content: string;
   replyToId?: string | null;
+  /// Notifica quem está sendo respondido sem escrever a menção no texto — o
+  /// servidor é que acrescenta o autor citado à lista de menções.
+  mencionarAutor?: boolean;
   attachments?: Attachment[];
   stickerId?: string;
   poll?: CreatePollInput;
