@@ -3,20 +3,6 @@ import { access, readFile, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import path from "node:path";
 
-/*
-  Tira o app de dentro do .dmg e deixa pronto para entrar no lugar do atual.
-
-  Três cuidados que não são opcionais:
-
-  - `ditto` em vez de `cp`: preserva links simbólicos, permissões e a assinatura
-    do pacote. Um `cp -r` produz um app que o macOS recusa abrir.
-  - Confere identificador e versão ANTES de aceitar. O arquivo veio da nossa
-    release por HTTPS, mas trocar o app instalado por algo que a gente não
-    verificou seria confiar demais numa resposta de rede.
-  - Tira a quarentena. Todo download ganha essa marca, e com assinatura ad-hoc
-    ela faz o Gatekeeper barrar a abertura — a mesma janela chata da primeira
-    instalação apareceria a cada atualização.
-*/
 export async function prepararNoMac(dmg: string, versaoEsperada: string): Promise<string> {
   const montado = await comando("hdiutil", ["attach", "-nobrowse", "-readonly", dmg]);
   const ponto = montado
@@ -54,14 +40,6 @@ export async function prepararNoMac(dmg: string, versaoEsperada: string): Promis
   }
 }
 
-/*
-  O roteiro que faz a troca depois que o app morre.
-
-  Precisa ser um processo de FORA: ninguém apaga o próprio pacote enquanto está
-  rodando dentro dele. E precisa ter volta — se a cópia falhar no meio, o app
-  antigo volta pro lugar. Sem isso, uma queda de energia na hora errada deixa a
-  pessoa sem aplicativo nenhum.
-*/
 export async function escreverTroca(pacote: string, novo: string): Promise<string> {
   const roteiro = path.join(path.dirname(novo), "trocar.sh");
 

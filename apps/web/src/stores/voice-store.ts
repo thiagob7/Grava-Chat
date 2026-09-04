@@ -32,17 +32,8 @@ export type VoiceTile = {
   micEnabled: boolean;
   cameraTrack: Track | null;
   screenTrack: Track | null;
-  /*
-    Voz e som da tela vivem em campos separados de propósito.
-
-    Num campo só, o `VoiceAudioSink` tocava os dois sempre que a pessoa estava
-    na sala — e era exatamente isso que fazia o som da live continuar tocando
-    pra quem NÃO estava assistindo. Separados, cada um tem seu destino: a voz
-    toca sempre, o som da tela só pra quem abriu a transmissão.
-  */
   micTrack: Track | null;
   screenAudioTrack: Track | null;
-  /// medida do LiveKit: "excellent" | "good" | "poor" | "lost" | "unknown"
   qualidade: string;
 };
 
@@ -69,16 +60,6 @@ type VoiceStore = {
   volumesLocais: Record<string, number>;
   silenciadosLocais: Record<string, boolean>;
   volumesDeTela: Record<string, number>;
-  /*
-    O que você está transmitindo — "Tela 1", "Visual Studio Code", o nome do
-    jogo — com o ícone do app quando existe.
-
-    No desktop o dado é bom: o `desktopCapturer` do Electron já devolve nome e
-    ícone de cada fonte, e o seletor guarda o que foi escolhido. No navegador
-    não há seletor nosso, e sobra o rótulo da faixa, que costuma ser um id
-    ("screen:0:0") em vez de um nome — daí o campo aceitar não ter ícone e o
-    nome cair num genérico.
-  */
   fonteDaTela: { nome: string; icone: string | null } | null;
 
   join: (channelId: string, options?: { resume?: boolean }) => Promise<void>;
@@ -90,12 +71,6 @@ type VoiceStore = {
   toggleNoiseFilter: () => Promise<void>;
   assistir: (identity: string | null) => void;
   definirPalcoVisivel: (visivel: boolean) => void;
-  /**
-   * A conversa escrita ao lado da chamada, no privado.
-   *
-   * Mora aqui, e não na página, porque quem liga e desliga é um botão DENTRO
-   * do palco — e o palco não conhece o layout da página que o hospeda.
-   */
   chatDaChamada: boolean;
   alternarChatDaChamada: () => void;
   setVolumeLocal: (userId: string, volume: number) => void;
@@ -125,7 +100,6 @@ function snapshot(room: Room): VoiceTile[] {
       return pub?.track ?? null;
     };
 
-    /// Ninguém ouve o próprio áudio de volta — daí o local não publicar nada aqui.
     const ouvivel = (source: Track.Source) => (isLocal ? null : track(source));
 
     return {
@@ -152,14 +126,6 @@ function snapshot(room: Room): VoiceTile[] {
 const TAB_VOICE_KEY = "gravae:voice-channel";
 const TAB_ID_KEY = "gravae:voice-cliente";
 
-/*
-  Identidade desta ABA, estável entre recargas.
-
-  Fica no `sessionStorage` porque é exatamente a semântica que queremos: ele
-  sobrevive ao F5 e ao restart do app, mas cada aba nova nasce com o seu. É com
-  isso que o servidor distingue "voltei de uma recarga" de "abri numa segunda
-  aba" — o `socketId` não serve, porque muda nas duas situações.
-*/
 export const clienteDestaAba = (): string | undefined => {
   try {
     const salvo = sessionStorage.getItem(TAB_ID_KEY);
@@ -169,33 +135,15 @@ export const clienteDestaAba = (): string | undefined => {
     sessionStorage.setItem(TAB_ID_KEY, novo);
     return novo;
   } catch {
-    /// Sem sessionStorage (aba anônima travada, storage cheio) volta o
-    /// comportamento antigo: sem identidade, o servidor decide pelo órfão.
     return undefined;
   }
 };
 
-/*
-  O volume de cada pessoa mora no navegador.
-
-  Era estado de memória: bastava recarregar o app — ou o processo do desktop
-  reiniciar — para o bot de música voltar a gritar no volume padrão. Como é
-  uma decisão sobre ALGUÉM ("esse aí é alto demais"), ela vale para as
-  próximas chamadas também, não só para esta.
-*/
 const AJUSTES_KEY = "gravae:volumes-por-pessoa";
 
 interface AjustesPorPessoa {
   volumes: Record<string, number>;
   silenciados: Record<string, boolean>;
-  /*
-    O volume da TRANSMISSÃO de alguém, separado do volume da voz.
-
-    São duas queixas diferentes e merecem dois controles: "a voz dele está
-    baixa" não é "o jogo que ele está transmitindo está estourando". Antes o
-    ajuste era um só e mexia nos dois — abaixar o barulho da live emudecia a
-    pessoa junto.
-  */
   telas: Record<string, number>;
 }
 
@@ -205,8 +153,6 @@ function lerAjustesPorPessoa(): AjustesPorPessoa {
     if (!salvo) return { volumes: {}, silenciados: {}, telas: {} };
 
     const dados = JSON.parse(salvo) as Partial<AjustesPorPessoa>;
-    /// `telas` nasceu depois: quem já tem ajustes salvos não o tem, e o `??`
-    /// é o que evita `undefined` chegando na leitura de volume.
     return { volumes: dados.volumes ?? {}, silenciados: dados.silenciados ?? {}, telas: dados.telas ?? {} };
   } catch {
     return { volumes: {}, silenciados: {}, telas: {} };
@@ -328,16 +274,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       });
 
       const refresh = () => {
-        /*
-          O volume NÃO é mais aplicado por participante aqui.
-
-          `p.setVolume()` age no participante inteiro — voz e som de tela juntos
-          —, e agora esses dois têm destinos diferentes: a voz toca sempre, a
-          tela só pra quem assiste, cada uma com seu próprio ajuste. Quem manda
-          no volume é o elemento `<audio>` em `VoiceTrack.tsx`, que já reaplica
-          o valor a cada mudança. Manter as duas vias fazia o LiveKit sobrescrever
-          o ajuste por faixa toda vez que qualquer coisa na sala mudasse.
-        */
         const tiles = snapshot(room);
 
         const eu = tiles.find((t) => t.isLocal);
@@ -447,13 +383,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     bipe("sairDaChamada");
     pararSomDoPainel();
-    /*
-      A conversa escrita volta ao sair.
-
-      Quem escondeu o chat pra ver a tela cheia e depois desligou ficava com a
-      página inteira preta: o palco tinha sumido junto com a chamada, e a
-      conversa continuava escondida por uma escolha que já não fazia sentido.
-    */
     set({ chatDaChamada: true });
     await room.disconnect();
     set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
@@ -488,8 +417,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     const next = !deafened;
 
     if (next) bipe("ensurdecer");
-    /// Ensurdecer cala na hora, inclusive o som do painel que já estava
-    /// tocando — esperar ele acabar seria ouvir o que você mandou parar.
     if (next) pararSomDoPainel();
     set({ deafened: next });
     if (!next) bipe("desensurdecer");
@@ -506,8 +433,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (!room) return;
 
     const next = !cameraEnabled;
-    /// A câmera escolhida vale desde o primeiro quadro: ligar na errada e
-    /// trocar depois faz a pessoa aparecer com a webcam errada pra sala toda.
     const { cameraId } = useVoicePrefs.getState();
     await room.localParticipant.setCameraEnabled(
       next,
@@ -569,15 +494,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
   definirPtt: (pressionado) => store().processador?.definirPtt(pressionado),
 
-  /*
-    O volume vive no ESTADO, e só nele.
-
-    Não há mais nenhum `participante.setVolume()` por aqui. Ele agia no
-    participante inteiro — voz e som de tela na mesma tecla —, e o som da tela
-    agora tem destino próprio. Quem aplica é o elemento `<audio>` de
-    `VoiceTrack.tsx`, que reage a `volumeSaida`, `volumesLocais`,
-    `silenciadosLocais` e `deafened`. Mudar aqui basta pra chegar lá.
-  */
   setVolumeLocal: (userId, volume) => {
     const volumes = { ...store().volumesLocais, [userId]: volume };
     set({ volumesLocais: volumes });
@@ -609,8 +525,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     const next = !screenEnabled;
 
-    /// Encerrar limpa a fonte antes de tudo: se o `set` viesse só no fim, o
-    /// painel continuaria anunciando "Tela 1" durante a despublicação.
     if (!next) set({ fonteDaTela: null });
 
     try {

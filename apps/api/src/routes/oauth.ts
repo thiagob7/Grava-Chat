@@ -8,7 +8,6 @@ import { objectId } from "~/validations/common.js";
 const pedido = z.object({
   client_id: objectId,
   redirect_uri: z.string().url(),
-  /// separados por espaço, como manda o OAuth2
   scope: z.string().min(1).max(200),
 });
 
@@ -19,7 +18,6 @@ const troca = z.object({
   redirect_uri: z.string().url(),
 });
 
-/// O token do dev vem no cabeçalho, como em qualquer API: "Bearer <token>".
 async function sessaoDaAplicacao(req: FastifyRequest) {
   const cabecalho = req.headers.authorization;
   if (!cabecalho?.startsWith("Bearer ")) throw new UnauthorizedError("Falta o token da aplicação");
@@ -27,15 +25,7 @@ async function sessaoDaAplicacao(req: FastifyRequest) {
   return oauthService.resolverToken(cabecalho.slice(7).trim());
 }
 
-/**
- * O OAuth2 das aplicações.
- *
- * É o que permite alguém montar um painel PRÓPRIO, fora daqui, e ainda assim
- * saber quem entrou e em quais servidores essa pessoa manda — sem nunca ver a
- * senha nem o cookie de sessão de ninguém.
- */
 export async function oauthRoutes(app: FastifyInstance) {
-  /// Só descreve o pedido; quem decide é a tela do app, que exige login.
   app.get("/oauth2/pedido", { preHandler: [app.authenticate] }, (req) => {
     const { client_id, redirect_uri, scope } = pedido.parse(req.query);
 
@@ -56,11 +46,6 @@ export async function oauthRoutes(app: FastifyInstance) {
     });
   });
 
-  /*
-    A troca roda no servidor do dev, com o segredo da aplicação — por isso não
-    tem `authenticate`: quem chama aqui é uma máquina, não um navegador com
-    cookie.
-  */
   app.post("/oauth2/token", (req) => {
     const dados = troca.parse(req.body);
 

@@ -12,8 +12,6 @@ export interface UpdateProfileDTO {
   perfil?: EstiloDePerfil | null;
   statusPersonalizado?: StatusPersonalizado | null;
 
-  /// Privacidade. Vai pelo mesmo `PATCH /me` do resto: são preferências da
-  /// conta, e um caminho só de escrita evita dois lugares pra manter.
   aceitaPedidos?: boolean;
   mostraAtividade?: boolean;
   mostraServidoresEmComum?: boolean;

@@ -5,21 +5,13 @@ import { AJUSTES_PADRAO, type AjustesDeVoz, type ModoDeEntrada } from "~/lib/aud
 export interface VoicePrefs extends AjustesDeVoz {
   entradaId: string | null;
   saidaId: string | null;
-  /// a câmera escolhida; nulo = a que o navegador der
   cameraId: string | null;
-  /// o seu próprio vídeo espelhado, como num espelho de verdade
   espelharCamera: boolean;
-  /// mostrar na grade quem está na chamada sem câmera nem tela
   mostrarSemVideo: boolean;
   volumeSaida: number;
   teclaPtt: string;
   somDaInterface: boolean;
   somDaTela: boolean;
-  /**
-   * O painel de efeitos sonoros: se toca, e em que volume. Fica aqui, e nao
-   * no servidor, porque e escolha de quem ouve — o volume gravado no som vale
-   * pra todo mundo, este so vale pra voce, neste aparelho.
-   */
   somDoPainel: boolean;
   volumeDoPainel: number;
 }

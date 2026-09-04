@@ -4,34 +4,13 @@ import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { voiceService } from "~/services/voice-service.js";
 
-/*
-  O histórico de status: quem mede, quem grava e quem resume.
-
-  Separado do `routes/status.ts`, que é o painel de administrador com carga de
-  máquina e memória. Aquele responde "como está a VM agora" para quem
-  administra; este responde "a plataforma esteve no ar" para qualquer pessoa —
-  dados diferentes, públicos diferentes, e nada em comum além da palavra.
-*/
-
-/// As peças que a página de status mostra. A ordem é a que aparece na tela.
 export const PECAS = ["api", "banco", "cache", "sfu"] as const;
 export type Peca = (typeof PECAS)[number];
 
-/*
-  Um minuto entre medições.
-
-  Mais rápido não melhora a barrinha do dia — ela mostra porcentagem, e 1.440
-  amostras já dão resolução de 0,07%. Mais devagar deixa passar queda curta,
-  que é justamente a que ninguém percebe sem histórico.
-*/
 const INTERVALO_MS = 60_000;
 
-/// A primeira medição espera o servidor terminar de subir. Medir no instante
-/// zero registraria como "queda" o Redis que ainda está abrindo a conexão.
 const ATRASO_INICIAL_MS = 15_000;
 
-/// Noventa dias é o que a página desenha. Guardar mais é guardar o que ninguém
-/// vai olhar, num banco de 512 MB.
 export const DIAS_GUARDADOS = 90;
 
 export interface Medida {
@@ -40,13 +19,6 @@ export interface Medida {
   ms: number;
 }
 
-/*
-  O dia em UTC, e não no fuso de quem pergunta.
-
-  O balde precisa ser o mesmo para todo mundo: com fuso local, quem abre a
-  página no Japão e quem abre no Brasil veriam a mesma queda em dias
-  diferentes, e a soma de dois visitantes nunca fecharia.
-*/
 export const diaUtc = (quando = new Date()) => quando.toISOString().slice(0, 10);
 
 async function medir(peca: Peca, tarefa: () => Promise<unknown>): Promise<Medida> {
@@ -60,14 +32,6 @@ async function medir(peca: Peca, tarefa: () => Promise<unknown>): Promise<Medida
   }
 }
 
-/**
- * O estado de agora, medido na hora.
- *
- * A "api" não tem o que medir de fora: se este código está rodando, ela está
- * no ar. Ela entra na lista mesmo assim, com o tempo em zero, porque a página
- * precisa listá-la — e porque a ausência dela seria lida como peça faltando, e
- * não como peça óbvia.
- */
 export async function estadoAgora(): Promise<Medida[]> {
   const [banco, cache, sfu] = await Promise.all([
     medir("banco", () => prisma.$runCommandRaw({ ping: 1 })),
@@ -81,8 +45,6 @@ export async function estadoAgora(): Promise<Medida[]> {
   return [{ peca: "api", estado: "up", ms: 0 }, banco, cache, sfu];
 }
 
-/// Soma a medição no balde do dia. `upsert` porque o primeiro minuto de cada
-/// dia cria o registro e os 1.439 seguintes só incrementam.
 async function gravar(medidas: Medida[]): Promise<void> {
   const dia = diaUtc();
 
@@ -107,8 +69,6 @@ async function gravar(medidas: Medida[]): Promise<void> {
   );
 }
 
-/// Tira o que saiu da janela. Sem isto o histórico cresce para sempre, e o
-/// dia 91 nunca é olhado por ninguém.
 async function podar(): Promise<number> {
   const limite = new Date(Date.now() - DIAS_GUARDADOS * 24 * 60 * 60 * 1000);
   const { count } = await prisma.statusDoDia.deleteMany({
@@ -121,15 +81,6 @@ async function podar(): Promise<number> {
 export const statusService = {
   estadoAgora,
 
-  /**
-   * A janela de dias, já em porcentagem, com os buracos preenchidos.
-   *
-   * Dia sem registro nenhum não é dia com queda — é dia em que ESTE serviço não
-   * estava rodando, seja porque a máquina caiu, seja porque a peça é mais nova
-   * que a janela. Pintar de vermelho seria inventar uma queda que talvez não
-   * tenha existido; devolver `null` deixa a página desenhar cinza e dizer a
-   * verdade: não sei.
-   */
   async janela(): Promise<Record<Peca, { dia: string; uptime: number | null }[]>> {
     const inicio = new Date(Date.now() - (DIAS_GUARDADOS - 1) * 24 * 60 * 60 * 1000);
 
@@ -155,8 +106,6 @@ export const statusService = {
     return saida;
   },
 
-  /// Liga o relógio. Devolve como desligar, pro encerramento limpo — o mesmo
-  /// contrato do `exclusao-service`.
   vigiar(log?: FastifyBaseLogger) {
     const rodada = () => {
       void estadoAgora()
@@ -169,7 +118,6 @@ export const statusService = {
         .catch((err) => log?.error({ err }, "rodada de status falhou"));
     };
 
-    /// A poda é barata e rara; uma vez por hora basta e não pesa.
     const limpeza = () => {
       void podar()
         .then((apagados) => apagados && log?.info({ apagados }, "dias de status podados"))

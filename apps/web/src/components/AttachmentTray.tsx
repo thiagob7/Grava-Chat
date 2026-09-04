@@ -163,8 +163,6 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
           </div>
 
           <div>
-            {/* O contador fica na mesma linha do rótulo, à direita: é onde a
-                pessoa já está olhando quando digita. */}
             <div className="flex items-baseline justify-between gap-3">
               <Label htmlFor="anexo-descricao">{t("conversa.anexos.descricao")}</Label>
               <span className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">

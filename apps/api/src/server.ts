@@ -16,8 +16,6 @@ try {
   await app.listen({ port: env.API_PORT, host: env.API_HOST });
   app.log.info("gateway de tempo real pronto");
 
-  /// O relógio que apaga as contas cujo prazo de quinze dias venceu. É a única
-  /// parte irreversível do fluxo — tudo antes dela é reversível de propósito.
   pararDeVigiarExclusoes = exclusaoService.vigiar(app.log);
   pararDeVigiarStatus = statusService.vigiar(app.log);
 } catch (err) {

@@ -1,39 +1,13 @@
 import { create } from "zustand";
 
-/**
- * Como você quer ser avisado.
- *
- * Fica no navegador, não na conta: "me avise" é uma decisão sobre ESTE
- * aparelho. A mesma conta aberta no trabalho e no celular não quer,
- * necessariamente, o mesmo barulho nos dois.
- */
-/// O que um canal específico faz com as mensagens que chegam nele.
 export type ModoDoCanal = "tudo" | "mencoes" | "nada";
 
 export interface PrefsDeAviso {
-  /// aviso do sistema (a janelinha do macOS/Windows)
   aviso: boolean;
-  /// só menção, ou toda mensagem
   soMencoes: boolean;
   som: boolean;
-  /// contador no título da aba e no ícone do app
   contador: boolean;
-  /**
-   * Exceções por canal, para o canal barulhento que você não quer largar.
-   *
-   * Só o que foge do padrão mora aqui: canal sem entrada segue a preferência
-   * geral. Fica no aparelho como o resto — silenciar no computador do
-   * trabalho não tem por que calar o celular.
-   */
   porCanal: Record<string, ModoDoCanal>;
-  /**
-   * Sons desligados um a um.
-   *
-   * Só o que foge do padrão mora aqui, como no `porCanal`: som ausente do mapa
-   * está ligado. Guardar os treze com `true` engordaria o armazenamento e, pior,
-   * congelaria a lista — som novo no app nasceria DESLIGADO para quem já tem
-   * preferência salva, e ninguém entenderia por quê.
-   */
   sonsDesligados: Record<string, boolean>;
 }
 
@@ -79,11 +53,6 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
     }
   },
 
-  /*
-    Liga ou desliga um som. Ligar APAGA a entrada em vez de gravar `false`:
-    o mapa guarda só o que foge do padrão, então o que está ligado não precisa
-    estar escrito em lugar nenhum.
-  */
   definirSom: (nome, ligado) => {
     const sonsDesligados = { ...store().sonsDesligados };
 
@@ -95,8 +64,6 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
   definirCanal: (channelId, modo) => {
     const porCanal = { ...store().porCanal };
 
-    /// Voltar ao padrão APAGA a entrada, não grava "tudo": assim o canal
-    /// volta a seguir a preferência geral quando ela mudar.
     if (modo === null) delete porCanal[channelId];
     else porCanal[channelId] = modo;
 

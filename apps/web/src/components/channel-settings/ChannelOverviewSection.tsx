@@ -23,8 +23,6 @@ function rotuloDoModoLento(segundos: number) {
   return `${segundos / 3600} h`;
 }
 
-/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
-/// resolveria antes de o idioma existir e ficaria congelada.
 const VISIBILIDADES = [
   {
     valor: "DEFAULT" as const,

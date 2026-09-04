@@ -4,9 +4,6 @@ import type { ComandoDisponivel, OpcaoDeComando } from "@gravae/shared";
 import { Avatar } from "~/components/Avatar";
 import { cn } from "~/lib/utils";
 
-/// A assinatura como o Discord escreve: obrigatória entre `<>`, opcional
-/// entre `[]`. É convenção velha de linha de comando, e quem nunca viu
-/// entende pela dica da opção logo abaixo.
 const assinatura = (opcoes: OpcaoDeComando[]) =>
   opcoes.map((o) => (o.obrigatoria ? `<${o.nome}>` : `[${o.nome}]`)).join(" ");
 
@@ -36,9 +33,6 @@ export const ComandoSugestoes: React.FC<ComandoSugestoesProps> = ({
           <li key={`${item.botId}-${item.nome}`}>
             <button
               type="button"
-              /// `onMouseDown` com `preventDefault` para o campo não perder o
-              /// foco antes do clique — senão o cursor sai de onde estava e o
-              /// texto é inserido no lugar errado.
               onMouseDown={(e) => {
                 e.preventDefault();
                 onEscolher(item);
@@ -78,20 +72,11 @@ export const ComandoSugestoes: React.FC<ComandoSugestoesProps> = ({
   );
 };
 
-/**
- * A dica que fica no ar enquanto se escrevem os argumentos.
- *
- * Depois de escolher o comando a lista sai da frente, e sem isto não sobra
- * nada dizendo o que ele espera — a pessoa fica olhando para uma linha em
- * branco tentando lembrar a ordem.
- */
 export const DicaDoComando: React.FC<{
   comando: ComandoDisponivel;
   preenchidas: Record<string, string>;
   faltando: OpcaoDeComando[];
 }> = ({ comando, preenchidas, faltando }) => {
-  /// A opção "da vez" é a primeira ainda vazia — é nela que o texto está
-  /// caindo enquanto se digita.
   const atual = comando.opcoes.find((o) => !preenchidas[o.nome]) ?? null;
 
   return (

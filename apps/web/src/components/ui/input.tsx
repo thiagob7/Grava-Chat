@@ -2,8 +2,6 @@ import * as React from "react";
 
 import { cn } from "~/lib/utils";
 
-// O anel no foco e o que faltava: so a borda mudando de cinza pra cinza mais
-// claro passa despercebido, ainda mais em tema escuro.
 export const campoBase =
   "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-ink-faint/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
@@ -24,18 +22,6 @@ export const grupoDeCampo =
 export const campoNu =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
 
-/*
-  Campo com um botão colado nele: o link do convite, o nome do amigo a
-  adicionar.
-
-  Antes era um `Input` — que tem borda e fundo próprios — dentro de outra caixa
-  que também tinha fundo. Dava caixa dentro de caixa, com dois cantos
-  arredondados concorrendo, e o botão espremido no que sobrava a ponto de
-  quebrar "Enviar pedido" em duas linhas.
-
-  Aqui a borda é UMA só, a do grupo, e é ela que reage ao foco. O campo por
-  dentro é nu, e o botão tem o espaço que precisa.
-*/
 export const CampoComAcao: React.FC<
   React.ComponentProps<"input"> & { acao: React.ReactNode }
 > = ({ acao, className, ...props }) => (
@@ -53,8 +39,6 @@ export const CampoComAcao: React.FC<
 export const cartaoDeEscolha = (escolhido: boolean) =>
   cn(
     "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",
-    // Selecionado = borda cheia + fundo tingido da marca. So a borda vermelha
-    // fina, que era o que tinha antes, lia como erro em vez de escolha.
     escolhido
       ? "border-brand bg-brand/10 text-ink"
       : "border-white/5 bg-campo hover:border-white/10 hover:bg-surface-3/60",

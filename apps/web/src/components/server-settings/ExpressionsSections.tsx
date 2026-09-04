@@ -34,8 +34,6 @@ interface SecaoProps {
   podeGerenciar: boolean;
 }
 
-/// Metade do caminho. O som do painel toca por cima de quem está falando, e
-/// 100% estoura o ouvido de quem está com o fone alto.
 const VOLUME_PADRAO = 0.5;
 
 const nomeSeguro = (texto: string) =>
@@ -88,14 +86,6 @@ export const EmojiSection: React.FC<SecaoProps> = ({
     <div className="max-w-3xl pb-10">
       <h2 className="text-xl font-semibold">{t("comum.emoji")}</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        {/*
-          Uma chave só, com o `:nome:` dentro dela.
-
-          Antes eram três pedaços — texto, um `<code>` e mais texto — e cada
-          idioma põe as partes numa ordem. Traduzir os pedaços separados daria
-          frase remontada errada em metade dos idiomas; o que se perde é a
-          moldura cinza do `:nome:`, e a frase inteira vale mais que ela.
-        */}
         {t("servidor.expressoes.comoUsar", { limite: LIMITS.emojisPorServidor })}
       </p>
 
@@ -375,8 +365,6 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
   );
   const [nome, setNome] = useState("");
   const [emoji, setEmoji] = useState("🔊");
-  /// Metade: som de painel entra por cima da conversa, e 100% costuma
-  /// estourar. Quem subiu ajusta aqui, e depois na lista, quando ouvir.
   const [volume, setVolume] = useState(VOLUME_PADRAO);
 
   const escolher = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -495,7 +483,6 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
             key={som.id}
             className="group flex items-center gap-3 border-t border-line py-3"
           >
-            {/* `||`: som sem emoji vem com string vazia, e o `??` deixava um buraco. */}
             <span className="text-xl">{som.emoji || "🔊"}</span>
             <span className="min-w-0 flex-1 truncate text-sm">{som.name}</span>
 
@@ -552,13 +539,6 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
   );
 };
 
-/**
- * O campo de emoji com o seletor do app.
- *
- * Era um campo de texto de 8 caracteres: pra colocar um emoji, a pessoa
- * precisava saber o atalho do teclado do sistema — ou colar de algum lugar. E
- * o campo aceitava "abc" numa boa, que ia parar na lista como emoji do som.
- */
 const CampoDeEmoji: React.FC<{
   id: string;
   emoji: string;
@@ -586,14 +566,6 @@ const CampoDeEmoji: React.FC<{
   );
 };
 
-/**
- * O volume gravado no som, ajustável depois de subir.
- *
- * Antes só dava pra escolher na hora do envio, e quem errasse a mão tinha que
- * apagar e subir de novo — gastando um dos oito espaços no caminho. A gravação
- * sai quando o dedo solta a faixa, não a cada passo: seriam vinte chamadas
- * numa arrastada só.
- */
 const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
   guildId,
   som,
@@ -602,7 +574,6 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
   const atualizar = useUpdateSound(guildId);
   const [volume, setVolume] = useState(som.volume);
 
-  /// Se outra pessoa mexer, a lista chega com o valor novo.
   useEffect(() => setVolume(som.volume), [som.volume]);
 
   const salvar = () => {
@@ -621,11 +592,6 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
         </button>
       </PopoverTrigger>
 
-      {/*
-        `portal={false}` como no seletor de emoji: as configurações moram num
-        diálogo modal, e o que sai pro `body` nasce com os cliques bloqueados —
-        a faixa apareceria e não mexeria.
-      */}
       <PopoverContent side="top" align="end" portal={false} className="w-64">
         <Label>Volume do som — {Math.round(volume * 100)}%</Label>
         <Slider
@@ -660,8 +626,6 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
   );
 };
 
-/// Função solta, não componente: não há gancho aqui, e `i18next.t` resolve no
-/// idioma de quem clicou — que é quando ela roda.
 function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
   return {
     titulo: i18next.t("servidor.expressoes.excluirTitulo", { tipo, nome }),

@@ -22,25 +22,13 @@ import { useConfigPorUrl } from "~/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/components/ContaEmExclusao";
 
 export const AppRoutes: React.FC = () => {
-  /// A outra ponta do botao de copiar link: um endereco com `?config=` abre as
-  /// configuracoes na tela — e na secao — que ele nomeia.
   useConfigPorUrl();
 
   return (
   <BrowserRouter>
-    {/*
-      A coluna vive AQUI, e não no #root: lá dentro moram também o container de
-      avisos, o seletor de tela e o visualizador de imagem. Distribuir altura
-      entre todos eles deixava a aplicação ocupando um pedaço da janela.
-    */}
     <div className="flex h-full flex-col">
       <BarraDeTitulo />
 
-      {/*
-        A faixa empurra o app pra baixo em vez de flutuar por cima: sobreposta,
-        ela taparia a barra de servidores ou o cabeçalho do canal, e o app
-        ficaria com um pedaço permanentemente escondido atrás de um convite.
-      */}
       <div className="relative">
         <FaixaDaComunidade />
       </div>
@@ -94,16 +82,12 @@ export const AppRoutes: React.FC = () => {
     </div>
 
     <FloatingScreenShare />
-    {/* aqui dentro pelo mesmo motivo do `LinksDoDesktop`: atender uma
-        chamada navega para a conversa, e `useNavigate` só existe sob o
-        Router. Fora dele, ele lança e leva a aplicação inteira junto. */}
     <ChamadaRecebida />
     <LinksDoDesktop />
   </BrowserRouter>
   );
 };
 
-/// Precisa morar dentro do BrowserRouter — é de lá que sai o `navigate`.
 const LinksDoDesktop: React.FC = () => {
   useLinksDoDesktop();
   return null;
@@ -121,13 +105,6 @@ const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
-  /*
-    Conta marcada para exclusão para ANTES da aplicação.
-
-    Deixar entrar direto na conversa faria da recuperação um acidente: a pessoa
-    usaria o app sem saber que o relógio corre, e descobriria no dia em que
-    tudo sumisse. Aqui voltar é uma decisão que ela toma olhando o prazo.
-  */
   if (user.excluirEm) return <ContaEmExclusao user={user} onSair={endSession} />;
 
   return <>{children}</>;

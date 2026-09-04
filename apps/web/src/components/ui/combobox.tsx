@@ -20,19 +20,6 @@ interface ComboboxProps<T extends string | number> {
   className?: string;
 }
 
-/**
- * Autocomplete: um campo em que se DIGITA, com a lista de sugestões embaixo.
- *
- * O gatilho é o próprio `<input>` — não um botão que abre uma busca separada.
- * É a diferença entre este e um `<select>` enfeitado: quem já sabe o que quer
- * escreve as primeiras letras e confirma sem tirar a mão do teclado, e quem não
- * sabe abre e lê a lista inteira.
- *
- * O que está escrito no campo é o RÓTULO da escolha enquanto ninguém digita.
- * Assim que alguém digita, o texto passa a ser o filtro; sair sem escolher
- * devolve o rótulo. Sem essa volta, o campo ficaria com um pedaço de palavra
- * dentro dele dizendo uma coisa e o valor guardado dizendo outra.
- */
 export function Combobox<T extends string | number>({
   id,
   valor,
@@ -50,7 +37,6 @@ export function Combobox<T extends string | number>({
   const ancora = React.useRef<HTMLDivElement>(null);
 
   const escolhida = opcoes.find((o) => o.valor === valor);
-  /// `null` = ninguém digitou desde a última escolha; o campo mostra o rótulo.
   const digitando = filtro !== null;
 
   const filtradas = React.useMemo(() => {
@@ -67,7 +53,6 @@ export function Combobox<T extends string | number>({
 
   const fechar = () => {
     setAberto(false);
-    /// Volta a mostrar o rótulo: o filtro era do balão, e o balão fechou.
     setFiltro(null);
   };
 
@@ -106,11 +91,6 @@ export function Combobox<T extends string | number>({
 
   return (
     <Popover open={aberto} onOpenChange={(proximo) => (proximo ? setAberto(true) : fechar())}>
-      {/*
-        `PopoverAnchor`, e não `PopoverTrigger`: o gatilho do Radix leva o foco
-        pra dentro do balão quando abre, e aqui o foco tem de ficar no campo —
-        é nele que se continua digitando com a lista aberta.
-      */}
       <PopoverAnchor asChild>
         <div
           ref={ancora}
@@ -134,30 +114,11 @@ export function Combobox<T extends string | number>({
             onChange={(e) => {
               setFiltro(e.target.value);
               setAberto(true);
-              /// Filtrar encurta a lista: o cursor volta pro topo, senão aponta
-              /// pra um índice que não existe mais e o Enter não escolhe nada.
               setAtivo(0);
             }}
-            /*
-              Abrir é no CLIQUE, não no foco. Os dois bugs vinham daí:
-
-              - Clicar de novo no campo já focado não abria mais. Depois de
-                escolher, o foco continua aqui (as opções seguram o `mousedown`
-                pra escolha não se perder), e um segundo clique não dispara
-                `focus` nenhum — não havia o que reabrir a lista.
-              - Clicar no RÓTULO abria a lista. `<label htmlFor>` manda o foco
-                pro campo, e o campo abria. Rótulo é pra apontar o campo, não
-                pra operá-lo.
-
-              `mousedown` dispara em todo clique, focado ou não, e o rótulo não
-              passa por ele.
-            */
             onMouseDown={() => {
               if (!aberto) abrirEm(Math.max(0, opcoes.findIndex((o) => o.valor === valor)));
             }}
-            /// Escolher com o mouse não passa por aqui: as opções seguram o
-            /// `mousedown`, então o campo nunca chega a perder o foco. Sair de
-            /// verdade — Tab, ou um clique em qualquer outro lugar — fecha.
             onBlur={fechar}
             onKeyDown={aoTeclar}
             className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
@@ -167,9 +128,6 @@ export function Combobox<T extends string | number>({
             type="button"
             tabIndex={-1}
             aria-hidden
-            /// `onMouseDown` com o padrão barrado: sem isso o botão rouba o foco
-            /// do campo, o `blur` fecha a lista e o clique a reabre em seguida —
-            /// a seta piscava em vez de alternar.
             onMouseDown={(evento) => {
               evento.preventDefault();
               if (aberto) return fechar();
@@ -190,49 +148,13 @@ export function Combobox<T extends string | number>({
       <PopoverContent
         align="start"
         sideOffset={6}
-        /*
-          O foco NÃO entra no balão, nem na abertura nem no fechamento: ele mora
-          no campo o tempo todo. Sem estes dois, abrir tiraria o cursor de onde
-          a pessoa está escrevendo.
-        */
         onOpenAutoFocus={(evento) => evento.preventDefault()}
         onCloseAutoFocus={(evento) => evento.preventDefault()}
-        /*
-          Sem isto a lista NÃO ABRE — abre e se fecha no mesmo quadro.
-
-          O `DismissableLayer` do Radix fecha o balão quando o foco está fora da
-          camada dele. Aqui o foco mora no campo, que é o âncora e fica de fora
-          por construção: era ele mesmo, o foco que precisa continuar no campo,
-          que disparava o fechamento no instante da abertura.
-
-          Quem fecha por perda de foco passa a ser o `onBlur` do campo, que é
-          onde essa decisão de fato pertence.
-        */
         onFocusOutside={(evento) => evento.preventDefault()}
-        /*
-          Clicar DENTRO do campo não fecha a lista.
-
-          Pro Radix, tudo que não está na camada do balão é "fora" — e o campo,
-          que é o âncora, está fora. Sem esta guarda, cada clique no texto que se
-          está digitando fechava a lista debaixo do dedo: um clique abria, o
-          segundo fechava, e parecia que ela tinha travado.
-
-          Fora do âncora o comportamento é o normal: clicou em qualquer outro
-          lugar, fecha.
-        */
         onPointerDownOutside={(evento) => {
           const alvo = evento.target;
           if (alvo instanceof Node && ancora.current?.contains(alvo)) evento.preventDefault();
         }}
-        /*
-          A lista NÃO tem animação de entrada, e isso é de propósito: o `.popup`
-          do `FormCombobox.module.css` da referência é estático. A única coisa
-          que se move lá é a seta, girando 180° em 0.2s — que é o que o gatilho
-          faz aqui. Eu tinha posto uma descida de 8px; era invenção minha.
-
-          A sombra é a de lá: `0 0.5rem 1rem rgb(0 0 0 / 0.24)`, mais rasa que a
-          `shadow-2xl` que o balão traz por padrão.
-        */
         className="w-[var(--radix-popover-trigger-width)] max-h-60 overflow-y-auto p-1 shadow-[0_0.5rem_1rem_rgb(0_0_0/0.24)]"
       >
         {!filtradas.length && (
@@ -248,19 +170,10 @@ export function Combobox<T extends string | number>({
               type="button"
               role="option"
               aria-selected={selecionada}
-              /// `onMouseDown` e não `onClick`: o clique tira o foco do campo
-              /// antes de chegar aqui, e o `blur` fecharia o balão debaixo do
-              /// dedo — a escolha se perderia no caminho.
               onMouseDown={(evento) => {
                 evento.preventDefault();
                 confirmar(opcao.valor);
               }}
-              /*
-                O realce segue o TECLADO, e por isso `onMouseMove` e não
-                `onMouseEnter`: a lista pode nascer debaixo do cursor parado, e
-                aí a linha sob ele roubaria o realce de quem chegou pelas setas
-                sem ninguém ter mexido no mouse.
-              */
               onMouseMove={() => setAtivo(indice)}
               className={cn(
                 "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors",

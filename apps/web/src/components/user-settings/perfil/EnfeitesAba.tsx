@@ -99,11 +99,6 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         amostra={(id) => <Amostra familia="decoracao" id={id} />}
       />
 
-      {/*
-        A moldura do avatar, o efeito do cartão e a placa do nome saíram da
-        grade por enquanto — veja FAMILIAS_DESLIGADAS no catálogo.
-      */}
-
       <div className="h-px bg-line" />
 
       <GradeDeOpcoes
@@ -125,8 +120,6 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
   const classe = classeDoEnfeite(familia, id);
   const deArquivo = familia === "decoracao" && ehDeArquivo(id as Decoracao);
 
-  /// Moldura agora e do cartao: a amostra dela precisa ter forma de cartao,
-  /// senao a pessoa escolhe achando que vai em volta do retrato.
   const doCartao = familia === "moldura";
 
   return (
@@ -144,8 +137,6 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
           className={cn(doCartao ? "gc-camada--cartao" : "gc-camada", classe)}
           style={{
             ...variaveisDoEnfeite({ animar: true, velocidade: "8s" }),
-            /// A amostra tem 28px de altura; molduras desenhadas usam borda de
-            /// 36px no cartão e aqui se sobreporiam.
             ...(doCartao ? { "--gc-borda": "7px" } : null),
           }}
         />

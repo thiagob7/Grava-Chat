@@ -49,15 +49,6 @@ import { useTranslation } from "~/traducao";
 
 type Detalhe = "todas" | "links" | "midia" | null;
 
-/**
- * A visualização de moderador, como uma COLUNA.
- *
- * Ela já foi um painel flutuante por cima de tudo, com o fundo escurecido —
- * e aí olhar a ficha de alguém tapava justamente a lista de onde você acabou
- * de clicar. Agora ela empurra a lista de membros para o lado, como no
- * Discord: as duas coisas na tela ao mesmo tempo, porque moderar é ir de uma
- * pessoa para a outra.
- */
 export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -69,12 +60,8 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
   const userId = alvo?.userId ?? null;
   const { data, isLoading, error } = useModerationView(guildId, userId);
 
-  /// Trocar de pessoa começa a ficha do zero, não no detalhe em que a
-  /// anterior tinha parado.
   useEffect(() => setDetalhe(null), [userId]);
 
-  /// ESC fecha — é o que a tecla faz em todo painel deste app, e o Discord
-  /// chega a desenhar a dica no cabeçalho.
   useEffect(() => {
     if (!alvo) return;
 
@@ -341,8 +328,6 @@ const AcaoDoTopo: React.FC<{
   </Tooltip>
 );
 
-/// Chaves, e não frases: é constante de módulo — ver o mesmo aviso no
-/// `VISIBILIDADES` e no `GATILHOS`.
 const TITULOS: Record<"todas" | "links" | "midia", string> = {
   todas: "servidor.moderacao.mensagens",
   links: "servidor.moderacao.links",
@@ -428,14 +413,6 @@ const MensagemDaLista: React.FC<{
       </time>
     </header>
 
-    {/*
-      Na aba de links, o que interessa é o LINK.
-
-      Antes esta lista mostrava a mensagem crua — três endereços colados um no
-      outro, quebrando linha no meio, e ninguém conseguia dizer o que era cada
-      um sem copiar e colar no navegador. Agora cada endereço vira uma linha
-      com o ícone e o título do site, do mesmo cartão que a conversa usa.
-    */}
     {filtro === "links" && <LinksDaMensagem conteudo={mensagem.content} />}
 
     {mensagem.content && (
@@ -488,14 +465,6 @@ const LinksDaMensagem: React.FC<{ conteudo: string }> = ({ conteudo }) => {
   );
 };
 
-/**
- * Um endereço, do jeito que dá para ler.
- *
- * O cartão vem do mesmo `/api/embeds` da conversa — então o título já está em
- * cache quando a mensagem estava na tela. Enquanto ele não chega (ou quando o
- * site não responde), fica o endereço encurtado, que é melhor que uma linha
- * vazia esperando.
- */
 const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
   const { data: embed } = useEmbed(url);
   const dominio = (() => {

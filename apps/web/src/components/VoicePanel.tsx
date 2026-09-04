@@ -17,7 +17,6 @@ import { useConfiguracoes } from "~/stores/configuracoes";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 
-/** A secao da chamada nao tem fundo proprio: o cartao e o `RodapeDaBarra`. */
 const SECAO_DA_CHAMADA = "mb-2";
 
 interface VoicePanelProps {
@@ -43,11 +42,6 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
 
   const { data: detail } = useFindGuild(guildId ?? undefined);
 
-  /*
-    Numa chamada de privado não há servidor nem canal a consultar: o `guildId`
-    é nulo e a busca acima volta vazia. Sem isto, o painel anunciava a chamada
-    como "…" — dizia que você estava em voz e não dizia com quem.
-  */
   const { data: dms = [] } = useFindDms(true);
   const conversa = dms.find((dm) => dm.id === channelId);
   const channels = detail?.channels ?? [];
@@ -60,16 +54,6 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
   const noiseFilter = useVoicePrefs((s) => s.supressaoDeRuido);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
 
-  /*
-    Em chamada noutra aba: uma linha, e só.
-
-    Aqui morava um bloco com título, subtítulo e um botão de "trazer a chamada
-    para esta aba" — três elementos disputando atenção com o cartão de quem
-    você é, que é o que esse canto existe pra mostrar. A ação foi pro diálogo
-    que aparece quando você clica no canal, que é o momento em que ela é
-    perguntada de verdade. O que sobra aqui é o lembrete de que o áudio está
-    tocando noutro lugar.
-  */
   if (!channelId && accountChannelId) {
     const remote = channels.find((c) => c.id === accountChannelId);
 
@@ -91,22 +75,10 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
       <div className="mb-2 flex items-center justify-between">
         <div className="min-w-0">
           <VoiceDetailsPopover ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>
-            {/*
-              O grupo é o próprio botão: antes ele era a seção inteira, então
-              chegar perto do botão de desligar já trocava o rótulo para
-              "Detalhes de Voz" sem que o mouse tivesse encostado no texto.
-            */}
             <button
               aria-label={t("chamada.detalhes.abrir")}
               className="group/voz flex w-full items-center gap-1.5 text-left text-sm font-semibold"
             >
-              {/*
-                O ícone fica de fora da troca: ele é o mesmo nos dois rótulos, e
-                vê-lo deslizar junto só denunciava que são dois textos
-                empilhados. Quem rola é o texto, dentro de uma janelinha da
-                altura da linha — um sai por cima enquanto o outro sobe no
-                lugar, como no Discord.
-              */}
               <IconeDeSinal ping={ping} />
 
               <span className="grid min-w-0 grid-cols-1 overflow-hidden">
@@ -136,13 +108,6 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5">
-          {/*
-            O clique ABRE, e não liga. Ligar direto era uma decisão às cegas: a
-            pessoa não sabe o que a supressão faz sem experimentar no meio de
-            uma conversa, e não tinha como conferir o resultado sem perguntar
-            "tá me ouvindo bem?" pra alguém. O interruptor continua ali dentro,
-            a um clique de distância, agora com um medidor ao lado.
-          */}
           <SupressaoDeRuidoPopover
             ligada={noiseFilter}
             disponivel={noiseFilterAvailable}
@@ -209,8 +174,6 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
     <button
       onClick={onClick}
       aria-label={label}
-      /// `bg-hover` é o branco a 5%: sobre o cartão ele vira uma
-      /// pastilha que se lê sem virar um bloco cinza.
       className="flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
     >
       {children}

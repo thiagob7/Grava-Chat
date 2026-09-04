@@ -17,10 +17,6 @@ describe("mensagemParaEditar", () => {
     expect(alvo).toBe("m2");
   });
 
-  /*
-    Com o campo preenchido a seta é do cursor. Roubá-la quebraria o gesto mais
-    básico de edição: subir uma linha num rascunho de vários parágrafos.
-  */
   it("não faz nada se já há texto escrito", () => {
     expect(mensagemParaEditar({ rascunho: "oi", euSou: eu, mensagens: [minha("m1")] })).toBeNull();
     expect(mensagemParaEditar({ rascunho: " ", euSou: eu, mensagens: [minha("m1")] })).toBeNull();

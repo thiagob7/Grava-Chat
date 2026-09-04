@@ -1,27 +1,8 @@
 import { i18next, idiomaAtual } from "~/traducao";
 import { prefsDeAparencia } from "~/stores/aparencia";
 
-/*
-  A hora, no formato que a pessoa escolheu e no idioma que ela lê.
-
-  Um `Intl.DateTimeFormat` guardado por (idioma, formato): montar o objeto
-  custa, e o horário é desenhado em toda mensagem da tela. Perguntar a
-  preferência a cada chamada é barato; construir o formatador não é.
-
-  `hour12` explícito não é redundância. Em muitos idiomas o padrão de 12 ou 24
-  horas já vem do locale, e omitir a opção deixaria o locale decidir por cima
-  da pessoa — que é justamente a escolha que a tela de Idioma oferece.
-*/
 const formatadores = new Map<string, Intl.DateTimeFormat>();
 
-/*
-  A chave junta idioma e formato, porque os dois mudam sem avisar.
-
-  Antes ela era só o `horaEm24h`, e a data nascia sempre em `pt-BR`. Quem
-  escolhesse japonês continuava vendo "02/09/2026" e "hoje às" — o texto da
-  tela trocava e o relógio não, que é a metade pior de traduzir: parece
-  descuido, não idioma faltando.
-*/
 function guardado(sufixo: string, montar: () => Intl.DateTimeFormat): Intl.DateTimeFormat {
   const chave = `${idiomaAtual()}|${sufixo}`;
   let pronto = formatadores.get(chave);

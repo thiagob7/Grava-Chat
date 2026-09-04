@@ -12,8 +12,6 @@ export const useAplicativosAutorizados = () =>
   useQuery({
     queryKey: [queryKeys.aplicativo.autorizados],
     queryFn: findAplicativosAutorizados,
-    /// Um token pode ter vencido enquanto a aba estava de lado, e a lista poda
-    /// os vencidos no servidor a cada consulta — voltar pra aba é a hora certa.
     refetchOnWindowFocus: true,
   });
 

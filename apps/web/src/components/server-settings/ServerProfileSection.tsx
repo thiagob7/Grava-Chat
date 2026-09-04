@@ -47,12 +47,6 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
     );
   };
 
-  /*
-    A faixa é larga e vive no alto da lista de canais — por isso sobe com um
-    teto de largura bem maior que o do ícone, que é um quadradinho.
-  */
-  /// Recebe o arquivo, e não o evento: o mesmo envio serve ao clique no seletor
-  /// e ao arquivo largado em cima da faixa.
   const enviarFaixa = async (file: File) => {
     const enviado = await uploadImage
       .mutateAsync({ file, maxSize: 960 })
@@ -153,14 +147,6 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
 
       <Label>{t("servidor.perfil.faixa")}</Label>
 
-      {/*
-        A área da imagem É o campo.
-
-        Antes ela era um retângulo decorativo com o botão embaixo: a coisa que
-        parecia clicável não era, e a que era ficava fora dela. Agora clicar na
-        faixa abre o seletor, arrastar um arquivo em cima envia, e o "remover"
-        mora no canto da própria imagem — que é onde se procura por ele.
-      */}
       <div className="space-y-2">
         <div className="relative">
           <button
@@ -175,8 +161,6 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               e.preventDefault();
               setArrastando(false);
               const arquivo = e.dataTransfer.files?.[0];
-              /// Largar uma pasta, um .zip ou um texto aqui não é erro de quem
-              /// larga — mas mandar isso pro upload é erro nosso.
               if (arquivo?.type.startsWith("image/")) void enviarFaixa(arquivo);
             }}
             disabled={uploadImage.isPending}
@@ -186,9 +170,6 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             className={cn(
               "group/faixa relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-cover bg-center outline-none transition",
               "focus-visible:border-brand",
-              /// Tracejado só enquanto está vazia: é o desenho universal de
-              /// "solte algo aqui". Com imagem dentro, tracejado vira sujeira
-              /// por cima da foto de quem manda no servidor.
               arrastando
                 ? "border-solid border-brand"
                 : bannerUrl
@@ -201,11 +182,6 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
             }}
           >
-            {/*
-              O véu só aparece com o mouse em cima, e só quando JÁ existe faixa:
-              escurecer uma imagem que a pessoa acabou de escolher, o tempo todo,
-              é mentir sobre como ela vai aparecer no alto da lista de canais.
-            */}
             <span
               className={cn(
                 "flex flex-col items-center gap-1.5 rounded-lg px-4 py-3 text-xs transition",

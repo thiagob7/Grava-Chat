@@ -34,8 +34,6 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
     : aba === "pendentes" ? pendentes
     : [];
 
-  /// A busca olha os dois nomes: quem procura "thi" pode estar atrás do
-  /// apelido ou do @usuario, e não sabe qual dos dois vai casar.
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     if (!termo) return listaDaAba;
@@ -65,15 +63,6 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
           <button
             key={item.id}
             onClick={() => setAba(item.id)}
-            /*
-              "Adicionar amigo" é botão, e não aba.
-
-              As outras três filtram uma lista que já está na tela; esta abre um
-              formulário. Vestida igual, ela se perdia no meio das irmãs — e é
-              justamente a única coisa a fazer numa conta que ainda não tem
-              ninguém. Agora é uma pastilha cheia da cor da casa, do jeito que
-              se destaca sem gritar.
-            */
             className={cn(
               "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
               item.id === "adicionar"
@@ -106,11 +95,6 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
           <p className="text-sm text-ink-faint">Carregando…</p>
         ) : (
           <>
-            {/*
-              A busca fica ACIMA do estado vazio de propósito: com dez amigos
-              ela é o caminho mais curto até um deles, e com zero ela explica
-              sozinha que a lista é filtrável quando encher.
-            */}
             <div className="relative mb-4">
               <Search
                 size={16}
@@ -158,13 +142,6 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
   );
 };
 
-/**
- * A tela vazia com desenho, título e explicação.
- *
- * Uma frase cinza solta no meio da tela parecia erro de carregamento. O
- * ícone grande diz "está vazio de propósito", e o título em negrito dá o que
- * fazer a seguir.
- */
 const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando }) => (
   <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
     <Users size={48} className="text-ink-faint/60" strokeWidth={1.5} />
@@ -202,13 +179,6 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
   const remove = useRemoveFriend();
   const confirmar = useConfirmar();
 
-  /*
-    Aceitar e recusar pedem confirmação — e o Shift pula.
-
-    Os dois botões são redondos, pequenos e vizinhos: errar o alvo é fácil, e
-    "recusar" não tem desfazer (a pessoa teria que pedir de novo). O Shift
-    existe pra quem limpa uma fila de pedidos e não quer confirmar dez vezes.
-  */
   const responder = async (evento: React.MouseEvent, aceitar: boolean) => {
     if (!evento.shiftKey) {
       const { confirmado } = await confirmar({

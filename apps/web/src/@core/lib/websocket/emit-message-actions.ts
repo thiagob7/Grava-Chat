@@ -20,15 +20,11 @@ export const closePoll = (messageId: string) => emit("poll:close", { messageId }
 export const ackMessage = (channelId: string, messageId: string) =>
   emit("message:ack", { channelId, messageId });
 
-/// deixa o canal não-lido a partir desta mensagem
 export const unreadFromMessage = (channelId: string, messageId: string) =>
   emit("message:unread", { channelId, messageId });
 
 export const startTyping = (channelId: string) => emit("typing:start", { channelId });
 
-/// Um comando de barra. O `ack` volta com o id da mensagem "fulano usou
-/// /play" — e um erro quando o servidor recusa, que é onde a validação das
-/// opções acontece.
 export const invocarComando = (payload: ClientEventPayload<"command:invoke">) =>
   emit("command:invoke", payload);
 

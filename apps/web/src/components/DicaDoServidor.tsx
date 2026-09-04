@@ -11,21 +11,8 @@ interface DicaDoServidorProps {
   children: React.ReactNode;
 }
 
-/// Quantos rostos cabem antes de virar "+N". Seis já ocupam a largura da dica;
-/// além disso o cartão fica mais largo que o próprio trilho.
 const ROSTOS = 6;
 
-/*
-  A dica de um servidor no trilho — o nome e quem está em chamada lá dentro.
-
-  Era só o nome. Saber que tem gente conversando num servidor que você não
-  abriu é justamente a informação que faz alguém entrar, e ela não existia em
-  lugar nenhum da tela: a bolinha de não-lido fala de mensagem, não de voz.
-
-  Não usa o `Tooltip` comum porque ele recebe `label: string`. Aqui o conteúdo
-  tem estrutura, e espremê-lo numa frase ("3 pessoas em Sala 1, 2 em Sala 2")
-  seria pedir pra pessoa LER o que ela reconheceria de relance pelos rostos.
-*/
 export const DicaDoServidor: React.FC<DicaDoServidorProps> = ({ nome, vozes, children }) => (
   <TooltipPrimitive.Root delayDuration={300}>
     <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
@@ -45,11 +32,6 @@ export const DicaDoServidor: React.FC<DicaDoServidorProps> = ({ nome, vozes, chi
               <span className="truncate">{canal.channelName}</span>
             </p>
 
-            {/*
-              Rostos encavalados, e não uma lista de nomes: numa dica que some
-              ao tirar o mouse, reconhecer é mais rápido do que ler. O anel da
-              cor do fundo é o que separa um rosto do outro na sobreposição.
-            */}
             <div className="mt-1.5 flex items-center pl-[3px]">
               {canal.pessoas.slice(0, ROSTOS).map((pessoa) => (
                 <div key={pessoa.userId} className="-ml-[3px] rounded-full ring-2 ring-surface-4">

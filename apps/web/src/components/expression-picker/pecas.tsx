@@ -3,11 +3,6 @@ import { ChevronDown, Loader2 } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
-/**
- * A coluna de atalhos da esquerda. Cada item leva a uma seção da lista; o
- * ativo é quem está no topo do que se vê, não o último clicado — senão rolar
- * com a roda do mouse deixa a coluna mentindo.
- */
 export interface AtalhoDaBarra {
   id: string;
   titulo: string;
@@ -23,19 +18,6 @@ interface BarraLateralProps {
 export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr }) => {
   const trilha = React.useRef<HTMLElement>(null);
 
-  /*
-    A coluna acompanha a rolagem da lista.
-
-    Ela já sabia QUEM é o ativo e o destacava — mas nada a rolava, e ela também
-    tem barra de rolagem própria: com os nove grupos de emoji mais um ícone por
-    servidor, o ativo sai de vista. Rolando a lista até "Bandeiras", o destaque
-    ficava num botão fora da área visível da coluna, e ela parecia congelada
-    enquanto a lista descia.
-
-    Rolo a `nav` na mão em vez de usar `scrollIntoView` porque ele sobe por
-    todos os ancestrais roláveis: aqui isso mexeria também na lista de emoji, e
-    a coluna acabaria empurrando o conteúdo que ela só deveria acompanhar.
-  */
   React.useEffect(() => {
     const nav = trilha.current;
     if (!nav || !ativo) return;
@@ -47,8 +29,6 @@ export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr
     const abaixo = alvo.offsetTop + alvo.offsetHeight > nav.scrollTop + nav.clientHeight;
     if (!acima && !abaixo) return;
 
-    /// Centraliza em vez de encostar na borda: assim dá pra ver o que vem antes
-    /// e depois, e a coluna não fica dando pulinhos de um item a cada seção.
     nav.scrollTo({
       top: alvo.offsetTop - nav.clientHeight / 2 + alvo.offsetHeight / 2,
       behavior: "smooth",
@@ -82,11 +62,6 @@ export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr
   );
 };
 
-/**
- * O rodapé que mostra o que está sob o cursor. Fica sempre com a mesma
- * altura, com ou sem nada apontado, para a grade não pular quando o mouse
- * entra e sai.
- */
 export const Rodape: React.FC<{
   amostra?: React.ReactNode;
   titulo?: string;
@@ -112,7 +87,6 @@ export const Rodape: React.FC<{
   </footer>
 );
 
-/** O ícone do servidor, ou as duas primeiras letras quando não há imagem. */
 export const IconeDoServidor: React.FC<{
   nome: string;
   iconUrl: string | null;
@@ -131,12 +105,6 @@ export const IconeDoServidor: React.FC<{
     </span>
   );
 
-/**
- * Um bloco da lista, com o cabeçalho grudado no topo enquanto ele passa.
- *
- * O cabeçalho inteiro é o botão de abrir e fechar — mirar só na setinha de
- * 12px seria um alvo pequeno demais para algo que se usa o tempo todo.
- */
 export const Secao: React.FC<{
   titulo: string;
   icone?: React.ReactNode;

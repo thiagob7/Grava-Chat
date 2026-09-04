@@ -18,24 +18,6 @@ import {
 } from "~/components/ui/dialog";
 import { codigoDoConvite, MOLDES, type MoldeDeServidor } from "~/lib/moldes-de-servidor";
 
-/**
- * O convite pra criar o primeiro servidor, pra quem ainda não tem nenhum.
- *
- * Antes havia só uma frase — "Você ainda não tem servidores" — e uma seta
- * apontando pro `+` da barra. Isso descreve o problema sem oferecer a saída, e
- * quem acabou de criar a conta é exatamente quem menos sabe o que fazer com um
- * botão de mais. Aqui as duas saídas ficam à vista: criar o seu, ou entrar no
- * de alguém com um convite. Os moldes existem pra terceira situação, a mais
- * comum de todas — querer criar e não saber que canais fazem sentido.
- *
- * É JANELA, e não tela.
- *
- * Como tela, ela tomava o app inteiro e não tinha saída: quem não queria criar
- * servidor nenhum — porque veio pra conversar no privado com um amigo — ficava
- * preso num formulário, sem alcançar as mensagens diretas que estavam logo ali
- * atrás. Fechando no X, o que aparece é o app de verdade, com os amigos e as
- * conversas, e o `+` da barra continua ali pra quando der vontade.
- */
 export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void }> = ({
   aberto,
   onFechar,
@@ -58,15 +40,6 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
     try {
       const guild = await criarServidor.mutateAsync({ name: limpo });
 
-      /*
-        Os canais do molde vão um a um, e em sequência — não em paralelo. A
-        posição de cada canal sai do último criado, e disparar tudo junto faria
-        a ordem virar sorteio.
-
-        Se um falhar, o servidor já existe e a pessoa entra nele: melhor um
-        canal faltando, que ela cria em dois cliques, do que uma tela de erro
-        depois de o servidor ter sido criado de verdade.
-      */
       for (const canal of comMolde?.canais ?? []) {
         await criarCanal
           .mutateAsync({ guildId: guild.id, name: canal.nome, type: canal.tipo })
@@ -129,11 +102,6 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
               <button
                 key={m.id}
                 disabled={criando}
-                /*
-                  O molde preenche o nome sugerido em vez de criar na hora. Criar
-                  direto tiraria da pessoa a única decisão que ela realmente quer
-                  tomar aqui — como o servidor dela vai se chamar.
-                */
                 onClick={() => {
                   setMolde(m);
                   setNome((atual) => atual || m.sugestaoDeNome);

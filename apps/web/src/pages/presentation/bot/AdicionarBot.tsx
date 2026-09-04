@@ -15,13 +15,6 @@ import { CampoSelect } from "~/components/ui/select";
 import { Label } from "~/components/ui/input";
 import { PERMISSION_LABELS } from "@gravae/shared";
 
-/**
- * O que o link de convite abre — o equivalente ao "Adicionar app" do Discord.
- *
- * Quem chega aqui não é o dono do bot: é quem manda num servidor e está
- * decidindo se deixa o bot entrar. Por isso a tela mostra, antes de qualquer
- * botão, o que o bot está pedindo.
- */
 export const AdicionarBot: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
@@ -144,11 +137,6 @@ export const AdicionarBot: React.FC = () => {
   );
 };
 
-/**
- * Por que não há para onde levar. Três motivos diferentes que davam a mesma
- * frase antes — e "já está em todos os seus servidores" numa conta que não
- * gerencia nenhum mandava a pessoa procurar um problema que não existe.
- */
 const SemDestino: React.FC<{ onde?: DestinosDoBotModel }> = ({ onde }) => {
   if (!onde) return <>Carregando…</>;
 

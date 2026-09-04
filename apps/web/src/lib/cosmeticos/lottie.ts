@@ -72,7 +72,7 @@ export function usarLottie(
       player.current?.destroy();
       player.current = null;
     };
-  }, [caixa, chave, repetir, aplicar]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [caixa, chave, repetir, aplicar]); 
 
   useEffect(() => aplicar(), [animar, de, ate, aplicar]);
 }

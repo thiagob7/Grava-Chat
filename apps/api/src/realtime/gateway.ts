@@ -27,8 +27,6 @@ export async function createGateway(app: FastifyInstance) {
     pingTimeout: 25_000,
   });
 
-  /// Os dois clientes do adaptador precisam do mesmo cuidado do cliente
-  /// principal: erro sem ouvinte derruba o processo.
   const pub = vigiar(new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }), "pub");
   const sub = vigiar(pub.duplicate(), "sub");
   server.adapter(createAdapter(pub, sub));
@@ -38,17 +36,6 @@ export async function createGateway(app: FastifyInstance) {
 
     if (!token) return next(new Error("Sem token"));
 
-    /*
-      Duas portas de entrada, e é isto que faz um bot existir aqui.
-
-      Gente entra com o JWT de sessão, que nasce do cookie e expira. Bot entra
-      com "Bot <token>", que não expira e não veio de login nenhum — o código
-      dele roda na máquina do dono, fora daqui, e esta é a única forma de ele
-      chegar ao gateway.
-
-      Do `socket.data.userId` para baixo os dois são a mesma coisa: o bot é um
-      User, e handlers, permissões e salas não precisam saber a diferença.
-    */
     const ehBot = token.startsWith("Bot ");
 
     if (ehBot) {
@@ -88,18 +75,6 @@ export async function createGateway(app: FastifyInstance) {
         .then((status) => (status ? broadcastPresence(userId, status) : undefined))
         .catch((err) => app.log.error({ err, userId }, "falha ao desconectar"));
 
-      /*
-        A limpeza roda SEMPRE, e não só quando este socket sabe estar na voz.
-
-        O `socket.data.voiceChannelId` é memória deste socket. Quando o cliente
-        reconecta, o socket novo nasce com ela em branco — e se a retomada da
-        chamada falhar, ninguém mais tem a lembrança, mas o estado continua no
-        Redis apontando pra um socket que já morreu. Era um caminho pra ficar
-        na chamada pra sempre.
-
-        Chamar sem a guarda é barato e seguro: o `orphan` só age se o estado
-        for mesmo deste socket, então para os outros isso é um GET no Redis.
-      */
       cleanupVoiceOnDisconnect(userId, socket.id).catch((err) =>
         app.log.error({ err, userId }, "falha ao limpar estado de voz"),
       );
@@ -107,19 +82,6 @@ export async function createGateway(app: FastifyInstance) {
 
     socket.join([rooms.user(userId), ...socket.data.guildIds.map(rooms.guild)]);
 
-    /*
-      Todo mundo entra em tudo o que pode ver, na conexão.
-
-      Era só o bot que fazia isso — a pessoa entrava um canal de cada vez, com
-      o `channel:subscribe` de quando abria cada um. O efeito colateral era
-      grande: mensagem de canal que você não abriu nesta sessão não chegava no
-      navegador, então contador de não-lido, aviso e som só existiam para o
-      canal que estava na tela. O aviso que só toca quando você já está
-      olhando não é aviso.
-
-      O cálculo é o mesmo de sempre: canal fechado ao seu cargo continua
-      fechado, aqui e em qualquer outro lugar.
-    */
     inscreverNosCanais(socket).catch((err) =>
       app.log.error({ err, userId }, "falha ao inscrever nos canais"),
     );
@@ -133,7 +95,6 @@ export async function createGateway(app: FastifyInstance) {
   setIo(server);
   await Promise.all([presenceService.reset(), voiceService.reset()]);
 
-  /// A partir daqui, quem manda sobre "está na chamada?" é o SFU.
   const pararVigia = vigiarChamadasFantasma((err) =>
     app.log.error({ err }, "falha ao varrer chamadas fantasma"),
   );
@@ -147,13 +108,6 @@ export async function createGateway(app: FastifyInstance) {
   return server;
 }
 
-/**
- * As salas de quem acabou de conectar.
- *
- * Bot e pessoa entram do mesmo jeito e pelo mesmo cálculo de permissão; o que
- * muda é só que o bot nunca teve outro caminho, porque ele não abre canal
- * nenhum na tela.
- */
 async function inscreverNosCanais(socket: {
   data: { userId: string; guildIds: string[]; ehBot?: boolean };
   join: (rooms: string[]) => void;

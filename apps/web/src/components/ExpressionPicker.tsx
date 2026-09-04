@@ -17,22 +17,13 @@ export type Aba = "gifs" | "figurinhas" | "emoji";
 interface ExpressionPickerProps {
   guildId: string | undefined;
   abaInicial?: Aba;
-  /**
-   * "reacao" tira as abas e deixa só o emoji: não dá pra reagir a uma
-   * mensagem com um GIF nem com uma figurinha, então oferecê-los seria
-   * prometer o que não existe.
-   */
   modo?: "mensagem" | "reacao";
   onEmoji: (texto: string) => void;
   onSticker?: (sticker: Sticker) => void;
   onGif?: (gif: GifModel) => void;
-  /// Fechar o popover que abriga o seletor. Só o "Adicionar emoji" usa: sair
-  /// daqui para um modal com o seletor ainda aberto por cima fica confuso.
   onFechar?: () => void;
 }
 
-/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
-/// resolveria antes de o idioma existir e ficaria congelada.
 const ABAS: { id: Aba; label: string; placeholder: string }[] = [
   { id: "gifs", label: "conversa.expressoes.gifs", placeholder: "conversa.expressoes.buscarGifs" },
   {
@@ -61,17 +52,6 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
 
   const abrirConfiguracoes = useServerSettingsStore((s) => s.abrir);
 
-  /*
-    O atalho para subir um emoji novo.
-
-    Aparece só no servidor em que você está — a lista do seletor mostra todos
-    os seus, mas as configurações que o botão abre são as deste. E só para
-    quem pode: oferecer o caminho e esbarrar na permissão lá dentro é pior do
-    que não oferecer.
-
-    A consulta já está em cache (`staleTime: Infinity`); aqui ela não custa
-    ida à rede.
-  */
   const { data: servidor } = useFindGuild(guildId);
 
   const podeAdicionar = Boolean(
@@ -86,18 +66,10 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
     abrirConfiguracoes(guildId, "emoji");
   };
 
-  /*
-    A aba guarda a chave; a tradução acontece aqui, na hora de desenhar.
-
-    O caso do `soEmoji` é outro texto: quando o seletor abre para escolher uma
-    REAÇÃO, e não para escrever, a frase muda — e por isso ela tem chave
-    própria em vez de reaproveitar a do emoji.
-  */
   const chaveDaDica = soEmoji
     ? "conversa.expressoes.buscarReacao"
     : ABAS.find((a) => a.id === aba)?.placeholder;
   const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
-
 
   return (
     <div className="flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl">

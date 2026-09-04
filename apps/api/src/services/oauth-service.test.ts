@@ -7,13 +7,6 @@ const mget = vi.fn();
 const srem = vi.fn();
 const getdel = vi.fn();
 
-/*
-  Os passos de cada `multi()` caem todos aqui, em ordem.
-
-  O que importa nos testes de índice é justamente a companhia: o token e a
-  entrada no conjunto da pessoa precisam sair na MESMA transação, senão existe
-  um instante em que a aplicação tem acesso e ninguém consegue vê-la.
-*/
 let transacao: unknown[][] = [];
 
 const multi = () => {

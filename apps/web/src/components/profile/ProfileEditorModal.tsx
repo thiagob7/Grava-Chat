@@ -46,8 +46,6 @@ export const ProfileEditorModal: React.FC<{
   const perfil = paraPerfil(rascunho);
   const { enviar } = useEnvioDeImagemDePerfil((campo, url) => definir(campo, url));
 
-  /// O mesmo cartao do editor, sem os gestos de edicao — serve de prévia
-  /// dentro dos modais de enfeite.
   const previaDoCartao = {
     id: user.id,
     displayName: rascunho.displayName || user.displayName,
@@ -60,12 +58,6 @@ export const ProfileEditorModal: React.FC<{
     createdAt: user.createdAt,
   };
 
-  /*
-    Só sobe o que mudou. Mandar o payload inteiro fazia trocar a decoração do
-    avatar reenviar o `avatarUrl` — e quem entra com Google tem ali a foto do
-    Google, que a API recusa por não ser do nosso R2. O erro aparecia numa
-    edição que nada tinha a ver com a foto.
-  */
   const salvar = () => {
     const displayName = rascunho.displayName.trim();
     const bio = rascunho.bio.trim() || null;
@@ -118,15 +110,6 @@ export const ProfileEditorModal: React.FC<{
           </aside>
 
           <main className="min-w-0 flex-1 overflow-y-auto p-8">
-            {/*
-              Sem `zoom` de proposito: ampliar o cartao inflava junto toda a
-              tipografia e o resultado ficava com cara de cartaz. 384px ja e a
-              largura do cartao do Discord, entao ele aparece em tamanho real —
-              e e tambem o que impede o balao de status (max-w-52) de estourar
-              a borda e ser cortado pelo overflow-hidden.
-            */}
-            {/* Os dois campos ficam fora da tela: quem abre o seletor sao os
-                botoes desenhados sobre a faixa e sobre o avatar. */}
             <input
               ref={escolherFoto}
               type="file"
@@ -235,13 +218,6 @@ export const ProfileEditorModal: React.FC<{
             <X size={20} />
           </DialogPrimitive.Close>
 
-          {/*
-            Escolher enfeite vendo so a miniatura da grade e chute: a decoracao
-            muda o conjunto todo. Por isso o cartao inteiro vai junto no modal,
-            montado com o rascunho — mexeu na grade, mudou ali do lado, antes de
-            salvar. (Moldura e efeito do cartao estao desligados: veja
-            FAMILIAS_DESLIGADAS no catalogo.)
-          */}
           <EscolherEnfeiteModal
             open={enfeiteAberto === "decoracao"}
             titulo={t("perfil.editor.decoracao")}

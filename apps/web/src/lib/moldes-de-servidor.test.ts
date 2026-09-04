@@ -7,10 +7,6 @@ describe("codigoDoConvite", () => {
     expect(codigoDoConvite("SNxLBdiz")).toBe("SNxLBdiz");
   });
 
-  /*
-    Ninguém copia só o código: copia-se a URL inteira. Exigir o código puro
-    transformaria um "cola aqui" num exercício de edição de texto.
-  */
   it("aceita o link completo", () => {
     expect(codigoDoConvite("https://gravae-chat.vercel.app/invite/SNxLBdiz")).toBe("SNxLBdiz");
   });

@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { Check, Menu } from "lucide-react";
-/*
-  Os ícones do cabeçalho e da lista de canais vêm do Phosphor, na variante
-  `fill` — é o mesmo conjunto (e o mesmo peso) do app que serviu de referência.
-  Ele é MIT e entra como dependência: nada foi copiado do código deles, que é
-  AGPL e não daria pra misturar aqui.
-*/
 import {
   Bell,
   BellSlash,
@@ -81,17 +75,7 @@ export const Chat: React.FC = () => {
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const [showMembers, setShowMembers] = useState(true);
   const [postAberto, setPostAberto] = useState<ForumPostModel | null>(null);
-  /*
-    O chat da chamada mora DENTRO do canal de voz, como no Discord.
-
-    Antes ele era um painel solto: dava para estar lendo #musica-play com o
-    chat do "Tecnologia" aberto do lado, dois canais na tela ao mesmo tempo,
-    e nada dizia a qual deles a caixa de escrever pertencia. Agora é um
-    liga/desliga do canal de voz que está aberto — some sozinho quando você
-    sai dele.
-  */
   const [chatDaVozAberto, setChatDaVozAberto] = useState(false);
-  /// termo que está valendo; vazio fecha o painel de resultados
   const [busca, setBusca] = useState("");
 
   useRealtime(routeGuildId, routeChannelId);
@@ -114,25 +98,16 @@ export const Chat: React.FC = () => {
       return;
     }
 
-    /*
-      A voz entra na mesma lista: o canal tem chat, e sem o `join` no gateway
-      as mensagens novas dele não chegavam enquanto o painel estava aberto.
-    */
     if (target.type === "TEXT" || target.type === "FORUM" || target.type === "VOICE") {
       void joinChannel(target.id).catch(() => undefined);
     }
   }, [routeGuildId, routeChannelId, detail, navigate]);
 
   useEffect(() => setPostAberto(null), [routeChannelId]);
-  /// Resultado é de um servidor só; ao trocar, o painel some em vez de mostrar
-  /// mensagens de um lugar onde você não está mais.
   useEffect(() => setBusca(""), [routeGuildId]);
-  /// A ficha é de alguém DESTE servidor; trocando de casa, ela fecha.
   useEffect(() => useModeracao.getState().fechar(), [routeGuildId]);
 
   const channel = detail?.channels.find((c) => c.id === routeChannelId);
-  /// Aberto E num canal de voz: mudar para um canal de texto guarda a escolha
-  /// sem mostrar o painel, e voltar para a voz o traz de volta.
   const chatDaVozVisivel = chatDaVozAberto && channel?.type === "VOICE";
   const summary = guilds.find((g) => g.id === routeGuildId);
   const { can, canInChannel } = usePermissions(detail);
@@ -144,8 +119,6 @@ export const Chat: React.FC = () => {
 
   const accountVoiceChannelId = myVoiceState?.channelId ?? null;
 
-  /// Quem está em qualquer canal de voz deste servidor, pra lista de membros
-  /// trocar a bolinha de presença pelo alto-falante.
   const quemEstaEmVoz = new Set(
     Object.values(detail?.voiceStates ?? {})
       .flat()
@@ -167,10 +140,6 @@ export const Chat: React.FC = () => {
     const contaJaEstaNesteCanal = (detail?.voiceStates[channelId] ?? []).some(
       (state) => state.userId === user?.id,
     );
-    /*
-      Sua conta já está nesta chamada, noutro aparelho. Antes o clique não
-      fazia NADA — sem resposta e sem explicação. Agora pergunta.
-    */
     if (contaJaEstaNesteCanal) return setConfirmandoVoz(channelId);
     if (!canInChannel(channelId, "CONNECT")) return;
     if (!voiceReachable) return;
@@ -181,10 +150,7 @@ export const Chat: React.FC = () => {
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
 
-  /// Canal de voz na tela larga não tem cabeçalho — ver o comentário lá embaixo,
-  /// onde ele deixa de ser desenhado.
   const semCabecalho = channel?.type === "VOICE" && !telaEstreita;
-  /// canal em que a conta já está por outro aparelho, esperando decisão
   const [confirmandoVoz, setConfirmandoVoz] = useState<string | null>(null);
 
   const handleLogout = async () => {
@@ -192,23 +158,8 @@ export const Chat: React.FC = () => {
     endSession();
   };
 
-  /*
-    Sem servidor nenhum, quem manda na tela são as mensagens diretas.
-
-    Aqui a rota de servidores montava uma tela própria com o convite de criar o
-    primeiro — e sem servidor não há canal, então essa tela não tinha o que
-    mostrar além do formulário. O convite virou janela e mora no `/dm`, que é o
-    lugar onde quem não tem servidor de fato tem coisa pra fazer: os amigos e as
-    conversas.
-  */
   if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
 
-  /*
-    As mesmas duas colunas servem os dois tamanhos de tela. No desktop elas
-    ficam no fluxo; no celular, dentro de uma gaveta — e por isso viram uma
-    variável em vez de JSX repetido: duplicar essa lista de props seria garantir
-    que uma das cópias ficasse pra trás na próxima mudança.
-  */
   const navegacao = (
     <>
         <GuildRail
@@ -230,11 +181,6 @@ export const Chat: React.FC = () => {
         }}
           onLogout={() => void handleLogout()}
           accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
-          /*
-            O ícone de chat abre o canal de voz e o chat dele — sem entrar na
-            chamada. Por isso `navigate` direto, e não o `selectChannel`, que
-            conecta o microfone ao chegar num canal de voz.
-          */
           onOpenVoiceChat={(id) => {
             navigate(`/channels/${routeGuildId}/${id}`);
             setChatDaVozAberto(true);
@@ -252,17 +198,8 @@ export const Chat: React.FC = () => {
 
   return (
     <div className="flex h-full bg-surface-0">
-      {/*
-        `bg-surface-0` só se vê na curva do painel de canais: todo o resto
-        está coberto pelo trilho, pelo painel e pela conversa. É a cor do
-        trilho, pra que a mordida no canto pareça o trilho continuando — sem
-        isto apareceria o fundo do `body`, que é `surface-2` e é mais CLARO
-        que os dois vizinhos.
-      */}
       {telaEstreita ? (
         <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
-          {/* O Sheet nasce à direita; aqui ele vira gaveta da esquerda, que é
-              de onde a navegação sai em qualquer app de celular. */}
           <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
             <SheetTitle className="sr-only">Servidores e canais</SheetTitle>
             {navegacao}
@@ -272,37 +209,7 @@ export const Chat: React.FC = () => {
         navegacao
       )}
 
-      {/*
-        O cabeçalho por CIMA da lista de membros, como no Discord.
-
-        Antes ele morava dentro do `<main>` e parava na borda da conversa: a
-        lista de membros tinha uma faixa própria ao lado, e as duas juntas
-        liam como dois cabeçalhos de coisas diferentes, na mesma altura, com
-        um corte no meio. O nome do canal vale para a coluna inteira — a
-        conversa E quem está nela.
-
-        Daí esta coluna: cabeçalho em cima ocupando tudo, e embaixo a linha
-        com a conversa e os painéis da direita. O `min-h-0` na linha é o que
-        deixa a conversa rolar; sem ele o flex cresce até o conteúdo e a
-        rolagem vaza para a página.
-      */}
       <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-        {/*
-          Canal de voz não tem cabeçalho, como no Discord e no Fluxer.
-
-          A chamada é a tela inteira, e o nome do canal já flutua no canto de
-          cima do palco. Uma faixa de 48px repetindo esse nome custa uma fileira
-          de rostos e não diz nada de novo.
-
-          Na tela estreita ele FICA: é ali que mora o botão que abre a gaveta de
-          servidores e canais, e sem cabeçalho quem entrasse numa chamada pelo
-          celular não teria como voltar para a lista.
-
-          O que a faixa carregava e não cabe no canal de voz — a estrela, a
-          caixa de entrada, o botão do aplicativo — desce para o canto do palco
-          pelo `acoesDoPalco`. Sumir com eles seria trocar um pedido de desenho
-          por uma perda de função.
-        */}
         {!semCabecalho && (
         <header className="regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
           {telaEstreita && (
@@ -331,12 +238,6 @@ export const Chat: React.FC = () => {
             </>
           )}
 
-          {/*
-            A ordem é a da referência, e ela tem lógica: primeiro o que age
-            sobre ESTE canal (avisos, fixadas, favorito), depois o que muda a
-            tela (membros), depois a busca, e por último os dois que valem pro
-            app inteiro.
-          */}
           <div className="ml-auto flex items-center gap-3">
             {channel && channel.type !== "VOICE" && <SinoDoCanal channelId={channel.id} />}
 
@@ -375,10 +276,6 @@ export const Chat: React.FC = () => {
 
             {routeGuildId && <CampoDeBusca termo={busca} onBuscar={setBusca} />}
 
-            {/*
-              Estes dois fecham a fileira, depois da busca: eles não agem sobre
-              a conversa aberta, e sim sobre o app inteiro.
-            */}
             <BotaoDoAplicativo />
             <CaixaDeEntrada />
           </div>
@@ -400,24 +297,12 @@ export const Chat: React.FC = () => {
               voiceStates={detail?.voiceStates[channel.id]}
               minhasPermissoes={detail?.permissions}
               currentUserId={user?.id}
-              /*
-                O MESMO estado do botão do cabeçalho, e não um segundo.
-
-                São dois caminhos até o mesmo interruptor — o de cima, para quem
-                procura na barra do canal, e o do canto do palco, para quem está
-                dentro da chamada. Dois estados fariam o chat abrir por um e
-                continuar "fechado" para o outro.
-              */
               chatAberto={chatDaVozAberto}
               onAlternarChat={() => setChatDaVozAberto((aberto) => !aberto)}
               podeConvidar={can("CREATE_INVITE")}
             />
           ) : (
             <div className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
-              {/*
-                A tira de arrasto continua, mesmo vazia: sem cabeçalho é ela
-                que sobra pra arrastar a janela pelo alto, no aplicativo.
-              */}
               {semCabecalho && (
                 <div className="regiao-de-arrasto absolute inset-x-0 top-0 h-12" />
               )}
@@ -526,15 +411,6 @@ export const Chat: React.FC = () => {
             />
           )}
 
-          {/*
-            No canal de voz não há lista de membros.
-
-            Quem está na chamada já são os quadros do palco, com o nome, o
-            microfone e a câmera de cada um — a coluna da direita repetiria os
-            mesmos nomes numa lista, e ainda estreitaria o palco pra fazer
-            isso. Quem está no servidor e NÃO está na chamada não interessa a
-            quem está dentro dela.
-          */}
           {showMembers && channel?.type !== "VOICE" && !chatDaVozVisivel && !busca && (
             <MemberList
               members={detail?.members ?? []}
@@ -547,11 +423,6 @@ export const Chat: React.FC = () => {
             />
           )}
 
-          {/*
-            Por último na fila, à direita de tudo: a ficha empurra a lista de
-            membros para o lado em vez de tapá-la. Só a partir de `xl` — abaixo
-            disso, duas colunas de 22rem não cabem sem espremer a conversa.
-          */}
           <ModeratorView roles={detail?.roles ?? []} />
         </div>
       </div>
@@ -573,16 +444,6 @@ export const Chat: React.FC = () => {
   );
 };
 
-/**
- * O sino do canal: o que ESTE canal faz com as mensagens que chegam.
- *
- * As três escolhas de sempre — tudo, só menções, nada — e uma quarta
- * que importa mais: "seguir o padrão", que apaga a exceção em vez de gravar
- * "tudo". Sem ela, mexer no sino uma vez congelaria o canal na escolha de
- * hoje, mesmo que a preferência geral mudasse depois.
- *
- * Vale neste aparelho, como todo o resto dos avisos.
- */
 const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
   const modo = useAvisos((s) => s.porCanal[channelId] ?? null);
   const definirCanal = useAvisos((s) => s.definirCanal);
@@ -633,12 +494,6 @@ const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
   );
 };
 
-/**
- * A estrela: põe o canal no topo da lista, num grupo "Favoritos".
- *
- * Vale neste aparelho — favoritar é dizer "quero este à mão", e o que está à
- * mão no trabalho não é o mesmo que em casa.
- */
 const EstrelaDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
   const favorito = useFavoritos((s) => s.canais.includes(channelId));
   const alternar = useFavoritos((s) => s.alternar);

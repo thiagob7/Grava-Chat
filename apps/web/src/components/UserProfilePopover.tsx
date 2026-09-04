@@ -153,12 +153,6 @@ const ProfileCard: React.FC<{
   const { can } = usePermissions(detalheDoServidor);
   const setRoles = useSetMemberRoles(guildId);
 
-  /*
-    Cargos vindos do detalhe do servidor, nao das props: e a mesma fonte que a
-    mutacao invalida, entao mexer num cargo aqui repinta o cartao na hora em
-    vez de esperar o pai repassar as props. As props ficam de reserva pra
-    quando o detalhe ainda nao esta em cache.
-  */
   const cargosDoServidor = detalheDoServidor?.roles ?? roles;
   const membrosDoServidor = detalheDoServidor?.members ?? [];
   const idsDoMembro =
@@ -170,11 +164,6 @@ const ProfileCard: React.FC<{
 
   const corDoCargo = corDoCargoMaisAlto(idsDoMembro, cargosDoServidor);
 
-  /*
-    A mesma hierarquia que a API cobra, so que antes: o dono passa por cima de
-    tudo, e os demais so mexem no que esta abaixo do proprio cargo mais alto —
-    inclusive na pessoa, que nao pode estar acima de quem esta mexendo.
-  */
   const souDono = Boolean(eu && detalheDoServidor?.guild.ownerId === eu.id);
   const meusIds =
     membrosDoServidor.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
@@ -273,11 +262,6 @@ const ProfileCard: React.FC<{
     removeFriend.isPending ||
     openDm.isPending;
 
-  /*
-    Fila de acoes no corpo do cartao, embaixo do @username — o mesmo lugar do
-    Discord. Antes elas flutuavam no canto da faixa, sobre a imagem, o que
-    escondia parte do banner e deixava o botao principal la no rodape.
-  */
   const acoes = (
     <>
       {perfil.friendship === "SELF" ? (
@@ -307,8 +291,6 @@ const ProfileCard: React.FC<{
                   username: perfil.username,
                   avatarUrl: perfil.avatarUrl,
                 });
-                /// O cartão sai da frente: a ficha abre na coluna, e os dois
-                /// abertos ao mesmo tempo seriam a mesma pessoa em dobro.
                 onFechar();
               }}
             >
@@ -640,17 +622,6 @@ const BotaoDeAmizade: React.FC<{
   );
 };
 
-/**
- * As contas de fora que a pessoa declarou, no cartão de perfil.
- *
- * O `rel="noreferrer noopener"` não é enfeite: sem `noopener` a página aberta
- * ganha `window.opener` e pode trocar a aba de origem por uma cópia da tela de
- * login. É um link que a PESSOA DO PERFIL escolheu e alguém clica — a mesma
- * situação em que o ataque funciona.
- *
- * O endereço é montado no `shared` a partir do handle, nunca guardado inteiro,
- * então nada que não seja `https://` de um domínio conhecido chega aqui.
- */
 const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
   const { t } = useTranslation();
   const validas = (conexoes ?? [])

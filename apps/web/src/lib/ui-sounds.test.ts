@@ -2,15 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { GRUPOS_DE_SONS, NOMES_DOS_SONS, TODOS_OS_SONS } from "~/lib/ui-sounds";
 
-/*
-  O catálogo e o mapa `SONS` são duas listas da mesma coisa — o mesmo risco do
-  catálogo de tokens, e a mesma falha silenciosa: som que fica de fora nunca
-  aparece na tela de Notificações, e ninguém descobre que não podia desligá-lo.
-
-  O TypeScript garante um lado: `nome` é `SomDaInterface`, então som inventado
-  não compila. Estes testes garantem o outro — e comparam com a fonte, não com
-  um número escrito à mão, que envelheceria no primeiro som novo.
-*/
 describe("catálogo de sons", () => {
   it("cobre todo som que o app sabe tocar", () => {
     const listados = new Set(TODOS_OS_SONS.map((s) => s.nome));

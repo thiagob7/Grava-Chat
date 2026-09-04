@@ -1,16 +1,5 @@
 import { create } from "zustand";
 
-/**
- * O estúdio de temas: substituições de token e CSS solto, deste aparelho.
- *
- * Mora no navegador, como a aparência — é decisão de onde você está sentado, e
- * um CSS que quebrou a tela num aparelho não pode viajar com a conta e quebrar
- * nos outros.
- *
- * As substituições são escritas como variável EM LINHA no `<html>`, que ganha
- * de qualquer `:root[data-tema=…]` do CSS sem precisar de `!important`. Trocar
- * de tema continua funcionando: o que você não substituiu segue o tema novo.
- */
 export interface TemaSalvo {
   id: string;
   nome: string;
@@ -18,13 +7,6 @@ export interface TemaSalvo {
   css: string;
 }
 
-/**
- * Um arquivo pra usar dentro do CSS — imagem de fundo, fonte, o que for.
- *
- * Guardamos só o endereço: o arquivo em si vai pro mesmo lugar dos anexos, e
- * não pro `localStorage`. Uma imagem de fundo em base64 estoura o limite de
- * 5 MB do navegador sozinha, e aí o estúdio inteiro para de salvar.
- */
 export interface AtivoDoTema {
   id: string;
   nome: string;
@@ -66,22 +48,8 @@ function ler(): EstadoDoEstudio {
 
 const ID_DO_ESTILO = "gc-estudio-css";
 
-/*
-  O que o estúdio escreveu na última vez.
-
-  Ele não pode simplesmente varrer todas as variáveis em linha da raiz: a cor
-  de destaque (a das bolinhas em Aparência) mora exatamente ali também, e a
-  varredura apagaria a escolha da pessoa toda vez que um token mudasse. Então
-  o estúdio só tira o que ele mesmo pôs.
-*/
 let escritos = new Set<string>();
 
-/**
- * Escreve no documento o que o estúdio decidiu.
- *
- * Removemos as variáveis que saíram da lista antes de escrever as novas —
- * senão tirar uma substituição não a apagaria da tela, só do estado.
- */
 function aplicar(estado: EstadoDoEstudio) {
   const raiz = document.documentElement;
 
@@ -169,6 +137,4 @@ export const useEstudio = create<EstudioStore>((set, store) => {
   };
 });
 
-/// Na abertura do app, antes de qualquer tela: o tema personalizado tem que
-/// estar de pé no primeiro quadro, senão a interface pisca no tema base.
 aplicar(useEstudio.getState());

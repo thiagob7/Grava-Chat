@@ -32,13 +32,6 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
         <p className="flex items-center gap-2 font-semibold">
           <AlertTriangle size={18} className="text-danger" /> {t("servidor.excluir.aviso")}
         </p>
-        {/*
-          O nome do canal por interpolação, e não num `<strong>` no meio.
-
-          Frase partida por elemento não se traduz aos pedaços: cada idioma
-          ordena as partes do seu jeito. Perde-se o negrito no nome — ele
-          continua na frase, e a frase continua certa em 34 idiomas.
-        */}
         <p className="mt-2 text-sm text-ink-muted">
           {t("servidor.canal.excluir.historico", { canal: channel.name })}
         </p>

@@ -24,7 +24,6 @@ vi.mock("~/services/voice-service.js", () => ({
 
 const { DIAS_GUARDADOS, diaUtc, statusService } = await import("~/services/status-service.js");
 
-/// O dia `n` dias atrás, do jeito que o serviço mesmo escreve.
 const diaAtras = (n: number) => diaUtc(new Date(Date.now() - n * 24 * 60 * 60 * 1000));
 
 beforeEach(() => {
@@ -40,11 +39,6 @@ describe("o dia do balde", () => {
     expect(diaUtc(new Date("2026-09-03T23:40:00Z"))).toBe("2026-09-03");
   });
 
-  /*
-    O caso que justifica o UTC: 23h no Brasil já é o dia seguinte em Londres.
-    Se o balde seguisse o fuso de quem grava, a mesma medição cairia em dias
-    diferentes conforme o servidor mudasse de máquina.
-  */
   it("não escorrega para o dia anterior por causa do fuso", () => {
     expect(diaUtc(new Date("2026-09-04T02:00:00Z"))).toBe("2026-09-04");
   });
@@ -67,8 +61,6 @@ describe("o estado de agora", () => {
     expect(medidas.find((m) => m.peca === "banco")?.estado).toBe("up");
   });
 
-  /// O SFU responde sem erro e mesmo assim está fora: ele devolve nada. Sem
-  /// esta conversão, uma resposta vazia contaria como peça no ar.
   it("marca o SFU como fora quando ele responde vazio", async () => {
     estadoDoSfu.mockResolvedValue(null);
 
@@ -87,13 +79,6 @@ describe("a janela de dias", () => {
     expect(janela.api.at(-1)?.dia).toBe(diaAtras(0));
   });
 
-  /*
-    A diferença que dá nome à página: dia sem registro é `null`, não zero.
-
-    Zero seria "ninguém conseguiu falar com a peça o dia inteiro"; `null` é
-    "ninguém perguntou". Trocar um pelo outro inventaria uma queda de 24 horas
-    toda vez que a máquina que mede ficasse fora.
-  */
   it("distingue dia sem medição de dia sem nenhuma resposta", async () => {
     registros.mockResolvedValue([
       { peca: "api", dia: diaAtras(1), medidas: 100, falhas: 100, msSoma: 0 },
@@ -116,8 +101,6 @@ describe("a janela de dias", () => {
     expect(janela.banco.find((d) => d.dia === diaAtras(3))?.uptime).toBe(99.93);
   });
 
-  /// Registro que existe mas não mediu nada é buraco, não queda — dividir por
-  /// zero aqui daria `NaN`, que a página desenharia como barra sem cor.
   it("trata registro sem medição como buraco", async () => {
     registros.mockResolvedValue([
       { peca: "cache", dia: diaAtras(5), medidas: 0, falhas: 0, msSoma: 0 },

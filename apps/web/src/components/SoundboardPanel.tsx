@@ -29,9 +29,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
   const [busca, setBusca] = useState("");
   const [aberto, setAberto] = useState(false);
 
-  /// Ensurdecido é ensurdecido: quem desligou os dois não vai tocar som pra
-  /// chamada sem ouvir o que mandou. O Discord apaga o botão nessa hora, e é
-  /// o que faz sentido — sem isso dá pra soltar áudio às cegas.
   const surdo = useVoiceStore((s) => s.deafened);
   const somDoPainel = useVoicePrefs((s) => s.somDoPainel);
   const volumeDoPainel = useVoicePrefs((s) => s.volumeDoPainel);
@@ -39,13 +36,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
 
   const [volumeAberto, setVolumeAberto] = useState(false);
 
-  /*
-    O balão do volume fecha com carência.
-
-    Entre o ícone e o balão existe um vão — e no instante em que o mouse entra
-    nele não está mais em cima de nenhum dos dois. Sem a carência, o balão
-    sumia bem no meio do caminho e não dava pra chegar na faixa.
-  */
   const saindo = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const mostrarVolume = () => {
@@ -58,11 +48,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
     saindo.current = setTimeout(() => setVolumeAberto(false), 220);
   };
 
-  /*
-    Enquanto a espera corre, os botões ficam apagados. Sem isso, quem aperta
-    depressa levava um aviso de erro na tela a cada clique — a trava do
-    servidor recusa o segundo som, e a recusa virava toast.
-  */
   const [esperando, setEsperando] = useState(false);
   const relogio = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -93,8 +78,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
 
   const porcento = Math.round(volumeDoPainel * 100);
 
-  /// Ensurdecer com o painel aberto fecha o painel: senão dava pra continuar
-  /// apertando som pra chamada inteira sem ouvir nada do que saiu.
   useEffect(() => {
     if (surdo) setAberto(false);
   }, [surdo]);
@@ -102,12 +85,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
   return (
     <Popover open={aberto} onOpenChange={setAberto}>
       <PopoverTrigger asChild>
-        {/*
-          `aria-disabled` no lugar de `disabled`: botão desabilitado de
-          verdade não recebe evento de mouse — nem o filho —, e aí o balão que
-          explica POR QUE ele está apagado nunca apareceria. O clique morre no
-          `preventDefault`, que o Radix respeita e não abre o painel.
-        */}
         <button
           aria-label="Efeitos sonoros"
           aria-disabled={surdo}
@@ -125,11 +102,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
         </button>
       </PopoverTrigger>
 
-      {/*
-        `collisionPadding`: o gatilho fica na barra de baixo, coladinho na
-        esquerda da janela, e sem folga o balão nascia grudado na borda —
-        parecia cortado pela tela.
-      */}
       <PopoverContent side="top" align="center" collisionPadding={12} className="w-[21rem] p-0">
         <div className="flex items-center gap-2 border-b border-divisor p-3">
           <div className="relative flex-1">
@@ -137,11 +109,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
               size={15}
               className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
             />
-            {/*
-              Foco neutro. O padrão do app acende a borda e um anel na cor da
-              marca — que é vermelha, e num campo de busca dentro de um balão
-              escuro lia como erro de formulário, não como "estou aqui".
-            */}
             <Input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -150,17 +117,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
             />
           </div>
 
-          {/*
-            Só o ícone, como no Discord: o clique cala os sons, e o mouse
-            parado em cima abre o volume. Antes era um ícone dentro de uma
-            caixinha cinza que virava vermelha — chamava mais atenção que os
-            próprios sons, e a faixa de volume ocupava um rodapé inteiro do
-            cartão.
-
-            O `<div>` em volta é o que segura o balão aberto: como o conteúdo
-            nasce aqui dentro (`portal={false}`), atravessar o vão entre o
-            ícone e o balão não conta como sair.
-          */}
           <div
             className="shrink-0"
             onMouseEnter={mostrarVolume}
@@ -190,7 +146,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                 onMouseLeave={esconderVolume}
                 portal={false}
                 collisionPadding={12}
-                /// o foco é da busca; roubá-lo ao passar o mouse fecharia o teclado
                 onOpenAutoFocus={(e) => e.preventDefault()}
                 className="w-60 p-3"
               >
@@ -250,10 +205,6 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                 title={som.name}
                 className="flex items-center gap-2 rounded-lg bg-surface-2 px-2.5 py-2 text-left transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {/*
-                  `||`, não `??`: som sem emoji vem com string vazia, e o `??`
-                  deixava o botão com um buraco no lugar do ícone.
-                */}
                 <span className="shrink-0 text-base leading-none">{som.emoji || "🔊"}</span>
                 <span className="min-w-0 flex-1 truncate text-xs">{som.name}</span>
               </button>

@@ -9,8 +9,6 @@ export const useSessoes = () =>
   useQuery({
     queryKey: [queryKeys.sessao.lista],
     queryFn: findSessoes,
-    /// Uma sessão que aparece aqui pode ter morrido noutro aparelho há minutos.
-    /// Recarregar ao voltar pra aba é mais barato que um relógio.
     refetchOnWindowFocus: true,
   });
 

@@ -54,8 +54,6 @@ interface RespostaCategoria {
   tags?: { searchterm?: string; name?: string; image?: string }[];
 }
 
-/// A Klipy devolve o nome com "#" na frente ("#happy birthday"); quem lê a
-/// grade não quer a cerquilha.
 function converterCategorias(resposta: RespostaCategoria): CategoriaDeGif[] {
   return (resposta.tags ?? []).flatMap((tag) => {
     const termo = tag.searchterm?.trim();
@@ -84,8 +82,6 @@ async function pedir(caminho: string, params: Record<string, string>) {
   return resposta.json();
 }
 
-/// Uma chamada à Klipy por caminho+parâmetros, guardada por alguns minutos. O
-/// `converter` roda sobre o que veio da rede, não sobre o que saiu do cache.
 async function comCache<T>(
   caminho: string,
   params: Record<string, string>,

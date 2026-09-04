@@ -6,7 +6,6 @@ export interface SessaoModel {
   ip: string | null;
   criadaEm: string;
   expiraEm: string;
-  /// a deste aparelho — não dá pra encerrar por aqui
   atual: boolean;
 }
 

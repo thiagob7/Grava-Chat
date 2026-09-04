@@ -5,17 +5,6 @@ import { pedirPermissaoDeAviso, permissaoDeAviso } from "~/lib/notificacoes";
 
 const CHAVE = "gravae:aviso-perguntado";
 
-/**
- * O convite para ligar os avisos, uma vez só.
- *
- * Pedir a permissão no carregamento, sem que ninguém tenha clicado em nada, é
- * o jeito mais rápido de levar um "bloquear" para sempre — e aí nem a tela de
- * Configurações consegue pedir de novo. Então o pedido de verdade acontece no
- * clique daqui, que é um gesto do usuário como o navegador exige.
- *
- * Quem disser "agora não" não vê mais: o caminho continua em Configurações →
- * Notificações.
- */
 export function useConviteDeAviso(ativo: boolean) {
   useEffect(() => {
     if (!ativo || permissaoDeAviso() !== "perguntar") return;
@@ -33,8 +22,6 @@ export function useConviteDeAviso(ativo: boolean) {
       }
     };
 
-    /// Uma pausa antes de aparecer: chegar junto com a tela ainda montando
-    /// vira mais uma coisa piscando no meio de tudo.
     const relogio = setTimeout(() => {
       toast.info(
         ({ closeToast }) => (

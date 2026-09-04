@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
 
-/**
- * Se o Shift está pressionado agora. É o que revela as ações escondidas na
- * barra da mensagem, como no Discord.
- *
- * Ouve `blur` da janela junto com o `keyup`: trocar de aplicativo com o Shift
- * na mão nunca devolve o `keyup`, e a barra ficaria aberta pra sempre.
- */
 export function useShiftPressionado() {
   const [shift, setShift] = useState(false);
 

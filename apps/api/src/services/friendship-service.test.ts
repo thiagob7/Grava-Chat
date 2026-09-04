@@ -55,11 +55,6 @@ describe("lista de relações", () => {
     expect(lista[0]?.user.id).toBe("outra");
   });
 
-  /*
-    O bloqueio mora numa linha só, e ela aparecia dos dois lados. A tela nunca
-    desenhou — as abas filtram por ACCEPTED e PENDING —, mas o dado saía do
-    servidor, e quem olhasse a resposta da rede sabia que tinha sido bloqueado.
-  */
   it("não conta pra ninguém que foi bloqueado", async () => {
     findAllForUser.mockResolvedValue([relacao("r1", "outra", "eu", "BLOCKED")]);
 

@@ -32,9 +32,7 @@ interface TemaDaLista {
   nome: string;
   icone: React.ReactNode;
   amostra: string[];
-  /// o tema da casa não se explica com três faixas de cinza: ele mostra a marca
   marca?: boolean;
-  /// tema cuja graça é o acento, e não a escala de cinza: ele aparece na amostra
   acento?: string;
 }
 
@@ -99,11 +97,6 @@ export const AppearanceSection: React.FC = () => {
                   : "border-line hover:border-ink-faint",
               )}
             >
-              {/*
-                A amostra é a própria escala do tema — as três superfícies que
-                o app usa mais. Um quadrado de cor só não diz nada; três em
-                camada mostram o contraste que você vai encarar.
-              */}
               <span className="relative flex h-14" aria-hidden>
                 {tema.amostra.map((cor) => (
                   <span
@@ -148,10 +141,6 @@ export const AppearanceSection: React.FC = () => {
           ))}
         </div>
 
-        {/*
-          O tema escolhido é a base; o estúdio é o que se pinta por cima dela.
-          Por isso o botão mora aqui embaixo da grade, e não numa seção sua.
-        */}
         <div className="mt-4">
           <Button variant="surface" onClick={() => setEstudioAberto(true)}>
             <Palette size={16} /> Abrir estúdio de temas…
@@ -175,8 +164,6 @@ export const AppearanceSection: React.FC = () => {
       >
         <div className="flex flex-wrap items-center gap-2">
           {CORES_DE_DESTAQUE.map((cor, indice) => {
-            /// A primeira é a da marca — escolher ela é voltar ao padrão, e
-            /// padrão é ausência de escolha guardada.
             const valor = indice === 0 ? null : cor.valor;
             const escolhida = prefs.destaque === valor;
 
@@ -236,11 +223,6 @@ export const AppearanceSection: React.FC = () => {
         titulo="Interface"
         detalhe="O contorno da janela e as colunas que ficam em volta da conversa."
       >
-        {/*
-          Só no aplicativo: no navegador o miolo encosta na aba e não há canto
-          para arredondar. Mostrar um interruptor que não muda nada seria pior
-          que não mostrar — quem clica conclui que está quebrado.
-        */}
         {ehDesktop() && (
           <Opcao
             titulo="Cantos arredondados"

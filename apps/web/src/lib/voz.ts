@@ -1,18 +1,7 @@
-/**
- * Ler mensagem em voz alta.
- *
- * `speechSynthesis` é do navegador e não pede nada de fora: nenhuma chave,
- * nenhum servidor, nenhum áudio saindo daqui. A voz é a que o sistema já tem
- * instalada — a mesma que o VoiceOver e o Narrador usam.
- *
- * Existe para quem não pode ou não quer olhar a tela o tempo todo: quem está
- * cozinhando, quem está com o app numa segunda tela, e quem enxerga pouco.
- */
+
 
 export type ModoDeLeitura = "nunca" | "canal-aberto" | "todos";
 
-/// Nomes de voz que valem oferecer primeiro. O sistema costuma instalar
-/// dezenas, quase todas de outros idiomas, e a lista crua é inútil.
 const IDIOMAS_PREFERIDOS = ["pt-BR", "pt-PT", "pt"];
 
 export interface Falado {
@@ -20,22 +9,8 @@ export interface Falado {
   texto: string;
 }
 
-/*
-  Limite do que é lido de uma vez.
-
-  Uma mensagem de dois mil caracteres vira dois minutos de fala que não dá pra
-  interromper sem desligar tudo. Cortar e avisar que cortou é mais honesto que
-  ler o começo e parar no meio de uma frase sem explicação.
-*/
 const MAXIMO = 300;
 
-/**
- * O que a voz vai dizer, a partir da mensagem.
- *
- * Separado do ato de falar porque é a parte que erra: link virando uma
- * sequência de letras, emoji virando silêncio no meio da frase, menção lida
- * como número. Aqui dá para testar cada caso sem um sintetizador por perto.
- */
 export function comoSeFala({ autor, texto }: Falado): string {
   let limpo = texto
     /// Blocos de código não se leem — viram "crase crase crase js".
@@ -70,12 +45,6 @@ export function vozesDisponiveis(): SpeechSynthesisVoice[] {
 
   const todas = window.speechSynthesis.getVoices();
 
-  /*
-    Português primeiro, e o resto depois — não filtrado fora.
-
-    Filtrar deixaria sem opção quem só tem voz em inglês instalada, que é o
-    caso de boa parte dos Windows em português. Melhor ordenar do que esconder.
-  */
   return [...todas].sort((a, b) => {
     const pesoA = IDIOMAS_PREFERIDOS.indexOf(a.lang) === -1 ? 1 : 0;
     const pesoB = IDIOMAS_PREFERIDOS.indexOf(b.lang) === -1 ? 1 : 0;
@@ -94,13 +63,6 @@ export interface OpcoesDeFala {
   velocidade?: number;
 }
 
-/**
- * Fala, e corta o que estava sendo falado.
- *
- * Enfileirar seria o padrão do navegador e é errado aqui: numa conversa
- * movimentada a fila cresce mais rápido do que a voz anda, e em um minuto a
- * pessoa está ouvindo mensagens de três minutos atrás. Conversa é agora.
- */
 export function falar(frase: string, opcoes: OpcoesDeFala = {}): void {
   if (!daPraFalar() || !frase.trim()) return;
 

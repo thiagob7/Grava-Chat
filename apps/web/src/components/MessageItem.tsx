@@ -71,8 +71,6 @@ import { useTranslation } from "~/traducao";
 
 const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];
 
-/// O que o item do menu manda. Segurar qualquer atalho ou pílula super-reage
-/// com aquele emoji; o menu precisa de um só, e o fogo é o mais "super".
 const SUPER_PADRAO = "🔥";
 
 interface MessageItemProps {
@@ -83,13 +81,11 @@ interface MessageItemProps {
   isOwn: boolean;
   currentUserId?: string;
   guildId?: string;
-  /// a mensagem que esta responde, quando ainda está na lista carregada
   respondida?: PendingMessageModel;
   emojis?: GuildEmoji[];
   enfeites?: EnfeitesDaPessoa;
   mencoes?: ResolverMencoes;
   meMenciona?: boolean;
-  /// veio de uma busca ou de "ir para a mensagem": acende por alguns segundos
   destacada?: boolean;
   onRetry: (message: PendingMessageModel) => void;
   onPin?: (message: Message, fixar: boolean) => void;
@@ -116,12 +112,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const confirmar = useConfirmar();
 
   const ignorado = useIgnoreStore((s) => s.ignorados).includes(message.author.id);
-  /*
-    Inscrever sem usar o valor é de propósito: quem formata a hora é o
-    `format.ts`, que lê a preferência direto. Sem esta linha, trocar de 24h
-    para AM/PM não mudaria nada na tela até a mensagem redesenhar por outro
-    motivo — e a pessoa concluiria que o botão não funciona.
-  */
   useAparencia((s) => s.horaEm24h);
 
   const mostrarAvatares = useAparencia((s) => s.avatares);
@@ -131,11 +121,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   const [editing, setEditing] = useState(false);
 
-  /*
-    A seta pra cima no campo de escrever deixa um bilhete com o id; a
-    mensagem dona dele abre em edição e recolhe o bilhete na mesma hora —
-    senão ela reabriria toda vez que a lista remontasse.
-  */
   const pedidoDeEdicao = useEdicaoStore((s) => s.pedido);
   const recolherPedido = useEdicaoStore((s) => s.recolher);
 
@@ -146,14 +131,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     setEditing(true);
     recolherPedido();
 
-    /*
-      Trazer a mensagem à vista, senão o atalho abre uma caixa que ninguém vê.
-
-      Quem aperta a seta costuma estar com a lista rolada — foi assim no teste:
-      a edição abriu corretamente e parecia não ter acontecido nada, porque a
-      mensagem estava abaixo da dobra. Um atalho que funciona sem dar sinal é
-      indistinguível de um que não funciona.
-    */
     requestAnimationFrame(() => raiz.current?.scrollIntoView({ block: "center" }));
   }, [pedidoDeEdicao, message.id, message.content, recolherPedido]);
   const [draft, setDraft] = useState(message.content);
@@ -189,8 +166,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     setReagindo(false);
   };
 
-  /// Super reação sempre ADICIONA: segurar o clique é o gesto de "manda ver",
-  /// e tirar a reação nesse gesto seria o contrário do que se pediu.
   const superReagir = (emoji: string) => {
     const caixa = raiz.current?.getBoundingClientRect();
 
@@ -212,8 +187,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     );
   };
 
-  /// O link é o mesmo endereço da rota do canal com a mensagem no fim, para o
-  /// dia em que der pra abrir direto nela.
   const linkDaMensagem = () =>
     `${window.location.origin}/channels/${guildId ?? "@me"}/${message.channelId}/${message.id}`;
 
@@ -237,14 +210,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       autorId: message.author.id,
     });
 
-  /*
-    O rastro de um comando de barra.
-
-    Linha fina, como a de entrada no servidor: não é conversa, é o registro de
-    que alguém acionou um bot. Desenhá-la como mensagem normal — com avatar
-    grande e ações de responder — daria peso de fala a algo que ninguém
-    escreveu para ser lido.
-  */
   if (message.tipo === "COMANDO") {
     return (
       <div className="group flex items-center gap-2 px-2 py-1 text-sm text-ink-muted transition hover:bg-hover @sm:gap-3 @sm:px-4">
@@ -258,14 +223,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         </span>
         <span className="shrink-0 text-xs text-ink-faint">{formatTime(message.createdAt)}</span>
 
-        {/*
-          Apagar, e só isso.
-
-          Editar não faz sentido — a linha não foi escrita, foi gerada; e
-          responder a ela seria responder ao próprio ato de digitar. Mas
-          apagar precisa existir: é uma mensagem sua no canal, e sem o botão
-          ela ficaria lá para sempre.
-        */}
         {canDelete && (
           <button
             type="button"
@@ -283,15 +240,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   if (message.tipo === "JOIN") {
     return (
-      /*
-        O aviso de entrada precisa de ar em volta. Com `py-1` e nenhuma margem
-        ele colava na mensagem de cima e na de baixo, e a conversa virava um
-        bloco só — a linha do sistema se lia como se fosse fala de alguém.
-
-        `my-2` de cada lado, contra os `mt-4` das mensagens normais: fica
-        separado o bastante pra ser outra coisa, e discreto o bastante pra não
-        virar um anúncio no meio do papo.
-      */
       <div className="my-2 flex items-center gap-2 px-2 py-1 text-sm text-ink-muted @sm:gap-3 @sm:px-4">
         <UserPlus size={16} className="shrink-0 text-online" />
         <span className="shrink-0 font-medium text-ink">{message.author.displayName}</span>
@@ -308,7 +256,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       className={cn(
         "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
         !compact && "mt-4",
-        /// dourado do destaque, não o amarelo de "ausente": são coisas diferentes
         meMenciona &&
           "bg-destaque/10 shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
         destacada && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
@@ -348,11 +295,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         {!compact && (
           <div className="flex items-baseline gap-x-2">
             <UserProfilePopover userId={message.author.id}>
-              {/*
-                `truncate` porque o nome é o único item elástico da linha: sem
-                ele, "Mardeson Pereira" quebrava em duas e empurrava a data
-                para baixo do avatar.
-              */}
               <button className="min-w-0 max-w-full truncate font-medium text-ink hover:underline">
                 <UserName
                   nome={message.author.displayName}
@@ -363,10 +305,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               </button>
             </UserProfilePopover>
             <ServerTag etiqueta={enfeites?.perfil?.etiquetaDoServidor} />
-            {/*
-              Na coluna estreita cabe a hora; a data inteira vira o `title`,
-              que é onde ela continua ao alcance de quem precisa dela.
-            */}
             <span className="shrink-0 text-xs text-ink-faint" title={formatTimestamp(message.createdAt)}>
               <span className="@md:hidden">{formatTime(message.createdAt)}</span>
               <span className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
@@ -411,11 +349,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </div>
         ) : (
           message.content && (
-            /*
-              `<div>`, nao `<p>`: o bloco de codigo e um painel, e o navegador
-              fecha o paragrafo sozinho quando um bloco aparece dentro dele —
-              o "(editado)" acabaria fora do texto.
-            */
             <div
               className="whitespace-pre-wrap break-words text-ink-muted"
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
@@ -430,11 +363,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           )
         )}
 
-        {/*
-          Os cartões dos links vêm depois do texto e antes de tudo o mais —
-          é a ordem do Discord, e é a que faz sentido: o cartão explica uma
-          coisa que está escrita ali em cima.
-        */}
         {mostrarPrevia && !editing && !(ignorado && !revelado) && message.content && (
           <LinkEmbeds content={message.content} />
         )}
@@ -487,19 +415,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <div
           className={cn(
             "absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
-            /*
-              Ela cresce para a ESQUERDA a partir do canto direito. Numa coluna
-              de 280px a fileira inteira — cinco emojis mais sete ações — era
-              mais larga que a mensagem e escapava por cima da barra lateral.
-              Daí o corte por container: cada faixa de largura mostra o que
-              cabe, e o resto continua inteiro no menu dos três pontos.
-            */
             "group-hover:flex group-focus-within:flex",
-            /*
-              Com a barra em `hidden`, o gatilho perde as medidas e o Radix
-              joga o menu pro canto da tela. Enquanto um dos dois está aberto
-              ela fica de pé, mesmo com o mouse já fora da mensagem.
-            */
             reagindo || menuAberto ? "flex" : "hidden",
           )}
         >
@@ -545,10 +461,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             <Forward size={16} />
           </AcaoDaBarra>
 
-          {/*
-            Com Shift, o que estava no menu dos três pontos vem pra barra —
-            é o atalho de quem já sabe onde fica cada coisa.
-          */}
           {shift && (
             <>
               <AcaoDaBarra
@@ -728,13 +640,6 @@ export const shouldGroup = (prev: Message | undefined, current: Message) =>
       new Date(current.createdAt).getTime() - new Date(prev.createdAt).getTime() < 5 * 60_000,
   );
 
-/**
- * A reação guarda texto: o caractere, para os nativos, e `:nome:` para os do
- * servidor. Sem isto a pílula de um emoji do servidor mostrava `:nome:` cru.
- *
- * Se o emoji não estiver mais no servidor (ou for de outro), o `:nome:` fica
- * à mostra de propósito — é mais honesto que um quadrado vazio.
- */
 const EmojiDaReacao: React.FC<{ emoji: string; doServidor: GuildEmoji[] }> = ({
   emoji,
   doServidor,
@@ -767,8 +672,6 @@ const AcaoDaBarra = React.forwardRef<
 ));
 AcaoDaBarra.displayName = "AcaoDaBarra";
 
-/// Clique reage; clique segurado super-reage. O `title` conta o gesto, que
-/// ninguém adivinha sozinho.
 const AtalhoDeReacao: React.FC<{
   emoji: string;
   className?: string;
@@ -812,14 +715,6 @@ const PilulaDeReacao: React.FC<{
   );
 };
 
-/**
- * A linha de citação acima de uma resposta. Uma linha, sempre: ela resume o
- * que está sendo respondido, não repete a mensagem.
- *
- * A mensagem é um flex de avatar + conteúdo, e a citação é mais um filho
- * dele: sem o `w-full` (com `flex-wrap` na raiz) ela virava uma terceira
- * coluna e empurrava o avatar pro lado.
- */
 const Citacao: React.FC<{
   respondida?: PendingMessageModel;
   emojis: GuildEmoji[];
@@ -828,54 +723,19 @@ const Citacao: React.FC<{
 }> = ({ respondida, emojis, mencoes, currentUserId }) => {
   const { t } = useTranslation();
 
-  /*
-    Respondendo a si mesmo, o retrato vem da sessão, não da mensagem.
-
-    O autor guardado na mensagem é uma fotografia de quando ela foi carregada:
-    quem troca a própria foto continua vendo a antiga na citação até a lista
-    ser buscada de novo — e, quem nunca tinha foto, continua vendo a inicial
-    mesmo depois de subir uma. Pra você mesmo isso dá pra corrigir de graça,
-    porque a sessão está sempre em dia.
-  */
   const me = useMe(true).data;
   const souEu = Boolean(currentUserId && respondida?.author.id === currentUserId);
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  /*
-    A citação fica pendurada na mensagem: o fio nasce na altura
-    do avatar (por isso o `pl` bate com a metade da coluna dele) e vira pra
-    direita até encostar na coluna do texto. Tudo numa linha só, cortada com
-    reticências — ela resume o que está sendo respondido, não repete.
-  */
   <div className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs">
-    {/*
-      A conta do fio, que eu errei duas vezes: este `pl` soma ao `px` da
-      linha, não substitui. A coluna do avatar tem 40px, então o traço
-      vertical sobe no meio dela (20px pra dentro do padding, daí o `pl-5`) e
-      o horizontal vai até a borda direita do avatar (mais 20px, daí o `w-5`)
-      — assim o retrato pequeno da citação começa
-      exatamente onde o avatar grande termina.
-    */}
     <span
       aria-hidden
-      /*
-        A curva é maior que a linha reta que tinha antes (`rounded-tl-lg`), e o
-        traço desce um pouco além da linha (`-mb-0.5`) pra encostar no avatar
-        de baixo. Sem esse par, o fio parecia um "L" solto pousado ali.
-      */
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
     />
 
     {respondida ? (
       <>
-        {/*
-          O retrato e o nome abrem o cartão de perfil, como na mensagem inteira.
-
-          Eles pareciam clicáveis desde sempre — é um rosto e um "@Fulano" — e
-          não eram. Um botão só para os dois, e não dois: eles estão colados, e
-          quem mira ali está mirando a pessoa, não a metade dela.
-        */}
         <UserProfilePopover userId={respondida.author.id}>
           <button className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
             <Avatar
@@ -884,23 +744,11 @@ const Citacao: React.FC<{
               url={avatarUrl}
               size={16}
             />
-            {/*
-              "@Fulano" em branco e negrito — não na cor de menção.
-
-              A pílula azul é para uma menção DE VERDADE, que notifica alguém.
-              Aqui o @ é só a forma de dizer de quem é a fala citada; pintar os
-              dois igual fazia parecer que responder marcava a pessoa duas vezes.
-            */}
             <span className="max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]">
               @{respondida.author.displayName}
             </span>
           </button>
         </UserProfilePopover>
-        {/*
-          O conteúdo pode trazer imagem ou GIF, que o MessageContent desenha
-          em tamanho cheio — numa citação isso virava um bloco de 300px de
-          altura. Aqui tudo é achatado à altura da linha.
-        */}
         <span className="min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
           {respondida.content ? (
             <MessageContent content={respondida.content} emojis={emojis} mencoes={mencoes} />

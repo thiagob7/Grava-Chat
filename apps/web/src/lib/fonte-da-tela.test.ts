@@ -18,11 +18,6 @@ describe("descreverFonte", () => {
     expect(descreverFonte(null, faixa("Counter-Strike 2"))?.nome).toBe("Counter-Strike 2");
   });
 
-  /*
-    O caso que motivou o arquivo. Compartilhando uma ABA, o Chrome põe no rótulo
-    `web-contents-media-stream://5/1` — identificador interno, não nome. Antes
-    isso virava "Sua tela", que não diz nada a quem lê.
-  */
   it("aba do Chrome: o identificador vira o tipo, não um genérico", () => {
     const fonte = descreverFonte(null, faixa("web-contents-media-stream://5/1", "browser"));
 
@@ -48,7 +43,6 @@ describe("descreverFonte", () => {
   });
 
   it("o rótulo tem precedência sobre o tipo quando é um nome", () => {
-    // se o navegador der o título, ele é melhor que "Uma aba do navegador"
     expect(descreverFonte(null, faixa("YouTube", "browser"))?.nome).toBe("YouTube");
   });
 });

@@ -30,14 +30,6 @@ export const useFindExpressions = (guildId: string | undefined) => {
   return { ...query, data: query.data ?? VAZIO };
 };
 
-/**
- * As expressões de vários servidores de uma vez — é o que o seletor precisa
- * para mostrar os emojis de todos os seus servidores, e não só os do que está
- * aberto.
- *
- * Usa a mesma `queryKey` do `useFindExpressions`, então o servidor que já
- * estava carregado sai do cache sem nova ida à rede.
- */
 export const useFindExpressionsOf = (guildIds: string[], enabled = true) => {
   const resultados = useQueries({
     queries: guildIds.map((id) => ({
@@ -114,11 +106,6 @@ export const useCreateSound = (guildId: string | undefined) => {
   });
 };
 
-/**
- * Sem aviso de sucesso: quem mexe no volume mexe arrastando, e um brinde a
- * cada solta do dedo empilharia cinco avisos na tela. A lista se atualiza
- * sozinha, que é a confirmação que importa.
- */
 export const useUpdateSound = (guildId: string | undefined) => {
   const invalidar = useInvalidar(guildId);
 

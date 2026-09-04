@@ -1,25 +1,8 @@
-/**
- * Os tokens do tema, agrupados como o estúdio mostra.
- *
- * São duas gerações no mesmo catálogo, e isso é de propósito:
- *
- * - os `--color-*`, em português, que o app inteiro já usa por classe do
- *   Tailwind (`bg-surface-2`, `text-ink`). Estão marcados `ligado: true`.
- * - os nomes da referência, declarados em `styles/tokens.css` — a lista
- *   completa do que dá pra vestir num cliente deste tipo. Existem, têm valor
- *   nos quatro temas e ainda não são lidos por componente nenhum.
- *
- * A marca `ligado` não é enfeite: sem ela o estúdio viraria uma parede de
- * seletores de cor em que a maioria não pinta nada, que é pior do que não
- * oferecer. Com ela dá pra filtrar, e cada componente que passa a ler um token
- * novo vira uma linha a mais que funciona. O teste confere a marca contra o
- * código de verdade, então ela não pode mentir por muito tempo.
- */
+
 export interface TokenDoTema {
   nome: string;
   rotulo: string;
   dica?: string;
-  /// O app já lê este token. Sem isto, mexer nele não muda nada na tela.
   ligado?: boolean;
 }
 
@@ -1647,16 +1630,8 @@ export const TODOS_OS_TOKENS = GRUPOS_DE_TOKENS.flatMap(
   (grupo) => grupo.tokens,
 );
 
-/// Os que já pintam alguma coisa. É o que o estúdio mostra por padrão.
 export const TOKENS_LIGADOS = TODOS_OS_TOKENS.filter((t) => t.ligado);
 
-/**
- * O valor que o token tem AGORA, já com o tema aplicado.
- *
- * Lê do elemento raiz sem as substituições em linha, senão o estúdio mostraria
- * o valor que ele mesmo acabou de escrever como se fosse o do tema — e o
- * "voltar ao padrão" não teria pra onde voltar.
- */
 export function valorDoTema(nome: string): string {
   const raiz = document.documentElement;
   const emLinha = raiz.style.getPropertyValue(nome);

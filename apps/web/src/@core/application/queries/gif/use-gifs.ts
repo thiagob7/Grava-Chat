@@ -54,11 +54,6 @@ export const useFavoriteGifs = (enabled: boolean) =>
     staleTime: 5 * 60_000,
   });
 
-/**
- * A estrela é um interruptor, e as duas rotas devolvem a lista inteira já
- * atualizada — então o cache é escrito com a resposta em vez de invalidado.
- * Sem isso, tirar um favorito piscava a grade toda enquanto o refetch vinha.
- */
 export const useToggleFavoriteGif = () => {
   const queryClient = useQueryClient();
 

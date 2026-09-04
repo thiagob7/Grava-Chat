@@ -68,15 +68,8 @@ export const AbaEmoji: React.FC<{
     void carregarEmojis().then(setGrupos);
   }, []);
 
-  /// Fechar uma seção encurta tudo que vem depois dela, e o navegador não
-  /// dispara `scroll` por causa disso. Sem recontar aqui, a coluna da
-  /// esquerda continua acesa na seção errada.
   useEffect(aoRolar, [fechadas, aoRolar]);
 
-  /// O atalho existe para mostrar a seção. Levar até um cabeçalho fechado
-  /// pareceria um clique que não fez nada — então ele abre no caminho. O
-  /// `offsetTop` do alvo não muda com a própria abertura (o que cresce fica
-  /// abaixo do cabeçalho), então a ordem aqui não importa.
   const irEAbrir = (id: string) => {
     abrir(id);
     irPara(id);
@@ -102,8 +95,6 @@ export const AbaEmoji: React.FC<{
       .filter((g) => g.emojis.length);
   }, [grupos, termo]);
 
-  /// Um servidor sem emoji que caiba na busca some da lista e da coluna — não
-  /// adianta um atalho que leva a um vazio.
   const comEmoji = servidores
     .map((s) => ({
       ...s,

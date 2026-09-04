@@ -27,10 +27,6 @@ const PRAZOS = [
   { id: "amanha", chave: "limparAmanha", minutos: 24 * 60 },
 ] as const;
 
-
-/// "Limpar amanhã" nao diz nada; "Limpar amanhã às 21:11" diz. O horario e
-/// calculado com o mesmo `calcularExpiracao` que grava o valor, entao o rotulo
-/// nunca mente sobre o que vai acontecer.
 function rotuloComHora(prazo: (typeof PRAZOS)[number]): string {
   const nome = i18next.t(`perfil.status.${prazo.chave}`);
   const iso = calcularExpiracao(prazo);
@@ -71,11 +67,6 @@ export const StatusModal: React.FC<StatusModalProps> = ({
     ? { texto: texto.trim(), emoji: emoji.trim() || null, expiraEm: null }
     : null;
 
-  /*
-    Com o campo vazio o cartao mostra o proprio placeholder no balao, em vez de
-    esconder o balao inteiro. E o que o Discord faz: a pessoa ve onde o status
-    vai parar antes de digitar qualquer coisa.
-  */
   const previaNoCartao: StatusPersonalizado = previa ?? {
     texto: t("perfil.status.oQuePensa"),
     emoji: null,

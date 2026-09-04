@@ -45,8 +45,6 @@ export const DeleteGuildSection: React.FC<{
       </div>
 
       <div className="mt-6">
-        {/* Interpolação, e não um `<strong>` no meio: frase partida por
-            elemento não se traduz aos pedaços. */}
         <Label htmlFor="confirmar">
           {t("servidor.excluir.digite", { servidor: guild.name })}
         </Label>

@@ -16,14 +16,6 @@ import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { i18next, useTranslation } from "~/traducao";
 
-/*
-  A lista guarda a CHAVE, e não o texto.
-
-  Ela vive fora do componente — é uma constante de módulo, avaliada uma vez na
-  carga do arquivo. Com o texto escrito aqui, ele seria o texto do idioma que
-  estava valendo naquele instante e nunca mais mudaria; trocar de idioma
-  redesenharia o menu inteiro com os quatro estados ainda em português.
-*/
 const ESTADOS: {
   id: DesiredStatus;
   chave: string;
@@ -46,8 +38,6 @@ const ESTADOS: {
   },
 ];
 
-/// Usado pelo `UserPanel`, que mostra o estado embaixo do nome. Função e não
-/// mapa, pelo mesmo motivo da lista acima: mapa de módulo congela o idioma.
 export function rotuloDoEstado(id: DesiredStatus): string {
   const estado = ESTADOS.find((e) => e.id === id) ?? ESTADOS[0]!;
   return i18next.t(`perfil.presenca.${estado.chave}`);
@@ -69,15 +59,6 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
   const estadoAtual = ESTADOS.find((e) => e.id === atual) ?? ESTADOS[0]!;
 
   return (
-    /*
-      Sem caixa em volta: os itens moram no cartão, não num cartão dentro dele.
-
-      Este bloco pintava o próprio `bg-surface-1` e ganhava padding, e o que
-      aparecia era um segundo cartão encaixado no primeiro — dois retângulos com
-      dois fundos diferentes, um dentro do outro, sem nada os separando a não ser
-      a mudança de cor. Um traço fino em cima já diz "daqui pra baixo são
-      ações", que era a única coisa que a caixa estava tentando dizer.
-    */
     <div className="mt-3 space-y-0.5 border-t border-line pt-3">
       <ItemDoMenu icone={<Pencil size={15} />} onClick={onEditarPerfil}>
         {t("perfil.editar")}
@@ -110,11 +91,6 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/*
-        Traço simples, e não o `DropdownMenuSeparator`: aquele é o separador do
-        Radix e pertence a um menu aberto. Aqui não há menu nenhum — estes itens
-        são o conteúdo do cartão.
-      */}
       <div className="my-1 h-px bg-line" />
 
       <DropdownMenu>

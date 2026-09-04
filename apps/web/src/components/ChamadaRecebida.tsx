@@ -10,30 +10,10 @@ import { useChamadaStore } from "~/stores/chamada-store";
 import { useVoiceStore } from "~/stores/voice-store";
 import { useTranslation } from "~/traducao";
 
-/**
- * Quanto tempo o telefone toca antes de desistir sozinho.
- *
- * Existe porque quem liga pode fechar o app, cair da rede ou desligar sem que
- * o "voice:left" chegue. Sem o teto, o cartão ficaria tocando para sempre, e a
- * pessoa teria que recusar uma chamada que já não existe.
- */
 const TEMPO_TOCANDO_MS = 45_000;
 
-/// A cada quanto o toque se repete. O som dura ~0,7s; 2,4s deixa o silêncio
-/// entre eles, que é o que faz soar como telefone e não como alarme.
 const INTERVALO_DO_TOQUE_MS = 2_400;
 
-/**
- * O cartão de chamada recebida, com atender e recusar.
- *
- * Antes disso, uma chamada no privado chegava como um toast clicável: dava pra
- * atender, mas não pra dizer não. E recusar não é o mesmo que ignorar — quem
- * liga precisa saber a diferença entre "ele disse que não pode" e "ele não viu".
- *
- * Fica montado no topo do app, e não dentro da conversa, porque a ligação chega
- * pela sala de usuário: o telefone toca mesmo com a conversa fechada, num
- * servidor qualquer, ou na tela de amigos.
- */
 export const ChamadaRecebida: React.FC = () => {
   const { t } = useTranslation();
   const chamada = useChamadaStore((s) => s.tocando);
@@ -47,7 +27,6 @@ export const ChamadaRecebida: React.FC = () => {
   const channelId = chamada?.channelId;
   const desde = chamada?.desde;
 
-  /// O toque e a desistência automática, os dois amarrados à mesma chamada.
   useEffect(() => {
     if (!channelId || !desde) return;
 
@@ -76,8 +55,6 @@ export const ChamadaRecebida: React.FC = () => {
 
   const recusar = () => {
     encerrar(chamada.channelId);
-    /// avisa o outro lado ANTES de sumir da tela daqui — sem isso, recusar e
-    /// ignorar ficariam idênticos pra quem ligou
     void recusarChamada(chamada.channelId).catch(() => undefined);
   };
 
@@ -114,10 +91,6 @@ export const ChamadaRecebida: React.FC = () => {
         </button>
       </div>
 
-      {/*
-        Atender uma chamada de vídeo sem abrir a câmera é um caso real — você
-        quer ver, mas não ser visto. Só aparece quando há o que escolher.
-      */}
       {chamada.comVideo && (
         <button
           onClick={() => void atender(false)}

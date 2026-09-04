@@ -1,7 +1,4 @@
-/// A conversa: a lista, a mensagem, a caixa de escrever e o que pende delas
-/// (anexos, cartões de link, enquete, fixadas, encaminhar). É a área mais
-/// densa do app e a que mais se lê — por isso é a segunda a ser traduzida,
-/// logo depois das configurações.
+
 export const conversa = {
   lista: {
     carregando: "Carregando mensagens…",
@@ -13,13 +10,6 @@ export const conversa = {
     boasVindas: "Bem-vindo a #{{canal}}",
     boasVindasDetalhe: "Este é o começo do canal #{{canal}}.",
   },
-  /*
-    A data escrita por extenso, e não só o número.
-
-    "Hoje" e "Ontem" são o que a pessoa lê no divisor da conversa; o resto do
-    calendário vem do `Intl`, que já sabe a ordem de dia e mês em cada idioma.
-    Só estas quatro precisam de tradução à mão.
-  */
   data: {
     hoje: "Hoje",
     ontem: "Ontem",
@@ -132,15 +122,6 @@ export const conversa = {
     video: "vídeo",
     verImagem: "Ver imagem",
   },
-  /*
-    Singular e plural em duas chaves, e não com o plural do i18next.
-
-    O `_one`/`_other` dele resolveria melhor o russo e o polonês, que têm
-    três e quatro formas — mas cada idioma passaria a ter um conjunto de
-    chaves DIFERENTE, e é justamente a igualdade entre os trinta e quatro
-    catálogos que o teste usa para achar tradução faltando. Duas chaves
-    perdem o caso raro; catálogo sem conferência perde todos.
-  */
   enquete: {
     titulo: "Enquete",
     encerrada: "Enquete encerrada",

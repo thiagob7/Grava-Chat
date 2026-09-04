@@ -11,7 +11,6 @@ export interface PublicUserModel {
   displayName: string;
   avatarUrl: string | null;
   status: PresenceStatus;
-  /// conta de bot ou de webhook
   isBot: boolean;
 }
 
@@ -23,19 +22,13 @@ export interface SelfUserModel extends PublicUserModel {
   perfil: EstiloDePerfil | null;
   statusPersonalizado: StatusPersonalizado | null;
   desiredStatus: DesiredStatus;
-  /// Vem da API (lista ADMIN_EMAILS). Libera o painel de servidor.
   admin: boolean;
 
-  /// Privacidade: guardada na conta porque vale contra outras pessoas. Quem
-  /// manda o pedido de amizade não passa pelo seu navegador.
   aceitaPedidos: boolean;
   mostraAtividade: boolean;
-  /// o que o perfil conta a terceiros: servidores e amigos em comum
   mostraServidoresEmComum: boolean;
   mostraAmigosEmComum: boolean;
 
-  /// Quando a conta some de vez, ou `null` se está viva. Com data, o app mostra
-  /// a tela de recuperação no lugar da conversa.
   excluirEm: string | null;
 }
 

@@ -21,18 +21,6 @@ interface Props {
   onAbrirAjustes: () => void;
 }
 
-/*
-  O que abre ao clicar no ícone de supressão, na barra da chamada.
-
-  Antes o clique LIGAVA e DESLIGAVA direto, e a única explicação do que estava
-  acontecendo era um tooltip que sumia. Duas coisas erradas nisso: ninguém sabia
-  o que a supressão faz sem experimentar no meio de uma conversa, e não havia
-  como conferir o resultado sem pedir "tá me ouvindo bem?" pra alguém.
-
-  Popover, e não janela: isto se usa DURANTE a chamada, e uma janela que tapa a
-  tela pra mexer no microfone é justamente o que atrapalha. O medidor ao vivo é
-  o coração — bater palma e ver a barra não subir vale mais que qualquer texto.
-*/
 export const SupressaoDeRuidoPopover: React.FC<Props> = ({
   children,
   ligada,
@@ -49,11 +37,6 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
       <PopoverContent side="top" align="end" className="w-80 p-4">
-        {/*
-          O gatilho é um ícone no meio de uma fileira de ícones, e o balão sai
-          alinhado pela ponta direita: sem a seta, ele é um cartão que aparece
-          perto de quatro botões e não diz de qual deles saiu.
-        */}
         <PopoverArrow />
 
         <div className="flex items-start justify-between gap-3">
@@ -103,13 +86,6 @@ export const SupressaoDeRuidoPopover: React.FC<Props> = ({
   );
 };
 
-/*
-  O medidor só liga quando o popover está aberto.
-
-  Ele abre um segundo caminho de áudio do microfone; mantê-lo vivo o tempo todo
-  gastaria CPU e deixaria a luzinha da câmera/mic acesa sem motivo, o que
-  assusta com razão.
-*/
 const TesteDoMicrofone: React.FC<{ aberto: boolean }> = ({ aberto }) => {
   const { t } = useTranslation();
   const { nivel, aberto: passando, erro } = useVoiceMeter(aberto);

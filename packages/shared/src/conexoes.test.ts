@@ -18,11 +18,6 @@ describe("endereço da conexão", () => {
     );
   });
 
-  /*
-    O handle vira parte de uma URL, então tudo que serve para escapar do molde
-    tem que morrer aqui. Sem isto, "thiagob7/../../evil.com" e um handle com
-    dois pontos viram um link que aponta para outro lugar.
-  */
   it("recusa nome de usuário que escapa do molde", () => {
     expect(
       enderecoDaConexao({ servico: "github", valor: "a/../b" }),
@@ -40,12 +35,6 @@ describe("endereço da conexão", () => {
     );
   });
 
-  /*
-    Link de perfil é clicável na máquina de outra pessoa. `javascript:` ali é
-    execução de código, e `data:` é o mesmo por outro caminho — os dois passam
-    por qualquer comparação ingênua de começo de texto, e por isso quem decide
-    é o `URL`, que lê o protocolo de verdade.
-  */
   it("não deixa o site virar um esquema perigoso", () => {
     expect(
       enderecoDaConexao({ servico: "site", valor: "javascript:alert(1)" }),
@@ -70,7 +59,6 @@ describe("como a conexão é escrita", () => {
     expect(comoSeLe({ servico: "x", valor: "@alguem" })).toBe("alguem");
   });
 
-  /// Cinco linhas de `https://` uma embaixo da outra não dizem nada.
   it("mostra só o domínio do site", () => {
     expect(
       comoSeLe({ servico: "site", valor: "https://gravae.io/sobre" }),

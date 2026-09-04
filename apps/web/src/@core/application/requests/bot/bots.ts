@@ -10,14 +10,11 @@ export interface BotModel {
   permissoesPedidas: Permission[];
   publico: boolean;
   redirectUris: string[];
-  /// o par do token no OAuth2; some da tela de convite
   clientSecret: string;
   createdAt: string;
-  /// só vem preenchido quando o bot acabou de nascer ou o token foi trocado
   token?: string;
 }
 
-/// O que a tela de convite recebe: sem token e sem dono.
 export type ConviteDeBotModel = Omit<
   BotModel,
   "createdAt" | "token" | "clientSecret" | "redirectUris"
@@ -73,8 +70,6 @@ export interface DestinosDoBotModel {
   jaEstaEm: number;
 }
 
-/// Onde VOCÊ pode pôr este bot: já sem os que ele tem e sem os que você não
-/// gerencia. Quem decide é o servidor — a tela não teria como saber.
 export async function findBotDestinations(botId: string): Promise<DestinosDoBotModel> {
   const response = await api.get<DestinosDoBotModel>(`/bots/${botId}/destinos`);
   return response.data;

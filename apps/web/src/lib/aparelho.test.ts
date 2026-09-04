@@ -17,16 +17,10 @@ describe("nome do aparelho", () => {
     expect(nomeDoAparelho(SAFARI_IPHONE)).toBe("Safari · iPhone");
   });
 
-  /*
-    Edge e Opera se anunciam como Chrome, e o Chrome se anuncia como Safari.
-    Sem a ordem certa na lista, TODO mundo vira Chrome e a lista fica inútil
-    justamente para quem usa dois navegadores diferentes.
-  */
   it("não confunde Edge com Chrome", () => {
     expect(nomeDoAparelho(EDGE_WIN)).toBe("Edge · Windows");
   });
 
-  /// No aplicativo, "aplicativo" diz mais que o navegador que ele usa dentro.
   it("reconhece o aplicativo de desktop antes do navegador", () => {
     expect(nomeDoAparelho(APP_MAC)).toBe("Aplicativo · macOS");
   });

@@ -7,23 +7,11 @@ import { ehDesktop } from "~/lib/desktop";
 import { useAtualizacao } from "~/hooks/use-atualizacao";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
-/*
-  Onde mora o instalador: a página de releases do repositório. `latest` sempre
-  aponta pra versão mais nova, então este link não precisa ser trocado a cada
-  publicação — só a release nova é que sai.
-*/
 const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";
 
-/// `latest/download/<nome>` serve sempre o arquivo da versão mais nova, desde
-/// que o nome não mude — por isso o `artifactName` fixo no electron-builder.
 const MAC = `${BASE}/gravae-chat-mac.dmg`;
 const WINDOWS = `${BASE}/gravae-chat-win.exe`;
 
-/*
-  Qual sistema a pessoa está usando agora. Serve só pra ordenar os cartões — o
-  de baixo continua acessível, porque é comum baixar num computador pra instalar
-  noutro. Esconder o outro sistema seria decidir demais por quem está lendo.
-*/
 function ehWindows(): boolean {
   if (typeof navigator === "undefined") return false;
 
@@ -32,15 +20,6 @@ function ehWindows(): boolean {
 
 export const AplicativoSection: React.FC = () => (
   <div>
-    {/*
-      No aplicativo instalado, a atualização vem PRIMEIRO.
-
-      Quem já baixou não precisa dos links de download — precisa saber em que
-      versão está e ter como instalar a nova. Antes isso só existia no botão
-      pontilhado do trilho, que aparece apenas quando já há novidade detectada:
-      sem novidade, não havia como conferir a versão nem pedir pra procurar, e
-      quem dispensava a faixa flutuante ficava sem caminho nenhum.
-    */}
     {ehDesktop() && <Atualizacao />}
 
     <Secao
@@ -62,12 +41,6 @@ export const AplicativoSection: React.FC = () => (
             </a>
           </Button>
 
-          {/*
-          Este aviso não é detalhe: sem conta de desenvolvedor da Apple o app
-          não é notarizado, e o macOS recusa a primeira abertura com uma
-          mensagem que parece "app quebrado". Quem lê isto antes não desinstala
-          achando que é.
-        */}
           <p className="mt-3 text-xs text-ink-faint">
             Na primeira vez:{" "}
             <b>
@@ -88,8 +61,6 @@ export const AplicativoSection: React.FC = () => (
             </a>
           </Button>
 
-          {/* Mesma história do macOS, outro guardião: sem certificado de
-            assinatura o SmartScreen barra a primeira execução. */}
           <p className="mt-3 text-xs text-ink-faint">
             Se o Windows avisar, clique em{" "}
             <b>Mais informações → Executar assim mesmo</b>.
@@ -100,20 +71,10 @@ export const AplicativoSection: React.FC = () => (
   </div>
 );
 
-/*
-  A versão instalada e o caminho até a próxima.
-
-  Os três botões nunca aparecem juntos porque cada fase tem UMA ação sensata:
-  procurar quando não se sabe, baixar quando há novidade, instalar quando o
-  arquivo já está no disco. Mostrar os três com dois apagados faria a pessoa
-  ler três coisas pra descobrir qual vale.
-*/
 const Atualizacao: React.FC = () => {
   const { estado, ponte, baixando, pronta, instalando } = useAtualizacao();
 
   if (!ponte) {
-    /// Aplicativo anterior à v0.2.0: a ponte não tem esta parte. Dizer isso é
-    /// melhor que esconder — é justamente quem mais precisa atualizar.
     return (
       <Secao id="atualizacao" titulo="Atualização">
         <p className="text-sm text-ink-muted">
@@ -148,12 +109,6 @@ const Atualizacao: React.FC = () => {
                       : "Você está em dia"}
           </p>
 
-          {/*
-            O erro tem prioridade sobre a explicação de sempre — inclusive na
-            fase "pronta", que é onde a troca que falhou antes de começar
-            aterrissa. Antes só a fase "erro" mostrava a mensagem, e a falha do
-            botão de instalar não passava por ela.
-          */}
           <p
             className={cn(
               "mt-0.5 text-xs",

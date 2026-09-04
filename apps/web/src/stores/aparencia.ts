@@ -6,74 +6,29 @@ export type Tema = "escuro" | "mais-escuro" | "claro" | "sistema" | "gravae";
 export type Densidade = "confortavel" | "compacta";
 export type QuandoMostrarSpoiler = "ao-clicar" | "sempre";
 
-/**
- * Aparência: o que este aparelho mostra e como.
- *
- * Tudo aqui é do navegador, não da conta — do mesmo jeito que os avisos. Tema
- * é decisão de onde você está sentado: a tela do trabalho e a da sala não
- * pedem a mesma coisa.
- */
 export interface PrefsDeAparencia {
   tema: Tema;
-  /// o vermelho da marca é o padrão; qualquer cor daqui vira o `--color-brand`
   destaque: string | null;
   densidade: Densidade;
 
-  /*
-    Tamanho, em porcentagem.
-
-    `zoomDoApp` cresce a interface inteira; `escalaDoChat` cresce só o texto
-    das mensagens. São perguntas diferentes: quem tem monitor grande quer tudo
-    maior, e quem lê muito quer a conversa maior sem que os menus e a lista de
-    canais engordem junto.
-  */
   zoomDoApp: number;
   escalaDoChat: number;
 
-  /*
-    Interface.
-
-    `cantosArredondados` só tem efeito no aplicativo: no navegador o miolo não
-    tem canto para arredondar, ele encosta na aba. `listaDeMembros` é a coluna
-    da direita, que hoje aparece sozinha em tela larga e não tinha como sumir.
-  */
   cantosArredondados: boolean;
   listaDeMembros: boolean;
 
-  /// Lista de canais
   faixaDoServidor: boolean;
   lembrarCategoriasFechadas: boolean;
 
-  /// Acessibilidade
   reduzirAnimacao: boolean;
-  /*
-    O anel de foco em TODO clique, e não só na navegação por teclado.
-
-    O padrão do navegador é `:focus-visible`, que esconde o anel de quem clica
-    com o mouse — é bonito e é a escolha certa para a maioria. Para quem se
-    perde de onde está, o anel sempre visível é a diferença entre saber e
-    adivinhar qual botão vai responder ao Enter.
-  */
   focoSempreVisivel: boolean;
 
-  /*
-    Ler mensagem em voz alta.
-
-    Três modos e não um interruptor: "todos os canais" numa conta com dez
-    servidores é uma voz que não para, e "nunca" é o padrão porque voz que
-    começa sozinha assusta. O do meio — só o canal que está aberto — é o único
-    que serve pro dia a dia.
-  */
   lerEmVozAlta: ModoDeLeitura;
-  /// O nome da voz do sistema. `null` = a que o navegador escolher.
   vozDaLeitura: string | null;
-  /// 0,5 a 2. O padrão do navegador é 1.
   velocidadeDaLeitura: number;
 
-  /// Idioma e região
   horaEm24h: boolean;
 
-  /// Mensagens
   imagensDeLinks: boolean;
   imagensEnviadas: boolean;
   previaDeLinks: boolean;
@@ -81,12 +36,10 @@ export interface PrefsDeAparencia {
   spoilers: QuandoMostrarSpoiler;
   avatares: boolean;
 
-  /// Caixa de chat
   sugestoes: boolean;
   emoticons: boolean;
   botaoDeEnviar: boolean;
 
-  /// Modo streamer
   modoStreamer: boolean;
   streamerEscondeDados: boolean;
   streamerEscondeConvites: boolean;
@@ -105,8 +58,6 @@ const PADRAO: PrefsDeAparencia = {
   cantosArredondados: true,
   listaDeMembros: true,
   faixaDoServidor: true,
-  /// Ligado: fechar uma categoria é uma decisão, e refazê-la a cada recarga
-  /// era o app esquecendo o que a pessoa acabou de dizer.
   lembrarCategoriasFechadas: true,
 
   reduzirAnimacao: false,
@@ -114,10 +65,6 @@ const PADRAO: PrefsDeAparencia = {
   lerEmVozAlta: "nunca",
   vozDaLeitura: null,
   velocidadeDaLeitura: 1,
-  /*
-    24h por padrão: é o formato que o Brasil usa falando e escrevendo, e o
-    `Intl` com `pt-BR` já entrega assim. Quem quiser AM/PM desliga.
-  */
   horaEm24h: true,
 
   imagensDeLinks: true,
@@ -140,13 +87,6 @@ const PADRAO: PrefsDeAparencia = {
 
 const CHAVE = "gravae:aparencia";
 
-/*
-  A paleta de acento roxo virou A paleta: o que se chamava "Índigo" é hoje o
-  próprio escuro, o carvão virou o "mais escuro" e o claro virou o "claro".
-  Quem tem um nome antigo guardado cai no tema equivalente — sem isto, o
-  `data-tema` viraria um valor que o CSS não conhece e a pessoa abriria o app
-  numa mistura sem dono.
-*/
 const NOMES_ANTIGOS: Record<string, Tema> = {
   fluxer: "escuro",
   "fluxer-carvao": "mais-escuro",
@@ -193,8 +133,6 @@ export const useAparencia = create<StoreDeAparencia>((set, store) => ({
   restaurarPadrao: () => store().definir(PADRAO),
 }));
 
-/// Para quem precisa das preferências fora de um componente — o som de aviso,
-/// por exemplo, que toca de dentro de um `handler` do socket.
 export const prefsDeAparencia = (): PrefsDeAparencia => {
   const { definir, restaurarPadrao, ...prefs } = useAparencia.getState();
   void definir;
@@ -202,13 +140,6 @@ export const prefsDeAparencia = (): PrefsDeAparencia => {
   return prefs;
 };
 
-/**
- * As oito cores de destaque.
- *
- * Poucas e escolhidas: o Discord abre um seletor de gradiente inteiro, e o
- * resultado é gente com o app ilegível. Todas aqui foram medidas contra o
- * fundo escuro e o claro — texto branco em cima de qualquer uma se lê.
- */
 export const CORES_DE_DESTAQUE = [
   { nome: "Gravaê", valor: "#d30404" },
   { nome: "Laranja", valor: "#e2620d" },

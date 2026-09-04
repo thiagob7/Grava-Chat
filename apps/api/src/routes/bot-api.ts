@@ -18,30 +18,13 @@ const guildParams = z.object({ guildId: objectId });
 const canalParams = z.object({ channelId: objectId });
 const mensagemParams = z.object({ messageId: objectId });
 
-/// O canal vem do caminho, então tirá-lo do corpo evita a pergunta boba de
-/// qual vale quando os dois vêm e discordam.
 const enviarBody = sendMessageInput.omit({ channelId: true, nonce: true });
 
-/// Do schema compartilhado, para o limite de tamanho não virar dois números
-/// que um dia discordam.
 const editarBody = editMessageInput.omit({ messageId: true });
 
-/*
-  O emoji vai no caminho, percent-encoded — `🔥` ou `%3Afogo%3A` para o custom
-  `:fogo:`. É a forma que o Discord usa, e evita `DELETE` com corpo, que boa
-  parte dos clientes e proxies trata mal.
-*/
 const reacaoParams = mensagemParams.extend({ emoji: z.string().min(1).max(80) });
 const reacaoBody = z.object({ burst: z.boolean().optional() });
 
-/**
- * A API que um bot usa por HTTP, com o próprio token.
- *
- * O WebSocket serve para reagir ao que acontece; isto serve para PERGUNTAR —
- * quais são os canais, quem está no servidor. Um painel de configuração
- * precisa disso antes de qualquer evento acontecer, e não teria como abrir um
- * socket só para desenhar um `<select>` de canais.
- */
 async function botDoToken(req: FastifyRequest) {
   const cabecalho = req.headers.authorization;
   if (!cabecalho?.startsWith("Bot ")) throw new UnauthorizedError("Falta o token do bot");
@@ -52,8 +35,6 @@ async function botDoToken(req: FastifyRequest) {
   return dono;
 }
 
-/// O bot só enxerga servidor onde ele foi adicionado. Sem isto, qualquer token
-/// leria a estrutura de qualquer servidor da plataforma.
 async function exigirPresenca(botUserId: string, guildId: string) {
   const membro = await memberRepository.find(guildId, botUserId);
   if (!membro) throw new ForbiddenError("Esse bot não está nesse servidor");
@@ -81,39 +62,12 @@ export async function botApiRoutes(app: FastifyInstance) {
     return canais.map((c) => ({ id: c.id, name: c.name, type: c.type }));
   });
 
-  /*
-    Escrever, pelo mesmo token.
-
-    Nenhuma checagem de permissão nova mora aqui, e é de propósito: o token do
-    bot resolve para um `userId`, e o `messageService` já cobra de qualquer um
-    a mesma coisa — acesso ao canal, castigo, SEND_MESSAGES, ATTACH_FILES,
-    CREATE_POLLS, modo lento. Um bot é um membro; repetir a regra aqui só
-    criaria uma segunda versão dela para divergir da primeira.
-
-    O `exigirPresenca` das rotas de leitura também não aparece: ele responde
-    "de quais servidores este bot faz parte", e para escrever o que vale é o
-    acesso ao canal, que é mais estrito e já é verificado lá dentro.
-  */
-  /*
-    Os comandos de barra que o bot declara.
-
-    A lista inteira de uma vez, substituindo a anterior. Apagar um comando é
-    deixar de mandá-lo — o bot não precisa lembrar o que registrou da última
-    vez, e um bot que sobe com a lista errada se conserta reiniciando.
-  */
   app.put("/bot/comandos", async (req) => {
     const { botId } = await botDoToken(req);
     const { comandos } = definirComandosInput.parse(req.body);
 
     const salvos = await botService.definirComandos(botId, comandos);
 
-    /*
-      Avisar os servidores onde ele está.
-
-      Sem isto, quem estava com o app aberto continuaria com a lista velha até
-      recarregar a página — oferecendo um comando que sumiu, ou escondendo um
-      que acabou de nascer.
-    */
     for (const servidor of await botService.servidoresDe(botId)) {
       io().to(rooms.guild(servidor.id)).emit("commands:changed", { guildId: servidor.id });
     }

@@ -14,7 +14,6 @@ interface AvatarProps {
   url?: string | null;
   size?: number;
   status?: PresenceStatus;
-  /// numa chamada agora: troca a bolinha de presença pelo alto-falante
   emVoz?: boolean;
   speaking?: boolean;
   enfeites?: Pick<PerfilPublico, "decoracao" | "moldura"> | null;
@@ -40,22 +39,8 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const mostrarImagem = Boolean(url) && !falhou;
 
-  /// Sem status e sem voz não há selo — e sem selo não há buraco a abrir.
   const selo = status || emVoz ? cantoDoStatus(size) : null;
 
-  /*
-    O furo é aberto em CADA CAMADA, na caixa dela.
-
-    A tentativa anterior mascarava o container inteiro de uma vez — mais curta
-    de escrever, e errada: máscara em CSS não pinta fora do próprio quadro, e
-    as decorações transbordam de propósito (a alada vai 24% pra fora de cada
-    lado). O resultado foi um avatar com o furo certinho e as asas sumidas.
-
-    Aqui cada camada recebe o mesmo buraco, deslocado pela folga dela: a foto
-    não tem folga, a decoração de classe tem 16%, e a de arquivo tem a sua
-    própria. Como o degradê preenche exatamente a caixa de quem o recebe, não
-    há tamanho nem posição a acertar — e nada é cortado por engano.
-  */
   const furo = (folga: number) => {
     if (!selo) return undefined;
 
@@ -63,7 +48,6 @@ export const Avatar: React.FC<AvatarProps> = ({
     return { WebkitMaskImage: buraco, maskImage: buraco } as React.CSSProperties;
   };
 
-  /// `-16%` é a folga do `.gc-camada`, fixada no CSS dos cosméticos.
   const recorteDaCamada = furo(size * 0.16);
   const recorteDeArquivo = enfeites?.decoracao
     ? furo(-(parseFloat(folgaDaDecoracao(enfeites.decoracao)) / 100) * size)
@@ -76,13 +60,6 @@ export const Avatar: React.FC<AvatarProps> = ({
   const ritmo = variaveisDoEnfeite({ animar, velocidade: "8s" });
 
   return (
-    /*
-      Duas caixas: a de dentro leva a máscara, a de fora leva a bolinha.
-
-      Com a bolinha dentro da caixa mascarada, o furo comeria justamente ela —
-      o buraco não distingue quem é filho de quem, só recorta o que estiver
-      naquela área.
-    */
     <div
       className={cn(
         "relative shrink-0 rounded-full transition-shadow duration-100",
@@ -129,7 +106,6 @@ export const Avatar: React.FC<AvatarProps> = ({
         />
       )}
 
-
       {selo && (
         <span className="absolute" style={{ left: selo.left, top: selo.top }}>
           <IconeDeStatus tipo={emVoz ? "VOZ" : status!} tamanho={selo.lado} />
@@ -139,35 +115,9 @@ export const Avatar: React.FC<AvatarProps> = ({
   );
 };
 
-/*
-  Onde a bolinha pousa, e o buraco que ela abre.
-
-  O anel em volta dela era pintado com a cor do fundo (`--gc-recorte`) — o que
-  obriga quem coloca um avatar em qualquer lugar novo a lembrar de declarar
-  essa cor, e falha sem remédio sobre foto, vídeo ou degradê, onde não existe
-  UMA cor de fundo. Agora o avatar é recortado de verdade: um furo na máscara,
-  que deixa passar o que estiver atrás, seja lá o que for.
-*/
-/*
-  Onde a bolinha pousa, e o buraco que ela abre.
-
-  O anel em volta dela era pintado com a cor do fundo (`--gc-recorte`) — o que
-  obriga quem coloca um avatar em qualquer lugar novo a lembrar de declarar
-  essa cor, e falha sem remédio sobre foto, vídeo ou degradê, onde não existe
-  UMA cor de fundo. Agora o avatar é recortado de verdade: um furo na máscara,
-  que deixa passar o que estiver atrás, seja lá o que for.
-
-  O centro fica a 82% do lado — montado na borda, e não sobre ela. Sobre a
-  circunferência (85,4%, onde a diagonal de 45° cruza) a bolinha fica pendurada
-  pra fora e invade a asa do enfeite; bem pra dentro (76%) ela parece grudada
-  no meio do rosto. Aqui ela morde a borda, metade dentro e metade fora, que é
-  o desenho que se reconhece de qualquer app.
-*/
 function cantoDoStatus(size: number) {
   const lado = Math.max(8, Math.round(size * 0.22));
   const centro = size * 0.82;
-  /// folga entre a bolinha e a borda do recorte; acompanha o tamanho pra não
-  /// sumir no avatar pequeno nem virar um rombo no grande
   const folga = Math.max(1.25, size * 0.045);
 
   return {

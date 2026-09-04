@@ -10,18 +10,9 @@ import { cn } from "~/lib/utils";
 interface BotaoDeLinkProps {
   secao: Secao;
   sub?: string;
-  /// o que a dica diz — "esta página" no cabeçalho, "esta seção" nos títulos
   oQue: string;
 }
 
-/*
-  Copia um link que abre exatamente aqui.
-
-  Só aparece quando o mouse está sobre o título, ou quando ele mesmo tem o
-  foco: um ícone permanente ao lado de cada título disputaria atenção com o
-  título, e são muitos títulos numa tela só. Quem navega por teclado alcança
-  pelo Tab, e aí ele se revela.
-*/
 export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({
   secao,
   sub,

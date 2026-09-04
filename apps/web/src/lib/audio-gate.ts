@@ -5,32 +5,11 @@ import rnnoiseSimdWasmUrl from "@sapphi-red/web-noise-suppressor/rnnoise_simd.wa
 import type { Track } from "livekit-client";
 import type { AudioProcessorOptions, TrackProcessor } from "livekit-client";
 
-/*
-  Supressão de ruído: RNNoise, uma rede pequena que roda em WASM aqui no
-  navegador mesmo.
-
-  Antes era o Krisp. O Krisp é melhor, mas a licença dele exige LiveKit Cloud
-  para o transporte de mídia, e o Gravaê hospeda o próprio SFU — então ele
-  nunca chegou a ligar: a checagem no `onPublish` reprovava, o `catch` marcava
-  indisponível, e o que sobrava era a cadeia de filtros aqui embaixo. O RNNoise
-  é BSD-3, não fala com servidor nenhum e não tem teto de minutos.
-*/
-
-/// O binário é o mesmo pra sempre: busca uma vez e reaproveita.
 let wasmDoRnnoise: Promise<ArrayBuffer> | null = null;
 
-/// `addModule` vale por contexto de áudio, e chamada e "ouvir minha voz" têm
-/// contextos diferentes. Refazer no mesmo contexto seria só trabalho repetido.
 const contextosPreparados = new WeakSet<BaseAudioContext>();
 
 async function criarRnnoise(ctx: AudioContext): Promise<RnnoiseWorkletNode> {
-  /*
-    Import dinâmico por dois motivos. O pacote declara classes que estendem
-    `AudioWorkletNode` já no topo do módulo, então importá-lo estaticamente
-    quebrava os testes das funções puras daqui — que rodam em Node, onde essa
-    classe não existe. E, de quebra, quem nunca liga a supressão não carrega
-    nada disso.
-  */
   const { RnnoiseWorkletNode, loadRnnoise } = await import(
     "@sapphi-red/web-noise-suppressor"
   );
@@ -176,11 +155,6 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     return () => this.ouvintes.delete(ouvinte);
   }
 
-  /*
-    Carrega o RNNoise sob demanda: quem deixa a supressão desligada nunca baixa
-    os 150 kB de WASM. Falhou — navegador sem AudioWorklet, rede caiu no meio —
-    a chamada segue com a cadeia de filtros, e a tela mostra "indisponível".
-  */
   private async prepararSupressao() {
     const ctx = this.ctx;
     if (!ctx || !this.ajustes.supressaoDeRuido || this.rnnoise) return;
@@ -195,14 +169,6 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     }
   }
 
-  /*
-    Religa o começo da cadeia com ou sem o RNNoise no meio — é isso que a chave
-    de supressão faz agora.
-
-    Com o Krisp era preciso derrubar e remontar a entrada inteira, porque ele
-    entregava outra MediaStreamTrack. O RNNoise é um nó do próprio grafo: ligar
-    e desligar é reconectar dois fios, sem intervalo audível.
-  */
   private ligarEntrada() {
     const { fonte, passaAlta, rnnoise } = this;
     if (!fonte || !passaAlta) return;
@@ -228,18 +194,6 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
 
     this.fonte = ctx.createMediaStreamSource(new MediaStream([entrada]));
 
-    /*
-      Recorte da faixa de voz, antes de tudo.
-
-      A fala vive, na prática, entre 100 Hz e 8 kHz. Abaixo disso é ronco de
-      mesa, ar-condicionado e o zumbido de 60 Hz da rede; acima é chiado,
-      assobio de fonte e sibilância de microfone barato. Cortar as duas pontas
-      tira ruído sem tocar na inteligibilidade.
-
-      Vem ANTES do analisador de propósito: assim a porta de ruído decide olhando
-      só o que é voz. Sem isso, um assobio constante contava como sinal e
-      segurava o microfone aberto sozinho — que é exatamente o sintoma relatado.
-    */
     this.passaAlta = ctx.createBiquadFilter();
     this.passaAlta.type = "highpass";
     this.passaAlta.frequency.value = 100;
@@ -258,8 +212,6 @@ export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioP
     this.ganho.gain.value = this.ajustes.ganhoEntrada;
     this.porta.gain.value = this.ajustes.modo === "ptt" ? 0 : 1;
 
-    /// O RNNoise vem primeiro, no sinal cheio — é onde a rede foi treinada. Os
-    /// filtros de faixa limpam o resíduo logo depois.
     this.ligarEntrada();
     this.passaAlta.connect(this.passaBaixa);
     this.passaBaixa.connect(this.ganho);
@@ -344,23 +296,11 @@ export async function criarMedidorDeTeste(deviceId?: string, supressao = true) {
     },
   });
 
-  /// 48 kHz na marra: é a taxa em que o RNNoise foi treinado, e a mesma que o
-  /// LiveKit usa na chamada. Sem fixar, uma placa em 44,1 kHz faria o teste
-  /// soar diferente do que sai na call.
   const ctx = new AudioContext({ sampleRate: 48_000 });
   const fonte = ctx.createMediaStreamSource(stream);
 
   const rnnoise = supressao ? await criarRnnoise(ctx).catch(() => null) : null;
 
-  /*
-    A MESMA cadeia da chamada — RNNoise e filtros. Sem eles o teste devolvia o microfone
-    cru: a tela promete "verde é o que sai daqui" e entregava outra coisa, então
-    quem ouvia o próprio assobio aqui concluía que o filtro não funcionava — mas
-    na chamada ele estava lá.
-
-    Se os valores mudarem em `montarCadeia`, mudam aqui junto; é o preço de ter
-    dois caminhos de áudio, e o teste mentir é pior que a duplicação.
-  */
   const passaAlta = ctx.createBiquadFilter();
   passaAlta.type = "highpass";
   passaAlta.frequency.value = 100;
@@ -387,7 +327,6 @@ export async function criarMedidorDeTeste(deviceId?: string, supressao = true) {
   const buffer = new Float32Array(analisador.fftSize) as Float32Array<ArrayBuffer>;
 
   return {
-    /// O stream filtrado, que é o que o "Ouvir minha voz" toca de volta.
     stream: saida.stream,
     ler: () => nivelDe(analisador, buffer),
     parar: () => {

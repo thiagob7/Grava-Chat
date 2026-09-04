@@ -8,10 +8,6 @@ describe("avisoDeQualidade", () => {
     expect(avisoDeQualidade("good")).toBeNull();
   });
 
-  /*
-    `unknown` é o valor dos primeiros segundos, antes do LiveKit ter medida.
-    Avisar aqui marcaria como problema todo mundo que acabou de entrar.
-  */
   it("quem acabou de entrar não é marcado como problema", () => {
     expect(avisoDeQualidade("unknown")).toBeNull();
   });

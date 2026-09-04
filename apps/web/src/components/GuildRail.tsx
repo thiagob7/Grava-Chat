@@ -20,8 +20,6 @@ interface GuildRailProps {
   pendingFriendRequests: number;
 }
 
-/// `⌘` no Mac, `Ctrl` no resto: mostrar a tecla errada faz a pessoa tentar o
-/// atalho, não funcionar, e concluir que o atalho é mentira.
 const ehMac =
   desktop()?.plataforma === "darwin" ||
   (typeof navigator !== "undefined" && /Mac/.test(navigator.platform));
@@ -39,13 +37,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
   const atualizacao = useAtualizacao();
 
-  /*
-    ⌘⇧N (Ctrl no Windows) abre o "adicionar servidor".
-
-    A dica no botão anuncia o atalho, e anunciar um atalho que não existe é
-    pior que não anunciar nada. `preventDefault` porque no navegador essa
-    combinação abre uma janela anônima.
-  */
   useEffect(() => {
     const aoTeclar = (evento: KeyboardEvent) => {
       const comando = evento.metaKey || evento.ctrlKey;
@@ -61,13 +52,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
   return (
     <>
-      {/*
-        O fio que separa o trilho do painel mora no PAINEL (`border-l`), não
-        aqui. Desenhado deste lado ele era uma reta de altura inteira passando
-        exatamente por onde o painel curva — e uma reta cruzando a mordida
-        remonta a quina quadrada por cima do arredondado. Do lado de lá, ele
-        segue a curva.
-      */}
       <nav className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3">
         <div className="group relative flex w-full justify-center">
           <span
@@ -107,14 +91,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           const active = guild.id === activeGuildId;
           const { naoLidas = 0, mencoes = 0 } = porServidor[guild.id] ?? {};
 
-          /*
-            A barrinha branca da esquerda diz três coisas com o mesmo traço,
-            como no Discord: comprida = servidor aberto, curta e redonda = tem
-            mensagem nova, nada = tudo lido. O número vermelho é outra coisa —
-            é menção, e menção não se descobre rolando o chat.
-
-            Servidor aberto não mostra a marca de não-lido: você está lendo.
-          */
           const temNovidade = !active && naoLidas > 0;
 
           return (
@@ -147,12 +123,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
               {mencoes > 0 && (
                 <span
                   title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
-                  /*
-                    Fora do botão, não dentro: o ícone do servidor tem
-                    `overflow-hidden` para recortar a foto no quadrado
-                    arredondado, e qualquer selo desenhado lá dentro sumiria
-                    junto com o canto.
-                  */
                   className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-white"
                 >
                   {mencoes > 99 ? "99+" : mencoes}
@@ -162,11 +132,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           );
         })}
 
-        {/*
-          Sem este guarda, quem nao tem servidor ve dois tracinhos colados: o
-          de cima separa as mensagens da lista, e este separaria a lista do "+"
-          — mas nao ha lista nenhuma no meio.
-        */}
         {guilds.length > 0 && (
           <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
@@ -179,12 +144,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           <Plus size={22} />
         </AcaoDoTrilho>
 
-        {/*
-          O mesmo lugar serve pra duas coisas, uma de cada vez: no navegador
-          convida a baixar o app; no app, quando sai versão nova, vira o botão
-          de atualizar. Antes a atualização só existia na faixa flutuante —
-          quem a dispensava ficava sem nenhum caminho até ela.
-        */}
         {!ehDesktop() ? (
           <AcaoDoTrilho label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
             <Download size={20} />
@@ -207,8 +166,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
             >
               <button
                 aria-label="Atualização do aplicativo"
-                /// travado enquanto instala: sem isto o clique cairia no
-                /// `baixar` e recomeçaria o download da versão que já está no disco
                 disabled={atualizacao.baixando || atualizacao.instalando}
                 onClick={() =>
                   void (atualizacao.pronta
@@ -233,7 +190,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   <ArrowDownToLine size={20} />
                 )}
 
-                {/* a bolinha verde diz "tem coisa nova aqui" sem precisar do balão */}
                 {atualizacao.pronta && (
                   <span className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
                 )}
@@ -252,17 +208,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   );
 };
 
-/*
-  Os botões do trilho que NÃO são servidores.
-
-  O círculo tracejado é o que separa as duas naturezas: servidor é um lugar que
-  existe e tem cara própria (foto ou iniciais, quadrado arredondado, cheio);
-  ação é um convite a criar algo que ainda não existe. Antes os dois eram o
-  mesmo bloco cheio, e o "+" lia como mais um servidor da lista — só que verde.
-
-  No hover ele se preenche e vira quadrado arredondado, igual aos servidores:
-  é a mesma linguagem de "isto vai virar um lugar".
-*/
 const AcaoDoTrilho: React.FC<{
   label: string;
   atalho?: string[];
@@ -273,14 +218,6 @@ const AcaoDoTrilho: React.FC<{
     <button
       onClick={onClick}
       aria-label={label}
-      /*
-        O hover muda o CONTORNO, não o miolo.
-
-        Preencher de vermelho fazia o botão virar um bloco cheio — igual aos
-        servidores, que é justamente a diferença que o tracejado existe pra
-        marcar. Clareando a linha e fechando um pouco o canto, o botão responde
-        ao mouse e continua sendo o que é: um lugar por fazer.
-      */
       className={cn(
         "flex size-12 items-center justify-center rounded-3xl border-2 border-dashed border-surface-4 text-ink-muted transition-all",
         "hover:rounded-2xl hover:border-ink hover:text-ink",

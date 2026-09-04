@@ -14,7 +14,6 @@ import { useTranslation } from "~/traducao";
 interface Destino {
   id: string;
   nome: string;
-  /// a foto, nas conversas privadas; nos canais é o "#"
   avatar?: { id: string; url: string | null };
 }
 
@@ -25,11 +24,6 @@ interface EncaminharModalProps {
   guildId?: string;
 }
 
-/**
- * Encaminhar é reenviar o texto noutro lugar, com uma linha dizendo de onde
- * veio. Não é uma referência guardada no banco: a mensagem nova é dela mesma,
- * e apagar a original não deixa um buraco na conversa de destino.
- */
 export const EncaminharModal: React.FC<EncaminharModalProps> = ({
   aberto,
   onFechar,

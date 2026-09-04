@@ -32,17 +32,6 @@ export const SignIn: React.FC = () => {
     <div className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
       <FundoDaMarca className="pointer-events-none absolute inset-0" />
 
-      {/*
-        Cartão partido em dois: a marca de um lado, o formulário do outro.
-
-        A versão anterior empilhava tudo numa coluna estreita, e a marca virava
-        um logotipo pequeno espremido em cima dos campos. Numa tela que é a
-        primeira coisa que alguém de fora vê, a marca merece metade do espaço —
-        e o formulário, livre daquele aperto, respira.
-
-        Em tela estreita a divisão vira empilhamento: duas colunas de 200px de
-        largura não seriam nem marca nem formulário.
-      */}
       <div className="relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-white/10 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
         <aside className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
           <span className="flex size-24 items-center justify-center rounded-full bg-brand">
@@ -110,12 +99,6 @@ export const SignIn: React.FC = () => {
           </p>
         )}
 
-        {/*
-          O aviso mudou de tom porque o comportamento mudou: a consulta agora
-          insiste sozinha e segue tentando de fundo (ver `use-auth-config.ts`).
-          Chamar isso de erro definitivo, com um botão de "tentar de novo" como
-          única saída, era pedir uma ação que o app já está tomando.
-        */}
         {apiUnreachable && (
           <div className="rounded bg-idle/15 p-3 text-center">
             <p className="flex items-center justify-center gap-2 text-sm text-idle">

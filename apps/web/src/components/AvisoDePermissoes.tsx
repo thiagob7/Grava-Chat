@@ -5,18 +5,6 @@ import { desktop } from "~/lib/desktop";
 
 const CHAVE = "gravae:permissoes-vistas";
 
-/*
-  Mostra as permissões do macOS UMA vez, na primeira entrada em que falta
-  alguma.
-
-  Quem instala o app e entra numa chamada descobre que o microfone não
-  funciona no pior momento possível: com gente do outro lado esperando. Melhor
-  resolver antes, com calma.
-
-  Uma vez só, e não a cada abertura: quem escolheu não conceder tem o direito de
-  não ser perguntado de novo — a tela continua nas Configurações de voz pra
-  quem mudar de ideia.
-*/
 export const AvisoDePermissoes: React.FC = () => {
   const [aberto, setAberto] = useState(false);
 

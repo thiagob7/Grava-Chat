@@ -16,9 +16,6 @@ export const publicUserSchema = z.object({
   displayName: z.string(),
   avatarUrl: z.string().nullable(),
   status: z.enum(PRESENCE_STATUSES),
-  /// Conta de bot ou de webhook. Sai daqui porque um bot precisa saber quem é
-  /// bot para não responder a outro — dois bots num canal, sem isto, ficam
-  /// conversando entre si até alguém desligar.
   isBot: z.boolean(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
@@ -31,28 +28,13 @@ export const selfUserSchema = publicUserSchema.extend({
   perfil: estiloDePerfilSchema.nullable(),
   statusPersonalizado: statusPersonalizadoSchema.nullable(),
   desiredStatus: z.enum(DESIRED_STATUSES),
-  /// Mostra o painel do servidor. Quem decide é a API; o front só obedece.
   admin: z.boolean(),
 
-  /*
-    Privacidade, guardada na conta e não no aparelho.
-
-    As duas valem contra OUTRAS pessoas — quem manda o pedido de amizade não
-    passa pelo seu navegador —, então uma escolha que o servidor não conhece
-    não protegeria ninguém.
-  */
   aceitaPedidos: z.boolean(),
   mostraAtividade: z.boolean(),
   mostraServidoresEmComum: z.boolean(),
   mostraAmigosEmComum: z.boolean(),
 
-  /*
-    Quando esta conta some de vez, ou `null` se ela está viva.
-
-    Com data, o app mostra a tela de recuperação em vez da conversa: até lá nada
-    foi destruído, e a pessoa precisa dizer que voltou — descobrir por acidente
-    que ainda está dentro seria pior do que a porta trancada.
-  */
   excluirEm: z.iso.datetime().nullable(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
@@ -154,7 +136,6 @@ export const reactionSummarySchema = z.object({
   emoji: z.string(),
   count: z.number().int(),
   me: z.boolean(),
-  /// alguém super-reagiu com este emoji — a pílula ganha o brilho
   burst: z.boolean(),
 });
 export type ReactionSummary = z.infer<typeof reactionSummarySchema>;
@@ -237,23 +218,8 @@ export type GuildMember = z.infer<typeof guildMemberSchema>;
 export const voiceStateSchema = z.object({
   userId: objectId,
   channelId: objectId,
-  /*
-    `null` quando a chamada é num privado.
-
-    Chamada de DM acontece fora de qualquer servidor: não há cargos, não há
-    permissão de canal e não há sala de guild pra difundir o estado. Quem
-    consome este campo precisa tratar os dois casos — é por isso que ele é
-    anulável e não uma string vazia.
-  */
   guildId: objectId.nullable(),
   socketId: z.string(),
-  /*
-    Identidade da ABA, e não da conexão.
-
-    O `socketId` muda a cada recarga da página; a aba, não. É essa diferença
-    que separa "voltei depois de recarregar" de "estou noutra aba" — sem ela
-    as duas coisas são indistinguíveis pro servidor.
-  */
   clienteId: z.string().nullable(),
   orphanedAt: z.number().nullable(),
   joinedAt: z.number(),
@@ -266,23 +232,9 @@ export const voiceStateSchema = z.object({
 });
 export type VoiceState = z.infer<typeof voiceStateSchema>;
 
-/*
-  Um canal de voz COM gente dentro, para o trilho de servidores.
-
-  Carrega o nome do canal junto porque quem lê isto — o trilho — não tem os
-  canais dos servidores que não estão abertos. Sem o nome, a dica do servidor
-  saberia quantas pessoas estão em voz e não saberia dizer onde.
-*/
 export const vozNoServidorSchema = z.object({
   channelId: z.string(),
   channelName: z.string(),
-  /*
-    Gente, e não `VoiceState` cru.
-
-    O estado de voz guarda id e flags — mudo, surdo, transmitindo —, nada que
-    se possa desenhar. A dica mostra ROSTOS, e resolver nome e avatar no
-    cliente exigiria ter os membros de servidores que nem estão abertos.
-  */
   pessoas: z.array(
     z.object({
       userId: z.string(),
@@ -324,17 +276,6 @@ export const sendMessageInput = z.object({
   stickerId: objectId.optional(),
   postId: objectId.nullable().optional(),
   replyToId: objectId.nullable().optional(),
-  /*
-    Avisar quem está sendo respondido, sem escrever a menção no texto.
-
-    Antes o app grudava um `<@id>` na frente do conteúdo para conseguir a
-    notificação — e a pessoa via um "@Fulano" de pílula azul no começo da
-    própria mensagem, repetindo o nome que a citação logo acima já mostra.
-
-    A notificação é do RESPONDER, não do texto. Com este campo o servidor
-    acrescenta o autor da mensagem citada à lista de menções e o conteúdo fica
-    como foi escrito.
-  */
   mencionarAutor: z.boolean().optional(),
   nonce: z.string().max(64).optional(),
 });
@@ -344,28 +285,10 @@ export const editMessageInput = z.object({
   content: z.string().min(1).max(LIMITS.messageLength),
 });
 
-/*
-  ── Comandos de barra ────────────────────────────────────────────────────
-
-  O bot declara o que sabe fazer; o app desenha a lista quando alguém digita
-  "/". A diferença para ler texto solto é que a parte chata — descobrir que o
-  comando existe, e quais argumentos ele quer — deixa de ser trabalho de quem
-  digita e de quem programa o bot.
-*/
-
-/// Minúsculas, sem espaço: é o que a pessoa digita depois da barra, e o que
-/// aparece na lista. Maiúscula ali só criaria dois comandos que parecem um.
 const nomeDeComando = z
   .string()
   .regex(/^[a-z0-9_-]{1,32}$/, "Só minúsculas, números, hífen e sublinhado");
 
-/**
- * Os tipos que uma opção pode ter.
- *
- * Curto de propósito. O tipo serve para duas coisas: dizer ao app como
- * desenhar a dica, e garantir ao bot que o valor chega no formato que ele
- * espera. Tipo que não muda nenhuma das duas não ganharia nada por existir.
- */
 export const TIPOS_DE_OPCAO = ["texto", "numero", "usuario", "canal"] as const;
 export type TipoDeOpcao = (typeof TIPOS_DE_OPCAO)[number];
 
@@ -384,24 +307,16 @@ export const comandoDeBotSchema = z.object({
 });
 export type ComandoDeBot = z.infer<typeof comandoDeBotSchema>;
 
-/// O que o bot manda para registrar. Lista inteira de uma vez, e não um
-/// comando por chamada: assim apagar é só deixar de mandar, e o bot nunca
-/// precisa lembrar o que registrou da última vez.
 export const definirComandosInput = z.object({
   comandos: z.array(comandoDeBotSchema).max(25),
 });
 
-/// O que o app recebe: o comando mais de quem ele é, porque dois bots no
-/// mesmo servidor podem ter um "/play" cada.
 export const comandoDisponivelSchema = comandoDeBotSchema.extend({
   botId: objectId,
   bot: publicUserSchema,
 });
 export type ComandoDisponivel = z.infer<typeof comandoDisponivelSchema>;
 
-/// Os valores chegam como texto, sempre — é o que a pessoa digitou. Quem
-/// converte é o servidor, que é onde a declaração do comando vive e onde a
-/// conversão pode ser cobrada.
 export const invocarComandoInput = z.object({
   channelId: objectId,
   botId: objectId,

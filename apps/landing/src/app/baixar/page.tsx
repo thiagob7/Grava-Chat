@@ -57,12 +57,6 @@ export default function Baixar() {
           />
         </div>
 
-        {/*
-          Linux fica de fora do jeito honesto: dizendo que não existe, em vez de
-          um botão que abre uma página vazia. O empacotamento é possível, mas
-          ninguém testou — e oferecer um download que não se sabe se abre é pior
-          que não oferecer.
-        */}
         <p className="mt-10 text-center text-sm text-ink-muted">
           Ainda não há aplicativo para Linux nem para celular. No Linux e no
           celular, o Gravaê roda no navegador.

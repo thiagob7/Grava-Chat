@@ -20,9 +20,6 @@ export const NotificationsSection: React.FC = () => {
     permissaoDeAviso(),
   );
 
-  /// A permissão pode mudar fora daqui (o cadeado da barra de endereço), e
-  /// nada avisa a página. Reler ao voltar para a aba é o mais perto de um
-  /// evento que existe.
   useEffect(() => {
     const reler = () => setPermissao(permissaoDeAviso());
     document.addEventListener("visibilitychange", reler);
@@ -122,8 +119,6 @@ export const NotificationsSection: React.FC = () => {
           ligado={prefs.som}
           onMudar={(v) => {
             prefs.definir({ som: v });
-            /// A prévia toca o de MENSAGEM: é o que a pessoa vai ouvir o dia
-            /// inteiro. Mostrar a menção aqui anunciava o som mais raro.
             if (v) tocarSom("mensagem");
           }}
         />
@@ -148,18 +143,6 @@ const Opcao: React.FC<{
   </div>
 );
 
-/*
-  Os sons, um a um.
-
-  Clicar no nome TOCA. É a única forma honesta de escolher: ninguém sabe o que
-  é "desensurdecer" pelo nome, e a pergunta real de quem abre esta lista é
-  "qual desses é aquele que me irrita".
-
-  Tocar ignora o interruptor do próprio som de propósito — quem está prestes a
-  desligar precisa ouvir antes o que vai perder, e um botão de ouvir que não
-  toca por causa da preferência que a pessoa está justamente avaliando seria
-  uma armadilha.
-*/
 const ListaDeSons: React.FC = () => {
   const sonsDesligados = useAvisos((s) => s.sonsDesligados);
   const definirSom = useAvisos((s) => s.definirSom);
@@ -173,11 +156,6 @@ const ListaDeSons: React.FC = () => {
             {grupo.titulo}
           </p>
 
-          {/*
-            Sem fio entre os itens. A linha marca SEÇÃO, não linha de lista: um
-            traço a cada item transforma quinze escolhas numa tabela, e o olho
-            passa a contar linhas em vez de ler nomes.
-          */}
           <div className="mt-2 overflow-hidden rounded-lg border border-line">
             {grupo.sons.map((som) => {
               const ligado = !sonsDesligados[som.nome];

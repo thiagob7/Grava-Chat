@@ -72,20 +72,11 @@ interface UserSettingsModalProps {
 
 interface Item {
   id: Secao;
-  /// Chave do catálogo, não texto. O mesmo motivo do `secoes.ts`: título de
-  /// tela em português com a lateral em inglês seriam duas metades do mesmo
-  /// modal em idiomas diferentes.
   chave: string;
   icone: React.ComponentType<{ size?: number | string; className?: string }>;
   subitens: SubSecao[];
 }
 
-/*
-  Os itens em grupos, com o título de cada um.
-
-  Uma lista corrida de sete linhas não diz o que é conta e o que é aparelho —
-  e é justamente a divisão que a pessoa procura quando abre isto aqui.
-*/
 const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
   {
     chave: "configuracoes.grupos.conta",
@@ -119,14 +110,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
         icone: MessageSquare,
         subitens: SUBSECOES["bate-papo"],
       },
-      /*
-        Conexões fica com Privacidade e não com Perfil.
-
-        Ela parece enfeite de perfil e não é: a pergunta que resolve é "o que
-        eu conto de mim para quem me abre" — a mesma de Visibilidade do perfil,
-        que está logo acima. Enfeite é como o nome é pintado; isto é o que ele
-        entrega.
-      */
       {
         id: "conexoes",
         chave: "configuracoes.telas.conexoes",
@@ -139,14 +122,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
         icone: Mic,
         subitens: SUBSECOES.voz,
       },
-      /*
-        Vídeo em tela própria.
-
-        Microfone e câmera se configuram em momentos diferentes — o microfone
-        antes da primeira chamada, a câmera na primeira vez que alguém pede
-        para te ver. Juntos faziam uma tela de seis seções em que a que
-        interessa está sempre no meio da rolagem.
-      */
       {
         id: "video",
         chave: "configuracoes.telas.video",
@@ -171,8 +146,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
         icone: Languages,
         subitens: SUBSECOES.idioma,
       },
-      /// Some pra quem ja esta no app instalado: oferecer download a quem acabou
-      /// de baixar e um convite pra lugar nenhum.
       ...(ehDesktop()
         ? []
         : [
@@ -185,14 +158,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
           ]),
     ],
   },
-  /*
-    O grupo de quem constrói em cima do Gravaê, separado das preferências.
-
-    Aplicativo não é preferência de aparelho: ele existe no servidor, tem
-    token e sobrevive à conta trocar de computador. Misturado com tema e som,
-    estava no lugar errado da lista — e é o único item daqui que outra pessoa
-    pode acabar usando.
-  */
   {
     chave: "configuracoes.grupos.desenvolvedor",
     itens: [
@@ -204,8 +169,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
       },
     ],
   },
-  /// Esconder o item é conforto, não segurança: quem decide é a API, que
-  /// devolve 404 na rota pra qualquer conta fora da lista.
   ...(admin
     ? [
         {
@@ -223,13 +186,6 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
     : []),
 ];
 
-/*
-  O título de cada tela, por chave.
-
-  Existe separado da lista de itens porque nem toda tela está na lista: "Baixar
-  o app" some do menu no aplicativo instalado, e a de servidor só aparece para
-  quem administra. O cabeçalho precisa saber o nome de todas.
-*/
 const TITULOS: Record<Secao, string> = {
   conta: "configuracoes.telas.conta",
   privacidade: "configuracoes.telas.privacidade",
@@ -260,14 +216,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   const [subAtiva, setSubAtiva] = useState<string | null>(null);
   const rolagem = useRef<HTMLDivElement>(null);
 
-  /*
-    A busca corta itens E sub-itens.
-
-    Procurar "qualidade" precisa achar a seção lá dentro de Voz e vídeo — é
-    justamente o que a pessoa não encontra sozinha, e o motivo de existir uma
-    busca numa lista de sete linhas. Item cujo próprio nome casa mantém a lista
-    inteira de sub-itens; grupo que ficou sem item some junto.
-  */
   const grupos = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     const todos = gruposPara(user.admin);
@@ -296,28 +244,11 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       .filter((grupo) => grupo.itens.length > 0);
   }, [busca, user.admin, t]);
 
-  /*
-    Trocar de tela volta a leitura pro alto e acende a PRIMEIRA seção.
-
-    Zerar deixava a árvore aberta sem nada marcado até a primeira rolagem — e
-    quem abre uma tela e não rola nunca via o fio aceso, como se a lateral
-    estivesse quebrada. Acender a primeira também é verdade: é onde a leitura
-    começa.
-  */
   useEffect(() => {
     setSubAtiva(SUBSECOES[secao][0]?.id ?? null);
     rolagem.current?.scrollTo({ top: 0 });
   }, [secao]);
 
-  /*
-    A seção escolhida no clique, protegida da rolagem.
-
-    Sem isto, clicar num sub-item acendia a seção certa por um instante e a
-    lateral pulava de volta: a rolagem suave dispara o `onScroll` dezenas de
-    vezes no caminho, e o último disparo mandava. Pior no fim da lista, onde a
-    tela não tem quanto rolar — a seção pedida nunca chega à linha de leitura,
-    e a marca voltava para a de cima como se o clique não tivesse funcionado.
-  */
   const escolhaManual = useRef<string | null>(null);
 
   const irPara = useCallback((secaoDestino: Secao, sub: string) => {
@@ -325,11 +256,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     setSubAtiva(sub);
     escolhaManual.current = sub;
 
-    /*
-      No quadro seguinte: quando a tela muda junto, a seção de destino ainda
-      não existe no DOM na hora do clique, e o `scrollIntoView` não acharia
-      nada. Um quadro é o suficiente porque o React já pintou.
-    */
     requestAnimationFrame(() => {
       document
         .getElementById(ancora(sub))
@@ -337,14 +263,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     });
   }, []);
 
-  /*
-    A tela e a seção que o link pediu.
-
-    `secao` nasce de `secaoInicial`, mas nascer não basta: o modal continua
-    montado depois de fechado, então abrir duas vezes seguidas em telas
-    diferentes deixaria a segunda na tela da primeira. E a sub-seção é
-    consumida — trocar de tela e voltar não pode pular de novo pra lá.
-  */
   const subInicial = useConfiguracoes((s) => s.subInicial);
   const consumirSubInicial = useConfiguracoes((s) => s.consumirSubInicial);
 
@@ -358,31 +276,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     consumirSubInicial();
   }, [open, secaoInicial, subInicial, irPara, consumirSubInicial]);
 
-  /// Rolar de verdade — roda, dedo ou teclado — devolve o comando ao espião.
   const soltarEscolha = useCallback(() => {
     escolhaManual.current = null;
   }, []);
 
-  /*
-    Qual seção está sendo lida.
-
-    Vale a ÚLTIMA cujo topo já passou da linha de leitura, e não a primeira
-    visível: rolando devagar, as duas aparecem juntas por um bom tempo, e a
-    lateral ficaria oscilando entre elas. A linha fica um pouco abaixo do topo
-    do painel, onde o olho de fato está.
-  */
   const aoRolar = useCallback(() => {
     const painel = rolagem.current;
     if (!painel) return;
 
-    /*
-      Enquanto a escolha do clique estiver de pé, quem manda é o clique.
-
-      Ela cai quando VOCÊ rola — roda do mouse, dedo, teclado —, e não depois
-      de um tempo. Prazo não serve: a rolagem suave pode demorar mais que ele
-      num painel longo, e seção curta no pé da lista nunca chega à linha de
-      leitura, então o relógio a devolveria pra anterior sozinho.
-    */
     if (escolhaManual.current) return;
 
     const secoes = SUBSECOES[secao];
@@ -394,8 +295,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
           const alvo = document.getElementById(ancora(sub.id));
           return alvo ? [{ id: sub.id, topo: alvo.getBoundingClientRect().top - topoDoPainel }] : [];
         }),
-        /// A linha fica um pouco abaixo do topo do painel, onde o olho de fato
-        /// está — não na borda, onde o texto ainda está entrando.
         linha: 80,
         rolagemTotal: painel.scrollHeight - painel.clientHeight,
       }),
@@ -409,12 +308,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
-        {/*
-          Janela grande e centrada, não uma caixinha no meio da tela: quase
-          toda seção daqui é lista longa — dispositivos de áudio, avisos por
-          servidor, temas — e a caixa de antes (896px de largura, 80% de
-          altura) obrigava a rolar pra ver três linhas de cada vez.
-        */}
         <DialogPrimitive.Content
           className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
           aria-label="Configurações do usuário"
@@ -423,19 +316,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             Configurações do usuário
           </DialogPrimitive.Title>
 
-          {/*
-            Barra lateral MAIS CLARA que o conteúdo, e não mais escura.
-
-            É a inversão que a referência faz e que dá o desenho: a navegação
-            sobe pra cor de menu (`surface-4`) e o conteúdo desce pra cor de
-            barra lateral (`surface-1`). Antes as duas colunas eram `surface-1`
-            e `surface-2` — dois quase-pretos separados por 4 pontos de brilho,
-            e a janela lia como um bloco só.
-
-            A largura acompanha a janela em vez de ser fixa: numa tela estreita
-            a lateral não pode comer o conteúdo, e numa larga não pode virar
-            uma tira de rótulos truncados.
-          */}
           <nav className="flex w-[max(15.75rem,min(24svw,20rem))] shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4">
             <div className="relative">
               <Search
@@ -499,19 +379,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </p>
             )}
 
-            {/*
-              Sair e as versões, no pé — e fora do filtro da busca.
-
-              Sair já existe dentro da tela de Conta, e continua lá: quem vai
-              deliberadamente encerrar a sessão passa pelo lugar onde estão as
-              sessões e os aparelhos. Aqui é o outro gesto, o de quem quer
-              apenas sair e não quer caçar onde. Duas portas para a mesma ação
-              não são duplicidade quando os caminhos até elas são diferentes.
-
-              `mt-auto` empurra o bloco para baixo mesmo com a lista curta, e o
-              `pb-3` existe porque a `<nav>` tem `pb-0` — sem ele o rodapé
-              encosta na borda da janela.
-            */}
             <div className="mt-auto flex flex-col pb-3 pt-2">
               <button
                 onClick={onLogout}
@@ -521,27 +388,12 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 {t("configuracoes.sair")}
               </button>
 
-              {/*
-                O rodapé também dentro de uma barreira.
-
-                A das seções já existia, mas ela cobre o miolo — e a lateral
-                ficava de fora. Foi por aqui que um rodapé de quatro linhas
-                derrubou o aplicativo inteiro: ele lê a ponte do desktop, e num
-                aplicativo instalado mais VELHO que este código o método que ele
-                chama simplesmente não existe. `compacto` porque, se falhar de
-                novo, o que cabe aqui é uma linha discreta e não um cartão.
-              */}
               <ErrorBoundary onde="configurações · versões" compacto>
                 <RodapeDeVersoes />
               </ErrorBoundary>
             </div>
           </nav>
 
-          {/*
-            O título da seção mora numa barra fixa, com o X ao lado: antes cada
-            seção repetia o próprio nome lá dentro e o X flutuava por cima do
-            conteúdo, encostando no que estivesse no canto.
-          */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4">
               <h2 className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
@@ -557,15 +409,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </DialogPrimitive.Close>
             </div>
 
-            {/*
-              A coluna de leitura tem teto e é centrada.
-
-              Sem isto o conteúdo se esparramava por toda a largura da janela:
-              numa janela de 1240px sobravam quase 400px de vazio à direita, e
-              cada linha de texto atravessava a tela inteira — largura em que
-              o olho perde a volta da linha. O teto cresce com a janela, mas
-              para: `max(40rem, min(90%, 50rem))`.
-            */}
             <div
               ref={rolagem}
               onScroll={aoRolar}
@@ -575,12 +418,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               className="min-h-0 flex-1 overflow-y-auto"
             >
               <div className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
-                {/*
-                  Caixa por seção, e a chave é o `secao`: uma tela de configuração
-                  que quebra mostra um cartão no lugar dela, e trocar de seção já
-                  limpa o estrago. Sem isso, o painel de servidor tropeçando num
-                  formato inesperado da API levava a aplicação inteira junto.
-                */}
                 <ContextoDaSecao.Provider value={secao}>
                   <ErrorBoundary
                     key={secao}
@@ -624,14 +461,6 @@ interface ItemDaLateralProps {
   onEscolherSub: (sub: string) => void;
 }
 
-/*
-  Um item da lateral, com a sua árvore de seções.
-
-  A tela aberta abre a árvore, e não um botão de expandir separado: as duas
-  coisas são a mesma pergunta — "estou nesta tela" —, e separá-las deixaria
-  abrir uma árvore de uma tela que não se está vendo, apontando seções que não
-  existem na página.
-*/
 const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
   item,
   ativo,
@@ -642,12 +471,6 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
   const { t } = useTranslation();
   const lista = useRef<HTMLDivElement>(null);
 
-  /*
-    Mede o sub-item aceso e entrega a posição ao CSS.
-
-    `useLayoutEffect` e não `useEffect`: medir depois da pintura faria o fio
-    saltar da posição antiga pra nova à vista de todos, no primeiro quadro.
-  */
   useLayoutEffect(() => {
     const el = lista.current;
     if (!el) return;
@@ -673,29 +496,13 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
         aria-current={ativo}
         aria-expanded={temSub ? ativo : undefined}
         className={cn(
-          /*
-            A borda de 1px existe SEMPRE, transparente. Aparecendo só no ativo,
-            o item ganharia 2px de altura ao ser escolhido e a lista inteira
-            andaria um pouco a cada clique.
-          */
           "flex w-full items-center gap-2 rounded-lg border px-2.5 py-[5px] text-left text-sm transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
-          /*
-            Só o véu branco a 10%, SEM cor de borda. A referência declara um
-            `--settings-selected-border-color` e não o usa aqui: nem o item
-            nem o sub-item acesos ganham borda visível. A de 1px transparente
-            fica só pela altura, pra lista não andar a cada clique.
-          */
           ativo
             ? "border-transparent bg-selecionado font-medium text-ink"
             : "border-transparent text-ink-muted hover:bg-hover hover:text-ink",
         )}
       >
-        {/*
-          O ícone é o que deixa a lista percorrível de relance — sete rótulos
-          alinhados só se leem palavra por palavra. Ele acende junto com o
-          item, senão vira ruído cinza.
-        */}
         <item.icone
           size={20}
           className={cn(
@@ -717,23 +524,12 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
       </button>
 
       {temSub && (
-        /*
-          Abre e fecha por `grid-template-rows`, de `0fr` a `1fr`. É o único
-          jeito de animar até a altura do conteúdo sem saber a altura: com
-          `max-height` chutada, uma árvore mais curta fecharia com atraso e uma
-          mais longa seria cortada.
-        */
         <div
           className="grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none"
           style={{ gridTemplateRows: ativo ? "1fr" : "0fr" }}
           aria-hidden={!ativo}
         >
           <div className="overflow-hidden">
-            {/*
-              As margens saem das medidas da referência: o fio nasce alinhado ao
-              centro do ícone do item de cima (21px), e o rótulo do sub-item
-              alinha com o rótulo do item (mais 7px).
-            */}
             <div
               ref={lista}
               className="subarvore-de-config ml-[21px] mt-[3px] flex flex-col gap-0.5 pl-[7px]"

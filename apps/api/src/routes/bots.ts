@@ -39,11 +39,6 @@ export async function botRoutes(app: FastifyInstance) {
     return reply.status(204).send();
   });
 
-  /*
-    A tela de convite. Qualquer pessoa logada pode ver — é o que o link abre,
-    e o link circula. Ver não dá poder nenhum: adicionar exige MANAGE_GUILD
-    no servidor de destino, e é o passo seguinte que cobra isso.
-  */
   app.get("/bots/:botId/convite", (req) =>
     botService.paraConvidar(botParams.parse(req.params).botId),
   );
@@ -56,9 +51,6 @@ export async function botRoutes(app: FastifyInstance) {
     botService.servidoresDe(botParams.parse(req.params).botId),
   );
 
-  /// Bot entrando ou saindo muda a lista de comandos de barra do servidor.
-  /// Sem o aviso, quem está com o app aberto continuaria oferecendo o que
-  /// acabou de sumir.
   const avisarComandos = (guildId: string) =>
     io().to(rooms.guild(guildId)).emit("commands:changed", { guildId });
 

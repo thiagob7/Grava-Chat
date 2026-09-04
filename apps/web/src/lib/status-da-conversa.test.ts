@@ -21,10 +21,6 @@ describe("statusDaConversa", () => {
     });
   });
 
-  /*
-    Só acontece num intervalo de milissegundos, entre sair de um lugar e entrar
-    no outro. O que importa pra quem lê é a chamada em que ele está envolvido.
-  */
   it("estando nos dois, a chamada comigo vence", () => {
     expect(statusDaConversa({ emChamadaComigo: true, emVozNoServidor: true })?.tipo).toBe("chamada");
   });

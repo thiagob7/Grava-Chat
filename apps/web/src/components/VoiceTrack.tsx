@@ -28,18 +28,6 @@ export function VoiceVideo({ track, mirrored }: { track: Track; mirrored?: boole
   );
 }
 
-/**
- * O áudio de uma pessoa na chamada — e o volume dela.
- *
- * O volume era ajustado pelo LiveKit (`participante.setVolume`), e por isso
- * ele sumia sozinho: quem toca o som é ESTE elemento, criado pelo React, e
- * cada vez que a pessoa saía e voltava nascia um elemento novo, no volume 1.
- * O `setVolume` tinha acontecido no elemento anterior, que já não existia
- * mais — daí o bot de música voltar gritando toda vez que reentrava na call.
- *
- * Agora o ajuste mora aqui e é reaplicado a cada mudança: elemento novo nasce
- * já no volume certo, e mexer no controle chega neste `useEffect` na hora.
- */
 export function VoiceAudio({
   track,
   identity,
@@ -47,12 +35,6 @@ export function VoiceAudio({
 }: {
   track: Track;
   identity: string;
-  /*
-    De onde vem este som. A voz da pessoa e o som da transmissão dela são duas
-    coisas com controles separados: "abaixa o jogo dele" não deve emudecer a
-    pessoa junto. `deafened` continua calando os dois — é o botão de ficar
-    surdo, e ele não faz exceção.
-  */
   fonte?: "voz" | "tela";
 }) {
   const ref = useRef<HTMLAudioElement>(null);
@@ -80,11 +62,6 @@ export function VoiceAudio({
     const el = ref.current;
     if (!el) return;
 
-    /*
-      `volume` de um elemento de áudio vai de 0 a 1 — não existe "mais que o
-      original" aqui. Por isso o controle na tela para em 100%: prometer 200%
-      e entregar 100% seria pior que não ter o controle.
-    */
     el.volume = silenciado || deafened ? 0 : Math.min(1, volumeSaida * individual);
   }, [track, volumeSaida, individual, silenciado, deafened]);
 

@@ -19,45 +19,17 @@ export type FriendshipView = {
 };
 
 export const friendshipService = {
-  /*
-    "Ativo agora": amigos que estão num canal de voz de um servidor que EU
-    também tenho. O filtro por servidor em comum não é detalhe de produto — sem
-    ele, eu veria onde meu amigo está em servidores que não são meus, o que é
-    vazar a rotina dele pra fora do lugar onde ele decidiu estar comigo.
-  */
   async ativosAgora(userId: string) {
     const [relacoes, eu] = await Promise.all([
       friendshipRepository.findAllForUser(userId),
       userRepository.findById(userId),
     ]);
 
-    /*
-      Amigo que escondeu a atividade sai da lista.
-
-      A checagem é aqui, e não na tela: "ativos agora" é o que o SERVIDOR conta
-      sobre outras pessoas. Filtrar no cliente entregaria a informação e pediria
-      pra ele não desenhar — que é o mesmo que não esconder nada.
-
-      Você continua se vendo mesmo escondido: a escolha é sobre quem te vê, e
-      perder o próprio caminho de volta pra chamada seria castigo, não
-      privacidade.
-    */
     const amigos = relacoes
       .filter((r) => r.status === "ACCEPTED")
       .map((r) => (r.requesterId === userId ? r.addressee : r.requester))
       .filter((amigo) => amigo.mostraAtividade);
 
-    /*
-      Você entra na própria lista.
-
-      Sem isso, quem está numa chamada e volta pras mensagens diretas não vê
-      sinal nenhum de que a chamada existe — a coluna fica dizendo "está quieto
-      por aqui" enquanto a pessoa fala com alguém. E é justamente aí que o
-      cartão vira o caminho de volta pro canal.
-
-      Primeiro da lista de propósito: com amigos na mesma chamada, quem olha
-      procura a si mesmo antes de qualquer coisa.
-    */
     const pessoas = eu ? [eu, ...amigos] : amigos;
 
     if (!pessoas.length) return [];
@@ -110,18 +82,6 @@ export const friendshipService = {
     });
   },
 
-  /**
-   * As minhas relações — amizades, pedidos e quem EU bloqueei.
-   *
-   * O bloqueio da outra pessoa fica de fora, e isso não é detalhe: a relação
-   * mora numa linha só, e ela aparecia dos dois lados. Quem tinha sido
-   * bloqueado recebia a linha com status `BLOCKED` e podia deduzir o que o
-   * bloqueio existe justamente para não anunciar.
-   *
-   * A tela nunca desenhou isso — as abas filtram por `ACCEPTED` e `PENDING`,
-   * então a linha caía no vazio. Mas "o cliente não desenha" não é privacidade:
-   * o dado saía do servidor, e quem olhasse a resposta da rede via.
-   */
   async list(userId: string): Promise<FriendshipView[]> {
     const todas = await friendshipRepository.findAllForUser(userId);
     const relacoes = todas.filter(
@@ -172,14 +132,6 @@ export const friendshipService = {
     if (!alvo) throw new NotFoundError("Não achei ninguém com esse nome de usuário");
     if (alvo.id === userId) throw new AppError("Você não pode adicionar a si mesmo");
 
-    /*
-      Quem fechou os pedidos não recebe.
-
-      A mensagem é a mesma de quem não existe, de propósito: dizer "essa pessoa
-      não aceita pedidos" confirma que o nome de usuário existe, e transforma a
-      busca de amigos numa forma de descobrir contas. Quem fecha a porta não
-      quer nem que saibam que ela está ali.
-    */
     if (!alvo.aceitaPedidos) throw new AppError("Não foi possível enviar o pedido");
 
     const existente = await friendshipRepository.findBetween(userId, alvo.id);

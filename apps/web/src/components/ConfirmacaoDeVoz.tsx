@@ -16,21 +16,6 @@ interface Props {
   onTrazerParaCa: () => void;
 }
 
-/*
-  {t("chamada.jaConectado.titulo")}, em outro lugar. E agora?
-
-  Antes o clique no canal simplesmente NÃO FAZIA NADA nesse caso — a única
-  pista era uma caixinha no rodapé da barra lateral, que competia por atenção
-  com tudo o mais que mora ali. Quem não reparava clicava de novo, e de novo, e
-  concluía que o app tinha travado.
-
-  Perguntar no meio da tela resolve as duas pontas: o clique passa a ter
-  resposta, e o rodapé volta a ser só o cartão de quem você é.
-
-  Duas saídas, e não três: o estado de voz no Redis é UM por conta, então
-  "entrar mantendo as outras conexões" não existe aqui. Oferecer um botão que
-  o servidor não sustenta seria inventar um recurso na tela.
-*/
 export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerParaCa }) => {
   const { t } = useTranslation();
 

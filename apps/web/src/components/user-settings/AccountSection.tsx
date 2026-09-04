@@ -36,11 +36,6 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
   return (
     <div>
       <Secao id="detalhes-de-login" titulo="Detalhes de login">
-        {/*
-          `surface-2`, e não `surface-1`: o painel das configurações passou a
-          ser `surface-1`, e um cartão da mesma cor do fundo é um cartão que
-          não existe.
-        */}
         <div className="rounded-lg bg-surface-2 p-5">
           <div className="flex items-center gap-4">
             <Avatar
@@ -153,14 +148,6 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
   );
 };
 
-/**
- * Um dado da conta — e, quando marcado como sigiloso, um que some na
- * transmissão.
- *
- * Escondido não é apagado: um clique revela. Quem está no modo streamer
- * também precisa ler o próprio e-mail de vez em quando; o que ele não pode é
- * que ele apareça sem ninguém ter pedido.
- */
 const Campo: React.FC<{
   rotulo: string;
   valor: string;
@@ -191,18 +178,6 @@ const Campo: React.FC<{
   );
 };
 
-/*
-  Os aparelhos em que a conta está aberta.
-
-  A lista existe por um motivo de segurança e não de curiosidade: é o único
-  lugar onde alguém descobre que a conta está aberta num computador que não é
-  dela. Por isso o IP fica visível ao lado do nome — quando o palpite do
-  `user-agent` erra, é o IP que denuncia o que não devia estar ali.
-
-  O aparelho ATUAL não tem botão. Encerrá-lo por aqui deixaria o app com um
-  cookie morto na mão, sem saber que perdeu a sessão; sair daqui é o botão de
-  sair, logo abaixo, que limpa o cookie junto.
-*/
 const ListaDeDispositivos: React.FC = () => {
   const { data: sessoes = [], isLoading } = useSessoes();
   const encerrar = useEncerrarSessao();
@@ -261,14 +236,6 @@ const ListaDeDispositivos: React.FC = () => {
   );
 };
 
-/*
-  Como cada escopo soa pra quem não escreveu a aplicação.
-
-  O nome técnico não diz o que está em jogo: "guilds" não avisa ninguém de que
-  o programa vê a lista inteira dos servidores dela. Escopo desconhecido cai no
-  próprio nome — é melhor mostrar "identify" cru do que esconder um acesso que
-  esta tela ainda não sabe traduzir.
-*/
 const ESCOPOS: Record<string, string> = {
   identify: "Ver seu nome, apelido e foto",
   guilds: "Ver seus servidores e o que você pode fazer em cada um",
@@ -280,18 +247,6 @@ const quando = (iso: string) =>
     timeStyle: "short",
   }).format(new Date(iso));
 
-/**
- * As aplicações de terceiros com acesso à conta.
- *
- * A lista sai do índice por pessoa no Redis, que passou a existir junto com
- * esta tela: antes o token era só uma chave, e chave não se pergunta pelo
- * conteúdo — não havia como responder "quem tem acesso à minha conta" sem
- * varrer o banco inteiro.
- *
- * Por isso ela começa vazia para todo mundo: autorização dada antes do índice
- * continua valendo e não aparece aqui. Como o token dura sete dias, a lista
- * fica completa sozinha em uma semana.
- */
 const ListaDeAplicativos: React.FC = () => {
   const { data: apps = [], isLoading } = useAplicativosAutorizados();
   const revogar = useRevogarAplicativo();
@@ -352,12 +307,6 @@ const ListaDeAplicativos: React.FC = () => {
             </Button>
           </div>
 
-          {/*
-            Os escopos ficam à mostra, e não atrás de um "ver detalhes": eles
-            são a única coisa que separa um app que lê o seu nome de um que lê
-            a lista inteira dos seus servidores. É o que a pessoa precisa pra
-            decidir se revoga.
-          */}
           <ul className="mt-2.5 space-y-1 border-t border-divisor pt-2.5">
             {app.escopos.map((escopo) => (
               <li
@@ -375,18 +324,7 @@ const ListaDeAplicativos: React.FC = () => {
   );
 };
 
-/**
- * Quem eu bloqueei.
- *
- * A lista sai da mesma consulta das amizades — bloqueio É uma relação, e o
- * servidor já mandava. O que faltava era um lugar que a desenhasse: as abas de
- * Amigos filtram por `ACCEPTED` e `PENDING`, então quem bloqueava alguém e
- * mudava de ideia só tinha um caminho de volta, que era achar a pessoa e abrir
- * o perfil dela. Achar quem você bloqueou é justamente o que é difícil.
- */
 const ListaDeBloqueados: React.FC = () => {
-  /// `true`: quem abriu esta seção quer ver a lista agora. O parâmetro existe
-  /// para as telas que montam antes de saber se vão precisar dela.
   const { data: relacoes = [], isLoading } = useFindFriends(true);
   const desbloquear = useUnblockUser();
 

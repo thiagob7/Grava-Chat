@@ -23,11 +23,6 @@ describe("deveTocar", () => {
     expect(deveTocar({ ...base, guildId: "servidor-1" })).toBe(false);
   });
 
-  /*
-    O `voice:joined` volta pelas salas de usuário dos DOIS participantes, então
-    o próprio join chega de volta pra quem o fez. Sem esta guarda, ligar pra
-    alguém faria o telefone tocar na sua própria mão.
-  */
   it("meu próprio join não toca pra mim", () => {
     expect(deveTocar({ ...base, quemEntrou: "eu" })).toBe(false);
   });
@@ -46,10 +41,6 @@ describe("estaChamando", () => {
     expect(estaChamando({ guildId: null, quantosNaSala: 2 })).toBe(false);
   });
 
-  /*
-    Num canal de servidor, estar sozinho é só estar sozinho — gente entra e sai
-    o dia todo e ninguém está esperando ninguém atender.
-  */
   it("sozinho num canal de servidor não é chamada", () => {
     expect(estaChamando({ guildId: "servidor-1", quantosNaSala: 1 })).toBe(false);
   });

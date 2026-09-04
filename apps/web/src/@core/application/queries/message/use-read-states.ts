@@ -17,13 +17,6 @@ export const useReadStates = (enabled: boolean) =>
       ) as Record<string, { lido: string | null; naoLidas: number; mencoes: number }>,
   });
 
-/**
- * A lista crua, sem virar mapa.
- *
- * A caixa de entrada precisa percorrer os canais e mostrar o nome de cada um
- * — e o `select` do `useReadStates` já reduziu tudo a um dicionário por id,
- * onde o nome não cabe.
- */
 export const useReadStatesLista = (enabled: boolean) =>
   useQuery({
     queryKey: [queryKeys.message.read_states],
@@ -31,13 +24,6 @@ export const useReadStatesLista = (enabled: boolean) =>
     enabled,
   });
 
-/**
- * O mesmo estado, somado por servidor.
- *
- * A barra da esquerda não tem a lista de canais dos outros servidores — só o
- * do que está aberto vem carregado. Por isso o `guildId` viaja junto de cada
- * estado: sem ele, um servidor fechado nunca saberia que tem coisa nova.
- */
 export const useReadStatesPorServidor = (enabled: boolean) =>
   useQuery({
     queryKey: [queryKeys.message.read_states],

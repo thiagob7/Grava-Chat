@@ -49,12 +49,6 @@ export async function buildApp() {
   await app.register(cookie, { secret: env.COOKIE_SECRET });
   await app.register(authPlugin);
 
-  /*
-    Antes das rotas de propósito: o gancho é `onRequest`, então quem estoura o
-    teto leva 429 sem que a requisição chegue a tocar o banco, o JWT ou o R2 —
-    que é justamente o ponto num núcleo fracionado. Registrar aqui também é o
-    que habilita o `config.rateLimit` nas rotas individuais.
-  */
   await app.register(rateLimitPlugin);
 
   app.setErrorHandler((error, req, reply) => {

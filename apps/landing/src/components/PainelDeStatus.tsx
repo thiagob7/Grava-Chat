@@ -12,18 +12,6 @@ import {
   type Status,
 } from "~/lib/status";
 
-/*
-  Uma barra por dia, noventa delas.
-
-  Três cores e não duas, porque o dia sem medição não é dia com queda: pode ser
-  a máquina que estava fora, pode ser peça mais nova que a janela. Pintar de
-  vermelho inventaria uma queda; pintar de verde esconderia uma. O cinza diz o
-  que é verdade — ninguém estava lá para medir.
-
-  O corte em 99,5% e não em 100% porque um minuto de instabilidade num dia dá
-  99,93%: chamar isso de "degradado" faria o painel gritar por ruído, e quem
-  olha aprenderia a ignorá-lo.
-*/
 const cor = (uptime: number | null) => {
   if (uptime === null) return "bg-white/10";
   if (uptime >= 99.5) return "bg-emerald-500";
@@ -36,11 +24,6 @@ const Barra = ({ dias }: { dias: DiaDaJanela[] }) => (
     {dias.map((d) => (
       <span
         key={d.dia}
-        /*
-          O `title` é o que transforma a barra de enfeite em dado: sem ele a
-          pessoa vê que houve uma queda e não tem como saber quando, nem
-          quanto. Com ele, o dia inteiro cabe num passar de mouse.
-        */
         title={
           d.uptime === null
             ? `${d.dia} — sem medição`
@@ -52,8 +35,6 @@ const Barra = ({ dias }: { dias: DiaDaJanela[] }) => (
   </div>
 );
 
-/// A média da janela, ignorando os dias sem medição — incluí-los como zero
-/// puniria a plataforma pelo histórico que não existe.
 const mediaDaJanela = (dias: DiaDaJanela[]) => {
   const medidos = dias.filter((d) => d.uptime !== null);
   if (!medidos.length) return null;
@@ -100,22 +81,10 @@ export const PainelDeStatus = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["status"],
     queryFn: buscarStatus,
-    /*
-      Uma consulta a cada meio minuto, e não uma só na abertura.
-
-      Página de status costuma ficar aberta numa aba enquanto se espera a coisa
-      voltar. Sem a repetição, ela congelaria no estado do instante em que
-      alguém a abriu — e continuaria dizendo "fora do ar" depois de tudo já ter
-      voltado.
-    */
     refetchInterval: 30_000,
-    /// O erro do `fetch` É a resposta "API fora do ar", então não se tenta de
-    /// novo em cascata: a próxima rodada de 30s já refaz a pergunta.
     retry: false,
   });
 
-  /// `undefined` é a primeira carga; `null` é a API que não respondeu. São
-  /// coisas diferentes e a tela precisa distinguir — uma espera, a outra avisa.
   const status = isError ? null : (data ?? null);
 
   if (isLoading) {

@@ -33,10 +33,6 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [aba, setAba] = useState<Aba>("geral");
-  /*
-    As listas só são buscadas quando a aba sai da "Visão geral" — e a
-    contagem, que decide se a aba existe, já veio junto do perfil.
-  */
   const emComum = useFindEmComum(perfil.id, aba !== "geral");
 
   const abas: { id: Aba; rotulo: string }[] = [
@@ -51,15 +47,8 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 
   return (
   <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
-    {/*
-      A borda no acento é de propósito: o cartão de perfil é a única
-      coisa do app que ganha moldura colorida, e é ela que faz o retrato
-      parecer um cartão de verdade em cima da conversa.
-    */}
     <DialogContent
       className="max-w-lg overflow-hidden border-2 border-brand p-0"
-      /// o cartão é de leitura: focar a primeira aba na abertura acende um
-      /// anel que parece seleção
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
       <div
@@ -99,11 +88,6 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         <DialogDescription className="text-base">@{perfil.username}</DialogDescription>
 
         {abas.length > 1 && (
-          /*
-            A fileira de abas com o sublinhado embaixo da escolhida, como no
-            abas. Ela só aparece quando há o que abrir: sem nada em comum,
-            uma aba sozinha chamada "Visão geral" não informa nada.
-          */
           <div className="mt-4 flex gap-4 border-b border-line">
             {abas.map((item) => (
               <button
@@ -206,8 +190,6 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 
 const Bloco: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
   <section className="mt-5">
-    {/* Mesma tipografia do cartão pequeno: rótulo branco em negrito, e o
-        conteúdo em cinza embaixo. */}
     <h3 className="mb-1.5 text-sm font-bold text-ink">{titulo}</h3>
     {children}
   </section>

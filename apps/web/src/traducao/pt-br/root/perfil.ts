@@ -1,7 +1,4 @@
-/// O perfil: o cartão que abre no clique do avatar, a janela cheia, o painel
-/// do privado e as telas de edição que penduram nele — status, cargos,
-/// etiqueta, emblemas e nota. É a terceira área a sair do português cravado,
-/// depois das configurações e da conversa.
+
 export const perfil = {
   carregando: "Carregando…",
   editar: "Editar perfil",
@@ -41,7 +38,6 @@ export const perfil = {
       "Vocês deixam de ser amigos, a conversa privada para de aceitar mensagens e ele não consegue mais te mandar pedido de amizade.",
     linkCopiado: "Vocês não são amigos — o link foi copiado para você mandar.",
   },
-  /// O campinho de mandar uma mensagem sem sair do cartão.
   recado: {
     escrever: "Conversar com @{{usuario}}",
     enviar: "Enviar",
@@ -58,12 +54,6 @@ export const perfil = {
     conteAlgo: "Conte algo sobre você",
     adicionarStatus: "Adicionar status",
     adicionarDescricao: "Clique para adicionar uma descrição",
-    /*
-      Três chaves para a mesma seção porque o título conta os cargos, e contar
-      em português muda a palavra: "Cargo" com um, "Cargos — 4" com quatro.
-      Idioma que não faz essa distinção repete o mesmo texto nas duas primeiras
-      e ninguém percebe; idioma que faz, faz certo.
-    */
     cargo: "Cargo",
     cargos: "Cargos",
     cargosCom: "Cargos — {{quantidade}}",
@@ -99,12 +89,6 @@ export const perfil = {
     limpar4h: "Limpar em 4 horas",
     limparHoje: "Limpar hoje",
     limparAmanha: "Limpar amanhã",
-    /*
-      "Limpar amanhã" não diz nada; "Limpar amanhã às 21:11" diz. A hora sai do
-      mesmo cálculo que grava o valor, então o rótulo nunca mente sobre o que
-      vai acontecer — e por isso ela entra por interpolação, e não escrita
-      dentro de cada um dos seis prazos.
-    */
     comHora: "{{prazo}} às {{hora}}",
   },
   presenca: {

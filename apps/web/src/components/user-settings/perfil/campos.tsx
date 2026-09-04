@@ -67,12 +67,6 @@ export function GradeDeOpcoes<T extends string>({
             title={opcao.descricao}
             className={cn(
               "relative flex flex-col items-center gap-1.5 rounded-lg border px-2 py-2.5 text-xs transition",
-              /*
-                Escolhido se anuncia por três sinais ao mesmo tempo: borda da
-                marca, fundo elevado e o visto no canto. Só tingir o fundo de
-                vermelho não funcionava — sobre superfície escura vira um marrom
-                apagado que passa por "desabilitado".
-              */
               valor === opcao.id
                 ? "border-brand bg-surface-3 font-medium text-ink shadow-[0_0_0_1px_var(--color-brand)]"
                 : "border-line bg-surface-0 text-ink-muted hover:border-white/10 hover:bg-surface-3 hover:text-ink",

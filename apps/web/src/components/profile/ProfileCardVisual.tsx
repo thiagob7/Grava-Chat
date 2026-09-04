@@ -43,16 +43,11 @@ interface ProfileCardVisualProps {
   mutualFriends?: number;
   mutualGuilds?: number;
   cargos?: Role[];
-  /// Cargos que quem esta olhando pode dar ou tirar. Vindo cheio, os chips
-  /// ganham o "x" e a fila termina num "+", como no Discord: da pra mexer no
-  /// cargo de alguem sem sair do cartao.
   cargosDisponiveis?: Role[];
   onAlternarCargo?: (roleId: string) => void;
   salvandoCargos?: boolean;
   emblemas?: Emblema[];
   acoesDoTopo?: ReactNode;
-  /// Linha compacta logo abaixo do @username, como no Discord: [Mensagem] [⋯].
-  /// Diferente de `children`, que cai no rodape do cartao.
   acoes?: ReactNode;
   children?: ReactNode;
   className?: string;
@@ -60,14 +55,9 @@ interface ProfileCardVisualProps {
   onEtiqueta?: (valor: string) => void;
   onEtiquetaDoServidor?: (guildId: string | null) => void;
   onStatus?: () => void;
-  /// Edicao pelo proprio cartao, como no Discord: lapis na faixa e camera
-  /// sobre o avatar. So aparecem quando o pai passa o callback.
   onEditarFaixa?: () => void;
-  /// Quando o pai quer um menu no lugar do botao simples da faixa: ele manda
-  /// o proprio gatilho (um DropdownMenu), e o cartao so o posiciona.
   menuDaFaixa?: ReactNode;
   onEditarFoto?: () => void;
-  /// Edicao da descricao no proprio cartao: clicou, virou campo.
   onBio?: (valor: string) => void;
 }
 
@@ -108,8 +98,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   const [editandoBio, setEditandoBio] = useState(false);
 
   const gerenciaCargos = Boolean(onAlternarCargo);
-  /// So os que a hierarquia deixa mexer ganham o "x" — os de cima aparecem
-  /// como enfeite, do mesmo jeito que a API os trataria.
   const cargosGeriveis = new Set(cargosDisponiveis.map((cargo) => cargo.id));
 
   const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
@@ -134,11 +122,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
       )}
       style={tema}
     >
-      {/*
-        A moldura emoldura o cartao inteiro — o retrato fica com a decoracao.
-        Camada por cima de tudo, sem borda: borda empurraria o conteudo pra
-        dentro e mudaria o layout a cada troca de enfeite.
-      */}
       {molduraDoCartao && (
         <span
           aria-hidden
@@ -212,11 +195,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
           </span>
 
-          {/*
-            Balão de pensamento: as duas bolinhas sobem pra cima-esquerda
-            saindo dele, como no Discord. O ml-2 é pra não encostar em
-            decoração de avatar, que vaza pra fora dos 72px do retrato.
-          */}
           {(statusPersonalizado || onStatus) && (
             <span className="relative ml-2 mt-8 min-w-0">
               <span
@@ -377,17 +355,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </p>
           )}
 
-          {/*
-            O Discord separa as secoes do cartao por espaco, nao por regua —
-            e o que da a ele aquele ar de painel em vez de ficha. As linhas
-            divisorias que existiam aqui picotavam o cartao em blocos.
-          */}
           {onBio ? (
-            /*
-              No cartao do dono, a descricao e o proprio campo: clicou, virou
-              textarea com contador — o mesmo gesto do Discord. Fora do modo de
-              edicao ela continua sendo so texto.
-            */
             editandoBio ? (
               <div className="mt-4">
                 <textarea
@@ -423,11 +391,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             bio && <p className="mt-4 whitespace-pre-wrap text-sm text-ink">{bio}</p>
           )}
 
-          {/*
-            Quem pode mexer nos cargos ve a secao mesmo com a lista vazia —
-            senao o "+" so existiria pra quem ja tem cargo, e dar o primeiro
-            obrigaria a ir ate as configuracoes do servidor.
-          */}
           {(cargos.length > 0 || gerenciaCargos) && (
             <>
               <p className="mb-2 mt-5 text-sm font-bold text-ink">

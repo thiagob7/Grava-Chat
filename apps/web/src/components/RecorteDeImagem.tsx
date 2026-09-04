@@ -13,14 +13,6 @@ import {
 } from "~/components/ui/dialog";
 import { Slider } from "~/components/ui/slider";
 
-/*
-  O lado do recorte na tela é o MESMO do arquivo que sai daqui.
-
-  Assim o que a pessoa vê é exatamente o que é salvo: desenhar num canvas de
-  outro tamanho obrigaria a converter as coordenadas do arrasto, e todo erro
-  nessa conta vira um recorte deslocado — que só aparece depois de salvo, que é
-  quando não dá mais pra comparar com o que estava na tela.
-*/
 const LADO = 256;
 
 interface Props {
@@ -53,8 +45,6 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
 
   if (!arquivo) return null;
 
-  /// Escala mínima é a que COBRE o quadrado: com menos que isso sobraria buraco
-  /// nas beiradas, e um avatar com canto vazio é sempre um acidente.
   const base = imagem ? LADO / Math.min(imagem.width, imagem.height) : 1;
   const escala = base * zoom;
   const largura = (imagem?.width ?? 0) * escala;
@@ -65,7 +55,6 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
     y: Math.min(0, Math.max(LADO - altura, y)),
   });
 
-  /// Centralizado é o padrão: quem só quer a foto no meio não precisa arrastar.
   const centro = { x: (LADO - largura) / 2, y: (LADO - altura) / 2 };
   const atual = imagem ? limitar(pos.x || centro.x, pos.y || centro.y) : { x: 0, y: 0 };
 
@@ -138,8 +127,6 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
               onChange={(e) => {
                 const proximo = Number(e.target.value);
                 setZoom(proximo);
-                /// Reposiciona junto: aproximar sem recolocar deixaria a
-                /// imagem sair do quadro e aparecer buraco na beirada.
                 setPos((p) => limitar(p.x, p.y));
               }}
             />

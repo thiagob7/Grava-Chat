@@ -30,25 +30,11 @@ const schema = z.object({
   LIVEKIT_API_KEY: z.string().default("devkey"),
   LIVEKIT_API_SECRET: z.string().default(""),
 
-  /*
-    Agente de métricas da MÁQUINA do SFU (`infra/sfu/`).
-
-    Vazio desliga o bloco "Voz" do painel em vez de mostrá-lo como fora do ar —
-    em desenvolvimento não existe segunda máquina, e uma caixa vermelha
-    permanente na tela ensina todo mundo a ignorar caixa vermelha.
-  */
   SFU_STATUS_URL: z.string().default(""),
   SFU_STATUS_TOKEN: z.string().default(""),
 
   KLIPY_API_KEY: z.string().default(""),
 
-  /*
-    Contas com acesso ao painel de servidor, separadas por vírgula.
-
-    Vive aqui e não no banco de propósito: é a chave de casa. Quem tem acesso ao
-    .env do servidor já manda em tudo mesmo; qualquer outro lugar (uma flag numa
-    collection, um cargo no app) seria uma superfície a mais pra invadir.
-  */
   ADMIN_EMAILS: z.string().default(""),
 });
 

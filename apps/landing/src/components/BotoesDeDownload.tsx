@@ -7,18 +7,6 @@ import { LINK_MAC, LINK_WINDOWS } from "~/lib/release";
 
 const APP = "https://gravae-chat.vercel.app";
 
-/*
-  Oferece PRIMEIRO o sistema de quem está lendo.
-
-  Uma fileira com "Windows, macOS, Linux" faz todo mundo procurar o próprio
-  nome antes de clicar. Aqui o botão principal já vem com o sistema certo, e os
-  outros continuam à mão logo abaixo — quem baixa pra outra máquina não fica
-  sem saída.
-
-  A detecção só acontece depois de montar: `navigator` não existe na hora de
-  gerar o HTML, e um site estático que tentasse adivinhar isso na build
-  entregaria o palpite errado pra metade das visitas.
-*/
 export const BotoesDeDownload = () => {
   const [sistema, setSistema] = useState<"mac" | "windows" | null>(null);
 

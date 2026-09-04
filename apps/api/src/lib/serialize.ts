@@ -54,12 +54,6 @@ export function toPerfilPublico(
     ...(p?.moldura ? { moldura: p.moldura as PerfilPublico["moldura"] } : {}),
     ...(p?.placa ? { placa: p.placa as PerfilPublico["placa"] } : {}),
     ...(statusVigente(u) ? { status: statusVigente(u) } : {}),
-    /*
-      As conexões saem inteiras porque não há o que esconder nelas: quem as
-      escreveu escreveu para serem vistas, e a tela de Conexões diz isso antes
-      de aceitar a primeira. O que NÃO sai é conexão que não vira endereço —
-      mas essa nem chega a ser guardada, o `me-service` filtra na escrita.
-    */
     ...(p?.conexoes?.length
       ? { conexoes: p.conexoes as NonNullable<PerfilPublico["conexoes"]> }
       : {}),
@@ -87,8 +81,6 @@ function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
   };
 }
 
-/// Comparação em minúsculas e sem espaço: e-mail digitado no .env com maiúscula
-/// ou espaço depois da vírgula é erro fácil de cometer e chato de diagnosticar.
 const ADMINS = new Set(
   env.ADMIN_EMAILS.split(",")
     .map((e) => e.trim().toLowerCase())

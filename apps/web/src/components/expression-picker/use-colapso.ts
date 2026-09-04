@@ -1,15 +1,5 @@
 import { useCallback, useState } from "react";
 
-/**
- * Quais seções estão fechadas, lembradas entre uma abertura e outra.
- *
- * O seletor vive dentro de um popover: fechar e reabrir desmonta tudo. Sem
- * guardar no navegador, fechar "Bandeiras" duraria até o próximo emoji — e
- * quem fecha uma seção quer que ela fique fechada.
- *
- * A chave separa emoji de figurinhas: as duas abas têm seções com o mesmo id
- * (`servidor:123`), e fechar o servidor numa fecharia na outra.
- */
 export function useColapso(aba: string) {
   const chave = `gravae:secoes-fechadas:${aba}`;
 

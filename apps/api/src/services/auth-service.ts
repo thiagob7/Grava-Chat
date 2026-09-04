@@ -47,24 +47,10 @@ export const authService = {
     await sessionRepository.revoke(hashToken(raw));
   },
 
-  /*
-    As sessões vivas, com a atual marcada.
-
-    Saber qual é a atual não é enfeite: sem isso a pessoa desconecta a si mesma
-    achando que está fechando o computador do trabalho, e leva um logout que
-    parece bug. O `raw` vem do cookie de quem está pedindo — é a única forma de
-    o servidor reconhecer o próprio aparelho de quem chama.
-  */
   async listarSessoes(userId: string, raw: string | undefined) {
     const atual = raw ? hashToken(raw) : null;
     const sessoes = await sessionRepository.findAtivasForUser(userId);
 
-    /*
-      A comparação é por HASH, e o hash não sai daqui.
-
-      Devolver o hash da sessão pro cliente entregaria o material de um ataque
-      de repetição a quem conseguisse ler a resposta. O que sai é um booleano.
-    */
     const daAtual = atual
       ? await sessionRepository.findByHash(atual).then((s) => s?.id ?? null)
       : null;
@@ -79,9 +65,6 @@ export const authService = {
     }));
   },
 
-  /// Derruba UMA sessão. A atual não passa: sair daqui é o botão de sair, que
-  /// limpa o cookie junto — por esta rota o app ficaria com um cookie morto na
-  /// mão, sem saber que perdeu a sessão.
   async revogarSessao(userId: string, id: string, raw: string | undefined) {
     const atual = raw ? await sessionRepository.findByHash(hashToken(raw)) : null;
 

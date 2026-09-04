@@ -4,24 +4,10 @@ import { X } from "lucide-react";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 
-/// O convite do servidor oficial do Gravaê. Sem isto configurado, a faixa
-/// simplesmente não existe — nenhuma instalação fica com um convite morto.
 const CONVITE = import.meta.env.VITE_CONVITE_OFICIAL as string | undefined;
 
 const CHAVE = "gravae:faixa-da-comunidade";
 
-/*
-  A faixa que convida pro servidor oficial, no topo de tudo.
-
-  Três coisas a mantêm honesta:
-
-  - Some sozinha pra quem já entrou. O convite responde `alreadyMember`, então
-    a faixa não fica chamando pra uma festa em que a pessoa já está.
-  - Fecha e não volta. Um convite que reaparece a cada abertura vira propaganda,
-    e propaganda no próprio app que a pessoa escolheu usar é abuso de confiança.
-  - Não existe sem `VITE_CONVITE_OFICIAL`. Quem hospeda o Gravaê por conta
-    própria não herda um convite pro nosso servidor.
-*/
 export const FaixaDaComunidade: React.FC = () => {
   const navigate = useNavigate();
   const [fechada, setFechada] = useState(() => {

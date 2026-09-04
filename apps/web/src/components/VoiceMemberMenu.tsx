@@ -83,8 +83,6 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const pode = (p: Permission) => has(permissoes as Set<Permission>, p);
 
   const naChamada = Boolean(voiceState);
-  /// O `min` limpa o que ficou guardado da versão em que a escala ia até 2 —
-  /// sem ele, o controle abriria fora da própria régua.
   const volume = Math.min(1, volumes[userId] ?? 1);
 
   return (
@@ -96,15 +94,6 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
           {euMesmo ? "Ver meu perfil" : "Perfil"}
         </ContextMenuItem>
 
-        {/*
-          Clicar em si mesmo nao pode devolver um menu com um item so.
-
-          Tudo aqui era `!euMesmo` — sensato pra moderacao (ninguem se expulsa),
-          mas o resultado era um menu de UMA linha quando a pessoa clicava no
-          proprio quadro. Estas sao as acoes que fazem sentido sobre voce: o que
-          voce ja pode fazer na barra de baixo, so que a um clique de onde seu
-          rosto esta.
-        */}
         {euMesmo && (
           <>
             <ContextMenuItem

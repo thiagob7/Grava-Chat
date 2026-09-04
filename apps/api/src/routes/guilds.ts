@@ -44,13 +44,6 @@ export async function guildRoutes(app: FastifyInstance) {
     return guild;
   });
 
-  /*
-    O que se pode digitar depois da barra aqui dentro.
-
-    Passa pelo `detail` de propósito: ele já é a porta que cobra ser membro e
-    ver o servidor. Uma consulta própria repetiria essa regra, e é o tipo de
-    repetição que um dia diverge para o lado errado.
-  */
   app.get("/guilds/:guildId/comandos", async (req) => {
     const { guildId } = guildParams.parse(req.params);
     await guildService.detail(req.userId, guildId);

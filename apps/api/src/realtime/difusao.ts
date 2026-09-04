@@ -9,27 +9,6 @@ import { botService } from "~/services/bot-service.js";
 import { messageService } from "~/services/message-service.js";
 import { io } from "./io.js";
 
-/**
- * Gravar e avisar, num lugar só.
- *
- * Escrever uma mensagem tem sempre duas metades: o service grava, e o
- * `io().to(...).emit(...)` conta para quem está com o canal aberto. Sem a
- * segunda, a mensagem entra no banco e ninguém vê até dar refresh.
- *
- * As duas metades viviam dentro dos handlers do socket. Com a API REST de
- * bot fazendo o mesmo trabalho por outra porta, ou isto virava um módulo
- * comum ou as duas cópias iam divergir — e a que ia ficar para trás é
- * justamente a que ninguém testa clicando.
- */
-
-/**
- * `exceto` é o socket de quem mandou.
- *
- * Quem envia pelo WebSocket precisa receber a mensagem com o `nonce` de
- * volta, para casar com o que já desenhou na tela; todo o resto do canal
- * recebe sem. Pela API REST não existe esse alguém, e aí o `emit` é para
- * todos.
- */
 export async function enviarMensagem(
   userId: string,
   input: Parameters<typeof messageService.send>[1],
@@ -72,9 +51,6 @@ export async function reagir(
 
   io().to(rooms.channel(channelId)).emit("message:reactions", { messageId, channelId, reactions });
 
-  /// A animação vai num evento próprio, e não junto da contagem: quem acabou
-  /// de abrir o canal recebe as reações pelo histórico e não pode levar com
-  /// uma chuva de emoji de algo que aconteceu antes de chegar.
   if (burst) {
     io().to(rooms.channel(channelId)).emit("message:super", { messageId, channelId, emoji, userId });
   }
@@ -82,17 +58,6 @@ export async function reagir(
   return { messageId, emoji, channelId, reactions };
 }
 
-/**
- * Como o comando fica escrito no canal.
- *
- * Só as opções que vieram, na ordem em que o bot as declarou — assim a linha
- * do histórico se parece com o que a pessoa digitou, e não com um objeto.
- *
- * Pessoa e canal voltam para a marcação `<@id>` e `<#id>`. O valor convertido
- * é um id de 24 caracteres: certo para o bot, ilegível no meio de uma frase.
- * Com a marcação, quem lê o histórico vê "@Thiago" e "#geral", que é o que
- * quem digitou escolheu na lista.
- */
 function comoFicaEscrito(comando: ComandoDeBot, opcoes: Record<string, string | number>) {
   const partes = comando.opcoes
     .filter((o) => opcoes[o.nome] !== undefined)
@@ -108,28 +73,16 @@ function comoFicaEscrito(comando: ComandoDeBot, opcoes: Record<string, string | 
   return [`/${comando.nome}`, ...partes].join(" ");
 }
 
-/**
- * Um comando de barra, do clique até o bot.
- *
- * Três coisas acontecem, nesta ordem, e a ordem importa: valida, deixa o
- * rastro no canal, entrega ao bot. O rastro vem ANTES da entrega porque o
- * evento leva o `messageId` — o bot responde citando a linha "fulano usou
- * /play", e ela precisa existir para ser citada.
- */
 export async function invocarComando(
   userId: string,
   input: { channelId: string; botId: string; comando: string; opcoes: Record<string, string> },
 ) {
   const { channel, contexto } = await accessService.requireChannelAccess(userId, input.channelId);
 
-  /// Comando é de servidor. Numa DM não existe "o bot está aqui" para
-  /// consultar, e o `guildId` que a validação precisa não existe.
   if (!channel.guildId || !contexto) {
     throw new AppError("Comandos de barra só funcionam em servidor", 400);
   }
 
-  /// A mesma permissão de escrever: o comando vira mensagem no canal, e quem
-  /// não pode falar ali não pode fazer o bot falar por ele.
   if (!has(contexto.permissions, "SEND_MESSAGES")) {
     throw new ForbiddenError("Você não pode escrever neste canal");
   }
@@ -141,13 +94,6 @@ export async function invocarComando(
     opcoes: input.opcoes,
   });
 
-  /*
-    As pessoas escolhidas em opções `usuario` contam como menção.
-
-    Não é enfeite: é o que faz `/expulsar @fulano` notificar o fulano. Escrever
-    `<@id>` no conteúdo sem registrar aqui desenharia a menção sem avisar
-    ninguém — o pior dos dois mundos.
-  */
   const mencionados = comando.opcoes
     .filter((o) => o.tipo === "usuario" && opcoes[o.nome] !== undefined)
     .map((o) => String(opcoes[o.nome]));

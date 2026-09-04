@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     description: "Conversa, voz e vídeo com os seus. De graça, sem anúncio.",
     type: "website",
   },
-  /// O app é o produto; a página só apresenta e manda baixar.
   alternates: { canonical: "/" },
   other: { "app-url": APP },
 };

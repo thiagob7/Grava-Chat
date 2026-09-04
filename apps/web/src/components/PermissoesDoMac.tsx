@@ -22,34 +22,16 @@ interface Linha {
   titulo: string;
   descricao: string;
   estado: Estado;
-  /// `null` quando não há o que fazer daqui — o macOS só deixa pelo painel dele
   conceder: (() => Promise<void>) | null;
   ajustes: () => void;
 }
 
-/// A lista guarda a CHAVE, e não o texto: é constante de módulo, avaliada uma
-/// vez na carga do arquivo, e o texto escrito aqui congelaria o idioma daquele
-/// instante.
 const MIDIAS: { tipo: TipoDeMidia; chave: string }[] = [
   { tipo: "microphone", chave: "microfone" },
   { tipo: "camera", chave: "camera" },
   { tipo: "screen", chave: "tela" },
 ];
 
-/*
-  As permissões do macOS num lugar só.
-
-  Elas são o defeito mais chato do aplicativo instalado: negadas, o botão de
-  microfone, o de câmera e o de tela simplesmente não funcionam — e o macOS
-  costuma perguntar UMA vez, num momento em que a pessoa não estava esperando.
-  Depois disso não pergunta mais: só o painel do sistema resolve, e é preciso
-  saber que ele existe.
-
-  A tela aparece sozinha na primeira vez em que algo está faltando, e depois
-  fica guardada nas Configurações de voz. Aqui não há mágica possível: para
-  gravação de tela, o macOS não deixa NENHUM app pedir por conta própria — o
-  máximo que dá é abrir o painel certo, já na página certa.
-*/
 export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }> = ({
   aberto,
   onFechar,
@@ -68,11 +50,6 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
     );
     setMidias(Object.fromEntries(lidas));
 
-    /*
-      O push-to-talk não tem consulta de status: o `configurar` devolve o
-      estado atual como efeito de ligar o atalho. Chamamos com o que já está
-      guardado nas preferências, então isto não muda nada — só pergunta.
-    */
     const estado = await ponte.ptt.configurar({ ativo: false, tecla: teclaPtt });
     setPtt(estado.indisponivel ? "negada" : estado.precisaPermissao ? "indefinida" : "concedida");
   }, [ponte, teclaPtt]);
@@ -81,8 +58,6 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
     if (aberto) void conferir();
   }, [aberto, conferir]);
 
-  /// Voltar do painel do sistema tem que refletir na hora: a pessoa concedeu lá
-  /// e volta pra cá esperando ver verde.
   useEffect(() => {
     if (!aberto) return;
 
@@ -163,12 +138,6 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
                       {t(linha.estado === "negada" ? "chamada.permissoes.negada" : "chamada.permissoes.naoPedida")}
                     </span>
 
-                    {/*
-                      Negada não tem volta pelo app: o macOS não pergunta duas
-                      vezes. Só o painel dele resolve, e mandar a pessoa
-                      "conceder" num botão que não faz nada seria pior que não
-                      ter botão.
-                    */}
                     {linha.conceder && linha.estado === "indefinida" ? (
                       <Button size="sm" onClick={() => void linha.conceder?.()}>
                         Permitir

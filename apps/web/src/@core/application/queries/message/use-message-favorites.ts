@@ -9,11 +9,6 @@ import {
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-/**
- * Só os ids, para a estrela saber se está acesa. É o que fica carregado o
- * tempo todo; a lista com as mensagens inteiras só é buscada quando o painel
- * de favoritas abre.
- */
 export const useFavoriteMessageIds = () =>
   useQuery({
     queryKey: [queryKeys.message.favorite_ids],

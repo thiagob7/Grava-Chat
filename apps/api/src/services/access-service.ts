@@ -84,18 +84,6 @@ export const accessService = {
     return { channel, contexto };
   },
 
-  /**
-   * Os canais do servidor onde esta pessoa pode ler.
-   *
-   * A busca precisa disso antes de qualquer consulta: procurar em todos os
-   * canais e filtrar o resultado depois vazaria por outro caminho — o número
-   * de acertos já conta que existe conversa no canal fechado. Aqui a lista de
-   * canais entra na consulta, não sai dela.
-   *
-   * `READ_MESSAGE_HISTORY` junto de `VIEW_CHANNEL` porque é o histórico que
-   * está sendo vasculhado: quem só pode ver o canal daqui pra frente não pode
-   * achar o que foi dito antes.
-   */
   async readableChannels(
     userId: string,
     guildId: string,
@@ -131,18 +119,6 @@ export const accessService = {
       .map((canal) => canal.id);
   },
 
-  /**
-   * Tudo o que esta pessoa deve OUVIR — servidores e conversas privadas.
-   *
-   * Antes, o app só entrava na sala do canal que estava aberto. Funcionava
-   * para o chat e escondia um buraco: mensagem de qualquer outro canal
-   * simplesmente não chegava no navegador. Nada de contador crescendo, nada
-   * de aviso — a menção de um canal fechado só aparecia quando você abrisse
-   * aquele canal, que é justamente quando o aviso não serve mais para nada.
-   *
-   * Aqui é `VIEW_CHANNEL` só: receber o que está sendo dito agora não é ler
-   * o que foi dito antes.
-   */
   async listenableChannels(userId: string, guildIds: string[]): Promise<string[]> {
     const porServidor = await Promise.all(
       guildIds.map((guildId) =>

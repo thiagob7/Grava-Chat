@@ -1,20 +1,7 @@
-/*
-  As configurações do SERVIDOR: cargos, membros, banimentos, convites,
-  webhooks, emblemas, expressões e o resto do que quem administra vê.
 
-  Quinta área a sair do português cravado, e a maior delas. Sai em levas — esta
-  primeira cobre as seções que são listas com um título e um vazio; as que têm
-  formulário grande (AutoMod, cargos, expressões) vêm depois.
-
-  O que NÃO entra aqui: nome de cargo, de canal, de emoji ou de servidor. São
-  dados de quem usa, não texto de tela — traduzir "everyone" quebraria a menção
-  que a pessoa digita.
-*/
 export const servidor = {
   titulo: "Configurações do servidor",
 
-  /// Os nomes das seções na lateral. "Perfil", "Cargos" e as outras reaproveitam
-  /// o título da própria seção; só estas quatro não têm de onde tirar.
   abas: {
     expressoes: "Expressões",
     pessoas: "Pessoas",

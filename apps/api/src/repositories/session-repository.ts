@@ -31,14 +31,6 @@ export const sessionRepository = {
       .catch(() => undefined);
   },
 
-  /*
-    As sessões vivas de uma pessoa, da mais recente pra mais antiga.
-
-    Viva = não revogada, não substituída e não vencida. As três condições
-    importam: um token substituído por rotação normal ainda está na tabela, e
-    listá-lo mostraria dois "aparelhos" onde só há um — o de antes e o de
-    depois do último refresh.
-  */
   findAtivasForUser(userId: string) {
     return prisma.refreshToken.findMany({
       where: {
@@ -51,8 +43,6 @@ export const sessionRepository = {
     });
   },
 
-  /// Revoga UMA sessão, conferindo que ela é de quem pediu. Sem o `userId` no
-  /// filtro, um id vazado derrubaria a sessão de outra pessoa.
   async revokeById(userId: string, id: string) {
     const result = await prisma.refreshToken.updateMany({
       where: { id, userId, ...unset("revokedAt") },

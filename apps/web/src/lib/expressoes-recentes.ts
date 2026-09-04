@@ -1,10 +1,6 @@
 const CHAVE_FIGURINHAS = "gravae:figurinhas-recentes";
 const QUANTAS = 12;
 
-/**
- * Guarda só o id. A figurinha em si já vem do servidor, e uma que foi apagada
- * simplesmente não aparece mais — sem lixo pendurado no navegador.
- */
 export function figurinhasRecentes(): string[] {
   try {
     const salvo = JSON.parse(localStorage.getItem(CHAVE_FIGURINHAS) ?? "[]") as unknown;

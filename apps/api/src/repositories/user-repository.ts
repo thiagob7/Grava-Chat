@@ -18,22 +18,6 @@ export const userRepository = {
     return prisma.user.findUnique({ where: { username }, select: { id: true } });
   },
 
-  /**
-   * Acha uma pessoa pelo nome de usuário, para o pedido de amizade.
-   *
-   * ⚠️ O `isBot: false` aqui depende de o campo EXISTIR no documento.
-   *
-   * `@default(false)` no schema vale na ESCRITA: o Prisma não volta e preenche
-   * quem já estava cadastrado quando o campo nasceu. E no conector do Mongo,
-   * documento sem o campo não casa com `isBot: false` — nem com
-   * `NOT: { isBot: true }`, que foi a primeira tentativa de conserto e falhou
-   * pela mesma razão.
-   *
-   * Quem se cadastrou antes dos bots existirem ficava, portanto, impossível de
-   * achar: a busca dizia "não achei ninguém com esse nome de usuário" como se a
-   * pessoa tivesse errado a digitação. O conserto é no DADO, não na consulta —
-   * `scripts/preencher-isbot.ts`.
-   */
   findByUsernamePublic(username: string) {
     return prisma.user.findFirst({
       where: { username: { equals: username, mode: "insensitive" }, isBot: false },

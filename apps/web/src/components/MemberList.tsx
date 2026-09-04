@@ -18,14 +18,6 @@ interface MemberListProps {
   ownerId: string | undefined;
   guildId?: string;
   podeModerar?: boolean;
-  /*
-    Quem está num canal de voz deste servidor agora.
-
-    A lista de membros diz quem ESTÁ, e a bolinha diz em que estado — mas
-    "online" e "online numa chamada com três pessoas" são coisas bem
-    diferentes na hora de decidir se você entra ou não. O alto-falante responde
-    isso sem precisar caçar canal por canal na barra da esquerda.
-  */
   emVoz?: Set<string>;
 }
 
@@ -41,14 +33,6 @@ export const MemberList: React.FC<MemberListProps> = ({
   const { t } = useTranslation();
   const enfeitesDe = useEnfeites(guildId);
 
-  /*
-    A coluna some por decisão de quem usa, e não só por largura de tela.
-
-    Ela já sumia sozinha abaixo de `lg` — o que faltava era o caso de quem tem
-    tela larga e prefere a conversa ocupando tudo. A guarda vem depois dos
-    hooks de propósito: sair antes deles muda a quantidade de hooks entre uma
-    renderização e outra, que é o erro que o React não perdoa.
-  */
   const mostrar = useAparencia((s) => s.listaDeMembros);
 
   const grupos = useMemo(() => {
@@ -82,22 +66,8 @@ export const MemberList: React.FC<MemberListProps> = ({
     ];
   }, [members, roles]);
 
-  /*
-    240px e ponto, como no Discord.
-
-    Ela já foi arrastável. Redimensionar a lista de gente não resolve problema
-    nenhum — ninguém precisa de nome de pessoa em 400px — e custava caro: a
-    alça ficava colada na barra de rolagem do chat, então arrastar a rolagem
-    puxava a coluna junto.
-  */
   if (!mostrar) return null;
 
-  /*
-    A lista de membros não tinha estado de carregamento nenhum: ela nascia
-    vazia e as pessoas apareciam de uma vez. Numa entrada de servidor grande
-    isso é uma coluna em branco por um segundo, indistinguível de um servidor
-    sem ninguém.
-  */
   if (carregando) {
     return (
       <aside
@@ -119,12 +89,6 @@ export const MemberList: React.FC<MemberListProps> = ({
     );
   }
 
-  /*
-    Sem `topo-do-miolo` desde que o cabeçalho passou a atravessar a largura
-    toda: o fio de 1px daquela classe marca o alto do MIOLO, e o alto do miolo
-    agora é o cabeçalho. Mantê-lo aqui desenharia um segundo fio logo abaixo do
-    primeiro.
-  */
   return (
     <aside className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div className="h-full overflow-y-auto px-2 py-4">

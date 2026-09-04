@@ -9,8 +9,6 @@ describe("o que a voz diz", () => {
     expect(fala("bom dia")).toBe("Ana diz: bom dia");
   });
 
-  /// Ler a URL inteira dá trinta segundos de letra por letra. O domínio é a
-  /// única parte que responde "de onde veio isso".
   it("troca o link pelo domínio", () => {
     expect(fala("olha https://github.com/thiagob7/Grava-Chat/pull/12")).toBe(
       "Ana diz: olha link de github.com",
@@ -43,10 +41,6 @@ describe("o que a voz diz", () => {
     expect(fala("isso é **muito** ~~bom~~")).toBe("Ana diz: isso é muito bom");
   });
 
-  /*
-    Mensagem só de anexo chega com texto vazio. Sem esta saída a voz anunciaria
-    "Ana diz:" e emudeceria — o que soa como falha do app, não como imagem.
-  */
   it("diz que é anexo quando não há texto", () => {
     expect(fala("")).toBe("Ana mandou um anexo");
     expect(fala("   ")).toBe("Ana mandou um anexo");

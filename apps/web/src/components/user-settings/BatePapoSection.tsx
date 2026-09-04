@@ -9,18 +9,6 @@ import {
   type QuandoMostrarSpoiler,
 } from "~/stores/aparencia";
 
-/*
-  O bate-papo, separado da aparência.
-
-  Estas preferências viviam na tela de Aparência, e não são sobre aparência:
-  ligar a prévia de link muda o que o app BUSCA na rede, e desligar as
-  sugestões muda o que a caixa de escrever FAZ enquanto você digita. Misturadas
-  com tema e cor, ficavam num lugar onde ninguém procura por elas.
-
-  A divisão em três é a mesma da referência, e ela responde três perguntas
-  diferentes: o que eu vejo, o que acontece enquanto escrevo, e o que o app
-  baixa sozinho.
-*/
 export const BatePapoSection: React.FC = () => {
   const prefs = useAparencia();
 

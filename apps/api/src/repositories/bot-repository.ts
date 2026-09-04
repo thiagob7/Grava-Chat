@@ -18,8 +18,6 @@ export const botRepository = {
     return prisma.bot.findUnique({ where: { token }, include: { usuario: true } });
   },
 
-  /// Os bots por trás de uma lista de usuários-bot. É como se sai de "quem
-  /// são os membros deste servidor" para "o que eles sabem fazer".
   findManyByUserIds(botUserIds: string[]) {
     return prisma.bot.findMany({
       where: { botUserId: { in: botUserIds } },

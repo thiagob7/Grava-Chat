@@ -26,12 +26,6 @@ export const SeletorDeTela: React.FC = () => {
       if (respondido.current) return;
       respondido.current = true;
 
-      /*
-        Guardar o que foi escolhido é o que permite o painel dizer "Tela 1" ou
-        "Visual Studio Code" em vez de um genérico. É aqui e em nenhum outro
-        lugar: depois que o Electron devolve a faixa, este nome já se perdeu —
-        o rótulo que chega na `MediaStreamTrack` é um identificador cru.
-      */
       const fonte = escolha ? lista?.find((f) => f.id === escolha.id) : null;
       definirFonteDaTela(fonte ? { nome: fonte.nome, icone: fonte.icone } : null);
 

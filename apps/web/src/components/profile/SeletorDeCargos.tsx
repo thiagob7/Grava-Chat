@@ -7,22 +7,14 @@ import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
 interface SeletorDeCargosProps {
-  /// So os cargos que quem esta olhando pode mesmo dar — a hierarquia ja vem
-  /// filtrada de fora, pra lista nao oferecer o que a API vai recusar.
   disponiveis: Role[];
   atuais: string[];
   onAlternar: (roleId: string) => void;
   desabilitado?: boolean;
 }
 
-/// A partir daqui a lista fica longa demais pra achar no olho.
 const BUSCA_A_PARTIR_DE = 8;
 
-/*
-  Um Popover, e nao um DropdownMenu: o menu do Radix nao deixa campo de texto
-  dentro dele — o foco e sempre dos itens, e o que a pessoa digitasse viraria
-  atalho de teclado em vez de busca.
-*/
 export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
   disponiveis,
   atuais,
@@ -41,8 +33,6 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
     .sort((a, b) => b.position - a.position)
     .filter((cargo) => !termo || cargo.name.toLowerCase().includes(termo));
 
-  /// Seta pra cima e pra baixo andam na lista, venha o toque do campo de busca
-  /// ou de um cargo — o Popover, ao contrario do menu, nao faz isso sozinho.
   const navegar = (e: React.KeyboardEvent) => {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
 
@@ -93,8 +83,6 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
               key={cargo.id}
               type="button"
               disabled={desabilitado}
-              /// O popover fica aberto a cada clique: dar tres cargos seguidos
-              /// nao devia custar abrir a lista tres vezes.
               onClick={() => onAlternar(cargo.id)}
               className={cn(
                 "flex w-full cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-left text-sm text-ink-muted outline-none transition",

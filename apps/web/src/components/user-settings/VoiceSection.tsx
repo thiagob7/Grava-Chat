@@ -89,19 +89,6 @@ const AvisoDoAtalho: React.FC = () => {
   );
 };
 
-/*
-  Áudio e vídeo eram uma tela só, e viraram duas.
-
-  Não é organização por gosto: microfone e câmera são configurados em momentos
-  diferentes — o microfone antes de entrar na primeira chamada, a câmera na
-  primeira vez que alguém pede para te ver — e juntos faziam uma tela em que
-  seis seções desciam sem fim, com a que interessa sempre no meio.
-
-  O componente continua sendo um só de propósito. Ele lê o mesmo estado de
-  dispositivos, o mesmo `getUserMedia` e as mesmas permissões do macOS;
-  quebrá-lo em dois arquivos duplicaria tudo isso para separar o que já se
-  separa com um `if`.
-*/
 export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
   parte = "audio",
 }) => {
@@ -184,10 +171,6 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
 
   return (
     <div className="max-w-2xl pb-10">
-      {/*
-        Só no aplicativo do macOS: no navegador quem manda nas permissões é o
-        próprio navegador, e no Windows não existe esse painel.
-      */}
       {ehMac && (
         <Button
           variant="surface"
@@ -338,12 +321,6 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
           </Secao>
 
           <Secao id="modo-de-entrada" titulo="Modo de entrada">
-            {/*
-          Escolher entre dois é rádio, não dois botões soltos. Como rádio, o
-          grupo inteiro é UMA parada de tabulação e as setas andam entre as
-          opções — quem navega por teclado não precisa tabular por cima da que
-          não quer, e quem usa leitor de tela ouve "1 de 2, marcado".
-        */}
             <div
               role="radiogroup"
               aria-labelledby="modo-de-entrada"
@@ -475,12 +452,6 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             titulo="Vídeo"
             detalhe="A câmera que entra quando você liga o vídeo numa chamada."
           >
-            {/*
-          A escolha ja existia — mas so DENTRO da chamada, na barra de
-          controles. Quem tem duas cameras precisava entrar, descobrir que
-          abriu a errada e trocar na frente de todo mundo. Aqui ela e feita
-          antes, e a barra continua valendo pra trocar no meio.
-        */}
             <label className="block max-w-sm">
               <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 <Video size={13} /> Câmera
@@ -506,14 +477,6 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             )}
           </Secao>
 
-          {/*
-        O som do sistema fica com o VÍDEO, e não com o áudio.
-
-        Parece áudio pelo nome e não é: ele só existe quando há tela sendo
-        compartilhada, e a pergunta que responde é "o que vai junto com a minha
-        tela". Deixá-lo entre o microfone e a supressão de ruído era o jeito
-        certo de alguém ligar achando que melhora a própria voz.
-      */}
           <Secao id="transmissao" titulo="Transmissão">
             <div className="flex items-start gap-4">
               <div className="min-w-0 flex-1">
@@ -614,19 +577,9 @@ interface OpcaoProps {
   titulo: string;
   descricao: string;
   onClick: () => void;
-  /// as setas do teclado saltam pra outra opção — e escolher é o que a seta faz
   onIrParaOutro: () => void;
 }
 
-/*
-  Um cartão de escolha do modo de entrada.
-
-  A marcada ganha três sinais ao mesmo tempo — a borda, um fundo com a cor da
-  marca e a bolinha cheia — porque só a borda é frágil: some pra quem enxerga
-  mal, some num monitor mal calibrado e some de vez pra quem não distingue a
-  cor. Antes a marcada ainda ESCURECIA o fundo (`bg-surface-0`), que é o oposto
-  do que se espera: a escolhida deve saltar, não afundar.
-*/
 const Opcao: React.FC<OpcaoProps> = ({
   ativo,
   icone: Icone,
@@ -638,11 +591,6 @@ const Opcao: React.FC<OpcaoProps> = ({
   <button
     role="radio"
     aria-checked={ativo}
-    /*
-      Tabulação rotativa: só a marcada recebe o Tab, e as setas trocam. É o que
-      transforma dois botões num grupo — sem isto, o Tab pararia nas duas e a
-      seta não faria nada, que é o contrário do que um rádio promete.
-    */
     tabIndex={ativo ? 0 : -1}
     onClick={onClick}
     onKeyDown={(e) => {
@@ -668,7 +616,6 @@ const Opcao: React.FC<OpcaoProps> = ({
       )}
     />
 
-    {/* `span`, e não `p`: parágrafo dentro de botão é HTML inválido. */}
     <span className="min-w-0 flex-1">
       <span className="block text-sm font-medium">{titulo}</span>
       <span className="mt-0.5 block text-xs text-ink-faint">{descricao}</span>

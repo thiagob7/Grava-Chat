@@ -16,9 +16,7 @@ export interface MessagePageModel {
 
 export interface ReadStateModel {
   channelId: string;
-  /// nulo em conversa privada, que não pertence a servidor nenhum
   guildId: string | null;
-  /// o nome do canal, pra caixa de entrada poder dizer onde ficou o não-lido
   channelName?: string | null;
   lastReadMessageId: string | null;
   unreadCount: number;

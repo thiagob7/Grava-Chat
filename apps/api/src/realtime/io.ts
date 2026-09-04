@@ -7,7 +7,6 @@ export type SocketData = {
   userId: string;
   guildIds: string[];
   voiceChannelId: string | null;
-  /// entrou com token de bot, e não com a sessão de uma pessoa
   ehBot?: boolean;
 };
 

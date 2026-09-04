@@ -18,14 +18,6 @@ export const AddFriendForm: React.FC = () => {
   };
 
   return (
-    /*
-      Centralizado, e não colado no topo da página.
-
-      A aba de adicionar amigo é uma tela de UMA tarefa: não há lista, não há
-      nada abaixo. Encostado no topo, o formulário ficava sozinho num canto com
-      uma área vazia enorme embaixo — parecia uma página que não terminou de
-      carregar. No meio, ele é claramente a coisa a fazer ali.
-    */
     <div className="flex h-full flex-col items-center justify-center px-6 text-center">
       <span className="flex size-16 items-center justify-center rounded-full bg-brand/15 text-brand">
         <UserRoundPlus size={30} />

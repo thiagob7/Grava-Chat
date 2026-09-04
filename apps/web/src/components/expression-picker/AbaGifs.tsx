@@ -13,15 +13,6 @@ import type { CategoriaDeGifModel, GifModel } from "~/@core/application/requests
 import { Carregando, Vazio } from "~/components/expression-picker/pecas";
 import { cn } from "~/lib/utils";
 
-/**
- * Duas telas na mesma aba: a capa, com as categorias, e a lista de GIFs de
- * uma delas. A capa é o que se vê ao abrir, como no Discord — cair direto nos
- * "em alta" não dava caminho nenhum pros favoritos.
- *
- * O que está aberto é `secao`: `null` na capa, "favoritos", "alta", ou o
- * termo de busca. Digitar na busca do topo abre a seção do termo digitado, e
- * apagar a busca volta pra capa.
- */
 type Secao = { tipo: "favoritos" } | { tipo: "alta" } | { tipo: "termo"; termo: string } | null;
 
 export const AbaGifs: React.FC<{
@@ -40,8 +31,6 @@ export const AbaGifs: React.FC<{
     return () => clearTimeout(timer);
   }, [busca]);
 
-  /// A busca do topo manda na seção: escrever abre o termo, limpar volta pra
-  /// capa. Sem isso, apagar o texto deixava a tela presa no último resultado.
   useEffect(() => {
     if (digitado) setSecao({ tipo: "termo", termo: digitado });
     else if (busca.trim() === "") setSecao((atual) => (atual?.tipo === "termo" ? null : atual));
@@ -110,12 +99,6 @@ export const AbaGifs: React.FC<{
   );
 };
 
-/**
- * Um quadro da capa. Todos têm foto de fundo — a categoria traz a sua da
- * Klipy, "em alta" e "favoritos" emprestam o primeiro GIF que têm. Sem foto
- * (favoritos vazio) sobra o degradê da marca, que é o único caso em que um
- * quadro fica chapado.
- */
 const Cartao: React.FC<{
   nome: string;
   preview?: string;

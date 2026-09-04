@@ -16,29 +16,10 @@ import { accessService } from "./access-service.js";
 export const roomName = (channelId: string) => `channel-${channelId}`;
 const canalDaSala = (nomeDaSala: string) => nomeDaSala.replace(/^channel-/, "");
 
-/// O Mongo estoura na consulta se o id não tiver a forma de ObjectId, e o
-/// LiveKit aceita qualquer string como identidade. Filtrar antes é o que
-/// impede um participante estranho de derrubar o painel inteiro.
 const ehObjectId = (valor: string) => /^[0-9a-f]{24}$/i.test(valor);
 
-/*
-  Um canal de privado serve de sala de chamada.
-
-  `guildId` nulo é o que define um DM no schema (`Channel.guildId`), e o tipo
-  dele é TEXT porque a conversa nasceu como conversa. Ligar não cria canal
-  nenhum: a sala do LiveKit é derivada do id do canal, igual em servidor.
-*/
 const ehChamadaDePrivado = (channel: { guildId: string | null }) => channel.guildId === null;
 
-/**
- * Quem precisa saber do estado de voz desta pessoa.
- *
- * Em servidor é a sala da guild, e pronto. No privado não existe essa sala —
- * então falamos com as duas pessoas da conversa pelas salas de usuário delas,
- * que o gateway assina na conexão. É o que faz a ligação TOCAR para quem está
- * com o app aberto noutra tela: a sala do canal só teria quem já abriu a
- * conversa, e quem está sendo chamado normalmente não está lá.
- */
 export async function destinatariosDaVoz(state: {
   guildId: string | null;
   channelId: string;
@@ -75,43 +56,14 @@ const DEFAULTS = {
 
 export const VOICE_GRACE_MS = 6_000;
 
-/*
-  Sobrevida da chave orfã no Redis.
-
-  O `setTimeout` que colhe o órfão vive DENTRO do processo. Se a API reinicia
-  na janela — deploy, crash, `yarn dev` recarregando — o temporizador morre e a
-  chave fica no Redis pra sempre: a pessoa aparece na chamada, desligada,
-  indefinidamente. O TTL é a rede embaixo do trapézio.
-*/
 const TTL_DO_ORFAO_MS = 60_000;
 
-/*
-  Quanto esperamos antes de confiar na ausência de alguém no SFU.
-
-  Entre pedir pra entrar e o navegador de fato conectar no LiveKit passam
-  segundos. Varrer sem essa carência derrubaria justamente quem está entrando.
-*/
 const CARENCIA_DO_SFU_MS = 25_000;
 
 export const voiceService = {
-  /*
-    Radiografia do SFU pro painel: que salas estão abertas e QUEM está dentro.
-
-    Pergunta ao próprio LiveKit, não ao Redis, de propósito — o Redis guarda o
-    que a NOSSA aplicação acha que está acontecendo, e a graça do painel é
-    justamente pegar divergência entre os dois.
-
-    `listRooms` sozinho devolve `channel-<id>` e um número. Nome de sala não é
-    nome de canal e número não é gente: sem trocar os ids por canal, servidor e
-    pessoa, o painel mostra um hash e uma contagem, que é exatamente o que não
-    ajuda a entender uma chamada travada às onze da noite.
-  */
   async estadoDoSfu() {
     const [salas, chaves] = await Promise.all([
       roomService().listRooms(),
-      /// Mesmo `keys` que a varredura de fantasmas usa. Varre o keyspace
-      /// inteiro, mas ele cabe na palma da mão aqui — e é a única forma de
-      /// achar estado preso num canal que nem sala tem mais.
       redis.keys("voice:user:*"),
     ]);
 
@@ -136,14 +88,6 @@ export const voiceService = {
     );
     const conhecidosPeloApp = new Set(noRedis.map((e) => `${e.channelId}:${e.userId}`));
 
-    /*
-      Fantasma: o app jura que a pessoa está em chamada e o SFU não a vê.
-
-      Uso a MESMA carência da varredura que limpa isso sozinha — quem acabou de
-      clicar em entrar ainda não conectou no LiveKit e não é fantasma nenhum.
-      Passada a carência, fantasma na tela é sinal de que a varredura parou de
-      rodar, que é exatamente o que ninguém descobre sem olhar.
-    */
     const agora = Date.now();
     const fantasmas = noRedis.filter(
       (e) =>
@@ -160,14 +104,6 @@ export const voiceService = {
       ].filter(ehObjectId),
     );
 
-    /*
-      De que servidor é a sala, segundo o Redis.
-
-      Serve para a sala cujo canal foi apagado com a chamada ainda viva: o
-      documento do canal não existe mais, mas o estado de voz de quem está
-      dentro ainda carrega o `guildId`. Sem isso o painel só saberia dizer
-      "canal sumiu" e ficaria por aí.
-    */
     const guildPorCanal = new Map<string, string>();
     for (const estado of noRedis) {
       if (estado.guildId) guildPorCanal.set(estado.channelId, estado.guildId);
@@ -180,12 +116,6 @@ export const voiceService = {
       ]),
     ]);
 
-    /*
-      Junto de quem está na sala vêm os donos das conversas privadas: canal de
-      DM se chama "dm" no banco, então o nome útil na tela é o das duas pessoas
-      — e uma delas pode estar sendo chamada sem ter atendido, isto é, sem
-      aparecer entre os participantes do SFU.
-    */
     const usuarios = await userRepository.findManyByIds(
       [
         ...new Set([
@@ -204,7 +134,6 @@ export const voiceService = {
       const canal = canalPorId.get(canalId);
       if (!canal) return canalId;
 
-      /// Canal de DM se chama "dm" no banco; o nome útil é o das duas pessoas.
       if (canal.guildId === null)
         return canal.recipients
           .map((id) => usuarioPorId.get(id)?.displayName ?? "alguém")
@@ -219,16 +148,6 @@ export const voiceService = {
       const guildId = canal?.guildId ?? guildPorCanal.get(canalId) ?? null;
       const guild = guildId ? guildPorId.get(guildId) : null;
 
-      /*
-        Sala sem canal no banco tem duas causas bem diferentes, e chamar as
-        duas de "canal sumiu" manda investigar o problema errado.
-
-        Se ninguém lá dentro existe neste banco, a sala não é nossa: é o
-        `LIVEKIT_URL` apontando pro SFU de outro ambiente — o `.env` de
-        desenvolvimento faz exatamente isso, mira o SFU de produção. Se as
-        pessoas SÃO daqui e só o canal não é, aí sim o canal foi apagado com a
-        chamada viva dentro.
-      */
       const alguemDaqui = pessoas.some((p) => usuarioPorId.has(p.identity));
       const motivo: "canal-apagado" | "outro-ambiente" | null = canal
         ? null
@@ -238,8 +157,6 @@ export const voiceService = {
 
       return {
         canalId,
-        /// `null` quando não dá pra saber: a tela diz o que houve em vez de
-        /// mostrar o id cru como se fosse nome de canal.
         nome: canal ? nomeDoCanal(canalId) : null,
         servidor: guild?.name ?? null,
         ehPrivado: canal?.guildId === null,
@@ -256,18 +173,10 @@ export const voiceService = {
             id: p.identity,
             nome: user?.displayName ?? (p.name || p.identity),
             avatarUrl: user?.avatarUrl ?? null,
-            /*
-              Três estados, não dois: sem trilha é microfone que nunca foi
-              publicado (ouvinte, ou conexão que ficou pelo caminho), e mudo é
-              trilha publicada e silenciada. Juntar os dois num booleano
-              esconde justamente o caso em que a chamada está quebrada.
-            */
             microfone: microfone ? (microfone.muted ? "mudo" : "aberto") : "sem",
             camera: Boolean(camera && !camera.muted),
             tela: Boolean(tela && !tela.muted),
             entrouEm: Number(p.joinedAt),
-            /// Está no SFU e o Redis não sabe: zumbi. A varredura expulsa
-            /// depois da carência — se continua aqui, ela não está rodando.
             soNoSfu: !conhecidosPeloApp.has(`${canalId}:${p.identity}`),
           };
         }),
@@ -284,11 +193,8 @@ export const voiceService = {
       fantasmas: fantasmas.map((e) => ({
         id: e.userId,
         nome: usuarioPorId.get(e.userId)?.displayName ?? e.userId,
-        /// Mesmo critério das salas: sem canal no banco a tela diz o que
-        /// houve, em vez de imprimir o id como se fosse nome.
         canal: canalPorId.has(e.channelId) ? nomeDoCanal(e.channelId) : null,
         desde: Math.round(e.joinedAt / 1000),
-        /// Já tinha caído e está na janela de reconexão: some sozinho, provável.
         aguardandoVolta: e.orphanedAt !== null,
       })),
     };
@@ -333,15 +239,6 @@ export const voiceService = {
     const { channel, contexto } = await accessService.requireChannelAccess(userId, channelId);
     const anterior = await voiceService.get(userId);
 
-    /*
-      No privado a chamada acontece no PRÓPRIO canal da conversa, que é do tipo
-      TEXT — não existe um canal de voz separado pra criar, e criar um só pra
-      ligar seria um documento a mais pra manter vivo e limpar depois.
-
-      O acesso já foi checado: `requireChannelAccess` devolve `contexto` nulo
-      justamente para DM, e só depois de confirmar que quem pede está entre os
-      `recipients`. Quem não é dos dois nem chega aqui.
-    */
     if (channel.type !== "VOICE" && !ehChamadaDePrivado(channel)) {
       throw new AppError("Este canal não é de voz");
     }
@@ -429,7 +326,6 @@ export const voiceService = {
     if (!state || state.socketId !== socketId || state.orphanedAt) return null;
 
     const orphaned = { ...state, orphanedAt: Date.now() };
-    /// Com prazo: se o processo cair antes de colher, o Redis colhe por ele.
     await redis.set(keys.voiceState(userId), JSON.stringify(orphaned), "PX", TTL_DO_ORFAO_MS);
     return orphaned;
   },
@@ -497,18 +393,6 @@ export const voiceService = {
     );
   },
 
-  /*
-    Quem está em voz em TODOS os servidores de uma pessoa.
-
-    O trilho de servidores precisa disso: o detalhe do servidor traz os estados
-    de voz, mas só do servidor aberto — e o trilho mostra todos. Sem uma rota
-    própria, mostrar quem está em chamada num servidor fechado exigiria carregar
-    o detalhe de cada um, que traz canais, membros e últimas mensagens junto.
-
-    Devolve só canal COM gente. Canal vazio não interessa a quem está olhando o
-    trilho, e mandar a lista inteira faria a resposta crescer com o número de
-    canais em vez de com o número de pessoas em chamada.
-  */
   async statesForUser(userId: string): Promise<Record<string, VozNoServidor[]>> {
     const membros = await memberRepository.guildIdsOf(userId);
     const guildIds = membros.map((m) => m.guildId);
@@ -519,13 +403,6 @@ export const voiceService = {
 
     const estados = await voiceService.statesForChannels(canais.map((c) => c.id));
 
-    /*
-      Uma consulta só para todos os rostos.
-
-      Resolver por canal daria uma consulta por canal com gente — e quem tem
-      dez servidores com uma chamada em cada pagaria dez idas ao banco pra
-      desenhar uma dica que some ao tirar o mouse.
-    */
     const ids = [...new Set(Object.values(estados).flatMap((lista) => lista.map((e) => e.userId)))];
     const usuarios = new Map(
       (await userRepository.findManyByIds(ids)).map((u) => [
@@ -537,13 +414,6 @@ export const voiceService = {
     const porServidor: Record<string, VozNoServidor[]> = {};
 
     for (const canal of canais) {
-      /*
-        `guildId` é anulável no schema: canal de mensagem direta não tem
-        servidor. A consulta já pede só canais de servidores meus, mas o tipo
-        não sabe disso — e o dia em que um canal de voz existir fora de um
-        servidor, este `continue` é a diferença entre ignorá-lo e escrever numa
-        chave `null`.
-      */
       const guildId = canal.guildId;
       const dentro = estados[canal.id] ?? [];
       if (!guildId || !dentro.length) continue;
@@ -552,8 +422,6 @@ export const voiceService = {
         .map((estado) => usuarios.get(estado.userId))
         .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
-      /// Estado no Redis de uma conta apagada deixa a lista vazia: melhor
-      /// omitir o canal do que anunciar uma chamada sem ninguém dentro.
       if (!pessoas.length) continue;
 
       (porServidor[guildId] ??= []).push({
@@ -566,26 +434,6 @@ export const voiceService = {
     return porServidor;
   },
 
-  /*
-    Confere o que o Redis acha com o que o LiveKit sabe, nos DOIS sentidos.
-
-    As duas fontes erram de jeitos diferentes, e cada uma engana uma parte da
-    tela: a lista embaixo do canal vem do Redis, e os quadros do palco vêm do
-    `room.remoteParticipants` do LiveKit. Um fantasma pode estar em qualquer
-    uma — ou nas duas.
-
-    REDIS SEM SFU acontece quando o cliente some sem se despedir e o órfão não
-    é colhido. Sai do Redis.
-
-    SFU SEM REDIS é o zumbi: a conexão do cliente morreu de um jeito que o
-    LiveKit não percebeu (máquina dormiu, rede caiu sem fechar o socket), e ele
-    segue listando a pessoa na sala. Aqui o Redis está CERTO e o SFU errado —
-    a pessoa fica com quadro no palco pra sempre. Esse é expulso do SFU.
-
-    Devolve os estados removidos do Redis pra quem chamou anunciar a saída; os
-    expulsos do SFU não precisam de anúncio, porque o próprio LiveKit avisa os
-    clientes quando alguém deixa a sala.
-  */
   async reconciliar(): Promise<{ doRedis: VoiceState[]; doSfu: number }> {
     const agora = Date.now();
 
@@ -599,7 +447,6 @@ export const voiceService = {
       .filter((v): v is string => Boolean(v))
       .map((v) => hidratar(JSON.parse(v) as VoiceState));
 
-    /// `channel-<id>` é o nome que damos à sala; só nos interessam as nossas.
     const nossas = salas.filter((sala) => sala.name.startsWith("channel-"));
 
     const participantes = await Promise.all(
@@ -615,7 +462,6 @@ export const voiceService = {
       for (const p of lista) noSfu.add(`${channelId}:${p.identity}`);
     }
 
-    /// Redis sem SFU: o estado é fantasma, some do Redis.
     const orfaos = noRedis.filter(
       (e) => agora - e.joinedAt > CARENCIA_DO_SFU_MS && !noSfu.has(`${e.channelId}:${e.userId}`),
     );
@@ -624,19 +470,6 @@ export const voiceService = {
       (e): e is VoiceState => Boolean(e),
     );
 
-    /*
-      SFU sem Redis: o participante é zumbi, sai da sala.
-
-      A trava: só mexemos numa sala onde este Redis reconhece ALGUÉM. É o que
-      prova que a sala é deste ambiente.
-
-      Sem ela isto vira uma arma. O `.env` de desenvolvimento aponta o
-      `LIVEKIT_URL` para o SFU de PRODUÇÃO — então a API rodando na máquina de
-      alguém enxerga as salas de produção, não reconhece nenhum daqueles
-      usuários no seu Redis local, e expulsaria todo mundo de todas as chamadas
-      ao vivo. Com a trava, uma sala em que este Redis não conhece ninguém é
-      simplesmente ignorada.
-    */
     const conhecidos = new Set(noRedis.map((e) => `${e.channelId}:${e.userId}`));
 
     const zumbis = participantes.flatMap(({ channelId, sala, lista }) => {
@@ -646,8 +479,6 @@ export const voiceService = {
       return lista
         .filter((p) => {
           if (conhecidos.has(`${channelId}:${p.identity}`)) return false;
-          /// `joinedAt` do LiveKit vem em segundos; quem acabou de entrar ainda
-          /// pode não ter estado no Redis, e não é zumbi.
           const entrouEm = Number(p.joinedAt ?? 0) * 1000;
           return entrouEm > 0 && agora - entrouEm > CARENCIA_DO_SFU_MS;
         })

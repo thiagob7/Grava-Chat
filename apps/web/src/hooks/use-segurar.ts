@@ -2,14 +2,6 @@ import { useCallback, useRef } from "react";
 
 const SEGURAR_MS = 450;
 
-/**
- * Clique curto faz uma coisa, clique segurado faz outra — é como se dispara a
- * super reação sem precisar de um botão só pra isso.
- *
- * O `onClick` normal não serve de par: ele dispara mesmo depois de um clique
- * longo, e o gesto contaria duas vezes. Por isso tudo sai do ponteiro, e o
- * `pointerup` decide qual dos dois aconteceu.
- */
 export function useSegurar(curto: () => void, longo: () => void) {
   const disparou = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

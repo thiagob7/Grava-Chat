@@ -49,7 +49,6 @@ interface ComposerProps {
   postId?: string;
   podeEscrever?: boolean;
   podeAnexar?: boolean;
-  /// segundos do modo lento do canal; 0 é desligado
   modoLento?: number;
 }
 
@@ -69,8 +68,6 @@ export const Composer: React.FC<ComposerProps> = ({
   const alternarMencao = useReplyStore((s) => s.alternarMencao);
   const cancelarResposta = useReplyStore((s) => s.cancelar);
 
-  /// A barra é do canal em que a resposta começou. Trocar de canal com uma
-  /// resposta pendente não pode levar o alvo junto.
   const resposta = respostaAberta?.channelId === channelId ? respostaAberta : null;
 
   const [fonte, setFonte] = useState<FonteDeNome>(lerFonteSalva);
@@ -81,22 +78,11 @@ export const Composer: React.FC<ComposerProps> = ({
   const queryClient = useQueryClient();
   const pedirEdicao = useEdicaoStore((s) => s.pedir);
 
-  /*
-    A seta pra cima com o campo vazio abre a última mensagem SUA para editar.
-
-    As mensagens saem direto do cache da consulta em vez de virarem props: a
-    lista já as tem, e passá-las por aqui obrigaria o campo a redesenhar a cada
-    mensagem nova que chegasse no canal — enquanto você digita.
-
-    Quem decide QUAL mensagem é o `lib/editar-com-a-seta.ts`; aqui só se junta
-    o material e se entrega o pedido.
-  */
   const abrirUltimaParaEditar = () => {
     const chave = postId ? queryKeys.channel.postMessages(postId) : queryKeys.channel.messages(channelId);
     const cache = queryClient.getQueryData<{ pages: MessagePageModel[] }>(chave);
     const eu = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me]);
 
-    /// as páginas vêm da mais recente para a mais antiga; a regra espera o contrário
     const mensagens = [...(cache?.pages ?? [])].reverse().flatMap((p) => p.messages);
 
     const alvo = mensagemParaEditar({ rascunho: value, euSou: eu?.id, mensagens });
@@ -128,13 +114,6 @@ export const Composer: React.FC<ComposerProps> = ({
   const { filtrar: filtrarComandos, analisar } = useComandos(guildId);
   const comandos = mostrarSugestoes && comando ? filtrarComandos(comando.termo) : [];
 
-  /*
-    Um anexo desliga o modo comando.
-
-    Comando de barra não carrega arquivo — quem arrastou algo para a caixa
-    está mandando uma mensagem, e a barra ali é texto. Melhor do que engolir o
-    anexo calado na hora de invocar.
-  */
   const invocacao = anexos.items.length ? null : analisar(value);
 
   const escolherComando = (item: (typeof comandos)[number]) => {
@@ -149,8 +128,6 @@ export const Composer: React.FC<ComposerProps> = ({
     });
   };
 
-  /// A detecção das duas listas anda junta: o que abre uma fecha a outra, e
-  /// esquecer uma delas deixaria a lista velha na tela.
   const detectar = (texto: string, cursor: number) => {
     setMencao(detectarMencao(texto, cursor));
     setComando(detectarComando(texto, cursor));
@@ -177,8 +154,6 @@ export const Composer: React.FC<ComposerProps> = ({
     podeEscrever &&
     (value.trim().length > 0 || anexos.prontos.length > 0) &&
     !anexos.subindo &&
-    /// Comando pela metade não sai. A dica em cima já diz o que falta, e
-    /// mandar assim só renderia um erro do servidor dizendo a mesma coisa.
     !invocacao?.faltando.length;
 
   const limparCaixa = () => {
@@ -188,15 +163,6 @@ export const Composer: React.FC<ComposerProps> = ({
     if (textarea.current) textarea.current.style.height = "auto";
   };
 
-  /*
-    A contagem do modo lento.
-
-    Quem manda a conta é o servidor (ele recusa com 429 e diz quantos segundos
-    faltam) — isto aqui é só o aviso na tela, pra pessoa não escrever um
-    parágrafo inteiro e só então descobrir que ainda falta esperar. Começa no
-    envio; se o envio falhar, o pior que acontece é um aviso a mais por alguns
-    segundos.
-  */
   const [esperaAte, setEsperaAte] = useState(0);
   const [agora, setAgora] = useState(() => Date.now());
 
@@ -207,7 +173,6 @@ export const Composer: React.FC<ComposerProps> = ({
     return () => clearInterval(relogio);
   }, [esperaAte, agora]);
 
-  /// Trocar de canal zera: o modo lento é por canal, e o de lá não vale aqui.
   useEffect(() => setEsperaAte(0), [channelId]);
 
   const faltam = Math.max(0, Math.ceil((esperaAte - agora) / 1000));
@@ -219,13 +184,6 @@ export const Composer: React.FC<ComposerProps> = ({
   const submit = () => {
     if (!podeEnviar) return;
 
-    /*
-      Comando não vira mensagem daqui.
-
-      Quem escreve o rastro no canal é o servidor, junto de entregar ao bot —
-      as duas coisas na mesma transação. Mandar o texto por fora deixaria a
-      linha "/play ..." no canal mesmo quando o comando fosse recusado.
-    */
     if (invocacao) {
       limparCaixa();
       cancelarResposta();
@@ -248,15 +206,6 @@ export const Composer: React.FC<ComposerProps> = ({
     sendMessage.mutate({
       channelId,
       content,
-      /*
-        O aviso é do RESPONDER, não do texto.
-
-        Antes o "@" ligado grudava um `<@id>` na frente do conteúdo só pra
-        conseguir a notificação — e a pessoa via a pílula azul no começo da
-        própria mensagem, repetindo o nome que a citação logo acima já mostra.
-        O servidor agora acrescenta o autor citado à lista de menções, e o
-        texto vai como foi escrito.
-      */
       mencionarAutor: Boolean(resposta && mencionarAoResponder),
       ...(fonte !== "padrao" ? { fonte } : {}),
       attachments: anexos.prontos,
@@ -308,21 +257,6 @@ export const Composer: React.FC<ComposerProps> = ({
     void startTyping(channelId).catch(() => undefined);
   };
 
-  /*
-    Colar código põe a cerca sozinho.
-
-    O bloco com o nome da linguagem e o botão de copiar existe desde sempre, e
-    quase nunca aparecia: ele depende de ``` e ninguém digita ``` ao colar
-    trinta linhas de TypeScript. O resultado era código virando parágrafo, na
-    fonte de texto, no meio da conversa.
-
-    O palpite mora AQUI, e não na hora de desenhar a mensagem, e a diferença é
-    quem paga pelo erro. Aqui a cerca aparece no campo, à vista, antes de
-    mandar — e `Ctrl+Z` desfaz. Do outro lado seria o app decidindo sozinho na
-    conversa dos outros, onde um falso positivo transforma a lista de preços de
-    alguém em bloco de código para sempre. Por isso o `pareceCodigo` também
-    prefere errar para o lado de não reconhecer.
-  */
   const colar = (evento: React.ClipboardEvent) => {
     const arquivos = [...evento.clipboardData.files];
 
@@ -341,10 +275,6 @@ export const Composer: React.FC<ComposerProps> = ({
     const fim = campo?.selectionEnd ?? value.length;
     const proximo = value.slice(0, inicio) + cercado + value.slice(fim);
 
-    /// Passar do limite é assunto do servidor, e o `maxLength` do campo não
-    /// vale para o que a gente escreve por código. Melhor deixar o navegador
-    /// colar do jeito dele — cru, e cortado no limite — do que montar uma
-    /// mensagem que vai ser recusada.
     if (proximo.length > LIMITS.messageLength) return;
 
     evento.preventDefault();
@@ -357,18 +287,12 @@ export const Composer: React.FC<ComposerProps> = ({
       campo.focus();
       campo.setSelectionRange(cursor, cursor);
 
-      /// A caixa cresceu de uma vez; sem isto ela ficaria de uma linha com o
-      /// bloco inteiro escondido dentro.
       campo.style.height = "auto";
       campo.style.height = `${Math.min(campo.scrollHeight, window.innerHeight / 2)}px`;
     });
   };
 
   return (
-    /*
-      Container próprio: a caixa de escrever não está dentro da lista, e é a
-      largura DELA que decide o que cabe na fileira de botões.
-    */
     <div className="@container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
       {faltam > 0 && (
         <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
@@ -395,12 +319,6 @@ export const Composer: React.FC<ComposerProps> = ({
           void anexos.add([...e.dataTransfer.files]);
         }}
         className={cn(
-          /*
-            `bg-campo`, e não `bg-composer`: nos temas escuros a superfície do
-            rodapé é a MESMA cor da conversa, então a caixa pintada com ela
-            sumia — sobrava o texto solto no fim da lista. Quem tem cor própria
-            é o campo (`--background-textarea`), que é o que se enxerga.
-          */
           "rounded-lg bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
@@ -462,14 +380,6 @@ export const Composer: React.FC<ComposerProps> = ({
             onPassarMouse={setEscolhido}
           />
 
-          {/*
-            A dica entra quando não há lista aberta.
-
-            As três ocupam o mesmo lugar — `absolute bottom-full` — e a última
-            desenhada tapa as outras. Sem esta condição, escolher uma pessoa
-            para uma opção `usuario` seria escolher às cegas: a lista de
-            menções existiria, embaixo da dica, invisível.
-          */}
           {!comandos.length && !sugestoes.length && invocacao && (
             <DicaDoComando
               comando={invocacao.comando}
@@ -539,11 +449,6 @@ export const Composer: React.FC<ComposerProps> = ({
               setComando(null);
             }}
             onKeyDown={(e) => {
-              /*
-                Depois das listas de sugestão e antes de tudo o mais: com o
-                menu de comandos ou de menções aberto, a seta é deles — ela
-                escolhe item, e roubá-la ali quebraria a navegação.
-              */
               if (e.key === "ArrowUp" && !sugestoes.length && !comandos.length) {
                 if (abrirUltimaParaEditar()) {
                   e.preventDefault();
@@ -613,24 +518,10 @@ export const Composer: React.FC<ComposerProps> = ({
               }
             }}
             style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
-            /// `placeholder:truncate`: "Conversar em #tecnologia" quebrava em
-            /// duas linhas e empurrava a caixa toda para cima; agora ele para
-            /// nas reticências.
             className="max-h-[50vh] min-w-0 flex-1 resize-none bg-transparent py-3 text-ink outline-none placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed"
           />
 
-          {/*
-            Os botões têm 36px e a linha é `items-end`, então colariam no fundo
-            da caixa — 6px abaixo do texto, que tem `py-3`. A margem devolve os
-            três ao centro da linha escrita; com o textarea crescendo, a âncora
-            continua certa, porque a última linha é que fica no fundo.
-          */}
           <div className="mb-1.5 flex shrink-0 items-center gap-1 @sm:gap-3">
-            {/*
-              A fonte é a menos usada das três e a única que tem casa em outro
-              lugar (ela fica guardada). Na coluna estreita ela sai para o
-              texto caber.
-            */}
             <span className="hidden @sm:flex">
             <SeletorDeFonte
               fonte={fonte}

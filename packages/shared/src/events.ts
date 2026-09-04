@@ -25,13 +25,10 @@ export const clientEventSchemas = {
   "message:react": z.object({
     messageId: objectId,
     emoji: z.string().max(64),
-    /// super reação: além de contar, dispara a animação em quem está no canal
     burst: z.boolean().optional(),
   }),
   "message:unreact": z.object({ messageId: objectId, emoji: z.string().max(64) }),
   "message:ack": z.object({ channelId: objectId, messageId: objectId }),
-  /// deixa o canal não-lido A PARTIR desta mensagem: quem marca quer voltar
-  /// nela depois, então o ponteiro de leitura recua para a mensagem anterior.
   "message:unread": z.object({ channelId: objectId, messageId: objectId }),
 
   "poll:vote": z.object({ messageId: objectId, optionId: z.string().min(1).max(64) }),
@@ -39,7 +36,6 @@ export const clientEventSchemas = {
 
   "typing:start": z.object({ channelId: objectId }),
 
-  /// A pessoa escolheu um comando de barra na lista e mandou.
   "command:invoke": invocarComandoInput,
 
   "presence:update": z.object({ status: z.enum(DESIRED_STATUSES) }),
@@ -48,16 +44,10 @@ export const clientEventSchemas = {
   "voice:join": z.object({
     channelId: objectId,
     resume: z.boolean().optional(),
-    /// Quem está pedindo: a aba, não a conexão. Ver `clienteId` no
-    /// `voiceStateSchema`.
     cliente: z.string().min(1).max(64).optional(),
   }),
   "voice:leave": z.object({}),
-  /// Credencial do SFU para um canal. O app pega pela rota REST, com o cookie
-  /// de sessão; um bot não tem cookie e só existe aqui dentro do socket.
   "voice:token": z.object({ channelId: objectId }),
-  /// Em que canal de voz alguém está, se estiver em algum. Um bot que acabou
-  /// de conectar não viu os "voice:joined" de quem já estava lá.
   "voice:onde": z.object({ userId: objectId }),
   "voice:sound": z.object({ soundId: objectId }),
 
@@ -66,14 +56,6 @@ export const clientEventSchemas = {
     serverMute: z.boolean().optional(),
     serverDeaf: z.boolean().optional(),
   }),
-  /*
-    Recusar uma chamada de privado.
-
-    Existe porque entrar na sala e sair de novo NÃO comunica recusa: pra quem
-    chamou, os dois casos são iguais — alguém apareceu e sumiu. Sem um evento
-    próprio, quem liga fica olhando pra "chamando…" sem saber se a pessoa
-    disse não, se está ocupada, ou se o celular está no bolso.
-  */
   "voice:recusar": z.object({ channelId: objectId }),
   "voice:kick": z.object({ userId: objectId }),
   "voice:moveMember": z.object({ userId: objectId, channelId: objectId }),
@@ -117,7 +99,6 @@ export type ServerToClientEvents = {
     reactions: z.infer<typeof reactionStateSchema>[];
   }) => void;
 
-  /// só a animação: a contagem já foi pelo "message:reactions" de sempre
   "message:super": (p: {
     messageId: string;
     channelId: string;
@@ -127,30 +108,15 @@ export type ServerToClientEvents = {
 
   "typing:started": (p: { channelId: string; user: z.infer<typeof publicUserSchema> }) => void;
 
-  /*
-    O comando chegando ao bot.
-
-    Só o bot dono do comando recebe — vai para a sala dele, e não para a do
-    canal. Quem está no canal já viu a mensagem de comando aparecer; mandar o
-    evento junto seria contar duas vezes a mesma coisa, e para quem não tem o
-    que fazer com ela.
-
-    `opcoes` já vem convertido: o `numero` chega número, o `usuario` e o
-    `canal` chegam como id. O bot não repete a validação que o servidor fez.
-  */
   "command:invoked": (p: {
     channelId: string;
     guildId: string;
-    /// a mensagem "fulano usou /play", para o bot poder responder citando
     messageId: string;
     comando: string;
     opcoes: Record<string, string | number>;
     usuario: z.infer<typeof publicUserSchema>;
   }) => void;
 
-  /// A lista de comandos de um servidor mudou: bot entrou, saiu, ou
-  /// registrou outra coisa. O app recarrega em vez de ficar oferecendo
-  /// comando que não existe mais.
   "commands:changed": (p: { guildId: string }) => void;
 
   "presence:changed": (p: { userId: string; status: PresenceStatus }) => void;
@@ -190,7 +156,6 @@ export type ServerToClientEvents = {
   "voice:joined": (state: z.infer<typeof voiceStateSchema>) => void;
   "voice:left": (p: { channelId: string; userId: string }) => void;
   "voice:updated": (state: z.infer<typeof voiceStateSchema>) => void;
-  /// alguém recusou a chamada no privado — o par de "voice:recusar"
   "voice:recusada": (p: { channelId: string; userId: string }) => void;
 
   "live:started": (p: { channelId: string; userId: string }) => void;

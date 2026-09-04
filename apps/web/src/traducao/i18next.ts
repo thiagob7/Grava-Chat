@@ -12,19 +12,6 @@ import {
   storageKey,
 } from "./settings";
 
-/*
-  Cada idioma chega por `import()`, e não todos empacotados juntos.
-
-  Com três idiomas, empacotar tudo era mais simples e igual de rápido. Com
-  trinta e quatro, é mandar trinta e três catálogos para quem vai ler um — e
-  o custo cresce junto com a tradução, que hoje tem sessenta e cinco textos e
-  vai ter mil e trezentos. O Vite lê este padrão e recorta um arquivo por
-  pasta sozinho.
-
-  O português é a exceção: ele vem junto, sempre, porque é o `fallbackLng`.
-  Carregá-lo por rede significaria uma tela sem texto nenhum no primeiro
-  instante — e é justamente ele que preenche o que os outros ainda não têm.
-*/
 const carregar = resourcesToBackend(async (lng: string) => {
   if (lng === fallbackLng) return ptBR;
 
@@ -34,17 +21,6 @@ const carregar = resourcesToBackend(async (lng: string) => {
   return modulo.default;
 });
 
-/*
-  A ordem do detector importa, e é a mesma do backoffice.
-
-  `localStorage` primeiro porque escolha explícita ganha de palpite: quem já
-  disse qual idioma quer não deve ser sobrescrito pelo navegador na próxima
-  abertura. `navigator` por último é o palpite, que só vale enquanto ninguém
-  escolheu nada.
-
-  `htmlTag` no meio cobre o caso do aplicativo, onde a janela pode nascer com o
-  idioma do sistema carimbado no `<html>` antes do JavaScript rodar.
-*/
 void i18next
   .use(initReactI18next)
   .use(LanguageDetector)
@@ -55,37 +31,9 @@ void i18next
     fallbackNS: defaultNS,
     defaultNS,
     ns: [defaultNS],
-    /*
-      O português entra pronto, antes de qualquer rede.
-
-      Sem isto, a primeira pintura de quem está em português esperaria uma
-      promessa resolver — e o `useSuspense: false` abaixo faz essa espera
-      aparecer como tela sem texto, não como carregando.
-    */
     resources: { [fallbackLng]: { [defaultNS]: ptBR } },
-    /*
-      Esta linha é o que faz os outros trinta e três idiomas EXISTIREM.
-
-      O `resources` acima e o backend de `import()` não convivem por padrão: o
-      `loadResources` do i18next começa com `if (!this.options.resources ||
-      this.options.partialBundledLanguages)`. Com o português entregue pronto e
-      sem esta opção, a condição é falsa e o backend NUNCA é chamado — os
-      trinta e três pedaços eram recortados no build e jamais buscados.
-
-      E o sintoma não é erro nenhum: `changeLanguage("ja")` resolve, o `lang`
-      do documento troca, o app redesenha inteiro — e todo texto cai no
-      fallback, que é o português. A tela fica idêntica, como se o botão de
-      idioma não fizesse nada.
-    */
     partialBundledLanguages: true,
-    /// O React já escapa tudo o que interpola. Escapar de novo transformaria
-    /// aspas e acentos em entidades no meio da frase.
     interpolation: { escapeValue: false },
-    /*
-      Sem Suspense: cada componente que traduz viraria um limite de Suspense a
-      mais. Quem troca de idioma vê o texto antigo por um instante e depois o
-      novo, que é melhor que a tela inteira sumir e voltar.
-    */
     react: { useSuspense: false },
     detection: {
       order: ["localStorage", "htmlTag", "navigator"],

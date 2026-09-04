@@ -81,14 +81,6 @@ export const messageService = {
     };
   },
 
-  /**
-   * Procurar no que já foi dito.
-   *
-   * O termo entra como pedaço de texto, sem curinga e sem operador: o que a
-   * pessoa digita é o que ela procura. Quem quiser filtrar por canal ou por
-   * quem escreveu manda os dois de lado, como o Discord faz com `in:` e
-   * `from:` — só que aqui vira campo, não sintaxe para decorar.
-   */
   async buscar(
     userId: string,
     params: { guildId: string; termo: string; canalId?: string; autorId?: string; before?: string },
@@ -141,14 +133,6 @@ export const messageService = {
       await respeitarModoLento(userId, channel, contexto);
     }
 
-    /*
-      FORA do `if (contexto)` de propósito: o modo lento é coisa de canal de
-      servidor, mas a rajada precisa ser barrada em todo lugar — inclusive no
-      privado, que não tem contexto de permissão nenhum.
-
-      Depois das checagens de permissão porque não faz sentido gastar o teto de
-      quem não podia escrever ali de qualquer forma.
-    */
     await garantirFluxo(userId);
 
     const content = input.content.trim();
@@ -173,16 +157,6 @@ export const messageService = {
       });
     }
 
-    /*
-      Responder notifica sem escrever a menção no texto.
-
-      O autor da mensagem citada entra na lista de menções, e não no conteúdo:
-      é o mesmo aviso, sem a pílula azul repetindo, dentro da mensagem, o nome
-      que a citação logo acima já mostra.
-
-      A si mesmo não se notifica, e a mensagem citada pode ter sumido — daí o
-      `catch` e a comparação com quem está mandando.
-    */
     const autorRespondido =
       input.mencionarAutor && input.replyToId
         ? await messageRepository
@@ -253,15 +227,6 @@ export const messageService = {
 
     await messageRepository.softDelete(messageId);
 
-    /*
-      O anexo vai junto. Sem isto o arquivo ficava no R2 pra sempre: a mensagem
-      some de todas as leituras (todas filtram `deletedAt`, e não há desfazer),
-      mas o bucket continua guardando — e cobrando — um arquivo que ninguém
-      mais alcança.
-
-      Sem `await`: a limpeza não pode atrasar nem falhar a exclusão. O
-      `uploadService.remover` já engole o próprio erro.
-    */
     void uploadService.remover(existing.attachments.map((a) => a.id));
 
     return { messageId, channelId: existing.channelId };
@@ -381,14 +346,6 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, messageId);
   },
 
-  /**
-   * Deixa o canal não-lido a partir desta mensagem. Quem marca quer voltar
-   * NELA depois, então o ponteiro de leitura recua para a anterior — marcar a
-   * própria mensagem como lida a esconderia do "não lidas".
-   *
-   * Sem anterior (é a primeira do canal), o ponteiro é apagado e o canal fica
-   * não-lido desde o começo.
-   */
   async markUnread(userId: string, channelId: string, messageId: string) {
     await accessService.requireChannelAccess(userId, channelId);
 
@@ -396,14 +353,6 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, anterior?.id ?? null);
   },
 
-  /**
-   * A caixa de entrada de menções: quem falou com você, e onde.
-   *
-   * Os canais são resolvidos ANTES da busca — os dos servidores em que você
-   * está, mais as conversas privadas. É isso que impede a consulta de
-   * devolver menção de um canal do qual você saiu (a mensagem continua lá, e
-   * o seu id continua na lista de citados dela).
-   */
   async mentions(userId: string) {
     const [guildIds, dms] = await Promise.all([
       memberRepository.guildIdsOf(userId),
@@ -438,9 +387,6 @@ export const messageService = {
     const memberships = await memberRepository.membershipsOf(userId);
     const meusCargos = [...new Set(memberships.flatMap((m) => m.roleIds))];
 
-    /// De que servidor é cada canal: é o que deixa a barra da esquerda somar
-    /// o não-lido de servidores que nem estão abertos — a lista de canais
-    /// deles não está carregada no navegador.
     const canais = await channelRepository.guildIdsOf(states.map((s) => s.channelId));
     const dadosDoCanal = new Map(canais.map((c) => [c.id, c]));
 
@@ -479,24 +425,6 @@ export const messageService = {
   },
 };
 
-/**
- * As menções em canal que a pessoa nunca abriu.
- *
- * O `ReadState` só nasce quando alguém LÊ um canal. Antes disso não existe
- * linha nenhuma, e o cálculo de cima — que percorre os `ReadState` — passa
- * direto: quem entrou num servidor, nunca abriu o `#geral` e foi citado lá não
- * via selo nenhum. Ao vivo funcionava, porque o evento do socket soma na tela;
- * bastava um F5 para a menção sumir, e quem foi citado com o app fechado nunca
- * chegou a ver.
- *
- * O piso é a data de entrada no servidor, como no Discord: o que foi dito
- * antes de você chegar não é menção sua por ler.
- *
- * A lista de canais vem do `listenableChannels`, o MESMO cálculo que decide em
- * que salas o socket entra. Enumerar os canais de outro jeito abriria a porta
- * para contar menção em canal privado que a pessoa não pode abrir — e um selo
- * que não leva a lugar nenhum já é, por si só, contar que ela foi citada ali.
- */
 async function mencoesEmCanalNuncaAberto(
   userId: string,
   jaTemEstado: Set<string>,
@@ -516,8 +444,6 @@ async function mencoesEmCanalNuncaAberto(
   const canais = await channelRepository.guildIdsOf(novos);
   const entrada = new Map(memberships.map((m) => [m.guildId, m.joinedAt]));
 
-  /// Só canal de servidor. Conversa direta não tem "data de entrada" que sirva
-  /// de piso, e o selo que este cálculo alimenta é o do trilho de servidores.
   const porServidor = new Map<string, string[]>();
   for (const canal of canais) {
     if (!canal.guildId || !entrada.has(canal.guildId)) continue;
@@ -538,15 +464,6 @@ async function mencoesEmCanalNuncaAberto(
       guildId: porId.get(channelId)?.guildId ?? null,
       channelName: porId.get(channelId)?.name ?? null,
       lastReadMessageId: null as string | null,
-      /*
-        Zero de propósito, e não o número de mensagens desde a entrada.
-
-        Contar o não-lido de todo canal nunca aberto acenderia a bolinha branca
-        em tudo que a pessoa nunca abriu, de uma vez — decisão maior que a
-        pedida aqui, que é o selo vermelho de menção. Quem quiser o outro
-        comportamento, é trocar este zero por um `countUnread` a partir da
-        mesma data de entrada.
-      */
       unreadCount: 0,
       mentionCount,
     })),
@@ -585,23 +502,10 @@ async function respeitarModoLento(
   }
 }
 
-/**
- * Teto curto contra rajada, valendo em TODO canal e sem depender de moderação.
- *
- * Fica separado do modo lento porque são coisas diferentes: o modo lento é
- * ajuste de canal, opcional, e existe pra dar ritmo à conversa; este é do
- * sistema, sempre ligado, e existe pra que um cliente em laço não despeje mais
- * mensagem do que qualquer um consegue ler.
- *
- * Vive no service e não num limite de rota porque mensagem aqui vai pelo
- * Socket.IO — um limite de rota HTTP não encostaria nela.
- */
 async function garantirFluxo(userId: string) {
   const chave = keys.fluxoDeMensagens(userId);
 
   const usos = await redis.incr(chave);
-  /// só na primeira da janela: renovar a cada mensagem faria a janela nunca
-  /// virar pra quem está justamente mandando sem parar
   if (usos === 1) await redis.expire(chave, JANELA_DO_FLUXO_S);
 
   if (passouDoFluxo(usos)) {

@@ -50,11 +50,6 @@ describe("purga das contas vencidas", () => {
     expect(await exclusaoService.purgarVencidas()).toEqual({ apagadas: 1, adiadas: 0 });
   });
 
-  /*
-    O caso que só existe por causa do prazo: no pedido ela era dona de servidor
-    vazio, e em quinze dias alguém entrou por um convite antigo. Apagar levaria
-    junto o servidor de outras pessoas, por uma decisão que não foi delas.
-  */
   it("ADIA quando o servidor dela ganhou gente durante os quinze dias", async () => {
     contasVencidas.mockResolvedValue([conta("1")]);
     servidoresDaConta.mockResolvedValue([servidor("Encheu", 4)]);

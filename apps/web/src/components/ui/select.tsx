@@ -52,8 +52,6 @@ export const SelectContent = ({
     <SelectPrimitive.Content
       position={position}
       className={cn(
-                /// Portal flutua por cima de cabeçalho, que é região de arrasto — sem
-        /// isto o sistema rouba o clique. Veja o porquê em `dropdown-menu.tsx`.
         "regiao-sem-arrasto z-[60] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-hidden rounded-lg border border-white/5 bg-surface-2 shadow-2xl",
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         className,
@@ -127,12 +125,6 @@ interface CampoSelectProps<T extends string | number> {
   className?: string;
 }
 
-/*
-  O Radix trata `value=""` como AUSENCIA de escolha: o gatilho cairia no
-  placeholder mesmo com a opcao "nenhum" marcada. Varias telas usam string vazia
-  para isso, entao ela vira um valor-sentinela aqui dentro e volta a ser "" na
-  saida — quem chama nao precisa saber.
-*/
 const VAZIO = "__vazio__";
 
 export function CampoSelect<T extends string | number>({

@@ -9,28 +9,12 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { useSession } from "~/contexts/session-context";
 import { avatarColor, initials } from "~/lib/format";
 
-/*
-  Coluna "Ativo agora", como a do Discord: quem dos seus amigos está num canal
-  de voz, e onde.
-
-  Só aparecem amigos em servidores que você também tem — a API filtra por isso.
-  Sem esse recorte, a tela contaria onde a pessoa está em lugares que não são
-  seus, o que é vazar a rotina dela fora do combinado.
-*/
 export const AtivosAgora: React.FC = () => {
   const { data: ativos = [], isLoading } = useAtivos();
   const { user } = useSession();
   const meuId = user?.id;
   const navigate = useNavigate();
 
-  /*
-    Agrupado por CANAL, e não por pessoa.
-
-    Três amigos na mesma chamada rendiam três cartões repetindo o mesmo canal e
-    o mesmo servidor — e nenhum deles dizia a única coisa que importa ali, que é
-    "tem gente reunida neste lugar". Junto, o cartão vira o convite que ele
-    sempre quis ser: as caras de quem já está, e um botão pra entrar.
-  */
   const salas = new Map<string, { canal: (typeof ativos)[number]["canal"]; servidor: (typeof ativos)[number]["servidor"]; gente: typeof ativos }>();
 
   for (const ativo of ativos) {
@@ -46,11 +30,6 @@ export const AtivosAgora: React.FC = () => {
       {isLoading ? (
         <p className="text-sm text-ink-faint">Vendo quem está por aí…</p>
       ) : salas.size === 0 ? (
-        /*
-          Vazio com desenho: o cartão cinza com duas frases
-          parecia um aviso de erro encostado no canto. O "zZ" grande diz que
-          está tudo bem, só quieto.
-        */
         <div className="flex flex-col items-center justify-center gap-2 px-2 py-24 text-center">
           <span aria-hidden className="text-3xl font-bold text-ink-faint/60">
             z<span className="align-super text-xl">Z</span>
@@ -70,14 +49,6 @@ export const AtivosAgora: React.FC = () => {
                 <Volume2 size={12} className="shrink-0" /> Em voz
               </p>
 
-              {/*
-                Servidor › canal numa linha só, como um caminho.
-
-                Antes eram duas linhas — o canal em cima, o servidor embaixo em
-                cinza — e a segunda parecia legenda de rodapé em vez de "onde
-                isto fica". Em caminho, a hierarquia se lê de uma passada, e
-                sobra altura pro que interessa: as caras e o botão.
-              */}
               <button
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
                 title={`Abrir ${canal.nome} em ${servidor.nome}`}
@@ -107,20 +78,7 @@ export const AtivosAgora: React.FC = () => {
                 </span>
               </button>
 
-              {/*
-                Rostos sobrepostos, e o nome só quando é uma pessoa só: com duas
-                ou mais, a lista de nomes ocupa três linhas e empurra o botão
-                pra fora do campo de visão — e a cara já diz quem é.
-              */}
               <div className="mt-3 flex items-center gap-2">
-                {/*
-                  O nome vive no hover de cada rosto.
-
-                  Com os rostos sobrepostos, escrever os nomes ao lado só
-                  funciona até dois — no terceiro a linha vira "Fulano, Beltrano
-                  e mais 3", que não diz quem são os 3. Passar o mouse responde
-                  isso um por um, sem gastar altura nenhuma.
-                */}
                 <div className="flex -space-x-2">
                   {gente.slice(0, 5).map((ativo) => (
                     <Tooltip
@@ -149,11 +107,6 @@ export const AtivosAgora: React.FC = () => {
                 </span>
               </div>
 
-              {/*
-                "Entrar" numa chamada em que você já está seria mentira — e a
-                pessoa que clica esperando entrar em algum lugar novo se
-                assusta. Estando dentro, o cartão é só o caminho de volta.
-              */}
               <Button
                 size="sm"
                 className="mt-3 w-full"

@@ -38,8 +38,6 @@ const duracao = (s: number) => {
   return `${s}s`;
 };
 
-/// O `formatBytes` do upload para em MB, e disco de VM se mede em GB: 20 GB
-/// virariam "20480.0 MB" na tela.
 const tamanho = (bytes: number) => {
   const mb = bytes / 1024 / 1024;
 
@@ -86,12 +84,6 @@ export const ServidorSection: React.FC = () => {
         )}
       </div>
 
-      {/*
-        Produção são DUAS VMs, e o painel mostrava só uma. A que aparecia era
-        sempre esta primeira, porque ela é a própria API se medindo; a de voz
-        existia aqui só como "no ar" lá embaixo, que é um teste de alcance e não
-        diz nada sobre carga, RAM ou disco da caixa.
-      */}
       <Maquina
         caixa={{
           titulo: "API",
@@ -107,11 +99,6 @@ export const ServidorSection: React.FC = () => {
       />
 
       {data.voz?.indisponivel === true ? (
-        /*
-          Sumir com o bloco aqui deixaria a tela idêntica à de quando está tudo
-          bem — e o `null` (sem segunda máquina configurada) já ocupa esse
-          significado. Some só em desenvolvimento; em produção, aparece a falha.
-        */
         <div className="rounded-lg border border-danger/30 bg-danger/5 p-4">
           <p className="text-sm font-medium">Voz</p>
           <p className="mt-1 text-sm text-danger">
@@ -227,11 +214,6 @@ export const ServidorSection: React.FC = () => {
                   </span>
                 </div>
 
-                {/*
-                  Sala aberta e vazia acontece: o LiveKit segura a sala por um
-                  tempinho depois que o último sai. Dizer isso evita a caçada a
-                  um fantasma que não existe.
-                */}
                 {sala.participantes.length === 0 ? (
                   <p className="mt-2 text-xs text-ink-faint">
                     Sala aberta, sem ninguém dentro — o SFU ainda vai fechá-la.
@@ -248,10 +230,6 @@ export const ServidorSection: React.FC = () => {
           </div>
         )}
 
-        {/*
-          Divergência é o motivo de o painel perguntar ao LiveKit em vez de ao
-          Redis. Se ela nunca aparece na tela, a comparação não serviu pra nada.
-        */}
         {data.sfu.fantasmas.length > 0 && (
           <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
             <p className="flex items-center gap-2 text-xs font-medium text-amber-400">
@@ -318,11 +296,6 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
   </div>
 );
 
-/*
-  O id fica atrás do ícone porque ele é o dado mais feio e o menos consultado
-  da linha — mas quando é preciso, é preciso inteiro e sem erro de digitação,
-  então o clique copia em vez de pedir seleção com o mouse.
-*/
 const Identificador: React.FC<{ id: string; oQueE: string }> = ({
   id,
   oQueE,
@@ -342,11 +315,6 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
   </Tooltip>
 );
 
-/*
-  Quando não há nome, o motivo OCUPA o lugar do nome: "canal apagado" dito no
-  lugar do título e repetido numa etiqueta ao lado é a mesma frase duas vezes,
-  e continua sem dizer o que fazer com ela. A explicação inteira fica no hover.
-*/
 const AVISOS = {
   "canal-apagado": {
     rotulo: "canal apagado",
@@ -395,14 +363,6 @@ const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
   </div>
 );
 
-/*
-  Um bloco por máquina, e os dois idênticos de propósito.
-
-  São duas VMs do mesmo tamanho (E2.1.Micro: 2 threads, 954 MB), e a pergunta
-  que se faz olhando pra elas é quase sempre comparativa — "qual das duas está
-  sofrendo?". Isso só se responde de relance se cada número estiver na mesma
-  posição nos dois blocos.
-*/
 interface Caixa {
   titulo: string;
   host: string;
@@ -411,25 +371,13 @@ interface Caixa {
   nucleos: number;
   memoria: { total: number; livre: number; disponivel: number };
   disco: { total: number; livre: number } | null;
-  /// Quanto o NOSSO processo come, contra o que a máquina inteira come: é o que
-  /// separa "a VM está cheia" de "somos nós que estamos enchendo ela".
   residente: { rotulo: string; bytes: number };
   uptimeDaMaquina: number;
 }
 
 const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
-  /*
-    A carga do Linux conta processos esperando CPU, não porcentagem. Dividir
-    pelos núcleos é o que transforma o número em algo que dá pra ler: 1.0 numa
-    máquina de 2 threads é 50% ocupado, não "no limite".
-  */
   const ocupacao = Math.min(caixa.carga.um / caixa.nucleos, 1);
 
-  /*
-    Uso de RAM contra o que o kernel diz que consegue entregar, não contra o
-    "livre". Cache de disco conta como usado no `freemem` e é devolvido na
-    hora que alguém precisa — medir por ali faz a VM parecer sempre cheia.
-  */
   const usada = caixa.memoria.total - caixa.memoria.disponivel;
   const discoUsado = caixa.disco ? caixa.disco.total - caixa.disco.livre : 0;
 
@@ -520,8 +468,6 @@ const Linha: React.FC<{
   nota?: string;
 }> = ({ rotulo, checagem, ok, nota }) => {
   const noAr = checagem ? checagem.estado === "up" : Boolean(ok);
-  /// Lento é um jeito de estar quebrado. 300 ms num ping é ruim o bastante pra
-  /// aparecer amarelo antes de virar fora do ar.
   const lento = noAr && checagem !== undefined && checagem.ms > 300;
 
   return (

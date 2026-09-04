@@ -34,8 +34,6 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
     canal !== (guild.systemChannelId ?? "") ||
     texto !== (guild.welcomeMessage ?? "");
 
-  /// A prévia usa VOCÊ como cobaia: é o jeito mais rápido de ver se a frase
-  /// ficou boa sem esperar alguém entrar de verdade no servidor.
   const previa = (texto.trim() || "{pessoa} acabou de chegar!")
     .replaceAll("{pessoa}", `@${user?.displayName ?? "alguém"}`)
     .replaceAll("{nome}", user?.displayName ?? "alguém")
@@ -80,11 +78,6 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
               })),
             ]}
           />
-          {/*
-            Ligado e sem canal é a combinação que não faz nada, e era fácil
-            terminar nela sem perceber: a chave acima aparece ligada por padrão
-            e o aviso era cinza como qualquer outra legenda.
-          */}
           <p
             className={cn(
               "mt-1.5 text-xs",

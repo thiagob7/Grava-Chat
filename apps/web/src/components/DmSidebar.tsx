@@ -32,28 +32,13 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   const { data: dms = [] } = useFindDms(true);
   const { data: relacoes = [] } = useFindFriends(true);
 
-  /*
-    Quem dos amigos está numa chamada agora. É a mesma consulta que alimenta a
-    coluna "Ativo agora" — aqui ela vira o subtítulo "Em voz" na linha, que é
-    a informação que decide se vale chamar a pessoa ou não.
-  */
   const { data: ativos = [] } = useAtivos();
   const emVoz = new Set(ativos.map((a) => a.user.id));
 
-  /*
-    A chamada de privado NÃO vem do `useAtivos` — o servidor a exclui de
-    propósito, porque ninguém entra na conversa privada dos outros. Quando ela
-    é comigo, quem sabe disso é o meu próprio store.
-  */
   const canalEmChamada = useVoiceStore((s) => s.channelId);
 
   const [busca, setBusca] = useState("");
 
-  /*
-    O filtro olha nome E usuário: você lembra de alguém por um ou por outro,
-    e obrigar a acertar qual dos dois seria uma busca que só funciona quando
-    você já sabe a resposta.
-  */
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     if (!termo) return dms;
@@ -79,13 +64,10 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
       className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
       style={{ width: largura }}
     >
-      {/* A mesma moldura do painel de canais — trocar de servidor pra mensagem
-          direta não pode endireitar a quina. Regras no `index.css`. */}
       <header className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">
         <h1 className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 
-      {/* Como na barra de canais: a alça mede só a área acima do rodapé. */}
       <div className="relative flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto px-2 py-3">
         <div className="relative mb-3">
@@ -156,8 +138,6 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
               <span className="min-w-0 flex-1 text-left">
                 <span className="block truncate">{dm.user.displayName}</span>
 
-                {/* só aparece quando há o que dizer — linha vazia embaixo de
-                    cada nome só faria a lista ocupar o dobro da altura */}
                 {(() => {
                   const status = statusDaConversa({
                     emChamadaComigo: canalEmChamada === dm.id,

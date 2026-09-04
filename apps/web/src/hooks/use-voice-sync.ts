@@ -72,8 +72,6 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
           channelId,
           guildId,
           socketId: "",
-          /// Sintetizado a partir do que o SFU mostra: não veio de um pedido
-          /// de aba nenhuma, então não tem identidade.
           clienteId: null,
           orphanedAt: null,
           joinedAt: Date.now(),

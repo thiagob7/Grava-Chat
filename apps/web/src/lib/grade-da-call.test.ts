@@ -12,11 +12,6 @@ describe("montarGrade", () => {
     expect(grade.every((q) => q.tipo === "pessoa")).toBe(true);
   });
 
-  /*
-    O comportamento que motivou o módulo. Antes a transmissão era desenhada
-    POR CIMA do quadro da pessoa, e o avatar dela sumia — abrir uma live fazia
-    o dono da live desaparecer da chamada.
-  */
   it("quem transmite ocupa dois quadros: a pessoa e a live", () => {
     const grade = montarGrade([pessoa("ana", true)]);
 
@@ -55,7 +50,6 @@ describe("formatoDaGrade", () => {
   });
 
   it("as colunas crescem com a quantidade em vez de travar em três", () => {
-    // era o teto antigo: 15 quadros viravam 5 fileiras e estouravam a altura
     expect(formatoDaGrade(4).colunas).toBe(2);
     expect(formatoDaGrade(9).colunas).toBe(3);
     expect(formatoDaGrade(15).colunas).toBe(4);
@@ -77,7 +71,6 @@ describe("formatoDaGrade", () => {
   });
 
   it("nunca devolve zero coluna, nem com a sala vazia", () => {
-    // grid-template-columns: repeat(0, …) apaga a grade inteira
     expect(formatoDaGrade(0).colunas).toBeGreaterThanOrEqual(1);
   });
 });
@@ -100,20 +93,10 @@ describe("focar", () => {
     expect(focar(quadros, "ana")?.faixa.map((q) => q.key)).toEqual(["bia", "bia:tela", "caio"]);
   });
 
-  /*
-    Quem estava em destaque pode sair da chamada ou encerrar a transmissão. Sem
-    devolver `null`, a tela ficaria presa num destaque que não existe mais.
-  */
   it("foco em quadro que sumiu volta pra grade normal", () => {
     expect(focar(quadros, "alguem-que-saiu")).toBeNull();
   });
 
-  /*
-    Sozinho na chamada o foco CONTINUA valendo, com a faixa vazia — é o que a
-    referência faz: o clique alterna sempre, e é a faixa que some quando não há
-    ninguém pra pôr nela. Quem lê isto daqui é o palco, que sem faixa desenha o
-    quadro de ponta a ponta em vez de dividir a altura com uma tira vazia.
-  */
   it("quadro sozinho vira destaque com faixa vazia", () => {
     const foco = focar(montarGrade([pessoa("ana")]), "ana");
 

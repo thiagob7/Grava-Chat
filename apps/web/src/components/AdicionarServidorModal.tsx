@@ -27,14 +27,6 @@ interface Props {
 
 type Passo = "escolher" | "criar" | "entrar";
 
-/*
-  Entrar num servidor e criar um servidor são a mesma vontade — "quero estar
-  num lugar com meus amigos" — e antes só uma delas tinha porta.
-
-  O "+" abria direto o formulário de criar. Quem tinha um convite na mão não
-  achava onde colar: tinha que abrir o link no navegador e torcer. Agora o
-  primeiro passo pergunta qual das duas é.
-*/
 export const AdicionarServidorModal: React.FC<Props> = ({ open, onClose, onCreated }) => {
   const [passo, setPasso] = useState<Passo>("escolher");
 
@@ -121,13 +113,6 @@ const Criar: React.FC<{
     if (name.trim().length < 2) return setError("O nome precisa de pelo menos 2 caracteres");
     setError(null);
 
-    /*
-      A imagem sobe ANTES de criar o servidor.
-
-      Se o envio falhar depois da criação, sobra um servidor sem ícone e uma
-      pessoa achando que a criação inteira deu errado. Falhando aqui, nada foi
-      criado ainda e dá pra tentar de novo sem lixo no meio.
-    */
     const enviado = icone
       ? await uploadImage
           .mutateAsync({ file: icone.arquivo, maxSize: 256, finalidade: "avatar" })
@@ -162,11 +147,6 @@ const Criar: React.FC<{
 
       <DialogBody>
         <div className="flex items-center gap-4">
-          {/*
-            Sem imagem, a inicial do nome — que muda enquanto se digita. É a
-            mesma cara que o servidor vai ter na barra lateral, então a escolha
-            de subir ou não uma foto é feita já vendo o resultado.
-          */}
           <button
             onClick={() => seletor.current?.click()}
             className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-surface-4 bg-surface-0 text-xl font-bold text-ink-muted transition hover:border-brand hover:text-ink"
@@ -245,13 +225,6 @@ const Entrar: React.FC<{ onVoltar: () => void; onFechar: () => void }> = ({
   const navigate = useNavigate();
   const [valor, setValor] = useState("");
 
-  /*
-    Aceita o link inteiro ou só o código.
-
-    Ninguém copia "Bh1izl-3" — copia o endereço todo, do jeito que apareceu na
-    conversa. Exigir só o código seria fazer a pessoa editar na mão o que ela
-    acabou de colar.
-  */
   const codigo = valor.trim().replace(/\/+$/, "").split("/").pop() ?? "";
 
   return (

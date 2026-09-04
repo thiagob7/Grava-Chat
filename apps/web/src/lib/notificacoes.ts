@@ -4,19 +4,6 @@ import { prefsDeAviso } from "~/stores/notificacoes";
 import { prefsDeAparencia } from "~/stores/aparencia";
 import { tocarSom } from "~/lib/ui-sounds";
 
-/**
- * O aviso de mensagem nova.
- *
- * Três decisões moram aqui, e as três são sobre QUANDO CALAR:
- *
- * 1. Mensagem sua nunca avisa.
- * 2. Canal aberto com a janela em foco não avisa — você está lendo.
- * 3. Menção sempre passa, mesmo no canal aberto, se a janela estiver atrás.
- *
- * Sem a segunda, o app apitava a cada linha de uma conversa que você estava
- * acompanhando ao vivo.
- */
-
 export type PermissaoDeAviso = "concedida" | "negada" | "perguntar" | "indisponivel";
 
 export function permissaoDeAviso(): PermissaoDeAviso {
@@ -40,7 +27,6 @@ export async function pedirPermissaoDeAviso(): Promise<PermissaoDeAviso> {
 interface Contexto {
   message: Message;
   meuId: string | undefined;
-  /// o canal que está aberto na tela agora
   canalAberto: string | undefined;
   meMenciona: boolean;
   nomeDoCanal: string | undefined;
@@ -49,7 +35,6 @@ interface Contexto {
   onAbrir: () => void;
 }
 
-/// Um resumo curto do que chegou. Anexo sem texto não pode virar aviso vazio.
 function corpoDoAviso(message: Message) {
   const texto = message.content
     /// menções vão como `<@id>` no texto cru; no aviso viram o nome só quando
@@ -79,18 +64,11 @@ export function avisarDeMensagem({
   if (!meuId || message.author.id === meuId || ignorado) return;
 
   const prefs = prefsDeAviso();
-  /*
-    O canal manda mais que a preferência geral: quem silenciou um canal
-    específico não quer ouvi-lo nem quando a regra geral diz "me avise de
-    tudo" — e quem pediu "tudo" num canal não quer perdê-lo por causa do
-    "só menções" global.
-  */
   const doCanal = prefs.porCanal[message.channelId] ?? null;
   if (doCanal === "nada") return;
   const emFoco = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();
   const lendoEsteCanal = emFoco && canalAberto === message.channelId;
 
-  /// DM é conversa de duas pessoas: ali toda mensagem conta como chamada.
   const importante = meMenciona || ehDm;
 
   if (lendoEsteCanal && !meMenciona) return;
@@ -102,8 +80,6 @@ export function avisarDeMensagem({
   if (!prefs.aviso || emFoco) return;
   if (permissaoDeAviso() !== "concedida") return;
 
-  /// Transmitindo: a janelinha do sistema aparece por cima de tudo, inclusive
-  /// do que está sendo gravado. É o vazamento mais fácil de acontecer.
   const aparencia = prefsDeAparencia();
   if (aparencia.modoStreamer && aparencia.streamerSemAvisos) return;
 
@@ -113,8 +89,6 @@ export function avisarDeMensagem({
     const aviso = new Notification(`${message.author.displayName}${onde}`, {
       body: corpoDoAviso(message),
       icon: message.author.avatarUrl ?? "/favicon.ico",
-      /// Uma janelinha por canal: dez mensagens seguidas do mesmo canal
-      /// substituem a anterior em vez de empilhar dez avisos.
       tag: message.channelId,
       renotify: importante,
       silent: true,

@@ -14,15 +14,6 @@ import { PalcoDoApp } from "~/components/PalcoDoApp";
 import { Rodape } from "~/components/Rodape";
 import { VersaoPublicada } from "~/components/VersaoPublicada";
 
-/*
-  Só entra aqui o que o Gravaê JÁ faz.
-
-  A tentação de uma página dessas é anunciar o roteiro: app de celular, região
-  de voz nos seis continentes, trinta idiomas. Quem baixa por causa disso abre
-  o app e descobre que não existe — e a primeira impressão que sobra não é
-  "faltou", é "mentiram". Cada linha abaixo corresponde a algo que está no
-  código hoje.
-*/
 const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
   {
     icone: Hash,
@@ -94,13 +85,6 @@ export default function Home() {
       <main>
         <section className="relative overflow-hidden px-6 pb-8 pt-20 text-center sm:pt-24">
           <div className="mx-auto max-w-3xl">
-            {/*
-              A tarja em vez da linha solta de antes.
-
-              A bolinha verde não é enfeite: é a mesma cor de "no ar" da página
-              de status, e dizer que o serviço está de pé logo antes do botão de
-              baixar responde a pergunta que todo mundo faz sem escrever.
-            */}
             <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-1 px-3 py-1 text-xs font-medium text-ink-muted">
               <span className="size-1.5 rounded-full bg-online" />
               Feito no Brasil, para conversar
@@ -131,18 +115,11 @@ export default function Home() {
 
           <PalcoDoApp />
 
-          {/*
-            O brilho vermelho atrás do título fica ATRÁS do conteúdo e sem
-            captura de clique: é decoração, e decoração que rouba o clique do
-            botão de baixar seria um autogol.
-          */}
           <div
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-0 -z-10 h-80 w-[42rem] -translate-x-1/2 rounded-full bg-brand/20 blur-[120px]"
           />
 
-          {/* A grade vive ABAIXO do brilho (`-z-20` contra `-z-10`): por cima
-              dele, os fios cortariam o borrão e ele deixaria de parecer luz. */}
           <div aria-hidden className="grade-do-heroi pointer-events-none absolute inset-0 -z-20" />
         </section>
 

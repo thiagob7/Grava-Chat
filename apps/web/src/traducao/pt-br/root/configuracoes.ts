@@ -1,6 +1,4 @@
-/// As telas das configurações e os títulos que a lateral desenha. É o primeiro
-/// pedaço traduzido porque é o mais denso de texto e o mais fácil de conferir:
-/// dá pra ver as treze telas de uma vez trocando o idioma.
+
 export const configuracoes = {
   sair: "Sair",
   versoes: {

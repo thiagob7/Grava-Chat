@@ -4,16 +4,6 @@ import rateLimit from "@fastify/rate-limit";
 
 import { politicaDeVazao } from "~/lib/vazao.js";
 
-/*
-  Sobe um Fastify só com a política — contador em memória, sem Redis. O que está
-  sob teste são as decisões do arquivo (o teto, quem escapa, o formato do erro),
-  não o ioredis.
-
-  O `setErrorHandler` é copiado do `app.ts` de propósito: é ele que transforma o
-  erro do plugin no `{ message }` que o front espera. Sem replicar aqui, o teste
-  passaria com o formato padrão do Fastify e não provaria nada sobre o que a API
-  de verdade responde.
-*/
 async function servidorDeTeste(sobrescrever: Partial<typeof politicaDeVazao> = {}) {
   const app = Fastify({ trustProxy: true });
 
@@ -52,8 +42,6 @@ describe("política de vazão", () => {
     const barrado = await bater(app, "/api/qualquer");
 
     expect(barrado.statusCode).toBe(429);
-    // o front monta o toast a partir de `message`; um corpo fora desse formato
-    // apareceria como erro genérico na tela
     expect(barrado.json()).toHaveProperty("message");
     expect(barrado.json().message).toMatch(/muitas requisições/i);
 
@@ -66,7 +54,6 @@ describe("política de vazão", () => {
     for (let i = 0; i < 4; i++) await bater(app, "/api/qualquer", "9.9.9.9");
     expect((await bater(app, "/api/qualquer", "9.9.9.9")).statusCode).toBe(429);
 
-    // o vizinho de NAT diferente continua atendido
     expect((await bater(app, "/api/qualquer", "2.2.2.2")).statusCode).toBe(200);
 
     await app.close();
@@ -83,8 +70,6 @@ describe("política de vazão", () => {
   });
 
   it("o teto padrão aguenta uma carga de tela cheia várias vezes", async () => {
-    // pino o número: baixá-lo sem pensar quebraria a abertura do app, que
-    // dispara de 30 a 50 chamadas de uma vez
     expect(politicaDeVazao.max).toBeGreaterThanOrEqual(200);
   });
 });

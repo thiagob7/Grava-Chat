@@ -1,6 +1,4 @@
-/// A chamada: o painel de voz, o palco, a barra de controles, o menu de quem
-/// está na sala, o compartilhamento de tela, a supressão de ruído e os avisos
-/// de permissão. Quarta área a sair do português cravado.
+
 export const chamada = {
   conectando: "Conectando à chamada…",
   naoEntrou: "Não deu pra entrar na chamada",
@@ -28,15 +26,8 @@ export const chamada = {
     entrada: "Dispositivo de entrada",
     saida: "Dispositivo de saída",
     camera: "Câmera",
-    /// Nome de reserva quando o navegador não diz qual é o aparelho — vira
-    /// "Microfone 2", "Saída 3". Sem ele a lista teria linhas em branco.
     microfone: "Microfone",
     saidaCurto: "Saída",
-    /*
-      Dois "o do sistema" porque o português concorda com o substantivo: o
-      DISPOSITIVO é ele, a CÂMERA é ela. Idioma sem gênero repete o mesmo texto
-      nos dois e ninguém percebe; idioma que tem, acerta.
-    */
     oDoSistema: "O do sistema",
     aDoSistema: "A do sistema",
     semEscolhaDeSaida:
@@ -117,16 +108,6 @@ export const chamada = {
       "O macOS ainda não liberou a gravação de tela. Sem isso o compartilhamento sai preto.",
     marque: "Marque o",
     reabra: "em Gravação de Tela e reabra o aplicativo.",
-    /*
-      O caso que a mensagem antiga não cobria, e que é o MAIS comum aqui.
-
-      A assinatura do aplicativo é ad-hoc, e ela muda a cada build. O macOS
-      amarra a permissão de tela à assinatura, então depois de uma atualização
-      o interruptor continua ligado — o registro é que deixou de conferir. A
-      pessoa olha os ajustes, vê tudo marcado, e o app insiste que não tem
-      permissão. Desmarcar e marcar de novo reescreve o registro com a
-      assinatura de agora.
-    */
     jaMarcado:
       "Se já estiver marcado, a permissão envelheceu na última atualização: desmarque, marque de novo e reabra.",
   },

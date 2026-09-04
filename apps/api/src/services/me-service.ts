@@ -14,58 +14,17 @@ import { userRepository } from "~/repositories/user-repository.js";
 const JANELA_S = 2;
 const POR_JANELA = 10;
 
-/*
-  Teto de mensagens na exportação.
-
-  Sem teto, uma conta antiga transformaria "exportar meus dados" numa consulta
-  que carrega o histórico inteiro na memória do servidor — e o arquivo baixado
-  seria grande demais para alguém abrir. Com teto, o arquivo diz quantas ficaram
-  de fora, o que é honesto e verificável.
-*/
 const TETO_DE_MENSAGENS = 10_000;
 
-/*
-  Quantos dias a conta fica recuperável antes de sumir de verdade.
-
-  Nada é destruído nesse tempo — nem mensagem, nem amizade, nem participação em
-  servidor. É o que torna a volta possível: prometer recuperação e ter apagado
-  no caminho seria mentira.
-*/
 const DIAS_DE_ARREPENDIMENTO = 15;
 
 export const meService = {
-  /*
-    Tudo o que a conta tem, num arquivo.
-
-    Vale para quem quer sair, para quem quer conferir o que o app guarda, e
-    para quem quer só as próprias mensagens de volta. Sai como JSON porque é
-    o formato que serve tanto para ler quanto para outro programa consumir.
-
-    Não inclui o que NÃO é seu: mensagens dos outros nos seus canais, membros
-    dos servidores em que você está. Exportar dados seus não pode virar um jeito
-    de extrair os dos outros.
-  */
-  /*
-    Marca a conta para exclusão, com prazo de arrependimento.
-
-    Não apaga nada. Desativa: derruba as sessões de todos os aparelhos e crava
-    a data. Entrar de novo cai na tela de recuperação, que é o oposto de uma
-    porta trancada — a pessoa precisa dizer que voltou, e não descobrir por
-    acidente que ainda está dentro.
-  */
   async pedirExclusao(userId: string) {
     const donoDe = await prisma.guild.findMany({
       where: { ownerId: userId },
       select: { name: true, _count: { select: { members: true } } },
     });
 
-    /*
-      Servidor com OUTRA gente dentro trava a exclusão.
-
-      Sumir sozinho é decisão sua; deixar um servidor sem dono é decisão sobre
-      os outros. Servidor onde você é o único membro não trava: ali não há
-      ninguém para ficar órfão.
-    */
     const comGente = donoDe
       .filter((g) => g._count.members > 1)
       .map((g) => g.name);
@@ -86,7 +45,6 @@ export const meService = {
     return { excluirEm: excluirEm.toISOString() };
   },
 
-  /// Cancela a exclusão. Como nada foi apagado, voltar é só limpar a data.
   async cancelarExclusao(userId: string) {
     await userRepository.update(userId, { excluirEm: null });
   },
@@ -154,7 +112,6 @@ export const meService = {
       mensagens: {
         total: quantasMensagens,
         incluidas: mensagens.length,
-        /// Diz o que ficou de fora em vez de cortar em silêncio.
         observacao:
           quantasMensagens > mensagens.length
             ? `Só as ${mensagens.length} mais recentes entraram neste arquivo.`
@@ -218,16 +175,6 @@ export const meService = {
   },
 };
 
-/*
-  Só entra a conexão que vira um endereço seguro.
-
-  A validação do Zod garante o formato do objeto; ela não garante que o handle
-  vire link. Guardar o que não vira link enche o perfil de linha morta — a tela
-  não desenha, a pessoa não entende por quê, e ninguém tem onde olhar.
-
-  Recusar o pedido inteiro seria pior: quem digitou sete conexões e errou uma
-  perderia as sete. Some a errada, ficam as seis.
-*/
 function comConexoesLimpas(perfil: EstiloDePerfil): EstiloDePerfil {
   if (!perfil.conexoes) return perfil;
 

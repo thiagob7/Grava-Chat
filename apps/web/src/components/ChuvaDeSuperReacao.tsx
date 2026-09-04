@@ -5,13 +5,6 @@ import { useSuperReacao, type Explosao } from "~/stores/super-reacao";
 const PARTICULAS = 18;
 const DURACAO = 1400;
 
-/**
- * As partículas de uma super reação, desenhadas por cima de tudo.
- *
- * Fica montado uma vez no app, e não dentro da mensagem: a lista rola, e uma
- * animação presa à mensagem sumiria no meio do caminho. Como é enfeite puro,
- * é `pointer-events-none` de ponta a ponta — nada aqui pode roubar um clique.
- */
 export const ChuvaDeSuperReacao: React.FC = () => {
   const explosoes = useSuperReacao((s) => s.explosoes);
 
@@ -34,8 +27,6 @@ const Explode: React.FC<{ explosao: Explosao }> = ({ explosao }) => {
     return () => clearTimeout(timer);
   }, [explosao.id, encerrar]);
 
-  /// Sorteado uma vez e guardado: recalcular a cada render faria as
-  /// partículas saltarem de lugar no meio do voo.
   const particulas = useMemo(
     () =>
       Array.from({ length: PARTICULAS }, (_, i) => {

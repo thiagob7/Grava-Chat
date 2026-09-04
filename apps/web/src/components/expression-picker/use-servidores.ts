@@ -12,11 +12,6 @@ export interface ServidorComExpressoes {
   figurinhas: (Sticker & { createdBy: { displayName: string } | null })[];
 }
 
-/**
- * Os servidores da pessoa, cada um já com as suas expressões, na ordem em que
- * aparecem no seletor: o que está aberto primeiro, porque é dele que se quer
- * um emoji na maioria das vezes.
- */
 export function useServidores(guildIdAtual: string | undefined): ServidorComExpressoes[] {
   const { data: guilds = [] } = useFindManyGuilds(true);
 

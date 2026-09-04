@@ -27,8 +27,6 @@ export const gifFavoriteService = {
     return (await gifFavoriteRepository.findManyOf(userId)).map(paraGif);
   },
 
-  /// Guardar de novo o mesmo GIF não é erro: a estrela é um interruptor, e
-  /// dois cliques rápidos não podem virar duas linhas nem um erro na cara.
   async salvar(userId: string, gif: Gif): Promise<Gif[]> {
     const atuais = await gifFavoriteRepository.findManyOf(userId);
     const jaTem = atuais.some((f) => f.gifId === gif.id);

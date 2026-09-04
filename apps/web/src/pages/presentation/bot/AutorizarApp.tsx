@@ -19,14 +19,6 @@ const EXPLICA: Record<string, string> = {
   guilds: "Saber em quais servidores você está e onde você manda",
 };
 
-/**
- * A tela que o OAuth2 abre — o "quer acessar sua conta" do Discord.
- *
- * Quem chega aqui veio de um site de fora que quer falar com o Gravaê em seu
- * nome. Por isso a tela é seca: quem é a aplicação, o que ela vai poder ver, e
- * PARA ONDE você volta depois. Esse último é o que ninguém costuma mostrar, e
- * é justamente o que denuncia um link torto.
- */
 export const AutorizarApp: React.FC = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -60,11 +52,6 @@ export const AutorizarApp: React.FC = () => {
         scope,
       });
 
-      /*
-        O `state` volta intocado porque é do site do dev, não nosso: é com ele
-        que o painel confere que a resposta pertence ao pedido que ele mesmo
-        começou.
-      */
       const destino = new URL(data.redirectUri);
       destino.searchParams.set("code", data.codigo);
       if (state) destino.searchParams.set("state", state);

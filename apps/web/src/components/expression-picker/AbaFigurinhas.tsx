@@ -33,8 +33,6 @@ export const AbaFigurinhas: React.FC<{
   const { container, registrar, irPara, aoRolar, ativo } = useSecoes();
   const { fechadas, alternar, abrir } = useColapso("figurinhas");
 
-  /// Ver o comentário gêmeo na AbaEmoji: fechar uma seção mexe nos offsets
-  /// sem disparar `scroll`, e o atalho abre a seção a que leva.
   useEffect(aoRolar, [fechadas, aoRolar]);
 
   const irEAbrir = (id: string) => {
@@ -51,8 +49,6 @@ export const AbaFigurinhas: React.FC<{
     .map((s) => ({ ...s, figurinhas: termo ? s.figurinhas.filter(combina) : s.figurinhas }))
     .filter((s) => s.figurinhas.length);
 
-  /// As recentes guardam só o id, então a busca é por todos os servidores — e
-  /// uma figurinha de um servidor de onde você saiu simplesmente não aparece.
   const usadas = termo
     ? []
     : recentes.flatMap((id) => {

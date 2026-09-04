@@ -43,13 +43,6 @@ const SAUDACOES = [
   "{pessoa} apareceu. Segura a emoção.",
 ];
 
-/**
- * As trocas que a mensagem de boas-vindas aceita.
- *
- * `{pessoa}` vira menção de verdade — é o que faz a pessoa ser notificada e
- * ver o próprio nome destacado. `{nome}` é o mesmo nome sem o toque, para
- * quem quer uma frase que não cutuca ninguém.
- */
 function preencher(
   modelo: string,
   dados: { userId: string; nome: string; servidor: string; contagem: number },
@@ -97,18 +90,6 @@ export const guildService = {
 
     const [textCategory, voiceCategory] = guild.categories;
 
-    /*
-      O #geral nasce sendo o canal de sistema.
-
-      Sem isso o `welcomeEnabled` vinha ligado por padrão do schema e o
-      `systemChannelId` vinha nulo, então `boasVindas` desistia na primeira
-      guarda e nenhuma boas-vindas era enviada — enquanto a tela de
-      Engajamento mostrava a chave ligada, porque ela também assume `?? true`.
-      Servidor recém-criado prometia a mensagem e não entregava.
-
-      Por isso ele é criado sozinho, e não no `createMany`: no Mongo o
-      `createMany` do Prisma devolve só a contagem, e aqui precisamos do id.
-    */
     const geral = await channelRepository.create({
       guildId: guild.id,
       categoryId: textCategory?.id ?? null,
@@ -303,8 +284,6 @@ export const guildService = {
 
     const escrita = guild.welcomeMessage?.trim();
 
-    /// Sem texto próprio, sorteia — é o que todo servidor tinha antes de dar
-    /// para escrever o seu, e continua sendo o padrão de quem não mexeu.
     const modelo = escrita || SAUDACOES[Math.floor(Math.random() * SAUDACOES.length)]!;
 
     const [pessoa, membros] = await Promise.all([

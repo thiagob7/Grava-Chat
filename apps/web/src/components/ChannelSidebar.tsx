@@ -12,13 +12,6 @@ import { InviteModal } from "~/components/InviteModal";
 import { CallTimer } from "~/components/CallTimer";
 import { VoiceMembers } from "~/components/VoiceMembers";
 import { useVoiceSync } from "~/hooks/use-voice-sync";
-/*
-  Os ícones da lista de canais são Phosphor, no peso `fill` — o mesmo conjunto e
-  o mesmo peso da referência. Os três botões de ação da linha eram lucide de
-  contorno a 14px, encostados num Phosphor cheio de 20px: duas famílias, dois
-  pesos e dois tamanhos na mesma linha, que é o que fazia a lista parecer
-  remendada.
-*/
 import {
   CaretDown,
   ChatCircle,
@@ -86,9 +79,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const [inviting, setInviting] = useState(false);
   const configuracoes = useServerSettingsStore();
 
-  /// O pedido pode ter nascido no servidor anterior: quem clicou em
-  /// "Adicionar emoji" e trocou de servidor no meio do caminho não quer cair
-  /// nas configurações deste aqui.
   const configurando =
     configuracoes.aberto && configuracoes.guildId === detail?.guild.id;
   const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
@@ -109,13 +99,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   }, [channels]);
   const uncategorized = channels.filter((c) => !c.categoryId);
 
-  /*
-    Favoritos no alto, e o canal continua no lugar de origem.
-
-    Tirar ele da categoria faria a estrela "mover" o canal — e aí favoritar
-    viraria uma decisão sobre a organização do servidor, que é de quem manda
-    nele. Aqui a estrela só duplica o atalho pra você.
-  */
   const favoritos = useFavoritos((s) => s.canais);
   const canaisFavoritos = channels.filter((c) => favoritos.includes(c.id));
 
@@ -142,38 +125,14 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
   const comFaixa = Boolean(detail?.guild.bannerUrl) && faixaDoServidor;
 
-  /*
-    A altura da faixa sai da LARGURA da barra dividida pela proporção da
-    imagem — e não de um número fixo. A barra é redimensionável: altura fixa
-    daria tarja numa largura e corte na outra.
-  */
   const proporcao = useProporcaoDaFaixa(comFaixa ? detail?.guild.bannerUrl : null);
 
   return (
     <>
-      {/*
-        `canto-do-miolo` e `topo-do-miolo` estão no `index.css`, e só valem
-        dentro do aplicativo instalado. A curva é do FUNDO, não um recorte: a
-        alça de largura mora em `-right-1`, fora da caixa, e um
-        `overflow-hidden` aqui comeria metade da área de pegar.
-      */}
       <aside
         className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
-        {/*
-          A faixa do servidor e o nome são o MESMO bloco, não dois empilhados.
-
-          Antes eram: uma tira de altura fixa em cima, o cabeçalho embaixo. Duas
-          alturas fixas para uma imagem de proporção qualquer — daí a tarja preta
-          de quem manda uma faixa mais larga que alta, e o corte pelo meio de
-          quem manda uma mais alta.
-
-          Agora a altura sai da LARGURA da barra: a faixa ocupa a proporção
-          inteira, e o nome flutua por cima do alto dela. O véu escuro e a sombra
-          no texto existem porque a imagem é escolha de quem manda no servidor —
-          sem eles, nome branco sobre faixa clara some.
-        */}
         <header
           className={cn(
             "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
@@ -183,12 +142,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             comFaixa
               ? {
                   height: largura / proporcao,
-                  /*
-                    Os limites do Fluxer, só que em CSS: `min-height` vence
-                    `max-height` na cascata, então isto é o mesmo que
-                    `max(48, min(ideal, 30vh))` — sem precisar de um ouvinte de
-                    `resize` para saber a altura da janela.
-                  */
                   minHeight: "3rem",
                   maxHeight: "30vh",
                 }
@@ -202,10 +155,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 className="absolute inset-0 bg-cover bg-top bg-no-repeat"
                 style={{ backgroundImage: `url(${detail!.guild.bannerUrl})` }}
               />
-              {/*
-                O véu cobre só a faixa de cima, onde o nome mora — escurecer a
-                imagem inteira seria estragá-la para proteger uma linha de texto.
-              */}
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/30 to-transparent"
@@ -218,25 +167,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             <DropdownMenuTrigger asChild disabled={!detail}>
               <button
                 className={cn(
-                  /*
-                    Pastilha do tamanho do NOME, não da barra inteira.
-
-                    Antes o gatilho era `flex-1 h-full`: o realce de passagem
-                    pintava a faixa toda, de ponta a ponta, e o mouse no vazio
-                    do lado direito acendia o botão como se o nome estivesse
-                    sob o cursor. Agora a área clicável é o que se vê — nome
-                    mais seta — e é ela que acende.
-                  */
                   "group/nome flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition",
-                  /*
-                    Sobre a faixa o realce é preto translúcido, não cinza.
-
-                    Já foi decidido aqui que não haveria realce nenhum sobre a
-                    imagem — mas aquilo valia pro retângulo da largura inteira,
-                    que virava uma tarja cinza atravessando a foto. Uma pastilha
-                    escura do tamanho do nome faz o contrário: escurece só onde
-                    o texto já precisa de contraste.
-                  */
                   comFaixa
                     ? "hover:bg-black/35 data-[state=open]:bg-black/35"
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
@@ -250,12 +181,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 >
                   {detail?.guild.name ?? "…"}
                 </h1>
-                {/*
-                  A seta vira de cabeça pra baixo com o menu aberto. Quem dá o
-                  estado é o próprio Radix, no `data-state` do gatilho — sem
-                  guardar "aberto" em lugar nenhum e sem o risco de a seta e o
-                  menu discordarem.
-                */}
                 <ChevronDown
                   size={16}
                   className={cn(
@@ -338,11 +263,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </div>
         </header>
 
-        {/*
-          Cabeçalho e lista dentro de um mesmo bloco relativo: é a altura DELE
-          que a alça de arrastar ocupa, e por isso o fio para onde o cartão do
-          rodapé começa.
-        */}
         <div className="relative flex min-h-0 flex-1 flex-col">
           <div className="flex-1 overflow-y-auto px-2 py-3">
             {groups.map((group) => {
@@ -369,10 +289,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         />
                         <span className="truncate">{group.name}</span>
                       </button>
-                      {/*
-                      "Favoritos" não é categoria de verdade: criar canal ali
-                      mandaria `categoryId: "favoritos"` pra API, que não existe.
-                    */}
                       {canManageChannels && group.id !== "favoritos" && (
                         <button
                           onClick={() => setCreatingIn(group.id)}
@@ -447,9 +363,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 className="shrink-0 text-ink-faint"
                               />
                             ) : channel.isPrivate ? (
-                              /* canal de texto fechado tinha o mesmo `#` de um
-                               aberto: quem entra no servidor não tinha como
-                               saber por que só enxerga metade da lista */
                               <Lock
                                 size={20}
                                 className="shrink-0 text-ink-faint"
@@ -472,17 +385,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             </span>
 
                             <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
-                              {/*
-                              A lotação, quando o canal tem limite.
-
-                              O `userLimit` existia no banco e na tela de
-                              configuração, e em lugar nenhum onde ele importa:
-                              não dava pra saber se um canal estava cheio sem
-                              tentar entrar e ser recusado.
-
-                              Só aparece com limite definido — `0` é "sem
-                              limite", e "3/0" não diria nada.
-                            */}
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
                                   <span

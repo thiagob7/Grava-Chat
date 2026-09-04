@@ -6,13 +6,6 @@ import { idioma } from "./root/idioma";
 import { perfil } from "./root/perfil";
 import { servidor } from "./root/servidor";
 
-/*
-  O catálogo é o conteúdo do namespace, sem envelope.
-
-  O `resourcesToBackend` chama a função por (idioma, namespace) e espera
-  receber o conteúdo daquele namespace — envolver num `{ traducao: ... }`
-  faria ele procurar `traducao.configuracoes.telas.conta` e não achar nada.
-*/
 const catalogo = {
   chamada,
   comum,

@@ -60,8 +60,6 @@ const ICONES: Record<string, React.ElementType> = {
   webhook: Webhook,
 };
 
-/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
-/// resolveria antes de o idioma existir e ficaria congelada.
 const FILTROS = [
   { valor: "", label: "servidor.auditoria.todasAsAcoes" },
   { valor: "member", label: "servidor.auditoria.filtroMembros" },

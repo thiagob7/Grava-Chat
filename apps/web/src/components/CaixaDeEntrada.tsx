@@ -18,25 +18,12 @@ import { useTranslation } from "~/traducao";
 
 type Aba = "nao-lidas" | "salvas" | "mencoes";
 
-/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
-/// resolveria antes de o idioma existir e ficaria congelada.
 const ABAS: { id: Aba; rotulo: string; icone: React.ReactNode }[] = [
   { id: "nao-lidas", rotulo: "conversa.entrada.naoLidas", icone: <Bell size={16} weight="fill" /> },
   { id: "salvas", rotulo: "conversa.entrada.salvas", icone: <BookmarkSimple size={16} weight="fill" /> },
   { id: "mencoes", rotulo: "conversa.entrada.mencoes", icone: <At size={16} weight="bold" /> },
 ];
 
-/**
- * A caixa de entrada: o que chegou pra você, fora da conversa aberta.
- *
- * Três abas — o que não foi lido, o que você guardou e quem
- * te citou. As três moram no mesmo balão porque respondem à mesma pergunta
- * ("tem algo esperando por mim?"), e separá-las em três botões no cabeçalho
- * era o que a gente tinha antes: o marcador de favoritas sozinho, sem o
- * resto.
- *
- * Cada aba só busca quando é aberta.
- */
 export const CaixaDeEntrada: React.FC = () => {
   const { t } = useTranslation();
   const [aberta, setAberta] = useState(false);
@@ -53,7 +40,6 @@ export const CaixaDeEntrada: React.FC = () => {
             <Tray size={20} weight="fill" />
           </Tooltip>
 
-          {/* a bolinha só existe quando há algo esperando */}
           {naoLidas.length > 0 && (
             <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-danger" />
           )}
@@ -61,7 +47,6 @@ export const CaixaDeEntrada: React.FC = () => {
       </PopoverTrigger>
 
       <PopoverContent align="end" className="flex h-[30rem] w-[26rem] gap-0 p-0">
-        {/* O trilho das abas, à esquerda. */}
         <nav className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-divisor py-2">
           {ABAS.map((item) => (
             <Tooltip key={item.id} label={item.rotulo} side="left">

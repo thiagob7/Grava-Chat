@@ -13,7 +13,6 @@ import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";
 
-
 interface PainelDeBuscaProps {
   guildId: string;
   termo: string;
@@ -45,15 +44,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
         <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">
           {busca.isLoading
             ? t("conversa.busca.procurando")
-            : /*
-                Duas chaves, e não plural do i18next.
-
-                O `_one`/`_other` do i18next é uma espinha de chaves DIFERENTE
-                em cada idioma — russo tem `_few` e `_many` —, e o teste que
-                exige as mesmas chaves nos 34 catálogos quebraria em bloco.
-                Duas chaves escolhidas aqui é a mesma aproximação que o código
-                já fazia com o "s" no fim, e cabe na regra da casa.
-              */
+            : 
               t(total === 1 ? "conversa.busca.resultado" : "conversa.busca.resultados", {
                 quantos: `${total}${busca.hasNextPage ? "+" : ""}`,
               })}
@@ -70,8 +61,6 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
         {!busca.isLoading && !total && (
           <p className="px-2 py-8 text-center text-sm text-ink-muted">
-            {/* O termo por interpolação: frase partida por elemento não se
-                traduz aos pedaços — ver os outros casos iguais. */}
             {t("conversa.busca.nadaCom", { termo })}
             <span className="mt-1 block text-xs text-ink-faint">
               {t("conversa.busca.soOsQuePodeLer")}
@@ -142,11 +131,6 @@ const Resultado: React.FC<{
           className="text-sm font-medium"
         />
 
-        {/*
-          O trecho vem cortado em volta do termo. Uma mensagem de trinta linhas
-          num cartão de 380px esconde justamente a palavra que a pessoa
-          procurou — que costuma estar no fim.
-        */}
         <p className="mt-0.5 line-clamp-4 whitespace-pre-wrap break-words text-sm text-ink-muted">
           <MessageContent content={trechoEmVolta(resultado.content, termo)} emojis={emojis} mencoes={mencoes} />
         </p>

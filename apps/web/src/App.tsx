@@ -34,11 +34,6 @@ export const App: React.FC = () => {
   useAparenciaAplicada();
 
   return (
-    /*
-      A rede de segurança fica por FORA de tudo, inclusive dos provedores: se
-      quem quebrar for um deles, ainda assim aparece uma tela com botão em vez
-      de uma janela preta.
-    */
     <ErrorBoundary onde="aplicação">
       <QueryClientProvider client={queryClient}>
         <SessionProvider>

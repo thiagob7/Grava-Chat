@@ -41,17 +41,6 @@ export type Secao =
   | "automod"
   | "excluir";
 
-/*
-  Os dois mapas guardam CHAVES, não frases.
-
-  São constantes de módulo: um `t()` aqui resolveria na hora de carregar o
-  arquivo, antes de o idioma existir, e ficaria congelado para sempre. Quem
-  desenha é que traduz.
-
-  E quase todo rótulo aponta para o título da PRÓPRIA seção, em vez de ter
-  chave nova. Assim o nome na lateral e o nome dentro da tela não podem
-  divergir — se alguém reescrever o título, a lateral acompanha.
-*/
 const GRUPOS: { titulo: string | null; itens: Secao[] }[] = [
   { titulo: null, itens: ["perfil", "tag", "engajamento"] },
   { titulo: "servidor.abas.expressoes", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
@@ -89,8 +78,6 @@ interface ServerSettingsModalProps {
   canManageRoles: boolean;
   canManageWebhooks: boolean;
   permissoes: Set<string>;
-  /// Onde cair ao abrir. Quem chama de longe — o "Adicionar emoji" do seletor
-  /// de expressões — quer a tela de emoji, não o Perfil do servidor.
   secaoInicial?: Secao | null;
 }
 
@@ -112,9 +99,6 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     permissoes.has("ADMINISTRATOR") || permissoes.has(p);
   const [secao, setSecao] = useState<Secao>(canManage ? "perfil" : "membros");
 
-  /// Só na abertura. Aplicar a cada render desfaria o clique de quem navega
-  /// pela lista da esquerda: escolher "Cargos" voltaria sozinho para a seção
-  /// pedida lá atrás.
   useEffect(() => {
     if (open && secaoInicial) setSecao(secaoInicial);
   }, [open, secaoInicial]);

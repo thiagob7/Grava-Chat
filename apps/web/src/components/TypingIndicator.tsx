@@ -34,17 +34,6 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
 
   return (
     <div className="flex h-6 items-center gap-2 px-3 text-xs text-ink-muted">
-      {/*
-        O retrato de quem digita, e não só o nome.
-
-        Numa conversa movimentada o nome sozinho obriga a LER pra saber quem é;
-        o rosto se reconhece antes da leitura. É o mesmo motivo de a lista de
-        mensagens ter avatar em vez de só o nome do autor.
-
-        Até três, e sobrepostos: a linha tem 24px de altura e divide espaço com
-        a frase, que já diz quantas pessoas são quando passam de duas. Mais
-        retratos empurrariam o texto pra fora antes de acrescentar informação.
-      */}
       <span className="flex shrink-0 -space-x-1.5">
         {users.slice(0, 3).map((entry) => (
           <Avatar

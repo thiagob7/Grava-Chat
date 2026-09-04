@@ -9,8 +9,6 @@ import { guildRepository, memberRepository } from "~/repositories/guild-reposito
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
 
-/// Curto de propósito: o código só precisa sobreviver ao redirecionamento do
-/// navegador até o servidor do dev. Se demorar mais que isso, algo deu errado.
 const CODIGO_TTL = 120;
 const TOKEN_TTL = 7 * 24 * 60 * 60;
 
@@ -28,16 +26,9 @@ interface TokenGuardado {
   userId: string;
   botId: string;
   escopos: Escopo[];
-  /*
-    Quando a pessoa autorizou. Opcional porque tokens emitidos antes desta
-    lista existir não têm o campo — eles continuam valendo até vencer, e a
-    tela só não sabe dizer a data deles.
-  */
   criadoEm?: number;
 }
 
-/// Comparação que não vaza o segredo pelo tempo de resposta. Com `===`, um
-/// atacante descobre o prefixo certo medindo quanto cada tentativa demora.
 function iguais(a: string, b: string) {
   const x = Buffer.from(a);
   const y = Buffer.from(b);
@@ -46,13 +37,6 @@ function iguais(a: string, b: string) {
 }
 
 export const oauthService = {
-  /**
-   * O que a tela de autorização mostra antes de a pessoa decidir.
-   *
-   * A `redirect_uri` é conferida AQUI, e não só na troca: se ela não estiver
-   * na lista do bot, a tela nem chega a aparecer — é o que impede alguém de
-   * montar um link com o endereço dele e colher os códigos.
-   */
   async descreverPedido(params: { botId: string; redirectUri: string; escopos: string[] }) {
     const bot = await botRepository.findById(params.botId);
     if (!bot) throw new NotFoundError("Aplicação não encontrada");
@@ -78,8 +62,6 @@ export const oauthService = {
     };
   },
 
-  /// A pessoa clicou em autorizar. O código vive no Redis e morre no primeiro
-  /// resgate — é de uso único, como o do login do desktop.
   async emitirCodigo(userId: string, params: { botId: string; redirectUri: string; escopos: string[] }) {
     const pedido = await oauthService.descreverPedido(params);
     const codigo = randomBytes(32).toString("base64url");
@@ -96,13 +78,6 @@ export const oauthService = {
     return { codigo, redirectUri: params.redirectUri };
   },
 
-  /**
-   * A troca que acontece no servidor do dev, nunca no navegador.
-   *
-   * Pede o `clientSecret` porque o código sozinho não basta: ele viaja pela
-   * barra de endereços e pode ser lido no caminho. O segredo prova que quem
-   * está trocando é o dono da aplicação.
-   */
   async trocarCodigo(params: {
     codigo: string;
     clientId: string;
@@ -119,8 +94,6 @@ export const oauthService = {
 
     const codigo = JSON.parse(bruto) as Codigo;
 
-    /// O código nasceu para OUTRA aplicação, ou para outro endereço de
-    /// retorno. Os dois casos são tentativa de desvio.
     if (codigo.botId !== params.clientId || codigo.redirectUri !== params.redirectUri) {
       throw new UnauthorizedError("Código não confere com a aplicação");
     }
@@ -133,15 +106,6 @@ export const oauthService = {
       criadoEm: Date.now(),
     };
 
-    /*
-      O token e o índice da pessoa nascem juntos, num pipeline só: um token
-      fora do índice é um acesso que ninguém consegue ver nem revogar, e é
-      exatamente o buraco que esta lista existe para fechar.
-
-      O `expire` no conjunto é renovado a cada autorização de propósito — ele
-      só precisa sobreviver ao token mais novo que guarda. Sem isso, o Redis
-      ficaria com um conjunto por pessoa para sempre, cheio de token morto.
-    */
     await redis
       .multi()
       .set(keys.oauthToken(token), JSON.stringify(guardado), "EX", TOKEN_TTL)
@@ -152,18 +116,6 @@ export const oauthService = {
     return { access_token: token, token_type: "Bearer", expires_in: TOKEN_TTL, scope: codigo.escopos.join(" ") };
   },
 
-  /**
-   * Quais aplicações têm acesso à conta, agrupadas por aplicação.
-   *
-   * Agrupadas porque o token é detalhe de implementação: quem autoriza duas
-   * vezes o mesmo painel — trocou de máquina, refez o login — tem dois tokens
-   * vivos, e ver "Meu Painel" duas vezes na lista não ajuda ninguém a decidir
-   * o que revogar.
-   *
-   * A varrida aproveita para PODAR: token que venceu some da chave sozinho,
-   * mas continua no conjunto. Sem esta limpeza, o índice só cresce, e uma
-   * aplicação já vencida ficaria pra sempre na tela dizendo que tem acesso.
-   */
   async listarAutorizadas(userId: string) {
     const chave = keys.oauthDaPessoa(userId);
     const tokens = await redis.smembers(chave);
@@ -180,8 +132,6 @@ export const oauthService = {
 
       const dados = JSON.parse(bruto) as TokenGuardado;
 
-      /// Token que não é desta pessoa não pode ter entrado aqui. Se entrou,
-      /// é sujeira — e devolvê-lo mostraria o acesso de outra conta.
       if (dados.userId !== userId) return mortos.push(token);
 
       vivos.push(dados);
@@ -190,8 +140,6 @@ export const oauthService = {
     if (mortos.length) await redis.srem(chave, ...mortos);
     if (!vivos.length) return [];
 
-    /// Um bot por aplicação, e a mesma aplicação pode aparecer em vários
-    /// tokens: os escopos somam e a data é a da autorização mais recente.
     const porBot = new Map<string, { escopos: Set<Escopo>; criadoEm: number | null }>();
 
     for (const dados of vivos) {
@@ -210,8 +158,6 @@ export const oauthService = {
       [...porBot].map(async ([botId, { escopos, criadoEm }]) => {
         const bot = await botRepository.findById(botId);
 
-        /// Aplicação apagada com token ainda vivo. Não dá pra desenhar um
-        /// cartão sem nome nem avatar, e o acesso morre com o TTL.
         if (!bot) return null;
 
         return {
@@ -230,13 +176,6 @@ export const oauthService = {
       .sort((a, b) => (b.autorizadoEm ?? "").localeCompare(a.autorizadoEm ?? ""));
   },
 
-  /**
-   * Tirar o acesso de uma aplicação.
-   *
-   * Apaga TODOS os tokens dela, e não só um: revogar pela metade é pior que
-   * não revogar, porque a tela diz que acabou e o painel do dev continua
-   * respondendo com o token da outra máquina.
-   */
   async revogarAplicacao(userId: string, botId: string) {
     const chave = keys.oauthDaPessoa(userId);
     const tokens = await redis.smembers(chave);
@@ -250,9 +189,6 @@ export const oauthService = {
 
       const dados = JSON.parse(bruto) as TokenGuardado;
 
-      /// O `userId` entra na comparação junto com o bot: o id da aplicação é
-      /// público, e sem ele um pedido forjado derrubaria a autorização de
-      /// outra pessoa se o token tivesse escorregado pro índice errado.
       return dados.botId === botId && dados.userId === userId;
     });
 
@@ -289,13 +225,6 @@ export const oauthService = {
     return toPublicUser(user);
   },
 
-  /**
-   * Os servidores da pessoa, com o que ela pode fazer em cada um.
-   *
-   * `gerencia` é o campo que o painel do dev realmente usa: é ele que separa
-   * "servidor que aparece na lista para configurar" de "servidor onde a
-   * pessoa só conversa".
-   */
   async servidoresDe(sessao: TokenGuardado) {
     oauthService.exigirEscopo(sessao, "guilds");
 
@@ -315,9 +244,6 @@ export const oauthService = {
 
         const permissoes = contexto?.permissions ?? new Set<Permission>();
 
-        /// Se o bot DESTA aplicação já está lá. Poupa o painel de descobrir
-        /// isso servidor por servidor só para desenhar "Configurar" em vez de
-        /// "Adicionar" — é a primeira coisa que toda dashboard precisa.
         const temOBot = bot
           ? Boolean(await memberRepository.find(m.guildId, bot.botUserId))
           : false;

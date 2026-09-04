@@ -48,12 +48,6 @@ import { cn } from "~/lib/utils";
 
 const AVATAR_MAX_PX = 256;
 
-/**
- * Combinações que cobrem quase todo bot que alguém escreve aqui. Existem
- * porque marcar caixa por caixa numa lista de 32 é o jeito mais fácil de
- * pedir demais sem perceber — e bot com permissão sobrando é o problema que
- * ninguém vê até o dia em que vê.
- */
 const PRESETS: { nome: string; descricao: string; permissoes: Permission[] }[] =
   [
     {
@@ -515,11 +509,6 @@ const Permissoes: React.FC<{
         )}
       </div>
 
-      {/*
-        Perigosa fica destacada: quem marca "Administrador" sem querer entrega
-        o servidor inteiro ao bot, e no meio de uma lista cinza isso passa
-        despercebido.
-      */}
       <div className="mt-3 max-h-72 space-y-4 overflow-y-auto pr-1">
         {grupos.map((grupo) => (
           <section key={grupo.label}>
@@ -590,13 +579,6 @@ const Permissoes: React.FC<{
   );
 };
 
-/**
- * O que um painel de fora precisa para falar com a gente.
- *
- * É a peça que faz alguém conseguir montar a própria dashboard — como a
- * Loritta faz — em vez de depender de uma tela nossa para cada coisa que o
- * bot inventar de configurar.
- */
 const OAuth: React.FC<{
   bot: BotModel;
   onSalvar: (uris: string[]) => void;

@@ -32,11 +32,6 @@ export function guardarFonte(fonte: FonteDeNome) {
   }
 }
 
-/**
- * O `Type` do lucide desenha numa caixa de 16 do viewBox de 24; os vizinhos
- * (`Smile`, `Send`) usam 20. No mesmo `size` o T sai 20% menor e a fileira
- * parece torta. `size` aqui é o dos vizinhos — o resto é a compensação.
- */
 export const IconeDeFonte: React.FC<{ size: number }> = ({ size }) => (
   <Type size={size * 1.25} strokeWidth={1.6} />
 );

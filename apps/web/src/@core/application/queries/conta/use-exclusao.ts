@@ -8,14 +8,6 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 export const usePedirExclusao = () =>
   useMutation({
     mutationFn: pedirExclusao,
-    /*
-      Recarrega a página inteira em vez de mexer no cache.
-
-      O pedido derrubou as sessões no servidor: o token que este app tem na mão
-      já não vale, e qualquer consulta seguinte voltaria 401 em cascata. Começar
-      do zero é o caminho honesto — a pessoa cai na tela de recuperação, que é
-      exatamente onde ela deve estar.
-    */
     onSuccess: () => window.location.reload(),
     onError: (error) => toast.error(apiErrorMessage(error, "Não consegui excluir a conta.")),
   });

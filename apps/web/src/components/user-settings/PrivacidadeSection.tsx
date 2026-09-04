@@ -21,14 +21,6 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
   const salvar = useUpdateProfile();
   const [baixando, setBaixando] = useState(false);
 
-  /*
-    O download é feito na mão, e não com um `<a href>`.
-
-    A rota exige o cabeçalho de autenticação que o `api` já carrega; um link
-    comum vai sem ele e volta 401. Buscar como blob e criar a âncora na hora é
-    o caminho que respeita o login — e o `revokeObjectURL` no fim evita segurar
-    o arquivo inteiro na memória depois que ele já foi pro disco.
-  */
   const exportar = async () => {
     setBaixando(true);
 
@@ -71,10 +63,6 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           onMudar={(aceitaPedidos) => salvar.mutate({ aceitaPedidos })}
         />
 
-        {/*
-          Uma regra que não é escolha, e por isso aparece como texto e não como
-          interruptor: fingir que dá pra mudar seria pior do que não mostrar.
-        */}
         <p className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Mensagem direta só entre amigos, sempre. Não há como abrir conversa
           com quem não aceitou o seu pedido — isso não é ajustável.
@@ -117,10 +105,6 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           }
         />
 
-        {/*
-          A checagem mora no servidor, e vale dizer isso: é a diferença entre
-          esconder e pedir para o outro app não mostrar.
-        */}
         <p className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Quem esconde, esconde no servidor: com o interruptor desligado a lista
           nem sai daqui. Não é a outra tela deixando de desenhar.
@@ -168,16 +152,6 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
   );
 };
 
-/*
-  O pedido de exclusão, atrás de uma confirmação que se digita.
-
-  Digitar o próprio nome não é burocracia: é o único jeito de garantir que o
-  clique foi deliberado. Botão de confirmar se aperta por reflexo — quem digita
-  seis letras já leu o que está fazendo.
-
-  O texto insiste no prazo porque ele muda a natureza do botão: sem prazo isto
-  seria irreversível, com prazo é uma decisão que dorme quinze noites.
-*/
 const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
   const [confirmando, setConfirmando] = useState(false);
   const [digitado, setDigitado] = useState("");

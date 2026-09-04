@@ -23,12 +23,6 @@ describe("cantoMaisProximo", () => {
     expect(cantoMaisProximo(em(650, 700), area)).toBe("inferior-direito");
   });
 
-  /*
-    O card tem 320px de largura. Largado encostado na borda direita de uma tela
-    de 1000px, o `x` dele é 672 — mas se a conta olhasse o canto superior
-    esquerdo em vez do centro, um card em x=400 (centro em 560, à direita do
-    meio) seria mandado pra esquerda, contra a intenção de quem arrastou.
-  */
   it("decide pelo centro do card, não pelo canto de origem", () => {
     expect(cantoMaisProximo(em(400, 20), area)).toBe("superior-direito");
     expect(cantoMaisProximo(em(330, 20), area)).toBe("superior-esquerdo");

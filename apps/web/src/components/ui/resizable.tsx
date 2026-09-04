@@ -95,16 +95,6 @@ export const AlcaDeLargura: React.FC<
     aria-valuemin={limites.min}
     aria-valuemax={limites.max}
     tabIndex={0}
-    /*
-      A área de PEGAR é larga (8px) e invisível; o que aparece é o fio de dentro.
-      Antes as duas eram a mesma coisa: 4px pintados de `bg-brand` cheio, que no
-      arraste viravam uma tira vermelha da altura da tela.
-    */
-    /*
-      `inset-y-0` do PAI, e o pai agora é a área de cima — não a barra
-      inteira. É o que faz o fio parar no cartão do rodapé em vez de descer
-      até o pé da janela por cima dele.
-    */
     className={cn(
       "group/alca absolute inset-y-0 z-20 w-2 cursor-col-resize",
       borda === "direita" ? "-right-1" : "-left-1",
@@ -116,11 +106,6 @@ export const AlcaDeLargura: React.FC<
       aria-hidden
       className={cn(
         "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
-        /*
-          O fio precisa aparecer ANTES do clique: quem não sabe que dá pra
-          arrastar não vai arrastar. Cinza claro no hover (a borda acesa), a
-          cor da marca enquanto arrasta.
-        */
         arrastando
           ? "w-0.5 bg-brand"
           : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-brand",

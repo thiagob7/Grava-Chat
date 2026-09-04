@@ -18,12 +18,6 @@ export interface PedidoDeConfirmacao {
   acao?: string;
   destrutivo?: boolean;
   campo?: { rotulo: string; placeholder?: string; obrigatorio?: boolean };
-  /**
-   * Mostra a dica de que dá pra pular esta confirmação segurando Shift.
-   *
-   * Só faça isso quando o gesto REALMENTE existir do outro lado: prometer um
-   * atalho que não funciona é pior do que não ter atalho nenhum.
-   */
   dicaDoShift?: boolean;
 }
 
@@ -93,11 +87,6 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
             </DialogBody>
           )}
 
-          {/*
-            Sem campo, o rodapé vem logo depois do cabeçalho — e o `DialogFooter`
-            só tem folga embaixo, então os botões encostavam na linha divisória.
-            O `pt-5` iguala o respiro que o corpo daria se existisse.
-          */}
           <DialogFooter className={pedido?.campo ? undefined : "pt-5"}>
             <Button variant="surface" onClick={() => responder(false)}>
               Cancelar

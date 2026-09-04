@@ -10,8 +10,6 @@ describe("cabeNaCota", () => {
   });
 
   it("um dia inteiro de fotos comprimidas passa longe do teto", () => {
-    // o `resizeImage` do front entrega algo entre 300 e 700 KB por imagem;
-    // 200 fotos num dia são ~100 MB, um quinto da cota
     expect(cabeNaCota({ jaUsado: 100 * MB, tamanho: 700 * 1024 })).toBe(true);
   });
 
@@ -27,11 +25,6 @@ describe("cabeNaCota", () => {
     expect(cabeNaCota({ jaUsado: COTA_POR_HORA, tamanho: 1 })).toBe(false);
   });
 
-  /*
-    O caso que motivou a cota: sessenta arquivos de 50 MB cabem no limite de
-    requisições (60/min) e dariam 3 GB — um terço do bucket inteiro, que ainda
-    é dividido com o outro produto.
-  */
   it("a rajada de vídeos que o limite por requisição deixava passar é barrada", () => {
     let usado = 0;
     let aceitos = 0;

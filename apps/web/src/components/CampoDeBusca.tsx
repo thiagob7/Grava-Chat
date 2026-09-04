@@ -3,22 +3,13 @@ import { X } from "lucide-react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
 interface CampoDeBuscaProps {
-  /// o termo que está valendo agora (vazio = painel fechado)
   termo: string;
   onBuscar: (termo: string) => void;
 }
 
-/**
- * O campo de busca do cabeçalho.
- *
- * Procura no Enter, não a cada tecla: cada busca varre o histórico de todos
- * os canais que você pode ler, e disparar isso a cada letra digitada seria
- * uma dezena de varreduras para chegar na primeira palavra.
- */
 export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) => {
   const [rascunho, setRascunho] = useState(termo);
 
-  /// Fechar o painel por fora (o X dele, trocar de servidor) esvazia o campo.
   useEffect(() => {
     if (!termo) setRascunho("");
   }, [termo]);

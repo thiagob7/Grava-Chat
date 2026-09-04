@@ -2,26 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import { codepointDoEmoji, EMOJI } from "./twemoji";
 
-/*
-  O nome do arquivo é a única ponte entre o caractere e o desenho. Errar a conta
-  não quebra nada de barulhento: o emoji some da tela e sobra o caractere, que é
-  o comportamento antigo. Por isso vale teste — a falha é silenciosa e parece
-  "não implementado".
-*/
 describe("codepointDoEmoji", () => {
   it("emoji simples é só o codepoint", () => {
     expect(codepointDoEmoji("😀")).toBe("1f600");
   });
 
-  /// O seletor de variação pede "desenhe como emoji"; o Twemoji já é o desenho.
   it("tira o seletor de variação", () => {
     expect(codepointDoEmoji("❤️")).toBe("2764");
   });
 
-  /*
-    A exceção que quebra famílias e casais se esquecida: dentro de uma sequência
-    com ZWJ, o seletor faz parte da identidade e FICA.
-  */
   it("mantém o seletor dentro de sequência com ZWJ", () => {
     expect(codepointDoEmoji("👨‍❤️‍👨")).toBe("1f468-200d-2764-fe0f-200d-1f468");
   });
@@ -42,11 +31,6 @@ describe("EMOJI", () => {
     expect(achar("bom dia 😀 pessoal")).toEqual(["😀"]);
   });
 
-  /*
-    O que motivou trocar `\\p{Emoji}` por `Extended_Pictographic`: aquela
-    propriedade casa com os dígitos, porque eles PODEM virar teclinha. Com ela,
-    todo número de toda mensagem virava imagem.
-  */
   it("não confunde número com emoji", () => {
     expect(achar("são 3 horas e 15 minutos")).toEqual([]);
   });

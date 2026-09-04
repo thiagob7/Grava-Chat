@@ -70,17 +70,6 @@ vi.mock("~/services/forum-service.js", () => ({
   forumService: { requirePostAberto: vi.fn(), registrarResposta: vi.fn() },
 }));
 
-/*
-  O mock do Redis envelheceu escondido.
-
-  Ele cobria só o modo lento; depois entrou o controle de vazão
-  (`fluxoDeMensagens`, com `incr` e `expire`) e ninguém atualizou aqui — porque
-  o arquivo inteiro nunca chegava a rodar: o `env.ts` matava o processo na
-  importação, e o vitest só sabia dizer "falhou ao carregar".
-
-  `incr` devolve 1 de propósito: é o primeiro uso da janela, o caso em que a
-  vazão deixa passar. Um teste de mensagem não deve morrer por limite de taxa.
-*/
 vi.mock("~/lib/redis.js", () => ({
   redis: { set: vi.fn(), ttl: vi.fn(), incr: vi.fn(async () => 1), expire: vi.fn() },
   keys: { slowmode: () => "slow:teste", fluxoDeMensagens: () => "fluxo:teste" },
@@ -151,13 +140,6 @@ describe("menções", () => {
     expect(gravado().mentions).toEqual([OUTRO]);
   });
 
-  /*
-    Responder notifica sem escrever nada no texto.
-
-    Antes o app grudava um `<@id>` na frente do conteúdo só para conseguir o
-    aviso, e a pessoa via a pílula azul repetindo, dentro da própria mensagem,
-    o nome que a citação logo acima já mostra. Agora o aviso vem do responder.
-  */
   it("responder com aviso menciona o autor citado, sem mexer no texto", async () => {
     findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
 
@@ -184,7 +166,6 @@ describe("menções", () => {
     expect(gravado().mentions).toEqual([]);
   });
 
-  /// A si mesmo não se notifica: o aviso existe para avisar OUTRA pessoa.
   it("responder a si mesmo não se menciona", async () => {
     findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: AUTHOR });
 
@@ -198,7 +179,6 @@ describe("menções", () => {
     expect(gravado().mentions).toEqual([]);
   });
 
-  /// E não duplica: quem já escreveu o `<@id>` na mão continua com um só.
   it("não repete o autor citado quando ele já está no texto", async () => {
     findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
 
@@ -375,11 +355,6 @@ describe("o selo de menção nos canais que ninguém abriu", () => {
     mencoesDesde.mockResolvedValue(new Map([[NUNCA_ABERTO, 2]]));
   });
 
-  /*
-    O caso que não existia: o `ReadState` só nasce quando alguém LÊ o canal.
-    Quem entrou no servidor, nunca abriu o `#geral` e foi citado lá não tinha
-    linha nenhuma para o cálculo percorrer — e o selo sumia no primeiro F5.
-  */
   it("conta menção em canal sem estado de leitura nenhum", async () => {
     const estados = await messageService.readStates(AUTHOR);
 
@@ -406,8 +381,6 @@ describe("o selo de menção nos canais que ninguém abriu", () => {
     );
   });
 
-  /// O canal que já tem estado de leitura é contado pelo caminho de cima; se
-  /// entrasse nos dois, a menção apareceria em dobro no trilho.
   it("não conta duas vezes o canal que já tem estado", async () => {
     estadosDeLeitura.mockResolvedValue([
       { channelId: JA_LIDO, lastReadMessageId: null },
@@ -422,11 +395,6 @@ describe("o selo de menção nos canais que ninguém abriu", () => {
     ]);
   });
 
-  /*
-    A lista vem do MESMO cálculo que decide em que salas o socket entra. Um
-    canal privado que a pessoa não pode abrir não pode virar selo: o selo já
-    conta, sozinho, que alguém a citou ali.
-  */
   it("não olha canal que a pessoa não pode ver", async () => {
     canaisQueEscuta.mockResolvedValue([]);
 

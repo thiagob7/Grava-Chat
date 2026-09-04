@@ -1,15 +1,4 @@
-/*
-  A última versão publicada, direto do GitHub.
 
-  Os botões de baixar poderiam apontar pro link permanente
-  (`releases/latest/download/...`) e pronto — e apontam. O que a consulta
-  acrescenta é o NÚMERO da versão e a data ao lado do botão: sem isso, ninguém
-  que já tem o app instalado consegue saber, olhando a página, se vale a pena
-  baixar de novo.
-
-  Roda no navegador de quem visita, e não na build: o site é estático, e uma
-  versão fixada no HTML envelheceria a cada release.
-*/
 export interface Publicada {
   versao: string;
   publicadaEm: string;

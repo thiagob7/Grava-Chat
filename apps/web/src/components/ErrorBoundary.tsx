@@ -4,23 +4,9 @@ import { RotateCcw } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { copiarTexto } from "~/lib/copiar";
 
-/*
-  Rede de segurança da árvore inteira.
-
-  Sem isto, UM componente que lança durante a renderização desmonta a aplicação
-  toda e deixa a janela preta: sem mensagem, sem botão, sem nada pra clicar —
-  e sem a menor pista de qual pedaço quebrou. Já aconteceu por um `useNavigate`
-  fora do Router, e volta a acontecer no dia em que a API responder num formato
-  que a tela não espera.
-
-  Precisa ser componente de classe: `getDerivedStateFromError` é o único jeito
-  que o React dá de interceptar a queda, e não existe em hook.
-*/
 interface Props {
   children: React.ReactNode;
-  /// onde a caixa vive, pra dizer no console e no texto copiado
   onde?: string;
-  /// cartão no lugar do pedaço quebrado, em vez de tela cheia
   compacto?: boolean;
 }
 
@@ -57,11 +43,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     const acoes = (
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        {/*
-          Duas saídas diferentes: tentar de novo remonta só o pedaço quebrado e
-          resolve o susto passageiro; recarregar busca a página inteira de novo,
-          que é o que salva quando o problema é código velho na memória.
-        */}
         <Button variant="surface" size="sm" onClick={() => this.setState({ erro: null })}>
           <RotateCcw size={14} /> Tentar de novo
         </Button>

@@ -229,14 +229,6 @@ const cache = {
     );
   },
 
-  /**
-   * O não-lido crescendo sozinho.
-   *
-   * Sem isto, o número na barra lateral era o do último carregamento: a
-   * bolinha aparecia (ela sai do `lastMessageId`), mas o "3" só virava "4" na
-   * próxima vez que a tela montasse. E o contador do título, que soma esses
-   * mesmos números, ficava parado no mesmo lugar.
-   */
   contarNaoLida(
     queryClient: QueryClient,
     channelId: string,
@@ -250,8 +242,6 @@ const cache = {
 
         const proximo: ReadStateModel = {
           channelId,
-          /// O que já estava guardado manda: o servidor veio do banco, e o
-          /// evento pode chegar de um canal cujo servidor não está carregado.
           guildId: atual?.guildId ?? guildId,
           lastReadMessageId: atual?.lastReadMessageId ?? null,
           unreadCount: (atual?.unreadCount ?? 0) + 1,
@@ -302,14 +292,6 @@ export function useRealtime(
   useEffect(() => {
     const socketInstance = connectSocket();
 
-    /*
-      Onde a mensagem caiu.
-
-      O evento traz o canal, não o servidor — e para avisar direito é preciso
-      saber os dois: o nome do canal vai no aviso, e os meus cargos naquele
-      servidor decidem se a menção de cargo é minha. Os dois estão no cache
-      do servidor, que já está carregado porque a lista dele está na tela.
-    */
     const ondeCaiu = (channelId: string) => {
       const detalhes = queryClient.getQueriesData<GuildDetailModel>({
         queryKey: ["find-guild"],
@@ -337,11 +319,6 @@ export function useRealtime(
           message.mentions.includes(eu?.id ?? "") ||
           message.mentionRoleIds.some((id) => meusCargos.has(id)));
 
-      /*
-        Ler é o que zera; estar com a aba na frente NO canal certo é ler.
-        A mesma condição do aviso — quem está acompanhando a conversa ao vivo
-        não acumula não-lido nem ouve barulho.
-      */
       const lendoAgora =
         currentChannelId === message.channelId &&
         document.visibilityState === "visible" &&
@@ -356,13 +333,6 @@ export function useRealtime(
         );
       }
 
-      /*
-        A voz vem ANTES do aviso sonoro e depois da contagem.
-
-        Antes do aviso porque os dois disputam o mesmo alto-falante e a voz é a
-        que carrega conteúdo — o bipe só diz "chegou algo", e ouvir o bipe por
-        cima da primeira palavra da frase é perder a frase.
-      */
       lerEmVoz(message, eu?.id, currentChannelId);
 
       avisarDeMensagem({
@@ -371,7 +341,6 @@ export function useRealtime(
         canalAberto: currentChannelId,
         meMenciona,
         nomeDoCanal: lugar?.canal.name,
-        /// Sem servidor no cache, a mensagem veio de uma conversa privada.
         ehDm: !lugar,
         ignorado: useIgnoreStore.getState().estaIgnorado(message.author.id),
         onAbrir: () =>
@@ -487,14 +456,6 @@ export function useRealtime(
       );
     };
 
-    /*
-      Estado de voz de chamada no privado não tem servidor pra atualizar.
-
-      O cache de guild é o que alimenta a lista de quem está no canal de voz da
-      barra lateral — coisa que só existe dentro de um servidor. Sem esta saída
-      antecipada, um `voice:joined` vindo de um DM chegaria aqui com `guildId`
-      nulo e iria procurar uma guild que não existe.
-    */
     const upsertVoiceState = (state: VoiceState) =>
       state.guildId === null
         ? undefined
@@ -565,9 +526,6 @@ export function useRealtime(
         })),
       }),
     );
-    /// A animação sai da pílula da reação, se a mensagem estiver na tela; se
-    /// não estiver, a store cai no rodapé sozinha. Quem super-reagiu já viu a
-    /// animação na hora do clique, então não repete pra ele.
     onMessageSuper(({ messageId, emoji, userId: quem }) => {
       const meuId = queryClient.getQueryData<{ id: string }>([
         queryKeys.auth.me,
@@ -651,21 +609,8 @@ export function useRealtime(
       const voz = useVoiceStore.getState();
       if (voz.channelId !== channelId || voz.deafened) return;
 
-      /*
-        Silenciar alguém tem que silenciar TUDO que vem dessa pessoa. O som do
-        painel não passa pela faixa de voz dela — é um áudio à parte, que o
-        navegador toca aqui —, então o silêncio local precisa ser conferido na
-        mão. Sem isso, quem você mutou continuava tocando som no seu ouvido.
-      */
       if (voz.silenciadosLocais[userId]) return;
 
-      /*
-        Quatro volumes se multiplicam, e cada um responde por uma coisa: o que
-        veio gravado no som (escolha de quem subiu, vale pro servidor
-        inteiro), o que você deu pra essa pessoa, o do painel e o de saída.
-        Antes só o primeiro contava — abaixar a saída não abaixava os sons, e
-        o balão ainda dizia que tocava no volume de saída.
-      */
       const { somDoPainel, volumeDoPainel, volumeSaida } =
         useVoicePrefs.getState();
       if (!somDoPainel) return;
@@ -720,13 +665,6 @@ export function useRealtime(
       })),
     );
     onUserUpdated(handleUserUpdated);
-    /*
-      Chamada no privado precisa AVISAR, não só atualizar a tela.
-
-      Num servidor, alguém entrar na voz é informação de fundo. No privado, é
-      alguém te ligando — e o evento chega pela sua sala de usuário mesmo que a
-      conversa esteja fechada, que é justamente quando o aviso importa.
-    */
     const aoEntrarNaVoz = (state: VoiceState) => {
       upsertVoiceState(state);
 
@@ -745,11 +683,6 @@ export function useRealtime(
 
       if (!tocar) return;
 
-      /*
-        Vira uma chamada tocando de verdade, com atender e recusar — o toast
-        de antes deixava atender mas não deixava dizer não, e quem ligava não
-        conseguia distinguir recusa de ausência.
-      */
       useChamadaStore.getState().receber({
         channelId: state.channelId,
         userId: state.userId,
@@ -757,17 +690,11 @@ export function useRealtime(
       });
     };
 
-    /*
-      A pessoa ligou e abriu a câmera logo depois de entrar — o que é o fluxo
-      normal do botão de vídeo, já que a câmera só liga com a sala conectada.
-      Sem isto, uma chamada de vídeo tocaria como se fosse de voz.
-    */
     const aoMudarNaVoz = (state: VoiceState) => {
       upsertVoiceState(state);
       useChamadaStore.getState().atualizarVideo(state.channelId, state.camera);
     };
 
-    /// Desligou antes de eu atender: para de tocar em vez de ficar até o teto.
     const aoSairDaVoz = (p: { channelId: string; userId: string }) => {
       removeVoiceState(p);
       useChamadaStore.getState().encerrar(p.channelId);
@@ -784,8 +711,6 @@ export function useRealtime(
         queryKeys.auth.me,
       ])?.id;
 
-      /// O evento vai para os dois lados da conversa; quem recusou não precisa
-      /// ser avisado de que recusou.
       if (!meuId || quemRecusou === meuId) return;
       if (useVoiceStore.getState().channelId !== channelId) return;
 
@@ -822,12 +747,6 @@ export function useRealtime(
         });
       }
 
-      /*
-        Enquanto estivemos fora, as mensagens que chegaram não vieram por
-        evento nenhum — ninguém estava ouvindo. Rejuntar o canal não busca o
-        que foi perdido, então a conversa aberta fica com um buraco até trocar
-        de canal. Só na RE-conexão: na primeira vez a própria tela já busca.
-      */
       if (caiuAntes && currentChannelId) {
         void queryClient.invalidateQueries({
           queryKey: queryKeys.channel.messages(currentChannelId),
@@ -843,8 +762,6 @@ export function useRealtime(
     socketInstance.on("disconnect", handleDisconnect);
     socketInstance.io.on("reconnect_attempt", handleTentativa);
 
-    /// O socket pode já estar de pé quando este efeito roda (troca de canal
-    /// remonta o hook): sem isto a barra diria "reconectando" pra sempre.
     if (socketInstance.connected) useConexaoStore.getState().conectou();
 
     return () => {

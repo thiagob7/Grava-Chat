@@ -21,23 +21,9 @@ interface MessageContentProps {
   emojis: GuildEmoji[];
   className?: string;
   mencoes?: ResolverMencoes;
-  /**
-   * Desenha as cercas como painel — com a lingua no alto e o botao de copiar.
-   * Fica desligado por padrao porque a busca, as favoritas e a citacao mostram
-   * a mensagem numa linha so: ali o painel estouraria o cartao, e o codigo vai
-   * em `<code>` mesmo, no meio do texto.
-   */
   blocos?: boolean;
 }
 
-/**
- * A pílula de menção.
- *
- * Três famílias, porque são três coisas diferentes: pessoa e
- * cargo em azul (ou na cor do cargo, quando ele tem uma), `@everyone` em roxo
- * e `@here` em âmbar. A borda fina é o que separa a pílula do texto sem
- * precisar de fundo forte.
- */
 const Pilula: React.FC<{
   children: React.ReactNode;
   cor?: string | null;
@@ -47,11 +33,6 @@ const Pilula: React.FC<{
   <span
     title={titulo}
     className="rounded px-1 py-px font-medium"
-    /*
-      Fundo tingido e nada de borda. A borda que estava aqui dava ar de botão —
-      no meio de uma frase, uma pílula com contorno parecia clicável e roubava
-      a linha inteira. O tom do fundo é o que basta pra dizer "isto é menção".
-    */
     style={
       cor
         ? { color: legivel(cor), backgroundColor: `${legivel(cor)}26` }
@@ -65,18 +46,6 @@ const Pilula: React.FC<{
   </span>
 );
 
-/*
-  Troca os emoji do texto pelo desenho do Twemoji.
-
-  Roda sobre os PEDAÇOS DE TEXTO que sobram depois do `enriquecer` — nunca sobre
-  o texto cru com marcação dentro. Assim ele não tem chance de encostar num
-  `:nome:` de emoji do servidor nem no miolo de uma menção, que já viraram
-  elementos antes de chegar aqui.
-
-  Volta o texto intacto quando não há emoji nenhum: a esmagadora maioria das
-  mensagens não tem, e devolver um vetor de um item só para cada linha de
-  conversa seria trabalho de React à toa.
-*/
 function comTwemoji(texto: string, chave: string): React.ReactNode[] {
   const achados = [...texto.matchAll(EMOJI)];
   if (!achados.length) return [texto];
@@ -167,7 +136,6 @@ function enriquecer(
   return partes;
 }
 
-/// Links, emojis e menções: o texto que sobra depois de tirar o código.
 function corrido(
   texto: string,
   porNome: Map<string, GuildEmoji>,
@@ -214,13 +182,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   mencoes,
   blocos = false,
 }) => {
-  /*
-    O `t` aqui é a inscrição, não o tradutor.
-
-    Quem traduz as pílulas de menção é o `i18next.t` lá dentro do `enriquecer`,
-    que não é componente e não tem hook. Sem esta linha, o texto delas só
-    trocaria de idioma quando a mensagem redesenhasse por outro motivo.
-  */
   useTranslation();
 
   const abrirImagem = useLightbox((s) => s.abrir);
@@ -241,8 +202,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
           alt=""
           loading="lazy"
           decoding="async"
-          /// `min()` porque o teto de 420px também tem que respeitar a coluna:
-          /// no painel estreito quem manda é o 100%.
           style={{ maxWidth: `min(${MAX_IMAGEM_W}px, 100%)`, maxHeight: MAX_IMAGEM_H }}
           className="block h-auto w-auto object-contain"
         />
@@ -261,9 +220,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
       return;
     }
 
-    /// `assim` no meio da frase, e a cerca quando o painel esta desligado:
-    /// nada de moldura, so a fonte e o fundo. A cerca perde as quebras porque
-    /// quem nao pediu painel mostra a mensagem numa linha so.
     if (pedaco.tipo === "linha" || !blocos) {
       const codigo =
         pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
@@ -280,8 +236,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
     partes.push(<BlocoDeCodigo key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
   });
 
-  /// `<div>` so quando ha painel: um bloco dentro do `<span>` da citacao (ou
-  /// de qualquer linha) fecharia o paragrafo a forca no navegador.
   if (temPainel) return <div className={className}>{partes}</div>;
 
   return <span className={className}>{partes}</span>;

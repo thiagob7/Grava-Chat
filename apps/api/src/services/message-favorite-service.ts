@@ -7,13 +7,6 @@ import { accessService } from "~/services/access-service.js";
 const LIMITE = 200;
 
 export const messageFavoriteService = {
-  /**
-   * As mensagens salvas, da mais recente para a mais antiga.
-   *
-   * Cada uma passa pelo controle de acesso do canal: sair de um servidor não
-   * apaga o que você favoritou lá, e a lista não pode virar uma porta dos
-   * fundos para ler o que você não pode mais ver.
-   */
   async listar(userId: string) {
     const salvas = await messageFavoriteRepository.findManyOf(userId, LIMITE);
 

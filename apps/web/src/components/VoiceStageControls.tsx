@@ -46,17 +46,8 @@ import { useConfiguracoes } from "~/stores/configuracoes";
 import { useVoicePrefs } from "~/stores/voice-prefs";
 import { useVoiceStore } from "~/stores/voice-store";
 
-/**
- * A barra de controles da chamada.
- *
- * Cada botão tem duas metades: o ícone, que faz a coisa, e a setinha, que abre
- * o que MUDA a coisa — trocar de microfone, de fone, de câmera. Antes era só a
- * primeira metade, e trocar de aparelho no meio de uma conversa obrigava a
- * abrir as configurações inteiras por cima da chamada.
- */
 export const VoiceStageControls: React.FC<{
   alvoTelaCheia?: React.RefObject<HTMLElement | null>;
-  /// só no privado, onde a conversa escrita divide a tela com a chamada
   mostrarChat?: boolean;
 }> = ({ alvoTelaCheia, mostrarChat }) => {
   const { t } = useTranslation();
@@ -81,26 +72,9 @@ export const VoiceStageControls: React.FC<{
   const prefs = useVoicePrefs();
   const { entradas, saidas, cameras } = useDispositivos();
 
-  /// A troca de saída depende do `setSinkId`, que nem todo navegador tem. Sem
-  /// ele a lista existiria só pra enganar: escolher não mudaria nada.
   const podeTrocarSaida =
     typeof HTMLMediaElement !== "undefined" && "setSinkId" in HTMLMediaElement.prototype;
 
-  /*
-    Quantos menus estão abertos agora.
-
-    A barra vive escondida e só aparece com o mouse em cima do palco
-    (`group-hover`). Um menu aberto, porém, mora num PORTAL: ele sobrevive ao
-    sumiço de quem o abriu. O resultado era a lista de dispositivos flutuando
-    sozinha no meio do preto, sem os botões embaixo — e ela sumia no caminho
-    entre o botão e a opção que a pessoa ia clicar.
-
-    `focus-within` não cobre isso: o conteúdo do menu está FORA desta árvore, no
-    portal, então o foco nunca está "dentro" daqui. Contar na mão é o que
-    funciona — e é contador, não booleano, porque fechar um menu enquanto outro
-    abre chega em ordem imprevisível, e um `false` atrasado apagaria a barra com
-    menu ainda aberto.
-  */
   const [menusAbertos, setMenusAbertos] = React.useState(0);
   const aoAlternarMenu = React.useCallback(
     (aberto: boolean) => setMenusAbertos((n) => Math.max(0, n + (aberto ? 1 : -1))),
@@ -117,13 +91,6 @@ export const VoiceStageControls: React.FC<{
           : "opacity-0 focus-within:opacity-100 group-hover:opacity-100",
       )}
     >
-      {/*
-        Chat à esquerda, volume e tela cheia à direita, controles no meio.
-
-        Os três grupos ficam na MESMA faixa: eles aparecem e somem juntos com o
-        mouse, e antes o de tela cheia morava no meio da pílula, disputando
-        espaço com o que se usa a toda hora.
-      */}
       <div className="flex flex-1 justify-start">
         {mostrarChat && (
         <Tooltip label={chatDaChamada ? "Esconder o chat" : "Mostrar o chat"}>
@@ -292,8 +259,6 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          {/* o monitor com X diz "clique pra PARAR"; a seta pra cima dizia o
-              contrário, e o botão parecia não ter feito nada */}
           {screenEnabled ? <MonitorX size={18} /> : <MonitorUp size={18} />}
         </Controle>
 
@@ -342,14 +307,6 @@ export const VoiceStageControls: React.FC<{
         </Tooltip>
       </div>
 
-      {/*
-        Estes dois são só o ícone, sem a cápsula escura.
-
-        A pílula do meio tem motivo pra existir: ela agrupa os controles da
-        chamada, que andam juntos. Aqui são dois botões soltos no canto — a
-        cápsula em volta deles não agrupava nada, só desenhava uma caixa a mais
-        sobre o vídeo. O realce é o ícone clareando, como nos cantos de cima.
-      */}
       <div className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
         <VolumeDaLive onOpenChange={aoAlternarMenu} />
 
@@ -367,21 +324,6 @@ export const VoiceStageControls: React.FC<{
   );
 };
 
-/**
- * O volume DA LIVE, no canto da barra do palco.
- *
- * Só existe enquanto você assiste a alguém — e isso não é economia de tela, é
- * o que o controle de fato alcança: o som da transmissão só toca para quem
- * está assistindo àquela transmissão (ver `VoiceAudioSink`). Fora daí não há
- * som de live no seu computador para subir ou baixar.
- *
- * Antes daqui saía o VOLUME GERAL, que multiplica a voz de todo mundo. Com o
- * vídeo de alguém ocupando a tela inteira atrás, era nele que se mirava para
- * abaixar o jogo do amigo — e o que se encontrava abaixava a mesa toda,
- * inclusive as vozes de quem estava falando com você. O volume geral continua
- * existindo, em Configurações › Áudio e vídeo, que é onde se procura por ele
- * quando o problema é "o Gravaê está alto demais".
- */
 const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
   onOpenChange,
 }) => {
@@ -416,10 +358,6 @@ const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
       <PopoverContent side="top" align="center" className="w-auto p-3">
         <PopoverArrow />
 
-        {/*
-          A faixa em pé, como no controle de volume de um vídeo: girada 90°,
-          com a caixa reservando a altura que a largura ocupa depois do giro.
-        */}
         <div className="flex h-32 w-6 items-center justify-center">
           <Slider
             min={0}
@@ -437,12 +375,6 @@ const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
   );
 };
 
-/**
- * Um controle com duas metades: o botão e a setinha do menu.
- *
- * A setinha é um alvo pequeno de propósito — quem quer mutar mira no ícone
- * grande, e só quem quer trocar de aparelho vai atrás dos 14px da ponta.
- */
 const Controle: React.FC<{
   children: React.ReactNode;
   label: string;
@@ -450,7 +382,6 @@ const Controle: React.FC<{
   onClick: () => void;
   ativo?: boolean;
   menu: React.ReactNode;
-  /// avisa a barra que há menu aberto, pra ela não sumir com o mouse
   onOpenChange?: (aberto: boolean) => void;
 }> = ({ children, label, labelDoMenu, onClick, ativo, menu, onOpenChange }) => (
   <div className="relative">
@@ -489,7 +420,6 @@ const Controle: React.FC<{
   </div>
 );
 
-/// A faixa dentro do menu: o número à direita do rótulo, como no resto do app.
 const FaixaDeVolume: React.FC<{
   rotulo: string;
   valor: number;

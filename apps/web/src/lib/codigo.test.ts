@@ -88,17 +88,6 @@ describe("rotuloDaLingua", () => {
   });
 });
 
-/*
-  ————————————————————————————————————————————————————————————————————————
-  Reconhecer código colado SEM cerca.
-
-  Esta tabela é a especificação do `pareceCodigo`, e não uma ilustração dele:
-  os pesos foram ajustados CONTRA ela, caso a caso. Os dois grupos têm o mesmo
-  peso, mas não o mesmo custo — deixar de reconhecer um trecho de Rust é um
-  bloco a menos, e reconhecer a lista de preços de alguém é a mensagem dela
-  desfigurada. Na dúvida, o erro barato.
-  ————————————————————————————————————————————————————————————————————————
-*/
 const CODIGO: Record<string, string> = {
   "o TypeScript do print": `import { cameraTimeline } from "@gravae/ai-analytics";
 

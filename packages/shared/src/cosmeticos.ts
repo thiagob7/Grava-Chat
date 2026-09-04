@@ -100,13 +100,6 @@ export const estiloDePerfilSchema = z.object({
   bannerCor: corHex.nullable().optional(),
   temaPrimario: corHex.nullable().optional(),
   temaSecundario: corHex.nullable().optional(),
-  /*
-    Teto de oito.
-
-    Não é limitação técnica: é que um perfil com vinte links deixa de ser
-    perfil e vira lista de links, e quem olha para de ler na terceira linha. O
-    teto obriga a escolher, que é o que faz a lista dizer alguma coisa.
-  */
   conexoes: z.array(conexaoSchema).max(8).optional(),
 });
 export type EstiloDePerfil = z.infer<typeof estiloDePerfilSchema>;
@@ -135,8 +128,6 @@ export const perfilPublicoSchema = z.object({
   moldura: z.enum(MOLDURAS).optional(),
   placa: z.enum(PLACAS).optional(),
   status: statusPersonalizadoSchema.nullable().optional(),
-  /// As contas de fora que a pessoa declara. Vão no perfil PÚBLICO porque é
-  /// justamente quem abre o perfil de outro que precisa vê-las.
   conexoes: z.array(conexaoSchema).optional(),
 });
 export type PerfilPublico = z.infer<typeof perfilPublicoSchema>;

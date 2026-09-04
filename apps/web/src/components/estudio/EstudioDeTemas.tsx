@@ -79,8 +79,6 @@ export const EstudioDeTemas: React.FC<{
         <DialogPrimitive.Content
           className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(900px,94vh)] w-[min(1320px,96vw)] overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
           aria-label="Estúdio de temas"
-          /// sem isto o primeiro item do trilho abre com o anel de foco aceso,
-          /// como se estivesse selecionado
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogPrimitive.Title className="sr-only">
@@ -107,7 +105,6 @@ export const EstudioDeTemas: React.FC<{
               ))}
             </div>
 
-            {/* Qual tema está por baixo do que você está mexendo. */}
             <p className="border-t border-line px-3 pt-3 text-xs text-ink-faint">
               {NOME_DO_TEMA[tema] ?? "Base"}
             </p>
@@ -137,14 +134,6 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
   const [soLigados, setSoLigados] = useState(false);
 
-  /*
-    Grupo fechado por padrão.
-
-    Com trinta e cinco tokens a lista aberta cabia na tela; com quase
-    quinhentos ela vira uma parede de rolagem em que nada se acha. Fechado, o
-    que aparece é o índice — vinte títulos com a contagem ao lado — e a busca
-    passa a ser o caminho normal até um token.
-  */
   const [abertos, setAbertos] = useState<Record<string, boolean>>({});
 
   const substituicoes = useEstudio((s) => s.substituicoes);
@@ -167,8 +156,6 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
     })).filter((grupo) => grupo.tokens.length > 0);
   }, [busca, soLigados]);
 
-  /// Procurar é dizer "me mostra"; manter os grupos fechados aí seria esconder
-  /// justamente o que a pessoa acabou de pedir.
   const buscando = Boolean(busca.trim());
 
   const quantas = Object.keys(substituicoes).length;
@@ -190,12 +177,6 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
           />
         </div>
 
-        {/*
-          O filtro existe porque a maioria dos tokens ainda não é lida por
-          componente nenhum: eles têm valor nos quatro temas, mas mexer neles
-          não muda a tela. Quem quer VER efeito liga isto e fica só com os que
-          pintam; quem quer conferir a lista inteira desliga.
-        */}
         <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-ink-muted">
           <Switch checked={soLigados} onCheckedChange={setSoLigados} />
           Só os que já pintam
@@ -278,29 +259,10 @@ const LinhaDeToken: React.FC<{
   const substituido = useEstudio((s) => s.substituicoes[token.nome]);
   const definir = useEstudio((s) => s.definirToken);
 
-  /// O valor do tema é lido do documento, e muda quando a base muda — daí o
-  /// `tema` na dependência.
   const doTema = useMemo(() => valorDoTema(token.nome), [token.nome, tema]);
 
-  /*
-    O valor do TEMA é placeholder; só a substituição é conteúdo.
-
-    Antes ele vinha preenchido no campo, e isso mentia duas vezes: parecia que
-    a pessoa tinha escrito aquilo, e dava pra apagar — deixando o campo vazio
-    como se o token não tivesse valor, quando o que existe é um padrão que não
-    se remove. Como placeholder, o padrão fica à vista, o campo nasce vazio, e
-    apagar o que você escreveu volta ao padrão em vez de virar nada.
-  */
   const valor = substituido ?? doTema;
 
-  /*
-    Antes quem dizia se dava pra escolher a cor era o `comoHex`, e ele só
-    aceitava `#rrggbb`: os vinte e três tokens escritos em `rgb(r g b / a)` —
-    as bordas, os fundos que dependem de transparência — nasciam com o quadrado
-    desligado e um aviso mandando editar no campo de texto. O seletor novo lê
-    qualquer cor que o CSS aceite e sabe escrever a opacidade de volta, então a
-    pergunta virou outra: dá pra LER esta cor? Se der, dá pra escolher.
-  */
   const legivel = lerCor(valor);
 
   return (
@@ -316,28 +278,6 @@ const LinhaDeToken: React.FC<{
                 ? "Escolher a cor"
                 : "Esta cor o seletor não sabe ler — edite no campo ao lado"
             }
-            /*
-              O xadrez por baixo da cor, e não só a cor.
-
-              Metade destes tokens é translúcida. Pintados sobre a linha da
-              lista, `rgb(255 255 255 / 0.05)` e `rgb(255 255 255 / 0.1)` davam
-              exatamente o mesmo quadradinho — dois tokens diferentes com a
-              mesma aparência. Com o xadrez atrás, a diferença aparece.
-
-              As duas coisas são CAMADAS DE FUNDO do mesmo elemento, e essa é a
-              parte que eu errei na primeira tentativa: o xadrez estava no botão
-              e a cor num `span` dentro dele. Aí não havia um quadrado, havia
-              dois — um de 28px com canto de 6px, outro de 26px com canto de
-              3px, porque o `span` mora dentro da borda. Sobrava um anel
-              xadrezado em volta da cor, pior nos cantos, onde os dois raios
-              divergem mais. E como a borda é branca a 10%, o xadrez ainda
-              aparecia ATRAVÉS dela.
-
-              Numa camada só existe um raio, uma borda e nenhum encontro pra
-              errar. A ordem é a do CSS: a primeira imagem fica por cima, então
-              a cor vem antes do xadrez. `background-color` não serviria — ele
-              pinta debaixo de toda imagem, e o xadrez taparia a cor.
-            */
             style={{
               backgroundImage: `linear-gradient(${valor}, ${valor}),
                 repeating-conic-gradient(rgb(255 255 255 / 0.14) 0 25%, transparent 0 50%)`,
@@ -363,11 +303,6 @@ const LinhaDeToken: React.FC<{
         <p className="flex items-center gap-2 truncate text-sm font-medium">
           <span className="truncate">{token.rotulo}</span>
 
-          {/*
-            Dizer que não pinta é o mínimo. Sem esta marca, mexer num token
-            destes é um seletor de cor que aceita o clique e não muda nada na
-            tela — e a conclusão de quem tenta é que o estúdio está quebrado.
-          */}
           {!token.ligado && (
             <span
               title="Este token existe e tem valor, mas nenhum componente lê ele ainda."
@@ -468,11 +403,6 @@ const AbaDeCss: React.FC = () => {
       </div>
 
       <div className="min-h-0 flex-1 p-4">
-        {/*
-          Textarea mesmo, não um editor de código: o que se escreve aqui são
-          dez linhas de CSS, e um editor completo custaria mais bytes de bundle
-          do que o app inteiro de mensagens.
-        */}
         <textarea
           value={css}
           onChange={(e) => definirCss(e.target.value)}
@@ -623,14 +553,6 @@ const AbaDaBiblioteca: React.FC = () => {
   );
 };
 
-/**
- * Os arquivos que o CSS personalizado pode usar.
- *
- * Sobem pro mesmo lugar dos anexos e voltam como endereço — o que se copia
- * daqui é `url("…")`, pronto pra colar no CSS rápido. Guardar a imagem dentro
- * do navegador seria mais simples, mas uma foto de fundo já estoura sozinha o
- * espaço que o estúdio inteiro tem pra salvar.
- */
 const AbaDeAtivos: React.FC = () => {
   const ativos = useEstudio((s) => s.ativos);
   const guardarAtivo = useEstudio((s) => s.guardarAtivo);
@@ -807,8 +729,6 @@ const AbaDeConfiguracoes: React.FC = () => {
   );
 };
 
-/// O navegador não deixa salvar arquivo sem um clique de verdade: por isso o
-/// link temporário em vez de uma chamada direta.
 function baixar(nome: string, conteudo: string, tipo: string) {
   const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
   const link = document.createElement("a");

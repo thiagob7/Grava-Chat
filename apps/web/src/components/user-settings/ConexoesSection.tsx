@@ -16,19 +16,8 @@ import { Input } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
 import { SecaoDeConfig as Secao } from "~/components/user-settings/SecaoDeConfig";
 
-/// O mesmo teto do schema. Repetido aqui de propósito: a tela precisa avisar
-/// ANTES de o servidor recusar, e o número é a coisa que ela precisa saber.
 const TETO = 8;
 
-/**
- * As contas de fora que aparecem no meu perfil.
- *
- * Elas são DECLARADAS, não verificadas — e a tela diz isso com todas as
- * letras. No Discord a conexão passa por OAuth com o serviço e por isso vale
- * como prova; aqui não passa por nada. Deixar essa diferença implícita seria
- * emprestar credibilidade que não existe: alguém confiaria num "@" que pode
- * não ser de quem diz ser.
- */
 export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
   user,
 }) => {
@@ -58,11 +47,6 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
         titulo="Conexões"
         detalhe="As contas de fora que aparecem no seu perfil, para quem abrir ele."
       >
-        {/*
-          O aviso vem antes da lista, e não em letra miúda no rodapé: ele muda
-          o que a lista SIGNIFICA para quem a lê, e quem chega aqui para
-          adicionar a primeira precisa saber disso antes de decidir.
-        */}
         <p className="mb-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Estas contas são{" "}
           <strong className="text-ink">declaradas por você</strong>, e o Gravaê
@@ -171,11 +155,6 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
           </div>
         )}
 
-        {/*
-          O erro aparece só depois que a pessoa escreveu alguma coisa: um aviso
-          vermelho num campo que ela ainda nem tocou é o app reclamando antes
-          de haver do que reclamar.
-        */}
         {valor.trim() && !enderecoDaConexao({ servico, valor }) && (
           <p className="mt-2 text-xs text-danger">
             {servico === "site"

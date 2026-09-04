@@ -7,10 +7,6 @@ describe("passouDoFluxo", () => {
     expect(passouDoFluxo(1)).toBe(false);
   });
 
-  /*
-    `usos` vem do INCR, então já conta a mensagem atual. Se a comparação fosse
-    `>=`, a décima seria barrada e o limite anunciado seria mentira: valeria 9.
-  */
   it("a mensagem que fecha o limite ainda passa", () => {
     expect(passouDoFluxo(LIMITE_POR_JANELA)).toBe(false);
   });
@@ -20,9 +16,7 @@ describe("passouDoFluxo", () => {
   });
 
   it("o teto fica bem acima de quem digita e bem abaixo de uma rajada", () => {
-    // uma pessoa manda ~1 a cada 2s, logo ~5 na janela de 10s
     expect(passouDoFluxo(5)).toBe(false);
-    // um laço solta dezenas por segundo
     expect(passouDoFluxo(200)).toBe(true);
   });
 

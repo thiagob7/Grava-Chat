@@ -22,7 +22,6 @@ interface CampoDeNomeDeCanalProps {
   onMudar: (valor: string) => void;
   fonte: FonteDeNome;
   onFonte: (fonte: FonteDeNome) => void;
-  /** No canal de texto o espaço vira hífen; no de voz e no fórum, não. */
   ehVoz: boolean;
   icone?: React.ReactNode;
   placeholder?: string;

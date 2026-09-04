@@ -9,9 +9,7 @@ export interface EmbedModel {
   imagem: string | null;
   favicon: string | null;
   autor: string | null;
-  /// endereço do tocador, quando o site tem um (YouTube e afins)
   player: string | null;
-  /// o `theme-color` do site, para a faixa da esquerda
   cor: string | null;
   largura: number | null;
   altura: number | null;

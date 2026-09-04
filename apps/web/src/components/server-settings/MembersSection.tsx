@@ -45,8 +45,6 @@ interface MembersSectionProps {
 
 type Ordem = "recentes" | "antigos" | "nome";
 
-/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
-/// resolveria antes de o idioma existir e ficaria congelada.
 const CASTIGOS = [
   { minutos: 5, chave: "servidor.membros.castigo5min" },
   { minutos: 60, chave: "servidor.membros.castigo1h" },
@@ -80,15 +78,6 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   const expulsar = async (member: GuildMember) => {
     const { confirmado } = await confirmar({
       titulo: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
-      /*
-        O nome em negrito, e o RESTO da frase numa chave só.
-
-        Ela tinha três pedaços em português — o nome, "sai de X na hora" e o
-        fecho — e cada idioma ordena isso do seu jeito. Traduzindo os pedaços
-        separados, metade das línguas remontaria a frase errada. Com o resto
-        inteiro numa chave, quem traduz recebe a frase completa; só o nome fica
-        de fora, no lugar onde ele começa.
-      */
       descricao: (
         <>
           <strong>{nomeDe(member)}</strong>{" "}

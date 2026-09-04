@@ -25,8 +25,6 @@ interface UserPanelProps {
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
   const [configurando, setConfigurando] = useState(false);
-  /// Pedido de abertura vindo de outro canto do app — o popover da supressão de
-  /// ruído, por exemplo, que quer cair direto na aba de voz.
   const secaoPedida = useConfiguracoes((s) => s.secao);
   const fecharPedido = useConfiguracoes((s) => s.fechar);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
@@ -34,16 +32,9 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   const { micEnabled, micBlocked, deafened, toggleMic, toggleDeafen } = useVoiceStore();
   const emChamada = useVoiceStore((v) => Boolean(v.channelId));
-  /// sem servidor por trás, a chamada é num privado — e ali há alguém do
-  /// outro lado, não um canal aberto o dia todo
   const emChamadaNoPrivado = useVoiceStore((v) => Boolean(v.channelId) && !v.guildId);
   const updateProfile = useUpdateProfile();
 
-  /*
-    Os seus cargos no servidor em que você está. Sai da mesma query que o resto
-    da tela já usa, então não custa requisição nenhuma — e o cartão de quem
-    clica em si mesmo passa a mostrar o que o cartão dos outros sempre mostrou.
-  */
   const { data: detalhe } = useFindGuild(guildId);
   const meusIds = detalhe?.members.find((m) => m.user.id === user.id)?.roleIds ?? [];
   const meusCargos = (detalhe?.roles ?? []).filter(
@@ -52,11 +43,6 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   return (
     <>
-      {/*
-        `cursor-pointer` na LINHA, não só nos botões: a faixa entre o nome e os
-        ícones é do botão do perfil (ele é `flex-1`), mas as sobras de padding
-        não eram de ninguém — e ali a seta voltava a ser de texto.
-      */}
       <div className="flex cursor-pointer items-center gap-1 px-1 py-1">
         <Popover>
           <PopoverTrigger asChild>
@@ -69,13 +55,6 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                 status={user.status}
                 enfeites={user.perfil}
               />
-              {/*
-                O grupo é o texto, não o botão inteiro: passar o mouse pelo
-                avatar ou pela sobra à direita não tem por que trocar a linha
-                de baixo. E as duas versões dela ficam empilhadas na mesma
-                célula da grade e rolam dentro de uma janelinha da altura da
-                linha: uma sai por cima enquanto a outra sobe no lugar.
-              */}
               <div className="group/eu min-w-0 flex-1">
                 <p className="truncate text-sm font-medium leading-tight">
                   <UserName nome={user.displayName} perfil={user.perfil} />
@@ -85,9 +64,6 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                   <span className="col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0">
                     {emChamada ? (
                       <span className="flex items-center gap-1 text-online">
-                        {/* "Em voz" e "Em uma chamada" descrevem coisas
-                            diferentes: uma é um canal de servidor aberto o dia
-                            todo, a outra é alguém do outro lado esperando você */}
                         {emChamadaNoPrivado ? (
                           <>
                             <Phone size={12} className="shrink-0" /> Em uma chamada

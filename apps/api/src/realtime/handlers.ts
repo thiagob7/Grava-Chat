@@ -79,11 +79,6 @@ export function registerHandlers(socket: GravaeSocket) {
     return { channelId };
   });
 
-  /*
-    O `except(socket.id)` mais o `socket.emit` com o `nonce` são o eco de
-    quem mandou: a tela dele já desenhou a mensagem e precisa do `nonce` para
-    reconhecer qual das suas era. O resto do canal recebe sem.
-  */
   on(socket, "message:send", async (payload) => {
     const message = await enviarMensagem(userId, payload, socket.id);
     socket.emit("message:created", { ...message, nonce: payload.nonce });
@@ -203,20 +198,8 @@ export function registerHandlers(socket: GravaeSocket) {
     const estado = await voiceService.get(userId);
     if (!estado) throw new AppError("Você não está numa chamada");
 
-    /*
-      A trava vem antes de tudo — inclusive antes de ir ao banco buscar o som.
-      Apertar o botão dez vezes seguidas mandava dez sons pra chamada inteira,
-      um por cima do outro; quem estava ouvindo não tinha defesa. O cliente
-      também trava o botão nesse tempo, mas isso é conforto: a garantia é aqui.
-    */
     if (esperandoParaTocar(userId)) throw new AppError("Espera um pouquinho antes do próximo som");
 
-    /*
-      Soundboard, moderação, expulsar e mover são poderes de SERVIDOR: existem
-      porque existem cargos e permissões atrás deles. No privado não há nem um
-      nem outro — e sem a trava, `requirePermission` receberia um `guildId`
-      nulo e quebraria com erro interno em vez de dizer o que houve.
-    */
     if (!estado.guildId) throw new AppError("O painel de sons só existe em servidor");
 
     const contexto = await accessService.requirePermission(
@@ -260,14 +243,6 @@ export function registerHandlers(socket: GravaeSocket) {
     return atualizado;
   });
 
-  /*
-    Recusar a chamada. Só existe no privado — num canal de voz de servidor não
-    há ninguém "chamando" você, o canal está lá o tempo todo.
-
-    O `requireChannelAccess` é o que garante que só quem participa da conversa
-    pode recusar: ele valida os `recipients` do canal de DM. Sem isso, qualquer
-    um com um id de canal derrubaria a chamada dos outros.
-  */
   on(socket, "voice:recusar", async ({ channelId }) => {
     const { channel } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.guildId) throw new AppError("Isso só existe numa chamada de privado");
@@ -311,14 +286,6 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 }
 
-/*
-  Quando cada pessoa tocou seu último som.
-
-  Na memória do processo, e não no Redis: são milissegundos, a API é uma só, e
-  perder isso num reinício custa um som a mais na chamada — não vale uma ida à
-  rede a cada clique. A limpeza é oportunista, pra tabela não crescer com quem
-  saiu faz tempo.
-*/
 const ultimoSom = new Map<string, number>();
 
 function esperandoParaTocar(userId: string): boolean {
@@ -342,29 +309,13 @@ async function announceLeave(guildId: string | null, channelId: string, userId: 
   io().to(destinos).emit("voice:left", { channelId, userId });
 }
 
-/// De quanto em quanto a varredura roda. Trinta segundos é curto o bastante
-/// pra ninguém reclamar do fantasma e longo o bastante pra ser uma chamada só
-/// ao SFU por meio minuto.
 const INTERVALO_DA_VARREDURA_MS = 30_000;
 
-/*
-  Vigia a divergência entre o Redis e o SFU, pra sempre.
-
-  A colheita do órfão cobre a desconexão limpa: o cliente se despede, o
-  `setTimeout` corre, tudo certo. Ela NÃO cobre o resto — aba morta sem aviso,
-  rede caindo, e principalmente a API reiniciando dentro da janela de 6s, que
-  leva o temporizador junto. Nesses casos a pessoa fica na chamada pra sempre.
-
-  Roda uma vez na subida de propósito: é ali que estão os fantasmas que o
-  processo anterior deixou pra trás.
-*/
 export function vigiarChamadasFantasma(aoErrar: (err: unknown) => void) {
   const varrer = () =>
     voiceService
       .reconciliar()
       .then(({ doRedis }) => {
-        /// Só os do Redis precisam de anúncio: quem foi expulso do SFU some da
-        /// tela sozinho, porque o LiveKit avisa os clientes da própria sala.
         for (const estado of doRedis) {
           void announceLeave(estado.guildId, estado.channelId, estado.userId);
         }

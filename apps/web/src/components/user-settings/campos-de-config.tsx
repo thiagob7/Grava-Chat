@@ -2,15 +2,6 @@ import React from "react";
 
 import { Switch } from "~/components/ui/switch";
 
-/*
-  As duas formas que uma preferência assume nas configurações.
-
-  Estavam dentro da tela de Aparência, e ficaram presas lá: quando o Bate-papo
-  virou tela própria, copiá-las seria garantir que uma das cópias envelhecesse
-  sozinha — o dia em que o espaçamento de uma mudasse, as telas ficariam
-  desalinhadas sem ninguém notar.
-*/
-
 export const Opcao: React.FC<{
   titulo: string;
   detalhe: string;

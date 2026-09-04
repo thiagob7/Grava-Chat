@@ -37,8 +37,6 @@ function alcancaOServidorDeVoz(voiceUrl: string | undefined): boolean {
 
 const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/// Teto da tela de abertura. Generoso de propósito: numa rede ruim, a primeira
-/// resposta demora — e cortar cedo mandaria pro login quem ia entrar bem.
 const TETO_DA_ABERTURA_MS = 20_000;
 
 async function restaurarSessao<U>(tentativas = 4): Promise<U | null> {
@@ -112,18 +110,6 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const value: SessionContextValue = {
     user: (me.data as SelfUserModel | undefined) ?? null,
-    /*
-      A tela de abertura tem hora pra acabar — a abertura INTEIRA.
-
-      O teto precisa cobrir os dois trechos da espera, e não só o segundo. A
-      restauração de sessão tenta quatro vezes antes de desistir; com um
-      servidor que aceita a conexão e não responde, cada tentativa vai até o
-      prazo do cliente HTTP, e a soma passa de dois minutos. Cobrindo só o
-      `me.isLoading`, o logotipo continuava sozinho no preto esse tempo todo.
-
-      Passado o teto, seguimos em frente: o app mostra o login, que já sabe
-      dizer que o servidor não responde e segue tentando por conta.
-    */
     isBooting: !demorouDemais && (isBooting || (hasSession && me.isLoading)),
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,

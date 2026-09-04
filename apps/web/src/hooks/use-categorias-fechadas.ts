@@ -4,20 +4,6 @@ import { useAparencia } from "~/stores/aparencia";
 
 const CHAVE = "gravae:categorias-fechadas";
 
-/**
- * Quais categorias da lista de canais estão fechadas — e se isso sobrevive.
- *
- * Antes era um `useState` puro: fechar uma categoria durava até a próxima
- * recarga, e aí tudo voltava aberto. Fechar uma categoria é uma decisão, e o
- * app refazê-la sozinho é o app esquecendo o que a pessoa acabou de dizer.
- *
- * Fica no aparelho, e não na conta, pelo mesmo motivo do tema: quem usa o app
- * no monitor grande e no notebook não quer a mesma lista fechada nos dois.
- *
- * Quem desliga a lembrança continua podendo fechar categoria — só não leva a
- * escolha para a próxima sessão. Por isso a leitura respeita a preferência e a
- * escrita também: desligar e continuar gravando seria guardar às escondidas.
- */
 export function useCategoriasFechadas(): [
   Record<string, boolean>,
   (proximo: Record<string, boolean>) => void,
@@ -27,12 +13,6 @@ export function useCategoriasFechadas(): [
     lembrar ? ler() : {},
   );
 
-  /*
-    Ligar a lembrança no meio da sessão traz de volta o que estava guardado;
-    desligar apaga. Sem apagar, o valor antigo ficaria no `localStorage`
-    esperando para ressuscitar no dia em que alguém religasse — uma memória que
-    a pessoa achava ter apagado.
-  */
   useEffect(() => {
     if (lembrar) {
       setFechadas(ler());
@@ -52,8 +32,6 @@ export function useCategoriasFechadas(): [
       if (!lembrar) return;
 
       try {
-        /// Só o que está FECHADO vai pro disco: guardar os `false` faria o
-        /// registro crescer com toda categoria que alguém já abriu.
         const fechadasSo = Object.fromEntries(
           Object.entries(proximo).filter(([, valor]) => valor),
         );

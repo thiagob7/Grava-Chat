@@ -6,37 +6,17 @@ import { Button } from "~/components/ui/button";
 import { FullProfileModal } from "~/components/FullProfileModal";
 import { idiomaAtual, useTranslation } from "~/traducao";
 
-/**
- * A coluna de perfil ao lado da conversa privada.
- *
- * Numa conversa de servidor você tem a lista de membros do lado; num privado
- * não há lista, e a única forma de lembrar com quem se está falando era o nome
- * no topo. Esta coluna ocupa esse espaço vazio com o que de fato ajuda: a
- * pessoa, o que temos em comum, e desde quando ela existe por aqui.
- *
- * Os dados vêm do mesmo `useFindProfile` que alimenta o cartão de perfil do
- * servidor — nada de rota nova.
- */
 export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => {
   const { t } = useTranslation();
   const { data: perfil, isLoading } = useFindProfile(userId);
   const [completo, setCompleto] = useState(false);
 
-  /*
-    Enquanto carrega, a coluna já existe com a largura final. Montá-la só depois
-    da resposta faria a conversa inteira pular para o lado quando o perfil
-    chegasse.
-  */
   if (isLoading || !perfil) {
     return <aside className="hidden w-64 shrink-0 border-l border-divisor bg-surface-1 lg:block" />;
   }
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col overflow-y-auto border-l border-divisor bg-surface-1 lg:flex">
-      {/*
-        A faixa de cor no topo é o banner do perfil quando existe. Sem ela o
-        avatar nasce colado no cabeçalho e a coluna parece um pedaço solto.
-      */}
       <div
         className="h-16 shrink-0 bg-surface-3"
         style={perfil.perfil?.bannerCor ? { backgroundColor: perfil.perfil.bannerCor } : undefined}
@@ -76,10 +56,6 @@ export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => 
             </dd>
           </div>
 
-          {/*
-            Zero em comum não vira linha: "0 amigos em comum" é uma informação
-            que só ocupa espaço pra dizer que não há informação.
-          */}
           {perfil.mutualFriends > 0 && (
             <div className="text-ink-muted">
               {perfil.mutualFriends} {perfil.mutualFriends === 1 ? "amigo" : "amigos"} em comum

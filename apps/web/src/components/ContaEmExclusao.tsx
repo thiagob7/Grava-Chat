@@ -10,24 +10,10 @@ interface ContaEmExclusaoProps {
   onSair: () => void;
 }
 
-/// Dias inteiros que faltam, arredondando pra cima: faltando algumas horas,
-/// "0 dias" assustaria mais do que informaria.
 function diasQueFaltam(iso: string): number {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000));
 }
 
-/*
-  A tela de quem pediu para excluir a conta.
-
-  Ela existe para que voltar seja uma DECISÃO, e não um acidente. Sem esta
-  parada, entrar de novo devolveria a pessoa direto à conversa como se nada
-  tivesse acontecido — e ela só descobriria que a exclusão foi cancelada
-  quando o prazo passasse sem nada acontecer.
-
-  O texto insiste que nada foi apagado porque é a única coisa que a pessoa
-  precisa saber para decidir sem medo. "Excluída" costuma significar "perdi
-  tudo"; aqui não significa, e dizer isso é obrigação de quem prometeu prazo.
-*/
 export const ContaEmExclusao: React.FC<ContaEmExclusaoProps> = ({ user, onSair }) => {
   const recuperar = useCancelarExclusao();
   const dias = user.excluirEm ? diasQueFaltam(user.excluirEm) : 0;

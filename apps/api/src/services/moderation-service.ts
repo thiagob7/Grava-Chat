@@ -66,8 +66,6 @@ export const moderationService = {
         new Date(Date.now() - input.apagarHoras * 3600_000),
       );
 
-      /// Expurgo de banimento é onde mais arquivo some de uma vez — e era onde
-      /// mais ficava no bucket. Sem `await`: limpeza não segura o banimento.
       void uploadService.remover(orfaos);
     }
 

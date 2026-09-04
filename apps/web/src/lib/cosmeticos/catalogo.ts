@@ -110,15 +110,4 @@ export const ESTILOS_DO_CARGO: Opcao<EstiloDeCargo>[] = catalogar(ESTILOS_DE_CAR
 
 export const VAZIOS = new Set<string>(["nenhum", "nenhuma", "solido", "padrao"]);
 
-/*
-  Desligadas por enquanto: a moldura do cartao, o efeito do perfil e a placa do
-  nome ficaram estranhos no cartao. O catalogo e o CSS continuam de pe — pra
-  religar, tire do conjunto e devolva a grade em EnfeitesAba (e, no caso da
-  moldura e do efeito, no menu do ProfileEditorModal).
-
-  Desligar AQUI, e nao so esconder a grade, e o que importa: o
-  `classeDoEnfeite` consulta este conjunto, entao quem ja tinha escolhido uma
-  placa para de ve-la no cartao tambem. Esconder so a grade deixaria a escolha
-  antiga pintando a tela sem nenhum lugar pra desfaze-la.
-*/
 export const FAMILIAS_DESLIGADAS = new Set<string>(["moldura", "perfil", "placa"]);

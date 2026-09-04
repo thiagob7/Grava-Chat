@@ -18,14 +18,6 @@ import { useAparencia } from "~/stores/aparencia";
 export const AcessibilidadeSection: React.FC = () => {
   const prefs = useAparencia();
 
-  /*
-    O que o SISTEMA já pede.
-
-    Quem ligou "reduzir movimento" no macOS ou no Windows já vinha atendido
-    pelo CSS, e dizer isso muda o que o interruptor significa: ele não está
-    desligado, está redundante. Sem essa linha, a pessoa desliga aqui achando
-    que voltou a ter animação, e nada muda.
-  */
   const sistemaPede =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -94,11 +86,6 @@ export const AcessibilidadeSection: React.FC = () => {
           />
         </div>
 
-        {/*
-          A lista dos atalhos existe porque eles não aparecem em lugar nenhum
-          da tela. Um atalho que ninguém descobre é um atalho que não existe, e
-          documentá-lo aqui custa menos que espalhar dica por toda a interface.
-        */}
         <div className="mt-5 overflow-hidden rounded-lg border border-line">
           {ATALHOS.map((atalho) => (
             <div
@@ -117,8 +104,6 @@ export const AcessibilidadeSection: React.FC = () => {
   );
 };
 
-/// O que já responde ao teclado hoje. Cresce quando um atalho novo nascer —
-/// e é aqui que se descobre que um atalho prometido nunca foi ligado.
 const ATALHOS = [
   { o_que: "Enviar a mensagem", teclas: "Enter" },
   { o_que: "Quebrar linha sem enviar", teclas: "Shift + Enter" },
@@ -127,24 +112,10 @@ const ATALHOS = [
   { o_que: "Falar enquanto segura", teclas: "a tecla do push-to-talk" },
 ];
 
-/*
-  A leitura em voz alta, e as três perguntas que ela faz.
-
-  Modo primeiro porque é o que decide se o resto importa: com "nunca", voz e
-  velocidade são enfeite. Por isso os dois só aparecem depois que alguém liga.
-*/
 const TextoEmVoz: React.FC = () => {
   const prefs = useAparencia();
   const [vozes, setVozes] = useState<SpeechSynthesisVoice[]>([]);
 
-  /*
-    A lista de vozes chega DEPOIS.
-
-    O Chrome devolve `[]` na primeira chamada e só preenche quando termina de
-    carregar as vozes do sistema, avisando por `voiceschanged`. Ler uma vez na
-    montagem dá uma caixa de seleção vazia em metade das aberturas — e o bug
-    parece "não tenho voz instalada", que é outra coisa.
-  */
   useEffect(() => {
     if (!daPraFalar()) return;
 
@@ -155,7 +126,6 @@ const TextoEmVoz: React.FC = () => {
 
     return () => {
       window.speechSynthesis.removeEventListener("voiceschanged", atualizar);
-      /// Sair da tela com a voz falando deixaria o teste ecoando pelo app.
       calar();
     };
   }, []);
@@ -270,11 +240,6 @@ const TextoEmVoz: React.FC = () => {
             />
           </div>
 
-          {/*
-            O botão de teste não é conforto: voz e velocidade só se julgam
-            ouvindo, e sem ele a única forma de conferir é esperar alguém
-            mandar mensagem.
-          */}
           <Button
             variant="surface"
             size="sm"

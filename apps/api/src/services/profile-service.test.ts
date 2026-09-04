@@ -47,8 +47,6 @@ const dono = (mostraServidores: boolean, mostraAmigos: boolean) => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  /// Há servidor em comum, então o perfil é visível — a visibilidade do perfil
-  /// e a das abas são portas diferentes, e esta está aberta.
   findBetween.mockResolvedValue(null);
   guildIdsInCommon.mockResolvedValue(["g1"]);
   friendIdsInCommon.mockResolvedValue(["a1"]);
@@ -66,11 +64,6 @@ describe("abas de em comum", () => {
     expect(guildsByIds).toHaveBeenCalledWith(["g1"]);
   });
 
-  /*
-    Esconder tem que acontecer ANTES da resposta sair. Devolver a lista e pedir
-    para o cliente não desenhar entrega tudo a quem olha a rede — foi o mesmo
-    erro do bloqueio aparecendo dos dois lados.
-  */
   it("nem busca os amigos em comum quando o dono escondeu", async () => {
     findById.mockResolvedValue(dono(true, false));
 
@@ -89,7 +82,6 @@ describe("abas de em comum", () => {
     expect(saida.servidores).toEqual([]);
   });
 
-  /// Os dois interruptores são independentes: fechar a rotina não fecha a rede.
   it("fecha uma sem fechar a outra", async () => {
     findById.mockResolvedValue(dono(false, true));
 

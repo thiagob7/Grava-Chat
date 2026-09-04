@@ -30,7 +30,6 @@ export const LIMITS = {
   emojisPorServidor: 50,
   figurinhasPorServidor: 5,
   sonsPorServidor: 8,
-  /// espera entre dois sons do painel da MESMA pessoa
   somEsperaMs: 1500,
   figurinhaBytes: 512 * 1024,
   somBytes: 512 * 1024,

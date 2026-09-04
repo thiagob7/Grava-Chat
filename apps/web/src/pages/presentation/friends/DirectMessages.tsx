@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { Menu } from "lucide-react";
-/// mesmo conjunto do cabeçalho do canal — Phosphor, variante cheia
 import { At, Phone, PhoneSlash, User, VideoCamera } from "@phosphor-icons/react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
@@ -70,26 +69,11 @@ export const DirectMessages: React.FC = () => {
   const telaEstreita = useTelaEstreita();
   const [menuAberto, setMenuAberto] = useState(false);
 
-  /*
-    Uma vez por abertura do app, e não uma vez pra sempre: sem servidor, o
-    convite ainda é a coisa mais útil a oferecer. Guardado em estado, e não no
-    armazenamento, porque "não quero agora" não é "não quero nunca" — e
-    perguntar de novo amanhã custa um X.
-  */
   const { data: guildsDaConta = [], isSuccess: guildsCarregadas } = useFindManyGuilds(true);
   const [dispensado, setDispensado] = useState(false);
   const convidando = guildsCarregadas && guildsDaConta.length === 0 && !dispensado;
-  /// a coluna de perfil abre por padrão, como no Discord
   const [perfilAberto, setPerfilAberto] = useState(true);
 
-  /*
-    A chamada no privado roda no PRÓPRIO canal da conversa.
-
-    Não existe um canal de voz separado por trás — o servidor aceita emitir
-    token de voz para um canal de DM justamente pra não precisar criar (e
-    depois limpar) um canal fantasma por conversa. Daí `channelId` da chamada
-    ser o mesmo id da conversa aberta.
-  */
   const canalEmChamada = useVoiceStore((s) => s.channelId);
   const entrarNaChamada = useVoiceStore((s) => s.join);
   const sairDaChamada = useVoiceStore((s) => s.leave);
@@ -98,25 +82,10 @@ export const DirectMessages: React.FC = () => {
   const chatDaChamada = useVoiceStore((s) => s.chatDaChamada);
   const emChamadaAqui = Boolean(channelId) && canalEmChamada === channelId;
 
-  /*
-    Sozinho na sala de um privado é o telefone tocando do outro lado. Enquanto
-    isso, mostrar a grade vazia com o seu próprio quadro não diz nada — quem
-    ligou quer saber se a pessoa vai atender, e quer poder desistir.
-  */
   const naSala = useVoiceStore((s) => s.tiles.length);
-  /// assistindo a uma transmissão, a área precisa de altura; com só rostos, não
   const assistindo = useVoiceStore((s) => Boolean(s.assistindo));
   const chamando = emChamadaAqui && estaChamando({ guildId: null, quantosNaSala: naSala });
 
-  /*
-    Ficar sozinho DEPOIS que alguém entrou é o fim da chamada, não uma nova.
-
-    Sem isto, quem desligava por último deixava o outro lado numa tela de
-    "Chamando…" que tocava a cada três segundos pra sempre — e, pior, o outro
-    continuava dentro da sala, então o telefone voltava a tocar pra quem já
-    tinha desligado. O prazo curto existe pra sobreviver a uma reconexão: cair
-    a rede por um segundo não pode encerrar a conversa.
-  */
   const alguemEntrou = useRef(false);
 
   useEffect(() => {
@@ -142,11 +111,6 @@ export const DirectMessages: React.FC = () => {
     return () => clearTimeout(prazo);
   }, [emChamadaAqui, naSala, sairDaChamada]);
 
-  /*
-    Ligar com vídeo é a MESMA chamada, com a câmera já aberta — e não um tipo
-    diferente de ligação. Discord mostra os dois botões porque a intenção de
-    quem clica é diferente; por baixo, os dois entram na mesma sala.
-  */
   const ligarComVideo = async (id: string) => {
     if (!emChamadaAqui) await entrarNaChamada(id);
     if (!useVoiceStore.getState().cameraEnabled) await ligarCamera();
@@ -179,22 +143,8 @@ export const DirectMessages: React.FC = () => {
 
   return (
     <div className="flex h-full bg-surface-0">
-      {/*
-        `bg-surface-0` só se vê na curva do painel de canais: todo o resto
-        está coberto pelo trilho, pelo painel e pela conversa. É a cor do
-        trilho, pra que a mordida no canto pareça o trilho continuando — sem
-        isto apareceria o fundo do `body`, que é `surface-2` e é mais CLARO
-        que os dois vizinhos.
-      */}
-      {/*
-        Quem ainda não tem servidor nenhum recebe o convite pra criar o
-        primeiro — uma vez por abertura do app, e fechável. Fechou, fica só a
-        tela de amigos e conversas, que é o que a pessoa veio ver.
-      */}
       <PrimeiroServidor aberto={convidando} onFechar={() => setDispensado(true)} />
 
-      {/* Mesma navegação nos dois tamanhos: no fluxo em telas largas, dentro de
-          uma gaveta no celular. Ver o comentário equivalente em Chat.tsx. */}
       {telaEstreita ? (
         <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
           <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
@@ -206,23 +156,8 @@ export const DirectMessages: React.FC = () => {
         navegacao
       )}
 
-      {/*
-        O cabeçalho por CIMA da coluna de perfil, como no Discord — e como
-        na tela de servidor, que fez a mesma mudança junto. O nome de quem
-        está do outro lado vale para a coluna inteira, e não só para a
-        conversa: com o cabeçalho parando na borda, ele e o topo do perfil
-        liam como dois cabeçalhos de coisas diferentes na mesma altura.
-      */}
       {conversa ? (
         <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-          {/*
-            A cor é do cabeçalho agora, e não herdada.
-
-            Ela vinha do `bg-surface-2` do `<main>`, de quem ele era filho.
-            Fora dali ele ficaria transparente e mostraria o fundo da página,
-            que é o do trilho — mais escuro. Quem sai de dentro de um pai
-            colorido leva a cor junto.
-          */}
           <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
             {telaEstreita && (
               <button
@@ -236,8 +171,6 @@ export const DirectMessages: React.FC = () => {
             <At weight="bold" size={20} className="text-ink-faint" />
             <h2 className="font-semibold">{conversa.user.displayName}</h2>
 
-            {/* na chamada, o estado substitui o @usuário: ali o que importa é
-                o que está acontecendo, não como a pessoa se chama */}
             {emChamadaAqui ? (
               <span className="flex items-center gap-1.5 text-sm text-online">
                 <Phone size={13} weight="fill" /> Em uma chamada
@@ -283,10 +216,6 @@ export const DirectMessages: React.FC = () => {
                 </button>
               </Tooltip>
 
-              {/*
-                No privado qualquer um dos dois pode fixar — o serviço só exige
-                permissão quando existe servidor por trás, e aqui não existe.
-              */}
               <PinnedMessagesPanel channelId={conversa.id} canManage />
 
               <Tooltip label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
@@ -305,7 +234,6 @@ export const DirectMessages: React.FC = () => {
                 </button>
               </Tooltip>
 
-              {/* Fecham a fileira, como no canal: valem pro app, não pra conversa. */}
               <BotaoDoAplicativo />
               <CaixaDeEntrada />
             </div>
@@ -314,31 +242,8 @@ export const DirectMessages: React.FC = () => {
           <div className="flex min-h-0 flex-1">
             <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
-          {/*
-            A chamada fica ACIMA da conversa, e não no lugar dela: o combinado
-            no privado é falar e continuar mandando link, print e recado no meio
-            — trocar a tela obrigaria a escolher entre as duas coisas.
-          */}
-          {/*
-            A altura muda com o que está na área, porque as duas coisas pedem
-            proporções opostas.
-
-            Uma fileira de rostos cabe em 224px de sobra, e cada pixel a mais
-            seria pixel roubado da conversa. Um VÍDEO na mesma faixa fica ridículo:
-            a área tem a largura toda da janela, e `object-contain` num retângulo
-            de 6:1 encaixa pela altura — um 16:9 vira uma tira de 364px no meio de
-            duas tarjas pretas enormes.
-
-            `max-h-[50vh]` porque em janela baixa 384px seria metade da tela.
-            `overflow-hidden` porque altura fixa sem recorte já vazou uma vez hoje.
-          */}
           {emChamadaAqui && (
             <div
-              /*
-                Sem a conversa escrita, a chamada fica com a tela toda — que é
-                o que se quer quando alguém está mostrando a tela e ninguém
-                está escrevendo. O botão que liga isso vive no proprio palco.
-              */
               className={cn(
                 "flex flex-col overflow-hidden border-b border-divisor",
                 chatDaChamada
@@ -390,11 +295,6 @@ export const DirectMessages: React.FC = () => {
           )}
             </main>
 
-        {/*
-          A coluna de perfil fica FORA do `main` e não dentro: dentro, ela
-          dividiria a altura com a lista de mensagens e o campo de escrever,
-          em vez de ficar do lado deles.
-        */}
             {perfilAberto && <PainelDePerfilDoDm userId={conversa.user.id} />}
           </div>
         </div>
@@ -408,16 +308,8 @@ export const DirectMessages: React.FC = () => {
   );
 };
 
-/// A cada quanto o "tuut" de espera se repete, pra soar como telefone.
 const INTERVALO_DA_ESPERA_MS = 3_000;
 
-/**
- * O que quem liga vê enquanto ninguém atendeu.
- *
- * Sem isto, quem ligava via a grade da chamada com um quadro só — o próprio —
- * e nada indicando que havia alguém sendo chamado. Não dava pra distinguir
- * "estou ligando" de "entrei sozinho num canal vazio".
- */
 const Chamando: React.FC<{
   nome: string;
   userId: string;

@@ -24,14 +24,6 @@ export const AcceptInvite: React.FC = () => {
     if (result) navigate(`/channels/${result.guildId}`, { replace: true });
   };
 
-  /*
-    Página aberta no navegador oferece o desvio para o aplicativo.
-
-    O navegador não tem como saber se o Gravaê está instalado — perguntar ao
-    sistema por um `gravae://` sem ninguém do outro lado só rende uma caixa de
-    erro. Então é um botão, não um desvio automático: quem tem o app clica,
-    quem não tem continua na aba e nem repara.
-  */
   const abrirNoApp = () => {
     if (code) window.location.href = `gravae://invite/${code}`;
   };

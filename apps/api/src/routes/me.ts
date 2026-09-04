@@ -49,17 +49,8 @@ export async function meRoutes(app: FastifyInstance) {
 
   app.get("/me/read-states", (req) => messageService.readStates(req.userId));
 
-  /// Quem está em voz em todos os meus servidores — o trilho usa pra dizer,
-  /// na dica de cada servidor, quem está em chamada lá dentro.
   app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
 
-  /*
-    Os aparelhos conectados.
-
-    Ficam sob `/me` e não sob `/auth` porque, pra quem usa, isto é "a minha
-    conta" e não "autenticação" — e o cookie de refresh, que identifica o
-    aparelho de quem pergunta, chega igual nos dois.
-  */
   app.get("/me/sessoes", (req) =>
     authService.listarSessoes(req.userId, req.cookies[REFRESH_COOKIE]),
   );
@@ -71,13 +62,6 @@ export async function meRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  /*
-    As aplicações que têm acesso à conta pelo OAuth.
-
-    Vizinhas dos aparelhos porque respondem à mesma pergunta — "quem está
-    dentro da minha conta agora?" —, só que do lado de fora: aparelho é a
-    pessoa, aplicação é um programa de terceiro agindo em nome dela.
-  */
   app.get("/me/aplicativos", (req) => oauthService.listarAutorizadas(req.userId));
 
   app.delete("/me/aplicativos/:botId", async (req) => {
@@ -87,21 +71,12 @@ export async function meRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  /*
-    Exclusão da conta, em duas rotas e nenhuma delas apaga nada.
-
-    `POST` marca e derruba as sessões; `DELETE` desmarca. O prazo de
-    arrependimento existe justamente para que "excluir" não seja um botão de
-    ida sem volta apertado numa noite ruim.
-  */
   app.post("/me/exclusao", (req) => meService.pedirExclusao(req.userId));
   app.delete("/me/exclusao", async (req) => {
     await meService.cancelarExclusao(req.userId);
     return { ok: true };
   });
 
-  /// Tudo o que a conta guarda, num JSON. O nome do arquivo sai no cabeçalho
-  /// pra quem baixar não receber um "download" sem extensão.
   app.get("/me/exportar", async (req, reply) => {
     const dados = await meService.exportar(req.userId);
     const dia = new Date().toISOString().slice(0, 10);
@@ -112,6 +87,5 @@ export async function meRoutes(app: FastifyInstance) {
       .send(dados);
   });
 
-  /// A aba de menções da caixa de entrada.
   app.get("/me/mentions", (req) => messageService.mentions(req.userId));
 }

@@ -47,14 +47,8 @@ if (!app.requestSingleInstanceLock()) {
     registrarAvisos();
     janela = criarJanela();
 
-    /*
-      Depois da janela existir: o estado da atualização é empurrado pra ela, e
-      empurrar pra ninguém seria conversar com a parede.
-    */
     registrarAtualizacao(() => janela);
 
-    /// No Windows e no Linux o link de abertura chega pela linha de comando,
-    /// e nao pelo `open-url` do macOS.
     const linkDeAbertura = process.argv.find((arg) => arg.startsWith("gravae://"));
     if (linkDeAbertura) links.abrir(linkDeAbertura);
 

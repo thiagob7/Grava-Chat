@@ -17,7 +17,6 @@ interface UserNameProps {
   fundo?: string;
   className?: string;
   title?: string;
-  /// conta de bot: ganha o selo "APP" ao lado do nome, como no Discord
   ehBot?: boolean;
 }
 
@@ -47,11 +46,6 @@ export const UserName: React.FC<UserNameProps> = ({
 
   if (!ehBot) return escrito;
 
-  /*
-    O selo fica FORA do span do nome porque o nome pode ter enfeite —
-    gradiente, neon, fonte própria. Herdar isso deixaria o "APP" ilegível, e
-    ele existe justamente para ser lido de relance.
-  */
   return (
     <span className="inline-flex items-center gap-1.5">
       {escrito}

@@ -30,13 +30,6 @@ interface AutoModSectionProps {
   roles: Role[];
 }
 
-/*
-  A lista guarda a CHAVE, não a frase.
-
-  Ela é uma constante de módulo: se chamasse `t()` aqui, a tradução seria
-  resolvida uma vez, na hora de carregar o arquivo — antes de o idioma estar
-  pronto, e congelada para sempre depois. Quem desenha é que traduz.
-*/
 const GATILHOS = [
   {
     valor: "WORDS" as const,
@@ -61,8 +54,6 @@ const GATILHOS = [
 const novaRegra = (
   trigger: AutoModRuleModel["trigger"],
 ): Omit<AutoModRuleModel, "id" | "guildId"> => ({
-  /// O nome da regra é gravado no banco: aqui a frase precisa existir de
-  /// verdade, e `i18next.t` resolve no idioma de quem clicou.
   name: i18next.t(GATILHOS.find((g) => g.valor === trigger)!.titulo),
   enabled: true,
   trigger,

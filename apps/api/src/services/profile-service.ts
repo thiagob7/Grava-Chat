@@ -63,17 +63,6 @@ export const profileService = {
     };
   },
 
-  /**
-   * Quem e o que os dois têm em comum — as listas, não só a contagem.
-   *
-   * Rota separada da do perfil de propósito: o cartão abre com a contagem, que
-   * já vem do `view`, e só vai atrás dos nomes e dos ícones quando a pessoa
-   * clica na aba. Carregar tudo junto seria pagar duas buscas a mais em toda
-   * abertura de perfil pra mostrar algo que quase ninguém abre.
-   *
-   * Vale a mesma regra de visibilidade do perfil: sem amizade e sem servidor
-   * em comum, o usuário "não existe" pra quem está olhando.
-   */
   async emComum(viewerId: string, userId: string) {
     if (viewerId === userId) return { amigos: [], servidores: [] };
 
@@ -84,18 +73,6 @@ export const profileService = {
 
     if (relacao === null && guildIds.length === 0) throw new NotFoundError("Usuário não encontrado");
 
-    /*
-      O dono do perfil decide o que a aba mostra.
-
-      A checagem é aqui, e não na tela: se o servidor devolvesse a lista e
-      pedisse pro cliente não desenhar, quem olhasse a resposta da rede veria
-      tudo — que é o mesmo que não esconder nada. Já foi assim com o bloqueio,
-      e o remendo é o mesmo: quem esconde, esconde no servidor.
-
-      As duas listas são perguntas diferentes. A de servidores desenha a
-      rotina de alguém; a de amigos, a rede. Quem fecha uma raramente quer
-      fechar a outra, então são dois interruptores e não um.
-    */
     const dono = await userRepository.findById(userId);
 
     const amigoIds = dono?.mostraAmigosEmComum

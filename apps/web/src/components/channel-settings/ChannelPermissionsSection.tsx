@@ -24,13 +24,6 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
   return (
   <div className="max-w-3xl pb-10">
     <h2 className="text-xl font-semibold">{t("servidor.cargos.abaPermissoes")}</h2>
-    {/*
-      Uma chave só, sem o negrito no "neste canal".
-
-      Era uma frase partida por um `<strong>` no meio, e frase partida não se
-      traduz aos pedaços — cada idioma põe as partes noutra ordem. Perde-se o
-      grifo; a frase certa em 34 idiomas vale mais.
-    */}
     <p className="mt-1 text-sm text-ink-muted">{t("servidor.canal.permissoesDescricao")}</p>
 
     <div className="mt-6">

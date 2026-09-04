@@ -2,7 +2,6 @@ import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma.js";
 
 export const guildRepository = {
-  /// Vários servidores pelo id, para resolver nome e ícone em lote.
   findManyByIds(ids: string[]) {
     if (!ids.length) return Promise.resolve([]);
 
@@ -118,9 +117,6 @@ export const memberRepository = {
     );
   },
 
-  /// Onde a pessoa está, com que cargos e desde quando. O `joinedAt` é o piso
-  /// das menções em canal nunca aberto: o que foi dito antes de ela chegar no
-  /// servidor não é menção dela por ler.
   membershipsOf(userId: string) {
     return prisma.guildMember.findMany({
       where: { userId },
@@ -202,8 +198,6 @@ export const categoryRepository = {
 };
 
 export const channelRepository = {
-  /// Vários canais de uma vez, pelo id. O "ativo agora" precisa resolver nome
-  /// de canal para amigos espalhados por servidores diferentes.
   findManyByIds(ids: string[]) {
     if (!ids.length) return Promise.resolve([]);
 
@@ -214,8 +208,6 @@ export const channelRepository = {
     return prisma.channel.findUnique({ where: { id } });
   },
 
-  /// De que servidor é cada canal. A barra de servidores precisa disso para
-  /// somar os não-lidos de quem não está aberto.
   guildIdsOf(channelIds: string[]) {
     if (!channelIds.length) return Promise.resolve([]);
 
@@ -229,8 +221,6 @@ export const channelRepository = {
     return prisma.channel.findMany({ where: { guildId }, orderBy: { position: "asc" } });
   },
 
-  /// Os canais de voz de vários servidores de uma vez. O trilho precisa saber
-  /// quem está em chamada em TODOS eles, e não um servidor por consulta.
   voiceChannelsOfGuilds(guildIds: string[]) {
     if (!guildIds.length) return Promise.resolve([]);
 
@@ -240,8 +230,6 @@ export const channelRepository = {
     });
   },
 
-  /// Todos os canais de um punhado de servidores. A caixa de entrada precisa
-  /// disso pra saber onde procurar menção sem varrer o banco inteiro.
   idsByGuilds(guildIds: string[]) {
     if (!guildIds.length) return Promise.resolve([]);
 

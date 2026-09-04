@@ -9,17 +9,9 @@ interface ControleDeEscalaProps {
   min: number;
   max: number;
   passo: number;
-  /// os valores que ganham marca embaixo da régua
   marcas: number[];
 }
 
-/*
-  Uma régua de porcentagem com marcas e um botão de voltar ao padrão.
-
-  O botão não é enfeite: quem arrasta a régua até uma tela ilegível não
-  consegue mais ler o próprio controle pra desfazer. Ele fica sempre no mesmo
-  lugar e sempre com o mesmo alvo, e é a saída de emergência.
-*/
 export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
   valor,
   onMudar,

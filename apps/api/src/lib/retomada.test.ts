@@ -46,8 +46,6 @@ describe("ehOutraAba", () => {
     ).toBe(false);
   });
 
-  /// Sem identidade dos dois lados, sobra o critério antigo — é o que mantém
-  /// cliente velho funcionando como funcionava.
   it("sem identidade, decide pelo órfão como antes", () => {
     expect(
       ehOutraAba({ retomando: true, anterior: { ...base, clienteId: null }, canalPedido: "c1", cliente: null }),

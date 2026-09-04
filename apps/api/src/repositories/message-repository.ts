@@ -12,16 +12,6 @@ export const messageInclude = {
 } satisfies Prisma.MessageInclude;
 
 export const messageRepository = {
-  /**
-   * As menções recentes a alguém, dentro dos canais que a pessoa pode ver.
-   *
-   * `mentions` guarda os ids citados na mensagem, e é por ele que a busca
-   * anda — não pelo texto. Assim `<@id>` escrito à mão, menção vinda de bot e
-   * resposta com aviso caem todas aqui, sem depender de como o texto ficou.
-   *
-   * Sete dias e cinquenta itens: a caixa de entrada é o que aconteceu agora,
-   * não um arquivo. O que passou disso vive na busca.
-   */
   findMentions(userId: string, channelIds: string[], desde: Date) {
     return prisma.message.findMany({
       where: {
@@ -41,8 +31,6 @@ export const messageRepository = {
     return prisma.message.findUnique({ where: { id } });
   },
 
-  /// A mensagem imediatamente anterior no canal. O id do Mongo cresce com o
-  /// tempo, que é o mesmo critério da paginação de mensagens.
   findPreviousIn(channelId: string, messageId: string) {
     return prisma.message.findFirst({
       where: { channelId, deletedAt: null, id: { lt: messageId } },
@@ -68,14 +56,6 @@ export const messageRepository = {
     });
   },
 
-  /**
-   * A busca.
-   *
-   * `contains` sem índice de texto: com o tamanho de conversa que este app
-   * tem, o Mongo varre e devolve rápido, e um índice de texto traria a briga
-   * de idioma (radicais em português) para dentro de algo que ninguém pediu.
-   * Se um dia doer, é aqui que entra o `$text`.
-   */
   buscar(params: {
     channelIds: string[];
     termo: string;
@@ -128,14 +108,6 @@ export const messageRepository = {
     return prisma.message.update({ where: { id }, data: { deletedAt: new Date() } });
   },
 
-  /**
-   * Apaga em massa o que a pessoa mandou desde `desde`, e devolve as CHAVES dos
-   * anexos que ficaram órfãos.
-   *
-   * O `updateMany` não devolve os documentos que tocou, então os anexos são
-   * lidos ANTES. Sem esse passo o banimento com expurgo — que é justamente o
-   * caso de muito arquivo de uma vez — deixaria tudo no bucket pra sempre.
-   */
   async softDeleteRecentByAuthor(guildId: string, authorId: string, desde: Date) {
     const canais = await prisma.channel.findMany({ where: { guildId }, select: { id: true } });
 
@@ -181,9 +153,6 @@ export const reactionRepository = {
     });
   },
 
-  /// Reagir de novo com o mesmo emoji, agora como super, promove a reação que
-  /// já estava lá — a chave única impediria uma segunda linha, e sem o update
-  /// o clique simplesmente não faria nada.
   add(messageId: string, userId: string, emoji: string, burst = false) {
     return prisma.reaction
       .upsert({
@@ -201,15 +170,6 @@ export const reactionRepository = {
   },
 };
 
-/*
-  O menor ObjectId de um instante.
-
-  Os quatro primeiros bytes do `_id` do Mongo são o segundo em que o documento
-  nasceu; o resto só desempata. Então "mensagem escrita depois de tal hora" se
-  pergunta comparando o próprio `id` com um ObjectId de máquina e contador
-  zerados — sem índice novo em `createdAt`, que num Atlas M0 custa espaço que
-  não sobra.
-*/
 const idNoInstante = (quando: Date) =>
   Math.floor(quando.getTime() / 1000)
     .toString(16)
@@ -241,15 +201,6 @@ export const readStateRepository = {
     });
   },
 
-  /**
-   * As menções em vários canais de uma vez, a partir de um instante.
-   *
-   * Um `findMany` para o servidor inteiro, e não um `count` por canal: a data
-   * de entrada é a mesma para todos os canais do mesmo servidor, e menção é
-   * coisa rara — o que volta são poucas linhas, contadas aqui em memória. Com
-   * um `count` por canal seriam dezenas de idas ao banco a cada abertura do
-   * app, e nenhuma delas devolveria nada na esmagadora maioria das vezes.
-   */
   async mentionsSince(
     channelIds: string[],
     desde: Date,
@@ -280,20 +231,6 @@ export const readStateRepository = {
     return porCanal;
   },
 
-  /*
-    Marcar como lido acontece em rajada: abrir vários canais, um bot despejando
-    mensagens, duas janelas do mesmo usuário abertas.
-
-    O `upsert` do Prisma no Mongo é leitura-e-escrita dentro de uma TRANSAÇÃO,
-    e transações concorrentes no mesmo documento colidem — o servidor devolve
-    P2034 e aquilo chegava na tela como "Erro inesperado" em série. Repetir não
-    resolveu: com rajada, a repetição colide de novo.
-
-    O `update` nativo do Mongo com `upsert: true` é atômico e não abre
-    transação nenhuma: o índice único de (userId, channelId) garante um
-    documento só, e a última escrita vence. É exatamente a semântica que
-    "marcar como lido" quer.
-  */
   async markRead(userId: string, channelId: string, messageId: string | null) {
     const oid = (v: string) => ({ $oid: v });
 
@@ -308,7 +245,6 @@ export const readStateRepository = {
               mentionCount: 0,
               updatedAt: { $date: new Date().toISOString() },
             },
-            /// Só entra na criação; num documento que já existe, o Mongo ignora.
             $setOnInsert: { userId: oid(userId), channelId: oid(channelId) },
           },
           upsert: true,

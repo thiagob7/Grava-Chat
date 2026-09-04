@@ -76,12 +76,6 @@ const SONS = {
     { hz: 740, em: 0.05, dura: 0.09 },
   ],
 
-  /*
-    Os dois avisos do chat.
-
-    A mensagem é uma nota curta e discreta; a menção sobe duas, porque ela
-    precisa se destacar do resto do dia sem parecer alarme de incêndio.
-  */
   mensagem: [{ hz: 587.33, em: 0, dura: 0.07 }],
   mencao: [
     { hz: 659.25, em: 0, dura: 0.07 },
@@ -98,17 +92,6 @@ const SONS = {
     { hz: 392, em: 0.06, dura: 0.14 },
   ],
 
-  /*
-    O telefone tocando, dos dois lados.
-
-    `chamando` é o que QUEM LIGA ouve: duas notas iguais e espaçadas, o
-    equivalente ao "tuut… tuut" de espera. `tocando` é o que quem RECEBE ouve
-    — sobe em vez de repetir, porque precisa chamar atenção de alguém que não
-    estava esperando nada.
-
-    Os dois são repetidos por quem os toca, não aqui: um som que se repete
-    sozinho não teria como parar quando a chamada é atendida.
-  */
   chamando: [
     { hz: 440, em: 0, dura: 0.18 },
     { hz: 440, em: 0.28, dura: 0.18 },
@@ -127,42 +110,17 @@ const SONS = {
 
 export type SomDaInterface = keyof typeof SONS;
 
-/// Os nomes que o app sabe tocar. Exportado para o catálogo poder ser
-/// conferido contra a fonte, em vez de contra um número escrito à mão.
 export const NOMES_DOS_SONS = Object.keys(SONS) as SomDaInterface[];
 
-/*
-  Sons gravados.
-
-  Todo o resto deste arquivo é oscilador: nota, duração, pronto. Um arquivo é
-  outra coisa — precisa viajar pela rede, ser decodificado e só então tocar. O
-  nome que estiver aqui ganha o arquivo e ignora as notas de `SONS`, que ficam
-  como estavam: se o arquivo não chegar, o som simplesmente não sai, e é melhor
-  silêncio do que um bipe no lugar de uma marca sonora.
-*/
 const GRAVADOS: Partial<Record<SomDaInterface, string>> = {
   mensagem: notificacaoUrl,
 };
 
-/*
-  Gravado precisa do seu próprio volume. O `VOLUME` de cima é o pico de uma
-  senoide pura; o arquivo é banda cheia e chega quase no talo (pico em -2,8 dB),
-  então o mesmo número daria dois sons de altura bem diferente. Este é o único
-  lugar pra mexer se ficar alto ou baixo demais.
-*/
 const VOLUME_GRAVADO = 0.45;
 
 const bytes = new Map<string, Promise<ArrayBuffer | null>>();
 const decodificados = new Map<string, AudioBuffer>();
 
-/*
-  Baixa uma vez e guarda a promessa, não o resultado: duas mensagens chegando
-  juntas na primeira vez pediriam dois downloads do mesmo arquivo.
-
-  Roda no carregamento do módulo, e de propósito. Deixar pra buscar no primeiro
-  aviso faria justamente o primeiro aviso — o único que a pessoa não está
-  esperando — chegar mudo ou atrasado.
-*/
 function baixar(url: string): Promise<ArrayBuffer | null> {
   let pendente = bytes.get(url);
 
@@ -202,11 +160,6 @@ function tocarGravado(url: string, volume: number) {
   void baixar(url).then(async (dados) => {
     if (!dados) return;
 
-    /*
-      `slice(0)` porque `decodeAudioData` CONSOME o ArrayBuffer que recebe —
-      ele fica com zero bytes depois. Passando o original, a segunda mensagem
-      encontraria um buffer vazio e nunca mais sairia som.
-    */
     const buffer = await audio.decodeAudioData(dados.slice(0)).catch(() => null);
     if (!buffer) return;
 
@@ -218,22 +171,9 @@ function tocarGravado(url: string, volume: number) {
 export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?: boolean } = {}) {
   if (opcoes.mudo) return;
 
-  /*
-    O modo streamer cala tudo aqui, num lugar só.
-
-    Espalhar a checagem por quem toca (voz, mensagem, menção) daria no mesmo
-    até alguém acrescentar um som novo e esquecer — e o esquecimento aparece
-    ao vivo, na transmissão de alguém.
-  */
   const { modoStreamer, streamerSemSom } = prefsDeAparencia();
   if (modoStreamer && streamerSemSom) return;
 
-  /*
-    Sons desligados um a um, e a checagem mora AQUI pelo mesmo motivo do modo
-    streamer: este é o portão único por onde os treze passam. Espalhada por
-    quem toca, ela seria esquecida no próximo som novo — e o esquecimento só
-    apareceria pra quem tinha desligado, que é justo quem mais se incomoda.
-  */
   if (useAvisos.getState().sonsDesligados[nome]) return;
 
   const gravado = GRAVADOS[nome];
@@ -253,16 +193,6 @@ export interface GrupoDeSons {
   sons: SomDoCatalogo[];
 }
 
-/*
-  Os sons com nome de gente, pra tela de Notificações.
-
-  `SONS` é indexado por identificador — "desensurdecer" não diz nada a quem
-  está decidindo o que quer ouvir. Aqui cada um ganha nome e, principalmente,
-  QUANDO toca: a pergunta real de quem abre essa lista não é "o que é este
-  som", é "quando é que ele me interrompe".
-
-  Um teste garante que os dois lados não divirjam.
-*/
 export const GRUPOS_DE_SONS: GrupoDeSons[] = [
   {
     titulo: "Conversa",

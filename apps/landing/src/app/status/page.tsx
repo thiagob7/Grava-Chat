@@ -23,15 +23,6 @@ export default function StatusDaPlataforma() {
 
         <PainelDeStatus />
 
-        {/*
-          Dito com todas as letras porque muda como se lê a página.
-
-          Uma barra cinza não é uma queda: é um dia em que ninguém mediu, porque
-          a máquina que mede é a mesma que está sendo medida. Sem esta frase, o
-          cinza seria lido como "vermelho claro" — e a página estaria mentindo
-          para baixo em vez de para cima, que é o erro mais fácil de cometer
-          numa página de status feita em casa.
-        */}
         <p className="mx-auto mt-12 max-w-md text-center text-xs leading-relaxed text-ink-faint">
           As medições são feitas de minuto em minuto pela própria API. Dia em
           cinza é dia sem medição — não é queda: é ausência de registro, quase

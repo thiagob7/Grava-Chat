@@ -15,8 +15,6 @@ const MAX_W = MAX_IMAGEM_W;
 const MAX_H = MAX_IMAGEM_H;
 
 export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ attachments }) => {
-  /// Desligado, a foto vira a mesma linha de arquivo dos outros anexos — ela
-  /// continua ali, a um clique, só não ocupa a conversa.
   const abrirImagens = useAparencia((s) => s.imagensEnviadas);
 
   if (!attachments.length) return null;
@@ -75,14 +73,6 @@ const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
         }
       : null;
 
-  /*
-    A largura em pixels é um TETO, não uma medida.
-
-    Antes ela era fixa: numa coluna de 280px — o painel da voz — a foto de
-    420px passava por baixo da lista e sumia meio corpo. Agora a caixa é
-    `max-w-full` e a altura vem da proporção, então a mesma imagem encolhe
-    inteira em vez de ser cortada.
-  */
   return (
     <button
       onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
