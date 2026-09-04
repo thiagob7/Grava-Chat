@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Server settings",
   auditoria: {
+    todasAsAcoes: "All actions",
+    todosOsUsuarios: "All users",
+    filtroMembros: "Members",
+    filtroCanais: "Channels",
+    filtroEmojis: "Emojis",
+    filtroServidor: "Server",
     titulo: "Audit log",
     porUsuario: "Filter by user",
     porAcao: "Filter by action",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "This can't be undone.",
   },
   emblemas: {
+    apagarDescricao: "It comes off whoever is wearing it. This can't be undone.",
     titulo: "Badges",
     vazio: "No badges yet.",
     novo: "New badge",
   },
   convites: {
+    revogarTitulo: "Revoke invite?",
+    revogarAcao: "Revoke",
+    revogarDescricao: "The link {{codigo}} stops working right away. Whoever already joined through it stays on the server.",
     titulo: "Invites",
     descricao: "Every active invite link for this server.",
     vazio: "No invites created yet.",
     revogar: "Revoke invite",
   },
   integracoes: {
+    opcionais: "username and avatar_url are optional and apply per message. The limit is 5 messages every 5 seconds.",
+    apagarDescricao: "The URL stops working right away. The messages it already sent stay in the channel.",
     titulo: "Integrations",
     descricao: "A webhook is an address that posts to a channel without needing an account. Handy for announcing when a build passes, when someone opens a ticket, or whatever you want to send from a script.",
     novo: "New webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Send a POST with JSON. The format is the same as Discord's, so a script that already exists out there works unchanged:",
   },
   engajamento: {
+    semCanal: "No system channel",
     titulo: "Engagement",
     descricao: "What the server does on its own so it doesn't feel empty when someone new arrives.",
     sistema: "System messages",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Apply timeout",
     duracao: "Duration in minutes",
     informeDuracao: "Enter the duration in minutes.",
+  },
+  abas: {
+    expressoes: "Expressions",
+    pessoas: "People",
+    apps: "Apps",
+    moderacao: "Moderation",
+    banimentos: "Bans",
   },
 };

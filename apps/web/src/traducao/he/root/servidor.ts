@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "הגדרות השרת",
   auditoria: {
+    todasAsAcoes: "כל הפעולות",
+    todosOsUsuarios: "כל המשתמשים",
+    filtroMembros: "חברים",
+    filtroCanais: "ערוצים",
+    filtroEmojis: "אימוג׳ים",
+    filtroServidor: "שרת",
     titulo: "יומן הפעולות",
     porUsuario: "סינון לפי אדם",
     porAcao: "סינון לפי פעולה",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "אי אפשר לבטל את זה.",
   },
   emblemas: {
+    apagarDescricao: "הוא יורד מכל מי שעונד אותו. אי אפשר לבטל.",
     titulo: "תגים",
     vazio: "עדיין אין תגים.",
     novo: "תג חדש",
   },
   convites: {
+    revogarTitulo: "לבטל את ההזמנה?",
+    revogarAcao: "ביטול",
+    revogarDescricao: "הקישור {{codigo}} מפסיק לעבוד מיד. מי שכבר נכנס דרכו נשאר בשרת.",
     titulo: "הזמנות",
     descricao: "כל קישורי ההזמנה הפעילים של השרת הזה.",
     vazio: "עדיין לא נוצרה שום הזמנה.",
     revogar: "ביטול ההזמנה",
   },
   integracoes: {
+    opcionais: "‏username ו-avatar_url אינם חובה ותקפים לכל הודעה. המגבלה היא 5 הודעות כל 5 שניות.",
+    apagarDescricao: "הכתובת מפסיקה לעבוד מיד. ההודעות שכבר נשלחו נשארות בערוץ.",
     titulo: "אינטגרציות",
     descricao: "וובהוק הוא כתובת שמפרסמת בערוץ בלי צורך בחשבון. שימושי כדי להודיע שבנייה עברה, שמישהו פתח פנייה, או כל מה שתרצה לשלוח מסקריפט.",
     novo: "וובהוק חדש",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "שלח POST עם JSON. הפורמט זהה לזה של Discord, כך שסקריפט שכבר קיים עובד בלי שינוי:",
   },
   engajamento: {
+    semCanal: "אין ערוץ מערכת",
     titulo: "מעורבות",
     descricao: "מה שהשרת עושה לבד כדי לא להיראות ריק כשמגיע מישהו חדש.",
     sistema: "הודעות מערכת",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "החלת ההשתקה",
     duracao: "משך בדקות",
     informeDuracao: "ציין את המשך בדקות.",
+  },
+  abas: {
+    expressoes: "ביטויים",
+    pessoas: "אנשים",
+    apps: "אפליקציות",
+    moderacao: "ניהול",
+    banimentos: "חסימות",
   },
 };

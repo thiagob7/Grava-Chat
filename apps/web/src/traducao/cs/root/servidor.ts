@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Nastavení serveru",
   auditoria: {
+    todasAsAcoes: "Všechny akce",
+    todosOsUsuarios: "Všichni uživatelé",
+    filtroMembros: "Členové",
+    filtroCanais: "Kanály",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Server",
     titulo: "Záznam akcí",
     porUsuario: "Filtrovat podle člověka",
     porAcao: "Filtrovat podle akce",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Tohle nejde vzít zpět.",
   },
   emblemas: {
+    apagarDescricao: "Zmizí každému, kdo ho nosí. Nejde to vrátit.",
     titulo: "Odznaky",
     vazio: "Zatím žádné odznaky.",
     novo: "Nový odznak",
   },
   convites: {
+    revogarTitulo: "Zrušit pozvánku?",
+    revogarAcao: "Zrušit",
+    revogarDescricao: "Odkaz {{codigo}} okamžitě přestane fungovat. Kdo přes něj už přišel, na serveru zůstává.",
     titulo: "Pozvánky",
     descricao: "Všechny aktivní pozvánkové odkazy tohoto serveru.",
     vazio: "Zatím nebyla vytvořena žádná pozvánka.",
     revogar: "Zrušit pozvánku",
   },
   integracoes: {
+    opcionais: "username a avatar_url jsou nepovinné a platí na zprávu. Limit je 5 zpráv za 5 sekund.",
+    apagarDescricao: "URL okamžitě přestane fungovat. Zprávy, které už poslal, v kanálu zůstávají.",
     titulo: "Integrace",
     descricao: "Webhook je adresa, která píše do kanálu bez potřeby účtu. Hodí se oznámit, že build prošel, že někdo otevřel ticket, nebo cokoli chceš poslat ze skriptu.",
     novo: "Nový webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Pošli POST s JSON. Formát je stejný jako u Discordu, takže skript, který už někde existuje, funguje beze změny:",
   },
   engajamento: {
+    semCanal: "Bez systémového kanálu",
     titulo: "Zapojení",
     descricao: "Co server dělá sám, aby nepůsobil prázdně, když přijde někdo nový.",
     sistema: "Systémové zprávy",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Použít umlčení",
     duracao: "Délka v minutách",
     informeDuracao: "Zadej délku v minutách.",
+  },
+  abas: {
+    expressoes: "Výrazy",
+    pessoas: "Lidé",
+    apps: "Aplikace",
+    moderacao: "Moderace",
+    banimentos: "Bany",
   },
 };

@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Serverinnstillinger",
   auditoria: {
+    todasAsAcoes: "Alle handlinger",
+    todosOsUsuarios: "Alle brukere",
+    filtroMembros: "Medlemmer",
+    filtroCanais: "Kanaler",
+    filtroEmojis: "Emojier",
+    filtroServidor: "Server",
     titulo: "Hendelseslogg",
     porUsuario: "Filtrer på person",
     porAcao: "Filtrer på handling",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Dette kan ikke angres.",
   },
   emblemas: {
+    apagarDescricao: "Det forsvinner fra alle som bruker det. Dette kan ikke angres.",
     titulo: "Merker",
     vazio: "Ingen merker ennå.",
     novo: "Nytt merke",
   },
   convites: {
+    revogarTitulo: "Trekke tilbake invitasjonen?",
+    revogarAcao: "Trekk tilbake",
+    revogarDescricao: "Lenken {{codigo}} slutter å virke med en gang. Den som allerede ble med via den blir værende på serveren.",
     titulo: "Invitasjoner",
     descricao: "Alle aktive invitasjonslenker for denne serveren.",
     vazio: "Ingen invitasjon er laget ennå.",
     revogar: "Trekk tilbake invitasjon",
   },
   integracoes: {
+    opcionais: "username og avatar_url er valgfrie og gjelder per melding. Grensen er 5 meldinger hvert 5. sekund.",
+    apagarDescricao: "URL-en slutter å virke med en gang. Meldingene den allerede sendte blir stående i kanalen.",
     titulo: "Integrasjoner",
     descricao: "En webhook er en adresse som poster i en kanal uten å trenge konto. Nyttig for å melde at et bygg gikk gjennom, at noen åpnet en sak, eller hva du nå vil sende fra et skript.",
     novo: "Ny webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Send en POST med JSON. Formatet er det samme som Discords, så et skript som allerede finnes virker uendret:",
   },
   engajamento: {
+    semCanal: "Ingen systemkanal",
     titulo: "Engasjement",
     descricao: "Hva serveren gjør av seg selv så den ikke virker tom når noen ny kommer.",
     sistema: "Systemmeldinger",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Bruk utestengelsen",
     duracao: "Varighet i minutter",
     informeDuracao: "Oppgi varigheten i minutter.",
+  },
+  abas: {
+    expressoes: "Uttrykk",
+    pessoas: "Folk",
+    apps: "Apper",
+    moderacao: "Moderering",
+    banimentos: "Utestengelser",
   },
 };

@@ -73,7 +73,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
             valor={canal}
             onEscolher={setCanal}
             opcoes={[
-              { valor: "", rotulo: "Sem canal de sistema" },
+              { valor: "", rotulo: t("servidor.engajamento.semCanal") },
               ...canaisDeTexto.map((c) => ({
                 valor: c.id,
                 rotulo: `#${c.name}`,

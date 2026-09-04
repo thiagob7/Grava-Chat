@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Serverinställningar",
   auditoria: {
+    todasAsAcoes: "Alla åtgärder",
+    todosOsUsuarios: "Alla användare",
+    filtroMembros: "Medlemmar",
+    filtroCanais: "Kanaler",
+    filtroEmojis: "Emojier",
+    filtroServidor: "Server",
     titulo: "Händelselogg",
     porUsuario: "Filtrera på person",
     porAcao: "Filtrera på åtgärd",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Det här går inte att ångra.",
   },
   emblemas: {
+    apagarDescricao: "Det försvinner från alla som bär det. Det går inte att ångra.",
     titulo: "Märken",
     vazio: "Inga märken än.",
     novo: "Nytt märke",
   },
   convites: {
+    revogarTitulo: "Återkalla inbjudan?",
+    revogarAcao: "Återkalla",
+    revogarDescricao: "Länken {{codigo}} slutar fungera direkt. Den som redan gått med via den stannar på servern.",
     titulo: "Inbjudningar",
     descricao: "Alla aktiva inbjudningslänkar för den här servern.",
     vazio: "Ingen inbjudan har skapats än.",
     revogar: "Återkalla inbjudan",
   },
   integracoes: {
+    opcionais: "username och avatar_url är valfria och gäller per meddelande. Gränsen är 5 meddelanden var femte sekund.",
+    apagarDescricao: "URL:en slutar fungera direkt. Meddelandena den redan skickat står kvar i kanalen.",
     titulo: "Integrationer",
     descricao: "En webhook är en adress som postar i en kanal utan att behöva ett konto. Bra för att meddela att ett bygge gick igenom, att någon öppnat ett ärende, eller vad du nu vill skicka från ett skript.",
     novo: "Ny webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Skicka en POST med JSON. Formatet är detsamma som Discords, så ett skript som redan finns fungerar oförändrat:",
   },
   engajamento: {
+    semCanal: "Ingen systemkanal",
     titulo: "Engagemang",
     descricao: "Vad servern gör på egen hand så att den inte känns tom när någon ny kommer.",
     sistema: "Systemmeddelanden",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Tillämpa tystnad",
     duracao: "Längd i minuter",
     informeDuracao: "Ange längden i minuter.",
+  },
+  abas: {
+    expressoes: "Uttryck",
+    pessoas: "Personer",
+    apps: "Appar",
+    moderacao: "Moderering",
+    banimentos: "Bannlysningar",
   },
 };

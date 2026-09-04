@@ -14,13 +14,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 type Aba = "nao-lidas" | "salvas" | "mencoes";
 
+/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
+/// resolveria antes de o idioma existir e ficaria congelada.
 const ABAS: { id: Aba; rotulo: string; icone: React.ReactNode }[] = [
-  { id: "nao-lidas", rotulo: "Não lidas", icone: <Bell size={16} weight="fill" /> },
-  { id: "salvas", rotulo: "Salvas", icone: <BookmarkSimple size={16} weight="fill" /> },
-  { id: "mencoes", rotulo: "Menções", icone: <At size={16} weight="bold" /> },
+  { id: "nao-lidas", rotulo: "conversa.entrada.naoLidas", icone: <Bell size={16} weight="fill" /> },
+  { id: "salvas", rotulo: "conversa.entrada.salvas", icone: <BookmarkSimple size={16} weight="fill" /> },
+  { id: "mencoes", rotulo: "conversa.entrada.mencoes", icone: <At size={16} weight="bold" /> },
 ];
 
 /**
@@ -35,6 +38,7 @@ const ABAS: { id: Aba; rotulo: string; icone: React.ReactNode }[] = [
  * Cada aba só busca quando é aberta.
  */
 export const CaixaDeEntrada: React.FC = () => {
+  const { t } = useTranslation();
   const [aberta, setAberta] = useState(false);
   const [aba, setAba] = useState<Aba>("nao-lidas");
 
@@ -44,8 +48,8 @@ export const CaixaDeEntrada: React.FC = () => {
   return (
     <Popover open={aberta} onOpenChange={setAberta}>
       <PopoverTrigger asChild>
-        <button aria-label="Caixa de entrada" className="relative text-ink-muted transition hover:text-ink">
-          <Tooltip label="Caixa de entrada">
+        <button aria-label={t("conversa.entrada.titulo")} className="relative text-ink-muted transition hover:text-ink">
+          <Tooltip label={t("conversa.entrada.titulo")}>
             <Tray size={20} weight="fill" />
           </Tooltip>
 
@@ -104,14 +108,15 @@ const NaoLidas: React.FC<{
   estados: { channelId: string; guildId: string | null; channelName?: string | null; unreadCount: number; mentionCount: number }[];
   onIr: () => void;
 }> = ({ estados, onIr }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (!estados.length) {
     return (
       <Vazio
         icone={<Confetti size={40} />}
-        titulo="Você chegou ao fim"
-        detalhe="Não há nada por ler. Quando chegar mensagem nova, ela aparece aqui."
+        titulo={t("conversa.entrada.fimTitulo")}
+        detalhe={t("conversa.entrada.fimDetalhe")}
       />
     );
   }
@@ -149,17 +154,18 @@ const NaoLidas: React.FC<{
 };
 
 const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
+  const { t } = useTranslation();
   const { data: favoritas = [], isLoading } = useFavoriteMessages(ativo);
   const alternar = useToggleFavoriteMessage();
 
-  if (isLoading) return <p className="p-6 text-center text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p className="p-6 text-center text-sm text-ink-faint">{t("comum.carregando")}</p>;
 
   if (!favoritas.length) {
     return (
       <Vazio
         icone={<BookmarkSimple size={40} />}
-        titulo="Nenhum item salvo"
-        detalhe="Segure Shift e clique no marcador de uma mensagem para guardá-la e ver depois."
+        titulo={t("conversa.entrada.semSalvosTitulo")}
+        detalhe={t("conversa.entrada.semSalvosDetalhe")}
       />
     );
   }
@@ -194,7 +200,7 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
 
           <button
             onClick={() => alternar.mutate({ messageId: mensagem.id, favorita: true })}
-            aria-label="Tirar dos salvos"
+            aria-label={t("conversa.entrada.tirarDosSalvos")}
             className="h-fit rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100"
           >
             <BookmarkSimple size={16} weight="fill" className="text-danger" />
@@ -206,17 +212,18 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
 };
 
 const Mencoes: React.FC<{ ativo: boolean; onIr: () => void }> = ({ ativo, onIr }) => {
+  const { t } = useTranslation();
   const { data: mencoes = [], isLoading } = useFindMentions(ativo);
   const navigate = useNavigate();
 
-  if (isLoading) return <p className="p-6 text-center text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p className="p-6 text-center text-sm text-ink-faint">{t("comum.carregando")}</p>;
 
   if (!mencoes.length) {
     return (
       <Vazio
         icone={<At size={40} />}
-        titulo="Nenhuma menção ainda"
-        detalhe="As menções a você aparecem aqui pelos últimos 7 dias."
+        titulo={t("conversa.entrada.semMencoesTitulo")}
+        detalhe={t("conversa.entrada.semMencoesDetalhe")}
       />
     );
   }

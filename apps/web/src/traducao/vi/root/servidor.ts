@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Cài đặt máy chủ",
   auditoria: {
+    todasAsAcoes: "Mọi hành động",
+    todosOsUsuarios: "Mọi người dùng",
+    filtroMembros: "Thành viên",
+    filtroCanais: "Kênh",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Máy chủ",
     titulo: "Nhật ký hoạt động",
     porUsuario: "Lọc theo người",
     porAcao: "Lọc theo hành động",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Việc này không thể hoàn tác.",
   },
   emblemas: {
+    apagarDescricao: "Nó rời khỏi tất cả những ai đang đeo. Không thể hoàn tác.",
     titulo: "Huy hiệu",
     vazio: "Chưa có huy hiệu nào.",
     novo: "Huy hiệu mới",
   },
   convites: {
+    revogarTitulo: "Thu hồi lời mời?",
+    revogarAcao: "Thu hồi",
+    revogarDescricao: "Liên kết {{codigo}} ngừng hoạt động ngay. Ai đã vào bằng nó thì vẫn ở lại máy chủ.",
     titulo: "Lời mời",
     descricao: "Tất cả liên kết mời đang hoạt động của máy chủ này.",
     vazio: "Chưa tạo lời mời nào.",
     revogar: "Thu hồi lời mời",
   },
   integracoes: {
+    opcionais: "username và avatar_url là tùy chọn và áp dụng cho từng tin nhắn. Giới hạn là 5 tin nhắn mỗi 5 giây.",
+    apagarDescricao: "URL ngừng hoạt động ngay. Những tin nhắn nó đã gửi vẫn ở trong kênh.",
     titulo: "Tích hợp",
     descricao: "Webhook là một địa chỉ đăng bài vào kênh mà không cần tài khoản. Tiện để báo khi bản dựng chạy xong, khi ai đó mở phiếu, hay bất cứ thứ gì bạn muốn gửi từ một script.",
     novo: "Webhook mới",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Gửi một POST kèm JSON. Định dạng giống hệt của Discord, nên script đã có sẵn chạy được mà không cần sửa:",
   },
   engajamento: {
+    semCanal: "Không có kênh hệ thống",
     titulo: "Sức sống",
     descricao: "Những gì máy chủ tự làm để không trông trống trải khi có người mới đến.",
     sistema: "Tin nhắn hệ thống",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Áp dụng cấm nói",
     duracao: "Thời lượng tính bằng phút",
     informeDuracao: "Cho biết thời lượng tính bằng phút.",
+  },
+  abas: {
+    expressoes: "Biểu đạt",
+    pessoas: "Mọi người",
+    apps: "Ứng dụng",
+    moderacao: "Kiểm duyệt",
+    banimentos: "Cấm",
   },
 };

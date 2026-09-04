@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "伺服器設定",
   auditoria: {
+    todasAsAcoes: "所有操作",
+    todosOsUsuarios: "所有使用者",
+    filtroMembros: "成員",
+    filtroCanais: "頻道",
+    filtroEmojis: "表情",
+    filtroServidor: "伺服器",
     titulo: "稽核紀錄",
     porUsuario: "依人篩選",
     porAcao: "依動作篩選",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "此動作無法復原。",
   },
   emblemas: {
+    apagarDescricao: "它會從配戴的每個人身上消失。無法復原。",
     titulo: "徽章",
     vazio: "還沒有徽章。",
     novo: "新徽章",
   },
   convites: {
+    revogarTitulo: "撤銷這個邀請？",
+    revogarAcao: "撤銷",
+    revogarDescricao: "連結 {{codigo}} 會立刻失效。已經透過它加入的人仍留在伺服器。",
     titulo: "邀請",
     descricao: "此伺服器所有有效的邀請連結。",
     vazio: "還沒有建立任何邀請。",
     revogar: "撤銷邀請",
   },
   integracoes: {
+    opcionais: "username 和 avatar_url 是選填的，按訊息生效。限制為每 5 秒 5 則。",
+    apagarDescricao: "該 URL 會立刻失效。它已經發出的訊息仍留在頻道裡。",
     titulo: "整合",
     descricao: "Webhook 是一個不需帳號就能向頻道發訊的位址。適合用來通報建置通過、有人開了工單，或任何你想從腳本送出的內容。",
     novo: "新增 Webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "送出帶 JSON 的 POST。格式與 Discord 相同，因此現成的腳本不必修改即可使用：",
   },
   engajamento: {
+    semCanal: "沒有系統頻道",
     titulo: "活躍度",
     descricao: "有新人來時，伺服器自己做點什麼才不會顯得冷清。",
     sistema: "系統訊息",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "套用禁言",
     duracao: "時長（分鐘）",
     informeDuracao: "請填寫時長（分鐘）。",
+  },
+  abas: {
+    expressoes: "表情",
+    pessoas: "人員",
+    apps: "應用程式",
+    moderacao: "管理",
+    banimentos: "封鎖",
   },
 };

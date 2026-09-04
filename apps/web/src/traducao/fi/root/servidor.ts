@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Palvelimen asetukset",
   auditoria: {
+    todasAsAcoes: "Kaikki toiminnot",
+    todosOsUsuarios: "Kaikki käyttäjät",
+    filtroMembros: "Jäsenet",
+    filtroCanais: "Kanavat",
+    filtroEmojis: "Emojit",
+    filtroServidor: "Palvelin",
     titulo: "Toimintaloki",
     porUsuario: "Suodata henkilön mukaan",
     porAcao: "Suodata toiminnon mukaan",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Tätä ei voi perua.",
   },
   emblemas: {
+    apagarDescricao: "Se lähtee jokaiselta, joka sitä käyttää. Tätä ei voi perua.",
     titulo: "Merkit",
     vazio: "Ei vielä merkkejä.",
     novo: "Uusi merkki",
   },
   convites: {
+    revogarTitulo: "Perutaanko kutsu?",
+    revogarAcao: "Peru",
+    revogarDescricao: "Linkki {{codigo}} lakkaa toimimasta heti. Se, joka jo liittyi sen kautta, pysyy palvelimella.",
     titulo: "Kutsut",
     descricao: "Kaikki tämän palvelimen voimassa olevat kutsulinkit.",
     vazio: "Yhtään kutsua ei ole vielä luotu.",
     revogar: "Peru kutsu",
   },
   integracoes: {
+    opcionais: "username ja avatar_url ovat valinnaisia ja koskevat viestiä. Raja on 5 viestiä 5 sekunnissa.",
+    apagarDescricao: "URL lakkaa toimimasta heti. Jo lähetetyt viestit jäävät kanavalle.",
     titulo: "Integraatiot",
     descricao: "Webhook on osoite, joka kirjoittaa kanavalle ilman tiliä. Kätevä ilmoittamaan, että käännös meni läpi, että joku avasi tiketin, tai mitä ikinä haluat lähettää skriptistä.",
     novo: "Uusi webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Lähetä POST JSONilla. Muoto on sama kuin Discordissa, joten valmiina oleva skripti toimii sellaisenaan:",
   },
   engajamento: {
+    semCanal: "Ei järjestelmäkanavaa",
     titulo: "Aktiivisuus",
     descricao: "Mitä palvelin tekee itsekseen, ettei se tuntuisi tyhjältä, kun joku uusi saapuu.",
     sistema: "Järjestelmäviestit",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Käytä hiljennystä",
     duracao: "Kesto minuutteina",
     informeDuracao: "Anna kesto minuutteina.",
+  },
+  abas: {
+    expressoes: "Ilmaisut",
+    pessoas: "Ihmiset",
+    apps: "Sovellukset",
+    moderacao: "Valvonta",
+    banimentos: "Porttikiellot",
   },
 };

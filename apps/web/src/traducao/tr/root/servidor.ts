@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Sunucu ayarları",
   auditoria: {
+    todasAsAcoes: "Tüm işlemler",
+    todosOsUsuarios: "Tüm kullanıcılar",
+    filtroMembros: "Üyeler",
+    filtroCanais: "Kanallar",
+    filtroEmojis: "Emojiler",
+    filtroServidor: "Sunucu",
     titulo: "Denetim kaydı",
     porUsuario: "Kişiye göre süz",
     porAcao: "İşleme göre süz",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Bu geri alınamaz.",
   },
   emblemas: {
+    apagarDescricao: "Takan herkesten kalkar. Geri alınamaz.",
     titulo: "Rozetler",
     vazio: "Henüz rozet yok.",
     novo: "Yeni rozet",
   },
   convites: {
+    revogarTitulo: "Davet iptal edilsin mi?",
+    revogarAcao: "İptal et",
+    revogarDescricao: "{{codigo}} bağlantısı hemen çalışmaz olur. Onunla zaten girmiş olan sunucuda kalır.",
     titulo: "Davetler",
     descricao: "Bu sunucunun tüm etkin davet bağlantıları.",
     vazio: "Henüz davet oluşturulmadı.",
     revogar: "Daveti iptal et",
   },
   integracoes: {
+    opcionais: "username ve avatar_url isteğe bağlıdır ve mesaj başına geçerlidir. Sınır 5 saniyede 5 mesajdır.",
+    apagarDescricao: "URL hemen çalışmaz olur. Zaten gönderdiği mesajlar kanalda kalır.",
     titulo: "Entegrasyonlar",
     descricao: "Webhook, hesap gerekmeden bir kanala yazan bir adrestir. Bir derleme geçtiğinde, biri kayıt açtığında ya da bir betikten göndermek istediğin her şeyi duyurmak için işe yarar.",
     novo: "Yeni webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "JSON ile bir POST gönder. Biçim Discord'unkiyle aynı, yani hâlihazırda var olan bir betik değişiklik olmadan çalışır:",
   },
   engajamento: {
+    semCanal: "Sistem kanalı yok",
     titulo: "Canlandırma",
     descricao: "Yeni biri geldiğinde boş görünmemesi için sunucunun kendi başına yaptıkları.",
     sistema: "Sistem mesajları",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Susturmayı uygula",
     duracao: "Dakika cinsinden süre",
     informeDuracao: "Süreyi dakika olarak gir.",
+  },
+  abas: {
+    expressoes: "İfadeler",
+    pessoas: "Kişiler",
+    apps: "Uygulamalar",
+    moderacao: "Denetim",
+    banimentos: "Yasaklar",
   },
 };

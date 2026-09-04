@@ -169,4 +169,50 @@ export const conversa = {
     canais: "Canais",
     conversas: "Conversas",
   },
+
+  expressoes: {
+    gifs: "GIFs",
+    buscarGifs: "Buscar Klipy",
+    figurinha: "Figurinha",
+    buscarFigurinha: "Encontre a figurinha perfeita",
+    buscarEmoji: "Encontre o emoji perfeito",
+    buscarReacao: "Encontre a reação perfeita",
+    adicionarEmoji: "Adicionar emoji",
+    limparBusca: "Limpar a busca",
+  },
+
+  busca: {
+    fechar: "Fechar a busca",
+    procurando: "Procurando…",
+    resultado: "{{quantos}} resultado",
+    resultados: "{{quantos}} resultados",
+    nadaCom: "Nada com {{termo}} por aqui.",
+    soOsQuePodeLer: "A busca só olha os canais que você pode ler.",
+  },
+
+  entrada: {
+    titulo: "Caixa de entrada",
+    naoLidas: "Não lidas",
+    salvas: "Salvas",
+    mencoes: "Menções",
+    fimTitulo: "Você chegou ao fim",
+    fimDetalhe: "Não há nada por ler. Quando chegar mensagem nova, ela aparece aqui.",
+    semSalvosTitulo: "Nenhum item salvo",
+    semSalvosDetalhe:
+      "Segure Shift e clique no marcador de uma mensagem para guardá-la e ver depois.",
+    tirarDosSalvos: "Tirar dos salvos",
+    semMencoesTitulo: "Nenhuma menção ainda",
+    semMencoesDetalhe: "As menções a você aparecem aqui pelos últimos 7 dias.",
+  },
+
+  forum: {
+    descricao:
+      "Cada assunto vira uma conversa separada — bom pra dúvida que não pode se perder no meio do papo.",
+    novoAssunto: "Novo assunto",
+    vazio: "Nenhum assunto ainda. Comece o primeiro e a conversa fica organizada desde o início.",
+    titulo: "Título",
+    doQueSeTrata: "Do que se trata?",
+    primeiraMensagem: "Primeira mensagem",
+    conteDoCaso: "Conte o caso",
+  },
 };

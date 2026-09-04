@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "서버 설정",
   auditoria: {
+    todasAsAcoes: "모든 작업",
+    todosOsUsuarios: "모든 사용자",
+    filtroMembros: "멤버",
+    filtroCanais: "채널",
+    filtroEmojis: "이모지",
+    filtroServidor: "서버",
     titulo: "감사 기록",
     porUsuario: "사람으로 거르기",
     porAcao: "동작으로 거르기",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "되돌릴 수 없습니다.",
   },
   emblemas: {
+    apagarDescricao: "달고 있는 모두에게서 사라집니다. 되돌릴 수 없습니다.",
     titulo: "배지",
     vazio: "아직 배지가 없습니다.",
     novo: "새 배지",
   },
   convites: {
+    revogarTitulo: "초대를 취소할까요?",
+    revogarAcao: "취소",
+    revogarDescricao: "링크 {{codigo}}은(는) 바로 작동을 멈춥니다. 이미 그 링크로 들어온 사람은 서버에 남습니다.",
     titulo: "초대",
     descricao: "이 서버의 유효한 초대 링크 전부.",
     vazio: "아직 만든 초대가 없습니다.",
     revogar: "초대 취소",
   },
   integracoes: {
+    opcionais: "username과 avatar_url은 선택이며 메시지마다 적용됩니다. 한도는 5초에 5개입니다.",
+    apagarDescricao: "URL이 바로 작동을 멈춥니다. 이미 보낸 메시지는 채널에 남습니다.",
     titulo: "연동",
     descricao: "웹훅은 계정 없이도 채널에 글을 올리는 주소입니다. 빌드가 통과했을 때, 누군가 문의를 열었을 때, 또는 스크립트에서 보내고 싶은 무엇이든 알리는 데 씁니다.",
     novo: "새 웹훅",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "JSON으로 POST를 보내세요. 형식은 Discord와 같아서 이미 있는 스크립트가 그대로 동작합니다:",
   },
   engajamento: {
+    semCanal: "시스템 채널 없음",
     titulo: "활기",
     descricao: "새로운 사람이 왔을 때 비어 보이지 않도록 서버가 알아서 하는 일.",
     sistema: "시스템 메시지",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "타임아웃 적용",
     duracao: "분 단위 시간",
     informeDuracao: "분 단위로 시간을 입력하세요.",
+  },
+  abas: {
+    expressoes: "표현",
+    pessoas: "사람",
+    apps: "앱",
+    moderacao: "관리",
+    banimentos: "차단",
   },
 };

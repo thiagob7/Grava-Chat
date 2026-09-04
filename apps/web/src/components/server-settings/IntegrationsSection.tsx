@@ -174,8 +174,8 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
             void confirmar({
               titulo: `Apagar webhook "${webhook.name}"?`,
               descricao:
-                "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
-              acao: "Apagar webhook",
+                t("servidor.integracoes.apagarDescricao"),
+              acao: t("servidor.integracoes.apagar"),
             }).then(
               ({ confirmado }) =>
                 confirmado && apagar.mutate({ guildId, webhookId: webhook.id }),
@@ -241,8 +241,7 @@ const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => {
     </pre>
 
     <p className="mt-2 text-xs text-ink-faint">
-      <code>username</code> e <code>avatar_url</code> são opcionais e valem por
-      mensagem. O limite é de 5 mensagens a cada 5 segundos.
+      {t("servidor.integracoes.opcionais")}
     </p>
   </section>
   );

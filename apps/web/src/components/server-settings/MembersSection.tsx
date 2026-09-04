@@ -358,7 +358,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                             danger
                             onSelect={() => void expulsar(member)}
                           >
-                            Expulsar <UserX size={14} />
+                            {t("servidor.membros.expulsar")} <UserX size={14} />
                           </DropdownMenuItem>
                         )}
 
@@ -367,7 +367,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                             danger
                             onSelect={() => void banirMembro(member)}
                           >
-                            Banir <Ban size={14} />
+                            {t("servidor.membros.banir")} <Ban size={14} />
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>

@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Impostazioni del server",
   auditoria: {
+    todasAsAcoes: "Tutte le azioni",
+    todosOsUsuarios: "Tutti gli utenti",
+    filtroMembros: "Membri",
+    filtroCanais: "Canali",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Server",
     titulo: "Registro delle azioni",
     porUsuario: "Filtra per utente",
     porAcao: "Filtra per azione",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Non si può tornare indietro.",
   },
   emblemas: {
+    apagarDescricao: "Viene tolto a chi lo sta usando. Non si può tornare indietro.",
     titulo: "Distintivi",
     vazio: "Ancora nessun distintivo.",
     novo: "Nuovo distintivo",
   },
   convites: {
+    revogarTitulo: "Revocare l'invito?",
+    revogarAcao: "Revoca",
+    revogarDescricao: "Il link {{codigo}} smette di funzionare all'istante. Chi è già entrato con quello resta nel server.",
     titulo: "Inviti",
     descricao: "Tutti i link d'invito attivi di questo server.",
     vazio: "Ancora nessun invito creato.",
     revogar: "Revoca l'invito",
   },
   integracoes: {
+    opcionais: "username e avatar_url sono facoltativi e valgono per messaggio. Il limite è di 5 messaggi ogni 5 secondi.",
+    apagarDescricao: "L'URL smette di funzionare all'istante. I messaggi che ha già mandato restano nel canale.",
     titulo: "Integrazioni",
     descricao: "Un webhook è un indirizzo che pubblica in un canale senza bisogno di un account. Serve per avvisare quando una build passa, quando qualcuno apre un ticket, o qualunque cosa tu voglia mandare da uno script.",
     novo: "Nuovo webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Manda un POST con JSON. Il formato è lo stesso di Discord, quindi uno script che esiste già funziona senza modifiche:",
   },
   engajamento: {
+    semCanal: "Nessun canale di sistema",
     titulo: "Coinvolgimento",
     descricao: "Quello che il server fa da solo per non sembrare vuoto quando arriva gente nuova.",
     sistema: "Messaggi di sistema",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Applica il silenziamento",
     duracao: "Durata in minuti",
     informeDuracao: "Indica la durata in minuti.",
+  },
+  abas: {
+    expressoes: "Espressioni",
+    pessoas: "Persone",
+    apps: "App",
+    moderacao: "Moderazione",
+    banimentos: "Ban",
   },
 };

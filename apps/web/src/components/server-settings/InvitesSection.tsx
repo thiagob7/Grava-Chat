@@ -72,15 +72,11 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
                 <button
                   onClick={() =>
                     void confirmar({
-                      titulo: "Revogar convite?",
-                      descricao: (
-                        <>
-                          O link <strong>{convite.code}</strong> para de
-                          funcionar na hora. Quem já entrou por ele continua no
-                          servidor.
-                        </>
-                      ),
-                      acao: "Revogar",
+                      titulo: t("servidor.convites.revogarTitulo"),
+                      descricao: t("servidor.convites.revogarDescricao", {
+                        codigo: convite.code,
+                      }),
+                      acao: t("servidor.convites.revogarAcao"),
                     }).then(
                       ({ confirmado }) =>
                         confirmado &&

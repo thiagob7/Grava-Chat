@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Налаштування сервера",
   auditoria: {
+    todasAsAcoes: "Усі дії",
+    todosOsUsuarios: "Усі користувачі",
+    filtroMembros: "Учасники",
+    filtroCanais: "Канали",
+    filtroEmojis: "Емодзі",
+    filtroServidor: "Сервер",
     titulo: "Журнал дій",
     porUsuario: "Фільтр за людиною",
     porAcao: "Фільтр за дією",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Це не можна скасувати.",
   },
   emblemas: {
+    apagarDescricao: "Він знімається з усіх, хто його носить. Скасувати не можна.",
     titulo: "Значки",
     vazio: "Значків поки немає.",
     novo: "Новий значок",
   },
   convites: {
+    revogarTitulo: "Відкликати запрошення?",
+    revogarAcao: "Відкликати",
+    revogarDescricao: "Посилання {{codigo}} перестає працювати одразу. Хто вже зайшов за ним, лишається на сервері.",
     titulo: "Запрошення",
     descricao: "Усі активні посилання-запрошення цього сервера.",
     vazio: "Запрошень поки не створено.",
     revogar: "Відкликати запрошення",
   },
   integracoes: {
+    opcionais: "username і avatar_url необов'язкові й діють на повідомлення. Обмеження — 5 повідомлень за 5 секунд.",
+    apagarDescricao: "URL перестає працювати одразу. Уже надіслані повідомлення лишаються в каналі.",
     titulo: "Інтеграції",
     descricao: "Вебхук — це адреса, що пише в канал без облікового запису. Знадобиться, щоб повідомити про вдалу збірку, про нове звернення чи про будь-що, що ви надсилаєте зі скрипта.",
     novo: "Новий вебхук",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Надішліть POST із JSON. Формат той самий, що в Discord, тож наявний скрипт запрацює без змін:",
   },
   engajamento: {
+    semCanal: "Без системного каналу",
     titulo: "Залучення",
     descricao: "Що сервер робить сам, щоб не виглядати порожнім, коли приходить новачок.",
     sistema: "Системні повідомлення",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Застосувати тайм-аут",
     duracao: "Тривалість у хвилинах",
     informeDuracao: "Вкажіть тривалість у хвилинах.",
+  },
+  abas: {
+    expressoes: "Вирази",
+    pessoas: "Люди",
+    apps: "Застосунки",
+    moderacao: "Модерація",
+    banimentos: "Блокування",
   },
 };

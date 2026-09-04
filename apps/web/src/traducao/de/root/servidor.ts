@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Servereinstellungen",
   auditoria: {
+    todasAsAcoes: "Alle Aktionen",
+    todosOsUsuarios: "Alle Personen",
+    filtroMembros: "Mitglieder",
+    filtroCanais: "Kanäle",
+    filtroEmojis: "Emojis",
+    filtroServidor: "Server",
     titulo: "Audit-Log",
     porUsuario: "Nach Person filtern",
     porAcao: "Nach Aktion filtern",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Das lässt sich nicht rückgängig machen.",
   },
   emblemas: {
+    apagarDescricao: "Es wird allen abgenommen, die es tragen. Das lässt sich nicht rückgängig machen.",
     titulo: "Abzeichen",
     vazio: "Noch keine Abzeichen.",
     novo: "Neues Abzeichen",
   },
   convites: {
+    revogarTitulo: "Einladung widerrufen?",
+    revogarAcao: "Widerrufen",
+    revogarDescricao: "Der Link {{codigo}} funktioniert sofort nicht mehr. Wer schon darüber beigetreten ist, bleibt auf dem Server.",
     titulo: "Einladungen",
     descricao: "Alle aktiven Einladungslinks dieses Servers.",
     vazio: "Noch keine Einladung erstellt.",
     revogar: "Einladung widerrufen",
   },
   integracoes: {
+    opcionais: "username und avatar_url sind optional und gelten pro Nachricht. Das Limit sind 5 Nachrichten alle 5 Sekunden.",
+    apagarDescricao: "Die URL funktioniert sofort nicht mehr. Die bereits gesendeten Nachrichten bleiben im Kanal.",
     titulo: "Integrationen",
     descricao: "Ein Webhook ist eine Adresse, die in einen Kanal postet, ohne ein Konto zu brauchen. Praktisch, um zu melden, dass ein Build durchgelaufen ist, dass jemand ein Ticket aufgemacht hat, oder was du sonst aus einem Skript schicken willst.",
     novo: "Neuer Webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Schick ein POST mit JSON. Das Format ist dasselbe wie bei Discord, ein Skript von dort funktioniert also unverändert:",
   },
   engajamento: {
+    semCanal: "Kein Systemkanal",
     titulo: "Belebung",
     descricao: "Was der Server von allein tut, damit er nicht leer wirkt, wenn jemand Neues kommt.",
     sistema: "Systemnachrichten",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Auszeit anwenden",
     duracao: "Dauer in Minuten",
     informeDuracao: "Gib die Dauer in Minuten an.",
+  },
+  abas: {
+    expressoes: "Ausdrücke",
+    pessoas: "Leute",
+    apps: "Apps",
+    moderacao: "Moderation",
+    banimentos: "Banns",
   },
 };

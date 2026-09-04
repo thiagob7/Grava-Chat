@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "सर्वर सेटिंग्स",
   auditoria: {
+    todasAsAcoes: "सभी कार्रवाइयाँ",
+    todosOsUsuarios: "सभी उपयोगकर्ता",
+    filtroMembros: "सदस्य",
+    filtroCanais: "चैनल",
+    filtroEmojis: "इमोजी",
+    filtroServidor: "सर्वर",
     titulo: "गतिविधि लॉग",
     porUsuario: "व्यक्ति से छाँटें",
     porAcao: "कार्रवाई से छाँटें",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "इसे पलटा नहीं जा सकता।",
   },
   emblemas: {
+    apagarDescricao: "जो भी इसे पहने हुए है, उससे यह हट जाता है। इसे पलटा नहीं जा सकता।",
     titulo: "बैज",
     vazio: "अभी कोई बैज नहीं।",
     novo: "नया बैज",
   },
   convites: {
+    revogarTitulo: "न्योता रद्द करें?",
+    revogarAcao: "रद्द करें",
+    revogarDescricao: "लिंक {{codigo}} तुरंत काम करना बंद कर देता है। जो पहले ही इससे आ चुके हैं, वे सर्वर में बने रहते हैं।",
     titulo: "न्योते",
     descricao: "इस सर्वर के सभी सक्रिय न्योता लिंक।",
     vazio: "अभी कोई न्योता नहीं बनाया गया।",
     revogar: "न्योता रद्द करें",
   },
   integracoes: {
+    opcionais: "username और avatar_url वैकल्पिक हैं और हर संदेश पर लागू होते हैं। सीमा हर 5 सेकंड में 5 संदेश है।",
+    apagarDescricao: "URL तुरंत काम करना बंद कर देता है। जो संदेश यह पहले भेज चुका है, वे चैनल में बने रहते हैं।",
     titulo: "एकीकरण",
     descricao: "वेबहुक एक पता है जो बिना खाते के किसी चैनल में पोस्ट करता है। यह बताने के काम आता है कि बिल्ड पास हुआ, किसी ने टिकट खोला, या जो कुछ आप स्क्रिप्ट से भेजना चाहें।",
     novo: "नया वेबहुक",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "JSON के साथ POST भेजिए। प्रारूप Discord जैसा ही है, इसलिए पहले से मौजूद स्क्रिप्ट बिना बदलाव के चलती है:",
   },
   engajamento: {
+    semCanal: "कोई सिस्टम चैनल नहीं",
     titulo: "सक्रियता",
     descricao: "नया व्यक्ति आने पर सर्वर खाली न लगे, इसके लिए वह खुद क्या करता है।",
     sistema: "सिस्टम संदेश",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "चुप कराना लागू करें",
     duracao: "अवधि मिनटों में",
     informeDuracao: "अवधि मिनटों में बताएँ।",
+  },
+  abas: {
+    expressoes: "भाव",
+    pessoas: "लोग",
+    apps: "ऐप्स",
+    moderacao: "मॉडरेशन",
+    banimentos: "प्रतिबंध",
   },
 };

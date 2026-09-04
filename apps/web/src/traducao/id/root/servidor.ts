@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Pengaturan server",
   auditoria: {
+    todasAsAcoes: "Semua tindakan",
+    todosOsUsuarios: "Semua pengguna",
+    filtroMembros: "Anggota",
+    filtroCanais: "Kanal",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Server",
     titulo: "Log tindakan",
     porUsuario: "Saring berdasarkan orang",
     porAcao: "Saring berdasarkan tindakan",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Ini tidak bisa dibatalkan.",
   },
   emblemas: {
+    apagarDescricao: "Lencananya lepas dari siapa pun yang memakainya. Ini tidak bisa dibatalkan.",
     titulo: "Lencana",
     vazio: "Belum ada lencana.",
     novo: "Lencana baru",
   },
   convites: {
+    revogarTitulo: "Cabut undangan?",
+    revogarAcao: "Cabut",
+    revogarDescricao: "Tautan {{codigo}} langsung berhenti bekerja. Yang sudah masuk lewat tautan itu tetap di server.",
     titulo: "Undangan",
     descricao: "Semua tautan undangan aktif server ini.",
     vazio: "Belum ada undangan yang dibuat.",
     revogar: "Cabut undangan",
   },
   integracoes: {
+    opcionais: "username dan avatar_url bersifat opsional dan berlaku per pesan. Batasnya 5 pesan tiap 5 detik.",
+    apagarDescricao: "URL-nya langsung berhenti bekerja. Pesan yang sudah dikirimnya tetap ada di kanal.",
     titulo: "Integrasi",
     descricao: "Webhook adalah alamat yang memposting ke sebuah kanal tanpa perlu akun. Berguna untuk mengabari bahwa build lolos, ada yang membuka tiket, atau apa pun yang ingin kamu kirim dari skrip.",
     novo: "Webhook baru",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Kirim POST berisi JSON. Formatnya sama dengan Discord, jadi skrip yang sudah ada berjalan tanpa diubah:",
   },
   engajamento: {
+    semCanal: "Tanpa kanal sistem",
     titulo: "Keterlibatan",
     descricao: "Apa yang server lakukan sendiri agar tidak terasa kosong saat ada orang baru datang.",
     sistema: "Pesan sistem",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Terapkan pembungkaman",
     duracao: "Durasi dalam menit",
     informeDuracao: "Sebutkan durasinya dalam menit.",
+  },
+  abas: {
+    expressoes: "Ekspresi",
+    pessoas: "Orang",
+    apps: "Aplikasi",
+    moderacao: "Moderasi",
+    banimentos: "Cekal",
   },
 };

@@ -10,6 +10,7 @@ import { AbaGifs } from "~/components/expression-picker/AbaGifs";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/stores/server-settings-store";
+import { useTranslation } from "~/traducao";
 
 export type Aba = "gifs" | "figurinhas" | "emoji";
 
@@ -30,10 +31,16 @@ interface ExpressionPickerProps {
   onFechar?: () => void;
 }
 
+/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
+/// resolveria antes de o idioma existir e ficaria congelada.
 const ABAS: { id: Aba; label: string; placeholder: string }[] = [
-  { id: "gifs", label: "GIFs", placeholder: "Buscar Klipy" },
-  { id: "figurinhas", label: "Figurinha", placeholder: "Encontre a figurinha perfeita" },
-  { id: "emoji", label: "Emoji", placeholder: "Encontre o emoji perfeito" },
+  { id: "gifs", label: "conversa.expressoes.gifs", placeholder: "conversa.expressoes.buscarGifs" },
+  {
+    id: "figurinhas",
+    label: "conversa.expressoes.figurinha",
+    placeholder: "conversa.expressoes.buscarFigurinha",
+  },
+  { id: "emoji", label: "comum.emoji", placeholder: "conversa.expressoes.buscarEmoji" },
 ];
 
 export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
@@ -45,6 +52,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
   onGif,
   onFechar,
 }) => {
+  const { t } = useTranslation();
   const soEmoji = modo === "reacao";
   const [aba, setAba] = useState<Aba>(soEmoji ? "emoji" : abaInicial);
   const [busca, setBusca] = useState("");
@@ -78,9 +86,18 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
     abrirConfiguracoes(guildId, "emoji");
   };
 
-  const placeholder = soEmoji
-    ? "Encontre a reação perfeita"
+  /*
+    A aba guarda a chave; a tradução acontece aqui, na hora de desenhar.
+
+    O caso do `soEmoji` é outro texto: quando o seletor abre para escolher uma
+    REAÇÃO, e não para escrever, a frase muda — e por isso ela tem chave
+    própria em vez de reaproveitar a do emoji.
+  */
+  const chaveDaDica = soEmoji
+    ? "conversa.expressoes.buscarReacao"
     : ABAS.find((a) => a.id === aba)?.placeholder;
+  const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
+
 
   return (
     <div className="flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl">
@@ -95,7 +112,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
                 aba === item.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
               )}
             >
-              {item.label}
+              {t(item.label)}
             </button>
           ))}
 
@@ -106,7 +123,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
               className="ml-auto flex shrink-0 items-center gap-1 rounded px-2 py-1.5 text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink"
             >
               <Plus size={14} />
-              Adicionar emoji
+              {t("conversa.expressoes.adicionarEmoji")}
             </button>
           )}
         </nav>
@@ -128,7 +145,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
             <button
               type="button"
               onClick={() => setBusca("")}
-              aria-label="Limpar a busca"
+              aria-label={t("conversa.expressoes.limparBusca")}
               className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
             >
               <X size={14} />

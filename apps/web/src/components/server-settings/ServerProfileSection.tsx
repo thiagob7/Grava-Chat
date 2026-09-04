@@ -174,7 +174,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               onClick={() => setBannerUrl(null)}
               className="text-danger"
             >
-              Remover
+              {t("comum.remover")}
             </Button>
           )}
 

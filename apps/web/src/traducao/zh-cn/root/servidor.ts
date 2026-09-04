@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "服务器设置",
   auditoria: {
+    todasAsAcoes: "所有操作",
+    todosOsUsuarios: "所有用户",
+    filtroMembros: "成员",
+    filtroCanais: "频道",
+    filtroEmojis: "表情",
+    filtroServidor: "服务器",
     titulo: "审计日志",
     porUsuario: "按人筛选",
     porAcao: "按操作筛选",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "此操作无法撤销。",
   },
   emblemas: {
+    apagarDescricao: "它会从佩戴的每个人身上消失。无法撤销。",
     titulo: "徽章",
     vazio: "还没有徽章。",
     novo: "新徽章",
   },
   convites: {
+    revogarTitulo: "撤销该邀请？",
+    revogarAcao: "撤销",
+    revogarDescricao: "链接 {{codigo}} 会立刻失效。已经通过它加入的人仍留在服务器。",
     titulo: "邀请",
     descricao: "该服务器所有有效的邀请链接。",
     vazio: "还没有创建任何邀请。",
     revogar: "撤销邀请",
   },
   integracoes: {
+    opcionais: "username 和 avatar_url 是可选的，按消息生效。限制为每 5 秒 5 条。",
+    apagarDescricao: "该 URL 会立刻失效。它已经发出的消息仍留在频道里。",
     titulo: "集成",
     descricao: "Webhook 是一个无需账号就能向频道发消息的地址。适合用来通报构建通过、有人开了工单，或任何你想从脚本里发出的内容。",
     novo: "新建 Webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "发送带 JSON 的 POST。格式与 Discord 相同，所以现成的脚本无需改动即可使用：",
   },
   engajamento: {
+    semCanal: "没有系统频道",
     titulo: "活跃度",
     descricao: "新人到来时，服务器自己做点什么才不会显得冷清。",
     sistema: "系统消息",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "应用禁言",
     duracao: "时长（分钟）",
     informeDuracao: "请填写时长（分钟）。",
+  },
+  abas: {
+    expressoes: "表情",
+    pessoas: "人员",
+    apps: "应用",
+    moderacao: "管理",
+    banimentos: "封禁",
   },
 };

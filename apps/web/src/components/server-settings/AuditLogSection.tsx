@@ -60,14 +60,16 @@ const ICONES: Record<string, React.ElementType> = {
   webhook: Webhook,
 };
 
+/// A lista guarda a CHAVE: constante de módulo não pode chamar `t()`, que ali
+/// resolveria antes de o idioma existir e ficaria congelada.
 const FILTROS = [
-  { valor: "", label: "Todas as ações" },
-  { valor: "member", label: "Membros" },
-  { valor: "role", label: "Cargos" },
-  { valor: "channel", label: "Canais" },
-  { valor: "emoji", label: "Emojis" },
-  { valor: "automod", label: "AutoMod" },
-  { valor: "guild", label: "Servidor" },
+  { valor: "", label: "servidor.auditoria.todasAsAcoes" },
+  { valor: "member", label: "servidor.auditoria.filtroMembros" },
+  { valor: "role", label: "servidor.cargos.titulo" },
+  { valor: "channel", label: "servidor.auditoria.filtroCanais" },
+  { valor: "emoji", label: "servidor.auditoria.filtroEmojis" },
+  { valor: "automod", label: "servidor.automod.titulo" },
+  { valor: "guild", label: "servidor.auditoria.filtroServidor" },
 ];
 
 export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
@@ -95,7 +97,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
             onEscolher={setActorId}
             className="mt-1 w-44 font-normal normal-case"
             opcoes={[
-              { valor: "", rotulo: "Todos os usuários" },
+              { valor: "", rotulo: t("servidor.auditoria.todosOsUsuarios") },
               ...members.map((m) => ({
                 valor: m.user.id,
                 rotulo: m.user.displayName,
@@ -110,7 +112,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
             valor={action}
             onEscolher={setAction}
             className="mt-1 w-40 font-normal normal-case"
-            opcoes={FILTROS.map((f) => ({ valor: f.valor, rotulo: f.label }))}
+            opcoes={FILTROS.map((f) => ({ valor: f.valor, rotulo: t(f.label) }))}
           />
         </label>
       </div>

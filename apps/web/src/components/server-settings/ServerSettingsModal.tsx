@@ -41,30 +41,41 @@ export type Secao =
   | "automod"
   | "excluir";
 
+/*
+  Os dois mapas guardam CHAVES, não frases.
+
+  São constantes de módulo: um `t()` aqui resolveria na hora de carregar o
+  arquivo, antes de o idioma existir, e ficaria congelado para sempre. Quem
+  desenha é que traduz.
+
+  E quase todo rótulo aponta para o título da PRÓPRIA seção, em vez de ter
+  chave nova. Assim o nome na lateral e o nome dentro da tela não podem
+  divergir — se alguém reescrever o título, a lateral acompanha.
+*/
 const GRUPOS: { titulo: string | null; itens: Secao[] }[] = [
   { titulo: null, itens: ["perfil", "tag", "engajamento"] },
-  { titulo: "Expressões", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
-  { titulo: "Pessoas", itens: ["membros", "cargos", "convites"] },
-  { titulo: "Apps", itens: ["integracoes"] },
-  { titulo: "Moderação", itens: ["auditoria", "banimentos", "automod"] },
+  { titulo: "servidor.abas.expressoes", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
+  { titulo: "servidor.abas.pessoas", itens: ["membros", "cargos", "convites"] },
+  { titulo: "servidor.abas.apps", itens: ["integracoes"] },
+  { titulo: "servidor.abas.moderacao", itens: ["auditoria", "banimentos", "automod"] },
 ];
 
 const ROTULOS: Record<Secao, string> = {
-  perfil: "Perfil do servidor",
-  tag: "Tag do servidor",
-  engajamento: "Engajamento",
-  emoji: "Emoji",
-  figurinhas: "Figurinhas",
-  sons: "Painel de efeitos sonoros",
-  emblemas: "Emblemas",
-  membros: "Membros",
-  cargos: "Cargos",
-  convites: "Convites",
-  integracoes: "Integrações",
-  auditoria: "Registro de auditoria",
-  banimentos: "Banimentos",
-  automod: "AutoMod",
-  excluir: "Excluir servidor",
+  perfil: "servidor.perfil.titulo",
+  tag: "servidor.etiqueta.titulo",
+  engajamento: "servidor.engajamento.titulo",
+  emoji: "comum.emoji",
+  figurinhas: "servidor.expressoes.figurinhas",
+  sons: "servidor.expressoes.sons",
+  emblemas: "servidor.emblemas.titulo",
+  membros: "servidor.auditoria.filtroMembros",
+  cargos: "servidor.cargos.titulo",
+  convites: "servidor.convites.titulo",
+  integracoes: "servidor.integracoes.titulo",
+  auditoria: "servidor.auditoria.titulo",
+  banimentos: "servidor.abas.banimentos",
+  automod: "servidor.automod.titulo",
+  excluir: "servidor.excluir.titulo",
 };
 
 interface ServerSettingsModalProps {
@@ -165,7 +176,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                 <div key={grupo.titulo ?? "principal"} className="mb-3">
                   {grupo.titulo && (
                     <p className="mb-1 mt-3 px-2 text-11 font-semibold uppercase tracking-wide text-ink-faint">
-                      {grupo.titulo}
+                      {t(grupo.titulo)}
                     </p>
                   )}
 
@@ -180,7 +191,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                           : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                       )}
                     >
-                      {ROTULOS[id]}
+                      {t(ROTULOS[id])}
                     </button>
                   ))}
                 </div>
@@ -192,7 +203,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                 onClick={() => setSecao("excluir")}
                 className="mt-2 flex w-full items-center justify-between rounded border-t border-line px-2.5 py-1.5 pt-3 text-left text-sm text-danger transition hover:bg-danger/10"
               >
-                {ROTULOS.excluir}
+                {t(ROTULOS.excluir)}
                 <Trash2 size={14} />
               </button>
             )}

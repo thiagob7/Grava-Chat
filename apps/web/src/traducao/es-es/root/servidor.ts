@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Ajustes del servidor",
   auditoria: {
+    todasAsAcoes: "Todas las acciones",
+    todosOsUsuarios: "Todos los usuarios",
+    filtroMembros: "Miembros",
+    filtroCanais: "Canales",
+    filtroEmojis: "Emojis",
+    filtroServidor: "Servidor",
     titulo: "Registro de auditoría",
     porUsuario: "Filtrar por usuario",
     porAcao: "Filtrar por acción",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Esto no se puede deshacer.",
   },
   emblemas: {
+    apagarDescricao: "Se le quita a quien lo esté usando. No se puede deshacer.",
     titulo: "Insignias",
     vazio: "Todavía no hay insignias.",
     novo: "Nueva insignia",
   },
   convites: {
+    revogarTitulo: "¿Revocar la invitación?",
+    revogarAcao: "Revocar",
+    revogarDescricao: "El enlace {{codigo}} deja de funcionar al instante. Quien ya entró por él sigue en el servidor.",
     titulo: "Invitaciones",
     descricao: "Todos los enlaces de invitación activos de este servidor.",
     vazio: "Todavía no se ha creado ninguna invitación.",
     revogar: "Revocar invitación",
   },
   integracoes: {
+    opcionais: "username y avatar_url son opcionales y valen por mensaje. El límite es de 5 mensajes cada 5 segundos.",
+    apagarDescricao: "La URL deja de funcionar al instante. Los mensajes que ya mandó siguen en el canal.",
     titulo: "Integraciones",
     descricao: "Un webhook es una dirección que publica en un canal sin necesitar cuenta. Sirve para avisar cuando pasa una compilación, cuando alguien abre un ticket, o lo que quieras mandar desde un script.",
     novo: "Nuevo webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Manda un POST con JSON. El formato es el mismo que el de Discord, así que un script que ya exista por ahí funciona sin cambios:",
   },
   engajamento: {
+    semCanal: "Sin canal de sistema",
     titulo: "Participación",
     descricao: "Lo que el servidor hace solo para no parecer vacío cuando llega gente nueva.",
     sistema: "Mensajes del sistema",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Aplicar silencio",
     duracao: "Duración en minutos",
     informeDuracao: "Indica la duración en minutos.",
+  },
+  abas: {
+    expressoes: "Expresiones",
+    pessoas: "Personas",
+    apps: "Apps",
+    moderacao: "Moderación",
+    banimentos: "Baneos",
   },
 };

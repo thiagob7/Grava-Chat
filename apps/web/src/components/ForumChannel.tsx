@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { formatTimestamp } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
 interface ForumChannelProps {
   channelId: string;
@@ -29,6 +30,7 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
   podeEscrever,
   onAbrirPost,
 }) => {
+  const { t } = useTranslation();
   const { data, isLoading } = useFindPosts(channelId);
   const [criando, setCriando] = useState(false);
 
@@ -40,25 +42,24 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
             <MessagesSquare size={22} className="text-ink-faint" /> {channelName}
           </h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Cada assunto vira uma conversa separada — bom pra dúvida que não pode se perder no meio
-            do papo.
+            {t("conversa.forum.descricao")}
           </p>
         </div>
 
         {podeEscrever && (
           <Button size="sm" onClick={() => setCriando(true)}>
-            <Plus size={16} /> Novo assunto
+            <Plus size={16} /> {t("conversa.forum.novoAssunto")}
           </Button>
         )}
       </header>
 
-      {isLoading && <p className="text-sm text-ink-faint">Carregando…</p>}
+      {isLoading && <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
       {!isLoading && !data?.posts.length && (
         <div className="rounded-lg border border-dashed border-line px-6 py-12 text-center">
           <MessagesSquare size={28} className="mx-auto text-ink-faint" />
           <p className="mt-3 text-sm text-ink-muted">
-            Nenhum assunto ainda. Comece o primeiro e a conversa fica organizada desde o início.
+            {t("conversa.forum.vazio")}
           </p>
         </div>
       )}
@@ -112,6 +113,7 @@ interface CriarAssuntoProps {
 }
 
 const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, onCriado }) => {
+  const { t } = useTranslation();
   const criar = useCreatePost(channelId);
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
@@ -133,30 +135,30 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo assunto</DialogTitle>
+          <DialogTitle>{t("conversa.forum.novoAssunto")}</DialogTitle>
         </DialogHeader>
 
         <DialogBody className="space-y-4">
           <div>
-            <Label htmlFor="post-titulo">Título</Label>
+            <Label htmlFor="post-titulo">{t("conversa.forum.titulo")}</Label>
             <Input
               id="post-titulo"
               autoFocus
               value={titulo}
               maxLength={100}
-              placeholder="Do que se trata?"
+              placeholder={t("conversa.forum.doQueSeTrata")}
               onChange={(e) => setTitulo(e.target.value)}
             />
           </div>
 
           <div>
-            <Label htmlFor="post-conteudo">Primeira mensagem</Label>
+            <Label htmlFor="post-conteudo">{t("conversa.forum.primeiraMensagem")}</Label>
             <Textarea
               id="post-conteudo"
               value={conteudo}
               rows={5}
               maxLength={4000}
-              placeholder="Conte o caso"
+              placeholder={t("conversa.forum.conteDoCaso")}
               onChange={(e) => setConteudo(e.target.value)}
             />
           </div>
@@ -164,7 +166,7 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cancelar
+            {t("comum.cancelar")}
           </Button>
           <Button
             disabled={!titulo.trim() || !conteudo.trim() || criar.isPending}

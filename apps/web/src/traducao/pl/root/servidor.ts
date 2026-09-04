@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Ustawienia serwera",
   auditoria: {
+    todasAsAcoes: "Wszystkie działania",
+    todosOsUsuarios: "Wszyscy użytkownicy",
+    filtroMembros: "Członkowie",
+    filtroCanais: "Kanały",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Serwer",
     titulo: "Dziennik zdarzeń",
     porUsuario: "Filtruj po osobie",
     porAcao: "Filtruj po działaniu",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Tego nie da się cofnąć.",
   },
   emblemas: {
+    apagarDescricao: "Znika u każdego, kto go nosi. Tego nie da się cofnąć.",
     titulo: "Odznaki",
     vazio: "Jeszcze nie ma odznak.",
     novo: "Nowa odznaka",
   },
   convites: {
+    revogarTitulo: "Unieważnić zaproszenie?",
+    revogarAcao: "Unieważnij",
+    revogarDescricao: "Link {{codigo}} przestaje działać natychmiast. Kto już wszedł przez niego, zostaje na serwerze.",
     titulo: "Zaproszenia",
     descricao: "Wszystkie aktywne linki zapraszające tego serwera.",
     vazio: "Nie utworzono jeszcze żadnego zaproszenia.",
     revogar: "Unieważnij zaproszenie",
   },
   integracoes: {
+    opcionais: "username i avatar_url są opcjonalne i działają na wiadomość. Limit to 5 wiadomości na 5 sekund.",
+    apagarDescricao: "URL przestaje działać natychmiast. Wiadomości, które już wysłał, zostają na kanale.",
     titulo: "Integracje",
     descricao: "Webhook to adres, który pisze na kanale bez potrzeby posiadania konta. Przydaje się, by ogłosić, że build przeszedł, że ktoś otworzył zgłoszenie, albo cokolwiek chcesz wysłać ze skryptu.",
     novo: "Nowy webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Wyślij POST z JSON-em. Format jest taki sam jak w Discordzie, więc skrypt, który już gdzieś istnieje, zadziała bez zmian:",
   },
   engajamento: {
+    semCanal: "Bez kanału systemowego",
     titulo: "Zaangażowanie",
     descricao: "Co serwer robi sam, żeby nie wyglądał pusto, gdy przychodzi ktoś nowy.",
     sistema: "Wiadomości systemowe",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Zastosuj wyciszenie",
     duracao: "Czas w minutach",
     informeDuracao: "Podaj czas w minutach.",
+  },
+  abas: {
+    expressoes: "Wyrażenia",
+    pessoas: "Ludzie",
+    apps: "Aplikacje",
+    moderacao: "Moderacja",
+    banimentos: "Bany",
   },
 };

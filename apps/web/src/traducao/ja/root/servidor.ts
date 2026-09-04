@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "サーバー設定",
   auditoria: {
+    todasAsAcoes: "すべての操作",
+    todosOsUsuarios: "すべての人",
+    filtroMembros: "メンバー",
+    filtroCanais: "チャンネル",
+    filtroEmojis: "絵文字",
+    filtroServidor: "サーバー",
     titulo: "監査ログ",
     porUsuario: "人で絞り込む",
     porAcao: "操作で絞り込む",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "これは取り消せません。",
   },
   emblemas: {
+    apagarDescricao: "着けている人みんなから外れます。取り消せません。",
     titulo: "バッジ",
     vazio: "バッジはまだありません。",
     novo: "新しいバッジ",
   },
   convites: {
+    revogarTitulo: "招待を取り消しますか？",
+    revogarAcao: "取り消す",
+    revogarDescricao: "リンク {{codigo}} はすぐ使えなくなります。すでにそこから入った人はサーバーに残ります。",
     titulo: "招待",
     descricao: "このサーバーの有効な招待リンクすべて。",
     vazio: "招待はまだ作られていません。",
     revogar: "招待を取り消す",
   },
   integracoes: {
+    opcionais: "username と avatar_url は任意で、メッセージごとに効きます。上限は 5 秒あたり 5 件です。",
+    apagarDescricao: "URL はすぐ使えなくなります。すでに送られたメッセージはチャンネルに残ります。",
     titulo: "連携",
     descricao: "Webhook はアカウントなしでチャンネルに投稿できるアドレスです。ビルドが通ったとき、誰かが問い合わせを開いたとき、あるいはスクリプトから送りたい何かを知らせるのに使えます。",
     novo: "新しい Webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "JSON を付けて POST を送ってください。形式は Discord と同じなので、すでにあるスクリプトがそのまま動きます：",
   },
   engajamento: {
+    semCanal: "システムチャンネルなし",
     titulo: "にぎわい",
     descricao: "新しい人が来たとき空っぽに見えないよう、サーバーが自分でやること。",
     sistema: "システムメッセージ",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "タイムアウトを適用",
     duracao: "分単位の長さ",
     informeDuracao: "分単位で長さを入れてください。",
+  },
+  abas: {
+    expressoes: "表現",
+    pessoas: "人",
+    apps: "アプリ",
+    moderacao: "モデレーション",
+    banimentos: "BAN",
   },
 };

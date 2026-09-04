@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Szerverbeállítások",
   auditoria: {
+    todasAsAcoes: "Minden művelet",
+    todosOsUsuarios: "Minden felhasználó",
+    filtroMembros: "Tagok",
+    filtroCanais: "Csatornák",
+    filtroEmojis: "Emodzsik",
+    filtroServidor: "Szerver",
     titulo: "Naplózott műveletek",
     porUsuario: "Szűrés személyre",
     porAcao: "Szűrés műveletre",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Ez nem vonható vissza.",
   },
   emblemas: {
+    apagarDescricao: "Lekerül mindenkiről, aki viseli. Ez nem vonható vissza.",
     titulo: "Jelvények",
     vazio: "Még nincsenek jelvények.",
     novo: "Új jelvény",
   },
   convites: {
+    revogarTitulo: "Visszavonod a meghívót?",
+    revogarAcao: "Visszavonás",
+    revogarDescricao: "A(z) {{codigo}} link azonnal működésképtelen lesz. Aki már belépett vele, a szerveren marad.",
     titulo: "Meghívók",
     descricao: "A szerver összes aktív meghívólinkje.",
     vazio: "Még nem készült meghívó.",
     revogar: "Meghívó visszavonása",
   },
   integracoes: {
+    opcionais: "A username és az avatar_url nem kötelező, és üzenetenként érvényes. A korlát 5 üzenet 5 másodpercenként.",
+    apagarDescricao: "Az URL azonnal működésképtelen lesz. Az általa már küldött üzenetek a csatornában maradnak.",
     titulo: "Integrációk",
     descricao: "A webhook egy cím, amely fiók nélkül ír egy csatornába. Jó arra, hogy jelezze, ha egy build lement, ha valaki hibajegyet nyitott, vagy bármi másra, amit szkriptből küldenél.",
     novo: "Új webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Küldj egy POST-ot JSON-nal. A formátum ugyanaz, mint a Discordé, így egy már létező szkript változtatás nélkül működik:",
   },
   engajamento: {
+    semCanal: "Nincs rendszercsatorna",
     titulo: "Élénkítés",
     descricao: "Amit a szerver magától tesz, hogy ne tűnjön üresnek, amikor új ember érkezik.",
     sistema: "Rendszerüzenetek",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Némítás alkalmazása",
     duracao: "Időtartam percben",
     informeDuracao: "Add meg az időtartamot percben.",
+  },
+  abas: {
+    expressoes: "Kifejezések",
+    pessoas: "Emberek",
+    apps: "Alkalmazások",
+    moderacao: "Moderálás",
+    banimentos: "Kitiltások",
   },
 };

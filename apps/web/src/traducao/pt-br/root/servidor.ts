@@ -13,12 +13,28 @@
 export const servidor = {
   titulo: "Configurações do servidor",
 
+  /// Os nomes das seções na lateral. "Perfil", "Cargos" e as outras reaproveitam
+  /// o título da própria seção; só estas quatro não têm de onde tirar.
+  abas: {
+    expressoes: "Expressões",
+    pessoas: "Pessoas",
+    apps: "Apps",
+    moderacao: "Moderação",
+    banimentos: "Banimentos",
+  },
+
   auditoria: {
     titulo: "Registro de auditoria",
     porUsuario: "Filtrar por usuário",
     porAcao: "Filtrar por ação",
     vazio: "Nada registrado ainda com esse filtro.",
     motivo: "Motivo:",
+    todasAsAcoes: "Todas as ações",
+    todosOsUsuarios: "Todos os usuários",
+    filtroMembros: "Membros",
+    filtroCanais: "Canais",
+    filtroEmojis: "Emojis",
+    filtroServidor: "Servidor",
   },
 
   banimentos: {
@@ -43,6 +59,7 @@ export const servidor = {
     titulo: "Emblemas",
     vazio: "Nenhum emblema ainda.",
     novo: "Novo emblema",
+    apagarDescricao: "Ele sai de quem estiver usando. Não dá pra desfazer.",
   },
 
   convites: {
@@ -50,6 +67,10 @@ export const servidor = {
     descricao: "Todos os links de convite ativos deste servidor.",
     vazio: "Nenhum convite criado ainda.",
     revogar: "Revogar convite",
+    revogarTitulo: "Revogar convite?",
+    revogarAcao: "Revogar",
+    revogarDescricao:
+      "O link {{codigo}} para de funcionar na hora. Quem já entrou por ele continua no servidor.",
   },
 
   integracoes: {
@@ -63,6 +84,10 @@ export const servidor = {
     comoUsar: "Como usar",
     comoUsarTexto:
       "Mande um POST com JSON. O formato é o mesmo do Discord, então script que já existe por aí funciona sem mudança:",
+    opcionais:
+      "username e avatar_url são opcionais e valem por mensagem. O limite é de 5 mensagens a cada 5 segundos.",
+    apagarDescricao:
+      "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
   },
 
   engajamento: {
@@ -75,6 +100,7 @@ export const servidor = {
     canalDoSistema: "Canal de mensagens do sistema",
     mensagem: "Mensagem de boas-vindas",
     deixeVazio: "Deixe vazio para sortear entre as frases prontas",
+    semCanal: "Sem canal de sistema",
   },
 
   automod: {

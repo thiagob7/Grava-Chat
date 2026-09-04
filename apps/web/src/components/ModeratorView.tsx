@@ -252,7 +252,7 @@ const BarraDeAcoes: React.FC<{
     const { confirmado } = await confirmar({
       titulo: t("servidor.membros.expulsarTitulo", { nome: displayName }),
       descricao: t("servidor.moderacao.expulsarDescricao"),
-      acao: "Expulsar",
+      acao: t("servidor.membros.expulsar"),
     });
 
     if (confirmado) {
@@ -265,7 +265,7 @@ const BarraDeAcoes: React.FC<{
     const { confirmado, texto } = await confirmar({
       titulo: t("servidor.membros.banirTitulo", { nome: displayName }),
       descricao: t("servidor.moderacao.banirDescricao"),
-      acao: "Banir",
+      acao: t("servidor.membros.banir"),
       campo: { rotulo: t("servidor.membros.motivo"), placeholder: t("servidor.membros.motivoDica") },
     });
 
@@ -373,7 +373,7 @@ const ListaDeMensagens: React.FC<{
       </div>
 
       <div className="space-y-3 p-4">
-        {isLoading && <p className="py-8 text-center text-sm text-ink-muted">Carregando…</p>}
+        {isLoading && <p className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
 
         {data && !data.length && (
           <p className="py-8 text-center text-sm text-ink-muted">{t("servidor.moderacao.vazio")}</p>

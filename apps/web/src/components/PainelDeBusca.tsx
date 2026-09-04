@@ -11,6 +11,7 @@ import { useMencoes } from "~/hooks/use-mencoes";
 import { MessageContent } from "~/components/MessageContent";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
+import { useTranslation } from "~/traducao";
 
 
 interface PainelDeBuscaProps {
@@ -28,6 +29,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   onFechar,
   onIr,
 }) => {
+  const { t } = useTranslation();
   const busca = useBuscarMensagens({ guildId, termo });
   const { data: expressoes } = useFindExpressions(guildId);
   const enfeitesDe = useEnfeites(guildId);
@@ -41,11 +43,24 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
       <header className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4">
         <Search size={16} className="shrink-0 text-ink-faint" />
         <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">
-          {busca.isLoading ? "Procurando…" : `${total}${busca.hasNextPage ? "+" : ""} resultado${total === 1 ? "" : "s"}`}
+          {busca.isLoading
+            ? t("conversa.busca.procurando")
+            : /*
+                Duas chaves, e não plural do i18next.
+
+                O `_one`/`_other` do i18next é uma espinha de chaves DIFERENTE
+                em cada idioma — russo tem `_few` e `_many` —, e o teste que
+                exige as mesmas chaves nos 34 catálogos quebraria em bloco.
+                Duas chaves escolhidas aqui é a mesma aproximação que o código
+                já fazia com o "s" no fim, e cabe na regra da casa.
+              */
+              t(total === 1 ? "conversa.busca.resultado" : "conversa.busca.resultados", {
+                quantos: `${total}${busca.hasNextPage ? "+" : ""}`,
+              })}
         </h2>
         <button
           onClick={onFechar}
-          aria-label="Fechar a busca"
+          aria-label={t("conversa.busca.fechar")}
           className="text-ink-muted transition hover:text-ink"
         >
           <X size={18} />
@@ -55,9 +70,11 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
         {!busca.isLoading && !total && (
           <p className="px-2 py-8 text-center text-sm text-ink-muted">
-            Nada com <span className="font-semibold text-ink">{termo}</span> por aqui.
+            {/* O termo por interpolação: frase partida por elemento não se
+                traduz aos pedaços — ver os outros casos iguais. */}
+            {t("conversa.busca.nadaCom", { termo })}
             <span className="mt-1 block text-xs text-ink-faint">
-              A busca só olha os canais que você pode ler.
+              {t("conversa.busca.soOsQuePodeLer")}
             </span>
           </p>
         )}

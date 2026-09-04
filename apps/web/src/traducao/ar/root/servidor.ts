@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "إعدادات الخادم",
   auditoria: {
+    todasAsAcoes: "كل الإجراءات",
+    todosOsUsuarios: "كل المستخدمين",
+    filtroMembros: "الأعضاء",
+    filtroCanais: "القنوات",
+    filtroEmojis: "الإيموجي",
+    filtroServidor: "الخادم",
     titulo: "سجل الإجراءات",
     porUsuario: "تصفية حسب الشخص",
     porAcao: "تصفية حسب الإجراء",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "لا يمكن التراجع عن هذا.",
   },
   emblemas: {
+    apagarDescricao: "يُنزع عن كل من يرتديه. لا يمكن التراجع.",
     titulo: "الشارات",
     vazio: "لا توجد شارات بعد.",
     novo: "شارة جديدة",
   },
   convites: {
+    revogarTitulo: "إلغاء الدعوة؟",
+    revogarAcao: "إلغاء",
+    revogarDescricao: "الرابط {{codigo}} يتوقف عن العمل فورًا. ومن دخل به من قبل يبقى في الخادم.",
     titulo: "الدعوات",
     descricao: "كل روابط الدعوة الفعّالة لهذا الخادم.",
     vazio: "لم تُنشأ أي دعوة بعد.",
     revogar: "إلغاء الدعوة",
   },
   integracoes: {
+    opcionais: "‏username و avatar_url اختياريان ويسريان لكل رسالة. الحد 5 رسائل كل 5 ثوانٍ.",
+    apagarDescricao: "يتوقف الرابط عن العمل فورًا. والرسائل التي أرسلها من قبل تبقى في القناة.",
     titulo: "التكاملات",
     descricao: "الويب هوك عنوان ينشر في قناة دون الحاجة إلى حساب. يفيد للإعلان بأن البناء نجح، أو أن أحدهم فتح طلبًا، أو أي شيء تريد إرساله من سكربت.",
     novo: "ويب هوك جديد",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "أرسل POST بصيغة JSON. الصيغة نفسها التي يستعملها Discord، فالسكربت الموجود مسبقًا يعمل دون تغيير:",
   },
   engajamento: {
+    semCanal: "بلا قناة نظام",
     titulo: "التفاعل",
     descricao: "ما يفعله الخادم من تلقاء نفسه كي لا يبدو فارغًا حين يصل شخص جديد.",
     sistema: "رسائل النظام",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "تطبيق الإسكات",
     duracao: "المدة بالدقائق",
     informeDuracao: "حدّد المدة بالدقائق.",
+  },
+  abas: {
+    expressoes: "التعبيرات",
+    pessoas: "الأشخاص",
+    apps: "التطبيقات",
+    moderacao: "الإشراف",
+    banimentos: "المحظورون",
   },
 };

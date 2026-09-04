@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Serverio nustatymai",
   auditoria: {
+    todasAsAcoes: "Visi veiksmai",
+    todosOsUsuarios: "Visi naudotojai",
+    filtroMembros: "Nariai",
+    filtroCanais: "Kanalai",
+    filtroEmojis: "Jaustukai",
+    filtroServidor: "Serveris",
     titulo: "Veiksmų žurnalas",
     porUsuario: "Filtruoti pagal žmogų",
     porAcao: "Filtruoti pagal veiksmą",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "To atšaukti nebegalima.",
   },
   emblemas: {
+    apagarDescricao: "Jis nukrenta nuo visų, kas jį nešioja. To atšaukti negalima.",
     titulo: "Ženkleliai",
     vazio: "Ženklelių dar nėra.",
     novo: "Naujas ženklelis",
   },
   convites: {
+    revogarTitulo: "Atšaukti pakvietimą?",
+    revogarAcao: "Atšaukti",
+    revogarDescricao: "Nuoroda {{codigo}} iškart nustoja veikti. Kas per ją jau atėjo, lieka serveryje.",
     titulo: "Pakvietimai",
     descricao: "Visos aktyvios šio serverio pakvietimo nuorodos.",
     vazio: "Dar nesukurta nė vieno pakvietimo.",
     revogar: "Atšaukti pakvietimą",
   },
   integracoes: {
+    opcionais: "username ir avatar_url nebūtini ir galioja žinutei. Riba — 5 žinutės per 5 sekundes.",
+    apagarDescricao: "URL iškart nustoja veikti. Jau išsiųstos žinutės lieka kanale.",
     titulo: "Integracijos",
     descricao: "Webhook yra adresas, kuris rašo į kanalą be paskyros. Pravartu pranešti, kad kompiliavimas praėjo, kad kažkas atidarė užklausą, ar ką dar norėtum siųsti iš scenarijaus.",
     novo: "Naujas webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Siųsk POST su JSON. Formatas toks pat kaip Discord, tad jau esantis scenarijus veiks be pakeitimų:",
   },
   engajamento: {
+    semCanal: "Nėra sistemos kanalo",
     titulo: "Įsitraukimas",
     descricao: "Ką serveris daro pats, kad neatrodytų tuščias, kai ateina kas nors naujas.",
     sistema: "Sistemos žinutės",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Taikyti nutildymą",
     duracao: "Trukmė minutėmis",
     informeDuracao: "Nurodyk trukmę minutėmis.",
+  },
+  abas: {
+    expressoes: "Išraiškos",
+    pessoas: "Žmonės",
+    apps: "Programėlės",
+    moderacao: "Moderavimas",
+    banimentos: "Blokavimai",
   },
 };

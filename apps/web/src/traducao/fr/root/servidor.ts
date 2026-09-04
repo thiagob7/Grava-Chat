@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Paramètres du serveur",
   auditoria: {
+    todasAsAcoes: "Toutes les actions",
+    todosOsUsuarios: "Tous les utilisateurs",
+    filtroMembros: "Membres",
+    filtroCanais: "Salons",
+    filtroEmojis: "Émojis",
+    filtroServidor: "Serveur",
     titulo: "Journal d'audit",
     porUsuario: "Filtrer par utilisateur",
     porAcao: "Filtrer par action",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Ceci est irréversible.",
   },
   emblemas: {
+    apagarDescricao: "Il est retiré à qui le porte. C'est irréversible.",
     titulo: "Badges",
     vazio: "Aucun badge pour l'instant.",
     novo: "Nouveau badge",
   },
   convites: {
+    revogarTitulo: "Révoquer l'invitation ?",
+    revogarAcao: "Révoquer",
+    revogarDescricao: "Le lien {{codigo}} cesse de fonctionner immédiatement. Qui est déjà entré par lui reste sur le serveur.",
     titulo: "Invitations",
     descricao: "Tous les liens d'invitation actifs de ce serveur.",
     vazio: "Aucune invitation créée pour l'instant.",
     revogar: "Révoquer l'invitation",
   },
   integracoes: {
+    opcionais: "username et avatar_url sont facultatifs et valent par message. La limite est de 5 messages toutes les 5 secondes.",
+    apagarDescricao: "L'URL cesse de fonctionner immédiatement. Les messages déjà envoyés restent dans le salon.",
     titulo: "Intégrations",
     descricao: "Un webhook est une adresse qui publie dans un salon sans avoir besoin de compte. Pratique pour annoncer qu'un build est passé, qu'un ticket vient d'être ouvert, ou ce que vous voulez envoyer depuis un script.",
     novo: "Nouveau webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Envoyez un POST en JSON. Le format est le même que celui de Discord, donc un script qui existe déjà fonctionne sans rien changer :",
   },
   engajamento: {
+    semCanal: "Aucun salon système",
     titulo: "Animation",
     descricao: "Ce que le serveur fait tout seul pour ne pas paraître vide quand quelqu'un de nouveau arrive.",
     sistema: "Messages système",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Appliquer l'exclusion",
     duracao: "Durée en minutes",
     informeDuracao: "Indiquez la durée en minutes.",
+  },
+  abas: {
+    expressoes: "Expressions",
+    pessoas: "Personnes",
+    apps: "Applis",
+    moderacao: "Modération",
+    banimentos: "Bannis",
   },
 };

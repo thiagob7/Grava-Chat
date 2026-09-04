@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Serverinstellingen",
   auditoria: {
+    todasAsAcoes: "Alle acties",
+    todosOsUsuarios: "Alle gebruikers",
+    filtroMembros: "Leden",
+    filtroCanais: "Kanalen",
+    filtroEmojis: "Emoji's",
+    filtroServidor: "Server",
     titulo: "Auditlogboek",
     porUsuario: "Filteren op gebruiker",
     porAcao: "Filteren op actie",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Dit kan niet ongedaan worden gemaakt.",
   },
   emblemas: {
+    apagarDescricao: "Het wordt afgenomen van iedereen die het draagt. Dit kan niet ongedaan worden gemaakt.",
     titulo: "Badges",
     vazio: "Nog geen badges.",
     novo: "Nieuwe badge",
   },
   convites: {
+    revogarTitulo: "Uitnodiging intrekken?",
+    revogarAcao: "Intrekken",
+    revogarDescricao: "De link {{codigo}} werkt meteen niet meer. Wie er al mee binnenkwam blijft op de server.",
     titulo: "Uitnodigingen",
     descricao: "Alle actieve uitnodigingslinks van deze server.",
     vazio: "Nog geen uitnodiging aangemaakt.",
     revogar: "Uitnodiging intrekken",
   },
   integracoes: {
+    opcionais: "username en avatar_url zijn optioneel en gelden per bericht. De limiet is 5 berichten per 5 seconden.",
+    apagarDescricao: "De URL werkt meteen niet meer. De berichten die hij al stuurde blijven in het kanaal.",
     titulo: "Integraties",
     descricao: "Een webhook is een adres dat in een kanaal post zonder account. Handig om te melden dat een build geslaagd is, dat iemand een ticket opent, of wat je verder vanuit een script wilt sturen.",
     novo: "Nieuwe webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Stuur een POST met JSON. Het formaat is hetzelfde als dat van Discord, dus een script dat al bestaat werkt zonder aanpassing:",
   },
   engajamento: {
+    semCanal: "Geen systeemkanaal",
     titulo: "Betrokkenheid",
     descricao: "Wat de server uit zichzelf doet zodat het niet leeg aanvoelt als er iemand nieuw binnenkomt.",
     sistema: "Systeemberichten",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Time-out toepassen",
     duracao: "Duur in minuten",
     informeDuracao: "Geef de duur in minuten op.",
+  },
+  abas: {
+    expressoes: "Expressies",
+    pessoas: "Mensen",
+    apps: "Apps",
+    moderacao: "Moderatie",
+    banimentos: "Bans",
   },
 };

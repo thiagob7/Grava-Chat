@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Setările serverului",
   auditoria: {
+    todasAsAcoes: "Toate acțiunile",
+    todosOsUsuarios: "Toți utilizatorii",
+    filtroMembros: "Membri",
+    filtroCanais: "Canale",
+    filtroEmojis: "Emoji",
+    filtroServidor: "Server",
     titulo: "Jurnalul acțiunilor",
     porUsuario: "Filtrează după persoană",
     porAcao: "Filtrează după acțiune",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Asta nu se poate anula.",
   },
   emblemas: {
+    apagarDescricao: "Iese de la oricine îl poartă. Nu se poate anula.",
     titulo: "Insigne",
     vazio: "Încă nu există insigne.",
     novo: "Insignă nouă",
   },
   convites: {
+    revogarTitulo: "Revoci invitația?",
+    revogarAcao: "Revocă",
+    revogarDescricao: "Linkul {{codigo}} încetează să funcționeze pe loc. Cine a intrat deja prin el rămâne pe server.",
     titulo: "Invitații",
     descricao: "Toate linkurile de invitație active ale acestui server.",
     vazio: "Încă nu s-a creat nicio invitație.",
     revogar: "Revocă invitația",
   },
   integracoes: {
+    opcionais: "username și avatar_url sunt opționale și se aplică per mesaj. Limita e de 5 mesaje la fiecare 5 secunde.",
+    apagarDescricao: "URL-ul încetează să funcționeze pe loc. Mesajele pe care le-a trimis deja rămân în canal.",
     titulo: "Integrări",
     descricao: "Un webhook e o adresă care postează într-un canal fără să aibă nevoie de cont. E util ca să anunțe că un build a trecut, că cineva a deschis un tichet, sau orice vrei să trimiți dintr-un script.",
     novo: "Webhook nou",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Trimite un POST cu JSON. Formatul e același ca la Discord, așa că un script care există deja funcționează nemodificat:",
   },
   engajamento: {
+    semCanal: "Fără canal de sistem",
     titulo: "Implicare",
     descricao: "Ce face serverul de unul singur ca să nu pară gol când vine cineva nou.",
     sistema: "Mesaje de sistem",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Aplică restricția",
     duracao: "Durata în minute",
     informeDuracao: "Spune durata în minute.",
+  },
+  abas: {
+    expressoes: "Expresii",
+    pessoas: "Oameni",
+    apps: "Aplicații",
+    moderacao: "Moderare",
+    banimentos: "Interdicții",
   },
 };

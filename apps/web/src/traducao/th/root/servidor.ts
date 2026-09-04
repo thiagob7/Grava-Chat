@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "ตั้งค่าเซิร์ฟเวอร์",
   auditoria: {
+    todasAsAcoes: "ทุกการกระทำ",
+    todosOsUsuarios: "ผู้ใช้ทั้งหมด",
+    filtroMembros: "สมาชิก",
+    filtroCanais: "ช่อง",
+    filtroEmojis: "อีโมจิ",
+    filtroServidor: "เซิร์ฟเวอร์",
     titulo: "บันทึกการกระทำ",
     porUsuario: "กรองตามคน",
     porAcao: "กรองตามการกระทำ",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "ย้อนกลับไม่ได้",
   },
   emblemas: {
+    apagarDescricao: "มันจะหลุดจากทุกคนที่ใช้อยู่ ย้อนกลับไม่ได้",
     titulo: "ตรา",
     vazio: "ยังไม่มีตรา",
     novo: "ตราใหม่",
   },
   convites: {
+    revogarTitulo: "เพิกถอนคำเชิญไหม",
+    revogarAcao: "เพิกถอน",
+    revogarDescricao: "ลิงก์ {{codigo}} จะใช้ไม่ได้ทันที คนที่เข้ามาด้วยลิงก์นี้แล้วยังอยู่ในเซิร์ฟเวอร์",
     titulo: "คำเชิญ",
     descricao: "ลิงก์คำเชิญที่ใช้งานอยู่ทั้งหมดของเซิร์ฟเวอร์นี้",
     vazio: "ยังไม่ได้สร้างคำเชิญ",
     revogar: "เพิกถอนคำเชิญ",
   },
   integracoes: {
+    opcionais: "username และ avatar_url ไม่บังคับ และมีผลต่อข้อความแต่ละอัน ขีดจำกัดคือ 5 ข้อความทุก 5 วินาที",
+    apagarDescricao: "URL จะใช้ไม่ได้ทันที ข้อความที่ส่งไปแล้วยังอยู่ในช่อง",
     titulo: "การเชื่อมต่อ",
     descricao: "เว็บฮุคคือที่อยู่ที่โพสต์ลงช่องได้โดยไม่ต้องมีบัญชี ใช้บอกว่าบิลด์ผ่าน มีคนเปิดเรื่องแจ้ง หรืออะไรก็ตามที่คุณอยากส่งจากสคริปต์",
     novo: "เว็บฮุคใหม่",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "ส่ง POST เป็น JSON รูปแบบเหมือนของ Discord สคริปต์ที่มีอยู่แล้วจึงใช้ได้โดยไม่ต้องแก้:",
   },
   engajamento: {
+    semCanal: "ไม่มีช่องระบบ",
     titulo: "ความมีชีวิตชีวา",
     descricao: "สิ่งที่เซิร์ฟเวอร์ทำเองเพื่อไม่ให้ดูว่างเปล่าตอนมีคนใหม่เข้ามา",
     sistema: "ข้อความระบบ",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "ใช้การปิดเสียง",
     duracao: "ระยะเวลาเป็นนาที",
     informeDuracao: "ระบุระยะเวลาเป็นนาที",
+  },
+  abas: {
+    expressoes: "การแสดงออก",
+    pessoas: "ผู้คน",
+    apps: "แอป",
+    moderacao: "การดูแล",
+    banimentos: "การแบน",
   },
 };

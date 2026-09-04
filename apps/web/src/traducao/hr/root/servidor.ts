@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Postavke poslužitelja",
   auditoria: {
+    todasAsAcoes: "Sve radnje",
+    todosOsUsuarios: "Svi korisnici",
+    filtroMembros: "Članovi",
+    filtroCanais: "Kanali",
+    filtroEmojis: "Emojiji",
+    filtroServidor: "Poslužitelj",
     titulo: "Zapisnik radnji",
     porUsuario: "Filtriraj po osobi",
     porAcao: "Filtriraj po radnji",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Ovo se ne može poništiti.",
   },
   emblemas: {
+    apagarDescricao: "Skida se svakome tko ga nosi. Ne može se poništiti.",
     titulo: "Bedževi",
     vazio: "Još nema bedževa.",
     novo: "Novi bedž",
   },
   convites: {
+    revogarTitulo: "Opozvati pozivnicu?",
+    revogarAcao: "Opozovi",
+    revogarDescricao: "Poveznica {{codigo}} odmah prestaje raditi. Tko je preko nje već ušao, ostaje na poslužitelju.",
     titulo: "Pozivnice",
     descricao: "Sve aktivne poveznice s pozivnicom ovog poslužitelja.",
     vazio: "Još nije stvorena nijedna pozivnica.",
     revogar: "Opozovi pozivnicu",
   },
   integracoes: {
+    opcionais: "username i avatar_url nisu obavezni i vrijede po poruci. Ograničenje je 5 poruka svakih 5 sekundi.",
+    apagarDescricao: "URL odmah prestaje raditi. Poruke koje je već poslao ostaju u kanalu.",
     titulo: "Integracije",
     descricao: "Webhook je adresa koja objavljuje u kanalu bez potrebe za računom. Služi da javi kad build prođe, kad netko otvori prijavu, ili što god želiš poslati iz skripte.",
     novo: "Novi webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Pošalji POST s JSON-om. Format je isti kao Discordov, pa skripta koja već postoji radi bez promjena:",
   },
   engajamento: {
+    semCanal: "Bez sustavnog kanala",
     titulo: "Uključenost",
     descricao: "Što poslužitelj radi sam da ne djeluje prazno kad dođe netko nov.",
     sistema: "Sustavne poruke",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Primijeni utišavanje",
     duracao: "Trajanje u minutama",
     informeDuracao: "Navedi trajanje u minutama.",
+  },
+  abas: {
+    expressoes: "Izrazi",
+    pessoas: "Ljudi",
+    apps: "Aplikacije",
+    moderacao: "Moderacija",
+    banimentos: "Zabrane",
   },
 };

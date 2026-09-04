@@ -337,7 +337,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
                       apagar.mutate({ guildId, stickerId: sticker.id }),
                   )
                 }
-                title="Apagar"
+                title={t("comum.apagar")}
                 className="absolute right-1 top-1 rounded bg-surface-0 p-1 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
               >
                 <Trash2 size={14} />
@@ -390,7 +390,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
     }
 
     const anexo = await uploadArquivo(arquivo).catch(() => null);
-    if (!anexo) return toast.error("Não deu pra subir o arquivo.");
+    if (!anexo) return toast.error(t("servidor.expressoes.falhaEnvio"));
 
     setPendente({ file: arquivo, url: anexo.url });
     setNome(arquivo.name.replace(/\.[^.]+$/, "").slice(0, 32));
@@ -476,14 +476,14 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
                 )
               }
             >
-              Enviar
+              {t("comum.enviar")}
             </Button>
             <Button
               variant="surface"
               size="sm"
               onClick={() => setPendente(null)}
             >
-              Deixa pra lá
+              {t("servidor.expressoes.deixaPraLa")}
             </Button>
           </div>
         </div>
@@ -533,7 +533,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
                       confirmado && apagar.mutate({ guildId, soundId: som.id }),
                   )
                 }
-                title="Apagar"
+                title={t("comum.apagar")}
                 className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
               >
                 <Trash2 size={16} />

@@ -99,8 +99,8 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
                   void confirmar({
                     titulo: `Apagar o emblema ${emblema.nome}?`,
                     descricao:
-                      "Ele sai de quem estiver usando. Não dá pra desfazer.",
-                    acao: "Apagar",
+                      t("servidor.emblemas.apagarDescricao"),
+                    acao: t("comum.apagar"),
                   }).then(
                     ({ confirmado }) =>
                       confirmado && remover.mutate(emblema.id),

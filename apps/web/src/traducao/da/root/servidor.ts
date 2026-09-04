@@ -1,6 +1,12 @@
 export const servidor = {
   titulo: "Serverindstillinger",
   auditoria: {
+    todasAsAcoes: "Alle handlinger",
+    todosOsUsuarios: "Alle brugere",
+    filtroMembros: "Medlemmer",
+    filtroCanais: "Kanaler",
+    filtroEmojis: "Emojis",
+    filtroServidor: "Server",
     titulo: "Handlingslog",
     porUsuario: "Filtrér på person",
     porAcao: "Filtrér på handling",
@@ -22,17 +28,23 @@ export const servidor = {
     aviso: "Det her kan ikke fortrydes.",
   },
   emblemas: {
+    apagarDescricao: "Det ryger af alle, der bærer det. Det kan ikke fortrydes.",
     titulo: "Mærker",
     vazio: "Ingen mærker endnu.",
     novo: "Nyt mærke",
   },
   convites: {
+    revogarTitulo: "Tilbagekald invitationen?",
+    revogarAcao: "Tilbagekald",
+    revogarDescricao: "Linket {{codigo}} holder op med at virke med det samme. Den, der allerede kom ind via det, bliver på serveren.",
     titulo: "Invitationer",
     descricao: "Alle aktive invitationslinks til denne server.",
     vazio: "Der er ikke oprettet nogen invitation endnu.",
     revogar: "Tilbagekald invitation",
   },
   integracoes: {
+    opcionais: "username og avatar_url er valgfrie og gælder pr. besked. Grænsen er 5 beskeder hvert 5. sekund.",
+    apagarDescricao: "URL'en holder op med at virke med det samme. De beskeder, den allerede sendte, bliver i kanalen.",
     titulo: "Integrationer",
     descricao: "En webhook er en adresse, der poster i en kanal uden at skulle have en konto. God til at melde, at et build gik igennem, at nogen har åbnet en sag, eller hvad du ellers vil sende fra et script.",
     novo: "Ny webhook",
@@ -43,6 +55,7 @@ export const servidor = {
     comoUsarTexto: "Send en POST med JSON. Formatet er det samme som Discords, så et script, der allerede findes, virker uændret:",
   },
   engajamento: {
+    semCanal: "Ingen systemkanal",
     titulo: "Engagement",
     descricao: "Hvad serveren gør af sig selv, så den ikke virker tom, når der kommer en ny.",
     sistema: "Systembeskeder",
@@ -246,5 +259,12 @@ export const servidor = {
     aplicarCastigo: "Anvend udelukkelsen",
     duracao: "Varighed i minutter",
     informeDuracao: "Angiv varigheden i minutter.",
+  },
+  abas: {
+    expressoes: "Udtryk",
+    pessoas: "Folk",
+    apps: "Apps",
+    moderacao: "Moderation",
+    banimentos: "Bandlysninger",
   },
 };
