@@ -3,7 +3,7 @@ import { Play } from "lucide-react";
 
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import type { EmbedModel } from "~/@core/application/requests/embed/embeds";
-import { extrairLinks } from "~/lib/links";
+import { extrairLinks } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";

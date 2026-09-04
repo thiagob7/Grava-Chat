@@ -7,14 +7,14 @@ import { useSendMessage } from "~/@core/application/queries/message/use-send-mes
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { MessagePageModel } from "~/@core/domain/models/message-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { mensagemParaEditar } from "~/lib/editar-com-a-seta";
-import { useEdicaoStore } from "~/stores/edicao-store";
+import { mensagemParaEditar } from "~/features/conversa/lib/editar-com-a-seta";
+import { useEdicaoStore } from "~/features/conversa/stores/edicao-store";
 import { invocarComando, startTyping } from "~/@core/lib/websocket/emit-message-actions";
-import { AttachmentTray } from "~/components/AttachmentTray";
-import { CreatePollModal } from "~/components/CreatePollModal";
+import { AttachmentTray } from "~/features/conversa/components/AttachmentTray";
+import { CreatePollModal } from "~/features/conversa/components/CreatePollModal";
 import { ExpressionPicker, type Aba } from "~/components/ExpressionPicker";
-import { ComandoSugestoes, DicaDoComando } from "~/components/ComandoSugestoes";
-import { MencaoSugestoes } from "~/components/MencaoSugestoes";
+import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
+import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
 import {
   SeletorDeFonte,
   guardarFonte,
@@ -29,16 +29,16 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { useAttachments } from "~/hooks/use-attachments";
+import { useAttachments } from "~/features/conversa/hooks/use-attachments";
 import { usePermissions } from "~/hooks/use-permissions";
-import { detectarComando, useComandos } from "~/hooks/use-comandos";
-import { detectarMencao, useMencoes, type Mencionavel } from "~/hooks/use-mencoes";
+import { detectarComando, useComandos } from "~/features/conversa/hooks/use-comandos";
+import { detectarMencao, useMencoes, type Mencionavel } from "~/features/conversa/hooks/use-mencoes";
 import { familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
-import { useReplyStore } from "~/stores/reply-store";
+import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAparencia } from "~/stores/aparencia";
-import { cercarCodigo, pareceCodigo } from "~/lib/codigo";
-import { converterEmoticons } from "~/lib/emoticons";
+import { cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
+import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
 

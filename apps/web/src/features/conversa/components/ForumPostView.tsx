@@ -3,9 +3,9 @@ import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 
 import { useClosePost } from "~/@core/application/queries/forum/use-forum";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
-import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
-import { Composer } from "~/components/Composer";
-import { MessageList } from "~/components/MessageList";
+import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import { Composer } from "~/features/conversa/components/Composer";
+import { MessageList } from "~/features/conversa/components/MessageList";
 import { Button } from "~/components/ui/button";
 import { formatTimestamp } from "~/lib/format";
 

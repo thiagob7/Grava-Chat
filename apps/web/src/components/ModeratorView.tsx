@@ -32,7 +32,7 @@ import { Avatar } from "~/components/Avatar";
 import { useModeracao } from "~/stores/moderacao";
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import { copiarTexto } from "~/lib/copiar";
-import { extrairLinks } from "~/lib/links";
+import { extrairLinks } from "~/features/conversa/lib/links";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirmar } from "~/components/ui/confirm";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";

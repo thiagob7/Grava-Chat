@@ -2,7 +2,7 @@ import React from "react";
 import { AtSign, Users } from "lucide-react";
 
 import { Avatar } from "~/components/Avatar";
-import type { Mencionavel } from "~/hooks/use-mencoes";
+import type { Mencionavel } from "~/features/conversa/hooks/use-mencoes";
 import { legivel } from "~/lib/cosmeticos/contraste";
 import { cn } from "~/lib/utils";
 

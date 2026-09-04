@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AlertCircle, EyeOff, FileText, Loader2, Pencil, X } from "lucide-react";
 
-import type { PendingAttachment } from "~/hooks/use-attachments";
+import type { PendingAttachment } from "~/features/conversa/hooks/use-attachments";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import {

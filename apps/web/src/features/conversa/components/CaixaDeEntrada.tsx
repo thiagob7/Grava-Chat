@@ -9,7 +9,7 @@ import {
   useToggleFavoriteMessage,
 } from "~/@core/application/queries/message/use-message-favorites";
 import { Avatar } from "~/components/Avatar";
-import { MessageContent } from "~/components/MessageContent";
+import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";

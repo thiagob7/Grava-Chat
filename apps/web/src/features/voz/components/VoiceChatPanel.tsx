@@ -2,9 +2,9 @@ import React from "react";
 import { useTranslation } from "~/traducao";
 import { MessageSquare, X } from "lucide-react";
 
-import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
-import { Composer } from "~/components/Composer";
-import { MessageList } from "~/components/MessageList";
+import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import { Composer } from "~/features/conversa/components/Composer";
+import { MessageList } from "~/features/conversa/components/MessageList";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 
 interface VoiceChatPanelProps {

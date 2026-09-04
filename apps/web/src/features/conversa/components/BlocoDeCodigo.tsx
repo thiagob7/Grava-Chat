@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 
-import { rotuloDaLingua } from "~/lib/codigo";
+import { rotuloDaLingua } from "~/features/conversa/lib/codigo";
 import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";

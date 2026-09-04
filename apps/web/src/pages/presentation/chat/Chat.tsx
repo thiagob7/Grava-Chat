@@ -22,13 +22,13 @@ import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
-import { AreaDeConversa, RodapeDaConversa } from "~/components/AreaDeConversa";
-import { CampoDeBusca } from "~/components/CampoDeBusca";
+import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import { CampoDeBusca } from "~/features/conversa/components/CampoDeBusca";
 import { ChannelSidebar } from "~/components/ChannelSidebar";
-import { Composer } from "~/components/Composer";
-import { ForumChannel } from "~/components/ForumChannel";
-import { ForumPostView } from "~/components/ForumPostView";
-import { PinnedMessagesPanel } from "~/components/PinnedMessagesPanel";
+import { Composer } from "~/features/conversa/components/Composer";
+import { ForumChannel } from "~/features/conversa/components/ForumChannel";
+import { ForumPostView } from "~/features/conversa/components/ForumPostView";
+import { PinnedMessagesPanel } from "~/features/conversa/components/PinnedMessagesPanel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,15 +38,15 @@ import {
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
 import { useFavoritos } from "~/stores/favoritos";
 import { BotaoDoAplicativo } from "~/components/BotaoDoAplicativo";
-import { CaixaDeEntrada } from "~/components/CaixaDeEntrada";
+import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/features/voz/components/VoiceChatPanel";
 import { GuildRail } from "~/components/GuildRail";
 import { MemberList } from "~/components/MemberList";
-import { MessageList } from "~/components/MessageList";
+import { MessageList } from "~/features/conversa/components/MessageList";
 import { ConfirmacaoDeVoz } from "~/features/voz/components/ConfirmacaoDeVoz";
 import { ModeratorView } from "~/components/ModeratorView";
-import { PainelDeBusca } from "~/components/PainelDeBusca";
-import { TypingIndicator } from "~/components/TypingIndicator";
+import { PainelDeBusca } from "~/features/conversa/components/PainelDeBusca";
+import { TypingIndicator } from "~/features/conversa/components/TypingIndicator";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
 import { Button } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";

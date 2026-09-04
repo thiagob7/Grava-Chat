@@ -7,8 +7,8 @@ import type { ResultadoDaBusca } from "~/@core/application/requests/message/busc
 import { Avatar } from "~/components/Avatar";
 import { UserName } from "~/components/UserName";
 import { useEnfeites } from "~/hooks/use-enfeites";
-import { useMencoes } from "~/hooks/use-mencoes";
-import { MessageContent } from "~/components/MessageContent";
+import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
+import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";

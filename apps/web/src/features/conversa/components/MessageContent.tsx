@@ -4,12 +4,12 @@ import type { GuildEmoji } from "@gravae/shared";
 import { Emoji } from "~/components/Emoji";
 import { EMOJI } from "~/lib/twemoji";
 
-import { BlocoDeCodigo } from "~/components/BlocoDeCodigo";
-import type { ResolverMencoes } from "~/hooks/use-mencoes";
-import { partirEmCodigo } from "~/lib/codigo";
+import { BlocoDeCodigo } from "~/features/conversa/components/BlocoDeCodigo";
+import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
+import { partirEmCodigo } from "~/features/conversa/lib/codigo";
 import { legivel } from "~/lib/cosmeticos/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
-import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/lib/links";
+import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/stores/aparencia";
 import { i18next, useTranslation } from "~/traducao";

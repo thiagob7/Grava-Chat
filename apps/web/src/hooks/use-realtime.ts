@@ -146,7 +146,7 @@ import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
 import { avisarDeMensagem } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAusencia } from "~/hooks/use-ausencia";
-import { useTypingStore } from "~/stores/typing-store";
+import { useTypingStore } from "~/features/conversa/stores/typing-store";
 import { tocarSomDoPainel } from "~/features/voz/lib/soundboard";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";

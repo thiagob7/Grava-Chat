@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Avatar } from "~/components/Avatar";
-import { useTypingStore } from "~/stores/typing-store";
+import { useTypingStore } from "~/features/conversa/stores/typing-store";
 import { useTranslation } from "~/traducao";
 
 interface TypingIndicatorProps {

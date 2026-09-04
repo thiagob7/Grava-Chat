@@ -24,25 +24,25 @@ import type { GuildEmoji, Message } from "@gravae/shared";
 import { Emoji } from "~/components/Emoji";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
 import type { EnfeitesDaPessoa } from "~/hooks/use-enfeites";
-import type { ResolverMencoes } from "~/hooks/use-mencoes";
+import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
 import {
   deleteMessage,
   editMessage,
   reactToMessage,
 } from "~/@core/lib/websocket/emit-message-actions";
 import { Avatar } from "~/components/Avatar";
-import { MessageAttachments } from "~/components/MessageAttachments";
+import { MessageAttachments } from "~/features/conversa/components/MessageAttachments";
 import { useMe } from "~/@core/application/queries/auth/use-me";
-import { MessageContent } from "~/components/MessageContent";
-import { LinkEmbeds } from "~/components/LinkEmbed";
-import { PollCard } from "~/components/PollCard";
+import { MessageContent } from "~/features/conversa/components/MessageContent";
+import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
+import { PollCard } from "~/features/conversa/components/PollCard";
 import { ServerTag } from "~/components/ServerTag";
 import { UserName } from "~/components/UserName";
 import { UserProfilePopover } from "~/components/UserProfilePopover";
 import { formatTime, formatTimestamp } from "~/lib/format";
 import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
 import { cn } from "~/lib/utils";
-import { useEdicaoStore } from "~/stores/edicao-store";
+import { useEdicaoStore } from "~/features/conversa/stores/edicao-store";
 import { useConfirmar } from "~/components/ui/confirm";
 import { Textarea } from "~/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
@@ -61,10 +61,10 @@ import { unreadFromMessage } from "~/@core/lib/websocket/emit-message-actions";
 import { copiarTexto } from "~/lib/copiar";
 import { useShiftPressionado } from "~/hooks/use-shift";
 import { useSegurar } from "~/hooks/use-segurar";
-import { useReplyStore } from "~/stores/reply-store";
+import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useSuperReacao } from "~/stores/super-reacao";
 import { ExpressionPicker } from "~/components/ExpressionPicker";
-import { EncaminharModal } from "~/components/EncaminharModal";
+import { EncaminharModal } from "~/features/conversa/components/EncaminharModal";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/stores/aparencia";
 import { useTranslation } from "~/traducao";
