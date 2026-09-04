@@ -34,7 +34,7 @@ import { ServerSettingsModal } from "~/features/servidor/components/server-setti
 import { Tooltip } from "~/components/ui/tooltip";
 import { usePermissions } from "~/hooks/use-permissions";
 import { copiarTexto } from "~/lib/copiar";
-import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";

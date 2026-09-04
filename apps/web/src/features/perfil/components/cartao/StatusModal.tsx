@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Smile, X } from "lucide-react";
 import { LIMITS, type StatusPersonalizado } from "@gravae/shared";
 
-import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
+import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";

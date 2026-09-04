@@ -5,7 +5,7 @@ import type { Message } from "@gravae/shared";
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Dialog, DialogBody, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";

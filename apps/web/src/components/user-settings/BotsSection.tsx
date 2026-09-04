@@ -32,7 +32,7 @@ import {
 } from "~/@core/application/queries/bot/use-bots";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import type { BotModel } from "~/@core/application/requests/bot/bots";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { useConfirmar } from "~/components/ui/confirm";
 import {

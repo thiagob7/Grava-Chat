@@ -3,7 +3,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { SpeakerHigh } from "@phosphor-icons/react";
 
 import type { VozNoServidor } from "@gravae/shared";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 
 interface DicaDoServidorProps {
   nome: string;

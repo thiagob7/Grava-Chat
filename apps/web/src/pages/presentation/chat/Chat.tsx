@@ -56,7 +56,7 @@ import { useRealtime } from "~/hooks/use-realtime";
 import { useReconnectVoice } from "~/features/voz/hooks/use-reconnect-voice";
 import { useModeracao } from "~/features/servidor/stores/moderacao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 
 export const Chat: React.FC = () => {

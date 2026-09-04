@@ -9,14 +9,14 @@ import {
 } from "~/@core/application/queries/role/use-save-role";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, campoDeCor } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirmar } from "~/components/ui/confirm";
-import { ESTILOS_DO_CARGO } from "~/lib/cosmeticos/catalogo";
-import { estiloDoCargo } from "~/lib/cosmeticos/cargo";
+import { ESTILOS_DO_CARGO } from "~/features/perfil/lib/catalogo";
+import { estiloDoCargo } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 

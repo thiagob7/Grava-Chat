@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import type { PerfilPublico, PresenceStatus } from "@gravae/shared";
 
-import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
-import { IconeDeStatus } from "~/components/IconeDeStatus";
-import { ehDeArquivo, folgaDaDecoracao } from "~/lib/cosmeticos/decoracoes";
-import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
+import { DecoracaoDeArquivo } from "~/features/perfil/components/DecoracaoDeArquivo";
+import { IconeDeStatus } from "~/features/perfil/components/IconeDeStatus";
+import { ehDeArquivo, folgaDaDecoracao } from "~/features/perfil/lib/decoracoes";
+import { classeDoEnfeite, variaveisDoEnfeite } from "~/features/perfil/lib/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 

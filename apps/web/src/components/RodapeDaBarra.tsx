@@ -2,7 +2,7 @@ import React from "react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { CartaoDaTransmissao } from "~/features/voz/components/CartaoDaTransmissao";
-import { UserPanel } from "~/components/UserPanel";
+import { UserPanel } from "~/features/perfil/components/UserPanel";
 import { VoicePanel } from "~/features/voz/components/VoicePanel";
 
 interface RodapeDaBarraProps {

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { ChevronRight, PhoneCall, Volume2 } from "lucide-react";
 
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useSession } from "~/contexts/session-context";

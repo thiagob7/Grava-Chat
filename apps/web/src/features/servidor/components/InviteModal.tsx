@@ -6,7 +6,7 @@ import { useCreateInvite } from "~/@core/application/queries/guild/use-create-in
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { openDm } from "~/@core/application/requests/friend/open-dm";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { CarrosselDeEtapas } from "~/components/ui/carrossel-de-etapas";
 import {
   ConfiguracoesDoConvite,

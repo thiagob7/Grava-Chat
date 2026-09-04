@@ -33,7 +33,7 @@ import { useAttachments } from "~/features/conversa/hooks/use-attachments";
 import { usePermissions } from "~/hooks/use-permissions";
 import { detectarComando, useComandos } from "~/features/conversa/hooks/use-comandos";
 import { detectarMencao, useMencoes, type Mencionavel } from "~/features/conversa/hooks/use-mencoes";
-import { familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAparencia } from "~/stores/aparencia";

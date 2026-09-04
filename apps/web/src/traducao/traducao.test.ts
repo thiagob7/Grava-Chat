@@ -136,9 +136,26 @@ describe("catálogos de tradução", () => {
 
   it("tem tradução para as chaves que a tela monta por interpolação", () => {
     const raiz = dirname(fileURLToPath(import.meta.url));
+
+    const achar = (nome: string): string => {
+      const pilha = [join(raiz, "..")];
+
+      while (pilha.length) {
+        const pasta = pilha.pop()!;
+
+        for (const item of readdirSync(pasta, { withFileTypes: true })) {
+          const caminho = join(pasta, item.name);
+          if (item.isDirectory()) pilha.push(caminho);
+          else if (item.name === nome) return caminho;
+        }
+      }
+
+      throw new Error(`não achei ${nome} em src/`);
+    };
+
     const fontes: [string, string][] = [
-      ["perfil.presenca", join(raiz, "..", "components", "profile", "MenuDoProprioCartao.tsx")],
-      ["perfil.status", join(raiz, "..", "components", "profile", "StatusModal.tsx")],
+      ["perfil.presenca", achar("MenuDoProprioCartao.tsx")],
+      ["perfil.status", achar("StatusModal.tsx")],
     ];
 
     const montadas = fontes.flatMap(([prefixo, caminho]) =>

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { useEnfeites } from "~/hooks/use-enfeites";
+import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 export function useParticipante() {

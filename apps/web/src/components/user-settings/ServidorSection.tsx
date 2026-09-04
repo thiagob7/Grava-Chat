@@ -22,7 +22,7 @@ import type {
   ParticipanteDaSala,
 } from "~/@core/application/requests/status/find-status";
 import { useStatus } from "~/@core/application/queries/status/use-status";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
 import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";

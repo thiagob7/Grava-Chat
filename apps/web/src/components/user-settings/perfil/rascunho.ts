@@ -10,7 +10,7 @@ import type {
 } from "@gravae/shared";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { VAZIOS } from "~/lib/cosmeticos/catalogo";
+import { VAZIOS } from "~/features/perfil/lib/catalogo";
 
 export interface RascunhoDePerfil {
   displayName: string;

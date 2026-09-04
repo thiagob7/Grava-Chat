@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import type { Role } from "@gravae/shared";
 
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
-import { Avatar } from "~/components/Avatar";
-import { UserName } from "~/components/UserName";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { UserName } from "~/features/perfil/components/UserName";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { useFindEmComum } from "~/@core/application/queries/user/use-find-em-comum";
-import { corMaisAlta } from "~/lib/cosmeticos/cargo";
+import { corMaisAlta } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
 import { idiomaAtual, useTranslation } from "~/traducao";

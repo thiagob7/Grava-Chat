@@ -9,7 +9,7 @@ import {
   useBotDestinations,
   useBotInvite,
 } from "~/@core/application/queries/bot/use-bots";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Label } from "~/components/ui/input";

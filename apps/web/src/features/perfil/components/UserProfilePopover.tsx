@@ -40,11 +40,11 @@ import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
-import { ProfileEditorModal } from "~/components/profile/ProfileEditorModal";
-import { StatusModal } from "~/components/profile/StatusModal";
-import { CampoDeNota } from "~/components/profile/CampoDeNota";
-import { EscolherEmblemas } from "~/components/profile/EscolherEmblemas";
-import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
+import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
+import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
+import { CampoDeNota } from "~/features/perfil/components/cartao/CampoDeNota";
+import { EscolherEmblemas } from "~/features/perfil/components/cartao/EscolherEmblemas";
+import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Tooltip } from "~/components/ui/tooltip";
 import {
   DropdownMenu,
@@ -56,7 +56,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { FullProfileModal } from "~/components/FullProfileModal";
+import { FullProfileModal } from "~/features/perfil/components/FullProfileModal";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useCreateInvite } from "~/@core/application/queries/guild/use-create-invite";
 import { useBlockUser } from "~/@core/application/queries/friend/use-block-user";
@@ -70,10 +70,10 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { useConfirmar } from "~/components/ui/confirm";
-import { useEnfeites } from "~/hooks/use-enfeites";
+import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
 import { copiarTexto } from "~/lib/copiar";
-import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
+import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
 import { useTranslation } from "~/traducao";
 
 interface UserProfilePopoverProps {

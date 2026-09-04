@@ -4,12 +4,12 @@ import { Headphones, HeadphoneOff, Mic, MicOff, Phone, Settings, Volume2 } from 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Avatar } from "~/components/Avatar";
-import { UserName } from "~/components/UserName";
-import { MenuDoProprioCartao, rotuloDoEstado } from "~/components/profile/MenuDoProprioCartao";
-import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
-import { ProfileEditorModal } from "~/components/profile/ProfileEditorModal";
-import { StatusModal } from "~/components/profile/StatusModal";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { UserName } from "~/features/perfil/components/UserName";
+import { MenuDoProprioCartao, rotuloDoEstado } from "~/features/perfil/components/cartao/MenuDoProprioCartao";
+import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
+import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
+import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
 import { UserSettingsModal } from "~/components/user-settings/UserSettingsModal";
 import { useConfiguracoes } from "~/stores/configuracoes";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";

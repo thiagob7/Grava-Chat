@@ -3,7 +3,7 @@ import { MessageSquare, MessagesSquare, Plus, Lock } from "lucide-react";
 
 import { useCreatePost, useFindPosts } from "~/@core/application/queries/forum/use-forum";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

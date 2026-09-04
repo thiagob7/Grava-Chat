@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Phone, PhoneOff, Video } from "lucide-react";
 
 import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { recusarChamada } from "~/@core/lib/websocket/emit-voice";
 import { tocarSom } from "~/lib/ui-sounds";
 import { useChamadaStore } from "~/features/voz/stores/chamada-store";

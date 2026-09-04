@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import type { GuildMember, Role } from "@gravae/shared";
 
-import { Avatar } from "~/components/Avatar";
-import { ServerTag } from "~/components/ServerTag";
-import { UserName } from "~/components/UserName";
-import { UserProfilePopover } from "~/components/UserProfilePopover";
-import { useEnfeites, type ResolverEnfeites } from "~/hooks/use-enfeites";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { ServerTag } from "~/features/perfil/components/ServerTag";
+import { UserName } from "~/features/perfil/components/UserName";
+import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
+import { useEnfeites, type ResolverEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";

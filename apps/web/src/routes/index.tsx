@@ -19,7 +19,7 @@ import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
 import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 import { useConfigPorUrl } from "~/hooks/use-config-por-url";
-import { ContaEmExclusao } from "~/components/ContaEmExclusao";
+import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
 
 export const AppRoutes: React.FC = () => {
   useConfigPorUrl();

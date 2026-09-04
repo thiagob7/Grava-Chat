@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { Check, ShieldAlert } from "lucide-react";
 
 import { api } from "~/@core/lib/api";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { useSession } from "~/contexts/session-context";
 import { useQuery } from "@tanstack/react-query";

@@ -5,7 +5,7 @@ import {
   useFindBans,
   useUnbanMember,
 } from "~/@core/application/queries/moderation/use-moderation";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { formatTimestamp } from "~/lib/format";

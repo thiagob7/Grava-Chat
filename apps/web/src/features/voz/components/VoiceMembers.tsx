@@ -10,8 +10,8 @@ import {
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 
-import { Avatar } from "~/components/Avatar";
-import { UserProfilePopover } from "~/components/UserProfilePopover";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";

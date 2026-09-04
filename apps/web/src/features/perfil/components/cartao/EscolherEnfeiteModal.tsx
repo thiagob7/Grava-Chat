@@ -1,6 +1,6 @@
 import React, { type ReactNode } from "react";
 
-import type { Opcao } from "~/lib/cosmeticos/catalogo";
+import type { Opcao } from "~/features/perfil/lib/catalogo";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { GradeDeOpcoes } from "~/components/user-settings/perfil/campos";
 

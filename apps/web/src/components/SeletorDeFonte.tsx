@@ -9,8 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Tooltip } from "~/components/ui/tooltip";
-import { FONTES } from "~/lib/cosmeticos/catalogo";
-import { carregarTodasAsFontes, familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { FONTES } from "~/features/perfil/lib/catalogo";
+import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 
 const CHAVE = "gravae:fonte-da-mensagem";

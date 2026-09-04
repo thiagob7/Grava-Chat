@@ -6,8 +6,8 @@ import {
   folgaDaDecoracao,
   imagemDaDecoracao,
   segmentoDaDecoracao,
-} from "~/lib/cosmeticos/decoracoes";
-import { usarLottie } from "~/lib/cosmeticos/lottie";
+} from "~/features/perfil/lib/decoracoes";
+import { usarLottie } from "~/features/perfil/lib/lottie";
 
 interface DecoracaoDeArquivoProps {
   decoracao: Decoracao;

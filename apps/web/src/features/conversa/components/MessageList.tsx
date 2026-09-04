@@ -9,7 +9,7 @@ import { useMarkRead } from "~/@core/application/queries/message/use-mark-read";
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { MessageItem, shouldGroup } from "~/features/conversa/components/MessageItem";
-import { useEnfeites } from "~/hooks/use-enfeites";
+import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";

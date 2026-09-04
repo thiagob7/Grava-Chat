@@ -5,7 +5,7 @@ import { useAparencia } from "~/stores/aparencia";
 
 import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import {
   useEncerrarSessao,

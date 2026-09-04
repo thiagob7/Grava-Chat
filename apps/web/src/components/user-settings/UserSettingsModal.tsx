@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { AccountSection } from "~/components/user-settings/AccountSection";
 import { AppearanceSection } from "~/components/user-settings/AppearanceSection";
 import { NotificationsSection } from "~/components/user-settings/NotificationsSection";

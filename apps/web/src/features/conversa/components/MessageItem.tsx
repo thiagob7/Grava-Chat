@@ -23,24 +23,24 @@ import type { GuildEmoji, Message } from "@gravae/shared";
 
 import { Emoji } from "~/components/Emoji";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
-import type { EnfeitesDaPessoa } from "~/hooks/use-enfeites";
+import type { EnfeitesDaPessoa } from "~/features/perfil/hooks/use-enfeites";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
 import {
   deleteMessage,
   editMessage,
   reactToMessage,
 } from "~/@core/lib/websocket/emit-message-actions";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { MessageAttachments } from "~/features/conversa/components/MessageAttachments";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
 import { PollCard } from "~/features/conversa/components/PollCard";
-import { ServerTag } from "~/components/ServerTag";
-import { UserName } from "~/components/UserName";
-import { UserProfilePopover } from "~/components/UserProfilePopover";
+import { ServerTag } from "~/features/perfil/components/ServerTag";
+import { UserName } from "~/features/perfil/components/UserName";
+import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { formatTime, formatTimestamp } from "~/lib/format";
-import { carregarFonte, familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useEdicaoStore } from "~/features/conversa/stores/edicao-store";
 import { useConfirmar } from "~/components/ui/confirm";

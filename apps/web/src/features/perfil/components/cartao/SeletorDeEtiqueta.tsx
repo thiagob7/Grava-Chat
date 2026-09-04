@@ -2,7 +2,7 @@ import React from "react";
 import { Check, ChevronDown, Plus } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
-import { ServerTag } from "~/components/ServerTag";
+import { ServerTag } from "~/features/perfil/components/ServerTag";
 import {
   DropdownMenu,
   DropdownMenuContent,

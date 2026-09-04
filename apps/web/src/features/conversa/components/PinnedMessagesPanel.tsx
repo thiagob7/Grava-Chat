@@ -2,7 +2,7 @@ import React from "react";
 import { PushPin, PushPinSlash } from "@phosphor-icons/react";
 
 import { useFindPins, usePinMessage } from "~/@core/application/queries/message/use-pins";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
 import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { FullProfileModal } from "~/components/FullProfileModal";
+import { FullProfileModal } from "~/features/perfil/components/FullProfileModal";
 import { idiomaAtual, useTranslation } from "~/traducao";
 
 export const PainelDePerfilDoDm: React.FC<{ userId: string }> = ({ userId }) => {

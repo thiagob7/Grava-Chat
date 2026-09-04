@@ -6,13 +6,13 @@ import {
   EFEITOS_DO_NOME,
   FONTES,
   PATENTES_DE_PERFIL,
-} from "~/lib/cosmeticos/catalogo";
-import { DecoracaoDeArquivo } from "~/components/DecoracaoDeArquivo";
-import { PatenteAnimada } from "~/components/PatenteAnimada";
-import { ehDeArquivo } from "~/lib/cosmeticos/decoracoes";
-import { classeDoEnfeite, variaveisDoEnfeite } from "~/lib/cosmeticos/estilos";
-import { carregarTodasAsFontes, familiaDaFonte } from "~/lib/cosmeticos/fontes";
-import { estiloDoNome } from "~/lib/cosmeticos/nome";
+} from "~/features/perfil/lib/catalogo";
+import { DecoracaoDeArquivo } from "~/features/perfil/components/DecoracaoDeArquivo";
+import { PatenteAnimada } from "~/features/perfil/components/PatenteAnimada";
+import { ehDeArquivo } from "~/features/perfil/lib/decoracoes";
+import { classeDoEnfeite, variaveisDoEnfeite } from "~/features/perfil/lib/estilos";
+import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
+import { estiloDoNome } from "~/features/perfil/lib/nome";
 import {
   CampoDeCor,
   GradeDeOpcoes,

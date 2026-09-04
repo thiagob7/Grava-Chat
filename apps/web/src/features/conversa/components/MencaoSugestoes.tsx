@@ -1,9 +1,9 @@
 import React from "react";
 import { AtSign, Users } from "lucide-react";
 
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import type { Mencionavel } from "~/features/conversa/hooks/use-mencoes";
-import { legivel } from "~/lib/cosmeticos/contraste";
+import { legivel } from "~/features/perfil/lib/contraste";
 import { cn } from "~/lib/utils";
 
 interface MencaoSugestoesProps {

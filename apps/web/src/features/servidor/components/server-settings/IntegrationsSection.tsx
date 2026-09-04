@@ -17,7 +17,7 @@ import {
   useUpdateWebhook,
 } from "~/@core/application/queries/webhook/use-webhooks";
 import type { WebhookModel } from "~/@core/domain/models/guild-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";

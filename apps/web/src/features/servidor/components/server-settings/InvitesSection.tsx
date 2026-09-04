@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 
 import { useFindGuildInvites } from "~/@core/application/queries/guild/use-find-guild-invites";
 import { useDeleteInvite } from "~/@core/application/queries/guild/use-delete-invite";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirmar } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";

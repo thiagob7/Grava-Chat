@@ -4,13 +4,13 @@ import { Pencil, X } from "lucide-react";
 import type { StatusPersonalizado } from "@gravae/shared";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
-import { useEnvioDeImagemDePerfil } from "~/hooks/use-envio-de-imagem-de-perfil";
+import { useEnvioDeImagemDePerfil } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Avatar } from "~/components/Avatar";
-import { ProfileCardVisual } from "~/components/profile/ProfileCardVisual";
-import { StatusModal } from "~/components/profile/StatusModal";
-import { EscolherEnfeiteModal } from "~/components/profile/EscolherEnfeiteModal";
-import { DECORACOES_DE_AVATAR } from "~/lib/cosmeticos/catalogo";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
+import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
+import { EscolherEnfeiteModal } from "~/features/perfil/components/cartao/EscolherEnfeiteModal";
+import { DECORACOES_DE_AVATAR } from "~/features/perfil/lib/catalogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { UserName } from "~/components/UserName";
+import { UserName } from "~/features/perfil/components/UserName";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Amostra, EnfeitesAba } from "~/components/user-settings/perfil/EnfeitesAba";
 import { IdentidadeAba } from "~/components/user-settings/perfil/IdentidadeAba";
@@ -26,7 +26,7 @@ import {
   doUsuario,
   paraPerfil,
 } from "~/components/user-settings/perfil/rascunho";
-import { useRascunho } from "~/hooks/use-rascunho";
+import { useRascunho } from "~/features/perfil/hooks/use-rascunho";
 import { useTranslation } from "~/traducao";
 
 export const ProfileEditorModal: React.FC<{

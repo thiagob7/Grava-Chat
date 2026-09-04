@@ -1,7 +1,7 @@
 import React from "react";
 import { Check, X } from "lucide-react";
 
-import type { Opcao } from "~/lib/cosmeticos/catalogo";
+import type { Opcao } from "~/features/perfil/lib/catalogo";
 import { Label, campoDeCor } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 

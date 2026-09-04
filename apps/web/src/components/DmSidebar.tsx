@@ -7,7 +7,7 @@ import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { statusDaConversa } from "~/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { RodapeDaBarra } from "~/components/RodapeDaBarra";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";

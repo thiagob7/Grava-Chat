@@ -12,8 +12,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Tooltip } from "~/components/ui/tooltip";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
-import { FONTES } from "~/lib/cosmeticos/catalogo";
-import { carregarTodasAsFontes, familiaDaFonte } from "~/lib/cosmeticos/fontes";
+import { FONTES } from "~/features/perfil/lib/catalogo";
+import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 
 interface CampoDeNomeDeCanalProps {

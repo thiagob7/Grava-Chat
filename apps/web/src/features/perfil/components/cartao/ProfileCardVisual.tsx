@@ -9,17 +9,17 @@ import type {
   StatusPersonalizado,
 } from "@gravae/shared";
 
-import { Avatar } from "~/components/Avatar";
-import { PatenteAnimada } from "~/components/PatenteAnimada";
-import { SeletorDeCargos } from "~/components/profile/SeletorDeCargos";
-import { SeletorDeEtiqueta } from "~/components/profile/SeletorDeEtiqueta";
-import { ServerTag } from "~/components/ServerTag";
-import { UserName } from "~/components/UserName";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { PatenteAnimada } from "~/features/perfil/components/PatenteAnimada";
+import { SeletorDeCargos } from "~/features/perfil/components/cartao/SeletorDeCargos";
+import { SeletorDeEtiqueta } from "~/features/perfil/components/cartao/SeletorDeEtiqueta";
+import { ServerTag } from "~/features/perfil/components/ServerTag";
+import { UserName } from "~/features/perfil/components/UserName";
 import {
   classeDoEnfeite,
   variaveisDoEnfeite,
   type EstiloCss,
-} from "~/lib/cosmeticos/estilos";
+} from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { idiomaAtual, useTranslation } from "~/traducao";

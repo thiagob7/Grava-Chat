@@ -13,7 +13,7 @@ import type { GuildMember } from "@gravae/shared";
 
 import { useFindAuditLog } from "~/@core/application/queries/moderation/use-moderation";
 import type { AuditEntryModel } from "~/@core/application/requests/moderation/moderation";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { CampoSelect } from "~/components/ui/select";
 import { formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";

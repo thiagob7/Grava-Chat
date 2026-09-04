@@ -7,7 +7,7 @@ import {
   useFindChannelOverwrites,
   useSetChannelOverwrite,
 } from "~/@core/application/queries/role/use-channel-overwrites";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import {
   Dialog,
   DialogBody,

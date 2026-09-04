@@ -7,7 +7,7 @@ import { EMOJI } from "~/lib/twemoji";
 import { BlocoDeCodigo } from "~/features/conversa/components/BlocoDeCodigo";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { partirEmCodigo } from "~/features/conversa/lib/codigo";
-import { legivel } from "~/lib/cosmeticos/contraste";
+import { legivel } from "~/features/perfil/lib/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";

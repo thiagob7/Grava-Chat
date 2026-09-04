@@ -1,7 +1,7 @@
 import React from "react";
 import type { ComandoDisponivel, OpcaoDeComando } from "@gravae/shared";
 
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { cn } from "~/lib/utils";
 
 const assinatura = (opcoes: OpcaoDeComando[]) =>

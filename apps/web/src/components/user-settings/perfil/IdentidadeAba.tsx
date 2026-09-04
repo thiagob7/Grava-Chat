@@ -3,9 +3,9 @@ import { ImageUp, Upload, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
 import { importarImagem } from "~/@core/application/requests/upload/importar-imagem";
-import { useEnvioDeImagemDePerfil } from "~/hooks/use-envio-de-imagem-de-perfil";
+import { useEnvioDeImagemDePerfil } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
 import { SeletorDeImagem } from "~/components/SeletorDeImagem";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { CampoDeCor } from "~/components/user-settings/perfil/campos";

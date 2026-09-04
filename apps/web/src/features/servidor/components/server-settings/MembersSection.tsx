@@ -18,7 +18,7 @@ import {
 } from "~/@core/application/queries/moderation/use-moderation";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,

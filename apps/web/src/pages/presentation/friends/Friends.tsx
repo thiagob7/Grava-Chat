@@ -7,7 +7,7 @@ import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-f
 import type { FriendshipModel } from "~/@core/domain/models/friend-model";
 import { AddFriendForm } from "~/components/AddFriendForm";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
-import { Avatar } from "~/components/Avatar";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { useConfirmar } from "~/components/ui/confirm";
 import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";

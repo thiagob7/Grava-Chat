@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from "react";
 import type { Patente } from "@gravae/shared";
 
-import { usarLottie } from "~/lib/cosmeticos/lottie";
-import { carregarPatente, ehPatenteComArte, proporcaoDaPatente } from "~/lib/cosmeticos/patentes";
-import { PATENTES_DE_PERFIL } from "~/lib/cosmeticos/catalogo";
+import { usarLottie } from "~/features/perfil/lib/lottie";
+import { carregarPatente, ehPatenteComArte, proporcaoDaPatente } from "~/features/perfil/lib/patentes";
+import { PATENTES_DE_PERFIL } from "~/features/perfil/lib/catalogo";
 
 interface PatenteAnimadaProps {
   patente: Patente;

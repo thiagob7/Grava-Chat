@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import type { PerfilPublico, Role } from "@gravae/shared";
 
-import { corDoCargoMaisAlto } from "~/lib/cosmeticos/cargo";
-import { carregarFonte } from "~/lib/cosmeticos/fontes";
-import { estiloDoNome } from "~/lib/cosmeticos/nome";
+import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
+import { carregarFonte } from "~/features/perfil/lib/fontes";
+import { estiloDoNome } from "~/features/perfil/lib/nome";
 import { cn } from "~/lib/utils";
 
 interface UserNameProps {
