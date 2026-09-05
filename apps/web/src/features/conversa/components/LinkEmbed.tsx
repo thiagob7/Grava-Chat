@@ -3,6 +3,9 @@ import { Play } from "lucide-react";
 
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import type { EmbedModel } from "~/@core/application/requests/embed/embeds";
+import { idDoTemaNoLink } from "@gravae/shared";
+
+import { CartaoDeTema } from "~/features/tema/components/CartaoDeTema";
 import { extrairLinks } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { cn } from "~/lib/utils";
@@ -14,9 +17,15 @@ export const LinkEmbeds: React.FC<{ content: string }> = ({ content }) => {
 
   return (
     <div className="mt-1 flex flex-col gap-2">
-      {links.map((url) => (
-        <LinkEmbed key={url} url={url} />
-      ))}
+      {links.map((url) => {
+        const tema = idDoTemaNoLink(url, window.location.origin);
+
+        return tema ? (
+          <CartaoDeTema key={url} temaId={tema} />
+        ) : (
+          <LinkEmbed key={url} url={url} />
+        );
+      })}
     </div>
   );
 };
