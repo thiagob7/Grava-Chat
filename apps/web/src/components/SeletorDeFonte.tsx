@@ -58,8 +58,10 @@ export const SeletorDeFonte: React.FC<SeletorDeFonteProps> = ({
           <button data-gc="seletor-de-fonte.button"
             aria-label="Fonte da mensagem"
             className={cn(
-              "flex size-9 shrink-0 items-center justify-center rounded transition disabled:cursor-not-allowed disabled:opacity-50",
-              fonte === "padrao" ? "text-ink-faint hover:text-ink" : "text-brand",
+              "flex size-8 shrink-0 items-center justify-center rounded-md transition disabled:cursor-not-allowed disabled:opacity-50",
+              fonte === "padrao"
+                ? "text-ink-muted hover:bg-hover hover:text-ink"
+                : "text-brand hover:bg-hover",
             )}
           >
             <IconeDeFonte data-gc="seletor-de-fonte.icone-de-fonte" size={20} />

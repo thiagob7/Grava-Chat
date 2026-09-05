@@ -74,6 +74,13 @@ export const ATALHOS: Atalho[] = [
     fixo: true,
   },
   {
+    id: "expressoes",
+    area: "mensagens",
+    nome: "Abrir emojis e figurinhas",
+    detalhe: "Abre o seletor na aba de emoji, com a caixa em foco.",
+    padrao: { key: "e", comando: true },
+  },
+  {
     id: "editar-ultima",
     area: "mensagens",
     nome: "Editar a última mensagem",

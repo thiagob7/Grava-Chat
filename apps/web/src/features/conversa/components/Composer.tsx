@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, FileUp, Paperclip, Plus, Send, Smile, Timer, X } from "lucide-react";
+import { BarChart3, FileUp, Paperclip, Plus, Send, Timer, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
 
 import { EspelhoDoCompositor } from "~/features/conversa/components/EspelhoDoCompositor";
@@ -15,6 +15,8 @@ import { invocarComando, startTyping } from "~/@core/lib/websocket/emit-message-
 import { AttachmentTray } from "~/features/conversa/components/AttachmentTray";
 import { CreatePollModal } from "~/features/conversa/components/CreatePollModal";
 import { ExpressionPicker, type Aba } from "~/features/expressao/components/ExpressionPicker";
+import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
+import { AcoesDaCaixa } from "~/features/conversa/components/AcoesDaCaixa";
 import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
 import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
 import {
@@ -104,6 +106,10 @@ export const Composer: React.FC<ComposerProps> = ({
   };
   const [arrastando, setArrastando] = useState(false);
   const [seletor, setSeletor] = useState<Aba | null>(null);
+
+  useAtalhoGlobal("expressoes", () => {
+    if (podeEscrever) setSeletor((atual) => (atual ? null : "emoji"));
+  });
   const [criandoEnquete, setCriandoEnquete] = useState(false);
   const [mencao, setMencao] = useState<{ termo: string; inicio: number } | null>(null);
   const [comando, setComando] = useState<{ termo: string } | null>(null);
@@ -356,7 +362,7 @@ export const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div data-gc="conversa.composer.div" {...flx("caixaDeEscrever", "caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6")}>
+    <div data-gc="conversa.composer.div" {...flx("caixaDeEscrever", "caixa-de-escrever @container bg-composer px-2 pb-3 @sm:px-3")}>
       <ModalIlustrado data-gc="conversa.composer.modal-ilustrado"
         aberto={Boolean(textoLongo)}
         onFechar={() => setTextoLongo(null)}
@@ -410,12 +416,12 @@ export const Composer: React.FC<ComposerProps> = ({
           void anexos.add([...e.dataTransfer.files]);
         }}
         className={cn(
-          "rounded-lg bg-campo transition",
+          "rounded bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >
         {resposta && (
-          <div data-gc="conversa.composer.div--3" className="flex items-center gap-2 rounded-t-lg bg-surface-3 px-3 py-1.5 text-sm @sm:px-4">
+          <div data-gc="conversa.composer.div--3" className="flex items-center gap-2 rounded-t bg-surface-3 px-2.5 py-1.5 text-sm">
             <span data-gc="conversa.composer.span" className="min-w-0 flex-1 truncate text-ink-muted">
               {t("conversa.caixa.respondendoPara")}{" "}
               <span data-gc="conversa.composer.span--2" className="font-semibold text-ink">{resposta.autor}</span>
@@ -456,7 +462,7 @@ export const Composer: React.FC<ComposerProps> = ({
           onPatch={anexos.patchAttachment}
         />
 
-        <div data-gc="conversa.composer.div--4" className="relative flex items-end gap-1.5 px-2 @sm:gap-3 @sm:px-4">
+        <div data-gc="conversa.composer.div--4" className="relative flex items-end gap-1 px-1.5 @sm:gap-1.5 @sm:px-2">
           <MencaoSugestoes data-gc="conversa.composer.mencao-sugestoes.inserir-mencao"
             itens={sugestoes}
             indice={escolhido}
@@ -635,7 +641,7 @@ export const Composer: React.FC<ComposerProps> = ({
           />
           </div>
 
-          <div data-gc="conversa.composer.div--6" className="mb-1.5 flex shrink-0 items-center gap-1 @sm:gap-3">
+          <div data-gc="conversa.composer.div--6" className="mb-1.5 flex shrink-0 items-center gap-0.5">
             <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
             <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}
@@ -653,14 +659,13 @@ export const Composer: React.FC<ComposerProps> = ({
               onOpenChange={(aberto) => setSeletor(aberto ? (seletor ?? "emoji") : null)}
             >
               <PopoverTrigger data-gc="conversa.composer.popover-trigger" asChild>
-                <span data-gc="conversa.composer.span--4" className="flex items-center">
-                  <BotaoDeExpressao data-gc="conversa.composer.botao-de-expressao"
-                    label={t("conversa.caixa.expressoes")}
-                    ativo={seletor !== null}
-                    onClick={() => setSeletor(seletor ? null : "emoji")}
-                  >
-                    <Smile data-gc="conversa.composer.smile" size={20} />
-                  </BotaoDeExpressao>
+                <span data-gc="conversa.composer.span--4" className="flex items-center gap-0.5">
+                  <AcoesDaCaixa data-gc="conversa.composer.acoes-da-caixa"
+                    podeAnexar={podeAnexar}
+                    aberto={seletor}
+                    onAbrir={(aba) => setSeletor(seletor === aba ? null : aba)}
+                    onAnexar={() => inputArquivo.current?.click()}
+                  />
                 </span>
               </PopoverTrigger>
 
@@ -688,7 +693,7 @@ export const Composer: React.FC<ComposerProps> = ({
                   onClick={submit}
                   disabled={!podeEnviar}
                   aria-label={t("conversa.caixa.enviar")}
-                  className="flex size-9 shrink-0 items-center justify-center rounded text-ink-muted transition hover:text-brand disabled:opacity-30"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-hover hover:text-brand disabled:opacity-30"
                 >
                   <Send data-gc="conversa.composer.send" size={20} />
                 </button>
@@ -710,24 +715,3 @@ export const Composer: React.FC<ComposerProps> = ({
   );
 };
 
-interface BotaoDeExpressaoProps {
-  label: string;
-  ativo: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-const BotaoDeExpressao: React.FC<BotaoDeExpressaoProps> = ({ label, ativo, onClick, children }) => (
-  <Tooltip data-gc="conversa.composer.tooltip--3" label={label}>
-    <button data-gc="conversa.composer.button.on-click"
-      onClick={onClick}
-      aria-label={label}
-      className={cn(
-        "flex size-9 shrink-0 items-center justify-center rounded transition",
-        ativo ? "text-ink" : "text-ink-muted hover:text-ink",
-      )}
-    >
-      {children}
-    </button>
-  </Tooltip>
-);

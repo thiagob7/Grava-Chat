@@ -31,7 +31,11 @@ export const Tooltip = ({
         )}
       >
         {atalho ? (
-          <span data-gc="ui.tooltip.span" className="flex items-center gap-2">
+          /*
+            Rótulo em cima, teclas embaixo. Em linha, uma dica com atalho fica
+            larga demais e o texto some do canto da tela.
+          */
+          <span data-gc="ui.tooltip.span" className="flex flex-col items-center gap-1.5">
             {label}
             <span data-gc="ui.tooltip.span--2" className="flex items-center gap-1">
               {atalho.map((tecla) => (
