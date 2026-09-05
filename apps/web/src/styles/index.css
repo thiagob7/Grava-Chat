@@ -6,6 +6,15 @@
 
 @theme {
 
+  /*
+    O Tailwind resolve `rounded-full` para um literal gigante quando o token
+    não está aqui dentro, e aí um tema não consegue quadrar avatar nenhum.
+    Declarado no @theme, `rounded-full` vira `var(--radius-full)` e passa a
+    obedecer. O valor é o mesmo da camada de tokens.
+  */
+  --radius-full: 624.938rem;
+
+
   --color-surface-0: #1a181e;
   --color-surface-1: #1a181e;
   --color-surface-2: #1e1d23;
