@@ -23,6 +23,21 @@ export const CORRECOES_DO_FLUXER = `
   width: var(--layout-guild-list-width) !important;
 }
 
+/*
+  O tema encurta os painéis pela altura do rodapé, porque lá o rodapé mora
+  dentro deles. Aqui ele mora ao lado: o painel já é flex-1 acima do rodapé e
+  para sozinho no lugar certo. Descontar de novo abriria um buraco do tamanho
+  do rodapé entre o painel e ele.
+
+  O trilho não entra nesta lista de propósito: nele o desconto é o que faz ele
+  terminar em cima do rodapé em vez de correr por trás.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades {
+  height: 100% !important;
+}
+
 
 `;
 

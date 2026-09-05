@@ -64,16 +64,22 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside data-gc="amizades.dm-sidebar.aside"
-      {...flx("listaDeConversas", "lista-de-conversas canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1")}
+      className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
       style={{ width: largura }}
     >
+      {/*
+        O painel termina onde o rodapé começa, e o rodapé fica de fora dele. No
+        Fluxer esses dois são irmãos, e é o que faz a borda do tema parar em
+        cima em vez de cercar o usuário junto.
+      */}
+      <div data-gc="amizades.dm-sidebar.div" {...flx("listaDeConversas", "lista-de-conversas flex min-h-0 flex-1 flex-col")}>
       <header data-gc="amizades.dm-sidebar.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm">
         <h1 data-gc="amizades.dm-sidebar.h1" className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 
-      <div data-gc="amizades.dm-sidebar.div" className="relative flex min-h-0 flex-1 flex-col">
-      <div data-gc="amizades.dm-sidebar.div--2" className="flex-1 overflow-y-auto px-2 py-3">
-        <div data-gc="amizades.dm-sidebar.div--3" className="relative mb-3">
+      <div data-gc="amizades.dm-sidebar.div--2" className="relative flex min-h-0 flex-1 flex-col">
+      <div data-gc="amizades.dm-sidebar.div--3" className="flex-1 overflow-y-auto px-2 py-3">
+        <div data-gc="amizades.dm-sidebar.div--4" className="relative mb-3">
           <Search data-gc="amizades.dm-sidebar.search" size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-ink-faint" />
           <input data-gc="amizades.dm-sidebar.input"
             value={busca}
@@ -176,6 +182,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
           limites={limites}
           {...alca}
         />
+      </div>
       </div>
 
       <RodapeDaBarra data-gc="amizades.dm-sidebar.rodape-da-barra.on-logout" user={user} onLogout={onLogout} />
