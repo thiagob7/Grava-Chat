@@ -529,3 +529,73 @@ body[data-scroll-locked] .regiao-de-arrasto {
     opacity: 0;
   }
 }
+
+/*
+  Realce de sintaxe. As cores saem dos tokens do tema, e não de uma paleta
+  fixa do highlight.js — assim o bloco continua legível quando alguém troca
+  para o tema claro ou mexe no estúdio.
+*/
+.hljs-comment,
+.hljs-quote {
+  color: var(--color-ink-faint);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-name {
+  color: var(--color-everyone);
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: var(--color-online);
+}
+
+.hljs-number,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-params {
+  color: var(--color-here);
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_,
+.hljs-section {
+  color: var(--color-link);
+}
+
+.hljs-attr,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-property {
+  color: var(--color-mencao);
+}
+
+.hljs-built_in,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-meta {
+  color: var(--color-destaque);
+}
+
+.hljs-deletion {
+  color: var(--color-danger);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 600;
+}
