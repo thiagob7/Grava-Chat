@@ -6,6 +6,7 @@ import { objectId, channelParams } from "~/validations/common.js";
 import { rooms } from "@gravae/shared";
 import { z } from "zod";
 import { io } from "~/realtime/io.js";
+import { removerAnexo } from "~/realtime/difusao.js";
 import { buscaQuery, historyQuery } from "~/validations/message.js";
 
 export async function messageRoutes(app: FastifyInstance) {
@@ -43,6 +44,14 @@ export async function messageRoutes(app: FastifyInstance) {
     return message;
   });
 
+  app.delete("/messages/:messageId/anexos/:anexoId", async (req, reply) => {
+    const { messageId, anexoId } = anexoParams.parse(req.params);
+
+    await removerAnexo(req.userId, messageId, anexoId);
+
+    return reply.status(204).send();
+  });
+
   app.get("/messages/busca", (req) => {
     const { q, guildId, canalId, autorId, before } = buscaQuery.parse(req.query);
     return messageService.buscar(req.userId, { guildId, termo: q, canalId, autorId, before });
@@ -64,3 +73,4 @@ export async function messageRoutes(app: FastifyInstance) {
 }
 
 const messageParams = z.object({ messageId: objectId });
+const anexoParams = messageParams.extend({ anexoId: objectId });

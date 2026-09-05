@@ -232,6 +232,51 @@ export const messageService = {
     return { messageId, channelId: existing.channelId };
   },
 
+  /*
+    Tira um anexo de uma mensagem que já saiu. Se ele era a única coisa ali —
+    sem texto, sem enquete, sem figurinha — a mensagem vai junto: sobraria um
+    balão vazio na conversa.
+  */
+  async removerAnexo(userId: string, messageId: string, anexoId: string) {
+    const existing = await messageRepository.findById(messageId);
+    if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
+
+    const alvo = existing.attachments.find((a) => a.id === anexoId);
+    if (!alvo) throw new NotFoundError("Anexo não encontrado");
+
+    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const ehAutor = existing.authorId === userId;
+    const podeModerar = Boolean(contexto && has(contexto.permissions, "MANAGE_MESSAGES"));
+
+    if (!ehAutor && !podeModerar) {
+      throw new ForbiddenError("Sem permissão para mexer nesta mensagem");
+    }
+
+    const restantes = existing.attachments.filter((a) => a.id !== anexoId);
+    const ficouVazia =
+      restantes.length === 0 &&
+      !existing.content?.trim() &&
+      !existing.poll &&
+      !existing.stickerId;
+
+    void uploadService.remover([anexoId]);
+
+    if (ficouVazia) {
+      await messageRepository.softDelete(messageId);
+      return { apagouAMensagem: true as const, channelId: existing.channelId, messageId };
+    }
+
+    await messageRepository.update(messageId, { attachments: { set: restantes } });
+
+    const atualizada = await messageRepository.findByIdWithRelations(messageId);
+
+    return {
+      apagouAMensagem: false as const,
+      channelId: existing.channelId,
+      message: toMessage(atualizada!, userId),
+    };
+  },
+
   async pin(userId: string, messageId: string, fixar: boolean) {
     const existing = await messageRepository.findById(messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");

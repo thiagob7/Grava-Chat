@@ -40,6 +40,20 @@ export async function apagarMensagem(userId: string, messageId: string) {
   return result;
 }
 
+export async function removerAnexo(userId: string, messageId: string, anexoId: string) {
+  const result = await messageService.removerAnexo(userId, messageId, anexoId);
+
+  if (result.apagouAMensagem) {
+    io()
+      .to(rooms.channel(result.channelId))
+      .emit("message:deleted", { messageId: result.messageId, channelId: result.channelId });
+  } else {
+    io().to(rooms.channel(result.channelId)).emit("message:updated", result.message);
+  }
+
+  return result;
+}
+
 export async function reagir(
   userId: string,
   messageId: string,

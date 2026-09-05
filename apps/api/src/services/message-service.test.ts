@@ -13,6 +13,8 @@ const mencoesDesde = vi.fn();
 const canaisQueEscuta = vi.fn();
 const canaisPorId = vi.fn();
 const participacoes = vi.fn();
+const comRelacoes = vi.fn();
+const removerArquivos = vi.fn();
 
 vi.mock("~/repositories/message-repository.js", () => ({
   messageRepository: {
@@ -20,6 +22,7 @@ vi.mock("~/repositories/message-repository.js", () => ({
     softDelete: (...a: unknown[]) => softDelete(...a),
     update: (...a: unknown[]) => updateMessage(...a),
     create: (...a: unknown[]) => createMessage(...a),
+    findByIdWithRelations: (...a: unknown[]) => comRelacoes(...a),
   },
   reactionRepository: { findManyByMessage: vi.fn(), add: vi.fn(), remove: vi.fn() },
   readStateRepository: {
@@ -407,5 +410,72 @@ describe("o selo de menção nos canais que ninguém abriu", () => {
 
     expect(await messageService.readStates(AUTHOR)).toEqual([]);
     expect(canaisQueEscuta).not.toHaveBeenCalled();
+  });
+});
+
+describe("remover um anexo", () => {
+  const comAnexos = {
+    ...messageRow,
+    content: "olha o arquivo",
+    attachments: [
+      { id: "a1", url: "u1", filename: "um.txt", contentType: "text/plain", size: 10 },
+      { id: "a2", url: "u2", filename: "dois.txt", contentType: "text/plain", size: 20 },
+    ],
+  };
+
+  it("tira so o anexo pedido e mantem os outros", async () => {
+    findMessageById.mockResolvedValue(comAnexos);
+    comRelacoes.mockResolvedValue({ ...comAnexos, attachments: [comAnexos.attachments[1]] });
+
+    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+
+    expect(r.apagouAMensagem).toBe(false);
+    expect(updateMessage).toHaveBeenCalledWith("m1", {
+      attachments: { set: [comAnexos.attachments[1]] },
+    });
+    expect(softDelete).not.toHaveBeenCalled();
+  });
+
+  it("apaga a mensagem quando o anexo era a unica coisa nela", async () => {
+    findMessageById.mockResolvedValue({
+      ...comAnexos,
+      content: "",
+      attachments: [comAnexos.attachments[0]],
+    });
+
+    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+
+    expect(r.apagouAMensagem).toBe(true);
+    expect(softDelete).toHaveBeenCalledWith("m1");
+  });
+
+  it("nao apaga a mensagem se ainda sobra texto", async () => {
+    findMessageById.mockResolvedValue({
+      ...comAnexos,
+      attachments: [comAnexos.attachments[0]],
+    });
+    comRelacoes.mockResolvedValue({ ...comAnexos, attachments: [] });
+
+    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+
+    expect(r.apagouAMensagem).toBe(false);
+    expect(softDelete).not.toHaveBeenCalled();
+  });
+
+  it("membro comum nao mexe no anexo dos outros", async () => {
+    findMessageById.mockResolvedValue(comAnexos);
+
+    await expect(messageService.removerAnexo(OUTRO, "m1", "a1")).rejects.toBeInstanceOf(
+      ForbiddenError,
+    );
+    expect(updateMessage).not.toHaveBeenCalled();
+  });
+
+  it("anexo que nao existe na mensagem da NotFound", async () => {
+    findMessageById.mockResolvedValue(comAnexos);
+
+    await expect(messageService.removerAnexo(AUTHOR, "m1", "a9")).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
   });
 });
