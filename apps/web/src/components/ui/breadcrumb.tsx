@@ -1,0 +1,78 @@
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
+
+import { cn } from "~/lib/utils";
+
+export const Breadcrumb = (props: React.ComponentProps<"nav">) => (
+  <nav aria-label="breadcrumb" {...props} />
+);
+
+export const BreadcrumbList = ({ className, ...props }: React.ComponentProps<"ol">) => (
+  <ol
+    className={cn(
+      "flex flex-wrap items-center gap-1.5 break-words text-sm text-ink-faint sm:gap-2.5",
+      className,
+    )}
+    {...props}
+  />
+);
+
+export const BreadcrumbItem = ({ className, ...props }: React.ComponentProps<"li">) => (
+  <li className={cn("inline-flex items-center gap-1.5", className)} {...props} />
+);
+
+export const BreadcrumbLink = ({
+  asChild,
+  className,
+  ...props
+}: React.ComponentProps<"a"> & { asChild?: boolean }) => {
+  const Comp = asChild ? Slot : "a";
+
+  return (
+    <Comp
+      className={cn(
+        "rounded transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+export const BreadcrumbPage = ({ className, ...props }: React.ComponentProps<"span">) => (
+  <span
+    role="link"
+    aria-disabled="true"
+    aria-current="page"
+    className={cn("font-medium text-ink", className)}
+    {...props}
+  />
+);
+
+export const BreadcrumbSeparator = ({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"li">) => (
+  <li
+    role="presentation"
+    aria-hidden="true"
+    className={cn("[&>svg]:size-3.5", className)}
+    {...props}
+  >
+    {children ?? <ChevronRight />}
+  </li>
+);
+
+export const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => (
+  <span
+    role="presentation"
+    aria-hidden="true"
+    className={cn("flex size-9 items-center justify-center", className)}
+    {...props}
+  >
+    <MoreHorizontal className="size-4" />
+    <span className="sr-only">Mais</span>
+  </span>
+);
