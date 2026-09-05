@@ -11,6 +11,7 @@ import {
   guildRepository,
   memberRepository,
 } from "~/repositories/guild-repository.js";
+import type { Contexto } from "./access-service.js";
 import { accessService } from "./access-service.js";
 
 export const roomName = (channelId: string) => `channel-${channelId}`;
@@ -59,6 +60,21 @@ export const VOICE_GRACE_MS = 6_000;
 const TTL_DO_ORFAO_MS = 60_000;
 
 const CARENCIA_DO_SFU_MS = 25_000;
+
+export function fontesQuePodePublicar(
+  podeFalar: boolean,
+  contexto: Pick<Contexto, "permissions"> | null | undefined,
+) {
+  const fontes: TrackSource[] = [];
+
+  if (podeFalar) fontes.push(TrackSource.MICROPHONE);
+  if (!contexto || has(contexto.permissions, "VIDEO")) fontes.push(TrackSource.CAMERA);
+  if (!contexto || has(contexto.permissions, "SHARE_SCREEN")) {
+    fontes.push(TrackSource.SCREEN_SHARE, TrackSource.SCREEN_SHARE_AUDIO);
+  }
+
+  return fontes;
+}
 
 export const voiceService = {
   async estadoDoSfu() {
@@ -255,14 +271,19 @@ export const voiceService = {
       ttl: "10m",
     });
 
+    const podeFalar =
+      !contexto ||
+      (has(contexto.permissions, "SPEAK") &&
+        !estaDeCastigo(contexto.member) &&
+        !(anterior?.channelId === channelId && anterior.serverMute));
+
+    const fontes = fontesQuePodePublicar(podeFalar, contexto);
+
     token.addGrant({
       room: roomName(channelId),
       roomJoin: true,
-      canPublish:
-        !contexto ||
-        (has(contexto.permissions, "SPEAK") &&
-          !estaDeCastigo(contexto.member) &&
-          !(anterior?.channelId === channelId && anterior.serverMute)),
+      canPublish: fontes.length > 0,
+      canPublishSources: fontes,
       canSubscribe: true,
       canPublishData: true,
     });
