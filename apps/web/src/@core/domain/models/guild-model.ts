@@ -91,7 +91,10 @@ export interface InviteModel {
 
 export interface InvitePreviewModel {
   code: string;
-  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "memberCount">;
+  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "bannerUrl" | "description"> & {
+    memberCount: number;
+    onlineCount: number;
+  };
   inviter: string;
   alreadyMember: boolean;
 }

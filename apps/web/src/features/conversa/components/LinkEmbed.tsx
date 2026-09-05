@@ -3,8 +3,9 @@ import { Play } from "lucide-react";
 
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import type { EmbedModel } from "~/@core/application/requests/embed/embeds";
-import { idDoTemaNoLink } from "@gravae/shared";
+import { codigoDoConviteNoLink, idDoTemaNoLink } from "@gravae/shared";
 
+import { CartaoDeConvite } from "~/features/servidor/components/CartaoDeConvite";
 import { CartaoDeTema } from "~/features/tema/components/CartaoDeTema";
 import { extrairLinks } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
@@ -19,12 +20,12 @@ export const LinkEmbeds: React.FC<{ content: string }> = ({ content }) => {
     <div data-gc="conversa.link-embed.div" className="mt-1 flex flex-col gap-2">
       {links.map((url) => {
         const tema = idDoTemaNoLink(url, window.location.origin);
+        if (tema) return <CartaoDeTema data-gc="conversa.link-embed.cartao-de-tema" key={url} temaId={tema} />;
 
-        return tema ? (
-          <CartaoDeTema data-gc="conversa.link-embed.cartao-de-tema" key={url} temaId={tema} />
-        ) : (
-          <LinkEmbed data-gc="conversa.link-embed.link-embed" key={url} url={url} />
-        );
+        const convite = codigoDoConviteNoLink(url, window.location.origin);
+        if (convite) return <CartaoDeConvite data-gc="conversa.link-embed.cartao-de-convite" key={url} codigo={convite} />;
+
+        return <LinkEmbed data-gc="conversa.link-embed.link-embed" key={url} url={url} />;
       })}
     </div>
   );

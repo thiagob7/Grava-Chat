@@ -59,6 +59,11 @@ export const AcceptInvite: React.FC = () => {
             <p data-gc="invite.accept-invite.p--3" className="text-sm text-ink-muted">{invite.inviter} te convidou para</p>
             <h1 data-gc="invite.accept-invite.h1--2" className="mt-1 text-2xl font-bold">{invite.guild.name}</h1>
             <p data-gc="invite.accept-invite.p--4" className="mt-1 text-sm text-ink-faint">
+              <span data-gc="invite.accept-invite.span" className="inline-flex items-center gap-1.5">
+                <span data-gc="invite.accept-invite.span--2" className="size-2 rounded-full bg-online" />
+                {invite.guild.onlineCount} online
+              </span>
+              <span data-gc="invite.accept-invite.span--3" className="px-2 text-ink-faint">·</span>
               {invite.guild.memberCount} {invite.guild.memberCount === 1 ? "membro" : "membros"}
             </p>
 

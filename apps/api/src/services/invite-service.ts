@@ -3,11 +3,20 @@ import { inviteRepository } from "~/repositories/invite-repository.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
 import { toMember } from "~/lib/serialize.js";
+import { presenceService } from "~/services/presence-service.js";
 
 export const inviteService = {
   async preview(userId: string, code: string) {
     const invite = await inviteRepository.findByCodeWithRelations(code);
     if (!invite) throw new NotFoundError("Convite inválido ou expirado");
+
+    /*
+      O cartão que aparece no chat mostra quantos estão online agora — é o que
+      diz se a comunidade está viva. Por isso a presença sai daqui, e não de uma
+      segunda chamada.
+    */
+    const membros = await memberRepository.findManyByGuild(invite.guildId);
+    const presenca = await presenceService.mapFor(membros.map((m) => m.userId));
 
     return {
       code: invite.code,
@@ -15,7 +24,10 @@ export const inviteService = {
         id: invite.guild.id,
         name: invite.guild.name,
         iconUrl: invite.guild.iconUrl,
+        bannerUrl: invite.guild.bannerUrl,
+        description: invite.guild.description,
         memberCount: invite.guild._count.members,
+        onlineCount: Object.values(presenca).filter((estado) => estado !== "OFFLINE").length,
       },
       inviter: invite.inviter.displayName,
       alreadyMember: Boolean(await memberRepository.find(invite.guildId, userId)),
