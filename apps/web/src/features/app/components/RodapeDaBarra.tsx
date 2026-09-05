@@ -59,7 +59,13 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
       ref={caixa}
       {...flx(
         "areaDoUsuario",
-        "area-do-usuario relative z-30 -ml-[var(--layout-guild-list-width)] bg-surface-1 pb-2",
+        /*
+          A margem negativa puxa a esquerda até debaixo do trilho, mas sem uma
+          largura própria o bloco só preenchia a lateral — e a borda direita
+          parava 72px antes dela. `100%` aqui é a lateral, que carrega a largura
+          arrastada de verdade, e não o token, que mente depois do arrasto.
+        */
+        "area-do-usuario relative z-30 -ml-[var(--layout-guild-list-width)] w-[calc(100%+var(--layout-guild-list-width))] bg-surface-1 pb-2",
       )}
     >
       <CartaoDaTransmissao data-gc="app.rodape-da-barra.cartao-da-transmissao" className="mx-2 mb-2" />

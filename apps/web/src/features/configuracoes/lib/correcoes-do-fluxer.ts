@@ -23,28 +23,7 @@ export const CORRECOES_DO_FLUXER = `
   width: var(--layout-guild-list-width) !important;
 }
 
-/*
-  A área do usuário já atravessa trilho e lateral, então a largura do tema
-  cabe. Só não pode passar da borda direita da lateral: o tema soma a folga
-  entre painéis, que aqui não existe.
-*/
-.area-do-usuario {
-  max-width: calc(100% + var(--layout-guild-list-width)) !important;
-}
 
-/*
-  A caixa de escrever flutua sobre as mensagens em vez de ficar ao lado delas.
-  Sem recortar, o painel das mensagens ia até embaixo e passava por trás da
-  caixa. A segunda regra tira o respiro que o rodapé flutuante reservava, que
-  agora sobraria.
-*/
-.lista-de-mensagens {
-  max-height: calc(100% - var(--gc-rodape, 0px)) !important;
-}
-
-.lista-de-mensagens > * {
-  --gc-rodape: 0px;
-}
 `;
 
 /// Marcas de que o CSS foi escrito para a árvore do Fluxer.
