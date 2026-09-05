@@ -19,6 +19,7 @@ import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
 import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 import { Explorar } from "~/pages/presentation/descoberta/Explorar";
+import { EstudioEmJanela } from "~/pages/presentation/estudio/EstudioEmJanela";
 import { VerTema } from "~/pages/presentation/tema/VerTema";
 import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
@@ -30,13 +31,8 @@ export const AppRoutes: React.FC = () => {
   return (
   <BrowserRouter>
     <div data-gc="routes.div" className="flex h-full flex-col">
-      <BarraDeTitulo data-gc="routes.barra-de-titulo" />
-
-      <div data-gc="routes.div--2" className="relative">
-        <FaixaDaComunidade data-gc="routes.faixa-da-comunidade" />
-      </div>
-
-      <div data-gc="routes.div--3" {...flx("molduraDoApp", "min-h-0 flex-1")}>
+      <CascaDoApp data-gc="routes.casca-do-app">
+      <div data-gc="routes.div--2" {...flx("molduraDoApp", "min-h-0 flex-1")}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route
@@ -80,9 +76,17 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/explorar"
+        path="/estudio"
         element={
           <Protected data-gc="routes.protected--6">
+            <EstudioEmJanela data-gc="routes.estudio-em-janela" />
+          </Protected>
+        }
+      />
+      <Route
+        path="/explorar"
+        element={
+          <Protected data-gc="routes.protected--7">
             <Explorar data-gc="routes.explorar" />
           </Protected>
         }
@@ -90,7 +94,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--7">
+          <Protected data-gc="routes.protected--8">
             <Chat data-gc="routes.chat" />
           </Protected>
         }
@@ -98,12 +102,36 @@ export const AppRoutes: React.FC = () => {
       <Route path="*" element={<Navigate to="/channels" replace />} />
     </Routes>
       </div>
+      </CascaDoApp>
     </div>
 
     <FloatingScreenShare data-gc="routes.floating-screen-share" />
     <ChamadaRecebida data-gc="routes.chamada-recebida" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
   </BrowserRouter>
+  );
+};
+
+/*
+  A janela à parte do estúdio roda na mesma aplicação, então cai nas mesmas
+  rotas. Ela não é o app: não leva a barra de título do servidor nem a faixa da
+  comunidade em cima.
+*/
+const CascaDoApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { pathname } = useLocation();
+
+  if (pathname === "/estudio") return <>{children}</>;
+
+  return (
+    <>
+      <BarraDeTitulo data-gc="routes.barra-de-titulo" />
+
+      <div data-gc="routes.div--3" className="relative">
+        <FaixaDaComunidade data-gc="routes.faixa-da-comunidade" />
+      </div>
+
+      {children}
+    </>
   );
 };
 

@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "react-toastify";
 import {
   ChevronRight,
+  ExternalLink,
   Copy,
   Download,
   FileCode2,
@@ -67,73 +68,108 @@ const NOME_DO_TEMA: Record<string, string> = {
   gravae: "Base Gravaê",
 };
 
-export const EstudioDeTemas: React.FC<{
-  open: boolean;
-  onClose: () => void;
-}> = ({ open, onClose }) => {
+/*
+  O corpo vale sozinho: é o mesmo dentro do modal e dentro da janela à parte.
+  Escrever tema com a tela do app tapada não funciona — a graça é ver a
+  mudança acontecer atrás enquanto se digita.
+*/
+export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) => {
   const [aba, setAba] = useState<Aba>("tokens");
   const tema = useAparencia((s) => s.tema);
 
   return (
-    <DialogPrimitive.Root data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveroot"
-      open={open}
-      onOpenChange={(next) => !next && onClose()}
-    >
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
-        <DialogPrimitive.Content data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivecontent"
-          className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(900px,94vh)] w-[min(1320px,96vw)] overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
-          aria-label="Estúdio de temas"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
-          <DialogPrimitive.Title data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivetitle" className="sr-only">
-            Estúdio de temas
-          </DialogPrimitive.Title>
+    <>
+      <nav data-gc="configuracoes.estudio.estudio-de-temas.nav" className="flex w-56 shrink-0 flex-col justify-between bg-surface-1 p-3">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div">
+          {ABAS.map((item) => (
+            <button data-gc="configuracoes.estudio.estudio-de-temas.button"
+              key={item.id}
+              onClick={() => setAba(item.id)}
+              aria-current={aba === item.id}
+              className={cn(
+                "mb-0.5 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition",
+                aba === item.id
+                  ? "bg-surface-3 font-medium text-ink"
+                  : "text-ink-muted hover:bg-hover hover:text-ink",
+              )}
+            >
+              {item.icone}
+              {item.nome}
+            </button>
+          ))}
+        </div>
 
-          <nav data-gc="configuracoes.estudio.estudio-de-temas.nav" className="flex w-56 shrink-0 flex-col justify-between bg-surface-1 p-3">
-            <div data-gc="configuracoes.estudio.estudio-de-temas.div">
-              {ABAS.map((item) => (
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button"
-                  key={item.id}
-                  onClick={() => setAba(item.id)}
-                  aria-current={aba === item.id}
-                  className={cn(
-                    "mb-0.5 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition",
-                    aba === item.id
-                      ? "bg-surface-3 font-medium text-ink"
-                      : "text-ink-muted hover:bg-hover hover:text-ink",
-                  )}
-                >
-                  {item.icone}
-                  {item.nome}
-                </button>
-              ))}
-            </div>
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--2" className="border-t border-line pt-3">
+          {acao}
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p" className="px-3 pt-2 text-xs text-ink-faint">{NOME_DO_TEMA[tema] ?? "Base"}</p>
+        </div>
+      </nav>
 
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p" className="border-t border-line px-3 pt-3 text-xs text-ink-faint">
-              {NOME_DO_TEMA[tema] ?? "Base"}
-            </p>
-          </nav>
-
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--2" className="flex min-w-0 flex-1 flex-col">
-            {aba === "tokens" && <AbaDeTokens data-gc="configuracoes.estudio.estudio-de-temas.aba-de-tokens" tema={tema} />}
-            {aba === "css" && <AbaDeCss data-gc="configuracoes.estudio.estudio-de-temas.aba-de-css" />}
-            {aba === "ativos" && <AbaDeAtivos data-gc="configuracoes.estudio.estudio-de-temas.aba-de-ativos" />}
-            {aba === "biblioteca" && <AbaDaBiblioteca data-gc="configuracoes.estudio.estudio-de-temas.aba-da-biblioteca" />}
-            {aba === "configuracoes" && <AbaDeConfiguracoes data-gc="configuracoes.estudio.estudio-de-temas.aba-de-configuracoes" />}
-          </div>
-
-          <DialogPrimitive.Close
-            aria-label="Fechar"
-            className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
-          >
-            <X data-gc="configuracoes.estudio.estudio-de-temas.x" size={18} />
-          </DialogPrimitive.Close>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--3" className="flex min-w-0 flex-1 flex-col">
+        {aba === "tokens" && <AbaDeTokens data-gc="configuracoes.estudio.estudio-de-temas.aba-de-tokens" tema={tema} />}
+        {aba === "css" && <AbaDeCss data-gc="configuracoes.estudio.estudio-de-temas.aba-de-css" />}
+        {aba === "ativos" && <AbaDeAtivos data-gc="configuracoes.estudio.estudio-de-temas.aba-de-ativos" />}
+        {aba === "biblioteca" && <AbaDaBiblioteca data-gc="configuracoes.estudio.estudio-de-temas.aba-da-biblioteca" />}
+        {aba === "configuracoes" && <AbaDeConfiguracoes data-gc="configuracoes.estudio.estudio-de-temas.aba-de-configuracoes" />}
+      </div>
+    </>
   );
 };
+
+/// Abre o estúdio numa janela do sistema, com o app vivo atrás.
+function abrirEmJanela() {
+  const largura = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
+  const altura = Math.min(900, Math.round(window.screen.availHeight * 0.85));
+
+  window.open(
+    "/estudio",
+    "gc-estudio",
+    `popup=yes,width=${largura},height=${altura},left=${Math.round(
+      (window.screen.availWidth - largura) / 2,
+    )},top=${Math.round((window.screen.availHeight - altura) / 2)}`,
+  );
+}
+
+export const EstudioDeTemas: React.FC<{
+  open: boolean;
+  onClose: () => void;
+}> = ({ open, onClose }) => (
+  <DialogPrimitive.Root data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveroot" open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
+      <DialogPrimitive.Content data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivecontent"
+        className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(900px,94vh)] w-[min(1320px,96vw)] overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
+        aria-label="Estúdio de temas"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DialogPrimitive.Title data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivetitle" className="sr-only">Estúdio de temas</DialogPrimitive.Title>
+
+        <CorpoDoEstudio data-gc="configuracoes.estudio.estudio-de-temas.corpo-do-estudio"
+          acao={
+            <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
+              type="button"
+              onClick={() => {
+                abrirEmJanela();
+                onClose();
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink-muted transition hover:bg-hover hover:text-ink"
+            >
+              <ExternalLink data-gc="configuracoes.estudio.estudio-de-temas.external-link" size={18} />
+              Abrir em janela
+            </button>
+          }
+        />
+
+        <DialogPrimitive.Close
+          aria-label="Fechar"
+          className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
+        >
+          <X data-gc="configuracoes.estudio.estudio-de-temas.x" size={18} />
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+  </DialogPrimitive.Root>
+);
 
 const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
@@ -168,8 +204,8 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
 
   return (
     <>
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--3" className="flex shrink-0 items-center gap-3 border-b border-line px-6 py-3.5 pr-14">
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--4" className="relative max-w-sm flex-1">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--4" className="flex shrink-0 items-center gap-3 border-b border-line px-6 py-3.5 pr-14">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--5" className="relative max-w-sm flex-1">
           <Search data-gc="configuracoes.estudio.estudio-de-temas.search"
             size={15}
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
@@ -203,7 +239,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
         </Button>
       </div>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--5" className="min-h-0 flex-1 overflow-y-auto px-6 py-2">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--6" className="min-h-0 flex-1 overflow-y-auto px-6 py-2">
         {grupos.map((grupo) => {
           const aberto = buscando || abertos[grupo.titulo] === true;
 
@@ -212,7 +248,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
               key={grupo.titulo}
               className="border-b border-divisor last:border-b-0"
             >
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
                 type="button"
                 onClick={() =>
                   setAbertos((atual) => ({
@@ -237,7 +273,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
               </button>
 
               {aberto && (
-                <div data-gc="configuracoes.estudio.estudio-de-temas.div--6" className="mb-3 overflow-hidden rounded-lg border border-line">
+                <div data-gc="configuracoes.estudio.estudio-de-temas.div--7" className="mb-3 overflow-hidden rounded-lg border border-line">
                   {grupo.tokens.map((token) => (
                     <LinhaDeToken data-gc="configuracoes.estudio.estudio-de-temas.linha-de-token" key={token.nome} token={token} tema={tema} />
                   ))}
@@ -271,10 +307,10 @@ const LinhaDeToken: React.FC<{
   const legivel = lerCor(valor);
 
   return (
-    <div data-gc="configuracoes.estudio.estudio-de-temas.div--7" className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--8" className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
       <Popover data-gc="configuracoes.estudio.estudio-de-temas.popover">
         <PopoverTrigger data-gc="configuracoes.estudio.estudio-de-temas.popover-trigger" asChild>
-          <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
+          <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
             type="button"
             disabled={!legivel}
             aria-label={`Cor de ${token.rotulo}`}
@@ -304,7 +340,7 @@ const LinhaDeToken: React.FC<{
         </PopoverContent>
       </Popover>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--8" className="min-w-0 flex-1">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--9" className="min-w-0 flex-1">
         <p data-gc="configuracoes.estudio.estudio-de-temas.p--4" className="flex items-center gap-2 truncate text-sm font-medium">
           <span data-gc="configuracoes.estudio.estudio-de-temas.span--2" className="truncate">{token.rotulo}</span>
 
@@ -335,7 +371,7 @@ const LinhaDeToken: React.FC<{
         )}
       />
 
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
         type="button"
         onClick={() => definir(token.nome, null)}
         disabled={!substituido}
@@ -358,8 +394,8 @@ const AbaDeCss: React.FC = () => {
 
   return (
     <>
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--9" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--10" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
           variant="surface"
           size="sm"
           onClick={() => arquivo.current?.click()}
@@ -378,7 +414,7 @@ const AbaDeCss: React.FC = () => {
           }}
         />
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
           variant="surface"
           size="sm"
           onClick={() => baixar("tema.css", css, "text/css")}
@@ -386,7 +422,7 @@ const AbaDeCss: React.FC = () => {
           <Download data-gc="configuracoes.estudio.estudio-de-temas.download" size={14} /> Baixar
         </Button>
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
           variant="surface"
           size="sm"
           onClick={() =>
@@ -396,7 +432,7 @@ const AbaDeCss: React.FC = () => {
           Copiar
         </Button>
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
           variant="surface"
           size="sm"
           className="ml-auto text-danger"
@@ -407,7 +443,7 @@ const AbaDeCss: React.FC = () => {
         </Button>
       </div>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--10" className="min-h-0 flex-1 p-4">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--11" className="min-h-0 flex-1 p-4">
         <textarea data-gc="configuracoes.estudio.estudio-de-temas.textarea"
           value={css}
           onChange={(e) => definirCss(e.target.value)}
@@ -436,7 +472,7 @@ const BotaoDeCompartilhar: React.FC = () => {
   const vazio = !css.trim() && Object.keys(substituicoes).length === 0;
 
   return (
-    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
+    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
       variant="surface"
       size="sm"
       disabled={vazio || publicar.isPending}
@@ -533,8 +569,8 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
   }, [lista, termo]);
 
   return (
-    <div data-gc="configuracoes.estudio.estudio-de-temas.div--11" className="shrink-0 border-t border-line px-6 py-3">
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--12" className="shrink-0 border-t border-line px-6 py-3">
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
         type="button"
         onClick={() => setAberto((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
@@ -553,9 +589,9 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             tema se agarra. O resto das classes é gerado e muda a cada build.
           </p>
 
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--12" className="mt-2 flex flex-wrap gap-1.5">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--13" className="mt-2 flex flex-wrap gap-1.5">
             {GANCHOS.map((gancho) => (
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
                 key={gancho.classe}
                 type="button"
                 title={gancho.oQueE}
@@ -567,7 +603,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             ))}
           </div>
 
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--13" className="mt-4 border-t border-line pt-3">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="mt-4 border-t border-line pt-3">
             <p data-gc="configuracoes.estudio.estudio-de-temas.p--8" className="text-xs text-ink-faint">
               E cada elemento do app carrega um{" "}
               <code data-gc="configuracoes.estudio.estudio-de-temas.code" className="font-mono text-ink-muted">data-gc</code> com o
@@ -584,7 +620,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             />
 
             {termo.length >= 2 && (
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="mt-2">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="mt-2">
                 {!lista ? (
                   <p data-gc="configuracoes.estudio.estudio-de-temas.p--9" className="text-xs text-ink-faint">Carregando a lista…</p>
                 ) : !total ? (
@@ -593,9 +629,9 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
                   </p>
                 ) : (
                   <>
-                    <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
+                    <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
                       {mostrar.map((nome) => (
-                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
+                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
                           key={nome}
                           type="button"
                           onClick={() => onUsar(`[data-gc="${nome}"] {\n  \n}`)}
@@ -618,12 +654,12 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             )}
           </div>
 
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--17" className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
             <pre data-gc="configuracoes.estudio.estudio-de-temas.pre" className="min-w-0 flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-ink-muted">
               {ENCOLHER}
             </pre>
 
-            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--13" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
+            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--14" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
               Usar
             </Button>
           </div>
@@ -661,8 +697,8 @@ const AbaDeAtivos: React.FC = () => {
 
   return (
     <>
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--17" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
           variant="surface"
           size="sm"
           disabled={subindo}
@@ -682,7 +718,7 @@ const AbaDeAtivos: React.FC = () => {
         </p>
       </div>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {!ativos.length && (
           <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="py-10 text-center text-sm text-ink-faint">
             Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
@@ -690,13 +726,13 @@ const AbaDeAtivos: React.FC = () => {
           </p>
         )}
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--20" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
           {ativos.map((ativo) => (
-            <div data-gc="configuracoes.estudio.estudio-de-temas.div--20"
+            <div data-gc="configuracoes.estudio.estudio-de-temas.div--21"
               key={ativo.id}
               className="overflow-hidden rounded-lg border border-line"
             >
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--21" className="flex h-28 items-center justify-center bg-surface-1">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex h-28 items-center justify-center bg-surface-1">
                 {ativo.tipo.startsWith("image/") ? (
                   <img data-gc="configuracoes.estudio.estudio-de-temas.img"
                     src={ativo.url}
@@ -708,7 +744,7 @@ const AbaDeAtivos: React.FC = () => {
                 )}
               </div>
 
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex items-center gap-2 p-2">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="flex items-center gap-2 p-2">
                 <p data-gc="configuracoes.estudio.estudio-de-temas.p--14"
                   className="min-w-0 flex-1 truncate text-xs"
                   title={ativo.nome}
@@ -716,7 +752,7 @@ const AbaDeAtivos: React.FC = () => {
                   {ativo.nome}
                 </p>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
                   onClick={() =>
                     void copiarTexto(`url("${ativo.url}")`).then(
                       (ok) => ok && toast.success("Endereço copiado."),
@@ -729,7 +765,7 @@ const AbaDeAtivos: React.FC = () => {
                   <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
                 </button>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
                   onClick={() =>
                     void confirmar({
                       titulo: `Tirar "${ativo.nome}" da lista?`,
@@ -760,16 +796,16 @@ const AbaDeConfiguracoes: React.FC = () => {
   const confirmar = useConfirmar();
 
   return (
-    <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--24" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
       <h3 data-gc="configuracoes.estudio.estudio-de-temas.h3" className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
       <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="mb-4 text-sm text-ink-muted">
         Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
         aparelho.
       </p>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--24" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--25" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--26" className="min-w-0 flex-1">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--25" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--26" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--27" className="min-w-0 flex-1">
             <p data-gc="configuracoes.estudio.estudio-de-temas.p--16" className="text-sm font-medium">
               Limpar as substituições de token
             </p>
@@ -782,14 +818,14 @@ const AbaDeConfiguracoes: React.FC = () => {
           </Button>
         </div>
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--27" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--28" className="min-w-0 flex-1">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--28" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--29" className="min-w-0 flex-1">
             <p data-gc="configuracoes.estudio.estudio-de-temas.p--18" className="text-sm font-medium">Apagar tudo do estúdio</p>
             <p data-gc="configuracoes.estudio.estudio-de-temas.p--19" className="text-xs text-ink-faint">
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>
-          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--18"
             variant="danger"
             size="sm"
             onClick={() =>

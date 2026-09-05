@@ -99,9 +99,44 @@ export function criarJanela() {
 
   janela.on("closed", () => carregador.encerrar());
 
+  /*
+    Link de fora vai para o navegador. Mas uma janela nossa — o estúdio de
+    temas, que precisa ficar ao lado do app para a pessoa ver o tema mudando —
+    abre aqui dentro, com a mesma casca e o mesmo preload.
+  */
   janela.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("http")) void shell.openExternal(url);
-    return { action: "deny" };
+    const nossa = (() => {
+      try {
+        return new URL(url).origin === APP_ORIGIN;
+      } catch {
+        return false;
+      }
+    })();
+
+    if (!nossa) {
+      if (url.startsWith("http")) void shell.openExternal(url);
+      return { action: "deny" };
+    }
+
+    return {
+      action: "allow",
+      overrideBrowserWindowOptions: {
+        width: 1280,
+        height: 860,
+        minWidth: 820,
+        minHeight: 520,
+        backgroundColor: "#2b2d31",
+        titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
+        ...(process.platform === "darwin" ? {} : { icon: ICONE }),
+        webPreferences: {
+          preload: path.join(__dirname, "preload.cjs"),
+          additionalArguments: [`--gravae-nome=${ehDev ? "Electron" : app.name}`],
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: false,
+        },
+      },
+    };
   });
 
   janela.webContents.on("will-navigate", (evento, url) => {

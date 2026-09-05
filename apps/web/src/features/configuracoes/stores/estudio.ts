@@ -52,6 +52,9 @@ interface EstudioStore extends EstadoDoEstudio {
 }
 
 const CHAVE = "gravae:estudio";
+
+/// Só existe quando há outra janela para avisar.
+let canal: BroadcastChannel | null = null;
 const VAZIO: EstadoDoEstudio = {
   substituicoes: {},
   css: "",
@@ -148,6 +151,8 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     } catch {
       /// Sem localStorage o estúdio ainda funciona; só não sobrevive ao F5.
     }
+
+    canal?.postMessage(1);
   };
 
   return {
@@ -278,3 +283,30 @@ export const useEstudio = create<EstudioStore>((set, store) => {
 });
 
 aplicar(useEstudio.getState());
+
+/*
+  O estúdio pode estar aberto em duas janelas ao mesmo tempo: a do app e a que
+  sai no "Abrir em janela". O tema tem que mudar nas duas enquanto se escreve —
+  é o ponto de ter uma janela à parte.
+
+  São dois caminhos porque nenhum sozinho cobre os dois mundos: o evento de
+  storage é o do navegador, e o canal é o que atravessa entre janelas do
+  Electron. Quem grava não recebe o próprio aviso, então não há laço.
+*/
+function receber() {
+  const chegou = ler();
+
+  useEstudio.setState(chegou);
+  aplicar(chegou);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (evento) => {
+    if (evento.key === CHAVE) receber();
+  });
+
+  if (typeof BroadcastChannel !== "undefined") {
+    canal = new BroadcastChannel(CHAVE);
+    canal.onmessage = receber;
+  }
+}
