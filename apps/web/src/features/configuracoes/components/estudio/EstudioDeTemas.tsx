@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "react-toastify";
 import {
   ChevronRight,
-  ExternalLink,
   Copy,
   Download,
   FileCode2,
@@ -16,7 +14,6 @@ import {
   SlidersHorizontal,
   Trash2,
   Upload,
-  X,
 } from "lucide-react";
 
 import { CAMINHO_DO_TEMA, lerCabecalhoDoTema } from "@gravae/shared";
@@ -121,70 +118,6 @@ export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) =
   );
 };
 
-/*
-  Abre o estúdio numa janela do sistema, com o app vivo atrás.
-
-  Devolve se conseguiu: bloqueador de pop-up existe, e quando ele barra a
-  janela a pessoa não pode ficar sem estúdio nenhum — cai no modal.
-*/
-export function abrirEstudioEmJanela(): boolean {
-  const largura = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
-  const altura = Math.min(900, Math.round(window.screen.availHeight * 0.85));
-
-  const janela = window.open(
-    "/estudio",
-    "gc-estudio",
-    `popup=yes,width=${largura},height=${altura},left=${Math.round(
-      (window.screen.availWidth - largura) / 2,
-    )},top=${Math.round((window.screen.availHeight - altura) / 2)}`,
-  );
-
-  if (!janela) return false;
-
-  janela.focus();
-  return true;
-}
-
-export const EstudioDeTemas: React.FC<{
-  open: boolean;
-  onClose: () => void;
-}> = ({ open, onClose }) => (
-  <DialogPrimitive.Root data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveroot" open={open} onOpenChange={(next) => !next && onClose()}>
-    <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
-      <DialogPrimitive.Content data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivecontent"
-        className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(900px,94vh)] w-[min(1320px,96vw)] overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
-        aria-label="Estúdio de temas"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
-        <DialogPrimitive.Title data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivetitle" className="sr-only">Estúdio de temas</DialogPrimitive.Title>
-
-        <CorpoDoEstudio data-gc="configuracoes.estudio.estudio-de-temas.corpo-do-estudio"
-          acao={
-            <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
-              type="button"
-              onClick={() => {
-                abrirEstudioEmJanela();
-                onClose();
-              }}
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink-muted transition hover:bg-hover hover:text-ink"
-            >
-              <ExternalLink data-gc="configuracoes.estudio.estudio-de-temas.external-link" size={18} />
-              Abrir em janela
-            </button>
-          }
-        />
-
-        <DialogPrimitive.Close
-          aria-label="Fechar"
-          className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
-        >
-          <X data-gc="configuracoes.estudio.estudio-de-temas.x" size={18} />
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
-    </DialogPrimitive.Portal>
-  </DialogPrimitive.Root>
-);
 
 const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
@@ -263,7 +196,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
               key={grupo.titulo}
               className="border-b border-divisor last:border-b-0"
             >
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
                 type="button"
                 onClick={() =>
                   setAbertos((atual) => ({
@@ -325,7 +258,7 @@ const LinhaDeToken: React.FC<{
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--8" className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
       <Popover data-gc="configuracoes.estudio.estudio-de-temas.popover">
         <PopoverTrigger data-gc="configuracoes.estudio.estudio-de-temas.popover-trigger" asChild>
-          <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
+          <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
             type="button"
             disabled={!legivel}
             aria-label={`Cor de ${token.rotulo}`}
@@ -386,7 +319,7 @@ const LinhaDeToken: React.FC<{
         )}
       />
 
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
         type="button"
         onClick={() => definir(token.nome, null)}
         disabled={!substituido}
@@ -410,7 +343,7 @@ const AbaDeCss: React.FC = () => {
   return (
     <>
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--10" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
           variant="surface"
           size="sm"
           onClick={() => arquivo.current?.click()}
@@ -429,7 +362,7 @@ const AbaDeCss: React.FC = () => {
           }}
         />
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
           variant="surface"
           size="sm"
           onClick={() => baixar("tema.css", css, "text/css")}
@@ -437,7 +370,7 @@ const AbaDeCss: React.FC = () => {
           <Download data-gc="configuracoes.estudio.estudio-de-temas.download" size={14} /> Baixar
         </Button>
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
           variant="surface"
           size="sm"
           onClick={() =>
@@ -447,7 +380,7 @@ const AbaDeCss: React.FC = () => {
           Copiar
         </Button>
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
           variant="surface"
           size="sm"
           className="ml-auto text-danger"
@@ -491,7 +424,7 @@ const BotaoDeCompartilhar: React.FC = () => {
   const vazio = !css.trim() && Object.keys(substituicoes).length === 0;
 
   return (
-    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
+    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
       variant="surface"
       size="sm"
       disabled={vazio || publicar.isPending}
@@ -618,7 +551,7 @@ const ComentariosQuebrados: React.FC<{
         ))}
       </div>
 
-      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
+      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
         variant="surface"
         size="sm"
         className="mt-2"
@@ -643,7 +576,7 @@ const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="shrink-0 border-t border-line px-6 py-3">
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
         type="button"
         onClick={() => setAberto((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
@@ -699,7 +632,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="shrink-0 border-t border-line px-6 py-3">
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
         type="button"
         onClick={() => setAberto((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
@@ -720,7 +653,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
 
           <div data-gc="configuracoes.estudio.estudio-de-temas.div--17" className="mt-2 flex flex-wrap gap-1.5">
             {GANCHOS.map((gancho) => (
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
                 key={gancho.classe}
                 type="button"
                 title={gancho.oQueE}
@@ -760,7 +693,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
                   <>
                     <div data-gc="configuracoes.estudio.estudio-de-temas.div--20" className="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
                       {mostrar.map((nome) => (
-                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
+                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
                           key={nome}
                           type="button"
                           onClick={() => onUsar(`[data-gc="${nome}"] {\n  \n}`)}
@@ -788,7 +721,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
               {ENCOLHER}
             </pre>
 
-            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--16" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
+            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--15" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
               Usar
             </Button>
           </div>
@@ -827,7 +760,7 @@ const AbaDeAtivos: React.FC = () => {
   return (
     <>
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
           variant="surface"
           size="sm"
           disabled={subindo}
@@ -881,7 +814,7 @@ const AbaDeAtivos: React.FC = () => {
                   {ativo.nome}
                 </p>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--18"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
                   onClick={() =>
                     void copiarTexto(`url("${ativo.url}")`).then(
                       (ok) => ok && toast.success("Endereço copiado."),
@@ -894,7 +827,7 @@ const AbaDeAtivos: React.FC = () => {
                   <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
                 </button>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--19"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--18"
                   onClick={() =>
                     void confirmar({
                       titulo: `Tirar "${ativo.nome}" da lista?`,
@@ -954,7 +887,7 @@ const AbaDeConfiguracoes: React.FC = () => {
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>
-          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--20"
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--19"
             variant="danger"
             size="sm"
             onClick={() =>

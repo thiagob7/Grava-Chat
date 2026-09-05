@@ -7,6 +7,7 @@ import { Splash } from "~/features/app/components/Splash";
 
 import { ChamadaRecebida } from "~/features/voz/components/ChamadaRecebida";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
+import { JanelaDoEstudio } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/features/app/hooks/use-aviso-no-titulo";
 import { useConviteDeAviso } from "~/features/app/hooks/use-convite-de-aviso";
@@ -106,6 +107,7 @@ export const AppRoutes: React.FC = () => {
     </div>
 
     <FloatingScreenShare data-gc="routes.floating-screen-share" />
+    <JanelaDoEstudio data-gc="routes.janela-do-estudio" />
     <ChamadaRecebida data-gc="routes.chamada-recebida" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
   </BrowserRouter>

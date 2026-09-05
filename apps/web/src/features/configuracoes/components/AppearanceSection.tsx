@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Check,
   Flame,
@@ -13,10 +13,8 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { CampoSelect } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
-import {
-  abrirEstudioEmJanela,
-  EstudioDeTemas,
-} from "~/features/configuracoes/components/estudio/EstudioDeTemas";
+import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { useJanelaDoEstudio } from "~/features/configuracoes/stores/janela-do-estudio";
 import {
   CORES_DE_DESTAQUE,
   useAparencia,
@@ -78,7 +76,8 @@ const TEMAS: TemaDaLista[] = [
 
 export const AppearanceSection: React.FC = () => {
   const prefs = useAparencia();
-  const [estudioAberto, setEstudioAberto] = useState(false);
+  const abrirEstudio = useJanelaDoEstudio((s) => s.abrir);
+  const fecharConfiguracoes = useConfiguracoes((s) => s.fechar);
 
   return (
     <div data-gc="configuracoes.appearance-section.div">
@@ -147,13 +146,14 @@ export const AppearanceSection: React.FC = () => {
         <div data-gc="configuracoes.appearance-section.div--3" className="mt-4">
           {/*
             O estúdio é oficina, não janela de leitura: escrever tema com a
-            tela do app tapada não funciona. Por isso ele sai em janela
-            própria, e o modal só entra quando o navegador barra a janela.
+            tela do app tapada não funciona. Ele abre como janela dentro do app
+            e as configurações saem da frente — a janela fica.
           */}
           <Button data-gc="configuracoes.appearance-section.button--2"
             variant="surface"
             onClick={() => {
-              if (!abrirEstudioEmJanela()) setEstudioAberto(true);
+              abrirEstudio();
+              fecharConfiguracoes();
             }}
           >
             <Palette data-gc="configuracoes.appearance-section.palette" size={16} /> Abrir estúdio de temas…
@@ -164,10 +164,6 @@ export const AppearanceSection: React.FC = () => {
           </p>
         </div>
 
-        <EstudioDeTemas data-gc="configuracoes.appearance-section.estudio-de-temas"
-          open={estudioAberto}
-          onClose={() => setEstudioAberto(false)}
-        />
       </Secao>
 
       <Secao data-gc="configuracoes.appearance-section.secao--2"
