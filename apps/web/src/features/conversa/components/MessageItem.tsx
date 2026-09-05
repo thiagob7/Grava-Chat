@@ -735,7 +735,7 @@ const AtalhoDeReacao: React.FC<{
         className,
       )}
     >
-      {emoji}
+      <Emoji emoji={emoji} className="size-5" />
     </button>
   );
 };
