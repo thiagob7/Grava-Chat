@@ -24,8 +24,17 @@ interface UserPanelProps {
 }
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
-  const [configurando, setConfigurando] = useState(false);
+  /*
+    O estado de "configurações abertas" mora só na loja.
+
+    Havia dois donos: um useState daqui e a seção pedida pela loja. Quem abria
+    pela engrenagem ficava fora do alcance de quem só sabia da loja — e o
+    estúdio, que pede para as configurações saírem da frente ao abrir a janela,
+    falava com a metade errada. A tela ficava por cima e parecia que o clique
+    não tinha feito nada.
+  */
   const secaoPedida = useConfiguracoes((s) => s.secao);
+  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
   const fecharPedido = useConfiguracoes((s) => s.fechar);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
@@ -105,7 +114,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               <MenuDoProprioCartao data-gc="perfil.user-panel.menu-do-proprio-cartao"
                 user={user}
                 onEditarPerfil={() => setEditandoPerfil(true)}
-                onGerenciarContas={() => setConfigurando(true)}
+                onGerenciarContas={() => abrirConfiguracoes("conta")}
               />
             </ProfileCardVisual>
           </PopoverContent>
@@ -129,7 +138,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
         <Tooltip data-gc="perfil.user-panel.tooltip" label="Configurações">
           <button data-gc="perfil.user-panel.button--2"
-            onClick={() => setConfigurando(true)}
+            onClick={() => abrirConfiguracoes("conta")}
             aria-label="Configurações"
             className="rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
@@ -138,19 +147,15 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
         </Tooltip>
       </div>
 
-      {(configurando || secaoPedida) && (
-        <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.on-logout"
+      {secaoPedida && (
+        <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.fechar-pedido"
           open
-          key={secaoPedida ?? "conta"}
-          secaoInicial={secaoPedida ?? "conta"}
+          key={secaoPedida}
+          secaoInicial={secaoPedida}
           user={user}
-          onClose={() => {
-            setConfigurando(false);
-            fecharPedido();
-          }}
+          onClose={fecharPedido}
           onLogout={onLogout}
           onEditarPerfil={() => {
-            setConfigurando(false);
             fecharPedido();
             setEditandoPerfil(true);
           }}
