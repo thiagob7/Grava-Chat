@@ -76,7 +76,9 @@ const NOME_DO_TEMA: Record<string, string> = {
   mudança acontecer atrás enquanto se digita.
 */
 export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) => {
-  const [aba, setAba] = useState<Aba>("tokens");
+  /// A biblioteca primeiro: é onde se importa e se liga um tema, que é o que
+  /// se quer fazer ao abrir o estúdio. Mexer em token vem depois.
+  const [aba, setAba] = useState<Aba>("biblioteca");
   const tema = useAparencia((s) => s.tema);
 
   return (
