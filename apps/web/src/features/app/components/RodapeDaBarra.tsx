@@ -73,10 +73,18 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
       {...flx(
         "areaDoUsuario",
         /*
-          Sem margem negativa nem largura calculada: agora ele é filho da coluna
-          da esquerda, então já nasce da largura do trilho mais a lateral.
+          `w-0 min-w-full` em vez de `w-full`, e não é firula.
+
+          A coluna da esquerda não tem largura fixa: ela nasce da largura do
+          trilho mais a lateral. Um filho `w-full` numa coluna assim entra na
+          conta com o tamanho do próprio texto — e o texto daqui é o nome do
+          canal de voz, que pode ser longo. A coluna crescia junto e empurrava o
+          app inteiro para fora da janela.
+
+          Com largura zero ele não entra na conta, e o mínimo o faz desenhar na
+          largura da coluna do mesmo jeito.
         */
-        "area-do-usuario relative z-30 w-full bg-surface-1 pb-2",
+        "area-do-usuario relative z-30 w-0 min-w-full bg-surface-1 pb-2",
       )}
     >
       <CartaoDaTransmissao data-gc="app.rodape-da-barra.cartao-da-transmissao" className="mx-2 mb-2" />
