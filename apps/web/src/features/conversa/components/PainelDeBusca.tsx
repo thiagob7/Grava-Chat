@@ -15,7 +15,9 @@ import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-fluxer";
 
 interface PainelDeBuscaProps {
-  guildId: string;
+  /// Ausente quando a busca é dentro de uma conversa.
+  guildId?: string;
+  canalId?: string;
   termo: string;
   currentUserId?: string;
   onFechar: () => void;
@@ -24,13 +26,14 @@ interface PainelDeBuscaProps {
 
 export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   guildId,
+  canalId,
   termo,
   currentUserId,
   onFechar,
   onIr,
 }) => {
   const { t } = useTranslation();
-  const busca = useBuscarMensagens({ guildId, termo });
+  const busca = useBuscarMensagens({ guildId, canalId, termo });
   const { data: expressoes } = useFindExpressions(guildId);
   const enfeitesDe = useEnfeites(guildId);
   const mencoes = useMencoes(guildId, false, currentUserId);

@@ -8,7 +8,6 @@ import {
   ChatsCircle,
   Hash,
   SpeakerHigh,
-  Star,
   Users,
 } from "@phosphor-icons/react";
 
@@ -36,7 +35,6 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
-import { useFavoritos } from "~/features/servidor/stores/favoritos";
 import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/features/voz/components/VoiceChatPanel";
@@ -45,6 +43,7 @@ import { MemberList } from "~/features/servidor/components/MemberList";
 import { MessageList } from "~/features/conversa/components/MessageList";
 import { ConfirmacaoDeVoz } from "~/features/voz/components/ConfirmacaoDeVoz";
 import { ModeratorView } from "~/features/servidor/components/ModeratorView";
+import { EstrelaDoCanal } from "~/features/conversa/components/EstrelaDoCanal";
 import { PainelDeBusca } from "~/features/conversa/components/PainelDeBusca";
 import { TypingIndicator } from "~/features/conversa/components/TypingIndicator";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
@@ -495,20 +494,3 @@ const SinoDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
   );
 };
 
-const EstrelaDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
-  const favorito = useFavoritos((s) => s.canais.includes(channelId));
-  const alternar = useFavoritos((s) => s.alternar);
-
-  return (
-    <Tooltip data-gc="chat.chat.tooltip--4" label={favorito ? "Tirar dos favoritos" : "Favoritar o canal"}>
-      <button data-gc="chat.chat.button--7"
-        onClick={() => alternar(channelId)}
-        aria-label={favorito ? "Tirar dos favoritos" : "Favoritar o canal"}
-        aria-pressed={favorito}
-        className={cn("transition hover:text-ink", favorito ? "text-idle" : "text-ink-muted")}
-      >
-        <Star data-gc="chat.chat.star" size={20} weight={favorito ? "fill" : "regular"} />
-      </button>
-    </Tooltip>
-  );
-};

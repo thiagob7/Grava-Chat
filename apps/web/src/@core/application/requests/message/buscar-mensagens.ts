@@ -12,8 +12,9 @@ export interface PaginaDaBusca {
   hasMore: boolean;
 }
 
+/// Ou o servidor inteiro, ou uma conversa só — nunca nenhum dos dois.
 export interface FiltrosDaBusca {
-  guildId: string;
+  guildId?: string;
   termo: string;
   canalId?: string;
   autorId?: string;

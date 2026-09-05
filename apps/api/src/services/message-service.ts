@@ -83,9 +83,17 @@ export const messageService = {
 
   async buscar(
     userId: string,
-    params: { guildId: string; termo: string; canalId?: string; autorId?: string; before?: string },
+    params: { guildId?: string; termo: string; canalId?: string; autorId?: string; before?: string },
   ) {
-    const canais = await accessService.readableChannels(userId, params.guildId);
+    /*
+      Sem servidor, a busca é dentro de uma conversa só — e o acesso a ela é a
+      mesma pergunta que se faz para abrir o canal.
+    */
+    const canais = params.guildId
+      ? await accessService.readableChannels(userId, params.guildId)
+      : await accessService
+          .requireChannelAccess(userId, params.canalId!)
+          .then(({ channel }) => [channel.id]);
 
     const linhas = await messageRepository.buscar({
       channelIds: canais,
