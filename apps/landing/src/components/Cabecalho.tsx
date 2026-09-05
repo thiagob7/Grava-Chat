@@ -20,6 +20,9 @@ export const Cabecalho = () => (
         <a href="#recursos" className="transition hover:text-ink">
           O que ele faz
         </a>
+        <Link href="/desenvolvedores" className="transition hover:text-ink">
+          Desenvolvedores
+        </Link>
         <a
           href="https://github.com/thiagob7/Grava-Chat"
           className="transition hover:text-ink"
