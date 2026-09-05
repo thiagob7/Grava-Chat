@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ArrowDownToLine, Download, Plus, RotateCw } from "lucide-react";
+import { useNavigate } from "react-router";
+import { ArrowDownToLine, Compass, Download, Plus, RotateCw } from "lucide-react";
 import { Headphones, MonitorPlay } from "@phosphor-icons/react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
@@ -12,6 +13,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
+import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 
@@ -38,20 +40,11 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const { data: vozes = {} } = useVoiceStates(true);
   const [creating, setCreating] = useState(false);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+  const navigate = useNavigate();
   const atualizacao = useAtualizacao();
 
-  useEffect(() => {
-    const aoTeclar = (evento: KeyboardEvent) => {
-      const comando = evento.metaKey || evento.ctrlKey;
-      if (!comando || !evento.shiftKey || evento.key.toLowerCase() !== "n") return;
-
-      evento.preventDefault();
-      setCreating(true);
-    };
-
-    window.addEventListener("keydown", aoTeclar);
-    return () => window.removeEventListener("keydown", aoTeclar);
-  }, []);
+  useAtalhoGlobal("servidor-novo", () => setCreating(true));
+  useAtalhoGlobal("configuracoes", () => abrirConfiguracoes("conta"));
 
   return (
     <>
@@ -165,6 +158,10 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           onClick={() => setCreating(true)}
         >
           <Plus size={22} />
+        </AcaoDoTrilho>
+
+        <AcaoDoTrilho label="Explorar comunidades" onClick={() => navigate("/explorar")}>
+          <Compass size={22} />
         </AcaoDoTrilho>
 
         {!ehDesktop() ? (
