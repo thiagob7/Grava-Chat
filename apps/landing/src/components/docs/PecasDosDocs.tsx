@@ -1,13 +1,20 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { CopiarPagina } from "~/components/docs/CopiarPagina";
 import { vizinhas } from "~/dados/docs";
 
 export const Trilha = ({ grupo, pagina }: { grupo: string; pagina: string }) => (
-  <p className="text-sm text-ink-faint">
-    {grupo} <span className="px-1.5">/</span>
-    <span className="text-ink-muted">{pagina}</span>
-  </p>
+  <div className="flex items-center gap-4">
+    <p className="min-w-0 truncate text-sm text-ink-faint">
+      {grupo} <span className="px-1.5">/</span>
+      <span className="text-ink-muted">{pagina}</span>
+    </p>
+
+    <span className="ml-auto">
+      <CopiarPagina />
+    </span>
+  </div>
 );
 
 export const Titulo = ({ children, chamada }: { children: string; chamada: string }) => (
