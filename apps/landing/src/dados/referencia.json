@@ -509,5 +509,147 @@
         }
       ]
     }
+  ],
+  "recebidos": [
+    {
+      "nome": "message:created",
+      "descricao": "Mensagem nova num canal que o bot acompanha."
+    },
+    {
+      "nome": "message:updated",
+      "descricao": "Mensagem editada."
+    },
+    {
+      "nome": "message:deleted",
+      "descricao": "Mensagem apagada."
+    },
+    {
+      "nome": "message:reactions",
+      "descricao": "A lista de reações da mensagem inteira, já recontada."
+    },
+    {
+      "nome": "message:super",
+      "descricao": "Alguém mandou a reação em destaque."
+    },
+    {
+      "nome": "typing:started",
+      "descricao": "Alguém começou a digitar no canal."
+    },
+    {
+      "nome": "command:invoked",
+      "descricao": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+    },
+    {
+      "nome": "commands:changed",
+      "descricao": "A lista de comandos do servidor mudou."
+    },
+    {
+      "nome": "presence:changed",
+      "descricao": "Alguém ficou on-line, ausente ou saiu."
+    },
+    {
+      "nome": "presence:self",
+      "descricao": "O estado que o servidor guardou para esta conexão."
+    },
+    {
+      "nome": "user:updated",
+      "descricao": "Perfil ou apelido de alguém mudou."
+    },
+    {
+      "nome": "friend:updated",
+      "descricao": "Algo mudou na lista de amizades."
+    },
+    {
+      "nome": "dm:created",
+      "descricao": "Abriram uma conversa direta."
+    },
+    {
+      "nome": "member:joined",
+      "descricao": "Entrou gente no servidor."
+    },
+    {
+      "nome": "member:updated",
+      "descricao": "Cargo ou apelido de um membro mudou."
+    },
+    {
+      "nome": "member:left",
+      "descricao": "Saiu gente do servidor."
+    },
+    {
+      "nome": "channel:created",
+      "descricao": "Canal novo."
+    },
+    {
+      "nome": "channel:updated",
+      "descricao": "Canal renomeado ou remexido."
+    },
+    {
+      "nome": "channel:deleted",
+      "descricao": "Canal apagado."
+    },
+    {
+      "nome": "guild:refresh",
+      "descricao": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo."
+    },
+    {
+      "nome": "post:created",
+      "descricao": "Post novo no fórum."
+    },
+    {
+      "nome": "post:updated",
+      "descricao": "Post do fórum editado."
+    },
+    {
+      "nome": "expressions:changed",
+      "descricao": "Os emojis ou figurinhas do servidor mudaram."
+    },
+    {
+      "nome": "guild:deleted",
+      "descricao": "O servidor foi apagado."
+    },
+    {
+      "nome": "guild:updated",
+      "descricao": "Nome, ícone ou descrição do servidor mudou."
+    },
+    {
+      "nome": "voice:states",
+      "descricao": "O retrato completo de quem está na chamada do canal."
+    },
+    {
+      "nome": "voice:sound",
+      "descricao": "Alguém tocou um som na chamada."
+    },
+    {
+      "nome": "voice:move",
+      "descricao": "Arrastaram esta conexão para outro canal de voz."
+    },
+    {
+      "nome": "voice:joined",
+      "descricao": "Alguém entrou na chamada."
+    },
+    {
+      "nome": "voice:left",
+      "descricao": "Alguém saiu da chamada."
+    },
+    {
+      "nome": "voice:updated",
+      "descricao": "Mudou o microfone, o fone ou a transmissão de alguém."
+    },
+    {
+      "nome": "voice:recusada",
+      "descricao": "A entrada na chamada foi recusada."
+    },
+    {
+      "nome": "live:started",
+      "descricao": "Começou uma transmissão de tela."
+    },
+    {
+      "nome": "live:ended",
+      "descricao": "A transmissão de tela acabou."
+    },
+    {
+      "nome": "error",
+      "descricao": "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo."
+    }
   ]
 }

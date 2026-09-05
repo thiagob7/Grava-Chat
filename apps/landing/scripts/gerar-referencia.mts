@@ -7,6 +7,7 @@ import { clientEventSchemas } from "@gravae/shared";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ROTAS = join(AQUI, "..", "..", "api", "src", "routes", "bot-api.ts");
+const EVENTOS = join(AQUI, "..", "..", "..", "packages", "shared", "src", "events.ts");
 const SAIDA = join(AQUI, "..", "src", "dados", "referencia.json");
 
 const DESCRICOES = {
@@ -19,6 +20,44 @@ const DESCRICOES = {
   "DELETE /bot/mensagens/:messageId": "Apaga uma mensagem do próprio bot.",
   "PUT /bot/mensagens/:messageId/reacoes/:emoji": "Reage a uma mensagem.",
   "DELETE /bot/mensagens/:messageId/reacoes/:emoji": "Tira a reação do bot.",
+};
+
+const RECEBIDOS = {
+  "message:created": "Mensagem nova num canal que o bot acompanha.",
+  "message:updated": "Mensagem editada.",
+  "message:deleted": "Mensagem apagada.",
+  "message:reactions": "A lista de reações da mensagem inteira, já recontada.",
+  "message:super": "Alguém mandou a reação em destaque.",
+  "typing:started": "Alguém começou a digitar no canal.",
+  "command:invoked": "Chamaram um comando de barra do bot. É por aqui que ele trabalha.",
+  "commands:changed": "A lista de comandos do servidor mudou.",
+  "presence:changed": "Alguém ficou on-line, ausente ou saiu.",
+  "presence:self": "O estado que o servidor guardou para esta conexão.",
+  "user:updated": "Perfil ou apelido de alguém mudou.",
+  "friend:updated": "Algo mudou na lista de amizades.",
+  "dm:created": "Abriram uma conversa direta.",
+  "member:joined": "Entrou gente no servidor.",
+  "member:updated": "Cargo ou apelido de um membro mudou.",
+  "member:left": "Saiu gente do servidor.",
+  "channel:created": "Canal novo.",
+  "channel:updated": "Canal renomeado ou remexido.",
+  "channel:deleted": "Canal apagado.",
+  "guild:refresh": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo.",
+  "post:created": "Post novo no fórum.",
+  "post:updated": "Post do fórum editado.",
+  "expressions:changed": "Os emojis ou figurinhas do servidor mudaram.",
+  "guild:deleted": "O servidor foi apagado.",
+  "guild:updated": "Nome, ícone ou descrição do servidor mudou.",
+  "voice:states": "O retrato completo de quem está na chamada do canal.",
+  "voice:sound": "Alguém tocou um som na chamada.",
+  "voice:move": "Arrastaram esta conexão para outro canal de voz.",
+  "voice:joined": "Alguém entrou na chamada.",
+  "voice:left": "Alguém saiu da chamada.",
+  "voice:updated": "Mudou o microfone, o fone ou a transmissão de alguém.",
+  "voice:recusada": "A entrada na chamada foi recusada.",
+  "live:started": "Começou uma transmissão de tela.",
+  "live:ended": "A transmissão de tela acabou.",
+  error: "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo.",
 };
 
 const CORPOS = {
@@ -79,9 +118,33 @@ const eventos = Object.entries(clientEventSchemas).map(([nome, schema]) => {
   };
 });
 
+const fonteDosEventos = await readFile(EVENTOS, "utf8");
+const bloco = fonteDosEventos.match(/export type ServerToClientEvents = \{\n([\s\S]*?)\n\};/);
+
+if (!bloco) {
+  console.error("\n  Não achei o ServerToClientEvents no events.ts. O formato mudou?\n");
+  process.exit(1);
+}
+
+const nomesRecebidos = [...bloco[1].matchAll(/^  "?([\w:]+)"?: \(/gm)].map(([, nome]) => nome);
+
+const semTexto = nomesRecebidos.filter((nome) => !RECEBIDOS[nome]);
+
+if (semTexto.length) {
+  console.error(
+    `\n  Evento novo que o servidor manda sem entrada na documentação:\n\n` +
+      semTexto.map((e) => `    ${e}`).join("\n") +
+      `\n\n  Descreva em apps/landing/scripts/gerar-referencia.mts e rode de novo.\n`,
+  );
+  process.exit(1);
+}
+
+const recebidos = nomesRecebidos.map((nome) => ({ nome, descricao: RECEBIDOS[nome] }));
+
 await mkdir(dirname(SAIDA), { recursive: true });
-await writeFile(SAIDA, `${JSON.stringify({ rest, eventos }, null, 2)}\n`);
+await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos }, null, 2)}\n`);
 
 console.log(
-  `referência: ${rest.length} rotas e ${eventos.length} eventos em src/dados/referencia.json`,
+  `referência: ${rest.length} rotas, ${eventos.length} eventos enviados e ` +
+    `${recebidos.length} recebidos em src/dados/referencia.json`,
 );
