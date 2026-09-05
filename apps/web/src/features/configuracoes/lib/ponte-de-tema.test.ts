@@ -14,7 +14,21 @@ describe("ponte de tema", () => {
 
     expect(saida["--color-surface-2"]).toBe("#1e1d23");
     expect(saida["--color-composer"]).toBe("#1e1d23");
-    expect(saida["--color-cabecalho"]).toBe("#1e1d23");
+  });
+
+  it("o cabecalho do canal vem do token proprio deles", () => {
+    expect(traduzirTema({ "--background-channel-header": "#111" })["--color-cabecalho"]).toBe(
+      "#111",
+    );
+  });
+
+  it("varias origens podem cair no mesmo destino, e a ultima vale", () => {
+    const saida = traduzirTema({
+      "--background-header-secondary": "#aaa",
+      "--border-color": "#bbb",
+    });
+
+    expect(saida["--color-line"]).toBe("#bbb");
   });
 
   it("ignora o que o tema nao declarou", () => {

@@ -16,34 +16,48 @@
 export const PONTE_DE_TEMA: Record<string, string[]> = {
   /// Trilho de servidores, barras laterais e faixa de título.
   "--background-secondary": ["--color-surface-1"],
-  /// O miolo: barra do canal, conversa, caixa de escrever, coluna da direita.
-  "--background-secondary-lighter": ["--color-surface-2", "--color-composer", "--color-cabecalho"],
+  /// O miolo: conversa, caixa de escrever, coluna da direita.
+  "--background-secondary-lighter": ["--color-surface-2", "--color-composer"],
   /// Cartão de chamada e de usuário.
   "--background-secondary-alt": ["--color-painel"],
   /// O fundo mais fundo, atrás de tudo.
   "--background-primary": ["--color-surface-0"],
   "--background-tertiary": ["--color-surface-3"],
+  "--background-channel-header": ["--color-cabecalho"],
+  "--background-header-primary": ["--color-cabecalho"],
   /// Menus, balões e dicas.
   "--form-surface-background": ["--color-surface-4"],
   "--background-textarea": ["--color-campo"],
   "--background-modifier-selected": ["--color-selecionado"],
   "--background-modifier-hover": ["--color-hover"],
-  "--background-modifier-accent": ["--color-line", "--color-divisor"],
+  "--background-modifier-accent": ["--color-divisor"],
   "--background-header-secondary": ["--color-line"],
+  "--border-color": ["--color-line"],
+  "--border-color-focus": ["--color-campo-foco"],
 
   "--text-primary": ["--color-ink"],
+  "--text-chat": ["--color-ink"],
+  "--text-secondary": ["--color-ink-muted"],
   "--text-primary-muted": ["--color-ink-muted"],
   "--text-tertiary": ["--color-ink-faint"],
   "--text-link": ["--color-link", "--color-mencao"],
+  "--text-warning": ["--color-aviso"],
 
   "--brand-primary": ["--color-brand"],
-  "--focus-primary": ["--color-brand"],
-  "--status-danger": ["--color-danger"],
+  "--brand-primary-fill": ["--color-brand"],
+  "--brand-secondary": ["--color-brand-hover"],
+  "--accent-primary": ["--color-brand"],
   "--accent-danger": ["--color-danger"],
-  "--status-warning": ["--color-aviso", "--color-idle"],
+  "--accent-success": ["--color-online"],
+  "--accent-warning": ["--color-idle", "--color-aviso"],
+  "--status-danger": ["--color-danger"],
   "--status-online": ["--color-online"],
   "--status-idle": ["--color-idle"],
   "--status-dnd": ["--color-dnd"],
+
+  "--code-block-bg": ["--color-codigo-bloco"],
+  "--code-inline-bg": ["--color-codigo"],
+  "--scrollbar-thumb-bg": ["--color-trilho"],
 
   "--font-primary": ["--font-sans"],
   "--font-display": ["--font-display"],
