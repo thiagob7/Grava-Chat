@@ -84,6 +84,28 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda, tok
     return () => window.removeEventListener(TEMA_APLICADO, refazer);
   }, [nome, token, padrao]);
 
+  /*
+    Depois de arrastar, o token passa a contar a largura de verdade.
+
+    Um tema faz conta com ele — a faixa do usuário lá embaixo, por exemplo, é
+    "trilho mais lateral". Se o token continuasse dizendo o valor de fábrica, a
+    conta daria um número fixo e a faixa ficaria mais curta que a lateral assim
+    que alguém arrastasse.
+
+    Só depois de arrastar: enquanto ninguém mexeu, quem manda no token é o tema,
+    e escrever por cima o calaria.
+  */
+  useEffect(() => {
+    if (!token || guardada(nome) === null) return;
+
+    const raiz = document.documentElement;
+    raiz.style.setProperty(token, `${Math.round(largura)}px`);
+
+    return () => {
+      raiz.style.removeProperty(token);
+    };
+  }, [nome, token, largura]);
+
   const guardar = (valor: number) => {
     try {
       localStorage.setItem(chaveDe(nome), String(valor));

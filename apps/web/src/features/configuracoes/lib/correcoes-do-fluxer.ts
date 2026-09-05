@@ -38,6 +38,15 @@ export const CORRECOES_DO_FLUXER = `
   height: 100% !important;
 }
 
+/*
+  A faixa do usuário mede trilho mais lateral. O tema faz essa soma com o valor
+  de fábrica da lateral, e aqui a lateral é arrastável — então a soma dele fica
+  curta assim que alguém arrasta. 100% aqui é a lateral de verdade.
+*/
+.area-do-usuario {
+  width: calc(100% + var(--layout-guild-list-width)) !important;
+}
+
 
 `;
 
