@@ -22,7 +22,13 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
 
   void byChannel;
   const users = activeIn(channelId, currentUserId);
-  if (!users.length) return <div className="h-6" />;
+
+  /*
+    Sem ninguém digitando, o aviso não ocupa espaço nenhum: ele flutua por
+    cima da caixa em vez de empurrá-la. Antes uma faixa de 24px ficava
+    reservada o tempo todo só para não haver salto quando alguém começasse.
+  */
+  if (!users.length) return null;
 
   const names = users.map((entry) => entry.user.displayName);
   const text =
@@ -33,7 +39,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         : t("conversa.digitando.varios", { quantidade: names.length });
 
   return (
-    <div className="flex h-6 items-center gap-2 px-3 text-xs text-ink-muted">
+    <div className="pointer-events-none absolute -top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full border border-line bg-surface-2/80 px-2.5 py-1 text-xs text-ink-muted shadow-lg backdrop-blur-md">
       <span className="flex shrink-0 -space-x-1.5">
         {users.slice(0, 3).map((entry) => (
           <Avatar
@@ -42,7 +48,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
             name={entry.user.displayName}
             url={entry.user.avatarUrl}
             size={16}
-            className="ring-2 ring-composer"
+            className="ring-2 ring-surface-2"
           />
         ))}
       </span>
