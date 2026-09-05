@@ -33,6 +33,12 @@ const DESCRICOES = {
   "PUT /bot/servidores/:guildId/banimentos/:userId":
     "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
   "DELETE /bot/servidores/:guildId/banimentos/:userId": "Desbane, devolvendo o acesso na hora.",
+  "POST /bot/servidores/:guildId/canais": "Cria um canal de texto, voz ou fórum.",
+  "PATCH /bot/servidores/:guildId/canais/:channelId":
+    "Muda nome, tópico, categoria, posição ou modo lento do canal.",
+  "DELETE /bot/servidores/:guildId/canais/:channelId":
+    "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
+  "POST /bot/servidores/:guildId/convites": "Cria um link de convite pro servidor.",
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
   "POST /bot/canais/:channelId/mensagens": "Manda uma mensagem no canal.",
   "GET /bot/canais/:channelId/mensagens":
@@ -85,6 +91,9 @@ const RECEBIDOS = {
 };
 
 const CORPOS = {
+  "POST /bot/servidores/:guildId/canais": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
+  "PATCH /bot/servidores/:guildId/canais/:channelId": "updateChannelInput — tudo opcional",
+  "POST /bot/servidores/:guildId/convites": "{ maxUses?: number, expiresInHours?: number }",
   "PATCH /bot/servidores/:guildId/membros/:userId/apelido": "{ nickname: string | null }",
   "PUT /bot/servidores/:guildId/membros/:userId/cargos": "{ roleIds: string[] }",
   "PUT /bot/servidores/:guildId/castigos/:userId": "{ minutos: number, reason?: string }",

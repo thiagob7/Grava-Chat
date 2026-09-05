@@ -19,6 +19,7 @@ import { moderationService } from "~/services/moderation-service.js";
 import { roleService } from "~/services/role-service.js";
 import { objectId } from "~/validations/common.js";
 import { banInput, nicknameInput, timeoutInput } from "~/validations/moderation.js";
+import { createChannelInput, updateChannelInput } from "~/validations/guild.js";
 import { setMemberRolesInput } from "~/validations/role.js";
 
 const guildParams = z.object({ guildId: objectId });
@@ -33,6 +34,12 @@ const reacaoParams = mensagemParams.extend({ emoji: z.string().min(1).max(80) })
 const reacaoBody = z.object({ burst: z.boolean().optional() });
 
 const membroParams = guildParams.extend({ userId: objectId });
+const canalDoServidorParams = guildParams.extend({ channelId: objectId });
+
+const conviteBody = z.object({
+  maxUses: z.number().int().min(1).max(1000).nullable().optional(),
+  expiresInHours: z.number().int().min(1).max(24 * 365).nullable().optional(),
+});
 
 const historicoQuery = z.object({
   before: objectId.optional(),
@@ -152,6 +159,40 @@ export async function botApiRoutes(app: FastifyInstance) {
     await moderationService.unban(botUserId, guildId, alvo);
 
     return reply.status(204).send();
+  });
+
+  app.post("/bot/servidores/:guildId/canais", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    const canal = await guildService.createChannel(userId, guildId, createChannelInput.parse(req.body));
+
+    return reply.status(201).send(canal);
+  });
+
+  app.patch("/bot/servidores/:guildId/canais/:channelId", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, channelId } = canalDoServidorParams.parse(req.params);
+
+    return guildService.updateChannel(userId, guildId, channelId, updateChannelInput.parse(req.body));
+  });
+
+  app.delete("/bot/servidores/:guildId/canais/:channelId", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, channelId } = canalDoServidorParams.parse(req.params);
+
+    await guildService.deleteChannel(userId, guildId, channelId);
+
+    return reply.status(204).send();
+  });
+
+  app.post("/bot/servidores/:guildId/convites", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    const convite = await guildService.createInvite(userId, guildId, conviteBody.parse(req.body ?? {}));
+
+    return reply.status(201).send(convite);
   });
 
   app.put("/bot/comandos", async (req) => {

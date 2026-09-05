@@ -111,6 +111,44 @@
       ]
     },
     {
+      "metodo": "POST",
+      "caminho": "/bot/servidores/:guildId/canais",
+      "descricao": "Cria um canal de texto, voz ou fórum.",
+      "corpo": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PATCH",
+      "caminho": "/bot/servidores/:guildId/canais/:channelId",
+      "descricao": "Muda nome, tópico, categoria, posição ou modo lento do canal.",
+      "corpo": "updateChannelInput — tudo opcional",
+      "parametros": [
+        "guildId",
+        "channelId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/servidores/:guildId/canais/:channelId",
+      "descricao": "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
+      "corpo": null,
+      "parametros": [
+        "guildId",
+        "channelId"
+      ]
+    },
+    {
+      "metodo": "POST",
+      "caminho": "/bot/servidores/:guildId/convites",
+      "descricao": "Cria um link de convite pro servidor.",
+      "corpo": "{ maxUses?: number, expiresInHours?: number }",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
       "metodo": "PUT",
       "caminho": "/bot/comandos",
       "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
