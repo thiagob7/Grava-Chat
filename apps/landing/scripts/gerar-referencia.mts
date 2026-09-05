@@ -20,6 +20,19 @@ const DESCRICOES = {
   "GET /bot/eu": "Quem é o bot deste token.",
   "GET /bot/servidores": "Os servidores em que o bot está.",
   "GET /bot/servidores/:guildId/canais": "Os canais de um servidor, com o que o bot alcança.",
+  "GET /bot/servidores/:guildId/membros": "Quem está no servidor, com apelido, cargos e desde quando.",
+  "GET /bot/servidores/:guildId/cargos": "Os cargos do servidor, com as permissões de cada um.",
+  "PATCH /bot/servidores/:guildId/membros/:userId/apelido":
+    "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
+  "PUT /bot/servidores/:guildId/membros/:userId/cargos":
+    "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
+  "DELETE /bot/servidores/:guildId/membros/:userId": "Expulsa. Quem foi expulso volta com convite novo.",
+  "PUT /bot/servidores/:guildId/castigos/:userId":
+    "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
+  "GET /bot/servidores/:guildId/banimentos": "Quem está banido, e por quê.",
+  "PUT /bot/servidores/:guildId/banimentos/:userId":
+    "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
+  "DELETE /bot/servidores/:guildId/banimentos/:userId": "Desbane, devolvendo o acesso na hora.",
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
   "POST /bot/canais/:channelId/mensagens": "Manda uma mensagem no canal.",
   "GET /bot/canais/:channelId/mensagens":
@@ -72,6 +85,10 @@ const RECEBIDOS = {
 };
 
 const CORPOS = {
+  "PATCH /bot/servidores/:guildId/membros/:userId/apelido": "{ nickname: string | null }",
+  "PUT /bot/servidores/:guildId/membros/:userId/cargos": "{ roleIds: string[] }",
+  "PUT /bot/servidores/:guildId/castigos/:userId": "{ minutos: number, reason?: string }",
+  "PUT /bot/servidores/:guildId/banimentos/:userId": "{ reason?: string, apagarHoras?: number }",
   "PUT /bot/comandos": "definirComandosInput",
   "POST /bot/canais/:channelId/mensagens": "sendMessageInput sem channelId e nonce",
   "PATCH /bot/mensagens/:messageId": "editMessageInput sem messageId",

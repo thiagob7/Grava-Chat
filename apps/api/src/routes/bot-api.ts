@@ -3,6 +3,7 @@ import { z } from "zod";
 import { definirComandosInput, editMessageInput, sendMessageInput, rooms } from "@gravae/shared";
 
 import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
+import { toPublicUser } from "~/lib/serialize.js";
 import {
   apagarMensagem,
   editarMensagem,
@@ -12,8 +13,13 @@ import {
 import { io } from "~/realtime/io.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { botService } from "~/services/bot-service.js";
+import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
+import { moderationService } from "~/services/moderation-service.js";
+import { roleService } from "~/services/role-service.js";
 import { objectId } from "~/validations/common.js";
+import { banInput, nicknameInput, timeoutInput } from "~/validations/moderation.js";
+import { setMemberRolesInput } from "~/validations/role.js";
 
 const guildParams = z.object({ guildId: objectId });
 const canalParams = z.object({ channelId: objectId });
@@ -25,6 +31,8 @@ const editarBody = editMessageInput.omit({ messageId: true });
 
 const reacaoParams = mensagemParams.extend({ emoji: z.string().min(1).max(80) });
 const reacaoBody = z.object({ burst: z.boolean().optional() });
+
+const membroParams = guildParams.extend({ userId: objectId });
 
 const historicoQuery = z.object({
   before: objectId.optional(),
@@ -66,6 +74,84 @@ export async function botApiRoutes(app: FastifyInstance) {
     const canais = await channelRepository.findManyByGuild(guildId);
 
     return canais.map((c) => ({ id: c.id, name: c.name, type: c.type }));
+  });
+
+  app.get("/bot/servidores/:guildId/membros", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    await exigirPresenca(userId, guildId);
+
+    const membros = await memberRepository.findManyByGuild(guildId);
+
+    return membros.map((m) => ({
+      userId: m.userId,
+      nickname: m.nickname,
+      roleIds: m.roleIds,
+      joinedAt: m.joinedAt,
+      usuario: toPublicUser(m.user),
+    }));
+  });
+
+  app.get("/bot/servidores/:guildId/cargos", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return roleService.list(userId, guildId);
+  });
+
+  app.patch("/bot/servidores/:guildId/membros/:userId/apelido", async (req) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { nickname } = nicknameInput.parse(req.body);
+
+    return moderationService.apelidar(botUserId, guildId, alvo, nickname);
+  });
+
+  app.put("/bot/servidores/:guildId/membros/:userId/cargos", async (req) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+
+    return roleService.setMemberRoles(botUserId, guildId, alvo, setMemberRolesInput.parse(req.body));
+  });
+
+  app.delete("/bot/servidores/:guildId/membros/:userId", async (req, reply) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+
+    await guildService.removeMember(botUserId, guildId, alvo);
+
+    return reply.status(204).send();
+  });
+
+  app.put("/bot/servidores/:guildId/castigos/:userId", async (req) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+
+    return moderationService.castigar(botUserId, guildId, alvo, timeoutInput.parse(req.body));
+  });
+
+  app.get("/bot/servidores/:guildId/banimentos", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return moderationService.listBans(userId, guildId);
+  });
+
+  app.put("/bot/servidores/:guildId/banimentos/:userId", async (req) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+
+    return moderationService.ban(botUserId, guildId, alvo, banInput.parse(req.body ?? {}));
+  });
+
+  app.delete("/bot/servidores/:guildId/banimentos/:userId", async (req, reply) => {
+    const { userId: botUserId } = await botDoToken(req);
+    const { guildId, userId: alvo } = membroParams.parse(req.params);
+
+    await moderationService.unban(botUserId, guildId, alvo);
+
+    return reply.status(204).send();
   });
 
   app.put("/bot/comandos", async (req) => {

@@ -24,6 +24,93 @@
       ]
     },
     {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/membros",
+      "descricao": "Quem está no servidor, com apelido, cargos e desde quando.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/cargos",
+      "descricao": "Os cargos do servidor, com as permissões de cada um.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PATCH",
+      "caminho": "/bot/servidores/:guildId/membros/:userId/apelido",
+      "descricao": "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
+      "corpo": "{ nickname: string | null }",
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/servidores/:guildId/membros/:userId/cargos",
+      "descricao": "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
+      "corpo": "{ roleIds: string[] }",
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/servidores/:guildId/membros/:userId",
+      "descricao": "Expulsa. Quem foi expulso volta com convite novo.",
+      "corpo": null,
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/servidores/:guildId/castigos/:userId",
+      "descricao": "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
+      "corpo": "{ minutos: number, reason?: string }",
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/banimentos",
+      "descricao": "Quem está banido, e por quê.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/servidores/:guildId/banimentos/:userId",
+      "descricao": "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
+      "corpo": "{ reason?: string, apagarHoras?: number }",
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/servidores/:guildId/banimentos/:userId",
+      "descricao": "Desbane, devolvendo o acesso na hora.",
+      "corpo": null,
+      "parametros": [
+        "guildId",
+        "userId"
+      ]
+    },
+    {
       "metodo": "PUT",
       "caminho": "/bot/comandos",
       "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
