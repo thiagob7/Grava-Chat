@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { rooms, objectId } from "@gravae/shared";
 import { z } from "zod";
+import { baseUrlDe } from "~/lib/endereco.js";
 import { io } from "~/realtime/io.js";
 import { webhookService } from "~/services/webhook-service.js";
 import { guildParams } from "~/validations/common.js";
@@ -13,12 +14,6 @@ import {
 const webhookParams = guildParams.extend({ webhookId: objectId });
 const executeParams = z.object({ webhookId: objectId, token: z.string().min(16).max(128) });
 
-function baseUrlDe(req: FastifyRequest) {
-  const host = (req.headers["x-forwarded-host"] as string) ?? req.headers.host;
-  const proto = (req.headers["x-forwarded-proto"] as string) ?? req.protocol;
-
-  return `${proto}://${host}`;
-}
 
 export async function webhookRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
