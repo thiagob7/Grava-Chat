@@ -144,7 +144,9 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
   const corpoDe = (texto: string, realce: string | null) => (
     <pre
       className={cn(
-        "px-3 py-2 font-mono text-13 leading-relaxed",
+        /// O pr-12 guarda o espaço do botão de copiar, que flutua no canto:
+        /// sem ele, a primeira linha passa por baixo quando o texto quebra.
+        "py-2 pl-3 pr-12 font-mono text-13 leading-relaxed",
         quebrar ? "whitespace-pre-wrap break-words" : "overflow-x-auto whitespace-pre",
       )}
     >
@@ -182,22 +184,18 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
             {corpoDe(codigo, html)}
           </div>
 
-          {aberto && (
-            <Tooltip
-              label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}
+          <Tooltip label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
+            <button
+              type="button"
+              onClick={copiar}
+              aria-label={t(
+                copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
+              )}
+              className="absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
             >
-              <button
-                type="button"
-                onClick={copiar}
-                aria-label={t(
-                  copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
-                )}
-                className="absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
-              >
-                {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
-              </button>
-            </Tooltip>
-          )}
+              {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+            </button>
+          </Tooltip>
         </div>
 
         <footer className="flex items-center gap-2 border-t border-line bg-codigo px-2 py-1.5">

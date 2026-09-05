@@ -477,7 +477,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
           <AcaoDaBarra
             titulo={t("conversa.acoes.encaminhar")}
-            className="hidden @sm:block"
             onClick={() => setEncaminhando(true)}
           >
             <Forward size={16} />
@@ -490,14 +489,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar",
                 )}
                 onClick={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
-                className={cn("hidden @md:block", favorita && "text-brand")}
+                className={cn(favorita && "text-brand")}
               >
                 <Bookmark size={16} className={favorita ? "fill-current" : undefined} />
               </AcaoDaBarra>
 
               <AcaoDaBarra
                 titulo={t("conversa.acoes.marcarNaoLida")}
-                className="hidden @md:block"
                 onClick={marcarNaoLido}
               >
                 <MailOpen size={16} />
@@ -505,7 +503,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
               <AcaoDaBarra
                 titulo={t("conversa.acoes.copiarLink")}
-                className="hidden @md:block"
                 onClick={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
               >
                 <Link2 size={16} />
@@ -513,7 +510,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
               <AcaoDaBarra
                 titulo={t("conversa.acoes.copiarId")}
-                className="hidden @md:block"
                 onClick={() => copiar(message.id, t("conversa.mensagem.idCopiado"))}
               >
                 <Hash size={16} />
@@ -524,7 +520,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           {canPin && (
             <AcaoDaBarra
               titulo={t(message.pinnedAt ? "conversa.acoes.desafixar" : "conversa.acoes.fixar")}
-              className="hidden @sm:block"
               onClick={() => onPin?.(message, !message.pinnedAt)}
             >
               {message.pinnedAt ? <PinOff size={16} /> : <Pin size={16} />}
@@ -534,7 +529,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           {isOwn && (
             <AcaoDaBarra
               titulo={t("conversa.acoes.editar")}
-              className="hidden @sm:block"
               onClick={() => {
                 setDraft(message.content);
                 setEditing(true);
@@ -548,7 +542,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             <AcaoDaBarra
               titulo={t("conversa.acoes.apagar")}
               onClick={apagar}
-              className="hidden hover:text-danger @sm:block"
+              className="hover:text-danger"
             >
               <Trash2 size={16} />
             </AcaoDaBarra>
