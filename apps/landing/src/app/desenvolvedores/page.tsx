@@ -1,63 +1,103 @@
 import type { Metadata } from "next";
 
-import { Codigo } from "~/components/Codigo";
-import { Adiante, CabecalhoDaPagina, Secao } from "~/components/PaginaDosDocs";
+import { Adiante, Cartoes, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
+import referencia from "~/dados/referencia.json";
 
 export const metadata: Metadata = {
-  title: "Desenvolvedores — Gravaê",
-  description: "O que é um bot do Gravaê, como criar o aplicativo e onde fica o token.",
+  title: "Introdução — Documentação do Gravaê",
+  description: "O que dá pra construir no Gravaê e por onde começar.",
 };
 
+const CONSTRUIR = [
+  {
+    href: "/desenvolvedores/primeiro-bot",
+    titulo: "Bots",
+    texto:
+      "Um usuário que o seu código controla: manda mensagem, reage, entra em servidor e responde a comando de barra.",
+  },
+  {
+    href: "/desenvolvedores/tempo-real",
+    titulo: "Integrações",
+    texto:
+      "Uma conexão que fica aberta ouvindo o que acontece e leva para fora — ou traz de fora para dentro.",
+  },
+  {
+    href: "/desenvolvedores/comandos",
+    titulo: "Comandos de barra",
+    texto:
+      "O jeito de dar uma ação nova a quem usa o servidor, com nome, descrição e opções, aparecendo na caixa de texto.",
+  },
+  {
+    href: "/desenvolvedores/referencia",
+    titulo: "Automações",
+    texto:
+      "Nem tudo precisa ficar de pé: um script que roda de hora em hora só chama o REST e vai embora.",
+  },
+];
+
 export default function Introducao() {
+  const rotas = referencia.rest.length;
+  const eventos = referencia.eventos.length + referencia.recebidos.length;
+  const permissoes = referencia.permissoes.reduce((total, g) => total + g.itens.length, 0);
+
   return (
-    <>
-      <CabecalhoDaPagina
-        titulo="Construa no Gravaê"
-        chamada="Um bot do Gravaê é um usuário como qualquer outro: entra em servidores, lê canais, manda mensagem, reage e responde a comandos de barra. A diferença é que ele se identifica com um token em vez de uma sessão, e por isso não precisa ficar com uma janela aberta."
-      />
+    <article className="space-y-10">
+      <header>
+        <Trilha grupo="Bem-vindo" pagina="Introdução" />
+        <Titulo chamada="Construa bots, comandos e integrações no Gravaê — o mesmo servidor que atende o aplicativo atende o seu código.">
+          Plataforma de desenvolvimento do Gravaê
+        </Titulo>
+      </header>
+
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { numero: rotas, rotulo: "rotas REST" },
+          { numero: eventos, rotulo: "eventos" },
+          { numero: permissoes, rotulo: "permissões" },
+        ].map((peca) => (
+          <div
+            key={peca.rotulo}
+            className="rounded-xl border border-line bg-surface-1 px-4 py-3.5 text-center"
+          >
+            <p className="text-2xl font-bold text-ink">{peca.numero}</p>
+            <p className="mt-0.5 text-xs text-ink-muted">{peca.rotulo}</p>
+          </div>
+        ))}
+      </div>
+
+      <Secao id="construir" titulo="O que você quer construir?">
+        <Cartoes itens={CONSTRUIR} />
+      </Secao>
+
+      <Secao id="como-funciona" titulo="Como funciona">
+        <p>
+          Um bot do Gravaê é um usuário como qualquer outro: entra em servidores, lê canais, manda
+          mensagem, reage e responde a comandos. A diferença é que ele se identifica com um{" "}
+          <strong className="text-ink">token</strong> em vez de uma sessão, e por isso não precisa
+          de ninguém com uma janela aberta.
+        </p>
+        <p>
+          Ele fala com o servidor de dois jeitos, e quase todo bot usa os dois. Pelo{" "}
+          <strong className="text-ink">REST</strong>, quando quer agir: mandar mensagem, apagar,
+          reagir. Pela <strong className="text-ink">conexão de tempo real</strong>, quando quer
+          saber: chegou mensagem, chamaram um comando, alguém entrou na chamada.
+        </p>
+      </Secao>
 
       <Secao id="de-onde-vem" titulo="De onde vem esta documentação">
         <p>
-          Tudo o que está aqui sai do próprio código da API — as rotas lidas do servidor, os
-          campos de cada evento convertidos dos contratos. Se um campo aparece nestas páginas,
-          ele existe lá. E rota nova sem descrição derruba o build do site, então a referência
-          não tem como envelhecer calada.
-        </p>
-      </Secao>
-
-      <Secao id="aplicativo" titulo="Crie o aplicativo">
-        <p>
-          Abra o Gravaê, vá em <strong className="text-ink">Configurações</strong> →{" "}
-          <strong className="text-ink">Desenvolvedor</strong> →{" "}
-          <strong className="text-ink">Aplicativos</strong> e crie um. Você escolhe o nome, e o
-          Gravaê cria junto o usuário que vai aparecer nas conversas.
+          Ela sai do próprio código da API. As rotas são lidas do servidor, os campos de cada
+          evento vêm dos contratos, as permissões e os limites vêm das constantes que o aplicativo
+          usa. Se está escrito aqui, existe lá.
         </p>
         <p>
-          Na mesma tela sai o <strong className="text-ink">link de convite</strong>. É por ele
-          que alguém com permissão põe o bot num servidor — o bot não entra sozinho, e não
-          enxerga servidor onde não foi convidado.
-        </p>
-      </Secao>
-
-      <Secao id="token" titulo="O token">
-        <p>
-          O token aparece uma vez, na hora em que o aplicativo é criado. Guarde num lugar seguro:
-          o Gravaê não mostra de novo. Se você perder, ou se ele vazar, gere outro na mesma tela
-          — o antigo morre na hora.
-        </p>
-        <p>
-          Ele vai no cabeçalho <code>Authorization</code>, com o prefixo <code>Bot </code> antes:
-        </p>
-
-        <Codigo legenda="cabeçalho">{`Authorization: Bot SEU_TOKEN_AQUI`}</Codigo>
-
-        <p>
-          Token no navegador é token público. Ele mora no seu servidor, em variável de ambiente —
-          nunca no código do site, nunca num repositório.
+          E não é só na hora de gerar: rota nova sem descrição, evento novo sem texto ou permissão
+          fora de grupo <strong className="text-ink">derrubam o build do site</strong>. É a
+          garantia de que esta página não vai envelhecer calada enquanto ninguém olha.
         </p>
       </Secao>
 
       <Adiante href="/desenvolvedores" />
-    </>
+    </article>
   );
 }

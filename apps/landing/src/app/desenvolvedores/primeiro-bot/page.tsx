@@ -1,40 +1,34 @@
 import type { Metadata } from "next";
 
-import { Codigo } from "~/components/Codigo";
-import { Adiante, CabecalhoDaPagina, Secao } from "~/components/PaginaDosDocs";
+import { Codigo } from "~/components/docs/Codigo";
+import { Adiante, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Seu primeiro bot — Gravaê",
-  description: "Do token à primeira mensagem, com a conexão de tempo real e comandos de barra.",
+  title: "Seu primeiro bot — Documentação do Gravaê",
+  description: "Do token à primeira mensagem em três comandos.",
 };
 
 export default function PrimeiroBot() {
   return (
-    <>
-      <CabecalhoDaPagina
-        titulo="Seu primeiro bot"
-        chamada="Com o token na mão, dá pra mandar a primeira mensagem em três comandos. Depois a gente liga a conexão de tempo real, que é o que faz o bot reagir sozinho."
-      />
+    <article className="space-y-10">
+      <header>
+        <Trilha grupo="Guias" pagina="Seu primeiro bot" />
+        <Titulo chamada="Com o token na mão e o bot convidado num servidor, a primeira mensagem sai em três comandos. Sem instalar nada.">
+          Seu primeiro bot
+        </Titulo>
+      </header>
 
-      <Secao id="quem-sou" titulo="Confirme o token">
-        <p>Antes de qualquer coisa, pergunte quem é o bot:</p>
-
+      <Secao id="confirmar" titulo="1. Confirme o token">
         <Codigo>{`curl ${API}/bot/eu \\
   -H "Authorization: Bot $GRAVAE_TOKEN"`}</Codigo>
 
         <p>
-          Voltou <code>botId</code> e <code>userId</code>? Está de pé. Voltou{" "}
-          <code>401</code>? O token está errado ou foi trocado.
+          Voltou <code>botId</code> e <code>userId</code>? Está de pé.
         </p>
       </Secao>
 
-      <Secao id="canal" titulo="Ache um canal">
-        <p>
-          <code>/bot/servidores</code> lista onde o bot foi convidado, e cada servidor tem seus
-          canais:
-        </p>
-
+      <Secao id="canal" titulo="2. Ache um canal">
         <Codigo>{`curl ${API}/bot/servidores \\
   -H "Authorization: Bot $GRAVAE_TOKEN"
 
@@ -43,77 +37,32 @@ curl ${API}/bot/servidores/$SERVIDOR/canais \\
 
         <p>
           Lista vazia quer dizer que ninguém convidou o bot ainda — volte no link de convite da
-          tela de Aplicativos.
+          tela de Aplicativos. Os canais vêm com <code>id</code>, <code>name</code> e{" "}
+          <code>type</code>; para escrever, você quer um de tipo <code>TEXT</code>.
         </p>
       </Secao>
 
-      <Secao id="falar" titulo="Fale">
+      <Secao id="falar" titulo="3. Fale">
         <Codigo>{`curl -X POST ${API}/bot/canais/$CANAL/mensagens \\
   -H "Authorization: Bot $GRAVAE_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{"content":"oi, cheguei"}'`}</Codigo>
 
         <p>
-          Pronto, o bot falou. A mensagem aparece na hora para quem estiver com o canal aberto —
-          o mesmo caminho de uma mensagem de gente.
+          A mensagem aparece na hora para quem estiver com o canal aberto — o mesmo caminho de uma
+          mensagem de gente. Editar e apagar são <code>PATCH</code> e <code>DELETE</code> em cima
+          do <code>id</code> que voltou aqui.
         </p>
       </Secao>
 
-      <Secao id="ouvir" titulo="Ficar ouvindo">
+      <Secao id="e-agora" titulo="E agora?">
         <p>
-          Pelo REST o bot só fala quando você manda. Para ele reagir ao que acontece, abra uma
-          conexão de tempo real — é Socket.IO, e o token vai no <code>auth</code> do aperto de
-          mão, com o mesmo prefixo <code>Bot</code>:
-        </p>
-
-        <Codigo legenda="bot.js">{`import { io } from "socket.io-client";
-
-const socket = io("https://gravaechat-api.duckdns.org", {
-  transports: ["websocket"],
-  auth: { token: \`Bot \${process.env.GRAVAE_TOKEN}\` },
-});
-
-socket.on("connect", () => console.log("de pé"));
-
-socket.on("message:created", (msg) => {
-  if (msg.content === "!ping") {
-    socket.emit("message:send", { channelId: msg.channelId, content: "pong" });
-  }
-});
-
-socket.on("error", ({ event, message }) => {
-  console.error(event, message);
-});`}</Codigo>
-
-        <p>
-          O bot já entra escutando os servidores onde foi convidado. Para acompanhar um canal
-          específico, mande <code>channel:subscribe</code> com o <code>channelId</code>.
-        </p>
-        <p>
-          Cuide do <code>error</code>: é por ele que o servidor conta que o seu evento não passou,
-          e sem ouvir esse evento a sua conexão fica falhando em silêncio.
-        </p>
-      </Secao>
-
-      <Secao id="comandos" titulo="Comandos de barra">
-        <p>
-          Registre a lista de comandos uma vez. O <code>PUT</code> substitui inteira a lista
-          anterior — mandar um array vazio apaga todos:
-        </p>
-
-        <Codigo>{`curl -X PUT ${API}/bot/comandos \\
-  -H "Authorization: Bot $GRAVAE_TOKEN" \\
-  -H "Content-Type: application/json" \\
-  -d '{"comandos":[{"nome":"clima","descricao":"O tempo agora"}]}'`}</Codigo>
-
-        <p>
-          Quando alguém usa o comando, chega <code>command:invoked</code> com o canal, o
-          servidor, quem chamou e as opções. Responder é mandar uma mensagem no canal que veio no
-          evento.
+          Isso é o bot falando quando você manda. Para ele reagir sozinho ao que acontece no
+          servidor, o próximo passo é a conexão de tempo real.
         </p>
       </Secao>
 
       <Adiante href="/desenvolvedores/primeiro-bot" />
-    </>
+    </article>
   );
 }

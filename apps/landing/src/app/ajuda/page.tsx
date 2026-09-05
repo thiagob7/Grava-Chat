@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Cabecalho } from "~/components/Cabecalho";
 import { Rodape } from "~/components/Rodape";
-import { TabelaDeLimites } from "~/components/TabelaDeLimites";
+import { TabelaDeLimites } from "~/components/docs/TabelaDeLimites";
 
 export const metadata: Metadata = {
   title: "Ajuda — Gravaê",
