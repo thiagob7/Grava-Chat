@@ -4,6 +4,7 @@ import {
   CORRECOES_DO_FLUXER,
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
+import { LUGARES } from "~/lib/compat-fluxer";
 
 describe("correções para tema do Fluxer", () => {
   it("reconhece o CSS escrito para a árvore deles", () => {
@@ -34,9 +35,23 @@ describe("correções para tema do Fluxer", () => {
     expect(declaracoes.filter((linha) => !linha.includes("!important"))).toEqual([]);
   });
 
-  it("só mira gancho nosso, para não depender da árvore deles", () => {
-    const seletores = CORRECOES_DO_FLUXER.match(/^[.\[][^{]*/gm) ?? [];
+  /*
+    Pode mirar um nome do Fluxer, mas só um que a gente mesma carimba. Mirar um
+    que só existe na árvore deles seria escrever para um elemento que aqui nunca
+    aparece — e o teste não pegaria, porque CSS que não casa não dá erro.
+  */
+  it("só mira nome que a ponte carimba de verdade", () => {
+    const nossos = new Set<string>();
 
-    expect(seletores.filter((s) => s.includes("module__") || s.includes("data-flx"))).toEqual([]);
+    for (const lugar of Object.values(LUGARES)) {
+      for (const classe of lugar.classes as readonly string[]) nossos.add(classe);
+      if ("flx" in lugar) nossos.add(lugar.flx);
+    }
+
+    const emprestados = [...CORRECOES_DO_FLUXER.matchAll(/\[(?:class\*|data-flx)=["']([^"']+)["']\]/g)]
+      .map((achado) => achado[1] ?? "")
+      .filter((nome) => ![...nossos].some((nosso) => nosso.includes(nome)));
+
+    expect(emprestados).toEqual([]);
   });
 });

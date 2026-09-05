@@ -47,6 +47,25 @@ export const CORRECOES_DO_FLUXER = `
   width: calc(100% + var(--layout-guild-list-width)) !important;
 }
 
+/*
+  A janela do estúdio dentro do app não veste o tema.
+
+  Na janela do sistema isso sai de graça, porque ela é outro documento. Aqui ela
+  divide o documento com o app, então o tema alcança os botões e os campos dela
+  pelos nomes que a ponte empresta. Um tema que esconde botão esconderia
+  justamente o de desfazer.
+*/
+.janela-neutra,
+.janela-neutra * {
+  backdrop-filter: none !important;
+}
+
+.janela-neutra [class*="Button.module__secondary_"],
+.janela-neutra [class*="Input.module__input_"] {
+  background: var(--color-surface-3) !important;
+  border-color: var(--color-line) !important;
+}
+
 
 `;
 

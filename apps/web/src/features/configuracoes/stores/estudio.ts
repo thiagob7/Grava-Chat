@@ -83,6 +83,20 @@ function ler(): EstadoDoEstudio {
 const ID_DO_ESTILO = "gc-estudio-css";
 const ID_DAS_CORRECOES = "gc-correcoes-fluxer";
 
+/*
+  A janela do estúdio não veste o tema.
+
+  Um tema pode esconder botão, zerar contraste, tirar borda — e é justo, é o
+  trabalho dele. Só que se ele fizer isso na própria oficina, a pessoa fica sem
+  como desfazer o que acabou de escrever.
+
+  Então a janela do estúdio fica neutra e a janela do app veste. As duas
+  compartilham o estado; quem pinta é só a de trás, que é justamente a que se
+  quer ver mudando.
+*/
+const ehAJanelaDoEstudio = () =>
+  typeof window !== "undefined" && window.location.pathname === "/estudio";
+
 let escritos = new Set<string>();
 
 function aplicar(estado: EstadoDoEstudio) {
@@ -93,6 +107,11 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   escritos = new Set(Object.keys(estado.substituicoes));
+
+  if (ehAJanelaDoEstudio()) {
+    avisarTemaAplicado();
+    return;
+  }
 
   for (const [nome, valor] of Object.entries(estado.substituicoes)) {
     raiz.style.setProperty(nome, valor);

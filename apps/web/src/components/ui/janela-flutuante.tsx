@@ -115,7 +115,7 @@ export const JanelaFlutuante: React.FC<JanelaFlutuanteProps> = ({
       role="dialog"
       aria-label={titulo}
       style={posicao}
-      className="regiao-sem-arrasto fixed z-40 flex flex-col overflow-hidden rounded-lg border border-line bg-surface-2 shadow-2xl"
+      className="janela-neutra regiao-sem-arrasto fixed z-40 flex flex-col overflow-hidden rounded-lg border border-line bg-surface-2 shadow-2xl"
     >
       <header data-gc="ui.janela-flutuante.header.comecar"
         onPointerDown={comecar}
