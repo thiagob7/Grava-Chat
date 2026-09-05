@@ -30,8 +30,21 @@ function useAlturaDoRodape() {
 
     const raiz = document.documentElement;
 
+    /*
+      A altura vai sem o respiro de baixo.
+
+      Um tema encurta o trilho por este número, para o rodapé caber embaixo. Se
+      o respiro entrasse na conta, o trilho subiria 8px a mais do que precisa —
+      e é justamente nesse vão que o tema desenha o rótulo "user", que deveria
+      montar na borda em vez de flutuar acima dela.
+    */
     const observador = new ResizeObserver(() => {
-      raiz.style.setProperty("--footer-box-height", `${Math.round(alvo.offsetHeight)}px`);
+      const respiro = Number.parseFloat(getComputedStyle(alvo).paddingBottom) || 0;
+
+      raiz.style.setProperty(
+        "--footer-box-height",
+        `${Math.round(alvo.offsetHeight - respiro)}px`,
+      );
     });
 
     observador.observe(alvo);
