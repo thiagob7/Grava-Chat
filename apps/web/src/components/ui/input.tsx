@@ -1,16 +1,23 @@
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const campoBase =
   "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-ink-faint/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
 export const Input = ({ className, ...props }: React.ComponentProps<"input">) => (
-  <input data-gc="ui.input.input" className={cn(campoBase, "h-10 py-1", className)} {...props} />
+  <input data-gc="ui.input.input"
+    className={cn(campoBase, "h-10 py-1", flxCls("campo"), className)}
+    {...props}
+  />
 );
 
 export const Textarea = ({ className, ...props }: React.ComponentProps<"textarea">) => (
-  <textarea data-gc="ui.input.textarea" className={cn(campoBase, "resize-none", className)} {...props} />
+  <textarea data-gc="ui.input.textarea"
+    className={cn(campoBase, "resize-none", flxCls("campo"), className)}
+    {...props}
+  />
 );
 
 export const campoDeCor =

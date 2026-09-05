@@ -35,6 +35,7 @@ import { TypingIndicator } from "~/features/conversa/components/TypingIndicator"
 import { useSession } from "~/contexts/session-context";
 import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
+import { flx } from "~/lib/compat-fluxer";
 
 export const DirectMessages: React.FC = () => {
   const { channelId } = useParams();
@@ -158,7 +159,7 @@ export const DirectMessages: React.FC = () => {
 
       {conversa ? (
         <div data-gc="friends.direct-messages.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-          <header data-gc="friends.direct-messages.header" className="topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
+          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm")}>
             {telaEstreita && (
               <button data-gc="friends.direct-messages.button"
                 onClick={() => setMenuAberto(true)}

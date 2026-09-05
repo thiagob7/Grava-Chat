@@ -11,6 +11,8 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { flx } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-fluxer";
 
 interface DmSidebarProps {
   activeChannelId: string | undefined;
@@ -62,7 +64,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside data-gc="amizades.dm-sidebar.aside"
-      className="lista-de-conversas canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+      {...flx("listaDeConversas", "lista-de-conversas canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1")}
       style={{ width: largura }}
     >
       <header data-gc="amizades.dm-sidebar.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm">
@@ -122,8 +124,9 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
               onClick={() => onSelectDm(dm.id)}
               className={cn(
                 "mb-0.5 flex w-full items-center gap-2.5 rounded px-2 py-1.5 text-sm transition",
+                flxCls("itemDeConversa"),
                 ativa
-                  ? "bg-selecionado text-ink"
+                  ? cn("bg-selecionado text-ink", flxCls("itemDeConversaAtivo"))
                   : naoLida
                     ? "font-semibold text-ink hover:bg-surface-3"
                     : "text-ink-muted hover:bg-surface-3",

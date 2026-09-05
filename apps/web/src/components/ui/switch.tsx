@@ -2,6 +2,7 @@ import * as React from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 
 import { cn } from "~/lib/utils";
+import { flxAttr } from "~/lib/compat-fluxer";
 
 export const Switch = ({
   className,
@@ -14,6 +15,7 @@ export const Switch = ({
       "data-[state=checked]:bg-online data-[state=unchecked]:bg-surface-4",
       className,
     )}
+    {...flxAttr("chave")}
     {...props}
   >
     <SwitchPrimitive.Thumb data-gc="ui.switch.switch-primitivethumb" className="pointer-events-none block size-5 rounded-full bg-white shadow transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />

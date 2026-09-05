@@ -50,6 +50,7 @@ import { cercarCodigo, pareceCodigo, textoParaArquivo } from "~/features/convers
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
+import { flx } from "~/lib/compat-fluxer";
 
 interface ComposerProps {
   channelId: string;
@@ -355,7 +356,7 @@ export const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div data-gc="conversa.composer.div" className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
+    <div data-gc="conversa.composer.div" {...flx("caixaDeEscrever", "caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6")}>
       <ModalIlustrado data-gc="conversa.composer.modal-ilustrado"
         aberto={Boolean(textoLongo)}
         onFechar={() => setTextoLongo(null)}

@@ -3,6 +3,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { DesenhoDaSeta } from "~/components/ui/seta-do-balao";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
@@ -33,6 +34,7 @@ export const PopoverContent = ({
       sideOffset={sideOffset}
       className={cn(
         "balao regiao-sem-arrasto z-50 w-72 rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
+        flxCls("balao"),
         className,
       )}
       {...props}

@@ -43,6 +43,8 @@ import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
+import { flx } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-fluxer";
 
 interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
@@ -131,7 +133,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   return (
     <>
       <aside data-gc="servidor.channel-sidebar.aside"
-        className="lista-de-canais canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        {...flx("listaDeCanais", "lista-de-canais canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1")}
         style={{ width: largura }}
       >
         <header data-gc="servidor.channel-sidebar.header"
@@ -331,7 +333,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             className={cn(
                               "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
                               active
-                                ? "bg-selecionado text-ink"
+                                ? cn("bg-selecionado text-ink", flxCls("itemDeCanalAtivo"))
                                 : bloqueado
                                   ? "text-ink-faint hover:bg-hover"
                                   : unread

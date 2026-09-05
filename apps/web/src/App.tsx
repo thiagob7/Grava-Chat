@@ -18,6 +18,7 @@ import { SeletorDeTela } from "~/features/voz/components/SeletorDeTela";
 import { VisualizadorDeImagem } from "~/components/VisualizadorDeImagem";
 import { useAparenciaAplicada } from "~/features/configuracoes/hooks/use-aparencia";
 import { usePushToTalk } from "~/features/voz/hooks/use-push-to-talk";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ export const App: React.FC = () => {
               <VisualizadorDeImagem data-gc="app.visualizador-de-imagem" />
               <ChuvaDeSuperReacao data-gc="app.chuva-de-super-reacao" />
               <ToastContainer data-gc="app.toast-container"
+                toastClassName={flxCls("aviso")}
                 position="bottom-center"
                 theme="dark"
                 autoClose={4000}

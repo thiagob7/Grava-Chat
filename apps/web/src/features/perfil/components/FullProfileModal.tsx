@@ -15,6 +15,7 @@ import { corMaisAlta } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
 import { idiomaAtual, useTranslation } from "~/traducao";
+import { flxCls } from "~/lib/compat-fluxer";
 
 interface FullProfileModalProps {
   open: boolean;
@@ -48,7 +49,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   return (
   <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
     <DialogContent data-gc="perfil.full-profile-modal.dialog-content"
-      className="max-w-lg overflow-hidden border-2 border-brand p-0"
+      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("perfilCompleto"))}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
       <div data-gc="perfil.full-profile-modal.div"

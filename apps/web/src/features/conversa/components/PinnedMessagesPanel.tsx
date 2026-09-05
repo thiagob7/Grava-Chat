@@ -7,6 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";
+import { flxCls } from "~/lib/compat-fluxer";
+import { cn } from "~/lib/utils";
 
 interface PinnedMessagesPanelProps {
   channelId: string;
@@ -32,7 +34,10 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
         </button>
       </PopoverTrigger>
 
-      <PopoverContent data-gc="conversa.pinned-messages-panel.popover-content" align="end" className="w-96 p-0">
+      <PopoverContent data-gc="conversa.pinned-messages-panel.popover-content"
+        align="end"
+        className={cn("w-96 p-0", flxCls("fixadas"))}
+      >
         <header data-gc="conversa.pinned-messages-panel.header" className="flex items-center gap-2 border-b border-line px-4 py-3">
           <PushPin data-gc="conversa.pinned-messages-panel.push-pin--2" size={16} weight="fill" />
           <h3 data-gc="conversa.pinned-messages-panel.h3" className="font-semibold">{t("conversa.fixadas.titulo")}</h3>

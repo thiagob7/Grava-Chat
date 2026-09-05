@@ -12,6 +12,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-fluxer";
 
 type Aba = "online" | "todos" | "pendentes" | "adicionar";
 
@@ -53,8 +54,8 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
   ];
 
   return (
-    <main data-gc="friends.friends.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
-      <header data-gc="friends.friends.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm">
+    <main data-gc="friends.friends.main" {...flx("listaDeAmigos", "flex min-w-0 flex-1 flex-col bg-surface-2")}>
+      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm")}>
         <span data-gc="friends.friends.span" className="mr-2 flex items-center gap-2 font-semibold">
           <Users data-gc="friends.friends.users" size={18} className="text-ink-muted" /> Meus amigos
         </span>

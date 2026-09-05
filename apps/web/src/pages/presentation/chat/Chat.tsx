@@ -58,6 +58,7 @@ import { useModeracao } from "~/features/servidor/stores/moderacao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-fluxer";
 
 export const Chat: React.FC = () => {
   const { guildId: routeGuildId, channelId: routeChannelId } = useParams();
@@ -197,7 +198,7 @@ export const Chat: React.FC = () => {
   );
 
   return (
-    <div data-gc="chat.chat.div" className="flex h-full bg-surface-0">
+    <div data-gc="chat.chat.div" {...flx("linhaDoApp", "flex h-full bg-surface-0")}>
       {telaEstreita ? (
         <Sheet data-gc="chat.chat.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
           <SheetContent data-gc="chat.chat.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
@@ -209,9 +210,9 @@ export const Chat: React.FC = () => {
         navegacao
       )}
 
-      <div data-gc="chat.chat.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
+      <div data-gc="chat.chat.div--2" {...flx("colunaDoMiolo", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
         {!semCabecalho && (
-        <header data-gc="chat.chat.header" className="topo-do-canal regiao-de-arrasto @container flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
+        <header data-gc="chat.chat.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto @container flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm")}>
           {telaEstreita && (
             <button data-gc="chat.chat.button"
               onClick={() => setMenuAberto(true)}

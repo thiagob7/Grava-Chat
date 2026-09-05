@@ -16,6 +16,7 @@ import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { flx } from "~/lib/compat-fluxer";
 
 interface GuildRailProps {
   activeGuildId: string | null;
@@ -48,8 +49,8 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
   return (
     <>
-      <nav data-gc="servidor.guild-rail.nav" className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3">
-        <div data-gc="servidor.guild-rail.div" className="group relative flex w-full justify-center">
+      <nav data-gc="servidor.guild-rail.nav" {...flx("trilhoDeServidores", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3")}>
+        <div data-gc="servidor.guild-rail.div" {...flx("itemDoTrilho", "group relative flex w-full justify-center")}>
           <span data-gc="servidor.guild-rail.span"
             className={cn(
               "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",

@@ -7,6 +7,7 @@ import { ehDeArquivo, folgaDaDecoracao } from "~/features/perfil/lib/decoracoes"
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/features/perfil/lib/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { flx, flxAttr, flxCls } from "~/lib/compat-fluxer";
 
 interface AvatarProps {
   id: string;
@@ -63,10 +64,13 @@ export const Avatar: React.FC<AvatarProps> = ({
     <div data-gc="perfil.avatar.div"
       className={cn(
         "avatar relative shrink-0 rounded-full transition-shadow duration-100",
+        flxCls("avatar"),
         speaking && "shadow-[0_0_0_3px_var(--color-online)]",
         className,
       )}
       style={{ width: size, height: size }}
+      data-flx-status={status ? String(status).toLowerCase() : "offline"}
+      {...flxAttr("avatar")}
     >
       {mostrarImagem ? (
         <img data-gc="perfil.avatar.img"
@@ -80,6 +84,7 @@ export const Avatar: React.FC<AvatarProps> = ({
           decoding="async"
           style={furo(0)}
           className="size-full rounded-full bg-surface-3 object-cover"
+          {...flxAttr("imagemDoAvatar")}
         />
       ) : (
         <div data-gc="perfil.avatar.div--2"
@@ -107,7 +112,11 @@ export const Avatar: React.FC<AvatarProps> = ({
       )}
 
       {selo && (
-        <span data-gc="perfil.avatar.span--2" className="absolute" style={{ left: selo.left, top: selo.top }}>
+        <span data-gc="perfil.avatar.span--2"
+          className="absolute"
+          style={{ left: selo.left, top: selo.top }}
+          {...flxAttr("bolinhaDeStatus")}
+        >
           <IconeDeStatus data-gc="perfil.avatar.icone-de-status" tipo={emVoz ? "VOZ" : status!} tamanho={selo.lado} />
         </span>
       )}

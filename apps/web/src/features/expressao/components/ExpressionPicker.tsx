@@ -11,6 +11,7 @@ import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 export type Aba = "gifs" | "figurinhas" | "emoji";
 
@@ -72,7 +73,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
   const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
 
   return (
-    <div data-gc="expressao.expression-picker.div" className="flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl">
+    <div data-gc="expressao.expression-picker.div" {...flx("seletorDeExpressao", "flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl")}>
       {!soEmoji && (
         <nav data-gc="expressao.expression-picker.nav" className="flex shrink-0 items-center gap-1 p-3 pb-2">
           {ABAS.map((item) => (

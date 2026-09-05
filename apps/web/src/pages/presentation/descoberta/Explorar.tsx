@@ -25,6 +25,7 @@ import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { useAtraso } from "~/hooks/use-atraso";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-fluxer";
 
 type Aba = "comunidades" | "aplicativos" | "temas";
 
@@ -71,10 +72,10 @@ export const Explorar: React.FC = () => {
       />
 
       <aside data-gc="descoberta.explorar.aside"
-        className="lista-de-comunidades canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        {...flx("listaDeConversas", "lista-de-comunidades canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1")}
         style={{ width: largura }}
       >
-        <header data-gc="descoberta.explorar.header" className="topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center border-b border-divisor px-4 shadow-sm">
+        <header data-gc="descoberta.explorar.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center border-b border-divisor px-4 shadow-sm")}>
           <h1 data-gc="descoberta.explorar.h1" className="truncate font-semibold">Explorar</h1>
         </header>
 
@@ -136,8 +137,8 @@ export const Explorar: React.FC = () => {
         navegacao
       )}
 
-      <div data-gc="descoberta.explorar.div--3" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-        <header data-gc="descoberta.explorar.header--2" className="topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4">
+      <div data-gc="descoberta.explorar.div--3" {...flx("explorar", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
+        <header data-gc="descoberta.explorar.header--2" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4")}>
           {telaEstreita && (
             <button data-gc="descoberta.explorar.button--2"
               onClick={() => setMenuAberto(true)}

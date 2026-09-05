@@ -24,6 +24,7 @@ import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
 import { idiomaAtual, useTranslation } from "~/traducao";
+import { flxCls } from "~/lib/compat-fluxer";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -126,6 +127,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
     <div data-gc="perfil.cartao.profile-card-visual.div"
       className={cn(
         "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
+        flxCls("cartaoDePerfil"),
         className,
       )}
       style={tema}

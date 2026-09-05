@@ -12,6 +12,7 @@ import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 interface PainelDeBuscaProps {
   guildId: string;
@@ -38,7 +39,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   const total = resultados.length;
 
   return (
-    <aside data-gc="conversa.painel-de-busca.aside" className="hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex">
+    <aside data-gc="conversa.painel-de-busca.aside" {...flx("painelDeBusca", "hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex")}>
       <header data-gc="conversa.painel-de-busca.header" className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4">
         <Search data-gc="conversa.painel-de-busca.search" size={16} className="shrink-0 text-ink-faint" />
         <h2 data-gc="conversa.painel-de-busca.h2" className="min-w-0 flex-1 truncate text-sm font-semibold">

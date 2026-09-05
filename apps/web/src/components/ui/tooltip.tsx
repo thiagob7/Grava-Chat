@@ -3,6 +3,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { DesenhoDaSeta } from "~/components/ui/seta-do-balao";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const TooltipProvider = TooltipPrimitive.Provider;
 
@@ -25,6 +26,7 @@ export const Tooltip = ({
         sideOffset={6}
         className={cn(
           "dica z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
+          flxCls("dica"),
           "shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)]",
         )}
       >

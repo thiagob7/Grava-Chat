@@ -22,6 +22,7 @@ import { Explorar } from "~/pages/presentation/descoberta/Explorar";
 import { VerTema } from "~/pages/presentation/tema/VerTema";
 import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
+import { flx } from "~/lib/compat-fluxer";
 
 export const AppRoutes: React.FC = () => {
   useConfigPorUrl();
@@ -35,7 +36,7 @@ export const AppRoutes: React.FC = () => {
         <FaixaDaComunidade data-gc="routes.faixa-da-comunidade" />
       </div>
 
-      <div data-gc="routes.div--3" className="min-h-0 flex-1">
+      <div data-gc="routes.div--3" {...flx("molduraDoApp", "min-h-0 flex-1")}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route

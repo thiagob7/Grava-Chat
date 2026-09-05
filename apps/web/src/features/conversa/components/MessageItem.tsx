@@ -70,6 +70,7 @@ import { EncaminharModal } from "~/features/conversa/components/EncaminharModal"
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
+import { flxCls } from "~/lib/compat-fluxer";
 
 const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
 
@@ -295,7 +296,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
         !compact && "mt-4",
         meMenciona &&
-          "bg-destaque/10 shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
+          cn(
+            "bg-destaque/10 shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
+            flxCls("mensagemQueMenciona"),
+          ),
         destacada && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
         message.pending && "opacity-60",
         message.failed && "bg-danger/10",
@@ -388,7 +392,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <div data-gc="conversa.message-item.div--8"
-              className="whitespace-pre-wrap break-words text-ink-muted"
+              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("conteudoDaMensagem"))}
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
               <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mencoes={mencoes} blocos />
@@ -456,6 +460,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <div data-gc="conversa.message-item.div--10"
           className={cn(
             "barra-da-mensagem absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
+            flxCls("barraDaMensagem"),
             "group-hover:flex group-focus-within:flex",
             reagindo || menuAberto ? "flex" : "hidden",
           )}
@@ -772,6 +777,7 @@ const PilulaDeReacao: React.FC<{
       title={t("conversa.mensagem.segureParaSuper", { emoji: reaction.emoji })}
       className={cn(
         "flex max-w-full shrink-0 items-center gap-1 rounded border px-2 py-0.5 text-sm transition",
+        flxCls("botaoDeReacao"),
         reaction.me ? "border-brand bg-brand/20" : "border-transparent bg-surface-3 hover:border-ink-faint",
         reaction.burst && "shadow-[0_0_0_1px_var(--color-idle),0_0_10px_-2px_var(--color-idle)]",
       )}

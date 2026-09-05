@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useSession } from "~/contexts/session-context";
 import { avatarColor, initials } from "~/lib/format";
+import { flx } from "~/lib/compat-fluxer";
 
 export const AtivosAgora: React.FC = () => {
   const { data: ativos = [], isLoading } = useAtivos();
@@ -24,7 +25,7 @@ export const AtivosAgora: React.FC = () => {
   }
 
   return (
-    <aside data-gc="amizades.ativos-agora.aside" className="hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block">
+    <aside data-gc="amizades.ativos-agora.aside" {...flx("ativosAgora", "hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block")}>
       <h2 data-gc="amizades.ativos-agora.h2" className="mb-3 text-sm font-semibold">Ativo agora</h2>
 
       {isLoading ? (

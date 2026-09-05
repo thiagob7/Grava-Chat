@@ -4,6 +4,7 @@ import * as DropdownPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const DropdownMenu = DropdownPrimitive.Root;
 export const DropdownMenuTrigger = DropdownPrimitive.Trigger;
@@ -18,6 +19,7 @@ export const DropdownMenuContent = ({
       sideOffset={sideOffset}
       className={cn(
         "menu regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+        flxCls("menu"),
         className,
       )}
       {...props}
