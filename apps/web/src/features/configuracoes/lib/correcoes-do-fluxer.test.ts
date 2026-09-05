@@ -21,12 +21,14 @@ describe("correções para tema do Fluxer", () => {
 
   /*
     Uma correção sem !important perde para a folha do tema — que é justamente a
-    que estamos corrigindo.
+    que estamos corrigindo. Variável nossa fica de fora: o tema não declara
+    nenhuma delas, então não há disputa para ganhar.
   */
   it("grita mais alto que o tema em toda declaração", () => {
     const declaracoes = CORRECOES_DO_FLUXER.split("\n")
       .map((linha) => linha.trim())
-      .filter((linha) => linha.endsWith(";"));
+      .filter((linha) => linha.endsWith(";"))
+      .filter((linha) => !linha.startsWith("--"));
 
     expect(declaracoes.length).toBeGreaterThan(0);
     expect(declaracoes.filter((linha) => !linha.includes("!important"))).toEqual([]);

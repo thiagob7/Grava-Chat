@@ -117,18 +117,28 @@ export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) =
   );
 };
 
-/// Abre o estúdio numa janela do sistema, com o app vivo atrás.
-function abrirEmJanela() {
+/*
+  Abre o estúdio numa janela do sistema, com o app vivo atrás.
+
+  Devolve se conseguiu: bloqueador de pop-up existe, e quando ele barra a
+  janela a pessoa não pode ficar sem estúdio nenhum — cai no modal.
+*/
+export function abrirEstudioEmJanela(): boolean {
   const largura = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
   const altura = Math.min(900, Math.round(window.screen.availHeight * 0.85));
 
-  window.open(
+  const janela = window.open(
     "/estudio",
     "gc-estudio",
     `popup=yes,width=${largura},height=${altura},left=${Math.round(
       (window.screen.availWidth - largura) / 2,
     )},top=${Math.round((window.screen.availHeight - altura) / 2)}`,
   );
+
+  if (!janela) return false;
+
+  janela.focus();
+  return true;
 }
 
 export const EstudioDeTemas: React.FC<{
@@ -150,7 +160,7 @@ export const EstudioDeTemas: React.FC<{
             <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
               type="button"
               onClick={() => {
-                abrirEmJanela();
+                abrirEstudioEmJanela();
                 onClose();
               }}
               className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink-muted transition hover:bg-hover hover:text-ink"

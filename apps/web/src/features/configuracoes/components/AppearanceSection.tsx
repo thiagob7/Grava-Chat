@@ -13,7 +13,10 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { CampoSelect } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
-import { EstudioDeTemas } from "~/features/configuracoes/components/estudio/EstudioDeTemas";
+import {
+  abrirEstudioEmJanela,
+  EstudioDeTemas,
+} from "~/features/configuracoes/components/estudio/EstudioDeTemas";
 import {
   CORES_DE_DESTAQUE,
   useAparencia,
@@ -142,7 +145,17 @@ export const AppearanceSection: React.FC = () => {
         </div>
 
         <div data-gc="configuracoes.appearance-section.div--3" className="mt-4">
-          <Button data-gc="configuracoes.appearance-section.button--2" variant="surface" onClick={() => setEstudioAberto(true)}>
+          {/*
+            O estúdio é oficina, não janela de leitura: escrever tema com a
+            tela do app tapada não funciona. Por isso ele sai em janela
+            própria, e o modal só entra quando o navegador barra a janela.
+          */}
+          <Button data-gc="configuracoes.appearance-section.button--2"
+            variant="surface"
+            onClick={() => {
+              if (!abrirEstudioEmJanela()) setEstudioAberto(true);
+            }}
+          >
             <Palette data-gc="configuracoes.appearance-section.palette" size={16} /> Abrir estúdio de temas…
           </Button>
           <p data-gc="configuracoes.appearance-section.p--2" className="mt-1.5 text-xs text-ink-faint">

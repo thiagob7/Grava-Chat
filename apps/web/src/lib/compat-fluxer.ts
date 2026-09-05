@@ -61,12 +61,16 @@ export const LUGARES = {
   },
 
   /*
-    Sem o `guildListScrollerWrapper`: esse nome existe no tema só para a regra
-    de largura, e o nosso trilho já é a coluna. O data-flx fica, que é o que
-    traz a borda e o rótulo "nav".
+    O `guildListScrollerWrapper` traz duas coisas na mesma regra: a altura, que
+    encurta o trilho para o rodapé caber embaixo, e a largura, que aqui não
+    serve porque o nosso trilho já é a coluna. Ele entra pela altura, e a
+    largura volta pela folha de correções.
   */
   trilhoDeServidores: {
-    classes: ["GuildsLayout.module__guildListScrollContainer_gc"],
+    classes: [
+      "GuildsLayout.module__guildListScrollContainer_gc",
+      "GuildsLayout.module__guildListScrollerWrapper_gc",
+    ],
     flx: "app.guilds-layout.guild-list.guild-list-scroller-wrapper",
   },
 

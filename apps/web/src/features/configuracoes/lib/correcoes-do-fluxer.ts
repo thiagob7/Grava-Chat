@@ -14,10 +14,13 @@
   não paga por isso, e continua mandando na largura de tudo.
 */
 export const CORRECOES_DO_FLUXER = `
-/* O trilho é a coluna, e não um rolador dentro dela. */
+/*
+  O trilho é a coluna, e não um rolador dentro dela: a largura é nossa. A
+  altura fica com o tema, que é o que encurta trilho e lateral para o rodapé
+  caber embaixo em vez de passar por trás deles.
+*/
 .trilho-de-servidores {
   width: var(--layout-guild-list-width) !important;
-  height: auto !important;
 }
 
 /*
@@ -29,11 +32,18 @@ export const CORRECOES_DO_FLUXER = `
   max-width: calc(100% + var(--layout-guild-list-width)) !important;
 }
 
-/* As laterais têm a própria altura; a conta deles sobra do rodapé que não temos. */
-.lista-de-canais,
-.lista-de-conversas,
-.lista-de-comunidades {
-  height: 100% !important;
+/*
+  A caixa de escrever flutua sobre as mensagens em vez de ficar ao lado delas.
+  Sem recortar, o painel das mensagens ia até embaixo e passava por trás da
+  caixa. A segunda regra tira o respiro que o rodapé flutuante reservava, que
+  agora sobraria.
+*/
+.lista-de-mensagens {
+  max-height: calc(100% - var(--gc-rodape, 0px)) !important;
+}
+
+.lista-de-mensagens > * {
+  --gc-rodape: 0px;
 }
 `;
 

@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { flx } from "~/lib/compat-fluxer";
 
 export const AreaDeConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div data-gc="conversa.area-de-conversa.div" {...flx("areaDeMensagens", "area-de-conversa relative flex min-h-0 flex-1 flex-col")}>
+  <div data-gc="conversa.area-de-conversa.div" className="area-de-conversa relative flex min-h-0 flex-1 flex-col">
     {children}
   </div>
 );
