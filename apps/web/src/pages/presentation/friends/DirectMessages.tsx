@@ -11,7 +11,11 @@ import { useReadStates } from "~/@core/application/queries/message/use-read-stat
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import {
+  AreaDeConversa,
+  PainelDaConversa,
+  RodapeDaConversa,
+} from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
 import { AtivosAgora } from "~/features/amizades/components/AtivosAgora";
 import { DmSidebar } from "~/features/amizades/components/DmSidebar";
@@ -282,13 +286,16 @@ export const DirectMessages: React.FC = () => {
 
           {chatDaChamada && (
           <AreaDeConversa data-gc="friends.direct-messages.area-de-conversa">
-          <MessageList data-gc="friends.direct-messages.message-list"
-            channelId={conversa.id}
-            channelName={conversa.user.displayName}
-            currentUserId={user.id}
-            isModerator={false}
-            header={<InicioDaDm data-gc="friends.direct-messages.inicio-da-dm" pessoa={conversa.user} />}
-          />
+            <PainelDaConversa data-gc="friends.direct-messages.painel-da-conversa">
+            <MessageList data-gc="friends.direct-messages.message-list"
+              channelId={conversa.id}
+              channelName={conversa.user.displayName}
+              currentUserId={user.id}
+              isModerator={false}
+              header={<InicioDaDm data-gc="friends.direct-messages.inicio-da-dm" pessoa={conversa.user} />}
+            />
+
+            </PainelDaConversa>
 
           <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
             <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />

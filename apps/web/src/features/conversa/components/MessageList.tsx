@@ -98,7 +98,15 @@ export const MessageList: React.FC<MessageListProps> = ({
       caixa.scrollTop = caixa.scrollHeight;
     });
 
+    /*
+      O conteúdo, porque ele cresce quando chega mensagem. E o rolador, porque
+      ele encolhe quando a caixa de escrever cresce — a caixa é irmã da lista,
+      então quem perde altura é a caixa de rolagem, não o conteúdo. Sem observar
+      os dois, escrever uma mensagem de várias linhas descolava a lista do fim.
+    */
     observador.observe(alvo);
+    observador.observe(caixa);
+
     return () => observador.disconnect();
   }, [channelId]);
 
@@ -204,9 +212,9 @@ export const MessageList: React.FC<MessageListProps> = ({
     <div data-gc="conversa.message-list.div.on-scroll"
       ref={scroller}
       onScroll={onScroll}
-      {...flx("areaDeMensagens", "lista-de-mensagens @container flex-1 overflow-y-auto pt-4")}
+      className="lista-de-mensagens @container flex-1 overflow-y-auto pt-4"
     >
-      <div data-gc="conversa.message-list.div--5" ref={conteudo} className="pb-[var(--gc-rodape,1rem)]">
+      <div data-gc="conversa.message-list.div--5" ref={conteudo} className="pb-4">
       {hasNextPage ? (
         <p data-gc="conversa.message-list.p" className="py-3 text-center text-xs text-ink-faint">
           {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}

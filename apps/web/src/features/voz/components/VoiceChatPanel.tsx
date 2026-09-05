@@ -2,7 +2,11 @@ import React from "react";
 import { useTranslation } from "~/traducao";
 import { MessageSquare, X } from "lucide-react";
 
-import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import {
+  AreaDeConversa,
+  PainelDaConversa,
+  RodapeDaConversa,
+} from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
 import { MessageList } from "~/features/conversa/components/MessageList";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
@@ -54,13 +58,16 @@ export const VoiceChatPanel: React.FC<VoiceChatPanelProps> = ({
     </header>
 
     <AreaDeConversa data-gc="voz.voice-chat-panel.area-de-conversa">
-    <MessageList data-gc="voz.voice-chat-panel.message-list"
-      channelId={channelId}
-      channelName={channelName}
-      guildId={guildId}
-      currentUserId={currentUserId}
-      isModerator={isModerator}
-    />
+      <PainelDaConversa data-gc="voz.voice-chat-panel.painel-da-conversa">
+      <MessageList data-gc="voz.voice-chat-panel.message-list"
+        channelId={channelId}
+        channelName={channelName}
+        guildId={guildId}
+        currentUserId={currentUserId}
+        isModerator={isModerator}
+      />
+
+      </PainelDaConversa>
 
     <RodapeDaConversa data-gc="voz.voice-chat-panel.rodape-da-conversa">
       <Composer data-gc="voz.voice-chat-panel.composer"

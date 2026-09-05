@@ -21,7 +21,11 @@ import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
-import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import {
+  AreaDeConversa,
+  PainelDaConversa,
+  RodapeDaConversa,
+} from "~/features/conversa/components/AreaDeConversa";
 import { CampoDeBusca } from "~/features/conversa/components/CampoDeBusca";
 import { ChannelSidebar } from "~/features/servidor/components/ChannelSidebar";
 import { Composer } from "~/features/conversa/components/Composer";
@@ -363,13 +367,16 @@ export const Chat: React.FC = () => {
           )
         ) : channel ? (
           <AreaDeConversa data-gc="chat.chat.area-de-conversa">
-            <MessageList data-gc="chat.chat.message-list"
-              channelId={channel.id}
-              channelName={channel.name}
-              guildId={channel.guildId ?? undefined}
-              currentUserId={user?.id}
-              isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
-            />
+            <PainelDaConversa data-gc="chat.chat.painel-da-conversa">
+              <MessageList data-gc="chat.chat.message-list"
+                channelId={channel.id}
+                channelName={channel.name}
+                guildId={channel.guildId ?? undefined}
+                currentUserId={user?.id}
+                isModerator={canInChannel(channel.id, "MANAGE_MESSAGES")}
+              />
+            </PainelDaConversa>
+
             <RodapeDaConversa data-gc="chat.chat.rodape-da-conversa">
               <TypingIndicator data-gc="chat.chat.typing-indicator" channelId={channel.id} currentUserId={user?.id} />
               <Composer data-gc="chat.chat.composer"

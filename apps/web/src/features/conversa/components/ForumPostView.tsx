@@ -3,7 +3,11 @@ import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 
 import { useClosePost } from "~/@core/application/queries/forum/use-forum";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
-import { AreaDeConversa, RodapeDaConversa } from "~/features/conversa/components/AreaDeConversa";
+import {
+  AreaDeConversa,
+  PainelDaConversa,
+  RodapeDaConversa,
+} from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
 import { MessageList } from "~/features/conversa/components/MessageList";
 import { Button } from "~/components/ui/button";
@@ -62,22 +66,25 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
       </header>
 
       <AreaDeConversa data-gc="conversa.forum-post-view.area-de-conversa">
-      <MessageList data-gc="conversa.forum-post-view.message-list"
-        channelId={post.channelId}
-        channelName={post.title}
-        postId={post.id}
-        guildId={guildId}
-        currentUserId={currentUserId}
-        isModerator={isModerator}
-        header={
-          <div data-gc="conversa.forum-post-view.div" className="px-4 pb-4 pt-6">
-            <h3 data-gc="conversa.forum-post-view.h3" className="text-2xl font-bold">{post.title}</h3>
-            <p data-gc="conversa.forum-post-view.p" className="mt-1 text-sm text-ink-muted">
-              Assunto criado por {post.author.displayName} em {formatTimestamp(post.createdAt)}.
-            </p>
-          </div>
-        }
-      />
+        <PainelDaConversa data-gc="conversa.forum-post-view.painel-da-conversa">
+        <MessageList data-gc="conversa.forum-post-view.message-list"
+          channelId={post.channelId}
+          channelName={post.title}
+          postId={post.id}
+          guildId={guildId}
+          currentUserId={currentUserId}
+          isModerator={isModerator}
+          header={
+            <div data-gc="conversa.forum-post-view.div" className="px-4 pb-4 pt-6">
+              <h3 data-gc="conversa.forum-post-view.h3" className="text-2xl font-bold">{post.title}</h3>
+              <p data-gc="conversa.forum-post-view.p" className="mt-1 text-sm text-ink-muted">
+                Assunto criado por {post.author.displayName} em {formatTimestamp(post.createdAt)}.
+              </p>
+            </div>
+          }
+        />
+
+        </PainelDaConversa>
 
       <RodapeDaConversa data-gc="conversa.forum-post-view.rodape-da-conversa">
         {post.closedAt ? (
