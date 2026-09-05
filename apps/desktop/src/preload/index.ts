@@ -106,6 +106,14 @@ const ponte: PonteDesktop = {
       return () => ipcRenderer.off("atualizacao:mudou", ouvinte);
     },
   },
+
+  sistema: {
+    podeAbrirNoLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:pode-abrir-no-login"),
+    abrirNoLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:abrir-no-login"),
+    definirAbrirNoLogin: (ligado: boolean): Promise<boolean> =>
+      ipcRenderer.invoke("sistema:definir-abrir-no-login", ligado),
+    reiniciar: (): Promise<void> => ipcRenderer.invoke("sistema:reiniciar"),
+  },
 };
 
 contextBridge.exposeInMainWorld("gravae", ponte);

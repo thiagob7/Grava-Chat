@@ -85,6 +85,13 @@ export interface VersoesDoAplicativo {
   sistema: string;
 }
 
+export interface PonteSistema {
+  abrirNoLogin: () => Promise<boolean>;
+  definirAbrirNoLogin: (ligado: boolean) => Promise<boolean>;
+  podeAbrirNoLogin: () => Promise<boolean>;
+  reiniciar: () => Promise<void>;
+}
+
 export interface PonteDesktop {
   ehDesktop: true;
   plataforma: string;
@@ -97,6 +104,7 @@ export interface PonteDesktop {
   janela: PonteJanela;
   links: PonteLinks;
   atualizacao: PonteAtualizacao;
+  sistema?: PonteSistema;
 }
 
 declare global {
