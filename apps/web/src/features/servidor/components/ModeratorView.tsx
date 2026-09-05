@@ -46,6 +46,7 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 type Detalhe = "todas" | "links" | "midia" | null;
 
@@ -76,7 +77,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
   if (!alvo || !guildId || !userId) return null;
 
   return (
-    <aside data-gc="servidor.moderator-view.aside" className="hidden w-[22rem] shrink-0 flex-col border-l border-divisor bg-surface-2 xl:flex">
+    <aside data-gc="servidor.moderator-view.aside" {...flx("paginaDeMembros", "hidden w-[22rem] shrink-0 flex-col border-l border-divisor bg-surface-2 xl:flex")}>
         <header data-gc="servidor.moderator-view.header" className="shrink-0 border-b border-divisor bg-surface-1">
           <div data-gc="servidor.moderator-view.div" className="flex items-center gap-3 p-4">
             <Avatar data-gc="servidor.moderator-view.avatar" id={userId} name={alvo.displayName} url={alvo.avatarUrl} size={40} />

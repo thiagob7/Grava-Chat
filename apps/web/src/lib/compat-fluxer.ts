@@ -103,6 +103,11 @@ export const LUGARES = {
   painelDeBusca: { classes: ["ChannelIndexPage.module__searchPanel_gc"] },
   explorar: { classes: ["DiscoveryPage.module__container_gc"] },
 
+  palcoDeVoz: { classes: ["VoiceCallView.module__root_gc"] },
+  paginaDeMembros: { classes: ["GuildMembersPage.module__pageContainer_gc"] },
+  cartaoDeEntrada: { classes: ["AuthLayout.module__card_gc"] },
+  abertura: { classes: ["SplashScreen.module__splashContent_gc"] },
+
   janela: { classes: ["Modal.module__root_gc", "Modal.module__surface_gc"] },
   fundoDaJanela: { classes: ["Modal.module__modalBackdrop_gc"] },
   menu: { classes: ["ContextMenu.module__contextMenu_gc"] },

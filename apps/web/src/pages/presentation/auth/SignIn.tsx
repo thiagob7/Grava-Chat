@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { desktop } from "~/lib/desktop";
+import { flx } from "~/lib/compat-fluxer";
 
 export const SignIn: React.FC = () => {
   const devLogin = useDevLogin();
@@ -32,7 +33,7 @@ export const SignIn: React.FC = () => {
     <div data-gc="auth.sign-in.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
       <FundoDaMarca data-gc="auth.sign-in.fundo-da-marca" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="auth.sign-in.div--2" className="relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-white/10 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+      <div data-gc="auth.sign-in.div--2" {...flx("cartaoDeEntrada", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-white/10 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
         <aside data-gc="auth.sign-in.aside" className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
           <span data-gc="auth.sign-in.span" className="flex size-24 items-center justify-center rounded-full bg-brand">
             <img data-gc="auth.sign-in.img"

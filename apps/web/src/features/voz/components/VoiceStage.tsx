@@ -30,6 +30,7 @@ import { useParticipante } from "~/features/voz/hooks/use-participante";
 import { useSomDoPainel } from "~/features/voz/lib/soundboard";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { flxCls } from "~/lib/compat-fluxer";
 
 interface VoiceStageProps {
   channelName: string;
@@ -194,6 +195,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       <div data-gc="voz.voice-stage.div--4"
         ref={palco}
         className={cn(
+          flxCls("palcoDeVoz"),
           "group relative flex min-h-0 flex-1 overflow-hidden bg-black",
           compacto ? "flex-row gap-2 p-2" : "flex-col",
         )}
@@ -302,6 +304,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       <div data-gc="voz.voice-stage.div--10"
         ref={palco}
         className={cn(
+          flxCls("palcoDeVoz"),
           "group relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden bg-surface-2 pb-20",
           compacto ? "p-4 pb-20" : "px-4 pt-14",
         )}
@@ -364,6 +367,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     <div data-gc="voz.voice-stage.div--17"
       ref={palco}
       className={cn(
+        flxCls("palcoDeVoz"),
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
         ampliado
           ? "palco-de-um bg-surface-2"
