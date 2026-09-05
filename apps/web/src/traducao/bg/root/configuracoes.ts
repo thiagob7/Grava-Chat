@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Език",
     aplicativo: "Изтегли приложението",
     atalhos: "Клавишни комбинации",
+    desktop: "Приложение за компютър",
     avancado: "Разширени",
     servidor: "Сървър",
   },

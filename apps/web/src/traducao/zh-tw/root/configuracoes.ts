@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "語言",
     aplicativo: "下載應用程式",
     atalhos: "快捷鍵",
+    desktop: "桌面應用程式",
     avancado: "進階",
     servidor: "伺服器",
   },

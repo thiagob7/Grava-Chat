@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Langue",
     aplicativo: "Télécharger l'app",
     atalhos: "Raccourcis",
+    desktop: "Application de bureau",
     avancado: "Avancé",
     servidor: "Serveur",
   },

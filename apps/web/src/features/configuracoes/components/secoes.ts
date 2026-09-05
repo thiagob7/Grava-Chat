@@ -13,6 +13,7 @@ export type Secao =
   | "acessibilidade"
   | "idioma"
   | "aplicativo"
+  | "desktop"
   | "atalhos"
   | "avancado"
   | "servidor";
@@ -103,6 +104,7 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   aplicativos: [],
   conexoes: [],
   aplicativo: [],
+  desktop: [],
   atalhos: [],
   avancado: [],
   servidor: [],

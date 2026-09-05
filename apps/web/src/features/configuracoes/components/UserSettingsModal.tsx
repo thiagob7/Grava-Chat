@@ -17,6 +17,7 @@ import {
   Keyboard,
   Languages,
   EyeOff,
+  MonitorCog,
   MessageSquare,
   Link2,
   Mic,
@@ -40,6 +41,7 @@ import { VoiceSection } from "~/features/configuracoes/components/VoiceSection";
 import { ConexoesSection } from "~/features/configuracoes/components/ConexoesSection";
 import { AplicativosSection } from "~/features/configuracoes/components/aplicativos/AplicativosSection";
 import { AtalhosSection } from "~/features/configuracoes/components/AtalhosSection";
+import { DesktopSection } from "~/features/configuracoes/components/DesktopSection";
 import { AvancadoSection } from "~/features/configuracoes/components/AvancadoSection";
 import { AplicativoSection } from "~/features/configuracoes/components/AplicativoSection";
 import { AcessibilidadeSection } from "~/features/configuracoes/components/AcessibilidadeSection";
@@ -157,7 +159,14 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
         subitens: SUBSECOES.atalhos,
       },
       ...(ehDesktop()
-        ? []
+        ? [
+            {
+              id: "desktop" as const,
+              chave: "configuracoes.telas.desktop",
+              icone: MonitorCog,
+              subitens: SUBSECOES.desktop,
+            },
+          ]
         : [
             {
               id: "aplicativo" as const,
@@ -215,6 +224,7 @@ const TITULOS: Record<Secao, string> = {
   acessibilidade: "configuracoes.telas.acessibilidade",
   idioma: "configuracoes.telas.idioma",
   aplicativo: "configuracoes.telas.aplicativo",
+  desktop: "configuracoes.telas.desktop",
   atalhos: "configuracoes.telas.atalhos",
   avancado: "configuracoes.telas.avancado",
   servidor: "configuracoes.telas.servidor",
@@ -459,6 +469,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "acessibilidade" && <AcessibilidadeSection />}
                     {secao === "idioma" && <IdiomaSection />}
                     {secao === "aplicativo" && <AplicativoSection />}
+                    {secao === "desktop" && <DesktopSection />}
                     {secao === "atalhos" && <AtalhosSection />}
                     {secao === "avancado" && <AvancadoSection />}
                     {secao === "servidor" && user.admin && <ServidorSection />}

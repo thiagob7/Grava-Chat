@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Nyelv",
     aplicativo: "Alkalmazás letöltése",
     atalhos: "Gyorsbillentyűk",
+    desktop: "Asztali alkalmazás",
     avancado: "Speciális",
     servidor: "Kiszolgáló",
   },

@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Język",
     aplicativo: "Pobierz aplikację",
     atalhos: "Skróty klawiszowe",
+    desktop: "Aplikacja na komputer",
     avancado: "Zaawansowane",
     servidor: "Serwer",
   },

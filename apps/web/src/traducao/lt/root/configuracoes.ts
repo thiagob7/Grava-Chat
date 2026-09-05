@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Kalba",
     aplicativo: "Atsisiųsti programą",
     atalhos: "Spartieji klavišai",
+    desktop: "Kompiuterio programa",
     avancado: "Išplėstiniai",
     servidor: "Serveris",
   },

@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "언어",
     aplicativo: "앱 받기",
     atalhos: "단축키",
+    desktop: "데스크톱 앱",
     avancado: "고급",
     servidor: "서버",
   },

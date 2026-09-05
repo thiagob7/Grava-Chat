@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Ngôn ngữ",
     aplicativo: "Tải ứng dụng",
     atalhos: "Phím tắt",
+    desktop: "Ứng dụng máy tính",
     avancado: "Nâng cao",
     servidor: "Máy chủ",
   },

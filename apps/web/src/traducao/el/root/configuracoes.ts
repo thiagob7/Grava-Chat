@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Γλώσσα",
     aplicativo: "Λήψη της εφαρμογής",
     atalhos: "Συντομεύσεις",
+    desktop: "Εφαρμογή υπολογιστή",
     avancado: "Για προχωρημένους",
     servidor: "Διακομιστής",
   },

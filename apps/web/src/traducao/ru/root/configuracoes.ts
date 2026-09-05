@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Язык",
     aplicativo: "Скачать приложение",
     atalhos: "Горячие клавиши",
+    desktop: "Приложение для компьютера",
     avancado: "Дополнительно",
     servidor: "Сервер",
   },

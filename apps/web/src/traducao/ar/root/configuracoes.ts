@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "اللغة",
     aplicativo: "تنزيل التطبيق",
     atalhos: "الاختصارات",
+    desktop: "تطبيق سطح المكتب",
     avancado: "متقدم",
     servidor: "الخادم",
   },

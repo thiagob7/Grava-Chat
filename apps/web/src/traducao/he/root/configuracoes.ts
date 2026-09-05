@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "שפה",
     aplicativo: "הורדת האפליקציה",
     atalhos: "קיצורי מקלדת",
+    desktop: "אפליקציית שולחן עבודה",
     avancado: "מתקדם",
     servidor: "שרת",
   },

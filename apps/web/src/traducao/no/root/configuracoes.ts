@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Språk",
     aplicativo: "Last ned appen",
     atalhos: "Snarveier",
+    desktop: "Skrivebordsapp",
     avancado: "Avansert",
     servidor: "Server",
   },

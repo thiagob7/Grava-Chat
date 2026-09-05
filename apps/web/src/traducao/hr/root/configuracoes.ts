@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Jezik",
     aplicativo: "Preuzmi aplikaciju",
     atalhos: "Prečaci",
+    desktop: "Aplikacija za računalo",
     avancado: "Napredno",
     servidor: "Poslužitelj",
   },
