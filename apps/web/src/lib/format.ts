@@ -92,3 +92,14 @@ export const initials = (name: string) =>
     .map((w) => w[0] ?? "")
     .join("")
     .toUpperCase();
+
+export const formatShortDate = (iso: string) =>
+  guardado(
+    "data-curta",
+    () =>
+      new Intl.DateTimeFormat(idiomaAtual(), {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+  ).format(new Date(iso));

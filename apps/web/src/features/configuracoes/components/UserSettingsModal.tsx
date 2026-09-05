@@ -36,7 +36,7 @@ import { AppearanceSection } from "~/features/configuracoes/components/Appearanc
 import { NotificationsSection } from "~/features/configuracoes/components/NotificationsSection";
 import { VoiceSection } from "~/features/configuracoes/components/VoiceSection";
 import { ConexoesSection } from "~/features/configuracoes/components/ConexoesSection";
-import { BotsSection } from "~/features/configuracoes/components/BotsSection";
+import { AplicativosSection } from "~/features/configuracoes/components/aplicativos/AplicativosSection";
 import { AplicativoSection } from "~/features/configuracoes/components/AplicativoSection";
 import { AcessibilidadeSection } from "~/features/configuracoes/components/AcessibilidadeSection";
 import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection";
@@ -434,7 +434,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "voz" && <VoiceSection parte="audio" />}
                     {secao === "video" && <VoiceSection parte="video" />}
                     {secao === "avisos" && <NotificationsSection />}
-                    {secao === "aplicativos" && <BotsSection />}
+                    {secao === "aplicativos" && <AplicativosSection />}
 
                     {secao === "aparencia" && <AppearanceSection />}
                     {secao === "bate-papo" && <BatePapoSection />}
