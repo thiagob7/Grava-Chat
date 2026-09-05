@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "복사됨",
     copiarAria: "코드 복사",
     copiadoAria: "코드를 복사했습니다",
+    recolher: "접기",
+    expandir: "펼치기",
+    verInteiro: "파일 전체 보기",
+    maisOpcoes: "더 보기",
+    baixar: "다운로드",
   },
   caixa: {
     escrever: "#{{canal}}에 메시지 보내기",

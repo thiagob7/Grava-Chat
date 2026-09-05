@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Đã sao chép",
     copiarAria: "Sao chép mã",
     copiadoAria: "Đã sao chép mã",
+    recolher: "Thu gọn",
+    expandir: "Mở rộng",
+    verInteiro: "Xem toàn bộ tệp",
+    maisOpcoes: "Tùy chọn khác",
+    baixar: "Tải xuống",
   },
   caixa: {
     escrever: "Nhắn trong #{{canal}}",

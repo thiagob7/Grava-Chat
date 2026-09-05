@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Kopirano",
     copiarAria: "Kopiraj kôd",
     copiadoAria: "Kôd je kopiran",
+    recolher: "Sažmi",
+    expandir: "Proširi",
+    verInteiro: "Prikaži cijelu datoteku",
+    maisOpcoes: "Više opcija",
+    baixar: "Preuzmi",
   },
   caixa: {
     escrever: "Piši u #{{canal}}",

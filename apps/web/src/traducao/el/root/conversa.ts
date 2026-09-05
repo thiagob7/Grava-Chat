@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Αντιγράφηκε",
     copiarAria: "Αντιγραφή του κώδικα",
     copiadoAria: "Ο κώδικας αντιγράφηκε",
+    recolher: "Σύμπτυξη",
+    expandir: "Ανάπτυξη",
+    verInteiro: "Προβολή όλου του αρχείου",
+    maisOpcoes: "Περισσότερες επιλογές",
+    baixar: "Λήψη",
   },
   caixa: {
     escrever: "Γράψε στο #{{canal}}",

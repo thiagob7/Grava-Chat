@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "已复制",
     copiarAria: "复制代码",
     copiadoAria: "代码已复制",
+    recolher: "收起",
+    expandir: "展开",
+    verInteiro: "查看完整文件",
+    maisOpcoes: "更多选项",
+    baixar: "下载",
   },
   caixa: {
     escrever: "在 #{{canal}} 中发消息",

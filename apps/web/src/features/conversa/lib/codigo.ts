@@ -159,11 +159,23 @@ export function adivinharLingua(texto: string): string | null {
 
   if (/^\s*(SELECT|INSERT|UPDATE|DELETE|CREATE TABLE)\b/i.test(t)) return "sql";
   if (/^\s*<(\?xml|!doctype|html|div|span|section)\b/i.test(t)) return "html";
+
+  /// Uma folha que abre com regra-arroba não é outra coisa.
+  if (/^\s*@(import|media|charset|font-face|keyframes|tailwind)\b/m.test(t)) return "css";
   if (/^\s*(#!|\$ )|^\s*(npm|yarn|pnpm|git|docker|cd|sudo|apt|brew|curl)\s/m.test(t)) return "sh";
   if (/^\s*(def|class)\s+\w+.*:\s*$/m.test(t) || /^\s*(from|import)\s+\w+\s*$/m.test(t)) return "py";
 
   if (/:\s*(string|number|boolean|void|any|unknown|Promise<)/.test(t)) return "ts";
   if (/\b(const|let|function|=>|import .* from|require\()/.test(t)) return "js";
+
+  /*
+    Por último, e só depois de JavaScript ter tido a vez: um seletor seguido de
+    bloco com `propriedade: valor`. O seletor não pode ter `=` nem parêntese,
+    senão `const a = { cor: azul }` entraria aqui.
+  */
+  if (/(^|\})\s*[.#:a-z[][^{}\n=()]{0,120}\{[^}]*[a-z-]+\s*:[^;}]+[;}]/i.test(t)) {
+    return "css";
+  }
 
   return null;
 }

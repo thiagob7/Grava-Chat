@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Zkopírováno",
     copiarAria: "Kopírovat kód",
     copiadoAria: "Kód zkopírován",
+    recolher: "Sbalit",
+    expandir: "Rozbalit",
+    verInteiro: "Zobrazit celý soubor",
+    maisOpcoes: "Další možnosti",
+    baixar: "Stáhnout",
   },
   caixa: {
     escrever: "Napiš na #{{canal}}",

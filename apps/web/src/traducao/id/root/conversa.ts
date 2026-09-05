@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Disalin",
     copiarAria: "Salin kodenya",
     copiadoAria: "Kode disalin",
+    recolher: "Ciutkan",
+    expandir: "Perluas",
+    verInteiro: "Lihat seluruh berkas",
+    maisOpcoes: "Opsi lainnya",
+    baixar: "Unduh",
   },
   caixa: {
     escrever: "Tulis di #{{canal}}",

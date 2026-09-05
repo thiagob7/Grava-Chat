@@ -156,7 +156,20 @@ describe("adivinhar a língua", () => {
     ["sh", CODIGO.shell],
     ["html", CODIGO.html],
     ["sql", CODIGO.sql],
+    [
+      "css",
+      ".lista-de-membros {\n  transition: width 0.3s ease;\n  width: 3rem;\n}",
+    ],
+    ["css", "@media (min-width: 640px) {\n  body { margin: 0; }\n}"],
   ])("%s", (esperada, texto) => expect(adivinharLingua(texto!)).toBe(esperada));
+
+  it("nao confunde objeto de javascript com css", () => {
+    expect(adivinharLingua("const a = { cor: azul };")).toBe("js");
+  });
+
+  it("nao chuta lingua para texto comum", () => {
+    expect(adivinharLingua("bom dia, tudo certo por aí?")).toBeNull();
+  });
 });
 
 const DIFICEIS: Record<string, string> = {

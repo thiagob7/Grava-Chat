@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Másolva",
     copiarAria: "A kód másolása",
     copiadoAria: "A kód másolva",
+    recolher: "Összecsukás",
+    expandir: "Kibontás",
+    verInteiro: "Teljes fájl megtekintése",
+    maisOpcoes: "További lehetőségek",
+    baixar: "Letöltés",
   },
   caixa: {
     escrever: "Írj ide: #{{canal}}",

@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Kopyalandı",
     copiarAria: "Kodu kopyala",
     copiadoAria: "Kod kopyalandı",
+    recolher: "Daralt",
+    expandir: "Genişlet",
+    verInteiro: "Dosyanın tamamını gör",
+    maisOpcoes: "Diğer seçenekler",
+    baixar: "İndir",
   },
   caixa: {
     escrever: "#{{canal}} kanalına yaz",

@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Kopioitu",
     copiarAria: "Kopioi koodi",
     copiadoAria: "Koodi kopioitu",
+    recolher: "Tiivistä",
+    expandir: "Laajenna",
+    verInteiro: "Näytä koko tiedosto",
+    maisOpcoes: "Lisää valintoja",
+    baixar: "Lataa",
   },
   caixa: {
     escrever: "Kirjoita kanavalle #{{canal}}",

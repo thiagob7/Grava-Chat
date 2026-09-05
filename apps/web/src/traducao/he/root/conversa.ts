@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "הועתק",
     copiarAria: "העתק את הקוד",
     copiadoAria: "הקוד הועתק",
+    recolher: "כווץ",
+    expandir: "הרחב",
+    verInteiro: "הצג את כל הקובץ",
+    maisOpcoes: "אפשרויות נוספות",
+    baixar: "הורדה",
   },
   caixa: {
     escrever: "כתבו ב‑‎#{{canal}}‎",

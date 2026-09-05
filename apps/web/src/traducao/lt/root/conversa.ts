@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Nukopijuota",
     copiarAria: "Kopijuoti kodą",
     copiadoAria: "Kodas nukopijuotas",
+    recolher: "Suskleisti",
+    expandir: "Išskleisti",
+    verInteiro: "Peržiūrėti visą failą",
+    maisOpcoes: "Daugiau parinkčių",
+    baixar: "Atsisiųsti",
   },
   caixa: {
     escrever: "Rašykite kanale #{{canal}}",

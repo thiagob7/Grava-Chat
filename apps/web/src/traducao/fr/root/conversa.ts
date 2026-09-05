@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Copié",
     copiarAria: "Copier le code",
     copiadoAria: "Code copié",
+    recolher: "Réduire",
+    expandir: "Développer",
+    verInteiro: "Voir tout le fichier",
+    maisOpcoes: "Plus d'options",
+    baixar: "Télécharger",
   },
   caixa: {
     escrever: "Écrire dans #{{canal}}",

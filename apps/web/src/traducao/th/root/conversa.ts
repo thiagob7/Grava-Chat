@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "คัดลอกแล้ว",
     copiarAria: "คัดลอกโค้ด",
     copiadoAria: "คัดลอกโค้ดแล้ว",
+    recolher: "ย่อ",
+    expandir: "ขยาย",
+    verInteiro: "ดูทั้งไฟล์",
+    maisOpcoes: "ตัวเลือกเพิ่มเติม",
+    baixar: "ดาวน์โหลด",
   },
   caixa: {
     escrever: "เขียนใน #{{canal}}",

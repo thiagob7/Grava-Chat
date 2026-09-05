@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "コピーしました",
     copiarAria: "コードをコピー",
     copiadoAria: "コードをコピーしました",
+    recolher: "折りたたむ",
+    expandir: "展開",
+    verInteiro: "ファイル全体を表示",
+    maisOpcoes: "その他の操作",
+    baixar: "ダウンロード",
   },
   caixa: {
     escrever: "#{{canal}} にメッセージを送信",

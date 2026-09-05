@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Gekopieerd",
     copiarAria: "De code kopiëren",
     copiadoAria: "Code gekopieerd",
+    recolher: "Inklappen",
+    expandir: "Uitklappen",
+    verInteiro: "Hele bestand bekijken",
+    maisOpcoes: "Meer opties",
+    baixar: "Downloaden",
   },
   caixa: {
     escrever: "Schrijf in #{{canal}}",

@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Copiat",
     copiarAria: "Copiază codul",
     copiadoAria: "Codul a fost copiat",
+    recolher: "Restrânge",
+    expandir: "Extinde",
+    verInteiro: "Vezi tot fișierul",
+    maisOpcoes: "Mai multe opțiuni",
+    baixar: "Descarcă",
   },
   caixa: {
     escrever: "Scrie în #{{canal}}",

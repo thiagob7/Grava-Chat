@@ -75,6 +75,11 @@ export const conversa = {
     copiado: "Скопировано",
     copiarAria: "Копировать код",
     copiadoAria: "Код скопирован",
+    recolher: "Свернуть",
+    expandir: "Развернуть",
+    verInteiro: "Показать файл целиком",
+    maisOpcoes: "Ещё",
+    baixar: "Скачать",
   },
   caixa: {
     escrever: "Написать в #{{canal}}",
