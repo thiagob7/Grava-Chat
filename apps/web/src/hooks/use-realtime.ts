@@ -665,8 +665,12 @@ export function useRealtime(
       })),
     );
     onUserUpdated(handleUserUpdated);
+    const aoMudarAVozDoTrilho = () =>
+      void queryClient.invalidateQueries({ queryKey: [queryKeys.voice.states] });
+
     const aoEntrarNaVoz = (state: VoiceState) => {
       upsertVoiceState(state);
+      aoMudarAVozDoTrilho();
 
       const meuId = queryClient.getQueryData<SelfUserModel>([
         queryKeys.auth.me,
@@ -692,11 +696,13 @@ export function useRealtime(
 
     const aoMudarNaVoz = (state: VoiceState) => {
       upsertVoiceState(state);
+      aoMudarAVozDoTrilho();
       useChamadaStore.getState().atualizarVideo(state.channelId, state.camera);
     };
 
     const aoSairDaVoz = (p: { channelId: string; userId: string }) => {
       removeVoiceState(p);
+      aoMudarAVozDoTrilho();
       useChamadaStore.getState().encerrar(p.channelId);
     };
 
