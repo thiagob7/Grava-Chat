@@ -1,3 +1,5 @@
+import { createServer } from "node:http";
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
@@ -8,6 +10,7 @@ import { authPlugin } from "~/plugins/auth.js";
 import { rateLimitPlugin } from "~/plugins/rate-limit.js";
 import { swaggerPlugin } from "~/plugins/swagger.js";
 import { AppError } from "~/lib/http.js";
+import { TETO_DE_CABECALHO } from "~/lib/limites-http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
 import { statusPublicoRoutes } from "~/routes/status-publico.js";
@@ -37,6 +40,8 @@ import { embedRoutes } from "~/routes/embeds.js";
 
 export async function buildApp() {
   const app = Fastify({
+    /// Por que não o padrão do Node: veja `lib/limites-http.ts`.
+    serverFactory: (atender) => createServer({ maxHeaderSize: TETO_DE_CABECALHO }, atender),
     logger: isDev
       ? { transport: { target: "pino-pretty", options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" } } }
       : true,
