@@ -82,16 +82,20 @@ const APELIDOS: Record<string, string> = {
   toml: "ini",
   ts: "typescript",
   tsx: "typescript",
-  txt: "plaintext",
   yml: "yaml",
   zsh: "bash",
 };
 
 const CONHECIDOS = new Set(IDIOMAS.map((i) => i.id));
 
-/// Normaliza o que veio da cerca. Devolve `auto` quando não reconhece, em vez
-/// de inventar: melhor o highlight.js chutar do que pintar com a gramática
-/// errada.
+/*
+  Normaliza o que veio da cerca. Devolve `auto` quando não reconhece, em vez de
+  inventar: melhor o highlight.js chutar do que pintar com a gramática errada.
+
+  `txt` de propósito não vira `plaintext`: um .txt costuma ter código dentro, e
+  a gramática de texto puro desligaria o realce justamente onde ele ajuda.
+  Quem quiser texto cru escolhe `plaintext` na lista.
+*/
 export function normalizarIdioma(bruto: string | null | undefined): string {
   const chave = bruto?.trim().toLowerCase();
   if (!chave) return IDIOMA_AUTOMATICO;

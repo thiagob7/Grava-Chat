@@ -2,12 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Copy, Download, Expand, MoreHorizontal } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -242,17 +237,78 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
       </div>
 
       <Dialog open={inteiro} onOpenChange={setInteiro}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-baseline gap-2">
-              {anexo.filename}
-              <span className="text-11 font-normal text-ink-faint">
-                {formatBytes(anexo.size)}
-              </span>
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="flex max-h-[88vh] w-[min(64rem,94vw)] max-w-none flex-col overflow-hidden bg-codigo-bloco p-0">
+          <DialogTitle className="sr-only">{anexo.filename}</DialogTitle>
 
-          <div className="max-h-[70vh] overflow-auto bg-codigo-bloco">{corpo}</div>
+          <div className="relative min-h-0 flex-1 overflow-auto">
+            {corpo}
+
+            <Tooltip
+              label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}
+            >
+              <button
+                type="button"
+                onClick={copiar}
+                aria-label={t(
+                  copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
+                )}
+                className="absolute right-3 top-3 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
+              >
+                {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+              </button>
+            </Tooltip>
+          </div>
+
+          <footer className="flex shrink-0 items-center gap-2 border-t border-line bg-codigo px-3 py-2">
+            <div className="min-w-0 flex-1 leading-tight">
+              <p className="truncate text-13 font-semibold">{anexo.filename}</p>
+              <p className="text-11 text-ink-faint">{formatBytes(anexo.size)}</p>
+            </div>
+
+            <SeletorDeIdioma idioma={idioma} onEscolher={setIdioma} />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={t("conversa.codigo.maisOpcoes")}
+                  className={botao}
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <a
+                    href={anexo.url}
+                    download={anexo.filename}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t("conversa.codigo.baixar")} <Download size={15} />
+                  </a>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onSelect={(evento) => {
+                    evento.preventDefault();
+                    setQuebrar((v) => !v);
+                  }}
+                >
+                  {t("conversa.codigo.quebrarTexto")}
+                  <span
+                    className={cn(
+                      "flex size-4 shrink-0 items-center justify-center rounded border transition",
+                      quebrar ? "border-brand bg-brand text-white" : "border-ink-faint",
+                    )}
+                  >
+                    {quebrar && <Check size={11} strokeWidth={3} />}
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </footer>
         </DialogContent>
       </Dialog>
     </>

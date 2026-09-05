@@ -336,11 +336,18 @@ export const Composer: React.FC<ComposerProps> = ({
 
     /*
       O que já estava na caixa vem cercado (o colar de código cerca na hora),
-      mas o texto novo chega cru. Emendar os dois assim daria "bloco + texto
-      solto", e o arquivo cairia para .txt em vez de sair como .js. Então
-      cercamos o novo antes de juntar.
+      mas o texto novo costuma chegar cru. Emendar os dois assim daria
+      "bloco + texto solto", e o arquivo cairia para .txt em vez de .js.
+
+      Só que quem cola um markdown inteiro já traz as cercas — e cercar de
+      novo aninhava uma na outra, que é o que fazia o arquivo sair .txt com
+      ``` no meio.
     */
-    const novo = pareceCodigo(textoLongo) ? cercarCodigo(textoLongo) : textoLongo.trim();
+    const jaVemCercado = textoLongo.includes("```");
+    const novo =
+      !jaVemCercado && pareceCodigo(textoLongo)
+        ? cercarCodigo(textoLongo)
+        : textoLongo.trim();
 
     virarArquivo([value.trim(), novo].filter(Boolean).join("\n\n"));
     limparCaixa();

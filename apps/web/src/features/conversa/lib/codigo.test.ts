@@ -263,6 +263,14 @@ describe("virar arquivo", () => {
     expect(textoParaArquivo("bom dia").nome).toBe("mensagem.txt");
   });
 
+  it("markdown colado inteiro vira um .js so, sem cerca aninhada", () => {
+    const markdown = bloco("js", "const a = 1;") + bloco("js", "const b = 2;");
+    const { nome, conteudo } = textoParaArquivo(markdown);
+
+    expect(nome).toBe("mensagem.js");
+    expect(conteudo).not.toContain("`");
+  });
+
   it("espaco em branco entre blocos nao conta como texto solto", () => {
     const texto = bloco("js", "const a = 1;") + "\n\n" + bloco("js", "const b = 2;");
 
