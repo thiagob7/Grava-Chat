@@ -10,7 +10,7 @@ import {
   type ClientToServerEvents,
   type ServerToClientEvents,
 } from "@gravae/shared";
-import { AppError, NotFoundError } from "~/lib/http.js";
+import { AppError, ConflictError, NotFoundError } from "~/lib/http.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
@@ -60,7 +60,8 @@ function on<E extends ClientEventName>(
       if (!isDomainError) console.error(`[socket:${event}]`, err);
 
       ack?.({ ok: false, error: message });
-      socket.emit("error", { event, message });
+
+      if (!isDomainError || err.avisar) socket.emit("error", { event, message });
     }
   });
 }
@@ -196,7 +197,7 @@ export function registerHandlers(socket: GravaeSocket) {
 
   on(socket, "voice:sound", async ({ soundId }) => {
     const estado = await voiceService.get(userId);
-    if (!estado) throw new AppError("Você não está numa chamada");
+    if (!estado) throw new ConflictError("Você não está numa chamada");
 
     if (esperandoParaTocar(userId)) throw new AppError("Espera um pouquinho antes do próximo som");
 

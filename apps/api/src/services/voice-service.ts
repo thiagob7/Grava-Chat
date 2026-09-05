@@ -2,7 +2,7 @@ import { AccessToken, RoomServiceClient, TrackSource } from "livekit-server-sdk"
 import type { VoiceState, VozNoServidor } from "@gravae/shared";
 import { has, rooms } from "@gravae/shared";
 import { env } from "~/env.js";
-import { AppError, ForbiddenError } from "~/lib/http.js";
+import { AppError, ConflictError, ForbiddenError } from "~/lib/http.js";
 import { ehOutraAba } from "~/lib/retomada.js";
 import { redis, keys } from "~/lib/redis.js";
 import { userRepository } from "~/repositories/user-repository.js";
@@ -356,7 +356,7 @@ export const voiceService = {
     patch: Partial<Pick<VoiceState, "selfMute" | "selfDeaf" | "camera" | "screenShare">>,
   ) {
     const state = await voiceService.get(userId);
-    if (!state) throw new AppError("Você não está num canal de voz");
+    if (!state) throw new ConflictError("Você não está num canal de voz");
 
     const next = { ...state, ...patch };
     await redis.set(keys.voiceState(userId), JSON.stringify(next));

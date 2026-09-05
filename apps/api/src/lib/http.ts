@@ -2,6 +2,7 @@ export class AppError extends Error {
   constructor(
     message: string,
     readonly statusCode: number = 400,
+    readonly avisar: boolean = true,
   ) {
     super(message);
     this.name = new.target.name;
@@ -28,6 +29,6 @@ export class UnauthorizedError extends AppError {
 
 export class ConflictError extends AppError {
   constructor(message = "Conflito") {
-    super(message, 409);
+    super(message, 409, false);
   }
 }
