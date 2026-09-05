@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { marcarTemaDaRaiz } from "~/features/configuracoes/lib/normalizar-tema";
 
 export function useAparenciaAplicada() {
   const tema = useAparencia((s) => s.tema);
@@ -18,6 +19,13 @@ export function useAparenciaAplicada() {
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema;
+
+    /*
+      A mesma escolha, no vocabulário deles. Um tema do Fluxer que avisa "só
+      funciona no escuro" fala por `theme-dark` e `theme-light`, não por
+      `data-tema`.
+    */
+    marcarTemaDaRaiz(tema);
   }, [tema]);
 
   useEffect(() => {

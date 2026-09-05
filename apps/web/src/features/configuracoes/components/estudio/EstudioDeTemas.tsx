@@ -25,6 +25,10 @@ import {
   consertarComentariosQuebrados,
 } from "~/features/configuracoes/lib/comentarios-quebrados";
 import { conferirCompatibilidade } from "~/features/configuracoes/lib/compatibilidade-do-tema";
+import {
+  contarSeletoresTravados,
+  normalizarSeletoresDoFluxer,
+} from "~/features/configuracoes/lib/normalizar-tema";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
@@ -571,7 +575,13 @@ const ComentariosQuebrados: React.FC<{
 const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
   const [aberto, setAberto] = useState(false);
 
-  const { achados, faltando } = useMemo(() => conferirCompatibilidade(css), [css]);
+  /// Confere depois de normalizar: é assim que o CSS chega na tela.
+  const { achados, faltando } = useMemo(
+    () => conferirCompatibilidade(normalizarSeletoresDoFluxer(css)),
+    [css],
+  );
+
+  const travados = useMemo(() => contarSeletoresTravados(css), [css]);
   const total = achados.length + faltando.length;
 
   if (!total) return null;
@@ -594,7 +604,15 @@ const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
 
       {aberto && (
         <>
-          <p data-gc="configuracoes.estudio.estudio-de-temas.p--10" className="mt-2 text-xs text-ink-faint">
+          {travados > 0 && (
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--10" className="mt-2 text-xs text-ink-muted">
+              {travados} {travados === 1 ? "seletor vinha travado" : "seletores vinham travados"} no
+              hash de um build do Fluxer. Travado assim não acha nada em lugar nenhum, nem lá com
+              outro build — então soltamos do hash na entrada. O seu arquivo não muda.
+            </p>
+          )}
+
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" className="mt-2 text-xs text-ink-faint">
             Este tema mira {total} {total === 1 ? "lugar" : "lugares"} da árvore do Fluxer.{" "}
             {faltando.length
               ? `${faltando.length} não ${faltando.length === 1 ? "existe" : "existem"} aqui — o que o tema faz neles não tem efeito.`
@@ -604,7 +622,7 @@ const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
           {faltando.length > 0 && (
             <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="mt-2 flex max-h-40 flex-col gap-0.5 overflow-y-auto">
               {faltando.map((nome) => (
-                <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" key={nome} className="truncate font-mono text-xs text-ink-muted">
+                <p data-gc="configuracoes.estudio.estudio-de-temas.p--12" key={nome} className="truncate font-mono text-xs text-ink-muted">
                   {nome}
                 </p>
               ))}
@@ -648,7 +666,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
 
       {aberto && (
         <>
-          <p data-gc="configuracoes.estudio.estudio-de-temas.p--12" className="mt-2 text-xs text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="mt-2 text-xs text-ink-faint">
             Estas classes ficam paradas em cada região da tela — é nelas que um
             tema se agarra. O resto das classes é gerado e muda a cada build.
           </p>
@@ -668,7 +686,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
           </div>
 
           <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="mt-4 border-t border-line pt-3">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--14" className="text-xs text-ink-faint">
               E cada elemento do app carrega um{" "}
               <code data-gc="configuracoes.estudio.estudio-de-temas.code" className="font-mono text-ink-muted">data-gc</code> com o
               caminho de onde ele está. São {lista ? lista.length : "4754"} —
@@ -686,9 +704,9 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             {termo.length >= 2 && (
               <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="mt-2">
                 {!lista ? (
-                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--14" className="text-xs text-ink-faint">Carregando a lista…</p>
+                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="text-xs text-ink-faint">Carregando a lista…</p>
                 ) : !total ? (
-                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="text-xs text-ink-faint">
+                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--16" className="text-xs text-ink-faint">
                     Nada com esse nome. Tente um pedaço menor.
                   </p>
                 ) : (
@@ -707,7 +725,7 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
                     </div>
 
                     {total > mostrar.length && (
-                      <p data-gc="configuracoes.estudio.estudio-de-temas.p--16" className="mt-1 px-2 text-xs text-ink-faint">
+                      <p data-gc="configuracoes.estudio.estudio-de-temas.p--17" className="mt-1 px-2 text-xs text-ink-faint">
                         e mais {total - mostrar.length}. Escreva mais para
                         estreitar.
                       </p>
@@ -777,14 +795,14 @@ const AbaDeAtivos: React.FC = () => {
           className="hidden"
           onChange={(e) => void escolher(e)}
         />
-        <p data-gc="configuracoes.estudio.estudio-de-temas.p--17" className="text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--18" className="text-xs text-ink-faint">
           Imagem ou fonte, pra usar no CSS rápido.
         </p>
       </div>
 
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {!ativos.length && (
-          <p data-gc="configuracoes.estudio.estudio-de-temas.p--18" className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--19" className="py-10 text-center text-sm text-ink-faint">
             Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
             <code data-gc="configuracoes.estudio.estudio-de-temas.code--2" className="font-mono">url(…)</code> no seu CSS.
           </p>
@@ -809,7 +827,7 @@ const AbaDeAtivos: React.FC = () => {
               </div>
 
               <div data-gc="configuracoes.estudio.estudio-de-temas.div--27" className="flex items-center gap-2 p-2">
-                <p data-gc="configuracoes.estudio.estudio-de-temas.p--19"
+                <p data-gc="configuracoes.estudio.estudio-de-temas.p--20"
                   className="min-w-0 flex-1 truncate text-xs"
                   title={ativo.nome}
                 >
@@ -862,7 +880,7 @@ const AbaDeConfiguracoes: React.FC = () => {
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--28" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
       <h3 data-gc="configuracoes.estudio.estudio-de-temas.h3" className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
-      <p data-gc="configuracoes.estudio.estudio-de-temas.p--20" className="mb-4 text-sm text-ink-muted">
+      <p data-gc="configuracoes.estudio.estudio-de-temas.p--21" className="mb-4 text-sm text-ink-muted">
         Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
         aparelho.
       </p>
@@ -870,10 +888,10 @@ const AbaDeConfiguracoes: React.FC = () => {
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--29" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
         <div data-gc="configuracoes.estudio.estudio-de-temas.div--30" className="flex items-center gap-4 p-4">
           <div data-gc="configuracoes.estudio.estudio-de-temas.div--31" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--21" className="text-sm font-medium">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--22" className="text-sm font-medium">
               Limpar as substituições de token
             </p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--22" className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--23" className="text-xs text-ink-faint">
               As cores voltam a ser as do tema. A biblioteca e o CSS ficam.
             </p>
           </div>
@@ -884,8 +902,8 @@ const AbaDeConfiguracoes: React.FC = () => {
 
         <div data-gc="configuracoes.estudio.estudio-de-temas.div--32" className="flex items-center gap-4 p-4">
           <div data-gc="configuracoes.estudio.estudio-de-temas.div--33" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--23" className="text-sm font-medium">Apagar tudo do estúdio</p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--24" className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--24" className="text-sm font-medium">Apagar tudo do estúdio</p>
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--25" className="text-xs text-ink-faint">
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>

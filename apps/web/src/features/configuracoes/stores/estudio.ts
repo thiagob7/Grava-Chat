@@ -7,6 +7,7 @@ import {
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
+import { normalizarSeletoresDoFluxer } from "~/features/configuracoes/lib/normalizar-tema";
 import {
   NOMES_DE_ORIGEM,
   nomesDeclaradosNoTema,
@@ -124,7 +125,12 @@ function aplicar(estado: EstadoDoEstudio) {
     document.head.appendChild(estilo);
   }
 
-  estilo.textContent = estado.css;
+  /*
+    O CSS entra normalizado: seletor travado no hash de um build do Fluxer não
+    acha nada em lugar nenhum, nem lá com outro build. O arquivo de quem
+    escreveu fica como está; muda só o que é aplicado.
+  */
+  estilo.textContent = normalizarSeletoresDoFluxer(estado.css);
 
   /*
     Depois da folha do tema, senão não corrige nada: aqui é a última palavra
