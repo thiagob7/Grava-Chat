@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "กำลังอัปโหลด…",
     modificar: "แก้ไข {{arquivo}}",
+    verPrevia: "ดูตัวอย่าง {{arquivo}}",
     remover: "เอา {{arquivo}} ออก",
     ver: "ดู {{arquivo}}",
     mostrarSpoiler: "แสดงสปอยล์: {{arquivo}}",

@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "上傳中…",
     modificar: "修改 {{arquivo}}",
+    verPrevia: "預覽 {{arquivo}}",
     remover: "移除 {{arquivo}}",
     ver: "查看 {{arquivo}}",
     mostrarSpoiler: "顯示劇透：{{arquivo}}",

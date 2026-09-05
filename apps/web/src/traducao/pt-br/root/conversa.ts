@@ -119,6 +119,7 @@ export const conversa = {
   anexos: {
     enviando: "Enviando…",
     modificar: "Modificar {{arquivo}}",
+    verPrevia: "Ver {{arquivo}}",
     remover: "Remover {{arquivo}}",
     ver: "Ver {{arquivo}}",
     mostrarSpoiler: "Mostrar spoiler: {{arquivo}}",

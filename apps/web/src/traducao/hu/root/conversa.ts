@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Feltöltés…",
     modificar: "{{arquivo}} módosítása",
+    verPrevia: "{{arquivo}} előnézete",
     remover: "{{arquivo}} eltávolítása",
     ver: "{{arquivo}} megtekintése",
     mostrarSpoiler: "Spoiler megjelenítése: {{arquivo}}",

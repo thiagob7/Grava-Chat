@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Mengunggah…",
     modificar: "Ubah {{arquivo}}",
+    verPrevia: "Pratinjau {{arquivo}}",
     remover: "Hapus {{arquivo}}",
     ver: "Lihat {{arquivo}}",
     mostrarSpoiler: "Tampilkan spoiler: {{arquivo}}",

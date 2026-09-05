@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Prijenos…",
     modificar: "Uredi {{arquivo}}",
+    verPrevia: "Pregled {{arquivo}}",
     remover: "Ukloni {{arquivo}}",
     ver: "Pogledaj {{arquivo}}",
     mostrarSpoiler: "Prikaži spojler: {{arquivo}}",

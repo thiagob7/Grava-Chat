@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Đang tải lên…",
     modificar: "Sửa {{arquivo}}",
+    verPrevia: "Xem trước {{arquivo}}",
     remover: "Bỏ {{arquivo}}",
     ver: "Xem {{arquivo}}",
     mostrarSpoiler: "Hiện tiết lộ: {{arquivo}}",

@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Se încarcă…",
     modificar: "Modifică {{arquivo}}",
+    verPrevia: "Previzualizează {{arquivo}}",
     remover: "Elimină {{arquivo}}",
     ver: "Vezi {{arquivo}}",
     mostrarSpoiler: "Arată spoilerul: {{arquivo}}",

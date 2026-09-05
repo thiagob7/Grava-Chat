@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "업로드 중…",
     modificar: "{{arquivo}} 수정",
+    verPrevia: "{{arquivo}} 미리 보기",
     remover: "{{arquivo}} 제거",
     ver: "{{arquivo}} 보기",
     mostrarSpoiler: "스포일러 보기: {{arquivo}}",

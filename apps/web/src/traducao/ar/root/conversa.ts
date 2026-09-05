@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "جارٍ الرفع…",
     modificar: "تعديل {{arquivo}}",
+    verPrevia: "معاينة {{arquivo}}",
     remover: "إزالة {{arquivo}}",
     ver: "عرض {{arquivo}}",
     mostrarSpoiler: "إظهار الحرق: {{arquivo}}",

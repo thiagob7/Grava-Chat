@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Качване…",
     modificar: "Промени {{arquivo}}",
+    verPrevia: "Преглед на {{arquivo}}",
     remover: "Премахни {{arquivo}}",
     ver: "Виж {{arquivo}}",
     mostrarSpoiler: "Покажи спойлера: {{arquivo}}",

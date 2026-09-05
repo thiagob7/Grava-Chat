@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AlertCircle, EyeOff, FileText, Loader2, Pencil, X } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, FileText, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { PendingAttachment } from "~/features/conversa/hooks/use-attachments";
 import { Button } from "~/components/ui/button";
@@ -13,6 +13,8 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
+import { extensaoDe } from "~/features/conversa/lib/anexo-de-texto";
+import { useLightbox } from "~/stores/lightbox";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
@@ -29,6 +31,7 @@ interface AttachmentTrayProps {
 export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove, onPatch }) => {
   const { t } = useTranslation();
   const [editando, setEditando] = useState<PendingAttachment | null>(null);
+  const abrirLightbox = useLightbox((s) => s.abrir);
 
   if (!items.length) return null;
 
@@ -45,26 +48,40 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
           <div
             key={item.id}
             className={cn(
-              "group relative w-32 overflow-hidden rounded-lg bg-surface-0 p-2",
+              "group relative w-40 overflow-hidden rounded-lg bg-surface-0 p-2",
               item.error && "ring-1 ring-danger",
             )}
           >
-            <div className="absolute right-1 top-1 z-10 flex gap-0.5 opacity-0 transition group-hover:opacity-100">
+            <div className="absolute right-1.5 top-1.5 z-10 flex items-center gap-0.5 rounded-lg bg-surface-3 p-0.5 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100">
+              {item.previewUrl && (
+                <button
+                  onClick={() => abrirLightbox(item.previewUrl!, item.filename)}
+                  aria-label={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
+                  title={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
+                  className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
+                >
+                  <Eye size={14} />
+                </button>
+              )}
+
               {item.attachment && (
                 <button
                   onClick={() => setEditando(item)}
                   aria-label={t("conversa.anexos.modificar", { arquivo: item.filename })}
-                  className="rounded bg-surface-2 p-1 text-ink-muted transition hover:text-ink"
+                  title={t("conversa.anexos.modificar", { arquivo: item.filename })}
+                  className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
                 >
                   <Pencil size={14} />
                 </button>
               )}
+
               <button
                 onClick={() => onRemove(item.id)}
                 aria-label={t("conversa.anexos.remover", { arquivo: item.filename })}
-                className="rounded bg-surface-2 p-1 text-ink-muted transition hover:text-danger"
+                title={t("conversa.anexos.remover", { arquivo: item.filename })}
+                className="flex size-6 items-center justify-center rounded text-danger transition hover:bg-danger hover:text-white"
               >
-                <X size={14} />
+                <Trash2 size={14} />
               </button>
             </div>
 
@@ -74,7 +91,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               </span>
             )}
 
-            <div className="mb-1.5 flex h-20 items-center justify-center overflow-hidden rounded bg-surface-2">
+            <div className="relative mb-2 flex aspect-square items-center justify-center overflow-hidden rounded-md bg-surface-2">
               {item.previewUrl ? (
                 <img
                   src={item.previewUrl}
@@ -82,29 +99,42 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                   className={cn("size-full object-cover transition", subindo && "opacity-40")}
                 />
               ) : (
-                <FileText size={28} className="text-ink-faint" />
+                <FileText size={44} strokeWidth={1.5} className="text-brand" />
               )}
 
-              {subindo && (
-                <Loader2 size={20} className="absolute animate-spin text-ink" />
-              )}
+              {subindo && <Loader2 size={20} className="absolute animate-spin text-ink" />}
             </div>
 
-            <p className="truncate text-xs font-medium" title={item.filename}>
-              {item.filename}
-            </p>
+            <div className="flex items-end gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-13 font-semibold" title={item.filename}>
+                  {item.filename}
+                </p>
 
-            <p className={cn("truncate text-11", item.error ? "text-danger" : "text-ink-faint")}>
-              {item.error ? (
-                <span className="flex items-center gap-1">
-                  <AlertCircle size={11} /> {item.error}
+                <p
+                  className={cn(
+                    "truncate text-11",
+                    item.error ? "text-danger" : "text-ink-faint",
+                  )}
+                >
+                  {item.error ? (
+                    <span className="flex items-center gap-1">
+                      <AlertCircle size={11} /> {item.error}
+                    </span>
+                  ) : subindo ? (
+                    t("conversa.anexos.enviando")
+                  ) : (
+                    economizou
+                  )}
+                </p>
+              </div>
+
+              {!item.previewUrl && extensaoDe(item.filename) && (
+                <span className="shrink-0 text-11 font-bold uppercase tracking-wide text-brand">
+                  {extensaoDe(item.filename)}
                 </span>
-              ) : subindo ? (
-                t("conversa.anexos.enviando")
-              ) : (
-                economizou
               )}
-            </p>
+            </div>
           </div>
         );
       })}

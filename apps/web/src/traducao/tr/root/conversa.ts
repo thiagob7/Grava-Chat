@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Yükleniyor…",
     modificar: "{{arquivo}} dosyasını düzenle",
+    verPrevia: "{{arquivo}} önizle",
     remover: "{{arquivo}} dosyasını kaldır",
     ver: "{{arquivo}} dosyasını görüntüle",
     mostrarSpoiler: "Spoiler'ı göster: {{arquivo}}",

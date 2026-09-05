@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Įkeliama…",
     modificar: "Keisti {{arquivo}}",
+    verPrevia: "Peržiūrėti {{arquivo}}",
     remover: "Pašalinti {{arquivo}}",
     ver: "Peržiūrėti {{arquivo}}",
     mostrarSpoiler: "Rodyti spoilerį: {{arquivo}}",

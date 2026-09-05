@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Lähetetään…",
     modificar: "Muokkaa tiedostoa {{arquivo}}",
+    verPrevia: "Esikatsele {{arquivo}}",
     remover: "Poista {{arquivo}}",
     ver: "Näytä {{arquivo}}",
     mostrarSpoiler: "Näytä juonipaljastus: {{arquivo}}",

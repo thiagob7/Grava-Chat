@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "アップロード中…",
     modificar: "{{arquivo}} を編集",
+    verPrevia: "{{arquivo}} をプレビュー",
     remover: "{{arquivo}} を外す",
     ver: "{{arquivo}} を見る",
     mostrarSpoiler: "ネタバレを表示：{{arquivo}}",

@@ -116,6 +116,7 @@ export const conversa = {
   anexos: {
     enviando: "Μεταφόρτωση…",
     modificar: "Επεξεργασία {{arquivo}}",
+    verPrevia: "Προεπισκόπηση {{arquivo}}",
     remover: "Αφαίρεση {{arquivo}}",
     ver: "Προβολή {{arquivo}}",
     mostrarSpoiler: "Εμφάνιση spoiler: {{arquivo}}",
