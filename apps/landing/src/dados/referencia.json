@@ -1,0 +1,513 @@
+{
+  "rest": [
+    {
+      "metodo": "GET",
+      "caminho": "/bot/eu",
+      "descricao": "Quem é o bot deste token.",
+      "corpo": null,
+      "parametros": []
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores",
+      "descricao": "Os servidores em que o bot está.",
+      "corpo": null,
+      "parametros": []
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/canais",
+      "descricao": "Os canais de um servidor, com o que o bot alcança.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/comandos",
+      "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
+      "corpo": "definirComandosInput",
+      "parametros": []
+    },
+    {
+      "metodo": "POST",
+      "caminho": "/bot/canais/:channelId/mensagens",
+      "descricao": "Manda uma mensagem no canal.",
+      "corpo": "sendMessageInput sem channelId e nonce",
+      "parametros": [
+        "channelId"
+      ]
+    },
+    {
+      "metodo": "PATCH",
+      "caminho": "/bot/mensagens/:messageId",
+      "descricao": "Edita uma mensagem do próprio bot.",
+      "corpo": "editMessageInput sem messageId",
+      "parametros": [
+        "messageId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/mensagens/:messageId",
+      "descricao": "Apaga uma mensagem do próprio bot.",
+      "corpo": null,
+      "parametros": [
+        "messageId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
+      "descricao": "Reage a uma mensagem.",
+      "corpo": "{ burst?: boolean }",
+      "parametros": [
+        "messageId",
+        "emoji"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
+      "descricao": "Tira a reação do bot.",
+      "corpo": null,
+      "parametros": [
+        "messageId",
+        "emoji"
+      ]
+    }
+  ],
+  "eventos": [
+    {
+      "nome": "channel:subscribe",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "channel:unsubscribe",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "message:send",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "content",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": 4000
+        },
+        {
+          "nome": "fonte",
+          "tipo": "string",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "attachments",
+          "tipo": "array",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "poll",
+          "tipo": "object",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "stickerId",
+          "tipo": "string",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "postId",
+          "tipo": "vários",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "replyToId",
+          "tipo": "vários",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "mencionarAutor",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "nonce",
+          "tipo": "string",
+          "obrigatorio": false,
+          "limite": 64
+        }
+      ]
+    },
+    {
+      "nome": "message:edit",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "content",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": 4000
+        }
+      ]
+    },
+    {
+      "nome": "message:delete",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "message:react",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "emoji",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": 64
+        },
+        {
+          "nome": "burst",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "message:unreact",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "emoji",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": 64
+        }
+      ]
+    },
+    {
+      "nome": "message:ack",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "message:unread",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "poll:vote",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "optionId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": 64
+        }
+      ]
+    },
+    {
+      "nome": "poll:close",
+      "campos": [
+        {
+          "nome": "messageId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "typing:start",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "command:invoke",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "botId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "comando",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "opcoes",
+          "tipo": "object",
+          "obrigatorio": false,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "presence:update",
+      "campos": [
+        {
+          "nome": "status",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "presence:afk",
+      "campos": [
+        {
+          "nome": "idle",
+          "tipo": "boolean",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:join",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "resume",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "cliente",
+          "tipo": "string",
+          "obrigatorio": false,
+          "limite": 64
+        }
+      ]
+    },
+    {
+      "nome": "voice:leave",
+      "campos": []
+    },
+    {
+      "nome": "voice:token",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:onde",
+      "campos": [
+        {
+          "nome": "userId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:sound",
+      "campos": [
+        {
+          "nome": "soundId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:moderate",
+      "campos": [
+        {
+          "nome": "userId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "serverMute",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "serverDeaf",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:recusar",
+      "campos": [
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:kick",
+      "campos": [
+        {
+          "nome": "userId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:moveMember",
+      "campos": [
+        {
+          "nome": "userId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        },
+        {
+          "nome": "channelId",
+          "tipo": "string",
+          "obrigatorio": true,
+          "limite": null
+        }
+      ]
+    },
+    {
+      "nome": "voice:state",
+      "campos": [
+        {
+          "nome": "selfMute",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "selfDeaf",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "camera",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
+          "nome": "screenShare",
+          "tipo": "boolean",
+          "obrigatorio": false,
+          "limite": null
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "referencia": "tsx scripts/gerar-referencia.mts",
+    "predev": "tsx scripts/gerar-referencia.mts",
     "dev": "next dev --port 4321",
+    "prebuild": "tsx scripts/gerar-referencia.mts",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit"
@@ -21,6 +24,7 @@
     "@types/react": "19.2.5",
     "@types/react-dom": "19.2.3",
     "tailwindcss": "4.3.3",
+    "tsx": "4.20.6",
     "typescript": "5.9.3"
   }
 }
