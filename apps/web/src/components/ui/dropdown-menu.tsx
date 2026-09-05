@@ -17,7 +17,7 @@ export const DropdownMenuContent = ({
     <DropdownPrimitive.Content data-gc="ui.dropdown-menu.dropdown-primitivecontent"
       sideOffset={sideOffset}
       className={cn(
-        "regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+        "menu regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}
       {...props}

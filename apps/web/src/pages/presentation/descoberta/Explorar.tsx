@@ -70,10 +70,10 @@ export const Explorar: React.FC = () => {
       />
 
       <aside data-gc="descoberta.explorar.aside"
-        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        className="lista-de-comunidades canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
-        <header data-gc="descoberta.explorar.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
+        <header data-gc="descoberta.explorar.header" className="topo-do-canal regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
           <h1 data-gc="descoberta.explorar.h1" className="truncate font-semibold">Explorar</h1>
         </header>
 
@@ -136,7 +136,7 @@ export const Explorar: React.FC = () => {
       )}
 
       <div data-gc="descoberta.explorar.div--3" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-        <header data-gc="descoberta.explorar.header--2" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4">
+        <header data-gc="descoberta.explorar.header--2" className="topo-do-canal regiao-de-arrasto flex h-12 shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4">
           {telaEstreita && (
             <button data-gc="descoberta.explorar.button--2"
               onClick={() => setMenuAberto(true)}

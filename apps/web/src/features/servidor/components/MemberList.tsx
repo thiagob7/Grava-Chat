@@ -90,7 +90,7 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside data-gc="servidor.member-list.aside--2" className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
+    <aside data-gc="servidor.member-list.aside--2" className="lista-de-membros hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div data-gc="servidor.member-list.div--3" className="h-full overflow-y-auto px-2 py-4">
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"

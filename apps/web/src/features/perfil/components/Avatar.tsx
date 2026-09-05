@@ -62,7 +62,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   return (
     <div data-gc="perfil.avatar.div"
       className={cn(
-        "relative shrink-0 rounded-full transition-shadow duration-100",
+        "avatar relative shrink-0 rounded-full transition-shadow duration-100",
         speaking && "shadow-[0_0_0_3px_var(--color-online)]",
         className,
       )}

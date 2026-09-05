@@ -43,7 +43,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   return (
     <>
-      <div data-gc="perfil.user-panel.div" className="flex cursor-pointer items-center gap-1 px-1 py-1">
+      <div data-gc="perfil.user-panel.div" className="painel-do-usuario flex cursor-pointer items-center gap-1 px-1 py-1">
         <Popover data-gc="perfil.user-panel.popover">
           <PopoverTrigger data-gc="perfil.user-panel.popover-trigger" asChild>
             <button data-gc="perfil.user-panel.button" className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">

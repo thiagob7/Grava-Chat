@@ -203,7 +203,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     <div data-gc="conversa.message-list.div.on-scroll"
       ref={scroller}
       onScroll={onScroll}
-      className="@container flex-1 overflow-y-auto pt-4"
+      className="lista-de-mensagens @container flex-1 overflow-y-auto pt-4"
     >
       <div data-gc="conversa.message-list.div--5" ref={conteudo} className="pb-[var(--gc-rodape,1rem)]">
       {hasNextPage ? (

@@ -455,7 +455,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       {!message.pending && !message.failed && !editing && (
         <div data-gc="conversa.message-item.div--10"
           className={cn(
-            "absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
+            "barra-da-mensagem absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
             "group-hover:flex group-focus-within:flex",
             reagindo || menuAberto ? "flex" : "hidden",
           )}

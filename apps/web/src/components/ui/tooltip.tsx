@@ -24,7 +24,7 @@ export const Tooltip = ({
         side={side}
         sideOffset={6}
         className={cn(
-          "z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
+          "dica z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
           "shadow-[0_0.5rem_1rem_rgba(0,0,0,0.22)]",
         )}
       >

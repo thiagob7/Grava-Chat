@@ -158,7 +158,7 @@ export const DirectMessages: React.FC = () => {
 
       {conversa ? (
         <div data-gc="friends.direct-messages.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-          <header data-gc="friends.direct-messages.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
+          <header data-gc="friends.direct-messages.header" className="topo-do-canal regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
             {telaEstreita && (
               <button data-gc="friends.direct-messages.button"
                 onClick={() => setMenuAberto(true)}
