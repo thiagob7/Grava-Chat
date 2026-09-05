@@ -334,8 +334,16 @@ export const Composer: React.FC<ComposerProps> = ({
   const mandarComoArquivo = () => {
     if (!textoLongo) return;
 
-    virarArquivo([value.trim(), textoLongo.trim()].filter(Boolean).join("\n\n"));
-    setValue("");
+    /*
+      O que já estava na caixa vem cercado (o colar de código cerca na hora),
+      mas o texto novo chega cru. Emendar os dois assim daria "bloco + texto
+      solto", e o arquivo cairia para .txt em vez de sair como .js. Então
+      cercamos o novo antes de juntar.
+    */
+    const novo = pareceCodigo(textoLongo) ? cercarCodigo(textoLongo) : textoLongo.trim();
+
+    virarArquivo([value.trim(), novo].filter(Boolean).join("\n\n"));
+    limparCaixa();
     setTextoLongo(null);
   };
 
@@ -481,7 +489,7 @@ export const Composer: React.FC<ComposerProps> = ({
                 disabled={!podeAnexar || !value.trim()}
                 onSelect={() => {
                   const texto = value;
-                  setValue("");
+                  limparCaixa();
                   virarArquivo(texto);
                 }}
               >
