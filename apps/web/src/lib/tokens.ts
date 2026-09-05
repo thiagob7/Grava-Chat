@@ -1205,10 +1205,12 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       {
         nome: "--layout-sidebar-width",
         rotulo: "Largura da barra lateral (layout)",
+        ligado: true,
       },
       {
         nome: "--layout-header-height",
         rotulo: "Altura do cabeçalho (layout)",
+        ligado: true,
       },
       {
         nome: "--layout-user-area-height",
@@ -1272,7 +1274,8 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       },
       {
         nome: "--layout-member-list-width",
-        rotulo: "Largura do member lista (layout)",
+        rotulo: "Largura da lista de membros (layout)",
+        ligado: true,
       },
       {
         nome: "--layout-header-height-mobile",

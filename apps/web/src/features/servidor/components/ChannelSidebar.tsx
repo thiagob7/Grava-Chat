@@ -118,6 +118,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("canais", {
     padrao: 240,
+    token: "--layout-sidebar-width",
     min: 180,
     max: 420,
     borda: "direita",
@@ -136,13 +137,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
             "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
-            !comFaixa && "h-12",
+            !comFaixa && "h-[var(--layout-header-height)]",
           )}
           style={
             comFaixa
               ? {
                   height: largura / proporcao,
-                  minHeight: "3rem",
+                  minHeight: "var(--layout-header-height)",
                   maxHeight: "30vh",
                 }
               : undefined
@@ -162,7 +163,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </>
           )}
 
-          <div data-gc="servidor.channel-sidebar.div--3" className="relative z-10 flex h-12 w-full items-center justify-between px-2">
+          <div data-gc="servidor.channel-sidebar.div--3" className="relative z-10 flex h-[var(--layout-header-height)] w-full items-center justify-between px-2">
           <DropdownMenu data-gc="servidor.channel-sidebar.dropdown-menu">
             <DropdownMenuTrigger data-gc="servidor.channel-sidebar.dropdown-menu-trigger" asChild disabled={!detail}>
               <button data-gc="servidor.channel-sidebar.button"

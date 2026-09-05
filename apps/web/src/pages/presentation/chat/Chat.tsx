@@ -211,7 +211,7 @@ export const Chat: React.FC = () => {
 
       <div data-gc="chat.chat.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
         {!semCabecalho && (
-        <header data-gc="chat.chat.header" className="topo-do-canal regiao-de-arrasto @container flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
+        <header data-gc="chat.chat.header" className="topo-do-canal regiao-de-arrasto @container flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm">
           {telaEstreita && (
             <button data-gc="chat.chat.button"
               onClick={() => setMenuAberto(true)}

@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { lerCabecalhoDoTema } from "@gravae/shared";
 
+import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import { NOMES_DE_ORIGEM, traduzirTema } from "~/features/configuracoes/lib/ponte-de-tema";
 
 export interface TemaSalvo {
@@ -95,6 +96,7 @@ function aplicar(estado: EstadoDoEstudio) {
   estilo.textContent = estado.css;
 
   aplicarPonte(estado);
+  avisarTemaAplicado();
 }
 
 /// O que a ponte escreveu da última vez, para limpar quando o tema sair.

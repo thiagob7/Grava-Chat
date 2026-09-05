@@ -54,6 +54,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("dm", {
     padrao: 240,
+    token: "--layout-sidebar-width",
     min: 180,
     max: 420,
     borda: "direita",
@@ -64,7 +65,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
       className="lista-de-conversas canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
       style={{ width: largura }}
     >
-      <header data-gc="amizades.dm-sidebar.header" className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">
+      <header data-gc="amizades.dm-sidebar.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm">
         <h1 data-gc="amizades.dm-sidebar.h1" className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 

@@ -1,5 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
+import { TEMA_APLICADO } from "~/features/configuracoes/lib/evento-de-tema";
 import { cn } from "~/lib/utils";
 
 type Borda = "esquerda" | "direita";
@@ -9,25 +10,79 @@ interface Opcoes {
   min: number;
   max: number;
   borda: Borda;
+  /// Token que dá a largura de partida, para um tema poder mudá-la.
+  token?: string;
 }
 
 const chaveDe = (nome: string) => `gravae:largura:${nome}`;
 
-function ler(nome: string, padrao: number, min: number, max: number) {
+/*
+  O token vem em rem, e daqui para baixo tudo é px. Em vez de converter na
+  unha — o que amarraria o cálculo ao tamanho de fonte da raiz — deixamos o
+  próprio navegador resolver: um elemento com essa largura, medido e jogado
+  fora.
+*/
+function medir(token: string | undefined, padrao: number) {
+  if (!token) return padrao;
+
   try {
-    const salvo = Number(localStorage.getItem(chaveDe(nome)));
-    return Number.isFinite(salvo) && salvo > 0 ? Math.min(max, Math.max(min, salvo)) : padrao;
+    const regua = document.createElement("div");
+    regua.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;width:var(${token})`;
+    document.body.appendChild(regua);
+
+    const medida = regua.getBoundingClientRect().width;
+    regua.remove();
+
+    return medida > 0 ? medida : padrao;
   } catch {
     return padrao;
   }
 }
 
-export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: Opcoes) {
-  const [largura, setLargura] = useState(() => ler(nome, padrao, min, max));
+function guardada(nome: string) {
+  try {
+    const salvo = Number(localStorage.getItem(chaveDe(nome)));
+    return Number.isFinite(salvo) && salvo > 0 ? salvo : null;
+  } catch {
+    return null;
+  }
+}
+
+export function useLarguraAjustavel(nome: string, { padrao, min, max, borda, token }: Opcoes) {
+  /*
+    O tema também abre a gaveta: se ele pede uma lateral mais larga que o
+    nosso teto, o teto sobe junto — senão a largura pedida seria aparada em
+    silêncio, e ninguém entenderia por que o tema não pegou.
+  */
+  const [pedida, setPedida] = useState(() => medir(token, padrao));
+
+  const piso = Math.min(min, pedida);
+  const teto = Math.max(max, pedida);
+  const limitar = (valor: number) => Math.min(teto, Math.max(piso, valor));
+
+  const [largura, setLargura] = useState(() => guardada(nome) ?? pedida);
   const [arrastando, setArrastando] = useState(false);
   const inicio = useRef<{ x: number; largura: number } | null>(null);
 
-  const limitar = (valor: number) => Math.min(max, Math.max(min, valor));
+  /*
+    Quem já arrastou fica com a largura que escolheu — a pessoa mandou, e um
+    tema não desfaz isso. Para quem nunca mexeu, o tema manda.
+  */
+  useEffect(() => {
+    if (!token) return;
+
+    const refazer = () => {
+      const alvo = medir(token, padrao);
+      setPedida(alvo);
+
+      if (guardada(nome) === null) setLargura(alvo);
+    };
+
+    refazer();
+    window.addEventListener(TEMA_APLICADO, refazer);
+
+    return () => window.removeEventListener(TEMA_APLICADO, refazer);
+  }, [nome, token, padrao]);
 
   const guardar = (valor: number) => {
     try {
@@ -76,7 +131,7 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda }: O
     },
   };
 
-  return { largura, arrastando, alca: props, limites: { min, max } };
+  return { largura, arrastando, alca: props, limites: { min: piso, max: teto } };
 }
 
 export const AlcaDeLargura: React.FC<

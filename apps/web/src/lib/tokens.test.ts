@@ -114,6 +114,13 @@ function ehLido(
 
   if (codigo.includes(`var(${nome})`)) return true;
 
+  /*
+    A largura das laterais é arrastável, então mora em JavaScript e é medida a
+    partir do token em vez de sair de um `var()` no JSX. O nome aparece como
+    `token: "--x"` na chamada do useLarguraAjustavel, e isso conta como leitura.
+  */
+  if (codigo.includes(`token: "${nome}"`)) return true;
+
   return (referencias[nome] ?? []).some((dono) => ehLido(dono, codigo, vistos));
 }
 

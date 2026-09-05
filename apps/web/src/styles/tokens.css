@@ -192,8 +192,8 @@
   --spacing-20: 5rem;
   --spacing-24: 6rem;
   --layout-guild-list-width: 4.5rem;
-  --layout-sidebar-width: 20rem;
-  --layout-header-height: 3.5rem;
+  --layout-sidebar-width: 15rem;
+  --layout-header-height: 3rem;
   --layout-user-area-height: var(--footer-box-height);
   --layout-user-area-reserved-height: 0px;
   --layout-voice-connection-height: 0px;
@@ -228,7 +228,7 @@
   --message-compact-text-indent-from-username: 2rem;
   --guilds-layout-item-bg: var(--guild-list-foreground);
   --guild-badge-surface: var(--background-secondary);
-  --layout-member-list-width: 16.5rem;
+  --layout-member-list-width: 15rem;
   --layout-header-height-mobile: 4rem;
   --channel-header-gap: var(--spacing-4);
   --channel-header-padding-inline: var(--spacing-4);

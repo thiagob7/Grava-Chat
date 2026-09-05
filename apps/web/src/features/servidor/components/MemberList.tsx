@@ -73,7 +73,7 @@ export const MemberList: React.FC<MemberListProps> = ({
       <aside data-gc="servidor.member-list.aside"
         aria-busy
         aria-label={t("comum.carregando")}
-        className="lista-de-membros hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block"
+        className="lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block"
       >
         <div data-gc="servidor.member-list.div" className="h-full overflow-hidden px-2 py-4">
           <Skeleton data-gc="servidor.member-list.skeleton" className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
@@ -90,7 +90,7 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside data-gc="servidor.member-list.aside--2" className="lista-de-membros hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
+    <aside data-gc="servidor.member-list.aside--2" className="lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block">
       <div data-gc="servidor.member-list.div--3" className="h-full overflow-y-auto px-2 py-4">
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
