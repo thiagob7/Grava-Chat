@@ -17,6 +17,7 @@ import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useSession } from "~/contexts/session-context";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import { CartaoDeComunidade } from "~/features/descoberta/components/CartaoDeComunidade";
@@ -45,6 +46,13 @@ export const Explorar: React.FC = () => {
     endSession();
   };
 
+  const { largura, arrastando, alca, limites } = useLarguraAjustavel("explorar", {
+    padrao: 240,
+    min: 180,
+    max: 420,
+    borda: "direita",
+  });
+
   const [aba, setAba] = useState<Aba>("comunidades");
   const [categoria, setCategoria] = useState<CategoriaDeComunidade | null>(null);
   const [busca, setBusca] = useState("");
@@ -61,7 +69,10 @@ export const Explorar: React.FC = () => {
         pendingFriendRequests={pendentes}
       />
 
-      <aside className="canto-do-miolo topo-do-miolo relative flex w-60 shrink-0 flex-col border-x border-divisor bg-surface-1">
+      <aside
+        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        style={{ width: largura }}
+      >
         <header className="regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
           <h1 className="truncate font-semibold">Explorar</h1>
         </header>
@@ -99,6 +110,14 @@ export const Explorar: React.FC = () => {
         <div className="mt-auto" />
 
         <RodapeDaBarra user={user} onLogout={() => void sair()} />
+
+        <AlcaDeLargura
+          borda="direita"
+          arrastando={arrastando}
+          largura={largura}
+          limites={limites}
+          {...alca}
+        />
       </aside>
     </>
   );
