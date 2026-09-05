@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "react-toastify";
 import {
@@ -491,8 +491,46 @@ body:not(:has(.lista-de-membros:hover)) .lista-de-membros {
   width: 3rem;
 }`;
 
+/*
+  A lista dos data-gc tem 4754 nomes e uns 200 KB. Carregar isso junto com o
+  app para uma gaveta que quase ninguém abre seria caro, então ela vem por
+  import() quando a busca é usada pela primeira vez.
+*/
+function useListaDeGanchos(precisa: boolean) {
+  const [lista, setLista] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    if (!precisa || lista) return;
+
+    let vivo = true;
+
+    void import("~/features/configuracoes/lib/ganchos.json").then((modulo) => {
+      if (vivo) setLista(modulo.default as string[]);
+    });
+
+    return () => {
+      vivo = false;
+    };
+  }, [precisa, lista]);
+
+  return lista;
+}
+
 const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => {
   const [aberto, setAberto] = useState(false);
+  const [busca, setBusca] = useState("");
+
+  const lista = useListaDeGanchos(aberto);
+  const termo = busca.trim().toLowerCase();
+
+  /// Sem busca a lista inteira não cabe na tela nem ajuda: só o que casa.
+  const { mostrar, total } = useMemo(() => {
+    if (!lista || termo.length < 2) return { mostrar: [], total: 0 };
+
+    const casam = lista.filter((nome) => nome.includes(termo));
+
+    return { mostrar: casam.slice(0, 40), total: casam.length };
+  }, [lista, termo]);
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--11" className="shrink-0 border-t border-line px-6 py-3">
@@ -529,12 +567,63 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             ))}
           </div>
 
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--13" className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--13" className="mt-4 border-t border-line pt-3">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--8" className="text-xs text-ink-faint">
+              E cada elemento do app carrega um{" "}
+              <code data-gc="configuracoes.estudio.estudio-de-temas.code" className="font-mono text-ink-muted">data-gc</code> com o
+              caminho de onde ele está. São {lista ? lista.length : "4754"} —
+              procure pelo nome da tela, do componente ou do botão.
+            </p>
+
+            <input data-gc="configuracoes.estudio.estudio-de-temas.input--4"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="conversa, avatar, apagar…"
+              aria-label="Procurar um gancho"
+              className="mt-2 w-full rounded border border-line bg-campo px-2 py-1.5 font-mono text-xs text-ink outline-none placeholder:text-ink-faint focus-visible:border-campo-foco"
+            />
+
+            {termo.length >= 2 && (
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="mt-2">
+                {!lista ? (
+                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--9" className="text-xs text-ink-faint">Carregando a lista…</p>
+                ) : !total ? (
+                  <p data-gc="configuracoes.estudio.estudio-de-temas.p--10" className="text-xs text-ink-faint">
+                    Nada com esse nome. Tente um pedaço menor.
+                  </p>
+                ) : (
+                  <>
+                    <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
+                      {mostrar.map((nome) => (
+                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
+                          key={nome}
+                          type="button"
+                          onClick={() => onUsar(`[data-gc="${nome}"] {\n  \n}`)}
+                          className="truncate rounded px-2 py-1 text-left font-mono text-xs text-ink-muted transition hover:bg-hover hover:text-ink"
+                        >
+                          {nome}
+                        </button>
+                      ))}
+                    </div>
+
+                    {total > mostrar.length && (
+                      <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" className="mt-1 px-2 text-xs text-ink-faint">
+                        e mais {total - mostrar.length}. Escreva mais para
+                        estreitar.
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
             <pre data-gc="configuracoes.estudio.estudio-de-temas.pre" className="min-w-0 flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-ink-muted">
               {ENCOLHER}
             </pre>
 
-            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--12" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
+            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--13" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
               Usar
             </Button>
           </div>
@@ -572,8 +661,8 @@ const AbaDeAtivos: React.FC = () => {
 
   return (
     <>
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--17" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
           variant="surface"
           size="sm"
           disabled={subindo}
@@ -581,33 +670,33 @@ const AbaDeAtivos: React.FC = () => {
         >
           <Upload data-gc="configuracoes.estudio.estudio-de-temas.upload--2" size={14} /> {subindo ? "Enviando…" : "Carregar arquivo"}
         </Button>
-        <input data-gc="configuracoes.estudio.estudio-de-temas.input--4"
+        <input data-gc="configuracoes.estudio.estudio-de-temas.input--5"
           ref={arquivo}
           type="file"
           accept="image/*,font/*,.woff,.woff2,.ttf,.otf"
           className="hidden"
           onChange={(e) => void escolher(e)}
         />
-        <p data-gc="configuracoes.estudio.estudio-de-temas.p--8" className="text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--12" className="text-xs text-ink-faint">
           Imagem ou fonte, pra usar no CSS rápido.
         </p>
       </div>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {!ativos.length && (
-          <p data-gc="configuracoes.estudio.estudio-de-temas.p--9" className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="py-10 text-center text-sm text-ink-faint">
             Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
-            <code data-gc="configuracoes.estudio.estudio-de-temas.code" className="font-mono">url(…)</code> no seu CSS.
+            <code data-gc="configuracoes.estudio.estudio-de-temas.code--2" className="font-mono">url(…)</code> no seu CSS.
           </p>
         )}
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
           {ativos.map((ativo) => (
-            <div data-gc="configuracoes.estudio.estudio-de-temas.div--17"
+            <div data-gc="configuracoes.estudio.estudio-de-temas.div--20"
               key={ativo.id}
               className="overflow-hidden rounded-lg border border-line"
             >
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="flex h-28 items-center justify-center bg-surface-1">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--21" className="flex h-28 items-center justify-center bg-surface-1">
                 {ativo.tipo.startsWith("image/") ? (
                   <img data-gc="configuracoes.estudio.estudio-de-temas.img"
                     src={ativo.url}
@@ -619,15 +708,15 @@ const AbaDeAtivos: React.FC = () => {
                 )}
               </div>
 
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="flex items-center gap-2 p-2">
-                <p data-gc="configuracoes.estudio.estudio-de-temas.p--10"
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex items-center gap-2 p-2">
+                <p data-gc="configuracoes.estudio.estudio-de-temas.p--14"
                   className="min-w-0 flex-1 truncate text-xs"
                   title={ativo.nome}
                 >
                   {ativo.nome}
                 </p>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
                   onClick={() =>
                     void copiarTexto(`url("${ativo.url}")`).then(
                       (ok) => ok && toast.success("Endereço copiado."),
@@ -640,7 +729,7 @@ const AbaDeAtivos: React.FC = () => {
                   <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
                 </button>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
                   onClick={() =>
                     void confirmar({
                       titulo: `Tirar "${ativo.nome}" da lista?`,
@@ -671,20 +760,20 @@ const AbaDeConfiguracoes: React.FC = () => {
   const confirmar = useConfirmar();
 
   return (
-    <div data-gc="configuracoes.estudio.estudio-de-temas.div--20" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
       <h3 data-gc="configuracoes.estudio.estudio-de-temas.h3" className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
-      <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" className="mb-4 text-sm text-ink-muted">
+      <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="mb-4 text-sm text-ink-muted">
         Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
         aparelho.
       </p>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--21" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--12" className="text-sm font-medium">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--24" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--25" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--26" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--16" className="text-sm font-medium">
               Limpar as substituições de token
             </p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--17" className="text-xs text-ink-faint">
               As cores voltam a ser as do tema. A biblioteca e o CSS ficam.
             </p>
           </div>
@@ -693,14 +782,14 @@ const AbaDeConfiguracoes: React.FC = () => {
           </Button>
         </div>
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--24" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--25" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--14" className="text-sm font-medium">Apagar tudo do estúdio</p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="text-xs text-ink-faint">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--27" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--28" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--18" className="text-sm font-medium">Apagar tudo do estúdio</p>
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--19" className="text-xs text-ink-faint">
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>
-          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
             variant="danger"
             size="sm"
             onClick={() =>
