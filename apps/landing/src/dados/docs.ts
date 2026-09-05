@@ -62,6 +62,11 @@ export const GRUPOS: Grupo[] = [
         titulo: "Comandos de barra",
         resumo: "Registrar comandos e responder quando alguém chama.",
       },
+      {
+        href: "/desenvolvedores/moderacao",
+        titulo: "Bot de moderação",
+        resumo: "Expulsar, banir, castigar e mexer em cargos — e o que o servidor não deixa.",
+      },
     ],
   },
   {

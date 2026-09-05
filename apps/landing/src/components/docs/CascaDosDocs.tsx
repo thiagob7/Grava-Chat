@@ -13,6 +13,7 @@ const GUIAS = [
   "/desenvolvedores/primeiro-bot",
   "/desenvolvedores/tempo-real",
   "/desenvolvedores/comandos",
+  "/desenvolvedores/moderacao",
 ];
 
 const REFERENCIA = [
