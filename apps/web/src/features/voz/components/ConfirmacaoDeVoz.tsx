@@ -20,29 +20,29 @@ export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerPar
   const { t } = useTranslation();
 
   return (
-  <Dialog open={Boolean(canal)} onOpenChange={(v) => !v && onFechar()}>
-    <DialogContent className="max-w-md">
-      <DialogHeader>
-        <DialogTitle>{t("chamada.jaConectado.titulo")}</DialogTitle>
+  <Dialog data-gc="voz.confirmacao-de-voz.dialog" open={Boolean(canal)} onOpenChange={(v) => !v && onFechar()}>
+    <DialogContent data-gc="voz.confirmacao-de-voz.dialog-content" className="max-w-md">
+      <DialogHeader data-gc="voz.confirmacao-de-voz.dialog-header">
+        <DialogTitle data-gc="voz.confirmacao-de-voz.dialog-title">{t("chamada.jaConectado.titulo")}</DialogTitle>
       </DialogHeader>
 
-      <DialogBody>
-        <p className="text-sm leading-relaxed text-ink-muted">
-          Sua conta está conectada em {canal ? <b className="text-ink">{canal}</b> : "outro canal"}{" "}
+      <DialogBody data-gc="voz.confirmacao-de-voz.dialog-body">
+        <p data-gc="voz.confirmacao-de-voz.p" className="text-sm leading-relaxed text-ink-muted">
+          Sua conta está conectada em {canal ? <b data-gc="voz.confirmacao-de-voz.b" className="text-ink">{canal}</b> : "outro canal"}{" "}
           por outro aparelho ou outra aba — e o áudio está tocando lá.
         </p>
 
-        <div className="mt-5 space-y-2">
-          <Button className="w-full" onClick={onTrazerParaCa}>
+        <div data-gc="voz.confirmacao-de-voz.div" className="mt-5 space-y-2">
+          <Button data-gc="voz.confirmacao-de-voz.button.on-trazer-para-ca" className="w-full" onClick={onTrazerParaCa}>
             {t("chamada.jaConectado.trazer")}
           </Button>
 
-          <Button variant="surface" className="w-full" onClick={onFechar}>
+          <Button data-gc="voz.confirmacao-de-voz.button.on-fechar" variant="surface" className="w-full" onClick={onFechar}>
             {t("chamada.jaConectado.deixar")}
           </Button>
         </div>
 
-        <p className="mt-3 text-xs leading-relaxed text-ink-faint">
+        <p data-gc="voz.confirmacao-de-voz.p--2" className="mt-3 text-xs leading-relaxed text-ink-faint">
           Trazendo para cá, a outra ponta sai da chamada — sua conta fica em um
           lugar de cada vez.
         </p>

@@ -25,13 +25,13 @@ export function useConviteDeAviso(ativo: boolean) {
     const relogio = setTimeout(() => {
       toast.info(
         ({ closeToast }) => (
-          <div>
-            <p className="text-sm font-medium">Quer ser avisado das mensagens?</p>
-            <p className="mt-0.5 text-xs opacity-80">
+          <div data-gc="app.use-convite-de-aviso.div">
+            <p data-gc="app.use-convite-de-aviso.p" className="text-sm font-medium">Quer ser avisado das mensagens?</p>
+            <p data-gc="app.use-convite-de-aviso.p--2" className="mt-0.5 text-xs opacity-80">
               Com o Gravaê atrás de outra janela, ele te chama.
             </p>
-            <div className="mt-2 flex gap-2">
-              <button
+            <div data-gc="app.use-convite-de-aviso.div--2" className="mt-2 flex gap-2">
+              <button data-gc="app.use-convite-de-aviso.button"
                 onClick={() => {
                   marcar();
                   void pedirPermissaoDeAviso();
@@ -41,7 +41,7 @@ export function useConviteDeAviso(ativo: boolean) {
               >
                 Permitir
               </button>
-              <button
+              <button data-gc="app.use-convite-de-aviso.button--2"
                 onClick={() => {
                   marcar();
                   closeToast?.();

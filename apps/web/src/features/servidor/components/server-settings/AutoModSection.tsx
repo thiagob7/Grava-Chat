@@ -80,34 +80,34 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
   const canaisDeTexto = channels.filter((c) => c.type === "TEXT");
 
   return (
-    <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">{t("servidor.automod.titulo")}</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+    <div data-gc="servidor.server-settings.auto-mod-section.div" className="max-w-2xl pb-10">
+      <h2 data-gc="servidor.server-settings.auto-mod-section.h2" className="text-xl font-semibold">{t("servidor.automod.titulo")}</h2>
+      <p data-gc="servidor.server-settings.auto-mod-section.p" className="mt-1 text-sm text-ink-muted">
         {t("servidor.automod.descricao")}
       </p>
 
-      <section className="mt-6 space-y-3">
+      <section data-gc="servidor.server-settings.auto-mod-section.section" className="mt-6 space-y-3">
         {GATILHOS.map((gatilho) => {
           const existente = regras.find((r) => r.trigger === gatilho.valor);
 
           return (
-            <div key={gatilho.valor} className="rounded-lg bg-surface-1 p-4">
-              <div className="flex items-start gap-3">
-                <gatilho.icone
+            <div data-gc="servidor.server-settings.auto-mod-section.div--2" key={gatilho.valor} className="rounded-lg bg-surface-1 p-4">
+              <div data-gc="servidor.server-settings.auto-mod-section.div--3" className="flex items-start gap-3">
+                <gatilho.icone data-gc="servidor.server-settings.auto-mod-section.gatilhoicone"
                   size={20}
                   className="mt-0.5 shrink-0 text-ink-faint"
                 />
 
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold">{t(gatilho.titulo)}</p>
-                  <p className="mt-0.5 text-xs text-ink-faint">
+                <div data-gc="servidor.server-settings.auto-mod-section.div--4" className="min-w-0 flex-1">
+                  <p data-gc="servidor.server-settings.auto-mod-section.p--2" className="text-sm font-semibold">{t(gatilho.titulo)}</p>
+                  <p data-gc="servidor.server-settings.auto-mod-section.p--3" className="mt-0.5 text-xs text-ink-faint">
                     {t(gatilho.descricao)}
                   </p>
 
                   {existente && (
-                    <div className="mt-2 flex flex-wrap gap-1">
+                    <div data-gc="servidor.server-settings.auto-mod-section.div--5" className="mt-2 flex flex-wrap gap-1">
                       {existente.acoes.map((acao) => (
-                        <span
+                        <span data-gc="servidor.server-settings.auto-mod-section.span"
                           key={acao}
                           className="rounded bg-surface-0 px-1.5 py-0.5 text-10 uppercase text-ink-faint"
                         >
@@ -123,8 +123,8 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                 </div>
 
                 {existente ? (
-                  <div className="flex shrink-0 items-center gap-2">
-                    <Switch
+                  <div data-gc="servidor.server-settings.auto-mod-section.div--6" className="flex shrink-0 items-center gap-2">
+                    <Switch data-gc="servidor.server-settings.auto-mod-section.switch"
                       checked={existente.enabled}
                       onCheckedChange={(v) =>
                         salvar.mutate({
@@ -135,14 +135,14 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                         })
                       }
                     />
-                    <Button
+                    <Button data-gc="servidor.server-settings.auto-mod-section.button"
                       variant="surface"
                       size="sm"
                       onClick={() => setEditando(existente)}
                     >
                       {t("servidor.automod.definir")}
                     </Button>
-                    <button
+                    <button data-gc="servidor.server-settings.auto-mod-section.button--2"
                       onClick={() =>
                         void confirmar({
                           titulo: t("servidor.automod.excluirTitulo"),
@@ -158,11 +158,11 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                       title={t("servidor.automod.apagar")}
                       className="rounded p-1.5 text-ink-faint transition hover:text-danger"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 data-gc="servidor.server-settings.auto-mod-section.trash2" size={16} />
                     </button>
                   </div>
                 ) : (
-                  <Button
+                  <Button data-gc="servidor.server-settings.auto-mod-section.button--3"
                     size="sm"
                     onClick={() =>
                       setEditando({
@@ -172,7 +172,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                       })
                     }
                   >
-                    <Plus size={14} /> {t("comum.criar")}
+                    <Plus data-gc="servidor.server-settings.auto-mod-section.plus" size={14} /> {t("comum.criar")}
                   </Button>
                 )}
               </div>
@@ -182,7 +182,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
       </section>
 
       {editando && (
-        <EditorDeRegra
+        <EditorDeRegra data-gc="servidor.server-settings.auto-mod-section.editor-de-regra"
           regra={editando}
           guildId={guildId}
           canais={canaisDeTexto}
@@ -229,15 +229,15 @@ const EditorDeRegra: React.FC<EditorProps> = ({
     }));
 
   return (
-    <div className="mt-6 rounded-lg border border-brand/40 bg-surface-1 p-5">
-      <h3 className="flex items-center gap-2 font-semibold">
-        <ShieldAlert size={18} /> {rascunho.name}
+    <div data-gc="servidor.server-settings.auto-mod-section.div--7" className="mt-6 rounded-lg border border-brand/40 bg-surface-1 p-5">
+      <h3 data-gc="servidor.server-settings.auto-mod-section.h3" className="flex items-center gap-2 font-semibold">
+        <ShieldAlert data-gc="servidor.server-settings.auto-mod-section.shield-alert" size={18} /> {rascunho.name}
       </h3>
 
-      <div className="mt-4 space-y-4">
-        <div>
-          <Label htmlFor="regra-nome">{t("servidor.automod.nomeDaRegra")}</Label>
-          <Input
+      <div data-gc="servidor.server-settings.auto-mod-section.div--8" className="mt-4 space-y-4">
+        <div data-gc="servidor.server-settings.auto-mod-section.div--9">
+          <Label data-gc="servidor.server-settings.auto-mod-section.label" htmlFor="regra-nome">{t("servidor.automod.nomeDaRegra")}</Label>
+          <Input data-gc="servidor.server-settings.auto-mod-section.input"
             id="regra-nome"
             value={rascunho.name}
             maxLength={48}
@@ -246,10 +246,10 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         </div>
 
         {rascunho.trigger === "WORDS" && (
-          <div>
-            <Label htmlFor="regra-palavra">{t("servidor.automod.bloqueadas")}</Label>
-            <div className="flex gap-2">
-              <Input
+          <div data-gc="servidor.server-settings.auto-mod-section.div--10">
+            <Label data-gc="servidor.server-settings.auto-mod-section.label--2" htmlFor="regra-palavra">{t("servidor.automod.bloqueadas")}</Label>
+            <div data-gc="servidor.server-settings.auto-mod-section.div--11" className="flex gap-2">
+              <Input data-gc="servidor.server-settings.auto-mod-section.input--2"
                 id="regra-palavra"
                 value={palavra}
                 placeholder={t("servidor.automod.digiteEnter")}
@@ -272,9 +272,9 @@ const EditorDeRegra: React.FC<EditorProps> = ({
               />
             </div>
 
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <div data-gc="servidor.server-settings.auto-mod-section.div--12" className="mt-2 flex flex-wrap gap-1.5">
               {rascunho.palavras.map((p) => (
-                <button
+                <button data-gc="servidor.server-settings.auto-mod-section.button--4"
                   key={p}
                   onClick={() =>
                     setRascunho((atual) => ({
@@ -289,18 +289,18 @@ const EditorDeRegra: React.FC<EditorProps> = ({
               ))}
             </div>
 
-            <p className="mt-2 text-xs text-ink-faint">
+            <p data-gc="servidor.server-settings.auto-mod-section.p--4" className="mt-2 text-xs text-ink-faint">
               {t("servidor.automod.comparacao")}
             </p>
           </div>
         )}
 
         {rascunho.trigger === "MENTION_SPAM" && (
-          <div>
-            <Label htmlFor="regra-mencoes">
+          <div data-gc="servidor.server-settings.auto-mod-section.div--13">
+            <Label data-gc="servidor.server-settings.auto-mod-section.label--3" htmlFor="regra-mencoes">
               {t("servidor.automod.aPartirDe")}
             </Label>
-            <Input
+            <Input data-gc="servidor.server-settings.auto-mod-section.input--3"
               id="regra-mencoes"
               type="number"
               min={2}
@@ -316,9 +316,9 @@ const EditorDeRegra: React.FC<EditorProps> = ({
           </div>
         )}
 
-        <div>
-          <Label>{t("servidor.automod.oQueFazer")}</Label>
-          <div className="space-y-2">
+        <div data-gc="servidor.server-settings.auto-mod-section.div--14">
+          <Label data-gc="servidor.server-settings.auto-mod-section.label--4">{t("servidor.automod.oQueFazer")}</Label>
+          <div data-gc="servidor.server-settings.auto-mod-section.div--15" className="space-y-2">
             {(
               [
                 ["BLOCK", "Bloquear a mensagem"],
@@ -326,7 +326,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
                 ["TIMEOUT", "Deixar de castigo"],
               ] as const
             ).map(([acao, rotulo]) => (
-              <label
+              <label data-gc="servidor.server-settings.auto-mod-section.label--5"
                 key={acao}
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded px-3 py-2 transition",
@@ -335,20 +335,20 @@ const EditorDeRegra: React.FC<EditorProps> = ({
                     : "bg-surface-0 hover:bg-surface-4/60",
                 )}
               >
-                <Checkbox
+                <Checkbox data-gc="servidor.server-settings.auto-mod-section.checkbox"
                   checked={rascunho.acoes.includes(acao)}
                   onChange={() => alternarAcao(acao)}
                 />
-                <span className="text-sm">{rotulo}</span>
+                <span data-gc="servidor.server-settings.auto-mod-section.span--2" className="text-sm">{rotulo}</span>
               </label>
             ))}
           </div>
         </div>
 
         {rascunho.acoes.includes("ALERT") && (
-          <div>
-            <Label htmlFor="regra-canal">{t("servidor.automod.canalDoAlerta")}</Label>
-            <CampoSelect
+          <div data-gc="servidor.server-settings.auto-mod-section.div--16">
+            <Label data-gc="servidor.server-settings.auto-mod-section.label--6" htmlFor="regra-canal">{t("servidor.automod.canalDoAlerta")}</Label>
+            <CampoSelect data-gc="servidor.server-settings.auto-mod-section.campo-select"
               id="regra-canal"
               valor={rascunho.alertChannelId ?? ""}
               onEscolher={(id) =>
@@ -366,9 +366,9 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         )}
 
         {rascunho.acoes.includes("TIMEOUT") && (
-          <div>
-            <Label htmlFor="regra-castigo">{t("servidor.automod.castigo")}</Label>
-            <Input
+          <div data-gc="servidor.server-settings.auto-mod-section.div--17">
+            <Label data-gc="servidor.server-settings.auto-mod-section.label--7" htmlFor="regra-castigo">{t("servidor.automod.castigo")}</Label>
+            <Input data-gc="servidor.server-settings.auto-mod-section.input--4"
               id="regra-castigo"
               type="number"
               min={1}
@@ -384,16 +384,16 @@ const EditorDeRegra: React.FC<EditorProps> = ({
           </div>
         )}
 
-        <div>
-          <Label>{t("servidor.automod.isentos")}</Label>
-          <div className="flex flex-wrap gap-1.5">
+        <div data-gc="servidor.server-settings.auto-mod-section.div--18">
+          <Label data-gc="servidor.server-settings.auto-mod-section.label--8">{t("servidor.automod.isentos")}</Label>
+          <div data-gc="servidor.server-settings.auto-mod-section.div--19" className="flex flex-wrap gap-1.5">
             {roles
               .filter((r) => !r.isEveryone)
               .map((role) => {
                 const isento = rascunho.cargosIsentos.includes(role.id);
 
                 return (
-                  <button
+                  <button data-gc="servidor.server-settings.auto-mod-section.button--5"
                     key={role.id}
                     onClick={() =>
                       setRascunho((atual) => ({
@@ -416,7 +416,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
               })}
 
             {roles.filter((r) => !r.isEveryone).length === 0 && (
-              <p className="text-xs text-ink-faint">
+              <p data-gc="servidor.server-settings.auto-mod-section.p--5" className="text-xs text-ink-faint">
                 {t("servidor.automod.semCargos")}
               </p>
             )}
@@ -424,8 +424,8 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         </div>
       </div>
 
-      <div className="mt-5 flex gap-2">
-        <Button
+      <div data-gc="servidor.server-settings.auto-mod-section.div--20" className="mt-5 flex gap-2">
+        <Button data-gc="servidor.server-settings.auto-mod-section.button--6"
           variant="success"
           size="sm"
           disabled={!rascunho.acoes.length}
@@ -433,7 +433,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         >
           {t("servidor.automod.salvarRegra")}
         </Button>
-        <Button variant="ghost" size="sm" onClick={onFechar}>
+        <Button data-gc="servidor.server-settings.auto-mod-section.button.on-fechar" variant="ghost" size="sm" onClick={onFechar}>
           {t("comum.cancelar")}
         </Button>
       </div>

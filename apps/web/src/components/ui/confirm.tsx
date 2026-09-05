@@ -54,27 +54,27 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
     <ConfirmContext.Provider value={confirmar}>
       {children}
 
-      <Dialog
+      <Dialog data-gc="ui.confirm.dialog"
         open={Boolean(pedido)}
         onOpenChange={(aberto) => !aberto && responder(false)}
       >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{pedido?.titulo}</DialogTitle>
-            <DialogDescription>{pedido?.descricao}</DialogDescription>
+        <DialogContent data-gc="ui.confirm.dialog-content" className="max-w-md">
+          <DialogHeader data-gc="ui.confirm.dialog-header">
+            <DialogTitle data-gc="ui.confirm.dialog-title">{pedido?.titulo}</DialogTitle>
+            <DialogDescription data-gc="ui.confirm.dialog-description">{pedido?.descricao}</DialogDescription>
 
             {pedido?.dicaDoShift && (
-              <p className="mt-2 text-sm text-ink-muted">
-                <span className="font-semibold text-online">Dica:</span> segure Shift ao clicar
+              <p data-gc="ui.confirm.p" className="mt-2 text-sm text-ink-muted">
+                <span data-gc="ui.confirm.span" className="font-semibold text-online">Dica:</span> segure Shift ao clicar
                 para pular esta confirmação.
               </p>
             )}
           </DialogHeader>
 
           {pedido?.campo && (
-            <DialogBody>
-              <Label htmlFor="confirm-campo">{pedido.campo.rotulo}</Label>
-              <Input
+            <DialogBody data-gc="ui.confirm.dialog-body">
+              <Label data-gc="ui.confirm.label" htmlFor="confirm-campo">{pedido.campo.rotulo}</Label>
+              <Input data-gc="ui.confirm.input"
                 id="confirm-campo"
                 autoFocus
                 value={texto}
@@ -87,11 +87,11 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
             </DialogBody>
           )}
 
-          <DialogFooter className={pedido?.campo ? undefined : "pt-5"}>
-            <Button variant="surface" onClick={() => responder(false)}>
+          <DialogFooter data-gc="ui.confirm.dialog-footer" className={pedido?.campo ? undefined : "pt-5"}>
+            <Button data-gc="ui.confirm.button" variant="surface" onClick={() => responder(false)}>
               Cancelar
             </Button>
-            <Button
+            <Button data-gc="ui.confirm.button--2"
               variant={pedido?.destrutivo === false ? "primary" : "danger"}
               disabled={faltaCampo}
               onClick={() => responder(true)}

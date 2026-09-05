@@ -103,11 +103,11 @@ export const AbaDaBiblioteca: React.FC = () => {
 
   return (
     <>
-      <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button variant="surface" size="sm" onClick={() => arquivoCss.current?.click()}>
-          <Upload size={14} /> Importar CSS
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div" className="flex shrink-0 flex-wrap items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button" variant="surface" size="sm" onClick={() => arquivoCss.current?.click()}>
+          <Upload data-gc="configuracoes.estudio.aba-da-biblioteca.upload" size={14} /> Importar CSS
         </Button>
-        <input
+        <input data-gc="configuracoes.estudio.aba-da-biblioteca.input"
           ref={arquivoCss}
           type="file"
           accept=".css,text/css"
@@ -120,10 +120,10 @@ export const AbaDaBiblioteca: React.FC = () => {
           }}
         />
 
-        <Button variant="surface" size="sm" onClick={() => pasta.current?.click()}>
-          <FolderUp size={14} /> Importar pasta
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--2" variant="surface" size="sm" onClick={() => pasta.current?.click()}>
+          <FolderUp data-gc="configuracoes.estudio.aba-da-biblioteca.folder-up" size={14} /> Importar pasta
         </Button>
-        <input
+        <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--2"
           ref={pasta}
           type="file"
           multiple
@@ -138,10 +138,10 @@ export const AbaDaBiblioteca: React.FC = () => {
           }}
         />
 
-        <Button variant="surface" size="sm" onClick={() => arquivoJson.current?.click()}>
-          <Library size={14} /> Importar biblioteca
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--3" variant="surface" size="sm" onClick={() => arquivoJson.current?.click()}>
+          <Library data-gc="configuracoes.estudio.aba-da-biblioteca.library" size={14} /> Importar biblioteca
         </Button>
-        <input
+        <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--3"
           ref={arquivoJson}
           type="file"
           accept="application/json,.json"
@@ -165,7 +165,7 @@ export const AbaDaBiblioteca: React.FC = () => {
           }}
         />
 
-        <Button
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--4"
           variant="surface"
           size="sm"
           disabled={!biblioteca.length}
@@ -178,16 +178,16 @@ export const AbaDaBiblioteca: React.FC = () => {
             )
           }
         >
-          <Download size={14} /> Exportar biblioteca
+          <Download data-gc="configuracoes.estudio.aba-da-biblioteca.download" size={14} /> Exportar biblioteca
         </Button>
       </div>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="flex w-64 shrink-0 flex-col border-r border-line">
-          <div className="p-3">
-            <div className={grupoDeCampo}>
-              <Search size={14} className="shrink-0 text-ink-faint" />
-              <input
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--2" className="flex min-h-0 flex-1">
+        <aside data-gc="configuracoes.estudio.aba-da-biblioteca.aside" className="flex w-64 shrink-0 flex-col border-r border-line">
+          <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--3" className="p-3">
+            <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--4" className={grupoDeCampo}>
+              <Search data-gc="configuracoes.estudio.aba-da-biblioteca.search" size={14} className="shrink-0 text-ink-faint" />
+              <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--4"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar temas"
@@ -195,21 +195,21 @@ export const AbaDaBiblioteca: React.FC = () => {
                 className={campoNu}
               />
               {busca && (
-                <button
+                <button data-gc="configuracoes.estudio.aba-da-biblioteca.button--5"
                   type="button"
                   onClick={() => setBusca("")}
                   aria-label="Limpar a busca"
                   className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
                 >
-                  <X size={14} />
+                  <X data-gc="configuracoes.estudio.aba-da-biblioteca.x" size={14} />
                 </button>
               )}
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 pb-3">
+          <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--5" className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 pb-3">
             {filtrados.map((tema) => (
-              <div
+              <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--6"
                 key={tema.id}
                 className={cn(
                   "flex items-center gap-2 rounded-lg border px-2.5 py-2 transition",
@@ -218,18 +218,18 @@ export const AbaDaBiblioteca: React.FC = () => {
                     : "border-line hover:bg-hover",
                 )}
               >
-                <button
+                <button data-gc="configuracoes.estudio.aba-da-biblioteca.button--6"
                   type="button"
                   onClick={() => setEscolhidoId(tema.id)}
                   className="min-w-0 flex-1 text-left"
                 >
-                  <p className="truncate text-sm font-medium">{tema.nome}</p>
-                  <p className="truncate text-11 text-ink-faint">
+                  <p data-gc="configuracoes.estudio.aba-da-biblioteca.p" className="truncate text-sm font-medium">{tema.nome}</p>
+                  <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--2" className="truncate text-11 text-ink-faint">
                     {tema.autor || `${tema.css.split("\n").length} linhas`}
                   </p>
                 </button>
 
-                <Switch
+                <Switch data-gc="configuracoes.estudio.aba-da-biblioteca.switch"
                   checked={ativoId === tema.id}
                   onCheckedChange={() => alternar(tema.id)}
                   aria-label={`Usar ${tema.nome}`}
@@ -238,23 +238,23 @@ export const AbaDaBiblioteca: React.FC = () => {
             ))}
 
             {!filtrados.length && (
-              <p className="px-1 py-6 text-center text-13 text-ink-faint">
+              <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--3" className="px-1 py-6 text-center text-13 text-ink-faint">
                 {termo ? "Nenhum tema com esse nome." : "Nenhum tema ainda."}
               </p>
             )}
           </div>
 
-          <div className="border-t border-line p-3">
-            <Label htmlFor="estudio-nome">Salvar o tema de agora</Label>
-            <div className="flex gap-2">
-              <Input
+          <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--7" className="border-t border-line p-3">
+            <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label" htmlFor="estudio-nome">Salvar o tema de agora</Label>
+            <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--8" className="flex gap-2">
+              <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--5"
                 id="estudio-nome"
                 value={nomeNovo}
                 maxLength={60}
                 placeholder="Ex: Índigo da casa"
                 onChange={(e) => setNomeNovo(e.target.value)}
               />
-              <Button
+              <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--7"
                 size="sm"
                 disabled={!nomeNovo.trim() || (!css.trim() && !Object.keys(substituicoes).length)}
                 onClick={() => {
@@ -268,9 +268,9 @@ export const AbaDaBiblioteca: React.FC = () => {
           </div>
         </aside>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+        <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--9" className="min-h-0 flex-1 overflow-y-auto p-5">
           {escolhido ? (
-            <DetalheDoTema
+            <DetalheDoTema data-gc="configuracoes.estudio.aba-da-biblioteca.detalhe-do-tema"
               key={escolhido.id}
               tema={escolhido}
               onSalvar={(dados) => {
@@ -296,7 +296,7 @@ export const AbaDaBiblioteca: React.FC = () => {
               }
             />
           ) : (
-            <p className="py-16 text-center text-sm text-ink-faint">
+            <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--4" className="py-16 text-center text-sm text-ink-faint">
               Importe um arquivo .css ou salve o tema de agora para começar.
             </p>
           )}
@@ -329,25 +329,25 @@ const DetalheDoTema: React.FC<{
     css !== tema.css;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <h3 className="min-w-0 flex-1 truncate text-lg font-semibold">{tema.nome}</h3>
+    <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--10" className="space-y-4">
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--11" className="flex items-center gap-2">
+        <h3 data-gc="configuracoes.estudio.aba-da-biblioteca.h3" className="min-w-0 flex-1 truncate text-lg font-semibold">{tema.nome}</h3>
 
-        <Button variant="surface" size="sm" onClick={onExportar}>
-          <Download size={14} /> Exportar
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-exportar" variant="surface" size="sm" onClick={onExportar}>
+          <Download data-gc="configuracoes.estudio.aba-da-biblioteca.download--2" size={14} /> Exportar
         </Button>
-        <Button variant="surface" size="sm" onClick={onDuplicar}>
-          <Copy size={14} /> Duplicar
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-duplicar" variant="surface" size="sm" onClick={onDuplicar}>
+          <Copy data-gc="configuracoes.estudio.aba-da-biblioteca.copy" size={14} /> Duplicar
         </Button>
-        <Button variant="surface" size="sm" className="text-danger" onClick={onExcluir}>
-          <Trash2 size={14} /> Excluir
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-excluir" variant="surface" size="sm" className="text-danger" onClick={onExcluir}>
+          <Trash2 data-gc="configuracoes.estudio.aba-da-biblioteca.trash2" size={14} /> Excluir
         </Button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <Label htmlFor={`nome-${tema.id}`}>Nome</Label>
-          <Input
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--12" className="grid gap-3 sm:grid-cols-2">
+        <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--13">
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--2" htmlFor={`nome-${tema.id}`}>Nome</Label>
+          <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--6"
             id={`nome-${tema.id}`}
             value={nome}
             maxLength={60}
@@ -355,9 +355,9 @@ const DetalheDoTema: React.FC<{
           />
         </div>
 
-        <div>
-          <Label htmlFor={`autor-${tema.id}`}>Autor</Label>
-          <Input
+        <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--14">
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--3" htmlFor={`autor-${tema.id}`}>Autor</Label>
+          <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--7"
             id={`autor-${tema.id}`}
             value={autor}
             maxLength={60}
@@ -365,9 +365,9 @@ const DetalheDoTema: React.FC<{
           />
         </div>
 
-        <div>
-          <Label htmlFor={`versao-${tema.id}`}>Versão</Label>
-          <Input
+        <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--15">
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--4" htmlFor={`versao-${tema.id}`}>Versão</Label>
+          <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--8"
             id={`versao-${tema.id}`}
             value={versao}
             maxLength={20}
@@ -375,9 +375,9 @@ const DetalheDoTema: React.FC<{
           />
         </div>
 
-        <div>
-          <Label htmlFor={`tags-${tema.id}`}>Tags</Label>
-          <Input
+        <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--16">
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--5" htmlFor={`tags-${tema.id}`}>Tags</Label>
+          <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--9"
             id={`tags-${tema.id}`}
             value={tags}
             placeholder="escuro, gruvbox, compacto"
@@ -386,9 +386,9 @@ const DetalheDoTema: React.FC<{
         </div>
       </div>
 
-      <div>
-        <Label htmlFor={`descricao-${tema.id}`}>Descrição</Label>
-        <Textarea
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--17">
+        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--6" htmlFor={`descricao-${tema.id}`}>Descrição</Label>
+        <Textarea data-gc="configuracoes.estudio.aba-da-biblioteca.textarea"
           id={`descricao-${tema.id}`}
           value={descricao}
           rows={2}
@@ -397,9 +397,9 @@ const DetalheDoTema: React.FC<{
         />
       </div>
 
-      <div>
-        <Label htmlFor={`css-${tema.id}`}>CSS</Label>
-        <textarea
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--18">
+        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--7" htmlFor={`css-${tema.id}`}>CSS</Label>
+        <textarea data-gc="configuracoes.estudio.aba-da-biblioteca.textarea--2"
           id={`css-${tema.id}`}
           value={css}
           onChange={(e) => setCss(e.target.value)}
@@ -407,13 +407,13 @@ const DetalheDoTema: React.FC<{
           rows={16}
           className="w-full resize-y rounded-lg border border-line bg-surface-1 p-3 font-mono text-13 leading-relaxed text-ink outline-none focus-visible:border-campo-foco"
         />
-        <p className="mt-1 text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--5" className="mt-1 text-xs text-ink-faint">
           {css.split("\n").length} linhas · {css.length} caracteres
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button
+      <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--19" className="flex items-center gap-2">
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--8"
           disabled={!mudou}
           onClick={() =>
             onSalvar({
@@ -432,7 +432,7 @@ const DetalheDoTema: React.FC<{
           Salvar tema
         </Button>
 
-        <Button
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--9"
           variant="ghost"
           size="sm"
           onClick={() => {

@@ -48,16 +48,16 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
   return (
     <>
-      <nav className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3">
-        <div className="group relative flex w-full justify-center">
-          <span
+      <nav data-gc="servidor.guild-rail.nav" className="trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-surface-1 pb-36 pt-3">
+        <div data-gc="servidor.guild-rail.div" className="group relative flex w-full justify-center">
+          <span data-gc="servidor.guild-rail.span"
             className={cn(
               "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
               activeGuildId === null ? "h-10" : "h-0 group-hover:h-5",
             )}
           />
-          <Tooltip label="Amigos e mensagens diretas" side="right">
-            <button
+          <Tooltip data-gc="servidor.guild-rail.tooltip" label="Amigos e mensagens diretas" side="right">
+            <button data-gc="servidor.guild-rail.button.on-open-friends"
               onClick={onOpenFriends}
               className={cn(
                 "relative flex size-12 items-center justify-center text-xl font-bold transition-all",
@@ -66,14 +66,14 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
               )}
             >
-              <img
+              <img data-gc="servidor.guild-rail.img"
                 src="/brand/logo%20g%20branco.svg"
                 alt=""
                 className="h-6 w-auto object-contain"
                 draggable={false}
               />
               {pendingFriendRequests > 0 && (
-                <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-white">
+                <span data-gc="servidor.guild-rail.span--2" className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-white">
                   {pendingFriendRequests}
                 </span>
               )}
@@ -81,7 +81,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           </Tooltip>
         </div>
 
-        <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
+        <div data-gc="servidor.guild-rail.div--2" className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
 
         {guilds.map((guild) => {
           const active = guild.id === activeGuildId;
@@ -93,15 +93,15 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           const temNovidade = !active && naoLidas > 0;
 
           return (
-            <div key={guild.id} className="group relative flex w-full justify-center">
-              <span
+            <div data-gc="servidor.guild-rail.div--3" key={guild.id} className="group relative flex w-full justify-center">
+              <span data-gc="servidor.guild-rail.span--3"
                 className={cn(
                   "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
                   active ? "h-10" : temNovidade ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
                 )}
               />
-              <DicaDoServidor nome={guild.name} vozes={vozes[guild.id] ?? []}>
-                <button
+              <DicaDoServidor data-gc="servidor.guild-rail.dica-do-servidor" nome={guild.name} vozes={vozes[guild.id] ?? []}>
+                <button data-gc="servidor.guild-rail.button"
                   onClick={() => onSelect(guild.id)}
                   className={cn(
                     "flex size-12 items-center justify-center overflow-hidden font-semibold transition-all",
@@ -112,7 +112,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
                 >
                   {guild.iconUrl ? (
-                    <img src={guild.iconUrl} alt={guild.name} className="size-full object-cover" />
+                    <img data-gc="servidor.guild-rail.img--2" src={guild.iconUrl} alt={guild.name} className="size-full object-cover" />
                   ) : (
                     initials(guild.name)
                   )}
@@ -120,7 +120,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
               </DicaDoServidor>
 
               {naChamada > 0 && (
-                <span
+                <span data-gc="servidor.guild-rail.span--4"
                   title={
                     transmitindo
                       ? t("servidor.trilho.transmitindo")
@@ -129,15 +129,15 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   className="pointer-events-none absolute -top-0.5 right-2 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-surface-0 text-ink"
                 >
                   {transmitindo ? (
-                    <MonitorPlay size={11} weight="fill" />
+                    <MonitorPlay data-gc="servidor.guild-rail.monitor-play" size={11} weight="fill" />
                   ) : (
-                    <Headphones size={11} weight="fill" />
+                    <Headphones data-gc="servidor.guild-rail.headphones" size={11} weight="fill" />
                   )}
                 </span>
               )}
 
               {mencoes > 0 && (
-                <span
+                <span data-gc="servidor.guild-rail.span--5"
                   title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
                   className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-white"
                 >
@@ -149,28 +149,28 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         })}
 
         {guilds.length > 0 && (
-          <div className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
+          <div data-gc="servidor.guild-rail.div--4" className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
 
-        <AcaoDoTrilho
+        <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho"
           label="Criar ou entrar num servidor"
           atalho={[ehMac ? "⌘" : "Ctrl", "Shift", "N"]}
           onClick={() => setCreating(true)}
         >
-          <Plus size={22} />
+          <Plus data-gc="servidor.guild-rail.plus" size={22} />
         </AcaoDoTrilho>
 
-        <AcaoDoTrilho label="Explorar comunidades" onClick={() => navigate("/explorar")}>
-          <Compass size={22} />
+        <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho--2" label="Explorar comunidades" onClick={() => navigate("/explorar")}>
+          <Compass data-gc="servidor.guild-rail.compass" size={22} />
         </AcaoDoTrilho>
 
         {!ehDesktop() ? (
-          <AcaoDoTrilho label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
-            <Download size={20} />
+          <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho--3" label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
+            <Download data-gc="servidor.guild-rail.download" size={20} />
           </AcaoDoTrilho>
         ) : (
           atualizacao.temNovidade && (
-            <Tooltip
+            <Tooltip data-gc="servidor.guild-rail.tooltip--2"
               side="right"
               label={
                 atualizacao.instalando
@@ -184,7 +184,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                         : `Saiu a versão ${atualizacao.estado?.disponivel} — clique para baixar`
               }
             >
-              <button
+              <button data-gc="servidor.guild-rail.button--2"
                 aria-label="Atualização do aplicativo"
                 disabled={atualizacao.baixando || atualizacao.instalando}
                 onClick={() =>
@@ -203,15 +203,15 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 )}
               >
                 {atualizacao.instalando ? (
-                  <RotateCw size={20} className="animate-spin" />
+                  <RotateCw data-gc="servidor.guild-rail.rotate-cw" size={20} className="animate-spin" />
                 ) : atualizacao.baixando ? (
-                  <ArrowDownToLine size={20} className="animate-pulse" />
+                  <ArrowDownToLine data-gc="servidor.guild-rail.arrow-down-to-line" size={20} className="animate-pulse" />
                 ) : (
-                  <ArrowDownToLine size={20} />
+                  <ArrowDownToLine data-gc="servidor.guild-rail.arrow-down-to-line--2" size={20} />
                 )}
 
                 {atualizacao.pronta && (
-                  <span className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
+                  <span data-gc="servidor.guild-rail.span--6" className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
                 )}
               </button>
             </Tooltip>
@@ -219,7 +219,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         )}
       </nav>
 
-      <AdicionarServidorModal
+      <AdicionarServidorModal data-gc="servidor.guild-rail.adicionar-servidor-modal.on-select"
         open={creating}
         onClose={() => setCreating(false)}
         onCreated={onSelect}
@@ -234,8 +234,8 @@ const AcaoDoTrilho: React.FC<{
   onClick: () => void;
   children: React.ReactNode;
 }> = ({ label, atalho, onClick, children }) => (
-  <Tooltip label={label} atalho={atalho} side="right">
-    <button
+  <Tooltip data-gc="servidor.guild-rail.tooltip--3" label={label} atalho={atalho} side="right">
+    <button data-gc="servidor.guild-rail.button.on-click"
       onClick={onClick}
       aria-label={label}
       className={cn(

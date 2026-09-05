@@ -30,7 +30,7 @@ export const PatenteAnimada: React.FC<PatenteAnimadaProps> = ({
   const rotulo = PATENTES_DE_PERFIL.find((o) => o.id === patente)?.rotulo ?? patente;
 
   return (
-    <span
+    <span data-gc="perfil.patente-animada.span"
       ref={caixa}
       role="img"
       aria-label={rotulo}

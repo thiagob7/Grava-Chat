@@ -76,25 +76,25 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
   if (!alvo || !guildId || !userId) return null;
 
   return (
-    <aside className="hidden w-[22rem] shrink-0 flex-col border-l border-divisor bg-surface-2 xl:flex">
-        <header className="shrink-0 border-b border-divisor bg-surface-1">
-          <div className="flex items-center gap-3 p-4">
-            <Avatar id={userId} name={alvo.displayName} url={alvo.avatarUrl} size={40} />
-            <div className="min-w-0 flex-1">
-              <h2 className="truncate text-base font-semibold">{alvo.displayName}</h2>
-              <p className="truncate text-xs text-ink-muted">@{alvo.username}</p>
+    <aside data-gc="servidor.moderator-view.aside" className="hidden w-[22rem] shrink-0 flex-col border-l border-divisor bg-surface-2 xl:flex">
+        <header data-gc="servidor.moderator-view.header" className="shrink-0 border-b border-divisor bg-surface-1">
+          <div data-gc="servidor.moderator-view.div" className="flex items-center gap-3 p-4">
+            <Avatar data-gc="servidor.moderator-view.avatar" id={userId} name={alvo.displayName} url={alvo.avatarUrl} size={40} />
+            <div data-gc="servidor.moderator-view.div--2" className="min-w-0 flex-1">
+              <h2 data-gc="servidor.moderator-view.h2" className="truncate text-base font-semibold">{alvo.displayName}</h2>
+              <p data-gc="servidor.moderator-view.p" className="truncate text-xs text-ink-muted">@{alvo.username}</p>
             </div>
-            <button
+            <button data-gc="servidor.moderator-view.button.fechar"
               onClick={fechar}
               aria-label={t("comum.fechar")}
               title={t("servidor.moderacao.fecharEsc")}
               className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
             >
-              <X size={20} />
+              <X data-gc="servidor.moderator-view.x" size={20} />
             </button>
           </div>
 
-          <BarraDeAcoes
+          <BarraDeAcoes data-gc="servidor.moderator-view.barra-de-acoes.fechar"
             guildId={guildId}
             userId={userId}
             displayName={alvo.displayName}
@@ -102,9 +102,9 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
           />
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div data-gc="servidor.moderator-view.div--3" className="min-h-0 flex-1 overflow-y-auto">
           {detalhe ? (
-            <ListaDeMensagens
+            <ListaDeMensagens data-gc="servidor.moderator-view.lista-de-mensagens"
               guildId={guildId}
               userId={userId}
               filtro={detalhe}
@@ -114,58 +114,58 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
               }
             />
           ) : (
-            <div className="p-4">
-              <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-                <ShieldAlert size={16} className="text-brand" /> {t("servidor.moderacao.titulo")}
+            <div data-gc="servidor.moderator-view.div--4" className="p-4">
+              <p data-gc="servidor.moderator-view.p--2" className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
+                <ShieldAlert data-gc="servidor.moderator-view.shield-alert" size={16} className="text-brand" /> {t("servidor.moderacao.titulo")}
               </p>
 
               {error && (
-                <p className="rounded bg-danger/10 p-3 text-sm text-danger">
+                <p data-gc="servidor.moderator-view.p--3" className="rounded bg-danger/10 p-3 text-sm text-danger">
                   {t("servidor.moderacao.semPermissao")}
                 </p>
               )}
 
-              {isLoading && <p className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
+              {isLoading && <p data-gc="servidor.moderator-view.p--4" className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
 
               {data && (
                 <>
-                  <Secao titulo={t("servidor.moderacao.atividade")}>
-                    <Linha
-                      icone={<MessageSquare size={15} />}
+                  <Secao data-gc="servidor.moderator-view.secao" titulo={t("servidor.moderacao.atividade")}>
+                    <Linha data-gc="servidor.moderator-view.linha"
+                      icone={<MessageSquare data-gc="servidor.moderator-view.message-square" size={15} />}
                       rotulo={t("servidor.moderacao.mensagens")}
                       valor={data.atividade.mensagens}
                       onClick={data.atividade.mensagens ? () => setDetalhe("todas") : undefined}
                     />
-                    <Linha
-                      icone={<Link2 size={15} />}
+                    <Linha data-gc="servidor.moderator-view.linha--2"
+                      icone={<Link2 data-gc="servidor.moderator-view.link2" size={15} />}
                       rotulo={t("servidor.moderacao.links")}
                       valor={data.atividade.links}
                       onClick={data.atividade.links ? () => setDetalhe("links") : undefined}
                     />
-                    <Linha
-                      icone={<ImageIcon size={15} />}
+                    <Linha data-gc="servidor.moderator-view.linha--3"
+                      icone={<ImageIcon data-gc="servidor.moderator-view.image-icon" size={15} />}
                       rotulo={t("servidor.moderacao.midia")}
                       valor={data.atividade.midia}
                       onClick={data.atividade.midia ? () => setDetalhe("midia") : undefined}
                     />
-                    <Linha
-                      icone={<FileText size={15} />}
+                    <Linha data-gc="servidor.moderator-view.linha--4"
+                      icone={<FileText data-gc="servidor.moderator-view.file-text" size={15} />}
                       rotulo={t("servidor.moderacao.acoesNaAuditoria")}
                       valor={data.auditoria.feitas}
                     />
-                    <Linha
-                      icone={<ShieldAlert size={15} />}
+                    <Linha data-gc="servidor.moderator-view.linha--5"
+                      icone={<ShieldAlert data-gc="servidor.moderator-view.shield-alert--2" size={15} />}
                       rotulo={t("servidor.moderacao.moderacoesSofridas")}
                       valor={data.auditoria.sofridas}
                       alerta={data.auditoria.sofridas > 0}
                     />
                   </Secao>
 
-                  <Secao titulo={t("servidor.moderacao.permissoes", { quantas: data.permissoes.length })}>
-                    <div className="flex flex-wrap gap-1.5 p-3">
+                  <Secao data-gc="servidor.moderator-view.secao--2" titulo={t("servidor.moderacao.permissoes", { quantas: data.permissoes.length })}>
+                    <div data-gc="servidor.moderator-view.div--5" className="flex flex-wrap gap-1.5 p-3">
                       {data.permissoes.length ? (
                         data.permissoes.map((p) => (
-                          <span
+                          <span data-gc="servidor.moderator-view.span"
                             key={p}
                             className="rounded bg-surface-3 px-2 py-1 text-xs text-ink-muted"
                           >
@@ -173,13 +173,13 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-ink-faint">{t("servidor.moderacao.semPermissaoEspecial")}</span>
+                        <span data-gc="servidor.moderator-view.span--2" className="text-xs text-ink-faint">{t("servidor.moderacao.semPermissaoEspecial")}</span>
                       )}
                     </div>
                   </Secao>
 
-                  <Secao titulo={t("servidor.cargos.titulo")}>
-                    <EditorDeCargos
+                  <Secao data-gc="servidor.moderator-view.secao--3" titulo={t("servidor.cargos.titulo")}>
+                    <EditorDeCargos data-gc="servidor.moderator-view.editor-de-cargos"
                       guildId={guildId}
                       userId={userId}
                       roles={roles}
@@ -187,14 +187,14 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                     />
                   </Secao>
 
-                  <Secao titulo={t("servidor.moderacao.conta")}>
-                    <Linha rotulo={t("servidor.moderacao.entrouNoServidor")} valor={data.entrouNoServidor} data />
-                    <Linha rotulo={t("servidor.moderacao.contaCriadaEm")} valor={data.entrouNoGravae} data />
+                  <Secao data-gc="servidor.moderator-view.secao--4" titulo={t("servidor.moderacao.conta")}>
+                    <Linha data-gc="servidor.moderator-view.linha--6" rotulo={t("servidor.moderacao.entrouNoServidor")} valor={data.entrouNoServidor} data />
+                    <Linha data-gc="servidor.moderator-view.linha--7" rotulo={t("servidor.moderacao.contaCriadaEm")} valor={data.entrouNoGravae} data />
                     {data.timeoutUntil && (
-                      <Linha rotulo={t("servidor.moderacao.deCastigoAte")} valor={data.timeoutUntil} data alerta />
+                      <Linha data-gc="servidor.moderator-view.linha--8" rotulo={t("servidor.moderacao.deCastigoAte")} valor={data.timeoutUntil} data alerta />
                     )}
-                    <Linha
-                      icone={<Ticket size={15} />}
+                    <Linha data-gc="servidor.moderator-view.linha--9"
+                      icone={<Ticket data-gc="servidor.moderator-view.ticket" size={15} />}
                       rotulo={t("servidor.moderacao.formaDeAdesao")}
                       valor={
                         data.adesao.inviteCode
@@ -288,21 +288,21 @@ const BarraDeAcoes: React.FC<{
   };
 
   return (
-    <div className="grid grid-cols-5 gap-1 border-t border-divisor p-2">
-      <AcaoDoTopo label={t("servidor.moderacao.mensagem")} onClick={() => void conversar()}>
-        <MessageSquare size={18} />
+    <div data-gc="servidor.moderator-view.div--6" className="grid grid-cols-5 gap-1 border-t border-divisor p-2">
+      <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo" label={t("servidor.moderacao.mensagem")} onClick={() => void conversar()}>
+        <MessageSquare data-gc="servidor.moderator-view.message-square--2" size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label={t("servidor.membros.expulsar")} onClick={() => void expulsar()} perigo>
-        <UserMinus size={18} />
+      <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo--2" label={t("servidor.membros.expulsar")} onClick={() => void expulsar()} perigo>
+        <UserMinus data-gc="servidor.moderator-view.user-minus" size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label={t("servidor.membros.banir")} onClick={() => void banirMembro()} perigo>
-        <Gavel size={18} />
+      <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo--3" label={t("servidor.membros.banir")} onClick={() => void banirMembro()} perigo>
+        <Gavel data-gc="servidor.moderator-view.gavel" size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label={t("servidor.moderacao.castigo")} onClick={() => void castigarMembro()} perigo>
-        <Clock size={18} />
+      <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo--4" label={t("servidor.moderacao.castigo")} onClick={() => void castigarMembro()} perigo>
+        <Clock data-gc="servidor.moderator-view.clock" size={18} />
       </AcaoDoTopo>
-      <AcaoDoTopo label={t("servidor.moderacao.copiarId")} onClick={() => void copiarId()}>
-        <IdCard size={18} />
+      <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo--5" label={t("servidor.moderacao.copiarId")} onClick={() => void copiarId()}>
+        <IdCard data-gc="servidor.moderator-view.id-card" size={18} />
       </AcaoDoTopo>
     </div>
   );
@@ -314,8 +314,8 @@ const AcaoDoTopo: React.FC<{
   onClick: () => void;
   perigo?: boolean;
 }> = ({ children, label, onClick, perigo }) => (
-  <Tooltip label={label}>
-    <button
+  <Tooltip data-gc="servidor.moderator-view.tooltip" label={label}>
+    <button data-gc="servidor.moderator-view.button.on-click"
       onClick={onClick}
       aria-label={label}
       className={cn(
@@ -345,28 +345,28 @@ const ListaDeMensagens: React.FC<{
   const { data, isLoading } = useModerationMessages(guildId, userId, filtro);
 
   return (
-    <div>
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-divisor bg-surface-2 px-4 py-2.5">
-        <button
+    <div data-gc="servidor.moderator-view.div--7">
+      <div data-gc="servidor.moderator-view.div--8" className="sticky top-0 z-10 flex items-center justify-between border-b border-divisor bg-surface-2 px-4 py-2.5">
+        <button data-gc="servidor.moderator-view.button.on-voltar"
           onClick={onVoltar}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-ink"
         >
-          <ArrowLeft size={16} /> {t("servidor.moderacao.voltar")}
+          <ArrowLeft data-gc="servidor.moderator-view.arrow-left" size={16} /> {t("servidor.moderacao.voltar")}
         </button>
-        <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <span data-gc="servidor.moderator-view.span--3" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
           {t(TITULOS[filtro])}
         </span>
       </div>
 
-      <div className="space-y-3 p-4">
-        {isLoading && <p className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
+      <div data-gc="servidor.moderator-view.div--9" className="space-y-3 p-4">
+        {isLoading && <p data-gc="servidor.moderator-view.p--5" className="py-8 text-center text-sm text-ink-muted">{t("comum.carregando")}</p>}
 
         {data && !data.length && (
-          <p className="py-8 text-center text-sm text-ink-muted">{t("servidor.moderacao.vazio")}</p>
+          <p data-gc="servidor.moderator-view.p--6" className="py-8 text-center text-sm text-ink-muted">{t("servidor.moderacao.vazio")}</p>
         )}
 
         {data?.map((mensagem) => (
-          <MensagemDaLista
+          <MensagemDaLista data-gc="servidor.moderator-view.mensagem-da-lista"
             key={mensagem.id}
             mensagem={mensagem}
             filtro={filtro}
@@ -375,7 +375,7 @@ const ListaDeMensagens: React.FC<{
         ))}
 
         {data && data.length >= 50 && (
-          <p className="pt-2 text-center text-xs text-ink-faint">
+          <p data-gc="servidor.moderator-view.p--7" className="pt-2 text-center text-xs text-ink-faint">
             {t("servidor.moderacao.cinquenta")}
           </p>
         )}
@@ -392,31 +392,31 @@ const MensagemDaLista: React.FC<{
   const { t } = useTranslation();
 
   return (
-  <article className="group/msg rounded-lg bg-surface-1 p-3">
-    <header className="mb-1.5 flex items-center gap-1.5 text-xs text-ink-faint">
-      {mensagem.channelType === "VOICE" ? <Volume2 size={12} /> : <Hash size={12} />}
-      <span className="min-w-0 flex-1 truncate font-medium text-ink-muted">
+  <article data-gc="servidor.moderator-view.article" className="group/msg rounded-lg bg-surface-1 p-3">
+    <header data-gc="servidor.moderator-view.header--2" className="mb-1.5 flex items-center gap-1.5 text-xs text-ink-faint">
+      {mensagem.channelType === "VOICE" ? <Volume2 data-gc="servidor.moderator-view.volume2" size={12} /> : <Hash data-gc="servidor.moderator-view.hash" size={12} />}
+      <span data-gc="servidor.moderator-view.span--4" className="min-w-0 flex-1 truncate font-medium text-ink-muted">
         {mensagem.channelName}
       </span>
 
-      <button
+      <button data-gc="servidor.moderator-view.button.on-ir"
         onClick={onIr}
         className="rounded bg-surface-3 px-1.5 py-0.5 text-11 opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
       >
         {t("servidor.moderacao.irParaMensagem")}
       </button>
 
-      <time dateTime={mensagem.createdAt}>
+      <time data-gc="servidor.moderator-view.time" dateTime={mensagem.createdAt}>
         {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
           new Date(mensagem.createdAt),
         )}
       </time>
     </header>
 
-    {filtro === "links" && <LinksDaMensagem conteudo={mensagem.content} />}
+    {filtro === "links" && <LinksDaMensagem data-gc="servidor.moderator-view.links-da-mensagem" conteudo={mensagem.content} />}
 
     {mensagem.content && (
-      <p
+      <p data-gc="servidor.moderator-view.p--8"
         className={cn(
           "whitespace-pre-wrap break-words text-sm",
           filtro === "links" && "mt-2 line-clamp-2 text-xs text-ink-faint",
@@ -427,17 +427,17 @@ const MensagemDaLista: React.FC<{
     )}
 
     {mensagem.attachments.length > 0 && (
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div data-gc="servidor.moderator-view.div--10" className="mt-2 flex flex-wrap gap-2">
         {mensagem.attachments.map((anexo) =>
           anexo.contentType.startsWith("image/") ? (
-            <img
+            <img data-gc="servidor.moderator-view.img"
               key={anexo.url}
               src={anexo.url}
               alt={anexo.filename}
               className="max-h-32 rounded object-cover"
             />
           ) : (
-            <span
+            <span data-gc="servidor.moderator-view.span--5"
               key={anexo.url}
               className="rounded bg-surface-3 px-2 py-1 text-xs text-ink-muted"
             >
@@ -457,9 +457,9 @@ const LinksDaMensagem: React.FC<{ conteudo: string }> = ({ conteudo }) => {
   if (!links.length) return null;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div data-gc="servidor.moderator-view.div--11" className="flex flex-col gap-1">
       {links.map((url) => (
-        <LinhaDeLink key={url} url={url} />
+        <LinhaDeLink data-gc="servidor.moderator-view.linha-de-link" key={url} url={url} />
       ))}
     </div>
   );
@@ -476,7 +476,7 @@ const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
   })();
 
   return (
-    <a
+    <a data-gc="servidor.moderator-view.a"
       href={url}
       target="_blank"
       rel="noreferrer noopener"
@@ -484,7 +484,7 @@ const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
       className="flex items-center gap-2 rounded bg-surface-3 px-2 py-1.5 transition hover:bg-surface-4"
     >
       {embed?.favicon ? (
-        <img
+        <img data-gc="servidor.moderator-view.img--2"
           src={embed.favicon}
           alt=""
           referrerPolicy="no-referrer"
@@ -492,14 +492,14 @@ const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
           className="size-4 shrink-0 rounded-sm object-contain"
         />
       ) : (
-        <Link2 size={14} className="shrink-0 text-ink-faint" />
+        <Link2 data-gc="servidor.moderator-view.link2--2" size={14} className="shrink-0 text-ink-faint" />
       )}
 
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-xs font-medium text-brand">
+      <span data-gc="servidor.moderator-view.span--6" className="min-w-0 flex-1">
+        <span data-gc="servidor.moderator-view.span--7" className="block truncate text-xs font-medium text-brand">
           {embed?.titulo ?? url}
         </span>
-        <span className="block truncate text-11 text-ink-faint">
+        <span data-gc="servidor.moderator-view.span--8" className="block truncate text-11 text-ink-faint">
           {embed?.site ?? dominio}
         </span>
       </span>
@@ -508,9 +508,9 @@ const LinhaDeLink: React.FC<{ url: string }> = ({ url }) => {
 };
 
 const Secao: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
-  <section className="mb-4">
-    <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">{titulo}</h4>
-    <div className="overflow-hidden rounded-lg bg-surface-1">{children}</div>
+  <section data-gc="servidor.moderator-view.section" className="mb-4">
+    <h4 data-gc="servidor.moderator-view.h4" className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">{titulo}</h4>
+    <div data-gc="servidor.moderator-view.div--12" className="overflow-hidden rounded-lg bg-surface-1">{children}</div>
   </section>
 );
 
@@ -527,23 +527,23 @@ const Linha: React.FC<LinhaProps> = ({ icone, rotulo, valor, data, alerta, onCli
   const { t } = useTranslation();
   const conteudo = (
     <>
-      {icone && <span className="shrink-0 text-ink-faint">{icone}</span>}
-      <span className="min-w-0 flex-1 truncate text-left text-sm">{rotulo}</span>
-      <span className={alerta ? "text-sm font-semibold text-danger" : "text-sm text-ink-muted"}>
+      {icone && <span data-gc="servidor.moderator-view.span--9" className="shrink-0 text-ink-faint">{icone}</span>}
+      <span data-gc="servidor.moderator-view.span--10" className="min-w-0 flex-1 truncate text-left text-sm">{rotulo}</span>
+      <span data-gc="servidor.moderator-view.span--11" className={alerta ? "text-sm font-semibold text-danger" : "text-sm text-ink-muted"}>
         {data
           ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(valor))
           : valor}
       </span>
-      {onClick && <ChevronRight size={14} className="shrink-0 text-ink-faint" />}
+      {onClick && <ChevronRight data-gc="servidor.moderator-view.chevron-right" size={14} className="shrink-0 text-ink-faint" />}
     </>
   );
 
   const classe = "flex w-full items-center gap-2 border-b border-divisor px-3 py-2.5 last:border-0";
 
-  if (!onClick) return <div className={classe}>{conteudo}</div>;
+  if (!onClick) return <div data-gc="servidor.moderator-view.div--13" className={classe}>{conteudo}</div>;
 
   return (
-    <button onClick={onClick} className={cn(classe, "transition hover:bg-surface-3")}>
+    <button data-gc="servidor.moderator-view.button.on-click--2" onClick={onClick} className={cn(classe, "transition hover:bg-surface-3")}>
       {conteudo}
     </button>
   );
@@ -577,13 +577,13 @@ const EditorDeCargos: React.FC<{
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 p-3">
+    <div data-gc="servidor.moderator-view.div--14" className="flex flex-wrap items-center gap-1.5 p-3">
       {marcados.map((cargo) => (
-        <span
+        <span data-gc="servidor.moderator-view.span--12"
           key={cargo.id}
           className="flex items-center gap-1.5 rounded bg-surface-3 px-2 py-1 text-xs"
         >
-          <span
+          <span data-gc="servidor.moderator-view.span--13"
             className="size-2 rounded-full"
             style={{ backgroundColor: cargo.color || "#99aab5" }}
           />
@@ -591,52 +591,52 @@ const EditorDeCargos: React.FC<{
         </span>
       ))}
 
-      {!marcados.length && <span className="text-xs text-ink-faint">{t("servidor.moderacao.soEveryone")}</span>}
+      {!marcados.length && <span data-gc="servidor.moderator-view.span--14" className="text-xs text-ink-faint">{t("servidor.moderacao.soEveryone")}</span>}
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
+      <DropdownMenu data-gc="servidor.moderator-view.dropdown-menu">
+        <DropdownMenuTrigger data-gc="servidor.moderator-view.dropdown-menu-trigger" asChild>
+          <button data-gc="servidor.moderator-view.button"
             aria-label={t("servidor.moderacao.adicionarCargo")}
             disabled={setRoles.isPending}
             className="rounded-full bg-surface-3 p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
           >
-            <Plus size={14} />
+            <Plus data-gc="servidor.moderator-view.plus" size={14} />
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="start" className="max-h-72 overflow-y-auto">
+        <DropdownMenuContent data-gc="servidor.moderator-view.dropdown-menu-content" align="start" className="max-h-72 overflow-y-auto">
           {atribuiveis.length ? (
             atribuiveis.map((cargo) => {
               const tem = atuais.includes(cargo.id);
 
               return (
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="servidor.moderator-view.dropdown-menu-item"
                   key={cargo.id}
                   onSelect={(e) => {
                     e.preventDefault();
                     alternar(cargo.id);
                   }}
                 >
-                  <span className="flex min-w-0 flex-1 items-center gap-2">
-                    <span
+                  <span data-gc="servidor.moderator-view.span--15" className="flex min-w-0 flex-1 items-center gap-2">
+                    <span data-gc="servidor.moderator-view.span--16"
                       className="size-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: cargo.color || "#99aab5" }}
                     />
-                    <span className="truncate">{cargo.name}</span>
+                    <span data-gc="servidor.moderator-view.span--17" className="truncate">{cargo.name}</span>
                   </span>
-                  <span
+                  <span data-gc="servidor.moderator-view.span--18"
                     className={cn(
                       "flex size-4 shrink-0 items-center justify-center rounded border",
                       tem ? "border-brand bg-brand text-white" : "border-line",
                     )}
                   >
-                    {tem && <Check size={11} />}
+                    {tem && <Check data-gc="servidor.moderator-view.check" size={11} />}
                   </span>
                 </DropdownMenuItem>
               );
             })
           ) : (
-            <DropdownMenuItem disabled>{t("servidor.moderacao.semCargos")}</DropdownMenuItem>
+            <DropdownMenuItem data-gc="servidor.moderator-view.dropdown-menu-item--2" disabled>{t("servidor.moderacao.semCargos")}</DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>

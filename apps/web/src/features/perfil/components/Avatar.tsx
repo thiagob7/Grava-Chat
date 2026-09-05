@@ -60,7 +60,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   const ritmo = variaveisDoEnfeite({ animar, velocidade: "8s" });
 
   return (
-    <div
+    <div data-gc="perfil.avatar.div"
       className={cn(
         "relative shrink-0 rounded-full transition-shadow duration-100",
         speaking && "shadow-[0_0_0_3px_var(--color-online)]",
@@ -69,7 +69,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       style={{ width: size, height: size }}
     >
       {mostrarImagem ? (
-        <img
+        <img data-gc="perfil.avatar.img"
           src={url!}
           alt=""
           width={size}
@@ -82,7 +82,7 @@ export const Avatar: React.FC<AvatarProps> = ({
           className="size-full rounded-full bg-surface-3 object-cover"
         />
       ) : (
-        <div
+        <div data-gc="perfil.avatar.div--2"
           className="flex size-full select-none items-center justify-center rounded-full font-semibold text-white"
           style={{ ...furo(0), backgroundColor: avatarColor(id), fontSize: size * 0.38 }}
           aria-label={name}
@@ -92,14 +92,14 @@ export const Avatar: React.FC<AvatarProps> = ({
       )}
 
       {decoracao && (
-        <span
+        <span data-gc="perfil.avatar.span"
           aria-hidden
           className={cn("gc-camada", decoracao)}
           style={{ ...ritmo, ...recorteDaCamada }}
         />
       )}
       {deArquivo && enfeites?.decoracao && (
-        <DecoracaoDeArquivo
+        <DecoracaoDeArquivo data-gc="perfil.avatar.decoracao-de-arquivo"
           decoracao={enfeites.decoracao}
           animar={animar}
           recorte={recorteDeArquivo}
@@ -107,8 +107,8 @@ export const Avatar: React.FC<AvatarProps> = ({
       )}
 
       {selo && (
-        <span className="absolute" style={{ left: selo.left, top: selo.top }}>
-          <IconeDeStatus tipo={emVoz ? "VOZ" : status!} tamanho={selo.lado} />
+        <span data-gc="perfil.avatar.span--2" className="absolute" style={{ left: selo.left, top: selo.top }}>
+          <IconeDeStatus data-gc="perfil.avatar.icone-de-status" tipo={emVoz ? "VOZ" : status!} tamanho={selo.lado} />
         </span>
       )}
     </div>

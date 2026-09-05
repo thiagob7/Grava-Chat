@@ -30,7 +30,7 @@ const Pilula: React.FC<{
   titulo?: string;
   familia?: "mencao" | "everyone" | "here";
 }> = ({ children, cor, titulo, familia = "mencao" }) => (
-  <span
+  <span data-gc="conversa.message-content.span"
     title={titulo}
     className="rounded px-1 py-px font-medium"
     style={
@@ -57,7 +57,7 @@ function comTwemoji(texto: string, chave: string): React.ReactNode[] {
     const inicio = achado.index!;
     if (inicio > ultimo) partes.push(texto.slice(ultimo, inicio));
 
-    partes.push(<Emoji key={`${chave}-e${inicio}`} emoji={achado[0]} />);
+    partes.push(<Emoji data-gc="conversa.message-content.emoji" key={`${chave}-e${inicio}`} emoji={achado[0]} />);
     ultimo = inicio + achado[0].length;
   }
 
@@ -87,7 +87,7 @@ function enriquecer(
       const encontrado = porNome.get(emoji);
       if (encontrado) {
         pedaco = (
-          <img
+          <img data-gc="conversa.message-content.img"
             key={k}
             src={encontrado.url}
             alt={`:${encontrado.name}:`}
@@ -99,19 +99,19 @@ function enriquecer(
     } else if (cargoId) {
       const cargo = mencoes?.cargos.get(cargoId);
       pedaco = (
-        <Pilula key={k} cor={cargo?.color} titulo={i18next.t("conversa.mencao.cargo")}>
+        <Pilula data-gc="conversa.message-content.pilula" key={k} cor={cargo?.color} titulo={i18next.t("conversa.mencao.cargo")}>
           @{cargo?.name ?? i18next.t("conversa.mencao.cargoSemNome")}
         </Pilula>
       );
     } else if (usuarioId) {
       pedaco = (
-        <Pilula key={k} titulo={i18next.t("conversa.mencao.pessoa")}>
+        <Pilula data-gc="conversa.message-content.pilula--2" key={k} titulo={i18next.t("conversa.mencao.pessoa")}>
           @{mencoes?.nomes.get(usuarioId) ?? i18next.t("conversa.mencao.alguem")}
         </Pilula>
       );
     } else if (todos) {
       pedaco = (
-        <Pilula
+        <Pilula data-gc="conversa.message-content.pilula--3"
           key={k}
           familia={todos === "here" ? "here" : "everyone"}
           titulo={i18next.t(
@@ -154,7 +154,7 @@ function corrido(
     }
 
     partes.push(
-      <a
+      <a data-gc="conversa.message-content.a"
         key={`${chave}-l${casamento.index}`}
         href={url}
         target="_blank"
@@ -192,12 +192,12 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   const sozinho = content.trim();
   if (abrirImagensDeLinks && SO_UM_LINK.test(sozinho) && EH_IMAGEM.test(limparLink(sozinho))) {
     return (
-      <button
+      <button data-gc="conversa.message-content.button"
         onClick={() => abrirImagem(sozinho)}
         aria-label={i18next.t("conversa.cartao.verImagem")}
         className="mt-1 block overflow-hidden rounded transition hover:brightness-110"
       >
-        <img
+        <img data-gc="conversa.message-content.img--2"
           src={sozinho}
           alt=""
           loading="lazy"
@@ -225,7 +225,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
         pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
 
       partes.push(
-        <code key={`c${i}`} className="rounded bg-codigo px-1 py-px font-mono text-[0.9em]">
+        <code data-gc="conversa.message-content.code" key={`c${i}`} className="rounded bg-codigo px-1 py-px font-mono text-[0.9em]">
           {codigo}
         </code>,
       );
@@ -233,10 +233,10 @@ export const MessageContent: React.FC<MessageContentProps> = ({
     }
 
     temPainel = true;
-    partes.push(<BlocoDeCodigo key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
+    partes.push(<BlocoDeCodigo data-gc="conversa.message-content.bloco-de-codigo" key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
   });
 
-  if (temPainel) return <div className={className}>{partes}</div>;
+  if (temPainel) return <div data-gc="conversa.message-content.div" className={className}>{partes}</div>;
 
-  return <span className={className}>{partes}</span>;
+  return <span data-gc="conversa.message-content.span--2" className={className}>{partes}</span>;
 };

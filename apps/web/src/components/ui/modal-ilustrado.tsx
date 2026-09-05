@@ -29,18 +29,18 @@ export const ModalIlustrado: React.FC<ModalIlustradoProps> = ({
   children,
   className,
 }) => (
-  <Dialog open={aberto} onOpenChange={(estado) => !estado && onFechar()}>
-    <DialogContent className={cn("max-w-sm", className)}>
-      <div className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
-        <div className="mb-5">{arte}</div>
+  <Dialog data-gc="ui.modal-ilustrado.dialog" open={aberto} onOpenChange={(estado) => !estado && onFechar()}>
+    <DialogContent data-gc="ui.modal-ilustrado.dialog-content" className={cn("max-w-sm", className)}>
+      <div data-gc="ui.modal-ilustrado.div" className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
+        <div data-gc="ui.modal-ilustrado.div--2" className="mb-5">{arte}</div>
 
-        <DialogTitle className="text-lg font-bold text-balance">{titulo}</DialogTitle>
+        <DialogTitle data-gc="ui.modal-ilustrado.dialog-title" className="text-lg font-bold text-balance">{titulo}</DialogTitle>
 
-        <DialogDescription className="mt-2 text-sm text-ink-muted">
+        <DialogDescription data-gc="ui.modal-ilustrado.dialog-description" className="mt-2 text-sm text-ink-muted">
           {descricao}
         </DialogDescription>
 
-        <div className="mt-6 flex w-full flex-col gap-2">{children}</div>
+        <div data-gc="ui.modal-ilustrado.div--3" className="mt-6 flex w-full flex-col gap-2">{children}</div>
       </div>
     </DialogContent>
   </Dialog>

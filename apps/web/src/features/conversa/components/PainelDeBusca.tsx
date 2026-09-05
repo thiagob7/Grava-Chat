@@ -38,10 +38,10 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   const total = resultados.length;
 
   return (
-    <aside className="hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4">
-        <Search size={16} className="shrink-0 text-ink-faint" />
-        <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">
+    <aside data-gc="conversa.painel-de-busca.aside" className="hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex">
+      <header data-gc="conversa.painel-de-busca.header" className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4">
+        <Search data-gc="conversa.painel-de-busca.search" size={16} className="shrink-0 text-ink-faint" />
+        <h2 data-gc="conversa.painel-de-busca.h2" className="min-w-0 flex-1 truncate text-sm font-semibold">
           {busca.isLoading
             ? t("conversa.busca.procurando")
             : 
@@ -49,28 +49,28 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
                 quantos: `${total}${busca.hasNextPage ? "+" : ""}`,
               })}
         </h2>
-        <button
+        <button data-gc="conversa.painel-de-busca.button.on-fechar"
           onClick={onFechar}
           aria-label={t("conversa.busca.fechar")}
           className="text-ink-muted transition hover:text-ink"
         >
-          <X size={18} />
+          <X data-gc="conversa.painel-de-busca.x" size={18} />
         </button>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+      <div data-gc="conversa.painel-de-busca.div" className="min-h-0 flex-1 overflow-y-auto p-3">
         {!busca.isLoading && !total && (
-          <p className="px-2 py-8 text-center text-sm text-ink-muted">
+          <p data-gc="conversa.painel-de-busca.p" className="px-2 py-8 text-center text-sm text-ink-muted">
             {t("conversa.busca.nadaCom", { termo })}
-            <span className="mt-1 block text-xs text-ink-faint">
+            <span data-gc="conversa.painel-de-busca.span" className="mt-1 block text-xs text-ink-faint">
               {t("conversa.busca.soOsQuePodeLer")}
             </span>
           </p>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div data-gc="conversa.painel-de-busca.div--2" className="flex flex-col gap-2">
           {resultados.map((resultado) => (
-            <Resultado
+            <Resultado data-gc="conversa.painel-de-busca.resultado"
               key={resultado.id}
               resultado={resultado}
               termo={termo}
@@ -83,7 +83,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
         </div>
 
         {busca.hasNextPage && (
-          <button
+          <button data-gc="conversa.painel-de-busca.button"
             onClick={() => void busca.fetchNextPage()}
             disabled={busca.isFetchingNextPage}
             className="mt-3 w-full rounded bg-surface-3 py-2 text-xs text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
@@ -104,26 +104,26 @@ const Resultado: React.FC<{
   mencoes: ReturnType<typeof useMencoes>;
   onIr: () => void;
 }> = ({ resultado, termo, emojis, enfeites, mencoes, onIr }) => (
-  <button
+  <button data-gc="conversa.painel-de-busca.button.on-ir"
     onClick={onIr}
     className="block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3"
   >
-    <p className="mb-1.5 flex items-center gap-1 text-xs text-ink-faint">
-      <span className="min-w-0 truncate">#{resultado.channelName}</span>
-      <span aria-hidden>·</span>
-      <span className="shrink-0">{formatTimestamp(resultado.createdAt)}</span>
+    <p data-gc="conversa.painel-de-busca.p--2" className="mb-1.5 flex items-center gap-1 text-xs text-ink-faint">
+      <span data-gc="conversa.painel-de-busca.span--2" className="min-w-0 truncate">#{resultado.channelName}</span>
+      <span data-gc="conversa.painel-de-busca.span--3" aria-hidden>·</span>
+      <span data-gc="conversa.painel-de-busca.span--4" className="shrink-0">{formatTimestamp(resultado.createdAt)}</span>
     </p>
 
-    <div className="flex gap-2">
-      <Avatar
+    <div data-gc="conversa.painel-de-busca.div--3" className="flex gap-2">
+      <Avatar data-gc="conversa.painel-de-busca.avatar"
         id={resultado.author.id}
         name={resultado.author.displayName}
         url={resultado.author.avatarUrl}
         size={24}
       />
 
-      <div className="min-w-0 flex-1">
-        <UserName
+      <div data-gc="conversa.painel-de-busca.div--4" className="min-w-0 flex-1">
+        <UserName data-gc="conversa.painel-de-busca.user-name"
           nome={resultado.author.displayName}
           perfil={enfeites?.perfil}
           corDoCargo={enfeites?.corDoCargo}
@@ -131,8 +131,8 @@ const Resultado: React.FC<{
           className="text-sm font-medium"
         />
 
-        <p className="mt-0.5 line-clamp-4 whitespace-pre-wrap break-words text-sm text-ink-muted">
-          <MessageContent content={trechoEmVolta(resultado.content, termo)} emojis={emojis} mencoes={mencoes} />
+        <p data-gc="conversa.painel-de-busca.p--3" className="mt-0.5 line-clamp-4 whitespace-pre-wrap break-words text-sm text-ink-muted">
+          <MessageContent data-gc="conversa.painel-de-busca.message-content" content={trechoEmVolta(resultado.content, termo)} emojis={emojis} mencoes={mencoes} />
         </p>
       </div>
     </div>

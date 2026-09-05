@@ -58,8 +58,8 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
     const remote = channels.find((c) => c.id === accountChannelId);
 
     return (
-      <p className={cn(SECAO_DA_CHAMADA, "flex items-center gap-1.5 truncate py-2 text-xs text-ink-muted")}>
-        <Signal size={13} className="shrink-0 text-idle" />
+      <p data-gc="voz.voice-panel.p" className={cn(SECAO_DA_CHAMADA, "flex items-center gap-1.5 truncate py-2 text-xs text-ink-muted")}>
+        <Signal data-gc="voz.voice-panel.signal" size={13} className="shrink-0 text-idle" />
         Em voz noutra aba
         {remote ? ` · ${remote.name}` : ""}
       </p>
@@ -71,27 +71,27 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
   const channel = channels.find((c) => c.id === channelId);
 
   return (
-    <div className={SECAO_DA_CHAMADA}>
-      <div className="mb-2 flex items-center justify-between">
-        <div className="min-w-0">
-          <VoiceDetailsPopover ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>
-            <button
+    <div data-gc="voz.voice-panel.div" className={SECAO_DA_CHAMADA}>
+      <div data-gc="voz.voice-panel.div--2" className="mb-2 flex items-center justify-between">
+        <div data-gc="voz.voice-panel.div--3" className="min-w-0">
+          <VoiceDetailsPopover data-gc="voz.voice-panel.voice-details-popover" ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>
+            <button data-gc="voz.voice-panel.button"
               aria-label={t("chamada.detalhes.abrir")}
               className="group/voz flex w-full items-center gap-1.5 text-left text-sm font-semibold"
             >
-              <IconeDeSinal ping={ping} />
+              <IconeDeSinal data-gc="voz.voice-panel.icone-de-sinal" ping={ping} />
 
-              <span className="grid min-w-0 grid-cols-1 overflow-hidden">
-                <span className="col-start-1 row-start-1 truncate text-online transition duration-200 ease-out group-hover/voz:-translate-y-full group-hover/voz:opacity-0">
+              <span data-gc="voz.voice-panel.span" className="grid min-w-0 grid-cols-1 overflow-hidden">
+                <span data-gc="voz.voice-panel.span--2" className="col-start-1 row-start-1 truncate text-online transition duration-200 ease-out group-hover/voz:-translate-y-full group-hover/voz:opacity-0">
                   {conversa ? "Em uma chamada" : "Voz conectada"}
                 </span>
-                <span className="col-start-1 row-start-1 translate-y-full truncate text-ink opacity-0 transition duration-200 ease-out group-hover/voz:translate-y-0 group-hover/voz:opacity-100">
+                <span data-gc="voz.voice-panel.span--3" className="col-start-1 row-start-1 translate-y-full truncate text-ink opacity-0 transition duration-200 ease-out group-hover/voz:translate-y-0 group-hover/voz:opacity-100">
                   {t("chamada.detalhes.titulo")}
                 </span>
               </span>
             </button>
           </VoiceDetailsPopover>
-          <button
+          <button data-gc="voz.voice-panel.button--2"
             onClick={() =>
               conversa
                 ? navigate(`/dm/${conversa.id}`)
@@ -107,15 +107,15 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           </button>
         </div>
 
-        <div className="flex shrink-0 items-center gap-0.5">
-          <SupressaoDeRuidoPopover
+        <div data-gc="voz.voice-panel.div--4" className="flex shrink-0 items-center gap-0.5">
+          <SupressaoDeRuidoPopover data-gc="voz.voice-panel.supressao-de-ruido-popover"
             ligada={noiseFilter}
             disponivel={noiseFilterAvailable}
             ocupada={noiseFilterBusy}
             onAlternar={() => void toggleNoiseFilter()}
             onAbrirAjustes={() => abrirConfiguracoes("voz")}
           >
-            <button
+            <button data-gc="voz.voice-panel.button--3"
               aria-label={t("chamada.ruido.titulo")}
               aria-pressed={noiseFilter && noiseFilterAvailable}
               className={cn(
@@ -124,38 +124,38 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
                 noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
               )}
             >
-              <AudioLines size={18} />
+              <AudioLines data-gc="voz.voice-panel.audio-lines" size={18} />
             </button>
           </SupressaoDeRuidoPopover>
 
-          <Tooltip label={t("chamada.desconectar")}>
-            <button
+          <Tooltip data-gc="voz.voice-panel.tooltip" label={t("chamada.desconectar")}>
+            <button data-gc="voz.voice-panel.button--4"
               onClick={() => void leave()}
               className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
             >
-              <PhoneOff size={18} />
+              <PhoneOff data-gc="voz.voice-panel.phone-off" size={18} />
             </button>
           </Tooltip>
         </div>
       </div>
 
-      {micBlocked && <AvisoMicrofoneBloqueado />}
+      {micBlocked && <AvisoMicrofoneBloqueado data-gc="voz.voice-panel.aviso-microfone-bloqueado" />}
 
-      <div className="grid grid-cols-3 gap-1">
-        <SoundboardPanel guildId={guildId ?? undefined} podeUsar={podeUsarSons} />
+      <div data-gc="voz.voice-panel.div--5" className="grid grid-cols-3 gap-1">
+        <SoundboardPanel data-gc="voz.voice-panel.soundboard-panel" guildId={guildId ?? undefined} podeUsar={podeUsarSons} />
 
-        <VoiceControl label={t("chamada.aparelhos.camera")} onClick={() => void toggleCamera()}>
-          {cameraEnabled ? <Video size={18} className="text-online" /> : <VideoOff size={18} />}
+        <VoiceControl data-gc="voz.voice-panel.voice-control" label={t("chamada.aparelhos.camera")} onClick={() => void toggleCamera()}>
+          {cameraEnabled ? <Video data-gc="voz.voice-panel.video" size={18} className="text-online" /> : <VideoOff data-gc="voz.voice-panel.video-off" size={18} />}
         </VoiceControl>
 
-        <VoiceControl
+        <VoiceControl data-gc="voz.voice-panel.voice-control--2"
           label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
           onClick={() => void toggleScreen()}
         >
           {screenEnabled ? (
-            <MonitorX size={18} className="text-online" />
+            <MonitorX data-gc="voz.voice-panel.monitor-x" size={18} className="text-online" />
           ) : (
-            <MonitorUp size={18} />
+            <MonitorUp data-gc="voz.voice-panel.monitor-up" size={18} />
           )}
         </VoiceControl>
       </div>
@@ -170,8 +170,8 @@ interface VoiceControlProps {
 }
 
 const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick }) => (
-  <Tooltip label={label}>
-    <button
+  <Tooltip data-gc="voz.voice-panel.tooltip--2" label={label}>
+    <button data-gc="voz.voice-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
       className="flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
@@ -193,7 +193,7 @@ const AvisoMicrofoneBloqueado: React.FC = () => {
 
   if (!ponte) {
     return (
-      <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+      <p data-gc="voz.voice-panel.p--2" className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
         {t("chamada.microfone.bloqueado")}
       </p>
     );
@@ -201,33 +201,33 @@ const AvisoMicrofoneBloqueado: React.FC = () => {
 
   if (statusDoSistema && statusDoSistema !== "granted") {
     return (
-      <div className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
-        <p>
-          {t("chamada.microfone.bloqueadoNoMac")} <b>{ponte.nomeNoSistema}</b> em{" "}
-          <b>{t("chamada.microfone.caminhoNoMac")}</b>.
+      <div data-gc="voz.voice-panel.div--6" className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+        <p data-gc="voz.voice-panel.p--3">
+          {t("chamada.microfone.bloqueadoNoMac")} <b data-gc="voz.voice-panel.b">{ponte.nomeNoSistema}</b> em{" "}
+          <b data-gc="voz.voice-panel.b--2">{t("chamada.microfone.caminhoNoMac")}</b>.
         </p>
-        <button
+        <button data-gc="voz.voice-panel.button--5"
           onClick={() => ponte.midia.abrirAjustes("microphone")}
           className="mt-1.5 rounded bg-danger/25 px-2 py-1 font-medium transition hover:bg-danger/40"
         >
           {t("chamada.microfone.abrirAjustes")}
         </button>
-        <p className="mt-1.5 text-ink-faint">{t("chamada.microfone.vaiReabrir")}</p>
+        <p data-gc="voz.voice-panel.p--4" className="mt-1.5 text-ink-faint">{t("chamada.microfone.vaiReabrir")}</p>
       </div>
     );
   }
 
   return (
-    <p className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
+    <p data-gc="voz.voice-panel.p--5" className="mb-2 rounded bg-danger/15 px-2 py-1.5 text-xs text-danger">
       {t("chamada.microfone.naoAbriu")}
     </p>
   );
 };
 
 const IconeDeSinal: React.FC<{ ping: PingDaChamada }> = ({ ping }) => (
-  <Tooltip label={ping.ms !== null ? `${ping.ms} ms` : "Medindo…"}>
-    <span className={corDoPing(ping)}>
-      <Signal size={16} />
+  <Tooltip data-gc="voz.voice-panel.tooltip--3" label={ping.ms !== null ? `${ping.ms} ms` : "Medindo…"}>
+    <span data-gc="voz.voice-panel.span--4" className={corDoPing(ping)}>
+      <Signal data-gc="voz.voice-panel.signal--2" size={16} />
     </span>
   </Tooltip>
 );

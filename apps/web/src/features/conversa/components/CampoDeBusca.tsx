@@ -15,10 +15,10 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
   }, [termo]);
 
   return (
-    <div className="relative hidden items-center @2xl:flex">
-      <MagnifyingGlass size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
+    <div data-gc="conversa.campo-de-busca.div" className="relative hidden items-center @2xl:flex">
+      <MagnifyingGlass data-gc="conversa.campo-de-busca.magnifying-glass" size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
 
-      <input
+      <input data-gc="conversa.campo-de-busca.input"
         value={rascunho}
         onChange={(e) => setRascunho(e.target.value)}
         onKeyDown={(e) => {
@@ -35,7 +35,7 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
       />
 
       {rascunho && (
-        <button
+        <button data-gc="conversa.campo-de-busca.button"
           onClick={() => {
             setRascunho("");
             onBuscar("");
@@ -43,7 +43,7 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
           aria-label="Limpar a busca"
           className="absolute right-1.5 text-ink-faint transition hover:text-ink"
         >
-          <X size={13} />
+          <X data-gc="conversa.campo-de-busca.x" size={13} />
         </button>
       )}
     </div>

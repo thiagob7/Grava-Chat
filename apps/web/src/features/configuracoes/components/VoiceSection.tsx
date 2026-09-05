@@ -37,7 +37,7 @@ const AvisoDoAtalho: React.FC = () => {
 
   if (!ponte) {
     return (
-      <p className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
+      <p data-gc="configuracoes.voice-section.p" className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
         No navegador, o push-to-talk só funciona com esta aba em foco. Com o
         jogo em primeiro plano a tecla não chega até aqui — isso o aplicativo
         para computador resolve.
@@ -47,14 +47,14 @@ const AvisoDoAtalho: React.FC = () => {
 
   if (estado?.precisaPermissao) {
     return (
-      <div className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
-        <p>
-          Falta liberar o <b>{ponte.nomeNoSistema}</b> em{" "}
-          <b>Ajustes do Sistema → Privacidade e Segurança → Acessibilidade</b>.
+      <div data-gc="configuracoes.voice-section.div" className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
+        <p data-gc="configuracoes.voice-section.p--2">
+          Falta liberar o <b data-gc="configuracoes.voice-section.b">{ponte.nomeNoSistema}</b> em{" "}
+          <b data-gc="configuracoes.voice-section.b--2">Ajustes do Sistema → Privacidade e Segurança → Acessibilidade</b>.
           Sem isso o macOS não entrega a tecla quando a janela está atrás do
           jogo — e o push-to-talk volta a valer só com o Gravaê em foco.
         </p>
-        <Button
+        <Button data-gc="configuracoes.voice-section.button"
           className="mt-2"
           variant="surface"
           size="sm"
@@ -66,7 +66,7 @@ const AvisoDoAtalho: React.FC = () => {
         >
           Abrir os ajustes
         </Button>
-        <p className="mt-2 text-ink-faint">
+        <p data-gc="configuracoes.voice-section.p--3" className="mt-2 text-ink-faint">
           Depois de marcar a caixinha, reabra o Gravaê.
         </p>
       </div>
@@ -75,7 +75,7 @@ const AvisoDoAtalho: React.FC = () => {
 
   if (estado?.indisponivel) {
     return (
-      <p className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
+      <p data-gc="configuracoes.voice-section.p--4" className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
         Não consegui ligar o atalho global nesta máquina. O push-to-talk
         continua funcionando com a janela do Gravaê em foco.
       </p>
@@ -83,7 +83,7 @@ const AvisoDoAtalho: React.FC = () => {
   }
 
   return (
-    <p className="mt-3 rounded bg-online/10 px-3 py-2 text-xs text-online">
+    <p data-gc="configuracoes.voice-section.p--5" className="mt-3 rounded bg-online/10 px-3 py-2 text-xs text-online">
       No aplicativo a tecla vale mesmo com o jogo em primeiro plano.
     </p>
   );
@@ -170,19 +170,19 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
   const [vendoPermissoes, setVendoPermissoes] = useState(false);
 
   return (
-    <div className="max-w-2xl pb-10">
+    <div data-gc="configuracoes.voice-section.div--2" className="max-w-2xl pb-10">
       {ehMac && (
-        <Button
+        <Button data-gc="configuracoes.voice-section.button--2"
           variant="surface"
           size="sm"
           onClick={() => setVendoPermissoes(true)}
         >
-          <ShieldCheck size={14} /> Permissões do macOS
+          <ShieldCheck data-gc="configuracoes.voice-section.shield-check" size={14} /> Permissões do macOS
         </Button>
       )}
 
       {ehMac && (
-        <PermissoesDoMac
+        <PermissoesDoMac data-gc="configuracoes.voice-section.permissoes-do-mac"
           aberto={vendoPermissoes}
           onFechar={() => setVendoPermissoes(false)}
         />
@@ -190,13 +190,13 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
 
       {parte === "audio" && (
         <>
-          <Secao id="dispositivos" titulo="Dispositivos">
-            <div className="grid grid-cols-2 gap-5">
-              <label className="block">
-                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                  <Mic size={13} /> Dispositivo de entrada
+          <Secao data-gc="configuracoes.voice-section.secao" id="dispositivos" titulo="Dispositivos">
+            <div data-gc="configuracoes.voice-section.div--3" className="grid grid-cols-2 gap-5">
+              <label data-gc="configuracoes.voice-section.label" className="block">
+                <span data-gc="configuracoes.voice-section.span" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  <Mic data-gc="configuracoes.voice-section.mic" size={13} /> Dispositivo de entrada
                 </span>
-                <CampoSelect
+                <CampoSelect data-gc="configuracoes.voice-section.campo-select"
                   valor={prefs.entradaId ?? ""}
                   onEscolher={(id) =>
                     void aplicarAjustes({ entradaId: id || null })
@@ -211,11 +211,11 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                 />
               </label>
 
-              <label className="block">
-                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                  <Volume2 size={13} /> Dispositivo de saída
+              <label data-gc="configuracoes.voice-section.label--2" className="block">
+                <span data-gc="configuracoes.voice-section.span--2" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  <Volume2 data-gc="configuracoes.voice-section.volume2" size={13} /> Dispositivo de saída
                 </span>
-                <CampoSelect
+                <CampoSelect data-gc="configuracoes.voice-section.campo-select--2"
                   valor={prefs.saidaId ?? ""}
                   disabled={!suportaTrocaDeSaida}
                   onEscolher={(id) =>
@@ -230,7 +230,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                   ]}
                 />
                 {!suportaTrocaDeSaida && (
-                  <p className="mt-1.5 text-xs text-ink-faint">
+                  <p data-gc="configuracoes.voice-section.p--6" className="mt-1.5 text-xs text-ink-faint">
                     Este navegador não deixa escolher a saída — quem manda é o
                     padrão do sistema.
                   </p>
@@ -240,7 +240,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
           </Secao>
 
           {semNomes && (
-            <Button
+            <Button data-gc="configuracoes.voice-section.button--3"
               variant="surface"
               size="sm"
               className="mt-3"
@@ -258,8 +258,8 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             </Button>
           )}
 
-          <section className="mt-7 grid grid-cols-2 gap-5">
-            <Controle
+          <section data-gc="configuracoes.voice-section.section" className="mt-7 grid grid-cols-2 gap-5">
+            <Controle data-gc="configuracoes.voice-section.controle"
               titulo="Volume de entrada"
               valor={`${Math.round(prefs.ganhoEntrada * 100)}%`}
               min={0}
@@ -270,7 +270,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
               onChange={(v) => void aplicarAjustes({ ganhoEntrada: v })}
             />
 
-            <Controle
+            <Controle data-gc="configuracoes.voice-section.controle--2"
               titulo="Volume de saída"
               valor={`${Math.round(prefs.volumeSaida * 100)}%`}
               min={0}
@@ -282,14 +282,14 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             />
           </section>
 
-          <Secao id="teste-do-microfone" titulo="Teste do microfone">
-            <p className="mt-1 text-sm text-ink-muted">
+          <Secao data-gc="configuracoes.voice-section.secao--2" id="teste-do-microfone" titulo="Teste do microfone">
+            <p data-gc="configuracoes.voice-section.p--7" className="mt-1 text-sm text-ink-muted">
               Fale alguma coisa. A barra mostra o que o microfone está captando;
               verde é o que sai daqui, cinza é o que o corte segura.
             </p>
 
-            <div className="mt-3 flex items-center gap-3">
-              <Button
+            <div data-gc="configuracoes.voice-section.div--4" className="mt-3 flex items-center gap-3">
+              <Button data-gc="configuracoes.voice-section.button--4"
                 variant="surface"
                 size="sm"
                 onClick={() => setTestando((v) => !v)}
@@ -298,8 +298,8 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
               </Button>
 
               {testando && !emChamada && (
-                <label className="flex items-center gap-2 text-sm text-ink-muted">
-                  <Switch
+                <label data-gc="configuracoes.voice-section.label--3" className="flex items-center gap-2 text-sm text-ink-muted">
+                  <Switch data-gc="configuracoes.voice-section.switch.set-ouvindo-avoz-propria"
                     checked={ouvindoAVozPropria}
                     onCheckedChange={setOuvindoAVozPropria}
                   />
@@ -308,25 +308,25 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
               )}
 
               {emChamada && (
-                <span className="text-xs text-ink-faint">
+                <span data-gc="configuracoes.voice-section.span--3" className="text-xs text-ink-faint">
                   Lendo da chamada em andamento.
                 </span>
               )}
             </div>
 
-            <Medidor nivel={nivel} aberto={aberto} className="mt-3" />
-            {erro && <p className="mt-2 text-xs text-danger">{erro}</p>}
+            <Medidor data-gc="configuracoes.voice-section.medidor" nivel={nivel} aberto={aberto} className="mt-3" />
+            {erro && <p data-gc="configuracoes.voice-section.p--8" className="mt-2 text-xs text-danger">{erro}</p>}
 
-            <audio ref={retorno} autoPlay />
+            <audio data-gc="configuracoes.voice-section.audio" ref={retorno} autoPlay />
           </Secao>
 
-          <Secao id="modo-de-entrada" titulo="Modo de entrada">
-            <div
+          <Secao data-gc="configuracoes.voice-section.secao--3" id="modo-de-entrada" titulo="Modo de entrada">
+            <div data-gc="configuracoes.voice-section.div--5"
               role="radiogroup"
               aria-labelledby="modo-de-entrada"
               className="mt-3 grid grid-cols-2 gap-3"
             >
-              <Opcao
+              <Opcao data-gc="configuracoes.voice-section.opcao"
                 ativo={prefs.modo === "voz"}
                 icone={AudioLines}
                 titulo="Atividade de voz"
@@ -334,7 +334,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                 onClick={() => void aplicarAjustes({ modo: "voz" })}
                 onIrParaOutro={() => void aplicarAjustes({ modo: "ptt" })}
               />
-              <Opcao
+              <Opcao data-gc="configuracoes.voice-section.opcao--2"
                 ativo={prefs.modo === "ptt"}
                 icone={Keyboard}
                 titulo="Push-to-talk"
@@ -345,38 +345,38 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             </div>
 
             {prefs.modo === "ptt" && (
-              <div className="mt-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <div data-gc="configuracoes.voice-section.div--6" className="mt-4">
+                <p data-gc="configuracoes.voice-section.p--9" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                   Atalho
                 </p>
 
-                <Button
+                <Button data-gc="configuracoes.voice-section.button--5"
                   variant={capturandoTecla ? "primary" : "surface"}
                   size="sm"
                   onClick={() => setCapturandoTecla(true)}
                 >
-                  <Keyboard size={14} />
+                  <Keyboard data-gc="configuracoes.voice-section.keyboard" size={14} />
                   {capturandoTecla
                     ? "Aperte uma tecla…"
                     : nomeDaTecla(prefs.teclaPtt)}
                 </Button>
 
-                <AvisoDoAtalho />
+                <AvisoDoAtalho data-gc="configuracoes.voice-section.aviso-do-atalho" />
               </div>
             )}
           </Secao>
 
-          <Secao id="sensibilidade" titulo="Sensibilidade de entrada">
-            <div className="mt-3 flex items-start gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">
+          <Secao data-gc="configuracoes.voice-section.secao--4" id="sensibilidade" titulo="Sensibilidade de entrada">
+            <div data-gc="configuracoes.voice-section.div--7" className="mt-3 flex items-start gap-4">
+              <div data-gc="configuracoes.voice-section.div--8" className="min-w-0 flex-1">
+                <p data-gc="configuracoes.voice-section.p--10" className="text-sm font-medium">
                   Determinar automaticamente
                 </p>
-                <p className="mt-0.5 text-xs text-ink-faint">
+                <p data-gc="configuracoes.voice-section.p--11" className="mt-0.5 text-xs text-ink-faint">
                   O corte se ajusta sozinho ao barulho do ambiente.
                 </p>
               </div>
-              <Switch
+              <Switch data-gc="configuracoes.voice-section.switch"
                 checked={prefs.sensibilidadeAutomatica}
                 onCheckedChange={(v) =>
                   void aplicarAjustes({ sensibilidadeAutomatica: v })
@@ -385,9 +385,9 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             </div>
 
             {!prefs.sensibilidadeAutomatica && (
-              <div className="mt-4">
-                <Medidor nivel={nivel} aberto={aberto} limiar={prefs.limiar} />
-                <Slider
+              <div data-gc="configuracoes.voice-section.div--9" className="mt-4">
+                <Medidor data-gc="configuracoes.voice-section.medidor--2" nivel={nivel} aberto={aberto} limiar={prefs.limiar} />
+                <Slider data-gc="configuracoes.voice-section.slider"
                   className="mt-2"
                   min={0}
                   max={0.5}
@@ -398,7 +398,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                     void aplicarAjustes({ limiar: Number(e.target.value) })
                   }
                 />
-                <p className="mt-2 text-xs text-ink-faint">
+                <p data-gc="configuracoes.voice-section.p--12" className="mt-2 text-xs text-ink-faint">
                   Coloque a marca logo acima do barulho de fundo: o que passar
                   dela é transmitido.
                 </p>
@@ -406,19 +406,19 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             )}
           </Secao>
 
-          <Secao id="qualidade" titulo="Qualidade">
-            <div className="mt-3 flex items-start gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">
+          <Secao data-gc="configuracoes.voice-section.secao--5" id="qualidade" titulo="Qualidade">
+            <div data-gc="configuracoes.voice-section.div--10" className="mt-3 flex items-start gap-4">
+              <div data-gc="configuracoes.voice-section.div--11" className="min-w-0 flex-1">
+                <p data-gc="configuracoes.voice-section.p--13" className="text-sm font-medium">
                   Supressão de ruído avançada
                 </p>
-                <p className="mt-0.5 text-xs text-ink-faint">
+                <p data-gc="configuracoes.voice-section.p--14" className="mt-0.5 text-xs text-ink-faint">
                   {noiseFilterAvailable
                     ? "Remove ventilador, teclado e obra na rua. RNNoise, rodando aqui no seu aparelho."
                     : "Indisponível neste navegador — segue valendo a supressão do próprio navegador."}
                 </p>
               </div>
-              <Switch
+              <Switch data-gc="configuracoes.voice-section.switch--2"
                 checked={prefs.supressaoDeRuido && noiseFilterAvailable}
                 disabled={!noiseFilterAvailable}
                 onCheckedChange={(v) =>
@@ -427,16 +427,16 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
               />
             </div>
 
-            <div className="mt-4 flex items-start gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">Sons da interface</p>
-                <p className="mt-0.5 text-xs text-ink-faint">
+            <div data-gc="configuracoes.voice-section.div--12" className="mt-4 flex items-start gap-4">
+              <div data-gc="configuracoes.voice-section.div--13" className="min-w-0 flex-1">
+                <p data-gc="configuracoes.voice-section.p--15" className="text-sm font-medium">Sons da interface</p>
+                <p data-gc="configuracoes.voice-section.p--16" className="mt-0.5 text-xs text-ink-faint">
                   Bipes curtos ao entrar e sair da chamada, mutar e começar a
                   transmitir. Quem está gravando ou transmitindo costuma
                   preferir desligado.
                 </p>
               </div>
-              <Switch
+              <Switch data-gc="configuracoes.voice-section.switch--3"
                 checked={prefs.somDaInterface}
                 onCheckedChange={(v) => prefs.definir({ somDaInterface: v })}
               />
@@ -447,16 +447,16 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
 
       {parte === "video" && (
         <>
-          <Secao
+          <Secao data-gc="configuracoes.voice-section.secao--6"
             id="video"
             titulo="Vídeo"
             detalhe="A câmera que entra quando você liga o vídeo numa chamada."
           >
-            <label className="block max-w-sm">
-              <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                <Video size={13} /> Câmera
+            <label data-gc="configuracoes.voice-section.label--4" className="block max-w-sm">
+              <span data-gc="configuracoes.voice-section.span--4" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                <Video data-gc="configuracoes.voice-section.video" size={13} /> Câmera
               </span>
-              <CampoSelect
+              <CampoSelect data-gc="configuracoes.voice-section.campo-select--3"
                 valor={prefs.cameraId ?? ""}
                 onEscolher={(id) => prefs.definir({ cameraId: id || null })}
                 opcoes={[
@@ -470,30 +470,30 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
             </label>
 
             {!cameras.length && (
-              <p className="mt-2 text-xs text-ink-faint">
+              <p data-gc="configuracoes.voice-section.p--17" className="mt-2 text-xs text-ink-faint">
                 Nenhuma câmera encontrada. Os nomes só aparecem depois que você
                 der permissão de vídeo ao Gravaê uma vez.
               </p>
             )}
           </Secao>
 
-          <Secao id="transmissao" titulo="Transmissão">
-            <div className="flex items-start gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">
+          <Secao data-gc="configuracoes.voice-section.secao--7" id="transmissao" titulo="Transmissão">
+            <div data-gc="configuracoes.voice-section.div--14" className="flex items-start gap-4">
+              <div data-gc="configuracoes.voice-section.div--15" className="min-w-0 flex-1">
+                <p data-gc="configuracoes.voice-section.p--18" className="text-sm font-medium">
                   Compartilhar o som do sistema
                 </p>
-                <p className="mt-0.5 text-xs text-ink-faint">
+                <p data-gc="configuracoes.voice-section.p--19" className="mt-0.5 text-xs text-ink-faint">
                   Manda o áudio do computador junto com a tela — é o que faz
                   assistir vídeo em conjunto funcionar.{" "}
-                  <strong className="text-ink">
+                  <strong data-gc="configuracoes.voice-section.strong" className="text-ink">
                     Se você ouve a chamada pelas caixas
                   </strong>
                   , o que sai delas é capturado e volta pra sala: todo mundo se
                   escuta em eco. De fone, não acontece.
                 </p>
               </div>
-              <Switch
+              <Switch data-gc="configuracoes.voice-section.switch--4"
                 checked={prefs.somDaTela}
                 onCheckedChange={(v) => prefs.definir({ somDaTela: v })}
               />
@@ -518,13 +518,13 @@ const Medidor: React.FC<MedidorProps> = ({
   limiar,
   className,
 }) => (
-  <div
+  <div data-gc="configuracoes.voice-section.div--16"
     className={cn(
       "relative h-2.5 w-full overflow-hidden rounded-full bg-surface-0",
       className,
     )}
   >
-    <div
+    <div data-gc="configuracoes.voice-section.div--17"
       className={cn(
         "h-full rounded-full transition-[width] duration-75",
         aberto ? "bg-online" : "bg-surface-4",
@@ -533,7 +533,7 @@ const Medidor: React.FC<MedidorProps> = ({
     />
 
     {limiar !== undefined && (
-      <span
+      <span data-gc="configuracoes.voice-section.span--5"
         className="absolute top-0 h-full w-0.5 bg-ink"
         style={{ left: `${Math.min(100, limiar * 100)}%` }}
       />
@@ -559,11 +559,11 @@ const Controle: React.FC<ControleProps> = ({
   preenchido,
   ...props
 }) => (
-  <label className="block">
-    <span className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-ink-muted">
-      {titulo} <span className="text-ink-faint">{valor}</span>
+  <label data-gc="configuracoes.voice-section.label--5" className="block">
+    <span data-gc="configuracoes.voice-section.span--6" className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-ink-muted">
+      {titulo} <span data-gc="configuracoes.voice-section.span--7" className="text-ink-faint">{valor}</span>
     </span>
-    <Slider
+    <Slider data-gc="configuracoes.voice-section.slider--2"
       {...props}
       preenchido={preenchido}
       onChange={(e) => onChange(Number(e.target.value))}
@@ -588,7 +588,7 @@ const Opcao: React.FC<OpcaoProps> = ({
   onClick,
   onIrParaOutro,
 }) => (
-  <button
+  <button data-gc="configuracoes.voice-section.button.on-click"
     role="radio"
     aria-checked={ativo}
     tabIndex={ativo ? 0 : -1}
@@ -608,7 +608,7 @@ const Opcao: React.FC<OpcaoProps> = ({
         : "border-line hover:border-ink-faint hover:bg-surface-3",
     )}
   >
-    <Icone
+    <Icone data-gc="configuracoes.voice-section.icone"
       size={18}
       className={cn(
         "mt-px shrink-0 transition",
@@ -616,19 +616,19 @@ const Opcao: React.FC<OpcaoProps> = ({
       )}
     />
 
-    <span className="min-w-0 flex-1">
-      <span className="block text-sm font-medium">{titulo}</span>
-      <span className="mt-0.5 block text-xs text-ink-faint">{descricao}</span>
+    <span data-gc="configuracoes.voice-section.span--8" className="min-w-0 flex-1">
+      <span data-gc="configuracoes.voice-section.span--9" className="block text-sm font-medium">{titulo}</span>
+      <span data-gc="configuracoes.voice-section.span--10" className="mt-0.5 block text-xs text-ink-faint">{descricao}</span>
     </span>
 
-    <span
+    <span data-gc="configuracoes.voice-section.span--11"
       aria-hidden
       className={cn(
         "relative mt-px size-4 shrink-0 rounded-full border transition",
         ativo ? "border-brand" : "border-surface-4",
       )}
     >
-      {ativo && <span className="absolute inset-[3px] rounded-full bg-brand" />}
+      {ativo && <span data-gc="configuracoes.voice-section.span--12" className="absolute inset-[3px] rounded-full bg-brand" />}
     </span>
   </button>
 );

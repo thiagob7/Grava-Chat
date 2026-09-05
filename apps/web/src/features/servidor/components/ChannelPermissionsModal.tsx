@@ -138,11 +138,11 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
   };
 
   return (
-    <div className="flex max-h-[60vh] gap-6">
-            <aside className="flex w-52 shrink-0 flex-col">
-              <div className="flex items-center gap-2 rounded bg-surface-0 px-2">
-                <Search size={14} className="text-ink-faint" />
-                <Input
+    <div data-gc="servidor.channel-permissions-modal.div" className="flex max-h-[60vh] gap-6">
+            <aside data-gc="servidor.channel-permissions-modal.aside" className="flex w-52 shrink-0 flex-col">
+              <div data-gc="servidor.channel-permissions-modal.div--2" className="flex items-center gap-2 rounded bg-surface-0 px-2">
+                <Search data-gc="servidor.channel-permissions-modal.search" size={14} className="text-ink-faint" />
+                <Input data-gc="servidor.channel-permissions-modal.input"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Cargo ou pessoa"
@@ -151,9 +151,9 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
               </div>
 
               {sugestoes.length > 0 && (
-                <div className="mt-1 overflow-hidden rounded border border-line bg-surface-1">
+                <div data-gc="servidor.channel-permissions-modal.div--3" className="mt-1 overflow-hidden rounded border border-line bg-surface-1">
                   {sugestoes.map((s) => (
-                    <button
+                    <button data-gc="servidor.channel-permissions-modal.button"
                       key={`${s.type}-${s.id}`}
                       onClick={() => {
                         setPendentes((atuais) =>
@@ -166,8 +166,8 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                       }}
                       className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm transition hover:bg-surface-3"
                     >
-                      <span className="truncate">{s.nome}</span>
-                      <span className="ml-auto shrink-0 text-10 uppercase text-ink-faint">
+                      <span data-gc="servidor.channel-permissions-modal.span" className="truncate">{s.nome}</span>
+                      <span data-gc="servidor.channel-permissions-modal.span--2" className="ml-auto shrink-0 text-10 uppercase text-ink-faint">
                         {s.type === "ROLE" ? "cargo" : "pessoa"}
                       </span>
                     </button>
@@ -175,9 +175,9 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                 </div>
               )}
 
-              <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
+              <div data-gc="servidor.channel-permissions-modal.div--4" className="mt-3 min-h-0 flex-1 overflow-y-auto">
                 {lista.map((item) => (
-                  <button
+                  <button data-gc="servidor.channel-permissions-modal.button--2"
                     key={`${item.type}-${item.id}`}
                     onClick={() => setAlvo({ id: item.id, type: item.type })}
                     className={cn(
@@ -186,61 +186,61 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                     )}
                   >
                     {item.user ? (
-                      <Avatar id={item.user.id} name={item.user.displayName} url={item.user.avatarUrl} size={20} />
+                      <Avatar data-gc="servidor.channel-permissions-modal.avatar" id={item.user.id} name={item.user.displayName} url={item.user.avatarUrl} size={20} />
                     ) : (
-                      <span
+                      <span data-gc="servidor.channel-permissions-modal.span--3"
                         className="size-2.5 shrink-0 rounded-full"
                         style={{ backgroundColor: item.cor ?? "#99aab5" }}
                       />
                     )}
-                    <span className="truncate">{item.nome}</span>
+                    <span data-gc="servidor.channel-permissions-modal.span--4" className="truncate">{item.nome}</span>
                   </button>
                 ))}
               </div>
             </aside>
 
-            <div className="min-w-0 flex-1 overflow-y-auto pr-1">
+            <div data-gc="servidor.channel-permissions-modal.div--5" className="min-w-0 flex-1 overflow-y-auto pr-1">
               {alvo ? (
-                <div className="space-y-4">
+                <div data-gc="servidor.channel-permissions-modal.div--6" className="space-y-4">
                   {permissoes.map((permissao) => {
                     const rotulo = PERMISSION_LABELS[permissao];
                     const bloqueado = !souAdmin && !minhasPermissoes.includes(permissao);
                     const estado = estadoDe(permissao);
 
                     return (
-                      <div key={permissao} className={cn("flex items-start gap-4", bloqueado && "opacity-60")}>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">{rotulo.nome}</p>
-                          <p className="mt-0.5 text-xs text-ink-faint">{rotulo.descricao}</p>
+                      <div data-gc="servidor.channel-permissions-modal.div--7" key={permissao} className={cn("flex items-start gap-4", bloqueado && "opacity-60")}>
+                        <div data-gc="servidor.channel-permissions-modal.div--8" className="min-w-0 flex-1">
+                          <p data-gc="servidor.channel-permissions-modal.p" className="text-sm font-medium">{rotulo.nome}</p>
+                          <p data-gc="servidor.channel-permissions-modal.p--2" className="mt-0.5 text-xs text-ink-faint">{rotulo.descricao}</p>
                         </div>
 
-                        <div className="flex shrink-0 overflow-hidden rounded border border-line">
-                          <BotaoEstado
+                        <div data-gc="servidor.channel-permissions-modal.div--9" className="flex shrink-0 overflow-hidden rounded border border-line">
+                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado"
                             ativo={estado === "negar"}
                             disabled={bloqueado}
                             cor="danger"
                             onClick={() => mudar(permissao, "negar")}
                             titulo="Negar"
                           >
-                            <X size={16} />
+                            <X data-gc="servidor.channel-permissions-modal.x" size={16} />
                           </BotaoEstado>
-                          <BotaoEstado
+                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado--2"
                             ativo={estado === "herdar"}
                             disabled={bloqueado}
                             cor="neutro"
                             onClick={() => mudar(permissao, "herdar")}
                             titulo="Herdar do cargo"
                           >
-                            <Minus size={16} />
+                            <Minus data-gc="servidor.channel-permissions-modal.minus" size={16} />
                           </BotaoEstado>
-                          <BotaoEstado
+                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado--3"
                             ativo={estado === "permitir"}
                             disabled={bloqueado}
                             cor="online"
                             onClick={() => mudar(permissao, "permitir")}
                             titulo="Permitir"
                           >
-                            <Check size={16} />
+                            <Check data-gc="servidor.channel-permissions-modal.check" size={16} />
                           </BotaoEstado>
                         </div>
                       </div>
@@ -248,7 +248,7 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                   })}
 
                   {atual && (
-                    <Button
+                    <Button data-gc="servidor.channel-permissions-modal.button--3"
                       variant="ghost"
                       size="sm"
                       className="mt-2"
@@ -264,7 +264,7 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-ink-faint">Escolha um cargo ou uma pessoa à esquerda.</p>
+                <p data-gc="servidor.channel-permissions-modal.p--3" className="text-sm text-ink-faint">Escolha um cargo ou uma pessoa à esquerda.</p>
               )}
             </div>
     </div>
@@ -283,19 +283,19 @@ export const ChannelPermissionsModal: React.FC<ChannelPermissionsModalProps> = (
   channelName,
   ...board
 }) => (
-  <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-    <DialogContent className="max-w-3xl">
-      <DialogHeader>
-        <DialogTitle>Permissões de {channelName}</DialogTitle>
+  <Dialog data-gc="servidor.channel-permissions-modal.dialog" open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogContent data-gc="servidor.channel-permissions-modal.dialog-content" className="max-w-3xl">
+      <DialogHeader data-gc="servidor.channel-permissions-modal.dialog-header">
+        <DialogTitle data-gc="servidor.channel-permissions-modal.dialog-title">Permissões de {channelName}</DialogTitle>
       </DialogHeader>
 
-      <DialogBody>
-        <p className="mb-4 text-sm text-ink-muted">
-          Aqui você muda o que vale <strong>neste canal</strong>. O que ficar em “herdar” continua
+      <DialogBody data-gc="servidor.channel-permissions-modal.dialog-body">
+        <p data-gc="servidor.channel-permissions-modal.p--4" className="mb-4 text-sm text-ink-muted">
+          Aqui você muda o que vale <strong data-gc="servidor.channel-permissions-modal.strong">neste canal</strong>. O que ficar em “herdar” continua
           seguindo o cargo.
         </p>
 
-        <ChannelPermissionsBoard {...board} />
+        <ChannelPermissionsBoard data-gc="servidor.channel-permissions-modal.channel-permissions-board" {...board} />
       </DialogBody>
     </DialogContent>
   </Dialog>
@@ -318,7 +318,7 @@ const BotaoEstado: React.FC<BotaoEstadoProps> = ({
   onClick,
   children,
 }) => (
-  <button
+  <button data-gc="servidor.channel-permissions-modal.button.on-click"
     onClick={onClick}
     disabled={disabled}
     title={titulo}

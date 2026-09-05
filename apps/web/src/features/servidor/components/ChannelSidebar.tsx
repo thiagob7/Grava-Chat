@@ -129,11 +129,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
   return (
     <>
-      <aside
+      <aside data-gc="servidor.channel-sidebar.aside"
         className="lista-de-canais canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
-        <header
+        <header data-gc="servidor.channel-sidebar.header"
           className={cn(
             "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
             !comFaixa && "h-12",
@@ -150,22 +150,22 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         >
           {comFaixa && (
             <>
-              <div
+              <div data-gc="servidor.channel-sidebar.div"
                 aria-hidden
                 className="absolute inset-0 bg-cover bg-top bg-no-repeat"
                 style={{ backgroundImage: `url(${detail!.guild.bannerUrl})` }}
               />
-              <div
+              <div data-gc="servidor.channel-sidebar.div--2"
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/30 to-transparent"
               />
             </>
           )}
 
-          <div className="relative z-10 flex h-12 w-full items-center justify-between px-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild disabled={!detail}>
-              <button
+          <div data-gc="servidor.channel-sidebar.div--3" className="relative z-10 flex h-12 w-full items-center justify-between px-2">
+          <DropdownMenu data-gc="servidor.channel-sidebar.dropdown-menu">
+            <DropdownMenuTrigger data-gc="servidor.channel-sidebar.dropdown-menu-trigger" asChild disabled={!detail}>
+              <button data-gc="servidor.channel-sidebar.button"
                 className={cn(
                   "group/nome flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition",
                   comFaixa
@@ -173,7 +173,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
                 )}
               >
-                <h1
+                <h1 data-gc="servidor.channel-sidebar.h1"
                   className={cn(
                     "truncate font-semibold",
                     comFaixa && "text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
@@ -181,7 +181,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 >
                   {detail?.guild.name ?? "…"}
                 </h1>
-                <ChevronDown
+                <ChevronDown data-gc="servidor.channel-sidebar.chevron-down"
                   size={16}
                   className={cn(
                     "shrink-0 transition-transform duration-150 group-data-[state=open]/nome:rotate-180",
@@ -193,32 +193,32 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="start" className="w-64">
+            <DropdownMenuContent data-gc="servidor.channel-sidebar.dropdown-menu-content" align="start" className="w-64">
               {can("CREATE_INVITE") && (
-                <DropdownMenuItem onSelect={() => setInviting(true)}>
-                  Convidar pessoas <UserPlus size={16} />
+                <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item" onSelect={() => setInviting(true)}>
+                  Convidar pessoas <UserPlus data-gc="servidor.channel-sidebar.user-plus" size={16} />
                 </DropdownMenuItem>
               )}
 
               {podeConfigurar && (
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--2"
                   onSelect={() => configuracoes.abrir(detail!.guild.id)}
                 >
-                  Configurações do servidor <Settings size={16} />
+                  Configurações do servidor <Settings data-gc="servidor.channel-sidebar.settings" size={16} />
                 </DropdownMenuItem>
               )}
 
               {canManageChannels && (
                 <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={() => setCreatingIn(null)}>
-                    Criar canal <Plus size={16} />
+                  <DropdownMenuSeparator data-gc="servidor.channel-sidebar.dropdown-menu-separator" />
+                  <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--3" onSelect={() => setCreatingIn(null)}>
+                    Criar canal <Plus data-gc="servidor.channel-sidebar.plus" size={16} />
                   </DropdownMenuItem>
                 </>
               )}
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
+              <DropdownMenuSeparator data-gc="servidor.channel-sidebar.dropdown-menu-separator--2" />
+              <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--4"
                 onSelect={() => {
                   void copiarTexto(detail?.guild.id ?? "");
                   toast.success("ID copiado.");
@@ -227,27 +227,27 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 Copiar ID do servidor
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator data-gc="servidor.channel-sidebar.dropdown-menu-separator--3" />
               {isOwner ? (
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--5"
                   danger
                   onSelect={() =>
                     configuracoes.abrir(detail!.guild.id, "excluir")
                   }
                 >
-                  Excluir servidor <Trash2 size={16} />
+                  Excluir servidor <Trash2 data-gc="servidor.channel-sidebar.trash2" size={16} />
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem danger onSelect={() => onLeaveGuild()}>
-                  Sair do servidor <LogOut size={16} />
+                <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--6" danger onSelect={() => onLeaveGuild()}>
+                  Sair do servidor <LogOut data-gc="servidor.channel-sidebar.log-out" size={16} />
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
 
           {detail && can("CREATE_INVITE") && (
-            <Tooltip label="Convidar amigos">
-              <button
+            <Tooltip data-gc="servidor.channel-sidebar.tooltip" label="Convidar amigos">
+              <button data-gc="servidor.channel-sidebar.button--2"
                 onClick={() => setInviting(true)}
                 className={cn(
                   "shrink-0 rounded-lg p-1.5 transition",
@@ -256,23 +256,23 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                     : "text-ink-muted hover:text-ink",
                 )}
               >
-                <UserPlus size={18} weight="fill" />
+                <UserPlus data-gc="servidor.channel-sidebar.user-plus--2" size={18} weight="fill" />
               </button>
             </Tooltip>
           )}
           </div>
         </header>
 
-        <div className="relative flex min-h-0 flex-1 flex-col">
-          <div className="flex-1 overflow-y-auto px-2 py-3">
+        <div data-gc="servidor.channel-sidebar.div--4" className="relative flex min-h-0 flex-1 flex-col">
+          <div data-gc="servidor.channel-sidebar.div--5" className="flex-1 overflow-y-auto px-2 py-3">
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
 
               return (
-                <section key={group.id ?? "sem-categoria"} className="mb-4">
+                <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} className="mb-4">
                   {group.name && (
-                    <div className="group flex items-center justify-between px-1">
-                      <button
+                    <div data-gc="servidor.channel-sidebar.div--6" className="group flex items-center justify-between px-1">
+                      <button data-gc="servidor.channel-sidebar.button--3"
                         onClick={() =>
                           group.id &&
                           setCollapsed({
@@ -282,20 +282,20 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         }
                         className="flex flex-1 items-center gap-1 py-1.5 text-sm font-semibold leading-5 text-ink-faint transition hover:text-ink"
                       >
-                        <CaretDown
+                        <CaretDown data-gc="servidor.channel-sidebar.caret-down"
                           size={12}
                           weight="bold"
                           className={cn("shrink-0 transition-transform", isCollapsed && "-rotate-90")}
                         />
-                        <span className="truncate">{group.name}</span>
+                        <span data-gc="servidor.channel-sidebar.span" className="truncate">{group.name}</span>
                       </button>
                       {canManageChannels && group.id !== "favoritos" && (
-                        <button
+                        <button data-gc="servidor.channel-sidebar.button--4"
                           onClick={() => setCreatingIn(group.id)}
                           title="Criar canal"
                           className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
                         >
-                          <Plus size={16} />
+                          <Plus data-gc="servidor.channel-sidebar.plus--2" size={16} />
                         </button>
                       )}
                     </div>
@@ -324,8 +324,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         : null;
 
                       return (
-                        <div key={channel.id} className="group/canal relative">
-                          <button
+                        <div data-gc="servidor.channel-sidebar.div--7" key={channel.id} className="group/canal relative">
+                          <button data-gc="servidor.channel-sidebar.button--5"
                             onClick={() => onSelectChannel(channel.id)}
                             className={cn(
                               "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
@@ -340,12 +340,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           >
                             {channel.type === "VOICE" ? (
                               bloqueado ? (
-                                <Lock
+                                <Lock data-gc="servidor.channel-sidebar.lock"
                                   size={20}
                                   className="shrink-0 text-ink-faint"
                                 />
                               ) : (
-                                <SpeakerHigh
+                                <SpeakerHigh data-gc="servidor.channel-sidebar.speaker-high"
                                   size={20}
                                   weight="fill"
                                   className={cn(
@@ -357,24 +357,24 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 />
                               )
                             ) : channel.type === "FORUM" ? (
-                              <ChatsCircle
+                              <ChatsCircle data-gc="servidor.channel-sidebar.chats-circle"
                                 size={20}
                                 weight="fill"
                                 className="shrink-0 text-ink-faint"
                               />
                             ) : channel.isPrivate ? (
-                              <Lock
+                              <Lock data-gc="servidor.channel-sidebar.lock--2"
                                 size={20}
                                 className="shrink-0 text-ink-faint"
                               />
                             ) : (
-                              <Hash
+                              <Hash data-gc="servidor.channel-sidebar.hash"
                                 size={20}
                                 weight="bold"
                                 className="shrink-0 text-ink-faint"
                               />
                             )}
-                            <span
+                            <span data-gc="servidor.channel-sidebar.span--2"
                               className="truncate"
                               style={{
                                 fontFamily:
@@ -384,10 +384,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               {channel.name}
                             </span>
 
-                            <span className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            <span data-gc="servidor.channel-sidebar.span--3" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
-                                  <span
+                                  <span data-gc="servidor.channel-sidebar.span--4"
                                     title={`${entradas.length} de ${channel.userLimit}`}
                                     className={cn(
                                       "text-11 font-medium tabular-nums",
@@ -402,11 +402,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                               {channel.type === "VOICE" &&
                                 chamadaDesde !== null &&
-                                !unread && <CallTimer desde={chamadaDesde} />}
+                                !unread && <CallTimer data-gc="servidor.channel-sidebar.call-timer" desde={chamadaDesde} />}
 
                               {unread &&
                                 (naoLidas > 0 ? (
-                                  <span
+                                  <span data-gc="servidor.channel-sidebar.span--5"
                                     title={
                                       mencoes > 0
                                         ? `${mencoes} menção(ões) a você`
@@ -422,45 +422,45 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     {naoLidas > 99 ? "99+" : naoLidas}
                                   </span>
                                 ) : (
-                                  <span className="size-2 rounded-full bg-ink" />
+                                  <span data-gc="servidor.channel-sidebar.span--6" className="size-2 rounded-full bg-ink" />
                                 ))}
                             </span>
                           </button>
 
-                          <div className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
+                          <div data-gc="servidor.channel-sidebar.div--8" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                             {channel.type === "VOICE" && (
-                              <button
+                              <button data-gc="servidor.channel-sidebar.button--6"
                                 onClick={() => onOpenVoiceChat?.(channel.id)}
                                 title="Abrir chat"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <ChatCircle size={16} weight="fill" />
+                                <ChatCircle data-gc="servidor.channel-sidebar.chat-circle" size={16} weight="fill" />
                               </button>
                             )}
 
                             {can("CREATE_INVITE") && (
-                              <button
+                              <button data-gc="servidor.channel-sidebar.button--7"
                                 onClick={() => setInviting(true)}
                                 title="Convidar pessoas"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <UserPlus size={16} weight="fill" />
+                                <UserPlus data-gc="servidor.channel-sidebar.user-plus--3" size={16} weight="fill" />
                               </button>
                             )}
 
                             {(canManageChannels || canManageRoles) && (
-                              <button
+                              <button data-gc="servidor.channel-sidebar.button--8"
                                 onClick={() => setEditandoCanal(channel.id)}
                                 title="Editar canal"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
-                                <GearSix size={16} weight="fill" />
+                                <GearSix data-gc="servidor.channel-sidebar.gear-six" size={16} weight="fill" />
                               </button>
                             )}
                           </div>
 
                           {channel.type === "VOICE" && (
-                            <VoiceMembers
+                            <VoiceMembers data-gc="servidor.channel-sidebar.voice-members"
                               states={detail?.voiceStates[channel.id] ?? []}
                               members={detail?.members ?? []}
                               guildId={detail?.guild.id}
@@ -480,7 +480,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             })}
           </div>
 
-          <AlcaDeLargura
+          <AlcaDeLargura data-gc="servidor.channel-sidebar.alca-de-largura"
             borda="direita"
             arrastando={arrastando}
             largura={largura}
@@ -489,7 +489,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           />
         </div>
 
-        <RodapeDaBarra
+        <RodapeDaBarra data-gc="servidor.channel-sidebar.rodape-da-barra.on-logout"
           user={user}
           guildId={detail?.guild.id}
           onLogout={onLogout}
@@ -497,13 +497,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         />
       </aside>
 
-      <CreateChannelModal
+      <CreateChannelModal data-gc="servidor.channel-sidebar.create-channel-modal"
         open={creatingIn !== false}
         guildId={detail?.guild.id}
         categoryId={creatingIn === false ? null : creatingIn}
         onClose={() => setCreatingIn(false)}
       />
-      <InviteModal
+      <InviteModal data-gc="servidor.channel-sidebar.invite-modal"
         open={inviting}
         guildId={detail?.guild.id}
         guildName={detail?.guild.name}
@@ -517,7 +517,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           if (!canal) return null;
 
           return (
-            <ChannelSettingsModal
+            <ChannelSettingsModal data-gc="servidor.channel-sidebar.channel-settings-modal"
               open
               onClose={() => setEditandoCanal(null)}
               guildId={detail.guild.id}
@@ -532,7 +532,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         })()}
 
       {detail && (
-        <ServerSettingsModal
+        <ServerSettingsModal data-gc="servidor.channel-sidebar.server-settings-modal.fechar"
           open={configurando}
           onClose={configuracoes.fechar}
           secaoInicial={configuracoes.secao}

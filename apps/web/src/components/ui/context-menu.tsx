@@ -13,7 +13,7 @@ export const ContextMenuContent = ({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Content>) => (
   <ContextMenuPrimitive.Portal>
-    <ContextMenuPrimitive.Content
+    <ContextMenuPrimitive.Content data-gc="ui.context-menu.context-menu-primitivecontent"
       className={cn(
         "regiao-sem-arrasto z-50 max-h-[85vh] min-w-56 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
@@ -28,7 +28,7 @@ interface ItemProps extends React.ComponentProps<typeof ContextMenuPrimitive.Ite
 }
 
 export const ContextMenuItem = ({ className, danger, ...props }: ItemProps) => (
-  <ContextMenuPrimitive.Item
+  <ContextMenuPrimitive.Item data-gc="ui.context-menu.context-menu-primitiveitem"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm outline-none transition",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
@@ -46,7 +46,7 @@ export const ContextMenuSubTrigger = ({
   children,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger>) => (
-  <ContextMenuPrimitive.SubTrigger
+  <ContextMenuPrimitive.SubTrigger data-gc="ui.context-menu.context-menu-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
       "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=open]:bg-surface-3",
@@ -55,7 +55,7 @@ export const ContextMenuSubTrigger = ({
     {...props}
   >
     {children}
-    <ChevronRight size={14} />
+    <ChevronRight data-gc="ui.context-menu.chevron-right" size={14} />
   </ContextMenuPrimitive.SubTrigger>
 );
 
@@ -64,7 +64,7 @@ export const ContextMenuSubContent = ({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) => (
   <ContextMenuPrimitive.Portal>
-    <ContextMenuPrimitive.SubContent
+    <ContextMenuPrimitive.SubContent data-gc="ui.context-menu.context-menu-primitivesub-content"
       className={cn(
         "regiao-sem-arrasto z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
@@ -78,14 +78,14 @@ export const ContextMenuSeparator = ({
   className,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Separator>) => (
-  <ContextMenuPrimitive.Separator className={cn("my-1.5 h-px bg-line", className)} {...props} />
+  <ContextMenuPrimitive.Separator data-gc="ui.context-menu.context-menu-primitiveseparator" className={cn("my-1.5 h-px bg-line", className)} {...props} />
 );
 
 export const ContextMenuLabel = ({
   className,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Label>) => (
-  <ContextMenuPrimitive.Label
+  <ContextMenuPrimitive.Label data-gc="ui.context-menu.context-menu-primitivelabel"
     className={cn("px-2.5 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-ink-faint", className)}
     {...props}
   />

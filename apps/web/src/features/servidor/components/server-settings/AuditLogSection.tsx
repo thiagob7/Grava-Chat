@@ -84,13 +84,13 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
   });
 
   return (
-    <div className="max-w-3xl pb-10">
-      <div className="flex items-end gap-4">
-        <h2 className="flex-1 text-xl font-semibold">{t("servidor.auditoria.titulo")}</h2>
+    <div data-gc="servidor.server-settings.audit-log-section.div" className="max-w-3xl pb-10">
+      <div data-gc="servidor.server-settings.audit-log-section.div--2" className="flex items-end gap-4">
+        <h2 data-gc="servidor.server-settings.audit-log-section.h2" className="flex-1 text-xl font-semibold">{t("servidor.auditoria.titulo")}</h2>
 
-        <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        <label data-gc="servidor.server-settings.audit-log-section.label" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           {t("servidor.auditoria.porUsuario")}
-          <CampoSelect
+          <CampoSelect data-gc="servidor.server-settings.audit-log-section.campo-select.set-actor-id"
             valor={actorId}
             onEscolher={setActorId}
             className="mt-1 w-44 font-normal normal-case"
@@ -104,9 +104,9 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
           />
         </label>
 
-        <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        <label data-gc="servidor.server-settings.audit-log-section.label--2" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           {t("servidor.auditoria.porAcao")}
-          <CampoSelect
+          <CampoSelect data-gc="servidor.server-settings.audit-log-section.campo-select.set-action"
             valor={action}
             onEscolher={setAction}
             className="mt-1 w-40 font-normal normal-case"
@@ -115,17 +115,17 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
         </label>
       </div>
 
-      <div className="mt-6 space-y-2">
-        {isLoading && <p className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
+      <div data-gc="servidor.server-settings.audit-log-section.div--3" className="mt-6 space-y-2">
+        {isLoading && <p data-gc="servidor.server-settings.audit-log-section.p" className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
         {!isLoading && !data?.entries.length && (
-          <p className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="servidor.server-settings.audit-log-section.p--2" className="py-10 text-center text-sm text-ink-faint">
             {t("servidor.auditoria.vazio")}
           </p>
         )}
 
         {(data?.entries ?? []).map((entrada) => (
-          <Entrada key={entrada.id} entrada={entrada} />
+          <Entrada data-gc="servidor.server-settings.audit-log-section.entrada" key={entrada.id} entrada={entrada} />
         ))}
       </div>
     </div>
@@ -146,47 +146,47 @@ const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
   const mudancas = Object.entries(entrada.changes ?? {});
 
   return (
-    <article className="rounded-lg bg-surface-1">
-      <button
+    <article data-gc="servidor.server-settings.audit-log-section.article" className="rounded-lg bg-surface-1">
+      <button data-gc="servidor.server-settings.audit-log-section.button"
         onClick={() => setAberto((v) => !v)}
         disabled={!mudancas.length && !entrada.reason}
         className="flex w-full items-center gap-3 p-3 text-left"
       >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-0 text-ink-muted">
-          <Icone size={16} />
+        <span data-gc="servidor.server-settings.audit-log-section.span" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-0 text-ink-muted">
+          <Icone data-gc="servidor.server-settings.audit-log-section.icone" size={16} />
         </span>
 
-        <Avatar
+        <Avatar data-gc="servidor.server-settings.audit-log-section.avatar"
           id={entrada.actor.id}
           name={entrada.actor.displayName}
           url={entrada.actor.avatarUrl}
           size={24}
         />
 
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm">
-            <strong className="font-medium text-ink">
+        <span data-gc="servidor.server-settings.audit-log-section.span--2" className="min-w-0 flex-1">
+          <span data-gc="servidor.server-settings.audit-log-section.span--3" className="block truncate text-sm">
+            <strong data-gc="servidor.server-settings.audit-log-section.strong" className="font-medium text-ink">
               {entrada.actor.displayName}
             </strong>{" "}
             {frase}
           </span>
-          <span className="block text-xs text-ink-faint">
+          <span data-gc="servidor.server-settings.audit-log-section.span--4" className="block text-xs text-ink-faint">
             {formatTimestamp(entrada.createdAt)}
           </span>
         </span>
       </button>
 
       {aberto && (
-        <div className="border-t border-line px-3 py-2 text-xs text-ink-muted">
+        <div data-gc="servidor.server-settings.audit-log-section.div--4" className="border-t border-line px-3 py-2 text-xs text-ink-muted">
           {entrada.reason && (
-            <p className="mb-1">
-              <span className="text-ink-faint">{t("servidor.auditoria.motivo")}</span> {entrada.reason}
+            <p data-gc="servidor.server-settings.audit-log-section.p--3" className="mb-1">
+              <span data-gc="servidor.server-settings.audit-log-section.span--5" className="text-ink-faint">{t("servidor.auditoria.motivo")}</span> {entrada.reason}
             </p>
           )}
 
           {mudancas.map(([campo, valor]) => (
-            <p key={campo}>
-              <span className="text-ink-faint">{campo}:</span>{" "}
+            <p data-gc="servidor.server-settings.audit-log-section.p--4" key={campo}>
+              <span data-gc="servidor.server-settings.audit-log-section.span--6" className="text-ink-faint">{campo}:</span>{" "}
               {formatar(valor.de)} → {formatar(valor.para)}
             </p>
           ))}

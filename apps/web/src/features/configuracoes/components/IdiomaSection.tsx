@@ -33,25 +33,25 @@ export const IdiomaSection: React.FC = () => {
   }));
 
   return (
-    <div>
-      <p className="text-sm text-ink-muted">
+    <div data-gc="configuracoes.idioma-section.div">
+      <p data-gc="configuracoes.idioma-section.p" className="text-sm text-ink-muted">
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao
+      <Secao data-gc="configuracoes.idioma-section.secao"
         id="idioma-da-interface"
         titulo={t("idioma.titulo")}
         detalhe={t("idioma.detalhe")}
       >
-        <EscolherIdioma />
+        <EscolherIdioma data-gc="configuracoes.idioma-section.escolher-idioma" />
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.idioma-section.secao--2"
         id="formato-da-hora"
         titulo={t("idioma.formatoDaHora.titulo")}
         detalhe={t("idioma.formatoDaHora.detalhe")}
       >
-        <div
+        <div data-gc="configuracoes.idioma-section.div--2"
           role="radiogroup"
           aria-label={t("idioma.formatoDaHora.titulo")}
           className="space-y-2"
@@ -60,7 +60,7 @@ export const IdiomaSection: React.FC = () => {
             const escolhido = prefs.horaEm24h === formato.vinteQuatro;
 
             return (
-              <button
+              <button data-gc="configuracoes.idioma-section.button"
                 key={formato.chave}
                 type="button"
                 role="radio"
@@ -75,7 +75,7 @@ export const IdiomaSection: React.FC = () => {
                     : "border-line hover:bg-surface-3",
                 )}
               >
-                <span
+                <span data-gc="configuracoes.idioma-section.span"
                   aria-hidden
                   className={cn(
                     "relative mt-0.5 size-4 shrink-0 rounded-full border transition",
@@ -83,15 +83,15 @@ export const IdiomaSection: React.FC = () => {
                   )}
                 >
                   {escolhido && (
-                    <span className="absolute inset-[3px] rounded-full bg-brand" />
+                    <span data-gc="configuracoes.idioma-section.span--2" className="absolute inset-[3px] rounded-full bg-brand" />
                   )}
                 </span>
 
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium">
+                <span data-gc="configuracoes.idioma-section.span--3" className="min-w-0 flex-1">
+                  <span data-gc="configuracoes.idioma-section.span--4" className="block text-sm font-medium">
                     {t(formato.chave)}
                   </span>
-                  <span className="mt-0.5 block font-mono text-xs text-ink-faint">
+                  <span data-gc="configuracoes.idioma-section.span--5" className="mt-0.5 block font-mono text-xs text-ink-faint">
                     {formato.exemplo}
                   </span>
                 </span>
@@ -114,12 +114,12 @@ const EscolherIdioma: React.FC = () => {
   const [atual, setAtual] = useState(idiomaAtual);
 
   return (
-    <div>
-      <p className="mb-3 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
+    <div data-gc="configuracoes.idioma-section.div--3">
+      <p data-gc="configuracoes.idioma-section.p--2" className="mb-3 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
         {t("idioma.emAndamento")}
       </p>
 
-      <CampoSelect
+      <CampoSelect data-gc="configuracoes.idioma-section.campo-select"
         valor={atual}
         onEscolher={(lng) => {
           setAtual(lng);
@@ -128,10 +128,10 @@ const EscolherIdioma: React.FC = () => {
         opcoes={IDIOMAS.map((idioma) => ({
           valor: idioma.lng,
           rotulo: (
-            <span className="flex w-full min-w-0 items-center gap-3">
-              <span className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
-              <span className="shrink-0 text-ink-faint">{idioma.nome}</span>
-              <span aria-hidden className="shrink-0 text-base leading-none">
+            <span data-gc="configuracoes.idioma-section.span--6" className="flex w-full min-w-0 items-center gap-3">
+              <span data-gc="configuracoes.idioma-section.span--7" className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
+              <span data-gc="configuracoes.idioma-section.span--8" className="shrink-0 text-ink-faint">{idioma.nome}</span>
+              <span data-gc="configuracoes.idioma-section.span--9" aria-hidden className="shrink-0 text-base leading-none">
                 {idioma.bandeira}
               </span>
             </span>

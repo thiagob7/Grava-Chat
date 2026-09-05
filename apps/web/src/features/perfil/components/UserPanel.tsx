@@ -43,11 +43,11 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
   return (
     <>
-      <div className="flex cursor-pointer items-center gap-1 px-1 py-1">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">
-              <Avatar
+      <div data-gc="perfil.user-panel.div" className="flex cursor-pointer items-center gap-1 px-1 py-1">
+        <Popover data-gc="perfil.user-panel.popover">
+          <PopoverTrigger data-gc="perfil.user-panel.popover-trigger" asChild>
+            <button data-gc="perfil.user-panel.button" className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3">
+              <Avatar data-gc="perfil.user-panel.avatar"
                 id={user.id}
                 name={user.displayName}
                 url={user.avatarUrl}
@@ -55,22 +55,22 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                 status={user.status}
                 enfeites={user.perfil}
               />
-              <div className="group/eu min-w-0 flex-1">
-                <p className="truncate text-sm font-medium leading-tight">
-                  <UserName nome={user.displayName} perfil={user.perfil} />
+              <div data-gc="perfil.user-panel.div--2" className="group/eu min-w-0 flex-1">
+                <p data-gc="perfil.user-panel.p" className="truncate text-sm font-medium leading-tight">
+                  <UserName data-gc="perfil.user-panel.user-name" nome={user.displayName} perfil={user.perfil} />
                 </p>
 
-                <span className="grid grid-cols-1 overflow-hidden text-xs text-ink-faint">
-                  <span className="col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0">
+                <span data-gc="perfil.user-panel.span" className="grid grid-cols-1 overflow-hidden text-xs text-ink-faint">
+                  <span data-gc="perfil.user-panel.span--2" className="col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0">
                     {emChamada ? (
-                      <span className="flex items-center gap-1 text-online">
+                      <span data-gc="perfil.user-panel.span--3" className="flex items-center gap-1 text-online">
                         {emChamadaNoPrivado ? (
                           <>
-                            <Phone size={12} className="shrink-0" /> Em uma chamada
+                            <Phone data-gc="perfil.user-panel.phone" size={12} className="shrink-0" /> Em uma chamada
                           </>
                         ) : (
                           <>
-                            <Volume2 size={12} className="shrink-0" /> Em voz
+                            <Volume2 data-gc="perfil.user-panel.volume2" size={12} className="shrink-0" /> Em voz
                           </>
                         )}
                       </span>
@@ -79,7 +79,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                     )}
                   </span>
 
-                  <span className="col-start-1 row-start-1 translate-y-full truncate opacity-0 transition duration-200 ease-out group-hover/eu:translate-y-0 group-hover/eu:opacity-100">
+                  <span data-gc="perfil.user-panel.span--4" className="col-start-1 row-start-1 translate-y-full truncate opacity-0 transition duration-200 ease-out group-hover/eu:translate-y-0 group-hover/eu:opacity-100">
                     {user.username}
                   </span>
                 </span>
@@ -87,8 +87,8 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
             </button>
           </PopoverTrigger>
 
-          <PopoverContent side="top" className="max-h-[80vh] w-80 overflow-y-auto p-0">
-            <ProfileCardVisual
+          <PopoverContent data-gc="perfil.user-panel.popover-content" side="top" className="max-h-[80vh] w-80 overflow-y-auto p-0">
+            <ProfileCardVisual data-gc="perfil.user-panel.profile-card-visual"
               id={user.id}
               displayName={user.displayName}
               username={user.username}
@@ -102,7 +102,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               onStatus={() => setDefinindoStatus(true)}
               className="rounded-none"
             >
-              <MenuDoProprioCartao
+              <MenuDoProprioCartao data-gc="perfil.user-panel.menu-do-proprio-cartao"
                 user={user}
                 onEditarPerfil={() => setEditandoPerfil(true)}
                 onGerenciarContas={() => setConfigurando(true)}
@@ -111,35 +111,35 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
           </PopoverContent>
         </Popover>
 
-        <BotaoDoPainel
+        <BotaoDoPainel data-gc="perfil.user-panel.botao-do-painel"
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
           onClick={() => void toggleMic()}
           cortado={!micEnabled || micBlocked}
         >
-          {micEnabled && !micBlocked ? <Mic size={18} /> : <MicOff size={18} />}
+          {micEnabled && !micBlocked ? <Mic data-gc="perfil.user-panel.mic" size={18} /> : <MicOff data-gc="perfil.user-panel.mic-off" size={18} />}
         </BotaoDoPainel>
 
-        <BotaoDoPainel
+        <BotaoDoPainel data-gc="perfil.user-panel.botao-do-painel--2"
           label={deafened ? "Ouvir" : "Ficar surdo"}
           onClick={() => void toggleDeafen()}
           cortado={deafened}
         >
-          {deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
+          {deafened ? <HeadphoneOff data-gc="perfil.user-panel.headphone-off" size={18} /> : <Headphones data-gc="perfil.user-panel.headphones" size={18} />}
         </BotaoDoPainel>
 
-        <Tooltip label="Configurações">
-          <button
+        <Tooltip data-gc="perfil.user-panel.tooltip" label="Configurações">
+          <button data-gc="perfil.user-panel.button--2"
             onClick={() => setConfigurando(true)}
             aria-label="Configurações"
             className="rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
-            <Settings size={18} />
+            <Settings data-gc="perfil.user-panel.settings" size={18} />
           </button>
         </Tooltip>
       </div>
 
       {(configurando || secaoPedida) && (
-        <UserSettingsModal
+        <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.on-logout"
           open
           key={secaoPedida ?? "conta"}
           secaoInicial={secaoPedida ?? "conta"}
@@ -158,11 +158,11 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
       )}
 
       {editandoPerfil && (
-        <ProfileEditorModal open user={user} onClose={() => setEditandoPerfil(false)} />
+        <ProfileEditorModal data-gc="perfil.user-panel.profile-editor-modal" open user={user} onClose={() => setEditandoPerfil(false)} />
       )}
 
       {definindoStatus && (
-        <StatusModal
+        <StatusModal data-gc="perfil.user-panel.status-modal"
           open
           user={user}
           perfil={user.perfil}
@@ -188,8 +188,8 @@ interface BotaoDoPainelProps {
 }
 
 const BotaoDoPainel: React.FC<BotaoDoPainelProps> = ({ children, label, onClick, cortado }) => (
-  <Tooltip label={label}>
-    <button
+  <Tooltip data-gc="perfil.user-panel.tooltip--2" label={label}>
+    <button data-gc="perfil.user-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
       aria-pressed={cortado}

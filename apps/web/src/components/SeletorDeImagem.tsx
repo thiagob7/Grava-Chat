@@ -34,46 +34,46 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(aberto) => !aberto && fechar()}>
-      <DialogContent
+    <Dialog data-gc="seletor-de-imagem.dialog" open={open} onOpenChange={(aberto) => !aberto && fechar()}>
+      <DialogContent data-gc="seletor-de-imagem.dialog-content"
         className={cn(
           "flex max-h-[85vh] flex-col",
           aba === "gif" ? "max-w-2xl" : "max-w-lg",
         )}
       >
-        <div className="flex items-center gap-2 px-5 pt-5">
+        <div data-gc="seletor-de-imagem.div" className="flex items-center gap-2 px-5 pt-5">
           {aba === "gif" && (
-            <button
+            <button data-gc="seletor-de-imagem.button"
               onClick={() => setAba("escolha")}
               aria-label="Voltar"
               className="rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft data-gc="seletor-de-imagem.arrow-left" size={18} />
             </button>
           )}
-          <DialogTitle className="text-lg font-semibold">
+          <DialogTitle data-gc="seletor-de-imagem.dialog-title" className="text-lg font-semibold">
             {aba === "gif" ? "Escolher GIF" : titulo}
           </DialogTitle>
         </div>
 
         {aba === "escolha" ? (
-          <div className="p-5">
-            <div className="grid grid-cols-2 gap-3">
-              <Opcao icone={<ImagePlus size={26} />} rotulo="Enviar imagem" onClick={onArquivo} />
-              <Opcao
-                icone={<Sparkles size={26} />}
+          <div data-gc="seletor-de-imagem.div--2" className="p-5">
+            <div data-gc="seletor-de-imagem.div--3" className="grid grid-cols-2 gap-3">
+              <Opcao data-gc="seletor-de-imagem.opcao.on-arquivo" icone={<ImagePlus data-gc="seletor-de-imagem.image-plus" size={26} />} rotulo="Enviar imagem" onClick={onArquivo} />
+              <Opcao data-gc="seletor-de-imagem.opcao"
+                icone={<Sparkles data-gc="seletor-de-imagem.sparkles" size={26} />}
                 rotulo="Escolher GIF"
                 onClick={() => setAba("gif")}
               />
             </div>
 
-            {rodape && <div className="mt-4 text-xs text-ink-faint">{rodape}</div>}
+            {rodape && <div data-gc="seletor-de-imagem.div--4" className="mt-4 text-xs text-ink-faint">{rodape}</div>}
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-3">
-            <div className="mb-3 flex shrink-0 items-center gap-2 rounded bg-surface-3 px-3">
-              <Search size={15} className="shrink-0 text-ink-faint" />
-              <Input
+          <div data-gc="seletor-de-imagem.div--5" className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-3">
+            <div data-gc="seletor-de-imagem.div--6" className="mb-3 flex shrink-0 items-center gap-2 rounded bg-surface-3 px-3">
+              <Search data-gc="seletor-de-imagem.search" size={15} className="shrink-0 text-ink-faint" />
+              <Input data-gc="seletor-de-imagem.input"
                 autoFocus
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
@@ -82,8 +82,8 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
               />
             </div>
 
-            <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
-              <GradeDeGifs
+            <div data-gc="seletor-de-imagem.div--7" className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
+              <GradeDeGifs data-gc="seletor-de-imagem.grade-de-gifs"
                 busca={busca}
                 onGif={(gif) => {
                   onGif(gif);
@@ -103,7 +103,7 @@ const Opcao: React.FC<{ icone: React.ReactNode; rotulo: string; onClick: () => v
   rotulo,
   onClick,
 }) => (
-  <button
+  <button data-gc="seletor-de-imagem.button.on-click"
     onClick={onClick}
     className={cn(
       "flex h-36 flex-col items-center justify-center gap-2 rounded-lg bg-surface-0 text-sm font-medium",

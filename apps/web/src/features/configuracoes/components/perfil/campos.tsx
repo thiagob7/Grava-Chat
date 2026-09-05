@@ -14,29 +14,29 @@ interface CampoDeCorProps {
 }
 
 export const CampoDeCor: React.FC<CampoDeCorProps> = ({ label, valor, onMudar, padrao = "#a8a8b3", dica }) => (
-  <div>
-    <Label>{label}</Label>
-    <div className="flex items-center gap-2">
-      <input
+  <div data-gc="configuracoes.perfil.campos.div">
+    <Label data-gc="configuracoes.perfil.campos.label">{label}</Label>
+    <div data-gc="configuracoes.perfil.campos.div--2" className="flex items-center gap-2">
+      <input data-gc="configuracoes.perfil.campos.input"
         type="color"
         value={valor ?? padrao}
         onChange={(e) => onMudar(e.target.value)}
         className={cn(campoDeCor, "size-9")}
         aria-label={label}
       />
-      <span className="flex-1 font-mono text-xs text-ink-faint">{valor ?? "herdada"}</span>
+      <span data-gc="configuracoes.perfil.campos.span" className="flex-1 font-mono text-xs text-ink-faint">{valor ?? "herdada"}</span>
       {valor && (
-        <button
+        <button data-gc="configuracoes.perfil.campos.button"
           type="button"
           onClick={() => onMudar(null)}
           className="rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
           aria-label={`Limpar ${label.toLowerCase()}`}
         >
-          <X size={14} />
+          <X data-gc="configuracoes.perfil.campos.x" size={14} />
         </button>
       )}
     </div>
-    {dica && <p className="mt-1 text-xs text-ink-faint">{dica}</p>}
+    {dica && <p data-gc="configuracoes.perfil.campos.p" className="mt-1 text-xs text-ink-faint">{dica}</p>}
   </div>
 );
 
@@ -56,11 +56,11 @@ export function GradeDeOpcoes<T extends string>({
   amostra,
 }: GradeDeOpcoesProps<T>) {
   return (
-    <div>
-      <Label>{label}</Label>
-      <div className="grid grid-cols-3 gap-2">
+    <div data-gc="configuracoes.perfil.campos.div--3">
+      <Label data-gc="configuracoes.perfil.campos.label--2">{label}</Label>
+      <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-3 gap-2">
         {opcoes.map((opcao) => (
-          <button
+          <button data-gc="configuracoes.perfil.campos.button--2"
             key={opcao.id}
             type="button"
             onClick={() => onEscolher(opcao.id)}
@@ -73,16 +73,16 @@ export function GradeDeOpcoes<T extends string>({
             )}
           >
             {valor === opcao.id && (
-              <span
+              <span data-gc="configuracoes.perfil.campos.span--2"
                 aria-hidden
                 className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-brand text-white shadow-md shadow-black/40"
               >
-                <Check size={11} strokeWidth={3} />
+                <Check data-gc="configuracoes.perfil.campos.check" size={11} strokeWidth={3} />
               </span>
             )}
 
-            {amostra && <span className="flex h-8 items-center justify-center">{amostra(opcao.id)}</span>}
-            <span className="text-center leading-tight">{opcao.rotulo}</span>
+            {amostra && <span data-gc="configuracoes.perfil.campos.span--3" className="flex h-8 items-center justify-center">{amostra(opcao.id)}</span>}
+            <span data-gc="configuracoes.perfil.campos.span--4" className="text-center leading-tight">{opcao.rotulo}</span>
           </button>
         ))}
       </div>

@@ -163,27 +163,27 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   if (isLoading) {
     return (
-      <div
+      <div data-gc="conversa.message-list.div"
         aria-busy
         aria-label={t("conversa.lista.carregando")}
         className="@container flex-1 overflow-hidden pt-4"
       >
         {Array.from({ length: 8 }, (_, i) => (
-          <div key={i} className="mt-4 flex gap-x-2 px-2 @sm:gap-x-4 @sm:px-4">
-            <Skeleton className="size-10 shrink-0 rounded-full" />
+          <div data-gc="conversa.message-list.div--2" key={i} className="mt-4 flex gap-x-2 px-2 @sm:gap-x-4 @sm:px-4">
+            <Skeleton data-gc="conversa.message-list.skeleton" className="size-10 shrink-0 rounded-full" />
 
-            <div className="min-w-0 flex-1 space-y-2 py-1">
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-3.5 w-28 rounded-sm" />
-                <Skeleton className="h-2.5 w-16 rounded-sm" />
+            <div data-gc="conversa.message-list.div--3" className="min-w-0 flex-1 space-y-2 py-1">
+              <div data-gc="conversa.message-list.div--4" className="flex items-center gap-2">
+                <Skeleton data-gc="conversa.message-list.skeleton--2" className="h-3.5 w-28 rounded-sm" />
+                <Skeleton data-gc="conversa.message-list.skeleton--3" className="h-2.5 w-16 rounded-sm" />
               </div>
 
-              <Skeleton
+              <Skeleton data-gc="conversa.message-list.skeleton--4"
                 className="h-3 rounded-sm"
                 style={{ width: larguraDaLinha(i) }}
               />
               {i % 3 !== 1 && (
-                <Skeleton
+                <Skeleton data-gc="conversa.message-list.skeleton--5"
                   className="h-3 rounded-sm"
                   style={{ width: larguraDaLinha(i + 3) }}
                 />
@@ -200,39 +200,39 @@ export const MessageList: React.FC<MessageListProps> = ({
   let lastDay = "";
 
   return (
-    <div
+    <div data-gc="conversa.message-list.div.on-scroll"
       ref={scroller}
       onScroll={onScroll}
       className="@container flex-1 overflow-y-auto pt-4"
     >
-      <div ref={conteudo} className="pb-[var(--gc-rodape,1rem)]">
+      <div data-gc="conversa.message-list.div--5" ref={conteudo} className="pb-[var(--gc-rodape,1rem)]">
       {hasNextPage ? (
-        <p className="py-3 text-center text-xs text-ink-faint">
+        <p data-gc="conversa.message-list.p" className="py-3 text-center text-xs text-ink-faint">
           {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}
         </p>
       ) : (
         (header ?? (
-          <div className="px-2 pb-6 pt-4 @sm:px-4">
-            <div className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
+          <div data-gc="conversa.message-list.div--6" className="px-2 pb-6 pt-4 @sm:px-4">
+            <div data-gc="conversa.message-list.div--7" className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
               {semHistorico ? (
-                <Lock size={32} className="text-ink-muted" />
+                <Lock data-gc="conversa.message-list.lock" size={32} className="text-ink-muted" />
               ) : (
-                <Hash size={36} className="text-ink" />
+                <Hash data-gc="conversa.message-list.hash" size={36} className="text-ink" />
               )}
             </div>
             {semHistorico ? (
               <>
-                <h2 className="text-2xl font-bold">{t("conversa.lista.semHistorico")}</h2>
-                <p className="mt-1 text-ink-muted">
+                <h2 data-gc="conversa.message-list.h2" className="text-2xl font-bold">{t("conversa.lista.semHistorico")}</h2>
+                <p data-gc="conversa.message-list.p--2" className="mt-1 text-ink-muted">
                   {t("conversa.lista.semHistoricoDetalhe", { canal: channelName })}
                 </p>
               </>
             ) : (
               <>
-                <h2 className="text-2xl font-bold">
+                <h2 data-gc="conversa.message-list.h2--2" className="text-2xl font-bold">
                   {t("conversa.lista.boasVindas", { canal: channelName })}
                 </h2>
-                <p className="mt-1 text-ink-muted">
+                <p data-gc="conversa.message-list.p--3" className="mt-1 text-ink-muted">
                   {t("conversa.lista.boasVindasDetalhe", { canal: channelName })}
                 </p>
               </>
@@ -247,17 +247,17 @@ export const MessageList: React.FC<MessageListProps> = ({
         lastDay = day;
 
         return (
-          <div key={message.id}>
+          <div data-gc="conversa.message-list.div--8" key={message.id}>
             {isNewDay && (
-              <div className="my-4 flex items-center gap-2 px-2 @sm:px-4">
-                <span className="h-px flex-1 bg-line" />
-                <span className="text-xs font-semibold text-ink-faint">
+              <div data-gc="conversa.message-list.div--9" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
+                <span data-gc="conversa.message-list.span" className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--2" className="text-xs font-semibold text-ink-faint">
                   {formatDayDivider(message.createdAt)}
                 </span>
-                <span className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--3" className="h-px flex-1 bg-line" />
               </div>
             )}
-            <MessageItem
+            <MessageItem data-gc="conversa.message-list.message-item.retry"
               message={message}
               compact={!isNewDay && shouldGroup(messages[index - 1], message)}
               isOwn={message.author.id === currentUserId}

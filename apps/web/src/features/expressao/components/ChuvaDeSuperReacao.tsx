@@ -11,9 +11,9 @@ export const ChuvaDeSuperReacao: React.FC = () => {
   if (!explosoes.length) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
+    <div data-gc="expressao.chuva-de-super-reacao.div" className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
       {explosoes.map((explosao) => (
-        <Explode key={explosao.id} explosao={explosao} />
+        <Explode data-gc="expressao.chuva-de-super-reacao.explode" key={explosao.id} explosao={explosao} />
       ))}
     </div>
   );
@@ -48,7 +48,7 @@ const Explode: React.FC<{ explosao: Explosao }> = ({ explosao }) => {
   return (
     <>
       {particulas.map((p) => (
-        <span
+        <span data-gc="expressao.chuva-de-super-reacao.span"
           key={p.i}
           className="absolute select-none text-2xl will-change-transform [animation:gc-super_1.4s_cubic-bezier(0.2,0.7,0.3,1)_forwards]"
           style={
@@ -64,7 +64,7 @@ const Explode: React.FC<{ explosao: Explosao }> = ({ explosao }) => {
           }
         >
           {explosao.url ? (
-            <img src={explosao.url} alt="" className="size-8 object-contain" />
+            <img data-gc="expressao.chuva-de-super-reacao.img" src={explosao.url} alt="" className="size-8 object-contain" />
           ) : (
             explosao.emoji
           )}

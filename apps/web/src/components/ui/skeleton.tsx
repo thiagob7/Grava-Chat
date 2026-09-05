@@ -6,7 +6,7 @@ export const Skeleton: React.FC<{ className?: string; style?: React.CSSPropertie
   className,
   style,
 }) => (
-  <span
+  <span data-gc="ui.skeleton.span"
     aria-hidden
     style={style}
     className={cn("block animate-pulse rounded bg-ink-faint/15", className)}

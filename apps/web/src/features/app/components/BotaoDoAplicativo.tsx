@@ -13,13 +13,13 @@ export const BotaoDoAplicativo: React.FC = () => {
 
   if (!ehDesktop()) {
     return (
-      <Tooltip label="Baixar o aplicativo">
-        <button
+      <Tooltip data-gc="app.botao-do-aplicativo.tooltip" label="Baixar o aplicativo">
+        <button data-gc="app.botao-do-aplicativo.button"
           onClick={() => abrirConfiguracoes("aplicativo")}
           aria-label="Baixar o aplicativo"
           className="text-online transition hover:brightness-125"
         >
-          <DownloadSimple size={20} weight="bold" />
+          <DownloadSimple data-gc="app.botao-do-aplicativo.download-simple" size={20} weight="bold" />
         </button>
       </Tooltip>
     );
@@ -30,7 +30,7 @@ export const BotaoDoAplicativo: React.FC = () => {
   const aoClicar = () => void (pronta ? ponte.instalar() : ponte.baixar());
 
   return (
-    <Tooltip
+    <Tooltip data-gc="app.botao-do-aplicativo.tooltip--2"
       label={
         instalando
           ? `Instalando a versão ${estado?.disponivel}…`
@@ -43,7 +43,7 @@ export const BotaoDoAplicativo: React.FC = () => {
                 : `Saiu a versão ${estado?.disponivel} — clique para baixar`
       }
     >
-      <button
+      <button data-gc="app.botao-do-aplicativo.button.ao-clicar"
         onClick={aoClicar}
         disabled={baixando || instalando}
         aria-label="Atualização do aplicativo"
@@ -54,13 +54,13 @@ export const BotaoDoAplicativo: React.FC = () => {
         )}
       >
         {pronta || instalando ? (
-          <ArrowClockwise size={20} weight="bold" className={cn(instalando && "animate-spin")} />
+          <ArrowClockwise data-gc="app.botao-do-aplicativo.arrow-clockwise" size={20} weight="bold" className={cn(instalando && "animate-spin")} />
         ) : (
-          <DownloadSimple size={20} weight="bold" />
+          <DownloadSimple data-gc="app.botao-do-aplicativo.download-simple--2" size={20} weight="bold" />
         )}
 
         {pronta && (
-          <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-online" />
+          <span data-gc="app.botao-do-aplicativo.span" className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-online" />
         )}
       </button>
     </Tooltip>

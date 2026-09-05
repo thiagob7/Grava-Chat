@@ -23,29 +23,29 @@ export const DesktopSection: React.FC = () => {
   }, [ponte]);
 
   return (
-    <div>
-      <p className="text-sm text-ink-muted">
+    <div data-gc="configuracoes.desktop-section.div">
+      <p data-gc="configuracoes.desktop-section.p" className="text-sm text-ink-muted">
         O que só faz sentido com o aplicativo instalado. Estas escolhas ficam
         neste computador, não na conta.
       </p>
 
-      <Secao
+      <Secao data-gc="configuracoes.desktop-section.secao"
         id="inicializacao"
         titulo="Inicialização"
         detalhe="Como o Gravaê se comporta quando o computador liga."
       >
         {!ponte ? (
-          <p className="text-sm text-ink-faint">
+          <p data-gc="configuracoes.desktop-section.p--2" className="text-sm text-ink-faint">
             Esta versão do aplicativo é mais antiga que esta tela. Atualize
             abaixo e a opção aparece.
           </p>
         ) : !suportado ? (
-          <p className="text-sm text-ink-faint">
+          <p data-gc="configuracoes.desktop-section.p--3" className="text-sm text-ink-faint">
             O seu sistema não deixa o aplicativo se registrar para abrir no
             login.
           </p>
         ) : (
-          <Opcao
+          <Opcao data-gc="configuracoes.desktop-section.opcao"
             titulo="Abrir junto com o computador"
             detalhe="O Gravaê sobe minimizado quando você entra na sua conta do sistema, já conectado."
             ligado={noLogin}
@@ -57,23 +57,23 @@ export const DesktopSection: React.FC = () => {
         )}
       </Secao>
 
-      <AtualizacaoDoApp />
+      <AtualizacaoDoApp data-gc="configuracoes.desktop-section.atualizacao-do-app" />
 
-      <Secao
+      <Secao data-gc="configuracoes.desktop-section.secao--2"
         id="reiniciar"
         titulo="Reiniciar"
         detalhe="Fecha e abre o aplicativo de novo, na mesma versão."
       >
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Reiniciar o aplicativo</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
+        <div data-gc="configuracoes.desktop-section.div--2" className="flex items-start gap-4">
+          <div data-gc="configuracoes.desktop-section.div--3" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.desktop-section.p--4" className="text-sm font-medium">Reiniciar o aplicativo</p>
+            <p data-gc="configuracoes.desktop-section.p--5" className="mt-0.5 text-xs text-ink-faint">
               Resolve travamento de janela e devolve o app a um estado limpo sem
               precisar reinstalar. Você sai da chamada se estiver em uma.
             </p>
           </div>
 
-          <Button
+          <Button data-gc="configuracoes.desktop-section.button"
             variant="surface"
             disabled={!ponte}
             onClick={() =>
@@ -85,7 +85,7 @@ export const DesktopSection: React.FC = () => {
               }).then(({ confirmado }) => confirmado && void ponte?.reiniciar())
             }
           >
-            <RotateCcw size={16} /> Reiniciar
+            <RotateCcw data-gc="configuracoes.desktop-section.rotate-ccw" size={16} /> Reiniciar
           </Button>
         </div>
       </Secao>

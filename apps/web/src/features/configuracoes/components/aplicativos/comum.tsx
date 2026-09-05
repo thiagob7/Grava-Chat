@@ -13,7 +13,7 @@ export const copiar = (texto: string, aviso: string) =>
 export const BotaoDeIcone: React.FC<
   React.ComponentProps<"button"> & { rotulo: string }
 > = ({ rotulo, className, ...props }) => (
-  <button
+  <button data-gc="configuracoes.aplicativos.comum.button"
     type="button"
     aria-label={rotulo}
     title={rotulo}
@@ -42,8 +42,8 @@ export const CampoDeSegredo: React.FC<{
   };
 
   return (
-    <div className="flex items-center gap-1">
-      <code
+    <div data-gc="configuracoes.aplicativos.comum.div" className="flex items-center gap-1">
+      <code data-gc="configuracoes.aplicativos.comum.code"
         className={cn(
           "min-w-0 flex-1 truncate rounded bg-surface-0 px-2 py-1.5 text-xs",
           mono && "font-mono",
@@ -53,16 +53,16 @@ export const CampoDeSegredo: React.FC<{
       </code>
 
       {escondivel && (
-        <BotaoDeIcone
+        <BotaoDeIcone data-gc="configuracoes.aplicativos.comum.botao-de-icone"
           rotulo={aberto ? "Esconder" : "Mostrar"}
           onClick={() => setAberto((v) => !v)}
         >
-          {aberto ? <EyeOff size={14} /> : <Eye size={14} />}
+          {aberto ? <EyeOff data-gc="configuracoes.aplicativos.comum.eye-off" size={14} /> : <Eye data-gc="configuracoes.aplicativos.comum.eye" size={14} />}
         </BotaoDeIcone>
       )}
 
-      <BotaoDeIcone rotulo={rotuloCopiar} onClick={aoCopiar}>
-        {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+      <BotaoDeIcone data-gc="configuracoes.aplicativos.comum.botao-de-icone.ao-copiar" rotulo={rotuloCopiar} onClick={aoCopiar}>
+        {copiado ? <Check data-gc="configuracoes.aplicativos.comum.check" size={14} className="text-online" /> : <Copy data-gc="configuracoes.aplicativos.comum.copy" size={14} />}
       </BotaoDeIcone>
     </div>
   );

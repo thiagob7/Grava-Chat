@@ -73,14 +73,14 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
   const vazio = !destinos.canais.length && !destinos.conversas.length;
 
   return (
-    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
-      <DialogContent className="max-w-md">
-        <DialogTitle>{t("conversa.encaminhar.titulo")}</DialogTitle>
+    <Dialog data-gc="conversa.encaminhar-modal.dialog" open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent data-gc="conversa.encaminhar-modal.dialog-content" className="max-w-md">
+        <DialogTitle data-gc="conversa.encaminhar-modal.dialog-title">{t("conversa.encaminhar.titulo")}</DialogTitle>
 
-        <DialogBody>
-          <div className={grupoDeCampo}>
-            <Search size={14} className="shrink-0 text-ink-faint" />
-            <input
+        <DialogBody data-gc="conversa.encaminhar-modal.dialog-body">
+          <div data-gc="conversa.encaminhar-modal.div" className={grupoDeCampo}>
+            <Search data-gc="conversa.encaminhar-modal.search" size={14} className="shrink-0 text-ink-faint" />
+            <input data-gc="conversa.encaminhar-modal.input"
               autoFocus
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -89,24 +89,24 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
             />
           </div>
 
-          <p className="mt-3 line-clamp-2 rounded bg-surface-0 px-3 py-2 text-xs text-ink-faint">
+          <p data-gc="conversa.encaminhar-modal.p" className="mt-3 line-clamp-2 rounded bg-surface-0 px-3 py-2 text-xs text-ink-faint">
             {mensagem.content || t("conversa.encaminhar.semTexto")}
           </p>
 
-          <div className="mt-3 max-h-64 space-y-3 overflow-y-auto">
+          <div data-gc="conversa.encaminhar-modal.div--2" className="mt-3 max-h-64 space-y-3 overflow-y-auto">
             {vazio && (
-              <p className="py-8 text-center text-sm text-ink-faint">
+              <p data-gc="conversa.encaminhar-modal.p--2" className="py-8 text-center text-sm text-ink-faint">
                 {t("conversa.encaminhar.nenhumLugar")}
               </p>
             )}
 
-            <Grupo
+            <Grupo data-gc="conversa.encaminhar-modal.grupo.encaminhar"
               titulo={t("conversa.encaminhar.canais")}
               itens={destinos.canais}
               enviandoPara={enviandoPara}
               onEscolher={encaminhar}
             />
-            <Grupo
+            <Grupo data-gc="conversa.encaminhar-modal.grupo.encaminhar--2"
               titulo={t("conversa.encaminhar.conversas")}
               itens={destinos.conversas}
               enviandoPara={enviandoPara}
@@ -128,13 +128,13 @@ const Grupo: React.FC<{
   if (!itens.length) return null;
 
   return (
-    <section>
-      <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+    <section data-gc="conversa.encaminhar-modal.section">
+      <h4 data-gc="conversa.encaminhar-modal.h4" className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
         {titulo}
       </h4>
 
       {itens.map((destino) => (
-        <button
+        <button data-gc="conversa.encaminhar-modal.button"
           key={destino.id}
           disabled={enviandoPara !== null}
           onClick={() => onEscolher(destino)}
@@ -144,19 +144,19 @@ const Grupo: React.FC<{
           )}
         >
           {destino.avatar ? (
-            <Avatar
+            <Avatar data-gc="conversa.encaminhar-modal.avatar"
               id={destino.avatar.id}
               name={destino.nome}
               url={destino.avatar.url}
               size={20}
             />
           ) : (
-            <Hash size={16} className="shrink-0 text-ink-faint" />
+            <Hash data-gc="conversa.encaminhar-modal.hash" size={16} className="shrink-0 text-ink-faint" />
           )}
 
-          <span className="min-w-0 flex-1 truncate">{destino.nome}</span>
+          <span data-gc="conversa.encaminhar-modal.span" className="min-w-0 flex-1 truncate">{destino.nome}</span>
 
-          {enviandoPara === destino.id && <Send size={14} className="shrink-0 text-brand" />}
+          {enviandoPara === destino.id && <Send data-gc="conversa.encaminhar-modal.send" size={14} className="shrink-0 text-brand" />}
         </button>
       ))}
     </section>

@@ -120,14 +120,14 @@ export const DirectMessages: React.FC = () => {
 
   const navegacao = (
     <>
-      <GuildRail
+      <GuildRail data-gc="friends.direct-messages.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
         onOpenFriends={() => navigate("/dm")}
         pendingFriendRequests={pendentes}
       />
 
-      <DmSidebar
+      <DmSidebar data-gc="friends.direct-messages.dm-sidebar"
         activeChannelId={channelId}
         readStates={readStates}
         user={user}
@@ -142,13 +142,13 @@ export const DirectMessages: React.FC = () => {
   );
 
   return (
-    <div className="flex h-full bg-surface-0">
-      <PrimeiroServidor aberto={convidando} onFechar={() => setDispensado(true)} />
+    <div data-gc="friends.direct-messages.div" className="flex h-full bg-surface-0">
+      <PrimeiroServidor data-gc="friends.direct-messages.primeiro-servidor" aberto={convidando} onFechar={() => setDispensado(true)} />
 
       {telaEstreita ? (
-        <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
-          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
-            <SheetTitle className="sr-only">Conversas</SheetTitle>
+        <Sheet data-gc="friends.direct-messages.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
+          <SheetContent data-gc="friends.direct-messages.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
+            <SheetTitle data-gc="friends.direct-messages.sheet-title" className="sr-only">Conversas</SheetTitle>
             {navegacao}
           </SheetContent>
         </Sheet>
@@ -157,31 +157,31 @@ export const DirectMessages: React.FC = () => {
       )}
 
       {conversa ? (
-        <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-          <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
+        <div data-gc="friends.direct-messages.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
+          <header data-gc="friends.direct-messages.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm">
             {telaEstreita && (
-              <button
+              <button data-gc="friends.direct-messages.button"
                 onClick={() => setMenuAberto(true)}
                 aria-label="Abrir conversas"
                 className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
               >
-                <Menu size={20} />
+                <Menu data-gc="friends.direct-messages.menu" size={20} />
               </button>
             )}
-            <At weight="bold" size={20} className="text-ink-faint" />
-            <h2 className="font-semibold">{conversa.user.displayName}</h2>
+            <At data-gc="friends.direct-messages.at" weight="bold" size={20} className="text-ink-faint" />
+            <h2 data-gc="friends.direct-messages.h2" className="font-semibold">{conversa.user.displayName}</h2>
 
             {emChamadaAqui ? (
-              <span className="flex items-center gap-1.5 text-sm text-online">
-                <Phone size={13} weight="fill" /> Em uma chamada
+              <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
+                <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> Em uma chamada
               </span>
             ) : (
-              <span className="text-sm text-ink-faint">@{conversa.user.username}</span>
+              <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{conversa.user.username}</span>
             )}
 
-            <div className="ml-auto flex items-center gap-1">
-              <Tooltip label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
-                <button
+            <div data-gc="friends.direct-messages.div--3" className="ml-auto flex items-center gap-1">
+              <Tooltip data-gc="friends.direct-messages.tooltip" label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
+                <button data-gc="friends.direct-messages.button--2"
                   onClick={() =>
                     void (emChamadaAqui ? sairDaChamada() : entrarNaChamada(conversa.id))
                   }
@@ -194,15 +194,15 @@ export const DirectMessages: React.FC = () => {
                   )}
                 >
                   {emChamadaAqui ? (
-                    <PhoneSlash size={17} weight="fill" />
+                    <PhoneSlash data-gc="friends.direct-messages.phone-slash" size={17} weight="fill" />
                   ) : (
-                    <Phone size={17} weight="fill" />
+                    <Phone data-gc="friends.direct-messages.phone--2" size={17} weight="fill" />
                   )}
                 </button>
               </Tooltip>
 
-              <Tooltip label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
-                <button
+              <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
+                <button data-gc="friends.direct-messages.button--3"
                   onClick={() => void (cameraLigada ? ligarCamera() : ligarComVideo(conversa.id))}
                   aria-label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
                   className={cn(
@@ -212,14 +212,14 @@ export const DirectMessages: React.FC = () => {
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
-                  <VideoCamera size={17} weight="fill" />
+                  <VideoCamera data-gc="friends.direct-messages.video-camera" size={17} weight="fill" />
                 </button>
               </Tooltip>
 
-              <PinnedMessagesPanel channelId={conversa.id} canManage />
+              <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={conversa.id} canManage />
 
-              <Tooltip label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
-                <button
+              <Tooltip data-gc="friends.direct-messages.tooltip--3" label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
+                <button data-gc="friends.direct-messages.button--4"
                   onClick={() => setPerfilAberto((aberto) => !aberto)}
                   aria-label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}
                   aria-pressed={perfilAberto}
@@ -230,20 +230,20 @@ export const DirectMessages: React.FC = () => {
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
-                  <User weight="fill" size={17} />
+                  <User data-gc="friends.direct-messages.user" weight="fill" size={17} />
                 </button>
               </Tooltip>
 
-              <BotaoDoAplicativo />
-              <CaixaDeEntrada />
+              <BotaoDoAplicativo data-gc="friends.direct-messages.botao-do-aplicativo" />
+              <CaixaDeEntrada data-gc="friends.direct-messages.caixa-de-entrada" />
             </div>
           </header>
 
-          <div className="flex min-h-0 flex-1">
-            <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
+          <div data-gc="friends.direct-messages.div--4" className="flex min-h-0 flex-1">
+            <main data-gc="friends.direct-messages.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
           {emChamadaAqui && (
-            <div
+            <div data-gc="friends.direct-messages.div--5"
               className={cn(
                 "flex flex-col overflow-hidden border-b border-divisor",
                 chatDaChamada
@@ -252,56 +252,56 @@ export const DirectMessages: React.FC = () => {
               )}
             >
               {chamando ? (
-                <Chamando
+                <Chamando data-gc="friends.direct-messages.chamando"
                   nome={conversa.user.displayName}
                   userId={conversa.user.id}
                   avatarUrl={conversa.user.avatarUrl}
                   onDesistir={() => void sairDaChamada()}
                 />
               ) : (
-                <VoiceStage channelName={conversa.user.displayName} currentUserId={user.id} compacto />
+                <VoiceStage data-gc="friends.direct-messages.voice-stage" channelName={conversa.user.displayName} currentUserId={user.id} compacto />
               )}
             </div>
           )}
 
           {chatDaChamada && (
-          <AreaDeConversa>
-          <MessageList
+          <AreaDeConversa data-gc="friends.direct-messages.area-de-conversa">
+          <MessageList data-gc="friends.direct-messages.message-list"
             channelId={conversa.id}
             channelName={conversa.user.displayName}
             currentUserId={user.id}
             isModerator={false}
             header={
-              <div className="px-4 pb-6 pt-4">
-                <Avatar
+              <div data-gc="friends.direct-messages.div--6" className="px-4 pb-6 pt-4">
+                <Avatar data-gc="friends.direct-messages.avatar"
                   id={conversa.user.id}
                   name={conversa.user.displayName}
                   url={conversa.user.avatarUrl}
                   size={80}
                 />
-                <h2 className="mt-3 text-2xl font-bold">{conversa.user.displayName}</h2>
-                <p className="mt-1 text-ink-muted">
+                <h2 data-gc="friends.direct-messages.h2--2" className="mt-3 text-2xl font-bold">{conversa.user.displayName}</h2>
+                <p data-gc="friends.direct-messages.p" className="mt-1 text-ink-muted">
                   Este é o começo da sua conversa com {conversa.user.displayName}.
                 </p>
               </div>
             }
           />
 
-          <RodapeDaConversa>
-            <TypingIndicator channelId={conversa.id} currentUserId={user.id} />
-            <Composer channelId={conversa.id} channelName={conversa.user.displayName} />
+          <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
+            <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />
+            <Composer data-gc="friends.direct-messages.composer" channelId={conversa.id} channelName={conversa.user.displayName} />
           </RodapeDaConversa>
           </AreaDeConversa>
           )}
             </main>
 
-            {perfilAberto && <PainelDePerfilDoDm userId={conversa.user.id} />}
+            {perfilAberto && <PainelDePerfilDoDm data-gc="friends.direct-messages.painel-de-perfil-do-dm" userId={conversa.user.id} />}
           </div>
         </div>
       ) : (
         <>
-          <Friends onOpenConversation={(userId) => void abrirConversa(userId)} />
-          <AtivosAgora />
+          <Friends data-gc="friends.direct-messages.friends" onOpenConversation={(userId) => void abrirConversa(userId)} />
+          <AtivosAgora data-gc="friends.direct-messages.ativos-agora" />
         </>
       )}
     </div>
@@ -324,21 +324,21 @@ const Chamando: React.FC<{
   }, []);
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
-      <span className="relative">
-        <Avatar id={userId} name={nome} url={avatarUrl} size={72} />
-        <span className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
+    <div data-gc="friends.direct-messages.div--7" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
+      <span data-gc="friends.direct-messages.span--3" className="relative">
+        <Avatar data-gc="friends.direct-messages.avatar--2" id={userId} name={nome} url={avatarUrl} size={72} />
+        <span data-gc="friends.direct-messages.span--4" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
       </span>
 
-      <p className="text-sm text-ink-muted">
-        Chamando <span className="font-semibold text-ink">{nome}</span>…
+      <p data-gc="friends.direct-messages.p--2" className="text-sm text-ink-muted">
+        Chamando <span data-gc="friends.direct-messages.span--5" className="font-semibold text-ink">{nome}</span>…
       </p>
 
-      <button
+      <button data-gc="friends.direct-messages.button.on-desistir"
         onClick={onDesistir}
         className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
       >
-        <PhoneSlash size={15} weight="fill" /> Cancelar
+        <PhoneSlash data-gc="friends.direct-messages.phone-slash--2" size={15} weight="fill" /> Cancelar
       </button>
     </div>
   );

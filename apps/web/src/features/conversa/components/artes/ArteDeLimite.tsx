@@ -12,32 +12,32 @@ import React from "react";
 
 const Fundo: React.FC = () => (
   <>
-    <defs>
-      <linearGradient id="arte-limite-brilho" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.35" />
-        <stop offset="100%" stopColor="var(--color-brand)" stopOpacity="0" />
+    <defs data-gc="conversa.artes.arte-de-limite.defs">
+      <linearGradient data-gc="conversa.artes.arte-de-limite.linear-gradient" id="arte-limite-brilho" x1="0" y1="0" x2="1" y2="1">
+        <stop data-gc="conversa.artes.arte-de-limite.stop" offset="0%" stopColor="var(--color-brand)" stopOpacity="0.35" />
+        <stop data-gc="conversa.artes.arte-de-limite.stop--2" offset="100%" stopColor="var(--color-brand)" stopOpacity="0" />
       </linearGradient>
-      <linearGradient id="arte-limite-papel" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="var(--color-surface-4)" />
-        <stop offset="100%" stopColor="var(--color-surface-2)" />
+      <linearGradient data-gc="conversa.artes.arte-de-limite.linear-gradient--2" id="arte-limite-papel" x1="0" y1="0" x2="0" y2="1">
+        <stop data-gc="conversa.artes.arte-de-limite.stop--3" offset="0%" stopColor="var(--color-surface-4)" />
+        <stop data-gc="conversa.artes.arte-de-limite.stop--4" offset="100%" stopColor="var(--color-surface-2)" />
       </linearGradient>
     </defs>
 
-    <circle cx="60" cy="60" r="58" fill="url(#arte-limite-brilho)" />
+    <circle data-gc="conversa.artes.arte-de-limite.circle" cx="60" cy="60" r="58" fill="url(#arte-limite-brilho)" />
   </>
 );
 
 /// Uma página cujas linhas não cabem: as três últimas passam da borda.
 export const ArteDeTextoLongo: React.FC = () => (
-  <svg
+  <svg data-gc="conversa.artes.arte-de-limite.svg"
     viewBox="0 0 120 120"
     className="size-28 motion-safe:animate-[flutuar_4s_ease-in-out_infinite]"
     role="img"
     aria-hidden="true"
   >
-    <Fundo />
+    <Fundo data-gc="conversa.artes.arte-de-limite.fundo" />
 
-    <rect
+    <rect data-gc="conversa.artes.arte-de-limite.rect"
       x="32"
       y="22"
       width="56"
@@ -48,7 +48,7 @@ export const ArteDeTextoLongo: React.FC = () => (
     />
 
     {[34, 43, 52, 61].map((y) => (
-      <rect
+      <rect data-gc="conversa.artes.arte-de-limite.rect--2"
         key={y}
         x="41"
         y={y}
@@ -61,7 +61,7 @@ export const ArteDeTextoLongo: React.FC = () => (
     ))}
 
     {[74, 83, 92].map((y, i) => (
-      <rect
+      <rect data-gc="conversa.artes.arte-de-limite.rect--3"
         key={y}
         x="41"
         y={y}
@@ -73,7 +73,7 @@ export const ArteDeTextoLongo: React.FC = () => (
       />
     ))}
 
-    <path
+    <path data-gc="conversa.artes.arte-de-limite.path"
       d="M32 88h56"
       stroke="var(--color-brand)"
       strokeWidth="2"
@@ -85,30 +85,30 @@ export const ArteDeTextoLongo: React.FC = () => (
 
 /// Um arquivo que não passa pela porta: a seta bate no traço do limite.
 export const ArteDeArquivoGrande: React.FC = () => (
-  <svg
+  <svg data-gc="conversa.artes.arte-de-limite.svg--2"
     viewBox="0 0 120 120"
     className="size-28 motion-safe:animate-[flutuar_4s_ease-in-out_infinite]"
     role="img"
     aria-hidden="true"
   >
-    <Fundo />
+    <Fundo data-gc="conversa.artes.arte-de-limite.fundo--2" />
 
-    <path
+    <path data-gc="conversa.artes.arte-de-limite.path--2"
       d="M40 26h26l16 16v48a6 6 0 0 1-6 6H40a6 6 0 0 1-6-6V32a6 6 0 0 1 6-6Z"
       fill="url(#arte-limite-papel)"
       stroke="var(--color-line)"
     />
 
-    <path
+    <path data-gc="conversa.artes.arte-de-limite.path--3"
       d="M66 26v12a4 4 0 0 0 4 4h12"
       fill="none"
       stroke="var(--color-line)"
       strokeWidth="2"
     />
 
-    <circle cx="58" cy="70" r="15" fill="var(--color-brand)" opacity="0.16" />
+    <circle data-gc="conversa.artes.arte-de-limite.circle--2" cx="58" cy="70" r="15" fill="var(--color-brand)" opacity="0.16" />
 
-    <path
+    <path data-gc="conversa.artes.arte-de-limite.path--4"
       d="M58 62v16m0 0-6-6m6 6 6-6"
       stroke="var(--color-brand)"
       strokeWidth="3"
@@ -116,7 +116,7 @@ export const ArteDeArquivoGrande: React.FC = () => (
       strokeLinejoin="round"
     />
 
-    <path
+    <path data-gc="conversa.artes.arte-de-limite.path--5"
       d="M44 88h28"
       stroke="var(--color-danger)"
       strokeWidth="3"

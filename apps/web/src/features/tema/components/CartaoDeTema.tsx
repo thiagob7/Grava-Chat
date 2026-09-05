@@ -16,14 +16,14 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
 
   if (isLoading)
     return (
-      <div className="mt-1 h-[6.5rem] w-72 animate-pulse rounded-lg border border-line bg-surface-2" />
+      <div data-gc="tema.cartao-de-tema.div" className="mt-1 h-[6.5rem] w-72 animate-pulse rounded-lg border border-line bg-surface-2" />
     );
 
   if (isError || !tema)
     return (
-      <div className="mt-1 w-72 rounded-lg border border-line bg-surface-2 p-3">
-        <p className="text-sm font-medium text-ink-muted">Tema indisponível</p>
-        <p className="mt-0.5 text-xs text-ink-faint">
+      <div data-gc="tema.cartao-de-tema.div--2" className="mt-1 w-72 rounded-lg border border-line bg-surface-2 p-3">
+        <p data-gc="tema.cartao-de-tema.p" className="text-sm font-medium text-ink-muted">Tema indisponível</p>
+        <p data-gc="tema.cartao-de-tema.p--2" className="mt-0.5 text-xs text-ink-faint">
           Quem publicou apagou, ou o link está errado.
         </p>
       </div>
@@ -40,26 +40,26 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
     .join(" · ");
 
   return (
-    <article className="mt-1 w-72 overflow-hidden rounded-lg border border-line bg-surface-2">
-      <div className="flex items-center gap-3 p-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white">
-          <Palette size={20} />
+    <article data-gc="tema.cartao-de-tema.article" className="mt-1 w-72 overflow-hidden rounded-lg border border-line bg-surface-2">
+      <div data-gc="tema.cartao-de-tema.div--3" className="flex items-center gap-3 p-3">
+        <span data-gc="tema.cartao-de-tema.span" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+          <Palette data-gc="tema.cartao-de-tema.palette" size={20} />
         </span>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{tema.nome}</p>
-          <p className="truncate text-xs text-ink-faint">{resumo}</p>
+        <div data-gc="tema.cartao-de-tema.div--4" className="min-w-0 flex-1">
+          <p data-gc="tema.cartao-de-tema.p--3" className="truncate text-sm font-semibold">{tema.nome}</p>
+          <p data-gc="tema.cartao-de-tema.p--4" className="truncate text-xs text-ink-faint">{resumo}</p>
         </div>
       </div>
 
       {(tema.descricao || tema.autor || tema.versao) && (
-        <div className="px-3 pb-2">
+        <div data-gc="tema.cartao-de-tema.div--5" className="px-3 pb-2">
           {tema.descricao && (
-            <p className="line-clamp-2 text-xs text-ink-muted">{tema.descricao}</p>
+            <p data-gc="tema.cartao-de-tema.p--5" className="line-clamp-2 text-xs text-ink-muted">{tema.descricao}</p>
           )}
 
           {(tema.autor || tema.versao) && (
-            <p className="mt-1 truncate text-xs text-ink-faint">
+            <p data-gc="tema.cartao-de-tema.p--6" className="mt-1 truncate text-xs text-ink-faint">
               {[tema.autor && `por ${tema.autor}`, tema.versao && `v${tema.versao}`]
                 .filter(Boolean)
                 .join(" · ")}
@@ -68,8 +68,8 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
         </div>
       )}
 
-      <div className="p-3 pt-1">
-        <Button
+      <div data-gc="tema.cartao-de-tema.div--6" className="p-3 pt-1">
+        <Button data-gc="tema.cartao-de-tema.button"
           size="sm"
           className="w-full"
           onClick={() =>

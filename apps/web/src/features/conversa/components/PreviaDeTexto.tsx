@@ -93,7 +93,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
 
   if (conteudo === null) {
     return (
-      <div className="h-28 w-full max-w-4xl animate-pulse rounded-md border border-line bg-codigo-bloco" />
+      <div data-gc="conversa.previa-de-texto.div" className="h-28 w-full max-w-4xl animate-pulse rounded-md border border-line bg-codigo-bloco" />
     );
   }
 
@@ -115,16 +115,16 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
   );
 
   const corpo = (
-    <pre
+    <pre data-gc="conversa.previa-de-texto.pre"
       className={cn(
         "py-2 pl-3 pr-12 font-mono text-13 leading-relaxed",
         quebrar ? "whitespace-pre-wrap break-words" : "overflow-x-auto whitespace-pre",
       )}
     >
       {html ? (
-        <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
+        <code data-gc="conversa.previa-de-texto.code" className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
       ) : (
-        <code>{conteudo}</code>
+        <code data-gc="conversa.previa-de-texto.code--2">{conteudo}</code>
       )}
     </pre>
   );
@@ -134,9 +134,9 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
 
   return (
     <>
-      <div className="w-full max-w-4xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink">
-        <div className="relative">
-          <div
+      <div data-gc="conversa.previa-de-texto.div--2" className="w-full max-w-4xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink">
+        <div data-gc="conversa.previa-de-texto.div--3" className="relative">
+          <div data-gc="conversa.previa-de-texto.div--4"
             className={cn(aberto ? "max-h-[32rem] overflow-y-auto" : "overflow-hidden")}
             style={
               aberto || !comprido
@@ -147,8 +147,8 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
             {corpo}
           </div>
 
-          <Tooltip label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
-            <button
+          <Tooltip data-gc="conversa.previa-de-texto.tooltip" label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
+            <button data-gc="conversa.previa-de-texto.button.copiar"
               type="button"
               onClick={copiar}
               aria-label={t(
@@ -156,22 +156,22 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
               )}
               className="absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
             >
-              {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+              {copiado ? <Check data-gc="conversa.previa-de-texto.check" size={14} className="text-online" /> : <Copy data-gc="conversa.previa-de-texto.copy" size={14} />}
             </button>
           </Tooltip>
         </div>
 
-        <footer className="flex items-center gap-2 border-t border-line bg-codigo px-2 py-1.5">
+        <footer data-gc="conversa.previa-de-texto.footer" className="flex items-center gap-2 border-t border-line bg-codigo px-2 py-1.5">
           {comprido && (
-            <Tooltip label={dicaDoRecolher}>
-              <button
+            <Tooltip data-gc="conversa.previa-de-texto.tooltip--2" label={dicaDoRecolher}>
+              <button data-gc="conversa.previa-de-texto.button"
                 type="button"
                 onClick={() => setAberto((v) => !v)}
                 aria-expanded={aberto}
                 aria-label={dicaDoRecolher}
                 className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
               >
-                <ChevronDown
+                <ChevronDown data-gc="conversa.previa-de-texto.chevron-down"
                   size={18}
                   className={cn("transition-transform", aberto && "rotate-180")}
                 />
@@ -179,56 +179,56 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
             </Tooltip>
           )}
 
-          <div className="min-w-0 flex-1 leading-tight">
-            <p className="truncate text-13 font-semibold">{anexo.filename}</p>
-            <p className="text-11 text-ink-faint">{formatBytes(anexo.size)}</p>
+          <div data-gc="conversa.previa-de-texto.div--5" className="min-w-0 flex-1 leading-tight">
+            <p data-gc="conversa.previa-de-texto.p" className="truncate text-13 font-semibold">{anexo.filename}</p>
+            <p data-gc="conversa.previa-de-texto.p--2" className="text-11 text-ink-faint">{formatBytes(anexo.size)}</p>
           </div>
 
-          <SeletorDeIdioma idioma={idioma} onEscolher={setIdioma} />
+          <SeletorDeIdioma data-gc="conversa.previa-de-texto.seletor-de-idioma.set-idioma" idioma={idioma} onEscolher={setIdioma} />
 
-          <Tooltip label={t("conversa.codigo.verInteiro")}>
-            <button
+          <Tooltip data-gc="conversa.previa-de-texto.tooltip--3" label={t("conversa.codigo.verInteiro")}>
+            <button data-gc="conversa.previa-de-texto.button--2"
               type="button"
               onClick={() => setInteiro(true)}
               aria-label={t("conversa.codigo.verInteiro")}
               className={botao}
             >
-              <Expand size={16} />
+              <Expand data-gc="conversa.previa-de-texto.expand" size={16} />
             </button>
           </Tooltip>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
+          <DropdownMenu data-gc="conversa.previa-de-texto.dropdown-menu">
+            <DropdownMenuTrigger data-gc="conversa.previa-de-texto.dropdown-menu-trigger" asChild>
+              <button data-gc="conversa.previa-de-texto.button--3"
                 type="button"
                 aria-label={t("conversa.codigo.maisOpcoes")}
                 className={botao}
               >
-                <MoreHorizontal size={16} />
+                <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal" size={16} />
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <a href={anexo.url} download={anexo.filename} target="_blank" rel="noreferrer">
-                  {t("conversa.codigo.baixar")} <Download size={15} />
+            <DropdownMenuContent data-gc="conversa.previa-de-texto.dropdown-menu-content" align="end" className="w-48">
+              <DropdownMenuItem data-gc="conversa.previa-de-texto.dropdown-menu-item" asChild>
+                <a data-gc="conversa.previa-de-texto.a" href={anexo.url} download={anexo.filename} target="_blank" rel="noreferrer">
+                  {t("conversa.codigo.baixar")} <Download data-gc="conversa.previa-de-texto.download" size={15} />
                 </a>
               </DropdownMenuItem>
 
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="conversa.previa-de-texto.dropdown-menu-item--2"
                 onSelect={(evento) => {
                   evento.preventDefault();
                   setQuebrar((v) => !v);
                 }}
               >
                 {t("conversa.codigo.quebrarTexto")}
-                <span
+                <span data-gc="conversa.previa-de-texto.span"
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded border transition",
                     quebrar ? "border-brand bg-brand text-white" : "border-ink-faint",
                   )}
                 >
-                  {quebrar && <Check size={11} strokeWidth={3} />}
+                  {quebrar && <Check data-gc="conversa.previa-de-texto.check--2" size={11} strokeWidth={3} />}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -236,17 +236,17 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
         </footer>
       </div>
 
-      <Dialog open={inteiro} onOpenChange={setInteiro}>
-        <DialogContent className="flex max-h-[88vh] w-[min(64rem,94vw)] max-w-none flex-col overflow-hidden bg-codigo-bloco p-0">
-          <DialogTitle className="sr-only">{anexo.filename}</DialogTitle>
+      <Dialog data-gc="conversa.previa-de-texto.dialog.set-inteiro" open={inteiro} onOpenChange={setInteiro}>
+        <DialogContent data-gc="conversa.previa-de-texto.dialog-content" className="flex max-h-[88vh] w-[min(64rem,94vw)] max-w-none flex-col overflow-hidden bg-codigo-bloco p-0">
+          <DialogTitle data-gc="conversa.previa-de-texto.dialog-title" className="sr-only">{anexo.filename}</DialogTitle>
 
-          <div className="relative min-h-0 flex-1 overflow-auto">
+          <div data-gc="conversa.previa-de-texto.div--6" className="relative min-h-0 flex-1 overflow-auto">
             {corpo}
 
-            <Tooltip
+            <Tooltip data-gc="conversa.previa-de-texto.tooltip--4"
               label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}
             >
-              <button
+              <button data-gc="conversa.previa-de-texto.button.copiar--2"
                 type="button"
                 onClick={copiar}
                 aria-label={t(
@@ -254,56 +254,56 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
                 )}
                 className="absolute right-3 top-3 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
               >
-                {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+                {copiado ? <Check data-gc="conversa.previa-de-texto.check--3" size={14} className="text-online" /> : <Copy data-gc="conversa.previa-de-texto.copy--2" size={14} />}
               </button>
             </Tooltip>
           </div>
 
-          <footer className="flex shrink-0 items-center gap-2 border-t border-line bg-codigo px-3 py-2">
-            <div className="min-w-0 flex-1 leading-tight">
-              <p className="truncate text-13 font-semibold">{anexo.filename}</p>
-              <p className="text-11 text-ink-faint">{formatBytes(anexo.size)}</p>
+          <footer data-gc="conversa.previa-de-texto.footer--2" className="flex shrink-0 items-center gap-2 border-t border-line bg-codigo px-3 py-2">
+            <div data-gc="conversa.previa-de-texto.div--7" className="min-w-0 flex-1 leading-tight">
+              <p data-gc="conversa.previa-de-texto.p--3" className="truncate text-13 font-semibold">{anexo.filename}</p>
+              <p data-gc="conversa.previa-de-texto.p--4" className="text-11 text-ink-faint">{formatBytes(anexo.size)}</p>
             </div>
 
-            <SeletorDeIdioma idioma={idioma} onEscolher={setIdioma} />
+            <SeletorDeIdioma data-gc="conversa.previa-de-texto.seletor-de-idioma.set-idioma--2" idioma={idioma} onEscolher={setIdioma} />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
+            <DropdownMenu data-gc="conversa.previa-de-texto.dropdown-menu--2">
+              <DropdownMenuTrigger data-gc="conversa.previa-de-texto.dropdown-menu-trigger--2" asChild>
+                <button data-gc="conversa.previa-de-texto.button--4"
                   type="button"
                   aria-label={t("conversa.codigo.maisOpcoes")}
                   className={botao}
                 >
-                  <MoreHorizontal size={16} />
+                  <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal--2" size={16} />
                 </button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <a
+              <DropdownMenuContent data-gc="conversa.previa-de-texto.dropdown-menu-content--2" align="end" className="w-48">
+                <DropdownMenuItem data-gc="conversa.previa-de-texto.dropdown-menu-item--3" asChild>
+                  <a data-gc="conversa.previa-de-texto.a--2"
                     href={anexo.url}
                     download={anexo.filename}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {t("conversa.codigo.baixar")} <Download size={15} />
+                    {t("conversa.codigo.baixar")} <Download data-gc="conversa.previa-de-texto.download--2" size={15} />
                   </a>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="conversa.previa-de-texto.dropdown-menu-item--4"
                   onSelect={(evento) => {
                     evento.preventDefault();
                     setQuebrar((v) => !v);
                   }}
                 >
                   {t("conversa.codigo.quebrarTexto")}
-                  <span
+                  <span data-gc="conversa.previa-de-texto.span--2"
                     className={cn(
                       "flex size-4 shrink-0 items-center justify-center rounded border transition",
                       quebrar ? "border-brand bg-brand text-white" : "border-ink-faint",
                     )}
                   >
-                    {quebrar && <Check size={11} strokeWidth={3} />}
+                    {quebrar && <Check data-gc="conversa.previa-de-texto.check--4" size={11} strokeWidth={3} />}
                   </span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

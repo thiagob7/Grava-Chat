@@ -11,8 +11,8 @@ export const AtualizacaoDoApp: React.FC = () => {
 
   if (!ponte) {
     return (
-      <Secao id="atualizacao" titulo="Atualização">
-        <p className="text-sm text-ink-muted">
+      <Secao data-gc="configuracoes.atualizacao-do-app.secao" id="atualizacao" titulo="Atualização">
+        <p data-gc="configuracoes.atualizacao-do-app.p" className="text-sm text-ink-muted">
           Esta versão do aplicativo não sabe se atualizar sozinha. Baixe o
           instalador mais novo abaixo e instale por cima.
         </p>
@@ -23,14 +23,14 @@ export const AtualizacaoDoApp: React.FC = () => {
   const temNovidade = Boolean(estado?.disponivel);
 
   return (
-    <Secao
+    <Secao data-gc="configuracoes.atualizacao-do-app.secao--2"
       id="atualizacao"
       titulo="Atualização"
       detalhe={estado ? `Você está na versão ${estado.atual}.` : undefined}
     >
-      <div className="flex items-start gap-4">
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">
+      <div data-gc="configuracoes.atualizacao-do-app.div" className="flex items-start gap-4">
+        <div data-gc="configuracoes.atualizacao-do-app.div--2" className="min-w-0 flex-1">
+          <p data-gc="configuracoes.atualizacao-do-app.p--2" className="text-sm font-medium">
             {instalando
               ? `Instalando a versão ${estado?.disponivel}…`
               : pronta
@@ -44,7 +44,7 @@ export const AtualizacaoDoApp: React.FC = () => {
                       : "Você está em dia"}
           </p>
 
-          <p
+          <p data-gc="configuracoes.atualizacao-do-app.p--3"
             className={cn(
               "mt-0.5 text-xs",
               estado?.erro ? "text-danger" : "text-ink-faint",
@@ -62,8 +62,8 @@ export const AtualizacaoDoApp: React.FC = () => {
           </p>
 
           {baixando && (
-            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-trilho">
-              <div
+            <div data-gc="configuracoes.atualizacao-do-app.div--3" className="mt-2 h-1 w-full overflow-hidden rounded-full bg-trilho">
+              <div data-gc="configuracoes.atualizacao-do-app.div--4"
                 className="h-full rounded-full bg-brand transition-all"
                 style={{
                   width: `${Math.round((estado?.progresso ?? 0) * 100)}%`,
@@ -74,29 +74,29 @@ export const AtualizacaoDoApp: React.FC = () => {
         </div>
 
         {instalando ? (
-          <Button variant="surface" disabled>
-            <Loader2 size={16} className="animate-spin" /> Instalando
+          <Button data-gc="configuracoes.atualizacao-do-app.button" variant="surface" disabled>
+            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2" size={16} className="animate-spin" /> Instalando
           </Button>
         ) : pronta ? (
-          <Button onClick={() => void ponte.instalar()}>
-            <RefreshCw size={16} />{" "}
+          <Button data-gc="configuracoes.atualizacao-do-app.button--2" onClick={() => void ponte.instalar()}>
+            <RefreshCw data-gc="configuracoes.atualizacao-do-app.refresh-cw" size={16} />{" "}
             {estado?.erro ? "Tentar de novo" : "Instalar e reiniciar"}
           </Button>
         ) : baixando ? (
-          <Button variant="surface" disabled>
-            <Loader2 size={16} className="animate-spin" /> Baixando
+          <Button data-gc="configuracoes.atualizacao-do-app.button--3" variant="surface" disabled>
+            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2--2" size={16} className="animate-spin" /> Baixando
           </Button>
         ) : temNovidade ? (
-          <Button onClick={() => void ponte.baixar()}>
-            <Download size={16} /> Baixar
+          <Button data-gc="configuracoes.atualizacao-do-app.button--4" onClick={() => void ponte.baixar()}>
+            <Download data-gc="configuracoes.atualizacao-do-app.download" size={16} /> Baixar
           </Button>
         ) : (
-          <Button
+          <Button data-gc="configuracoes.atualizacao-do-app.button--5"
             variant="surface"
             disabled={estado?.fase === "procurando"}
             onClick={() => void ponte.procurar()}
           >
-            <RefreshCw size={16} /> Procurar
+            <RefreshCw data-gc="configuracoes.atualizacao-do-app.refresh-cw--2" size={16} /> Procurar
           </Button>
         )}
       </div>

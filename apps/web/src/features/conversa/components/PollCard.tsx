@@ -22,9 +22,9 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
   const maisVotada = Math.max(...poll.opcoes.map((o) => o.userIds.length), 0);
 
   return (
-    <div className="mt-1 max-w-md rounded-lg border border-line bg-surface-1 p-4">
-      <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-        <BarChart3 size={13} />
+    <div data-gc="conversa.poll-card.div" className="mt-1 max-w-md rounded-lg border border-line bg-surface-1 p-4">
+      <p data-gc="conversa.poll-card.p" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <BarChart3 data-gc="conversa.poll-card.bar-chart3" size={13} />
         {t(
           encerrada
             ? "conversa.enquete.encerrada"
@@ -34,9 +34,9 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
         )}
       </p>
 
-      <p className="mt-1.5 font-semibold">{poll.pergunta}</p>
+      <p data-gc="conversa.poll-card.p--2" className="mt-1.5 font-semibold">{poll.pergunta}</p>
 
-      <div className="mt-3 space-y-2">
+      <div data-gc="conversa.poll-card.div--2" className="mt-3 space-y-2">
         {poll.opcoes.map((opcao) => {
           const votos = opcao.userIds.length;
           const eu = currentUserId ? opcao.userIds.includes(currentUserId) : false;
@@ -44,7 +44,7 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
           const vencendo = encerrada && votos > 0 && votos === maisVotada;
 
           return (
-            <button
+            <button data-gc="conversa.poll-card.button"
               key={opcao.id}
               disabled={encerrada}
               onClick={() => void votePoll(messageId, opcao.id).catch(() => undefined)}
@@ -55,7 +55,7 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
                 encerrada && "cursor-default",
               )}
             >
-              <span
+              <span data-gc="conversa.poll-card.span"
                 className={cn(
                   "absolute inset-y-0 left-0 transition-[width]",
                   vencendo ? "bg-online/25" : eu ? "bg-brand/20" : "bg-surface-3",
@@ -63,10 +63,10 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
                 style={{ width: `${porcento}%` }}
               />
 
-              <span className="relative flex items-center gap-2">
-                {eu && <Check size={14} className="shrink-0 text-brand" />}
-                <span className="min-w-0 flex-1 truncate">{opcao.texto}</span>
-                <span className="shrink-0 text-xs text-ink-faint">
+              <span data-gc="conversa.poll-card.span--2" className="relative flex items-center gap-2">
+                {eu && <Check data-gc="conversa.poll-card.check" size={14} className="shrink-0 text-brand" />}
+                <span data-gc="conversa.poll-card.span--3" className="min-w-0 flex-1 truncate">{opcao.texto}</span>
+                <span data-gc="conversa.poll-card.span--4" className="shrink-0 text-xs text-ink-faint">
                   {t(votos === 1 ? "conversa.enquete.umVoto" : "conversa.enquete.votos", {
                     quantidade: votos,
                   })}{" "}
@@ -78,15 +78,15 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
         })}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
-        <span>
+      <div data-gc="conversa.poll-card.div--3" className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
+        <span data-gc="conversa.poll-card.span--5">
           {t(total === 1 ? "conversa.enquete.umVotoNoTotal" : "conversa.enquete.votosNoTotal", {
             quantidade: total,
           })}
         </span>
 
         {!encerrada && poll.expiresAt && (
-          <span>
+          <span data-gc="conversa.poll-card.span--6">
             ·{" "}
             {t("conversa.enquete.encerraEm", {
               quando: new Intl.DateTimeFormat(idiomaAtual(), {
@@ -98,7 +98,7 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
         )}
 
         {!encerrada && isAuthor && (
-          <button
+          <button data-gc="conversa.poll-card.button--2"
             onClick={() => void closePoll(messageId).catch(() => undefined)}
             className="ml-auto text-brand hover:underline"
           >

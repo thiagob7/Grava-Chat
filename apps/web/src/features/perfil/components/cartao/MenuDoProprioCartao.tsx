@@ -59,65 +59,65 @@ export const MenuDoProprioCartao: React.FC<MenuDoProprioCartaoProps> = ({
   const estadoAtual = ESTADOS.find((e) => e.id === atual) ?? ESTADOS[0]!;
 
   return (
-    <div className="mt-3 space-y-0.5 border-t border-line pt-3">
-      <ItemDoMenu icone={<Pencil size={15} />} onClick={onEditarPerfil}>
+    <div data-gc="perfil.cartao.menu-do-proprio-cartao.div" className="mt-3 space-y-0.5 border-t border-line pt-3">
+      <ItemDoMenu data-gc="perfil.cartao.menu-do-proprio-cartao.item-do-menu.on-editar-perfil" icone={<Pencil data-gc="perfil.cartao.menu-do-proprio-cartao.pencil" size={15} />} onClick={onEditarPerfil}>
         {t("perfil.editar")}
       </ItemDoMenu>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
-            <span className={cn("size-3 shrink-0 rounded-full", estadoAtual.cor)} />
-            <span className="flex-1">{t(`perfil.presenca.${estadoAtual.chave}`)}</span>
-            <span className="text-ink-faint">›</span>
+      <DropdownMenu data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu">
+        <DropdownMenuTrigger data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-trigger" asChild>
+          <button data-gc="perfil.cartao.menu-do-proprio-cartao.button" className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span" className={cn("size-3 shrink-0 rounded-full", estadoAtual.cor)} />
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--2" className="flex-1">{t(`perfil.presenca.${estadoAtual.chave}`)}</span>
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--3" className="text-ink-faint">›</span>
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="right" align="start" className="w-64">
+        <DropdownMenuContent data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-content" side="right" align="start" className="w-64">
           {ESTADOS.map((estado) => (
-            <DropdownMenuItem key={estado.id} onSelect={() => void updatePresence(estado.id)}>
-              <span className={cn("size-2.5 shrink-0 rounded-full", estado.cor)} />
-              <span className="min-w-0 flex-1">
-                <span className="block">{t(`perfil.presenca.${estado.chave}`)}</span>
+            <DropdownMenuItem data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-item" key={estado.id} onSelect={() => void updatePresence(estado.id)}>
+              <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--4" className={cn("size-2.5 shrink-0 rounded-full", estado.cor)} />
+              <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--5" className="min-w-0 flex-1">
+                <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--6" className="block">{t(`perfil.presenca.${estado.chave}`)}</span>
                 {estado.detalhe && (
-                  <span className="block text-xs text-ink-faint">
+                  <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--7" className="block text-xs text-ink-faint">
                     {t(`perfil.presenca.${estado.detalhe}`)}
                   </span>
                 )}
               </span>
-              {atual === estado.id && <Check size={14} />}
+              {atual === estado.id && <Check data-gc="perfil.cartao.menu-do-proprio-cartao.check" size={14} />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="my-1 h-px bg-line" />
+      <div data-gc="perfil.cartao.menu-do-proprio-cartao.div--2" className="my-1 h-px bg-line" />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
-            <UserCircle size={15} className="shrink-0" />
-            <span className="flex-1">{t("perfil.menu.mudarDeConta")}</span>
-            <span className="text-ink-faint">›</span>
+      <DropdownMenu data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu--2">
+        <DropdownMenuTrigger data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-trigger--2" asChild>
+          <button data-gc="perfil.cartao.menu-do-proprio-cartao.button--2" className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink">
+            <UserCircle data-gc="perfil.cartao.menu-do-proprio-cartao.user-circle" size={15} className="shrink-0" />
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--8" className="flex-1">{t("perfil.menu.mudarDeConta")}</span>
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--9" className="text-ink-faint">›</span>
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="right" align="start" className="w-56">
-          <DropdownMenuItem onSelect={() => undefined}>
-            <span className="min-w-0 flex-1 truncate">@{user.username}</span>
-            <Check size={14} />
+        <DropdownMenuContent data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-content--2" side="right" align="start" className="w-56">
+          <DropdownMenuItem data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-item--2" onSelect={() => undefined}>
+            <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--10" className="min-w-0 flex-1 truncate">@{user.username}</span>
+            <Check data-gc="perfil.cartao.menu-do-proprio-cartao.check--2" size={14} />
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-separator" />
 
-          <DropdownMenuItem onSelect={onGerenciarContas}>
-            {t("perfil.menu.gerenciarContas")} <Settings size={14} />
+          <DropdownMenuItem data-gc="perfil.cartao.menu-do-proprio-cartao.dropdown-menu-item.on-gerenciar-contas" onSelect={onGerenciarContas}>
+            {t("perfil.menu.gerenciarContas")} <Settings data-gc="perfil.cartao.menu-do-proprio-cartao.settings" size={14} />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ItemDoMenu
-        icone={<IdCard size={15} />}
+      <ItemDoMenu data-gc="perfil.cartao.menu-do-proprio-cartao.item-do-menu"
+        icone={<IdCard data-gc="perfil.cartao.menu-do-proprio-cartao.id-card" size={15} />}
         onClick={() => {
           void copiarTexto(user.id);
           toast.success(t("perfil.idCopiado"));
@@ -134,11 +134,11 @@ const ItemDoMenu: React.FC<{
   onClick: () => void;
   children: React.ReactNode;
 }> = ({ icone, onClick, children }) => (
-  <button
+  <button data-gc="perfil.cartao.menu-do-proprio-cartao.button.on-click"
     onClick={onClick}
     className="flex w-full items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink"
   >
-    <span className="shrink-0">{icone}</span>
+    <span data-gc="perfil.cartao.menu-do-proprio-cartao.span--11" className="shrink-0">{icone}</span>
     {children}
   </button>
 );

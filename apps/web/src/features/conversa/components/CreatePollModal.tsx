@@ -49,16 +49,16 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
   };
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !next && fechar()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Criar enquete</DialogTitle>
+    <Dialog data-gc="conversa.create-poll-modal.dialog" open={open} onOpenChange={(next) => !next && fechar()}>
+      <DialogContent data-gc="conversa.create-poll-modal.dialog-content">
+        <DialogHeader data-gc="conversa.create-poll-modal.dialog-header">
+          <DialogTitle data-gc="conversa.create-poll-modal.dialog-title">Criar enquete</DialogTitle>
         </DialogHeader>
 
-        <DialogBody className="space-y-4">
-          <div>
-            <Label htmlFor="pergunta">Pergunta</Label>
-            <Input
+        <DialogBody data-gc="conversa.create-poll-modal.dialog-body" className="space-y-4">
+          <div data-gc="conversa.create-poll-modal.div">
+            <Label data-gc="conversa.create-poll-modal.label" htmlFor="pergunta">Pergunta</Label>
+            <Input data-gc="conversa.create-poll-modal.input"
               id="pergunta"
               autoFocus
               value={pergunta}
@@ -68,12 +68,12 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
             />
           </div>
 
-          <div>
-            <Label>Respostas</Label>
-            <div className="space-y-2">
+          <div data-gc="conversa.create-poll-modal.div--2">
+            <Label data-gc="conversa.create-poll-modal.label--2">Respostas</Label>
+            <div data-gc="conversa.create-poll-modal.div--3" className="space-y-2">
               {opcoes.map((opcao, indice) => (
-                <div key={indice} className="flex items-center gap-2">
-                  <Input
+                <div data-gc="conversa.create-poll-modal.div--4" key={indice} className="flex items-center gap-2">
+                  <Input data-gc="conversa.create-poll-modal.input--2"
                     value={opcao}
                     maxLength={80}
                     placeholder={`Opção ${indice + 1}`}
@@ -82,12 +82,12 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
                     }
                   />
                   {opcoes.length > 2 && (
-                    <button
+                    <button data-gc="conversa.create-poll-modal.button"
                       onClick={() => setOpcoes((atual) => atual.filter((_, i) => i !== indice))}
                       aria-label="Remover opção"
                       className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
                     >
-                      <X size={16} />
+                      <X data-gc="conversa.create-poll-modal.x" size={16} />
                     </button>
                   )}
                 </div>
@@ -95,30 +95,30 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
             </div>
 
             {opcoes.length < LIMITS.opcoesPorEnquete && (
-              <Button
+              <Button data-gc="conversa.create-poll-modal.button--2"
                 variant="ghost"
                 size="sm"
                 className="mt-2"
                 onClick={() => setOpcoes((atual) => [...atual, ""])}
               >
-                <Plus size={14} /> Adicionar opção
+                <Plus data-gc="conversa.create-poll-modal.plus" size={14} /> Adicionar opção
               </Button>
             )}
           </div>
 
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <p className="text-sm font-medium">Permitir mais de uma resposta</p>
-              <p className="mt-0.5 text-xs text-ink-faint">
+          <div data-gc="conversa.create-poll-modal.div--5" className="flex items-start gap-4">
+            <div data-gc="conversa.create-poll-modal.div--6" className="flex-1">
+              <p data-gc="conversa.create-poll-modal.p" className="text-sm font-medium">Permitir mais de uma resposta</p>
+              <p data-gc="conversa.create-poll-modal.p--2" className="mt-0.5 text-xs text-ink-faint">
                 Sem isto, votar numa opção tira o voto da anterior.
               </p>
             </div>
-            <Switch checked={multiSelect} onCheckedChange={setMultiSelect} />
+            <Switch data-gc="conversa.create-poll-modal.switch.set-multi-select" checked={multiSelect} onCheckedChange={setMultiSelect} />
           </div>
 
-          <div>
-            <Label htmlFor="duracao">Duração</Label>
-            <CampoSelect
+          <div data-gc="conversa.create-poll-modal.div--7">
+            <Label data-gc="conversa.create-poll-modal.label--3" htmlFor="duracao">Duração</Label>
+            <CampoSelect data-gc="conversa.create-poll-modal.campo-select"
               id="duracao"
               valor={duracao === null ? "" : String(duracao)}
               onEscolher={(v) => setDuracao(v ? Number(v) : null)}
@@ -130,11 +130,11 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
           </div>
         </DialogBody>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={fechar}>
+        <DialogFooter data-gc="conversa.create-poll-modal.dialog-footer">
+          <Button data-gc="conversa.create-poll-modal.button.fechar" variant="ghost" onClick={fechar}>
             Cancelar
           </Button>
-          <Button
+          <Button data-gc="conversa.create-poll-modal.button--3"
             disabled={!pode}
             onClick={() =>
               onCriar({

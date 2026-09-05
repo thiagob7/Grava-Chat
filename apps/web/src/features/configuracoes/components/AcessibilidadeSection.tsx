@@ -23,27 +23,27 @@ export const AcessibilidadeSection: React.FC = () => {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   return (
-    <div>
-      <p className="text-sm text-ink-muted">
+    <div data-gc="configuracoes.acessibilidade-section.div">
+      <p data-gc="configuracoes.acessibilidade-section.p" className="text-sm text-ink-muted">
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao
+      <Secao data-gc="configuracoes.acessibilidade-section.secao"
         id="movimento"
         titulo="Movimento"
         detalhe="Aberturas, deslizes e transições. Desligar não tira nada da tela: só faz o que ia se mover aparecer direto no lugar."
       >
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Reduzir animação</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
+        <div data-gc="configuracoes.acessibilidade-section.div--2" className="flex items-start gap-4">
+          <div data-gc="configuracoes.acessibilidade-section.div--3" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.acessibilidade-section.p--2" className="text-sm font-medium">Reduzir animação</p>
+            <p data-gc="configuracoes.acessibilidade-section.p--3" className="mt-0.5 text-xs text-ink-faint">
               {sistemaPede
                 ? "O seu sistema já pede movimento reduzido, e o Gravaê já obedece. Este botão é para quem quer o mesmo sem mexer no sistema inteiro."
                 : "Corta as animações do app inteiro, inclusive as dos avisos e as do painel de chamada."}
             </p>
           </div>
 
-          <Switch
+          <Switch data-gc="configuracoes.acessibilidade-section.switch"
             checked={prefs.reduzirAnimacao}
             onCheckedChange={(reduzirAnimacao) =>
               prefs.definir({ reduzirAnimacao })
@@ -52,25 +52,25 @@ export const AcessibilidadeSection: React.FC = () => {
         </div>
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.acessibilidade-section.secao--2"
         id="texto-em-voz"
         titulo="Texto em voz"
         detalhe="A mensagem que chega, lida em voz alta pela voz que o seu sistema já tem instalada — a mesma do VoiceOver e do Narrador. Nada sai daqui: nenhuma chave, nenhum servidor, nenhum áudio enviado."
       >
-        <TextoEmVoz />
+        <TextoEmVoz data-gc="configuracoes.acessibilidade-section.texto-em-voz" />
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.acessibilidade-section.secao--3"
         id="teclado"
         titulo="Teclado"
         detalhe="Como o app responde a quem navega sem o mouse."
       >
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">
+        <div data-gc="configuracoes.acessibilidade-section.div--4" className="flex items-start gap-4">
+          <div data-gc="configuracoes.acessibilidade-section.div--5" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.acessibilidade-section.p--4" className="text-sm font-medium">
               Mostrar sempre onde está o foco
             </p>
-            <p className="mt-0.5 text-xs text-ink-faint">
+            <p data-gc="configuracoes.acessibilidade-section.p--5" className="mt-0.5 text-xs text-ink-faint">
               O navegador esconde o anel de foco de quem clica com o mouse e só
               mostra para quem navega por Tab. Ligue isto para ver o anel sempre
               — é a diferença entre saber e adivinhar qual botão vai responder
@@ -78,7 +78,7 @@ export const AcessibilidadeSection: React.FC = () => {
             </p>
           </div>
 
-          <Switch
+          <Switch data-gc="configuracoes.acessibilidade-section.switch--2"
             checked={prefs.focoSempreVisivel}
             onCheckedChange={(focoSempreVisivel) =>
               prefs.definir({ focoSempreVisivel })
@@ -86,14 +86,14 @@ export const AcessibilidadeSection: React.FC = () => {
           />
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-lg border border-line">
+        <div data-gc="configuracoes.acessibilidade-section.div--6" className="mt-5 overflow-hidden rounded-lg border border-line">
           {ATALHOS.map((atalho) => (
-            <div
+            <div data-gc="configuracoes.acessibilidade-section.div--7"
               key={atalho.o_que}
               className="flex items-center justify-between gap-4 border-b border-divisor px-3 py-2 last:border-b-0"
             >
-              <span className="min-w-0 truncate text-sm">{atalho.o_que}</span>
-              <span className="shrink-0 font-mono text-11 text-ink-faint">
+              <span data-gc="configuracoes.acessibilidade-section.span" className="min-w-0 truncate text-sm">{atalho.o_que}</span>
+              <span data-gc="configuracoes.acessibilidade-section.span--2" className="shrink-0 font-mono text-11 text-ink-faint">
                 {atalho.teclas}
               </span>
             </div>
@@ -132,7 +132,7 @@ const TextoEmVoz: React.FC = () => {
 
   if (!daPraFalar()) {
     return (
-      <p className="text-sm text-ink-muted">
+      <p data-gc="configuracoes.acessibilidade-section.p--6" className="text-sm text-ink-muted">
         Este navegador não tem síntese de voz. No aplicativo de desktop e nos
         navegadores atuais ela existe — aqui, não há o que ligar.
       </p>
@@ -142,15 +142,15 @@ const TextoEmVoz: React.FC = () => {
   const ligado = prefs.lerEmVozAlta !== "nunca";
 
   return (
-    <div className="space-y-5">
-      <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+    <div data-gc="configuracoes.acessibilidade-section.div--8" className="space-y-5">
+      <div data-gc="configuracoes.acessibilidade-section.div--9">
+        <p data-gc="configuracoes.acessibilidade-section.p--7" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Quando ler
         </p>
 
-        <div className="space-y-2">
+        <div data-gc="configuracoes.acessibilidade-section.div--10" className="space-y-2">
           {MODOS.map((modo) => (
-            <button
+            <button data-gc="configuracoes.acessibilidade-section.button"
               key={modo.valor}
               type="button"
               onClick={() => {
@@ -165,14 +165,14 @@ const TextoEmVoz: React.FC = () => {
                   : "border-line hover:bg-surface-3",
               )}
             >
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium">{modo.titulo}</span>
-                <span className="mt-0.5 block text-xs text-ink-faint">
+              <span data-gc="configuracoes.acessibilidade-section.span--3" className="min-w-0 flex-1">
+                <span data-gc="configuracoes.acessibilidade-section.span--4" className="block text-sm font-medium">{modo.titulo}</span>
+                <span data-gc="configuracoes.acessibilidade-section.span--5" className="mt-0.5 block text-xs text-ink-faint">
                   {modo.detalhe}
                 </span>
               </span>
 
-              <span
+              <span data-gc="configuracoes.acessibilidade-section.span--6"
                 aria-hidden
                 className={cn(
                   "relative mt-px size-4 shrink-0 rounded-full border transition",
@@ -182,7 +182,7 @@ const TextoEmVoz: React.FC = () => {
                 )}
               >
                 {prefs.lerEmVozAlta === modo.valor && (
-                  <span className="absolute inset-[3px] rounded-full bg-brand" />
+                  <span data-gc="configuracoes.acessibilidade-section.span--7" className="absolute inset-[3px] rounded-full bg-brand" />
                 )}
               </span>
             </button>
@@ -192,11 +192,11 @@ const TextoEmVoz: React.FC = () => {
 
       {ligado && (
         <>
-          <label className="block">
-            <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          <label data-gc="configuracoes.acessibilidade-section.label" className="block">
+            <span data-gc="configuracoes.acessibilidade-section.span--8" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
               Voz
             </span>
-            <CampoSelect
+            <CampoSelect data-gc="configuracoes.acessibilidade-section.campo-select"
               valor={prefs.vozDaLeitura ?? ""}
               onEscolher={(valor) =>
                 prefs.definir({ vozDaLeitura: valor || null })
@@ -210,23 +210,23 @@ const TextoEmVoz: React.FC = () => {
               ]}
             />
             {!vozes.length && (
-              <span className="mt-1.5 block text-xs text-ink-faint">
+              <span data-gc="configuracoes.acessibilidade-section.span--9" className="mt-1.5 block text-xs text-ink-faint">
                 Procurando as vozes do sistema…
               </span>
             )}
           </label>
 
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          <div data-gc="configuracoes.acessibilidade-section.div--11">
+            <div data-gc="configuracoes.acessibilidade-section.div--12" className="mb-2 flex items-center justify-between">
+              <span data-gc="configuracoes.acessibilidade-section.span--10" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 Velocidade
               </span>
-              <span className="font-mono text-11 text-ink-faint">
+              <span data-gc="configuracoes.acessibilidade-section.span--11" className="font-mono text-11 text-ink-faint">
                 {prefs.velocidadeDaLeitura.toFixed(1)}×
               </span>
             </div>
 
-            <input
+            <input data-gc="configuracoes.acessibilidade-section.input"
               type="range"
               min={0.5}
               max={2}
@@ -240,7 +240,7 @@ const TextoEmVoz: React.FC = () => {
             />
           </div>
 
-          <Button
+          <Button data-gc="configuracoes.acessibilidade-section.button--2"
             variant="surface"
             size="sm"
             onClick={() =>
@@ -250,7 +250,7 @@ const TextoEmVoz: React.FC = () => {
               })
             }
           >
-            <Volume2 size={14} /> Ouvir uma prova
+            <Volume2 data-gc="configuracoes.acessibilidade-section.volume2" size={14} /> Ouvir uma prova
           </Button>
         </>
       )}

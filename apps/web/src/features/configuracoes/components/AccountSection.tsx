@@ -34,29 +34,29 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
   const [confirmando, setConfirmando] = useState(false);
 
   return (
-    <div>
-      <Secao id="detalhes-de-login" titulo="Detalhes de login">
-        <div className="rounded-lg bg-surface-2 p-5">
-          <div className="flex items-center gap-4">
-            <Avatar
+    <div data-gc="configuracoes.account-section.div">
+      <Secao data-gc="configuracoes.account-section.secao" id="detalhes-de-login" titulo="Detalhes de login">
+        <div data-gc="configuracoes.account-section.div--2" className="rounded-lg bg-surface-2 p-5">
+          <div data-gc="configuracoes.account-section.div--3" className="flex items-center gap-4">
+            <Avatar data-gc="configuracoes.account-section.avatar"
               id={user.id}
               name={user.displayName}
               url={user.avatarUrl}
               size={64}
             />
-            <div className="min-w-0">
-              <p className="truncate text-lg font-semibold">
+            <div data-gc="configuracoes.account-section.div--4" className="min-w-0">
+              <p data-gc="configuracoes.account-section.p" className="truncate text-lg font-semibold">
                 {user.displayName}
               </p>
-              <p className="truncate text-sm text-ink-muted">
+              <p data-gc="configuracoes.account-section.p--2" className="truncate text-sm text-ink-muted">
                 @{user.username}
               </p>
             </div>
           </div>
 
-          <div className="mt-5 space-y-4">
-            <Campo rotulo="E-mail" valor={user.email} sigiloso />
-            <Campo
+          <div data-gc="configuracoes.account-section.div--5" className="mt-5 space-y-4">
+            <Campo data-gc="configuracoes.account-section.campo" rotulo="E-mail" valor={user.email} sigiloso />
+            <Campo data-gc="configuracoes.account-section.campo--2"
               rotulo="Entrar com"
               valor={
                 user.providers.includes("google")
@@ -64,7 +64,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
                   : "Login de desenvolvimento"
               }
             />
-            <Campo
+            <Campo data-gc="configuracoes.account-section.campo--3"
               rotulo="Membro desde"
               valor={new Intl.DateTimeFormat("pt-BR", {
                 dateStyle: "long",
@@ -74,49 +74,49 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         </div>
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.account-section.secao--2"
         id="dispositivos"
         titulo="Dispositivos"
         detalhe="Onde a sua conta está aberta agora. Não reconheceu algum? Desconecte."
       >
-        <ListaDeDispositivos />
+        <ListaDeDispositivos data-gc="configuracoes.account-section.lista-de-dispositivos" />
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.account-section.secao--3"
         id="usuarios-bloqueados"
         titulo="Usuários bloqueados"
         detalhe="Quem você bloqueou não te manda mensagem nem pedido de amizade. Desbloquear não refaz a amizade — só tira o bloqueio."
       >
-        <ListaDeBloqueados />
+        <ListaDeBloqueados data-gc="configuracoes.account-section.lista-de-bloqueados" />
       </Secao>
 
-      <Secao
+      <Secao data-gc="configuracoes.account-section.secao--4"
         id="aplicativos-autorizados"
         titulo="Aplicativos autorizados"
         detalhe="Programas de fora que você deixou entrar na sua conta. Revogar corta o acesso na hora."
       >
-        <ListaDeAplicativos />
+        <ListaDeAplicativos data-gc="configuracoes.account-section.lista-de-aplicativos" />
       </Secao>
 
-      <Secao id="sessoes" titulo="Sessões">
-        <div className="space-y-3">
-          <Button
+      <Secao data-gc="configuracoes.account-section.secao--5" id="sessoes" titulo="Sessões">
+        <div data-gc="configuracoes.account-section.div--6" className="space-y-3">
+          <Button data-gc="configuracoes.account-section.button.on-logout"
             variant="surface"
             onClick={onLogout}
             className="w-full justify-start"
           >
-            <LogOut size={16} /> Sair desta conta
+            <LogOut data-gc="configuracoes.account-section.log-out" size={16} /> Sair desta conta
           </Button>
 
           {confirmando ? (
-            <div className="rounded border border-danger/40 bg-danger/10 p-4">
-              <p className="text-sm">
-                Isto derruba a sessão em <strong>todos</strong> os aparelhos,
+            <div data-gc="configuracoes.account-section.div--7" className="rounded border border-danger/40 bg-danger/10 p-4">
+              <p data-gc="configuracoes.account-section.p--3" className="text-sm">
+                Isto derruba a sessão em <strong data-gc="configuracoes.account-section.strong">todos</strong> os aparelhos,
                 inclusive este. Serve para quando você esqueceu a conta aberta
                 em outro computador.
               </p>
-              <div className="mt-3 flex gap-2">
-                <Button
+              <div data-gc="configuracoes.account-section.div--8" className="mt-3 flex gap-2">
+                <Button data-gc="configuracoes.account-section.button"
                   variant="danger"
                   size="sm"
                   disabled={logoutAll.isPending}
@@ -124,7 +124,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
                 >
                   Encerrar em todos
                 </Button>
-                <Button
+                <Button data-gc="configuracoes.account-section.button--2"
                   variant="surface"
                   size="sm"
                   onClick={() => setConfirmando(false)}
@@ -134,12 +134,12 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
               </div>
             </div>
           ) : (
-            <Button
+            <Button data-gc="configuracoes.account-section.button--3"
               variant="ghost"
               onClick={() => setConfirmando(true)}
               className="w-full justify-start text-danger"
             >
-              <ShieldAlert size={16} /> Encerrar sessão em todos os aparelhos
+              <ShieldAlert data-gc="configuracoes.account-section.shield-alert" size={16} /> Encerrar sessão em todos os aparelhos
             </Button>
           )}
         </div>
@@ -159,20 +159,20 @@ const Campo: React.FC<{
     sigiloso && !revelado && prefs.modoStreamer && prefs.streamerEscondeDados;
 
   return (
-    <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+    <div data-gc="configuracoes.account-section.div--9">
+      <p data-gc="configuracoes.account-section.p--4" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
         {rotulo}
       </p>
 
       {escondido ? (
-        <button
+        <button data-gc="configuracoes.account-section.button--4"
           onClick={() => setRevelado(true)}
           className="mt-0.5 rounded bg-surface-3 px-2 py-0.5 text-sm text-ink-faint transition hover:text-ink"
         >
           Escondido pelo modo streamer — clique para ver
         </button>
       ) : (
-        <p className="mt-0.5 text-sm">{valor}</p>
+        <p data-gc="configuracoes.account-section.p--5" className="mt-0.5 text-sm">{valor}</p>
       )}
     </div>
   );
@@ -182,35 +182,35 @@ const ListaDeDispositivos: React.FC = () => {
   const { data: sessoes = [], isLoading } = useSessoes();
   const encerrar = useEncerrarSessao();
 
-  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--6" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!sessoes.length) {
     return (
-      <p className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>
+      <p data-gc="configuracoes.account-section.p--7" className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line">
+    <div data-gc="configuracoes.account-section.div--10" className="overflow-hidden rounded-lg border border-line">
       {sessoes.map((sessao) => (
-        <div
+        <div data-gc="configuracoes.account-section.div--11"
           key={sessao.id}
           className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
         >
-          <Monitor size={18} className="shrink-0 text-ink-faint" />
+          <Monitor data-gc="configuracoes.account-section.monitor" size={18} className="shrink-0 text-ink-faint" />
 
-          <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <span className="truncate">
+          <div data-gc="configuracoes.account-section.div--12" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.account-section.p--8" className="flex items-center gap-2 text-sm font-medium">
+              <span data-gc="configuracoes.account-section.span" className="truncate">
                 {nomeDoAparelho(sessao.userAgent)}
               </span>
               {sessao.atual && (
-                <span className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-10 font-semibold uppercase tracking-wide text-online">
+                <span data-gc="configuracoes.account-section.span--2" className="shrink-0 rounded-full bg-online/15 px-1.5 py-px text-10 font-semibold uppercase tracking-wide text-online">
                   este aparelho
                 </span>
               )}
             </p>
-            <p className="mt-0.5 truncate text-xs text-ink-faint">
+            <p data-gc="configuracoes.account-section.p--9" className="mt-0.5 truncate text-xs text-ink-faint">
               {sessao.ip ?? "IP desconhecido"} · desde{" "}
               {new Intl.DateTimeFormat("pt-BR", {
                 dateStyle: "short",
@@ -220,7 +220,7 @@ const ListaDeDispositivos: React.FC = () => {
           </div>
 
           {!sessao.atual && (
-            <Button
+            <Button data-gc="configuracoes.account-section.button--5"
               variant="ghost"
               size="sm"
               disabled={encerrar.isPending}
@@ -252,33 +252,33 @@ const ListaDeAplicativos: React.FC = () => {
   const revogar = useRevogarAplicativo();
   const confirmar = useConfirmar();
 
-  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--10" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!apps.length) {
     return (
-      <p className="text-sm text-ink-faint">
+      <p data-gc="configuracoes.account-section.p--11" className="text-sm text-ink-faint">
         Nenhum aplicativo tem acesso à sua conta.
       </p>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div data-gc="configuracoes.account-section.div--13" className="space-y-2">
       {apps.map((app) => (
-        <div key={app.id} className="rounded-lg border border-line p-3">
-          <div className="flex items-center gap-3">
-            <Avatar
+        <div data-gc="configuracoes.account-section.div--14" key={app.id} className="rounded-lg border border-line p-3">
+          <div data-gc="configuracoes.account-section.div--15" className="flex items-center gap-3">
+            <Avatar data-gc="configuracoes.account-section.avatar--2"
               id={app.usuario.id}
               name={app.usuario.displayName}
               url={app.usuario.avatarUrl}
               size={36}
             />
 
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
+            <div data-gc="configuracoes.account-section.div--16" className="min-w-0 flex-1">
+              <p data-gc="configuracoes.account-section.p--12" className="truncate text-sm font-medium">
                 {app.usuario.displayName}
               </p>
-              <p className="mt-0.5 truncate text-xs text-ink-faint">
+              <p data-gc="configuracoes.account-section.p--13" className="mt-0.5 truncate text-xs text-ink-faint">
                 {app.autorizadoEm
                   ? `Autorizado em ${quando(app.autorizadoEm)}`
                   : "Autorizado antes desta lista existir"}
@@ -286,7 +286,7 @@ const ListaDeAplicativos: React.FC = () => {
               </p>
             </div>
 
-            <Button
+            <Button data-gc="configuracoes.account-section.button--6"
               variant="ghost"
               size="sm"
               disabled={revogar.isPending}
@@ -307,13 +307,13 @@ const ListaDeAplicativos: React.FC = () => {
             </Button>
           </div>
 
-          <ul className="mt-2.5 space-y-1 border-t border-divisor pt-2.5">
+          <ul data-gc="configuracoes.account-section.ul" className="mt-2.5 space-y-1 border-t border-divisor pt-2.5">
             {app.escopos.map((escopo) => (
-              <li
+              <li data-gc="configuracoes.account-section.li"
                 key={escopo}
                 className="flex items-start gap-2 text-xs text-ink-muted"
               >
-                <Check size={13} className="mt-0.5 shrink-0 text-ink-faint" />
+                <Check data-gc="configuracoes.account-section.check" size={13} className="mt-0.5 shrink-0 text-ink-faint" />
                 {ESCOPOS[escopo] ?? escopo}
               </li>
             ))}
@@ -330,36 +330,36 @@ const ListaDeBloqueados: React.FC = () => {
 
   const bloqueados = relacoes.filter((relacao) => relacao.status === "BLOCKED");
 
-  if (isLoading) return <p className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--14" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!bloqueados.length) {
-    return <p className="text-sm text-ink-faint">Você não bloqueou ninguém.</p>;
+    return <p data-gc="configuracoes.account-section.p--15" className="text-sm text-ink-faint">Você não bloqueou ninguém.</p>;
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line">
+    <div data-gc="configuracoes.account-section.div--17" className="overflow-hidden rounded-lg border border-line">
       {bloqueados.map((relacao) => (
-        <div
+        <div data-gc="configuracoes.account-section.div--18"
           key={relacao.id}
           className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
         >
-          <Avatar
+          <Avatar data-gc="configuracoes.account-section.avatar--3"
             id={relacao.user.id}
             name={relacao.user.displayName}
             url={relacao.user.avatarUrl}
             size={32}
           />
 
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">
+          <div data-gc="configuracoes.account-section.div--19" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.account-section.p--16" className="truncate text-sm font-medium">
               {relacao.user.displayName}
             </p>
-            <p className="truncate text-xs text-ink-faint">
+            <p data-gc="configuracoes.account-section.p--17" className="truncate text-xs text-ink-faint">
               @{relacao.user.username}
             </p>
           </div>
 
-          <Button
+          <Button data-gc="configuracoes.account-section.button--7"
             variant="ghost"
             size="sm"
             disabled={desbloquear.isPending}

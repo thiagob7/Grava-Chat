@@ -121,10 +121,19 @@ describe("catálogos de tradução", () => {
         return /\.tsx?$/.test(item.name) ? [readFileSync(caminho, "utf8")] : [];
       });
 
+    /*
+      Os ganchos de tema (`data-gc="configuracoes.aplicativos…"`) são strings
+      pontilhadas com os mesmos prefixos das chaves, mas não são chaves — saem
+      antes de procurar, senão o teste cobra tradução para um seletor de CSS.
+    */
+    const semGanchos = (src: string) => src.replace(/data-gc="[^"]*"/g, "");
+
     const pedidas = new Set(
       varrer(join(raiz, "..")).flatMap((src) =>
         [
-          ...src.matchAll(/"((?:chamada|comum|configuracoes|conversa|idioma|perfil|servidor)\.[\w.]+)"/g),
+          ...semGanchos(src).matchAll(
+            /"((?:chamada|comum|configuracoes|conversa|idioma|perfil|servidor)\.[\w.]+)"/g,
+          ),
         ].map((m) => m[1]!),
       ),
     );

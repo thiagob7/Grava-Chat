@@ -82,7 +82,7 @@ export const VoiceStageControls: React.FC<{
   );
 
   return (
-    <div
+    <div data-gc="voz.voice-stage-controls.div"
       className={cn(
         "pointer-events-none absolute inset-x-0 bottom-4 flex items-center gap-2 px-4",
         "transition-opacity duration-150",
@@ -91,23 +91,23 @@ export const VoiceStageControls: React.FC<{
           : "opacity-0 focus-within:opacity-100 group-hover:opacity-100",
       )}
     >
-      <div className="flex flex-1 justify-start">
+      <div data-gc="voz.voice-stage-controls.div--2" className="flex flex-1 justify-start">
         {mostrarChat && (
-        <Tooltip label={chatDaChamada ? "Esconder o chat" : "Mostrar o chat"}>
-          <button
+        <Tooltip data-gc="voz.voice-stage-controls.tooltip" label={chatDaChamada ? "Esconder o chat" : "Mostrar o chat"}>
+          <button data-gc="voz.voice-stage-controls.button.alternar-chat-da-chamada"
             onClick={alternarChatDaChamada}
             aria-label={chatDaChamada ? "Esconder o chat" : "Mostrar o chat"}
             aria-pressed={chatDaChamada}
             className="pointer-events-auto flex size-10 items-center justify-center rounded-full bg-surface-0/95 text-ink-muted shadow-lg ring-1 ring-black/30 backdrop-blur transition hover:text-ink"
           >
-            <MessageSquare size={18} />
+            <MessageSquare data-gc="voz.voice-stage-controls.message-square" size={18} />
           </button>
         </Tooltip>
         )}
       </div>
 
-      <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
-        <Controle
+      <div data-gc="voz.voice-stage-controls.div--3" className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
+        <Controle data-gc="voz.voice-stage-controls.controle.ao-alternar-menu"
           onOpenChange={aoAlternarMenu}
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
           labelDoMenu={t("chamada.aparelhos.configEntrada")}
@@ -115,40 +115,40 @@ export const VoiceStageControls: React.FC<{
           ativo={micEnabled && !micBlocked}
           menu={
             <>
-              <DropdownMenuLabel>{t("chamada.aparelhos.entrada")}</DropdownMenuLabel>
-              <DropdownMenuRadioGroup
+              <DropdownMenuLabel data-gc="voz.voice-stage-controls.dropdown-menu-label">{t("chamada.aparelhos.entrada")}</DropdownMenuLabel>
+              <DropdownMenuRadioGroup data-gc="voz.voice-stage-controls.dropdown-menu-radio-group"
                 value={prefs.entradaId ?? "padrao"}
                 onValueChange={(valor) =>
                   prefs.definir({ entradaId: valor === "padrao" ? null : valor })
                 }
               >
-                <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item" value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
                 {entradas.map((aparelho, i) => (
-                  <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
+                  <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item--2" key={aparelho.deviceId} value={aparelho.deviceId}>
                     {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.microfone"))}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
 
-              <DropdownMenuSeparator />
-              <FaixaDeVolume
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator" />
+              <FaixaDeVolume data-gc="voz.voice-stage-controls.faixa-de-volume"
                 rotulo={t("chamada.volume.entrada")}
                 valor={prefs.ganhoEntrada}
                 max={2}
                 onMudar={(v) => prefs.definir({ ganhoEntrada: v })}
               />
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                {t("chamada.aparelhos.configEntrada")} <Settings size={15} />
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--2" />
+              <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item" onSelect={() => abrirConfiguracoes("voz")}>
+                {t("chamada.aparelhos.configEntrada")} <Settings data-gc="voz.voice-stage-controls.settings" size={15} />
               </DropdownMenuItem>
             </>
           }
         >
-          {micEnabled && !micBlocked ? <Mic size={18} /> : <MicOff size={18} className="text-danger" />}
+          {micEnabled && !micBlocked ? <Mic data-gc="voz.voice-stage-controls.mic" size={18} /> : <MicOff data-gc="voz.voice-stage-controls.mic-off" size={18} className="text-danger" />}
         </Controle>
 
-        <Controle
+        <Controle data-gc="voz.voice-stage-controls.controle.ao-alternar-menu--2"
           onOpenChange={aoAlternarMenu}
           label={deafened ? "Ouvir" : "Ficar surdo"}
           labelDoMenu={t("chamada.aparelhos.configSaida")}
@@ -156,46 +156,46 @@ export const VoiceStageControls: React.FC<{
           ativo={!deafened}
           menu={
             <>
-              <DropdownMenuLabel>{t("chamada.aparelhos.saida")}</DropdownMenuLabel>
+              <DropdownMenuLabel data-gc="voz.voice-stage-controls.dropdown-menu-label--2">{t("chamada.aparelhos.saida")}</DropdownMenuLabel>
               {podeTrocarSaida ? (
-                <DropdownMenuRadioGroup
+                <DropdownMenuRadioGroup data-gc="voz.voice-stage-controls.dropdown-menu-radio-group--2"
                   value={prefs.saidaId ?? "padrao"}
                   onValueChange={(valor) =>
                     prefs.definir({ saidaId: valor === "padrao" ? null : valor })
                   }
                 >
-                  <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item--3" value="padrao">{t("chamada.aparelhos.oDoSistema")}</DropdownMenuRadioItem>
                   {saidas.map((aparelho, i) => (
-                    <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
+                    <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item--4" key={aparelho.deviceId} value={aparelho.deviceId}>
                       {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.saidaCurto"))}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
               ) : (
-                <p className="px-2 py-1.5 text-xs text-ink-faint">
+                <p data-gc="voz.voice-stage-controls.p" className="px-2 py-1.5 text-xs text-ink-faint">
                   Este navegador não deixa escolher a saída — quem manda é o sistema.
                 </p>
               )}
 
-              <DropdownMenuSeparator />
-              <FaixaDeVolume
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--3" />
+              <FaixaDeVolume data-gc="voz.voice-stage-controls.faixa-de-volume--2"
                 rotulo={t("chamada.volume.saida")}
                 valor={prefs.volumeSaida}
                 max={1}
                 onMudar={(v) => prefs.definir({ volumeSaida: v })}
               />
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                {t("chamada.aparelhos.configSaida")} <Settings size={15} />
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--4" />
+              <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--2" onSelect={() => abrirConfiguracoes("voz")}>
+                {t("chamada.aparelhos.configSaida")} <Settings data-gc="voz.voice-stage-controls.settings--2" size={15} />
               </DropdownMenuItem>
             </>
           }
         >
-          {deafened ? <HeadphoneOff size={18} className="text-danger" /> : <Headphones size={18} />}
+          {deafened ? <HeadphoneOff data-gc="voz.voice-stage-controls.headphone-off" size={18} className="text-danger" /> : <Headphones data-gc="voz.voice-stage-controls.headphones" size={18} />}
         </Controle>
 
-        <Controle
+        <Controle data-gc="voz.voice-stage-controls.controle.ao-alternar-menu--3"
           onOpenChange={aoAlternarMenu}
           label={cameraEnabled ? "Desligar a câmera" : "Ligar a câmera"}
           labelDoMenu={t("chamada.aparelhos.configCamera")}
@@ -203,40 +203,40 @@ export const VoiceStageControls: React.FC<{
           ativo={cameraEnabled}
           menu={
             <>
-              <DropdownMenuLabel>{t("chamada.aparelhos.camera")}</DropdownMenuLabel>
-              <DropdownMenuRadioGroup
+              <DropdownMenuLabel data-gc="voz.voice-stage-controls.dropdown-menu-label--3">{t("chamada.aparelhos.camera")}</DropdownMenuLabel>
+              <DropdownMenuRadioGroup data-gc="voz.voice-stage-controls.dropdown-menu-radio-group--3"
                 value={prefs.cameraId ?? "padrao"}
                 onValueChange={(valor) =>
                   prefs.definir({ cameraId: valor === "padrao" ? null : valor })
                 }
               >
-                <DropdownMenuRadioItem value="padrao">{t("chamada.aparelhos.aDoSistema")}</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item--5" value="padrao">{t("chamada.aparelhos.aDoSistema")}</DropdownMenuRadioItem>
                 {cameras.map((aparelho, i) => (
-                  <DropdownMenuRadioItem key={aparelho.deviceId} value={aparelho.deviceId}>
+                  <DropdownMenuRadioItem data-gc="voz.voice-stage-controls.dropdown-menu-radio-item--6" key={aparelho.deviceId} value={aparelho.deviceId}>
                     {nomeDoDispositivo(aparelho, i, t("chamada.aparelhos.camera"))}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
 
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--5" />
+              <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item"
                 checked={prefs.espelharCamera}
                 onCheckedChange={(marcado) => prefs.definir({ espelharCamera: marcado })}
               >
                 {t("chamada.aparelhos.espelhar")}
               </DropdownMenuCheckboxItem>
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                {t("chamada.aparelhos.configCamera")} <Settings size={15} />
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--6" />
+              <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--3" onSelect={() => abrirConfiguracoes("voz")}>
+                {t("chamada.aparelhos.configCamera")} <Settings data-gc="voz.voice-stage-controls.settings--3" size={15} />
               </DropdownMenuItem>
             </>
           }
         >
-          {cameraEnabled ? <Video size={18} /> : <VideoOff size={18} />}
+          {cameraEnabled ? <Video data-gc="voz.voice-stage-controls.video" size={18} /> : <VideoOff data-gc="voz.voice-stage-controls.video-off" size={18} />}
         </Controle>
 
-        <Controle
+        <Controle data-gc="voz.voice-stage-controls.controle.ao-alternar-menu--4"
           onOpenChange={aoAlternarMenu}
           label={screenEnabled ? t("chamada.tela.pararDeCompartilhar") : t("chamada.tela.compartilhar")}
           labelDoMenu={t("chamada.tela.configCompartilhamento")}
@@ -244,79 +244,79 @@ export const VoiceStageControls: React.FC<{
           ativo={screenEnabled}
           menu={
             <>
-              <DropdownMenuLabel>{t("chamada.tela.compartilhar")}</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem
+              <DropdownMenuLabel data-gc="voz.voice-stage-controls.dropdown-menu-label--4">{t("chamada.tela.compartilhar")}</DropdownMenuLabel>
+              <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item--2"
                 checked={prefs.somDaTela}
                 onCheckedChange={(marcado) => prefs.definir({ somDaTela: marcado })}
               >
                 {t("chamada.tela.somDoComputador")}
               </DropdownMenuCheckboxItem>
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-                {t("chamada.tela.configCompartilhamento")} <Settings size={15} />
+              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--7" />
+              <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--4" onSelect={() => abrirConfiguracoes("voz")}>
+                {t("chamada.tela.configCompartilhamento")} <Settings data-gc="voz.voice-stage-controls.settings--4" size={15} />
               </DropdownMenuItem>
             </>
           }
         >
-          {screenEnabled ? <MonitorX size={18} /> : <MonitorUp size={18} />}
+          {screenEnabled ? <MonitorX data-gc="voz.voice-stage-controls.monitor-x" size={18} /> : <MonitorUp data-gc="voz.voice-stage-controls.monitor-up" size={18} />}
         </Controle>
 
-        <DropdownMenu onOpenChange={aoAlternarMenu}>
-          <Tooltip label={t("chamada.maisOpcoes")}>
-            <DropdownMenuTrigger asChild>
-              <button
+        <DropdownMenu data-gc="voz.voice-stage-controls.dropdown-menu.ao-alternar-menu" onOpenChange={aoAlternarMenu}>
+          <Tooltip data-gc="voz.voice-stage-controls.tooltip--2" label={t("chamada.maisOpcoes")}>
+            <DropdownMenuTrigger data-gc="voz.voice-stage-controls.dropdown-menu-trigger" asChild>
+              <button data-gc="voz.voice-stage-controls.button"
                 aria-label={t("chamada.maisOpcoes")}
                 className="flex size-10 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-3 hover:text-ink"
               >
-                <MoreHorizontal size={18} />
+                <MoreHorizontal data-gc="voz.voice-stage-controls.more-horizontal" size={18} />
               </button>
             </DropdownMenuTrigger>
           </Tooltip>
 
-          <DropdownMenuContent side="top" align="center" className="w-64">
-            <DropdownMenuCheckboxItem
+          <DropdownMenuContent data-gc="voz.voice-stage-controls.dropdown-menu-content" side="top" align="center" className="w-64">
+            <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item--3"
               checked={prefs.mostrarSemVideo}
               onCheckedChange={(marcado) => prefs.definir({ mostrarSemVideo: marcado })}
             >
               {t("chamada.tela.mostrarSemVideo")}
             </DropdownMenuCheckboxItem>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => void telaCheia.alternar()}>
+            <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--8" />
+            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--5" onSelect={() => void telaCheia.alternar()}>
               {telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}
-              {telaCheia.ativa ? <Minimize size={15} /> : <Maximize size={15} />}
+              {telaCheia.ativa ? <Minimize data-gc="voz.voice-stage-controls.minimize" size={15} /> : <Maximize data-gc="voz.voice-stage-controls.maximize" size={15} />}
             </DropdownMenuItem>
 
-            <DropdownMenuItem onSelect={() => abrirConfiguracoes("voz")}>
-              {t("chamada.aparelhos.configAudioEVideo")} <Settings size={15} />
+            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--6" onSelect={() => abrirConfiguracoes("voz")}>
+              {t("chamada.aparelhos.configAudioEVideo")} <Settings data-gc="voz.voice-stage-controls.settings--5" size={15} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <span className="mx-0.5 h-6 w-px bg-white/10" aria-hidden />
+        <span data-gc="voz.voice-stage-controls.span" className="mx-0.5 h-6 w-px bg-white/10" aria-hidden />
 
-        <Tooltip label={t("chamada.sairDaVoz")}>
-          <button
+        <Tooltip data-gc="voz.voice-stage-controls.tooltip--3" label={t("chamada.sairDaVoz")}>
+          <button data-gc="voz.voice-stage-controls.button--2"
             onClick={() => void leave()}
             aria-label={t("chamada.sairDaVoz")}
             className="flex size-10 items-center justify-center rounded-full bg-danger text-white transition hover:brightness-110"
           >
-            <PhoneOff size={18} />
+            <PhoneOff data-gc="voz.voice-stage-controls.phone-off" size={18} />
           </button>
         </Tooltip>
       </div>
 
-      <div className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
-        <VolumeDaLive onOpenChange={aoAlternarMenu} />
+      <div data-gc="voz.voice-stage-controls.div--4" className="pointer-events-auto flex flex-1 items-center justify-end gap-1">
+        <VolumeDaLive data-gc="voz.voice-stage-controls.volume-da-live.ao-alternar-menu" onOpenChange={aoAlternarMenu} />
 
-        <Tooltip label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}>
-          <button
+        <Tooltip data-gc="voz.voice-stage-controls.tooltip--4" label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}>
+          <button data-gc="voz.voice-stage-controls.button--3"
             onClick={() => void telaCheia.alternar()}
             aria-label={telaCheia.ativa ? "Sair da tela cheia" : "Entrar em tela cheia"}
             className="flex size-10 items-center justify-center rounded-full text-ink-muted drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-ink"
           >
-            {telaCheia.ativa ? <Minimize size={18} /> : <Maximize size={18} />}
+            {telaCheia.ativa ? <Minimize data-gc="voz.voice-stage-controls.minimize--2" size={18} /> : <Maximize data-gc="voz.voice-stage-controls.maximize--2" size={18} />}
           </button>
         </Tooltip>
       </div>
@@ -337,29 +337,29 @@ const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
   if (!assistindo) return null;
 
   return (
-    <Popover onOpenChange={onOpenChange}>
-      <Tooltip
+    <Popover data-gc="voz.voice-stage-controls.popover.on-open-change" onOpenChange={onOpenChange}>
+      <Tooltip data-gc="voz.voice-stage-controls.tooltip--5"
         label={
           volume === 0
             ? t("chamada.volume.liveSemSom")
             : t("chamada.volume.liveComPorcento", { porcento: Math.round(volume * 100) })
         }
       >
-        <PopoverTrigger asChild>
-          <button
+        <PopoverTrigger data-gc="voz.voice-stage-controls.popover-trigger" asChild>
+          <button data-gc="voz.voice-stage-controls.button--4"
             aria-label={t("chamada.volume.live")}
             className="flex size-10 items-center justify-center rounded-full text-ink-muted drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition hover:text-ink"
           >
-            {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            {volume === 0 ? <VolumeX data-gc="voz.voice-stage-controls.volume-x" size={18} /> : <Volume2 data-gc="voz.voice-stage-controls.volume2" size={18} />}
           </button>
         </PopoverTrigger>
       </Tooltip>
 
-      <PopoverContent side="top" align="center" className="w-auto p-3">
-        <PopoverArrow />
+      <PopoverContent data-gc="voz.voice-stage-controls.popover-content" side="top" align="center" className="w-auto p-3">
+        <PopoverArrow data-gc="voz.voice-stage-controls.popover-arrow" />
 
-        <div className="flex h-32 w-6 items-center justify-center">
-          <Slider
+        <div data-gc="voz.voice-stage-controls.div--5" className="flex h-32 w-6 items-center justify-center">
+          <Slider data-gc="voz.voice-stage-controls.slider"
             min={0}
             max={1}
             step={0.05}
@@ -384,9 +384,9 @@ const Controle: React.FC<{
   menu: React.ReactNode;
   onOpenChange?: (aberto: boolean) => void;
 }> = ({ children, label, labelDoMenu, onClick, ativo, menu, onOpenChange }) => (
-  <div className="relative">
-    <Tooltip label={label}>
-      <button
+  <div data-gc="voz.voice-stage-controls.div--6" className="relative">
+    <Tooltip data-gc="voz.voice-stage-controls.tooltip--6" label={label}>
+      <button data-gc="voz.voice-stage-controls.button.on-click"
         onClick={onClick}
         aria-label={label}
         aria-pressed={ativo}
@@ -401,19 +401,19 @@ const Controle: React.FC<{
       </button>
     </Tooltip>
 
-    <DropdownMenu onOpenChange={onOpenChange}>
-      <Tooltip label={labelDoMenu}>
-        <DropdownMenuTrigger asChild>
-          <button
+    <DropdownMenu data-gc="voz.voice-stage-controls.dropdown-menu.on-open-change" onOpenChange={onOpenChange}>
+      <Tooltip data-gc="voz.voice-stage-controls.tooltip--7" label={labelDoMenu}>
+        <DropdownMenuTrigger data-gc="voz.voice-stage-controls.dropdown-menu-trigger--2" asChild>
+          <button data-gc="voz.voice-stage-controls.button--5"
             aria-label={labelDoMenu}
             className="absolute -top-1 right-0 flex size-4 items-center justify-center rounded-full bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
           >
-            <ChevronUp size={11} />
+            <ChevronUp data-gc="voz.voice-stage-controls.chevron-up" size={11} />
           </button>
         </DropdownMenuTrigger>
       </Tooltip>
 
-      <DropdownMenuContent side="top" align="center" className="w-64">
+      <DropdownMenuContent data-gc="voz.voice-stage-controls.dropdown-menu-content--2" side="top" align="center" className="w-64">
         {menu}
       </DropdownMenuContent>
     </DropdownMenu>
@@ -426,13 +426,13 @@ const FaixaDeVolume: React.FC<{
   max: number;
   onMudar: (valor: number) => void;
 }> = ({ rotulo, valor, max, onMudar }) => (
-  <div className="px-2 py-1.5">
-    <p className="mb-1.5 flex items-center justify-between text-xs">
-      <span className="font-medium text-ink-muted">{rotulo}</span>
-      <span className="tabular-nums text-ink-faint">{Math.round(valor * 100)}%</span>
+  <div data-gc="voz.voice-stage-controls.div--7" className="px-2 py-1.5">
+    <p data-gc="voz.voice-stage-controls.p--2" className="mb-1.5 flex items-center justify-between text-xs">
+      <span data-gc="voz.voice-stage-controls.span--2" className="font-medium text-ink-muted">{rotulo}</span>
+      <span data-gc="voz.voice-stage-controls.span--3" className="tabular-nums text-ink-faint">{Math.round(valor * 100)}%</span>
     </p>
 
-    <Slider
+    <Slider data-gc="voz.voice-stage-controls.slider--2"
       min={0}
       max={max}
       step={0.05}

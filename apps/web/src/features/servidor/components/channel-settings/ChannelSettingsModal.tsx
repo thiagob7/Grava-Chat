@@ -50,21 +50,21 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
   const prefixo = channel.type === "VOICE" ? "CANAIS DE VOZ" : "CANAIS DE TEXTO";
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogPrimitive.Root data-gc="servidor.channel-settings.channel-settings-modal.dialog-primitiveroot" open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
-        <DialogPrimitive.Content className="regiao-sem-arrasto fixed inset-0 z-50 flex outline-none">
-          <DialogPrimitive.Title className="sr-only">
+        <DialogPrimitive.Overlay data-gc="servidor.channel-settings.channel-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-surface-2" />
+        <DialogPrimitive.Content data-gc="servidor.channel-settings.channel-settings-modal.dialog-primitivecontent" className="regiao-sem-arrasto fixed inset-0 z-50 flex outline-none">
+          <DialogPrimitive.Title data-gc="servidor.channel-settings.channel-settings-modal.dialog-primitivetitle" className="sr-only">
             Configurações de {channel.name}
           </DialogPrimitive.Title>
 
-          <nav className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
-            <p className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-              {channel.name} <span className="text-ink-faint/60">· {prefixo}</span>
+          <nav data-gc="servidor.channel-settings.channel-settings-modal.nav" className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
+            <p data-gc="servidor.channel-settings.channel-settings-modal.p" className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+              {channel.name} <span data-gc="servidor.channel-settings.channel-settings-modal.span" className="text-ink-faint/60">· {prefixo}</span>
             </p>
 
             {itens.map((item) => (
-              <button
+              <button data-gc="servidor.channel-settings.channel-settings-modal.button"
                 key={item.id}
                 onClick={() => setSecao(item.id)}
                 className={cn(
@@ -77,16 +77,16 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
                 )}
               >
                 {item.label}
-                {item.danger && <Trash2 size={14} />}
+                {item.danger && <Trash2 data-gc="servidor.channel-settings.channel-settings-modal.trash2" size={14} />}
               </button>
             ))}
           </nav>
 
-          <div className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
-            {secao === "visao" && <ChannelOverviewSection guildId={guildId} channel={channel} />}
+          <div data-gc="servidor.channel-settings.channel-settings-modal.div" className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
+            {secao === "visao" && <ChannelOverviewSection data-gc="servidor.channel-settings.channel-settings-modal.channel-overview-section" guildId={guildId} channel={channel} />}
 
             {secao === "permissoes" && (
-              <ChannelPermissionsSection
+              <ChannelPermissionsSection data-gc="servidor.channel-settings.channel-settings-modal.channel-permissions-section"
                 guildId={guildId}
                 channel={channel}
                 roles={roles}
@@ -95,22 +95,22 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
               />
             )}
 
-            {secao === "convites" && <InvitesSection guildId={guildId} />}
+            {secao === "convites" && <InvitesSection data-gc="servidor.channel-settings.channel-settings-modal.invites-section" guildId={guildId} />}
 
             {secao === "excluir" && (
-              <DeleteChannelSection guildId={guildId} channel={channel} onClose={onClose} />
+              <DeleteChannelSection data-gc="servidor.channel-settings.channel-settings-modal.delete-channel-section.on-close" guildId={guildId} channel={channel} onClose={onClose} />
             )}
           </div>
 
-          <button
+          <button data-gc="servidor.channel-settings.channel-settings-modal.button.on-close"
             onClick={onClose}
             aria-label={t("comum.fechar")}
             className="absolute right-10 top-12 flex flex-col items-center gap-1 text-ink-muted transition hover:text-ink"
           >
-            <span className="flex size-9 items-center justify-center rounded-full border-2 border-current">
-              <X size={18} />
+            <span data-gc="servidor.channel-settings.channel-settings-modal.span--2" className="flex size-9 items-center justify-center rounded-full border-2 border-current">
+              <X data-gc="servidor.channel-settings.channel-settings-modal.x" size={18} />
             </span>
-            <span className="text-xs font-semibold">ESC</span>
+            <span data-gc="servidor.channel-settings.channel-settings-modal.span--3" className="text-xs font-semibold">ESC</span>
           </button>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

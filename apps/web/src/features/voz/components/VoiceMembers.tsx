@@ -56,7 +56,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   if (!states.length) return null;
 
   return (
-    <div className="mb-1 ml-6 space-y-0.5">
+    <div data-gc="voz.voice-members.div" className="mb-1 ml-6 space-y-0.5">
       {states.map((state) => {
         const member = members.find((m) => m.user.id === state.userId);
         const name = member?.nickname ?? member?.user.displayName ?? "…";
@@ -69,28 +69,28 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         const conexao = naSala ? avisoDeQualidade(naSala.qualidade) : null;
 
         const linha = (
-          <ConviteParaLive
+          <ConviteParaLive data-gc="voz.voice-members.convite-para-live"
             ativo={podeAssistir}
             nome={name}
             transmissao={transmissao}
             onAssistir={() => assistir(state.userId)}
           >
-            <UserProfilePopover
+            <UserProfilePopover data-gc="voz.voice-members.user-profile-popover"
               userId={state.userId}
               guildId={guildId}
               roles={roles}
               roleIds={member?.roleIds ?? []}
               podeModerar={podeModerar}
             >
-              <button className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left transition hover:bg-hover">
-                <Avatar
+              <button data-gc="voz.voice-members.button" className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left transition hover:bg-hover">
+                <Avatar data-gc="voz.voice-members.avatar"
                   id={state.userId}
                   name={name}
                   url={member?.user.avatarUrl}
                   size={24}
                   speaking={falando.has(state.userId) || somDe === state.userId}
                 />
-              <span
+              <span data-gc="voz.voice-members.span"
                 className={cn(
                   "min-w-0 flex-1 truncate text-sm font-medium leading-5",
                   state.selfMute ? "text-ink-faint" : "text-ink-muted",
@@ -98,11 +98,11 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
               >
                 {name}
               </span>
-                <span className="flex shrink-0 items-center gap-1 text-ink-faint">
+                <span data-gc="voz.voice-members.span--2" className="flex shrink-0 items-center gap-1 text-ink-faint">
                 {conexao && (
-                  <Tooltip label={conexao.rotulo}>
-                    <span className={cn("flex items-center", conexao.cor)} aria-label={conexao.rotulo}>
-                      <CellSignalLow
+                  <Tooltip data-gc="voz.voice-members.tooltip" label={conexao.rotulo}>
+                    <span data-gc="voz.voice-members.span--3" className={cn("flex items-center", conexao.cor)} aria-label={conexao.rotulo}>
+                      <CellSignalLow data-gc="voz.voice-members.cell-signal-low"
                         size={14}
                         weight="fill"
                         className={conexao.pulsando ? "animate-pulse" : undefined}
@@ -111,15 +111,15 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                   </Tooltip>
                 )}
                 {state.screenShare && (
-                  <MonitorArrowUp size={14} weight="fill" className="text-online" />
+                  <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={14} weight="fill" className="text-online" />
                 )}
-                {state.camera && <VideoCamera size={14} weight="fill" className="text-online" />}
+                {state.camera && <VideoCamera data-gc="voz.voice-members.video-camera" size={14} weight="fill" className="text-online" />}
 
                 {(state.serverMute || state.selfMute) && (
-                  <MicrophoneSlash size={14} weight="fill" className="text-danger" />
+                  <MicrophoneSlash data-gc="voz.voice-members.microphone-slash" size={14} weight="fill" className="text-danger" />
                 )}
                 {(state.serverDeaf || state.selfDeaf) && (
-                  <SpeakerSlash size={14} weight="fill" className="text-danger" />
+                  <SpeakerSlash data-gc="voz.voice-members.speaker-slash" size={14} weight="fill" className="text-danger" />
                 )}
                 </span>
               </button>
@@ -127,10 +127,10 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
           </ConviteParaLive>
         );
 
-        if (!guildId) return <div key={state.userId}>{linha}</div>;
+        if (!guildId) return <div data-gc="voz.voice-members.div--2" key={state.userId}>{linha}</div>;
 
         return (
-          <VoiceMemberMenu
+          <VoiceMemberMenu data-gc="voz.voice-members.voice-member-menu"
             key={state.userId}
             guildId={guildId}
             userId={state.userId}
@@ -142,7 +142,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
             minhasPermissoes={minhasPermissoes}
             currentUserId={currentUserId}
           >
-            <div>{linha}</div>
+            <div data-gc="voz.voice-members.div--3">{linha}</div>
           </VoiceMemberMenu>
         );
       })}
@@ -160,17 +160,17 @@ const ConviteParaLive: React.FC<{
   const { t } = useTranslation();
   const [aberto, setAberto] = useState(false);
 
-  if (!ativo) return <div>{children}</div>;
+  if (!ativo) return <div data-gc="voz.voice-members.div--4">{children}</div>;
 
   return (
-    <Popover open={aberto} onOpenChange={setAberto}>
-      <PopoverAnchor asChild>
-        <div onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
+    <Popover data-gc="voz.voice-members.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+      <PopoverAnchor data-gc="voz.voice-members.popover-anchor" asChild>
+        <div data-gc="voz.voice-members.div--5" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
           {children}
         </div>
       </PopoverAnchor>
 
-      <PopoverContent
+      <PopoverContent data-gc="voz.voice-members.popover-content"
         side="right"
         align="center"
         className="w-64 space-y-2 p-2"
@@ -178,24 +178,24 @@ const ConviteParaLive: React.FC<{
         onMouseLeave={() => setAberto(false)}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <div className="aspect-video overflow-hidden rounded bg-black">
+        <div data-gc="voz.voice-members.div--6" className="aspect-video overflow-hidden rounded bg-black">
           {transmissao ? (
-            <VoiceVideo track={transmissao} />
+            <VoiceVideo data-gc="voz.voice-members.voice-video" track={transmissao} />
           ) : (
-            <div className="flex size-full items-center justify-center text-xs text-ink-faint">
+            <div data-gc="voz.voice-members.div--7" className="flex size-full items-center justify-center text-xs text-ink-faint">
               {t("chamada.carregandoPrevia")}
             </div>
           )}
         </div>
 
-        <button
+        <button data-gc="voz.voice-members.button--2"
           onClick={() => {
             onAssistir();
             setAberto(false);
           }}
           className="flex w-full items-center justify-center gap-2 rounded bg-surface-3 px-2 py-1.5 text-sm font-medium transition hover:bg-surface-4"
         >
-          <Play size={14} className="text-online" />
+          <Play data-gc="voz.voice-members.play" size={14} className="text-online" />
           {t("chamada.live.assistirPessoa", { nome })}
         </button>
       </PopoverContent>

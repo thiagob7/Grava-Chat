@@ -28,13 +28,13 @@ export function EscolherEnfeiteModal<T extends string>({
   previa,
 }: EscolherEnfeiteModalProps<T>) {
   return (
-    <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
-      <DialogContent className="max-w-3xl p-5">
-        <DialogTitle className="text-lg font-semibold">{titulo}</DialogTitle>
+    <Dialog data-gc="perfil.cartao.escolher-enfeite-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+      <DialogContent data-gc="perfil.cartao.escolher-enfeite-modal.dialog-content" className="max-w-3xl p-5">
+        <DialogTitle data-gc="perfil.cartao.escolher-enfeite-modal.dialog-title" className="text-lg font-semibold">{titulo}</DialogTitle>
 
-        <div className="mt-4 flex gap-5">
-          <div className="max-h-[26rem] min-w-0 flex-1 overflow-y-auto pr-1">
-            <GradeDeOpcoes
+        <div data-gc="perfil.cartao.escolher-enfeite-modal.div" className="mt-4 flex gap-5">
+          <div data-gc="perfil.cartao.escolher-enfeite-modal.div--2" className="max-h-[26rem] min-w-0 flex-1 overflow-y-auto pr-1">
+            <GradeDeOpcoes data-gc="perfil.cartao.escolher-enfeite-modal.grade-de-opcoes.on-escolher"
               label={legenda}
               opcoes={opcoes}
               valor={valor}
@@ -43,7 +43,7 @@ export function EscolherEnfeiteModal<T extends string>({
             />
           </div>
 
-          <div className="w-80 shrink-0">{previa}</div>
+          <div data-gc="perfil.cartao.escolher-enfeite-modal.div--3" className="w-80 shrink-0">{previa}</div>
         </div>
       </DialogContent>
     </Dialog>

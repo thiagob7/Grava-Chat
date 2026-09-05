@@ -11,6 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "css:check": "node scripts/checar-css.mjs",
+    "ganchos": "node scripts/ganchos-de-tema.mjs",
+    "ganchos:check": "node scripts/ganchos-de-tema.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "emoji": "node scripts/copiar-emoji.mjs"

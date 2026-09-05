@@ -78,24 +78,24 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
     });
 
   return (
-    <div className="max-w-2xl">
-      <h2 className="text-xl font-semibold">{t("servidor.perfil.titulo")}</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+    <div data-gc="servidor.server-settings.server-profile-section.div" className="max-w-2xl">
+      <h2 data-gc="servidor.server-settings.server-profile-section.h2" className="text-xl font-semibold">{t("servidor.perfil.titulo")}</h2>
+      <p data-gc="servidor.server-settings.server-profile-section.p" className="mt-1 text-sm text-ink-muted">
         {t("servidor.perfil.descricao")}
       </p>
 
-      <div className="my-6 h-px bg-line" />
+      <div data-gc="servidor.server-settings.server-profile-section.div--2" className="my-6 h-px bg-line" />
 
-      <Label>{t("servidor.perfil.icone")}</Label>
-      <div className="flex items-center gap-4">
+      <Label data-gc="servidor.server-settings.server-profile-section.label">{t("servidor.perfil.icone")}</Label>
+      <div data-gc="servidor.server-settings.server-profile-section.div--3" className="flex items-center gap-4">
         {iconUrl ? (
-          <img
+          <img data-gc="servidor.server-settings.server-profile-section.img"
             src={iconUrl}
             alt=""
             className="size-20 rounded-3xl object-cover"
           />
         ) : (
-          <div
+          <div data-gc="servidor.server-settings.server-profile-section.div--4"
             className="flex size-20 items-center justify-center rounded-3xl text-2xl font-bold text-white"
             style={{ backgroundColor: avatarColor(guild.id) }}
           >
@@ -103,20 +103,20 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
           </div>
         )}
 
-        <div>
-          <div className="flex gap-2">
-            <Button
+        <div data-gc="servidor.server-settings.server-profile-section.div--5">
+          <div data-gc="servidor.server-settings.server-profile-section.div--6" className="flex gap-2">
+            <Button data-gc="servidor.server-settings.server-profile-section.button"
               variant="surface"
               size="sm"
               onClick={() => inputArquivo.current?.click()}
               disabled={uploadImage.isPending}
             >
-              <Upload size={14} />
+              <Upload data-gc="servidor.server-settings.server-profile-section.upload" size={14} />
               {uploadImage.isPending ? "Enviando…" : "Alterar ícone"}
             </Button>
 
             {iconUrl && (
-              <Button
+              <Button data-gc="servidor.server-settings.server-profile-section.button--2"
                 variant="ghost"
                 size="sm"
                 onClick={() => setIconUrl(null)}
@@ -127,13 +127,13 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             )}
           </div>
 
-          <p className="mt-1.5 text-xs text-ink-faint">
+          <p data-gc="servidor.server-settings.server-profile-section.p--2" className="mt-1.5 text-xs text-ink-faint">
             {economia
               ? t("servidor.perfil.comprimido", { economia })
               : "A imagem é reduzida no navegador."}
           </p>
 
-          <input
+          <input data-gc="servidor.server-settings.server-profile-section.input"
             ref={inputArquivo}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
@@ -143,13 +143,13 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
         </div>
       </div>
 
-      <div className="my-6 h-px bg-line" />
+      <div data-gc="servidor.server-settings.server-profile-section.div--7" className="my-6 h-px bg-line" />
 
-      <Label>{t("servidor.perfil.faixa")}</Label>
+      <Label data-gc="servidor.server-settings.server-profile-section.label--2">{t("servidor.perfil.faixa")}</Label>
 
-      <div className="space-y-2">
-        <div className="relative">
-          <button
+      <div data-gc="servidor.server-settings.server-profile-section.div--8" className="space-y-2">
+        <div data-gc="servidor.server-settings.server-profile-section.div--9" className="relative">
+          <button data-gc="servidor.server-settings.server-profile-section.button--3"
             type="button"
             onClick={() => inputDaFaixa.current?.click()}
             onDragOver={(e) => {
@@ -182,7 +182,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
             }}
           >
-            <span
+            <span data-gc="servidor.server-settings.server-profile-section.span"
               className={cn(
                 "flex flex-col items-center gap-1.5 rounded-lg px-4 py-3 text-xs transition",
                 bannerUrl
@@ -190,7 +190,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
                   : "text-white/80",
               )}
             >
-              <ImageUp size={20} />
+              <ImageUp data-gc="servidor.server-settings.server-profile-section.image-up" size={20} />
               {uploadImage.isPending
                 ? "Enviando…"
                 : arrastando
@@ -202,24 +202,24 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
           </button>
 
           {bannerUrl && !uploadImage.isPending && (
-            <button
+            <button data-gc="servidor.server-settings.server-profile-section.button--4"
               type="button"
               onClick={() => setBannerUrl(null)}
               aria-label={t("comum.remover")}
               title={t("comum.remover")}
               className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur transition hover:bg-danger hover:text-white"
             >
-              <X size={14} />
+              <X data-gc="servidor.server-settings.server-profile-section.x" size={14} />
             </button>
           )}
         </div>
 
-        <p className="text-xs text-ink-faint">
+        <p data-gc="servidor.server-settings.server-profile-section.p--3" className="text-xs text-ink-faint">
           Aparece no alto da lista de canais. PNG, JPG, WEBP ou GIF — a imagem é
           reduzida no navegador.
         </p>
 
-        <input
+        <input data-gc="servidor.server-settings.server-profile-section.input--2"
           ref={inputDaFaixa}
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
@@ -228,19 +228,19 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
         />
       </div>
 
-      <div className="my-6 h-px bg-line" />
+      <div data-gc="servidor.server-settings.server-profile-section.div--10" className="my-6 h-px bg-line" />
 
-      <Label htmlFor="guild-name">{t("servidor.perfil.nomeDoServidor")}</Label>
-      <Input
+      <Label data-gc="servidor.server-settings.server-profile-section.label--3" htmlFor="guild-name">{t("servidor.perfil.nomeDoServidor")}</Label>
+      <Input data-gc="servidor.server-settings.server-profile-section.input--3"
         id="guild-name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         maxLength={LIMITS.guildName}
       />
 
-      <div className="mt-5">
-        <Label htmlFor="guild-description">{t("servidor.perfil.campoDescricao")}</Label>
-        <Textarea
+      <div data-gc="servidor.server-settings.server-profile-section.div--11" className="mt-5">
+        <Label data-gc="servidor.server-settings.server-profile-section.label--4" htmlFor="guild-description">{t("servidor.perfil.campoDescricao")}</Label>
+        <Textarea data-gc="servidor.server-settings.server-profile-section.textarea"
           id="guild-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -251,12 +251,12 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
       </div>
 
       {mudou && (
-        <div className="mt-6 flex items-center justify-between rounded-lg bg-surface-0 px-4 py-3">
-          <p className="text-sm text-ink-muted">
+        <div data-gc="servidor.server-settings.server-profile-section.div--12" className="mt-6 flex items-center justify-between rounded-lg bg-surface-0 px-4 py-3">
+          <p data-gc="servidor.server-settings.server-profile-section.p--4" className="text-sm text-ink-muted">
             {t("comum.naoSalvo")}
           </p>
-          <div className="flex gap-2">
-            <Button
+          <div data-gc="servidor.server-settings.server-profile-section.div--13" className="flex gap-2">
+            <Button data-gc="servidor.server-settings.server-profile-section.button--5"
               variant="ghost"
               size="sm"
               onClick={() => {
@@ -268,7 +268,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             >
               {t("comum.descartar")}
             </Button>
-            <Button
+            <Button data-gc="servidor.server-settings.server-profile-section.button.salvar"
               size="sm"
               onClick={salvar}
               disabled={updateGuild.isPending || !name.trim()}

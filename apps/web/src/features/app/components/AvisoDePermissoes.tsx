@@ -36,5 +36,5 @@ export const AvisoDePermissoes: React.FC = () => {
     }
   };
 
-  return <PermissoesDoMac aberto={aberto} onFechar={fechar} />;
+  return <PermissoesDoMac data-gc="app.aviso-de-permissoes.permissoes-do-mac.fechar" aberto={aberto} onFechar={fechar} />;
 };

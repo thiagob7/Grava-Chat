@@ -59,40 +59,40 @@ export const ChamadaRecebida: React.FC = () => {
   };
 
   return (
-    <div className="fixed right-4 top-4 z-[60] w-72 rounded-lg bg-surface-0 p-4 shadow-2xl ring-1 ring-white/10">
-      <div className="flex items-center gap-3">
-        <span className="relative">
-          <Avatar id={chamada.userId} name={nome} url={perfil?.avatarUrl ?? null} size={44} />
-          <span className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
+    <div data-gc="voz.chamada-recebida.div" className="fixed right-4 top-4 z-[60] w-72 rounded-lg bg-surface-0 p-4 shadow-2xl ring-1 ring-white/10">
+      <div data-gc="voz.chamada-recebida.div--2" className="flex items-center gap-3">
+        <span data-gc="voz.chamada-recebida.span" className="relative">
+          <Avatar data-gc="voz.chamada-recebida.avatar" id={chamada.userId} name={nome} url={perfil?.avatarUrl ?? null} size={44} />
+          <span data-gc="voz.chamada-recebida.span--2" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
         </span>
 
-        <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold">{nome}</span>
-          <span className="flex items-center gap-1.5 text-xs text-ink-muted">
-            {chamada.comVideo ? <Video size={12} /> : <Phone size={12} />}
+        <span data-gc="voz.chamada-recebida.span--3" className="min-w-0 flex-1">
+          <span data-gc="voz.chamada-recebida.span--4" className="block truncate font-semibold">{nome}</span>
+          <span data-gc="voz.chamada-recebida.span--5" className="flex items-center gap-1.5 text-xs text-ink-muted">
+            {chamada.comVideo ? <Video data-gc="voz.chamada-recebida.video" size={12} /> : <Phone data-gc="voz.chamada-recebida.phone" size={12} />}
             {t(chamada.comVideo ? "chamada.deVideo" : "chamada.deVoz")}
           </span>
         </span>
       </div>
 
-      <div className="mt-4 flex gap-2">
-        <button
+      <div data-gc="voz.chamada-recebida.div--3" className="mt-4 flex gap-2">
+        <button data-gc="voz.chamada-recebida.button.recusar"
           onClick={recusar}
           className="flex flex-1 items-center justify-center gap-1.5 rounded bg-surface-3 px-3 py-2 text-sm font-medium transition hover:bg-danger hover:text-white"
         >
-          <PhoneOff size={15} /> Recusar
+          <PhoneOff data-gc="voz.chamada-recebida.phone-off" size={15} /> Recusar
         </button>
 
-        <button
+        <button data-gc="voz.chamada-recebida.button"
           onClick={() => void atender(chamada.comVideo)}
           className="flex flex-1 items-center justify-center gap-1.5 rounded bg-online px-3 py-2 text-sm font-medium text-black transition hover:brightness-110"
         >
-          {chamada.comVideo ? <Video size={15} /> : <Phone size={15} />} Atender
+          {chamada.comVideo ? <Video data-gc="voz.chamada-recebida.video--2" size={15} /> : <Phone data-gc="voz.chamada-recebida.phone--2" size={15} />} Atender
         </button>
       </div>
 
       {chamada.comVideo && (
-        <button
+        <button data-gc="voz.chamada-recebida.button--2"
           onClick={() => void atender(false)}
           className="mt-2 w-full text-center text-xs text-ink-muted transition hover:text-ink hover:underline"
         >

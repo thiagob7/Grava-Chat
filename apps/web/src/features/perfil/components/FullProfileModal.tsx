@@ -46,12 +46,12 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   ];
 
   return (
-  <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
-    <DialogContent
+  <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+    <DialogContent data-gc="perfil.full-profile-modal.dialog-content"
       className="max-w-lg overflow-hidden border-2 border-brand p-0"
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
-      <div
+      <div data-gc="perfil.full-profile-modal.div"
         className="h-28 bg-cover bg-center"
         style={{
           backgroundColor: perfil.perfil?.bannerCor ?? avatarColor(perfil.id),
@@ -61,9 +61,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         }}
       />
 
-      <div className="px-6 pb-6">
-        <div className="-mt-14 mb-4">
-          <Avatar
+      <div data-gc="perfil.full-profile-modal.div--2" className="px-6 pb-6">
+        <div data-gc="perfil.full-profile-modal.div--3" className="-mt-14 mb-4">
+          <Avatar data-gc="perfil.full-profile-modal.avatar"
             id={perfil.id}
             name={perfil.displayName}
             url={perfil.avatarUrl}
@@ -75,8 +75,8 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
           />
         </div>
 
-        <DialogTitle className="text-2xl font-bold leading-tight">
-          <UserName
+        <DialogTitle data-gc="perfil.full-profile-modal.dialog-title" className="text-2xl font-bold leading-tight">
+          <UserName data-gc="perfil.full-profile-modal.user-name"
             nome={perfil.displayName}
             perfil={perfil.perfil}
             corDoCargo={corMaisAlta(cargos)}
@@ -85,12 +85,12 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
             fundo="#27272a"
           />
         </DialogTitle>
-        <DialogDescription className="text-base">@{perfil.username}</DialogDescription>
+        <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{perfil.username}</DialogDescription>
 
         {abas.length > 1 && (
-          <div className="mt-4 flex gap-4 border-b border-line">
+          <div data-gc="perfil.full-profile-modal.div--4" className="mt-4 flex gap-4 border-b border-line">
             {abas.map((item) => (
-              <button
+              <button data-gc="perfil.full-profile-modal.button"
                 key={item.id}
                 onClick={() => setAba(item.id)}
                 aria-current={aba === item.id}
@@ -108,61 +108,61 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {aba !== "geral" && emComum.isPending && (
-          <p className="py-8 text-center text-sm text-ink-faint">{t("perfil.carregando")}</p>
+          <p data-gc="perfil.full-profile-modal.p" className="py-8 text-center text-sm text-ink-faint">{t("perfil.carregando")}</p>
         )}
 
         {aba === "amigos" && emComum.data && (
-          <div className="mt-4 space-y-1">
+          <div data-gc="perfil.full-profile-modal.div--5" className="mt-4 space-y-1">
             {emComum.data.amigos.map((amigo) => (
-              <div key={amigo.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
-                <Avatar
+              <div data-gc="perfil.full-profile-modal.div--6" key={amigo.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+                <Avatar data-gc="perfil.full-profile-modal.avatar--2"
                   id={amigo.id}
                   name={amigo.displayName}
                   url={amigo.avatarUrl}
                   size={32}
                   status={amigo.status}
                 />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                <span data-gc="perfil.full-profile-modal.span" className="min-w-0 flex-1 truncate text-sm font-medium">
                   {amigo.displayName}
                 </span>
-                <span className="shrink-0 text-xs text-ink-faint">@{amigo.username}</span>
+                <span data-gc="perfil.full-profile-modal.span--2" className="shrink-0 text-xs text-ink-faint">@{amigo.username}</span>
               </div>
             ))}
           </div>
         )}
 
         {aba === "servidores" && emComum.data && (
-          <div className="mt-4 space-y-1">
+          <div data-gc="perfil.full-profile-modal.div--7" className="mt-4 space-y-1">
             {emComum.data.servidores.map((servidor) => (
-              <div key={servidor.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+              <div data-gc="perfil.full-profile-modal.div--8" key={servidor.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
                 {servidor.iconUrl ? (
-                  <img src={servidor.iconUrl} alt="" className="size-8 rounded-full object-cover" />
+                  <img data-gc="perfil.full-profile-modal.img" src={servidor.iconUrl} alt="" className="size-8 rounded-full object-cover" />
                 ) : (
-                  <span className="flex size-8 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold">
+                  <span data-gc="perfil.full-profile-modal.span--3" className="flex size-8 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold">
                     {servidor.name.slice(0, 2).toUpperCase()}
                   </span>
                 )}
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{servidor.name}</span>
+                <span data-gc="perfil.full-profile-modal.span--4" className="min-w-0 flex-1 truncate text-sm font-medium">{servidor.name}</span>
               </div>
             ))}
           </div>
         )}
 
         {aba === "geral" && perfil.bio && (
-          <Bloco titulo={t("perfil.sobre")}>
-            <p className="whitespace-pre-wrap text-sm text-ink-muted">{perfil.bio}</p>
+          <Bloco data-gc="perfil.full-profile-modal.bloco" titulo={t("perfil.sobre")}>
+            <p data-gc="perfil.full-profile-modal.p--2" className="whitespace-pre-wrap text-sm text-ink-muted">{perfil.bio}</p>
           </Bloco>
         )}
 
         {aba === "geral" && cargos.length > 0 && (
-          <Bloco titulo={t("perfil.cargosTitulo")}>
-            <div className="flex flex-wrap gap-1.5">
+          <Bloco data-gc="perfil.full-profile-modal.bloco--2" titulo={t("perfil.cargosTitulo")}>
+            <div data-gc="perfil.full-profile-modal.div--9" className="flex flex-wrap gap-1.5">
               {cargos.map((cargo) => (
-                <span
+                <span data-gc="perfil.full-profile-modal.span--5"
                   key={cargo.id}
                   className="flex items-center gap-1.5 rounded bg-surface-1 px-2 py-1 text-xs"
                 >
-                  <span
+                  <span data-gc="perfil.full-profile-modal.span--6"
                     className="size-2 rounded-full"
                     style={{ backgroundColor: cargo.color || "#99aab5" }}
                   />
@@ -174,8 +174,8 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {aba === "geral" && (
-          <Bloco titulo={t("perfil.membroDesde")}>
-            <p className="text-sm text-ink-muted">
+          <Bloco data-gc="perfil.full-profile-modal.bloco--3" titulo={t("perfil.membroDesde")}>
+            <p data-gc="perfil.full-profile-modal.p--3" className="text-sm text-ink-muted">
               {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
                 new Date(perfil.createdAt),
               )}
@@ -189,8 +189,8 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 };
 
 const Bloco: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
-  <section className="mt-5">
-    <h3 className="mb-1.5 text-sm font-bold text-ink">{titulo}</h3>
+  <section data-gc="perfil.full-profile-modal.section" className="mt-5">
+    <h3 data-gc="perfil.full-profile-modal.h3" className="mb-1.5 text-sm font-bold text-ink">{titulo}</h3>
     {children}
   </section>
 );

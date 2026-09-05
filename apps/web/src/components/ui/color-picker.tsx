@@ -90,7 +90,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <ContextoDaCor.Provider value={{ cor, mudar }}>
-      <div className={cn("flex w-full flex-col gap-3", className)}>{children}</div>
+      <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", className)}>{children}</div>
     </ContextoDaCor.Provider>
   );
 };
@@ -146,7 +146,7 @@ export const ColorPickerSelection: React.FC<{ className?: string }> = ({ classNa
   const { x, y } = posicaoDaCor(cor);
 
   return (
-    <div
+    <div data-gc="ui.color-picker.div--2"
       ref={caixa}
       onPointerDown={(e) => {
         e.preventDefault();
@@ -160,7 +160,7 @@ export const ColorPickerSelection: React.FC<{ className?: string }> = ({ classNa
                      hsl(${cor.h}, 100%, 50%)`,
       }}
     >
-      <span
+      <span data-gc="ui.color-picker.span"
         aria-hidden
         className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.5)]"
         style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
@@ -184,7 +184,7 @@ export const ColorPickerHue: React.FC = () => {
   const { cor, mudar } = usarCor();
 
   return (
-    <input
+    <input data-gc="ui.color-picker.input"
       type="range"
       min={0}
       max={360}
@@ -205,7 +205,7 @@ export const ColorPickerAlpha: React.FC = () => {
   const { cor, mudar } = usarCor();
 
   return (
-    <input
+    <input data-gc="ui.color-picker.input--2"
       type="range"
       min={0}
       max={100}
@@ -245,14 +245,14 @@ export const ColorPickerEyeDropper: React.FC = () => {
   };
 
   return (
-    <button
+    <button data-gc="ui.color-picker.button"
       type="button"
       onClick={() => void pingar()}
       title="Pescar uma cor da tela"
       aria-label="Pescar uma cor da tela"
       className="flex size-8 shrink-0 items-center justify-center rounded-md border border-line text-ink-muted transition hover:bg-surface-3 hover:text-ink"
     >
-      <Pipette size={14} />
+      <Pipette data-gc="ui.color-picker.pipette" size={14} />
     </button>
   );
 };
@@ -272,8 +272,8 @@ export const ColorPickerFormat: React.FC = () => {
   const campo = "h-8 flex-1 px-2 font-mono text-xs";
 
   return (
-    <div className="flex items-center gap-2">
-      <CampoSelect<Formato>
+    <div data-gc="ui.color-picker.div--3" className="flex items-center gap-2">
+      <CampoSelect<Formato> data-gc="ui.color-picker.campo-select"
         valor={formato}
         onEscolher={(f) => {
           setFormato(f);
@@ -284,7 +284,7 @@ export const ColorPickerFormat: React.FC = () => {
       />
 
       {formato === "hex" && (
-        <Input
+        <Input data-gc="ui.color-picker.input--3"
           value={rascunho ?? hex}
           onChange={(e) => {
             setRascunho(e.target.value);
@@ -299,7 +299,7 @@ export const ColorPickerFormat: React.FC = () => {
       )}
 
       {formato !== "hex" && (
-        <Input
+        <Input data-gc="ui.color-picker.input--4"
           readOnly
           value={
             formato === "rgb"
@@ -314,7 +314,7 @@ export const ColorPickerFormat: React.FC = () => {
       )}
 
       {formato !== "css" && (
-        <span className="flex h-8 shrink-0 items-center rounded-md border border-line px-1.5 font-mono text-xs tabular-nums text-ink-muted">
+        <span data-gc="ui.color-picker.span--2" className="flex h-8 shrink-0 items-center rounded-md border border-line px-1.5 font-mono text-xs tabular-nums text-ink-muted">
           {Math.round(cor.a * 100)}%
         </span>
       )}
@@ -323,18 +323,18 @@ export const ColorPickerFormat: React.FC = () => {
 };
 
 export const SeletorDeCor: React.FC<ColorPickerProps> = ({ valor, onMudar, className }) => (
-  <ColorPicker valor={valor} onMudar={onMudar} className={className}>
-    <ColorPickerSelection />
+  <ColorPicker data-gc="ui.color-picker.color-picker.on-mudar" valor={valor} onMudar={onMudar} className={className}>
+    <ColorPickerSelection data-gc="ui.color-picker.color-picker-selection" />
 
-    <div className="flex items-center gap-2">
-      <ColorPickerEyeDropper />
+    <div data-gc="ui.color-picker.div--4" className="flex items-center gap-2">
+      <ColorPickerEyeDropper data-gc="ui.color-picker.color-picker-eye-dropper" />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <ColorPickerHue />
-        <ColorPickerAlpha />
+      <div data-gc="ui.color-picker.div--5" className="flex min-w-0 flex-1 flex-col gap-2">
+        <ColorPickerHue data-gc="ui.color-picker.color-picker-hue" />
+        <ColorPickerAlpha data-gc="ui.color-picker.color-picker-alpha" />
       </div>
     </div>
 
-    <ColorPickerFormat />
+    <ColorPickerFormat data-gc="ui.color-picker.color-picker-format" />
   </ColorPicker>
 );

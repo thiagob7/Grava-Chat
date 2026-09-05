@@ -72,11 +72,11 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
   const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
 
   return (
-    <div className="flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl">
+    <div data-gc="expressao.expression-picker.div" className="flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl">
       {!soEmoji && (
-        <nav className="flex shrink-0 items-center gap-1 p-3 pb-2">
+        <nav data-gc="expressao.expression-picker.nav" className="flex shrink-0 items-center gap-1 p-3 pb-2">
           {ABAS.map((item) => (
-            <button
+            <button data-gc="expressao.expression-picker.button"
               key={item.id}
               onClick={() => setAba(item.id)}
               className={cn(
@@ -89,23 +89,23 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
           ))}
 
           {aba === "emoji" && podeAdicionar && (
-            <button
+            <button data-gc="expressao.expression-picker.button.adicionar-emoji"
               type="button"
               onClick={adicionarEmoji}
               className="ml-auto flex shrink-0 items-center gap-1 rounded px-2 py-1.5 text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink"
             >
-              <Plus size={14} />
+              <Plus data-gc="expressao.expression-picker.plus" size={14} />
               {t("conversa.expressoes.adicionarEmoji")}
             </button>
           )}
         </nav>
       )}
 
-      <div className={cn("shrink-0 px-3 pb-2", soEmoji && "pt-3")}>
-        <div className={grupoDeCampo}>
-          <Search size={14} className="shrink-0 text-ink-faint" />
+      <div data-gc="expressao.expression-picker.div--2" className={cn("shrink-0 px-3 pb-2", soEmoji && "pt-3")}>
+        <div data-gc="expressao.expression-picker.div--3" className={grupoDeCampo}>
+          <Search data-gc="expressao.expression-picker.search" size={14} className="shrink-0 text-ink-faint" />
 
-          <input
+          <input data-gc="expressao.expression-picker.input"
             autoFocus
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
@@ -114,26 +114,26 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
           />
 
           {busca && (
-            <button
+            <button data-gc="expressao.expression-picker.button--2"
               type="button"
               onClick={() => setBusca("")}
               aria-label={t("conversa.expressoes.limparBusca")}
               className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
             >
-              <X size={14} />
+              <X data-gc="expressao.expression-picker.x" size={14} />
             </button>
           )}
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col">
-        {aba === "gifs" && onGif && <AbaGifs busca={busca} onGif={onGif} onBusca={setBusca} />}
+      <div data-gc="expressao.expression-picker.div--4" className="flex min-h-0 flex-1 flex-col">
+        {aba === "gifs" && onGif && <AbaGifs data-gc="expressao.expression-picker.aba-gifs.on-gif" busca={busca} onGif={onGif} onBusca={setBusca} />}
 
         {aba === "figurinhas" && onSticker && (
-          <AbaFigurinhas guildId={guildId} busca={busca} onSticker={onSticker} />
+          <AbaFigurinhas data-gc="expressao.expression-picker.aba-figurinhas.on-sticker" guildId={guildId} busca={busca} onSticker={onSticker} />
         )}
 
-        {aba === "emoji" && <AbaEmoji guildId={guildId} busca={busca} onEmoji={onEmoji} />}
+        {aba === "emoji" && <AbaEmoji data-gc="expressao.expression-picker.aba-emoji.on-emoji" guildId={guildId} busca={busca} onEmoji={onEmoji} />}
       </div>
     </div>
   );

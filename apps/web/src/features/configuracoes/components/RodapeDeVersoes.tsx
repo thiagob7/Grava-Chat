@@ -51,18 +51,18 @@ export const RodapeDeVersoes: React.FC = () => {
   };
 
   return (
-    <Tooltip
+    <Tooltip data-gc="configuracoes.rodape-de-versoes.tooltip"
       label={t(copiado ? "configuracoes.versoes.copiado" : "configuracoes.versoes.copiar")}
       side="top"
     >
-      <button
+      <button data-gc="configuracoes.rodape-de-versoes.button.copiar"
         type="button"
         onClick={copiar}
         aria-label={t("configuracoes.versoes.copiar")}
         className="mt-1 block w-full rounded-md px-2.5 py-2 text-left text-11 leading-[1.45] text-ink-faint transition hover:bg-hover hover:text-ink-muted"
       >
         {linhas.map((linha) => (
-          <span key={linha} className="block tabular-nums">
+          <span data-gc="configuracoes.rodape-de-versoes.span" key={linha} className="block tabular-nums">
             {linha}
           </span>
         ))}

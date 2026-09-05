@@ -35,7 +35,7 @@ export const ModalDeCriacao: React.FC<ModalDeCriacaoProps> = ({
   };
 
   return (
-    <Dialog
+    <Dialog data-gc="configuracoes.aplicativos.modal-de-criacao.dialog"
       open={aberto}
       onOpenChange={(estado) => {
         if (estado) return;
@@ -43,17 +43,17 @@ export const ModalDeCriacao: React.FC<ModalDeCriacaoProps> = ({
         onFechar();
       }}
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Criar aplicativo</DialogTitle>
-          <DialogDescription>
+      <DialogContent data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-content">
+        <DialogHeader data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-header">
+          <DialogTitle data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-title">Criar aplicativo</DialogTitle>
+          <DialogDescription data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-description">
             O bot nasce junto, com esse nome. Dá pra trocar depois.
           </DialogDescription>
         </DialogHeader>
 
-        <DialogBody>
-          <Label htmlFor="nome-do-aplicativo">Nome</Label>
-          <Input
+        <DialogBody data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-body">
+          <Label data-gc="configuracoes.aplicativos.modal-de-criacao.label" htmlFor="nome-do-aplicativo">Nome</Label>
+          <Input data-gc="configuracoes.aplicativos.modal-de-criacao.input"
             id="nome-do-aplicativo"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
@@ -64,12 +64,12 @@ export const ModalDeCriacao: React.FC<ModalDeCriacaoProps> = ({
           />
         </DialogBody>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={onFechar}>
+        <DialogFooter data-gc="configuracoes.aplicativos.modal-de-criacao.dialog-footer">
+          <Button data-gc="configuracoes.aplicativos.modal-de-criacao.button.on-fechar" variant="ghost" onClick={onFechar}>
             Cancelar
           </Button>
 
-          <Button disabled={!valido || criando} onClick={criar}>
+          <Button data-gc="configuracoes.aplicativos.modal-de-criacao.button.criar" disabled={!valido || criando} onClick={criar}>
             {criando ? "Criando…" : "Criar"}
           </Button>
         </DialogFooter>

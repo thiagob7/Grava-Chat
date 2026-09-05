@@ -23,7 +23,7 @@ export const CallTimer: React.FC<{ desde: number }> = ({ desde }) => {
   if (!valido) return null;
 
   return (
-    <span className="shrink-0 font-mono text-xs tabular-nums text-online">
+    <span data-gc="voz.call-timer.span" className="shrink-0 font-mono text-xs tabular-nums text-online">
       {formatarDuracao(agora - desde)}
     </span>
   );

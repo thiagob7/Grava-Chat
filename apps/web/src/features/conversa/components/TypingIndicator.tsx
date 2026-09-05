@@ -39,10 +39,10 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         : t("conversa.digitando.varios", { quantidade: names.length });
 
   return (
-    <div className="pointer-events-none absolute -top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full border border-line bg-surface-2/80 px-2.5 py-1 text-xs text-ink-muted shadow-lg backdrop-blur-md">
-      <span className="flex shrink-0 -space-x-1.5">
+    <div data-gc="conversa.typing-indicator.div" className="pointer-events-none absolute -top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full border border-line bg-surface-2/80 px-2.5 py-1 text-xs text-ink-muted shadow-lg backdrop-blur-md">
+      <span data-gc="conversa.typing-indicator.span" className="flex shrink-0 -space-x-1.5">
         {users.slice(0, 3).map((entry) => (
-          <Avatar
+          <Avatar data-gc="conversa.typing-indicator.avatar"
             key={entry.user.id}
             id={entry.user.id}
             name={entry.user.displayName}
@@ -53,9 +53,9 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         ))}
       </span>
 
-      <span className="flex gap-0.5">
+      <span data-gc="conversa.typing-indicator.span--2" className="flex gap-0.5">
         {[0, 150, 300].map((delay) => (
-          <span
+          <span data-gc="conversa.typing-indicator.span--3"
             key={delay}
             className="size-1 animate-bounce rounded-full bg-ink-muted"
             style={{ animationDelay: `${delay}ms` }}
@@ -63,7 +63,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         ))}
       </span>
 
-      <span className="min-w-0 truncate font-medium">{text}</span>
+      <span data-gc="conversa.typing-indicator.span--4" className="min-w-0 truncate font-medium">{text}</span>
     </div>
   );
 };

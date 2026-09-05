@@ -31,38 +31,38 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-divisor px-4 shadow-sm">
-        <button
+      <header data-gc="conversa.forum-post-view.header" className="flex h-12 shrink-0 items-center gap-3 border-b border-divisor px-4 shadow-sm">
+        <button data-gc="conversa.forum-post-view.button.on-voltar"
           onClick={onVoltar}
           className="flex items-center gap-1.5 text-sm text-ink-muted transition hover:text-ink"
         >
-          <ArrowLeft size={16} /> Assuntos
+          <ArrowLeft data-gc="conversa.forum-post-view.arrow-left" size={16} /> Assuntos
         </button>
 
-        <span className="h-5 w-px bg-line" />
+        <span data-gc="conversa.forum-post-view.span" className="h-5 w-px bg-line" />
 
-        <h2 className="min-w-0 flex-1 truncate font-semibold">{post.title}</h2>
+        <h2 data-gc="conversa.forum-post-view.h2" className="min-w-0 flex-1 truncate font-semibold">{post.title}</h2>
 
         {post.closedAt && (
-          <span className="flex items-center gap-1 rounded bg-surface-0 px-2 py-0.5 text-11 uppercase text-ink-faint">
-            <Lock size={11} /> fechado
+          <span data-gc="conversa.forum-post-view.span--2" className="flex items-center gap-1 rounded bg-surface-0 px-2 py-0.5 text-11 uppercase text-ink-faint">
+            <Lock data-gc="conversa.forum-post-view.lock" size={11} /> fechado
           </span>
         )}
 
         {podeFechar && (
-          <Button
+          <Button data-gc="conversa.forum-post-view.button"
             variant="ghost"
             size="sm"
             onClick={() => fechar.mutate({ postId: post.id, closed: !post.closedAt })}
           >
-            {post.closedAt ? <LockOpen size={14} /> : <Lock size={14} />}
+            {post.closedAt ? <LockOpen data-gc="conversa.forum-post-view.lock-open" size={14} /> : <Lock data-gc="conversa.forum-post-view.lock--2" size={14} />}
             {post.closedAt ? "Reabrir" : "Fechar"}
           </Button>
         )}
       </header>
 
-      <AreaDeConversa>
-      <MessageList
+      <AreaDeConversa data-gc="conversa.forum-post-view.area-de-conversa">
+      <MessageList data-gc="conversa.forum-post-view.message-list"
         channelId={post.channelId}
         channelName={post.title}
         postId={post.id}
@@ -70,22 +70,22 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
         currentUserId={currentUserId}
         isModerator={isModerator}
         header={
-          <div className="px-4 pb-4 pt-6">
-            <h3 className="text-2xl font-bold">{post.title}</h3>
-            <p className="mt-1 text-sm text-ink-muted">
+          <div data-gc="conversa.forum-post-view.div" className="px-4 pb-4 pt-6">
+            <h3 data-gc="conversa.forum-post-view.h3" className="text-2xl font-bold">{post.title}</h3>
+            <p data-gc="conversa.forum-post-view.p" className="mt-1 text-sm text-ink-muted">
               Assunto criado por {post.author.displayName} em {formatTimestamp(post.createdAt)}.
             </p>
           </div>
         }
       />
 
-      <RodapeDaConversa>
+      <RodapeDaConversa data-gc="conversa.forum-post-view.rodape-da-conversa">
         {post.closedAt ? (
-          <p className="px-4 pb-6 text-center text-sm text-ink-faint">
+          <p data-gc="conversa.forum-post-view.p--2" className="px-4 pb-6 text-center text-sm text-ink-faint">
             Este assunto está fechado. Reabra para continuar a conversa.
           </p>
         ) : (
-          <Composer
+          <Composer data-gc="conversa.forum-post-view.composer"
             channelId={post.channelId}
             channelName={post.title}
             guildId={guildId}

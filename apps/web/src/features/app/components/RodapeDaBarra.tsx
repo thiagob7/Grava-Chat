@@ -19,12 +19,12 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
   accountChannelId,
 }) => (
   <>
-    <div className="relative z-30 -ml-[72px] bg-surface-1 pb-2">
-      <CartaoDaTransmissao className="mx-2 mb-2" />
+    <div data-gc="app.rodape-da-barra.div" className="relative z-30 -ml-[72px] bg-surface-1 pb-2">
+      <CartaoDaTransmissao data-gc="app.rodape-da-barra.cartao-da-transmissao" className="mx-2 mb-2" />
 
-      <div className="mx-2 rounded-lg bg-painel p-2 shadow-lg shadow-black/30 [--gc-recorte:var(--color-painel)]">
-        <VoicePanel accountChannelId={accountChannelId} />
-        {user && <UserPanel user={user} guildId={guildId} onLogout={onLogout} />}
+      <div data-gc="app.rodape-da-barra.div--2" className="mx-2 rounded-lg bg-painel p-2 shadow-lg shadow-black/30 [--gc-recorte:var(--color-painel)]">
+        <VoicePanel data-gc="app.rodape-da-barra.voice-panel" accountChannelId={accountChannelId} />
+        {user && <UserPanel data-gc="app.rodape-da-barra.user-panel.on-logout" user={user} guildId={guildId} onLogout={onLogout} />}
       </div>
     </div>
   </>

@@ -87,7 +87,7 @@ export const AlcaDeLargura: React.FC<
     limites: { min: number; max: number };
   } & React.ComponentProps<"div">
 > = ({ borda, arrastando, largura, limites, className, ...props }) => (
-  <div
+  <div data-gc="ui.resizable.div"
     role="separator"
     aria-orientation="vertical"
     aria-label="Ajustar a largura"
@@ -102,7 +102,7 @@ export const AlcaDeLargura: React.FC<
     )}
     {...props}
   >
-    <span
+    <span data-gc="ui.resizable.span"
       aria-hidden
       className={cn(
         "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",

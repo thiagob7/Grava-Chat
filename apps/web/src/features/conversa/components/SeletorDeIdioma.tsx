@@ -36,16 +36,16 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
   );
 
   return (
-    <Popover
+    <Popover data-gc="conversa.seletor-de-idioma.popover"
       open={aberto}
       onOpenChange={(estado) => {
         setAberto(estado);
         if (!estado) setBusca("");
       }}
     >
-      <Tooltip label={t("conversa.codigo.mudarIdioma")}>
-        <PopoverTrigger asChild>
-          <button
+      <Tooltip data-gc="conversa.seletor-de-idioma.tooltip" label={t("conversa.codigo.mudarIdioma")}>
+        <PopoverTrigger data-gc="conversa.seletor-de-idioma.popover-trigger" asChild>
+          <button data-gc="conversa.seletor-de-idioma.button"
             type="button"
             aria-label={t("conversa.codigo.mudarIdioma")}
             className={cn(
@@ -54,14 +54,14 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
               className,
             )}
           >
-            <Code2 size={16} />
+            <Code2 data-gc="conversa.seletor-de-idioma.code2" size={16} />
           </button>
         </PopoverTrigger>
       </Tooltip>
 
-      <PopoverContent align="end" className="w-56 p-0">
-        <div className="p-2">
-          <input
+      <PopoverContent data-gc="conversa.seletor-de-idioma.popover-content" align="end" className="w-56 p-0">
+        <div data-gc="conversa.seletor-de-idioma.div" className="p-2">
+          <input data-gc="conversa.seletor-de-idioma.input"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder={t("conversa.codigo.procurarIdioma")}
@@ -71,12 +71,12 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
           />
         </div>
 
-        <div className="max-h-64 overflow-y-auto pb-1">
+        <div data-gc="conversa.seletor-de-idioma.div--2" className="max-h-64 overflow-y-auto pb-1">
           {filtrados.map((item) => {
             const escolhido = item.id === idioma;
 
             return (
-              <button
+              <button data-gc="conversa.seletor-de-idioma.button--2"
                 key={item.id}
                 type="button"
                 onClick={() => {
@@ -90,10 +90,10 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
                     : "text-ink-muted hover:bg-hover hover:text-ink",
                 )}
               >
-                <span className="min-w-0 flex-1 truncate">{item.rotulo}</span>
+                <span data-gc="conversa.seletor-de-idioma.span" className="min-w-0 flex-1 truncate">{item.rotulo}</span>
 
                 {item.formato && (
-                  <span
+                  <span data-gc="conversa.seletor-de-idioma.span--2"
                     className={cn(
                       "shrink-0 text-10 uppercase tracking-wide",
                       escolhido ? "text-white/70" : "text-ink-faint",
@@ -103,13 +103,13 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
                   </span>
                 )}
 
-                {escolhido && <Check size={14} className="shrink-0" />}
+                {escolhido && <Check data-gc="conversa.seletor-de-idioma.check" size={14} className="shrink-0" />}
               </button>
             );
           })}
 
           {!filtrados.length && (
-            <p className="px-3 py-4 text-center text-13 text-ink-faint">
+            <p data-gc="conversa.seletor-de-idioma.p" className="px-3 py-4 text-center text-13 text-ink-faint">
               {t("conversa.codigo.nenhumIdioma")}
             </p>
           )}

@@ -77,18 +77,18 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
   };
 
   return (
-    <Dialog open onOpenChange={(v) => !v && onCancelar()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Recortar o ícone</DialogTitle>
-          <DialogDescription>
+    <Dialog data-gc="recorte-de-imagem.dialog" open onOpenChange={(v) => !v && onCancelar()}>
+      <DialogContent data-gc="recorte-de-imagem.dialog-content">
+        <DialogHeader data-gc="recorte-de-imagem.dialog-header">
+          <DialogTitle data-gc="recorte-de-imagem.dialog-title">Recortar o ícone</DialogTitle>
+          <DialogDescription data-gc="recorte-de-imagem.dialog-description">
             Arraste para escolher o pedaço e use a barra para aproximar. O ícone
             fica redondo em todo lugar do app.
           </DialogDescription>
         </DialogHeader>
 
-        <DialogBody>
-          <div
+        <DialogBody data-gc="recorte-de-imagem.dialog-body">
+          <div data-gc="recorte-de-imagem.div"
             className="relative mx-auto cursor-grab overflow-hidden rounded-full bg-surface-0 active:cursor-grabbing"
             style={{ width: LADO, height: LADO, touchAction: "none" }}
             onPointerDown={(e) => {
@@ -102,7 +102,7 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
             onPointerUp={() => (arrasto.current = null)}
           >
             {imagem && (
-              <img
+              <img data-gc="recorte-de-imagem.img"
                 src={imagem.src}
                 alt=""
                 draggable={false}
@@ -116,9 +116,9 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
             )}
           </div>
 
-          <div className="mx-auto mt-4 flex max-w-xs items-center gap-3">
-            <ImageIcon size={14} className="shrink-0 text-ink-faint" />
-            <Slider
+          <div data-gc="recorte-de-imagem.div--2" className="mx-auto mt-4 flex max-w-xs items-center gap-3">
+            <ImageIcon data-gc="recorte-de-imagem.image-icon" size={14} className="shrink-0 text-ink-faint" />
+            <Slider data-gc="recorte-de-imagem.slider"
               min={1}
               max={3}
               step={0.02}
@@ -130,9 +130,9 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
                 setPos((p) => limitar(p.x, p.y));
               }}
             />
-            <ImageIcon size={20} className="shrink-0 text-ink-faint" />
+            <ImageIcon data-gc="recorte-de-imagem.image-icon--2" size={20} className="shrink-0 text-ink-faint" />
 
-            <button
+            <button data-gc="recorte-de-imagem.button"
               onClick={() => {
                 setZoom(1);
                 setPos({ x: 0, y: 0 });
@@ -140,16 +140,16 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
               title="Voltar ao começo"
               className="shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
             >
-              <RotateCcw size={14} />
+              <RotateCcw data-gc="recorte-de-imagem.rotate-ccw" size={14} />
             </button>
           </div>
         </DialogBody>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={onCancelar}>
+        <DialogFooter data-gc="recorte-de-imagem.dialog-footer">
+          <Button data-gc="recorte-de-imagem.button.on-cancelar" variant="ghost" onClick={onCancelar}>
             Cancelar
           </Button>
-          <Button onClick={() => void salvar()} disabled={!imagem}>
+          <Button data-gc="recorte-de-imagem.button--2" onClick={() => void salvar()} disabled={!imagem}>
             Usar este recorte
           </Button>
         </DialogFooter>

@@ -67,8 +67,8 @@ export const AbaFigurinhas: React.FC<{
 
   if (!servidores.some((s) => s.figurinhas.length)) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col">
-        <Vazio>
+      <div data-gc="expressao.seletor.aba-figurinhas.div" className="flex min-h-0 flex-1 flex-col">
+        <Vazio data-gc="expressao.seletor.aba-figurinhas.vazio">
           Nenhum dos seus servidores tem figurinhas. Quem gerencia expressões pode subir até 5 em
           Configurações do servidor.
         </Vazio>
@@ -78,45 +78,45 @@ export const AbaFigurinhas: React.FC<{
 
   const atalhos: AtalhoDaBarra[] = [
     ...(usadas.length
-      ? [{ id: "recentes", titulo: "Utilizadas com frequência", icone: <Clock size={18} /> }]
+      ? [{ id: "recentes", titulo: "Utilizadas com frequência", icone: <Clock data-gc="expressao.seletor.aba-figurinhas.clock" size={18} /> }]
       : []),
     ...comFigurinha.map((s) => ({
       id: `servidor:${s.id}`,
       titulo: s.nome,
-      icone: <IconeDoServidor nome={s.nome} iconUrl={s.iconUrl} />,
+      icone: <IconeDoServidor data-gc="expressao.seletor.aba-figurinhas.icone-do-servidor" nome={s.nome} iconUrl={s.iconUrl} />,
     })),
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1">
-        <BarraLateral atalhos={atalhos} ativo={ativo} onIr={irEAbrir} />
+    <div data-gc="expressao.seletor.aba-figurinhas.div--2" className="flex min-h-0 flex-1 flex-col">
+      <div data-gc="expressao.seletor.aba-figurinhas.div--3" className="flex min-h-0 flex-1">
+        <BarraLateral data-gc="expressao.seletor.aba-figurinhas.barra-lateral.ir-eabrir" atalhos={atalhos} ativo={ativo} onIr={irEAbrir} />
 
-        <div
+        <div data-gc="expressao.seletor.aba-figurinhas.div.ao-rolar"
           ref={container}
           onScroll={aoRolar}
           onMouseLeave={() => setApontada(null)}
           className="relative min-h-0 flex-1 overflow-y-auto px-3 py-2"
         >
           {usadas.length > 0 && (
-            <div ref={registrar("recentes")}>
-              <Secao
+            <div data-gc="expressao.seletor.aba-figurinhas.div--4" ref={registrar("recentes")}>
+              <Secao data-gc="expressao.seletor.aba-figurinhas.secao"
                 titulo="Utilizadas com frequência"
-                icone={<Clock size={12} />}
+                icone={<Clock data-gc="expressao.seletor.aba-figurinhas.clock--2" size={12} />}
                 fechada={fechadas.has("recentes")}
                 onAlternar={() => alternar("recentes")}
               >
-                <Grade itens={usadas} onEscolher={escolher} onApontar={setApontada} />
+                <Grade data-gc="expressao.seletor.aba-figurinhas.grade.escolher" itens={usadas} onEscolher={escolher} onApontar={setApontada} />
               </Secao>
             </div>
           )}
 
           {comFigurinha.map((servidor) => (
-            <div key={servidor.id} ref={registrar(`servidor:${servidor.id}`)}>
-              <Secao
+            <div data-gc="expressao.seletor.aba-figurinhas.div--5" key={servidor.id} ref={registrar(`servidor:${servidor.id}`)}>
+              <Secao data-gc="expressao.seletor.aba-figurinhas.secao--2"
                 titulo={servidor.nome}
                 icone={
-                  <IconeDoServidor
+                  <IconeDoServidor data-gc="expressao.seletor.aba-figurinhas.icone-do-servidor--2"
                     nome={servidor.nome}
                     iconUrl={servidor.iconUrl}
                     className="size-4"
@@ -125,7 +125,7 @@ export const AbaFigurinhas: React.FC<{
                 fechada={fechadas.has(`servidor:${servidor.id}`)}
                 onAlternar={() => alternar(`servidor:${servidor.id}`)}
               >
-                <Grade
+                <Grade data-gc="expressao.seletor.aba-figurinhas.grade.escolher--2"
                   itens={servidor.figurinhas.map((figurinha) => ({ figurinha, servidor }))}
                   onEscolher={escolher}
                   onApontar={setApontada}
@@ -134,21 +134,21 @@ export const AbaFigurinhas: React.FC<{
             </div>
           ))}
 
-          {!comFigurinha.length && <Vazio>Nenhuma figurinha com esse nome.</Vazio>}
+          {!comFigurinha.length && <Vazio data-gc="expressao.seletor.aba-figurinhas.vazio--2">Nenhuma figurinha com esse nome.</Vazio>}
         </div>
       </div>
 
-      <Rodape
+      <Rodape data-gc="expressao.seletor.aba-figurinhas.rodape"
         amostra={
           apontada && (
-            <img src={apontada.figurinha.url} alt="" className="size-7 rounded object-contain" />
+            <img data-gc="expressao.seletor.aba-figurinhas.img" src={apontada.figurinha.url} alt="" className="size-7 rounded object-contain" />
           )
         }
         titulo={apontada?.figurinha.name}
         detalhe={apontada ? `de ${apontada.servidor.nome}` : undefined}
         direita={
           apontada && (
-            <IconeDoServidor
+            <IconeDoServidor data-gc="expressao.seletor.aba-figurinhas.icone-do-servidor--3"
               nome={apontada.servidor.nome}
               iconUrl={apontada.servidor.iconUrl}
               className="size-6"
@@ -166,16 +166,16 @@ const Grade: React.FC<{
   onEscolher: (s: ComAutor) => void;
   onApontar: (a: Apontada) => void;
 }> = ({ itens, onEscolher, onApontar }) => (
-  <div className="grid grid-cols-3 gap-2">
+  <div data-gc="expressao.seletor.aba-figurinhas.div--6" className="grid grid-cols-3 gap-2">
     {itens.map(({ figurinha, servidor }) => (
-      <button
+      <button data-gc="expressao.seletor.aba-figurinhas.button"
         key={figurinha.id}
         onClick={() => onEscolher(figurinha)}
         onMouseEnter={() => onApontar({ figurinha, servidor })}
         onFocus={() => onApontar({ figurinha, servidor })}
         className="aspect-square rounded-lg p-1.5 transition hover:bg-surface-3"
       >
-        <img
+        <img data-gc="expressao.seletor.aba-figurinhas.img--2"
           src={figurinha.url}
           alt={figurinha.name}
           loading="lazy"

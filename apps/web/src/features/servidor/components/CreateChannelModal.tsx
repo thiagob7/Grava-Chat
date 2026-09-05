@@ -80,27 +80,27 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
   const Icon = type === "VOICE" ? Volume2 : type === "FORUM" ? MessagesSquare : Hash;
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Criar canal</DialogTitle>
+    <Dialog data-gc="servidor.create-channel-modal.dialog" open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent data-gc="servidor.create-channel-modal.dialog-content">
+        <DialogHeader data-gc="servidor.create-channel-modal.dialog-header">
+          <DialogTitle data-gc="servidor.create-channel-modal.dialog-title">Criar canal</DialogTitle>
         </DialogHeader>
 
-        <DialogBody>
-          <Label>Tipo de canal</Label>
-          <div className="mb-4 space-y-2">
+        <DialogBody data-gc="servidor.create-channel-modal.dialog-body">
+          <Label data-gc="servidor.create-channel-modal.label">Tipo de canal</Label>
+          <div data-gc="servidor.create-channel-modal.div" className="mb-4 space-y-2">
             {CHANNEL_OPTIONS.map((option) => (
-              <button
+              <button data-gc="servidor.create-channel-modal.button"
                 key={option.value}
                 onClick={() => setType(option.value)}
                 className={cartaoDeEscolha(type === option.value)}
               >
-                <option.icon size={20} className="text-ink-faint" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{option.label}</p>
-                  <p className="text-xs text-ink-faint">{option.hint}</p>
+                <option.icon data-gc="servidor.create-channel-modal.optionicon" size={20} className="text-ink-faint" />
+                <div data-gc="servidor.create-channel-modal.div--2" className="flex-1">
+                  <p data-gc="servidor.create-channel-modal.p" className="text-sm font-medium">{option.label}</p>
+                  <p data-gc="servidor.create-channel-modal.p--2" className="text-xs text-ink-faint">{option.hint}</p>
                 </div>
-                <span
+                <span data-gc="servidor.create-channel-modal.span"
                   className={cn(
                     "size-4 rounded-full border-2",
                     type === option.value ? "border-brand bg-brand" : "border-ink-faint",
@@ -110,8 +110,8 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
             ))}
           </div>
 
-          <Label htmlFor="channel-name">Nome do canal</Label>
-          <CampoDeNomeDeCanal
+          <Label data-gc="servidor.create-channel-modal.label--2" htmlFor="channel-name">Nome do canal</Label>
+          <CampoDeNomeDeCanal data-gc="servidor.create-channel-modal.campo-de-nome-de-canal.set-name"
             id="channel-name"
             autoFocus
             valor={name}
@@ -119,29 +119,29 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
             fonte={fonte}
             onFonte={setFonte}
             ehVoz={type !== "TEXT"}
-            icone={<Icon size={18} className="shrink-0 text-ink-faint" />}
+            icone={<Icon data-gc="servidor.create-channel-modal.icon" size={18} className="shrink-0 text-ink-faint" />}
             placeholder={type === "TEXT" ? "novo-canal" : "Sala 2"}
             onEnter={() => void submit()}
           />
 
-          <div className="mt-5 flex items-start gap-4">
-            <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1.5 text-sm font-medium">
-                <Lock size={13} /> Canal privado
+          <div data-gc="servidor.create-channel-modal.div--3" className="mt-5 flex items-start gap-4">
+            <div data-gc="servidor.create-channel-modal.div--4" className="min-w-0 flex-1">
+              <p data-gc="servidor.create-channel-modal.p--3" className="flex items-center gap-1.5 text-sm font-medium">
+                <Lock data-gc="servidor.create-channel-modal.lock" size={13} /> Canal privado
               </p>
-              <p className="mt-0.5 text-xs text-ink-faint">
+              <p data-gc="servidor.create-channel-modal.p--4" className="mt-0.5 text-xs text-ink-faint">
                 Somente membros e cargos selecionados poderão visualizar esse canal.
               </p>
             </div>
-            <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
+            <Switch data-gc="servidor.create-channel-modal.switch.set-is-private" checked={isPrivate} onCheckedChange={setIsPrivate} />
           </div>
         </DialogBody>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+        <DialogFooter data-gc="servidor.create-channel-modal.dialog-footer">
+          <Button data-gc="servidor.create-channel-modal.button.on-close" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={() => void submit()} disabled={createChannel.isPending || !name.trim()}>
+          <Button data-gc="servidor.create-channel-modal.button--2" onClick={() => void submit()} disabled={createChannel.isPending || !name.trim()}>
             {createChannel.isPending ? "Criando…" : "Criar canal"}
           </Button>
         </DialogFooter>

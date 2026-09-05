@@ -80,7 +80,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       titulo: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong>{" "}
+          <strong data-gc="servidor.server-settings.members-section.strong">{nomeDe(member)}</strong>{" "}
           {t("servidor.membros.expulsarDescricao", { servidor: guild.name })}
         </>
       ),
@@ -96,7 +96,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       titulo: t("servidor.membros.banirTitulo", { nome: nomeDe(member) }),
       descricao: (
         <>
-          <strong>{nomeDe(member)}</strong>{" "}
+          <strong data-gc="servidor.server-settings.members-section.strong--2">{nomeDe(member)}</strong>{" "}
           {t("servidor.membros.banirDescricao", { servidor: guild.name })}
         </>
       ),
@@ -139,15 +139,15 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   }, [members, busca, ordem]);
 
   return (
-    <div className="max-w-4xl pb-10">
-      <h2 className="text-xl font-semibold">
+    <div data-gc="servidor.server-settings.members-section.div" className="max-w-4xl pb-10">
+      <h2 data-gc="servidor.server-settings.members-section.h2" className="text-xl font-semibold">
         Membros do servidor — {members.length}
       </h2>
 
-      <div className="mt-4 flex items-center gap-3">
-        <div className="flex flex-1 items-center gap-2 rounded bg-surface-0 px-3">
-          <Search size={16} className="text-ink-faint" />
-          <Input
+      <div data-gc="servidor.server-settings.members-section.div--2" className="mt-4 flex items-center gap-3">
+        <div data-gc="servidor.server-settings.members-section.div--3" className="flex flex-1 items-center gap-2 rounded bg-surface-0 px-3">
+          <Search data-gc="servidor.server-settings.members-section.search" size={16} className="text-ink-faint" />
+          <Input data-gc="servidor.server-settings.members-section.input"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder={t("servidor.membros.procurar")}
@@ -155,7 +155,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
           />
         </div>
 
-        <Button
+        <Button data-gc="servidor.server-settings.members-section.button"
           variant="surface"
           size="sm"
           onClick={() =>
@@ -168,7 +168,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
             )
           }
         >
-          <ArrowUpDown size={14} />
+          <ArrowUpDown data-gc="servidor.server-settings.members-section.arrow-up-down" size={14} />
           {ordem === "recentes"
             ? "Mais recentes"
             : ordem === "antigos"
@@ -177,17 +177,17 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
         </Button>
       </div>
 
-      <table className="mt-4 w-full">
-        <thead>
-          <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
-            <th className="pb-2 font-semibold">{t("comum.nome")}</th>
-            <th className="pb-2 font-semibold">{t("servidor.membros.membroDesde")}</th>
-            <th className="pb-2 font-semibold">{t("servidor.cargos.titulo")}</th>
-            <th />
+      <table data-gc="servidor.server-settings.members-section.table" className="mt-4 w-full">
+        <thead data-gc="servidor.server-settings.members-section.thead">
+          <tr data-gc="servidor.server-settings.members-section.tr" className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+            <th data-gc="servidor.server-settings.members-section.th" className="pb-2 font-semibold">{t("comum.nome")}</th>
+            <th data-gc="servidor.server-settings.members-section.th--2" className="pb-2 font-semibold">{t("servidor.membros.membroDesde")}</th>
+            <th data-gc="servidor.server-settings.members-section.th--3" className="pb-2 font-semibold">{t("servidor.cargos.titulo")}</th>
+            <th data-gc="servidor.server-settings.members-section.th--4" />
           </tr>
         </thead>
 
-        <tbody>
+        <tbody data-gc="servidor.server-settings.members-section.tbody">
           {lista.map((member) => {
             const ehDono = member.user.id === guild.ownerId;
             const euMesmo = member.user.id === currentUserId;
@@ -200,50 +200,50 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                 : null;
 
             return (
-              <tr
+              <tr data-gc="servidor.server-settings.members-section.tr--2"
                 key={member.id}
                 className="group border-b border-line align-middle"
               >
-                <td className="py-3">
-                  <div className="flex items-center gap-3">
-                    <Avatar
+                <td data-gc="servidor.server-settings.members-section.td" className="py-3">
+                  <div data-gc="servidor.server-settings.members-section.div--4" className="flex items-center gap-3">
+                    <Avatar data-gc="servidor.server-settings.members-section.avatar"
                       id={member.user.id}
                       name={member.user.displayName}
                       url={member.user.avatarUrl}
                       size={36}
                       status={member.user.status}
                     />
-                    <div className="min-w-0">
-                      <p className="flex items-center gap-1.5 truncate text-sm font-medium">
+                    <div data-gc="servidor.server-settings.members-section.div--5" className="min-w-0">
+                      <p data-gc="servidor.server-settings.members-section.p" className="flex items-center gap-1.5 truncate text-sm font-medium">
                         {member.nickname ?? member.user.displayName}
-                        {ehDono && <Crown size={13} className="text-idle" />}
+                        {ehDono && <Crown data-gc="servidor.server-settings.members-section.crown" size={13} className="text-idle" />}
                         {deCastigo && (
-                          <span className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
-                            <Clock size={10} /> {t("servidor.membros.deCastigo")}
+                          <span data-gc="servidor.server-settings.members-section.span" className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
+                            <Clock data-gc="servidor.server-settings.members-section.clock" size={10} /> {t("servidor.membros.deCastigo")}
                           </span>
                         )}
                       </p>
-                      <p className="truncate text-xs text-ink-faint">
+                      <p data-gc="servidor.server-settings.members-section.p--2" className="truncate text-xs text-ink-faint">
                         @{member.user.username}
                       </p>
                     </div>
                   </div>
                 </td>
 
-                <td className="py-3 text-sm text-ink-muted">
+                <td data-gc="servidor.server-settings.members-section.td--2" className="py-3 text-sm text-ink-muted">
                   {new Intl.DateTimeFormat("pt-BR").format(
                     new Date(member.joinedAt),
                   )}
                 </td>
 
-                <td className="py-3">
-                  <div className="flex flex-wrap gap-1">
+                <td data-gc="servidor.server-settings.members-section.td--3" className="py-3">
+                  <div data-gc="servidor.server-settings.members-section.div--6" className="flex flex-wrap gap-1">
                     {cargos.map((role) => (
-                      <span
+                      <span data-gc="servidor.server-settings.members-section.span--2"
                         key={role.id}
                         className="flex items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-11 text-ink-muted"
                       >
-                        <span
+                        <span data-gc="servidor.server-settings.members-section.span--3"
                           className="size-1.5 rounded-full"
                           style={{ backgroundColor: role.color ?? "#99aab5" }}
                         />
@@ -251,24 +251,24 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                       </span>
                     ))}
                     {!cargos.length && (
-                      <span className="text-xs text-ink-faint">—</span>
+                      <span data-gc="servidor.server-settings.members-section.span--4" className="text-xs text-ink-faint">—</span>
                     )}
                   </div>
                 </td>
 
-                <td className="py-3 text-right">
+                <td data-gc="servidor.server-settings.members-section.td--4" className="py-3 text-right">
                   {!ehDono && !euMesmo && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
+                    <DropdownMenu data-gc="servidor.server-settings.members-section.dropdown-menu">
+                      <DropdownMenuTrigger data-gc="servidor.server-settings.members-section.dropdown-menu-trigger" asChild>
+                        <button data-gc="servidor.server-settings.members-section.button--2"
                           aria-label={t("servidor.membros.acoesPara", { nome: member.user.displayName })}
                           className="rounded p-1.5 text-ink-muted opacity-0 transition group-hover:opacity-100 hover:bg-surface-0 hover:text-ink"
                         >
-                          <MoreVertical size={16} />
+                          <MoreVertical data-gc="servidor.server-settings.members-section.more-vertical" size={16} />
                         </button>
                       </DropdownMenuTrigger>
 
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent data-gc="servidor.server-settings.members-section.dropdown-menu-content" align="end">
                         {canManageRoles &&
                           roles
                             .filter((r) => !r.isEveryone)
@@ -276,7 +276,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                               const tem = member.roleIds.includes(role.id);
 
                               return (
-                                <DropdownMenuItem
+                                <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item"
                                   key={role.id}
                                   onSelect={(e) => {
                                     e.preventDefault();
@@ -291,8 +291,8 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                     });
                                   }}
                                 >
-                                  <span className="flex items-center gap-2">
-                                    <span
+                                  <span data-gc="servidor.server-settings.members-section.span--5" className="flex items-center gap-2">
+                                    <span data-gc="servidor.server-settings.members-section.span--6"
                                       className="size-2.5 rounded-full"
                                       style={{
                                         backgroundColor:
@@ -301,16 +301,16 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                     />
                                     {role.name}
                                   </span>
-                                  <Checkbox readOnly checked={tem} />
+                                  <Checkbox data-gc="servidor.server-settings.members-section.checkbox" readOnly checked={tem} />
                                 </DropdownMenuItem>
                               );
                             })}
 
                         {canTimeout && (
                           <>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator data-gc="servidor.server-settings.members-section.dropdown-menu-separator" />
                             {deCastigo ? (
-                              <DropdownMenuItem
+                              <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--2"
                                 onSelect={() =>
                                   castigar.mutate({
                                     guildId: guild.id,
@@ -319,11 +319,11 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                   })
                                 }
                               >
-                                {t("servidor.membros.tirarCastigo")} <Clock size={14} />
+                                {t("servidor.membros.tirarCastigo")} <Clock data-gc="servidor.server-settings.members-section.clock--2" size={14} />
                               </DropdownMenuItem>
                             ) : (
                               CASTIGOS.map((opcao) => (
-                                <DropdownMenuItem
+                                <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--3"
                                   key={opcao.minutos}
                                   onSelect={() =>
                                     castigar.mutate({
@@ -340,23 +340,23 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                           </>
                         )}
 
-                        {(canKick || canBan) && <DropdownMenuSeparator />}
+                        {(canKick || canBan) && <DropdownMenuSeparator data-gc="servidor.server-settings.members-section.dropdown-menu-separator--2" />}
 
                         {canKick && (
-                          <DropdownMenuItem
+                          <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--4"
                             danger
                             onSelect={() => void expulsar(member)}
                           >
-                            {t("servidor.membros.expulsar")} <UserX size={14} />
+                            {t("servidor.membros.expulsar")} <UserX data-gc="servidor.server-settings.members-section.user-x" size={14} />
                           </DropdownMenuItem>
                         )}
 
                         {canBan && (
-                          <DropdownMenuItem
+                          <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--5"
                             danger
                             onSelect={() => void banirMembro(member)}
                           >
-                            {t("servidor.membros.banir")} <Ban size={14} />
+                            {t("servidor.membros.banir")} <Ban data-gc="servidor.server-settings.members-section.ban" size={14} />
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -370,7 +370,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       </table>
 
       {!lista.length && (
-        <p className={cn("py-10 text-center text-sm text-ink-faint")}>
+        <p data-gc="servidor.server-settings.members-section.p--3" className={cn("py-10 text-center text-sm text-ink-faint")}>
           {t("servidor.membros.vazio")}
         </p>
       )}

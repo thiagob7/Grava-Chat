@@ -33,7 +33,7 @@ export function guardarFonte(fonte: FonteDeNome) {
 }
 
 export const IconeDeFonte: React.FC<{ size: number }> = ({ size }) => (
-  <Type size={size * 1.25} strokeWidth={1.6} />
+  <Type data-gc="seletor-de-fonte.type" size={size * 1.25} strokeWidth={1.6} />
 );
 
 interface SeletorDeFonteProps {
@@ -52,29 +52,29 @@ export const SeletorDeFonte: React.FC<SeletorDeFonteProps> = ({
   const rotulo = FONTES.find((f) => f.id === fonte)?.rotulo ?? "Padrão";
 
   return (
-    <DropdownMenu>
-      <Tooltip label={`Fonte da mensagem — ${rotulo}`}>
-        <DropdownMenuTrigger asChild disabled={disabled}>
-          <button
+    <DropdownMenu data-gc="seletor-de-fonte.dropdown-menu">
+      <Tooltip data-gc="seletor-de-fonte.tooltip" label={`Fonte da mensagem — ${rotulo}`}>
+        <DropdownMenuTrigger data-gc="seletor-de-fonte.dropdown-menu-trigger" asChild disabled={disabled}>
+          <button data-gc="seletor-de-fonte.button"
             aria-label="Fonte da mensagem"
             className={cn(
               "flex size-9 shrink-0 items-center justify-center rounded transition disabled:cursor-not-allowed disabled:opacity-50",
               fonte === "padrao" ? "text-ink-faint hover:text-ink" : "text-brand",
             )}
           >
-            <IconeDeFonte size={20} />
+            <IconeDeFonte data-gc="seletor-de-fonte.icone-de-fonte" size={20} />
           </button>
         </DropdownMenuTrigger>
       </Tooltip>
 
-      <DropdownMenuContent
+      <DropdownMenuContent data-gc="seletor-de-fonte.dropdown-menu-content"
         side="top"
         align="end"
         className="min-w-44"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
         {FONTES.map((opcao) => (
-          <DropdownMenuItem
+          <DropdownMenuItem data-gc="seletor-de-fonte.dropdown-menu-item"
             key={opcao.id}
             onSelect={() => onEscolher(opcao.id)}
             className={cn("text-base", opcao.id === fonte && "text-brand")}

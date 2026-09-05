@@ -15,12 +15,12 @@ export const Emoji: React.FC<EmojiProps> = ({ emoji, className }) => {
 
   if (semDesenho) {
     return (
-      <span className={cn("inline-block text-center leading-none", className)}>{emoji}</span>
+      <span data-gc="expressao.emoji.span" className={cn("inline-block text-center leading-none", className)}>{emoji}</span>
     );
   }
 
   return (
-    <img
+    <img data-gc="expressao.emoji.img"
       src={urlDoEmoji(emoji)}
       alt={emoji}
       draggable={false}

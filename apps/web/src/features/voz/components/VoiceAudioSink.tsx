@@ -8,13 +8,13 @@ export const VoiceAudioSink: React.FC = () => {
   const assistindo = useVoiceStore((s) => s.assistindo);
 
   return (
-    <div className="hidden" aria-hidden>
+    <div data-gc="voz.voice-audio-sink.div" className="hidden" aria-hidden>
       {tiles.map((tile) => (
         <React.Fragment key={tile.identity}>
-          {tile.micTrack && <VoiceAudio track={tile.micTrack} identity={tile.identity} />}
+          {tile.micTrack && <VoiceAudio data-gc="voz.voice-audio-sink.voice-audio" track={tile.micTrack} identity={tile.identity} />}
 
           {tile.screenAudioTrack && assistindo === tile.identity && (
-            <VoiceAudio track={tile.screenAudioTrack} identity={tile.identity} fonte="tela" />
+            <VoiceAudio data-gc="voz.voice-audio-sink.voice-audio--2" track={tile.screenAudioTrack} identity={tile.identity} fonte="tela" />
           )}
         </React.Fragment>
       ))}

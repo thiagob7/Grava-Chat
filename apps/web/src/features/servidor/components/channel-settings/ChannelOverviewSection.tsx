@@ -70,13 +70,13 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
     userLimit !== channel.userLimit;
 
   return (
-    <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">{t("servidor.canal.visaoGeral")}</h2>
+    <div data-gc="servidor.channel-settings.channel-overview-section.div" className="max-w-2xl pb-10">
+      <h2 data-gc="servidor.channel-settings.channel-overview-section.h2" className="text-xl font-semibold">{t("servidor.canal.visaoGeral")}</h2>
 
-      <div className="mt-6 space-y-6">
-        <div>
-          <Label htmlFor="canal-nome">{t("servidor.canal.nome")}</Label>
-          <CampoDeNomeDeCanal
+      <div data-gc="servidor.channel-settings.channel-overview-section.div--2" className="mt-6 space-y-6">
+        <div data-gc="servidor.channel-settings.channel-overview-section.div--3">
+          <Label data-gc="servidor.channel-settings.channel-overview-section.label" htmlFor="canal-nome">{t("servidor.canal.nome")}</Label>
+          <CampoDeNomeDeCanal data-gc="servidor.channel-settings.channel-overview-section.campo-de-nome-de-canal.set-name"
             id="canal-nome"
             valor={name}
             onMudar={setName}
@@ -87,9 +87,9 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
         </div>
 
         {!ehVoz && (
-          <div>
-            <Label htmlFor="canal-topico">{t("servidor.canal.topico")}</Label>
-            <Textarea
+          <div data-gc="servidor.channel-settings.channel-overview-section.div--4">
+            <Label data-gc="servidor.channel-settings.channel-overview-section.label--2" htmlFor="canal-topico">{t("servidor.canal.topico")}</Label>
+            <Textarea data-gc="servidor.channel-settings.channel-overview-section.textarea"
               id="canal-topico"
               value={topic}
               maxLength={512}
@@ -100,9 +100,9 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
           </div>
         )}
 
-        <div>
-          <Label htmlFor="modo-lento">Modo lento — {rotuloDoModoLento(slowmode)}</Label>
-          <CampoSelect
+        <div data-gc="servidor.channel-settings.channel-overview-section.div--5">
+          <Label data-gc="servidor.channel-settings.channel-overview-section.label--3" htmlFor="modo-lento">Modo lento — {rotuloDoModoLento(slowmode)}</Label>
+          <CampoSelect data-gc="servidor.channel-settings.channel-overview-section.campo-select.set-slowmode"
             id="modo-lento"
             valor={slowmode}
             onEscolher={setSlowmode}
@@ -111,16 +111,16 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
               rotulo: rotuloDoModoLento(segundos),
             }))}
           />
-          <p className="mt-1.5 text-xs text-ink-faint">
+          <p data-gc="servidor.channel-settings.channel-overview-section.p" className="mt-1.5 text-xs text-ink-faint">
             {t("servidor.canal.modoLento")}
           </p>
         </div>
 
-        <div>
-          <Label>{t("servidor.canal.visibilidade")}</Label>
-          <div className="space-y-2">
+        <div data-gc="servidor.channel-settings.channel-overview-section.div--6">
+          <Label data-gc="servidor.channel-settings.channel-overview-section.label--4">{t("servidor.canal.visibilidade")}</Label>
+          <div data-gc="servidor.channel-settings.channel-overview-section.div--7" className="space-y-2">
             {VISIBILIDADES.map((opcao) => (
-              <OpcaoEmCartao
+              <OpcaoEmCartao data-gc="servidor.channel-settings.channel-overview-section.opcao-em-cartao"
                 key={opcao.valor}
                 escolhido={visibilidade === opcao.valor}
                 onEscolher={() => setVisibilidade(opcao.valor)}
@@ -133,9 +133,9 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
         {ehVoz && (
           <>
-            <div>
-              <Label>Taxa de bits — {Math.round(bitrate / 1000)} kbps</Label>
-              <Slider
+            <div data-gc="servidor.channel-settings.channel-overview-section.div--8">
+              <Label data-gc="servidor.channel-settings.channel-overview-section.label--5">Taxa de bits — {Math.round(bitrate / 1000)} kbps</Label>
+              <Slider data-gc="servidor.channel-settings.channel-overview-section.slider"
                 min={8000}
                 max={96000}
                 step={8000}
@@ -143,14 +143,14 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
                 preenchido={(bitrate - 8000) / 88000}
                 onChange={(e) => setBitrate(Number(e.target.value))}
               />
-              <p className="mt-1.5 text-xs text-ink-faint">
+              <p data-gc="servidor.channel-settings.channel-overview-section.p--2" className="mt-1.5 text-xs text-ink-faint">
                 {t("servidor.canal.bitrateDica")}
               </p>
             </div>
 
-            <div>
-              <Label>{t("servidor.canal.qualidadeDeVideo")}</Label>
-              <GrupoSegmentado
+            <div data-gc="servidor.channel-settings.channel-overview-section.div--9">
+              <Label data-gc="servidor.channel-settings.channel-overview-section.label--6">{t("servidor.canal.qualidadeDeVideo")}</Label>
+              <GrupoSegmentado data-gc="servidor.channel-settings.channel-overview-section.grupo-segmentado.set-video-quality"
                 valor={videoQuality}
                 onEscolher={setVideoQuality}
                 opcoes={[
@@ -160,15 +160,15 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
               />
             </div>
 
-            <div>
-              <Label>
+            <div data-gc="servidor.channel-settings.channel-overview-section.div--10">
+              <Label data-gc="servidor.channel-settings.channel-overview-section.label--7">
                 {t("servidor.canal.limite", {
                   valor: userLimit
                     ? t("servidor.canal.pessoas", { quantos: userLimit })
                     : t("servidor.canal.semLimite"),
                 })}
               </Label>
-              <Slider
+              <Slider data-gc="servidor.channel-settings.channel-overview-section.slider--2"
                 min={0}
                 max={99}
                 step={1}
@@ -181,7 +181,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
         )}
       </div>
 
-      <UnsavedBar
+      <UnsavedBar data-gc="servidor.channel-settings.channel-overview-section.unsaved-bar"
         visivel={mudou}
         salvando={salvar.isPending}
         onDescartar={() => {

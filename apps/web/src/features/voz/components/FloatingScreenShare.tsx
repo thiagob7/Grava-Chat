@@ -86,7 +86,7 @@ export const FloatingScreenShare: React.FC = () => {
   if (!mostrar || !alvo) return null;
 
   return (
-    <div
+    <div data-gc="voz.floating-screen-share.div"
       ref={mini}
       style={telaCheia.ativa ? undefined : { left: posicao.x, top: posicao.y, width: LARGURA, height: ALTURA }}
       className={cn(
@@ -95,9 +95,9 @@ export const FloatingScreenShare: React.FC = () => {
         pousando && !telaCheia.ativa && "transition-[left,top] duration-200 ease-out",
       )}
     >
-      <VoiceVideo track={alvo.screenTrack!} />
+      <VoiceVideo data-gc="voz.floating-screen-share.voice-video" track={alvo.screenTrack!} />
 
-      <div
+      <div data-gc="voz.floating-screen-share.div--2"
         onPointerDown={(e) => {
           if (telaCheia.ativa) return;
 
@@ -107,31 +107,31 @@ export const FloatingScreenShare: React.FC = () => {
         style={{ touchAction: "none" }}
         className="absolute inset-x-0 top-0 flex cursor-grab items-center gap-1.5 bg-gradient-to-b from-black/85 to-transparent px-2 py-1.5 active:cursor-grabbing"
       >
-        <MonitorUp size={12} className="shrink-0 text-online" />
-        <span className="min-w-0 flex-1 truncate text-xs font-medium">{alvo.name}</span>
+        <MonitorUp data-gc="voz.floating-screen-share.monitor-up" size={12} className="shrink-0 text-online" />
+        <span data-gc="voz.floating-screen-share.span" className="min-w-0 flex-1 truncate text-xs font-medium">{alvo.name}</span>
 
-        <BotaoDaMini
+        <BotaoDaMini data-gc="voz.floating-screen-share.botao-da-mini"
           label={telaCheia.ativa ? "Sair da tela cheia (Esc)" : "Tela cheia"}
           onClick={() => void telaCheia.alternar()}
         >
-          {telaCheia.ativa ? <Shrink size={12} /> : <Expand size={12} />}
+          {telaCheia.ativa ? <Shrink data-gc="voz.floating-screen-share.shrink" size={12} /> : <Expand data-gc="voz.floating-screen-share.expand" size={12} />}
         </BotaoDaMini>
 
-        <BotaoDaMini
+        <BotaoDaMini data-gc="voz.floating-screen-share.botao-da-mini--2"
           label={t("chamada.voltar")}
           onClick={() => guildId && channelId && navigate(`/channels/${guildId}/${channelId}`)}
         >
-          <Maximize2 size={12} />
+          <Maximize2 data-gc="voz.floating-screen-share.maximize2" size={12} />
         </BotaoDaMini>
 
         {alvo.isLocal && (
-          <BotaoDaMini label={t("chamada.tela.encerrarTransmissao")} onClick={() => void encerrarTransmissao()}>
-            <MonitorX size={12} className="text-danger" />
+          <BotaoDaMini data-gc="voz.floating-screen-share.botao-da-mini--3" label={t("chamada.tela.encerrarTransmissao")} onClick={() => void encerrarTransmissao()}>
+            <MonitorX data-gc="voz.floating-screen-share.monitor-x" size={12} className="text-danger" />
           </BotaoDaMini>
         )}
 
-        <BotaoDaMini label={t("chamada.live.pararDeAssistir")} onClick={() => parar(null)}>
-          <X size={12} />
+        <BotaoDaMini data-gc="voz.floating-screen-share.botao-da-mini--4" label={t("chamada.live.pararDeAssistir")} onClick={() => parar(null)}>
+          <X data-gc="voz.floating-screen-share.x" size={12} />
         </BotaoDaMini>
       </div>
     </div>
@@ -143,7 +143,7 @@ const BotaoDaMini: React.FC<{
   label: string;
   onClick: () => void;
 }> = ({ children, label, onClick }) => (
-  <button
+  <button data-gc="voz.floating-screen-share.button.on-click"
     onPointerDown={(e) => e.stopPropagation()}
     onClick={onClick}
     title={label}

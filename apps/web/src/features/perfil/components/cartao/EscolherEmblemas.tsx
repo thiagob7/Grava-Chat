@@ -35,14 +35,14 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
   };
 
   return (
-    <div className="mt-3">
-      <p className="mb-1.5 text-xs font-semibold uppercase text-ink-faint">
+    <div data-gc="perfil.cartao.escolher-emblemas.div" className="mt-3">
+      <p data-gc="perfil.cartao.escolher-emblemas.p" className="mb-1.5 text-xs font-semibold uppercase text-ink-faint">
         {t("perfil.emblemas.doServidor")}
       </p>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div data-gc="perfil.cartao.escolher-emblemas.div--2" className="flex flex-wrap gap-1.5">
         {disponiveis.map((emblema) => (
-          <button
+          <button data-gc="perfil.cartao.escolher-emblemas.button"
             key={emblema.id}
             onClick={() => alternar(emblema.id)}
             title={emblema.nome}
@@ -55,9 +55,9 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
             )}
           >
             {emblema.emoji ? (
-              <span className="leading-none">{emblema.emoji}</span>
+              <span data-gc="perfil.cartao.escolher-emblemas.span" className="leading-none">{emblema.emoji}</span>
             ) : emblema.iconUrl ? (
-              <img src={emblema.iconUrl} alt="" className="size-4 object-contain" />
+              <img data-gc="perfil.cartao.escolher-emblemas.img" src={emblema.iconUrl} alt="" className="size-4 object-contain" />
             ) : null}
             {emblema.nome}
           </button>

@@ -35,14 +35,14 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
   useEffect(() => carregarTodasAsFontes(), []);
 
   return (
-    <div className="space-y-6">
-      <GradeDeOpcoes
+    <div data-gc="configuracoes.perfil.enfeites-aba.div" className="space-y-6">
+      <GradeDeOpcoes data-gc="configuracoes.perfil.enfeites-aba.grade-de-opcoes"
         label="Fonte do nome"
         opcoes={FONTES}
         valor={rascunho.fonte}
         onEscolher={(id) => definir("fonte", id)}
         amostra={(id) => (
-          <span
+          <span data-gc="configuracoes.perfil.enfeites-aba.span"
             className="text-base"
             style={{ fontFamily: familiaDaFonte(id) ?? undefined }}
           >
@@ -51,7 +51,7 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         )}
       />
 
-      <GradeDeOpcoes
+      <GradeDeOpcoes data-gc="configuracoes.perfil.enfeites-aba.grade-de-opcoes--2"
         label="Efeito do nome"
         opcoes={EFEITOS_DO_NOME}
         valor={rascunho.efeitoDoNome}
@@ -64,7 +64,7 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
           });
 
           return (
-            <span
+            <span data-gc="configuracoes.perfil.enfeites-aba.span--2"
               className={cn("text-base font-bold", enfeite.className)}
               style={enfeite.style}
             >
@@ -74,14 +74,14 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         }}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <CampoDeCor
+      <div data-gc="configuracoes.perfil.enfeites-aba.div--2" className="grid grid-cols-2 gap-4">
+        <CampoDeCor data-gc="configuracoes.perfil.enfeites-aba.campo-de-cor"
           label="Cor do nome"
           valor={rascunho.cor}
           onMudar={(cor) => definir("cor", cor)}
           dica="Sem escolha, o efeito usa a cor do seu cargo mais alto."
         />
-        <CampoDeCor
+        <CampoDeCor data-gc="configuracoes.perfil.enfeites-aba.campo-de-cor--2"
           label="Segunda cor"
           valor={rascunho.cor2}
           onMudar={(cor) => definir("cor2", cor)}
@@ -89,24 +89,24 @@ export const EnfeitesAba: React.FC<EnfeitesAbaProps> = ({
         />
       </div>
 
-      <div className="h-px bg-line" />
+      <div data-gc="configuracoes.perfil.enfeites-aba.div--3" className="h-px bg-line" />
 
-      <GradeDeOpcoes
+      <GradeDeOpcoes data-gc="configuracoes.perfil.enfeites-aba.grade-de-opcoes--3"
         label="Decoração do avatar"
         opcoes={DECORACOES_DE_AVATAR}
         valor={rascunho.decoracao}
         onEscolher={(id) => definir("decoracao", id)}
-        amostra={(id) => <Amostra familia="decoracao" id={id} />}
+        amostra={(id) => <Amostra data-gc="configuracoes.perfil.enfeites-aba.amostra" familia="decoracao" id={id} />}
       />
 
-      <div className="h-px bg-line" />
+      <div data-gc="configuracoes.perfil.enfeites-aba.div--4" className="h-px bg-line" />
 
-      <GradeDeOpcoes
+      <GradeDeOpcoes data-gc="configuracoes.perfil.enfeites-aba.grade-de-opcoes--4"
         label="Patente"
         opcoes={PATENTES_DE_PERFIL}
         valor={rascunho.patente}
         onEscolher={(id) => definir("patente", id)}
-        amostra={(id) => <PatenteAnimada patente={id} animar altura={24} />}
+        amostra={(id) => <PatenteAnimada data-gc="configuracoes.perfil.enfeites-aba.patente-animada" patente={id} animar altura={24} />}
       />
 
     </div>
@@ -123,16 +123,16 @@ export const Amostra: React.FC<{ familia: string; id: string }> = ({
   const doCartao = familia === "moldura";
 
   return (
-    <span
+    <span data-gc="configuracoes.perfil.enfeites-aba.span--3"
       className={cn(
         "relative block bg-surface-4",
         doCartao ? "h-7 w-10 rounded" : "size-7 rounded-full",
       )}
     >
-      {deArquivo && <DecoracaoDeArquivo decoracao={id as Decoracao} animar />}
+      {deArquivo && <DecoracaoDeArquivo data-gc="configuracoes.perfil.enfeites-aba.decoracao-de-arquivo" decoracao={id as Decoracao} animar />}
 
       {!deArquivo && classe && (
-        <span
+        <span data-gc="configuracoes.perfil.enfeites-aba.span--4"
           aria-hidden
           className={cn(doCartao ? "gc-camada--cartao" : "gc-camada", classe)}
           style={{

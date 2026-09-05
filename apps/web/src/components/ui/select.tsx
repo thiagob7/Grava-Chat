@@ -24,8 +24,8 @@ export const SelectTrigger = ({
     {...props}
   >
     {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown size={16} className="shrink-0 text-ink-faint" />
+    <SelectPrimitive.Icon data-gc="ui.select.select-primitiveicon" asChild>
+      <ChevronDown data-gc="ui.select.chevron-down" size={16} className="shrink-0 text-ink-faint" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );
@@ -34,7 +34,7 @@ const BotaoDeRolagem = ({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) => (
-  <div
+  <div data-gc="ui.select.div"
     className="flex cursor-default items-center justify-center py-1 text-ink-faint"
     {...props}
   >
@@ -49,7 +49,7 @@ export const SelectContent = ({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) => (
   <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
+    <SelectPrimitive.Content data-gc="ui.select.select-primitivecontent"
       position={position}
       className={cn(
         "regiao-sem-arrasto z-[60] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-hidden rounded-lg border border-white/5 bg-surface-2 shadow-2xl",
@@ -58,13 +58,13 @@ export const SelectContent = ({
       )}
       {...props}
     >
-      <SelectPrimitive.ScrollUpButton asChild>
-        <BotaoDeRolagem>
-          <ChevronUp size={14} />
+      <SelectPrimitive.ScrollUpButton data-gc="ui.select.select-primitivescroll-up-button" asChild>
+        <BotaoDeRolagem data-gc="ui.select.botao-de-rolagem">
+          <ChevronUp data-gc="ui.select.chevron-up" size={14} />
         </BotaoDeRolagem>
       </SelectPrimitive.ScrollUpButton>
 
-      <SelectPrimitive.Viewport
+      <SelectPrimitive.Viewport data-gc="ui.select.select-primitiveviewport"
         className={cn(
           "p-1",
           position === "popper" && "w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1",
@@ -73,9 +73,9 @@ export const SelectContent = ({
         {children}
       </SelectPrimitive.Viewport>
 
-      <SelectPrimitive.ScrollDownButton asChild>
-        <BotaoDeRolagem>
-          <ChevronDown size={14} />
+      <SelectPrimitive.ScrollDownButton data-gc="ui.select.select-primitivescroll-down-button" asChild>
+        <BotaoDeRolagem data-gc="ui.select.botao-de-rolagem--2">
+          <ChevronDown data-gc="ui.select.chevron-down--2" size={14} />
         </BotaoDeRolagem>
       </SelectPrimitive.ScrollDownButton>
     </SelectPrimitive.Content>
@@ -87,7 +87,7 @@ export const SelectItem = ({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Item>) => (
-  <SelectPrimitive.Item
+  <SelectPrimitive.Item data-gc="ui.select.select-primitiveitem"
     className={cn(
       "relative flex w-full cursor-pointer select-none items-center rounded py-1.5 pl-2 pr-8 text-sm text-ink outline-none transition-colors",
       "focus:bg-surface-3 data-[state=checked]:text-brand",
@@ -96,10 +96,10 @@ export const SelectItem = ({
     )}
     {...props}
   >
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    <span className="absolute right-2 flex size-3.5 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <Check size={14} />
+    <SelectPrimitive.ItemText data-gc="ui.select.select-primitiveitem-text">{children}</SelectPrimitive.ItemText>
+    <span data-gc="ui.select.span" className="absolute right-2 flex size-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator data-gc="ui.select.select-primitiveitem-indicator">
+        <Check data-gc="ui.select.check" size={14} />
       </SelectPrimitive.ItemIndicator>
     </span>
   </SelectPrimitive.Item>
@@ -109,7 +109,7 @@ export const SelectSeparator = ({
   className,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Separator>) => (
-  <SelectPrimitive.Separator
+  <SelectPrimitive.Separator data-gc="ui.select.select-primitiveseparator"
     className={cn("-mx-1 my-1 h-px bg-line", className)}
     {...props}
   />
@@ -140,7 +140,7 @@ export function CampoSelect<T extends string | number>({
   const paraRadix = (v: T) => (String(v) === "" ? VAZIO : String(v));
 
   return (
-    <Select
+    <Select data-gc="ui.select.select"
       value={paraRadix(valor)}
       disabled={disabled}
       onValueChange={(bruto) => {
@@ -148,12 +148,12 @@ export function CampoSelect<T extends string | number>({
         onEscolher((numerico ? Number(limpo) : limpo) as T);
       }}
     >
-      <SelectTrigger id={id} className={className}>
-        <SelectValue placeholder={placeholder} />
+      <SelectTrigger data-gc="ui.select.select-trigger" id={id} className={className}>
+        <SelectValue data-gc="ui.select.select-value" placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent data-gc="ui.select.select-content">
         {opcoes.map((o) => (
-          <SelectItem key={String(o.valor)} value={paraRadix(o.valor)}>
+          <SelectItem data-gc="ui.select.select-item" key={String(o.valor)} value={paraRadix(o.valor)}>
             {o.rotulo}
           </SelectItem>
         ))}

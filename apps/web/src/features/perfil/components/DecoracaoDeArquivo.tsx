@@ -24,10 +24,10 @@ export const DecoracaoDeArquivo: React.FC<DecoracaoDeArquivoProps> = ({
   const url = imagemDaDecoracao(decoracao);
 
   if (url)
-    return <ComoImagem key={`imagem:${decoracao}`} url={url} inset={inset} recorte={recorte} />;
+    return <ComoImagem data-gc="perfil.decoracao-de-arquivo.como-imagem" key={`imagem:${decoracao}`} url={url} inset={inset} recorte={recorte} />;
 
   return (
-    <ComoLottie
+    <ComoLottie data-gc="perfil.decoracao-de-arquivo.como-lottie"
       key={`lottie:${decoracao}`}
       decoracao={decoracao}
       animar={animar}
@@ -42,8 +42,8 @@ const ComoImagem: React.FC<{ url: string; inset: string; recorte?: React.CSSProp
   inset,
   recorte,
 }) => (
-  <span aria-hidden className="gc-camada" style={{ inset, ...recorte }}>
-    <img
+  <span data-gc="perfil.decoracao-de-arquivo.span" aria-hidden className="gc-camada" style={{ inset, ...recorte }}>
+    <img data-gc="perfil.decoracao-de-arquivo.img"
       src={url}
       alt=""
       loading="lazy"
@@ -69,5 +69,5 @@ const ComoLottie: React.FC<{
     segmento: segmentoDaDecoracao(decoracao),
   });
 
-  return <span ref={caixa} aria-hidden className="gc-camada" style={{ inset, ...recorte }} />;
+  return <span data-gc="perfil.decoracao-de-arquivo.span--2" ref={caixa} aria-hidden className="gc-camada" style={{ inset, ...recorte }} />;
 };

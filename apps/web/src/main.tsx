@@ -39,6 +39,6 @@ if (import.meta.env.DEV) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <App data-gc="main.app" />
   </StrictMode>,
 );

@@ -106,26 +106,26 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
   };
 
   return (
-    <Dialog open onOpenChange={(v) => !v && fechar()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Headphones size={18} className="text-brand" />
+    <Dialog data-gc="app.aviso-de-novo-dispositivo.dialog" open onOpenChange={(v) => !v && fechar()}>
+      <DialogContent data-gc="app.aviso-de-novo-dispositivo.dialog-content" className="max-w-md">
+        <DialogHeader data-gc="app.aviso-de-novo-dispositivo.dialog-header">
+          <DialogTitle data-gc="app.aviso-de-novo-dispositivo.dialog-title" className="flex items-center gap-2">
+            <Headphones data-gc="app.aviso-de-novo-dispositivo.headphones" size={18} className="text-brand" />
             {ehEntrada
               ? "Microfone novo por aqui"
               : "Saída de áudio nova por aqui"}
           </DialogTitle>
         </DialogHeader>
 
-        <DialogBody>
-          <p className="text-sm leading-relaxed text-ink-muted">
-            Apareceu <b className="text-ink">{novo.nome}</b>.{" "}
+        <DialogBody data-gc="app.aviso-de-novo-dispositivo.dialog-body">
+          <p data-gc="app.aviso-de-novo-dispositivo.p" className="text-sm leading-relaxed text-ink-muted">
+            Apareceu <b data-gc="app.aviso-de-novo-dispositivo.b" className="text-ink">{novo.nome}</b>.{" "}
             {ehEntrada ? "Quer falar por ele?" : "Quer ouvir por ele?"}
             {emChamada && " A troca vale na hora, sem sair da chamada."}
           </p>
 
-          <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-ink-muted">
-            <Checkbox
+          <label data-gc="app.aviso-de-novo-dispositivo.label" className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-ink-muted">
+            <Checkbox data-gc="app.aviso-de-novo-dispositivo.checkbox"
               checked={naoSugerir}
               onChange={(e) => setNaoSugerir(e.target.checked)}
             />
@@ -133,11 +133,11 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
           </label>
         </DialogBody>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={fechar}>
+        <DialogFooter data-gc="app.aviso-de-novo-dispositivo.dialog-footer">
+          <Button data-gc="app.aviso-de-novo-dispositivo.button.fechar" variant="ghost" onClick={fechar}>
             Agora não
           </Button>
-          <Button onClick={trocar}>Trocar para ele</Button>
+          <Button data-gc="app.aviso-de-novo-dispositivo.button.trocar" onClick={trocar}>Trocar para ele</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -48,14 +48,14 @@ import { cn } from "~/lib/utils";
 type Aba = "biblioteca" | "tokens" | "css" | "ativos" | "configuracoes";
 
 const ABAS: { id: Aba; nome: string; icone: React.ReactNode }[] = [
-  { id: "biblioteca", nome: "Biblioteca", icone: <Library size={16} /> },
-  { id: "tokens", nome: "Tokens", icone: <SlidersHorizontal size={16} /> },
-  { id: "css", nome: "CSS rápido", icone: <FileCode2 size={16} /> },
-  { id: "ativos", nome: "Ativos", icone: <ImageIcon size={16} /> },
+  { id: "biblioteca", nome: "Biblioteca", icone: <Library data-gc="configuracoes.estudio.estudio-de-temas.library" size={16} /> },
+  { id: "tokens", nome: "Tokens", icone: <SlidersHorizontal data-gc="configuracoes.estudio.estudio-de-temas.sliders-horizontal" size={16} /> },
+  { id: "css", nome: "CSS rápido", icone: <FileCode2 data-gc="configuracoes.estudio.estudio-de-temas.file-code2" size={16} /> },
+  { id: "ativos", nome: "Ativos", icone: <ImageIcon data-gc="configuracoes.estudio.estudio-de-temas.image-icon" size={16} /> },
   {
     id: "configuracoes",
     nome: "Configurações",
-    icone: <Settings2 size={16} />,
+    icone: <Settings2 data-gc="configuracoes.estudio.estudio-de-temas.settings2" size={16} />,
   },
 ];
 
@@ -75,25 +75,25 @@ export const EstudioDeTemas: React.FC<{
   const tema = useAparencia((s) => s.tema);
 
   return (
-    <DialogPrimitive.Root
+    <DialogPrimitive.Root data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveroot"
       open={open}
       onOpenChange={(next) => !next && onClose()}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
-        <DialogPrimitive.Content
+        <DialogPrimitive.Overlay data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
+        <DialogPrimitive.Content data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivecontent"
           className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(900px,94vh)] w-[min(1320px,96vw)] overflow-hidden rounded-xl bg-surface-2 shadow-2xl outline-none"
           aria-label="Estúdio de temas"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <DialogPrimitive.Title className="sr-only">
+          <DialogPrimitive.Title data-gc="configuracoes.estudio.estudio-de-temas.dialog-primitivetitle" className="sr-only">
             Estúdio de temas
           </DialogPrimitive.Title>
 
-          <nav className="flex w-56 shrink-0 flex-col justify-between bg-surface-1 p-3">
-            <div>
+          <nav data-gc="configuracoes.estudio.estudio-de-temas.nav" className="flex w-56 shrink-0 flex-col justify-between bg-surface-1 p-3">
+            <div data-gc="configuracoes.estudio.estudio-de-temas.div">
               {ABAS.map((item) => (
-                <button
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button"
                   key={item.id}
                   onClick={() => setAba(item.id)}
                   aria-current={aba === item.id}
@@ -110,24 +110,24 @@ export const EstudioDeTemas: React.FC<{
               ))}
             </div>
 
-            <p className="border-t border-line px-3 pt-3 text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p" className="border-t border-line px-3 pt-3 text-xs text-ink-faint">
               {NOME_DO_TEMA[tema] ?? "Base"}
             </p>
           </nav>
 
-          <div className="flex min-w-0 flex-1 flex-col">
-            {aba === "tokens" && <AbaDeTokens tema={tema} />}
-            {aba === "css" && <AbaDeCss />}
-            {aba === "ativos" && <AbaDeAtivos />}
-            {aba === "biblioteca" && <AbaDaBiblioteca />}
-            {aba === "configuracoes" && <AbaDeConfiguracoes />}
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--2" className="flex min-w-0 flex-1 flex-col">
+            {aba === "tokens" && <AbaDeTokens data-gc="configuracoes.estudio.estudio-de-temas.aba-de-tokens" tema={tema} />}
+            {aba === "css" && <AbaDeCss data-gc="configuracoes.estudio.estudio-de-temas.aba-de-css" />}
+            {aba === "ativos" && <AbaDeAtivos data-gc="configuracoes.estudio.estudio-de-temas.aba-de-ativos" />}
+            {aba === "biblioteca" && <AbaDaBiblioteca data-gc="configuracoes.estudio.estudio-de-temas.aba-da-biblioteca" />}
+            {aba === "configuracoes" && <AbaDeConfiguracoes data-gc="configuracoes.estudio.estudio-de-temas.aba-de-configuracoes" />}
           </div>
 
           <DialogPrimitive.Close
             aria-label="Fechar"
             className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint transition hover:bg-hover hover:text-ink"
           >
-            <X size={18} />
+            <X data-gc="configuracoes.estudio.estudio-de-temas.x" size={18} />
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
@@ -168,13 +168,13 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
 
   return (
     <>
-      <div className="flex shrink-0 items-center gap-3 border-b border-line px-6 py-3.5 pr-14">
-        <div className="relative max-w-sm flex-1">
-          <Search
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--3" className="flex shrink-0 items-center gap-3 border-b border-line px-6 py-3.5 pr-14">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--4" className="relative max-w-sm flex-1">
+          <Search data-gc="configuracoes.estudio.estudio-de-temas.search"
             size={15}
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
           />
-          <Input
+          <Input data-gc="configuracoes.estudio.estudio-de-temas.input"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Pesquisar tokens"
@@ -182,37 +182,37 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
           />
         </div>
 
-        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-ink-muted">
-          <Switch checked={soLigados} onCheckedChange={setSoLigados} />
+        <label data-gc="configuracoes.estudio.estudio-de-temas.label" className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-ink-muted">
+          <Switch data-gc="configuracoes.estudio.estudio-de-temas.switch.set-so-ligados" checked={soLigados} onCheckedChange={setSoLigados} />
           Só os que já pintam
         </label>
 
-        <p className="ml-auto shrink-0 text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--2" className="ml-auto shrink-0 text-xs text-ink-faint">
           {quantas} {quantas === 1 ? "substituição" : "substituições"} ·{" "}
           {grupos.length} grupos · {totalMostrado} de {TODOS_OS_TOKENS.length}{" "}
           tokens
         </p>
 
-        <Button
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button.limpar"
           variant="surface"
           size="sm"
           disabled={!quantas}
           onClick={limpar}
         >
-          <RotateCcw size={14} /> Redefinir tudo
+          <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw" size={14} /> Redefinir tudo
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-2">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--5" className="min-h-0 flex-1 overflow-y-auto px-6 py-2">
         {grupos.map((grupo) => {
           const aberto = buscando || abertos[grupo.titulo] === true;
 
           return (
-            <section
+            <section data-gc="configuracoes.estudio.estudio-de-temas.section"
               key={grupo.titulo}
               className="border-b border-divisor last:border-b-0"
             >
-              <button
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--2"
                 type="button"
                 onClick={() =>
                   setAbertos((atual) => ({
@@ -223,7 +223,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
                 aria-expanded={aberto}
                 className="flex w-full items-center gap-2 py-3 text-left text-sm font-semibold transition hover:text-brand"
               >
-                <ChevronRight
+                <ChevronRight data-gc="configuracoes.estudio.estudio-de-temas.chevron-right"
                   size={14}
                   className={cn(
                     "shrink-0 transition-transform",
@@ -231,15 +231,15 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
                   )}
                 />
                 {grupo.titulo}
-                <span className="ml-auto text-xs font-normal text-ink-faint">
+                <span data-gc="configuracoes.estudio.estudio-de-temas.span" className="ml-auto text-xs font-normal text-ink-faint">
                   {grupo.tokens.length}
                 </span>
               </button>
 
               {aberto && (
-                <div className="mb-3 overflow-hidden rounded-lg border border-line">
+                <div data-gc="configuracoes.estudio.estudio-de-temas.div--6" className="mb-3 overflow-hidden rounded-lg border border-line">
                   {grupo.tokens.map((token) => (
-                    <LinhaDeToken key={token.nome} token={token} tema={tema} />
+                    <LinhaDeToken data-gc="configuracoes.estudio.estudio-de-temas.linha-de-token" key={token.nome} token={token} tema={tema} />
                   ))}
                 </div>
               )}
@@ -248,7 +248,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
         })}
 
         {!grupos.length && (
-          <p className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--3" className="py-10 text-center text-sm text-ink-faint">
             Nenhum token com esse nome.
           </p>
         )}
@@ -271,10 +271,10 @@ const LinhaDeToken: React.FC<{
   const legivel = lerCor(valor);
 
   return (
-    <div className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--7" className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
+      <Popover data-gc="configuracoes.estudio.estudio-de-temas.popover">
+        <PopoverTrigger data-gc="configuracoes.estudio.estudio-de-temas.popover-trigger" asChild>
+          <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
             type="button"
             disabled={!legivel}
             aria-label={`Cor de ${token.rotulo}`}
@@ -292,11 +292,11 @@ const LinhaDeToken: React.FC<{
           />
         </PopoverTrigger>
 
-        <PopoverContent align="start" className="w-60 p-3">
-          <PopoverArrow />
+        <PopoverContent data-gc="configuracoes.estudio.estudio-de-temas.popover-content" align="start" className="w-60 p-3">
+          <PopoverArrow data-gc="configuracoes.estudio.estudio-de-temas.popover-arrow" />
 
           {legivel && (
-            <SeletorDeCor
+            <SeletorDeCor data-gc="configuracoes.estudio.estudio-de-temas.seletor-de-cor"
               valor={valor}
               onMudar={(nova) => definir(token.nome, nova)}
             />
@@ -304,12 +304,12 @@ const LinhaDeToken: React.FC<{
         </PopoverContent>
       </Popover>
 
-      <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 truncate text-sm font-medium">
-          <span className="truncate">{token.rotulo}</span>
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--8" className="min-w-0 flex-1">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--4" className="flex items-center gap-2 truncate text-sm font-medium">
+          <span data-gc="configuracoes.estudio.estudio-de-temas.span--2" className="truncate">{token.rotulo}</span>
 
           {!token.ligado && (
-            <span
+            <span data-gc="configuracoes.estudio.estudio-de-temas.span--3"
               title="Este token existe e tem valor, mas nenhum componente lê ele ainda."
               className="shrink-0 rounded-full bg-surface-3 px-1.5 py-px text-10 font-normal uppercase tracking-wide text-ink-faint"
             >
@@ -317,13 +317,13 @@ const LinhaDeToken: React.FC<{
             </span>
           )}
         </p>
-        <p className="truncate font-mono text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--5" className="truncate font-mono text-xs text-ink-faint">
           {token.nome}
-          {token.dica && <span className="font-sans"> — {token.dica}</span>}
+          {token.dica && <span data-gc="configuracoes.estudio.estudio-de-temas.span--4" className="font-sans"> — {token.dica}</span>}
         </p>
       </div>
 
-      <Input
+      <Input data-gc="configuracoes.estudio.estudio-de-temas.input--2"
         value={substituido ?? ""}
         placeholder={doTema}
         onChange={(e) => definir(token.nome, e.target.value || null)}
@@ -335,7 +335,7 @@ const LinhaDeToken: React.FC<{
         )}
       />
 
-      <button
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
         type="button"
         onClick={() => definir(token.nome, null)}
         disabled={!substituido}
@@ -343,7 +343,7 @@ const LinhaDeToken: React.FC<{
         aria-label={`Voltar ${token.rotulo} ao valor do tema`}
         className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink disabled:opacity-25"
       >
-        <RotateCcw size={14} />
+        <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--2" size={14} />
       </button>
     </div>
   );
@@ -358,15 +358,15 @@ const AbaDeCss: React.FC = () => {
 
   return (
     <>
-      <div className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--9" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
           variant="surface"
           size="sm"
           onClick={() => arquivo.current?.click()}
         >
-          <Upload size={14} /> Importar CSS
+          <Upload data-gc="configuracoes.estudio.estudio-de-temas.upload" size={14} /> Importar CSS
         </Button>
-        <input
+        <input data-gc="configuracoes.estudio.estudio-de-temas.input--3"
           ref={arquivo}
           type="file"
           accept=".css,text/css"
@@ -378,15 +378,15 @@ const AbaDeCss: React.FC = () => {
           }}
         />
 
-        <Button
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
           variant="surface"
           size="sm"
           onClick={() => baixar("tema.css", css, "text/css")}
         >
-          <Download size={14} /> Baixar
+          <Download data-gc="configuracoes.estudio.estudio-de-temas.download" size={14} /> Baixar
         </Button>
 
-        <Button
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
           variant="surface"
           size="sm"
           onClick={() =>
@@ -396,19 +396,19 @@ const AbaDeCss: React.FC = () => {
           Copiar
         </Button>
 
-        <Button
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
           variant="surface"
           size="sm"
           className="ml-auto text-danger"
           disabled={!css}
           onClick={() => definirCss("")}
         >
-          <RotateCcw size={14} /> Limpar
+          <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--3" size={14} /> Limpar
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 p-4">
-        <textarea
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--10" className="min-h-0 flex-1 p-4">
+        <textarea data-gc="configuracoes.estudio.estudio-de-temas.textarea"
           value={css}
           onChange={(e) => definirCss(e.target.value)}
           spellCheck={false}
@@ -418,9 +418,9 @@ const AbaDeCss: React.FC = () => {
         />
       </div>
 
-      <Ganchos onUsar={(trecho) => definirCss(css ? `${css}\n\n${trecho}` : trecho)} />
+      <Ganchos data-gc="configuracoes.estudio.estudio-de-temas.ganchos" onUsar={(trecho) => definirCss(css ? `${css}\n\n${trecho}` : trecho)} />
 
-      <p className="shrink-0 border-t border-line px-6 py-2 text-xs text-ink-faint">
+      <p data-gc="configuracoes.estudio.estudio-de-temas.p--6" className="shrink-0 border-t border-line px-6 py-2 text-xs text-ink-faint">
         {linhas} {linhas === 1 ? "linha" : "linhas"} · {css.length} caracteres —
         aplicado na hora, neste aparelho.
       </p>
@@ -436,7 +436,7 @@ const BotaoDeCompartilhar: React.FC = () => {
   const vazio = !css.trim() && Object.keys(substituicoes).length === 0;
 
   return (
-    <Button
+    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
       variant="surface"
       size="sm"
       disabled={vazio || publicar.isPending}
@@ -458,7 +458,7 @@ const BotaoDeCompartilhar: React.FC = () => {
         )
       }
     >
-      <Share2 size={14} /> {publicar.isPending ? "Publicando…" : "Compartilhar"}
+      <Share2 data-gc="configuracoes.estudio.estudio-de-temas.share2" size={14} /> {publicar.isPending ? "Publicando…" : "Compartilhar"}
     </Button>
   );
 };
@@ -485,13 +485,13 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
   const [aberto, setAberto] = useState(false);
 
   return (
-    <div className="shrink-0 border-t border-line px-6 py-3">
-      <button
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--11" className="shrink-0 border-t border-line px-6 py-3">
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
         type="button"
         onClick={() => setAberto((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
       >
-        <ChevronRight
+        <ChevronRight data-gc="configuracoes.estudio.estudio-de-temas.chevron-right--2"
           size={14}
           className={cn("transition-transform", aberto && "rotate-90")}
         />
@@ -500,14 +500,14 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
 
       {aberto && (
         <>
-          <p className="mt-2 text-xs text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--7" className="mt-2 text-xs text-ink-faint">
             Estas classes ficam paradas em cada região da tela — é nelas que um
             tema se agarra. O resto das classes é gerado e muda a cada build.
           </p>
 
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--12" className="mt-2 flex flex-wrap gap-1.5">
             {GANCHOS.map((gancho) => (
-              <button
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
                 key={gancho.classe}
                 type="button"
                 title={gancho.oQueE}
@@ -519,12 +519,12 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
             ))}
           </div>
 
-          <div className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
-            <pre className="min-w-0 flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-ink-muted">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--13" className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
+            <pre data-gc="configuracoes.estudio.estudio-de-temas.pre" className="min-w-0 flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-ink-muted">
               {ENCOLHER}
             </pre>
 
-            <Button variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
+            <Button data-gc="configuracoes.estudio.estudio-de-temas.button--12" variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
               Usar
             </Button>
           </div>
@@ -562,62 +562,62 @@ const AbaDeAtivos: React.FC = () => {
 
   return (
     <>
-      <div className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
           variant="surface"
           size="sm"
           disabled={subindo}
           onClick={() => arquivo.current?.click()}
         >
-          <Upload size={14} /> {subindo ? "Enviando…" : "Carregar arquivo"}
+          <Upload data-gc="configuracoes.estudio.estudio-de-temas.upload--2" size={14} /> {subindo ? "Enviando…" : "Carregar arquivo"}
         </Button>
-        <input
+        <input data-gc="configuracoes.estudio.estudio-de-temas.input--4"
           ref={arquivo}
           type="file"
           accept="image/*,font/*,.woff,.woff2,.ttf,.otf"
           className="hidden"
           onChange={(e) => void escolher(e)}
         />
-        <p className="text-xs text-ink-faint">
+        <p data-gc="configuracoes.estudio.estudio-de-temas.p--8" className="text-xs text-ink-faint">
           Imagem ou fonte, pra usar no CSS rápido.
         </p>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--15" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {!ativos.length && (
-          <p className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--9" className="py-10 text-center text-sm text-ink-faint">
             Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
-            <code className="font-mono">url(…)</code> no seu CSS.
+            <code data-gc="configuracoes.estudio.estudio-de-temas.code" className="font-mono">url(…)</code> no seu CSS.
           </p>
         )}
 
-        <div className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
           {ativos.map((ativo) => (
-            <div
+            <div data-gc="configuracoes.estudio.estudio-de-temas.div--17"
               key={ativo.id}
               className="overflow-hidden rounded-lg border border-line"
             >
-              <div className="flex h-28 items-center justify-center bg-surface-1">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--18" className="flex h-28 items-center justify-center bg-surface-1">
                 {ativo.tipo.startsWith("image/") ? (
-                  <img
+                  <img data-gc="configuracoes.estudio.estudio-de-temas.img"
                     src={ativo.url}
                     alt=""
                     className="max-h-full max-w-full object-contain"
                   />
                 ) : (
-                  <FileCode2 size={28} className="text-ink-faint" />
+                  <FileCode2 data-gc="configuracoes.estudio.estudio-de-temas.file-code2--2" size={28} className="text-ink-faint" />
                 )}
               </div>
 
-              <div className="flex items-center gap-2 p-2">
-                <p
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--19" className="flex items-center gap-2 p-2">
+                <p data-gc="configuracoes.estudio.estudio-de-temas.p--10"
                   className="min-w-0 flex-1 truncate text-xs"
                   title={ativo.nome}
                 >
                   {ativo.nome}
                 </p>
 
-                <button
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
                   onClick={() =>
                     void copiarTexto(`url("${ativo.url}")`).then(
                       (ok) => ok && toast.success("Endereço copiado."),
@@ -627,10 +627,10 @@ const AbaDeAtivos: React.FC = () => {
                   aria-label={`Copiar o endereço de ${ativo.nome}`}
                   className="rounded p-1 text-ink-faint transition hover:text-ink"
                 >
-                  <Copy size={14} />
+                  <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
                 </button>
 
-                <button
+                <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
                   onClick={() =>
                     void confirmar({
                       titulo: `Tirar "${ativo.nome}" da lista?`,
@@ -644,7 +644,7 @@ const AbaDeAtivos: React.FC = () => {
                   aria-label={`Tirar ${ativo.nome}`}
                   className="rounded p-1 text-ink-faint transition hover:text-danger"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 data-gc="configuracoes.estudio.estudio-de-temas.trash2" size={14} />
                 </button>
               </div>
             </div>
@@ -661,36 +661,36 @@ const AbaDeConfiguracoes: React.FC = () => {
   const confirmar = useConfirmar();
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-      <h3 className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
-      <p className="mb-4 text-sm text-ink-muted">
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--20" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+      <h3 data-gc="configuracoes.estudio.estudio-de-temas.h3" className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
+      <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" className="mb-4 text-sm text-ink-muted">
         Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
         aparelho.
       </p>
 
-      <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
-        <div className="flex items-center gap-4 p-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--21" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--22" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--23" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--12" className="text-sm font-medium">
               Limpar as substituições de token
             </p>
-            <p className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--13" className="text-xs text-ink-faint">
               As cores voltam a ser as do tema. A biblioteca e o CSS ficam.
             </p>
           </div>
-          <Button variant="surface" size="sm" onClick={limparSubstituicoes}>
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button.limpar-substituicoes" variant="surface" size="sm" onClick={limparSubstituicoes}>
             Limpar
           </Button>
         </div>
 
-        <div className="flex items-center gap-4 p-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Apagar tudo do estúdio</p>
-            <p className="text-xs text-ink-faint">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--24" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--25" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--14" className="text-sm font-medium">Apagar tudo do estúdio</p>
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--15" className="text-xs text-ink-faint">
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>
-          <Button
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
             variant="danger"
             size="sm"
             onClick={() =>
@@ -702,7 +702,7 @@ const AbaDeConfiguracoes: React.FC = () => {
               }).then(({ confirmado }) => confirmado && limparTudo())
             }
           >
-            <Trash2 size={14} /> Apagar tudo
+            <Trash2 data-gc="configuracoes.estudio.estudio-de-temas.trash2--2" size={14} /> Apagar tudo
           </Button>
         </div>
       </div>

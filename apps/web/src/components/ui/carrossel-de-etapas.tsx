@@ -62,13 +62,13 @@ export const CarrosselDeEtapas: React.FC<Props> = ({ etapa, etapas, paineis, cla
   }, []);
 
   return (
-    <motion.div
+    <motion.div data-gc="ui.carrossel-de-etapas.motiondiv"
       animate={{ height: altura }}
       transition={semAnimacao ? instantaneo : daAltura}
       className={cn("relative overflow-hidden", className)}
     >
-      <AnimatePresence mode="wait" initial={false} custom={direcao}>
-        <motion.div
+      <AnimatePresence data-gc="ui.carrossel-de-etapas.animate-presence" mode="wait" initial={false} custom={direcao}>
+        <motion.div data-gc="ui.carrossel-de-etapas.motiondiv--2"
           key={etapa}
           ref={medir}
           custom={direcao}

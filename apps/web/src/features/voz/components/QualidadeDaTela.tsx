@@ -20,7 +20,7 @@ export const QualidadeDaTela: React.FC<{ track: Track }> = ({ track }) => {
   if (!medida) return null;
 
   return (
-    <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 text-10 font-semibold text-white/90">
+    <span data-gc="voz.qualidade-da-tela.span" className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 text-10 font-semibold text-white/90">
       {medida.altura}p{medida.fps ? ` · ${medida.fps} fps` : ""}
     </span>
   );

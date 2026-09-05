@@ -36,12 +36,12 @@ export const BarraLateral: React.FC<BarraLateralProps> = ({ atalhos, ativo, onIr
   }, [ativo]);
 
   return (
-    <nav
+    <nav data-gc="expressao.seletor.pecas.nav"
       ref={trilha}
       className="flex w-12 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-line bg-surface-0/60 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {atalhos.map((atalho) => (
-        <button
+        <button data-gc="expressao.seletor.pecas.button"
           key={atalho.id}
           data-secao={atalho.id}
           onClick={() => onIr(atalho.id)}
@@ -69,21 +69,21 @@ export const Rodape: React.FC<{
   direita?: React.ReactNode;
   vazio: string;
 }> = ({ amostra, titulo, detalhe, direita, vazio }) => (
-  <footer className="flex h-12 shrink-0 items-center gap-2.5 border-t border-line bg-surface-0/60 px-3">
-    <span className="flex size-7 shrink-0 items-center justify-center text-2xl leading-none">
+  <footer data-gc="expressao.seletor.pecas.footer" className="flex h-12 shrink-0 items-center gap-2.5 border-t border-line bg-surface-0/60 px-3">
+    <span data-gc="expressao.seletor.pecas.span" className="flex size-7 shrink-0 items-center justify-center text-2xl leading-none">
       {amostra}
     </span>
 
     {titulo ? (
-      <span className="min-w-0 flex-1 truncate text-sm">
-        <span className="font-semibold text-ink">{titulo}</span>
-        {detalhe && <span className="ml-1.5 text-ink-faint">{detalhe}</span>}
+      <span data-gc="expressao.seletor.pecas.span--2" className="min-w-0 flex-1 truncate text-sm">
+        <span data-gc="expressao.seletor.pecas.span--3" className="font-semibold text-ink">{titulo}</span>
+        {detalhe && <span data-gc="expressao.seletor.pecas.span--4" className="ml-1.5 text-ink-faint">{detalhe}</span>}
       </span>
     ) : (
-      <span className="flex-1 truncate text-sm text-ink-faint">{vazio}</span>
+      <span data-gc="expressao.seletor.pecas.span--5" className="flex-1 truncate text-sm text-ink-faint">{vazio}</span>
     )}
 
-    {direita && <span className="shrink-0">{direita}</span>}
+    {direita && <span data-gc="expressao.seletor.pecas.span--6" className="shrink-0">{direita}</span>}
   </footer>
 );
 
@@ -93,9 +93,9 @@ export const IconeDoServidor: React.FC<{
   className?: string;
 }> = ({ nome, iconUrl, className = "size-6" }) =>
   iconUrl ? (
-    <img src={iconUrl} alt="" className={cn("rounded-full object-cover", className)} />
+    <img data-gc="expressao.seletor.pecas.img" src={iconUrl} alt="" className={cn("rounded-full object-cover", className)} />
   ) : (
-    <span
+    <span data-gc="expressao.seletor.pecas.span--7"
       className={cn(
         "flex items-center justify-center rounded-full bg-surface-4 text-10 font-bold uppercase text-ink",
         className,
@@ -112,9 +112,9 @@ export const Secao: React.FC<{
   onAlternar?: () => void;
   children: React.ReactNode;
 }> = ({ titulo, icone, fechada = false, onAlternar, children }) => (
-  <section className="mb-3">
-    <h4 className="sticky top-0 z-10 -mx-3 mb-1 bg-surface-1/95 backdrop-blur">
-      <button
+  <section data-gc="expressao.seletor.pecas.section" className="mb-3">
+    <h4 data-gc="expressao.seletor.pecas.h4" className="sticky top-0 z-10 -mx-3 mb-1 bg-surface-1/95 backdrop-blur">
+      <button data-gc="expressao.seletor.pecas.button.on-alternar"
         type="button"
         onClick={onAlternar}
         disabled={!onAlternar}
@@ -125,10 +125,10 @@ export const Secao: React.FC<{
         )}
       >
         {icone}
-        <span className="min-w-0 truncate">{titulo}</span>
+        <span data-gc="expressao.seletor.pecas.span--8" className="min-w-0 truncate">{titulo}</span>
 
         {onAlternar && (
-          <ChevronDown
+          <ChevronDown data-gc="expressao.seletor.pecas.chevron-down"
             size={12}
             className={cn("ml-auto shrink-0 transition-transform", fechada && "-rotate-90")}
           />
@@ -141,11 +141,11 @@ export const Secao: React.FC<{
 );
 
 export const Carregando: React.FC = () => (
-  <div className="flex justify-center py-10 text-ink-faint">
-    <Loader2 size={20} className="animate-spin" />
+  <div data-gc="expressao.seletor.pecas.div" className="flex justify-center py-10 text-ink-faint">
+    <Loader2 data-gc="expressao.seletor.pecas.loader2" size={20} className="animate-spin" />
   </div>
 );
 
 export const Vazio: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="px-6 py-10 text-center text-sm text-ink-faint">{children}</p>
+  <p data-gc="expressao.seletor.pecas.p" className="px-6 py-10 text-center text-sm text-ink-faint">{children}</p>
 );

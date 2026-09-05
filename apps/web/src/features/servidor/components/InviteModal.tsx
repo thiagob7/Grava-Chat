@@ -133,14 +133,14 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-        <DialogContent className="overflow-hidden">
-          <CarrosselDeEtapas
+      <Dialog data-gc="servidor.invite-modal.dialog" open={open} onOpenChange={(next) => !next && onClose()}>
+        <DialogContent data-gc="servidor.invite-modal.dialog-content" className="overflow-hidden">
+          <CarrosselDeEtapas data-gc="servidor.invite-modal.carrossel-de-etapas"
             etapa={vista}
             etapas={ETAPAS}
             paineis={{
               opcoes: (
-                <ConfiguracoesDoConvite
+                <ConfiguracoesDoConvite data-gc="servidor.invite-modal.configuracoes-do-convite.gerar"
                   atuais={opcoes}
                   gerando={createInvite.isPending}
                   onVoltar={() => setVista("convidar")}
@@ -149,20 +149,20 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
               ),
               convidar: (
                 <>
-              <DialogHeader>
-              <DialogTitle>Convidar amigos {guildName ? `para ${guildName}` : ""}</DialogTitle>
-              <DialogDescription>
+              <DialogHeader data-gc="servidor.invite-modal.dialog-header">
+              <DialogTitle data-gc="servidor.invite-modal.dialog-title">Convidar amigos {guildName ? `para ${guildName}` : ""}</DialogTitle>
+              <DialogDescription data-gc="servidor.invite-modal.dialog-description">
                 Quem você escolher recebe o link numa conversa privada.
               </DialogDescription>
             </DialogHeader>
 
-            <DialogBody className="space-y-3">
-              <div className="relative">
-                <Search
+            <DialogBody data-gc="servidor.invite-modal.dialog-body" className="space-y-3">
+              <div data-gc="servidor.invite-modal.div" className="relative">
+                <Search data-gc="servidor.invite-modal.search"
                   size={16}
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
                 />
-                <Input
+                <Input data-gc="servidor.invite-modal.input"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar amigos"
@@ -170,11 +170,11 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                 />
               </div>
 
-              <div className="cascata h-[25rem] space-y-0.5 overflow-y-auto pr-1">
-                {isLoading && <Vazio>Carregando…</Vazio>}
+              <div data-gc="servidor.invite-modal.div--2" className="cascata h-[25rem] space-y-0.5 overflow-y-auto pr-1">
+                {isLoading && <Vazio data-gc="servidor.invite-modal.vazio">Carregando…</Vazio>}
 
                 {!isLoading && !amigos.length && (
-                  <Vazio>
+                  <Vazio data-gc="servidor.invite-modal.vazio--2">
                     {busca.trim()
                       ? "Nenhum amigo com esse nome."
                       : "Você ainda não tem amigos adicionados. Use o link ali embaixo."}
@@ -185,11 +185,11 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                   const estado = envios[user.id];
 
                   return (
-                    <div
+                    <div data-gc="servidor.invite-modal.div--3"
                       key={user.id}
                       className="flex min-h-11 items-center gap-2.5 rounded-md px-2 py-1.5 transition hover:bg-hover"
                     >
-                  <Avatar
+                  <Avatar data-gc="servidor.invite-modal.avatar"
                     id={user.id}
                     name={user.displayName}
                     url={user.avatarUrl}
@@ -197,12 +197,12 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                     status={user.status}
                   />
 
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{user.displayName}</p>
-                        <p className="truncate text-xs text-ink-faint">{user.username}</p>
+                      <div data-gc="servidor.invite-modal.div--4" className="min-w-0 flex-1">
+                        <p data-gc="servidor.invite-modal.p" className="truncate text-sm font-medium">{user.displayName}</p>
+                        <p data-gc="servidor.invite-modal.p--2" className="truncate text-xs text-ink-faint">{user.username}</p>
                       </div>
 
-                      <Button
+                      <Button data-gc="servidor.invite-modal.button"
                         size="sm"
                         variant={estado === "enviado" ? "ghost" : "outline"}
                         disabled={!link || estado === "enviando" || estado === "enviado"}
@@ -211,7 +211,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                       >
                         {estado === "enviado" ? (
                           <>
-                            <Check size={14} /> Enviado
+                            <Check data-gc="servidor.invite-modal.check" size={14} /> Enviado
                           </>
                         ) : estado === "enviando" ? (
                           "Enviando…"
@@ -226,32 +226,32 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                 })}
               </div>
 
-              <div className="border-t border-divisor pt-3">
-                <p className="mb-2 text-sm font-medium text-ink">
+              <div data-gc="servidor.invite-modal.div--5" className="border-t border-divisor pt-3">
+                <p data-gc="servidor.invite-modal.p--3" className="mb-2 text-sm font-medium text-ink">
                   Ou envie um link de convite para um amigo:
                 </p>
-                <CampoComAcao
+                <CampoComAcao data-gc="servidor.invite-modal.campo-com-acao"
                   readOnly
                   value={link ? (escondido ? MASCARA : link) : "Gerando…"}
                   onFocus={() => setRevelado(true)}
                   title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
                   acao={
-                    <Button size="sm" onClick={() => void copy()} disabled={!link}>
-                      {copied ? <Check size={14} /> : <Copy size={14} />}
+                    <Button data-gc="servidor.invite-modal.button--2" size="sm" onClick={() => void copy()} disabled={!link}>
+                      {copied ? <Check data-gc="servidor.invite-modal.check--2" size={14} /> : <Copy data-gc="servidor.invite-modal.copy" size={14} />}
                       {copied ? "Copiado" : "Copiar"}
                     </Button>
                   }
                 />
 
-                <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-ink-faint">
-                  <span>
+                <p data-gc="servidor.invite-modal.p--4" className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-ink-faint">
+                  <span data-gc="servidor.invite-modal.span">
                     {expiraEm
                       ? `Seu link de convite expira em ${formatTimestamp(expiraEm)}.`
                       : "Seu link de convite não expira."}
                     {opcoes.maxUses ? ` Vale ${opcoes.maxUses} uso(s).` : ""}
                   </span>
 
-                  <button
+                  <button data-gc="servidor.invite-modal.button--3"
                     type="button"
                     onClick={() => setVista("opcoes")}
                     className="text-brand transition hover:underline"
@@ -272,5 +272,5 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 };
 
 const Vazio: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="px-2 py-8 text-center text-sm text-ink-muted">{children}</p>
+  <p data-gc="servidor.invite-modal.p--5" className="px-2 py-8 text-center text-sm text-ink-muted">{children}</p>
 );

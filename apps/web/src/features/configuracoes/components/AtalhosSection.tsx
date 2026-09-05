@@ -50,16 +50,16 @@ export const AtalhosSection: React.FC = () => {
   );
 
   return (
-    <div className="max-w-2xl pb-10">
-      <p className="text-sm text-ink-muted">
+    <div data-gc="configuracoes.atalhos-section.div" className="max-w-2xl pb-10">
+      <p data-gc="configuracoes.atalhos-section.p" className="text-sm text-ink-muted">
         Os atalhos que o Gravaê entende hoje. Os que têm tecla trocável valem em
         qualquer lugar do app; os fixos são do próprio campo de texto e não dá
         pra mexer.
       </p>
 
-      <div className={cn(grupoDeCampo, "mt-5")}>
-        <Search size={14} className="shrink-0 text-ink-faint" />
-        <input
+      <div data-gc="configuracoes.atalhos-section.div--2" className={cn(grupoDeCampo, "mt-5")}>
+        <Search data-gc="configuracoes.atalhos-section.search" size={14} className="shrink-0 text-ink-faint" />
+        <input data-gc="configuracoes.atalhos-section.input"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Procurar atalho"
@@ -67,28 +67,28 @@ export const AtalhosSection: React.FC = () => {
           className={campoNu}
         />
         {busca && (
-          <button
+          <button data-gc="configuracoes.atalhos-section.button"
             type="button"
             onClick={() => setBusca("")}
             aria-label="Limpar a busca"
             className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
           >
-            <X size={14} />
+            <X data-gc="configuracoes.atalhos-section.x" size={14} />
           </button>
         )}
       </div>
 
       {porArea.map((area) =>
         area.atalhos.length ? (
-          <Secao
+          <Secao data-gc="configuracoes.atalhos-section.secao"
             key={area.id}
             id={`atalhos-${area.id}`}
             titulo={area.nome}
             detalhe={area.detalhe}
           >
-            <div className="overflow-hidden rounded-lg border border-line">
+            <div data-gc="configuracoes.atalhos-section.div--3" className="overflow-hidden rounded-lg border border-line">
               {area.atalhos.map((atalho) => (
-                <LinhaDeAtalho
+                <LinhaDeAtalho data-gc="configuracoes.atalhos-section.linha-de-atalho"
                   key={atalho.id}
                   atalho={atalho}
                   combo={trocados[atalho.id] ?? atalho.padrao}
@@ -102,7 +102,7 @@ export const AtalhosSection: React.FC = () => {
             </div>
 
             {area.id === "voz" && (
-              <Button
+              <Button data-gc="configuracoes.atalhos-section.button--2"
                 variant="ghost"
                 size="sm"
                 className="mt-3"
@@ -116,26 +116,26 @@ export const AtalhosSection: React.FC = () => {
       )}
 
       {!porArea.some((area) => area.atalhos.length) && (
-        <p className="mt-6 text-sm text-ink-faint">Nenhum atalho com esse nome.</p>
+        <p data-gc="configuracoes.atalhos-section.p--2" className="mt-6 text-sm text-ink-faint">Nenhum atalho com esse nome.</p>
       )}
 
-      <Secao
+      <Secao data-gc="configuracoes.atalhos-section.secao--2"
         id="voltar-ao-padrao"
         titulo="Voltar ao padrão"
         detalhe="Devolve todas as teclas de fábrica e religa o que você desligou."
       >
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Restaurar todos os atalhos</p>
-            <p className="mt-0.5 text-xs text-ink-faint">
+        <div data-gc="configuracoes.atalhos-section.div--4" className="flex items-start gap-4">
+          <div data-gc="configuracoes.atalhos-section.div--5" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.atalhos-section.p--3" className="text-sm font-medium">Restaurar todos os atalhos</p>
+            <p data-gc="configuracoes.atalhos-section.p--4" className="mt-0.5 text-xs text-ink-faint">
               {mexido
                 ? "Você mexeu em pelo menos um atalho."
                 : "Está tudo como veio de fábrica."}
             </p>
           </div>
 
-          <Button variant="surface" disabled={!mexido} onClick={restaurarTudo}>
-            <RotateCcw size={16} /> Restaurar
+          <Button data-gc="configuracoes.atalhos-section.button.restaurar-tudo" variant="surface" disabled={!mexido} onClick={restaurarTudo}>
+            <RotateCcw data-gc="configuracoes.atalhos-section.rotate-ccw" size={16} /> Restaurar
           </Button>
         </div>
       </Secao>
@@ -187,33 +187,33 @@ const LinhaDeAtalho: React.FC<{
   }, [capturando, atalho.id, trocar, onDesistir]);
 
   return (
-    <div className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
-      <div className="min-w-0 flex-1">
-        <p className={cn("text-sm font-medium", !ligado && "text-ink-faint")}>
+    <div data-gc="configuracoes.atalhos-section.div--6" className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
+      <div data-gc="configuracoes.atalhos-section.div--7" className="min-w-0 flex-1">
+        <p data-gc="configuracoes.atalhos-section.p--5" className={cn("text-sm font-medium", !ligado && "text-ink-faint")}>
           {atalho.nome}
         </p>
-        <p className="mt-0.5 text-xs text-ink-faint">{atalho.detalhe}</p>
+        <p data-gc="configuracoes.atalhos-section.p--6" className="mt-0.5 text-xs text-ink-faint">{atalho.detalhe}</p>
       </div>
 
       {atalho.fixo ? (
-        <kbd className="shrink-0 rounded border border-line bg-surface-0 px-2 py-1 font-mono text-xs text-ink-muted">
+        <kbd data-gc="configuracoes.atalhos-section.kbd" className="shrink-0 rounded border border-line bg-surface-0 px-2 py-1 font-mono text-xs text-ink-muted">
           {escreverCombo(combo)}
         </kbd>
       ) : (
         <>
           {trocado && (
-            <button
+            <button data-gc="configuracoes.atalhos-section.button--3"
               type="button"
               onClick={() => devolverPadrao(atalho.id)}
               aria-label={`Voltar ${atalho.nome} ao padrão`}
               title={`Padrão: ${escreverCombo(atalho.padrao)}`}
               className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
             >
-              <RotateCcw size={14} />
+              <RotateCcw data-gc="configuracoes.atalhos-section.rotate-ccw--2" size={14} />
             </button>
           )}
 
-          <button
+          <button data-gc="configuracoes.atalhos-section.button.on-desistir"
             ref={botao}
             type="button"
             onClick={capturando ? onDesistir : onCapturar}
@@ -230,7 +230,7 @@ const LinhaDeAtalho: React.FC<{
             {capturando ? "Aperte a tecla…" : escreverCombo(combo)}
           </button>
 
-          <Switch
+          <Switch data-gc="configuracoes.atalhos-section.switch"
             checked={ligado}
             onCheckedChange={(valor) => alternar(atalho.id, valor)}
             aria-label={`Ligar ou desligar ${atalho.nome}`}

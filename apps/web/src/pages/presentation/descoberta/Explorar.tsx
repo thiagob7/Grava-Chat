@@ -62,24 +62,24 @@ export const Explorar: React.FC = () => {
 
   const navegacao = (
     <>
-      <GuildRail
+      <GuildRail data-gc="descoberta.explorar.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
         onOpenFriends={() => navigate("/dm")}
         pendingFriendRequests={pendentes}
       />
 
-      <aside
+      <aside data-gc="descoberta.explorar.aside"
         className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
-        <header className="regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
-          <h1 className="truncate font-semibold">Explorar</h1>
+        <header data-gc="descoberta.explorar.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
+          <h1 data-gc="descoberta.explorar.h1" className="truncate font-semibold">Explorar</h1>
         </header>
 
-        <nav className="flex flex-col gap-0.5 px-2 py-3">
+        <nav data-gc="descoberta.explorar.nav" className="flex flex-col gap-0.5 px-2 py-3">
           {ABAS.map((item) => (
-            <button
+            <button data-gc="descoberta.explorar.button"
               key={item.id}
               type="button"
               disabled={item.emBreve}
@@ -95,11 +95,11 @@ export const Explorar: React.FC = () => {
                 item.emBreve && "cursor-default opacity-60 hover:bg-transparent",
               )}
             >
-              <item.icone size={18} className="shrink-0" />
-              <span className="min-w-0 flex-1 truncate font-medium">{item.nome}</span>
+              <item.icone data-gc="descoberta.explorar.itemicone" size={18} className="shrink-0" />
+              <span data-gc="descoberta.explorar.span" className="min-w-0 flex-1 truncate font-medium">{item.nome}</span>
 
               {item.emBreve && (
-                <span className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 text-10 font-semibold uppercase tracking-wide text-ink-faint">
+                <span data-gc="descoberta.explorar.span--2" className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 text-10 font-semibold uppercase tracking-wide text-ink-faint">
                   em breve
                 </span>
               )}
@@ -107,11 +107,11 @@ export const Explorar: React.FC = () => {
           ))}
         </nav>
 
-        <div className="mt-auto" />
+        <div data-gc="descoberta.explorar.div" className="mt-auto" />
 
-        <RodapeDaBarra user={user} onLogout={() => void sair()} />
+        <RodapeDaBarra data-gc="descoberta.explorar.rodape-da-barra" user={user} onLogout={() => void sair()} />
 
-        <AlcaDeLargura
+        <AlcaDeLargura data-gc="descoberta.explorar.alca-de-largura"
           borda="direita"
           arrastando={arrastando}
           largura={largura}
@@ -123,11 +123,11 @@ export const Explorar: React.FC = () => {
   );
 
   return (
-    <div className="flex h-full bg-surface-0">
+    <div data-gc="descoberta.explorar.div--2" className="flex h-full bg-surface-0">
       {telaEstreita ? (
-        <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
-          <SheetContent className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
-            <SheetTitle className="sr-only">Explorar</SheetTitle>
+        <Sheet data-gc="descoberta.explorar.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
+          <SheetContent data-gc="descoberta.explorar.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
+            <SheetTitle data-gc="descoberta.explorar.sheet-title" className="sr-only">Explorar</SheetTitle>
             {navegacao}
           </SheetContent>
         </Sheet>
@@ -135,27 +135,27 @@ export const Explorar: React.FC = () => {
         navegacao
       )}
 
-      <div className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-        <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4">
+      <div data-gc="descoberta.explorar.div--3" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
+        <header data-gc="descoberta.explorar.header--2" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4">
           {telaEstreita && (
-            <button
+            <button data-gc="descoberta.explorar.button--2"
               onClick={() => setMenuAberto(true)}
               aria-label="Abrir o Explorar"
               className="rounded p-1 text-ink-faint transition hover:text-ink"
             >
-              <Menu size={20} />
+              <Menu data-gc="descoberta.explorar.menu" size={20} />
             </button>
           )}
 
-          <div className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
-            <Filtro
+          <div data-gc="descoberta.explorar.div--4" className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+            <Filtro data-gc="descoberta.explorar.filtro"
               ativo={categoria === null}
               nome="Todos"
               onEscolher={() => setCategoria(null)}
             />
 
             {CATEGORIAS_DE_COMUNIDADE.map((id) => (
-              <Filtro
+              <Filtro data-gc="descoberta.explorar.filtro--2"
                 key={id}
                 ativo={categoria === id}
                 nome={NOMES_DE_CATEGORIA[id]}
@@ -164,9 +164,9 @@ export const Explorar: React.FC = () => {
             ))}
           </div>
 
-          <div className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
-            <Search size={14} className="shrink-0 text-ink-faint" />
-            <input
+          <div data-gc="descoberta.explorar.div--5" className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
+            <Search data-gc="descoberta.explorar.search" size={14} className="shrink-0 text-ink-faint" />
+            <input data-gc="descoberta.explorar.input"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar comunidades"
@@ -174,20 +174,20 @@ export const Explorar: React.FC = () => {
               className={campoNu}
             />
             {busca && (
-              <button
+              <button data-gc="descoberta.explorar.button--3"
                 type="button"
                 onClick={() => setBusca("")}
                 aria-label="Limpar a busca"
                 className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
               >
-                <X size={14} />
+                <X data-gc="descoberta.explorar.x" size={14} />
               </button>
             )}
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-5">
-          {aba === "comunidades" && <Comunidades categoria={categoria} busca={busca} />}
+        <div data-gc="descoberta.explorar.div--6" className="min-h-0 flex-1 overflow-y-auto p-5">
+          {aba === "comunidades" && <Comunidades data-gc="descoberta.explorar.comunidades" categoria={categoria} busca={busca} />}
         </div>
       </div>
     </div>
@@ -199,7 +199,7 @@ const Filtro: React.FC<{ ativo: boolean; nome: string; onEscolher: () => void }>
   nome,
   onEscolher,
 }) => (
-  <button
+  <button data-gc="descoberta.explorar.button.on-escolher"
     type="button"
     onClick={onEscolher}
     className={cn(
@@ -227,22 +227,22 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
 
   if (isLoading || !comunidades)
     return (
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <div data-gc="descoberta.explorar.div--7" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-64 rounded-lg" />
+          <Skeleton data-gc="descoberta.explorar.skeleton" key={i} className="h-64 rounded-lg" />
         ))}
       </div>
     );
 
   if (!comunidades.length)
     return (
-      <div className="flex flex-col items-center gap-3 py-20 text-center">
-        <Compass size={36} className="text-ink-faint" />
-        <div>
-          <p className="text-sm font-medium">
+      <div data-gc="descoberta.explorar.div--8" className="flex flex-col items-center gap-3 py-20 text-center">
+        <Compass data-gc="descoberta.explorar.compass" size={36} className="text-ink-faint" />
+        <div data-gc="descoberta.explorar.div--9">
+          <p data-gc="descoberta.explorar.p" className="text-sm font-medium">
             {termo ? "Nenhuma comunidade com esse nome" : "Ainda não há o que explorar"}
           </p>
-          <p className="mt-1 max-w-sm text-xs text-ink-faint">
+          <p data-gc="descoberta.explorar.p--2" className="mt-1 max-w-sm text-xs text-ink-faint">
             {termo
               ? "Tente outro termo, ou tire o filtro de categoria."
               : `Só entram aqui as comunidades a partir de ${MEMBROS_PARA_DESCOBRIR} membros. Assim que uma chegar lá, ela aparece sozinha.`}
@@ -252,9 +252,9 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
     );
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+    <div data-gc="descoberta.explorar.div--10" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
       {comunidades.map((comunidade) => (
-        <CartaoDeComunidade
+        <CartaoDeComunidade data-gc="descoberta.explorar.cartao-de-comunidade"
           key={comunidade.id}
           comunidade={comunidade}
           entrando={entrar.isPending && entrar.variables === comunidade.id}

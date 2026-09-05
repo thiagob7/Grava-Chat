@@ -15,9 +15,9 @@ export const CampoDeNota: React.FC<{
   useEffect(() => setTexto(nota ?? ""), [nota, userId]);
 
   return (
-    <div className="mt-3">
-      <p className="mb-1 text-xs font-semibold uppercase text-ink-faint">{t("perfil.nota.rotulo")}</p>
-      <textarea
+    <div data-gc="perfil.cartao.campo-de-nota.div" className="mt-3">
+      <p data-gc="perfil.cartao.campo-de-nota.p" className="mb-1 text-xs font-semibold uppercase text-ink-faint">{t("perfil.nota.rotulo")}</p>
+      <textarea data-gc="perfil.cartao.campo-de-nota.textarea"
         ref={campo}
         value={texto}
         rows={2}

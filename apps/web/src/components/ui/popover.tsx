@@ -13,9 +13,9 @@ export const PopoverArrow = ({
   className,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Arrow>) => (
-  <PopoverPrimitive.Arrow asChild width={14} height={7} {...props}>
-    <svg className={cn("overflow-visible", className)}>
-      <DesenhoDaSeta />
+  <PopoverPrimitive.Arrow data-gc="ui.popover.popover-primitivearrow" asChild width={14} height={7} {...props}>
+    <svg data-gc="ui.popover.svg" className={cn("overflow-visible", className)}>
+      <DesenhoDaSeta data-gc="ui.popover.desenho-da-seta" />
     </svg>
   </PopoverPrimitive.Arrow>
 );
@@ -28,7 +28,7 @@ export const PopoverContent = ({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content> & { portal?: boolean }) => {
   const conteudo = (
-    <PopoverPrimitive.Content
+    <PopoverPrimitive.Content data-gc="ui.popover.popover-primitivecontent"
       align={align}
       sideOffset={sideOffset}
       className={cn(

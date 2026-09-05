@@ -40,11 +40,11 @@ export const AbaGifs: React.FC<{
   const alta = useTrendingGifs(disponivel && secao?.tipo === "alta");
   const resultado = useSearchGifs(secao?.tipo === "termo" ? secao.termo : "");
 
-  if (config && !disponivel) return <SemChave />;
+  if (config && !disponivel) return <SemChave data-gc="expressao.seletor.aba-gifs.sem-chave" />;
 
   if (!secao) {
     return (
-      <Capa
+      <Capa data-gc="expressao.seletor.aba-gifs.capa"
         favoritos={favoritos.data ?? []}
         onAbrir={(nova) => {
           if (nova.tipo === "termo") onBusca(nova.termo);
@@ -73,27 +73,27 @@ export const AbaGifs: React.FC<{
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col px-3 pb-3">
-      <button
+    <div data-gc="expressao.seletor.aba-gifs.div" className="flex min-h-0 flex-1 flex-col px-3 pb-3">
+      <button data-gc="expressao.seletor.aba-gifs.button.voltar"
         onClick={voltar}
         className="mb-2 flex shrink-0 items-center gap-1 self-start rounded py-1 pr-2 text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
       >
-        <ChevronLeft size={14} />
-        <span className="truncate">{titulo}</span>
+        <ChevronLeft data-gc="expressao.seletor.aba-gifs.chevron-left" size={14} />
+        <span data-gc="expressao.seletor.aba-gifs.span" className="truncate">{titulo}</span>
       </button>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        {carregando && <Carregando />}
+      <div data-gc="expressao.seletor.aba-gifs.div--2" className="min-h-0 flex-1 overflow-y-auto">
+        {carregando && <Carregando data-gc="expressao.seletor.aba-gifs.carregando" />}
 
         {!carregando && !(lista ?? []).length && (
-          <Vazio>
+          <Vazio data-gc="expressao.seletor.aba-gifs.vazio">
             {secao.tipo === "favoritos"
               ? "Você ainda não guardou nenhum GIF. Passe o mouse num GIF e clique na estrela."
               : "Nada por aqui."}
           </Vazio>
         )}
 
-        <Grade gifs={lista ?? []} favoritos={favoritos.data ?? []} onGif={onGif} />
+        <Grade data-gc="expressao.seletor.aba-gifs.grade.on-gif" gifs={lista ?? []} favoritos={favoritos.data ?? []} onGif={onGif} />
       </div>
     </div>
   );
@@ -106,28 +106,28 @@ const Cartao: React.FC<{
   selo?: number;
   onClick: () => void;
 }> = ({ nome, preview, icone, selo, onClick }) => (
-  <button
+  <button data-gc="expressao.seletor.aba-gifs.button.on-click"
     onClick={onClick}
     className="group relative h-[86px] overflow-hidden rounded-lg ring-white/70 transition hover:ring-2"
   >
     {preview ? (
-      <img
+      <img data-gc="expressao.seletor.aba-gifs.img"
         src={preview}
         alt=""
         loading="lazy"
         className="size-full object-cover transition duration-200 group-hover:scale-105"
       />
     ) : (
-      <span className="block size-full bg-gradient-to-br from-brand/70 to-brand-hover" />
+      <span data-gc="expressao.seletor.aba-gifs.span--2" className="block size-full bg-gradient-to-br from-brand/70 to-brand-hover" />
     )}
 
-    <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 px-2 text-center text-sm font-bold text-white drop-shadow transition group-hover:bg-black/25">
+    <span data-gc="expressao.seletor.aba-gifs.span--3" className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 px-2 text-center text-sm font-bold text-white drop-shadow transition group-hover:bg-black/25">
       {icone}
       {nome}
     </span>
 
     {selo !== undefined && selo > 0 && (
-      <span className="absolute right-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-10 font-semibold text-white">
+      <span data-gc="expressao.seletor.aba-gifs.span--4" className="absolute right-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-10 font-semibold text-white">
         {selo}
       </span>
     )}
@@ -142,25 +142,25 @@ const Capa: React.FC<{
   const { data: alta } = useTrendingGifs(true);
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
-      <div className="grid grid-cols-2 gap-2">
-        <Cartao
+    <div data-gc="expressao.seletor.aba-gifs.div--3" className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+      <div data-gc="expressao.seletor.aba-gifs.div--4" className="grid grid-cols-2 gap-2">
+        <Cartao data-gc="expressao.seletor.aba-gifs.cartao"
           nome="Favoritos"
           preview={favoritos[0]?.preview}
           selo={favoritos.length}
-          icone={<Star size={14} className="fill-current" />}
+          icone={<Star data-gc="expressao.seletor.aba-gifs.star" size={14} className="fill-current" />}
           onClick={() => onAbrir({ tipo: "favoritos" })}
         />
 
-        <Cartao
+        <Cartao data-gc="expressao.seletor.aba-gifs.cartao--2"
           nome="GIFs em alta"
           preview={alta?.[0]?.preview}
-          icone={<TrendingUp size={14} />}
+          icone={<TrendingUp data-gc="expressao.seletor.aba-gifs.trending-up" size={14} />}
           onClick={() => onAbrir({ tipo: "alta" })}
         />
 
         {(categorias ?? []).map((cat: CategoriaDeGifModel) => (
-          <Cartao
+          <Cartao data-gc="expressao.seletor.aba-gifs.cartao--3"
             key={cat.termo}
             nome={cat.nome}
             preview={cat.preview}
@@ -169,7 +169,7 @@ const Capa: React.FC<{
         ))}
       </div>
 
-      {isLoading && <Carregando />}
+      {isLoading && <Carregando data-gc="expressao.seletor.aba-gifs.carregando--2" />}
     </div>
   );
 };
@@ -183,18 +183,18 @@ const Grade: React.FC<{
   const salvos = new Set(favoritos.map((f) => f.id));
 
   return (
-    <div className="columns-2 gap-2">
+    <div data-gc="expressao.seletor.aba-gifs.div--5" className="columns-2 gap-2">
       {gifs.map((gif) => {
         const salvo = salvos.has(gif.id);
 
         return (
-          <div key={gif.id} className="group relative mb-2 break-inside-avoid">
-            <button
+          <div data-gc="expressao.seletor.aba-gifs.div--6" key={gif.id} className="group relative mb-2 break-inside-avoid">
+            <button data-gc="expressao.seletor.aba-gifs.button"
               onClick={() => onGif(gif)}
               title={gif.descricao}
               className="block w-full overflow-hidden rounded-lg ring-brand/70 transition hover:ring-2 focus-visible:ring-2"
             >
-              <img
+              <img data-gc="expressao.seletor.aba-gifs.img--2"
                 src={gif.preview}
                 alt={gif.descricao}
                 loading="lazy"
@@ -202,7 +202,7 @@ const Grade: React.FC<{
               />
             </button>
 
-            <button
+            <button data-gc="expressao.seletor.aba-gifs.button--2"
               onClick={() => alternar.mutate({ gif, salvo })}
               aria-label={salvo ? "Tirar dos favoritos" : "Guardar nos favoritos"}
               title={salvo ? "Tirar dos favoritos" : "Guardar nos favoritos"}
@@ -212,7 +212,7 @@ const Grade: React.FC<{
                 salvo ? "text-brand opacity-100" : "text-white opacity-0 group-hover:opacity-100",
               )}
             >
-              <Star size={14} className={salvo ? "fill-current" : undefined} />
+              <Star data-gc="expressao.seletor.aba-gifs.star--2" size={14} className={salvo ? "fill-current" : undefined} />
             </button>
           </div>
         );
@@ -222,12 +222,12 @@ const Grade: React.FC<{
 };
 
 const SemChave: React.FC = () => (
-  <div className="flex h-full flex-col items-center justify-center px-6 py-10 text-center">
-    <p className="text-sm font-medium">A busca de GIF precisa de uma chave</p>
-    <p className="mt-2 text-xs text-ink-muted">
+  <div data-gc="expressao.seletor.aba-gifs.div--7" className="flex h-full flex-col items-center justify-center px-6 py-10 text-center">
+    <p data-gc="expressao.seletor.aba-gifs.p" className="text-sm font-medium">A busca de GIF precisa de uma chave</p>
+    <p data-gc="expressao.seletor.aba-gifs.p--2" className="mt-2 text-xs text-ink-muted">
       Crie uma chave gratuita em{" "}
-      <code className="rounded bg-surface-0 px-1">partner.klipy.com</code> e coloque em{" "}
-      <code className="rounded bg-surface-0 px-1">KLIPY_API_KEY</code> no .env do projeto. Colar
+      <code data-gc="expressao.seletor.aba-gifs.code" className="rounded bg-surface-0 px-1">partner.klipy.com</code> e coloque em{" "}
+      <code data-gc="expressao.seletor.aba-gifs.code--2" className="rounded bg-surface-0 px-1">KLIPY_API_KEY</code> no .env do projeto. Colar
       link de GIF continua funcionando sem isso.
     </p>
   </div>

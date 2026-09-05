@@ -20,9 +20,9 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
   passo,
   marcas,
 }) => (
-  <div>
-    <div className="flex items-center gap-4">
-      <Slider
+  <div data-gc="configuracoes.controle-de-escala.div">
+    <div data-gc="configuracoes.controle-de-escala.div--2" className="flex items-center gap-4">
+      <Slider data-gc="configuracoes.controle-de-escala.slider"
         min={min}
         max={max}
         step={passo}
@@ -31,15 +31,15 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
         onChange={(e) => onMudar(Number(e.target.value))}
         aria-label="Tamanho, em porcentagem"
       />
-      <span className="w-14 shrink-0 text-right text-sm tabular-nums text-ink-muted">
+      <span data-gc="configuracoes.controle-de-escala.span" className="w-14 shrink-0 text-right text-sm tabular-nums text-ink-muted">
         {valor}%
       </span>
     </div>
 
-    <div className="mt-2 flex items-center justify-between">
-      <div className="flex gap-4 text-11 tabular-nums text-ink-faint">
+    <div data-gc="configuracoes.controle-de-escala.div--3" className="mt-2 flex items-center justify-between">
+      <div data-gc="configuracoes.controle-de-escala.div--4" className="flex gap-4 text-11 tabular-nums text-ink-faint">
         {marcas.map((marca) => (
-          <button
+          <button data-gc="configuracoes.controle-de-escala.button"
             key={marca}
             type="button"
             onClick={() => onMudar(marca)}
@@ -51,7 +51,7 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
       </div>
 
       {valor !== 100 && (
-        <Button variant="ghost" size="sm" onClick={() => onMudar(100)}>
+        <Button data-gc="configuracoes.controle-de-escala.button--2" variant="ghost" size="sm" onClick={() => onMudar(100)}>
           Voltar ao padrão
         </Button>
       )}

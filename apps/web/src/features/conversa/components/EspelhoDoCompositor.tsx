@@ -17,9 +17,9 @@ const EmojiNoTexto: React.FC<{ emoji: string }> = ({ emoji }) => {
   if (semDesenho) return <>{emoji}</>;
 
   return (
-    <span className="relative text-transparent">
+    <span data-gc="conversa.espelho-do-compositor.span" className="relative text-transparent">
       {emoji}
-      <img
+      <img data-gc="conversa.espelho-do-compositor.img"
         src={urlDoEmoji(emoji)}
         alt=""
         aria-hidden
@@ -38,7 +38,7 @@ export const EspelhoDoCompositor = React.forwardRef<HTMLDivElement, Props>(
     for (const achado of texto.matchAll(EMOJI)) {
       const inicio = achado.index!;
       if (inicio > ultimo) partes.push(texto.slice(ultimo, inicio));
-      partes.push(<EmojiNoTexto key={inicio} emoji={achado[0]} />);
+      partes.push(<EmojiNoTexto data-gc="conversa.espelho-do-compositor.emoji-no-texto" key={inicio} emoji={achado[0]} />);
       ultimo = inicio + achado[0].length;
     }
 
@@ -46,7 +46,7 @@ export const EspelhoDoCompositor = React.forwardRef<HTMLDivElement, Props>(
     if (texto.endsWith("\n")) partes.push("​");
 
     return (
-      <div
+      <div data-gc="conversa.espelho-do-compositor.div"
         ref={ref}
         aria-hidden
         style={{ fontFamily }}

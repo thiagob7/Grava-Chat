@@ -39,7 +39,7 @@ export const UserName: React.FC<UserNameProps> = ({
   const enfeite = estiloDoNome({ estilo: perfil?.nome, corDoCargo: cor, tamanho, animar, fundo });
 
   const escrito = (
-    <span className={cn(className, enfeite.className)} style={enfeite.style} title={title}>
+    <span data-gc="perfil.user-name.span" className={cn(className, enfeite.className)} style={enfeite.style} title={title}>
       {nome}
     </span>
   );
@@ -47,15 +47,15 @@ export const UserName: React.FC<UserNameProps> = ({
   if (!ehBot) return escrito;
 
   return (
-    <span className="inline-flex items-center gap-1.5">
+    <span data-gc="perfil.user-name.span--2" className="inline-flex items-center gap-1.5">
       {escrito}
-      <SeloDeApp />
+      <SeloDeApp data-gc="perfil.user-name.selo-de-app" />
     </span>
   );
 };
 
 export const SeloDeApp: React.FC = () => (
-  <span className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-white">
+  <span data-gc="perfil.user-name.span--3" className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-white">
     app
   </span>
 );

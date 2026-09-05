@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 export const AreaDeConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="area-de-conversa relative flex min-h-0 flex-1 flex-col">{children}</div>
+  <div data-gc="conversa.area-de-conversa.div" className="area-de-conversa relative flex min-h-0 flex-1 flex-col">{children}</div>
 );
 
 export const RodapeDaConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,7 +24,7 @@ export const RodapeDaConversa: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   return (
-    <div ref={rodape} className="absolute inset-x-0 bottom-0 z-10">
+    <div data-gc="conversa.area-de-conversa.div--2" ref={rodape} className="absolute inset-x-0 bottom-0 z-10">
       {children}
     </div>
   );

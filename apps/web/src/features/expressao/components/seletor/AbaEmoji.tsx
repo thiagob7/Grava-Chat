@@ -34,15 +34,15 @@ import {
 } from "~/features/expressao/lib/emoji";
 
 const ICONES: Record<string, React.ReactNode> = {
-  smileys_emotion: <Smile size={18} />,
-  people_body: <Hand size={18} />,
-  animals_nature: <Leaf size={18} />,
-  food_drink: <Pizza size={18} />,
-  travel_places: <Plane size={18} />,
-  activities: <Trophy size={18} />,
-  objects: <Lightbulb size={18} />,
-  symbols: <Hash size={18} />,
-  flags: <Flag size={18} />,
+  smileys_emotion: <Smile data-gc="expressao.seletor.aba-emoji.smile" size={18} />,
+  people_body: <Hand data-gc="expressao.seletor.aba-emoji.hand" size={18} />,
+  animals_nature: <Leaf data-gc="expressao.seletor.aba-emoji.leaf" size={18} />,
+  food_drink: <Pizza data-gc="expressao.seletor.aba-emoji.pizza" size={18} />,
+  travel_places: <Plane data-gc="expressao.seletor.aba-emoji.plane" size={18} />,
+  activities: <Trophy data-gc="expressao.seletor.aba-emoji.trophy" size={18} />,
+  objects: <Lightbulb data-gc="expressao.seletor.aba-emoji.lightbulb" size={18} />,
+  symbols: <Hash data-gc="expressao.seletor.aba-emoji.hash" size={18} />,
+  flags: <Flag data-gc="expressao.seletor.aba-emoji.flag" size={18} />,
 };
 
 interface Apontado {
@@ -108,48 +108,48 @@ export const AbaEmoji: React.FC<{
 
   const atalhos: AtalhoDaBarra[] = [
     ...(mostraRecentes
-      ? [{ id: "recentes", titulo: "Usados com frequência", icone: <Clock size={18} /> }]
+      ? [{ id: "recentes", titulo: "Usados com frequência", icone: <Clock data-gc="expressao.seletor.aba-emoji.clock" size={18} /> }]
       : []),
     ...comEmoji.map((s) => ({
       id: `servidor:${s.id}`,
       titulo: s.nome,
-      icone: <IconeDoServidor nome={s.nome} iconUrl={s.iconUrl} />,
+      icone: <IconeDoServidor data-gc="expressao.seletor.aba-emoji.icone-do-servidor" nome={s.nome} iconUrl={s.iconUrl} />,
     })),
     ...filtrados.map((g) => ({
       id: g.slug,
       titulo: g.titulo,
-      icone: ICONES[g.slug] ?? <Smile size={18} />,
+      icone: ICONES[g.slug] ?? <Smile data-gc="expressao.seletor.aba-emoji.smile--2" size={18} />,
     })),
   ];
 
   const nada = Boolean(grupos) && !filtrados.length && !comEmoji.length;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1">
-        <BarraLateral atalhos={atalhos} ativo={ativo} onIr={irEAbrir} />
+    <div data-gc="expressao.seletor.aba-emoji.div" className="flex min-h-0 flex-1 flex-col">
+      <div data-gc="expressao.seletor.aba-emoji.div--2" className="flex min-h-0 flex-1">
+        <BarraLateral data-gc="expressao.seletor.aba-emoji.barra-lateral.ir-eabrir" atalhos={atalhos} ativo={ativo} onIr={irEAbrir} />
 
-        <div
+        <div data-gc="expressao.seletor.aba-emoji.div.ao-rolar"
           ref={container}
           onScroll={aoRolar}
           onMouseLeave={() => setApontado(null)}
           className="relative min-h-0 flex-1 overflow-y-auto px-3 py-2"
         >
           {mostraRecentes && (
-            <div ref={registrar("recentes")}>
-              <Secao
+            <div data-gc="expressao.seletor.aba-emoji.div--3" ref={registrar("recentes")}>
+              <Secao data-gc="expressao.seletor.aba-emoji.secao"
                 titulo="Usados com frequência"
-                icone={<Clock size={12} />}
+                icone={<Clock data-gc="expressao.seletor.aba-emoji.clock--2" size={12} />}
                 fechada={fechadas.has("recentes")}
                 onAlternar={() => alternar("recentes")}
               >
-                <div className="flex flex-wrap gap-0.5">
+                <div data-gc="expressao.seletor.aba-emoji.div--4" className="flex flex-wrap gap-0.5">
                   {recentes.map((emoji) => (
-                    <BotaoEmoji
+                    <BotaoEmoji data-gc="expressao.seletor.aba-emoji.botao-emoji"
                       key={emoji}
                       emoji={emoji}
                       onClick={() => escolher(emoji, true)}
-                      onApontar={() => setApontado({ amostra: <Emoji emoji={emoji} className="size-7" />, titulo: emoji })}
+                      onApontar={() => setApontado({ amostra: <Emoji data-gc="expressao.seletor.aba-emoji.emoji" emoji={emoji} className="size-7" />, titulo: emoji })}
                     />
                   ))}
                 </div>
@@ -158,11 +158,11 @@ export const AbaEmoji: React.FC<{
           )}
 
           {comEmoji.map((servidor) => (
-            <div key={servidor.id} ref={registrar(`servidor:${servidor.id}`)}>
-              <Secao
+            <div data-gc="expressao.seletor.aba-emoji.div--5" key={servidor.id} ref={registrar(`servidor:${servidor.id}`)}>
+              <Secao data-gc="expressao.seletor.aba-emoji.secao--2"
                 titulo={servidor.nome}
                 icone={
-                  <IconeDoServidor
+                  <IconeDoServidor data-gc="expressao.seletor.aba-emoji.icone-do-servidor--2"
                     nome={servidor.nome}
                     iconUrl={servidor.iconUrl}
                     className="size-4"
@@ -171,20 +171,20 @@ export const AbaEmoji: React.FC<{
                 fechada={fechadas.has(`servidor:${servidor.id}`)}
                 onAlternar={() => alternar(`servidor:${servidor.id}`)}
               >
-                <div className="flex flex-wrap gap-0.5">
+                <div data-gc="expressao.seletor.aba-emoji.div--6" className="flex flex-wrap gap-0.5">
                   {servidor.emojis.map((emoji) => (
-                    <button
+                    <button data-gc="expressao.seletor.aba-emoji.button"
                       key={emoji.id}
                       onClick={() => escolher(`:${emoji.name}:`, false)}
                       onMouseEnter={() =>
                         setApontado({
                           amostra: (
-                            <img src={emoji.url} alt="" className="size-7 object-contain" />
+                            <img data-gc="expressao.seletor.aba-emoji.img" src={emoji.url} alt="" className="size-7 object-contain" />
                           ),
                           titulo: `:${emoji.name}:`,
                           detalhe: `de ${servidor.nome}`,
                           direita: (
-                            <IconeDoServidor
+                            <IconeDoServidor data-gc="expressao.seletor.aba-emoji.icone-do-servidor--3"
                               nome={servidor.nome}
                               iconUrl={servidor.iconUrl}
                               className="size-6"
@@ -194,7 +194,7 @@ export const AbaEmoji: React.FC<{
                       }
                       className="flex size-9 items-center justify-center rounded transition hover:bg-surface-3"
                     >
-                      <img src={emoji.url} alt={emoji.name} className="size-7 object-contain" />
+                      <img data-gc="expressao.seletor.aba-emoji.img--2" src={emoji.url} alt={emoji.name} className="size-7 object-contain" />
                     </button>
                   ))}
                 </div>
@@ -202,24 +202,24 @@ export const AbaEmoji: React.FC<{
             </div>
           ))}
 
-          {!grupos && <Carregando />}
+          {!grupos && <Carregando data-gc="expressao.seletor.aba-emoji.carregando" />}
 
           {filtrados.map((grupo) => (
-            <div key={grupo.slug} ref={registrar(grupo.slug)}>
-              <Secao
+            <div data-gc="expressao.seletor.aba-emoji.div--7" key={grupo.slug} ref={registrar(grupo.slug)}>
+              <Secao data-gc="expressao.seletor.aba-emoji.secao--3"
                 titulo={grupo.titulo}
                 fechada={fechadas.has(grupo.slug)}
                 onAlternar={() => alternar(grupo.slug)}
               >
-                <div className="flex flex-wrap gap-0.5">
+                <div data-gc="expressao.seletor.aba-emoji.div--8" className="flex flex-wrap gap-0.5">
                   {grupo.emojis.map((item) => (
-                    <BotaoEmoji
+                    <BotaoEmoji data-gc="expressao.seletor.aba-emoji.botao-emoji--2"
                       key={item.slug}
                       emoji={item.emoji}
                       onClick={() => escolher(item.emoji, true)}
                       onApontar={() =>
                         setApontado({
-                          amostra: <Emoji emoji={item.emoji} className="size-7" />,
+                          amostra: <Emoji data-gc="expressao.seletor.aba-emoji.emoji--2" emoji={item.emoji} className="size-7" />,
                           titulo: `:${item.slug}:`,
                           detalhe: item.name,
                         })
@@ -231,11 +231,11 @@ export const AbaEmoji: React.FC<{
             </div>
           ))}
 
-          {nada && <Vazio>Nenhum emoji com esse nome.</Vazio>}
+          {nada && <Vazio data-gc="expressao.seletor.aba-emoji.vazio">Nenhum emoji com esse nome.</Vazio>}
         </div>
       </div>
 
-      <Rodape
+      <Rodape data-gc="expressao.seletor.aba-emoji.rodape"
         amostra={apontado?.amostra}
         titulo={apontado?.titulo}
         detalhe={apontado?.detalhe}
@@ -251,12 +251,12 @@ const BotaoEmoji: React.FC<{ emoji: string; onClick: () => void; onApontar: () =
   onClick,
   onApontar,
 }) => (
-  <button
+  <button data-gc="expressao.seletor.aba-emoji.button.on-click"
     onClick={onClick}
     onMouseEnter={onApontar}
     onFocus={onApontar}
     className="flex size-9 items-center justify-center rounded transition hover:bg-surface-3"
   >
-    <Emoji emoji={emoji} className="size-7" />
+    <Emoji data-gc="expressao.seletor.aba-emoji.emoji--3" emoji={emoji} className="size-7" />
   </button>
 );

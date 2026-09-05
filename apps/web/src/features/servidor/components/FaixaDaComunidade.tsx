@@ -32,24 +32,24 @@ export const FaixaDaComunidade: React.FC = () => {
   };
 
   return (
-    <div className="flex shrink-0 items-center justify-center gap-3 bg-brand px-10 py-2 text-sm font-medium text-white">
-      <span className="min-w-0 truncate">
+    <div data-gc="servidor.faixa-da-comunidade.div" className="flex shrink-0 items-center justify-center gap-3 bg-brand px-10 py-2 text-sm font-medium text-white">
+      <span data-gc="servidor.faixa-da-comunidade.span" className="min-w-0 truncate">
         Entre no {convite.guild.name} para conversar com a gente e ficar por dentro.
       </span>
 
-      <button
+      <button data-gc="servidor.faixa-da-comunidade.button"
         onClick={() => navigate(`/invite/${CONVITE}`)}
         className="shrink-0 rounded bg-white px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-white/90"
       >
         Entrar
       </button>
 
-      <button
+      <button data-gc="servidor.faixa-da-comunidade.button.fechar"
         onClick={fechar}
         aria-label="Fechar"
         className="absolute right-3 rounded p-1 text-white/80 transition hover:bg-white/15 hover:text-white"
       >
-        <X size={16} />
+        <X data-gc="servidor.faixa-da-comunidade.x" size={16} />
       </button>
     </div>
   );

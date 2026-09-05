@@ -15,15 +15,15 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
   ...props
 }) => (
-  <span className={cn("relative inline-flex size-4 shrink-0", className)}>
-    <input
+  <span data-gc="ui.checkbox.span" className={cn("relative inline-flex size-4 shrink-0", className)}>
+    <input data-gc="ui.checkbox.input"
       type="checkbox"
       checked={checked}
       className="peer absolute inset-0 z-10 cursor-pointer opacity-0"
       {...props}
     />
 
-    <span
+    <span data-gc="ui.checkbox.span--2"
       aria-hidden
       className={cn(
         "pointer-events-none flex size-4 items-center justify-center rounded border transition",
@@ -35,7 +35,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         "[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100",
       )}
     >
-      <Check size={11} strokeWidth={3.5} className="transition-opacity" />
+      <Check data-gc="ui.checkbox.check" size={11} strokeWidth={3.5} className="transition-opacity" />
     </span>
   </span>
 );

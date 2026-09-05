@@ -18,7 +18,7 @@ export function VoiceVideo({ track, mirrored }: { track: Track; mirrored?: boole
   }, [track]);
 
   return (
-    <video
+    <video data-gc="voz.voice-track.video"
       ref={ref}
       autoPlay
       playsInline
@@ -65,5 +65,5 @@ export function VoiceAudio({
     el.volume = silenciado || deafened ? 0 : Math.min(1, volumeSaida * individual);
   }, [track, volumeSaida, individual, silenciado, deafened]);
 
-  return <audio ref={ref} autoPlay />;
+  return <audio data-gc="voz.voice-track.audio" ref={ref} autoPlay />;
 }

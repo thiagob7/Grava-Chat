@@ -14,8 +14,8 @@ export const DialogContent = ({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px]" />
-    <DialogPrimitive.Content
+    <DialogPrimitive.Overlay data-gc="ui.dialog.dialog-primitiveoverlay" className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px]" />
+    <DialogPrimitive.Content data-gc="ui.dialog.dialog-primitivecontent"
       className={cn(
         "regiao-sem-arrasto fixed inset-0 z-50 m-auto h-fit max-h-[92vh] w-full max-w-md outline-none",
         "rounded-xl border border-line bg-surface-1",
@@ -29,34 +29,34 @@ export const DialogContent = ({
         aria-label="Fechar"
         className="absolute right-5 top-4 text-ink-faint transition hover:text-ink"
       >
-        <X size={20} />
+        <X data-gc="ui.dialog.x" size={20} />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 );
 
 export const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div className={cn("border-b border-line px-5 py-4", className)} {...props} />
+  <div data-gc="ui.dialog.div" className={cn("border-b border-line px-5 py-4", className)} {...props} />
 );
 
 export const DialogTitle = ({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Title>) => (
-  <DialogPrimitive.Title className={cn("text-lg font-semibold", className)} {...props} />
+  <DialogPrimitive.Title data-gc="ui.dialog.dialog-primitivetitle" className={cn("text-lg font-semibold", className)} {...props} />
 );
 
 export const DialogDescription = ({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) => (
-  <DialogPrimitive.Description className={cn("mt-1 text-sm text-ink-muted", className)} {...props} />
+  <DialogPrimitive.Description data-gc="ui.dialog.dialog-primitivedescription" className={cn("mt-1 text-sm text-ink-muted", className)} {...props} />
 );
 
 export const DialogBody = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div className={cn("p-5", className)} {...props} />
+  <div data-gc="ui.dialog.div--2" className={cn("p-5", className)} {...props} />
 );
 
 export const DialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div className={cn("flex justify-end gap-2 px-5 pb-5", className)} {...props} />
+  <div data-gc="ui.dialog.div--3" className={cn("flex justify-end gap-2 px-5 pb-5", className)} {...props} />
 );

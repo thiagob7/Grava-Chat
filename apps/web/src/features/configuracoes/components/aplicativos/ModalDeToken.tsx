@@ -19,22 +19,22 @@ interface ModalDeTokenProps {
 }
 
 export const ModalDeToken: React.FC<ModalDeTokenProps> = ({ token, onFechar }) => (
-  <Dialog open={Boolean(token)} onOpenChange={(estado) => !estado && onFechar()}>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <TriangleAlert size={18} className="text-aviso" />
+  <Dialog data-gc="configuracoes.aplicativos.modal-de-token.dialog" open={Boolean(token)} onOpenChange={(estado) => !estado && onFechar()}>
+    <DialogContent data-gc="configuracoes.aplicativos.modal-de-token.dialog-content">
+      <DialogHeader data-gc="configuracoes.aplicativos.modal-de-token.dialog-header">
+        <DialogTitle data-gc="configuracoes.aplicativos.modal-de-token.dialog-title" className="flex items-center gap-2">
+          <TriangleAlert data-gc="configuracoes.aplicativos.modal-de-token.triangle-alert" size={18} className="text-aviso" />
           Copie o token agora
         </DialogTitle>
-        <DialogDescription>
+        <DialogDescription data-gc="configuracoes.aplicativos.modal-de-token.dialog-description">
           Ele não aparece de novo. Se perder, só resta gerar outro — e o antigo
           morre na hora.
         </DialogDescription>
       </DialogHeader>
 
-      <DialogBody>
+      <DialogBody data-gc="configuracoes.aplicativos.modal-de-token.dialog-body">
         {token && (
-          <CampoDeSegredo
+          <CampoDeSegredo data-gc="configuracoes.aplicativos.modal-de-token.campo-de-segredo"
             valor={token}
             rotuloCopiar="Copiar o token"
             avisoCopiado="Token copiado."
@@ -42,8 +42,8 @@ export const ModalDeToken: React.FC<ModalDeTokenProps> = ({ token, onFechar }) =
         )}
       </DialogBody>
 
-      <DialogFooter>
-        <Button onClick={onFechar}>Guardei</Button>
+      <DialogFooter data-gc="configuracoes.aplicativos.modal-de-token.dialog-footer">
+        <Button data-gc="configuracoes.aplicativos.modal-de-token.button.on-fechar" onClick={onFechar}>Guardei</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

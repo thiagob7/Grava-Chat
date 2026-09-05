@@ -80,44 +80,44 @@ export const ProfileEditorModal: React.FC<{
       .catch(() => null);
 
   return (
-    <DialogPrimitive.Root
+    <DialogPrimitive.Root data-gc="perfil.cartao.profile-editor-modal.dialog-primitiveroot"
       open={open}
       onOpenChange={(next) => !next && onClose()}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70" />
-        <DialogPrimitive.Content
+        <DialogPrimitive.Overlay data-gc="perfil.cartao.profile-editor-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
+        <DialogPrimitive.Content data-gc="perfil.cartao.profile-editor-modal.dialog-primitivecontent"
           className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[78vh] w-full max-w-6xl overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
           aria-label={t("perfil.editar")}
         >
-          <DialogPrimitive.Title className="sr-only">
+          <DialogPrimitive.Title data-gc="perfil.cartao.profile-editor-modal.dialog-primitivetitle" className="sr-only">
             {t("perfil.editar")}
           </DialogPrimitive.Title>
 
-          <aside className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
-            <h2 className="mb-4 text-sm font-semibold">{t("perfil.editor.principal")}</h2>
+          <aside data-gc="perfil.cartao.profile-editor-modal.aside" className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
+            <h2 data-gc="perfil.cartao.profile-editor-modal.h2" className="mb-4 text-sm font-semibold">{t("perfil.editor.principal")}</h2>
 
-            <div className="space-y-6">
-              <IdentidadeAba
+            <div data-gc="perfil.cartao.profile-editor-modal.div" className="space-y-6">
+              <IdentidadeAba data-gc="perfil.cartao.profile-editor-modal.identidade-aba"
                 id={user.id}
                 username={user.username}
                 rascunho={rascunho}
                 definir={definir}
               />
-              <div className="h-px bg-line" />
-              <EnfeitesAba rascunho={rascunho} definir={definir} />
+              <div data-gc="perfil.cartao.profile-editor-modal.div--2" className="h-px bg-line" />
+              <EnfeitesAba data-gc="perfil.cartao.profile-editor-modal.enfeites-aba" rascunho={rascunho} definir={definir} />
             </div>
           </aside>
 
-          <main className="min-w-0 flex-1 overflow-y-auto p-8">
-            <input
+          <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-8">
+            <input data-gc="perfil.cartao.profile-editor-modal.input"
               ref={escolherFoto}
               type="file"
               accept="image/*"
               className="hidden"
               onChange={(e) => void enviar(e, "avatarUrl")}
             />
-            <input
+            <input data-gc="perfil.cartao.profile-editor-modal.input--2"
               ref={escolherFaixa}
               type="file"
               accept="image/*"
@@ -125,10 +125,10 @@ export const ProfileEditorModal: React.FC<{
               onChange={(e) => void enviar(e, "bannerUrl")}
             />
 
-            <div className="mx-auto w-96">
-              <div>
-                <div>
-                  <ProfileCardVisual
+            <div data-gc="perfil.cartao.profile-editor-modal.div--3" className="mx-auto w-96">
+              <div data-gc="perfil.cartao.profile-editor-modal.div--4">
+                <div data-gc="perfil.cartao.profile-editor-modal.div--5">
+                  <ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual"
                     id={user.id}
                     displayName={rascunho.displayName || user.displayName}
                     username={user.username}
@@ -146,25 +146,25 @@ export const ProfileEditorModal: React.FC<{
                     onStatus={() => setDefinindoStatus(true)}
                     onEditarFoto={() => escolherFoto.current?.click()}
                     menuDaFaixa={
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
+                      <DropdownMenu data-gc="perfil.cartao.profile-editor-modal.dropdown-menu">
+                        <DropdownMenuTrigger data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-trigger" asChild>
+                          <button data-gc="perfil.cartao.profile-editor-modal.button"
                             type="button"
                             aria-label="Editar o cartão"
                             className="rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
                           >
-                            <Pencil size={15} />
+                            <Pencil data-gc="perfil.cartao.profile-editor-modal.pencil" size={15} />
                           </button>
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
+                        <DropdownMenuContent data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-content" align="end">
+                          <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item"
                             onSelect={() => escolherFaixa.current?.click()}
                           >
                             Trocar a faixa
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onSelect={() => setEnfeiteAberto("decoracao")}>
+                          <DropdownMenuSeparator data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-separator" />
+                          <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item--2" onSelect={() => setEnfeiteAberto("decoracao")}>
                             {t("perfil.editor.decoracao")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -175,26 +175,26 @@ export const ProfileEditorModal: React.FC<{
                 </div>
               </div>
 
-              <div className="mt-6">
-                <p className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">
+              <div data-gc="perfil.cartao.profile-editor-modal.div--6" className="mt-6">
+                <p data-gc="perfil.cartao.profile-editor-modal.p" className="mb-1.5 text-xs font-semibold uppercase text-ink-muted">
                   No chat
                 </p>
-                <div className="flex gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5">
-                  <Avatar
+                <div data-gc="perfil.cartao.profile-editor-modal.div--7" className="flex gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5">
+                  <Avatar data-gc="perfil.cartao.profile-editor-modal.avatar"
                     id={user.id}
                     name={rascunho.displayName || user.displayName}
                     url={rascunho.avatarUrl}
                     size={40}
                     enfeites={perfil}
                   />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium leading-tight">
-                      <UserName
+                  <div data-gc="perfil.cartao.profile-editor-modal.div--8" className="min-w-0">
+                    <p data-gc="perfil.cartao.profile-editor-modal.p--2" className="text-sm font-medium leading-tight">
+                      <UserName data-gc="perfil.cartao.profile-editor-modal.user-name"
                         nome={rascunho.displayName || user.displayName}
                         perfil={perfil}
                       />
                     </p>
-                    <p className="text-sm text-ink-muted">
+                    <p data-gc="perfil.cartao.profile-editor-modal.p--3" className="text-sm text-ink-muted">
                       é assim que seu nome aparece numa conversa
                     </p>
                   </div>
@@ -203,9 +203,9 @@ export const ProfileEditorModal: React.FC<{
             </div>
           </main>
 
-          <aside className="hidden w-72 shrink-0 overflow-y-auto border-l border-line p-5 xl:block">
-            <p className="mb-3 text-sm font-semibold">Atividade</p>
-            <p className="text-sm text-ink-faint">
+          <aside data-gc="perfil.cartao.profile-editor-modal.aside--2" className="hidden w-72 shrink-0 overflow-y-auto border-l border-line p-5 xl:block">
+            <p data-gc="perfil.cartao.profile-editor-modal.p--4" className="mb-3 text-sm font-semibold">Atividade</p>
+            <p data-gc="perfil.cartao.profile-editor-modal.p--5" className="text-sm text-ink-faint">
               Quando você entrar numa chamada, ela aparece aqui — e no seu
               cartão, pra quem abrir.
             </p>
@@ -215,10 +215,10 @@ export const ProfileEditorModal: React.FC<{
             aria-label="Fechar"
             className="absolute right-4 top-4 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
           >
-            <X size={20} />
+            <X data-gc="perfil.cartao.profile-editor-modal.x" size={20} />
           </DialogPrimitive.Close>
 
-          <EscolherEnfeiteModal
+          <EscolherEnfeiteModal data-gc="perfil.cartao.profile-editor-modal.escolher-enfeite-modal"
             open={enfeiteAberto === "decoracao"}
             titulo={t("perfil.editor.decoracao")}
             legenda="Suas decorações"
@@ -226,12 +226,12 @@ export const ProfileEditorModal: React.FC<{
             valor={rascunho.decoracao}
             onEscolher={(id) => definir("decoracao", id)}
             onClose={() => setEnfeiteAberto(null)}
-            amostra={(id) => <Amostra familia="decoracao" id={id} />}
-            previa={<ProfileCardVisual {...previaDoCartao} />}
+            amostra={(id) => <Amostra data-gc="perfil.cartao.profile-editor-modal.amostra" familia="decoracao" id={id} />}
+            previa={<ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual--2" {...previaDoCartao} />}
           />
 
           {definindoStatus && (
-            <StatusModal
+            <StatusModal data-gc="perfil.cartao.profile-editor-modal.status-modal.salvar-status"
               open
               user={user}
               perfil={perfil}
@@ -242,7 +242,7 @@ export const ProfileEditorModal: React.FC<{
           )}
         </DialogPrimitive.Content>
 
-        <UnsavedBar
+        <UnsavedBar data-gc="perfil.cartao.profile-editor-modal.unsaved-bar.descartar"
           visivel={sujo}
           salvando={updateProfile.isPending}
           onDescartar={descartar}

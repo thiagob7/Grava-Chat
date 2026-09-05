@@ -90,9 +90,9 @@ export function Combobox<T extends string | number>({
   };
 
   return (
-    <Popover open={aberto} onOpenChange={(proximo) => (proximo ? setAberto(true) : fechar())}>
-      <PopoverAnchor asChild>
-        <div
+    <Popover data-gc="ui.combobox.popover" open={aberto} onOpenChange={(proximo) => (proximo ? setAberto(true) : fechar())}>
+      <PopoverAnchor data-gc="ui.combobox.popover-anchor" asChild>
+        <div data-gc="ui.combobox.div"
           ref={ancora}
           className={cn(
             "flex h-10 w-full items-center gap-2 rounded-lg border border-line bg-campo px-3 transition",
@@ -101,7 +101,7 @@ export function Combobox<T extends string | number>({
             className,
           )}
         >
-          <input
+          <input data-gc="ui.combobox.input.fechar"
             id={id}
             ref={campo}
             role="combobox"
@@ -124,7 +124,7 @@ export function Combobox<T extends string | number>({
             className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
           />
 
-          <button
+          <button data-gc="ui.combobox.button"
             type="button"
             tabIndex={-1}
             aria-hidden
@@ -137,7 +137,7 @@ export function Combobox<T extends string | number>({
             }}
             className="shrink-0 text-ink-faint transition hover:text-ink"
           >
-            <ChevronDown
+            <ChevronDown data-gc="ui.combobox.chevron-down"
               size={16}
               className={cn("transition-transform duration-200 ease-in-out", aberto && "rotate-180")}
             />
@@ -145,7 +145,7 @@ export function Combobox<T extends string | number>({
         </div>
       </PopoverAnchor>
 
-      <PopoverContent
+      <PopoverContent data-gc="ui.combobox.popover-content"
         align="start"
         sideOffset={6}
         onOpenAutoFocus={(evento) => evento.preventDefault()}
@@ -158,14 +158,14 @@ export function Combobox<T extends string | number>({
         className="w-[var(--radix-popover-trigger-width)] max-h-60 overflow-y-auto p-1 shadow-[0_0.5rem_1rem_rgb(0_0_0/0.24)]"
       >
         {!filtradas.length && (
-          <p className="px-2 py-3 text-center text-sm text-ink-muted">{vazio}</p>
+          <p data-gc="ui.combobox.p" className="px-2 py-3 text-center text-sm text-ink-muted">{vazio}</p>
         )}
 
         {filtradas.map((opcao, indice) => {
           const selecionada = opcao.valor === valor;
 
           return (
-            <button
+            <button data-gc="ui.combobox.button--2"
               key={String(opcao.valor)}
               type="button"
               role="option"
@@ -180,8 +180,8 @@ export function Combobox<T extends string | number>({
                 indice === ativo ? "bg-brand text-white" : "text-ink-muted",
               )}
             >
-              <span className="min-w-0 flex-1 truncate">{opcao.rotulo}</span>
-              {selecionada && <Check size={14} className="shrink-0" />}
+              <span data-gc="ui.combobox.span" className="min-w-0 flex-1 truncate">{opcao.rotulo}</span>
+              {selecionada && <Check data-gc="ui.combobox.check" size={14} className="shrink-0" />}
             </button>
           );
         })}

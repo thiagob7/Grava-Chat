@@ -100,17 +100,17 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   const { data: perfil, isLoading } = useFindProfile(aberto ? userId : null);
 
   return (
-    <Popover open={aberto} onOpenChange={setAberto}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+    <Popover data-gc="perfil.user-profile-popover.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+      <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" asChild>{children}</PopoverTrigger>
 
-      <PopoverContent
+      <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
         side={side}
         className="max-h-[80vh] w-80 overflow-y-auto p-0"
       >
         {isLoading || !perfil ? (
-          <div className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
+          <div data-gc="perfil.user-profile-popover.div" className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
         ) : (
-          <ProfileCard
+          <ProfileCard data-gc="perfil.user-profile-popover.profile-card"
             perfil={perfil}
             onFechar={() => setAberto(false)}
             guildId={guildId}
@@ -266,23 +266,23 @@ const ProfileCard: React.FC<{
   const acoes = (
     <>
       {perfil.friendship === "SELF" ? (
-        <Button size="sm" onClick={() => setEditandoPerfil(true)}>
-          <Pencil size={14} /> {t("perfil.editar")}
+        <Button data-gc="perfil.user-profile-popover.button" size="sm" onClick={() => setEditandoPerfil(true)}>
+          <Pencil data-gc="perfil.user-profile-popover.pencil" size={14} /> {t("perfil.editar")}
         </Button>
       ) : (
         <>
           {perfil.friendship === "ACCEPTED" && (
-            <Button
+            <Button data-gc="perfil.user-profile-popover.button--2"
               size="sm"
               onClick={() => void conversar()}
               disabled={ocupado}
             >
-              <MessageSquare size={14} /> {t("perfil.mensagem")}
+              <MessageSquare data-gc="perfil.user-profile-popover.message-square" size={14} /> {t("perfil.mensagem")}
             </Button>
           )}
 
           {podeModerar && guildId && (
-            <BotaoRedondo
+            <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo"
               label={t("perfil.moderador")}
               onClick={() => {
                 useModeracao.getState().abrir({
@@ -295,47 +295,47 @@ const ProfileCard: React.FC<{
                 onFechar();
               }}
             >
-              <ShieldAlert size={16} />
+              <ShieldAlert data-gc="perfil.user-profile-popover.shield-alert" size={16} />
             </BotaoRedondo>
           )}
 
-          <BotaoDeAmizade
+          <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade"
             perfil={perfil}
             onAdicionar={() => requestFriend.mutate(perfil.username)}
           />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
+          <DropdownMenu data-gc="perfil.user-profile-popover.dropdown-menu">
+            <DropdownMenuTrigger data-gc="perfil.user-profile-popover.dropdown-menu-trigger" asChild>
+              <button data-gc="perfil.user-profile-popover.button--3"
                 aria-label={t("perfil.mais")}
                 className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
               >
-                <MoreHorizontal size={16} />
+                <MoreHorizontal data-gc="perfil.user-profile-popover.more-horizontal" size={16} />
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent data-gc="perfil.user-profile-popover.dropdown-menu-content" align="end">
               {perfil.friendship === "ACCEPTED" && (
                 <>
-                  <DropdownMenuItem onSelect={() => void conversar()}>
-                    {t("perfil.abrirConversa")} <MessageSquare size={14} />
+                  <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void conversar()}>
+                    {t("perfil.abrirConversa")} <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} />
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator" />
                 </>
               )}
 
-              <DropdownMenuItem onSelect={() => setPerfilCompleto(true)}>
-                {t("perfil.verCompleto")} <User size={14} />
+              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--2" onSelect={() => setPerfilCompleto(true)}>
+                {t("perfil.verCompleto")} <User data-gc="perfil.user-profile-popover.user" size={14} />
               </DropdownMenuItem>
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
+              <DropdownMenuSub data-gc="perfil.user-profile-popover.dropdown-menu-sub">
+                <DropdownMenuSubTrigger data-gc="perfil.user-profile-popover.dropdown-menu-sub-trigger">
                   {t("perfil.convidarParaServidor")}
                 </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
+                <DropdownMenuSubContent data-gc="perfil.user-profile-popover.dropdown-menu-sub-content">
                   {guilds.data?.length ? (
                     guilds.data.map((servidor) => (
-                      <DropdownMenuItem
+                      <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--3"
                         key={servidor.id}
                         onSelect={() => void convidarPara(servidor.id)}
                       >
@@ -343,42 +343,42 @@ const ProfileCard: React.FC<{
                       </DropdownMenuItem>
                     ))
                   ) : (
-                    <DropdownMenuItem disabled>
+                    <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--4" disabled>
                       {t("perfil.semServidores")}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--2" />
 
-              <DropdownMenuItem onSelect={() => alternarIgnorado(perfil.id)}>
+              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--5" onSelect={() => alternarIgnorado(perfil.id)}>
                 {t(ignorado ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
-                {ignorado ? <Eye size={14} /> : <EyeOff size={14} />}
+                {ignorado ? <Eye data-gc="perfil.user-profile-popover.eye" size={14} /> : <EyeOff data-gc="perfil.user-profile-popover.eye-off" size={14} />}
               </DropdownMenuItem>
 
-              <DropdownMenuItem danger onSelect={() => void bloquearUsuario()}>
-                {t("perfil.amizade.bloquear")} <Ban size={14} />
+              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--6" danger onSelect={() => void bloquearUsuario()}>
+                {t("perfil.amizade.bloquear")} <Ban data-gc="perfil.user-profile-popover.ban" size={14} />
               </DropdownMenuItem>
 
               {perfil.friendship === "ACCEPTED" && (
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--7"
                   danger
                   onSelect={() => void desfazerAmizade()}
                 >
-                  {t("perfil.amizade.desfazer")} <UserX size={14} />
+                  {t("perfil.amizade.desfazer")} <UserX data-gc="perfil.user-profile-popover.user-x" size={14} />
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--3" />
 
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--8"
                 onSelect={() => {
                   void copiarTexto(perfil.id);
                   aviso.success(t("perfil.idCopiado"));
                 }}
               >
-                {t("perfil.copiarId")} <Copy size={14} />
+                {t("perfil.copiarId")} <Copy data-gc="perfil.user-profile-popover.copy" size={14} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -390,7 +390,7 @@ const ProfileCard: React.FC<{
   return (
     <>
       {editandoPerfil && eu && (
-        <ProfileEditorModal
+        <ProfileEditorModal data-gc="perfil.user-profile-popover.profile-editor-modal"
           open
           user={eu}
           onClose={() => setEditandoPerfil(false)}
@@ -398,7 +398,7 @@ const ProfileCard: React.FC<{
       )}
 
       {definindoStatus && eu && (
-        <StatusModal
+        <StatusModal data-gc="perfil.user-profile-popover.status-modal"
           open
           user={eu}
           perfil={eu.perfil}
@@ -414,7 +414,7 @@ const ProfileCard: React.FC<{
       )}
 
       {perfilCompleto && (
-        <FullProfileModal
+        <FullProfileModal data-gc="perfil.user-profile-popover.full-profile-modal"
           open
           perfil={perfil}
           cargos={cargosDoMembro}
@@ -422,7 +422,7 @@ const ProfileCard: React.FC<{
         />
       )}
 
-      <ProfileCardVisual
+      <ProfileCardVisual data-gc="perfil.user-profile-popover.profile-card-visual"
         onAbrirPerfil={() => setPerfilCompleto(true)}
         onIrParaNota={
           perfil.friendship === "SELF"
@@ -458,29 +458,29 @@ const ProfileCard: React.FC<{
         acoes={acoes}
         className="rounded-none"
       >
-        <ConexoesDoPerfil conexoes={perfil.perfil?.conexoes} />
+        <ConexoesDoPerfil data-gc="perfil.user-profile-popover.conexoes-do-perfil" conexoes={perfil.perfil?.conexoes} />
 
         {perfil.friendship !== "SELF" && (
-          <CampoDeNota userId={perfil.id} nota={perfil.nota} campo={campoDaNota} />
+          <CampoDeNota data-gc="perfil.user-profile-popover.campo-de-nota" userId={perfil.id} nota={perfil.nota} campo={campoDaNota} />
         )}
 
         {perfil.friendship === "SELF" && guildId && (
-          <EscolherEmblemas
+          <EscolherEmblemas data-gc="perfil.user-profile-popover.escolher-emblemas"
             guildId={guildId}
             disponiveis={detalheDoServidor?.emblemas ?? []}
             vestidos={emblemas}
           />
         )}
 
-        <div className="mt-4 space-y-2">
+        <div data-gc="perfil.user-profile-popover.div--2" className="mt-4 space-y-2">
           {perfil.friendship !== "SELF" && (
             <>
               {perfil.friendship === "PENDING_IN" && (
                 <>
-                  <p className="mb-1 text-center text-xs text-ink-faint">
+                  <p data-gc="perfil.user-profile-popover.p" className="mb-1 text-center text-xs text-ink-faint">
                     {t("perfil.amizade.teMandouPedido")}
                   </p>
-                  <Button
+                  <Button data-gc="perfil.user-profile-popover.button--4"
                     variant="success"
                     onClick={() =>
                       perfil.friendshipId &&
@@ -492,7 +492,7 @@ const ProfileCard: React.FC<{
                     disabled={ocupado}
                     className="w-full"
                   >
-                    <Check size={16} /> {t("perfil.amizade.aceitar")}
+                    <Check data-gc="perfil.user-profile-popover.check" size={16} /> {t("perfil.amizade.aceitar")}
                   </Button>
                 </>
               )}
@@ -502,7 +502,7 @@ const ProfileCard: React.FC<{
       </ProfileCardVisual>
 
       {perfil.friendship === "ACCEPTED" && (
-        <ComposerDoPerfil userId={perfil.id} username={perfil.username} />
+        <ComposerDoPerfil data-gc="perfil.user-profile-popover.composer-do-perfil" userId={perfil.id} username={perfil.username} />
       )}
     </>
   );
@@ -543,9 +543,9 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   };
 
   return (
-    <div className="border-t border-line p-3">
-      <div className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
-        <Input
+    <div data-gc="perfil.user-profile-popover.div--3" className="border-t border-line p-3">
+      <div data-gc="perfil.user-profile-popover.div--4" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
+        <Input data-gc="perfil.user-profile-popover.input"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           onKeyDown={(e) => {
@@ -558,19 +558,19 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
           disabled={enviando}
           className="border-0 bg-transparent text-sm"
         />
-        <button
+        <button data-gc="perfil.user-profile-popover.button--5"
           onClick={() => void enviar()}
           disabled={!texto.trim() || enviando}
           aria-label={t("perfil.recado.enviar")}
           className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
         >
-          <SendHorizontal size={16} />
+          <SendHorizontal data-gc="perfil.user-profile-popover.send-horizontal" size={16} />
         </button>
       </div>
 
       {enviada && (
-        <p className="mt-1.5 flex items-center gap-1 text-xs text-online">
-          <Check size={12} /> {t("perfil.recado.enviada")}
+        <p data-gc="perfil.user-profile-popover.p--2" className="mt-1.5 flex items-center gap-1 text-xs text-online">
+          <Check data-gc="perfil.user-profile-popover.check--2" size={12} /> {t("perfil.recado.enviada")}
         </p>
       )}
     </div>
@@ -583,8 +583,8 @@ const BotaoRedondo: React.FC<{
   onClick?: () => void;
   desabilitado?: boolean;
 }> = ({ children, label, onClick, desabilitado }) => (
-  <Tooltip label={label}>
-    <button
+  <Tooltip data-gc="perfil.user-profile-popover.tooltip" label={label}>
+    <button data-gc="perfil.user-profile-popover.button.on-click"
       onClick={onClick}
       disabled={desabilitado}
       aria-label={label}
@@ -603,31 +603,31 @@ const BotaoDeAmizade: React.FC<{
 
   if (perfil.friendship === "ACCEPTED") {
     return (
-      <BotaoRedondo label={t("perfil.amizade.amigo")} desabilitado>
-        <UserCheck size={16} className="text-online" />
+      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--2" label={t("perfil.amizade.amigo")} desabilitado>
+        <UserCheck data-gc="perfil.user-profile-popover.user-check" size={16} className="text-online" />
       </BotaoRedondo>
     );
   }
 
   if (perfil.friendship === "PENDING_OUT") {
     return (
-      <BotaoRedondo label={t("perfil.amizade.pedidoEnviado")} desabilitado>
-        <Clock size={16} />
+      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--3" label={t("perfil.amizade.pedidoEnviado")} desabilitado>
+        <Clock data-gc="perfil.user-profile-popover.clock" size={16} />
       </BotaoRedondo>
     );
   }
 
   if (perfil.friendship === "PENDING_IN") {
     return (
-      <BotaoRedondo label={t("perfil.amizade.respondaAbaixo")} desabilitado>
-        <UserPlus size={16} className="text-idle" />
+      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--4" label={t("perfil.amizade.respondaAbaixo")} desabilitado>
+        <UserPlus data-gc="perfil.user-profile-popover.user-plus" size={16} className="text-idle" />
       </BotaoRedondo>
     );
   }
 
   return (
-    <BotaoRedondo label={t("perfil.amizade.adicionar")} onClick={onAdicionar}>
-      <UserPlus size={16} />
+    <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo.on-adicionar" label={t("perfil.amizade.adicionar")} onClick={onAdicionar}>
+      <UserPlus data-gc="perfil.user-profile-popover.user-plus--2" size={16} />
     </BotaoRedondo>
   );
 };
@@ -643,14 +643,14 @@ const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
   if (!validas.length) return null;
 
   return (
-    <div className="mt-3">
-      <p className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
+    <div data-gc="perfil.user-profile-popover.div--5" className="mt-3">
+      <p data-gc="perfil.user-profile-popover.p--3" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
         {t("perfil.conexoes")}
       </p>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div data-gc="perfil.user-profile-popover.div--6" className="flex flex-wrap gap-1.5">
         {validas.map(({ conexao, endereco }, indice) => (
-          <a
+          <a data-gc="perfil.user-profile-popover.a"
             key={`${conexao.servico}-${indice}`}
             href={endereco}
             target="_blank"
@@ -658,8 +658,8 @@ const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
             title={`${NOMES_DOS_SERVICOS[conexao.servico]} — ${comoSeLe(conexao)}`}
             className="flex max-w-full items-center gap-1.5 rounded-md bg-surface-3 px-2 py-1 text-11 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
           >
-            <Link2 size={12} className="shrink-0" />
-            <span className="truncate">{comoSeLe(conexao)}</span>
+            <Link2 data-gc="perfil.user-profile-popover.link2" size={12} className="shrink-0" />
+            <span data-gc="perfil.user-profile-popover.span" className="truncate">{comoSeLe(conexao)}</span>
           </a>
         ))}
       </div>

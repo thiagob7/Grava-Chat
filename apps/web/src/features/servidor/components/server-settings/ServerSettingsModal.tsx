@@ -137,22 +137,22 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
   };
 
   return (
-    <DialogPrimitive.Root
+    <DialogPrimitive.Root data-gc="servidor.server-settings.server-settings-modal.dialog-primitiveroot"
       open={open}
       onOpenChange={(next) => !next && onClose()}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-surface-2" />
-        <DialogPrimitive.Content
+        <DialogPrimitive.Overlay data-gc="servidor.server-settings.server-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-surface-2" />
+        <DialogPrimitive.Content data-gc="servidor.server-settings.server-settings-modal.dialog-primitivecontent"
           className="regiao-sem-arrasto fixed inset-0 z-50 flex outline-none"
           aria-label={t("servidor.titulo")}
         >
-          <DialogPrimitive.Title className="sr-only">
+          <DialogPrimitive.Title data-gc="servidor.server-settings.server-settings-modal.dialog-primitivetitle" className="sr-only">
             Configurações de {detail.guild.name}
           </DialogPrimitive.Title>
 
-          <nav className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
-            <p className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <nav data-gc="servidor.server-settings.server-settings-modal.nav" className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
+            <p data-gc="servidor.server-settings.server-settings-modal.p" className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
               {detail.guild.name}
             </p>
 
@@ -161,15 +161,15 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
               if (!itens.length) return null;
 
               return (
-                <div key={grupo.titulo ?? "principal"} className="mb-3">
+                <div data-gc="servidor.server-settings.server-settings-modal.div" key={grupo.titulo ?? "principal"} className="mb-3">
                   {grupo.titulo && (
-                    <p className="mb-1 mt-3 px-2 text-11 font-semibold uppercase tracking-wide text-ink-faint">
+                    <p data-gc="servidor.server-settings.server-settings-modal.p--2" className="mb-1 mt-3 px-2 text-11 font-semibold uppercase tracking-wide text-ink-faint">
                       {t(grupo.titulo)}
                     </p>
                   )}
 
                   {itens.map((id) => (
-                    <button
+                    <button data-gc="servidor.server-settings.server-settings-modal.button"
                       key={id}
                       onClick={() => setSecao(id)}
                       className={cn(
@@ -187,63 +187,63 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             })}
 
             {visivel.excluir && (
-              <button
+              <button data-gc="servidor.server-settings.server-settings-modal.button--2"
                 onClick={() => setSecao("excluir")}
                 className="mt-2 flex w-full items-center justify-between rounded border-t border-line px-2.5 py-1.5 pt-3 text-left text-sm text-danger transition hover:bg-danger/10"
               >
                 {t(ROTULOS.excluir)}
-                <Trash2 size={14} />
+                <Trash2 data-gc="servidor.server-settings.server-settings-modal.trash2" size={14} />
               </button>
             )}
           </nav>
 
-          <div className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
+          <div data-gc="servidor.server-settings.server-settings-modal.div--2" className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
             {secao === "perfil" && (
-              <ServerProfileSection guild={detail.guild} />
+              <ServerProfileSection data-gc="servidor.server-settings.server-settings-modal.server-profile-section" guild={detail.guild} />
             )}
 
-            {secao === "tag" && <ServerTagSection guild={detail.guild} />}
+            {secao === "tag" && <ServerTagSection data-gc="servidor.server-settings.server-settings-modal.server-tag-section" guild={detail.guild} />}
 
-            {secao === "explorar" && <DescobertaSection guild={detail.guild} />}
+            {secao === "explorar" && <DescobertaSection data-gc="servidor.server-settings.server-settings-modal.descoberta-section" guild={detail.guild} />}
 
             {secao === "engajamento" && (
-              <EngagementSection
+              <EngagementSection data-gc="servidor.server-settings.server-settings-modal.engagement-section"
                 guild={detail.guild}
                 channels={detail.channels}
               />
             )}
 
             {secao === "emoji" && (
-              <EmojiSection
+              <EmojiSection data-gc="servidor.server-settings.server-settings-modal.emoji-section"
                 guildId={detail.guild.id}
                 podeGerenciar={pode("MANAGE_EXPRESSIONS")}
               />
             )}
 
             {secao === "figurinhas" && (
-              <StickersSection
+              <StickersSection data-gc="servidor.server-settings.server-settings-modal.stickers-section"
                 guildId={detail.guild.id}
                 podeGerenciar={pode("MANAGE_EXPRESSIONS")}
               />
             )}
 
             {secao === "sons" && (
-              <SoundboardSection
+              <SoundboardSection data-gc="servidor.server-settings.server-settings-modal.soundboard-section"
                 guildId={detail.guild.id}
                 podeGerenciar={pode("MANAGE_EXPRESSIONS")}
               />
             )}
 
             {secao === "auditoria" && (
-              <AuditLogSection guildId={detail.guild.id} members={members} />
+              <AuditLogSection data-gc="servidor.server-settings.server-settings-modal.audit-log-section" guildId={detail.guild.id} members={members} />
             )}
 
             {secao === "banimentos" && (
-              <BansSection guildId={detail.guild.id} />
+              <BansSection data-gc="servidor.server-settings.server-settings-modal.bans-section" guildId={detail.guild.id} />
             )}
 
             {secao === "automod" && (
-              <AutoModSection
+              <AutoModSection data-gc="servidor.server-settings.server-settings-modal.auto-mod-section"
                 guildId={detail.guild.id}
                 channels={detail.channels}
                 roles={detail.roles}
@@ -251,7 +251,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "emblemas" && (
-              <EmblemasSection
+              <EmblemasSection data-gc="servidor.server-settings.server-settings-modal.emblemas-section"
                 guildId={detail.guild.id}
                 emblemas={detail.emblemas}
                 editavel={canManage}
@@ -259,7 +259,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "membros" && (
-              <MembersSection
+              <MembersSection data-gc="servidor.server-settings.server-settings-modal.members-section"
                 guild={detail.guild}
                 members={members}
                 roles={detail.roles}
@@ -272,15 +272,15 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "convites" && (
-              <InvitesSection guildId={detail.guild.id} />
+              <InvitesSection data-gc="servidor.server-settings.server-settings-modal.invites-section" guildId={detail.guild.id} />
             )}
 
             {secao === "excluir" && (
-              <DeleteGuildSection guild={detail.guild} onClose={onClose} />
+              <DeleteGuildSection data-gc="servidor.server-settings.server-settings-modal.delete-guild-section.on-close" guild={detail.guild} onClose={onClose} />
             )}
 
             {secao === "cargos" && (
-              <RolesSection
+              <RolesSection data-gc="servidor.server-settings.server-settings-modal.roles-section"
                 guildId={detail.guild.id}
                 members={members}
                 minhasPermissoes={detail.permissions as Permission[]}
@@ -290,22 +290,22 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "integracoes" && (
-              <IntegrationsSection
+              <IntegrationsSection data-gc="servidor.server-settings.server-settings-modal.integrations-section"
                 guildId={detail.guild.id}
                 channels={detail.channels}
               />
             )}
           </div>
 
-          <button
+          <button data-gc="servidor.server-settings.server-settings-modal.button.on-close"
             onClick={onClose}
             aria-label={t("comum.fechar")}
             className="absolute right-10 top-12 flex flex-col items-center gap-1 text-ink-muted transition hover:text-ink"
           >
-            <span className="flex size-9 items-center justify-center rounded-full border-2 border-ink-faint">
-              <X size={18} />
+            <span data-gc="servidor.server-settings.server-settings-modal.span" className="flex size-9 items-center justify-center rounded-full border-2 border-ink-faint">
+              <X data-gc="servidor.server-settings.server-settings-modal.x" size={18} />
             </span>
-            <span className="text-10 font-semibold">ESC</span>
+            <span data-gc="servidor.server-settings.server-settings-modal.span--2" className="text-10 font-semibold">ESC</span>
           </button>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

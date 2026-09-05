@@ -64,24 +64,24 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
   const podeCriar = Boolean(nome.trim()) && Boolean(emoji.trim() || iconUrl);
 
   return (
-    <div className="max-w-xl">
-      <h2 className="text-xl font-semibold">{t("servidor.emblemas.titulo")}</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+    <div data-gc="servidor.server-settings.emblemas-section.div" className="max-w-xl">
+      <h2 data-gc="servidor.server-settings.emblemas-section.h2" className="text-xl font-semibold">{t("servidor.emblemas.titulo")}</h2>
+      <p data-gc="servidor.server-settings.emblemas-section.p" className="mt-1 text-sm text-ink-muted">
         Ícones que qualquer membro pode vestir ao lado do nome. Você cria aqui;
         cada um escolhe quais usar no próprio cartão de perfil.
       </p>
 
-      <div className="mt-6 space-y-2">
+      <div data-gc="servidor.server-settings.emblemas-section.div--2" className="mt-6 space-y-2">
         {emblemas.map((emblema) => (
-          <div
+          <div data-gc="servidor.server-settings.emblemas-section.div--3"
             key={emblema.id}
             className="flex items-center gap-3 rounded bg-surface-1 px-3 py-2.5"
           >
-            <span className="flex size-7 items-center justify-center">
+            <span data-gc="servidor.server-settings.emblemas-section.span" className="flex size-7 items-center justify-center">
               {emblema.emoji ? (
-                <span className="text-lg leading-none">{emblema.emoji}</span>
+                <span data-gc="servidor.server-settings.emblemas-section.span--2" className="text-lg leading-none">{emblema.emoji}</span>
               ) : emblema.iconUrl ? (
-                <img
+                <img data-gc="servidor.server-settings.emblemas-section.img"
                   src={emblema.iconUrl}
                   alt=""
                   className="size-6 object-contain"
@@ -89,12 +89,12 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               ) : null}
             </span>
 
-            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+            <span data-gc="servidor.server-settings.emblemas-section.span--3" className="min-w-0 flex-1 truncate text-sm font-medium">
               {emblema.nome}
             </span>
 
             {editavel && (
-              <button
+              <button data-gc="servidor.server-settings.emblemas-section.button"
                 onClick={() =>
                   void confirmar({
                     titulo: `Apagar o emblema ${emblema.nome}?`,
@@ -109,27 +109,27 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
                 aria-label={`Apagar ${emblema.nome}`}
                 className="rounded p-1.5 text-ink-faint transition hover:bg-surface-3 hover:text-danger"
               >
-                <Trash2 size={15} />
+                <Trash2 data-gc="servidor.server-settings.emblemas-section.trash2" size={15} />
               </button>
             )}
           </div>
         ))}
 
         {!emblemas.length && (
-          <p className="rounded bg-surface-1 px-3 py-6 text-center text-sm text-ink-faint">
+          <p data-gc="servidor.server-settings.emblemas-section.p--2" className="rounded bg-surface-1 px-3 py-6 text-center text-sm text-ink-faint">
             {t("servidor.emblemas.vazio")}
           </p>
         )}
       </div>
 
       {editavel && emblemas.length < LIMITS.emblemasPorServidor && (
-        <div className="mt-6 rounded bg-surface-1 p-4">
-          <p className="mb-3 text-sm font-medium">{t("servidor.emblemas.novo")}</p>
+        <div data-gc="servidor.server-settings.emblemas-section.div--4" className="mt-6 rounded bg-surface-1 p-4">
+          <p data-gc="servidor.server-settings.emblemas-section.p--3" className="mb-3 text-sm font-medium">{t("servidor.emblemas.novo")}</p>
 
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <Label htmlFor="emblema-nome">{t("comum.nome")}</Label>
-              <Input
+          <div data-gc="servidor.server-settings.emblemas-section.div--5" className="flex gap-3">
+            <div data-gc="servidor.server-settings.emblemas-section.div--6" className="flex-1">
+              <Label data-gc="servidor.server-settings.emblemas-section.label" htmlFor="emblema-nome">{t("comum.nome")}</Label>
+              <Input data-gc="servidor.server-settings.emblemas-section.input"
                 id="emblema-nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
@@ -138,9 +138,9 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               />
             </div>
 
-            <div className="w-24">
-              <Label htmlFor="emblema-emoji">{t("comum.emoji")}</Label>
-              <Input
+            <div data-gc="servidor.server-settings.emblemas-section.div--7" className="w-24">
+              <Label data-gc="servidor.server-settings.emblemas-section.label--2" htmlFor="emblema-emoji">{t("comum.emoji")}</Label>
+              <Input data-gc="servidor.server-settings.emblemas-section.input--2"
                 id="emblema-emoji"
                 value={emoji}
                 onChange={(e) => {
@@ -153,14 +153,14 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             </div>
           </div>
 
-          <div className="mt-3 flex items-center gap-2">
-            <Button
+          <div data-gc="servidor.server-settings.emblemas-section.div--8" className="mt-3 flex items-center gap-2">
+            <Button data-gc="servidor.server-settings.emblemas-section.button--2"
               variant="surface"
               size="sm"
               onClick={() => arquivo.current?.click()}
               disabled={uploadImage.isPending}
             >
-              <ImageUp size={14} />
+              <ImageUp data-gc="servidor.server-settings.emblemas-section.image-up" size={14} />
               {uploadImage.isPending
                 ? "Enviando…"
                 : iconUrl
@@ -169,10 +169,10 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             </Button>
 
             {iconUrl && (
-              <img src={iconUrl} alt="" className="size-6 object-contain" />
+              <img data-gc="servidor.server-settings.emblemas-section.img--2" src={iconUrl} alt="" className="size-6 object-contain" />
             )}
 
-            <input
+            <input data-gc="servidor.server-settings.emblemas-section.input--3"
               ref={arquivo}
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -180,7 +180,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               className="hidden"
             />
 
-            <Button
+            <Button data-gc="servidor.server-settings.emblemas-section.button--3"
               size="sm"
               className="ml-auto"
               disabled={!podeCriar || criar.isPending}
@@ -195,7 +195,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             </Button>
           </div>
 
-          <p className="mt-2 text-xs text-ink-faint">
+          <p data-gc="servidor.server-settings.emblemas-section.p--4" className="mt-2 text-xs text-ink-faint">
             Emoji ou imagem, não os dois. Até {LIMITS.emblemasPorServidor}{" "}
             emblemas por servidor.
           </p>

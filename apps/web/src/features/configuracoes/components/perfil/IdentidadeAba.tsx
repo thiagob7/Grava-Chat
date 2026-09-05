@@ -41,9 +41,9 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Avatar
+    <div data-gc="configuracoes.perfil.identidade-aba.div" className="space-y-6">
+      <div data-gc="configuracoes.perfil.identidade-aba.div--2" className="flex items-center gap-4">
+        <Avatar data-gc="configuracoes.perfil.identidade-aba.avatar"
           id={id}
           name={rascunho.displayName}
           url={rascunho.avatarUrl}
@@ -52,24 +52,24 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
           animar
         />
 
-        <div>
-          <Button
+        <div data-gc="configuracoes.perfil.identidade-aba.div--3">
+          <Button data-gc="configuracoes.perfil.identidade-aba.button"
             variant="surface"
             size="sm"
             onClick={() => escolherFoto.current?.click()}
             disabled={enviando}
           >
-            <Upload size={14} />
+            <Upload data-gc="configuracoes.perfil.identidade-aba.upload" size={14} />
             {enviando ? "Enviando…" : "Trocar foto"}
           </Button>
 
-          <p className="mt-1.5 text-xs text-ink-faint">
+          <p data-gc="configuracoes.perfil.identidade-aba.p" className="mt-1.5 text-xs text-ink-faint">
             {economia
               ? `Comprimida antes de subir: ${economia}`
               : "A imagem é reduzida no navegador antes de subir."}
           </p>
 
-          <input
+          <input data-gc="configuracoes.perfil.identidade-aba.input"
             ref={escolherFoto}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
@@ -79,9 +79,9 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="display-name">Nome de exibição</Label>
-        <Input
+      <div data-gc="configuracoes.perfil.identidade-aba.div--4">
+        <Label data-gc="configuracoes.perfil.identidade-aba.label" htmlFor="display-name">Nome de exibição</Label>
+        <Input data-gc="configuracoes.perfil.identidade-aba.input--2"
           id="display-name"
           value={rascunho.displayName}
           onChange={(e) => definir("displayName", e.target.value)}
@@ -89,17 +89,17 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         />
       </div>
 
-      <div>
-        <Label htmlFor="username">Nome de usuário</Label>
-        <Input id="username" value={`@${username}`} readOnly className="text-ink-faint" />
-        <p className="mt-1 text-xs text-ink-faint">
+      <div data-gc="configuracoes.perfil.identidade-aba.div--5">
+        <Label data-gc="configuracoes.perfil.identidade-aba.label--2" htmlFor="username">Nome de usuário</Label>
+        <Input data-gc="configuracoes.perfil.identidade-aba.input--3" id="username" value={`@${username}`} readOnly className="text-ink-faint" />
+        <p data-gc="configuracoes.perfil.identidade-aba.p--2" className="mt-1 text-xs text-ink-faint">
           É por aqui que seus amigos te encontram. Ainda não dá pra trocar.
         </p>
       </div>
 
-      <div>
-        <Label htmlFor="bio">Sobre mim</Label>
-        <Textarea
+      <div data-gc="configuracoes.perfil.identidade-aba.div--6">
+        <Label data-gc="configuracoes.perfil.identidade-aba.label--3" htmlFor="bio">Sobre mim</Label>
+        <Textarea data-gc="configuracoes.perfil.identidade-aba.textarea"
           id="bio"
           value={rascunho.bio}
           onChange={(e) => definir("bio", e.target.value)}
@@ -109,29 +109,29 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         />
       </div>
 
-      <div className="h-px bg-line" />
+      <div data-gc="configuracoes.perfil.identidade-aba.div--7" className="h-px bg-line" />
 
-      <div>
-        <Label>Faixa do cartão</Label>
-        <div className="flex items-center gap-2">
-          <Button
+      <div data-gc="configuracoes.perfil.identidade-aba.div--8">
+        <Label data-gc="configuracoes.perfil.identidade-aba.label--4">Faixa do cartão</Label>
+        <div data-gc="configuracoes.perfil.identidade-aba.div--9" className="flex items-center gap-2">
+          <Button data-gc="configuracoes.perfil.identidade-aba.button--2"
             variant="surface"
             size="sm"
             onClick={() => setEscolhendoFaixa(true)}
             disabled={enviando || importando}
           >
-            <ImageUp size={14} />
+            <ImageUp data-gc="configuracoes.perfil.identidade-aba.image-up" size={14} />
             {importando ? "Trazendo o GIF…" : "Escolher imagem ou GIF"}
           </Button>
 
           {rascunho.bannerUrl && (
-            <Button variant="ghost" size="sm" onClick={() => definir("bannerUrl", null)}>
-              <X size={14} /> Tirar
+            <Button data-gc="configuracoes.perfil.identidade-aba.button--3" variant="ghost" size="sm" onClick={() => definir("bannerUrl", null)}>
+              <X data-gc="configuracoes.perfil.identidade-aba.x" size={14} /> Tirar
             </Button>
           )}
         </div>
 
-        <input
+        <input data-gc="configuracoes.perfil.identidade-aba.input--4"
           ref={escolherBanner}
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
@@ -139,13 +139,13 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
           className="hidden"
         />
 
-        <p className="mt-1.5 text-xs text-ink-faint">
+        <p data-gc="configuracoes.perfil.identidade-aba.p--3" className="mt-1.5 text-xs text-ink-faint">
           PNG, JPG ou GIF até {Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. Sem imagem, vale a
           cor abaixo.
         </p>
       </div>
 
-      <SeletorDeImagem
+      <SeletorDeImagem data-gc="configuracoes.perfil.identidade-aba.seletor-de-imagem"
         open={escolhendoFaixa}
         onClose={() => setEscolhendoFaixa(false)}
         onArquivo={() => {
@@ -157,20 +157,20 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         rodape={`PNG, JPG ou GIF até ${Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. O GIF continua animado — ele não passa pelo redimensionador.`}
       />
 
-      <CampoDeCor
+      <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor"
         label="Cor da faixa"
         valor={rascunho.bannerCor}
         onMudar={(cor) => definir("bannerCor", cor)}
         dica="Usada quando não há imagem. Sem escolha, fica a cor gerada do seu id."
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <CampoDeCor
+      <div data-gc="configuracoes.perfil.identidade-aba.div--10" className="grid grid-cols-2 gap-4">
+        <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor--2"
           label="Tema — cor 1"
           valor={rascunho.temaPrimario}
           onMudar={(cor) => definir("temaPrimario", cor)}
         />
-        <CampoDeCor
+        <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor--3"
           label="Tema — cor 2"
           valor={rascunho.temaSecundario}
           onMudar={(cor) => definir("temaSecundario", cor)}

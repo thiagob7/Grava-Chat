@@ -22,12 +22,12 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
   const { t } = useTranslation();
 
   return (
-  <div className="max-w-3xl pb-10">
-    <h2 className="text-xl font-semibold">{t("servidor.cargos.abaPermissoes")}</h2>
-    <p className="mt-1 text-sm text-ink-muted">{t("servidor.canal.permissoesDescricao")}</p>
+  <div data-gc="servidor.channel-settings.channel-permissions-section.div" className="max-w-3xl pb-10">
+    <h2 data-gc="servidor.channel-settings.channel-permissions-section.h2" className="text-xl font-semibold">{t("servidor.cargos.abaPermissoes")}</h2>
+    <p data-gc="servidor.channel-settings.channel-permissions-section.p" className="mt-1 text-sm text-ink-muted">{t("servidor.canal.permissoesDescricao")}</p>
 
-    <div className="mt-6">
-      <ChannelPermissionsBoard
+    <div data-gc="servidor.channel-settings.channel-permissions-section.div--2" className="mt-6">
+      <ChannelPermissionsBoard data-gc="servidor.channel-settings.channel-permissions-section.channel-permissions-board"
         guildId={guildId}
         channelId={channel.id}
         channelType={channel.type}

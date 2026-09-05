@@ -97,36 +97,36 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
   ];
 
   return (
-    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t("chamada.permissoes.titulo")}</DialogTitle>
+    <Dialog data-gc="app.permissoes-do-mac.dialog" open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent data-gc="app.permissoes-do-mac.dialog-content" className="max-w-lg">
+        <DialogHeader data-gc="app.permissoes-do-mac.dialog-header">
+          <DialogTitle data-gc="app.permissoes-do-mac.dialog-title">{t("chamada.permissoes.titulo")}</DialogTitle>
         </DialogHeader>
 
-        <DialogBody>
-          <p className="text-sm text-ink-muted">
+        <DialogBody data-gc="app.permissoes-do-mac.dialog-body">
+          <p data-gc="app.permissoes-do-mac.p" className="text-sm text-ink-muted">
             O macOS pergunta uma vez só, e depois só muda pelo painel dele. Aqui
             dá pra ver o que está valendo e resolver o que faltou.
           </p>
 
-          <div className="mt-4 space-y-2">
+          <div data-gc="app.permissoes-do-mac.div" className="mt-4 space-y-2">
             {linhas.map((linha) => (
-              <div
+              <div data-gc="app.permissoes-do-mac.div--2"
                 key={linha.chave}
                 className="flex items-center gap-3 rounded-lg border border-line bg-surface-1 p-3"
               >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{linha.titulo}</p>
-                  <p className="mt-0.5 text-xs text-ink-muted">{linha.descricao}</p>
+                <div data-gc="app.permissoes-do-mac.div--3" className="min-w-0 flex-1">
+                  <p data-gc="app.permissoes-do-mac.p--2" className="text-sm font-medium">{linha.titulo}</p>
+                  <p data-gc="app.permissoes-do-mac.p--3" className="mt-0.5 text-xs text-ink-muted">{linha.descricao}</p>
                 </div>
 
                 {linha.estado === "concedida" ? (
-                  <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-online/10 px-2.5 py-1.5 text-xs font-medium text-online">
-                    <Check size={14} /> {t("chamada.permissoes.concedida")}
+                  <span data-gc="app.permissoes-do-mac.span" className="flex shrink-0 items-center gap-1.5 rounded-md bg-online/10 px-2.5 py-1.5 text-xs font-medium text-online">
+                    <Check data-gc="app.permissoes-do-mac.check" size={14} /> {t("chamada.permissoes.concedida")}
                   </span>
                 ) : (
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span
+                  <div data-gc="app.permissoes-do-mac.div--4" className="flex shrink-0 items-center gap-2">
+                    <span data-gc="app.permissoes-do-mac.span--2"
                       className={cn(
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium",
                         linha.estado === "negada"
@@ -134,16 +134,16 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
                           : "bg-amber-500/10 text-amber-400",
                       )}
                     >
-                      {linha.estado === "negada" ? <X size={14} /> : null}
+                      {linha.estado === "negada" ? <X data-gc="app.permissoes-do-mac.x" size={14} /> : null}
                       {t(linha.estado === "negada" ? "chamada.permissoes.negada" : "chamada.permissoes.naoPedida")}
                     </span>
 
                     {linha.conceder && linha.estado === "indefinida" ? (
-                      <Button size="sm" onClick={() => void linha.conceder?.()}>
+                      <Button data-gc="app.permissoes-do-mac.button" size="sm" onClick={() => void linha.conceder?.()}>
                         Permitir
                       </Button>
                     ) : (
-                      <Button variant="surface" size="sm" onClick={linha.ajustes}>
+                      <Button data-gc="app.permissoes-do-mac.button.ajustes" variant="surface" size="sm" onClick={linha.ajustes}>
                         Abrir ajustes
                       </Button>
                     )}

@@ -355,47 +355,47 @@ export const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
-      <ModalIlustrado
+    <div data-gc="conversa.composer.div" className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
+      <ModalIlustrado data-gc="conversa.composer.modal-ilustrado"
         aberto={Boolean(textoLongo)}
         onFechar={() => setTextoLongo(null)}
-        arte={<ArteDeTextoLongo />}
+        arte={<ArteDeTextoLongo data-gc="conversa.composer.arte-de-texto-longo" />}
         titulo={t("conversa.caixa.longaTitulo")}
         descricao={t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
       >
-        <Button onClick={mandarComoArquivo}>
-          <Paperclip size={16} /> {t("conversa.caixa.enviarComoArquivo")}
+        <Button data-gc="conversa.composer.button.mandar-como-arquivo" onClick={mandarComoArquivo}>
+          <Paperclip data-gc="conversa.composer.paperclip" size={16} /> {t("conversa.caixa.enviarComoArquivo")}
         </Button>
 
-        <Button variant="ghost" onClick={() => setTextoLongo(null)}>
+        <Button data-gc="conversa.composer.button" variant="ghost" onClick={() => setTextoLongo(null)}>
           {t("comum.cancelar")}
         </Button>
       </ModalIlustrado>
 
-      <ModalIlustrado
+      <ModalIlustrado data-gc="conversa.composer.modal-ilustrado.esquecer-grande-demais"
         aberto={Boolean(anexos.grandeDemais)}
         onFechar={anexos.esquecerGrandeDemais}
-        arte={<ArteDeArquivoGrande />}
+        arte={<ArteDeArquivoGrande data-gc="conversa.composer.arte-de-arquivo-grande" />}
         titulo={t("conversa.caixa.arquivoGrandeTitulo")}
         descricao={t("conversa.caixa.arquivoGrandeDescricao", {
           arquivo: anexos.grandeDemais ?? "",
           limite: Math.round(LIMITS.attachmentBytes / (1024 * 1024)),
         })}
       >
-        <Button onClick={anexos.esquecerGrandeDemais}>{t("comum.fechar")}</Button>
+        <Button data-gc="conversa.composer.button.esquecer-grande-demais" onClick={anexos.esquecerGrandeDemais}>{t("comum.fechar")}</Button>
       </ModalIlustrado>
       {faltam > 0 && (
-        <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
-          <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
+        <Tooltip data-gc="conversa.composer.tooltip" label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
+          <p data-gc="conversa.composer.p" className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
             {t("conversa.caixa.modoLento", {
               tempo: `${String(Math.floor(faltam / 60)).padStart(2, "0")}:${String(faltam % 60).padStart(2, "0")}`,
             })}
-            <Timer size={13} />
+            <Timer data-gc="conversa.composer.timer" size={13} />
           </p>
         </Tooltip>
       )}
 
-      <div
+      <div data-gc="conversa.composer.div--2"
         onDragOver={(e) => {
           e.preventDefault();
           setArrastando(true);
@@ -414,13 +414,13 @@ export const Composer: React.FC<ComposerProps> = ({
         )}
       >
         {resposta && (
-          <div className="flex items-center gap-2 rounded-t-lg bg-surface-3 px-3 py-1.5 text-sm @sm:px-4">
-            <span className="min-w-0 flex-1 truncate text-ink-muted">
+          <div data-gc="conversa.composer.div--3" className="flex items-center gap-2 rounded-t-lg bg-surface-3 px-3 py-1.5 text-sm @sm:px-4">
+            <span data-gc="conversa.composer.span" className="min-w-0 flex-1 truncate text-ink-muted">
               {t("conversa.caixa.respondendoPara")}{" "}
-              <span className="font-semibold text-ink">{resposta.autor}</span>
+              <span data-gc="conversa.composer.span--2" className="font-semibold text-ink">{resposta.autor}</span>
             </span>
 
-            <button
+            <button data-gc="conversa.composer.button.alternar-mencao"
               type="button"
               onClick={alternarMencao}
               title={t(
@@ -438,32 +438,32 @@ export const Composer: React.FC<ComposerProps> = ({
               @ {t(mencionarAoResponder ? "conversa.caixa.ligado" : "conversa.caixa.desligado")}
             </button>
 
-            <button
+            <button data-gc="conversa.composer.button.cancelar-resposta"
               type="button"
               onClick={cancelarResposta}
               aria-label={t("conversa.caixa.pararDeResponder")}
               className="shrink-0 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink"
             >
-              <X size={14} />
+              <X data-gc="conversa.composer.x" size={14} />
             </button>
           </div>
         )}
 
-        <AttachmentTray
+        <AttachmentTray data-gc="conversa.composer.attachment-tray.remove"
           items={anexos.items}
           onRemove={anexos.remove}
           onPatch={anexos.patchAttachment}
         />
 
-        <div className="relative flex items-end gap-1.5 px-2 @sm:gap-3 @sm:px-4">
-          <MencaoSugestoes
+        <div data-gc="conversa.composer.div--4" className="relative flex items-end gap-1.5 px-2 @sm:gap-3 @sm:px-4">
+          <MencaoSugestoes data-gc="conversa.composer.mencao-sugestoes.inserir-mencao"
             itens={sugestoes}
             indice={escolhido}
             onEscolher={inserirMencao}
             onPassarMouse={setEscolhido}
           />
 
-          <ComandoSugestoes
+          <ComandoSugestoes data-gc="conversa.composer.comando-sugestoes.escolher-comando"
             itens={comandos}
             indice={escolhido}
             onEscolher={escolherComando}
@@ -471,28 +471,28 @@ export const Composer: React.FC<ComposerProps> = ({
           />
 
           {!comandos.length && !sugestoes.length && invocacao && (
-            <DicaDoComando
+            <DicaDoComando data-gc="conversa.composer.dica-do-comando"
               comando={invocacao.comando}
               preenchidas={invocacao.opcoes}
               faltando={invocacao.faltando}
             />
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild disabled={!podeEscrever}>
-              <button
+          <DropdownMenu data-gc="conversa.composer.dropdown-menu">
+            <DropdownMenuTrigger data-gc="conversa.composer.dropdown-menu-trigger" asChild disabled={!podeEscrever}>
+              <button data-gc="conversa.composer.button--2"
                 aria-label={t("conversa.caixa.mais")}
                 className="py-3 text-ink-muted transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <Plus size={22} />
+                <Plus data-gc="conversa.composer.plus" size={22} />
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="start" side="top" className="w-56">
-              <DropdownMenuItem disabled={!podeAnexar} onSelect={() => inputArquivo.current?.click()}>
-                {t("conversa.caixa.enviarArquivo")} <FileUp size={16} />
+            <DropdownMenuContent data-gc="conversa.composer.dropdown-menu-content" align="start" side="top" className="w-56">
+              <DropdownMenuItem data-gc="conversa.composer.dropdown-menu-item" disabled={!podeAnexar} onSelect={() => inputArquivo.current?.click()}>
+                {t("conversa.caixa.enviarArquivo")} <FileUp data-gc="conversa.composer.file-up" size={16} />
               </DropdownMenuItem>
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="conversa.composer.dropdown-menu-item--2"
                 disabled={!podeAnexar || !value.trim()}
                 onSelect={() => {
                   const texto = value;
@@ -500,16 +500,16 @@ export const Composer: React.FC<ComposerProps> = ({
                   virarArquivo(texto);
                 }}
               >
-                {t("conversa.caixa.textoComoArquivo")} <Paperclip size={16} />
+                {t("conversa.caixa.textoComoArquivo")} <Paperclip data-gc="conversa.composer.paperclip--2" size={16} />
               </DropdownMenuItem>
 
-              <DropdownMenuItem onSelect={() => setCriandoEnquete(true)}>
-                {t("conversa.caixa.criarEnquete")} <BarChart3 size={16} />
+              <DropdownMenuItem data-gc="conversa.composer.dropdown-menu-item--3" onSelect={() => setCriandoEnquete(true)}>
+                {t("conversa.caixa.criarEnquete")} <BarChart3 data-gc="conversa.composer.bar-chart3" size={16} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <input
+          <input data-gc="conversa.composer.input"
             ref={inputArquivo}
             type="file"
             multiple
@@ -520,15 +520,15 @@ export const Composer: React.FC<ComposerProps> = ({
             className="hidden"
           />
 
-          <div className="relative min-w-0 flex-1">
-          <EspelhoDoCompositor
+          <div data-gc="conversa.composer.div--5" className="relative min-w-0 flex-1">
+          <EspelhoDoCompositor data-gc="conversa.composer.espelho-do-compositor"
             ref={espelho}
             texto={value}
             fontFamily={familiaDaFonte(fonte) ?? undefined}
             className="py-3"
           />
 
-          <textarea
+          <textarea data-gc="conversa.composer.textarea.colar"
             ref={textarea}
             value={value}
             rows={1}
@@ -634,9 +634,9 @@ export const Composer: React.FC<ComposerProps> = ({
           />
           </div>
 
-          <div className="mb-1.5 flex shrink-0 items-center gap-1 @sm:gap-3">
-            <span className="hidden @sm:flex">
-            <SeletorDeFonte
+          <div data-gc="conversa.composer.div--6" className="mb-1.5 flex shrink-0 items-center gap-1 @sm:gap-3">
+            <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
+            <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}
               disabled={!podeEscrever}
               onEscolher={(nova) => {
@@ -647,25 +647,25 @@ export const Composer: React.FC<ComposerProps> = ({
             />
             </span>
 
-            <Popover
+            <Popover data-gc="conversa.composer.popover"
               open={seletor !== null}
               onOpenChange={(aberto) => setSeletor(aberto ? (seletor ?? "emoji") : null)}
             >
-              <PopoverTrigger asChild>
-                <span className="flex items-center">
-                  <BotaoDeExpressao
+              <PopoverTrigger data-gc="conversa.composer.popover-trigger" asChild>
+                <span data-gc="conversa.composer.span--4" className="flex items-center">
+                  <BotaoDeExpressao data-gc="conversa.composer.botao-de-expressao"
                     label={t("conversa.caixa.expressoes")}
                     ativo={seletor !== null}
                     onClick={() => setSeletor(seletor ? null : "emoji")}
                   >
-                    <Smile size={20} />
+                    <Smile data-gc="conversa.composer.smile" size={20} />
                   </BotaoDeExpressao>
                 </span>
               </PopoverTrigger>
 
-              <PopoverContent side="top" align="end" className="w-auto border-0 bg-transparent p-0">
+              <PopoverContent data-gc="conversa.composer.popover-content" side="top" align="end" className="w-auto border-0 bg-transparent p-0">
                 {seletor && (
-                  <ExpressionPicker
+                  <ExpressionPicker data-gc="conversa.composer.expression-picker.enviar-figurinha"
                     guildId={guildId}
                     abaInicial={seletor}
                     onFechar={() => setSeletor(null)}
@@ -678,18 +678,18 @@ export const Composer: React.FC<ComposerProps> = ({
             </Popover>
 
             {mostrarBotaoDeEnviar && (
-              <Tooltip
+              <Tooltip data-gc="conversa.composer.tooltip--2"
                 label={t(
                   anexos.subindo ? "conversa.caixa.aguardandoEnvio" : "conversa.caixa.enviar",
                 )}
               >
-                <button
+                <button data-gc="conversa.composer.button.submit"
                   onClick={submit}
                   disabled={!podeEnviar}
                   aria-label={t("conversa.caixa.enviar")}
                   className="flex size-9 shrink-0 items-center justify-center rounded text-ink-muted transition hover:text-brand disabled:opacity-30"
                 >
-                  <Send size={20} />
+                  <Send data-gc="conversa.composer.send" size={20} />
                 </button>
               </Tooltip>
             )}
@@ -697,7 +697,7 @@ export const Composer: React.FC<ComposerProps> = ({
         </div>
       </div>
 
-      <CreatePollModal
+      <CreatePollModal data-gc="conversa.composer.create-poll-modal"
         open={criandoEnquete}
         onClose={() => setCriandoEnquete(false)}
         onCriar={(poll) => {
@@ -717,8 +717,8 @@ interface BotaoDeExpressaoProps {
 }
 
 const BotaoDeExpressao: React.FC<BotaoDeExpressaoProps> = ({ label, ativo, onClick, children }) => (
-  <Tooltip label={label}>
-    <button
+  <Tooltip data-gc="conversa.composer.tooltip--3" label={label}>
+    <button data-gc="conversa.composer.button.on-click"
       onClick={onClick}
       aria-label={label}
       className={cn(

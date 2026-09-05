@@ -17,10 +17,10 @@ export const Tooltip = ({
   atalho?: string[];
   side?: "top" | "right" | "bottom" | "left";
 }) => (
-  <TooltipPrimitive.Root delayDuration={300}>
+  <TooltipPrimitive.Root data-gc="ui.tooltip.tooltip-primitiveroot" delayDuration={300}>
     <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
     <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
+      <TooltipPrimitive.Content data-gc="ui.tooltip.tooltip-primitivecontent"
         side={side}
         sideOffset={6}
         className={cn(
@@ -29,11 +29,11 @@ export const Tooltip = ({
         )}
       >
         {atalho ? (
-          <span className="flex items-center gap-2">
+          <span data-gc="ui.tooltip.span" className="flex items-center gap-2">
             {label}
-            <span className="flex items-center gap-1">
+            <span data-gc="ui.tooltip.span--2" className="flex items-center gap-1">
               {atalho.map((tecla) => (
-                <kbd
+                <kbd data-gc="ui.tooltip.kbd"
                   key={tecla}
                   className="rounded border border-white/10 bg-surface-3 px-1.5 py-0.5 text-10 font-semibold uppercase text-ink-muted"
                 >
@@ -46,9 +46,9 @@ export const Tooltip = ({
           label
         )}
 
-        <TooltipPrimitive.Arrow asChild width={12} height={6}>
-          <svg className="overflow-visible">
-            <DesenhoDaSeta />
+        <TooltipPrimitive.Arrow data-gc="ui.tooltip.tooltip-primitivearrow" asChild width={12} height={6}>
+          <svg data-gc="ui.tooltip.svg" className="overflow-visible">
+            <DesenhoDaSeta data-gc="ui.tooltip.desenho-da-seta" />
           </svg>
         </TooltipPrimitive.Arrow>
       </TooltipPrimitive.Content>

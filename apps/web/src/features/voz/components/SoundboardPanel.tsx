@@ -83,9 +83,9 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
   }, [surdo]);
 
   return (
-    <Popover open={aberto} onOpenChange={setAberto}>
-      <PopoverTrigger asChild>
-        <button
+    <Popover data-gc="voz.soundboard-panel.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+      <PopoverTrigger data-gc="voz.soundboard-panel.popover-trigger" asChild>
+        <button data-gc="voz.soundboard-panel.button"
           aria-label="Efeitos sonoros"
           aria-disabled={surdo}
           onClick={(e) => surdo && e.preventDefault()}
@@ -94,22 +94,22 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
             surdo ? "cursor-not-allowed opacity-40" : "hover:bg-surface-4 hover:text-ink",
           )}
         >
-          <Tooltip
+          <Tooltip data-gc="voz.soundboard-panel.tooltip"
             label={surdo ? "Ative o áudio pra usar os efeitos sonoros" : "Abrir efeitos sonoros"}
           >
-            <Music2 size={18} />
+            <Music2 data-gc="voz.soundboard-panel.music2" size={18} />
           </Tooltip>
         </button>
       </PopoverTrigger>
 
-      <PopoverContent side="top" align="center" collisionPadding={12} className="w-[21rem] p-0">
-        <div className="flex items-center gap-2 border-b border-divisor p-3">
-          <div className="relative flex-1">
-            <Search
+      <PopoverContent data-gc="voz.soundboard-panel.popover-content" side="top" align="center" collisionPadding={12} className="w-[21rem] p-0">
+        <div data-gc="voz.soundboard-panel.div" className="flex items-center gap-2 border-b border-divisor p-3">
+          <div data-gc="voz.soundboard-panel.div--2" className="relative flex-1">
+            <Search data-gc="voz.soundboard-panel.search"
               size={15}
               className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
             />
-            <Input
+            <Input data-gc="voz.soundboard-panel.input"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Encontre o som perfeito"
@@ -117,14 +117,14 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
             />
           </div>
 
-          <div
+          <div data-gc="voz.soundboard-panel.div.mostrar-volume"
             className="shrink-0"
             onMouseEnter={mostrarVolume}
             onMouseLeave={esconderVolume}
           >
-            <Popover open={volumeAberto} onOpenChange={setVolumeAberto}>
-              <PopoverAnchor asChild>
-                <button
+            <Popover data-gc="voz.soundboard-panel.popover.set-volume-aberto" open={volumeAberto} onOpenChange={setVolumeAberto}>
+              <PopoverAnchor data-gc="voz.soundboard-panel.popover-anchor" asChild>
+                <button data-gc="voz.soundboard-panel.button--2"
                   type="button"
                   aria-pressed={!somDoPainel}
                   aria-label={somDoPainel ? "Desativar os sons" : "Ativar os sons"}
@@ -134,11 +134,11 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                     somDoPainel ? "text-ink-muted hover:text-ink" : "text-danger hover:text-danger/80",
                   )}
                 >
-                  {somDoPainel ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                  {somDoPainel ? <Volume2 data-gc="voz.soundboard-panel.volume2" size={20} /> : <VolumeX data-gc="voz.soundboard-panel.volume-x" size={20} />}
                 </button>
               </PopoverAnchor>
 
-              <PopoverContent
+              <PopoverContent data-gc="voz.soundboard-panel.popover-content.mostrar-volume"
                 side="right"
                 align="center"
                 sideOffset={6}
@@ -149,16 +149,16 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                 onOpenAutoFocus={(e) => e.preventDefault()}
                 className="w-60 p-3"
               >
-                <PopoverArrow />
+                <PopoverArrow data-gc="voz.soundboard-panel.popover-arrow" />
 
-                <div className="mb-2 flex items-center justify-between gap-2 text-xs">
-                  <span className="font-medium text-ink-muted">Volume dos efeitos sonoros</span>
-                  <span className="shrink-0 tabular-nums text-ink-faint">
+                <div data-gc="voz.soundboard-panel.div--3" className="mb-2 flex items-center justify-between gap-2 text-xs">
+                  <span data-gc="voz.soundboard-panel.span" className="font-medium text-ink-muted">Volume dos efeitos sonoros</span>
+                  <span data-gc="voz.soundboard-panel.span--2" className="shrink-0 tabular-nums text-ink-faint">
                     {somDoPainel ? `${porcento}%` : "mudo"}
                   </span>
                 </div>
 
-                <Slider
+                <Slider data-gc="voz.soundboard-panel.slider"
                   min={0}
                   max={1}
                   step={0.05}
@@ -170,7 +170,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                   className={somDoPainel ? undefined : "opacity-50"}
                 />
 
-                <p className="mt-2.5 text-11 leading-snug text-ink-faint">
+                <p data-gc="voz.soundboard-panel.p" className="mt-2.5 text-11 leading-snug text-ink-faint">
                   {somDoPainel
                     ? "Vale só pra você. Clique no alto-falante pra desativar os sons."
                     : "Os sons estão desativados. Clique no alto-falante pra ouvir de novo."}
@@ -180,39 +180,39 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
           </div>
         </div>
 
-        <div className="max-h-72 overflow-y-auto p-3">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <div data-gc="voz.soundboard-panel.div--4" className="max-h-72 overflow-y-auto p-3">
+          <h3 data-gc="voz.soundboard-panel.h3" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Sons do servidor
           </h3>
 
           {!data.sounds.length && (
-            <p className="py-6 text-center text-sm text-ink-muted">
+            <p data-gc="voz.soundboard-panel.p--2" className="py-6 text-center text-sm text-ink-muted">
               Nenhum som ainda. Quem gerencia expressões pode subir até 8 em Configurações do
               servidor.
             </p>
           )}
 
           {data.sounds.length > 0 && !sons.length && (
-            <p className="py-6 text-center text-sm text-ink-muted">Nenhum som com esse nome.</p>
+            <p data-gc="voz.soundboard-panel.p--3" className="py-6 text-center text-sm text-ink-muted">Nenhum som com esse nome.</p>
           )}
 
-          <div className="grid grid-cols-2 gap-2">
+          <div data-gc="voz.soundboard-panel.div--5" className="grid grid-cols-2 gap-2">
             {sons.map((som) => (
-              <button
+              <button data-gc="voz.soundboard-panel.button--3"
                 key={som.id}
                 disabled={!podeUsar || esperando || surdo}
                 onClick={() => tocar(som.id)}
                 title={som.name}
                 className="flex items-center gap-2 rounded-lg bg-surface-2 px-2.5 py-2 text-left transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <span className="shrink-0 text-base leading-none">{som.emoji || "🔊"}</span>
-                <span className="min-w-0 flex-1 truncate text-xs">{som.name}</span>
+                <span data-gc="voz.soundboard-panel.span--3" className="shrink-0 text-base leading-none">{som.emoji || "🔊"}</span>
+                <span data-gc="voz.soundboard-panel.span--4" className="min-w-0 flex-1 truncate text-xs">{som.name}</span>
               </button>
             ))}
           </div>
 
           {!podeUsar && data.sounds.length > 0 && (
-            <p className="mt-3 text-xs text-ink-faint">
+            <p data-gc="voz.soundboard-panel.p--4" className="mt-3 text-xs text-ink-faint">
               Você não tem a permissão “Usar efeitos sonoros” neste servidor.
             </p>
           )}

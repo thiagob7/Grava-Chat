@@ -60,10 +60,10 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
   };
 
   return (
-    <div className={grupoDeCampo}>
+    <div data-gc="servidor.campo-de-nome-de-canal.div" className={grupoDeCampo}>
       {icone}
 
-      <input
+      <input data-gc="servidor.campo-de-nome-de-canal.input"
         ref={campo}
         id={id}
         value={valor}
@@ -76,20 +76,20 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
         className={campoNu}
       />
 
-      <SeletorDeEmoji onEscolher={inserirEmoji}>
-        <button
+      <SeletorDeEmoji data-gc="servidor.campo-de-nome-de-canal.seletor-de-emoji.inserir-emoji" onEscolher={inserirEmoji}>
+        <button data-gc="servidor.campo-de-nome-de-canal.button"
           type="button"
           aria-label="Emoji no nome"
           className="flex size-7 shrink-0 items-center justify-center rounded text-ink-faint transition hover:bg-surface-3 hover:text-ink"
         >
-          <Smile size={16} />
+          <Smile data-gc="servidor.campo-de-nome-de-canal.smile" size={16} />
         </button>
       </SeletorDeEmoji>
 
-      <DropdownMenu>
-        <Tooltip label="Fonte do nome">
-          <DropdownMenuTrigger asChild>
-            <button
+      <DropdownMenu data-gc="servidor.campo-de-nome-de-canal.dropdown-menu">
+        <Tooltip data-gc="servidor.campo-de-nome-de-canal.tooltip" label="Fonte do nome">
+          <DropdownMenuTrigger data-gc="servidor.campo-de-nome-de-canal.dropdown-menu-trigger" asChild>
+            <button data-gc="servidor.campo-de-nome-de-canal.button--2"
               type="button"
               aria-label="Fonte do nome"
               className={cn(
@@ -97,14 +97,14 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
                 fonte === "padrao" ? "text-ink-faint hover:text-ink" : "text-brand",
               )}
             >
-              <IconeDeFonte size={16} />
+              <IconeDeFonte data-gc="servidor.campo-de-nome-de-canal.icone-de-fonte" size={16} />
             </button>
           </DropdownMenuTrigger>
         </Tooltip>
 
-        <DropdownMenuContent align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
+        <DropdownMenuContent data-gc="servidor.campo-de-nome-de-canal.dropdown-menu-content" align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
           {FONTES.map((opcao) => (
-            <DropdownMenuItem
+            <DropdownMenuItem data-gc="servidor.campo-de-nome-de-canal.dropdown-menu-item"
               key={opcao.id}
               onSelect={() => onFonte(opcao.id)}
               className={cn("text-base", opcao.id === fonte && "text-brand")}

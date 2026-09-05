@@ -21,11 +21,11 @@ export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({
   const [copiado, setCopiado] = useState(false);
 
   return (
-    <Tooltip
+    <Tooltip data-gc="configuracoes.botao-de-link.tooltip"
       label={copiado ? "Link copiado" : `Copiar link para ${oQue}`}
       side="top"
     >
-      <button
+      <button data-gc="configuracoes.botao-de-link.button"
         type="button"
         aria-label={`Copiar link para ${oQue}`}
         onClick={() => {
@@ -43,7 +43,7 @@ export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({
           copiado && "text-online opacity-100",
         )}
       >
-        <Link2 size={15} />
+        <Link2 data-gc="configuracoes.botao-de-link.link2" size={15} />
       </button>
     </Tooltip>
   );

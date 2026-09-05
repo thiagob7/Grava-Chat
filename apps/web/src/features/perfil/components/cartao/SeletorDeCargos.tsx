@@ -49,24 +49,24 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
   };
 
   return (
-    <Popover onOpenChange={(aberto) => !aberto && setBusca("")}>
-      <PopoverTrigger asChild>
-        <button
+    <Popover data-gc="perfil.cartao.seletor-de-cargos.popover" onOpenChange={(aberto) => !aberto && setBusca("")}>
+      <PopoverTrigger data-gc="perfil.cartao.seletor-de-cargos.popover-trigger" asChild>
+        <button data-gc="perfil.cartao.seletor-de-cargos.button"
           type="button"
           disabled={desabilitado}
           aria-label={t("perfil.cargos.adicionar")}
           title={t("perfil.cargos.adicionar")}
           className="flex size-[22px] items-center justify-center rounded bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
         >
-          <Plus size={14} />
+          <Plus data-gc="perfil.cartao.seletor-de-cargos.plus" size={14} />
         </button>
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="w-60 p-1.5" onKeyDown={navegar}>
+      <PopoverContent data-gc="perfil.cartao.seletor-de-cargos.popover-content.navegar" align="start" className="w-60 p-1.5" onKeyDown={navegar}>
         {comBusca && (
-          <div className="mb-1 flex items-center gap-2 rounded bg-surface-1 px-2">
-            <Search size={13} className="shrink-0 text-ink-faint" />
-            <input
+          <div data-gc="perfil.cartao.seletor-de-cargos.div" className="mb-1 flex items-center gap-2 rounded bg-surface-1 px-2">
+            <Search data-gc="perfil.cartao.seletor-de-cargos.search" size={13} className="shrink-0 text-ink-faint" />
+            <input data-gc="perfil.cartao.seletor-de-cargos.input"
               autoFocus
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -77,9 +77,9 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
           </div>
         )}
 
-        <div ref={listaRef} className="max-h-56 overflow-y-auto">
+        <div data-gc="perfil.cartao.seletor-de-cargos.div--2" ref={listaRef} className="max-h-56 overflow-y-auto">
           {lista.map((cargo) => (
-            <button
+            <button data-gc="perfil.cartao.seletor-de-cargos.button--2"
               key={cargo.id}
               type="button"
               disabled={desabilitado}
@@ -90,26 +90,26 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
                 "disabled:cursor-default disabled:opacity-50",
               )}
             >
-              <span className="flex min-w-0 items-center gap-2">
+              <span data-gc="perfil.cartao.seletor-de-cargos.span" className="flex min-w-0 items-center gap-2">
                 {cargo.iconEmoji ? (
-                  <span className="leading-none">{cargo.iconEmoji}</span>
+                  <span data-gc="perfil.cartao.seletor-de-cargos.span--2" className="leading-none">{cargo.iconEmoji}</span>
                 ) : cargo.iconUrl ? (
-                  <img src={cargo.iconUrl} alt="" className="size-3.5 rounded-sm object-cover" />
+                  <img data-gc="perfil.cartao.seletor-de-cargos.img" src={cargo.iconUrl} alt="" className="size-3.5 rounded-sm object-cover" />
                 ) : (
-                  <span
+                  <span data-gc="perfil.cartao.seletor-de-cargos.span--3"
                     className="size-2.5 shrink-0 rounded-full"
                     style={{ backgroundColor: cargo.color ?? "var(--color-ink-faint)" }}
                   />
                 )}
-                <span className="min-w-0 truncate">{cargo.name}</span>
+                <span data-gc="perfil.cartao.seletor-de-cargos.span--4" className="min-w-0 truncate">{cargo.name}</span>
               </span>
 
-              {tem.has(cargo.id) && <Check size={14} className="shrink-0" />}
+              {tem.has(cargo.id) && <Check data-gc="perfil.cartao.seletor-de-cargos.check" size={14} className="shrink-0" />}
             </button>
           ))}
 
           {!lista.length && (
-            <p className="px-2.5 py-2 text-sm text-ink-faint">
+            <p data-gc="perfil.cartao.seletor-de-cargos.p" className="px-2.5 py-2 text-sm text-ink-faint">
               {termo ? "Nenhum cargo com esse nome" : "Nenhum cargo pra dar"}
             </p>
           )}

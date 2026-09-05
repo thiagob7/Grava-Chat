@@ -49,21 +49,21 @@ const tamanho = (bytes: number) => {
 export const ServidorSection: React.FC = () => {
   const { data, isLoading, isError } = useStatus(true);
 
-  if (isLoading) return <p className="text-sm text-ink-muted">Medindo…</p>;
+  if (isLoading) return <p data-gc="configuracoes.servidor-section.p" className="text-sm text-ink-muted">Medindo…</p>;
 
   if (isError || !data)
-    return <p className="text-sm text-danger">Não consegui falar com a API.</p>;
+    return <p data-gc="configuracoes.servidor-section.p--2" className="text-sm text-danger">Não consegui falar com a API.</p>;
 
   const { ambiente, node, uptimeDoProcesso } = data.api;
   const ehProducao = ambiente === "production";
   const salas = data.sfu.salas;
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold">Servidor</h2>
-        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-          <span
+    <div data-gc="configuracoes.servidor-section.div" className="max-w-2xl space-y-6">
+      <div data-gc="configuracoes.servidor-section.div--2">
+        <h2 data-gc="configuracoes.servidor-section.h2" className="text-lg font-semibold">Servidor</h2>
+        <p data-gc="configuracoes.servidor-section.p--3" className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+          <span data-gc="configuracoes.servidor-section.span"
             className={cn(
               "rounded px-1.5 py-0.5 text-xs font-semibold",
               ehProducao
@@ -73,18 +73,18 @@ export const ServidorSection: React.FC = () => {
           >
             {ehProducao ? "produção" : "desenvolvimento"}
           </span>
-          <span>atualiza a cada 5 s</span>
+          <span data-gc="configuracoes.servidor-section.span--2">atualiza a cada 5 s</span>
         </p>
 
         {!ehProducao && (
-          <p className="mt-2 text-xs text-ink-faint">
+          <p data-gc="configuracoes.servidor-section.p--4" className="mt-2 text-xs text-ink-faint">
             Estes números são da máquina onde a API está rodando — agora, a sua.
             Abra pelo endereço publicado para ver a VM.
           </p>
         )}
       </div>
 
-      <Maquina
+      <Maquina data-gc="configuracoes.servidor-section.maquina"
         caixa={{
           titulo: "API",
           host: data.api.host,
@@ -99,12 +99,12 @@ export const ServidorSection: React.FC = () => {
       />
 
       {data.voz?.indisponivel === true ? (
-        <div className="rounded-lg border border-danger/30 bg-danger/5 p-4">
-          <p className="text-sm font-medium">Voz</p>
-          <p className="mt-1 text-sm text-danger">
+        <div data-gc="configuracoes.servidor-section.div--3" className="rounded-lg border border-danger/30 bg-danger/5 p-4">
+          <p data-gc="configuracoes.servidor-section.p--5" className="text-sm font-medium">Voz</p>
+          <p data-gc="configuracoes.servidor-section.p--6" className="mt-1 text-sm text-danger">
             A máquina do SFU não respondeu.
           </p>
-          <p className="mt-1 text-xs text-ink-faint">
+          <p data-gc="configuracoes.servidor-section.p--7" className="mt-1 text-xs text-ink-faint">
             Não quer dizer que as chamadas caíram: quem as segura é o LiveKit, e
             ele é medido separado, em Serviços. Isto aqui é o agente de métricas
             da caixa.
@@ -112,7 +112,7 @@ export const ServidorSection: React.FC = () => {
         </div>
       ) : (
         data.voz && (
-          <Maquina
+          <Maquina data-gc="configuracoes.servidor-section.maquina--2"
             caixa={{
               titulo: "Voz",
               host: data.voz.host,
@@ -128,15 +128,15 @@ export const ServidorSection: React.FC = () => {
         )
       )}
 
-      <div className="rounded-lg border border-line bg-surface-2 p-4">
-        <p className="flex items-center gap-2 text-sm font-medium">
-          <Database size={16} /> Serviços
+      <div data-gc="configuracoes.servidor-section.div--4" className="rounded-lg border border-line bg-surface-2 p-4">
+        <p data-gc="configuracoes.servidor-section.p--8" className="flex items-center gap-2 text-sm font-medium">
+          <Database data-gc="configuracoes.servidor-section.database" size={16} /> Serviços
         </p>
 
-        <div className="mt-3 space-y-2 text-sm">
-          <Linha rotulo="MongoDB (Atlas)" checagem={data.mongo} />
-          <Linha rotulo="Redis (local)" checagem={data.redis} />
-          <Linha
+        <div data-gc="configuracoes.servidor-section.div--5" className="mt-3 space-y-2 text-sm">
+          <Linha data-gc="configuracoes.servidor-section.linha" rotulo="MongoDB (Atlas)" checagem={data.mongo} />
+          <Linha data-gc="configuracoes.servidor-section.linha--2" rotulo="Redis (local)" checagem={data.redis} />
+          <Linha data-gc="configuracoes.servidor-section.linha--3"
             rotulo="Gateway (Socket.IO)"
             ok={Boolean(data.gateway)}
             nota={
@@ -145,7 +145,7 @@ export const ServidorSection: React.FC = () => {
                 : undefined
             }
           />
-          <Linha
+          <Linha data-gc="configuracoes.servidor-section.linha--4"
             rotulo="LiveKit (SFU)"
             ok={!data.sfu.indisponivel}
             nota={
@@ -157,14 +157,14 @@ export const ServidorSection: React.FC = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border border-line bg-surface-2 p-4">
-        <p className="flex items-center justify-between gap-2 text-sm font-medium">
-          <span className="flex items-center gap-2">
-            <Radio size={16} /> Chamadas agora
+      <div data-gc="configuracoes.servidor-section.div--6" className="rounded-lg border border-line bg-surface-2 p-4">
+        <p data-gc="configuracoes.servidor-section.p--9" className="flex items-center justify-between gap-2 text-sm font-medium">
+          <span data-gc="configuracoes.servidor-section.span--3" className="flex items-center gap-2">
+            <Radio data-gc="configuracoes.servidor-section.radio" size={16} /> Chamadas agora
           </span>
 
           {!data.sfu.indisponivel && data.sfu.participantes > 0 && (
-            <span className="text-xs font-normal text-ink-muted">
+            <span data-gc="configuracoes.servidor-section.span--4" className="text-xs font-normal text-ink-muted">
               {data.sfu.participantes}{" "}
               {data.sfu.participantes === 1 ? "pessoa" : "pessoas"} ·{" "}
               {data.sfu.publicando} com microfone aberto
@@ -173,37 +173,37 @@ export const ServidorSection: React.FC = () => {
         </p>
 
         {data.sfu.indisponivel ? (
-          <p className="mt-2 text-sm text-danger">O SFU não respondeu.</p>
+          <p data-gc="configuracoes.servidor-section.p--10" className="mt-2 text-sm text-danger">O SFU não respondeu.</p>
         ) : salas.length === 0 ? (
-          <p className="mt-2 text-sm text-ink-muted">Ninguém em voz.</p>
+          <p data-gc="configuracoes.servidor-section.p--11" className="mt-2 text-sm text-ink-muted">Ninguém em voz.</p>
         ) : (
-          <div className="mt-3 space-y-3">
+          <div data-gc="configuracoes.servidor-section.div--7" className="mt-3 space-y-3">
             {salas.map((sala) => (
-              <div key={sala.canalId} className="rounded-lg bg-surface-2 p-3">
-                <div className="flex items-center justify-between gap-2 text-sm">
-                  <span className="flex min-w-0 items-center gap-1.5">
+              <div data-gc="configuracoes.servidor-section.div--8" key={sala.canalId} className="rounded-lg bg-surface-2 p-3">
+                <div data-gc="configuracoes.servidor-section.div--9" className="flex items-center justify-between gap-2 text-sm">
+                  <span data-gc="configuracoes.servidor-section.span--5" className="flex min-w-0 items-center gap-1.5">
                     {sala.ehPrivado ? (
-                      <Lock size={12} className="shrink-0 text-ink-muted" />
+                      <Lock data-gc="configuracoes.servidor-section.lock" size={12} className="shrink-0 text-ink-muted" />
                     ) : (
-                      <Hash size={12} className="shrink-0 text-ink-muted" />
+                      <Hash data-gc="configuracoes.servidor-section.hash" size={12} className="shrink-0 text-ink-muted" />
                     )}
 
                     {sala.nome ? (
-                      <span className="truncate font-medium">{sala.nome}</span>
+                      <span data-gc="configuracoes.servidor-section.span--6" className="truncate font-medium">{sala.nome}</span>
                     ) : (
-                      <Aviso motivo={sala.motivo ?? "canal-apagado"} />
+                      <Aviso data-gc="configuracoes.servidor-section.aviso" motivo={sala.motivo ?? "canal-apagado"} />
                     )}
 
                     {sala.servidor && (
-                      <span className="truncate text-xs text-ink-muted">
+                      <span data-gc="configuracoes.servidor-section.span--7" className="truncate text-xs text-ink-muted">
                         · {sala.servidor}
                       </span>
                     )}
 
-                    <Identificador id={sala.canalId} oQueE="canal" />
+                    <Identificador data-gc="configuracoes.servidor-section.identificador" id={sala.canalId} oQueE="canal" />
                   </span>
 
-                  <span className="shrink-0 text-xs text-ink-faint">
+                  <span data-gc="configuracoes.servidor-section.span--8" className="shrink-0 text-xs text-ink-faint">
                     há{" "}
                     {duracao(
                       Math.max(
@@ -215,13 +215,13 @@ export const ServidorSection: React.FC = () => {
                 </div>
 
                 {sala.participantes.length === 0 ? (
-                  <p className="mt-2 text-xs text-ink-faint">
+                  <p data-gc="configuracoes.servidor-section.p--12" className="mt-2 text-xs text-ink-faint">
                     Sala aberta, sem ninguém dentro — o SFU ainda vai fechá-la.
                   </p>
                 ) : (
-                  <div className="mt-2 space-y-1.5">
+                  <div data-gc="configuracoes.servidor-section.div--10" className="mt-2 space-y-1.5">
                     {sala.participantes.map((p) => (
-                      <Pessoa key={p.id} pessoa={p} />
+                      <Pessoa data-gc="configuracoes.servidor-section.pessoa" key={p.id} pessoa={p} />
                     ))}
                   </div>
                 )}
@@ -231,18 +231,18 @@ export const ServidorSection: React.FC = () => {
         )}
 
         {data.sfu.fantasmas.length > 0 && (
-          <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-            <p className="flex items-center gap-2 text-xs font-medium text-amber-400">
-              <Ghost size={14} />
+          <div data-gc="configuracoes.servidor-section.div--11" className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+            <p data-gc="configuracoes.servidor-section.p--13" className="flex items-center gap-2 text-xs font-medium text-amber-400">
+              <Ghost data-gc="configuracoes.servidor-section.ghost" size={14} />
               {data.sfu.fantasmas.length === 1
                 ? "1 pessoa que o app acha que está em chamada"
                 : `${data.sfu.fantasmas.length} pessoas que o app acha que estão em chamada`}
               , mas o SFU não vê
             </p>
 
-            <div className="mt-2 space-y-1">
+            <div data-gc="configuracoes.servidor-section.div--12" className="mt-2 space-y-1">
               {data.sfu.fantasmas.map((f) => (
-                <Fantasma key={f.id} fantasma={f} />
+                <Fantasma data-gc="configuracoes.servidor-section.fantasma" key={f.id} fantasma={f} />
               ))}
             </div>
           </div>
@@ -254,20 +254,20 @@ export const ServidorSection: React.FC = () => {
 };
 
 const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
-  <div className="flex items-center gap-2">
-    <Avatar
+  <div data-gc="configuracoes.servidor-section.div--13" className="flex items-center gap-2">
+    <Avatar data-gc="configuracoes.servidor-section.avatar"
       id={pessoa.id}
       name={pessoa.nome}
       url={pessoa.avatarUrl}
       size={24}
     />
 
-    <span className="min-w-0 flex-1 truncate text-sm">{pessoa.nome}</span>
+    <span data-gc="configuracoes.servidor-section.span--9" className="min-w-0 flex-1 truncate text-sm">{pessoa.nome}</span>
 
-    <Identificador id={pessoa.id} oQueE="usuário" />
+    <Identificador data-gc="configuracoes.servidor-section.identificador--2" id={pessoa.id} oQueE="usuário" />
 
     {pessoa.soNoSfu && (
-      <span
+      <span data-gc="configuracoes.servidor-section.span--10"
         className="shrink-0 rounded bg-amber-500/15 px-1.5 text-xs text-amber-400"
         title="Está no SFU, mas o app não tem estado de voz desta pessoa"
       >
@@ -275,21 +275,21 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
       </span>
     )}
 
-    <span className="flex shrink-0 items-center gap-2 text-ink-faint">
-      {pessoa.camera && <Video size={14} className="text-ink-muted" />}
-      {pessoa.tela && <MonitorUp size={14} className="text-ink-muted" />}
+    <span data-gc="configuracoes.servidor-section.span--11" className="flex shrink-0 items-center gap-2 text-ink-faint">
+      {pessoa.camera && <Video data-gc="configuracoes.servidor-section.video" size={14} className="text-ink-muted" />}
+      {pessoa.tela && <MonitorUp data-gc="configuracoes.servidor-section.monitor-up" size={14} className="text-ink-muted" />}
 
       {pessoa.microfone === "aberto" ? (
-        <Mic size={14} className="text-online" />
+        <Mic data-gc="configuracoes.servidor-section.mic" size={14} className="text-online" />
       ) : pessoa.microfone === "mudo" ? (
-        <MicOff size={14} className="text-ink-muted" />
+        <MicOff data-gc="configuracoes.servidor-section.mic-off" size={14} className="text-ink-muted" />
       ) : (
-        <span title="não publicou microfone">
-          <MicOff size={14} className="text-danger" />
+        <span data-gc="configuracoes.servidor-section.span--12" title="não publicou microfone">
+          <MicOff data-gc="configuracoes.servidor-section.mic-off--2" size={14} className="text-danger" />
         </span>
       )}
 
-      <span className="w-12 text-right text-xs tabular-nums">
+      <span data-gc="configuracoes.servidor-section.span--13" className="w-12 text-right text-xs tabular-nums">
         {duracao(Math.max(0, Math.round(Date.now() / 1000 - pessoa.entrouEm)))}
       </span>
     </span>
@@ -300,8 +300,8 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
   id,
   oQueE,
 }) => (
-  <Tooltip label={`${oQueE} ${id} · clique para copiar`}>
-    <button
+  <Tooltip data-gc="configuracoes.servidor-section.tooltip" label={`${oQueE} ${id} · clique para copiar`}>
+    <button data-gc="configuracoes.servidor-section.button"
       type="button"
       onClick={() => {
         void copiarTexto(id);
@@ -310,7 +310,7 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
       className="shrink-0 text-ink-faint transition hover:text-ink"
       aria-label={`Copiar ID do ${oQueE}`}
     >
-      <Fingerprint size={12} />
+      <Fingerprint data-gc="configuracoes.servidor-section.fingerprint" size={12} />
     </button>
   </Tooltip>
 );
@@ -329,27 +329,27 @@ const AVISOS = {
 } as const;
 
 const Aviso: React.FC<{ motivo: keyof typeof AVISOS }> = ({ motivo }) => (
-  <Tooltip label={AVISOS[motivo].explicacao}>
-    <span className="cursor-help truncate font-medium italic text-amber-400">
+  <Tooltip data-gc="configuracoes.servidor-section.tooltip--2" label={AVISOS[motivo].explicacao}>
+    <span data-gc="configuracoes.servidor-section.span--14" className="cursor-help truncate font-medium italic text-amber-400">
       {AVISOS[motivo].rotulo}
     </span>
   </Tooltip>
 );
 
 const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
-  <div className="flex items-center gap-2 text-xs">
-    <span className="min-w-0 flex-1 truncate text-ink">
+  <div data-gc="configuracoes.servidor-section.div--14" className="flex items-center gap-2 text-xs">
+    <span data-gc="configuracoes.servidor-section.span--15" className="min-w-0 flex-1 truncate text-ink">
       {fantasma.nome}
-      <span className="text-ink-muted">
+      <span data-gc="configuracoes.servidor-section.span--16" className="text-ink-muted">
         {" em "}
-        {fantasma.canal ?? <span className="italic">canal apagado</span>}
+        {fantasma.canal ?? <span data-gc="configuracoes.servidor-section.span--17" className="italic">canal apagado</span>}
       </span>
     </span>
 
-    <Identificador id={fantasma.id} oQueE="usuário" />
+    <Identificador data-gc="configuracoes.servidor-section.identificador--3" id={fantasma.id} oQueE="usuário" />
 
     {fantasma.aguardandoVolta && (
-      <span
+      <span data-gc="configuracoes.servidor-section.span--18"
         className="shrink-0 text-ink-faint"
         title="Caiu e está na janela de reconexão"
       >
@@ -357,7 +357,7 @@ const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
       </span>
     )}
 
-    <span className="shrink-0 tabular-nums text-ink-faint">
+    <span data-gc="configuracoes.servidor-section.span--19" className="shrink-0 tabular-nums text-ink-faint">
       há {duracao(Math.max(0, Math.round(Date.now() / 1000 - fantasma.desde)))}
     </span>
   </div>
@@ -382,26 +382,26 @@ const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
   const discoUsado = caixa.disco ? caixa.disco.total - caixa.disco.livre : 0;
 
   return (
-    <div>
-      <p className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
-        <span className="font-medium">{caixa.titulo}</span>
-        <code className="text-xs text-ink-muted">{caixa.host}</code>
-        <span className="text-xs text-ink-faint">
+    <div data-gc="configuracoes.servidor-section.div--15">
+      <p data-gc="configuracoes.servidor-section.p--14" className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+        <span data-gc="configuracoes.servidor-section.span--20" className="font-medium">{caixa.titulo}</span>
+        <code data-gc="configuracoes.servidor-section.code" className="text-xs text-ink-muted">{caixa.host}</code>
+        <span data-gc="configuracoes.servidor-section.span--21" className="text-xs text-ink-faint">
           · {caixa.legenda} · ligada há {duracao(caixa.uptimeDaMaquina)}
         </span>
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Cartao
-          icone={<Cpu size={16} />}
+      <div data-gc="configuracoes.servidor-section.div--16" className="grid gap-3 sm:grid-cols-3">
+        <Cartao data-gc="configuracoes.servidor-section.cartao"
+          icone={<Cpu data-gc="configuracoes.servidor-section.cpu" size={16} />}
           titulo="CPU"
           valor={`${Math.round(ocupacao * 100)}%`}
           detalhe={`carga ${caixa.carga.um.toFixed(2)} · ${caixa.carga.cinco.toFixed(2)} · ${caixa.carga.quinze.toFixed(2)} em ${caixa.nucleos} threads`}
           proporcao={ocupacao}
         />
 
-        <Cartao
-          icone={<MemoryStick size={16} />}
+        <Cartao data-gc="configuracoes.servidor-section.cartao--2"
+          icone={<MemoryStick data-gc="configuracoes.servidor-section.memory-stick" size={16} />}
           titulo="Memória"
           valor={tamanho(usada)}
           detalhe={`de ${tamanho(caixa.memoria.total)} · ${tamanho(caixa.memoria.disponivel)} disponíveis · ${caixa.residente.rotulo} ${tamanho(caixa.residente.bytes)}`}
@@ -409,19 +409,19 @@ const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
         />
 
         {caixa.disco ? (
-          <Cartao
-            icone={<HardDrive size={16} />}
+          <Cartao data-gc="configuracoes.servidor-section.cartao--3"
+            icone={<HardDrive data-gc="configuracoes.servidor-section.hard-drive" size={16} />}
             titulo="Disco"
             valor={tamanho(discoUsado)}
             detalhe={`de ${tamanho(caixa.disco.total)} · ${tamanho(caixa.disco.livre)} livres`}
             proporcao={discoUsado / caixa.disco.total}
           />
         ) : (
-          <div className="rounded-lg border border-line bg-surface-2 p-4">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <HardDrive size={16} /> Disco
+          <div data-gc="configuracoes.servidor-section.div--17" className="rounded-lg border border-line bg-surface-2 p-4">
+            <p data-gc="configuracoes.servidor-section.p--15" className="flex items-center gap-2 text-sm font-medium">
+              <HardDrive data-gc="configuracoes.servidor-section.hard-drive--2" size={16} /> Disco
             </p>
-            <p className="mt-2 text-sm text-ink-faint">não deu pra medir aqui</p>
+            <p data-gc="configuracoes.servidor-section.p--16" className="mt-2 text-sm text-ink-faint">não deu pra medir aqui</p>
           </div>
         )}
       </div>
@@ -436,15 +436,15 @@ const Cartao: React.FC<{
   detalhe: string;
   proporcao: number;
 }> = ({ icone, titulo, valor, detalhe, proporcao }) => (
-  <div className="rounded-lg border border-line bg-surface-2 p-4">
-    <p className="flex items-center gap-2 text-sm font-medium">
+  <div data-gc="configuracoes.servidor-section.div--18" className="rounded-lg border border-line bg-surface-2 p-4">
+    <p data-gc="configuracoes.servidor-section.p--17" className="flex items-center gap-2 text-sm font-medium">
       {icone} {titulo}
     </p>
 
-    <p className="mt-2 text-2xl font-semibold">{valor}</p>
+    <p data-gc="configuracoes.servidor-section.p--18" className="mt-2 text-2xl font-semibold">{valor}</p>
 
-    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
-      <div
+    <div data-gc="configuracoes.servidor-section.div--19" className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
+      <div data-gc="configuracoes.servidor-section.div--20"
         className={cn(
           "h-full rounded-full transition-all",
           proporcao > 0.85
@@ -457,7 +457,7 @@ const Cartao: React.FC<{
       />
     </div>
 
-    <p className="mt-2 text-xs text-ink-faint">{detalhe}</p>
+    <p data-gc="configuracoes.servidor-section.p--19" className="mt-2 text-xs text-ink-faint">{detalhe}</p>
   </div>
 );
 
@@ -471,12 +471,12 @@ const Linha: React.FC<{
   const lento = noAr && checagem !== undefined && checagem.ms > 300;
 
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-ink-muted">{rotulo}</span>
+    <div data-gc="configuracoes.servidor-section.div--21" className="flex items-center justify-between">
+      <span data-gc="configuracoes.servidor-section.span--22" className="text-ink-muted">{rotulo}</span>
 
-      <span className="flex items-center gap-1.5">
+      <span data-gc="configuracoes.servidor-section.span--23" className="flex items-center gap-1.5">
         {(checagem || nota) && (
-          <span
+          <span data-gc="configuracoes.servidor-section.span--24"
             className={cn(
               "text-xs tabular-nums",
               lento ? "text-amber-400" : "text-ink-faint",
@@ -486,13 +486,13 @@ const Linha: React.FC<{
           </span>
         )}
 
-        <span
+        <span data-gc="configuracoes.servidor-section.span--25"
           className={cn(
             "flex items-center gap-1.5",
             noAr ? (lento ? "text-amber-400" : "text-online") : "text-danger",
           )}
         >
-          <span
+          <span data-gc="configuracoes.servidor-section.span--26"
             className={cn(
               "size-2 rounded-full",
               noAr ? (lento ? "bg-amber-500" : "bg-online") : "bg-danger",

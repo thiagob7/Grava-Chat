@@ -16,8 +16,8 @@ export const SheetContent = ({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/60" />
-    <DialogPrimitive.Content
+    <DialogPrimitive.Overlay data-gc="ui.sheet.dialog-primitiveoverlay" className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/60" />
+    <DialogPrimitive.Content data-gc="ui.sheet.dialog-primitivecontent"
       className={cn(
         "regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",
         className,
@@ -34,6 +34,6 @@ export const SheetCloseButton = ({ className }: { className?: string }) => (
     aria-label="Fechar"
     className={cn("shrink-0 rounded p-1 text-ink-faint transition hover:text-ink", className)}
   >
-    <X size={20} />
+    <X data-gc="ui.sheet.x" size={20} />
   </DialogPrimitive.Close>
 );

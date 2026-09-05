@@ -53,14 +53,14 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
   ];
 
   return (
-    <main className="flex min-w-0 flex-1 flex-col bg-surface-2">
-      <header className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm">
-        <span className="mr-2 flex items-center gap-2 font-semibold">
-          <Users size={18} className="text-ink-muted" /> Meus amigos
+    <main data-gc="friends.friends.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
+      <header data-gc="friends.friends.header" className="regiao-de-arrasto flex h-12 shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm">
+        <span data-gc="friends.friends.span" className="mr-2 flex items-center gap-2 font-semibold">
+          <Users data-gc="friends.friends.users" size={18} className="text-ink-muted" /> Meus amigos
         </span>
-        <span className="mr-2 h-5 w-px bg-line" />
+        <span data-gc="friends.friends.span--2" className="mr-2 h-5 w-px bg-line" />
         {abas.map((item) => (
-          <button
+          <button data-gc="friends.friends.button"
             key={item.id}
             onClick={() => setAba(item.id)}
             className={cn(
@@ -76,31 +76,31 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
           >
             {item.label}
             {Boolean(item.badge) && (
-              <span className="rounded-full bg-danger px-1.5 text-xs font-semibold text-white">
+              <span data-gc="friends.friends.span--3" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-white">
                 {item.badge}
               </span>
             )}
           </button>
         ))}
 
-        <div className="ml-auto">
-          <CaixaDeEntrada />
+        <div data-gc="friends.friends.div" className="ml-auto">
+          <CaixaDeEntrada data-gc="friends.friends.caixa-de-entrada" />
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div data-gc="friends.friends.div--2" className="flex-1 overflow-y-auto px-6 py-5">
         {aba === "adicionar" ? (
-          <AddFriendForm />
+          <AddFriendForm data-gc="friends.friends.add-friend-form" />
         ) : isLoading ? (
-          <p className="text-sm text-ink-faint">Carregando…</p>
+          <p data-gc="friends.friends.p" className="text-sm text-ink-faint">Carregando…</p>
         ) : (
           <>
-            <div className="relative mb-4">
-              <Search
+            <div data-gc="friends.friends.div--3" className="relative mb-4">
+              <Search data-gc="friends.friends.search"
                 size={16}
                 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
               />
-              <Input
+              <Input data-gc="friends.friends.input"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder={
@@ -112,10 +112,10 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
             </div>
 
             {visiveis.length === 0 ? (
-              <EmptyState aba={aba} filtrando={Boolean(busca.trim())} />
+              <EmptyState data-gc="friends.friends.empty-state" aba={aba} filtrando={Boolean(busca.trim())} />
             ) : (
               <>
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                <h3 data-gc="friends.friends.h3" className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   {aba === "pendentes"
                     ? "Solicitações de amizade"
                     : aba === "online"
@@ -124,9 +124,9 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
                   — {visiveis.length}
                 </h3>
 
-                <div className="space-y-px">
+                <div data-gc="friends.friends.div--4" className="space-y-px">
                   {visiveis.map((relacao) => (
-                    <FriendRow
+                    <FriendRow data-gc="friends.friends.friend-row.on-open-conversation"
                       key={relacao.id}
                       relacao={relacao}
                       onOpenConversation={onOpenConversation}
@@ -143,10 +143,10 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
 };
 
 const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando }) => (
-  <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-    <Users size={48} className="text-ink-faint/60" strokeWidth={1.5} />
+  <div data-gc="friends.friends.div--5" className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+    <Users data-gc="friends.friends.users--2" size={48} className="text-ink-faint/60" strokeWidth={1.5} />
 
-    <p className="text-lg font-semibold">
+    <p data-gc="friends.friends.p--2" className="text-lg font-semibold">
       {filtrando
         ? "Ninguém com esse nome"
         : aba === "pendentes"
@@ -156,12 +156,12 @@ const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando
             : "Esta lista de amigos precisa de mais gente"}
     </p>
 
-    <p className="max-w-sm text-sm text-ink-muted">
+    <p data-gc="friends.friends.p--3" className="max-w-sm text-sm text-ink-muted">
       {filtrando ? (
         "Tente outro nome — a busca olha o apelido e o nome de usuário."
       ) : (
         <>
-          Use a aba <span className="font-medium text-brand">Adicionar amigo</span> e o nome de
+          Use a aba <span data-gc="friends.friends.span--4" className="font-medium text-brand">Adicionar amigo</span> e o nome de
           usuário da pessoa.
         </>
       )}
@@ -224,8 +224,8 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
         : `@${relacao.user.username}`;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
-      <Avatar
+    <div data-gc="friends.friends.div--6" className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
+      <Avatar data-gc="friends.friends.avatar"
         id={relacao.user.id}
         name={relacao.user.displayName}
         url={relacao.user.avatarUrl}
@@ -233,35 +233,35 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
         status={relacao.status === "ACCEPTED" ? relacao.user.status : undefined}
       />
 
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">{relacao.user.displayName}</p>
-        <p className="truncate text-xs text-ink-faint">{legenda}</p>
+      <div data-gc="friends.friends.div--7" className="min-w-0 flex-1">
+        <p data-gc="friends.friends.p--4" className="truncate text-sm font-semibold">{relacao.user.displayName}</p>
+        <p data-gc="friends.friends.p--5" className="truncate text-xs text-ink-faint">{legenda}</p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div data-gc="friends.friends.div--8" className="flex shrink-0 items-center gap-2">
         {relacao.status === "ACCEPTED" && (
-          <Tooltip label="Conversar">
-            <button
+          <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
+            <button data-gc="friends.friends.button--2"
               onClick={() => onOpenConversation(relacao.user.id)}
               className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-ink"
             >
-              <MessageSquare size={18} />
+              <MessageSquare data-gc="friends.friends.message-square" size={18} />
             </button>
           </Tooltip>
         )}
 
         {relacao.status === "PENDING_IN" && (
-          <Tooltip label="Aceitar">
-            <button
+          <Tooltip data-gc="friends.friends.tooltip--2" label="Aceitar">
+            <button data-gc="friends.friends.button--3"
               onClick={(e) => void responder(e, true)}
               className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-online"
             >
-              <Check size={18} />
+              <Check data-gc="friends.friends.check" size={18} />
             </button>
           </Tooltip>
         )}
 
-        <Tooltip
+        <Tooltip data-gc="friends.friends.tooltip--3"
           label={
             relacao.status === "ACCEPTED"
               ? "Desfazer amizade"
@@ -270,13 +270,13 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
                 : "Cancelar pedido"
           }
         >
-          <button
+          <button data-gc="friends.friends.button--4"
             onClick={(e) =>
               relacao.status === "PENDING_IN" ? void responder(e, false) : void desfazer(e)
             }
             className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-danger"
           >
-            <X size={18} />
+            <X data-gc="friends.friends.x" size={18} />
           </button>
         </Tooltip>
       </div>

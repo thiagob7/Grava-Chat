@@ -39,23 +39,23 @@ export const App: React.FC = () => {
         <SessionProvider>
           <TooltipProvider>
             <ConfirmProvider>
-              <AppRoutes />
-              <EstadoDaConexao />
-              <AvisoDeAtualizacao />
-              <AvisoDePermissoes />
-              <AvisoDeNovoDispositivo />
-              <VoiceAudioSink />
-              <SeletorDeTela />
-              <VisualizadorDeImagem />
-              <ChuvaDeSuperReacao />
-              <ToastContainer
+              <AppRoutes data-gc="app.app-routes" />
+              <EstadoDaConexao data-gc="app.estado-da-conexao" />
+              <AvisoDeAtualizacao data-gc="app.aviso-de-atualizacao" />
+              <AvisoDePermissoes data-gc="app.aviso-de-permissoes" />
+              <AvisoDeNovoDispositivo data-gc="app.aviso-de-novo-dispositivo" />
+              <VoiceAudioSink data-gc="app.voice-audio-sink" />
+              <SeletorDeTela data-gc="app.seletor-de-tela" />
+              <VisualizadorDeImagem data-gc="app.visualizador-de-imagem" />
+              <ChuvaDeSuperReacao data-gc="app.chuva-de-super-reacao" />
+              <ToastContainer data-gc="app.toast-container"
                 position="bottom-center"
                 theme="dark"
                 autoClose={4000}
                 hideProgressBar
               />
               {import.meta.env.DEV && (
-                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+                <ReactQueryDevtools data-gc="app.react-query-devtools" initialIsOpen={false} buttonPosition="bottom-right" />
               )}
             </ConfirmProvider>
           </TooltipProvider>

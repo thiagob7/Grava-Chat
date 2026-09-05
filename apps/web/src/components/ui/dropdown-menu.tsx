@@ -14,7 +14,7 @@ export const DropdownMenuContent = ({
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.Content>) => (
   <DropdownPrimitive.Portal>
-    <DropdownPrimitive.Content
+    <DropdownPrimitive.Content data-gc="ui.dropdown-menu.dropdown-primitivecontent"
       sideOffset={sideOffset}
       className={cn(
         "regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
@@ -30,7 +30,7 @@ interface ItemProps extends React.ComponentProps<typeof DropdownPrimitive.Item> 
 }
 
 export const DropdownMenuItem = ({ className, danger, ...props }: ItemProps) => (
-  <DropdownPrimitive.Item
+  <DropdownPrimitive.Item data-gc="ui.dropdown-menu.dropdown-primitiveitem"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm outline-none transition",
       danger
@@ -46,7 +46,7 @@ export const DropdownMenuLabel = ({
   className,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.Label>) => (
-  <DropdownPrimitive.Label
+  <DropdownPrimitive.Label data-gc="ui.dropdown-menu.dropdown-primitivelabel"
     className={cn("px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint", className)}
     {...props}
   />
@@ -59,7 +59,7 @@ export const DropdownMenuRadioItem = ({
   children,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.RadioItem>) => (
-  <DropdownPrimitive.RadioItem
+  <DropdownPrimitive.RadioItem data-gc="ui.dropdown-menu.dropdown-primitiveradio-item"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
       "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
@@ -67,11 +67,11 @@ export const DropdownMenuRadioItem = ({
     )}
     {...props}
   >
-    <span className="min-w-0 flex-1 truncate">{children}</span>
+    <span data-gc="ui.dropdown-menu.span" className="min-w-0 flex-1 truncate">{children}</span>
 
-    <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint">
-      <DropdownPrimitive.ItemIndicator>
-        <span className="block size-2 rounded-full bg-brand" />
+    <span data-gc="ui.dropdown-menu.span--2" className="flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint">
+      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator">
+        <span data-gc="ui.dropdown-menu.span--3" className="block size-2 rounded-full bg-brand" />
       </DropdownPrimitive.ItemIndicator>
     </span>
   </DropdownPrimitive.RadioItem>
@@ -82,7 +82,7 @@ export const DropdownMenuCheckboxItem = ({
   children,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.CheckboxItem>) => (
-  <DropdownPrimitive.CheckboxItem
+  <DropdownPrimitive.CheckboxItem data-gc="ui.dropdown-menu.dropdown-primitivecheckbox-item"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
       "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
@@ -90,11 +90,11 @@ export const DropdownMenuCheckboxItem = ({
     )}
     {...props}
   >
-    <span className="min-w-0 flex-1 truncate">{children}</span>
+    <span data-gc="ui.dropdown-menu.span--4" className="min-w-0 flex-1 truncate">{children}</span>
 
-    <span className="flex size-4 shrink-0 items-center justify-center rounded border border-ink-faint">
-      <DropdownPrimitive.ItemIndicator>
-        <Check size={12} />
+    <span data-gc="ui.dropdown-menu.span--5" className="flex size-4 shrink-0 items-center justify-center rounded border border-ink-faint">
+      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator--2">
+        <Check data-gc="ui.dropdown-menu.check" size={12} />
       </DropdownPrimitive.ItemIndicator>
     </span>
   </DropdownPrimitive.CheckboxItem>
@@ -104,7 +104,7 @@ export const DropdownMenuSeparator = ({
   className,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.Separator>) => (
-  <DropdownPrimitive.Separator className={cn("my-1.5 h-px bg-line", className)} {...props} />
+  <DropdownPrimitive.Separator data-gc="ui.dropdown-menu.dropdown-primitiveseparator" className={cn("my-1.5 h-px bg-line", className)} {...props} />
 );
 
 export const DropdownMenuSub = DropdownPrimitive.Sub;
@@ -114,7 +114,7 @@ export const DropdownMenuSubTrigger = ({
   children,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.SubTrigger>) => (
-  <DropdownPrimitive.SubTrigger
+  <DropdownPrimitive.SubTrigger data-gc="ui.dropdown-menu.dropdown-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
       "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=open]:bg-surface-3",
@@ -123,7 +123,7 @@ export const DropdownMenuSubTrigger = ({
     {...props}
   >
     {children}
-    <ChevronRight size={14} />
+    <ChevronRight data-gc="ui.dropdown-menu.chevron-right" size={14} />
   </DropdownPrimitive.SubTrigger>
 );
 
@@ -132,7 +132,7 @@ export const DropdownMenuSubContent = ({
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.SubContent>) => (
   <DropdownPrimitive.Portal>
-    <DropdownPrimitive.SubContent
+    <DropdownPrimitive.SubContent data-gc="ui.dropdown-menu.dropdown-primitivesub-content"
       className={cn(
         "regiao-sem-arrasto z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,

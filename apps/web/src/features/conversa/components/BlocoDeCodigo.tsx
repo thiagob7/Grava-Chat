@@ -52,22 +52,22 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
   };
 
   return (
-    <div
+    <div data-gc="conversa.bloco-de-codigo.div"
       className={cn(
         "relative my-1 overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink",
         className,
       )}
     >
-      <pre className="overflow-x-auto py-2 pl-3 pr-12 font-mono text-13 leading-relaxed">
+      <pre data-gc="conversa.bloco-de-codigo.pre" className="overflow-x-auto py-2 pl-3 pr-12 font-mono text-13 leading-relaxed">
         {html ? (
-          <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
+          <code data-gc="conversa.bloco-de-codigo.code" className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
         ) : (
-          <code className="whitespace-pre">{codigo}</code>
+          <code data-gc="conversa.bloco-de-codigo.code--2" className="whitespace-pre">{codigo}</code>
         )}
       </pre>
 
-      <Tooltip label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
-        <button
+      <Tooltip data-gc="conversa.bloco-de-codigo.tooltip" label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
+        <button data-gc="conversa.bloco-de-codigo.button.copiar"
           type="button"
           onClick={copiar}
           aria-label={t(
@@ -75,7 +75,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
           )}
           className="absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
         >
-          {copiado ? <Check size={14} className="text-online" /> : <Copy size={14} />}
+          {copiado ? <Check data-gc="conversa.bloco-de-codigo.check" size={14} className="text-online" /> : <Copy data-gc="conversa.bloco-de-codigo.copy" size={14} />}
         </button>
       </Tooltip>
     </div>

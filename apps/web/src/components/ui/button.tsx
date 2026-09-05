@@ -37,7 +37,7 @@ export interface ButtonProps
 
 export const Button = ({ className, variant, size, asChild = false, ...props }: ButtonProps) => {
   const Comp = asChild ? Slot : "button";
-  return <Comp className={cn(buttonVariants({ variant, size }), className)} {...props} />;
+  return <Comp data-gc="ui.button.comp" className={cn(buttonVariants({ variant, size }), className)} {...props} />;
 };
 
 export { buttonVariants };

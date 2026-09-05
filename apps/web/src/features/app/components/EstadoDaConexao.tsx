@@ -50,43 +50,43 @@ export const EstadoDaConexao: React.FC = () => {
 
   if (fase === "voltou")
     return (
-      <div
+      <div data-gc="app.estado-da-conexao.div"
         role="status"
         className={cn(
           "pointer-events-none fixed inset-x-0 z-[110] flex justify-center",
           ehDesktop() ? "top-10" : "top-3",
         )}
       >
-        <span className="flex items-center gap-2 rounded-full bg-online px-3 py-1.5 text-xs font-medium text-white shadow-lg">
-          <Check size={14} /> Conectado de novo
+        <span data-gc="app.estado-da-conexao.span" className="flex items-center gap-2 rounded-full bg-online px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+          <Check data-gc="app.estado-da-conexao.check" size={14} /> Conectado de novo
         </span>
       </div>
     );
 
   return (
-    <div
+    <div data-gc="app.estado-da-conexao.div--2"
       role="status"
       className={cn(
         "fixed inset-x-0 bottom-0 z-[110] bg-surface-2",
         ehDesktop() ? "top-8" : "top-0",
       )}
     >
-      <Splash
+      <Splash data-gc="app.estado-da-conexao.splash"
         legenda={
-          <div className="flex flex-col items-center gap-3 text-center">
-            <p className="flex items-center gap-2 text-sm text-ink-muted">
-              <Loader2 size={14} className="animate-spin" />
+          <div data-gc="app.estado-da-conexao.div--3" className="flex flex-col items-center gap-3 text-center">
+            <p data-gc="app.estado-da-conexao.p" className="flex items-center gap-2 text-sm text-ink-muted">
+              <Loader2 data-gc="app.estado-da-conexao.loader2" size={14} className="animate-spin" />
               Reconectando
               {tentativas > 1 && ` · tentativa ${tentativas}`}
             </p>
 
-            <p className="max-w-xs text-xs text-ink-faint">
+            <p data-gc="app.estado-da-conexao.p--2" className="max-w-xs text-xs text-ink-faint">
               A conversa está a salvo no servidor. Isto volta sozinho assim que
               a conexão voltar.
             </p>
 
             {tentativas >= TENTATIVAS_ATE_OFERECER_RECARGA && (
-              <Button variant="surface" size="sm" onClick={() => window.location.reload()}>
+              <Button data-gc="app.estado-da-conexao.button" variant="surface" size="sm" onClick={() => window.location.reload()}>
                 Recarregar
               </Button>
             )}

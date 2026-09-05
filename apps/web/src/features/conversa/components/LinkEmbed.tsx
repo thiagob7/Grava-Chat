@@ -16,14 +16,14 @@ export const LinkEmbeds: React.FC<{ content: string }> = ({ content }) => {
   if (!links.length) return null;
 
   return (
-    <div className="mt-1 flex flex-col gap-2">
+    <div data-gc="conversa.link-embed.div" className="mt-1 flex flex-col gap-2">
       {links.map((url) => {
         const tema = idDoTemaNoLink(url, window.location.origin);
 
         return tema ? (
-          <CartaoDeTema key={url} temaId={tema} />
+          <CartaoDeTema data-gc="conversa.link-embed.cartao-de-tema" key={url} temaId={tema} />
         ) : (
-          <LinkEmbed key={url} url={url} />
+          <LinkEmbed data-gc="conversa.link-embed.link-embed" key={url} url={url} />
         );
       })}
     </div>
@@ -36,10 +36,10 @@ const LinkEmbed: React.FC<{ url: string }> = ({ url }) => {
   if (!embed) return null;
 
   if (embed.tipo === "imagem" && embed.imagem) {
-    return <ImagemSozinha url={embed.imagem} destino={embed.url} />;
+    return <ImagemSozinha data-gc="conversa.link-embed.imagem-sozinha" url={embed.imagem} destino={embed.url} />;
   }
 
-  return <Cartao embed={embed} />;
+  return <Cartao data-gc="conversa.link-embed.cartao" embed={embed} />;
 };
 
 function useMedida(endereco: string | null) {
@@ -74,21 +74,21 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
   const abrir = () => window.open(embed.url, "_blank", "noopener,noreferrer");
 
   return (
-    <article
+    <article data-gc="conversa.link-embed.article"
       style={embed.cor ? { borderLeftColor: embed.cor } : undefined}
       className="w-full max-w-[26rem] overflow-hidden rounded border-l-4 border-brand bg-surface-1"
     >
-      <div className="flex gap-3 p-3">
-        <div className="min-w-0 flex-1">
+      <div data-gc="conversa.link-embed.div--2" className="flex gap-3 p-3">
+        <div data-gc="conversa.link-embed.div--3" className="min-w-0 flex-1">
           {embed.site && (
-            <p className="flex items-center gap-1.5 text-xs text-ink-muted">
-              {embed.favicon && <Favicon url={embed.favicon} />}
-              <span className="truncate">{embed.site}</span>
+            <p data-gc="conversa.link-embed.p" className="flex items-center gap-1.5 text-xs text-ink-muted">
+              {embed.favicon && <Favicon data-gc="conversa.link-embed.favicon" url={embed.favicon} />}
+              <span data-gc="conversa.link-embed.span" className="truncate">{embed.site}</span>
             </p>
           )}
 
           {embed.titulo && (
-            <a
+            <a data-gc="conversa.link-embed.a"
               href={embed.url}
               target="_blank"
               rel="noreferrer noopener"
@@ -98,22 +98,22 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
             </a>
           )}
 
-          {embed.autor && <p className="text-xs text-ink-muted">{embed.autor}</p>}
+          {embed.autor && <p data-gc="conversa.link-embed.p--2" className="text-xs text-ink-muted">{embed.autor}</p>}
 
           {embed.descricao && (
-            <p className="mt-1 line-clamp-4 whitespace-pre-wrap text-sm text-ink-muted">
+            <p data-gc="conversa.link-embed.p--3" className="mt-1 line-clamp-4 whitespace-pre-wrap text-sm text-ink-muted">
               {embed.descricao}
             </p>
           )}
         </div>
 
         {!capaGrande && embed.imagem && medida && (
-          <button
+          <button data-gc="conversa.link-embed.button.abrir"
             onClick={abrir}
             aria-label={t("conversa.cartao.abrir", { destino: embed.site ?? embed.url })}
             className="size-20 shrink-0 overflow-hidden rounded transition hover:brightness-110"
           >
-            <img
+            <img data-gc="conversa.link-embed.img"
               src={embed.imagem}
               alt=""
               referrerPolicy="no-referrer"
@@ -125,9 +125,9 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
       </div>
 
       {capaGrande && embed.imagem && (
-        <div className="px-3 pb-3">
+        <div data-gc="conversa.link-embed.div--4" className="px-3 pb-3">
           {tocando && embed.player ? (
-            <iframe
+            <iframe data-gc="conversa.link-embed.iframe"
               src={embed.player}
               title={embed.titulo ?? t("conversa.cartao.tocador")}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
@@ -135,7 +135,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
               className="aspect-video w-full rounded border-0 bg-black"
             />
           ) : (
-            <Capa embed={embed} pronta={Boolean(medida)} onAbrir={() => (embed.player ? setTocando(true) : abrir())} />
+            <Capa data-gc="conversa.link-embed.capa" embed={embed} pronta={Boolean(medida)} onAbrir={() => (embed.player ? setTocando(true) : abrir())} />
           )}
         </div>
       )}
@@ -151,7 +151,7 @@ const Capa: React.FC<{ embed: EmbedModel; pronta: boolean; onAbrir: () => void }
   const { t } = useTranslation();
 
   return (
-    <button
+    <button data-gc="conversa.link-embed.button.on-abrir"
       onClick={onAbrir}
       aria-label={
         embed.player
@@ -163,7 +163,7 @@ const Capa: React.FC<{ embed: EmbedModel; pronta: boolean; onAbrir: () => void }
         !pronta && "hidden",
       )}
     >
-      <img
+      <img data-gc="conversa.link-embed.img--2"
         src={embed.imagem ?? ""}
         alt={embed.titulo ?? ""}
         referrerPolicy="no-referrer"
@@ -172,9 +172,9 @@ const Capa: React.FC<{ embed: EmbedModel; pronta: boolean; onAbrir: () => void }
       />
 
       {embed.player && (
-        <span className="absolute inset-0 flex items-center justify-center">
-          <span className="flex size-12 items-center justify-center rounded-full bg-black/60 text-white transition group-hover/capa:bg-brand">
-            <Play size={22} className="ml-0.5 fill-current" />
+        <span data-gc="conversa.link-embed.span--2" className="absolute inset-0 flex items-center justify-center">
+          <span data-gc="conversa.link-embed.span--3" className="flex size-12 items-center justify-center rounded-full bg-black/60 text-white transition group-hover/capa:bg-brand">
+            <Play data-gc="conversa.link-embed.play" size={22} className="ml-0.5 fill-current" />
           </span>
         </span>
       )}
@@ -187,7 +187,7 @@ const Favicon: React.FC<{ url: string }> = ({ url }) => {
   if (falhou) return null;
 
   return (
-    <img
+    <img data-gc="conversa.link-embed.img--3"
       src={url}
       alt=""
       referrerPolicy="no-referrer"
@@ -206,13 +206,13 @@ const ImagemSozinha: React.FC<{ url: string; destino: string }> = ({ url, destin
   if (!medida) return null;
 
   return (
-    <button
+    <button data-gc="conversa.link-embed.button"
       onClick={() => abrirImagem(destino)}
       aria-label={t("conversa.cartao.verImagem")}
       className="block max-w-full overflow-hidden rounded transition hover:brightness-110"
       style={{ width: Math.min(medida.largura, 420) }}
     >
-      <img
+      <img data-gc="conversa.link-embed.img--4"
         src={url}
         alt=""
         referrerPolicy="no-referrer"

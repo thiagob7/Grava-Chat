@@ -81,14 +81,14 @@ export const StatusModal: React.FC<StatusModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(aberto) => !aberto && onClose()}>
-      <DialogContent className="max-w-md p-5">
-        <DialogTitle className="text-lg font-semibold">
+    <Dialog data-gc="perfil.cartao.status-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+      <DialogContent data-gc="perfil.cartao.status-modal.dialog-content" className="max-w-md p-5">
+        <DialogTitle data-gc="perfil.cartao.status-modal.dialog-title" className="text-lg font-semibold">
           {t("perfil.status.definir")}
         </DialogTitle>
 
-        <div className="mt-4">
-          <ProfileCardVisual
+        <div data-gc="perfil.cartao.status-modal.div" className="mt-4">
+          <ProfileCardVisual data-gc="perfil.cartao.status-modal.profile-card-visual"
             id={user.id}
             displayName={user.displayName}
             username={user.username}
@@ -99,21 +99,21 @@ export const StatusModal: React.FC<StatusModalProps> = ({
           />
         </div>
 
-        <div className="mt-5">
-          <Label htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
+        <div data-gc="perfil.cartao.status-modal.div--2" className="mt-5">
+          <Label data-gc="perfil.cartao.status-modal.label" htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
 
-          <div className={cn(grupoDeCampo, "gap-1 px-1.5")}>
-            <SeletorDeEmoji onEscolher={setEmoji}>
-              <button
+          <div data-gc="perfil.cartao.status-modal.div--3" className={cn(grupoDeCampo, "gap-1 px-1.5")}>
+            <SeletorDeEmoji data-gc="perfil.cartao.status-modal.seletor-de-emoji.set-emoji" onEscolher={setEmoji}>
+              <button data-gc="perfil.cartao.status-modal.button"
                 type="button"
                 aria-label={t("perfil.status.escolherEmoji")}
                 className="flex size-8 shrink-0 items-center justify-center rounded text-lg text-ink-faint transition hover:bg-surface-3 hover:text-ink"
               >
-                {emoji || <Smile size={16} />}
+                {emoji || <Smile data-gc="perfil.cartao.status-modal.smile" size={16} />}
               </button>
             </SeletorDeEmoji>
 
-            <input
+            <input data-gc="perfil.cartao.status-modal.input"
               id="status-texto"
               autoFocus
               value={texto}
@@ -124,33 +124,33 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             />
 
             {emoji && (
-              <button
+              <button data-gc="perfil.cartao.status-modal.button--2"
                 type="button"
                 onClick={() => setEmoji("")}
                 aria-label={t("perfil.status.tirarEmoji")}
                 className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink"
               >
-                <X size={14} />
+                <X data-gc="perfil.cartao.status-modal.x" size={14} />
               </button>
             )}
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
-          <CampoSelect
+        <div data-gc="perfil.cartao.status-modal.div--4" className="mt-4 flex items-center gap-3">
+          <CampoSelect data-gc="perfil.cartao.status-modal.campo-select.set-prazo"
             valor={prazo}
             onEscolher={setPrazo}
             className="flex-1"
             opcoes={PRAZOS.map((p) => ({ valor: p.id, rotulo: rotuloComHora(p) }))}
           />
 
-          <Button onClick={salvar} disabled={salvando}>
+          <Button data-gc="perfil.cartao.status-modal.button.salvar" onClick={salvar} disabled={salvando}>
             {t(salvando ? "comum.salvando" : "comum.salvar")}
           </Button>
         </div>
 
         {atual && (
-          <button
+          <button data-gc="perfil.cartao.status-modal.button--3"
             onClick={() => onSalvar(null)}
             className="mt-3 text-xs text-ink-faint transition hover:text-danger"
           >

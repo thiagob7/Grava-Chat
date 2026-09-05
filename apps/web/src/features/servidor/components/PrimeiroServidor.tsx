@@ -61,45 +61,45 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
   };
 
   return (
-    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
-      <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Crie seu primeiro servidor</DialogTitle>
-          <DialogDescription>
+    <Dialog data-gc="servidor.primeiro-servidor.dialog" open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent data-gc="servidor.primeiro-servidor.dialog-content" className="max-h-[85vh] max-w-md overflow-y-auto">
+        <DialogHeader data-gc="servidor.primeiro-servidor.dialog-header">
+          <DialogTitle data-gc="servidor.primeiro-servidor.dialog-title">Crie seu primeiro servidor</DialogTitle>
+          <DialogDescription data-gc="servidor.primeiro-servidor.dialog-description">
             Um servidor é onde você e seus amigos se encontram. Crie o seu e
             chame a galera.
           </DialogDescription>
         </DialogHeader>
 
-        <DialogBody>
+        <DialogBody data-gc="servidor.primeiro-servidor.dialog-body">
 
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <div data-gc="servidor.primeiro-servidor.div" className="space-y-2">
+          <label data-gc="servidor.primeiro-servidor.label" className="block text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Criar o meu
           </label>
 
-          <div className="flex gap-2">
-            <Input
+          <div data-gc="servidor.primeiro-servidor.div--2" className="flex gap-2">
+            <Input data-gc="servidor.primeiro-servidor.input"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void criar(molde, nome)}
               placeholder={molde ? molde.sugestaoDeNome : "Nome do servidor"}
               maxLength={64}
             />
-            <Button onClick={() => void criar(molde, nome)} disabled={!nome.trim() || criando}>
-              {criando ? <Loader2 size={16} className="animate-spin" /> : "Criar"}
+            <Button data-gc="servidor.primeiro-servidor.button" onClick={() => void criar(molde, nome)} disabled={!nome.trim() || criando}>
+              {criando ? <Loader2 data-gc="servidor.primeiro-servidor.loader2" size={16} className="animate-spin" /> : "Criar"}
             </Button>
           </div>
         </div>
 
-        <div className="mt-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <div data-gc="servidor.primeiro-servidor.div--3" className="mt-6">
+          <p data-gc="servidor.primeiro-servidor.p" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Começar de um molde
           </p>
 
-          <div className="space-y-2">
+          <div data-gc="servidor.primeiro-servidor.div--4" className="space-y-2">
             {MOLDES.map((m) => (
-              <button
+              <button data-gc="servidor.primeiro-servidor.button--2"
                 key={m.id}
                 disabled={criando}
                 onClick={() => {
@@ -108,32 +108,32 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
                 }}
                 className={cnMolde(molde?.id === m.id)}
               >
-                <span className="text-xl">{m.emoji}</span>
+                <span data-gc="servidor.primeiro-servidor.span" className="text-xl">{m.emoji}</span>
 
-                <span className="min-w-0 flex-1 text-left">
-                  <span className="block truncate font-medium">{m.nome}</span>
-                  <span className="block truncate text-xs text-ink-faint">
+                <span data-gc="servidor.primeiro-servidor.span--2" className="min-w-0 flex-1 text-left">
+                  <span data-gc="servidor.primeiro-servidor.span--3" className="block truncate font-medium">{m.nome}</span>
+                  <span data-gc="servidor.primeiro-servidor.span--4" className="block truncate text-xs text-ink-faint">
                     {m.canais.map((c) => c.nome).join(" · ")}
                   </span>
                 </span>
 
-                <ChevronRight size={16} className="shrink-0 text-ink-faint" />
+                <ChevronRight data-gc="servidor.primeiro-servidor.chevron-right" size={16} className="shrink-0 text-ink-faint" />
               </button>
             ))}
           </div>
         </div>
 
-        <div className="mt-8 border-t border-divisor pt-6">
-          <p className="mb-2 text-sm font-medium">Já tem um convite?</p>
+        <div data-gc="servidor.primeiro-servidor.div--5" className="mt-8 border-t border-divisor pt-6">
+          <p data-gc="servidor.primeiro-servidor.p--2" className="mb-2 text-sm font-medium">Já tem um convite?</p>
 
-          <div className="flex gap-2">
-            <Input
+          <div data-gc="servidor.primeiro-servidor.div--6" className="flex gap-2">
+            <Input data-gc="servidor.primeiro-servidor.input--2"
               value={convite}
               onChange={(e) => setConvite(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && entrar()}
               placeholder="Cole o link ou o código do convite"
             />
-            <Button variant="surface" onClick={entrar} disabled={!codigoDoConvite(convite)}>
+            <Button data-gc="servidor.primeiro-servidor.button.entrar" variant="surface" onClick={entrar} disabled={!codigoDoConvite(convite)}>
               Entrar
             </Button>
           </div>

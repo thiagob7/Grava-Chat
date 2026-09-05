@@ -70,18 +70,18 @@ export const MemberList: React.FC<MemberListProps> = ({
 
   if (carregando) {
     return (
-      <aside
+      <aside data-gc="servidor.member-list.aside"
         aria-busy
         aria-label={t("comum.carregando")}
         className="lista-de-membros hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block"
       >
-        <div className="h-full overflow-hidden px-2 py-4">
-          <Skeleton className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
+        <div data-gc="servidor.member-list.div" className="h-full overflow-hidden px-2 py-4">
+          <Skeleton data-gc="servidor.member-list.skeleton" className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
 
           {Array.from({ length: 9 }, (_, i) => (
-            <div key={i} className="flex items-center gap-2 px-2 py-1.5">
-              <Skeleton className="size-8 shrink-0 rounded-full" />
-              <Skeleton className="h-3 rounded-sm" style={{ width: larguraDaLinha(i) }} />
+            <div data-gc="servidor.member-list.div--2" key={i} className="flex items-center gap-2 px-2 py-1.5">
+              <Skeleton data-gc="servidor.member-list.skeleton--2" className="size-8 shrink-0 rounded-full" />
+              <Skeleton data-gc="servidor.member-list.skeleton--3" className="h-3 rounded-sm" style={{ width: larguraDaLinha(i) }} />
             </div>
           ))}
         </div>
@@ -90,10 +90,10 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
-      <div className="h-full overflow-y-auto px-2 py-4">
+    <aside data-gc="servidor.member-list.aside--2" className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block">
+      <div data-gc="servidor.member-list.div--3" className="h-full overflow-y-auto px-2 py-4">
         {grupos.map((grupo) => (
-          <MemberGroup
+          <MemberGroup data-gc="servidor.member-list.member-group"
             key={grupo.titulo}
             title={grupo.titulo}
             members={grupo.membros}
@@ -131,15 +131,15 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
   if (!members.length) return null;
 
   return (
-    <section className="mb-5">
-      <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+    <section data-gc="servidor.member-list.section" className="mb-5">
+      <h3 data-gc="servidor.member-list.h3" className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
         {title}
       </h3>
       {members.map((member) => {
         const { perfil, corDoCargo } = enfeitesDe(member.user.id);
 
         return (
-          <UserProfilePopover
+          <UserProfilePopover data-gc="servidor.member-list.user-profile-popover"
             key={member.id}
             userId={member.user.id}
             side="left"
@@ -148,13 +148,13 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
             roleIds={member.roleIds}
             podeModerar={podeModerar}
           >
-            <button
+            <button data-gc="servidor.member-list.button"
               className={cn(
                 "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
                 dim && "opacity-40",
               )}
             >
-              <Avatar
+              <Avatar data-gc="servidor.member-list.avatar"
                 id={member.user.id}
                 name={member.nickname ?? member.user.displayName}
                 url={member.user.avatarUrl}
@@ -163,7 +163,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 emVoz={emVoz?.has(member.user.id)}
                 enfeites={perfil}
               />
-              <UserName
+              <UserName data-gc="servidor.member-list.user-name"
                 nome={member.nickname ?? member.user.displayName}
                 perfil={perfil}
                 corDoCargo={corDoCargo}
@@ -173,12 +173,12 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                   corDoCargo || perfil?.nome ? "" : "text-ink-muted",
                 )}
               />
-              <ServerTag
+              <ServerTag data-gc="servidor.member-list.server-tag"
                 etiqueta={perfil?.etiquetaDoServidor}
                 interativo={false}
               />
               {member.user.id === ownerId && (
-                <span title="Dono do servidor">👑</span>
+                <span data-gc="servidor.member-list.span" title="Dono do servidor">👑</span>
               )}
             </button>
           </UserProfilePopover>

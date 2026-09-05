@@ -7,7 +7,7 @@ interface SliderProps extends Omit<React.ComponentProps<"input">, "type"> {
 }
 
 export const Slider = ({ className, preenchido, ...props }: SliderProps) => (
-  <input
+  <input data-gc="ui.slider.input"
     type="range"
     className={cn(
       "h-1.5 w-full cursor-pointer appearance-none rounded-full outline-none",

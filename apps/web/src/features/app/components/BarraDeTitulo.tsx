@@ -14,14 +14,14 @@ export const BarraDeTitulo: React.FC = () => {
   const atual = guilds.find((g) => g.id === rota?.params.guildId);
 
   return (
-    <header className="regiao-de-arrasto flex h-8 shrink-0 items-center justify-center bg-surface-0 px-2">
-      <span className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
+    <header data-gc="app.barra-de-titulo.header" className="regiao-de-arrasto flex h-8 shrink-0 items-center justify-center bg-surface-0 px-2">
+      <span data-gc="app.barra-de-titulo.span" className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
         {atual ? (
           <>
             {atual.iconUrl ? (
-              <img src={atual.iconUrl} alt="" className="size-4 shrink-0 rounded object-cover" />
+              <img data-gc="app.barra-de-titulo.img" src={atual.iconUrl} alt="" className="size-4 shrink-0 rounded object-cover" />
             ) : (
-              <span
+              <span data-gc="app.barra-de-titulo.span--2"
                 aria-hidden
                 className="flex size-4 shrink-0 items-center justify-center rounded text-10 font-bold text-white"
                 style={{ backgroundColor: avatarColor(atual.id) }}
@@ -29,7 +29,7 @@ export const BarraDeTitulo: React.FC = () => {
                 {initials(atual.name)}
               </span>
             )}
-            <span className="truncate">{atual.name}</span>
+            <span data-gc="app.barra-de-titulo.span--3" className="truncate">{atual.name}</span>
           </>
         ) : (
           "Gravaê"

@@ -28,7 +28,7 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
   if (!visivel) return null;
 
   return (
-    <footer
+    <footer data-gc="ui.unsaved-bar.footer"
       className={cn(
         "flex items-center gap-3 rounded-lg bg-surface-0 px-4 py-3",
         flutuante
@@ -37,11 +37,11 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
           : "sticky bottom-0 mt-6",
       )}
     >
-      <p className="flex-1 text-sm">{texto ?? t("comum.naoSalvo")}</p>
-      <Button variant="ghost" size="sm" onClick={onDescartar}>
+      <p data-gc="ui.unsaved-bar.p" className="flex-1 text-sm">{texto ?? t("comum.naoSalvo")}</p>
+      <Button data-gc="ui.unsaved-bar.button.on-descartar" variant="ghost" size="sm" onClick={onDescartar}>
         {acaoDescartar ?? t("comum.descartar")}
       </Button>
-      <Button
+      <Button data-gc="ui.unsaved-bar.button.on-salvar"
         variant="success"
         size="sm"
         disabled={salvando}

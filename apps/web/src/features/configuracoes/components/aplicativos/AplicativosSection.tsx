@@ -35,82 +35,82 @@ export const AplicativosSection: React.FC = () => {
   if (aberto)
     return (
       <>
-        <DetalheDoAplicativo
+        <DetalheDoAplicativo data-gc="configuracoes.aplicativos.aplicativos-section.detalhe-do-aplicativo.set-token-novo"
           bot={aberto}
           onVoltar={() => setAbertoId(null)}
           onTokenNovo={setTokenNovo}
         />
 
-        <ModalDeToken token={tokenNovo} onFechar={() => setTokenNovo(null)} />
+        <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token" token={tokenNovo} onFechar={() => setTokenNovo(null)} />
       </>
     );
 
   return (
-    <div className="max-w-2xl pb-10">
-      <p className="text-sm text-ink-muted">
+    <div data-gc="configuracoes.aplicativos.aplicativos-section.div" className="max-w-2xl pb-10">
+      <p data-gc="configuracoes.aplicativos.aplicativos-section.p" className="text-sm text-ink-muted">
         Um aplicativo é um bot com token próprio. O código roda onde você quiser
         — exemplos prontos em{" "}
-        <code className="rounded bg-surface-0 px-1 text-xs">exemplos/</code>.
+        <code data-gc="configuracoes.aplicativos.aplicativos-section.code" className="rounded bg-surface-0 px-1 text-xs">exemplos/</code>.
       </p>
 
-      <Secao
+      <Secao data-gc="configuracoes.aplicativos.aplicativos-section.secao"
         id="seus-aplicativos"
         titulo="Seus aplicativos"
         detalhe="Cada um vem com um bot e um token próprios."
       >
-        <div className="flex flex-wrap items-center gap-4">
-          <Button onClick={() => setCriando(true)}>
-            <Plus size={16} /> Criar aplicativo
+        <div data-gc="configuracoes.aplicativos.aplicativos-section.div--2" className="flex flex-wrap items-center gap-4">
+          <Button data-gc="configuracoes.aplicativos.aplicativos-section.button" onClick={() => setCriando(true)}>
+            <Plus data-gc="configuracoes.aplicativos.aplicativos-section.plus" size={16} /> Criar aplicativo
           </Button>
 
           {DOCS && (
-            <a
+            <a data-gc="configuracoes.aplicativos.aplicativos-section.a"
               href={DOCS}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-link hover:underline"
             >
-              <BookOpen size={16} /> Leia a documentação
+              <BookOpen data-gc="configuracoes.aplicativos.aplicativos-section.book-open" size={16} /> Leia a documentação
             </a>
           )}
         </div>
 
-        <div className="mt-4">
-          {isLoading && <p className="text-sm text-ink-faint">Carregando…</p>}
+        <div data-gc="configuracoes.aplicativos.aplicativos-section.div--3" className="mt-4">
+          {isLoading && <p data-gc="configuracoes.aplicativos.aplicativos-section.p--2" className="text-sm text-ink-faint">Carregando…</p>}
 
           {!isLoading && isError && (
-            <div className="flex items-center gap-3">
-              <p className="flex-1 text-sm text-ink-faint">
+            <div data-gc="configuracoes.aplicativos.aplicativos-section.div--4" className="flex items-center gap-3">
+              <p data-gc="configuracoes.aplicativos.aplicativos-section.p--3" className="flex-1 text-sm text-ink-faint">
                 Não deu pra carregar seus aplicativos.
               </p>
 
-              <Button variant="surface" size="sm" onClick={() => void refetch()}>
+              <Button data-gc="configuracoes.aplicativos.aplicativos-section.button--2" variant="surface" size="sm" onClick={() => void refetch()}>
                 Tentar de novo
               </Button>
             </div>
           )}
 
           {!isLoading && !isError && !bots.length && (
-            <p className="text-sm text-ink-faint">
+            <p data-gc="configuracoes.aplicativos.aplicativos-section.p--4" className="text-sm text-ink-faint">
               Nenhum aplicativo ainda. Crie o primeiro pra começar a usar a API
               do Gravaê.
             </p>
           )}
 
           {!isLoading && !isError && bots.length > 0 && (
-            <ListaDeAplicativos bots={bots} onAbrir={setAbertoId} />
+            <ListaDeAplicativos data-gc="configuracoes.aplicativos.aplicativos-section.lista-de-aplicativos.set-aberto-id" bots={bots} onAbrir={setAbertoId} />
           )}
         </div>
       </Secao>
 
-      <ModalDeCriacao
+      <ModalDeCriacao data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-criacao.criar-bot"
         aberto={criando}
         criando={criar.isPending}
         onFechar={() => setCriando(false)}
         onCriar={criarBot}
       />
 
-      <ModalDeToken token={tokenNovo} onFechar={() => setTokenNovo(null)} />
+      <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token--2" token={tokenNovo} onFechar={() => setTokenNovo(null)} />
     </div>
   );
 };

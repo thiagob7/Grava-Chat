@@ -24,44 +24,44 @@ export const AtivosAgora: React.FC = () => {
   }
 
   return (
-    <aside className="hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block">
-      <h2 className="mb-3 text-sm font-semibold">Ativo agora</h2>
+    <aside data-gc="amizades.ativos-agora.aside" className="hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block">
+      <h2 data-gc="amizades.ativos-agora.h2" className="mb-3 text-sm font-semibold">Ativo agora</h2>
 
       {isLoading ? (
-        <p className="text-sm text-ink-faint">Vendo quem está por aí…</p>
+        <p data-gc="amizades.ativos-agora.p" className="text-sm text-ink-faint">Vendo quem está por aí…</p>
       ) : salas.size === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-2 px-2 py-24 text-center">
-          <span aria-hidden className="text-3xl font-bold text-ink-faint/60">
-            z<span className="align-super text-xl">Z</span>
+        <div data-gc="amizades.ativos-agora.div" className="flex flex-col items-center justify-center gap-2 px-2 py-24 text-center">
+          <span data-gc="amizades.ativos-agora.span" aria-hidden className="text-3xl font-bold text-ink-faint/60">
+            z<span data-gc="amizades.ativos-agora.span--2" className="align-super text-xl">Z</span>
           </span>
 
-          <p className="text-sm font-semibold">Está tudo tranquilo por enquanto…</p>
-          <p className="text-xs leading-relaxed text-ink-muted">
+          <p data-gc="amizades.ativos-agora.p--2" className="text-sm font-semibold">Está tudo tranquilo por enquanto…</p>
+          <p data-gc="amizades.ativos-agora.p--3" className="text-xs leading-relaxed text-ink-muted">
             Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá pra entrar junto
             com um clique.
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div data-gc="amizades.ativos-agora.div--2" className="space-y-3">
           {[...salas.values()].map(({ canal, servidor, gente }) => (
-            <div key={canal.id} className="rounded-lg bg-surface-1 p-3">
-              <p className="flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-online">
-                <Volume2 size={12} className="shrink-0" /> Em voz
+            <div data-gc="amizades.ativos-agora.div--3" key={canal.id} className="rounded-lg bg-surface-1 p-3">
+              <p data-gc="amizades.ativos-agora.p--4" className="flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-online">
+                <Volume2 data-gc="amizades.ativos-agora.volume2" size={12} className="shrink-0" /> Em voz
               </p>
 
-              <button
+              <button data-gc="amizades.ativos-agora.button"
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
                 title={`Abrir ${canal.nome} em ${servidor.nome}`}
                 className="mt-2 flex w-full min-w-0 items-center gap-1.5 text-left"
               >
                 {servidor.iconUrl ? (
-                  <img
+                  <img data-gc="amizades.ativos-agora.img"
                     src={servidor.iconUrl}
                     alt=""
                     className="size-5 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <span
+                  <span data-gc="amizades.ativos-agora.span--3"
                     aria-hidden
                     className="flex size-5 shrink-0 items-center justify-center rounded-full text-10 font-bold text-white"
                     style={{ backgroundColor: avatarColor(servidor.id) }}
@@ -70,23 +70,23 @@ export const AtivosAgora: React.FC = () => {
                   </span>
                 )}
 
-                <ChevronRight size={12} className="shrink-0 text-ink-faint" />
-                <Volume2 size={13} className="shrink-0 text-ink-muted" />
+                <ChevronRight data-gc="amizades.ativos-agora.chevron-right" size={12} className="shrink-0 text-ink-faint" />
+                <Volume2 data-gc="amizades.ativos-agora.volume2--2" size={13} className="shrink-0 text-ink-muted" />
 
-                <span className="min-w-0 truncate text-sm font-medium hover:underline">
+                <span data-gc="amizades.ativos-agora.span--4" className="min-w-0 truncate text-sm font-medium hover:underline">
                   {canal.nome}
                 </span>
               </button>
 
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex -space-x-2">
+              <div data-gc="amizades.ativos-agora.div--4" className="mt-3 flex items-center gap-2">
+                <div data-gc="amizades.ativos-agora.div--5" className="flex -space-x-2">
                   {gente.slice(0, 5).map((ativo) => (
-                    <Tooltip
+                    <Tooltip data-gc="amizades.ativos-agora.tooltip"
                       key={ativo.user.id}
                       label={ativo.user.id === meuId ? "Você" : ativo.user.displayName}
                     >
-                      <span className="rounded-full">
-                        <Avatar
+                      <span data-gc="amizades.ativos-agora.span--5" className="rounded-full">
+                        <Avatar data-gc="amizades.ativos-agora.avatar"
                           id={ativo.user.id}
                           name={ativo.user.displayName}
                           url={ativo.user.avatarUrl}
@@ -98,7 +98,7 @@ export const AtivosAgora: React.FC = () => {
                   ))}
                 </div>
 
-                <span className="min-w-0 flex-1 truncate text-xs text-ink-muted">
+                <span data-gc="amizades.ativos-agora.span--6" className="min-w-0 flex-1 truncate text-xs text-ink-muted">
                   {gente.length === 1
                     ? gente[0]!.user.id === meuId
                       ? "Só você"
@@ -107,12 +107,12 @@ export const AtivosAgora: React.FC = () => {
                 </span>
               </div>
 
-              <Button
+              <Button data-gc="amizades.ativos-agora.button--2"
                 size="sm"
                 className="mt-3 w-full"
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
               >
-                <PhoneCall size={14} />
+                <PhoneCall data-gc="amizades.ativos-agora.phone-call" size={14} />
                 {gente.some((a) => a.user.id === meuId) ? "Voltar para a chamada" : "Entrar na chamada"}
               </Button>
             </div>

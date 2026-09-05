@@ -129,7 +129,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     },
   };
 
-  return <SessionContext value={value}>{children}</SessionContext>;
+  return <SessionContext data-gc="contexts.session-context.session-context" value={value}>{children}</SessionContext>;
 };
 
 export const useSession = () => {

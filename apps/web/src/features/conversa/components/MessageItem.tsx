@@ -231,7 +231,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       descricao: (
         <>
           {t("conversa.mensagem.apagarDescricao")}
-          <PreviaDaMensagem message={message} emojis={emojis} />
+          <PreviaDaMensagem data-gc="conversa.message-item.previa-da-mensagem" message={message} emojis={emojis} />
         </>
       ),
       acao: t("conversa.mensagem.apagarAcao"),
@@ -250,26 +250,26 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   if (message.tipo === "COMANDO") {
     return (
-      <div className="group flex items-center gap-2 px-2 py-1 text-sm text-ink-muted transition hover:bg-hover @sm:gap-3 @sm:px-4">
-        <SlashSquare size={16} className="shrink-0 text-ink-faint" />
-        <span className="max-w-[8rem] truncate font-medium text-ink @sm:max-w-none">
+      <div data-gc="conversa.message-item.div" className="group flex items-center gap-2 px-2 py-1 text-sm text-ink-muted transition hover:bg-hover @sm:gap-3 @sm:px-4">
+        <SlashSquare data-gc="conversa.message-item.slash-square" size={16} className="shrink-0 text-ink-faint" />
+        <span data-gc="conversa.message-item.span" className="max-w-[8rem] truncate font-medium text-ink @sm:max-w-none">
           {message.author.displayName}
         </span>
-        <span className="hidden @xs:inline">{t("conversa.mensagem.usou")}</span>
-        <span className="min-w-0 truncate text-xs text-ink-muted">
-          <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} />
+        <span data-gc="conversa.message-item.span--2" className="hidden @xs:inline">{t("conversa.mensagem.usou")}</span>
+        <span data-gc="conversa.message-item.span--3" className="min-w-0 truncate text-xs text-ink-muted">
+          <MessageContent data-gc="conversa.message-item.message-content" content={message.content} emojis={emojis} mencoes={mencoes} />
         </span>
-        <span className="shrink-0 text-xs text-ink-faint">{formatTime(message.createdAt)}</span>
+        <span data-gc="conversa.message-item.span--4" className="shrink-0 text-xs text-ink-faint">{formatTime(message.createdAt)}</span>
 
         {canDelete && (
-          <button
+          <button data-gc="conversa.message-item.button.apagar"
             type="button"
             onClick={apagar}
             title={t("conversa.acoes.apagar")}
             aria-label={t("conversa.acoes.apagar")}
             className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-danger group-hover:opacity-100"
           >
-            <Trash2 size={14} />
+            <Trash2 data-gc="conversa.message-item.trash2" size={14} />
           </button>
         )}
       </div>
@@ -278,17 +278,17 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   if (message.tipo === "JOIN") {
     return (
-      <div className="my-2 flex items-center gap-2 px-2 py-1 text-sm text-ink-muted @sm:gap-3 @sm:px-4">
-        <UserPlus size={16} className="shrink-0 text-online" />
-        <span className="shrink-0 font-medium text-ink">{message.author.displayName}</span>
-        <span className="min-w-0 truncate">{message.content.replace(/<@[a-f\d]{24}>/gi, "").trim()}</span>
-        <span className="shrink-0 text-xs text-ink-faint">{formatTime(message.createdAt)}</span>
+      <div data-gc="conversa.message-item.div--2" className="my-2 flex items-center gap-2 px-2 py-1 text-sm text-ink-muted @sm:gap-3 @sm:px-4">
+        <UserPlus data-gc="conversa.message-item.user-plus" size={16} className="shrink-0 text-online" />
+        <span data-gc="conversa.message-item.span--5" className="shrink-0 font-medium text-ink">{message.author.displayName}</span>
+        <span data-gc="conversa.message-item.span--6" className="min-w-0 truncate">{message.content.replace(/<@[a-f\d]{24}>/gi, "").trim()}</span>
+        <span data-gc="conversa.message-item.span--7" className="shrink-0 text-xs text-ink-faint">{formatTime(message.createdAt)}</span>
       </div>
     );
   }
 
   return (
-    <div
+    <div data-gc="conversa.message-item.div--3"
       ref={raiz}
       data-mensagem={message.id}
       className={cn(
@@ -302,7 +302,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       )}
     >
       {message.replyToId && (
-        <Citacao
+        <Citacao data-gc="conversa.message-item.citacao"
           respondida={respondida}
           emojis={emojis}
           mencoes={mencoes}
@@ -310,15 +310,15 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         />
       )}
 
-      <div className="w-10 shrink-0">
+      <div data-gc="conversa.message-item.div--4" className="w-10 shrink-0">
         {compact || !mostrarAvatares ? (
-          <span className="hidden text-10 leading-6 text-ink-faint group-hover:block">
+          <span data-gc="conversa.message-item.span--8" className="hidden text-10 leading-6 text-ink-faint group-hover:block">
             {formatTime(message.createdAt)}
           </span>
         ) : (
-          <UserProfilePopover userId={message.author.id}>
-            <button className="rounded-full transition hover:brightness-110">
-              <Avatar
+          <UserProfilePopover data-gc="conversa.message-item.user-profile-popover" userId={message.author.id}>
+            <button data-gc="conversa.message-item.button" className="rounded-full transition hover:brightness-110">
+              <Avatar data-gc="conversa.message-item.avatar"
                 id={message.author.id}
                 name={message.author.displayName}
                 url={message.author.avatarUrl}
@@ -329,12 +329,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div data-gc="conversa.message-item.div--5" className="min-w-0 flex-1">
         {!compact && (
-          <div className="flex items-baseline gap-x-2">
-            <UserProfilePopover userId={message.author.id}>
-              <button className="min-w-0 max-w-full truncate font-medium text-ink hover:underline">
-                <UserName
+          <div data-gc="conversa.message-item.div--6" className="flex items-baseline gap-x-2">
+            <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id}>
+              <button data-gc="conversa.message-item.button--2" className="min-w-0 max-w-full truncate font-medium text-ink hover:underline">
+                <UserName data-gc="conversa.message-item.user-name"
                   nome={message.author.displayName}
                   perfil={enfeites?.perfil}
                   corDoCargo={enfeites?.corDoCargo}
@@ -342,29 +342,29 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 />
               </button>
             </UserProfilePopover>
-            <ServerTag etiqueta={enfeites?.perfil?.etiquetaDoServidor} />
-            <span className="shrink-0 text-xs text-ink-faint" title={formatTimestamp(message.createdAt)}>
-              <span className="@md:hidden">{formatTime(message.createdAt)}</span>
-              <span className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
+            <ServerTag data-gc="conversa.message-item.server-tag" etiqueta={enfeites?.perfil?.etiquetaDoServidor} />
+            <span data-gc="conversa.message-item.span--9" className="shrink-0 text-xs text-ink-faint" title={formatTimestamp(message.createdAt)}>
+              <span data-gc="conversa.message-item.span--10" className="@md:hidden">{formatTime(message.createdAt)}</span>
+              <span data-gc="conversa.message-item.span--11" className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
             </span>
             {message.pinnedAt && (
-              <span className="flex shrink-0 items-center gap-1 text-10 text-ink-faint">
-                <Pin size={10} /> {t("conversa.mensagem.fixada")}
+              <span data-gc="conversa.message-item.span--12" className="flex shrink-0 items-center gap-1 text-10 text-ink-faint">
+                <Pin data-gc="conversa.message-item.pin" size={10} /> {t("conversa.mensagem.fixada")}
               </span>
             )}
           </div>
         )}
 
         {ignorado && !revelado ? (
-          <p className="my-1 flex items-center gap-2 text-sm italic text-ink-faint">
+          <p data-gc="conversa.message-item.p" className="my-1 flex items-center gap-2 text-sm italic text-ink-faint">
             {t("conversa.mensagem.ignorada")}
-            <button onClick={() => setRevelado(true)} className="not-italic text-brand hover:underline">
+            <button data-gc="conversa.message-item.button--3" onClick={() => setRevelado(true)} className="not-italic text-brand hover:underline">
               {t("conversa.mensagem.mostrar")}
             </button>
           </p>
         ) : editing ? (
-          <div className="my-1">
-            <Textarea
+          <div data-gc="conversa.message-item.div--7" className="my-1">
+            <Textarea data-gc="conversa.message-item.textarea"
               autoFocus
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -377,9 +377,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               }}
               rows={Math.min(6, draft.split("\n").length)}
             />
-            <p className="mt-1 text-xs text-ink-faint">
+            <p data-gc="conversa.message-item.p--2" className="mt-1 text-xs text-ink-faint">
               {t("conversa.mensagem.escPara")}{" "}
-              <button onClick={() => setEditing(false)} className="text-brand hover:underline">
+              <button data-gc="conversa.message-item.button--4" onClick={() => setEditing(false)} className="text-brand hover:underline">
                 {t("conversa.mensagem.cancelar")}
               </button>{" "}
               · {t("conversa.mensagem.enterParaSalvar")}
@@ -387,13 +387,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </div>
         ) : (
           message.content && (
-            <div
+            <div data-gc="conversa.message-item.div--8"
               className="whitespace-pre-wrap break-words text-ink-muted"
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
-              <MessageContent content={message.content} emojis={emojis} mencoes={mencoes} blocos />
+              <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mencoes={mencoes} blocos />
               {message.editedAt && (
-                <span className="ml-1 text-10 text-ink-faint">
+                <span data-gc="conversa.message-item.span--13" className="ml-1 text-10 text-ink-faint">
                   {t("conversa.mensagem.editado")}
                 </span>
               )}
@@ -402,11 +402,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
 
         {mostrarPrevia && !editing && !(ignorado && !revelado) && message.content && (
-          <LinkEmbeds content={message.content} />
+          <LinkEmbeds data-gc="conversa.message-item.link-embeds" content={message.content} />
         )}
 
         {message.sticker && (
-          <img
+          <img data-gc="conversa.message-item.img"
             src={message.sticker.url}
             alt={message.sticker.name}
             title={message.sticker.name}
@@ -415,7 +415,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
 
         {message.poll && (
-          <PollCard
+          <PollCard data-gc="conversa.message-item.poll-card"
             messageId={message.id}
             poll={message.poll}
             currentUserId={currentUserId}
@@ -423,24 +423,24 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           />
         )}
 
-        <MessageAttachments
+        <MessageAttachments data-gc="conversa.message-item.message-attachments"
           attachments={message.attachments}
           onRemover={canDelete ? apagarAnexo : undefined}
         />
 
         {message.failed && (
-          <button
+          <button data-gc="conversa.message-item.button--5"
             onClick={() => onRetry(message)}
             className="mt-1 flex items-center gap-1 text-xs text-danger hover:underline"
           >
-            <RotateCw size={12} /> {t("conversa.mensagem.falhou")}
+            <RotateCw data-gc="conversa.message-item.rotate-cw" size={12} /> {t("conversa.mensagem.falhou")}
           </button>
         )}
 
         {mostrarReacoes && message.reactions.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
+          <div data-gc="conversa.message-item.div--9" className="mt-1 flex flex-wrap gap-1">
             {message.reactions.map((reaction) => (
-              <PilulaDeReacao
+              <PilulaDeReacao data-gc="conversa.message-item.pilula-de-reacao"
                 key={reaction.emoji}
                 reaction={reaction}
                 emojis={emojis}
@@ -453,7 +453,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       </div>
 
       {!message.pending && !message.failed && !editing && (
-        <div
+        <div data-gc="conversa.message-item.div--10"
           className={cn(
             "absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
             "group-hover:flex group-focus-within:flex",
@@ -462,7 +462,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         >
           {mostrarReacoes &&
             atalhos.map((emoji) => (
-              <AtalhoDeReacao
+              <AtalhoDeReacao data-gc="conversa.message-item.atalho-de-reacao"
                 key={emoji}
                 emoji={emoji}
                 onReagir={() => void toggleReaction(emoji)}
@@ -471,15 +471,15 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             ))}
 
           {mostrarReacoes && (
-          <Popover open={reagindo} onOpenChange={setReagindo}>
-            <PopoverTrigger asChild>
-              <AcaoDaBarra titulo={t("conversa.acoes.reagir")}>
-                <SmilePlus size={16} />
+          <Popover data-gc="conversa.message-item.popover.set-reagindo" open={reagindo} onOpenChange={setReagindo}>
+            <PopoverTrigger data-gc="conversa.message-item.popover-trigger" asChild>
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra" titulo={t("conversa.acoes.reagir")}>
+                <SmilePlus data-gc="conversa.message-item.smile-plus" size={16} />
               </AcaoDaBarra>
             </PopoverTrigger>
 
-            <PopoverContent side="top" align="end" className="w-auto border-0 bg-transparent p-0">
-              <ExpressionPicker
+            <PopoverContent data-gc="conversa.message-item.popover-content" side="top" align="end" className="w-auto border-0 bg-transparent p-0">
+              <ExpressionPicker data-gc="conversa.message-item.expression-picker"
                 guildId={guildId}
                 modo="reacao"
                 onFechar={() => setReagindo(false)}
@@ -489,95 +489,95 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </Popover>
           )}
 
-          <AcaoDaBarra titulo={t("conversa.acoes.responder")} onClick={iniciarResposta}>
-            <CornerUpLeft size={16} />
+          <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra.iniciar-resposta" titulo={t("conversa.acoes.responder")} onClick={iniciarResposta}>
+            <CornerUpLeft data-gc="conversa.message-item.corner-up-left" size={16} />
           </AcaoDaBarra>
 
-          <AcaoDaBarra
+          <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--2"
             titulo={t("conversa.acoes.encaminhar")}
             onClick={() => setEncaminhando(true)}
           >
-            <Forward size={16} />
+            <Forward data-gc="conversa.message-item.forward" size={16} />
           </AcaoDaBarra>
 
           {shift && (
             <>
-              <AcaoDaBarra
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--3"
                 titulo={t(
                   favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar",
                 )}
                 onClick={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
                 className={cn(favorita && "text-brand")}
               >
-                <Bookmark size={16} className={favorita ? "fill-current" : undefined} />
+                <Bookmark data-gc="conversa.message-item.bookmark" size={16} className={favorita ? "fill-current" : undefined} />
               </AcaoDaBarra>
 
-              <AcaoDaBarra
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra.marcar-nao-lido"
                 titulo={t("conversa.acoes.marcarNaoLida")}
                 onClick={marcarNaoLido}
               >
-                <MailOpen size={16} />
+                <MailOpen data-gc="conversa.message-item.mail-open" size={16} />
               </AcaoDaBarra>
 
-              <AcaoDaBarra
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--4"
                 titulo={t("conversa.acoes.copiarLink")}
                 onClick={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
               >
-                <Link2 size={16} />
+                <Link2 data-gc="conversa.message-item.link2" size={16} />
               </AcaoDaBarra>
 
-              <AcaoDaBarra
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--5"
                 titulo={t("conversa.acoes.copiarId")}
                 onClick={() => copiar(message.id, t("conversa.mensagem.idCopiado"))}
               >
-                <Hash size={16} />
+                <Hash data-gc="conversa.message-item.hash" size={16} />
               </AcaoDaBarra>
             </>
           )}
 
           {canPin && (
-            <AcaoDaBarra
+            <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--6"
               titulo={t(message.pinnedAt ? "conversa.acoes.desafixar" : "conversa.acoes.fixar")}
               onClick={() => onPin?.(message, !message.pinnedAt)}
             >
-              {message.pinnedAt ? <PinOff size={16} /> : <Pin size={16} />}
+              {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off" size={16} /> : <Pin data-gc="conversa.message-item.pin--2" size={16} />}
             </AcaoDaBarra>
           )}
 
           {isOwn && (
-            <AcaoDaBarra
+            <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--7"
               titulo={t("conversa.acoes.editar")}
               onClick={() => {
                 setDraft(message.content);
                 setEditing(true);
               }}
             >
-              <Pencil size={16} />
+              <Pencil data-gc="conversa.message-item.pencil" size={16} />
             </AcaoDaBarra>
           )}
 
           {canDelete && (
-            <AcaoDaBarra
+            <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra.apagar"
               titulo={t("conversa.acoes.apagar")}
               onClick={apagar}
               className="hover:text-danger"
             >
-              <Trash2 size={16} />
+              <Trash2 data-gc="conversa.message-item.trash2--2" size={16} />
             </AcaoDaBarra>
           )}
 
-          <DropdownMenu open={menuAberto} onOpenChange={setMenuAberto}>
-            <DropdownMenuTrigger asChild>
-              <AcaoDaBarra titulo={t("conversa.acoes.mais")}>
-                <MoreHorizontal size={16} />
+          <DropdownMenu data-gc="conversa.message-item.dropdown-menu.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
+            <DropdownMenuTrigger data-gc="conversa.message-item.dropdown-menu-trigger" asChild>
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--8" titulo={t("conversa.acoes.mais")}>
+                <MoreHorizontal data-gc="conversa.message-item.more-horizontal" size={16} />
               </AcaoDaBarra>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-60">
+            <DropdownMenuContent data-gc="conversa.message-item.dropdown-menu-content" align="end" className="w-60">
               {mostrarReacoes && (
-                <div className="mb-1 flex items-center gap-0.5 border-b border-line px-1 pb-1.5">
+                <div data-gc="conversa.message-item.div--11" className="mb-1 flex items-center gap-0.5 border-b border-line px-1 pb-1.5">
                   {atalhos.map((emoji) => (
-                    <AtalhoDeReacao
+                    <AtalhoDeReacao data-gc="conversa.message-item.atalho-de-reacao--2"
                       key={emoji}
                       emoji={emoji}
                       onReagir={() => {
@@ -591,7 +591,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     />
                   ))}
 
-                  <AcaoDaBarra
+                  <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--9"
                     titulo={t("conversa.acoes.reagir")}
                     className="ml-auto"
                     onClick={() => {
@@ -599,86 +599,86 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                       setReagindo(true);
                     }}
                   >
-                    <SmilePlus size={16} />
+                    <SmilePlus data-gc="conversa.message-item.smile-plus--2" size={16} />
                   </AcaoDaBarra>
                 </div>
               )}
 
-              <DropdownMenuItem onSelect={iniciarResposta}>
-                {t("conversa.acoes.responder")} <CornerUpLeft size={16} />
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.iniciar-resposta" onSelect={iniciarResposta}>
+                {t("conversa.acoes.responder")} <CornerUpLeft data-gc="conversa.message-item.corner-up-left--2" size={16} />
               </DropdownMenuItem>
 
-              <DropdownMenuItem onSelect={() => setEncaminhando(true)}>
-                {t("conversa.acoes.encaminhar")} <Forward size={16} />
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item" onSelect={() => setEncaminhando(true)}>
+                {t("conversa.acoes.encaminhar")} <Forward data-gc="conversa.message-item.forward--2" size={16} />
               </DropdownMenuItem>
 
               {mostrarReacoes && (
                 <>
-                  <DropdownMenuItem onSelect={() => setReagindo(true)}>
-                    {t("conversa.acoes.adicionarReacao")} <SmilePlus size={16} />
+                  <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--2" onSelect={() => setReagindo(true)}>
+                    {t("conversa.acoes.adicionarReacao")} <SmilePlus data-gc="conversa.message-item.smile-plus--3" size={16} />
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem onSelect={() => superReagir(SUPER_PADRAO)}>
+                  <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--3" onSelect={() => superReagir(SUPER_PADRAO)}>
                     {t("conversa.acoes.superReagirCom", { emoji: SUPER_PADRAO })}{" "}
-                    <Sparkles size={16} />
+                    <Sparkles data-gc="conversa.message-item.sparkles" size={16} />
                   </DropdownMenuItem>
                 </>
               )}
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator" />
 
               {canPin && (
-                <DropdownMenuItem onSelect={() => onPin?.(message, !message.pinnedAt)}>
+                <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--4" onSelect={() => onPin?.(message, !message.pinnedAt)}>
                   {t(
                     message.pinnedAt
                       ? "conversa.acoes.desafixarMensagem"
                       : "conversa.acoes.fixarMensagem",
                   )}
-                  {message.pinnedAt ? <PinOff size={16} /> : <Pin size={16} />}
+                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off--2" size={16} /> : <Pin data-gc="conversa.message-item.pin--3" size={16} />}
                 </DropdownMenuItem>
               )}
 
               {isOwn && (
-                <DropdownMenuItem
+                <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--5"
                   onSelect={() => {
                     setDraft(message.content);
                     setEditing(true);
                   }}
                 >
-                  {t("conversa.acoes.editarMensagem")} <Pencil size={16} />
+                  {t("conversa.acoes.editarMensagem")} <Pencil data-gc="conversa.message-item.pencil--2" size={16} />
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--6"
                 onSelect={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
               >
                 {t(favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar")}
-                <Bookmark size={16} className={favorita ? "fill-current text-brand" : undefined} />
+                <Bookmark data-gc="conversa.message-item.bookmark--2" size={16} className={favorita ? "fill-current text-brand" : undefined} />
               </DropdownMenuItem>
 
-              <DropdownMenuItem onSelect={marcarNaoLido}>
-                {t("conversa.acoes.marcarNaoLida")} <MailOpen size={16} />
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.marcar-nao-lido" onSelect={marcarNaoLido}>
+                {t("conversa.acoes.marcarNaoLida")} <MailOpen data-gc="conversa.message-item.mail-open--2" size={16} />
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator--2" />
 
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--7"
                 onSelect={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
               >
-                {t("conversa.acoes.copiarLink")} <Link2 size={16} />
+                {t("conversa.acoes.copiarLink")} <Link2 data-gc="conversa.message-item.link2--2" size={16} />
               </DropdownMenuItem>
 
-              <DropdownMenuItem
+              <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--8"
                 onSelect={() => copiar(message.id, t("conversa.mensagem.idCopiado"))}
               >
-                {t("conversa.acoes.copiarId")} <Copy size={16} />
+                {t("conversa.acoes.copiarId")} <Copy data-gc="conversa.message-item.copy" size={16} />
               </DropdownMenuItem>
 
               {canDelete && (
                 <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={apagar} className="text-danger focus:text-danger">
-                    {t("conversa.acoes.apagarMensagem")} <Trash2 size={16} />
+                  <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator--3" />
+                  <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.apagar" onSelect={apagar} className="text-danger focus:text-danger">
+                    {t("conversa.acoes.apagarMensagem")} <Trash2 data-gc="conversa.message-item.trash2--3" size={16} />
                   </DropdownMenuItem>
                 </>
               )}
@@ -687,7 +687,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         </div>
       )}
 
-      <EncaminharModal
+      <EncaminharModal data-gc="conversa.message-item.encaminhar-modal"
         aberto={encaminhando}
         onFechar={() => setEncaminhando(false)}
         mensagem={message}
@@ -711,16 +711,16 @@ const EmojiDaReacao: React.FC<{ emoji: string; doServidor: GuildEmoji[] }> = ({
   const nome = /^:([\w~-]+):$/.exec(emoji)?.[1];
   const achado = nome ? doServidor.find((e) => e.name === nome) : undefined;
 
-  if (!achado) return <Emoji emoji={emoji} className="size-5" />;
+  if (!achado) return <Emoji data-gc="conversa.message-item.emoji" emoji={emoji} className="size-5" />;
 
-  return <img src={achado.url} alt={emoji} title={emoji} className="size-5 object-contain" />;
+  return <img data-gc="conversa.message-item.img--2" src={achado.url} alt={emoji} title={emoji} className="size-5 object-contain" />;
 };
 
 const AcaoDaBarra = React.forwardRef<
   HTMLButtonElement,
   { titulo: string; className?: string; onClick?: () => void; children: React.ReactNode }
 >(({ titulo, className, onClick, children, ...props }, ref) => (
-  <button
+  <button data-gc="conversa.message-item.button.on-click"
     ref={ref}
     onClick={onClick}
     title={titulo}
@@ -745,7 +745,7 @@ const AtalhoDeReacao: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <button
+    <button data-gc="conversa.message-item.button--6"
       {...useSegurar(onReagir, onSuper)}
       title={t("conversa.mensagem.reagirCom", { emoji })}
       className={cn(
@@ -753,7 +753,7 @@ const AtalhoDeReacao: React.FC<{
         className,
       )}
     >
-      <Emoji emoji={emoji} className="size-5" />
+      <Emoji data-gc="conversa.message-item.emoji--2" emoji={emoji} className="size-5" />
     </button>
   );
 };
@@ -767,7 +767,7 @@ const PilulaDeReacao: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <button
+    <button data-gc="conversa.message-item.button--7"
       {...useSegurar(onReagir, onSuper)}
       title={t("conversa.mensagem.segureParaSuper", { emoji: reaction.emoji })}
       className={cn(
@@ -776,8 +776,8 @@ const PilulaDeReacao: React.FC<{
         reaction.burst && "shadow-[0_0_0_1px_var(--color-idle),0_0_10px_-2px_var(--color-idle)]",
       )}
     >
-      <EmojiDaReacao emoji={reaction.emoji} doServidor={emojis} />
-      <span className="text-xs font-medium text-ink-muted">{reaction.count}</span>
+      <EmojiDaReacao data-gc="conversa.message-item.emoji-da-reacao" emoji={reaction.emoji} doServidor={emojis} />
+      <span data-gc="conversa.message-item.span--14" className="text-xs font-medium text-ink-muted">{reaction.count}</span>
     </button>
   );
 };
@@ -795,37 +795,37 @@ const Citacao: React.FC<{
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  <div className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs">
-    <span
+  <div data-gc="conversa.message-item.div--12" className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs">
+    <span data-gc="conversa.message-item.span--15"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
     />
 
     {respondida ? (
       <>
-        <UserProfilePopover userId={respondida.author.id}>
-          <button className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
-            <Avatar
+        <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--3" userId={respondida.author.id}>
+          <button data-gc="conversa.message-item.button--8" className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
+            <Avatar data-gc="conversa.message-item.avatar--2"
               id={respondida.author.id}
               name={respondida.author.displayName}
               url={avatarUrl}
               size={16}
             />
-            <span className="max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]">
+            <span data-gc="conversa.message-item.span--16" className="max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]">
               @{respondida.author.displayName}
             </span>
           </button>
         </UserProfilePopover>
-        <span className="min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
+        <span data-gc="conversa.message-item.span--17" className="min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
           {respondida.content ? (
-            <MessageContent content={respondida.content} emojis={emojis} mencoes={mencoes} />
+            <MessageContent data-gc="conversa.message-item.message-content--3" content={respondida.content} emojis={emojis} mencoes={mencoes} />
           ) : (
             t("conversa.mensagem.citacaoAnexo")
           )}
         </span>
       </>
     ) : (
-      <span className="italic text-ink-faint">{t("conversa.mensagem.citacaoSumiu")}</span>
+      <span data-gc="conversa.message-item.span--18" className="italic text-ink-faint">{t("conversa.mensagem.citacaoSumiu")}</span>
     )}
     </div>
   );
@@ -837,25 +837,25 @@ const PreviaDaMensagem: React.FC<{
   message: Message | PendingMessageModel;
   emojis: GuildEmoji[];
 }> = ({ message, emojis }) => (
-  <div className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
-    <div className="flex items-baseline gap-2">
-      <Avatar
+  <div data-gc="conversa.message-item.div--13" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
+    <div data-gc="conversa.message-item.div--14" className="flex items-baseline gap-2">
+      <Avatar data-gc="conversa.message-item.avatar--3"
         id={message.author.id}
         name={message.author.displayName}
         url={message.author.avatarUrl}
         size={20}
       />
-      <span className="truncate text-sm font-medium">{message.author.displayName}</span>
-      <span className="shrink-0 text-xs text-ink-faint">
+      <span data-gc="conversa.message-item.span--19" className="truncate text-sm font-medium">{message.author.displayName}</span>
+      <span data-gc="conversa.message-item.span--20" className="shrink-0 text-xs text-ink-faint">
         {formatTimestamp(message.createdAt)}
       </span>
     </div>
 
-    <div className="mt-1 break-words text-sm text-ink-muted">
+    <div data-gc="conversa.message-item.div--15" className="mt-1 break-words text-sm text-ink-muted">
       {message.content ? (
-        <MessageContent content={message.content} emojis={emojis} blocos />
+        <MessageContent data-gc="conversa.message-item.message-content--4" content={message.content} emojis={emojis} blocos />
       ) : (
-        <span className="italic text-ink-faint">sem texto</span>
+        <span data-gc="conversa.message-item.span--21" className="italic text-ink-faint">sem texto</span>
       )}
     </div>
   </div>

@@ -29,16 +29,16 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
     descobrivel !== (guild.descobrivel !== false) || categoria !== (guild.categoria ?? "");
 
   return (
-    <div className="max-w-2xl pb-10">
-      <h2 className="text-xl font-semibold">Explorar</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+    <div data-gc="servidor.server-settings.descoberta-section.div" className="max-w-2xl pb-10">
+      <h2 data-gc="servidor.server-settings.descoberta-section.h2" className="text-xl font-semibold">Explorar</h2>
+      <p data-gc="servidor.server-settings.descoberta-section.p" className="mt-1 text-sm text-ink-muted">
         A partir de {MEMBROS_PARA_DESCOBRIR} membros, o servidor passa a aparecer
         para quem procura comunidade no Explorar. Não é preciso pedir nada — mas
         dá para ficar de fora.
       </p>
 
-      <div className="mt-6 rounded-lg border border-line bg-surface-2 p-4">
-        <p className="text-sm font-medium">
+      <div data-gc="servidor.server-settings.descoberta-section.div--2" className="mt-6 rounded-lg border border-line bg-surface-2 p-4">
+        <p data-gc="servidor.server-settings.descoberta-section.p--2" className="text-sm font-medium">
           {jaAparece
             ? "Este servidor está aparecendo no Explorar"
             : !descobrivel
@@ -46,7 +46,7 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
               : `Faltam ${numero.format(faltam)} ${faltam === 1 ? "membro" : "membros"}`}
         </p>
 
-        <p className="mt-1 text-xs text-ink-faint">
+        <p data-gc="servidor.server-settings.descoberta-section.p--3" className="mt-1 text-xs text-ink-faint">
           {jaAparece
             ? `${numero.format(membros)} membros hoje. Quem entrar por aqui cai no seu canal de boas-vindas, como qualquer convite.`
             : !descobrivel
@@ -55,21 +55,21 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
         </p>
       </div>
 
-      <div className="mt-6 flex items-start gap-4">
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">Aparecer no Explorar</p>
-          <p className="mt-0.5 text-xs text-ink-faint">
+      <div data-gc="servidor.server-settings.descoberta-section.div--3" className="mt-6 flex items-start gap-4">
+        <div data-gc="servidor.server-settings.descoberta-section.div--4" className="min-w-0 flex-1">
+          <p data-gc="servidor.server-settings.descoberta-section.p--4" className="text-sm font-medium">Aparecer no Explorar</p>
+          <p data-gc="servidor.server-settings.descoberta-section.p--5" className="mt-0.5 text-xs text-ink-faint">
             Desligado, o servidor fica de fora da lista mesmo passando dos{" "}
             {MEMBROS_PARA_DESCOBRIR} membros. Nada muda para quem já está dentro.
           </p>
         </div>
 
-        <Switch checked={descobrivel} onCheckedChange={setDescobrivel} />
+        <Switch data-gc="servidor.server-settings.descoberta-section.switch.set-descobrivel" checked={descobrivel} onCheckedChange={setDescobrivel} />
       </div>
 
-      <div className="mt-6">
-        <Label htmlFor="categoria-do-servidor">Categoria</Label>
-        <CampoSelect
+      <div data-gc="servidor.server-settings.descoberta-section.div--5" className="mt-6">
+        <Label data-gc="servidor.server-settings.descoberta-section.label" htmlFor="categoria-do-servidor">Categoria</Label>
+        <CampoSelect data-gc="servidor.server-settings.descoberta-section.campo-select.set-categoria"
           id="categoria-do-servidor"
           valor={categoria}
           onEscolher={setCategoria}
@@ -81,13 +81,13 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
             })),
           ]}
         />
-        <p className="mt-1.5 text-xs text-ink-faint">
+        <p data-gc="servidor.server-settings.descoberta-section.p--6" className="mt-1.5 text-xs text-ink-faint">
           É a aba em que ele aparece. Sem categoria ele continua em "Todos", mas
           some quando alguém filtra.
         </p>
       </div>
 
-      <UnsavedBar
+      <UnsavedBar data-gc="servidor.server-settings.descoberta-section.unsaved-bar"
         visivel={mudou}
         salvando={salvar.isPending}
         onDescartar={() => {
