@@ -3,6 +3,8 @@ import { Download, EyeOff, FileText } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
+import { PreviaDeTexto } from "~/features/conversa/components/PreviaDeTexto";
+import { ehAnexoDeTexto } from "~/features/conversa/lib/anexo-de-texto";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
@@ -25,6 +27,8 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ attachme
         <ComSpoiler key={anexo.id} anexo={anexo}>
           {abrirImagens && isImageType(anexo.contentType) ? (
             <ImageAttachment anexo={anexo} />
+          ) : ehAnexoDeTexto(anexo) ? (
+            <PreviaDeTexto anexo={anexo} aoFalhar={<FileAttachment anexo={anexo} />} />
           ) : (
             <FileAttachment anexo={anexo} />
           )}
