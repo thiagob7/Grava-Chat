@@ -7,7 +7,11 @@ import {
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
-import { NOMES_DE_ORIGEM, traduzirTema } from "~/features/configuracoes/lib/ponte-de-tema";
+import {
+  NOMES_DE_ORIGEM,
+  nomesDeclaradosNoTema,
+  traduzirTema,
+} from "~/features/configuracoes/lib/ponte-de-tema";
 
 export interface TemaSalvo {
   id: string;
@@ -144,11 +148,18 @@ function aplicarPonte(estado: EstadoDoEstudio) {
 
   if (!estado.css.trim()) return;
 
+  /*
+    Só os nomes que o próprio arquivo declara. Ler tudo do computado achava
+    valor para o vocabulário inteiro do Fluxer — que a nossa camada de tokens
+    já declara — e escrevia a camada de referência por cima das cores reais.
+  */
+  const declarados = nomesDeclaradosNoTema(estado.css);
+
   const lido = getComputedStyle(raiz);
   const origens: Record<string, string> = {};
 
   for (const nome of NOMES_DE_ORIGEM) {
-    origens[nome] = lido.getPropertyValue(nome);
+    if (declarados.has(nome)) origens[nome] = lido.getPropertyValue(nome);
   }
 
   const escolhidos = new Set(Object.keys(estado.substituicoes));

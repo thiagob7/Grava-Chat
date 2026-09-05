@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { NOMES_DE_ORIGEM, PONTE_DE_TEMA, traduzirTema } from "./ponte-de-tema";
+import {
+  NOMES_DE_ORIGEM,
+  nomesDeclaradosNoTema,
+  PONTE_DE_TEMA,
+  traduzirTema,
+} from "./ponte-de-tema";
 
 describe("ponte de tema", () => {
   it("traduz o fundo da lateral para o nosso nome", () => {
@@ -58,5 +63,39 @@ describe("ponte de tema", () => {
     const destinos = Object.values(PONTE_DE_TEMA).flat();
 
     expect(destinos.every((d) => d.startsWith("--color-") || d.startsWith("--font-"))).toBe(true);
+  });
+});
+
+describe("o que o tema declarou", () => {
+  it("acha as variáveis que o arquivo escreve", () => {
+    const nomes = nomesDeclaradosNoTema(`
+      :root { --background-secondary: #111; --text-primary: #fff }
+      body { --brand-primary: rgb(254, 128, 25); }
+    `);
+
+    expect([...nomes].sort()).toEqual([
+      "--background-secondary",
+      "--brand-primary",
+      "--text-primary",
+    ]);
+  });
+
+  /*
+    A camada de tokens já declara o vocabulário inteiro do Fluxer. Se ler uma
+    variável contasse como declarar, a ponte escreveria a camada de referência
+    por cima das cores reais — que foi o que deixou o cabeçalho de outra cor.
+  */
+  it("não conta variável que o tema só lê", () => {
+    const nomes = nomesDeclaradosNoTema(
+      ".x { color: var(--background-channel-header); border: 1px solid var(--text-primary) }",
+    );
+
+    expect([...nomes]).toEqual([]);
+  });
+
+  it("conta a que o tema declara em função de outra", () => {
+    const nomes = nomesDeclaradosNoTema(":root { --background-primary: var(--ThemeFlatDarker) }");
+
+    expect([...nomes]).toEqual(["--background-primary"]);
   });
 });

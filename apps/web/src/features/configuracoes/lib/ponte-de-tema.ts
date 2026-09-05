@@ -91,3 +91,25 @@ export function traduzirTema(
 
   return saida;
 }
+
+/*
+  Quais variáveis o próprio arquivo declara.
+
+  Sem esta pergunta a ponte lia o computado da raiz e achava valor para TODO
+  nome do vocabulário do Fluxer — porque a nossa camada de tokens já declara
+  esse vocabulário inteiro. O tema não tinha dito nada sobre
+  `--background-channel-header`, e mesmo assim o valor da nossa camada de
+  referência era escrito por cima do `--color-cabecalho` real. Era por isso que
+  o cabeçalho da conversa saía de outra cor.
+
+  Agora a ponte só traduz o que o tema escreveu com as próprias mãos.
+*/
+export function nomesDeclaradosNoTema(css: string): Set<string> {
+  const achados = new Set<string>();
+
+  for (const declaracao of css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)) {
+    if (declaracao[1]) achados.add(declaracao[1]);
+  }
+
+  return achados;
+}
