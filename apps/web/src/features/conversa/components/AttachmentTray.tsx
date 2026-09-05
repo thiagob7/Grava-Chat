@@ -19,6 +19,20 @@ import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
+/*
+  Um roxo mais claro que a marca, misturado na hora em vez de fixo: assim ele
+  acompanha o tema e a cor de destaque que a pessoa escolher no estúdio.
+
+  Não virou token porque o estúdio exige que todo token seja editável, e um
+  derivado pararia de seguir a marca no instante em que alguém o editasse.
+*/
+const TINTA_SUAVE = "text-[color-mix(in_srgb,var(--color-brand)_55%,white)]";
+
+const ARTE_DO_ARQUIVO = cn(
+  TINTA_SUAVE,
+  "fill-[color-mix(in_srgb,var(--color-brand)_18%,transparent)]",
+);
+
 interface AttachmentTrayProps {
   items: PendingAttachment[];
   onRemove: (id: string) => void;
@@ -91,7 +105,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               </span>
             )}
 
-            <div className="relative mb-2 flex aspect-square items-center justify-center overflow-hidden rounded-md bg-surface-2">
+            <div className="relative mb-2 flex aspect-square items-center justify-center overflow-hidden rounded-md bg-surface-3">
               {item.previewUrl ? (
                 <img
                   src={item.previewUrl}
@@ -99,7 +113,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                   className={cn("size-full object-cover transition", subindo && "opacity-40")}
                 />
               ) : (
-                <FileText size={44} strokeWidth={1.5} className="text-brand" />
+                <FileText size={56} strokeWidth={1.5} className={ARTE_DO_ARQUIVO} />
               )}
 
               {subindo && <Loader2 size={20} className="absolute animate-spin text-ink" />}
@@ -130,7 +144,12 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
               </div>
 
               {!item.previewUrl && extensaoDe(item.filename) && (
-                <span className="shrink-0 text-11 font-bold uppercase tracking-wide text-brand">
+                <span
+                  className={cn(
+                    "shrink-0 text-11 font-bold uppercase tracking-wide",
+                    TINTA_SUAVE,
+                  )}
+                >
                   {extensaoDe(item.filename)}
                 </span>
               )}
