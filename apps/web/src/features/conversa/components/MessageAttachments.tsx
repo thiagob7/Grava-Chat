@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Download, EyeOff, FileText } from "lucide-react";
+import { Download, EyeOff, FileText, Trash2 } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
@@ -11,28 +11,49 @@ import { useTranslation } from "~/traducao";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
+  /// Quando dá para apagar, cada anexo ganha a lixeira ao lado. Sem isto o
+  /// componente segue servindo para quem só lê.
+  onRemover?: (anexo: Attachment) => void;
 }
 
 const MAX_W = MAX_IMAGEM_W;
 const MAX_H = MAX_IMAGEM_H;
 
-export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ attachments }) => {
+export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
+  attachments,
+  onRemover,
+}) => {
   const abrirImagens = useAparencia((s) => s.imagensEnviadas);
+  const { t } = useTranslation();
 
   if (!attachments.length) return null;
 
   return (
     <div className="mt-1 flex flex-wrap gap-2">
       {attachments.map((anexo) => (
-        <ComSpoiler key={anexo.id} anexo={anexo}>
-          {abrirImagens && isImageType(anexo.contentType) ? (
-            <ImageAttachment anexo={anexo} />
-          ) : ehAnexoDeTexto(anexo) ? (
-            <PreviaDeTexto anexo={anexo} aoFalhar={<FileAttachment anexo={anexo} />} />
-          ) : (
-            <FileAttachment anexo={anexo} />
+        <div key={anexo.id} className="group/anexo flex w-full items-start gap-2">
+          <ComSpoiler anexo={anexo}>
+            {abrirImagens && isImageType(anexo.contentType) ? (
+              <ImageAttachment anexo={anexo} />
+            ) : ehAnexoDeTexto(anexo) ? (
+              <PreviaDeTexto anexo={anexo} aoFalhar={<FileAttachment anexo={anexo} />} />
+            ) : (
+              <FileAttachment anexo={anexo} />
+            )}
+          </ComSpoiler>
+
+          {onRemover && (
+            <button
+              type="button"
+              onClick={() => onRemover(anexo)}
+              aria-label={t("conversa.anexos.excluirTitulo")}
+              title={t("conversa.anexos.excluirTitulo")}
+              className="mt-1 flex size-7 shrink-0 items-center justify-center rounded text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-danger focus-visible:opacity-100 group-hover/anexo:opacity-100"
+            >
+              <Trash2 size={16} />
+            </button>
           )}
-        </ComSpoiler>
+        </div>
       ))}
     </div>
   );

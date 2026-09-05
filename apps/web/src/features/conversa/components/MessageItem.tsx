@@ -19,7 +19,7 @@ import {
   Trash2,
   UserPlus,
 } from "lucide-react";
-import type { GuildEmoji, Message } from "@gravae/shared";
+import type { Attachment, GuildEmoji, Message } from "@gravae/shared";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { emojisRecentes } from "~/features/expressao/lib/emoji";
@@ -33,6 +33,7 @@ import {
 } from "~/@core/lib/websocket/emit-message-actions";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { MessageAttachments } from "~/features/conversa/components/MessageAttachments";
+import { removerAnexo } from "~/@core/application/requests/message/remover-anexo";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
@@ -206,6 +207,20 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   };
 
   const apagarMesmo = () => void deleteMessage(message.id).catch(() => undefined);
+
+  const apagarAnexo = (anexo: Attachment) =>
+    void confirmar({
+      titulo: t("conversa.anexos.excluirTitulo"),
+      descricao: t("conversa.anexos.excluirDescricao", { arquivo: anexo.filename }),
+      acao: t("conversa.anexos.excluirAcao"),
+      destrutivo: true,
+    }).then(({ confirmado }) => {
+      if (!confirmado) return;
+
+      void removerAnexo(message.id, anexo.id).catch(() =>
+        toast.error(t("conversa.anexos.excluirFalhou")),
+      );
+    });
 
   const apagar = () => {
     /// Segurando Shift, some direto — é a saída pra quem está limpando várias.
@@ -408,7 +423,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           />
         )}
 
-        <MessageAttachments attachments={message.attachments} />
+        <MessageAttachments
+          attachments={message.attachments}
+          onRemover={canDelete ? apagarAnexo : undefined}
+        />
 
         {message.failed && (
           <button

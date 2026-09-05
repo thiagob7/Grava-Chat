@@ -25,7 +25,7 @@ import { useTranslation } from "~/traducao";
 
 /// Quantas linhas ficam à mostra com o cartão recolhido. Recolhido não é
 /// fechado: dá pra saber o que tem ali sem abrir.
-const LINHAS_NA_PREVIA = 7;
+const LINHAS_NA_PREVIA = 5;
 const LINHAS_ATE_RECOLHER = 15;
 
 interface PreviaDeTextoProps {
@@ -93,7 +93,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
 
   if (conteudo === null) {
     return (
-      <div className="h-32 w-full max-w-2xl animate-pulse rounded-md border border-line bg-codigo-bloco" />
+      <div className="h-28 w-full max-w-4xl animate-pulse rounded-md border border-line bg-codigo-bloco" />
     );
   }
 
@@ -134,7 +134,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
 
   return (
     <>
-      <div className="w-full max-w-2xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink">
+      <div className="w-full max-w-4xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink">
         <div className="relative">
           <div
             className={cn(aberto ? "max-h-[32rem] overflow-y-auto" : "overflow-hidden")}
@@ -169,10 +169,10 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
                 onClick={() => setAberto((v) => !v)}
                 aria-expanded={aberto}
                 aria-label={dicaDoRecolher}
-                className={botao}
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
               >
                 <ChevronDown
-                  size={16}
+                  size={18}
                   className={cn("transition-transform", aberto && "rotate-180")}
                 />
               </button>
