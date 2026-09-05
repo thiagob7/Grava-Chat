@@ -3,7 +3,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { z } from "zod";
-import { clientEventSchemas, LIMITS } from "@gravae/shared";
+import {
+  clientEventSchemas,
+  DEFAULT_EVERYONE_PERMISSIONS,
+  LIMITS,
+  PERMISSION_GROUPS,
+  PERMISSION_LABELS,
+} from "@gravae/shared";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ROTAS = join(AQUI, "..", "..", "api", "src", "routes", "bot-api.ts");
@@ -100,6 +106,31 @@ const limites = LIMITES.map(({ chave, rotulo, formato }) => ({
   valor: LIMITS[chave],
 }));
 
+const padrao = new Set<string>(DEFAULT_EVERYONE_PERMISSIONS);
+
+const permissoes = PERMISSION_GROUPS.map((grupo) => ({
+  titulo: grupo.label,
+  itens: grupo.permissions.map((chave) => ({
+    chave,
+    nome: PERMISSION_LABELS[chave].nome,
+    descricao: PERMISSION_LABELS[chave].descricao,
+    padrao: padrao.has(chave),
+  })),
+}));
+
+const forasDoGrupo = Object.keys(PERMISSION_LABELS).filter(
+  (chave) => !PERMISSION_GROUPS.some((grupo) => grupo.permissions.includes(chave as never)),
+);
+
+if (forasDoGrupo.length) {
+  console.error(
+    `\n  Permissão que existe mas não está em grupo nenhum, então sumiria da documentação:\n\n` +
+      forasDoGrupo.map((p) => `    ${p}`).join("\n") +
+      `\n\n  Ponha num PERMISSION_GROUPS do @gravae/shared e rode de novo.\n`,
+  );
+  process.exit(1);
+}
+
 const fonte = await readFile(ROTAS, "utf8");
 
 const rotas = [...fonte.matchAll(/app\.(get|post|patch|put|delete)\(\s*"([^"]+)"/g)].map(
@@ -175,9 +206,11 @@ if (semTexto.length) {
 const recebidos = nomesRecebidos.map((nome) => ({ nome, descricao: RECEBIDOS[nome] }));
 
 await mkdir(dirname(SAIDA), { recursive: true });
-await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos, limites }, null, 2)}\n`);
+await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos, limites, permissoes }, null, 2)}\n`);
 
 console.log(
   `referência: ${rest.length} rotas, ${eventos.length} eventos enviados, ` +
-    `${recebidos.length} recebidos e ${limites.length} limites em src/dados/referencia.json`,
+    `${recebidos.length} recebidos, ${limites.length} limites e ` +
+    `${permissoes.reduce((total, g) => total + g.itens.length, 0)} permissões ` +
+    `em src/dados/referencia.json`,
 );

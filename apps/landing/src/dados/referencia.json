@@ -718,5 +718,225 @@
       "formato": "segundos",
       "valor": 21600
     }
+  ],
+  "permissoes": [
+    {
+      "titulo": "Geral do servidor",
+      "itens": [
+        {
+          "chave": "ADMINISTRATOR",
+          "nome": "Administrador",
+          "descricao": "Concede TODAS as permissões e ignora restrições de canal. Dê com cuidado.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_GUILD",
+          "nome": "Gerenciar servidor",
+          "descricao": "Mudar nome, ícone e descrição.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_ROLES",
+          "nome": "Gerenciar cargos",
+          "descricao": "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_CHANNELS",
+          "nome": "Gerenciar canais",
+          "descricao": "Criar, editar e apagar canais.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_WEBHOOKS",
+          "nome": "Gerenciar webhooks",
+          "descricao": "Criar e apagar integrações.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_EXPRESSIONS",
+          "nome": "Gerenciar expressões",
+          "descricao": "Subir e apagar emojis, figurinhas e efeitos sonoros do servidor.",
+          "padrao": false
+        },
+        {
+          "chave": "CREATE_EXPRESSIONS",
+          "nome": "Criar expressões",
+          "descricao": "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
+          "padrao": false
+        },
+        {
+          "chave": "CREATE_INVITE",
+          "nome": "Criar convite",
+          "descricao": "Gerar links para convidar pessoas.",
+          "padrao": true
+        },
+        {
+          "chave": "VIEW_AUDIT_LOG",
+          "nome": "Ver registro de auditoria",
+          "descricao": "Ver quem fez o quê no servidor.",
+          "padrao": false
+        }
+      ]
+    },
+    {
+      "titulo": "Moderação",
+      "itens": [
+        {
+          "chave": "KICK_MEMBERS",
+          "nome": "Expulsar membros",
+          "descricao": "Remover quem está abaixo de você.",
+          "padrao": false
+        },
+        {
+          "chave": "BAN_MEMBERS",
+          "nome": "Banir membros",
+          "descricao": "Remover e impedir de voltar, mesmo com convite novo.",
+          "padrao": false
+        },
+        {
+          "chave": "MODERATE_MEMBERS",
+          "nome": "Castigar membros",
+          "descricao": "Deixar alguém sem escrever nem falar por um tempo.",
+          "padrao": false
+        },
+        {
+          "chave": "MANAGE_NICKNAMES",
+          "nome": "Gerenciar apelidos",
+          "descricao": "Mudar o apelido de outras pessoas.",
+          "padrao": false
+        },
+        {
+          "chave": "CHANGE_NICKNAME",
+          "nome": "Alterar apelido",
+          "descricao": "Mudar o próprio apelido neste servidor.",
+          "padrao": true
+        }
+      ]
+    },
+    {
+      "titulo": "Canais de texto",
+      "itens": [
+        {
+          "chave": "VIEW_CHANNEL",
+          "nome": "Ver canal",
+          "descricao": "Ver o canal e ler o histórico.",
+          "padrao": true
+        },
+        {
+          "chave": "SEND_MESSAGES",
+          "nome": "Enviar mensagens",
+          "descricao": "Escrever nos canais de texto.",
+          "padrao": true
+        },
+        {
+          "chave": "MANAGE_MESSAGES",
+          "nome": "Gerenciar mensagens",
+          "descricao": "Apagar mensagens de outras pessoas.",
+          "padrao": false
+        },
+        {
+          "chave": "ATTACH_FILES",
+          "nome": "Anexar arquivos",
+          "descricao": "Enviar imagens e arquivos.",
+          "padrao": true
+        },
+        {
+          "chave": "ADD_REACTIONS",
+          "nome": "Adicionar reações",
+          "descricao": "Reagir às mensagens.",
+          "padrao": true
+        },
+        {
+          "chave": "MENTION_EVERYONE",
+          "nome": "Mencionar @everyone",
+          "descricao": "Notificar o servidor inteiro.",
+          "padrao": false
+        },
+        {
+          "chave": "READ_MESSAGE_HISTORY",
+          "nome": "Ver histórico de mensagens",
+          "descricao": "Ler o que foi dito antes de você abrir o canal.",
+          "padrao": true
+        },
+        {
+          "chave": "PIN_MESSAGES",
+          "nome": "Fixar mensagens",
+          "descricao": "Fixar e desafixar qualquer mensagem.",
+          "padrao": false
+        },
+        {
+          "chave": "BYPASS_SLOWMODE",
+          "nome": "Ignorar modo lento",
+          "descricao": "Escrever sem esperar o intervalo do canal.",
+          "padrao": false
+        },
+        {
+          "chave": "CREATE_POLLS",
+          "nome": "Criar enquetes",
+          "descricao": "Publicar enquetes nos canais.",
+          "padrao": true
+        }
+      ]
+    },
+    {
+      "titulo": "Canais de voz",
+      "itens": [
+        {
+          "chave": "CONNECT",
+          "nome": "Conectar",
+          "descricao": "Entrar em canais de voz.",
+          "padrao": true
+        },
+        {
+          "chave": "SPEAK",
+          "nome": "Falar",
+          "descricao": "Transmitir áudio na chamada.",
+          "padrao": true
+        },
+        {
+          "chave": "VIDEO",
+          "nome": "Câmera",
+          "descricao": "Ligar a webcam na chamada.",
+          "padrao": true
+        },
+        {
+          "chave": "SHARE_SCREEN",
+          "nome": "Compartilhar tela",
+          "descricao": "Transmitir a tela na chamada.",
+          "padrao": true
+        },
+        {
+          "chave": "USE_SOUNDBOARD",
+          "nome": "Usar efeitos sonoros",
+          "descricao": "Tocar os sons do painel na chamada.",
+          "padrao": false
+        },
+        {
+          "chave": "USE_VAD",
+          "nome": "Usar detecção de voz",
+          "descricao": "Falar sem apertar tecla. Sem isto, só push-to-talk.",
+          "padrao": true
+        },
+        {
+          "chave": "MUTE_MEMBERS",
+          "nome": "Silenciar membros",
+          "descricao": "Mutar outras pessoas na chamada.",
+          "padrao": false
+        },
+        {
+          "chave": "DEAFEN_MEMBERS",
+          "nome": "Ensurdecer membros",
+          "descricao": "Tirar o áudio da chamada de outra pessoa.",
+          "padrao": false
+        },
+        {
+          "chave": "MOVE_MEMBERS",
+          "nome": "Mover membros",
+          "descricao": "Puxar alguém para outro canal de voz, ou desconectar.",
+          "padrao": false
+        }
+      ]
+    }
   ]
 }
