@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, FileUp, Plus, Send, Smile, Timer, X } from "lucide-react";
+import { BarChart3, FileUp, Paperclip, Plus, Send, Smile, Timer, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
 
 import { EspelhoDoCompositor } from "~/features/conversa/components/EspelhoDoCompositor";
@@ -39,7 +39,28 @@ import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import { adivinharLingua, cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
+
+/// A extensão que o texto colado ganha ao virar arquivo.
+const EXTENSAO_DA_LINGUA: Record<string, string> = {
+  css: "css",
+  html: "html",
+  js: "js",
+  json: "json",
+  py: "py",
+  sh: "sh",
+  sql: "sql",
+  ts: "ts",
+};
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
@@ -76,6 +97,7 @@ export const Composer: React.FC<ComposerProps> = ({
   const anexos = useAttachments();
 
   const [value, setValue] = useState("");
+  const [textoLongo, setTextoLongo] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
   const pedirEdicao = useEdicaoStore((s) => s.pedir);
@@ -270,15 +292,30 @@ export const Composer: React.FC<ComposerProps> = ({
     }
 
     const texto = evento.clipboardData.getData("text");
-    if (!texto || !pareceCodigo(texto)) return;
+    if (!texto) return;
+
+    const campoDeTexto = textarea.current;
+    const jaTem =
+      value.length -
+      ((campoDeTexto?.selectionEnd ?? 0) - (campoDeTexto?.selectionStart ?? 0));
+
+    /*
+      Colar mais do que cabe: em vez de truncar em silêncio, oferecemos mandar
+      como arquivo. É o caso de quem cola um arquivo inteiro na conversa.
+    */
+    if (jaTem + texto.length > LIMITS.messageLength) {
+      evento.preventDefault();
+      setTextoLongo(texto);
+      return;
+    }
+
+    if (!pareceCodigo(texto)) return;
 
     const cercado = cercarCodigo(texto);
     const campo = textarea.current;
     const inicio = campo?.selectionStart ?? value.length;
     const fim = campo?.selectionEnd ?? value.length;
     const proximo = value.slice(0, inicio) + cercado + value.slice(fim);
-
-    if (proximo.length > LIMITS.messageLength) return;
 
     evento.preventDefault();
     setValue(proximo);
@@ -295,8 +332,40 @@ export const Composer: React.FC<ComposerProps> = ({
     });
   };
 
+  const mandarComoArquivo = () => {
+    if (!textoLongo) return;
+
+    const extensao = EXTENSAO_DA_LINGUA[adivinharLingua(textoLongo) ?? ""] ?? "txt";
+    const arquivo = new File([textoLongo], `mensagem.${extensao}`, {
+      type: "text/plain;charset=utf-8",
+    });
+
+    setTextoLongo(null);
+    void anexos.add([arquivo]);
+  };
+
   return (
     <div className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
+      <Dialog open={Boolean(textoLongo)} onOpenChange={() => setTextoLongo(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("conversa.caixa.longaTitulo")}</DialogTitle>
+            <DialogDescription>
+              {t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setTextoLongo(null)}>
+              {t("comum.cancelar")}
+            </Button>
+
+            <Button onClick={mandarComoArquivo}>
+              <Paperclip size={16} /> {t("conversa.caixa.enviarComoArquivo")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {faltam > 0 && (
         <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
           <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
