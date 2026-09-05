@@ -15,12 +15,13 @@ import {
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useSession } from "~/contexts/session-context";
-import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import { CartaoDeComunidade } from "~/features/descoberta/components/CartaoDeComunidade";
+import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { useAtraso } from "~/hooks/use-atraso";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
@@ -63,7 +64,7 @@ export const Explorar: React.FC = () => {
   const pendentes = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
   const navegacao = (
-    <>
+    <ColunaDaEsquerda data-gc="descoberta.explorar.coluna-da-esquerda" rodape={<RodapeDaBarra data-gc="descoberta.explorar.rodape-da-barra" user={user} onLogout={() => void sair()} />}>
       <GuildRail data-gc="descoberta.explorar.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
@@ -118,7 +119,6 @@ export const Explorar: React.FC = () => {
         <div data-gc="descoberta.explorar.div--2" className="mt-auto" />
         </div>
 
-        <RodapeDaBarra data-gc="descoberta.explorar.rodape-da-barra" user={user} onLogout={() => void sair()} />
 
         <AlcaDeLargura data-gc="descoberta.explorar.alca-de-largura"
           borda="direita"
@@ -128,7 +128,7 @@ export const Explorar: React.FC = () => {
           {...alca}
         />
       </aside>
-    </>
+    </ColunaDaEsquerda>
   );
 
   return (

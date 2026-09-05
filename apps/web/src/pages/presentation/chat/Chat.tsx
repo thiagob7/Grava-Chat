@@ -42,6 +42,8 @@ import { useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
 import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/features/voz/components/VoiceChatPanel";
+import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { MemberList } from "~/features/servidor/components/MemberList";
 import { MessageList } from "~/features/conversa/components/MessageList";
@@ -165,7 +167,14 @@ export const Chat: React.FC = () => {
   if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
 
   const navegacao = (
-    <>
+    <ColunaDaEsquerda data-gc="chat.chat.coluna-da-esquerda" rodape={
+        <RodapeDaBarra data-gc="chat.chat.rodape-da-barra"
+          user={user}
+          guildId={routeGuildId}
+          onLogout={() => void handleLogout()}
+          accountChannelId={inCallElsewhere ? accountVoiceChannelId : null}
+        />
+      }>
         <GuildRail data-gc="chat.chat.guild-rail"
           activeGuildId={routeGuildId ?? null}
           onSelect={(id) => navigate(`/channels/${id}`)}
@@ -183,8 +192,6 @@ export const Chat: React.FC = () => {
           selectChannel(id);
           setMenuAberto(false);
         }}
-          onLogout={() => void handleLogout()}
-          accountVoiceChannelId={inCallElsewhere ? accountVoiceChannelId : null}
           onOpenVoiceChat={(id) => {
             navigate(`/channels/${routeGuildId}/${id}`);
             setChatDaVozAberto(true);
@@ -197,7 +204,7 @@ export const Chat: React.FC = () => {
             );
           }}
         />
-    </>
+    </ColunaDaEsquerda>
   );
 
   return (

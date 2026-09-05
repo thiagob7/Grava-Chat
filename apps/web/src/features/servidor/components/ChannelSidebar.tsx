@@ -21,7 +21,6 @@ import {
   SpeakerHigh,
   UserPlus,
 } from "@phosphor-icons/react";
-import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { useFavoritos } from "~/features/servidor/stores/favoritos";
 import {
   DropdownMenu,
@@ -56,8 +55,6 @@ interface ChannelSidebarProps {
   >;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
-  onLogout: () => void;
-  accountVoiceChannelId: string | null;
   onLeaveGuild: () => void;
   onOpenVoiceChat?: (channelId: string) => void;
 }
@@ -69,8 +66,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   readStates,
   user,
   onSelectChannel,
-  onLogout,
-  accountVoiceChannelId,
   onLeaveGuild,
   onOpenVoiceChat,
 }) => {
@@ -500,12 +495,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         </div>
         </div>
 
-        <RodapeDaBarra data-gc="servidor.channel-sidebar.rodape-da-barra.on-logout"
-          user={user}
-          guildId={detail?.guild.id}
-          onLogout={onLogout}
-          accountChannelId={accountVoiceChannelId}
-        />
       </aside>
 
       <CreateChannelModal data-gc="servidor.channel-sidebar.create-channel-modal"

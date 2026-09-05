@@ -8,7 +8,6 @@ import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { statusDaConversa } from "~/features/amizades/lib/status-da-conversa";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { flx } from "~/lib/compat-fluxer";
@@ -20,7 +19,6 @@ interface DmSidebarProps {
   user: SelfUserModel;
   onOpenFriends: () => void;
   onSelectDm: (channelId: string) => void;
-  onLogout: () => void;
 }
 
 export const DmSidebar: React.FC<DmSidebarProps> = ({
@@ -29,7 +27,6 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   user,
   onOpenFriends,
   onSelectDm,
-  onLogout,
 }) => {
   const { data: dms = [] } = useFindDms(true);
   const { data: relacoes = [] } = useFindFriends(true);
@@ -185,7 +182,6 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
       </div>
       </div>
 
-      <RodapeDaBarra data-gc="amizades.dm-sidebar.rodape-da-barra.on-logout" user={user} onLogout={onLogout} />
     </aside>
   );
 };

@@ -24,14 +24,12 @@ export const CORRECOES_DO_FLUXER = `
 }
 
 /*
-  O tema encurta os painéis pela altura do rodapé, porque lá o rodapé mora
-  dentro deles. Aqui ele mora ao lado: o painel já é flex-1 acima do rodapé e
-  para sozinho no lugar certo. Descontar de novo abriria um buraco do tamanho
-  do rodapé entre o painel e ele.
-
-  O trilho não entra nesta lista de propósito: nele o desconto é o que faz ele
-  terminar em cima do rodapé em vez de correr por trás.
+  O tema encurta trilho e painéis pela altura do rodapé, porque lá o rodapé mora
+  dentro da coluna deles. Aqui os três são irmãos: trilho e painel dividem uma
+  linha, e o rodapé vem embaixo dela. Já terminam onde devem, e descontar de
+  novo abriria um buraco do tamanho do rodapé.
 */
+.trilho-de-servidores,
 .lista-de-canais,
 .lista-de-conversas,
 .lista-de-comunidades {
@@ -39,12 +37,12 @@ export const CORRECOES_DO_FLUXER = `
 }
 
 /*
-  A faixa do usuário mede trilho mais lateral. O tema faz essa soma com o valor
-  de fábrica da lateral, e aqui a lateral é arrastável — então a soma dele fica
-  curta assim que alguém arrasta. 100% aqui é a lateral de verdade.
+  A faixa do usuário já ocupa trilho mais lateral por nascer na mesma coluna que
+  os dois. O tema quer somar isso na mão, com o valor de fábrica da lateral — e
+  a nossa é arrastável, então a soma dele fica curta assim que alguém arrasta.
 */
 .area-do-usuario {
-  width: calc(100% + var(--layout-guild-list-width)) !important;
+  width: 100% !important;
 }
 
 /*

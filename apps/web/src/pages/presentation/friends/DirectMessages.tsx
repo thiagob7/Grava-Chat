@@ -24,6 +24,8 @@ import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-ma
 import { PrimeiroServidor } from "~/features/servidor/components/PrimeiroServidor";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
+import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
 import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
@@ -129,7 +131,7 @@ export const DirectMessages: React.FC = () => {
   if (!user) return null;
 
   const navegacao = (
-    <>
+    <ColunaDaEsquerda data-gc="friends.direct-messages.coluna-da-esquerda" rodape={<RodapeDaBarra data-gc="friends.direct-messages.rodape-da-barra" user={user} onLogout={() => void sair()} />}>
       <GuildRail data-gc="friends.direct-messages.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
@@ -146,9 +148,8 @@ export const DirectMessages: React.FC = () => {
           navigate(`/dm/${id}`);
           setMenuAberto(false);
         }}
-        onLogout={() => void sair()}
       />
-    </>
+    </ColunaDaEsquerda>
   );
 
   return (
