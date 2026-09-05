@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "消息太长了…",
     longaDescricao: "已达到 {{limite}} 字符的上限，可以作为文件发送。",
     enviarComoArquivo: "作为文件发送",
+    textoComoArquivo: "将文本作为文件发送",
     arquivoGrandeTitulo: "文件太大了",
     arquivoGrandeDescricao: "“{{arquivo}}”超过了每个文件 {{limite}} MB 的上限。",
     respondendoPara: "正在回复",

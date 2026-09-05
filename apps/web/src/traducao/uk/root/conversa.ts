@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Повідомлення надто довге…",
     longaDescricao: "Ти досяг межі у {{limite}} символів. Можна надіслати файлом.",
     enviarComoArquivo: "Надіслати файлом",
+    textoComoArquivo: "Надіслати текст файлом",
     arquivoGrandeTitulo: "Файл завеликий",
     arquivoGrandeDescricao: "«{{arquivo}}» перевищує ліміт {{limite}} МБ на файл.",
     respondendoPara: "Відповідь для",

@@ -329,16 +329,21 @@ export const Composer: React.FC<ComposerProps> = ({
     });
   };
 
+  /// Vira anexo com a extensão que o próprio texto denuncia, e não um .txt
+  /// genérico: assim a prévia já abre com o realce certo do outro lado.
+  const virarArquivo = (texto: string) => {
+    const extensao = EXTENSAO_DA_LINGUA[adivinharLingua(texto) ?? ""] ?? "txt";
+
+    void anexos.add([
+      new File([texto], `mensagem.${extensao}`, { type: "text/plain;charset=utf-8" }),
+    ]);
+  };
+
   const mandarComoArquivo = () => {
     if (!textoLongo) return;
 
-    const extensao = EXTENSAO_DA_LINGUA[adivinharLingua(textoLongo) ?? ""] ?? "txt";
-    const arquivo = new File([textoLongo], `mensagem.${extensao}`, {
-      type: "text/plain;charset=utf-8",
-    });
-
+    virarArquivo(textoLongo);
     setTextoLongo(null);
-    void anexos.add([arquivo]);
   };
 
   return (
@@ -479,6 +484,17 @@ export const Composer: React.FC<ComposerProps> = ({
               <DropdownMenuItem disabled={!podeAnexar} onSelect={() => inputArquivo.current?.click()}>
                 {t("conversa.caixa.enviarArquivo")} <FileUp size={16} />
               </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={!podeAnexar || !value.trim()}
+                onSelect={() => {
+                  const texto = value;
+                  setValue("");
+                  virarArquivo(texto);
+                }}
+              >
+                {t("conversa.caixa.textoComoArquivo")} <Paperclip size={16} />
+              </DropdownMenuItem>
+
               <DropdownMenuItem onSelect={() => setCriandoEnquete(true)}>
                 {t("conversa.caixa.criarEnquete")} <BarChart3 size={16} />
               </DropdownMenuItem>

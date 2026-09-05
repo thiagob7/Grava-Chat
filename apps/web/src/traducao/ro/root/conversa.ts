@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Mesajul tău e prea lung…",
     longaDescricao: "Ai atins limita de {{limite}} caractere. Îl poți trimite ca fișier.",
     enviarComoArquivo: "Trimite ca fișier",
+    textoComoArquivo: "Trimite textul ca fișier",
     arquivoGrandeTitulo: "Fișierul e prea mare",
     arquivoGrandeDescricao: "„{{arquivo}}” depășește limita de {{limite}} MB per fișier.",
     respondendoPara: "Răspuns pentru",

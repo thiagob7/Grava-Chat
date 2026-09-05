@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Az üzeneted túl hosszú…",
     longaDescricao: "Elérted a {{limite}} karakteres korlátot. Elküldheted fájlként.",
     enviarComoArquivo: "Küldés fájlként",
+    textoComoArquivo: "Szöveg küldése fájlként",
     arquivoGrandeTitulo: "A fájl túl nagy",
     arquivoGrandeDescricao: "A(z) „{{arquivo}}” túllépi a fájlonkénti {{limite}} MB-os korlátot.",
     respondendoPara: "Válasz neki:",

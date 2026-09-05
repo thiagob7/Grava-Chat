@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Wiadomość jest za długa…",
     longaDescricao: "Osiągnąłeś limit {{limite}} znaków. Możesz wysłać ją jako plik.",
     enviarComoArquivo: "Wyślij jako plik",
+    textoComoArquivo: "Wyślij tekst jako plik",
     arquivoGrandeTitulo: "Plik jest za duży",
     arquivoGrandeDescricao: "„{{arquivo}}” przekracza limit {{limite}} MB na plik.",
     respondendoPara: "Odpowiedź do",

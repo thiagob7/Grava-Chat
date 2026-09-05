@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "ההודעה ארוכה מדי…",
     longaDescricao: "הגעת למגבלה של {{limite}} תווים. אפשר לשלוח כקובץ.",
     enviarComoArquivo: "שליחה כקובץ",
+    textoComoArquivo: "שליחת הטקסט כקובץ",
     arquivoGrandeTitulo: "הקובץ גדול מדי",
     arquivoGrandeDescricao: "„{{arquivo}}” חורג ממגבלת {{limite}} MB לקובץ.",
     respondendoPara: "בתגובה ל",

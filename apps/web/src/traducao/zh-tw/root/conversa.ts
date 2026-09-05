@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "訊息太長了…",
     longaDescricao: "已達到 {{limite}} 字元的上限，可以用檔案傳送。",
     enviarComoArquivo: "以檔案傳送",
+    textoComoArquivo: "將文字以檔案傳送",
     arquivoGrandeTitulo: "檔案太大了",
     arquivoGrandeDescricao: "「{{arquivo}}」超過每個檔案 {{limite}} MB 的上限。",
     respondendoPara: "正在回覆",

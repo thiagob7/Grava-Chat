@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Το μήνυμα είναι πολύ μεγάλο…",
     longaDescricao: "Έφτασες το όριο των {{limite}} χαρακτήρων. Στείλ' το ως αρχείο.",
     enviarComoArquivo: "Αποστολή ως αρχείο",
+    textoComoArquivo: "Αποστολή κειμένου ως αρχείο",
     arquivoGrandeTitulo: "Το αρχείο είναι πολύ μεγάλο",
     arquivoGrandeDescricao: "Το «{{arquivo}}» ξεπερνά το όριο των {{limite}} MB ανά αρχείο.",
     respondendoPara: "Απάντηση σε",

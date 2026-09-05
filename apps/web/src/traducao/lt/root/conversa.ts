@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Žinutė per ilga…",
     longaDescricao: "Pasiekei {{limite}} simbolių ribą. Gali siųsti kaip failą.",
     enviarComoArquivo: "Siųsti kaip failą",
+    textoComoArquivo: "Siųsti tekstą kaip failą",
     arquivoGrandeTitulo: "Failas per didelis",
     arquivoGrandeDescricao: "„{{arquivo}}“ viršija {{limite}} MB ribą vienam failui.",
     respondendoPara: "Atsakymas",

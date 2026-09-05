@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Tu mensaje es muy largo…",
     longaDescricao: "Alcanzaste el límite de {{limite}} caracteres. Puedes enviarlo como archivo.",
     enviarComoArquivo: "Enviar como archivo",
+    textoComoArquivo: "Enviar el texto como archivo",
     arquivoGrandeTitulo: "El archivo es muy grande",
     arquivoGrandeDescricao: "«{{arquivo}}» supera el límite de {{limite}} MB por archivo.",
     respondendoPara: "Respondiendo a",

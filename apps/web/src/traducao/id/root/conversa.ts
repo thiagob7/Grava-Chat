@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Pesanmu terlalu panjang…",
     longaDescricao: "Kamu mencapai batas {{limite}} karakter. Kirim saja sebagai berkas.",
     enviarComoArquivo: "Kirim sebagai berkas",
+    textoComoArquivo: "Kirim teks sebagai berkas",
     arquivoGrandeTitulo: "Berkasnya terlalu besar",
     arquivoGrandeDescricao: "“{{arquivo}}” melewati batas {{limite}} MB per berkas.",
     respondendoPara: "Membalas",

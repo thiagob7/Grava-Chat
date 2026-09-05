@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "आपका संदेश बहुत लंबा है…",
     longaDescricao: "आप {{limite}} अक्षरों की सीमा पर पहुँच गए. इसे फ़ाइल के रूप में भेजें.",
     enviarComoArquivo: "फ़ाइल के रूप में भेजें",
+    textoComoArquivo: "टेक्स्ट को फ़ाइल के रूप में भेजें",
     arquivoGrandeTitulo: "यह फ़ाइल बहुत बड़ी है",
     arquivoGrandeDescricao: "“{{arquivo}}” प्रति फ़ाइल {{limite}} MB की सीमा से अधिक है.",
     respondendoPara: "जवाब:",

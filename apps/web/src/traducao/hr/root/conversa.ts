@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Poruka je predugačka…",
     longaDescricao: "Dosegao si granicu od {{limite}} znakova. Možeš je poslati kao datoteku.",
     enviarComoArquivo: "Pošalji kao datoteku",
+    textoComoArquivo: "Pošalji tekst kao datoteku",
     arquivoGrandeTitulo: "Datoteka je prevelika",
     arquivoGrandeDescricao: "„{{arquivo}}“ premašuje ograničenje od {{limite}} MB po datoteci.",
     respondendoPara: "Odgovor za",

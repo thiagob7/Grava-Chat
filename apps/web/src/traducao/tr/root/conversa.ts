@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "Mesajın çok uzun…",
     longaDescricao: "{{limite}} karakter sınırına ulaştın. Dosya olarak gönderebilirsin.",
     enviarComoArquivo: "Dosya olarak gönder",
+    textoComoArquivo: "Metni dosya olarak gönder",
     arquivoGrandeTitulo: "Bu dosya çok büyük",
     arquivoGrandeDescricao: "“{{arquivo}}” dosya başına {{limite}} MB sınırını aşıyor.",
     respondendoPara: "Şuna yanıt:",

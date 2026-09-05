@@ -95,6 +95,7 @@ export const conversa = {
     longaTitulo: "رسالتك طويلة جدًا…",
     longaDescricao: "لقد بلغت الحد الأقصى {{limite}} حرف. يمكن إرسالها كملف بدل ذلك.",
     enviarComoArquivo: "إرسال كملف",
+    textoComoArquivo: "إرسال النص كملف",
     arquivoGrandeTitulo: "الملف كبير جدًا",
     arquivoGrandeDescricao: "«{{arquivo}}» يتجاوز حد {{limite}} ميغابايت لكل ملف.",
     respondendoPara: "رد على",
