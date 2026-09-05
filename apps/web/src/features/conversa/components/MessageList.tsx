@@ -14,6 +14,7 @@ import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 interface MessageListProps {
   channelId: string;
@@ -251,7 +252,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             {isNewDay && (
               <div data-gc="conversa.message-list.div--9" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
                 <span data-gc="conversa.message-list.span" className="h-px flex-1 bg-line" />
-                <span data-gc="conversa.message-list.span--2" className="text-xs font-semibold text-ink-faint">
+                <span data-gc="conversa.message-list.span--2" {...flx("divisorDoDia", "text-xs font-semibold text-ink-faint")}>
                   {formatDayDivider(message.createdAt)}
                 </span>
                 <span data-gc="conversa.message-list.span--3" className="h-px flex-1 bg-line" />

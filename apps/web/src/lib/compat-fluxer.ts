@@ -126,6 +126,38 @@ export const LUGARES = {
   cartaoDeEntrada: { classes: ["AuthLayout.module__card_gc"] },
   abertura: { classes: ["SplashScreen.module__splashContent_gc"] },
 
+  /// A moldura da conversa: cabeçalho, mensagens e caixa juntos.
+  molduraDoCanal: {
+    classes: [
+      "ChannelLayout.module__channelLayoutContainer_gc",
+      "GuildLayout.module__guildMainContent_gc",
+    ],
+  },
+
+  cabecalhoDoServidor: { classes: ["GuildHeader.module__headerContainer_gc"] },
+  roladorDeCanais: { classes: ["ChannelListContent.module__channelListScroller_gc"] },
+  roladorDeMembros: { classes: ["MemberListContainer.module__memberListScroller_gc"] },
+  colunaDeAmigos: {
+    classes: ["DMFriendsView.module__container_gc", "DMFriendsView.module__mainColumn_gc"],
+  },
+
+  divisorDoDia: {
+    classes: ["Divider.module__text_gc", "Divider.module__dateWithUnreadText_gc"],
+  },
+
+  cartaoDeLink: {
+    classes: ["EmbedCard.module__wrapper_gc", "Embed.module__embedFull_gc"],
+  },
+  cartaoDeAnexo: { classes: ["AttachmentFile.module__attachmentContainer_gc"] },
+  anexoSubindo: { classes: ["ChannelAttachmentArea.module__upload_gc"] },
+  previaDaMensagem: { classes: ["MessagePreview.module__previewCard_gc"] },
+  sugestoes: { classes: ["Autocomplete.module__container_gc"] },
+  resultadosDaBusca: { classes: ["ChannelSearchResults.module__container_gc"] },
+  itemDoResultado: { classes: ["ChannelSearchResults.module__messageItem_gc"] },
+  citacao: { classes: ["Markup.module__blockquoteContainer_gc"] },
+  gaveta: { classes: ["Sheet.module__root_gc", "Sheet.module__container_gc"] },
+  botaoSecundario: { classes: ["Button.module__secondary_gc"] },
+
   janela: { classes: ["Modal.module__root_gc", "Modal.module__surface_gc"] },
   fundoDaJanela: { classes: ["Modal.module__modalBackdrop_gc"] },
   menu: { classes: ["ContextMenu.module__contextMenu_gc"] },

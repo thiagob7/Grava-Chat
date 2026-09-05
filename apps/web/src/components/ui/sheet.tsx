@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export const Sheet = DialogPrimitive.Root;
 export const SheetTrigger = DialogPrimitive.Trigger;
@@ -20,6 +21,7 @@ export const SheetContent = ({
     <DialogPrimitive.Content data-gc="ui.sheet.dialog-primitivecontent"
       className={cn(
         "regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",
+        flxCls("gaveta"),
         className,
       )}
       {...props}

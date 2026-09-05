@@ -138,6 +138,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
       >
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
+            flxCls("cabecalhoDoServidor"),
             "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
             !comFaixa && "h-[var(--layout-header-height)]",
           )}
@@ -267,7 +268,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         </header>
 
         <div data-gc="servidor.channel-sidebar.div--4" className="relative flex min-h-0 flex-1 flex-col">
-          <div data-gc="servidor.channel-sidebar.div--5" className="flex-1 overflow-y-auto px-2 py-3">
+          <div data-gc="servidor.channel-sidebar.div--5" {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
 

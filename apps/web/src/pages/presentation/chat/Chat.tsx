@@ -282,7 +282,7 @@ export const Chat: React.FC = () => {
         </header>
         )}
 
-        <div data-gc="chat.chat.div--4" className="flex min-h-0 flex-1">
+        <div data-gc="chat.chat.div--4" {...flx("molduraDoCanal", "flex min-h-0 flex-1")}>
           <main data-gc="chat.chat.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
         {channel?.type === "VOICE" ? (

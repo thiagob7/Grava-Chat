@@ -11,6 +11,7 @@ import { extrairLinks } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 export const LinkEmbeds: React.FC<{ content: string }> = ({ content }) => {
   const links = useMemo(() => extrairLinks(content), [content]);
@@ -77,7 +78,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
   return (
     <article data-gc="conversa.link-embed.article"
       style={embed.cor ? { borderLeftColor: embed.cor } : undefined}
-      className="w-full max-w-[26rem] overflow-hidden rounded border-l-4 border-brand bg-surface-1"
+      {...flx("cartaoDeLink", "w-full max-w-[26rem] overflow-hidden rounded border-l-4 border-brand bg-surface-1")}
     >
       <div data-gc="conversa.link-embed.div--2" className="flex gap-3 p-3">
         <div data-gc="conversa.link-embed.div--3" className="min-w-0 flex-1">

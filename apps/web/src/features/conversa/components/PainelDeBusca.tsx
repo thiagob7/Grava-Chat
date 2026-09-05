@@ -62,7 +62,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
         </button>
       </header>
 
-      <div data-gc="conversa.painel-de-busca.div" className="min-h-0 flex-1 overflow-y-auto p-3">
+      <div data-gc="conversa.painel-de-busca.div" {...flx("resultadosDaBusca", "min-h-0 flex-1 overflow-y-auto p-3")}>
         {!busca.isLoading && !total && (
           <p data-gc="conversa.painel-de-busca.p" className="px-2 py-8 text-center text-sm text-ink-muted">
             {t("conversa.busca.nadaCom", { termo })}
@@ -110,7 +110,7 @@ const Resultado: React.FC<{
 }> = ({ resultado, termo, emojis, enfeites, mencoes, onIr }) => (
   <button data-gc="conversa.painel-de-busca.button.on-ir"
     onClick={onIr}
-    className="block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3"
+    {...flx("itemDoResultado", "block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3")}
   >
     <p data-gc="conversa.painel-de-busca.p--2" className="mb-1.5 flex items-center gap-1 text-xs text-ink-faint">
       <span data-gc="conversa.painel-de-busca.span--2" className="min-w-0 truncate">#{resultado.channelName}</span>

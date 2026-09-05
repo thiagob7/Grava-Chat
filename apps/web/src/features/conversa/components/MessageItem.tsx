@@ -801,7 +801,7 @@ const Citacao: React.FC<{
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  <div data-gc="conversa.message-item.div--12" className="mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs">
+  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("citacao"), flxCls("previaDaMensagem"))}>
     <span data-gc="conversa.message-item.span--15"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"

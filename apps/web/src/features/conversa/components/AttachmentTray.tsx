@@ -18,6 +18,7 @@ import { useLightbox } from "~/stores/lightbox";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 /*
   Um roxo mais claro que a marca, misturado na hora em vez de fixo: assim ele
@@ -50,7 +51,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
   if (!items.length) return null;
 
   return (
-    <div data-gc="conversa.attachment-tray.div" className="flex flex-wrap gap-2 border-b border-line px-4 py-3">
+    <div data-gc="conversa.attachment-tray.div" {...flx("anexoSubindo", "flex flex-wrap gap-2 border-b border-line px-4 py-3")}>
       {items.map((item) => {
         const subindo = !item.attachment && !item.error;
         const economizou =

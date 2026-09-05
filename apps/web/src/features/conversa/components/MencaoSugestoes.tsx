@@ -5,6 +5,7 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import type { Mencionavel } from "~/features/conversa/hooks/use-mencoes";
 import { legivel } from "~/features/perfil/lib/contraste";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-fluxer";
 
 interface MencaoSugestoesProps {
   itens: Mencionavel[];
@@ -22,7 +23,7 @@ export const MencaoSugestoes: React.FC<MencaoSugestoesProps> = ({
   if (!itens.length) return null;
 
   return (
-    <div data-gc="conversa.mencao-sugestoes.div" className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg bg-surface-1 shadow-2xl ring-1 ring-line">
+    <div data-gc="conversa.mencao-sugestoes.div" {...flx("sugestoes", "absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg bg-surface-1 shadow-2xl ring-1 ring-line")}>
       <p data-gc="conversa.mencao-sugestoes.p" className="px-3 pt-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
         Membros e cargos
       </p>

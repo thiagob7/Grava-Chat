@@ -8,6 +8,7 @@ import { ehAnexoDeTexto } from "~/features/conversa/lib/anexo-de-texto";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
+import { flx } from "~/lib/compat-fluxer";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
@@ -122,7 +123,7 @@ const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
     href={anexo.url}
     target="_blank"
     rel="noreferrer"
-    className="flex w-full max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5 transition hover:border-ink-faint"
+    {...flx("cartaoDeAnexo", "flex w-full max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5 transition hover:border-ink-faint")}
   >
     <FileText data-gc="conversa.message-attachments.file-text" size={28} className="shrink-0 text-brand" />
 

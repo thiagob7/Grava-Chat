@@ -92,7 +92,7 @@ export const MemberList: React.FC<MemberListProps> = ({
 
   return (
     <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block")}>
-      <div data-gc="servidor.member-list.div--3" className="h-full overflow-y-auto px-2 py-4">
+      <div data-gc="servidor.member-list.div--3" {...flx("roladorDeMembros", "h-full overflow-y-auto px-2 py-4")}>
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
             key={grupo.titulo}
