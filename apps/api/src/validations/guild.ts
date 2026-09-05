@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { FONTES_DE_NOME, createGuildInput, createChannelInput, LIMITS } from "@gravae/shared";
+import {
+  CATEGORIAS_DE_COMUNIDADE,
+  FONTES_DE_NOME,
+  createGuildInput,
+  createChannelInput,
+  LIMITS,
+} from "@gravae/shared";
 import { r2Url } from "./auth.js";
 
 export { createGuildInput, createChannelInput };
@@ -31,6 +37,8 @@ export const updateGuildInput = z.object({
   systemChannelId: z.string().nullable().optional(),
   welcomeEnabled: z.boolean().optional(),
   welcomeMessage: z.string().trim().max(500).nullable().optional(),
+  categoria: z.enum(CATEGORIAS_DE_COMUNIDADE).nullable().optional(),
+  descobrivel: z.boolean().optional(),
 });
 export type UpdateGuildInput = z.infer<typeof updateGuildInput>;
 

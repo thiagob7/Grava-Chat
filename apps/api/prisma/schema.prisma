@@ -176,6 +176,7 @@ model User {
   gifsFavoritos       GifFavorito[]
   mensagensFavoritas  MensagemFavorita[]
   botsCriados         Bot[]          @relation("BotOwner")
+  temasPublicados     Tema[]         @relation("TemaAutor")
   botIdentity         Bot?           @relation("BotIdentity")
 }
 
@@ -257,6 +258,14 @@ model Guild {
   /// O texto das boas-vindas. Vazio cai nas frases sorteadas de sempre —
   /// servidor que nunca configurou nada continua com a saudação variada.
   welcomeMessage  String?
+  /// Em que aba do Explorar a comunidade cai. Sem categoria ela ainda
+  /// aparece em "Todos", mas some quando alguém filtra.
+  categoria   String?
+  /// Passando de MEMBROS_PARA_DESCOBRIR membros o servidor entra no
+  /// Explorar sozinho. O dono desliga isto para ficar de fora. Anulável de
+  /// propósito: os servidores criados antes disto não têm o campo no
+  /// documento, e ausente vale como ligado.
+  descobrivel Boolean? @default(true)
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
@@ -862,4 +871,25 @@ model StatusDoDia {
 
   @@unique([peca, dia])
   @@index([dia])
+}
+
+/// Um tema do estúdio publicado para virar link. Quem abre o link importa
+/// as substituições e o CSS para o próprio estúdio.
+model Tema {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome      String
+  descricao String?
+  /// O nome que o autor escreveu no cabeçalho do CSS, que não é
+  /// necessariamente quem publicou.
+  autor     String?
+  versao    String?
+  tags      String[] @default([])
+  css       String
+  /// Os tokens trocados, no formato { "--color-brand": "#413cdd" }.
+  substituicoes Json
+  autorId   String   @db.ObjectId
+  usuario   User     @relation("TemaAutor", fields: [autorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([autorId])
 }

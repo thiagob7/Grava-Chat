@@ -198,6 +198,8 @@ export const guildService = {
         systemChannelId: guild.systemChannelId,
         welcomeEnabled: guild.welcomeEnabled,
         welcomeMessage: guild.welcomeMessage,
+        categoria: guild.categoria,
+        descobrivel: guild.descobrivel,
         ownerId: guild.ownerId,
         memberCount: guild._count.members,
       },
@@ -273,6 +275,8 @@ export const guildService = {
       systemChannelId: guild.systemChannelId,
       welcomeEnabled: guild.welcomeEnabled,
       welcomeMessage: guild.welcomeMessage,
+      categoria: guild.categoria,
+      descobrivel: guild.descobrivel,
       ownerId: guild.ownerId,
       memberCount: guild._count.members,
     };

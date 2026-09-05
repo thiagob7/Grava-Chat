@@ -67,6 +67,44 @@ export const guildRepository = {
   },
 };
 
+export const descobertaRepository = {
+  async candidatas(categoria: string | null, busca: string | null) {
+    return prisma.guild.findMany({
+      where: {
+        NOT: { descobrivel: false },
+        ...(categoria ? { categoria } : {}),
+        ...(busca
+          ? {
+              OR: [
+                { name: { contains: busca, mode: "insensitive" as const } },
+                { description: { contains: busca, mode: "insensitive" as const } },
+              ],
+            }
+          : {}),
+      },
+      include: { _count: { select: { members: true } } },
+    });
+  },
+
+  async membrosDe(guildIds: string[]): Promise<Map<string, string[]>> {
+    const porServidor = new Map<string, string[]>();
+    if (!guildIds.length) return porServidor;
+
+    const membros = await prisma.guildMember.findMany({
+      where: { guildId: { in: guildIds } },
+      select: { guildId: true, userId: true },
+    });
+
+    for (const membro of membros) {
+      const lista = porServidor.get(membro.guildId);
+      if (lista) lista.push(membro.userId);
+      else porServidor.set(membro.guildId, [membro.userId]);
+    }
+
+    return porServidor;
+  },
+};
+
 export const tagRepository = {
   async resolverMuitas(guildIds: string[]) {
     if (!guildIds.length) return new Map<string, { tag: string; tagIcon: string | null }>();
