@@ -52,6 +52,9 @@ interface ProfileCardVisualProps {
   children?: ReactNode;
   className?: string;
   editavel?: boolean;
+  /// Clicar no nome ou no @usuário abre o perfil inteiro, como no Fluxer.
+  /// Sem isto os dois seguem sendo texto — é o que vale no próprio cartão.
+  onAbrirPerfil?: () => void;
   onEtiqueta?: (valor: string) => void;
   onEtiquetaDoServidor?: (guildId: string | null) => void;
   onStatus?: () => void;
@@ -85,6 +88,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   children,
   className,
   editavel = false,
+  onAbrirPerfil,
   onEtiqueta,
   onEtiquetaDoServidor,
   onStatus,
@@ -252,18 +256,40 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 placa,
               )}
             >
-              <UserName
-                nome={displayName}
-                perfil={perfil}
-                corDoCargo={corDoCargo}
-                tamanho="md"
-                animar
-              />
+              {onAbrirPerfil ? (
+                <button
+                  type="button"
+                  onClick={onAbrirPerfil}
+                  className="min-w-0 max-w-full truncate text-left hover:underline"
+                >
+                  <UserName
+                    nome={displayName}
+                    perfil={perfil}
+                    corDoCargo={corDoCargo}
+                    tamanho="md"
+                    animar
+                  />
+                </button>
+              ) : (
+                <UserName
+                  nome={displayName}
+                  perfil={perfil}
+                  corDoCargo={corDoCargo}
+                  tamanho="md"
+                  animar
+                />
+              )}
             </p>
           </div>
 
           <p className="flex flex-wrap items-center gap-1.5 text-sm text-ink-muted">
-            <span>@{username}</span>
+            {onAbrirPerfil ? (
+              <button type="button" onClick={onAbrirPerfil} className="hover:underline">
+                @{username}
+              </button>
+            ) : (
+              <span>@{username}</span>
+            )}
 
             {editavel ? (
               <>

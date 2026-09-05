@@ -422,6 +422,7 @@ const ProfileCard: React.FC<{
       )}
 
       <ProfileCardVisual
+        onAbrirPerfil={() => setPerfilCompleto(true)}
         id={perfil.id}
         displayName={perfil.displayName}
         username={perfil.username}
