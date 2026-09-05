@@ -651,5 +651,72 @@
       "nome": "error",
       "descricao": "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo."
     }
+  ],
+  "limites": [
+    {
+      "rotulo": "Tamanho de uma mensagem",
+      "formato": "caracteres",
+      "valor": 4000
+    },
+    {
+      "rotulo": "Anexos por mensagem",
+      "formato": "numero",
+      "valor": 10
+    },
+    {
+      "rotulo": "Tamanho de cada anexo",
+      "formato": "bytes",
+      "valor": 52428800
+    },
+    {
+      "rotulo": "Tamanho da foto de perfil",
+      "formato": "bytes",
+      "valor": 2097152
+    },
+    {
+      "rotulo": "Tamanho do banner",
+      "formato": "bytes",
+      "valor": 10485760
+    },
+    {
+      "rotulo": "Sobre mim",
+      "formato": "caracteres",
+      "valor": 512
+    },
+    {
+      "rotulo": "Recado do perfil",
+      "formato": "caracteres",
+      "valor": 96
+    },
+    {
+      "rotulo": "Emojis por servidor",
+      "formato": "numero",
+      "valor": 50
+    },
+    {
+      "rotulo": "Figurinhas por servidor",
+      "formato": "numero",
+      "valor": 5
+    },
+    {
+      "rotulo": "Sons por servidor",
+      "formato": "numero",
+      "valor": 8
+    },
+    {
+      "rotulo": "Opções por enquete",
+      "formato": "numero",
+      "valor": 5
+    },
+    {
+      "rotulo": "Mensagens fixadas por canal",
+      "formato": "numero",
+      "valor": 50
+    },
+    {
+      "rotulo": "Modo lento, no máximo",
+      "formato": "segundos",
+      "valor": 21600
+    }
   ]
 }

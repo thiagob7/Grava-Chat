@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { z } from "zod";
-import { clientEventSchemas } from "@gravae/shared";
+import { clientEventSchemas, LIMITS } from "@gravae/shared";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ROTAS = join(AQUI, "..", "..", "api", "src", "routes", "bot-api.ts");
@@ -66,6 +66,39 @@ const CORPOS = {
   "PATCH /bot/mensagens/:messageId": "editMessageInput sem messageId",
   "PUT /bot/mensagens/:messageId/reacoes/:emoji": "{ burst?: boolean }",
 };
+
+const LIMITES = [
+  { chave: "messageLength", rotulo: "Tamanho de uma mensagem", formato: "caracteres" },
+  { chave: "attachmentsPerMessage", rotulo: "Anexos por mensagem", formato: "numero" },
+  { chave: "attachmentBytes", rotulo: "Tamanho de cada anexo", formato: "bytes" },
+  { chave: "avatarBytes", rotulo: "Tamanho da foto de perfil", formato: "bytes" },
+  { chave: "bannerBytes", rotulo: "Tamanho do banner", formato: "bytes" },
+  { chave: "bio", rotulo: "Sobre mim", formato: "caracteres" },
+  { chave: "statusPersonalizado", rotulo: "Recado do perfil", formato: "caracteres" },
+  { chave: "emojisPorServidor", rotulo: "Emojis por servidor", formato: "numero" },
+  { chave: "figurinhasPorServidor", rotulo: "Figurinhas por servidor", formato: "numero" },
+  { chave: "sonsPorServidor", rotulo: "Sons por servidor", formato: "numero" },
+  { chave: "opcoesPorEnquete", rotulo: "Opções por enquete", formato: "numero" },
+  { chave: "mensagensFixadas", rotulo: "Mensagens fixadas por canal", formato: "numero" },
+  { chave: "modoLentoMax", rotulo: "Modo lento, no máximo", formato: "segundos" },
+] as const;
+
+const sumido = LIMITES.filter(({ chave }) => !(chave in LIMITS));
+
+if (sumido.length) {
+  console.error(
+    `\n  A ajuda cita limite que não existe mais no @gravae/shared:\n\n` +
+      sumido.map(({ chave }) => `    LIMITS.${chave}`).join("\n") +
+      `\n\n  Acerte em apps/landing/scripts/gerar-referencia.mts e rode de novo.\n`,
+  );
+  process.exit(1);
+}
+
+const limites = LIMITES.map(({ chave, rotulo, formato }) => ({
+  rotulo,
+  formato,
+  valor: LIMITS[chave],
+}));
 
 const fonte = await readFile(ROTAS, "utf8");
 
@@ -142,9 +175,9 @@ if (semTexto.length) {
 const recebidos = nomesRecebidos.map((nome) => ({ nome, descricao: RECEBIDOS[nome] }));
 
 await mkdir(dirname(SAIDA), { recursive: true });
-await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos }, null, 2)}\n`);
+await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos, limites }, null, 2)}\n`);
 
 console.log(
-  `referência: ${rest.length} rotas, ${eventos.length} eventos enviados e ` +
-    `${recebidos.length} recebidos em src/dados/referencia.json`,
+  `referência: ${rest.length} rotas, ${eventos.length} eventos enviados, ` +
+    `${recebidos.length} recebidos e ${limites.length} limites em src/dados/referencia.json`,
 );
