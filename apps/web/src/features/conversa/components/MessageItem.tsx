@@ -195,12 +195,25 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     toast.success(t("conversa.mensagem.naoLidasDaqui"));
   };
 
-  const apagar = () =>
+  const apagarMesmo = () => void deleteMessage(message.id).catch(() => undefined);
+
+  const apagar = () => {
+    /// Segurando Shift, some direto — é a saída pra quem está limpando várias.
+    if (shift) return apagarMesmo();
+
     void confirmar({
       titulo: t("conversa.mensagem.apagarTitulo"),
-      descricao: t("conversa.mensagem.apagarDescricao"),
+      descricao: (
+        <>
+          {t("conversa.mensagem.apagarDescricao")}
+          <PreviaDaMensagem message={message} emojis={emojis} />
+        </>
+      ),
       acao: t("conversa.mensagem.apagarAcao"),
-    }).then(({ confirmado }) => confirmado && void deleteMessage(message.id).catch(() => undefined));
+      destrutivo: true,
+      dicaDoShift: true,
+    }).then(({ confirmado }) => confirmado && apagarMesmo());
+  };
 
   const iniciarResposta = () =>
     responder({
@@ -763,3 +776,33 @@ const Citacao: React.FC<{
     </div>
   );
 };
+
+/// A mensagem que vai sumir, dentro da confirmação. Sem ações e sem hover:
+/// aqui ela é só a prova de que é esta mesma, e não a de cima.
+const PreviaDaMensagem: React.FC<{
+  message: Message | PendingMessageModel;
+  emojis: GuildEmoji[];
+}> = ({ message, emojis }) => (
+  <div className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
+    <div className="flex items-baseline gap-2">
+      <Avatar
+        id={message.author.id}
+        name={message.author.displayName}
+        url={message.author.avatarUrl}
+        size={20}
+      />
+      <span className="truncate text-sm font-medium">{message.author.displayName}</span>
+      <span className="shrink-0 text-xs text-ink-faint">
+        {formatTimestamp(message.createdAt)}
+      </span>
+    </div>
+
+    <div className="mt-1 break-words text-sm text-ink-muted">
+      {message.content ? (
+        <MessageContent content={message.content} emojis={emojis} blocos />
+      ) : (
+        <span className="italic text-ink-faint">sem texto</span>
+      )}
+    </div>
+  </div>
+);
