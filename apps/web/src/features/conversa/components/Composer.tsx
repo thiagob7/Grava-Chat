@@ -45,19 +45,8 @@ import {
   ArteDeArquivoGrande,
   ArteDeTextoLongo,
 } from "~/features/conversa/components/artes/ArteDeLimite";
-import { adivinharLingua, cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
+import { cercarCodigo, pareceCodigo, textoParaArquivo } from "~/features/conversa/lib/codigo";
 
-/// A extensão que o texto colado ganha ao virar arquivo.
-const EXTENSAO_DA_LINGUA: Record<string, string> = {
-  css: "css",
-  html: "html",
-  js: "js",
-  json: "json",
-  py: "py",
-  sh: "sh",
-  sql: "sql",
-  ts: "ts",
-};
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
@@ -332,17 +321,21 @@ export const Composer: React.FC<ComposerProps> = ({
   /// Vira anexo com a extensão que o próprio texto denuncia, e não um .txt
   /// genérico: assim a prévia já abre com o realce certo do outro lado.
   const virarArquivo = (texto: string) => {
-    const extensao = EXTENSAO_DA_LINGUA[adivinharLingua(texto) ?? ""] ?? "txt";
+    const { nome, conteudo } = textoParaArquivo(texto);
 
-    void anexos.add([
-      new File([texto], `mensagem.${extensao}`, { type: "text/plain;charset=utf-8" }),
-    ]);
+    void anexos.add([new File([conteudo], nome, { type: "text/plain;charset=utf-8" })]);
   };
 
+  /*
+    Vai TUDO no mesmo arquivo: o que já estava escrito mais o que foi colado.
+    Mandar só o pedaço que estourou deixava o resto como texto solto na caixa,
+    e a mensagem saía partida entre blocos e anexo.
+  */
   const mandarComoArquivo = () => {
     if (!textoLongo) return;
 
-    virarArquivo(textoLongo);
+    virarArquivo([value.trim(), textoLongo.trim()].filter(Boolean).join("\n\n"));
+    setValue("");
     setTextoLongo(null);
   };
 

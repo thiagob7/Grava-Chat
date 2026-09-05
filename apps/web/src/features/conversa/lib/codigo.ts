@@ -185,3 +185,57 @@ export function cercarCodigo(texto: string): string {
 
   return `\`\`\`${adivinharLingua(limpo) ?? ""}\n${limpo}\n\`\`\``;
 }
+
+const EXTENSAO: Record<string, string> = {
+  bash: "sh",
+  css: "css",
+  html: "html",
+  js: "js",
+  json: "json",
+  jsx: "jsx",
+  md: "md",
+  py: "py",
+  rb: "rb",
+  rs: "rs",
+  sh: "sh",
+  sql: "sql",
+  ts: "ts",
+  tsx: "tsx",
+  xml: "xml",
+  yaml: "yml",
+  yml: "yml",
+};
+
+export interface ArquivoDeTexto {
+  nome: string;
+  conteudo: string;
+}
+
+/*
+  Transforma o que está na caixa num arquivo só.
+
+  Quando é tudo bloco de código, as cercas saem e os corpos são emendados: um
+  `.js` com ``` dentro não é JavaScript válido, e quem abre o anexo quer o
+  código, não a marcação que o chat usou para exibi-lo.
+
+  Sobrando qualquer texto solto entre os blocos, vira `.txt` com tudo como
+  está — ali as cercas são a única coisa que separa uma parte da outra.
+*/
+export function textoParaArquivo(texto: string, base = "mensagem"): ArquivoDeTexto {
+  const pedacos = partirEmCodigo(texto).filter(
+    (p) => p.tipo !== "texto" || p.texto.trim().length > 0,
+  );
+
+  const blocos = pedacos.filter((p) => p.tipo === "bloco");
+  const soBlocos = blocos.length > 0 && blocos.length === pedacos.length;
+
+  if (!soBlocos) return { nome: `${base}.txt`, conteudo: texto.trim() };
+
+  const lingua = blocos.find((b) => b.lingua)?.lingua ?? adivinharLingua(blocos[0]!.codigo);
+  const extensao = EXTENSAO[(lingua ?? "").toLowerCase()] ?? "txt";
+
+  return {
+    nome: `${base}.${extensao}`,
+    conteudo: blocos.map((b) => b.codigo.trim()).join("\n\n"),
+  };
+}

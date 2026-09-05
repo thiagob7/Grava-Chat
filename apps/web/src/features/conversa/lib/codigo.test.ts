@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { partirEmCodigo, rotuloDaLingua,
   adivinharLingua,
   pareceCodigo,
+  textoParaArquivo,
 } from "./codigo";
 
 describe("partirEmCodigo", () => {
@@ -222,3 +223,49 @@ describe("mas continua pegando o que é código", () => {
   }
 });
 
+
+describe("virar arquivo", () => {
+  const bloco = (lingua: string, corpo: string) => "```" + lingua + "\n" + corpo + "\n```";
+
+  it("tira as cercas: um .js com ``` dentro nao e JavaScript", () => {
+    const { conteudo } = textoParaArquivo(bloco("js", "const a = 1;"));
+
+    expect(conteudo).toBe("const a = 1;");
+    expect(conteudo).not.toContain("```");
+  });
+
+  it("emenda TODOS os blocos num arquivo so", () => {
+    const texto = bloco("js", "const a = 1;") + bloco("js", "const b = 2;");
+    const { conteudo } = textoParaArquivo(texto);
+
+    expect(conteudo).toBe("const a = 1;\n\nconst b = 2;");
+  });
+
+  it("a extensao sai da cerca", () => {
+    expect(textoParaArquivo(bloco("ts", "const a: number = 1;")).nome).toBe("mensagem.ts");
+    expect(textoParaArquivo(bloco("css", "body { color: red; }")).nome).toBe("mensagem.css");
+  });
+
+  it("sem cerca declarando, adivinha pelo codigo", () => {
+    expect(textoParaArquivo(bloco("", "SELECT * FROM gente;")).nome).toBe("mensagem.sql");
+  });
+
+  it("texto solto no meio derruba tudo para .txt, com as cercas", () => {
+    const texto = "olha isso:\n" + bloco("js", "const a = 1;");
+    const { nome, conteudo } = textoParaArquivo(texto);
+
+    expect(nome).toBe("mensagem.txt");
+    expect(conteudo).toContain("olha isso:");
+    expect(conteudo).toContain("```");
+  });
+
+  it("texto puro vira .txt", () => {
+    expect(textoParaArquivo("bom dia").nome).toBe("mensagem.txt");
+  });
+
+  it("espaco em branco entre blocos nao conta como texto solto", () => {
+    const texto = bloco("js", "const a = 1;") + "\n\n" + bloco("js", "const b = 2;");
+
+    expect(textoParaArquivo(texto).nome).toBe("mensagem.js");
+  });
+});
