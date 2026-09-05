@@ -1,4 +1,5 @@
 import type {
+  CategoriaDeComunidade,
   Category,
   Channel,
   Emblema,
@@ -21,6 +22,8 @@ export interface GuildModel {
   systemChannelId?: string | null;
   welcomeEnabled?: boolean;
   welcomeMessage?: string | null;
+  categoria?: CategoriaDeComunidade | null;
+  descobrivel?: boolean | null;
   ownerId: string;
   memberCount: number;
 }

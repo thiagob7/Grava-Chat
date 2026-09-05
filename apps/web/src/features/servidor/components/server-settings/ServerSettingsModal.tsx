@@ -12,6 +12,7 @@ import { AuditLogSection } from "~/features/servidor/components/server-settings/
 import { AutoModSection } from "~/features/servidor/components/server-settings/AutoModSection";
 import { BansSection } from "~/features/servidor/components/server-settings/BansSection";
 import { EmblemasSection } from "~/features/servidor/components/server-settings/EmblemasSection";
+import { DescobertaSection } from "~/features/servidor/components/server-settings/DescobertaSection";
 import { EngagementSection } from "~/features/servidor/components/server-settings/EngagementSection";
 import {
   EmojiSection,
@@ -28,6 +29,7 @@ export type Secao =
   | "perfil"
   | "tag"
   | "engajamento"
+  | "explorar"
   | "emoji"
   | "figurinhas"
   | "sons"
@@ -42,7 +44,7 @@ export type Secao =
   | "excluir";
 
 const GRUPOS: { titulo: string | null; itens: Secao[] }[] = [
-  { titulo: null, itens: ["perfil", "tag", "engajamento"] },
+  { titulo: null, itens: ["perfil", "tag", "engajamento", "explorar"] },
   { titulo: "servidor.abas.expressoes", itens: ["emoji", "figurinhas", "sons", "emblemas"] },
   { titulo: "servidor.abas.pessoas", itens: ["membros", "cargos", "convites"] },
   { titulo: "servidor.abas.apps", itens: ["integracoes"] },
@@ -53,6 +55,7 @@ const ROTULOS: Record<Secao, string> = {
   perfil: "servidor.perfil.titulo",
   tag: "servidor.etiqueta.titulo",
   engajamento: "servidor.engajamento.titulo",
+  explorar: "servidor.explorar.titulo",
   emoji: "comum.emoji",
   figurinhas: "servidor.expressoes.figurinhas",
   sons: "servidor.expressoes.sons",
@@ -118,6 +121,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     perfil: canManage,
     tag: canManage,
     engajamento: canManage,
+    explorar: canManage,
     emoji: true,
     figurinhas: true,
     sons: true,
@@ -199,6 +203,8 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
 
             {secao === "tag" && <ServerTagSection guild={detail.guild} />}
+
+            {secao === "explorar" && <DescobertaSection guild={detail.guild} />}
 
             {secao === "engajamento" && (
               <EngagementSection
