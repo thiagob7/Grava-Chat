@@ -1,10 +1,17 @@
 import { create } from "zustand";
 
+import { lerCabecalhoDoTema } from "@gravae/shared";
+
 import { NOMES_DE_ORIGEM, traduzirTema } from "~/features/configuracoes/lib/ponte-de-tema";
 
 export interface TemaSalvo {
   id: string;
   nome: string;
+  /// Saem do cabeçalho do CSS quando o tema vem de um arquivo.
+  autor?: string | null;
+  versao?: string | null;
+  descricao?: string | null;
+  tags?: string[];
   substituicoes: Record<string, string>;
   css: string;
 }
@@ -21,6 +28,8 @@ interface EstadoDoEstudio {
   css: string;
   biblioteca: TemaSalvo[];
   ativos: AtivoDoTema[];
+  /// Qual tema da biblioteca está valendo agora. Null é o tema base.
+  ativoId: string | null;
 }
 
 interface EstudioStore extends EstadoDoEstudio {
@@ -30,6 +39,11 @@ interface EstudioStore extends EstadoDoEstudio {
   aplicarDaBiblioteca: (id: string) => void;
   apagarDaBiblioteca: (id: string) => void;
   importar: (tema: { substituicoes?: Record<string, string>; css?: string; nome?: string }) => void;
+  importarCssComoTema: (css: string, nomeDoArquivo?: string) => string;
+  atualizarNaBiblioteca: (id: string, dados: Partial<Omit<TemaSalvo, "id">>) => void;
+  duplicarDaBiblioteca: (id: string) => void;
+  alternarTema: (id: string) => void;
+  importarBiblioteca: (temas: TemaSalvo[]) => void;
   guardarAtivo: (ativo: Omit<AtivoDoTema, "id">) => void;
   apagarAtivo: (id: string) => void;
   limparSubstituicoes: () => void;
@@ -37,7 +51,13 @@ interface EstudioStore extends EstadoDoEstudio {
 }
 
 const CHAVE = "gravae:estudio";
-const VAZIO: EstadoDoEstudio = { substituicoes: {}, css: "", biblioteca: [], ativos: [] };
+const VAZIO: EstadoDoEstudio = {
+  substituicoes: {},
+  css: "",
+  biblioteca: [],
+  ativos: [],
+  ativoId: null,
+};
 
 function ler(): EstadoDoEstudio {
   try {
@@ -115,11 +135,14 @@ export const useEstudio = create<EstudioStore>((set, store) => {
   const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
     set(mudanca);
 
-    const { substituicoes, css, biblioteca, ativos } = store();
-    aplicar({ substituicoes, css, biblioteca, ativos });
+    const { substituicoes, css, biblioteca, ativos, ativoId } = store();
+    aplicar({ substituicoes, css, biblioteca, ativos, ativoId });
 
     try {
-      localStorage.setItem(CHAVE, JSON.stringify({ substituicoes, css, biblioteca, ativos }));
+      localStorage.setItem(
+        CHAVE,
+        JSON.stringify({ substituicoes, css, biblioteca, ativos, ativoId }),
+      );
     } catch {
       /// Sem localStorage o estúdio ainda funciona; só não sobrevive ao F5.
     }
@@ -155,11 +178,87 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       const tema = store().biblioteca.find((t) => t.id === id);
       if (!tema) return;
 
-      guardar({ substituicoes: { ...tema.substituicoes }, css: tema.css });
+      guardar({ substituicoes: { ...tema.substituicoes }, css: tema.css, ativoId: id });
     },
 
+    /// Ligar troca o tema que está valendo; desligar volta para o base.
+    alternarTema: (id) => {
+      const tema = store().biblioteca.find((t) => t.id === id);
+      if (!tema) return;
+
+      if (store().ativoId === id) {
+        guardar({ substituicoes: {}, css: "", ativoId: null });
+        return;
+      }
+
+      guardar({ substituicoes: { ...tema.substituicoes }, css: tema.css, ativoId: id });
+    },
+
+    atualizarNaBiblioteca: (id, dados) => {
+      const biblioteca = store().biblioteca.map((tema) =>
+        tema.id === id ? { ...tema, ...dados } : tema,
+      );
+
+      /// Editar o tema que está no ar precisa repintar na hora, senão a
+      /// pessoa salva e não vê nada acontecer.
+      const valendo = store().ativoId === id;
+      const atual = biblioteca.find((t) => t.id === id);
+
+      guardar(
+        valendo && atual
+          ? { biblioteca, substituicoes: { ...atual.substituicoes }, css: atual.css }
+          : { biblioteca },
+      );
+    },
+
+    duplicarDaBiblioteca: (id) => {
+      const tema = store().biblioteca.find((t) => t.id === id);
+      if (!tema) return;
+
+      guardar({
+        biblioteca: [
+          ...store().biblioteca,
+          { ...tema, id: crypto.randomUUID(), nome: `${tema.nome} (cópia)` },
+        ],
+      });
+    },
+
+    importarCssComoTema: (css, nomeDoArquivo) => {
+      const cabecalho = lerCabecalhoDoTema(css);
+      const id = crypto.randomUUID();
+
+      guardar({
+        biblioteca: [
+          ...store().biblioteca,
+          {
+            id,
+            nome: cabecalho.nome ?? nomeDoArquivo ?? "Tema sem nome",
+            autor: cabecalho.autor,
+            versao: cabecalho.versao,
+            descricao: cabecalho.descricao,
+            tags: cabecalho.tags,
+            substituicoes: {},
+            css,
+          },
+        ],
+      });
+
+      return id;
+    },
+
+    importarBiblioteca: (temas) =>
+      guardar({
+        biblioteca: [
+          ...store().biblioteca,
+          ...temas.map((tema) => ({ ...tema, id: crypto.randomUUID() })),
+        ],
+      }),
+
     apagarDaBiblioteca: (id) =>
-      guardar({ biblioteca: store().biblioteca.filter((tema) => tema.id !== id) }),
+      guardar({
+        biblioteca: store().biblioteca.filter((tema) => tema.id !== id),
+        ...(store().ativoId === id ? { substituicoes: {}, css: "", ativoId: null } : {}),
+      }),
 
     importar: ({ substituicoes, css }) =>
       guardar({ substituicoes: { ...(substituicoes ?? {}) }, css: css ?? "" }),
@@ -171,7 +270,8 @@ export const useEstudio = create<EstudioStore>((set, store) => {
 
     limparSubstituicoes: () => guardar({ substituicoes: {} }),
 
-    limparTudo: () => guardar({ substituicoes: {}, css: "", biblioteca: [], ativos: [] }),
+    limparTudo: () =>
+      guardar({ substituicoes: {}, css: "", biblioteca: [], ativos: [], ativoId: null }),
   };
 });
 
