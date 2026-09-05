@@ -85,10 +85,15 @@ export const LUGARES = {
     classes: ["ChannelItemSurface.module__channelItemSurfaceSelected_gc"],
   },
 
-  painelDoUsuario: {
-    classes: ["UserArea.module__userAreaInnerWrapper_gc"],
-    flx: "app.guilds-layout.user-area-wrapper",
-  },
+  /*
+    Dois elementos, não um. O de fora é o painel — é ele que ganha borda,
+    rótulo e a largura que cobre trilho e lateral. O de dentro é o cartão, e o
+    tema o quer transparente para a borda de fora aparecer sozinha.
+
+    Foi por juntar os dois num só que a borda do usuário saiu curta.
+  */
+  areaDoUsuario: { classes: [], flx: "app.guilds-layout.user-area-wrapper" },
+  cartaoDoUsuario: { classes: ["UserArea.module__userAreaInnerWrapper_gc"] },
 
   topoDoCanal: {
     classes: [
@@ -106,9 +111,11 @@ export const LUGARES = {
     classes: ["ChannelChatLayout.module__messagesArea_gc"],
   },
 
-  caixaDeEscrever: {
-    classes: ["ChannelAttachmentArea.module__textareaArea_gc"],
-    flx: "channel.channel-chat-layout.textarea-area",
+  /// Mesma divisão da área do usuário: o painel de fora, o campo de dentro.
+  caixaDeEscrever: { classes: [], flx: "channel.channel-chat-layout.textarea-area" },
+  campoDeEscrever: {
+    classes: [],
+    flx: "channel.lexical-channel-textarea-content.textarea-outer",
   },
 
   conteudoDaMensagem: { classes: ["Markup.module__markup_gc"] },

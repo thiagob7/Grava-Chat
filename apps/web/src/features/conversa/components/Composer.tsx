@@ -52,7 +52,7 @@ import { cercarCodigo, pareceCodigo, textoParaArquivo } from "~/features/convers
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxAttr } from "~/lib/compat-fluxer";
 
 interface ComposerProps {
   channelId: string;
@@ -415,6 +415,7 @@ export const Composer: React.FC<ComposerProps> = ({
           setArrastando(false);
           void anexos.add([...e.dataTransfer.files]);
         }}
+        {...flxAttr("campoDeEscrever")}
         className={cn(
           "rounded bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",

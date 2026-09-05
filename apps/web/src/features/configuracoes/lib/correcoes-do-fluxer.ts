@@ -20,10 +20,13 @@ export const CORRECOES_DO_FLUXER = `
   height: auto !important;
 }
 
-/* O painel do usuário mora dentro da lateral, e não atravessa trilho e lateral. */
-.painel-do-usuario {
-  width: auto !important;
-  max-width: 100% !important;
+/*
+  A área do usuário já atravessa trilho e lateral, então a largura do tema
+  cabe. Só não pode passar da borda direita da lateral: o tema soma a folga
+  entre painéis, que aqui não existe.
+*/
+.area-do-usuario {
+  max-width: calc(100% + var(--layout-guild-list-width)) !important;
 }
 
 /* As laterais têm a própria altura; a conta deles sobra do rodapé que não temos. */
