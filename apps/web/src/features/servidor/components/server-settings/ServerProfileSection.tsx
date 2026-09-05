@@ -96,7 +96,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
           />
         ) : (
           <div data-gc="servidor.server-settings.server-profile-section.div--4"
-            className="flex size-20 items-center justify-center rounded-3xl text-2xl font-bold text-white"
+            className="flex size-20 items-center justify-center rounded-3xl text-2xl font-bold text-palco-ink"
             style={{ backgroundColor: avatarColor(guild.id) }}
           >
             {initials(name || guild.name)}
@@ -186,8 +186,8 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               className={cn(
                 "flex flex-col items-center gap-1.5 rounded-lg px-4 py-3 text-xs transition",
                 bannerUrl
-                  ? "bg-black/60 text-white opacity-0 group-hover/faixa:opacity-100"
-                  : "text-white/80",
+                  ? "bg-sobre-midia text-palco-ink opacity-0 group-hover/faixa:opacity-100"
+                  : "text-palco-ink/80",
               )}
             >
               <ImageUp data-gc="servidor.server-settings.server-profile-section.image-up" size={20} />
@@ -207,7 +207,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               onClick={() => setBannerUrl(null)}
               aria-label={t("comum.remover")}
               title={t("comum.remover")}
-              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur transition hover:bg-danger hover:text-white"
+              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-sobre-midia text-palco-ink/80 backdrop-blur transition hover:bg-danger hover:text-palco-ink"
             >
               <X data-gc="servidor.server-settings.server-profile-section.x" size={14} />
             </button>

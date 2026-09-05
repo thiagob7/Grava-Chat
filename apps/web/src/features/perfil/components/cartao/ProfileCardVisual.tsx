@@ -160,7 +160,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             onClick={onEditarFaixa}
             aria-label={t("perfil.cartao.trocarFaixa")}
             title={t("perfil.cartao.trocarFaixaCurto")}
-            className="absolute right-3 top-3 rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
+            className="absolute right-3 top-3 rounded-full bg-sobre-midia p-1.5 text-palco-ink/80 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-palco-ink"
           >
             <Pencil data-gc="perfil.cartao.profile-card-visual.pencil" size={15} />
           </button>
@@ -198,7 +198,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               onClick={onEditarFoto}
               aria-label={t("perfil.cartao.trocarFoto")}
               title={t("perfil.cartao.trocarFotoCurto")}
-              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition hover:opacity-100 focus-visible:opacity-100"
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-sobre-midia text-palco-ink opacity-0 transition hover:opacity-100 focus-visible:opacity-100"
             >
               <Camera data-gc="perfil.cartao.profile-card-visual.camera" size={22} />
             </button>
@@ -209,17 +209,17 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             <span data-gc="perfil.cartao.profile-card-visual.span--4" className="relative ml-2 mt-8 min-w-0">
               <span data-gc="perfil.cartao.profile-card-visual.span--5"
                 aria-hidden
-                className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
+                className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
               />
               <span data-gc="perfil.cartao.profile-card-visual.span--6"
                 aria-hidden
-                className="absolute -left-5 -top-2.5 size-1.5 rounded-full bg-surface-3 shadow-md shadow-black/40"
+                className="absolute -left-5 -top-2.5 size-1.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
               />
 
               {onStatus ? (
                 <button data-gc="perfil.cartao.profile-card-visual.button.on-status"
                   onClick={onStatus}
-                  className="flex max-w-52 items-center gap-2 rounded-full bg-surface-3 px-4 py-2.5 text-left text-sm text-ink-muted shadow-lg shadow-black/30 transition hover:bg-surface-4 hover:text-ink"
+                  className="flex max-w-52 items-center gap-2 rounded-full bg-surface-3 px-4 py-2.5 text-left text-sm text-ink-muted shadow-lg shadow-sombra transition hover:bg-surface-4 hover:text-ink"
                 >
                   {statusPersonalizado ? (
                     <>
@@ -239,7 +239,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 </button>
               ) : (
                 statusPersonalizado && (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--10" className="flex max-w-52 items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-2 text-sm text-ink-muted shadow-lg shadow-black/30">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--10" className="flex max-w-52 items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-2 text-sm text-ink-muted shadow-lg shadow-sombra">
                     {statusPersonalizado.emoji && (
                       <span data-gc="perfil.cartao.profile-card-visual.span--11">{statusPersonalizado.emoji}</span>
                     )}

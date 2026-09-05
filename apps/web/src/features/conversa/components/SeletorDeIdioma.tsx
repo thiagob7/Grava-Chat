@@ -86,7 +86,7 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
                 className={cn(
                   "flex w-full items-center gap-2 px-3 py-1.5 text-left font-mono text-13 transition",
                   escolhido
-                    ? "bg-brand text-white"
+                    ? "bg-brand text-sobre-marca"
                     : "text-ink-muted hover:bg-hover hover:text-ink",
                 )}
               >
@@ -96,7 +96,7 @@ export const SeletorDeIdioma: React.FC<SeletorDeIdiomaProps> = ({
                   <span data-gc="conversa.seletor-de-idioma.span--2"
                     className={cn(
                       "shrink-0 text-10 uppercase tracking-wide",
-                      escolhido ? "text-white/70" : "text-ink-faint",
+                      escolhido ? "text-sobre-marca/70" : "text-ink-faint",
                     )}
                   >
                     {item.formato}

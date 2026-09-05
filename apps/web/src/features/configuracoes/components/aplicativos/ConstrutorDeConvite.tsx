@@ -176,8 +176,8 @@ export const ConstrutorDeConvite: React.FC<ConstrutorDeConviteProps> = ({
                           "flex size-4 shrink-0 items-center justify-center rounded border transition",
                           marcada
                             ? pesada
-                              ? "border-danger bg-danger text-white"
-                              : "border-brand bg-brand text-white"
+                              ? "border-danger bg-danger text-sobre-marca"
+                              : "border-brand bg-brand text-sobre-marca"
                             : "border-ink-faint",
                         )}
                       >

@@ -32,7 +32,7 @@ export const AcceptInvite: React.FC = () => {
     <div data-gc="invite.accept-invite.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
       <FundoDaMarca data-gc="invite.accept-invite.fundo-da-marca" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="invite.accept-invite.div--2" className="relative w-full max-w-sm rounded-xl bg-surface-1 p-8 text-center shadow-2xl ring-1 ring-white/10">
+      <div data-gc="invite.accept-invite.div--2" className="relative w-full max-w-sm rounded-xl bg-surface-1 p-8 text-center shadow-2xl ring-1 ring-line-sutil">
         {error ? (
           <>
             <h1 data-gc="invite.accept-invite.h1" className="text-lg font-semibold">Convite inválido</h1>

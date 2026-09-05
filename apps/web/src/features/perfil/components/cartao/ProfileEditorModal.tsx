@@ -85,7 +85,7 @@ export const ProfileEditorModal: React.FC<{
       onOpenChange={(next) => !next && onClose()}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay data-gc="perfil.cartao.profile-editor-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
+        <DialogPrimitive.Overlay data-gc="perfil.cartao.profile-editor-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
         <DialogPrimitive.Content data-gc="perfil.cartao.profile-editor-modal.dialog-primitivecontent"
           className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[78vh] w-full max-w-6xl overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
           aria-label={t("perfil.editar")}
@@ -151,7 +151,7 @@ export const ProfileEditorModal: React.FC<{
                           <button data-gc="perfil.cartao.profile-editor-modal.button"
                             type="button"
                             aria-label="Editar o cartão"
-                            className="rounded-full bg-black/45 p-1.5 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
+                            className="rounded-full bg-sobre-midia p-1.5 text-sobre-marca/80 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-sobre-marca"
                           >
                             <Pencil data-gc="perfil.cartao.profile-editor-modal.pencil" size={15} />
                           </button>

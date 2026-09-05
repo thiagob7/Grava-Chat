@@ -56,8 +56,18 @@ const CantosDaChamada: React.FC<{
 }> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
   const { t } = useTranslation();
 
-  const botao =
-    "pointer-events-auto flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.8125rem] border border-white/[0.08] bg-black text-white/[0.84] shadow-[inset_0_1px_0_rgba(255,255,255,0.055)] transition-colors duration-75 hover:border-white/[0.14] hover:bg-[#111] hover:text-white aria-pressed:border-white/[0.14] aria-pressed:bg-[#111] aria-pressed:text-white";
+  /*
+    O hover e o ligado eram `#111` cravado — um cinza que só existia aqui e que
+    nenhum tema alcançava. Agora é o próprio palco clareado, então acompanha
+    seja qual for o fundo que o tema escolher.
+  */
+  const botao = cn(
+    "pointer-events-auto flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.8125rem]",
+    "border border-line-sutil bg-palco text-palco-ink/[0.84] transition-colors duration-75",
+    "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--color-palco-ink)_5%,transparent)]",
+    "hover:bg-[color-mix(in_srgb,var(--color-palco)_92%,var(--color-palco-ink))] hover:text-palco-ink",
+    "aria-pressed:bg-[color-mix(in_srgb,var(--color-palco)_92%,var(--color-palco-ink))] aria-pressed:text-palco-ink",
+  );
 
   return (
     <>
@@ -67,7 +77,7 @@ const CantosDaChamada: React.FC<{
           "opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100",
         )}
       >
-        <span data-gc="voz.voice-stage.span" className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
+        <span data-gc="voz.voice-stage.span" className="flex min-w-0 items-center gap-2 text-sm font-semibold text-palco-ink [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
           <SpeakerHigh data-gc="voz.voice-stage.speaker-high"
             size={20}
             weight="fill"
@@ -196,11 +206,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         ref={palco}
         className={cn(
           flxCls("palcoDeVoz"),
-          "group relative flex min-h-0 flex-1 overflow-hidden bg-black",
+          "group relative flex min-h-0 flex-1 overflow-hidden bg-palco",
           compacto ? "flex-row gap-2 p-2" : "flex-col",
         )}
       >
-        <div data-gc="voz.voice-stage.div--5" ref={quadro} className="relative min-w-0 flex-1 overflow-hidden bg-black">
+        <div data-gc="voz.voice-stage.div--5" ref={quadro} className="relative min-w-0 flex-1 overflow-hidden bg-palco">
           <button data-gc="voz.voice-stage.button"
             onClick={() => setAssistindo(null)}
             aria-label={t("chamada.voltarAosQuadros")}
@@ -211,13 +221,13 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
           <div data-gc="voz.voice-stage.div--6"
             className={cn(
-              "pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/80 to-transparent px-4",
+              "pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-palco/80 to-transparent px-4",
               compacto ? "pb-6 pt-2" : "pb-8 pt-3",
             )}
           >
             {!compacto && (
               <>
-                <MonitorUp data-gc="voz.voice-stage.monitor-up" size={14} className="shrink-0 text-white/70" />
+                <MonitorUp data-gc="voz.voice-stage.monitor-up" size={14} className="shrink-0 text-palco-ink/70" />
                 <span data-gc="voz.voice-stage.span--3" className="text-sm font-medium">Tela de {sharing.name}</span>
                 <QualidadeDaTela data-gc="voz.voice-stage.qualidade-da-tela" track={sharing.screenTrack!} />
               </>
@@ -229,14 +239,14 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
             <button data-gc="voz.voice-stage.button--2"
               onClick={() => setAssistindo(null)}
-              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-white/25"
+              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded bg-palco-ink/15 px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition hover:bg-palco-ink/25"
             >
               <X data-gc="voz.voice-stage.x" size={14} /> {t("chamada.live.pararDeAssistir")}
             </button>
           </div>
 
           {!compacto && (
-            <div data-gc="voz.voice-stage.div--7" className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
+            <div data-gc="voz.voice-stage.div--7" className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-palco/80 to-transparent px-4 pb-3 pt-10">
               <div data-gc="voz.voice-stage.div--8" className="flex shrink-0 gap-2">
                 {tiles.map((tile) => (
                   <ComMenu data-gc="voz.voice-stage.com-menu" key={tile.identity} tile={tile} contexto={contexto}>
@@ -474,7 +484,7 @@ const Tile: React.FC<TileProps> = ({
 
       <div data-gc="voz.voice-stage.div--20"
         className={cn(
-          "absolute bottom-1.5 left-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded bg-black/60 px-1.5 py-0.5",
+          "absolute bottom-1.5 left-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded bg-sobre-midia px-1.5 py-0.5",
           !compact && "bottom-2 left-2 gap-1.5 px-2 py-1",
         )}
       >
@@ -515,7 +525,7 @@ const TileDaLive: React.FC<{
   return (
   <div data-gc="voz.voice-stage.div--21"
     className={cn(
-      "group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black/70 ring-1 ring-white/10",
+      "group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-sobre-midia ring-1 ring-line-sutil",
       className,
     )}
   >
@@ -523,23 +533,23 @@ const TileDaLive: React.FC<{
       <button data-gc="voz.voice-stage.button.on-assistir" onClick={onAssistir} className="absolute inset-0 size-full">
         <VoiceVideo data-gc="voz.voice-stage.voice-video--3" track={tile.screenTrack} />
 
-        <span data-gc="voz.voice-stage.span--5" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
-          <span data-gc="voz.voice-stage.span--6" className="size-1.5 animate-pulse rounded-full bg-white" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--5" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--6" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
       </button>
     ) : (
       <button data-gc="voz.voice-stage.button.on-assistir--2"
         onClick={onAssistir}
-        className="absolute inset-0 flex items-center justify-center transition hover:bg-white/5"
+        className="absolute inset-0 flex items-center justify-center transition hover:bg-palco-ink/5"
       >
-        <span data-gc="voz.voice-stage.span--7" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-white">
-          <span data-gc="voz.voice-stage.span--8" className="size-1.5 animate-pulse rounded-full bg-white" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--7" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--8" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
 
         <span data-gc="voz.voice-stage.span--9"
           title={t("chamada.live.assistir")}
           className={cn(
-            "flex items-center justify-center bg-brand font-medium text-white shadow-lg",
+            "flex items-center justify-center bg-brand font-medium text-palco-ink shadow-lg",
             "opacity-0 transition group-hover/live:opacity-100",
             denso
               ? "size-9 rounded-full"
@@ -552,7 +562,7 @@ const TileDaLive: React.FC<{
       </button>
     )}
 
-    <div data-gc="voz.voice-stage.div--22" className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-black/60 px-2 py-1">
+    <div data-gc="voz.voice-stage.div--22" className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-sobre-midia px-2 py-1">
       <Monitor data-gc="voz.voice-stage.monitor" size={12} className="shrink-0 text-online" />
       <span data-gc="voz.voice-stage.span--10" className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
         {tile.name}
@@ -579,7 +589,7 @@ const ControleDeVolumeDaLive: React.FC<{ identity: string; className?: string }>
           <button data-gc="voz.voice-stage.button--4"
             aria-label="Volume da live"
             className={cn(
-              "pointer-events-auto rounded bg-black/60 p-1.5 text-white/80 transition hover:bg-black/80 hover:text-white",
+              "pointer-events-auto rounded bg-sobre-midia p-1.5 text-palco-ink/80 transition hover:bg-sobre-midia hover:text-palco-ink",
               className,
             )}
           >

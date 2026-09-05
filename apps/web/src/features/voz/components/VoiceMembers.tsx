@@ -178,7 +178,7 @@ const ConviteParaLive: React.FC<{
         onMouseLeave={() => setAberto(false)}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <div data-gc="voz.voice-members.div--6" className="aspect-video overflow-hidden rounded bg-black">
+        <div data-gc="voz.voice-members.div--6" className="aspect-video overflow-hidden rounded bg-palco">
           {transmissao ? (
             <VoiceVideo data-gc="voz.voice-members.voice-video" track={transmissao} />
           ) : (

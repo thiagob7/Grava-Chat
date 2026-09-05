@@ -68,7 +68,7 @@ export const ServidorSection: React.FC = () => {
               "rounded px-1.5 py-0.5 text-xs font-semibold",
               ehProducao
                 ? "bg-online/15 text-online"
-                : "bg-amber-500/15 text-amber-400",
+                : "bg-aviso/15 text-aviso",
             )}
           >
             {ehProducao ? "produção" : "desenvolvimento"}
@@ -231,8 +231,8 @@ export const ServidorSection: React.FC = () => {
         )}
 
         {data.sfu.fantasmas.length > 0 && (
-          <div data-gc="configuracoes.servidor-section.div--11" className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-            <p data-gc="configuracoes.servidor-section.p--13" className="flex items-center gap-2 text-xs font-medium text-amber-400">
+          <div data-gc="configuracoes.servidor-section.div--11" className="mt-3 rounded-lg border border-aviso/30 bg-aviso/5 p-3">
+            <p data-gc="configuracoes.servidor-section.p--13" className="flex items-center gap-2 text-xs font-medium text-aviso">
               <Ghost data-gc="configuracoes.servidor-section.ghost" size={14} />
               {data.sfu.fantasmas.length === 1
                 ? "1 pessoa que o app acha que está em chamada"
@@ -268,7 +268,7 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
 
     {pessoa.soNoSfu && (
       <span data-gc="configuracoes.servidor-section.span--10"
-        className="shrink-0 rounded bg-amber-500/15 px-1.5 text-xs text-amber-400"
+        className="shrink-0 rounded bg-aviso/15 px-1.5 text-xs text-aviso"
         title="Está no SFU, mas o app não tem estado de voz desta pessoa"
       >
         só no SFU
@@ -330,7 +330,7 @@ const AVISOS = {
 
 const Aviso: React.FC<{ motivo: keyof typeof AVISOS }> = ({ motivo }) => (
   <Tooltip data-gc="configuracoes.servidor-section.tooltip--2" label={AVISOS[motivo].explicacao}>
-    <span data-gc="configuracoes.servidor-section.span--14" className="cursor-help truncate font-medium italic text-amber-400">
+    <span data-gc="configuracoes.servidor-section.span--14" className="cursor-help truncate font-medium italic text-aviso">
       {AVISOS[motivo].rotulo}
     </span>
   </Tooltip>
@@ -450,7 +450,7 @@ const Cartao: React.FC<{
           proporcao > 0.85
             ? "bg-danger"
             : proporcao > 0.6
-              ? "bg-amber-500"
+              ? "bg-aviso"
               : "bg-online",
         )}
         style={{ width: `${Math.round(proporcao * 100)}%` }}
@@ -479,7 +479,7 @@ const Linha: React.FC<{
           <span data-gc="configuracoes.servidor-section.span--24"
             className={cn(
               "text-xs tabular-nums",
-              lento ? "text-amber-400" : "text-ink-faint",
+              lento ? "text-aviso" : "text-ink-faint",
             )}
           >
             {checagem ? `${checagem.ms} ms` : nota}
@@ -489,13 +489,13 @@ const Linha: React.FC<{
         <span data-gc="configuracoes.servidor-section.span--25"
           className={cn(
             "flex items-center gap-1.5",
-            noAr ? (lento ? "text-amber-400" : "text-online") : "text-danger",
+            noAr ? (lento ? "text-aviso" : "text-online") : "text-danger",
           )}
         >
           <span data-gc="configuracoes.servidor-section.span--26"
             className={cn(
               "size-2 rounded-full",
-              noAr ? (lento ? "bg-amber-500" : "bg-online") : "bg-danger",
+              noAr ? (lento ? "bg-aviso" : "bg-online") : "bg-danger",
             )}
           />
           {noAr ? (lento ? "lento" : "no ar") : "fora"}

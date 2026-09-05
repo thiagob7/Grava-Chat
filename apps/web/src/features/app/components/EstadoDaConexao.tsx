@@ -57,7 +57,7 @@ export const EstadoDaConexao: React.FC = () => {
           ehDesktop() ? "top-10" : "top-3",
         )}
       >
-        <span data-gc="app.estado-da-conexao.span" className="flex items-center gap-2 rounded-full bg-online px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+        <span data-gc="app.estado-da-conexao.span" className="flex items-center gap-2 rounded-full bg-online px-3 py-1.5 text-xs font-medium text-sobre-marca shadow-lg">
           <Check data-gc="app.estado-da-conexao.check" size={14} /> Conectado de novo
         </span>
       </div>

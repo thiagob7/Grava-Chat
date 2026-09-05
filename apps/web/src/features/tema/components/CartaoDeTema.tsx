@@ -42,7 +42,7 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
   return (
     <article data-gc="tema.cartao-de-tema.article" className="mt-1 w-72 overflow-hidden rounded-lg border border-line bg-surface-2">
       <div data-gc="tema.cartao-de-tema.div--3" className="flex items-center gap-3 p-3">
-        <span data-gc="tema.cartao-de-tema.span" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+        <span data-gc="tema.cartao-de-tema.span" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca">
           <Palette data-gc="tema.cartao-de-tema.palette" size={20} />
         </span>
 

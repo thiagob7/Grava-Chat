@@ -406,7 +406,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
                     className={cn(
                       "rounded px-2 py-1 text-xs transition",
                       isento
-                        ? "bg-brand text-white"
+                        ? "bg-brand text-sobre-marca"
                         : "bg-surface-0 text-ink-muted hover:text-ink",
                     )}
                   >

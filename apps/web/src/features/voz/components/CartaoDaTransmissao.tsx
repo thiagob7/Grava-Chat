@@ -18,7 +18,7 @@ export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ classNam
     <div data-gc="voz.cartao-da-transmissao.div"
       className={cn(
         "relative z-30 flex items-center gap-2 rounded-lg bg-surface-2 px-2 py-1.5",
-        "shadow-lg shadow-black/30 ring-1 ring-white/[0.04]",
+        "shadow-lg shadow-sombra ring-1 ring-line-sutil",
         className,
       )}
     >

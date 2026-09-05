@@ -97,7 +97,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
           <Users data-gc="amizades.dm-sidebar.users" size={20} className="text-ink-faint" />
           Amigos
           {pedidosRecebidos > 0 && (
-            <span data-gc="amizades.dm-sidebar.span" className="ml-auto rounded-full bg-danger px-1.5 text-xs font-semibold text-white">
+            <span data-gc="amizades.dm-sidebar.span" className="ml-auto rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
               {pedidosRecebidos}
             </span>
           )}

@@ -33,8 +33,8 @@ export const ContextMenuItem = ({ className, danger, ...props }: ItemProps) => (
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm outline-none transition",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
       danger
-        ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-white"
-        : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-white",
+        ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-sobre-marca"
+        : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
       className,
     )}
     {...props}
@@ -49,7 +49,7 @@ export const ContextMenuSubTrigger = ({
   <ContextMenuPrimitive.SubTrigger data-gc="ui.context-menu.context-menu-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=open]:bg-surface-3",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca data-[state=open]:bg-surface-3",
       className,
     )}
     {...props}

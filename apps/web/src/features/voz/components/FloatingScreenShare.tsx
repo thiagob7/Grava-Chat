@@ -90,8 +90,8 @@ export const FloatingScreenShare: React.FC = () => {
       ref={mini}
       style={telaCheia.ativa ? undefined : { left: posicao.x, top: posicao.y, width: LARGURA, height: ALTURA }}
       className={cn(
-        "group/mini regiao-sem-arrasto fixed z-40 overflow-hidden bg-black",
-        telaCheia.ativa ? "inset-0" : "rounded-lg shadow-2xl ring-1 ring-white/10",
+        "group/mini regiao-sem-arrasto fixed z-40 overflow-hidden bg-palco",
+        telaCheia.ativa ? "inset-0" : "rounded-lg shadow-2xl ring-1 ring-line-sutil",
         pousando && !telaCheia.ativa && "transition-[left,top] duration-200 ease-out",
       )}
     >
@@ -105,7 +105,7 @@ export const FloatingScreenShare: React.FC = () => {
           arrasto.current = { dx: e.clientX - posicao.x, dy: e.clientY - posicao.y };
         }}
         style={{ touchAction: "none" }}
-        className="absolute inset-x-0 top-0 flex cursor-grab items-center gap-1.5 bg-gradient-to-b from-black/85 to-transparent px-2 py-1.5 active:cursor-grabbing"
+        className="absolute inset-x-0 top-0 flex cursor-grab items-center gap-1.5 bg-gradient-to-b from-palco/85 to-transparent px-2 py-1.5 active:cursor-grabbing"
       >
         <MonitorUp data-gc="voz.floating-screen-share.monitor-up" size={12} className="shrink-0 text-online" />
         <span data-gc="voz.floating-screen-share.span" className="min-w-0 flex-1 truncate text-xs font-medium">{alvo.name}</span>
@@ -148,7 +148,7 @@ const BotaoDaMini: React.FC<{
     onClick={onClick}
     title={label}
     aria-label={label}
-    className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-white/15 hover:text-ink"
+    className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-palco-ink/15 hover:text-ink"
   >
     {children}
   </button>

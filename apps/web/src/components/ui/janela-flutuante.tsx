@@ -188,7 +188,7 @@ const BotaoDaBarra: React.FC<{
     onClick={onClick}
     className={cn(
       "flex size-6 shrink-0 items-center justify-center rounded text-ink-faint transition",
-      perigo ? "hover:bg-danger hover:text-white" : "hover:bg-hover hover:text-ink",
+      perigo ? "hover:bg-danger hover:text-sobre-marca" : "hover:bg-hover hover:text-ink",
     )}
   >
     {children}

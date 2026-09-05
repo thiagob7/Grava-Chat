@@ -336,7 +336,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       onOpenChange={(next) => !next && onClose()}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay data-gc="configuracoes.user-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
+        <DialogPrimitive.Overlay data-gc="configuracoes.user-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
         <DialogPrimitive.Content data-gc="configuracoes.user-settings-modal.dialog-primitivecontent"
           className={cn(
             "regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none",
@@ -359,7 +359,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar configurações"
                 aria-label="Pesquisar configurações"
-                className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-white/15 focus-visible:ring-0"
+                className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
               />
             </div>
 

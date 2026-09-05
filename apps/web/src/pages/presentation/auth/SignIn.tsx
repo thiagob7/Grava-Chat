@@ -33,7 +33,7 @@ export const SignIn: React.FC = () => {
     <div data-gc="auth.sign-in.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
       <FundoDaMarca data-gc="auth.sign-in.fundo-da-marca" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="auth.sign-in.div--2" {...flx("cartaoDeEntrada", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-white/10 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
+      <div data-gc="auth.sign-in.div--2" {...flx("cartaoDeEntrada", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
         <aside data-gc="auth.sign-in.aside" className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
           <span data-gc="auth.sign-in.span" className="flex size-24 items-center justify-center rounded-full bg-brand">
             <img data-gc="auth.sign-in.img"
@@ -63,7 +63,7 @@ export const SignIn: React.FC = () => {
             disabled={!googleEnabled}
             variant="surface"
             title={googleEnabled ? undefined : "Configure GOOGLE_CLIENT_ID no .env"}
-            className="mb-2 w-full bg-white/90 text-black/80 hover:bg-white"
+            className="mb-2 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
             onClick={() => ponte.login.iniciar()}
           >
             <GoogleMark data-gc="auth.sign-in.google-mark" /> Entrar com Google
@@ -74,7 +74,7 @@ export const SignIn: React.FC = () => {
             disabled={!googleEnabled}
             variant="surface"
             title={googleEnabled ? undefined : "Configure GOOGLE_CLIENT_ID no .env"}
-            className="mb-4 w-full bg-white/90 text-black/80 hover:bg-white"
+            className="mb-4 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
           >
             {googleEnabled ? (
               <a data-gc="auth.sign-in.a" href="/api/auth/google">

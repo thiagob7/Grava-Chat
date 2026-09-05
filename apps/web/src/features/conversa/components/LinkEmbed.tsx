@@ -134,7 +134,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
               title={embed.titulo ?? t("conversa.cartao.tocador")}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
-              className="aspect-video w-full rounded border-0 bg-black"
+              className="aspect-video w-full rounded border-0 bg-palco"
             />
           ) : (
             <Capa data-gc="conversa.link-embed.capa" embed={embed} pronta={Boolean(medida)} onAbrir={() => (embed.player ? setTocando(true) : abrir())} />
@@ -175,7 +175,7 @@ const Capa: React.FC<{ embed: EmbedModel; pronta: boolean; onAbrir: () => void }
 
       {embed.player && (
         <span data-gc="conversa.link-embed.span--2" className="absolute inset-0 flex items-center justify-center">
-          <span data-gc="conversa.link-embed.span--3" className="flex size-12 items-center justify-center rounded-full bg-black/60 text-white transition group-hover/capa:bg-brand">
+          <span data-gc="conversa.link-embed.span--3" className="flex size-12 items-center justify-center rounded-full bg-sobre-midia text-palco-ink transition group-hover/capa:bg-brand">
             <Play data-gc="conversa.link-embed.play" size={22} className="ml-0.5 fill-current" />
           </span>
         </span>

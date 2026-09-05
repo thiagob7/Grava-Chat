@@ -74,7 +74,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 draggable={false}
               />
               {pendingFriendRequests > 0 && (
-                <span data-gc="servidor.guild-rail.span--2" className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-white">
+                <span data-gc="servidor.guild-rail.span--2" className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-sobre-marca">
                   {pendingFriendRequests}
                 </span>
               )}
@@ -140,7 +140,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
               {mencoes > 0 && (
                 <span data-gc="servidor.guild-rail.span--5"
                   title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
-                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-white"
+                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-sobre-marca"
                 >
                   {mencoes > 99 ? "99+" : mencoes}
                 </span>

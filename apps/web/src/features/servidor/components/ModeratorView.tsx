@@ -628,7 +628,7 @@ const EditorDeCargos: React.FC<{
                   <span data-gc="servidor.moderator-view.span--18"
                     className={cn(
                       "flex size-4 shrink-0 items-center justify-center rounded border",
-                      tem ? "border-brand bg-brand text-white" : "border-line",
+                      tem ? "border-brand bg-brand text-sobre-marca" : "border-line",
                     )}
                   >
                     {tem && <Check data-gc="servidor.moderator-view.check" size={11} />}

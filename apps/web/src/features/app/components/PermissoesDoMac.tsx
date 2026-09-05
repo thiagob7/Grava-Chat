@@ -131,7 +131,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium",
                         linha.estado === "negada"
                           ? "bg-danger/10 text-danger"
-                          : "bg-amber-500/10 text-amber-400",
+                          : "bg-aviso/10 text-aviso",
                       )}
                     >
                       {linha.estado === "negada" ? <X data-gc="app.permissoes-do-mac.x" size={14} /> : null}

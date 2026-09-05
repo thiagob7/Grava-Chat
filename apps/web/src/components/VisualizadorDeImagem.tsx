@@ -14,7 +14,7 @@ export const VisualizadorDeImagem: React.FC = () => {
   return (
     <DialogPrimitive.Root data-gc="visualizador-de-imagem.dialog-primitiveroot" open onOpenChange={(aberto) => !aberto && fechar()}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay data-gc="visualizador-de-imagem.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/80" />
+        <DialogPrimitive.Overlay data-gc="visualizador-de-imagem.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
 
         <DialogPrimitive.Content data-gc="visualizador-de-imagem.dialog-primitivecontent"
           aria-describedby={undefined}
@@ -40,7 +40,7 @@ export const VisualizadorDeImagem: React.FC = () => {
 
           <DialogPrimitive.Close
             aria-label="Fechar"
-            className="absolute right-5 top-5 rounded p-1 text-ink-muted transition hover:bg-white/10 hover:text-ink"
+            className="absolute right-5 top-5 rounded p-1 text-ink-muted transition hover:bg-palco-ink/10 hover:text-ink"
           >
             <X data-gc="visualizador-de-imagem.x" size={24} />
           </DialogPrimitive.Close>

@@ -59,7 +59,7 @@ export const ChamadaRecebida: React.FC = () => {
   };
 
   return (
-    <div data-gc="voz.chamada-recebida.div" className="fixed right-4 top-4 z-[60] w-72 rounded-lg bg-surface-0 p-4 shadow-2xl ring-1 ring-white/10">
+    <div data-gc="voz.chamada-recebida.div" className="fixed right-4 top-4 z-[60] w-72 rounded-lg bg-surface-0 p-4 shadow-2xl ring-1 ring-line-sutil">
       <div data-gc="voz.chamada-recebida.div--2" className="flex items-center gap-3">
         <span data-gc="voz.chamada-recebida.span" className="relative">
           <Avatar data-gc="voz.chamada-recebida.avatar" id={chamada.userId} name={nome} url={perfil?.avatarUrl ?? null} size={44} />
@@ -78,14 +78,14 @@ export const ChamadaRecebida: React.FC = () => {
       <div data-gc="voz.chamada-recebida.div--3" className="mt-4 flex gap-2">
         <button data-gc="voz.chamada-recebida.button.recusar"
           onClick={recusar}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-surface-3 px-3 py-2 text-sm font-medium transition hover:bg-danger hover:text-white"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-surface-3 px-3 py-2 text-sm font-medium transition hover:bg-danger hover:text-palco-ink"
         >
           <PhoneOff data-gc="voz.chamada-recebida.phone-off" size={15} /> Recusar
         </button>
 
         <button data-gc="voz.chamada-recebida.button"
           onClick={() => void atender(chamada.comVideo)}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-online px-3 py-2 text-sm font-medium text-black transition hover:brightness-110"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-online px-3 py-2 text-sm font-medium text-ink transition hover:brightness-110"
         >
           {chamada.comVideo ? <Video data-gc="voz.chamada-recebida.video--2" size={15} /> : <Phone data-gc="voz.chamada-recebida.phone--2" size={15} />} Atender
         </button>

@@ -64,7 +64,7 @@ export const AtivosAgora: React.FC = () => {
                 ) : (
                   <span data-gc="amizades.ativos-agora.span--3"
                     aria-hidden
-                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-10 font-bold text-white"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-10 font-bold text-sobre-marca"
                     style={{ backgroundColor: avatarColor(servidor.id) }}
                   >
                     {initials(servidor.nome)}

@@ -162,7 +162,7 @@ export const ColorPickerSelection: React.FC<{ className?: string }> = ({ classNa
     >
       <span data-gc="ui.color-picker.span"
         aria-hidden
-        className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.5)]"
+        className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-line-sutil shadow-[0_0_0_1px_rgba(0,0,0,0.5)]"
         style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
       />
     </div>
@@ -173,10 +173,10 @@ const REGUA = cn(
   "h-3.5 w-full cursor-pointer appearance-none rounded-full outline-none",
   "[&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none",
   "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2",
-  "[&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-transparent",
+  "[&::-webkit-slider-thumb]:border-line-sutil [&::-webkit-slider-thumb]:bg-transparent",
   "[&::-webkit-slider-thumb]:shadow-[0_0_0_1px_rgba(0,0,0,0.5)]",
   "[&::-moz-range-thumb]:size-3.5 [&::-moz-range-thumb]:rounded-full",
-  "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white",
+  "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-line-sutil",
   "[&::-moz-range-thumb]:bg-transparent",
 );
 

@@ -68,7 +68,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
               "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
               item.id === "adicionar"
                 ? aba === item.id
-                  ? "bg-brand font-medium text-white"
+                  ? "bg-brand font-medium text-sobre-marca"
                   : "font-medium text-brand hover:bg-brand/10"
                 : aba === item.id
                   ? "bg-surface-4 text-ink"
@@ -77,7 +77,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
           >
             {item.label}
             {Boolean(item.badge) && (
-              <span data-gc="friends.friends.span--3" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-white">
+              <span data-gc="friends.friends.span--3" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
                 {item.badge}
               </span>
             )}
@@ -108,7 +108,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
                   aba === "pendentes" ? "Buscar solicitações pendentes" : "Procurar amigos"
                 }
                 aria-label="Procurar na lista"
-                className="h-10 border-transparent pl-9 text-sm shadow-none focus-visible:border-white/15 focus-visible:ring-0"
+                className="h-10 border-transparent pl-9 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
               />
             </div>
 

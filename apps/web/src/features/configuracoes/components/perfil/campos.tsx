@@ -69,13 +69,13 @@ export function GradeDeOpcoes<T extends string>({
               "relative flex flex-col items-center gap-1.5 rounded-lg border px-2 py-2.5 text-xs transition",
               valor === opcao.id
                 ? "border-brand bg-surface-3 font-medium text-ink shadow-[0_0_0_1px_var(--color-brand)]"
-                : "border-line bg-surface-0 text-ink-muted hover:border-white/10 hover:bg-surface-3 hover:text-ink",
+                : "border-line bg-surface-0 text-ink-muted hover:border-line-sutil hover:bg-surface-3 hover:text-ink",
             )}
           >
             {valor === opcao.id && (
               <span data-gc="configuracoes.perfil.campos.span--2"
                 aria-hidden
-                className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-brand text-white shadow-md shadow-black/40"
+                className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-brand text-sobre-marca shadow-md shadow-sombra"
               >
                 <Check data-gc="configuracoes.perfil.campos.check" size={11} strokeWidth={3} />
               </span>

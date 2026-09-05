@@ -108,7 +108,7 @@ const Cartao: React.FC<{
 }> = ({ nome, preview, icone, selo, onClick }) => (
   <button data-gc="expressao.seletor.aba-gifs.button.on-click"
     onClick={onClick}
-    className="group relative h-[86px] overflow-hidden rounded-lg ring-white/70 transition hover:ring-2"
+    className="group relative h-[86px] overflow-hidden rounded-lg ring-line-sutil transition hover:ring-2"
   >
     {preview ? (
       <img data-gc="expressao.seletor.aba-gifs.img"
@@ -121,13 +121,13 @@ const Cartao: React.FC<{
       <span data-gc="expressao.seletor.aba-gifs.span--2" className="block size-full bg-gradient-to-br from-brand/70 to-brand-hover" />
     )}
 
-    <span data-gc="expressao.seletor.aba-gifs.span--3" className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 px-2 text-center text-sm font-bold text-white drop-shadow transition group-hover:bg-black/25">
+    <span data-gc="expressao.seletor.aba-gifs.span--3" className="absolute inset-0 flex items-center justify-center gap-1.5 bg-sobre-midia px-2 text-center text-sm font-bold text-palco-ink drop-shadow transition group-hover:bg-sobre-midia">
       {icone}
       {nome}
     </span>
 
     {selo !== undefined && selo > 0 && (
-      <span data-gc="expressao.seletor.aba-gifs.span--4" className="absolute right-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-10 font-semibold text-white">
+      <span data-gc="expressao.seletor.aba-gifs.span--4" className="absolute right-1.5 top-1.5 rounded-full bg-sobre-midia px-1.5 py-0.5 text-10 font-semibold text-palco-ink">
         {selo}
       </span>
     )}
@@ -207,9 +207,9 @@ const Grade: React.FC<{
               aria-label={salvo ? "Tirar dos favoritos" : "Guardar nos favoritos"}
               title={salvo ? "Tirar dos favoritos" : "Guardar nos favoritos"}
               className={cn(
-                "absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-black/55 backdrop-blur transition",
-                "hover:bg-black/75 focus-visible:opacity-100",
-                salvo ? "text-brand opacity-100" : "text-white opacity-0 group-hover:opacity-100",
+                "absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-sobre-midia backdrop-blur transition",
+                "hover:bg-sobre-midia focus-visible:opacity-100",
+                salvo ? "text-brand opacity-100" : "text-palco-ink opacity-0 group-hover:opacity-100",
               )}
             >
               <Star data-gc="expressao.seletor.aba-gifs.star--2" size={14} className={salvo ? "fill-current" : undefined} />

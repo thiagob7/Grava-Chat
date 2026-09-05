@@ -160,6 +160,30 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
     titulo: "Superfícies",
     tokens: [
       {
+        nome: "--color-veu",
+        rotulo: "Véu atrás das janelas",
+        dica: "o escurecido que separa o modal do app",
+        ligado: true,
+      },
+      {
+        nome: "--color-sombra",
+        rotulo: "Cor da sombra",
+        dica: "o tingimento das sombras dos cartões e balões",
+        ligado: true,
+      },
+      {
+        nome: "--color-sobre-midia",
+        rotulo: "Escurecido sobre mídia",
+        dica: "os selos e botões que ficam por cima de gif, vídeo e banner",
+        ligado: true,
+      },
+      {
+        nome: "--color-palco",
+        rotulo: "Fundo do palco de voz",
+        dica: "a área de vídeo e transmissão, que era preta cravada",
+        ligado: true,
+      },
+      {
         nome: "--color-surface-0",
         rotulo: "Fundo mais profundo",
         dica: "ícones do trilho, faixa de título, campos e poços",
@@ -306,6 +330,17 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Texto",
     tokens: [
+      {
+        nome: "--color-sobre-marca",
+        rotulo: "Texto sobre cor forte",
+        dica: "o que fica em cima de botão colorido, de pílula, de selo",
+        ligado: true,
+      },
+      {
+        nome: "--color-palco-ink",
+        rotulo: "Texto sobre o palco de voz",
+        ligado: true,
+      },
       { nome: "--color-ink", rotulo: "Texto principal", ligado: true },
       { nome: "--color-ink-muted", rotulo: "Texto secundário", ligado: true },
       {
@@ -367,6 +402,12 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Status",
     tokens: [
+      {
+        nome: "--color-danger-fundo",
+        rotulo: "Fundo fraco de perigo",
+        dica: "o realce por trás de aviso e de mensagem que falhou",
+        ligado: true,
+      },
       { nome: "--color-online", rotulo: "Online", ligado: true },
       { nome: "--color-idle", rotulo: "Ausente", ligado: true },
       { nome: "--color-dnd", rotulo: "Não perturbe", ligado: true },
@@ -481,6 +522,18 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
   {
     titulo: "Bordas e foco",
     tokens: [
+      {
+        nome: "--color-line-sutil",
+        rotulo: "Borda quase invisível",
+        dica: "a divisão de dentro de cartão e de campo",
+        ligado: true,
+      },
+      {
+        nome: "--color-foco-anel",
+        rotulo: "Anel de foco",
+        dica: "o halo do que está selecionado ou em foco pelo teclado",
+        ligado: true,
+      },
       {
         nome: "--color-line",
         rotulo: "Borda",

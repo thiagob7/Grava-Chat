@@ -162,7 +162,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               />
               <div data-gc="servidor.channel-sidebar.div--3"
                 aria-hidden
-                className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/30 to-transparent"
+                className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-sobre-midia to-transparent"
               />
             </>
           )}
@@ -174,14 +174,14 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 className={cn(
                   "group/nome flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition",
                   comFaixa
-                    ? "hover:bg-black/35 data-[state=open]:bg-black/35"
+                    ? "hover:bg-sobre-midia data-[state=open]:bg-sobre-midia"
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
                 )}
               >
                 <h1 data-gc="servidor.channel-sidebar.h1"
                   className={cn(
                     "truncate font-semibold",
-                    comFaixa && "text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
+                    comFaixa && "text-sobre-marca [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
                   )}
                 >
                   {detail?.guild.name ?? "…"}
@@ -191,7 +191,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                   className={cn(
                     "shrink-0 transition-transform duration-150 group-data-[state=open]/nome:rotate-180",
                     comFaixa
-                      ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                      ? "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                       : "text-ink-muted",
                   )}
                 />
@@ -257,7 +257,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 className={cn(
                   "shrink-0 rounded-lg p-1.5 transition",
                   comFaixa
-                    ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-white/80"
+                    ? "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-sobre-marca/80"
                     : "text-ink-muted hover:text-ink",
                 )}
               >
@@ -420,7 +420,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     className={cn(
                                       "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
                                       mencoes > 0
-                                        ? "bg-danger text-white"
+                                        ? "bg-danger text-sobre-marca"
                                         : "bg-selecionado text-ink-muted",
                                     )}
                                   >

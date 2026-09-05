@@ -55,7 +55,7 @@ export const UserName: React.FC<UserNameProps> = ({
 };
 
 export const SeloDeApp: React.FC = () => (
-  <span data-gc="perfil.user-name.span--3" className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-white">
+  <span data-gc="perfil.user-name.span--3" className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-sobre-marca">
     app
   </span>
 );

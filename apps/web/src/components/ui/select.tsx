@@ -52,7 +52,7 @@ export const SelectContent = ({
     <SelectPrimitive.Content data-gc="ui.select.select-primitivecontent"
       position={position}
       className={cn(
-        "regiao-sem-arrasto z-[60] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-hidden rounded-lg border border-white/5 bg-surface-2 shadow-2xl",
+        "regiao-sem-arrasto z-[60] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-hidden rounded-lg border border-line-sutil bg-surface-2 shadow-2xl",
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         className,
       )}

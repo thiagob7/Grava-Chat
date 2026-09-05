@@ -159,7 +159,7 @@ const Grupo: React.FC<{
                 : "border-transparent hover:border-surface-4",
             )}
           >
-            <div data-gc="voz.seletor-de-tela.div--5" className="grid aspect-video place-items-center bg-black/40">
+            <div data-gc="voz.seletor-de-tela.div--5" className="grid aspect-video place-items-center bg-sobre-midia">
               {fonte.miniatura ? (
                 <img data-gc="voz.seletor-de-tela.img" src={fonte.miniatura} alt="" className="max-h-full max-w-full object-contain" />
               ) : (

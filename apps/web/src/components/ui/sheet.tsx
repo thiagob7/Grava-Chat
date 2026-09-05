@@ -17,7 +17,7 @@ export const SheetContent = ({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay data-gc="ui.sheet.dialog-primitiveoverlay" className="regiao-sem-arrasto fixed inset-0 z-50 bg-black/60" />
+    <DialogPrimitive.Overlay data-gc="ui.sheet.dialog-primitiveoverlay" className="regiao-sem-arrasto fixed inset-0 z-50 bg-veu" />
     <DialogPrimitive.Content data-gc="ui.sheet.dialog-primitivecontent"
       className={cn(
         "regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",

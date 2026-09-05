@@ -55,7 +55,7 @@ export const AdicionarBot: React.FC = () => {
 
         <h1 data-gc="bot.adicionar-bot.h1--2" className="mt-4 flex items-center gap-2 text-xl font-semibold">
           {bot.usuario.displayName}
-          <span data-gc="bot.adicionar-bot.span" className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
+          <span data-gc="bot.adicionar-bot.span" className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-sobre-marca">
             app
           </span>
         </h1>

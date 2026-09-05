@@ -29,7 +29,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         "pointer-events-none flex size-4 items-center justify-center rounded border transition",
         "border-ink-faint/60 bg-transparent",
         "peer-hover:border-ink-faint",
-        "peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white",
+        "peer-checked:border-brand peer-checked:bg-brand peer-checked:text-sobre-marca",
         "peer-focus-visible:ring-2 peer-focus-visible:ring-brand peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface-2",
         "peer-disabled:opacity-40",
         "[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100",

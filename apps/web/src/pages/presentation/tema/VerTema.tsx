@@ -52,7 +52,7 @@ export const VerTema: React.FC = () => {
     <div data-gc="tema.ver-tema.div--4" className="flex h-full items-center justify-center overflow-y-auto bg-surface-0 p-6">
       <article data-gc="tema.ver-tema.article" className="w-full max-w-md rounded-xl border border-line bg-surface-2 p-6">
         <div data-gc="tema.ver-tema.div--5" className="flex items-center gap-3">
-          <span data-gc="tema.ver-tema.span" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+          <span data-gc="tema.ver-tema.span" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca">
             <Palette data-gc="tema.ver-tema.palette--2" size={24} />
           </span>
 

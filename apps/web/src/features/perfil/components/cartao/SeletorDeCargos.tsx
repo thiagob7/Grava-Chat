@@ -86,7 +86,7 @@ export const SeletorDeCargos: React.FC<SeletorDeCargosProps> = ({
               onClick={() => onAlternar(cargo.id)}
               className={cn(
                 "flex w-full cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-left text-sm text-ink-muted outline-none transition",
-                "hover:bg-brand hover:text-white focus-visible:bg-brand focus-visible:text-white",
+                "hover:bg-brand hover:text-sobre-marca focus-visible:bg-brand focus-visible:text-sobre-marca",
                 "disabled:cursor-default disabled:opacity-50",
               )}
             >

@@ -225,7 +225,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
                 <span data-gc="conversa.previa-de-texto.span"
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded border transition",
-                    quebrar ? "border-brand bg-brand text-white" : "border-ink-faint",
+                    quebrar ? "border-brand bg-brand text-sobre-marca" : "border-ink-faint",
                   )}
                 >
                   {quebrar && <Check data-gc="conversa.previa-de-texto.check--2" size={11} strokeWidth={3} />}
@@ -300,7 +300,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
                   <span data-gc="conversa.previa-de-texto.span--2"
                     className={cn(
                       "flex size-4 shrink-0 items-center justify-center rounded border transition",
-                      quebrar ? "border-brand bg-brand text-white" : "border-ink-faint",
+                      quebrar ? "border-brand bg-brand text-sobre-marca" : "border-ink-faint",
                     )}
                   >
                     {quebrar && <Check data-gc="conversa.previa-de-texto.check--4" size={11} strokeWidth={3} />}

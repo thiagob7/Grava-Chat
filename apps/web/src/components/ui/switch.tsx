@@ -18,6 +18,6 @@ export const Switch = ({
     {...flxAttr("chave")}
     {...props}
   >
-    <SwitchPrimitive.Thumb data-gc="ui.switch.switch-primitivethumb" className="pointer-events-none block size-5 rounded-full bg-white shadow transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+    <SwitchPrimitive.Thumb data-gc="ui.switch.switch-primitivethumb" className="pointer-events-none block size-5 rounded-full bg-sobre-marca shadow transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
   </SwitchPrimitive.Root>
 );

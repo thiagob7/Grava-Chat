@@ -139,8 +139,8 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               size={56}
             />
 
-            <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span" className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition group-hover:opacity-100">
-              <Upload data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.upload" size={16} className="text-white" />
+            <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span" className="absolute inset-0 flex items-center justify-center rounded-full bg-sobre-midia opacity-0 transition group-hover:opacity-100">
+              <Upload data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.upload" size={16} className="text-sobre-marca" />
             </span>
           </button>
 
@@ -157,7 +157,7 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span--2" className="truncate text-lg font-semibold">
                 {bot.usuario.displayName}
               </span>
-              <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span--3" className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
+              <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span--3" className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-sobre-marca">
                 app
               </span>
             </p>

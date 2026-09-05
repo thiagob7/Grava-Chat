@@ -86,7 +86,7 @@ const CartaoDeEscolha: React.FC<{
     onClick={onClick}
     className="flex flex-col items-center gap-2 rounded-lg border border-line bg-surface-1 p-5 text-center transition hover:border-brand hover:bg-surface-3"
   >
-    <span data-gc="servidor.adicionar-servidor-modal.span" className="flex size-11 items-center justify-center rounded-full bg-brand text-white">
+    <span data-gc="servidor.adicionar-servidor-modal.span" className="flex size-11 items-center justify-center rounded-full bg-brand text-sobre-marca">
       {icone}
     </span>
     <span data-gc="servidor.adicionar-servidor-modal.span--2" className="text-sm font-semibold">{titulo}</span>

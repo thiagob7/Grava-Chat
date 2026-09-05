@@ -21,11 +21,11 @@ export const Textarea = ({ className, ...props }: React.ComponentProps<"textarea
 );
 
 export const campoDeCor =
-  "shrink-0 cursor-pointer rounded-lg border border-white/5 bg-campo p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "shrink-0 cursor-pointer rounded-lg border border-line-sutil bg-campo p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export const grupoDeCampo =
   `${flxCls("grupoDeCampo")} ` +
-  "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition focus-within:border-ink-faint/40";
+  "flex h-10 items-center gap-2 rounded-lg border border-line-sutil bg-campo px-3 transition focus-within:border-ink-faint/40";
 
 export const campoNu =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
@@ -49,7 +49,7 @@ export const cartaoDeEscolha = (escolhido: boolean) =>
     "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",
     escolhido
       ? "border-brand bg-brand/10 text-ink"
-      : "border-white/5 bg-campo hover:border-white/10 hover:bg-surface-3/60",
+      : "border-line-sutil bg-campo hover:border-line-sutil hover:bg-surface-3/60",
   );
 
 export const Label = ({ className, ...props }: React.ComponentProps<"label">) => (
@@ -112,7 +112,7 @@ export function GrupoSegmentado<T extends string>({
             "h-10 flex-1 rounded-lg border text-sm transition-colors",
             valor === o.valor
               ? "border-brand bg-brand/10 text-ink"
-              : "border-white/5 bg-campo text-ink-muted hover:border-white/10 hover:text-ink",
+              : "border-line-sutil bg-campo text-ink-muted hover:border-line-sutil hover:text-ink",
           )}
         >
           {o.rotulo}

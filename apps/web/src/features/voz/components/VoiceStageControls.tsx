@@ -98,7 +98,7 @@ export const VoiceStageControls: React.FC<{
             onClick={alternarChatDaChamada}
             aria-label={chatDaChamada ? "Esconder o chat" : "Mostrar o chat"}
             aria-pressed={chatDaChamada}
-            className="pointer-events-auto flex size-10 items-center justify-center rounded-full bg-surface-0/95 text-ink-muted shadow-lg ring-1 ring-black/30 backdrop-blur transition hover:text-ink"
+            className="pointer-events-auto flex size-10 items-center justify-center rounded-full bg-surface-0/95 text-ink-muted shadow-lg ring-1 ring-line-sutil backdrop-blur transition hover:text-ink"
           >
             <MessageSquare data-gc="voz.voice-stage-controls.message-square" size={18} />
           </button>
@@ -106,7 +106,7 @@ export const VoiceStageControls: React.FC<{
         )}
       </div>
 
-      <div data-gc="voz.voice-stage-controls.div--3" className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-black/30 backdrop-blur">
+      <div data-gc="voz.voice-stage-controls.div--3" className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-line-sutil backdrop-blur">
         <Controle data-gc="voz.voice-stage-controls.controle.ao-alternar-menu"
           onOpenChange={aoAlternarMenu}
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
@@ -294,13 +294,13 @@ export const VoiceStageControls: React.FC<{
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <span data-gc="voz.voice-stage-controls.span" className="mx-0.5 h-6 w-px bg-white/10" aria-hidden />
+        <span data-gc="voz.voice-stage-controls.span" className="mx-0.5 h-6 w-px bg-palco-ink/10" aria-hidden />
 
         <Tooltip data-gc="voz.voice-stage-controls.tooltip--3" label={t("chamada.sairDaVoz")}>
           <button data-gc="voz.voice-stage-controls.button--2"
             onClick={() => void leave()}
             aria-label={t("chamada.sairDaVoz")}
-            className="flex size-10 items-center justify-center rounded-full bg-danger text-white transition hover:brightness-110"
+            className="flex size-10 items-center justify-center rounded-full bg-danger text-palco-ink transition hover:brightness-110"
           >
             <PhoneOff data-gc="voz.voice-stage-controls.phone-off" size={18} />
           </button>

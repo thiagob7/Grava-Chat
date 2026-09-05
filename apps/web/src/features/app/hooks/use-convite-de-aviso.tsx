@@ -37,7 +37,7 @@ export function useConviteDeAviso(ativo: boolean) {
                   void pedirPermissaoDeAviso();
                   closeToast?.();
                 }}
-                className="rounded bg-brand px-2.5 py-1 text-xs font-semibold text-white"
+                className="rounded bg-brand px-2.5 py-1 text-xs font-semibold text-sobre-marca"
               >
                 Permitir
               </button>

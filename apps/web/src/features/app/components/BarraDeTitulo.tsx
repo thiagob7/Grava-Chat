@@ -23,7 +23,7 @@ export const BarraDeTitulo: React.FC = () => {
             ) : (
               <span data-gc="app.barra-de-titulo.span--2"
                 aria-hidden
-                className="flex size-4 shrink-0 items-center justify-center rounded text-10 font-bold text-white"
+                className="flex size-4 shrink-0 items-center justify-center rounded text-10 font-bold text-sobre-marca"
                 style={{ backgroundColor: avatarColor(atual.id) }}
               >
                 {initials(atual.name)}

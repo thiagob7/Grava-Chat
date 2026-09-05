@@ -11,8 +11,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-brand text-ink hover:bg-brand-hover",
-        success: "bg-online text-white hover:brightness-110",
-        danger: "bg-danger text-white hover:brightness-110",
+        success: "bg-online text-sobre-marca hover:brightness-110",
+        danger: "bg-danger text-sobre-marca hover:brightness-110",
         surface: cn(
           "bg-surface-3 text-ink-muted hover:bg-surface-4 hover:text-ink",
           flxCls("botaoSecundario"),

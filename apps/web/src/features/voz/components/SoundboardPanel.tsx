@@ -113,7 +113,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Encontre o som perfeito"
-              className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-white/15 focus-visible:ring-0"
+              className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
             />
           </div>
 

@@ -17,7 +17,7 @@ export const DialogContent = ({
   <DialogPrimitive.Portal>
     <DialogPrimitive.Overlay data-gc="ui.dialog.dialog-primitiveoverlay"
       className={cn(
-        "regiao-sem-arrasto fixed inset-0 z-50 bg-black/35 backdrop-blur-[3px]",
+        "regiao-sem-arrasto fixed inset-0 z-50 bg-veu backdrop-blur-[3px]",
         flxCls("fundoDaJanela"),
       )}
     />

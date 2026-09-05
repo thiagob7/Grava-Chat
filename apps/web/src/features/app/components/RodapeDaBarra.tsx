@@ -92,7 +92,7 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
       <div data-gc="app.rodape-da-barra.div--2"
         {...flx(
           "cartaoDoUsuario",
-          "mx-2 rounded-lg bg-painel p-2 shadow-lg shadow-black/30 [--gc-recorte:var(--color-painel)]",
+          "mx-2 rounded-lg bg-painel p-2 shadow-lg shadow-sombra [--gc-recorte:var(--color-painel)]",
         )}
       >
         <VoicePanel data-gc="app.rodape-da-barra.voice-panel" accountChannelId={accountChannelId} />

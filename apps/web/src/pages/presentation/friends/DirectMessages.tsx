@@ -206,7 +206,7 @@ export const DirectMessages: React.FC = () => {
                   className={cn(
                     "flex size-8 items-center justify-center rounded-full transition",
                     emChamadaAqui
-                      ? "bg-danger text-white hover:brightness-110"
+                      ? "bg-danger text-sobre-marca hover:brightness-110"
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                   )}
                 >
@@ -357,7 +357,7 @@ const Chamando: React.FC<{
 
       <button data-gc="friends.direct-messages.button.on-desistir"
         onClick={onDesistir}
-        className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+        className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-sobre-marca transition hover:brightness-110"
       >
         <PhoneSlash data-gc="friends.direct-messages.phone-slash--2" size={15} weight="fill" /> Cancelar
       </button>

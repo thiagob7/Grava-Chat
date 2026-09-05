@@ -135,7 +135,7 @@ export const AppearanceSection: React.FC = () => {
               </span>
 
               {prefs.tema === tema.id && (
-                <span data-gc="configuracoes.appearance-section.span--5" className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-brand text-white">
+                <span data-gc="configuracoes.appearance-section.span--5" className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-brand text-sobre-marca">
                   <Check data-gc="configuracoes.appearance-section.check" size={12} />
                 </span>
               )}
@@ -185,7 +185,7 @@ export const AppearanceSection: React.FC = () => {
                 aria-pressed={escolhida}
                 style={{ backgroundColor: cor.valor }}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-full text-white transition hover:scale-110",
+                  "flex size-8 items-center justify-center rounded-full text-sobre-marca transition hover:scale-110",
                   escolhida &&
                     "ring-2 ring-ink ring-offset-2 ring-offset-surface-2",
                 )}

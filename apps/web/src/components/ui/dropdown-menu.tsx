@@ -36,8 +36,8 @@ export const DropdownMenuItem = ({ className, danger, ...props }: ItemProps) => 
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm outline-none transition",
       danger
-        ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-white"
-        : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-white",
+        ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-sobre-marca"
+        : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
       className,
     )}
     {...props}
@@ -64,7 +64,7 @@ export const DropdownMenuRadioItem = ({
   <DropdownPrimitive.RadioItem data-gc="ui.dropdown-menu.dropdown-primitiveradio-item"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca data-[state=checked]:text-ink",
       className,
     )}
     {...props}
@@ -87,7 +87,7 @@ export const DropdownMenuCheckboxItem = ({
   <DropdownPrimitive.CheckboxItem data-gc="ui.dropdown-menu.dropdown-primitivecheckbox-item"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=checked]:text-ink",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca data-[state=checked]:text-ink",
       className,
     )}
     {...props}
@@ -119,7 +119,7 @@ export const DropdownMenuSubTrigger = ({
   <DropdownPrimitive.SubTrigger data-gc="ui.dropdown-menu.dropdown-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      "data-[highlighted]:bg-brand data-[highlighted]:text-white data-[state=open]:bg-surface-3",
+      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca data-[state=open]:bg-surface-3",
       className,
     )}
     {...props}

@@ -254,7 +254,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                       cor === c && "ring-2 ring-ink",
                     )}
                   >
-                    {cor === c && <Check data-gc="servidor.server-settings.role-editor.check" size={14} className="text-white" />}
+                    {cor === c && <Check data-gc="servidor.server-settings.role-editor.check" size={14} className="text-sobre-marca" />}
                   </button>
                 ))}
 

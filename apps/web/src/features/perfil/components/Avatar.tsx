@@ -88,7 +88,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         />
       ) : (
         <div data-gc="perfil.avatar.div--2"
-          className="flex size-full select-none items-center justify-center rounded-full font-semibold text-white"
+          className="flex size-full select-none items-center justify-center rounded-full font-semibold text-sobre-marca"
           style={{ ...furo(0), backgroundColor: avatarColor(id), fontSize: size * 0.38 }}
           aria-label={name}
         >

@@ -326,9 +326,9 @@ const BotaoEstado: React.FC<BotaoEstadoProps> = ({
       "flex size-8 items-center justify-center transition disabled:cursor-not-allowed",
       ativo
         ? cor === "danger"
-          ? "bg-danger text-white"
+          ? "bg-danger text-sobre-marca"
           : cor === "online"
-            ? "bg-online text-white"
+            ? "bg-online text-sobre-marca"
             : "bg-surface-4 text-ink"
         : "text-ink-faint hover:bg-surface-3 hover:text-ink",
     )}

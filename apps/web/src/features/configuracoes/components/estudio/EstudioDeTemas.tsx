@@ -168,7 +168,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Pesquisar tokens"
-            className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-white/15 focus-visible:ring-0"
+            className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
           />
         </div>
 
@@ -278,7 +278,7 @@ const LinhaDeToken: React.FC<{
                 repeating-conic-gradient(rgb(255 255 255 / 0.14) 0 25%, transparent 0 50%)`,
               backgroundSize: "auto, 8px 8px",
             }}
-            className="size-7 shrink-0 cursor-pointer rounded-md border border-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="size-7 shrink-0 cursor-pointer rounded-md border border-line-sutil disabled:cursor-not-allowed disabled:opacity-40"
           />
         </PopoverTrigger>
 

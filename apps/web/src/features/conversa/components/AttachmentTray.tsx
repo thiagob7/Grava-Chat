@@ -94,7 +94,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                 onClick={() => onRemove(item.id)}
                 aria-label={t("conversa.anexos.remover", { arquivo: item.filename })}
                 title={t("conversa.anexos.remover", { arquivo: item.filename })}
-                className="flex size-6 items-center justify-center rounded text-danger transition hover:bg-danger hover:text-white"
+                className="flex size-6 items-center justify-center rounded text-danger transition hover:bg-danger hover:text-sobre-marca"
               >
                 <Trash2 data-gc="conversa.attachment-tray.trash2" size={14} />
               </button>

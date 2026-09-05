@@ -71,7 +71,7 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
           />
         ) : (
           <span data-gc="servidor.cartao-de-convite.span"
-            className="flex size-12 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white"
+            className="flex size-12 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-sobre-marca"
             style={{ backgroundColor: avatarColor(guild.id) }}
           >
             {initials(guild.name)}

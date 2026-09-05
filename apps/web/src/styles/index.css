@@ -51,6 +51,24 @@
   --color-hover: rgb(255 255 255 / 0.05);
   --color-pilula: #f4f4f6;
 
+  /*
+    Os tokens que faltavam para o tema alcançar o app inteiro.
+
+    Cada um nasceu de uma contagem: `text-white` sobre botão colorido aparecia
+    76 vezes, o véu preto dos modais 27, a borda branca sutil 20, o fundo fraco
+    de perigo 13, o anel de foco 12. Eram todos cor crava, fora do alcance de
+    qualquer tema — e é por isso que trocar de tema quase não mudava nada.
+  */
+  --color-sobre-marca: #ffffff;
+  --color-veu: rgb(0 0 0 / 0.6);
+  --color-line-sutil: rgb(255 255 255 / 0.08);
+  --color-danger-fundo: rgb(229 55 52 / 0.12);
+  --color-foco-anel: rgb(65 60 221 / 0.6);
+  --color-palco: #0a0a0c;
+  --color-sobre-midia: rgb(0 0 0 / 0.6);
+  --color-sombra: rgb(0 0 0 / 0.32);
+  --color-palco-ink: #f4f4f6;
+
   --text-10: 0.625rem;
   --text-10--line-height: 0.75rem;
   --text-11: 0.6875rem;
@@ -82,6 +100,16 @@
 }
 
 :root[data-tema="mais-escuro"] {
+
+  --color-sobre-marca: #ffffff;
+  --color-veu: rgb(0 0 0 / 0.72);
+  --color-line-sutil: rgb(255 255 255 / 0.06);
+  --color-danger-fundo: rgb(229 55 52 / 0.14);
+  --color-foco-anel: rgb(65 60 221 / 0.6);
+  --color-palco: #000000;
+  --color-sobre-midia: rgb(0 0 0 / 0.66);
+  --color-sombra: rgb(0 0 0 / 0.4);
+  --color-palco-ink: #f4f4f6;
   --color-surface-0: #020203;
   --color-surface-1: #020203;
   --color-surface-2: #020203;
@@ -120,6 +148,16 @@
 }
 
 :root[data-tema="gravae"] {
+
+  --color-sobre-marca: #ffffff;
+  --color-veu: rgb(0 0 0 / 0.66);
+  --color-line-sutil: rgb(255 255 255 / 0.08);
+  --color-danger-fundo: rgb(229 55 52 / 0.14);
+  --color-foco-anel: rgb(211 4 4 / 0.6);
+  --color-palco: #0b0709;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.36);
+  --color-palco-ink: #f4f4f6;
   --color-surface-0: #0b0708;
   --color-surface-1: #120c0d;
   --color-surface-2: #171011;
@@ -165,6 +203,16 @@
 
 :root[data-tema="claro"],
 :root[data-tema="sistema"] {
+
+  --color-sobre-marca: #ffffff;
+  --color-veu: rgb(23 25 28 / 0.45);
+  --color-line-sutil: rgb(23 25 28 / 0.08);
+  --color-danger-fundo: rgb(229 55 52 / 0.1);
+  --color-foco-anel: rgb(65 60 221 / 0.5);
+  --color-palco: #22252a;
+  --color-sobre-midia: rgb(0 0 0 / 0.55);
+  --color-sombra: rgb(0 0 0 / 0.18);
+  --color-palco-ink: #f4f4f6;
   --color-surface-0: #ebecef;
   --color-surface-1: #ebecef;
   --color-surface-2: #f0f1f3;
@@ -205,6 +253,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
+    --color-sobre-marca: #ffffff;
+    --color-veu: rgb(0 0 0 / 0.6);
+    --color-line-sutil: rgb(255 255 255 / 0.08);
+    --color-danger-fundo: rgb(229 55 52 / 0.12);
+    --color-foco-anel: rgb(65 60 221 / 0.6);
+    --color-palco: #0a0a0c;
+    --color-sobre-midia: rgb(0 0 0 / 0.6);
+    --color-sombra: rgb(0 0 0 / 0.32);
+    --color-palco-ink: #f4f4f6;
     color-scheme: dark;
     --color-surface-0: #1a181e;
     --color-surface-1: #1a181e;

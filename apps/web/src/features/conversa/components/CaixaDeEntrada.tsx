@@ -127,7 +127,7 @@ const NaoLidas: React.FC<{
           </span>
 
           {estado.mentionCount > 0 && (
-            <span data-gc="conversa.caixa-de-entrada.span--4" className="shrink-0 rounded-full bg-danger px-1.5 text-xs font-semibold text-white">
+            <span data-gc="conversa.caixa-de-entrada.span--4" className="shrink-0 rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
               {estado.mentionCount}
             </span>
           )}

@@ -94,7 +94,7 @@ export const AutorizarApp: React.FC = () => {
 
       <h1 data-gc="bot.autorizar-app.h1--2" className="mt-4 text-center text-lg">
         <span data-gc="bot.autorizar-app.span--2" className="font-semibold">{bot.usuario.displayName}</span>{" "}
-        <span data-gc="bot.autorizar-app.span--3" className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-white">
+        <span data-gc="bot.autorizar-app.span--3" className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-sobre-marca">
           app
         </span>
         <span data-gc="bot.autorizar-app.span--4" className="mt-1 block text-sm text-ink-muted">quer acessar sua conta</span>
