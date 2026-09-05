@@ -18,6 +18,8 @@ import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
 import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
 import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
+import { Explorar } from "~/pages/presentation/descoberta/Explorar";
+import { VerTema } from "~/pages/presentation/tema/VerTema";
 import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
 
@@ -65,6 +67,22 @@ export const AppRoutes: React.FC = () => {
         element={
           <Protected>
             <DirectMessages />
+          </Protected>
+        }
+      />
+      <Route
+        path="/tema/:temaId"
+        element={
+          <Protected>
+            <VerTema />
+          </Protected>
+        }
+      />
+      <Route
+        path="/explorar"
+        element={
+          <Protected>
+            <Explorar />
           </Protected>
         }
       />

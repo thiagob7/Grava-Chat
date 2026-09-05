@@ -84,6 +84,16 @@ export const queryKeys = {
       ["buscar-mensagens", guildId, termo, canalId, autorId] as const,
   },
 
+  tema: {
+    meus: "meus-temas",
+    find: (temaId: string) => ["find-tema", temaId] as const,
+  },
+
+  descoberta: {
+    comunidades: (categoria: string, busca: string) =>
+      ["descobrir-comunidades", categoria, busca] as const,
+  },
+
   bot: {
     find_many: "find-bots",
     invite: (botId: string) => ["find-bot-invite", botId] as const,
