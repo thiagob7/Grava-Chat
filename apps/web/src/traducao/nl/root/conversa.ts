@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "Je bericht is te lang…",
     longaDescricao: "Je hebt de limiet van {{limite}} tekens bereikt. Stuur het als bestand.",
     enviarComoArquivo: "Als bestand versturen",
+    arquivoGrandeTitulo: "Dit bestand is te groot",
+    arquivoGrandeDescricao: "“{{arquivo}}” gaat over de limiet van {{limite}} MB per bestand.",
     respondendoPara: "Antwoord aan",
     vaiNotificar: "De persoon krijgt een melding",
     naoVaiNotificar: "De persoon krijgt geen melding",

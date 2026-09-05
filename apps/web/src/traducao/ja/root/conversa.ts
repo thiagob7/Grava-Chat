@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "メッセージが長すぎます…",
     longaDescricao: "{{limite}} 文字の上限に達しました。ファイルとして送れます。",
     enviarComoArquivo: "ファイルとして送信",
+    arquivoGrandeTitulo: "ファイルが大きすぎます",
+    arquivoGrandeDescricao: "「{{arquivo}}」は 1 ファイル {{limite}} MB の上限を超えています。",
     respondendoPara: "返信先",
     vaiNotificar: "相手に通知されます",
     naoVaiNotificar: "相手に通知されません",

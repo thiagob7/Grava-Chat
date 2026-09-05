@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "Tin nhắn của bạn quá dài…",
     longaDescricao: "Bạn đã chạm giới hạn {{limite}} ký tự. Có thể gửi dưới dạng tệp.",
     enviarComoArquivo: "Gửi dưới dạng tệp",
+    arquivoGrandeTitulo: "Tệp quá lớn",
+    arquivoGrandeDescricao: "“{{arquivo}}” vượt giới hạn {{limite}} MB mỗi tệp.",
     respondendoPara: "Trả lời",
     vaiNotificar: "Người đó sẽ nhận được thông báo",
     naoVaiNotificar: "Người đó sẽ không nhận được thông báo",

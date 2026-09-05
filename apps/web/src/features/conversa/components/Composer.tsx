@@ -40,14 +40,11 @@ import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { Button } from "~/components/ui/button";
+import { ModalIlustrado } from "~/components/ui/modal-ilustrado";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
+  ArteDeArquivoGrande,
+  ArteDeTextoLongo,
+} from "~/features/conversa/components/artes/ArteDeLimite";
 import { adivinharLingua, cercarCodigo, pareceCodigo } from "~/features/conversa/lib/codigo";
 
 /// A extensão que o texto colado ganha ao virar arquivo.
@@ -346,26 +343,34 @@ export const Composer: React.FC<ComposerProps> = ({
 
   return (
     <div className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
-      <Dialog open={Boolean(textoLongo)} onOpenChange={() => setTextoLongo(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("conversa.caixa.longaTitulo")}</DialogTitle>
-            <DialogDescription>
-              {t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
-            </DialogDescription>
-          </DialogHeader>
+      <ModalIlustrado
+        aberto={Boolean(textoLongo)}
+        onFechar={() => setTextoLongo(null)}
+        arte={<ArteDeTextoLongo />}
+        titulo={t("conversa.caixa.longaTitulo")}
+        descricao={t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
+      >
+        <Button onClick={mandarComoArquivo}>
+          <Paperclip size={16} /> {t("conversa.caixa.enviarComoArquivo")}
+        </Button>
 
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setTextoLongo(null)}>
-              {t("comum.cancelar")}
-            </Button>
+        <Button variant="ghost" onClick={() => setTextoLongo(null)}>
+          {t("comum.cancelar")}
+        </Button>
+      </ModalIlustrado>
 
-            <Button onClick={mandarComoArquivo}>
-              <Paperclip size={16} /> {t("conversa.caixa.enviarComoArquivo")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ModalIlustrado
+        aberto={Boolean(anexos.grandeDemais)}
+        onFechar={anexos.esquecerGrandeDemais}
+        arte={<ArteDeArquivoGrande />}
+        titulo={t("conversa.caixa.arquivoGrandeTitulo")}
+        descricao={t("conversa.caixa.arquivoGrandeDescricao", {
+          arquivo: anexos.grandeDemais ?? "",
+          limite: Math.round(LIMITS.attachmentBytes / (1024 * 1024)),
+        })}
+      >
+        <Button onClick={anexos.esquecerGrandeDemais}>{t("comum.fechar")}</Button>
+      </ModalIlustrado>
       {faltam > 0 && (
         <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
           <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">

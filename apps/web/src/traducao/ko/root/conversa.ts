@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "메시지가 너무 깁니다…",
     longaDescricao: "{{limite}}자 제한에 도달했습니다. 파일로 보낼 수 있습니다.",
     enviarComoArquivo: "파일로 보내기",
+    arquivoGrandeTitulo: "파일이 너무 큽니다",
+    arquivoGrandeDescricao: "“{{arquivo}}”은(는) 파일당 {{limite}}MB 제한을 넘습니다.",
     respondendoPara: "답장 대상",
     vaiNotificar: "상대에게 알림이 갑니다",
     naoVaiNotificar: "상대에게 알림이 가지 않습니다",

@@ -52,6 +52,8 @@ export function useAttachments() {
     [],
   );
 
+  const [grandeDemais, setGrandeDemais] = useState<string | null>(null);
+
   const add = useCallback(
     async (files: File[]) => {
       const espaco = LIMITS.attachmentsPerMessage - items.length;
@@ -68,7 +70,8 @@ export function useAttachments() {
 
       for (const file of aceitos) {
         if (file.size > LIMITS.attachmentBytes) {
-          toast.error(`"${file.name}" passa do limite de 50 MB.`);
+          /// Quem recusa aqui não sabe desenhar modal — só avisa quem sabe.
+          setGrandeDemais(file.name);
           continue;
         }
 
@@ -127,6 +130,8 @@ export function useAttachments() {
 
   return {
     items,
+    grandeDemais,
+    esquecerGrandeDemais: () => setGrandeDemais(null),
     add,
     remove,
     clear,

@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "ข้อความยาวเกินไป…",
     longaDescricao: "ถึงขีดจำกัด {{limite}} ตัวอักษรแล้ว ส่งเป็นไฟล์แทนได้",
     enviarComoArquivo: "ส่งเป็นไฟล์",
+    arquivoGrandeTitulo: "ไฟล์ใหญ่เกินไป",
+    arquivoGrandeDescricao: "“{{arquivo}}” เกินขีดจำกัด {{limite}} MB ต่อไฟล์",
     respondendoPara: "ตอบกลับถึง",
     vaiNotificar: "อีกฝ่ายจะได้รับการแจ้งเตือน",
     naoVaiNotificar: "อีกฝ่ายจะไม่ได้รับการแจ้งเตือน",

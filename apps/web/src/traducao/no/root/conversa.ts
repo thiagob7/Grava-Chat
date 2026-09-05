@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "Meldingen din er for lang…",
     longaDescricao: "Du har nådd grensen på {{limite}} tegn. Du kan sende den som fil.",
     enviarComoArquivo: "Send som fil",
+    arquivoGrandeTitulo: "Filen er for stor",
+    arquivoGrandeDescricao: "«{{arquivo}}» overskrider grensen på {{limite}} MB per fil.",
     respondendoPara: "Svar til",
     vaiNotificar: "Personen får varsel",
     naoVaiNotificar: "Personen får ikke varsel",

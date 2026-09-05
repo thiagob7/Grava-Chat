@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "Zpráva je příliš dlouhá…",
     longaDescricao: "Dosáhl jsi limitu {{limite}} znaků. Můžeš ji poslat jako soubor.",
     enviarComoArquivo: "Poslat jako soubor",
+    arquivoGrandeTitulo: "Soubor je příliš velký",
+    arquivoGrandeDescricao: "„{{arquivo}}“ překračuje limit {{limite}} MB na soubor.",
     respondendoPara: "Odpověď pro",
     vaiNotificar: "Dostane upozornění",
     naoVaiNotificar: "Upozornění nedostane",

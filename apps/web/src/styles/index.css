@@ -599,3 +599,15 @@ body[data-scroll-locked] .regiao-de-arrasto {
 .hljs-strong {
   font-weight: 600;
 }
+
+/* A flutuação das artes de modal. Discreta de propósito: chama o olho sem
+   competir com o texto que está pedindo uma decisão. */
+@keyframes flutuar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}

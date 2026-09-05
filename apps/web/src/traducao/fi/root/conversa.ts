@@ -95,6 +95,8 @@ export const conversa = {
     longaTitulo: "Viestisi on liian pitkä…",
     longaDescricao: "Saavutit {{limite}} merkin rajan. Voit lähettää sen tiedostona.",
     enviarComoArquivo: "Lähetä tiedostona",
+    arquivoGrandeTitulo: "Tiedosto on liian suuri",
+    arquivoGrandeDescricao: "”{{arquivo}}” ylittää {{limite}} Mt:n tiedostorajan.",
     respondendoPara: "Vastaus käyttäjälle",
     vaiNotificar: "Henkilö saa ilmoituksen",
     naoVaiNotificar: "Henkilö ei saa ilmoitusta",
