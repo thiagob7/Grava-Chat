@@ -44,6 +44,11 @@ export const Rodape = () => (
         <h3 className="text-sm font-semibold">Ajuda</h3>
         <ul className="mt-3 space-y-2 text-sm text-ink-muted">
           <li>
+            <Link href="/ajuda" className="transition hover:text-ink">
+              Perguntas frequentes
+            </Link>
+          </li>
+          <li>
             <a
               href={`${REPO}/issues/new`}
               target="_blank"

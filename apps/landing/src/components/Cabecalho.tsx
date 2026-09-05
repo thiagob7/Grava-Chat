@@ -20,6 +20,9 @@ export const Cabecalho = () => (
         <a href="#recursos" className="transition hover:text-ink">
           O que ele faz
         </a>
+        <Link href="/ajuda" className="transition hover:text-ink">
+          Ajuda
+        </Link>
         <Link href="/desenvolvedores" className="transition hover:text-ink">
           Desenvolvedores
         </Link>
