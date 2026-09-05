@@ -55,6 +55,25 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--status-idle": ["--color-idle"],
   "--status-dnd": ["--color-dnd"],
 
+  /*
+    Estes saíram de uma contagem no código deles: são as variáveis que os
+    componentes mais consomem e que a ponte não traduzia. Um tema que mexe
+    nelas mexia em tudo lá e em nada aqui — juntas, dão conta de umas 330
+    aparições na interface deles.
+  */
+  "--brand-primary-light": ["--color-brand-hover"],
+  "--surface-interactive-hover-bg": ["--color-hover"],
+  "--settings-hover-background": ["--color-hover"],
+  "--surface-interactive-selected-bg": ["--color-selecionado"],
+  "--surface-interactive-selected-color": ["--color-ink"],
+  "--text-tertiary-muted": ["--color-ink-faint"],
+  "--text-chat-muted": ["--color-ink-muted"],
+  "--voice-text-strong": ["--color-ink"],
+  "--user-area-divider-color": ["--color-divisor"],
+  "--settings-border-color": ["--color-line"],
+  "--settings-surface-background": ["--color-surface-2"],
+  "--background-modifier-accent-focus": ["--color-campo-foco"],
+
   "--code-block-bg": ["--color-codigo-bloco"],
   "--code-inline-bg": ["--color-codigo"],
   "--scrollbar-thumb-bg": ["--color-trilho"],
