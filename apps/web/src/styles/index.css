@@ -67,6 +67,7 @@
   --color-palco: #0a0a0c;
   --color-sobre-midia: rgb(0 0 0 / 0.6);
   --color-sombra: rgb(0 0 0 / 0.32);
+  --color-brilho: rgb(255 255 255 / 0.35);
   --color-palco-ink: #f4f4f6;
 
   --text-10: 0.625rem;
@@ -109,6 +110,7 @@
   --color-palco: #000000;
   --color-sobre-midia: rgb(0 0 0 / 0.66);
   --color-sombra: rgb(0 0 0 / 0.4);
+  --color-brilho: rgb(255 255 255 / 0.3);
   --color-palco-ink: #f4f4f6;
   --color-surface-0: #020203;
   --color-surface-1: #020203;
@@ -157,6 +159,7 @@
   --color-palco: #0b0709;
   --color-sobre-midia: rgb(0 0 0 / 0.62);
   --color-sombra: rgb(0 0 0 / 0.36);
+  --color-brilho: rgb(255 255 255 / 0.32);
   --color-palco-ink: #f4f4f6;
   --color-surface-0: #0b0708;
   --color-surface-1: #120c0d;
@@ -212,6 +215,7 @@
   --color-palco: #22252a;
   --color-sobre-midia: rgb(0 0 0 / 0.55);
   --color-sombra: rgb(0 0 0 / 0.18);
+  --color-brilho: rgb(23 25 28 / 0.28);
   --color-palco-ink: #f4f4f6;
   --color-surface-0: #ebecef;
   --color-surface-1: #ebecef;
@@ -261,6 +265,7 @@
     --color-palco: #0a0a0c;
     --color-sobre-midia: rgb(0 0 0 / 0.6);
     --color-sombra: rgb(0 0 0 / 0.32);
+    --color-brilho: rgb(255 255 255 / 0.35);
     --color-palco-ink: #f4f4f6;
     color-scheme: dark;
     --color-surface-0: #1a181e;

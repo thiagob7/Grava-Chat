@@ -1,3 +1,20 @@
+/*
+  Os enfeites de perfil.
+
+  Regra de cor deste arquivo, e vale a pena escrever porque não é óbvia:
+
+  - O que é SUPERFÍCIE sai de token — o vidro, o verniz, o texto sobre a placa.
+    Um tema claro precisa poder trocar isso, senão o vidro branco some no
+    fundo branco.
+
+  - O que é ARTE fica cravado. "Aurora" é verde e roxo, "chamas" é laranja e
+    vermelho: essas cores são o enfeite, não o tema. Deixar um tema repintá-las
+    apagaria justamente o que a pessoa escolheu.
+
+  - O preto dentro de `mask` NÃO é cor. Ali preto significa opaco e branco
+    significa transparente; trocar por token quebra o recorte.
+*/
+
 .gc-fonte {
   font-family: var(--gc-fonte, var(--font-sans));
 }
@@ -350,10 +367,14 @@
 
 .gc-moldura--vidro {
   box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.35),
-    inset 0 1px 0 rgb(255 255 255 / 0.5),
-    inset 0 -20px 24px -22px rgb(255 255 255 / 0.6);
-  background: linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 40%);
+    inset 0 0 0 1px var(--color-brilho),
+    inset 0 1px 0 color-mix(in srgb, var(--color-brilho) 140%, transparent),
+    inset 0 -20px 24px -22px color-mix(in srgb, var(--color-brilho) 170%, transparent);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-brilho) 30%, transparent),
+    transparent 40%
+  );
 }
 
 .gc-moldura--pixel {
@@ -608,7 +629,7 @@
 
 .gc-placa--holograma {
   background: linear-gradient(100deg, #a78bfa, #22d3ee, #f472b6);
-  color: #0b0b0f;
+  color: var(--color-palco);
 }
 
 .gc-placa--carimbo {

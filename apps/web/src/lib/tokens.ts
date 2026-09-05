@@ -166,6 +166,12 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         ligado: true,
       },
       {
+        nome: "--color-brilho",
+        rotulo: "Brilho de vidro",
+        dica: "o realce claro dos enfeites de vidro e verniz",
+        ligado: true,
+      },
+      {
         nome: "--color-sombra",
         rotulo: "Cor da sombra",
         dica: "o tingimento das sombras dos cartões e balões",
