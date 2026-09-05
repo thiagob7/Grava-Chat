@@ -13,6 +13,9 @@ import {
   useEntrarNaComunidade,
 } from "~/@core/application/queries/descoberta/use-descoberta";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
+import { useLogout } from "~/@core/application/queries/auth/use-logout";
+import { useSession } from "~/contexts/session-context";
+import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -34,6 +37,13 @@ export const Explorar: React.FC = () => {
   const navigate = useNavigate();
   const telaEstreita = useTelaEstreita();
   const { data: relacoes = [] } = useFindFriends(true);
+  const { user, endSession } = useSession();
+  const logout = useLogout();
+
+  const sair = async () => {
+    await logout.mutateAsync().catch(() => undefined);
+    endSession();
+  };
 
   const [aba, setAba] = useState<Aba>("comunidades");
   const [categoria, setCategoria] = useState<CategoriaDeComunidade | null>(null);
@@ -51,12 +61,12 @@ export const Explorar: React.FC = () => {
         pendingFriendRequests={pendentes}
       />
 
-      <aside className="flex w-60 shrink-0 flex-col bg-surface-1">
-        <header className="regiao-de-arrasto flex h-12 shrink-0 items-center px-4">
-          <h1 className="text-base font-semibold">Explorar</h1>
+      <aside className="canto-do-miolo topo-do-miolo relative flex w-60 shrink-0 flex-col border-x border-divisor bg-surface-1">
+        <header className="regiao-de-arrasto flex h-12 shrink-0 items-center border-b border-divisor px-4 shadow-sm">
+          <h1 className="truncate font-semibold">Explorar</h1>
         </header>
 
-        <nav className="flex flex-col gap-0.5 p-2">
+        <nav className="flex flex-col gap-0.5 px-2 py-3">
           {ABAS.map((item) => (
             <button
               key={item.id}
@@ -85,6 +95,10 @@ export const Explorar: React.FC = () => {
             </button>
           ))}
         </nav>
+
+        <div className="mt-auto" />
+
+        <RodapeDaBarra user={user} onLogout={() => void sair()} />
       </aside>
     </>
   );
