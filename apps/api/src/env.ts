@@ -36,6 +36,10 @@ const schema = z.object({
   KLIPY_API_KEY: z.string().default(""),
 
   ADMIN_EMAILS: z.string().default(""),
+
+  /// A tela do Swagger em /api/docs. Em desenvolvimento ela abre sempre; em
+  /// producao so com isto ligado, para nao publicar o mapa da API sem querer.
+  DOCS_ABERTAS: z.stringbool().default(false),
 });
 
 const parsed = schema.safeParse(process.env);

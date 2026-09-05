@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import { env, isDev } from "~/env.js";
 import { authPlugin } from "~/plugins/auth.js";
 import { rateLimitPlugin } from "~/plugins/rate-limit.js";
+import { swaggerPlugin } from "~/plugins/swagger.js";
 import { AppError } from "~/lib/http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
@@ -52,6 +53,7 @@ export async function buildApp() {
   await app.register(authPlugin);
 
   await app.register(rateLimitPlugin);
+  await app.register(swaggerPlugin);
 
   app.setErrorHandler((error, req, reply) => {
     if (error instanceof AppError) {
