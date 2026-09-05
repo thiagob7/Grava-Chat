@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 export const AreaDeConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="relative flex min-h-0 flex-1 flex-col">{children}</div>
+  <div className="area-de-conversa relative flex min-h-0 flex-1 flex-col">{children}</div>
 );
 
 export const RodapeDaConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => {

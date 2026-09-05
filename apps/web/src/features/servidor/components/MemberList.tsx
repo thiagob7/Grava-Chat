@@ -73,7 +73,7 @@ export const MemberList: React.FC<MemberListProps> = ({
       <aside
         aria-busy
         aria-label={t("comum.carregando")}
-        className="hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block"
+        className="lista-de-membros hidden w-60 shrink-0 border-l border-divisor bg-surface-2 lg:block"
       >
         <div className="h-full overflow-hidden px-2 py-4">
           <Skeleton className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />

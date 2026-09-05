@@ -61,7 +61,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside
-      className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+      className="lista-de-conversas canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
       style={{ width: largura }}
     >
       <header className="regiao-de-arrasto flex h-12 items-center border-b border-divisor px-4 shadow-sm">

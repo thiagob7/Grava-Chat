@@ -130,7 +130,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   return (
     <>
       <aside
-        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        className="lista-de-canais canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
         style={{ width: largura }}
       >
         <header

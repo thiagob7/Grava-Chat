@@ -11,12 +11,16 @@ import {
   RotateCcw,
   Search,
   Settings2,
+  Share2,
   SlidersHorizontal,
   Trash2,
   Upload,
   X,
 } from "lucide-react";
 
+import { CAMINHO_DO_TEMA, lerCabecalhoDoTema } from "@gravae/shared";
+
+import { usePublicarTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { useConfirmar } from "~/components/ui/confirm";
@@ -407,17 +411,125 @@ const AbaDeCss: React.FC = () => {
           value={css}
           onChange={(e) => definirCss(e.target.value)}
           spellCheck={false}
-          placeholder={"/* Ex.: */\n.gc-cartao { border-radius: 1rem; }"}
+          placeholder={"/* Ex.: */\n.lista-de-membros { width: 12rem; }"}
           aria-label="CSS personalizado"
           className="size-full resize-none rounded-lg border border-line bg-surface-1 p-4 font-mono text-13 leading-relaxed text-ink outline-none placeholder:text-ink-faint focus-visible:border-campo-foco"
         />
       </div>
+
+      <Ganchos onUsar={(trecho) => definirCss(css ? `${css}\n\n${trecho}` : trecho)} />
 
       <p className="shrink-0 border-t border-line px-6 py-2 text-xs text-ink-faint">
         {linhas} {linhas === 1 ? "linha" : "linhas"} · {css.length} caracteres —
         aplicado na hora, neste aparelho.
       </p>
     </>
+  );
+};
+
+const BotaoDeCompartilhar: React.FC = () => {
+  const substituicoes = useEstudio((s) => s.substituicoes);
+  const css = useEstudio((s) => s.css);
+  const publicar = usePublicarTema();
+
+  const vazio = !css.trim() && Object.keys(substituicoes).length === 0;
+
+  return (
+    <Button
+      variant="surface"
+      size="sm"
+      disabled={vazio || publicar.isPending}
+      title={vazio ? "Mexa em alguma cor ou escreva CSS antes" : undefined}
+      onClick={() =>
+        publicar.mutate(
+          { css, substituicoes },
+          {
+            onSuccess: (tema) => {
+              const link = `${window.location.origin}${CAMINHO_DO_TEMA}${tema.id}`;
+
+              void copiarTexto(link).then((deu) =>
+                deu
+                  ? toast.success("Link copiado. Cole num canal e vira um cartão de importar.")
+                  : toast.info(link),
+              );
+            },
+          },
+        )
+      }
+    >
+      <Share2 size={14} /> {publicar.isPending ? "Publicando…" : "Compartilhar"}
+    </Button>
+  );
+};
+
+const GANCHOS: { classe: string; oQueE: string }[] = [
+  { classe: "trilho-de-servidores", oQueE: "a coluna estreita dos ícones" },
+  { classe: "lista-de-canais", oQueE: "a barra dos canais do servidor" },
+  { classe: "lista-de-conversas", oQueE: "a barra das mensagens diretas" },
+  { classe: "lista-de-membros", oQueE: "a coluna da direita" },
+  { classe: "area-de-conversa", oQueE: "o miolo, onde as mensagens rolam" },
+  { classe: "caixa-de-escrever", oQueE: "a caixa de escrever" },
+];
+
+const ENCOLHER = `/* A lista de membros encolhe sozinha e volta quando o mouse chega. */
+.lista-de-membros {
+  transition: width 0.3s ease;
+}
+
+body:not(:has(.lista-de-membros:hover)) .lista-de-membros {
+  width: 3rem;
+}`;
+
+const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => {
+  const [aberto, setAberto] = useState(false);
+
+  return (
+    <div className="shrink-0 border-t border-line px-6 py-3">
+      <button
+        type="button"
+        onClick={() => setAberto((v) => !v)}
+        className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
+      >
+        <ChevronRight
+          size={14}
+          className={cn("transition-transform", aberto && "rotate-90")}
+        />
+        Em que dá para mexer
+      </button>
+
+      {aberto && (
+        <>
+          <p className="mt-2 text-xs text-ink-faint">
+            Estas classes ficam paradas em cada região da tela — é nelas que um
+            tema se agarra. O resto das classes é gerado e muda a cada build.
+          </p>
+
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {GANCHOS.map((gancho) => (
+              <button
+                key={gancho.classe}
+                type="button"
+                title={gancho.oQueE}
+                onClick={() => onUsar(`.${gancho.classe} {\n  \n}`)}
+                className="rounded border border-line px-2 py-1 font-mono text-xs text-ink-muted transition hover:border-ink-faint hover:text-ink"
+              >
+                .{gancho.classe}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-1 p-3">
+            <pre className="min-w-0 flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-ink-muted">
+              {ENCOLHER}
+            </pre>
+
+            <Button variant="surface" size="sm" onClick={() => onUsar(ENCOLHER)}>
+              Usar
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -446,15 +558,23 @@ const AbaDaBiblioteca: React.FC = () => {
         <input
           ref={arquivo}
           type="file"
-          accept="application/json,.json"
+          accept="application/json,.json,text/css,.css"
           className="hidden"
           onChange={async (e) => {
             const escolhido = e.target.files?.[0];
             e.target.value = "";
             if (!escolhido) return;
 
+            const texto = await escolhido.text();
+
+            if (escolhido.name.toLowerCase().endsWith(".css")) {
+              importar({ css: texto, nome: lerCabecalhoDoTema(texto).nome ?? undefined });
+              toast.success("Tema importado.");
+              return;
+            }
+
             try {
-              importar(JSON.parse(await escolhido.text()) as { css?: string });
+              importar(JSON.parse(texto) as { css?: string });
               toast.success("Tema importado.");
             } catch {
               toast.error("Esse arquivo não é um tema válido.");
@@ -475,6 +595,8 @@ const AbaDaBiblioteca: React.FC = () => {
         >
           <Download size={14} /> Exportar o atual
         </Button>
+
+        <BotaoDeCompartilhar />
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">

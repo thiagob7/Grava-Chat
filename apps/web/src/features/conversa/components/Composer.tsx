@@ -296,7 +296,7 @@ export const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div className="@container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
+    <div className="caixa-de-escrever @container bg-composer px-2 pb-4 @sm:px-4 @sm:pb-6">
       {faltam > 0 && (
         <Tooltip label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
           <p className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
