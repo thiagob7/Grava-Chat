@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Zobrazit celý soubor",
     maisOpcoes: "Další možnosti",
     baixar: "Stáhnout",
+    recolherLinhas: "Sbalit ({{linhas}} řádků)",
+    expandirLinhas: "Rozbalit ({{linhas}} řádků)",
+    mudarIdioma: "Změnit jazyk",
+    procurarIdioma: "Hledat kód jazyka…",
+    nenhumIdioma: "Žádný takový jazyk.",
+    quebrarTexto: "Zalamovat text",
   },
   caixa: {
     escrever: "Napiš na #{{canal}}",

@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "ดูทั้งไฟล์",
     maisOpcoes: "ตัวเลือกเพิ่มเติม",
     baixar: "ดาวน์โหลด",
+    recolherLinhas: "ย่อ ({{linhas}} บรรทัด)",
+    expandirLinhas: "ขยาย ({{linhas}} บรรทัด)",
+    mudarIdioma: "เปลี่ยนภาษา",
+    procurarIdioma: "ค้นหารหัสภาษา…",
+    nenhumIdioma: "ไม่พบภาษานี้",
+    quebrarTexto: "ตัดข้อความขึ้นบรรทัดใหม่",
   },
   caixa: {
     escrever: "เขียนใน #{{canal}}",

@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Виж целия файл",
     maisOpcoes: "Още опции",
     baixar: "Изтегли",
+    recolherLinhas: "Свий ({{linhas}} реда)",
+    expandirLinhas: "Разгъни ({{linhas}} реда)",
+    mudarIdioma: "Смяна на езика",
+    procurarIdioma: "Търсене на език…",
+    nenhumIdioma: "Няма такъв език.",
+    quebrarTexto: "Пренасяне на текста",
   },
   caixa: {
     escrever: "Пиши в #{{canal}}",

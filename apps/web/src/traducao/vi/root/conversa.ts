@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Xem toàn bộ tệp",
     maisOpcoes: "Tùy chọn khác",
     baixar: "Tải xuống",
+    recolherLinhas: "Thu gọn ({{linhas}} dòng)",
+    expandirLinhas: "Mở rộng ({{linhas}} dòng)",
+    mudarIdioma: "Đổi ngôn ngữ",
+    procurarIdioma: "Tìm mã ngôn ngữ…",
+    nenhumIdioma: "Không có ngôn ngữ nào.",
+    quebrarTexto: "Ngắt dòng văn bản",
   },
   caixa: {
     escrever: "Nhắn trong #{{canal}}",

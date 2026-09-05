@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Se hele filen",
     maisOpcoes: "Flere muligheder",
     baixar: "Download",
+    recolherLinhas: "Skjul ({{linhas}} linjer)",
+    expandirLinhas: "Udvid ({{linhas}} linjer)",
+    mudarIdioma: "Skift sprog",
+    procurarIdioma: "Søg efter sprogkode…",
+    nenhumIdioma: "Intet sprog fundet.",
+    quebrarTexto: "Ombryd tekst",
   },
   caixa: {
     escrever: "Skriv i #{{canal}}",

@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Prikaži cijelu datoteku",
     maisOpcoes: "Više opcija",
     baixar: "Preuzmi",
+    recolherLinhas: "Sažmi ({{linhas}} redaka)",
+    expandirLinhas: "Proširi ({{linhas}} redaka)",
+    mudarIdioma: "Promijeni jezik",
+    procurarIdioma: "Traži kôd jezika…",
+    nenhumIdioma: "Nema takvog jezika.",
+    quebrarTexto: "Prelomi tekst",
   },
   caixa: {
     escrever: "Piši u #{{canal}}",

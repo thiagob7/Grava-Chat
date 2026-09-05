@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "عرض الملف كاملاً",
     maisOpcoes: "خيارات إضافية",
     baixar: "تنزيل",
+    recolherLinhas: "طي ({{linhas}} سطر)",
+    expandirLinhas: "توسيع ({{linhas}} سطر)",
+    mudarIdioma: "تغيير اللغة",
+    procurarIdioma: "ابحث عن رمز اللغة…",
+    nenhumIdioma: "لا توجد لغة بهذا الاسم.",
+    quebrarTexto: "التفاف النص",
   },
   caixa: {
     escrever: "اكتب في ‎#{{canal}}‎",

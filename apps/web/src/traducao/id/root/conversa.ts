@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Lihat seluruh berkas",
     maisOpcoes: "Opsi lainnya",
     baixar: "Unduh",
+    recolherLinhas: "Ciutkan ({{linhas}} baris)",
+    expandirLinhas: "Perluas ({{linhas}} baris)",
+    mudarIdioma: "Ubah bahasa",
+    procurarIdioma: "Cari kode bahasa…",
+    nenhumIdioma: "Bahasa tidak ditemukan.",
+    quebrarTexto: "Bungkus teks",
   },
   caixa: {
     escrever: "Tulis di #{{canal}}",

@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "View whole file",
     maisOpcoes: "More options",
     baixar: "Download",
+    recolherLinhas: "Collapse ({{linhas}} lines)",
+    expandirLinhas: "Expand ({{linhas}} lines)",
+    mudarIdioma: "Change language",
+    procurarIdioma: "Search language code…",
+    nenhumIdioma: "No such language.",
+    quebrarTexto: "Wrap text",
   },
   caixa: {
     escrever: "Message #{{canal}}",

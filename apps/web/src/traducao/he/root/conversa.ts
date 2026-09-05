@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "הצג את כל הקובץ",
     maisOpcoes: "אפשרויות נוספות",
     baixar: "הורדה",
+    recolherLinhas: "כווץ ({{linhas}} שורות)",
+    expandirLinhas: "הרחב ({{linhas}} שורות)",
+    mudarIdioma: "שינוי שפה",
+    procurarIdioma: "חיפוש קוד שפה…",
+    nenhumIdioma: "לא נמצאה שפה.",
+    quebrarTexto: "גלישת טקסט",
   },
   caixa: {
     escrever: "כתבו ב‑‎#{{canal}}‎",

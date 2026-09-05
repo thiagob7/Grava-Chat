@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Vezi tot fișierul",
     maisOpcoes: "Mai multe opțiuni",
     baixar: "Descarcă",
+    recolherLinhas: "Restrânge ({{linhas}} linii)",
+    expandirLinhas: "Extinde ({{linhas}} linii)",
+    mudarIdioma: "Schimbă limbajul",
+    procurarIdioma: "Caută cod de limbaj…",
+    nenhumIdioma: "Niciun limbaj găsit.",
+    quebrarTexto: "Încadrează textul",
   },
   caixa: {
     escrever: "Scrie în #{{canal}}",

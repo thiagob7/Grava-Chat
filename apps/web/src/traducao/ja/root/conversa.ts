@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "ファイル全体を表示",
     maisOpcoes: "その他の操作",
     baixar: "ダウンロード",
+    recolherLinhas: "折りたたむ（{{linhas}} 行）",
+    expandirLinhas: "展開（{{linhas}} 行）",
+    mudarIdioma: "言語を変更",
+    procurarIdioma: "言語コードを検索…",
+    nenhumIdioma: "該当する言語がありません。",
+    quebrarTexto: "テキストを折り返す",
   },
   caixa: {
     escrever: "#{{canal}} にメッセージを送信",

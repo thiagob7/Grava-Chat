@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Peržiūrėti visą failą",
     maisOpcoes: "Daugiau parinkčių",
     baixar: "Atsisiųsti",
+    recolherLinhas: "Suskleisti ({{linhas}} eil.)",
+    expandirLinhas: "Išskleisti ({{linhas}} eil.)",
+    mudarIdioma: "Keisti kalbą",
+    procurarIdioma: "Ieškoti kalbos kodo…",
+    nenhumIdioma: "Tokios kalbos nėra.",
+    quebrarTexto: "Laužyti tekstą",
   },
   caixa: {
     escrever: "Rašykite kanale #{{canal}}",

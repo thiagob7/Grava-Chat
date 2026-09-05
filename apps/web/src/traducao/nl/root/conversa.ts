@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Hele bestand bekijken",
     maisOpcoes: "Meer opties",
     baixar: "Downloaden",
+    recolherLinhas: "Inklappen ({{linhas}} regels)",
+    expandirLinhas: "Uitklappen ({{linhas}} regels)",
+    mudarIdioma: "Taal wijzigen",
+    procurarIdioma: "Zoek taalcode…",
+    nenhumIdioma: "Geen taal gevonden.",
+    quebrarTexto: "Tekstterugloop",
   },
   caixa: {
     escrever: "Schrijf in #{{canal}}",

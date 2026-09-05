@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Dosyanın tamamını gör",
     maisOpcoes: "Diğer seçenekler",
     baixar: "İndir",
+    recolherLinhas: "Daralt ({{linhas}} satır)",
+    expandirLinhas: "Genişlet ({{linhas}} satır)",
+    mudarIdioma: "Dili değiştir",
+    procurarIdioma: "Dil kodu ara…",
+    nenhumIdioma: "Böyle bir dil yok.",
+    quebrarTexto: "Metni kaydır",
   },
   caixa: {
     escrever: "#{{canal}} kanalına yaz",

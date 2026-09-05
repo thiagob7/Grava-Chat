@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Προβολή όλου του αρχείου",
     maisOpcoes: "Περισσότερες επιλογές",
     baixar: "Λήψη",
+    recolherLinhas: "Σύμπτυξη ({{linhas}} γραμμές)",
+    expandirLinhas: "Ανάπτυξη ({{linhas}} γραμμές)",
+    mudarIdioma: "Αλλαγή γλώσσας",
+    procurarIdioma: "Αναζήτηση γλώσσας…",
+    nenhumIdioma: "Καμία γλώσσα.",
+    quebrarTexto: "Αναδίπλωση κειμένου",
   },
   caixa: {
     escrever: "Γράψε στο #{{canal}}",

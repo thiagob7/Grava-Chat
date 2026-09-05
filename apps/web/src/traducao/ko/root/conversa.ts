@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "파일 전체 보기",
     maisOpcoes: "더 보기",
     baixar: "다운로드",
+    recolherLinhas: "접기 ({{linhas}}줄)",
+    expandirLinhas: "펼치기 ({{linhas}}줄)",
+    mudarIdioma: "언어 변경",
+    procurarIdioma: "언어 코드 검색…",
+    nenhumIdioma: "해당 언어가 없습니다.",
+    quebrarTexto: "텍스트 줄바꿈",
   },
   caixa: {
     escrever: "#{{canal}}에 메시지 보내기",

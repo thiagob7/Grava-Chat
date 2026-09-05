@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "查看完整文件",
     maisOpcoes: "更多选项",
     baixar: "下载",
+    recolherLinhas: "收起（{{linhas}} 行）",
+    expandirLinhas: "展开（{{linhas}} 行）",
+    mudarIdioma: "更改语言",
+    procurarIdioma: "搜索语言代码…",
+    nenhumIdioma: "没有这个语言。",
+    quebrarTexto: "自动换行",
   },
   caixa: {
     escrever: "在 #{{canal}} 中发消息",

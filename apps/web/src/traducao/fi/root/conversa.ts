@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Näytä koko tiedosto",
     maisOpcoes: "Lisää valintoja",
     baixar: "Lataa",
+    recolherLinhas: "Tiivistä ({{linhas}} riviä)",
+    expandirLinhas: "Laajenna ({{linhas}} riviä)",
+    mudarIdioma: "Vaihda kieli",
+    procurarIdioma: "Hae kielikoodia…",
+    nenhumIdioma: "Kieltä ei löytynyt.",
+    quebrarTexto: "Rivitä teksti",
   },
   caixa: {
     escrever: "Kirjoita kanavalle #{{canal}}",

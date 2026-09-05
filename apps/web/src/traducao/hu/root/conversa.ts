@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "Teljes fájl megtekintése",
     maisOpcoes: "További lehetőségek",
     baixar: "Letöltés",
+    recolherLinhas: "Összecsukás ({{linhas}} sor)",
+    expandirLinhas: "Kibontás ({{linhas}} sor)",
+    mudarIdioma: "Nyelv módosítása",
+    procurarIdioma: "Nyelvkód keresése…",
+    nenhumIdioma: "Nincs ilyen nyelv.",
+    quebrarTexto: "Sortörés",
   },
   caixa: {
     escrever: "Írj ide: #{{canal}}",

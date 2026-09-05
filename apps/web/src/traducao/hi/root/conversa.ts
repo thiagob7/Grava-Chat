@@ -80,6 +80,12 @@ export const conversa = {
     verInteiro: "पूरी फ़ाइल देखें",
     maisOpcoes: "और विकल्प",
     baixar: "डाउनलोड",
+    recolherLinhas: "छोटा करें ({{linhas}} पंक्तियाँ)",
+    expandirLinhas: "बड़ा करें ({{linhas}} पंक्तियाँ)",
+    mudarIdioma: "भाषा बदलें",
+    procurarIdioma: "भाषा कोड खोजें…",
+    nenhumIdioma: "कोई भाषा नहीं मिली.",
+    quebrarTexto: "टेक्स्ट लपेटें",
   },
   caixa: {
     escrever: "#{{canal}} में लिखें",
