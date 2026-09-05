@@ -129,6 +129,7 @@ export const guildService = {
       id: guild.id,
       name: guild.name,
       iconUrl: guild.iconUrl,
+      bannerUrl: guild.bannerUrl,
       description: guild.description,
       tag: guild.tag,
       tagIcon: guild.tagIcon,

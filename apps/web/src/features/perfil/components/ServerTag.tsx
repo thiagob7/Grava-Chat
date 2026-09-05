@@ -53,7 +53,14 @@ const CartaoDoServidor: React.FC<{ guildId: string; onIr: () => void }> = ({ gui
 
   return (
     <>
-      <div className="h-16" style={{ backgroundColor: avatarColor(servidor.id) }} />
+      <div
+        className="h-16 overflow-hidden"
+        style={servidor.bannerUrl ? undefined : { backgroundColor: avatarColor(servidor.id) }}
+      >
+        {servidor.bannerUrl && (
+          <img src={servidor.bannerUrl} alt="" className="size-full object-cover" />
+        )}
+      </div>
 
       <div className="px-4 pb-4">
         <div className="-mt-8 mb-2 size-16 overflow-hidden rounded-2xl bg-surface-3 ring-4 ring-surface-0">
