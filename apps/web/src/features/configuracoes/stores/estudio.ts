@@ -8,6 +8,7 @@ import {
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import { normalizarSeletoresDoFluxer } from "~/features/configuracoes/lib/normalizar-tema";
+import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
 import {
   NOMES_DE_ORIGEM,
   nomesDeclaradosNoTema,
@@ -109,7 +110,11 @@ function aplicar(estado: EstadoDoEstudio) {
 
   escritos = new Set(Object.keys(estado.substituicoes));
 
-  if (ehAJanelaDoEstudio()) {
+  /*
+    A janela do estúdio nunca veste o tema, e `?sem-tema` desliga em qualquer
+    janela — é a saída para quando um tema esconde o caminho de volta.
+  */
+  if (ehAJanelaDoEstudio() || temaDesligadoPelaUrl()) {
     avisarTemaAplicado();
     return;
   }
