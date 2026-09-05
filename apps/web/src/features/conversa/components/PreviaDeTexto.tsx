@@ -22,6 +22,7 @@ import {
   normalizarIdioma,
   realcar,
 } from "~/features/conversa/lib/realce";
+import { api } from "~/@core/lib/api";
 import { copiarTexto } from "~/lib/copiar";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
@@ -60,9 +61,13 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
   useEffect(() => {
     let vivo = true;
 
-    void fetch(anexo.url)
-      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
-      .then((texto) => vivo && setConteudo(texto))
+    /*
+      Passa pela nossa API de propósito: o bucket público do R2 não devolve
+      CORS, então buscar direto daqui é recusado pelo navegador.
+    */
+    void api
+      .get<{ conteudo: string }>("/anexos/texto", { params: { url: anexo.url } })
+      .then(({ data }) => vivo && setConteudo(data.conteudo))
       .catch(() => vivo && setFalhou(true));
 
     return () => {

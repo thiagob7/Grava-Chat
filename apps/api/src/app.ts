@@ -21,6 +21,7 @@ import { expressionRoutes } from "~/routes/expressions.js";
 import { moderationRoutes } from "~/routes/moderation.js";
 import { forumRoutes } from "~/routes/forum.js";
 import { gifRoutes } from "~/routes/gifs.js";
+import { anexoRoutes } from "~/routes/anexos.js";
 import { descobertaRoutes } from "~/routes/descoberta.js";
 import { temaRoutes } from "~/routes/temas.js";
 import { inviteRoutes } from "~/routes/invites.js";
@@ -89,6 +90,7 @@ export async function buildApp() {
       await api.register(botApiRoutes);
       await api.register(roleRoutes);
       await api.register(inviteRoutes);
+      await api.register(anexoRoutes);
       await api.register(descobertaRoutes);
       await api.register(temaRoutes);
       await api.register(messageRoutes);
