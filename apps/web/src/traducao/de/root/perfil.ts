@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Zum Notieren klicken",
     rotulo: "Notiz (nur du siehst sie)",
+    adicionar: "Notiz hinzufügen (nur für dich sichtbar)",
   },
   status: {
     titulo: "Status",

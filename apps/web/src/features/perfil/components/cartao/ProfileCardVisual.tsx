@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from "react";
-import { Camera, Pencil, PlusCircle, X } from "lucide-react";
+import { Camera, NotebookPen, Pencil, PlusCircle, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 import type {
   Emblema,
@@ -22,6 +22,7 @@ import {
 } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { Tooltip } from "~/components/ui/tooltip";
 import { idiomaAtual, useTranslation } from "~/traducao";
 
 interface ProfileCardVisualProps {
@@ -55,6 +56,8 @@ interface ProfileCardVisualProps {
   /// Clicar no nome ou no @usuário abre o perfil inteiro, como no Fluxer.
   /// Sem isto os dois seguem sendo texto — é o que vale no próprio cartão.
   onAbrirPerfil?: () => void;
+  /// O lápis ao lado do nome, que leva direto para a nota.
+  onIrParaNota?: () => void;
   onEtiqueta?: (valor: string) => void;
   onEtiquetaDoServidor?: (guildId: string | null) => void;
   onStatus?: () => void;
@@ -89,6 +92,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   className,
   editavel = false,
   onAbrirPerfil,
+  onIrParaNota,
   onEtiqueta,
   onEtiquetaDoServidor,
   onStatus,
@@ -280,6 +284,19 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 />
               )}
             </p>
+
+            {onIrParaNota && (
+              <Tooltip label={t("perfil.nota.adicionar")}>
+                <button
+                  type="button"
+                  onClick={onIrParaNota}
+                  aria-label={t("perfil.nota.adicionar")}
+                  className="shrink-0 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+                >
+                  <NotebookPen size={16} />
+                </button>
+              </Tooltip>
+            )}
           </div>
 
           <p className="flex flex-wrap items-center gap-1.5 text-sm text-ink-muted">

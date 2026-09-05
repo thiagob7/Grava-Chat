@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "클릭해서 메모를 남기세요",
     rotulo: "메모 (나만 볼 수 있음)",
+    adicionar: "메모 추가 (나만 볼 수 있음)",
   },
   status: {
     titulo: "상태",

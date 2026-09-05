@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "点击记点东西",
     rotulo: "备注（只有你能看到）",
+    adicionar: "添加备注（只有你能看到）",
   },
   status: {
     titulo: "状态",

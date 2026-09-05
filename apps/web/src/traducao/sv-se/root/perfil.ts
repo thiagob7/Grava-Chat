@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Klicka för att anteckna något",
     rotulo: "Anteckning (bara du ser den)",
+    adicionar: "Lägg till anteckning (bara du ser den)",
   },
   status: {
     titulo: "Status",

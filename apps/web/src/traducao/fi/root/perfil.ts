@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Kirjoita muistiinpano napsauttamalla",
     rotulo: "Muistiinpano (vain sinä näet sen)",
+    adicionar: "Lisää muistiinpano (vain sinä näet)",
   },
   status: {
     titulo: "Tila",

@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "クリックしてメモを書く",
     rotulo: "メモ（自分だけが見られます）",
+    adicionar: "メモを追加（自分だけに見えます）",
   },
   status: {
     titulo: "ステータス",

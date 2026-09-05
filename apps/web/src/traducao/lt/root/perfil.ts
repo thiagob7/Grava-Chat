@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Spustelėkite, kad ką nors užsirašytumėte",
     rotulo: "Užrašas (matote tik jūs)",
+    adicionar: "Pridėti užrašą (matai tik tu)",
   },
   status: {
     titulo: "Būsena",

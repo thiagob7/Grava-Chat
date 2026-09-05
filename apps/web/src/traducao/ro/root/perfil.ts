@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Dă clic ca să notezi ceva",
     rotulo: "Notiță (o vezi doar tu)",
+    adicionar: "Adaugă o notiță (o vezi doar tu)",
   },
   status: {
     titulo: "Stare",

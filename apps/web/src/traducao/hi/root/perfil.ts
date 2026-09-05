@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "कुछ लिखने के लिए क्लिक करें",
     rotulo: "नोट (सिर्फ़ आप देखते हैं)",
+    adicionar: "नोट जोड़ें (सिर्फ़ आपको दिखेगा)",
   },
   status: {
     titulo: "स्टेटस",

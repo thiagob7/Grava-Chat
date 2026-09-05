@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Kattints, ha fel akarsz jegyezni valamit",
     rotulo: "Jegyzet (csak te látod)",
+    adicionar: "Jegyzet hozzáadása (csak te látod)",
   },
   status: {
     titulo: "Állapot",

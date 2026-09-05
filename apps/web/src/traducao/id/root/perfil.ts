@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Klik untuk mencatat sesuatu",
     rotulo: "Catatan (hanya kamu yang lihat)",
+    adicionar: "Tambah catatan (hanya kamu yang lihat)",
   },
   status: {
     titulo: "Status",

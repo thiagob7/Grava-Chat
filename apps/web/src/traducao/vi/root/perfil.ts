@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Nhấn để ghi lại điều gì đó",
     rotulo: "Ghi chú (chỉ mình bạn thấy)",
+    adicionar: "Thêm ghi chú (chỉ bạn thấy)",
   },
   status: {
     titulo: "Trạng thái",

@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from "react";
+import React, { useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
   comoSeLe,
@@ -134,6 +134,7 @@ const ProfileCard: React.FC<{
 }> = ({ perfil, onFechar, guildId, roles, roleIds, podeModerar }) => {
   const { t } = useTranslation();
   const [perfilCompleto, setPerfilCompleto] = useState(false);
+  const campoDaNota = useRef<HTMLTextAreaElement>(null);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [definindoStatus, setDefinindoStatus] = useState(false);
   const { data: eu } = useMe(true);
@@ -423,6 +424,14 @@ const ProfileCard: React.FC<{
 
       <ProfileCardVisual
         onAbrirPerfil={() => setPerfilCompleto(true)}
+        onIrParaNota={
+          perfil.friendship === "SELF"
+            ? undefined
+            : () => {
+                campoDaNota.current?.scrollIntoView({ block: "nearest" });
+                campoDaNota.current?.focus();
+              }
+        }
         id={perfil.id}
         displayName={perfil.displayName}
         username={perfil.username}
@@ -452,7 +461,7 @@ const ProfileCard: React.FC<{
         <ConexoesDoPerfil conexoes={perfil.perfil?.conexoes} />
 
         {perfil.friendship !== "SELF" && (
-          <CampoDeNota userId={perfil.id} nota={perfil.nota} />
+          <CampoDeNota userId={perfil.id} nota={perfil.nota} campo={campoDaNota} />
         )}
 
         {perfil.friendship === "SELF" && guildId && (

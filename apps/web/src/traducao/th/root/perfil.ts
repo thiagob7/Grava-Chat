@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "คลิกเพื่อจดอะไรสักอย่าง",
     rotulo: "บันทึก (เห็นคนเดียว)",
+    adicionar: "เพิ่มโน้ต (เห็นคนเดียว)",
   },
   status: {
     titulo: "สถานะ",

@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Klikni a poznamenej si něco",
     rotulo: "Poznámka (vidíš ji jen ty)",
+    adicionar: "Přidat poznámku (vidíš jen ty)",
   },
   status: {
     titulo: "Stav",

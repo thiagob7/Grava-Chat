@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useSalvarNota } from "~/@core/application/queries/user/use-salvar-nota";
 import { useTranslation } from "~/traducao";
 
-export const CampoDeNota: React.FC<{ userId: string; nota: string | null }> = ({ userId, nota }) => {
+export const CampoDeNota: React.FC<{
+  userId: string;
+  nota: string | null;
+  campo?: React.RefObject<HTMLTextAreaElement | null>;
+}> = ({ userId, nota, campo }) => {
   const { t } = useTranslation();
   const salvar = useSalvarNota(userId);
   const [texto, setTexto] = useState(nota ?? "");
@@ -14,6 +18,7 @@ export const CampoDeNota: React.FC<{ userId: string; nota: string | null }> = ({
     <div className="mt-3">
       <p className="mb-1 text-xs font-semibold uppercase text-ink-faint">{t("perfil.nota.rotulo")}</p>
       <textarea
+        ref={campo}
         value={texto}
         rows={2}
         maxLength={256}

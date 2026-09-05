@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "انقر لتدوين شيء",
     rotulo: "ملاحظة (تراها وحدك)",
+    adicionar: "إضافة ملاحظة (تراها أنت فقط)",
   },
   status: {
     titulo: "الحالة",

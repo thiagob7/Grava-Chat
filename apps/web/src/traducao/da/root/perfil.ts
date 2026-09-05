@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Klik for at skrive en note",
     rotulo: "Note (kun du ser den)",
+    adicionar: "Tilføj note (kun du ser den)",
   },
   status: {
     titulo: "Status",

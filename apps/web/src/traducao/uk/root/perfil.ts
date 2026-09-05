@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Натисніть, щоб записати нотатку",
     rotulo: "Нотатка (бачите тільки ви)",
+    adicionar: "Додати нотатку (бачиш лише ти)",
   },
   status: {
     titulo: "Статус",

@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Click to jot something down",
     rotulo: "Note (only you see it)",
+    adicionar: "Add note (only you can see it)",
   },
   status: {
     titulo: "Status",

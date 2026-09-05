@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Bir not almak için tıkla",
     rotulo: "Not (yalnızca sen görürsün)",
+    adicionar: "Not ekle (sadece sen görürsün)",
   },
   status: {
     titulo: "Durum",

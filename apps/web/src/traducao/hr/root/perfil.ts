@@ -72,6 +72,7 @@ export const perfil = {
   nota: {
     vazia: "Klikni da nešto zapišeš",
     rotulo: "Bilješka (vidiš je samo ti)",
+    adicionar: "Dodaj bilješku (vidiš samo ti)",
   },
   status: {
     titulo: "Status",
