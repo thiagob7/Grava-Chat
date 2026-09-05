@@ -10,7 +10,7 @@ import { cn } from "~/lib/utils";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxCls } from "~/lib/compat-fluxer";
 
 interface MemberListProps {
   members: GuildMember[];
@@ -92,7 +92,7 @@ export const MemberList: React.FC<MemberListProps> = ({
 
   return (
     <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block")}>
-      <div data-gc="servidor.member-list.div--3" {...flx("roladorDeMembros", "h-full overflow-y-auto px-2 py-4")}>
+      <div data-gc="servidor.member-list.div--3" {...flx("roladorDeMembros", cn("h-full overflow-y-auto px-2 py-4", flxCls("conteudoDaListaDeMembros")))}>
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
             key={grupo.titulo}
@@ -152,6 +152,8 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
             <button data-gc="servidor.member-list.button"
               className={cn(
                 "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
+                flxCls("linhaDeMembro"),
+                flxCls("itemDeMembro"),
                 dim && "opacity-40",
               )}
             >

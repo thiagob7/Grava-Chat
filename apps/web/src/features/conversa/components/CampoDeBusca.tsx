@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { flxCls } from "~/lib/compat-fluxer";
+import { cn } from "~/lib/utils";
 
 interface CampoDeBuscaProps {
   termo: string;
@@ -15,7 +17,13 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
   }, [termo]);
 
   return (
-    <div data-gc="conversa.campo-de-busca.div" className="relative hidden items-center @2xl:flex">
+    <div data-gc="conversa.campo-de-busca.div"
+      className={cn(
+        "relative hidden items-center @2xl:flex",
+        flxCls("molduraDaBusca"),
+        flxCls("ancoraDaBusca"),
+      )}
+    >
       <MagnifyingGlass data-gc="conversa.campo-de-busca.magnifying-glass" size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
 
       <input data-gc="conversa.campo-de-busca.input"
@@ -31,7 +39,10 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
         }}
         placeholder="Buscar"
         aria-label="Buscar mensagens neste servidor"
-        className="h-7 w-36 rounded bg-surface-1 pl-7 pr-6 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:w-56 focus:ring-1 focus:ring-brand"
+        className={cn(
+          "h-7 w-36 rounded bg-surface-1 pl-7 pr-6 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:w-56 focus:ring-1 focus:ring-brand",
+          flxCls("campoDaBusca"),
+        )}
       />
 
       {rascunho && (
@@ -41,7 +52,7 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
             onBuscar("");
           }}
           aria-label="Limpar a busca"
-          className="absolute right-1.5 text-ink-faint transition hover:text-ink"
+          className={cn("absolute right-1.5 text-ink-faint transition hover:text-ink", flxCls("limparBusca"))}
         >
           <X data-gc="conversa.campo-de-busca.x" size={13} />
         </button>

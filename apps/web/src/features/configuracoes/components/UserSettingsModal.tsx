@@ -64,6 +64,7 @@ import { RodapeDeVersoes } from "~/features/configuracoes/components/RodapeDeVer
 import { ContextoDaSecao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { subSecaoAtiva } from "~/features/configuracoes/components/espiao-da-rolagem";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { flxCls } from "~/lib/compat-fluxer";
 
 export type { Secao };
 
@@ -337,7 +338,10 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay data-gc="configuracoes.user-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-black/70" />
         <DialogPrimitive.Content data-gc="configuracoes.user-settings-modal.dialog-primitivecontent"
-          className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none"
+          className={cn(
+            "regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none",
+            flxCls("janelaDeConfiguracoes"),
+          )}
           aria-label="Configurações do usuário"
         >
           <DialogPrimitive.Title data-gc="configuracoes.user-settings-modal.dialog-primitivetitle" className="sr-only">

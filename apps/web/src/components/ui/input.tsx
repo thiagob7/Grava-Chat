@@ -24,6 +24,7 @@ export const campoDeCor =
   "shrink-0 cursor-pointer rounded-lg border border-white/5 bg-campo p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export const grupoDeCampo =
+  `${flxCls("grupoDeCampo")} ` +
   "flex h-10 items-center gap-2 rounded-lg border border-white/5 bg-campo px-3 transition focus-within:border-ink-faint/40";
 
 export const campoNu =

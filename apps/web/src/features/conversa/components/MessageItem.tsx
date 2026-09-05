@@ -70,7 +70,7 @@ import { EncaminharModal } from "~/features/conversa/components/EncaminharModal"
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxAttr, flxCls } from "~/lib/compat-fluxer";
 
 const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
 
@@ -292,8 +292,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     <div data-gc="conversa.message-item.div--3"
       ref={raiz}
       data-mensagem={message.id}
+      {...flxAttr("grupoDeMensagens")}
       className={cn(
         "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
+        flxCls("molduraDaMensagem"),
         !compact && "mt-4",
         meMenciona &&
           cn(
@@ -392,7 +394,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <div data-gc="conversa.message-item.div--8"
-              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("conteudoDaMensagem"))}
+              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("corpoDaMensagem"))}
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
               <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mencoes={mencoes} blocos />
@@ -801,7 +803,7 @@ const Citacao: React.FC<{
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("citacao"), flxCls("previaDaMensagem"))}>
+  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("citacao"), flxCls("previaDaMensagem"), flxCls("respondida"))}>
     <span data-gc="conversa.message-item.span--15"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"

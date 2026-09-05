@@ -116,13 +116,44 @@ export const LUGARES = {
   },
 
   /// Mesma divisão da área do usuário: o painel de fora, o campo de dentro.
-  caixaDeEscrever: { classes: [], flx: "channel.channel-chat-layout.textarea-area" },
+  caixaDeEscrever: {
+    classes: ["ChannelChatLayout.module__textareaArea_gc"],
+    flx: "channel.channel-chat-layout.textarea-area",
+  },
   campoDeEscrever: {
     classes: [],
     flx: "channel.lexical-channel-textarea-content.textarea-outer",
   },
 
-  conteudoDaMensagem: { classes: ["Markup.module__markup_gc"] },
+  /*
+    A segunda leva saiu de contar, num tema de verdade, quais nomes ele mira e
+    a gente não tinha. Estes são os que mais aparecem lá e têm equivalente aqui
+    — a mensagem e o que mora dentro dela, a lista de membros e a busca.
+  */
+  grupoDeMensagens: { classes: [], flx: "channel.message-group.group" },
+  corpoDaMensagem: {
+    classes: ["Message.module__messageContent_gc", "Markup.module__markup_gc"],
+  },
+  molduraDaMensagem: { classes: ["Message.module__container_gc"] },
+  respondida: { classes: ["Message.module__repliedMessage_gc"] },
+  mosaicoDeAnexos: { classes: ["AttachmentMosaic.module__mosaicContainerWrapper_gc"] },
+  spoiler: { classes: ["Markup.module__blockSpoiler_gc"] },
+  conteudoDoSpoiler: { classes: ["Markup.module__spoilerContent_gc"] },
+
+  linhaDeMembro: { classes: ["ChannelMembers.module__virtualMemberRow_gc"] },
+  itemDeMembro: { classes: ["MemberListItem.module__grid_gc"] },
+  conteudoDaListaDeMembros: { classes: ["ChannelMembers.module__virtualListContent_gc"] },
+
+  molduraDaBusca: { classes: ["ChannelHeader.module__messageSearchFocusWrapper_gc"] },
+  ancoraDaBusca: { classes: ["MessageSearchBar.module__anchor_gc"] },
+  campoDaBusca: { classes: ["MessageSearchBar.module__inputContainer_gc"] },
+  limparBusca: { classes: ["MessageSearchBar.module__clearButton_gc"] },
+
+  linhaDoUsuario: { classes: ["UserArea.module__userAreaContainer_gc"] },
+  bioDoPerfil: { classes: ["UserProfileShared.module__bioContainer_gc"] },
+  janelaDeConfiguracoes: { classes: ["SettingsModalLayout.module__container_gc"] },
+  grupoDeCampo: { classes: ["FormInput.module__inputGroup_gc"] },
+
   mensagemQueMenciona: { classes: ["Message.module__messageMentioned_gc"] },
   barraDaMensagem: { classes: ["MessageActionBar.module__actionBar_gc"] },
   botaoDeReacao: { classes: ["MessageReactions.module__reactionButton_gc"] },

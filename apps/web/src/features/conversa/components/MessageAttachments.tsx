@@ -9,6 +9,8 @@ import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-fluxer";
+import { cn } from "~/lib/utils";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
@@ -30,7 +32,7 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
   if (!attachments.length) return null;
 
   return (
-    <div data-gc="conversa.message-attachments.div" className="mt-1 flex flex-wrap gap-2">
+    <div data-gc="conversa.message-attachments.div" className={cn("mt-1 flex flex-wrap gap-2", flxCls("mosaicoDeAnexos"))}>
       {attachments.map((anexo) => (
         <div data-gc="conversa.message-attachments.div--2" key={anexo.id} className="group/anexo flex w-full items-start gap-2">
           <ComSpoiler data-gc="conversa.message-attachments.com-spoiler" anexo={anexo}>
@@ -73,10 +75,14 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
   return (
     <button data-gc="conversa.message-attachments.button--2"
       onClick={() => setAberto(true)}
-      className="group relative overflow-hidden rounded-lg"
+      className={cn("group relative overflow-hidden rounded-lg", flxCls("spoiler"))}
       aria-label={t("conversa.anexos.mostrarSpoiler", { arquivo: anexo.filename })}
     >
-      <div data-gc="conversa.message-attachments.div--3" className="pointer-events-none blur-xl brightness-50">{children}</div>
+      <div data-gc="conversa.message-attachments.div--3"
+        className={cn("pointer-events-none blur-xl brightness-50", flxCls("conteudoDoSpoiler"))}
+      >
+        {children}
+      </div>
 
       <span data-gc="conversa.message-attachments.span" className="absolute inset-0 flex items-center justify-center">
         <span data-gc="conversa.message-attachments.span--2" className="flex items-center gap-1.5 rounded-full bg-surface-0/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink transition group-hover:bg-surface-0">

@@ -151,7 +151,11 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 
         {aba === "geral" && perfil.bio && (
           <Bloco data-gc="perfil.full-profile-modal.bloco" titulo={t("perfil.sobre")}>
-            <p data-gc="perfil.full-profile-modal.p--2" className="whitespace-pre-wrap text-sm text-ink-muted">{perfil.bio}</p>
+            <p data-gc="perfil.full-profile-modal.p--2"
+              className={cn("whitespace-pre-wrap text-sm text-ink-muted", flxCls("bioDoPerfil"))}
+            >
+              {perfil.bio}
+            </p>
           </Bloco>
         )}
 
