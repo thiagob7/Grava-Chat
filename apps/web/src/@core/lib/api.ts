@@ -17,6 +17,10 @@ export const setSessionLostHandler = (fn: () => void) => {
   onSessionLost = fn;
 };
 
+/// Para quem descobre a sessão morta fora do caminho HTTP — o socket, por
+/// exemplo, que é recusado no aperto de mão e não passa pelo interceptador.
+export const avisarSessaoPerdida = () => onSessionLost?.();
+
 api.interceptors.request.use((config) => {
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   return config;

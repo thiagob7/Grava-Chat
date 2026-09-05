@@ -25,6 +25,10 @@ import type {
   ReadStateModel,
 } from "~/@core/domain/models/message-model";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
+import axios from "axios";
+
+import { avisarSessaoPerdida, refreshSession } from "~/@core/lib/api";
+import { deveTrocarToken } from "~/features/app/lib/reconexao";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import {
@@ -761,11 +765,41 @@ export function useRealtime(
     };
 
     const handleDisconnect = () => useConexaoStore.getState().caiu();
+
+    /*
+      O socket manda o access token no aperto de mão e tenta reconectar para
+      sempre — mas sempre com o MESMO token. Se ele venceu enquanto a conexão
+      estava caída, toda tentativa é recusada e a tela fica em "Reconectando"
+      até alguém recarregar na mão. Nada mais renova sozinho: quem renova é o
+      interceptador do axios, e ele só roda se houver chamada HTTP.
+
+      Então, ao ser recusado por token, trocamos a cópia da sessão aqui e
+      reconectamos — o auth é uma função, e a próxima tentativa já leva o
+      token novo.
+    */
+    let ultimaTroca = 0;
+
+    const handleConnectError = (erro: Error) => {
+      useConexaoStore.getState().caiu();
+
+      const agora = Date.now();
+      if (!deveTrocarToken(erro.message, agora, ultimaTroca)) return;
+      ultimaTroca = agora;
+
+      void refreshSession()
+        .then(() => socketInstance.connect())
+        .catch((falha) => {
+          if (axios.isAxiosError(falha) && falha.response?.status === 401) {
+            avisarSessaoPerdida();
+          }
+        });
+    };
     const handleTentativa = (n: number) =>
       useConexaoStore.getState().tentando(n);
 
     socketInstance.on("connect", handleConnect);
     socketInstance.on("disconnect", handleDisconnect);
+    socketInstance.on("connect_error", handleConnectError);
     socketInstance.io.on("reconnect_attempt", handleTentativa);
 
     if (socketInstance.connected) useConexaoStore.getState().conectou();
@@ -773,6 +807,7 @@ export function useRealtime(
     return () => {
       socketInstance.off("connect", handleConnect);
       socketInstance.off("disconnect", handleDisconnect);
+      socketInstance.off("connect_error", handleConnectError);
       socketInstance.io.off("reconnect_attempt", handleTentativa);
       offMessageCreated();
       offMessageUpdated();
