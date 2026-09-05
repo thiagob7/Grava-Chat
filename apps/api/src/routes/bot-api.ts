@@ -12,6 +12,7 @@ import {
 import { io } from "~/realtime/io.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { botService } from "~/services/bot-service.js";
+import { messageService } from "~/services/message-service.js";
 import { objectId } from "~/validations/common.js";
 
 const guildParams = z.object({ guildId: objectId });
@@ -24,6 +25,11 @@ const editarBody = editMessageInput.omit({ messageId: true });
 
 const reacaoParams = mensagemParams.extend({ emoji: z.string().min(1).max(80) });
 const reacaoBody = z.object({ burst: z.boolean().optional() });
+
+const historicoQuery = z.object({
+  before: objectId.optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
 
 async function botDoToken(req: FastifyRequest) {
   const cabecalho = req.headers.authorization;
@@ -85,6 +91,35 @@ export async function botApiRoutes(app: FastifyInstance) {
     });
 
     return reply.status(201).send(message);
+  });
+
+  app.get("/bot/canais/:channelId/mensagens", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { channelId } = canalParams.parse(req.params);
+    const { before, limit } = historicoQuery.parse(req.query);
+
+    return messageService.history(userId, channelId, { before, limit });
+  });
+
+  app.get("/bot/canais/:channelId/fixadas", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { channelId } = canalParams.parse(req.params);
+
+    return messageService.pinned(userId, channelId);
+  });
+
+  app.put("/bot/mensagens/:messageId/fixar", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { messageId } = mensagemParams.parse(req.params);
+
+    return messageService.pin(userId, messageId, true);
+  });
+
+  app.delete("/bot/mensagens/:messageId/fixar", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { messageId } = mensagemParams.parse(req.params);
+
+    return messageService.pin(userId, messageId, false);
   });
 
   app.patch("/bot/mensagens/:messageId", async (req) => {

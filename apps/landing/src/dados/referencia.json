@@ -40,6 +40,42 @@
       ]
     },
     {
+      "metodo": "GET",
+      "caminho": "/bot/canais/:channelId/mensagens",
+      "descricao": "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
+      "corpo": null,
+      "parametros": [
+        "channelId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/canais/:channelId/fixadas",
+      "descricao": "As mensagens fixadas do canal.",
+      "corpo": null,
+      "parametros": [
+        "channelId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/mensagens/:messageId/fixar",
+      "descricao": "Fixa a mensagem no canal.",
+      "corpo": null,
+      "parametros": [
+        "messageId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/mensagens/:messageId/fixar",
+      "descricao": "Desafixa a mensagem.",
+      "corpo": null,
+      "parametros": [
+        "messageId"
+      ]
+    },
+    {
       "metodo": "PATCH",
       "caminho": "/bot/mensagens/:messageId",
       "descricao": "Edita uma mensagem do próprio bot.",

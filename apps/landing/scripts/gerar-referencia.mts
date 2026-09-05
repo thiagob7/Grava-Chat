@@ -22,6 +22,11 @@ const DESCRICOES = {
   "GET /bot/servidores/:guildId/canais": "Os canais de um servidor, com o que o bot alcança.",
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
   "POST /bot/canais/:channelId/mensagens": "Manda uma mensagem no canal.",
+  "GET /bot/canais/:channelId/mensagens":
+    "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
+  "GET /bot/canais/:channelId/fixadas": "As mensagens fixadas do canal.",
+  "PUT /bot/mensagens/:messageId/fixar": "Fixa a mensagem no canal.",
+  "DELETE /bot/mensagens/:messageId/fixar": "Desafixa a mensagem.",
   "PATCH /bot/mensagens/:messageId": "Edita uma mensagem do próprio bot.",
   "DELETE /bot/mensagens/:messageId": "Apaga uma mensagem do próprio bot.",
   "PUT /bot/mensagens/:messageId/reacoes/:emoji": "Reage a uma mensagem.",
