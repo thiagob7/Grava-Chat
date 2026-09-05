@@ -149,6 +149,118 @@
       ]
     },
     {
+      "metodo": "PATCH",
+      "caminho": "/bot/servidores/:guildId",
+      "descricao": "Muda nome, ícone, banner ou descrição do servidor.",
+      "corpo": "updateGuildInput — tudo opcional",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/auditoria",
+      "descricao": "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "POST",
+      "caminho": "/bot/servidores/:guildId/cargos",
+      "descricao": "Cria um cargo, já com as permissões dele.",
+      "corpo": "createRoleInput — name, permissions[]",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PATCH",
+      "caminho": "/bot/servidores/:guildId/cargos/:roleId",
+      "descricao": "Muda nome, permissões, cor ou ícone do cargo.",
+      "corpo": "updateRoleInput — tudo opcional",
+      "parametros": [
+        "guildId",
+        "roleId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/servidores/:guildId/cargos/:roleId",
+      "descricao": "Apaga o cargo e tira ele de quem o tinha.",
+      "corpo": null,
+      "parametros": [
+        "guildId",
+        "roleId"
+      ]
+    },
+    {
+      "metodo": "PUT",
+      "caminho": "/bot/servidores/:guildId/cargos",
+      "descricao": "Reordena os cargos. A ordem é quem manda em quem.",
+      "corpo": "{ roles: [{ id, position }] }",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/expressoes",
+      "descricao": "Emojis, figurinhas e sons do servidor.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "POST",
+      "caminho": "/bot/servidores/:guildId/emojis",
+      "descricao": "Sobe um emoji a partir de uma URL de imagem.",
+      "corpo": "{ name, url, animated? }",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "PATCH",
+      "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
+      "descricao": "Renomeia o emoji.",
+      "corpo": "{ name }",
+      "parametros": [
+        "guildId",
+        "emojiId"
+      ]
+    },
+    {
+      "metodo": "DELETE",
+      "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
+      "descricao": "Apaga o emoji do servidor.",
+      "corpo": null,
+      "parametros": [
+        "guildId",
+        "emojiId"
+      ]
+    },
+    {
+      "metodo": "GET",
+      "caminho": "/bot/servidores/:guildId/webhooks",
+      "descricao": "Os webhooks do servidor, com a URL de cada um.",
+      "corpo": null,
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
+      "metodo": "POST",
+      "caminho": "/bot/servidores/:guildId/webhooks",
+      "descricao": "Cria um webhook apontado pra um canal.",
+      "corpo": "{ name, channelId }",
+      "parametros": [
+        "guildId"
+      ]
+    },
+    {
       "metodo": "PUT",
       "caminho": "/bot/comandos",
       "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",

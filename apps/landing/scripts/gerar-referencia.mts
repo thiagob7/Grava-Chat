@@ -39,6 +39,19 @@ const DESCRICOES = {
   "DELETE /bot/servidores/:guildId/canais/:channelId":
     "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
   "POST /bot/servidores/:guildId/convites": "Cria um link de convite pro servidor.",
+  "PATCH /bot/servidores/:guildId": "Muda nome, ícone, banner ou descrição do servidor.",
+  "GET /bot/servidores/:guildId/auditoria":
+    "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
+  "POST /bot/servidores/:guildId/cargos": "Cria um cargo, já com as permissões dele.",
+  "PATCH /bot/servidores/:guildId/cargos/:roleId": "Muda nome, permissões, cor ou ícone do cargo.",
+  "DELETE /bot/servidores/:guildId/cargos/:roleId": "Apaga o cargo e tira ele de quem o tinha.",
+  "PUT /bot/servidores/:guildId/cargos": "Reordena os cargos. A ordem é quem manda em quem.",
+  "GET /bot/servidores/:guildId/expressoes": "Emojis, figurinhas e sons do servidor.",
+  "POST /bot/servidores/:guildId/emojis": "Sobe um emoji a partir de uma URL de imagem.",
+  "PATCH /bot/servidores/:guildId/emojis/:emojiId": "Renomeia o emoji.",
+  "DELETE /bot/servidores/:guildId/emojis/:emojiId": "Apaga o emoji do servidor.",
+  "GET /bot/servidores/:guildId/webhooks": "Os webhooks do servidor, com a URL de cada um.",
+  "POST /bot/servidores/:guildId/webhooks": "Cria um webhook apontado pra um canal.",
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
   "POST /bot/canais/:channelId/mensagens": "Manda uma mensagem no canal.",
   "GET /bot/canais/:channelId/mensagens":
@@ -91,6 +104,13 @@ const RECEBIDOS = {
 };
 
 const CORPOS = {
+  "PATCH /bot/servidores/:guildId": "updateGuildInput — tudo opcional",
+  "POST /bot/servidores/:guildId/cargos": "createRoleInput — name, permissions[]",
+  "PATCH /bot/servidores/:guildId/cargos/:roleId": "updateRoleInput — tudo opcional",
+  "PUT /bot/servidores/:guildId/cargos": "{ roles: [{ id, position }] }",
+  "POST /bot/servidores/:guildId/emojis": "{ name, url, animated? }",
+  "PATCH /bot/servidores/:guildId/emojis/:emojiId": "{ name }",
+  "POST /bot/servidores/:guildId/webhooks": "{ name, channelId }",
   "POST /bot/servidores/:guildId/canais": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
   "PATCH /bot/servidores/:guildId/canais/:channelId": "updateChannelInput — tudo opcional",
   "POST /bot/servidores/:guildId/convites": "{ maxUses?: number, expiresInHours?: number }",

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { definirComandosInput, editMessageInput, sendMessageInput, rooms } from "@gravae/shared";
 
 import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
+import { baseUrlDe } from "~/lib/endereco.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import {
   apagarMensagem,
@@ -19,8 +20,19 @@ import { moderationService } from "~/services/moderation-service.js";
 import { roleService } from "~/services/role-service.js";
 import { objectId } from "~/validations/common.js";
 import { banInput, nicknameInput, timeoutInput } from "~/validations/moderation.js";
-import { createChannelInput, updateChannelInput } from "~/validations/guild.js";
-import { setMemberRolesInput } from "~/validations/role.js";
+import { auditService } from "~/services/audit-service.js";
+import { expressionService } from "~/services/expression-service.js";
+import { webhookService } from "~/services/webhook-service.js";
+import { createEmojiInput, updateEmojiInput } from "~/validations/expression.js";
+import { createChannelInput, updateChannelInput, updateGuildInput } from "~/validations/guild.js";
+import { auditQuery } from "~/validations/moderation.js";
+import {
+  createRoleInput,
+  reorderRolesInput,
+  setMemberRolesInput,
+  updateRoleInput,
+} from "~/validations/role.js";
+import { createWebhookInput } from "~/validations/webhook.js";
 
 const guildParams = z.object({ guildId: objectId });
 const canalParams = z.object({ channelId: objectId });
@@ -35,6 +47,8 @@ const reacaoBody = z.object({ burst: z.boolean().optional() });
 
 const membroParams = guildParams.extend({ userId: objectId });
 const canalDoServidorParams = guildParams.extend({ channelId: objectId });
+const cargoParams = guildParams.extend({ roleId: objectId });
+const emojiParams = guildParams.extend({ emojiId: objectId });
 
 const conviteBody = z.object({
   maxUses: z.number().int().min(1).max(1000).nullable().optional(),
@@ -193,6 +207,106 @@ export async function botApiRoutes(app: FastifyInstance) {
     const convite = await guildService.createInvite(userId, guildId, conviteBody.parse(req.body ?? {}));
 
     return reply.status(201).send(convite);
+  });
+
+  app.patch("/bot/servidores/:guildId", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return guildService.update(userId, guildId, updateGuildInput.parse(req.body));
+  });
+
+  app.get("/bot/servidores/:guildId/auditoria", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return auditService.list(userId, guildId, auditQuery.parse(req.query));
+  });
+
+  app.post("/bot/servidores/:guildId/cargos", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    const cargo = await roleService.create(userId, guildId, createRoleInput.parse(req.body));
+
+    return reply.status(201).send(cargo);
+  });
+
+  app.patch("/bot/servidores/:guildId/cargos/:roleId", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, roleId } = cargoParams.parse(req.params);
+
+    return roleService.update(userId, guildId, roleId, updateRoleInput.parse(req.body));
+  });
+
+  app.delete("/bot/servidores/:guildId/cargos/:roleId", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, roleId } = cargoParams.parse(req.params);
+
+    await roleService.remove(userId, guildId, roleId);
+
+    return reply.status(204).send();
+  });
+
+  app.put("/bot/servidores/:guildId/cargos", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return roleService.reorder(userId, guildId, reorderRolesInput.parse(req.body));
+  });
+
+  app.get("/bot/servidores/:guildId/expressoes", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return expressionService.list(userId, guildId);
+  });
+
+  app.post("/bot/servidores/:guildId/emojis", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    const emoji = await expressionService.createEmoji(userId, guildId, createEmojiInput.parse(req.body));
+
+    return reply.status(201).send(emoji);
+  });
+
+  app.patch("/bot/servidores/:guildId/emojis/:emojiId", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, emojiId } = emojiParams.parse(req.params);
+    const { name } = updateEmojiInput.parse(req.body);
+
+    return expressionService.renameEmoji(userId, guildId, emojiId, name);
+  });
+
+  app.delete("/bot/servidores/:guildId/emojis/:emojiId", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, emojiId } = emojiParams.parse(req.params);
+
+    await expressionService.removeEmoji(userId, guildId, emojiId);
+
+    return reply.status(204).send();
+  });
+
+  app.get("/bot/servidores/:guildId/webhooks", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    return webhookService.list(userId, guildId, baseUrlDe(req));
+  });
+
+  app.post("/bot/servidores/:guildId/webhooks", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId } = guildParams.parse(req.params);
+
+    const webhook = await webhookService.create(
+      userId,
+      guildId,
+      createWebhookInput.parse(req.body),
+      baseUrlDe(req),
+    );
+
+    return reply.status(201).send(webhook);
   });
 
   app.put("/bot/comandos", async (req) => {
