@@ -34,7 +34,14 @@ export const AppRoutes: React.FC = () => {
   <BrowserRouter>
     <div data-gc="routes.div" className="flex h-full flex-col">
       <CascaDoApp data-gc="routes.casca-do-app">
-      <div data-gc="routes.div--2" {...flx("molduraDoApp", "min-h-0 flex-1")}>
+      {/*
+        O app não rola para o lado, nunca. Um tema pode empurrar um painel para
+        fora — o jeito de encolher a lista de membros, por exemplo, é jogá-la
+        13rem para a direita e só trazer de volta no hover. Sem alguém cortando
+        aqui, esse empurrão vira barra de rolagem horizontal e o trilho sai pela
+        esquerda.
+      */}
+      <div data-gc="routes.div--2" {...flx("molduraDoApp", "min-h-0 flex-1 overflow-x-hidden")}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route

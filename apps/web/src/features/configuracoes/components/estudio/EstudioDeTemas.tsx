@@ -412,7 +412,7 @@ const AbaDeCss: React.FC = () => {
 
       <ComentariosQuebrados data-gc="configuracoes.estudio.estudio-de-temas.comentarios-quebrados.definir-css" css={css} onConsertar={definirCss} />
 
-      <PonteComOFluxer data-gc="configuracoes.estudio.estudio-de-temas.ponte-com-ofluxer" css={css} />
+      <TemaImportado data-gc="configuracoes.estudio.estudio-de-temas.tema-importado" css={css} />
 
       <p data-gc="configuracoes.estudio.estudio-de-temas.p--6" className="shrink-0 border-t border-line px-6 py-2 text-xs text-ink-faint">
         {linhas} {linhas === 1 ? "linha" : "linhas"} · {css.length} caracteres —
@@ -512,7 +512,7 @@ function useListaDeGanchos(precisa: boolean) {
 }
 
 /*
-  Quando o tema é do Fluxer, mostra o que ele mira e não acha aqui.
+  Quando o tema vem de outro cliente, mostra o que ele mira e não acha aqui.
 
   Sem isto, "está quase igual mas não está" vira comparação de print. Com isto,
   é uma lista: cada nome que sobra é um pedaço do tema sem efeito, e cada um
@@ -572,7 +572,7 @@ const ComentariosQuebrados: React.FC<{
   );
 };
 
-const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
+const TemaImportado: React.FC<{ css: string }> = ({ css }) => {
   const [aberto, setAberto] = useState(false);
 
   /// Confere depois de normalizar: é assim que o CSS chega na tela.
@@ -594,7 +594,7 @@ const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
       >
         <ChevronRight data-gc="configuracoes.estudio.estudio-de-temas.chevron-right--2" size={14} className={cn("transition-transform", aberto && "rotate-90")} />
-        Ponte com o Fluxer
+        Tema importado
         <span data-gc="configuracoes.estudio.estudio-de-temas.span--5" className="ml-auto normal-case tracking-normal">
           <span data-gc="configuracoes.estudio.estudio-de-temas.span--6" className={cn("font-mono", faltando.length ? "text-aviso" : "text-online")}>
             {achados.length}/{total}
@@ -607,13 +607,13 @@ const PonteComOFluxer: React.FC<{ css: string }> = ({ css }) => {
           {travados > 0 && (
             <p data-gc="configuracoes.estudio.estudio-de-temas.p--10" className="mt-2 text-xs text-ink-muted">
               {travados} {travados === 1 ? "seletor vinha travado" : "seletores vinham travados"} no
-              hash de um build do Fluxer. Travado assim não acha nada em lugar nenhum, nem lá com
-              outro build — então soltamos do hash na entrada. O seu arquivo não muda.
+              nome interno de outro cliente. Travado assim não acha nada em lugar nenhum, nem onde
+              foi escrito — então soltamos o travamento na entrada. O seu arquivo não muda.
             </p>
           )}
 
           <p data-gc="configuracoes.estudio.estudio-de-temas.p--11" className="mt-2 text-xs text-ink-faint">
-            Este tema mira {total} {total === 1 ? "lugar" : "lugares"} da árvore do Fluxer.{" "}
+            Este tema mira {total} {total === 1 ? "lugar" : "lugares"} de outro cliente.{" "}
             {faltando.length
               ? `${faltando.length} não ${faltando.length === 1 ? "existe" : "existem"} aqui — o que o tema faz neles não tem efeito.`
               : "Todos existem aqui."}
