@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { NOMES_DE_ORIGEM, traduzirTema } from "~/features/configuracoes/lib/ponte-de-tema";
+
 export interface TemaSalvo {
   id: string;
   nome: string;
@@ -71,6 +73,42 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   estilo.textContent = estado.css;
+
+  aplicarPonte(estado);
+}
+
+/// O que a ponte escreveu da última vez, para limpar quando o tema sair.
+let daPonte = new Set<string>();
+
+/*
+  Depois que a folha do tema entra, lemos as variáveis que ELE declarou e
+  escrevemos nos nossos nomes. Precisa ser depois: só com a folha aplicada o
+  getComputedStyle enxerga o que ela definiu.
+*/
+function aplicarPonte(estado: EstadoDoEstudio) {
+  const raiz = document.documentElement;
+
+  for (const nome of daPonte) {
+    if (!(nome in estado.substituicoes)) raiz.style.removeProperty(nome);
+  }
+
+  daPonte = new Set();
+
+  if (!estado.css.trim()) return;
+
+  const lido = getComputedStyle(raiz);
+  const origens: Record<string, string> = {};
+
+  for (const nome of NOMES_DE_ORIGEM) {
+    origens[nome] = lido.getPropertyValue(nome);
+  }
+
+  const escolhidos = new Set(Object.keys(estado.substituicoes));
+
+  for (const [nome, valor] of Object.entries(traduzirTema(origens, escolhidos))) {
+    raiz.style.setProperty(nome, valor);
+    daPonte.add(nome);
+  }
 }
 
 export const useEstudio = create<EstudioStore>((set, store) => {
