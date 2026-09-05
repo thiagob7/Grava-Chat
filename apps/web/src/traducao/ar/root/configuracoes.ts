@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "إمكانية الوصول",
     idioma: "اللغة",
     aplicativo: "تنزيل التطبيق",
+    atalhos: "الاختصارات",
     servidor: "الخادم",
   },
   grupos: {

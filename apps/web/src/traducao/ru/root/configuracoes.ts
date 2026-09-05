@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Доступность",
     idioma: "Язык",
     aplicativo: "Скачать приложение",
+    atalhos: "Горячие клавиши",
     servidor: "Сервер",
   },
   grupos: {

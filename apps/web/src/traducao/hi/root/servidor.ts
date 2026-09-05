@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "कैसे इस्तेमाल करें",
     comoUsarTexto: "JSON के साथ POST भेजिए:",
   },
+  explorar: {
+    titulo: "एक्सप्लोर",
+  },
   engajamento: {
     semCanal: "कोई सिस्टम चैनल नहीं",
     titulo: "सक्रियता",

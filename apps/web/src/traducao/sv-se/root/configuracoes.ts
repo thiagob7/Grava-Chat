@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Tillgänglighet",
     idioma: "Språk",
     aplicativo: "Ladda ner appen",
+    atalhos: "Kortkommandon",
     servidor: "Server",
   },
   grupos: {

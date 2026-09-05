@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Cara memakai",
     comoUsarTexto: "Kirim POST berisi JSON:",
   },
+  explorar: {
+    titulo: "Jelajahi",
+  },
   engajamento: {
     semCanal: "Tanpa kanal sistem",
     titulo: "Keterlibatan",

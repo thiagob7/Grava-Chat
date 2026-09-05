@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "怎麼用",
     comoUsarTexto: "送出帶 JSON 的 POST：",
   },
+  explorar: {
+    titulo: "探索",
+  },
   engajamento: {
     semCanal: "沒有系統頻道",
     titulo: "活躍度",

@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "सुगम्यता",
     idioma: "भाषा",
     aplicativo: "ऐप डाउनलोड करें",
+    atalhos: "शॉर्टकट",
     servidor: "सर्वर",
   },
   grupos: {

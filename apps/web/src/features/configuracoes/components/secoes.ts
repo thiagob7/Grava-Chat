@@ -13,6 +13,7 @@ export type Secao =
   | "acessibilidade"
   | "idioma"
   | "aplicativo"
+  | "atalhos"
   | "servidor";
 
 export interface SubSecao {
@@ -101,5 +102,6 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   aplicativos: [],
   conexoes: [],
   aplicativo: [],
+  atalhos: [],
   servidor: [],
 };

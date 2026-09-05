@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Cách dùng",
     comoUsarTexto: "Gửi một POST kèm JSON:",
   },
+  explorar: {
+    titulo: "Khám phá",
+  },
   engajamento: {
     semCanal: "Không có kênh hệ thống",
     titulo: "Sức sống",

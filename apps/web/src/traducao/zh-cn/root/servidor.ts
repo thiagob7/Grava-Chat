@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "怎么用",
     comoUsarTexto: "发送带 JSON 的 POST：",
   },
+  explorar: {
+    titulo: "发现",
+  },
   engajamento: {
     semCanal: "没有系统频道",
     titulo: "活跃度",

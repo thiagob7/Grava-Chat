@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "การเข้าถึง",
     idioma: "ภาษา",
     aplicativo: "ดาวน์โหลดแอป",
+    atalhos: "ทางลัด",
     servidor: "เซิร์ฟเวอร์",
   },
   grupos: {

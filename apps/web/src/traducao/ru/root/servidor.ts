@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Как пользоваться",
     comoUsarTexto: "Отправьте POST с JSON:",
   },
+  explorar: {
+    titulo: "Обзор",
+  },
   engajamento: {
     semCanal: "Без системного канала",
     titulo: "Вовлечение",

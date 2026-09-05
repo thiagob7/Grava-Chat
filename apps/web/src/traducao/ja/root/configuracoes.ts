@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "アクセシビリティ",
     idioma: "言語",
     aplicativo: "アプリを入手",
+    atalhos: "ショートカット",
     servidor: "サーバー",
   },
   grupos: {

@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Használat",
     comoUsarTexto: "Küldj egy POST-ot JSON-nal:",
   },
+  explorar: {
+    titulo: "Felfedezés",
+  },
   engajamento: {
     semCanal: "Nincs rendszercsatorna",
     titulo: "Élénkítés",

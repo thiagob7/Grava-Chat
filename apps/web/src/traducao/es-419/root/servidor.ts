@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Cómo se usa",
     comoUsarTexto: "Mandá un POST con JSON:",
   },
+  explorar: {
+    titulo: "Explorar",
+  },
   engajamento: {
     semCanal: "Sin canal de sistema",
     titulo: "Participación",

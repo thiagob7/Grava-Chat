@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Cum se folosește",
     comoUsarTexto: "Trimite un POST cu JSON:",
   },
+  explorar: {
+    titulo: "Explorează",
+  },
   engajamento: {
     semCanal: "Fără canal de sistem",
     titulo: "Implicare",

@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Tilgjengelighet",
     idioma: "Språk",
     aplicativo: "Last ned appen",
+    atalhos: "Snarveier",
     servidor: "Server",
   },
   grupos: {

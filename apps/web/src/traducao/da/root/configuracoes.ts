@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Tilgængelighed",
     idioma: "Sprog",
     aplicativo: "Hent appen",
+    atalhos: "Genveje",
     servidor: "Server",
   },
   grupos: {

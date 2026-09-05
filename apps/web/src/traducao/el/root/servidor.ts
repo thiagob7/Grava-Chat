@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Πώς χρησιμοποιείται",
     comoUsarTexto: "Στείλε ένα POST με JSON:",
   },
+  explorar: {
+    titulo: "Εξερεύνηση",
+  },
   engajamento: {
     semCanal: "Χωρίς κανάλι συστήματος",
     titulo: "Δραστηριότητα",

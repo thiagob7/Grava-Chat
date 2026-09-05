@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "נגישות",
     idioma: "שפה",
     aplicativo: "הורדת האפליקציה",
+    atalhos: "קיצורי מקלדת",
     servidor: "שרת",
   },
   grupos: {

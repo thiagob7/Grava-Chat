@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Barrierefreiheit",
     idioma: "Sprache",
     aplicativo: "App herunterladen",
+    atalhos: "Tastenkürzel",
     servidor: "Server",
   },
   grupos: {

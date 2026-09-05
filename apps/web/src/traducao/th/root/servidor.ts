@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "วิธีใช้",
     comoUsarTexto: "ส่ง POST เป็น JSON:",
   },
+  explorar: {
+    titulo: "สำรวจ",
+  },
   engajamento: {
     semCanal: "ไม่มีช่องระบบ",
     titulo: "ความมีชีวิตชีวา",

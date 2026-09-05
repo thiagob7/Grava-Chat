@@ -81,6 +81,9 @@ export const servidor = {
       "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
   },
 
+  explorar: {
+    titulo: "Explorar",
+  },
   engajamento: {
     titulo: "Engajamento",
     descricao:

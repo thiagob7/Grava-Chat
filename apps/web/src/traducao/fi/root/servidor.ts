@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Näin sitä käytetään",
     comoUsarTexto: "Lähetä POST JSONilla:",
   },
+  explorar: {
+    titulo: "Löydä",
+  },
   engajamento: {
     semCanal: "Ei järjestelmäkanavaa",
     titulo: "Aktiivisuus",

@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "无障碍",
     idioma: "语言",
     aplicativo: "下载应用",
+    atalhos: "快捷键",
     servidor: "服务器",
   },
   grupos: {

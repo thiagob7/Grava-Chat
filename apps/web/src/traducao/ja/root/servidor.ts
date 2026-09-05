@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "使い方",
     comoUsarTexto: "JSON を付けて POST を送ってください：",
   },
+  explorar: {
+    titulo: "見つける",
+  },
   engajamento: {
     semCanal: "システムチャンネルなし",
     titulo: "にぎわい",

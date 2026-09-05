@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "איך משתמשים",
     comoUsarTexto: "שלח POST עם JSON:",
   },
+  explorar: {
+    titulo: "גילוי",
+  },
   engajamento: {
     semCanal: "אין ערוץ מערכת",
     titulo: "מעורבות",

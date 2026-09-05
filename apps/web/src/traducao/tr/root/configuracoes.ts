@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Erişilebilirlik",
     idioma: "Dil",
     aplicativo: "Uygulamayı indir",
+    atalhos: "Kısayollar",
     servidor: "Sunucu",
   },
   grupos: {

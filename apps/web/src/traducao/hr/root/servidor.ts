@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Kako se koristi",
     comoUsarTexto: "Pošalji POST s JSON-om:",
   },
+  explorar: {
+    titulo: "Otkrivanje",
+  },
   engajamento: {
     semCanal: "Bez sustavnog kanala",
     titulo: "Uključenost",

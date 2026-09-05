@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Sådan bruger du det",
     comoUsarTexto: "Send en POST med JSON:",
   },
+  explorar: {
+    titulo: "Udforsk",
+  },
   engajamento: {
     semCanal: "Ingen systemkanal",
     titulo: "Engagement",

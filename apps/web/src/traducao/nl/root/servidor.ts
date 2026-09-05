@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Zo gebruik je het",
     comoUsarTexto: "Stuur een POST met JSON:",
   },
+  explorar: {
+    titulo: "Ontdekken",
+  },
   engajamento: {
     semCanal: "Geen systeemkanaal",
     titulo: "Betrokkenheid",

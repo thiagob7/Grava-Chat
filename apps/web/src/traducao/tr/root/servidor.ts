@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Nasıl kullanılır",
     comoUsarTexto: "JSON ile bir POST gönder:",
   },
+  explorar: {
+    titulo: "Keşfet",
+  },
   engajamento: {
     semCanal: "Sistem kanalı yok",
     titulo: "Canlandırma",

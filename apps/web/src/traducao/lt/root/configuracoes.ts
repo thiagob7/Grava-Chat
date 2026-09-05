@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Prieinamumas",
     idioma: "Kalba",
     aplicativo: "Atsisiųsti programą",
+    atalhos: "Spartieji klavišai",
     servidor: "Serveris",
   },
   grupos: {

@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Προσβασιμότητα",
     idioma: "Γλώσσα",
     aplicativo: "Λήψη της εφαρμογής",
+    atalhos: "Συντομεύσεις",
     servidor: "Διακομιστής",
   },
   grupos: {

@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "Kaip naudoti",
     comoUsarTexto: "Siųsk POST su JSON:",
   },
+  explorar: {
+    titulo: "Naršyti",
+  },
   engajamento: {
     semCanal: "Nėra sistemos kanalo",
     titulo: "Įsitraukimas",

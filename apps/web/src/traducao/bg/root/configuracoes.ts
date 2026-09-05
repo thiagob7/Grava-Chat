@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Достъпност",
     idioma: "Език",
     aplicativo: "Изтегли приложението",
+    atalhos: "Клавишни комбинации",
     servidor: "Сървър",
   },
   grupos: {

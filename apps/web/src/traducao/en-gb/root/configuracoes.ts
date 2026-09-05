@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Accessibility",
     idioma: "Language",
     aplicativo: "Get the app",
+    atalhos: "Shortcuts",
     servidor: "Server",
   },
   grupos: {

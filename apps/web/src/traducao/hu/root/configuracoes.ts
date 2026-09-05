@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Kisegítő lehetőségek",
     idioma: "Nyelv",
     aplicativo: "Alkalmazás letöltése",
+    atalhos: "Gyorsbillentyűk",
     servidor: "Kiszolgáló",
   },
   grupos: {

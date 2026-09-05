@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Aksesibilitas",
     idioma: "Bahasa",
     aplicativo: "Unduh aplikasi",
+    atalhos: "Pintasan",
     servidor: "Server",
   },
   grupos: {

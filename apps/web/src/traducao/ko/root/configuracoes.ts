@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "접근성",
     idioma: "언어",
     aplicativo: "앱 받기",
+    atalhos: "단축키",
     servidor: "서버",
   },
   grupos: {

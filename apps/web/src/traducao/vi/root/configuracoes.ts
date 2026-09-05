@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Trợ năng",
     idioma: "Ngôn ngữ",
     aplicativo: "Tải ứng dụng",
+    atalhos: "Phím tắt",
     servidor: "Máy chủ",
   },
   grupos: {

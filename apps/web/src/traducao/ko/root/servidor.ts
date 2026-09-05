@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "사용법",
     comoUsarTexto: "JSON으로 POST를 보내세요:",
   },
+  explorar: {
+    titulo: "탐색",
+  },
   engajamento: {
     semCanal: "시스템 채널 없음",
     titulo: "활기",

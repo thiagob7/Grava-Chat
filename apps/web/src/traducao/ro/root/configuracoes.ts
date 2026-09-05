@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Accesibilitate",
     idioma: "Limbă",
     aplicativo: "Descarcă aplicația",
+    atalhos: "Scurtături",
     servidor: "Server",
   },
   grupos: {

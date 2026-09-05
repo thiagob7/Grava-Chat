@@ -58,6 +58,9 @@ export const servidor = {
     comoUsar: "طريقة الاستخدام",
     comoUsarTexto: "أرسل POST بصيغة JSON:",
   },
+  explorar: {
+    titulo: "استكشاف",
+  },
   engajamento: {
     semCanal: "بلا قناة نظام",
     titulo: "التفاعل",

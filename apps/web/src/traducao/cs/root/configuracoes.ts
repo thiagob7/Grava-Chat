@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Přístupnost",
     idioma: "Jazyk",
     aplicativo: "Stáhnout aplikaci",
+    atalhos: "Klávesové zkratky",
     servidor: "Server",
   },
   grupos: {

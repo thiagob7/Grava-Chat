@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Pristupačnost",
     idioma: "Jezik",
     aplicativo: "Preuzmi aplikaciju",
+    atalhos: "Prečaci",
     servidor: "Poslužitelj",
   },
   grupos: {

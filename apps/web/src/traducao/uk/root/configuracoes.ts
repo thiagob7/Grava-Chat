@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Доступність",
     idioma: "Мова",
     aplicativo: "Завантажити застосунок",
+    atalhos: "Гарячі клавіші",
     servidor: "Сервер",
   },
   grupos: {

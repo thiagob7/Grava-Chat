@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Saavutettavuus",
     idioma: "Kieli",
     aplicativo: "Lataa sovellus",
+    atalhos: "Pikanäppäimet",
     servidor: "Palvelin",
   },
   grupos: {

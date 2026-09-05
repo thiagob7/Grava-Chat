@@ -17,6 +17,7 @@ export const configuracoes = {
     acessibilidade: "Toegankelijkheid",
     idioma: "Taal",
     aplicativo: "App downloaden",
+    atalhos: "Sneltoetsen",
     servidor: "Server",
   },
   grupos: {
