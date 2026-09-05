@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && yarn build --filter=@gravae/landing",
+  "installCommand": "cd ../.. && yarn install --frozen-lockfile",
+  "framework": "nextjs"
+}
