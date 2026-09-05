@@ -206,12 +206,38 @@ if (semDescricao.length) {
   process.exit(1);
 }
 
+const GRUPOS_DE_ROTA = [
+  { titulo: "Identidade", teste: /^\/bot\/(eu|comandos)$/ },
+  { titulo: "Mensagens", teste: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/ },
+  { titulo: "Servidores e canais", teste: /^\/bot\/servidores(\/:guildId(\/canais|\/convites)?)?$/ },
+  { titulo: "Membros e moderação", teste: /^\/bot\/servidores\/:guildId\/(membros|castigos|banimentos|auditoria)/ },
+  { titulo: "Cargos", teste: /^\/bot\/servidores\/:guildId\/cargos/ },
+  { titulo: "Expressões", teste: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/ },
+  { titulo: "Webhooks", teste: /^\/bot\/servidores\/:guildId\/webhooks/ },
+  { titulo: "Servidores e canais", teste: /^\/bot\/servidores\/:guildId\/canais/ },
+];
+
+const grupoDa = (caminho: string) =>
+  GRUPOS_DE_ROTA.find(({ teste }) => teste.test(caminho))?.titulo;
+
+const semGrupo = rotas.filter(({ caminho }) => !grupoDa(caminho));
+
+if (semGrupo.length) {
+  console.error(
+    `\n  Rota que não cai em grupo nenhum, então ficaria solta na página:\n\n` +
+      semGrupo.map(({ metodo, caminho }) => `    ${metodo} ${caminho}`).join("\n") +
+      `\n\n  Acrescente um GRUPOS_DE_ROTA em apps/landing/scripts/gerar-referencia.mts.\n`,
+  );
+  process.exit(1);
+}
+
 const rest = rotas.map(({ metodo, caminho }) => {
   const chave = `${metodo} ${caminho}`;
 
   return {
     metodo,
     caminho,
+    grupo: grupoDa(caminho)!,
     descricao: DESCRICOES[chave],
     corpo: CORPOS[chave] ?? null,
     parametros: [...caminho.matchAll(/:(\w+)/g)].map(([, nome]) => nome),
