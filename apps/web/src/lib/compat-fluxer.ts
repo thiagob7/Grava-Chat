@@ -24,6 +24,22 @@ interface Lugar {
   flx?: string;
 }
 
+/*
+  Nem todo nome deles carrega a mesma coisa. Uns só pintam — borda, fundo, raio,
+  desfoque, rótulo — e cabem em qualquer elemento que faça o papel. Outros o tema
+  usa para MEDIR, e aí o nome só serve se a nossa peça tiver a mesma posição na
+  árvore.
+
+  Foi por ignorar isso que a tela quebrou: o `guildListScrollerWrapper` lá é o
+  rolador dentro da coluna do trilho, e ganha `width: -webkit-fill-available`
+  para preencher a coluna. Aqui o nosso trilho É a coluna, então ele passou a
+  preencher a linha toda.
+
+  Nome que mede e não casa fica de fora. Quando ele traz coisa boa junto — o
+  painel do usuário traz borda e rótulo com a largura errada — o nome entra e a
+  medida volta pela folha de correções.
+*/
+
 export const LUGARES = {
   /// A moldura de tudo: é onde entra o respiro entre painéis.
   molduraDoApp: { classes: ["AppLayout.module__appLayout_gc"] },
@@ -44,11 +60,13 @@ export const LUGARES = {
     ],
   },
 
+  /*
+    Sem o `guildListScrollerWrapper`: esse nome existe no tema só para a regra
+    de largura, e o nosso trilho já é a coluna. O data-flx fica, que é o que
+    traz a borda e o rótulo "nav".
+  */
   trilhoDeServidores: {
-    classes: [
-      "GuildsLayout.module__guildListScrollContainer_gc",
-      "GuildsLayout.module__guildListScrollerWrapper_gc",
-    ],
+    classes: ["GuildsLayout.module__guildListScrollContainer_gc"],
     flx: "app.guilds-layout.guild-list.guild-list-scroller-wrapper",
   },
 

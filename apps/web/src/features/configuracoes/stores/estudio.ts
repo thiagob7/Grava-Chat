@@ -2,6 +2,10 @@ import { create } from "zustand";
 
 import { lerCabecalhoDoTema } from "@gravae/shared";
 
+import {
+  CORRECOES_DO_FLUXER,
+  pareceTemaDoFluxer,
+} from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import { NOMES_DE_ORIGEM, traduzirTema } from "~/features/configuracoes/lib/ponte-de-tema";
 
@@ -73,6 +77,7 @@ function ler(): EstadoDoEstudio {
 }
 
 const ID_DO_ESTILO = "gc-estudio-css";
+const ID_DAS_CORRECOES = "gc-correcoes-fluxer";
 
 let escritos = new Set<string>();
 
@@ -97,6 +102,24 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   estilo.textContent = estado.css;
+
+  /*
+    Depois da folha do tema, senão não corrige nada: aqui é a última palavra
+    sobre o que a nossa árvore mede.
+  */
+  let correcoes = document.getElementById(ID_DAS_CORRECOES);
+
+  if (pareceTemaDoFluxer(estado.css)) {
+    if (!correcoes) {
+      correcoes = document.createElement("style");
+      correcoes.id = ID_DAS_CORRECOES;
+      document.head.appendChild(correcoes);
+    }
+
+    correcoes.textContent = CORRECOES_DO_FLUXER;
+  } else {
+    correcoes?.remove();
+  }
 
   aplicarPonte(estado);
   avisarTemaAplicado();
