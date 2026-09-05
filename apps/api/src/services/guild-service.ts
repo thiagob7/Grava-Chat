@@ -530,8 +530,12 @@ export const guildService = {
   },
 
   async removeMember(actorId: string, guildId: string, targetId: string) {
-    if (targetId !== actorId) await accessService.requirePermission(actorId, guildId, "KICK_MEMBERS");
-    else await accessService.requireMember(actorId, guildId);
+    if (targetId !== actorId) {
+      const contexto = await accessService.requirePermission(actorId, guildId, "KICK_MEMBERS");
+      await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
+    } else {
+      await accessService.requireMember(actorId, guildId);
+    }
 
     const guild = await guildRepository.findById(guildId);
     if (!guild) throw new NotFoundError("Servidor não encontrado");

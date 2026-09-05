@@ -5,7 +5,7 @@ import {
   type Permission,
   type RoleLike,
 } from "@gravae/shared";
-import { NotFoundError, ForbiddenError } from "~/lib/http.js";
+import { AppError, NotFoundError, ForbiddenError } from "~/lib/http.js";
 import { memberRepository, channelRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
 import { dmRepository } from "~/repositories/friendship-repository.js";
@@ -136,5 +136,24 @@ export const accessService = {
   requireAbove(contexto: Contexto, posicaoAlvo: number, mensagem: string) {
     if (contexto.isOwner) return;
     if (contexto.highest <= posicaoAlvo) throw new ForbiddenError(mensagem);
+  },
+
+  async requireAcimaDoAlvo(contexto: Contexto, guildId: string, targetId: string) {
+    const guild = await guildRepository.findById(guildId);
+    if (!guild) throw new NotFoundError("Servidor não encontrado");
+    if (guild.ownerId === targetId) {
+      throw new AppError("O dono do servidor não pode ser moderado", 403);
+    }
+
+    const alvo = await memberRepository.find(guildId, targetId);
+    if (!alvo) return;
+
+    const roles = await roleRepository.findForMember(guildId, alvo.roleIds);
+
+    accessService.requireAbove(
+      contexto,
+      highestPosition(roles),
+      "Esta pessoa está acima de você na hierarquia",
+    );
   },
 };

@@ -1,31 +1,13 @@
-import { highestPosition } from "@gravae/shared";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { toMember, toPublicUser } from "~/lib/serialize.js";
 import { banRepository } from "~/repositories/ban-repository.js";
 import { guildRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
-import { roleRepository } from "~/repositories/role-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService, type Contexto } from "./access-service.js";
 import { auditService } from "./audit-service.js";
 import { uploadService } from "./upload-service.js";
 import type { BanInput, TimeoutInput } from "~/validations/moderation.js";
-
-async function requireAcimaDoAlvo(contexto: Contexto, guildId: string, targetId: string) {
-  const guild = await guildRepository.findById(guildId);
-  if (!guild) throw new NotFoundError("Servidor não encontrado");
-  if (guild.ownerId === targetId) throw new AppError("O dono do servidor não pode ser moderado", 403);
-
-  const alvo = await memberRepository.find(guildId, targetId);
-  if (!alvo) return;
-
-  const roles = await roleRepository.findForMember(guildId, alvo.roleIds);
-  accessService.requireAbove(
-    contexto,
-    highestPosition(roles),
-    "Esta pessoa está acima de você na hierarquia",
-  );
-}
 
 export const moderationService = {
   async listBans(userId: string, guildId: string) {
@@ -45,7 +27,7 @@ export const moderationService = {
 
   async ban(actorId: string, guildId: string, targetId: string, input: BanInput) {
     const contexto = await accessService.requirePermission(actorId, guildId, "BAN_MEMBERS");
-    await requireAcimaDoAlvo(contexto, guildId, targetId);
+    await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
 
     if (await banRepository.find(guildId, targetId)) throw new AppError("Esta pessoa já está banida");
 
@@ -103,7 +85,7 @@ export const moderationService = {
 
   async castigar(actorId: string, guildId: string, targetId: string, input: TimeoutInput) {
     const contexto = await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
-    await requireAcimaDoAlvo(contexto, guildId, targetId);
+    await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
 
     const ate = input.minutos ? new Date(Date.now() + input.minutos * 60_000) : null;
     const member = await memberRepository.setTimeout(guildId, targetId, ate);
@@ -127,7 +109,7 @@ export const moderationService = {
       await accessService.requirePermission(actorId, guildId, "CHANGE_NICKNAME");
     } else {
       const contexto = await accessService.requirePermission(actorId, guildId, "MANAGE_NICKNAMES");
-      await requireAcimaDoAlvo(contexto, guildId, targetId);
+      await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
     }
 
     const member = await memberRepository.setNickname(guildId, targetId, nickname);
