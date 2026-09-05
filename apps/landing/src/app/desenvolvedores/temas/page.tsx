@@ -125,7 +125,8 @@ export default function Temas() {
           valendo, ele só entra sem nome no estúdio. Para instalar, abra{" "}
           <strong className="text-ink">Configurações → Aparência → Estúdio de temas</strong> e
           arraste o arquivo — ou uma pasta inteira, que vira uma biblioteca com um tema ativo
-          por vez.
+          por vez. O botão <strong className="text-ink">Abrir em janela</strong> tira o estúdio do
+          modal e o põe numa janela ao lado, com o app vivo atrás: o que você digita pinta na hora.
         </p>
       </Secao>
 
@@ -239,16 +240,29 @@ export default function Temas() {
 
       <Secao id="fluxer" titulo="Trazendo um tema do Fluxer">
         <p>
-          Temas do Fluxer importam e a camada de cor pega: o estúdio lê as variáveis que o
-          arquivo declarou e escreve nos nomes de cá — o <code>--background-secondary</code> deles
-          é o nosso <code>--color-surface-1</code>, e mais cinquenta pares assim.
+          Temas do Fluxer funcionam aqui, e por dois caminhos. As variáveis atravessam: o estúdio
+          lê o que o arquivo declarou e escreve nos nomes de cá — o{" "}
+          <code>--background-secondary</code> deles é o nosso <code>--color-surface-1</code>, e
+          mais cinquenta pares assim. E o vocabulário deles existe na nossa camada de tokens, então
+          um tema que <em>lê</em> <code>--status-online</code> ou <code>--transition-fast</code>{" "}
+          também acha o que procura.
         </p>
 
         <p>
-          O que não atravessa é o que o tema faz por seletor de componente, do tipo{" "}
-          <code>.ChannelIndexPage__memberListDivider___XzJmOW</code>: essas classes descrevem a
-          árvore deles, que não é a nossa. Um tema pesado desses entra com as cores certas e o
-          layout de origem, e é para reescrever essa parte que os ganchos acima existem.
+          O outro caminho é a estrutura. Um tema pesado quase não pinta variável: ele mira lugar da
+          tela, pelo nome de classe que o build deles gera —{" "}
+          <code>[class*=&quot;GuildNavbar.module__guildNavbarContainer_&quot;]</code> — e pelo{" "}
+          <code>data-flx</code>. É de lá que saem as bordas por painel, o espaço entre eles, o
+          hover na borda e os rótulos. Esses nomes não descrevem código deles: descrevem um lugar,
+          e o lugar existe aqui igual, então{" "}
+          <strong className="text-ink">os nossos elementos carregam os mesmos nomes</strong>. São
+          34 lugares mapeados.
+        </p>
+
+        <p>
+          O que continua sem efeito é o que um tema faz mirando pedaço que só existe lá — um painel
+          nosso que não tem equivalente, ou o contrário. Para isso é que serve o{" "}
+          <code>data-gc</code>.
         </p>
       </Secao>
 
