@@ -22,6 +22,7 @@ import {
 import type { GuildEmoji, Message } from "@gravae/shared";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
+import { emojisRecentes } from "~/features/expressao/lib/emoji";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
 import type { EnfeitesDaPessoa } from "~/features/perfil/hooks/use-enfeites";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
@@ -69,7 +70,15 @@ import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
 
-const QUICK_EMOJIS = ["👍", "🔥", "😂", "❤️", "👀"];
+const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
+
+/// Os quatro que a pessoa mais usa, completados com os de fábrica quando ela
+/// ainda não reagiu o bastante para haver histórico.
+function atalhosDeReacao(): string[] {
+  const usados = emojisRecentes().filter((e) => e.length <= 8);
+
+  return [...new Set([...usados, ...QUICK_PADRAO])].slice(0, 4);
+}
 
 const SUPER_PADRAO = "🔥";
 
@@ -116,6 +125,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   const mostrarAvatares = useAparencia((s) => s.avatares);
   const mostrarReacoes = useAparencia((s) => s.reacoes);
+  const atalhos = React.useMemo(atalhosDeReacao, []);
   const mostrarPrevia = useAparencia((s) => s.previaDeLinks);
   const [revelado, setRevelado] = useState(false);
 
@@ -433,11 +443,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           )}
         >
           {mostrarReacoes &&
-            QUICK_EMOJIS.map((emoji) => (
-            <AtalhoDeReacao
-              key={emoji}
-              emoji={emoji}
-              className="hidden @md:block"
+            atalhos.map((emoji) => (
+              <AtalhoDeReacao
+                key={emoji}
+                emoji={emoji}
                 onReagir={() => void toggleReaction(emoji)}
                 onSuper={() => superReagir(emoji)}
               />
@@ -553,6 +562,36 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-60">
+              {mostrarReacoes && (
+                <div className="mb-1 flex items-center gap-0.5 border-b border-line px-1 pb-1.5">
+                  {atalhos.map((emoji) => (
+                    <AtalhoDeReacao
+                      key={emoji}
+                      emoji={emoji}
+                      onReagir={() => {
+                        setMenuAberto(false);
+                        void toggleReaction(emoji);
+                      }}
+                      onSuper={() => {
+                        setMenuAberto(false);
+                        superReagir(emoji);
+                      }}
+                    />
+                  ))}
+
+                  <AcaoDaBarra
+                    titulo={t("conversa.acoes.reagir")}
+                    className="ml-auto"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      setReagindo(true);
+                    }}
+                  >
+                    <SmilePlus size={16} />
+                  </AcaoDaBarra>
+                </div>
+              )}
+
               <DropdownMenuItem onSelect={iniciarResposta}>
                 {t("conversa.acoes.responder")} <CornerUpLeft size={16} />
               </DropdownMenuItem>
@@ -675,7 +714,7 @@ const AcaoDaBarra = React.forwardRef<
     title={titulo}
     aria-label={titulo}
     className={cn(
-      "rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink",
+      "flex size-7 shrink-0 items-center justify-center rounded text-ink-muted transition hover:bg-surface-3 hover:text-ink",
       className,
     )}
     {...props}
@@ -697,7 +736,10 @@ const AtalhoDeReacao: React.FC<{
     <button
       {...useSegurar(onReagir, onSuper)}
       title={t("conversa.mensagem.reagirCom", { emoji })}
-      className={cn("rounded px-1.5 py-1 text-base hover:bg-surface-3", className)}
+      className={cn(
+        "flex size-7 shrink-0 items-center justify-center rounded text-base leading-none transition hover:bg-surface-3",
+        className,
+      )}
     >
       {emoji}
     </button>
