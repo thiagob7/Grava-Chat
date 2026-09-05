@@ -87,6 +87,11 @@ export const GRUPOS: Grupo[] = [
         titulo: "Limites",
         resumo: "Vazão, tamanhos e tetos que o servidor aplica.",
       },
+      {
+        href: "/desenvolvedores/temas",
+        titulo: "Temas",
+        resumo: "Escrever um tema: as cores, os ganchos em cada elemento e a forma da tela.",
+      },
     ],
   },
 ];

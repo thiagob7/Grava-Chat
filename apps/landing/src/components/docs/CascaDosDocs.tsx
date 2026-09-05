@@ -20,6 +20,7 @@ const REFERENCIA = [
   "/desenvolvedores/referencia",
   "/desenvolvedores/eventos",
   "/desenvolvedores/limites",
+  "/desenvolvedores/temas",
 ];
 
 const ABAS = [

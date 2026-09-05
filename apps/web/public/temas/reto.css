@@ -1,0 +1,108 @@
+/**
+ * @name Reto
+ * @description Nada de canto redondo, nada de espaço sobrando. Serve de exemplo: mexe em cor, em forma e em densidade, e cada trecho está comentado.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, compacto, exemplo
+ */
+
+/*
+  1. As cores.
+
+  São variáveis no :root, e é o que um tema quase sempre muda. Uma dúzia dá
+  conta, porque o resto do app é derivado destas.
+*/
+:root {
+  --color-surface-0: #0d0f12;
+  --color-surface-1: #14171c;
+  --color-surface-2: #191d23;
+  --color-surface-3: #21262e;
+  --color-surface-4: #2a3038;
+  --color-cabecalho: #14171c;
+  --color-composer: #191d23;
+  --color-painel: #21262e;
+
+  --color-hover: rgb(255 255 255 / 0.04);
+  --color-selecionado: rgb(255 255 255 / 0.08);
+  --color-line: rgb(190 205 220 / 0.12);
+  --color-divisor: rgb(190 205 220 / 0.08);
+  --color-campo: #1b2027;
+  --color-campo-foco: #2a3038;
+
+  --color-ink: #dfe3e8;
+  --color-ink-muted: #9aa3ad;
+  --color-ink-faint: #626c77;
+
+  --color-brand: #5a8f7b;
+  --color-brand-hover: #6ba98f;
+}
+
+/*
+  2. A forma.
+
+  Zerar os raios tira o arredondamento do app inteiro de uma vez, inclusive
+  dos avatares — o `--radius-full` é o que o `rounded-full` lê.
+*/
+:root {
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-full: 2px;
+}
+
+/*
+  3. A medida da tela.
+
+  Estas três davam a densidade e ficavam presas no código. A largura das
+  laterais só vale para quem nunca arrastou: quem escolheu uma largura mandou,
+  e um tema não desfaz isso.
+*/
+:root {
+  --layout-sidebar-width: 13rem;
+  --layout-member-list-width: 12rem;
+  --layout-header-height: 2.5rem;
+}
+
+/*
+  4. Os ganchos de região.
+
+  Cada pedaço grande da tela carrega uma classe parada. É por ela que se
+  alcança o que não é token.
+*/
+.topo-do-canal {
+  box-shadow: none;
+}
+
+.trilho-de-servidores {
+  padding-top: 0.25rem;
+}
+
+.lista-de-mensagens {
+  font-size: 0.9375rem;
+}
+
+.barra-da-mensagem {
+  box-shadow: none;
+}
+
+.janela,
+.menu,
+.balao {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+/*
+  5. Os ganchos finos.
+
+  Quando a região não basta, cada elemento tem um data-gc com o caminho de
+  onde ele está — a busca do estúdio acha o nome de qualquer um.
+*/
+[data-gc="conversa.message-item.acao-da-barra.apagar"] {
+  color: #c0575c;
+}
+
+[data-gc="perfil.user-panel.div"] {
+  border-top: 1px solid var(--color-line);
+}
