@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Taal",
     aplicativo: "App downloaden",
     atalhos: "Sneltoetsen",
+    avancado: "Geavanceerd",
     servidor: "Server",
   },
   grupos: {

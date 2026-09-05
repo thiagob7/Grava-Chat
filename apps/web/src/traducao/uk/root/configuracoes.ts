@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Мова",
     aplicativo: "Завантажити застосунок",
     atalhos: "Гарячі клавіші",
+    avancado: "Додатково",
     servidor: "Сервер",
   },
   grupos: {

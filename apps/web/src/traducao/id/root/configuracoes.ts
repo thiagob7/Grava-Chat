@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Bahasa",
     aplicativo: "Unduh aplikasi",
     atalhos: "Pintasan",
+    avancado: "Lanjutan",
     servidor: "Server",
   },
   grupos: {

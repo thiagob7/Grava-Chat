@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "ภาษา",
     aplicativo: "ดาวน์โหลดแอป",
     atalhos: "ทางลัด",
+    avancado: "ขั้นสูง",
     servidor: "เซิร์ฟเวอร์",
   },
   grupos: {

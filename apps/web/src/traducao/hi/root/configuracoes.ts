@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "भाषा",
     aplicativo: "ऐप डाउनलोड करें",
     atalhos: "शॉर्टकट",
+    avancado: "उन्नत",
     servidor: "सर्वर",
   },
   grupos: {

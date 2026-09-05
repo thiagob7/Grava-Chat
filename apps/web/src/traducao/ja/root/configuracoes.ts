@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "言語",
     aplicativo: "アプリを入手",
     atalhos: "ショートカット",
+    avancado: "詳細設定",
     servidor: "サーバー",
   },
   grupos: {

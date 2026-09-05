@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Kieli",
     aplicativo: "Lataa sovellus",
     atalhos: "Pikanäppäimet",
+    avancado: "Lisäasetukset",
     servidor: "Palvelin",
   },
   grupos: {

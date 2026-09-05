@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Sprog",
     aplicativo: "Hent appen",
     atalhos: "Genveje",
+    avancado: "Avanceret",
     servidor: "Server",
   },
   grupos: {

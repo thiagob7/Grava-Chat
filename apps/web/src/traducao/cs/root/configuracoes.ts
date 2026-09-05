@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Jazyk",
     aplicativo: "Stáhnout aplikaci",
     atalhos: "Klávesové zkratky",
+    avancado: "Pokročilé",
     servidor: "Server",
   },
   grupos: {

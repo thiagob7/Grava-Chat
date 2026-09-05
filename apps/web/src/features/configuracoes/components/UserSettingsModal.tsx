@@ -25,6 +25,7 @@ import {
   Pencil,
   Search,
   Server,
+  SlidersHorizontal,
   User,
   X,
   LogOut,
@@ -39,6 +40,7 @@ import { VoiceSection } from "~/features/configuracoes/components/VoiceSection";
 import { ConexoesSection } from "~/features/configuracoes/components/ConexoesSection";
 import { AplicativosSection } from "~/features/configuracoes/components/aplicativos/AplicativosSection";
 import { AtalhosSection } from "~/features/configuracoes/components/AtalhosSection";
+import { AvancadoSection } from "~/features/configuracoes/components/AvancadoSection";
 import { AplicativoSection } from "~/features/configuracoes/components/AplicativoSection";
 import { AcessibilidadeSection } from "~/features/configuracoes/components/AcessibilidadeSection";
 import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection";
@@ -164,6 +166,12 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
               subitens: SUBSECOES.aplicativo,
             },
           ]),
+      {
+        id: "avancado" as const,
+        chave: "configuracoes.telas.avancado",
+        icone: SlidersHorizontal,
+        subitens: SUBSECOES.avancado,
+      },
     ],
   },
   {
@@ -208,6 +216,7 @@ const TITULOS: Record<Secao, string> = {
   idioma: "configuracoes.telas.idioma",
   aplicativo: "configuracoes.telas.aplicativo",
   atalhos: "configuracoes.telas.atalhos",
+  avancado: "configuracoes.telas.avancado",
   servidor: "configuracoes.telas.servidor",
 };
 
@@ -451,6 +460,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "idioma" && <IdiomaSection />}
                     {secao === "aplicativo" && <AplicativoSection />}
                     {secao === "atalhos" && <AtalhosSection />}
+                    {secao === "avancado" && <AvancadoSection />}
                     {secao === "servidor" && user.admin && <ServidorSection />}
                   </ErrorBoundary>
                 </ContextoDaSecao.Provider>

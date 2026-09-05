@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Limbă",
     aplicativo: "Descarcă aplicația",
     atalhos: "Scurtături",
+    avancado: "Avansat",
     servidor: "Server",
   },
   grupos: {

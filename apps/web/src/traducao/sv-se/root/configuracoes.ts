@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Språk",
     aplicativo: "Ladda ner appen",
     atalhos: "Kortkommandon",
+    avancado: "Avancerat",
     servidor: "Server",
   },
   grupos: {

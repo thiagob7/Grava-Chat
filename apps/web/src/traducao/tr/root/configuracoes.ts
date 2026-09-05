@@ -18,6 +18,7 @@ export const configuracoes = {
     idioma: "Dil",
     aplicativo: "Uygulamayı indir",
     atalhos: "Kısayollar",
+    avancado: "Gelişmiş",
     servidor: "Sunucu",
   },
   grupos: {
