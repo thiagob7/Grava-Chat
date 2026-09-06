@@ -23,6 +23,80 @@
     -->
 
     <title>Gravaê Chat</title>
+
+    <script>
+      /*
+        A primeira pintura, já com o tema certo.
+
+        Sem isto o app pinta o escuro de fábrica, o React monta, os efeitos
+        rodam e SÓ ENTÃO o tema entra — dá uma piscada branca em quem escolheu
+        o claro, e uma piscada roxa em quem trocou a marca. Quanto mais pesado
+        o app fica, mais longa a piscada.
+
+        Roda antes do módulo do app de propósito, e sem `defer`: o que estiver
+        aqui precisa estar aplicado antes do navegador desenhar o primeiro
+        quadro. Tudo dentro de um try: se o armazenamento estiver bloqueado, a
+        pior consequência é voltar a piscar — nunca uma tela em branco.
+
+        As marcas escritas aqui são as mesmas do `use-aparencia.ts`. Quando uma
+        mudar lá, muda aqui: são as duas pontas de uma mesma decisão, e não há
+        como uma máquina cobrar isso de um HTML.
+      */
+      (function () {
+        var raiz = document.documentElement;
+
+        function ler(chave) {
+          try {
+            return JSON.parse(localStorage.getItem(chave) || "null");
+          } catch (erro) {
+            return null;
+          }
+        }
+
+        try {
+          var aparencia = ler("gravae:aparencia") || {};
+          var estudio = ler("gravae:estudio") || {};
+
+          var tema = aparencia.tema || "escuro";
+          raiz.dataset.tema = tema;
+          raiz.dataset.densidade = aparencia.densidade || "confortavel";
+
+          /// O vocabulário da referência, para um tema que só vale no escuro.
+          raiz.classList.add(tema === "claro" ? "theme-light" : tema === "mais-escuro" ? "theme-coal" : "theme-dark");
+
+          if (aparencia.cantosArredondados === false) raiz.dataset.cantos = "retos";
+          if (aparencia.reduzirAnimacao) raiz.dataset.animacao = "reduzida";
+          if (aparencia.focoSempreVisivel) raiz.dataset.foco = "sempre";
+
+          if (aparencia.zoomDoApp && aparencia.zoomDoApp !== 100) {
+            raiz.style.setProperty("zoom", String(aparencia.zoomDoApp / 100));
+          }
+
+          if (aparencia.escalaDoChat && aparencia.escalaDoChat !== 100) {
+            raiz.style.setProperty("--gc-escala-do-chat", String(aparencia.escalaDoChat / 100));
+          }
+
+          var trocadas = estudio.substituicoes || {};
+
+          for (var nome in trocadas) {
+            if (nome.indexOf("--") === 0) raiz.style.setProperty(nome, trocadas[nome]);
+          }
+
+          /// A cor de destaque só vale se o estúdio não tiver mandado na marca.
+          if (aparencia.destaque && !trocadas["--color-brand"]) {
+            raiz.style.setProperty("--color-brand", aparencia.destaque);
+            raiz.style.setProperty(
+              "--color-brand-hover",
+              "color-mix(in oklab, " + aparencia.destaque + ", black 18%)"
+            );
+          }
+        } catch (erro) {
+          /// Sem armazenamento o app abre no tema de fábrica. Volta a piscar,
+          /// e só. Nada aqui vale uma tela em branco.
+        }
+      })();
+    </script>
+
   </head>
   <body>
     <div id="root"></div>
