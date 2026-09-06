@@ -7,6 +7,11 @@ import {
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { derivar } from "~/features/configuracoes/lib/cores-mae";
+import {
+  ID_DO_ESCUDO,
+  cssDoEscudo,
+  medirBase,
+} from "~/features/configuracoes/lib/escudo-do-estudio";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import { normalizarSeletoresDoFluxer } from "~/features/configuracoes/lib/normalizar-tema";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
@@ -224,7 +229,46 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   aplicarPonte(estado);
+  aplicarEscudo();
   avisarTemaAplicado();
+}
+
+/*
+  O escudo entra por ÚLTIMO, depois da folha do tema e das correções.
+  `!important` contra `!important` empata na especificidade, e quem chega
+  depois ganha — então a ordem aqui é a regra, não um detalhe.
+*/
+let escudoDe: string | null = null;
+
+function aplicarEscudo() {
+  /*
+    A base só muda quando muda a VARIANTE — claro, escuro, Gravaê. Escrever no
+    editor de CSS chama isto a cada tecla, e medir de novo obrigaria o
+    navegador a recalcular estilo a cada letra digitada.
+  */
+  const variante = document.documentElement.dataset.tema ?? "";
+  if (escudoDe === variante) return;
+
+  let escudo = document.getElementById(ID_DO_ESCUDO);
+
+  if (!escudo) {
+    escudo = document.createElement("style");
+    escudo.id = ID_DO_ESCUDO;
+  }
+
+  escudo.textContent = cssDoEscudo(medirBase(ID_DO_ESTILO));
+  document.head.appendChild(escudo);
+  escudoDe = variante;
+}
+
+/*
+  Trocar de variante muda a base inteira, e a marca `data-tema` é escrita
+  depois que este módulo carrega — então o escudo precisa ser refeito quando
+  ela chega, senão o estúdio fica com as cores do escuro num app claro.
+*/
+export function revisarEscudo() {
+  escudoDe = null;
+  aplicarEscudo();
 }
 
 /// O que a ponte escreveu da última vez, para limpar quando o tema sair.

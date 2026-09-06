@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { revisarEscudo, useEstudio } from "~/features/configuracoes/stores/estudio";
 import { marcarTemaDaRaiz } from "~/features/configuracoes/lib/normalizar-tema";
 
 export function useAparenciaAplicada() {
@@ -26,6 +26,9 @@ export function useAparenciaAplicada() {
       `data-tema`.
     */
     marcarTemaDaRaiz(tema);
+
+    /// A base do estúdio é outra em cada variante; ele remede agora.
+    revisarEscudo();
   }, [tema]);
 
   useEffect(() => {
