@@ -304,7 +304,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           ),
         destacada && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
         message.pending && "opacity-60",
-        message.failed && "bg-danger/10",
+        message.failed && "bg-danger-fundo",
       )}
     >
       {message.replyToId && (

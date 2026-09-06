@@ -130,7 +130,7 @@ export const PermissoesDoMac: React.FC<{ aberto: boolean; onFechar: () => void }
                       className={cn(
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium",
                         linha.estado === "negada"
-                          ? "bg-danger/10 text-danger"
+                          ? "bg-danger-fundo text-danger"
                           : "bg-aviso/10 text-aviso",
                       )}
                     >

@@ -7,7 +7,10 @@ import {
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { resolverAtivos } from "~/features/configuracoes/lib/ativos-do-tema";
-import { montarTema } from "~/features/configuracoes/lib/cores-mae";
+import {
+  completarComDerivacao,
+  montarTema,
+} from "~/features/configuracoes/lib/cores-mae";
 import {
   ID_DO_ESCUDO,
   cssDoEscudo,
@@ -303,8 +306,35 @@ function aplicarPonte(estado: EstadoDoEstudio) {
   }
 
   const escolhidos = new Set(Object.keys(estado.substituicoes));
+  const traduzidos = traduzirTema(origens, escolhidos);
 
-  for (const [nome, valor] of Object.entries(traduzirTema(origens, escolhidos))) {
+  /*
+    O buraco que fazia um tema importado quase não mudar nada.
+
+    Um tema é escrito contra a árvore de OUTRO app, e cobre o vocabulário
+    daquele app — não o nosso. Mesmo com a ponte alargada, ele nunca vai falar
+    de `--color-palco`, `--color-veu` ou `--color-line-sutil`: esses nomes não
+    existem no mundo dele. O resultado era um app metade pintado, com o miolo
+    do tema e as bordas de fábrica.
+
+    Agora o que o tema NÃO disse é derivado do que ele disse. Se ele declarou o
+    fundo, as superfícies, o hover, as bordas e o palco de voz saem dali pela
+    mesma rampa da aba Cores. É a ideia da referência — lá as cores nascem de
+    famílias, não soltas — só que aplicada ao que chega de fora.
+
+    Vem ANTES da tradução de propósito: o que o tema disse com todas as letras
+    tem que vencer o que a gente deduziu por ele.
+  */
+  for (const [nome, valor] of Object.entries(
+    completarComDerivacao(traduzidos, estado.saturacao),
+  )) {
+    if (escolhidos.has(nome)) continue;
+
+    raiz.style.setProperty(nome, valor);
+    daPonte.add(nome);
+  }
+
+  for (const [nome, valor] of Object.entries(traduzidos)) {
     raiz.style.setProperty(nome, valor);
     daPonte.add(nome);
   }

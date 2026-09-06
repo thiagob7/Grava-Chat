@@ -28,7 +28,7 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
     <div data-gc="servidor.channel-settings.delete-channel-section.div" className="max-w-xl">
       <h2 data-gc="servidor.channel-settings.delete-channel-section.h2" className="text-xl font-semibold text-danger">{t("servidor.canal.excluir.titulo")}</h2>
 
-      <div data-gc="servidor.channel-settings.delete-channel-section.div--2" className="mt-6 rounded-lg border border-danger/40 bg-danger/10 p-5">
+      <div data-gc="servidor.channel-settings.delete-channel-section.div--2" className="mt-6 rounded-lg border border-danger/40 bg-danger-fundo p-5">
         <p data-gc="servidor.channel-settings.delete-channel-section.p" className="flex items-center gap-2 font-semibold">
           <AlertTriangle data-gc="servidor.channel-settings.delete-channel-section.alert-triangle" size={18} className="text-danger" /> {t("servidor.excluir.aviso")}
         </p>

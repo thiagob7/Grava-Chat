@@ -196,6 +196,11 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       { nome: "--color-idle", rotulo: "Ausente" },
       { nome: "--color-dnd", rotulo: "Não perturbe" },
       { nome: "--color-danger", rotulo: "Perigo", dica: "excluir, sair, erro" },
+      {
+        nome: "--color-danger-fundo",
+        rotulo: "Fundo de perigo",
+        dica: "a tarja fraca atrás de um aviso de excluir",
+      },
     ],
   },
   {
@@ -223,6 +228,11 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         dica: "vem da escala do Tailwind, a nossa para no enorme",
       },
       { nome: "--radius-full", rotulo: "Total (canto)" },
+      {
+        nome: "--color-foco-anel",
+        rotulo: "Anel de foco (cor)",
+        dica: "o halo do botão e do campo em foco; aceita transparência",
+      },
       {
         nome: "--focus-primary",
         rotulo: "Anel de foco",

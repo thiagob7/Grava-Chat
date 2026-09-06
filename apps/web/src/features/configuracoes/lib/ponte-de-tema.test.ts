@@ -6,6 +6,7 @@ import {
   PONTE_DE_TEMA,
   traduzirTema,
 } from "./ponte-de-tema";
+import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
 
 describe("ponte de tema", () => {
   it("traduz o fundo da lateral para o nosso nome", () => {
@@ -59,10 +60,25 @@ describe("ponte de tema", () => {
     expect(NOMES_DE_ORIGEM.every((n) => n.startsWith("--"))).toBe(true);
   });
 
-  it("todo destino e um token nosso", () => {
-    const destinos = Object.values(PONTE_DE_TEMA).flat();
+  /*
+    Antes isto só conferia o prefixo do nome, e prefixo certo em token morto
+    passa liso: a ponte traduziria para um lugar que ninguém lê, e o tema
+    pareceria não pegar. Agora a pergunta é a mesma do estúdio — o token está
+    vivo no CSS construído?
 
-    expect(destinos.every((d) => d.startsWith("--color-") || d.startsWith("--font-"))).toBe(true);
+    `--font-display` é a exceção, e é de propósito: nós não temos esse token, e
+    a linha existe para o dia em que tiver. Fica anotada aqui em vez de virar
+    uma tradução silenciosa para o vazio.
+  */
+  it("todo destino é um token que o app realmente lê", () => {
+    const vivos = new Set(tokensVivos as string[]);
+    const combinado = new Set(["--font-display"]);
+
+    const mortos = [
+      ...new Set(Object.values(PONTE_DE_TEMA).flat()),
+    ].filter((destino) => !vivos.has(destino) && !combinado.has(destino));
+
+    expect(mortos).toEqual([]);
   });
 });
 
@@ -97,5 +113,53 @@ describe("o que o tema declarou", () => {
     const nomes = nomesDeclaradosNoTema(":root { --background-primary: var(--ThemeFlatDarker) }");
 
     expect([...nomes]).toEqual(["--background-primary"]);
+  });
+
+  /*
+    A ordem da tabela É a regra de precedência, e é fácil de quebrar sem
+    perceber: basta alguém acrescentar um nome no lugar errado. Eles têm cores
+    independentes para a marca e para o preenchimento do botão; nós temos um
+    token só. Quem mexeu nos dois quis que a marca mandasse.
+  */
+  it("deixa o nome canônico vencer o específico", () => {
+    const nomes = Object.keys(PONTE_DE_TEMA);
+    const antes = (especifico: string, canonico: string) =>
+      nomes.indexOf(especifico) < nomes.indexOf(canonico);
+
+    const pares: [string, string][] = [
+      ["--button-primary-fill", "--brand-primary"],
+      ["--button-primary-active-fill", "--brand-secondary"],
+      ["--button-danger-fill", "--accent-danger"],
+      ["--interactive-active", "--text-primary"],
+      ["--interactive-muted", "--text-tertiary"],
+      ["--bg-hover", "--background-modifier-hover"],
+      ["--bg-active", "--background-modifier-selected"],
+      ["--bg-primary", "--background-primary"],
+      ["--accent-info", "--text-link"],
+      ["--control-button-normal-text", "--text-secondary"],
+    ];
+
+    expect(pares.filter(([e, c]) => !antes(e, c))).toEqual([]);
+  });
+
+  it("o botão do tema pinta a nossa marca quando o tema só fala de botão", () => {
+    expect(traduzirTema({ "--button-primary-fill": "#ff0000" })).toEqual({
+      "--color-brand": "#ff0000",
+    });
+  });
+
+  it("mas a marca do tema vence o botão quando ele fala dos dois", () => {
+    const saida = traduzirTema({
+      "--button-primary-fill": "#ff0000",
+      "--brand-primary": "#00ff00",
+    });
+
+    expect(saida["--color-brand"]).toBe("#00ff00");
+  });
+
+  it("não repete um nome de origem em duas linhas", () => {
+    const nomes = Object.keys(PONTE_DE_TEMA);
+
+    expect(nomes).toHaveLength(new Set(nomes).size);
   });
 });

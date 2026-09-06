@@ -414,7 +414,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             <div data-gc="configuracoes.user-settings-modal.div--4" className="mt-auto flex flex-col pb-3 pt-2">
               <button data-gc="configuracoes.user-settings-modal.button.on-logout"
                 onClick={onLogout}
-                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-danger transition hover:bg-danger/10"
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-danger transition hover:bg-danger-fundo"
               >
                 <LogOut data-gc="configuracoes.user-settings-modal.log-out" size={16} className="shrink-0" />
                 {t("configuracoes.sair")}
@@ -435,7 +435,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
               <DialogPrimitive.Close
                 aria-label="Fechar"
-                className="flex size-[34px] shrink-0 items-center justify-center rounded-lg text-ink-faint transition hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
+                className="flex size-[34px] shrink-0 items-center justify-center rounded-lg text-ink-faint transition hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
               >
                 <X data-gc="configuracoes.user-settings-modal.x" size={20} />
               </DialogPrimitive.Close>
@@ -532,7 +532,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
         aria-expanded={temSub ? ativo : undefined}
         className={cn(
           "flex w-full items-center gap-2 rounded-lg border px-2.5 py-[5px] text-left text-sm transition",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
           ativo
             ? "border-transparent bg-selecionado font-medium text-ink"
             : "border-transparent text-ink-muted hover:bg-hover hover:text-ink",
@@ -577,7 +577,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
                   onClick={() => onEscolherSub(sub.id)}
                   className={cn(
                     "relative z-10 truncate rounded-md border px-2.5 py-1 text-left text-13 transition",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
                     subAtiva === sub.id
                       ? "border-transparent bg-selecionado font-semibold text-ink"
                       : "border-transparent text-ink-faint hover:bg-hover hover:text-ink-muted",

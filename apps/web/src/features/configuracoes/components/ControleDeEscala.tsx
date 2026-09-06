@@ -43,7 +43,7 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
             key={marca}
             type="button"
             onClick={() => onMudar(marca)}
-            className="rounded px-1 transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
+            className="rounded px-1 transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
           >
             {marca}%
           </button>

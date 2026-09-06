@@ -122,7 +122,7 @@ export const DicaDoComando: React.FC<{
       </p>
 
       {faltando.length > 0 && (
-        <p data-gc="conversa.comando-sugestoes.p--3" className="border-t border-line bg-danger/10 px-3 py-1.5 text-xs text-danger">
+        <p data-gc="conversa.comando-sugestoes.p--3" className="border-t border-line bg-danger-fundo px-3 py-1.5 text-xs text-danger">
           Falta {faltando.map((o) => o.nome).join(", ")}.
         </p>
       )}

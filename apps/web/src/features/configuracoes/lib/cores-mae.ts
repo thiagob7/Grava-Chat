@@ -186,3 +186,36 @@ export function montarTema(
 
   return { ...derivadas, ...manuais };
 }
+
+/*
+  O que o tema não disse, deduzido do que ele disse.
+
+  Um tema de fora é escrito contra a árvore de OUTRO app e cobre o vocabulário
+  daquele app — não o nosso. Por mais que a ponte cresça, ele nunca vai falar
+  de `--color-palco`, `--color-veu` ou `--color-line-sutil`: esses nomes não
+  existem no mundo dele. Sem isto, o resultado é um app metade pintado, com o
+  miolo do tema e as bordas de fábrica — que é exatamente a queixa de "importei
+  e quase nada mudou".
+
+  Então cada mãe cuja cor o tema declarou gera as filhas que ele deixou de
+  fora. O que ele disse com todas as letras nunca é tocado.
+*/
+export function completarComDerivacao(
+  traduzidos: Record<string, string>,
+  saturacao = 1,
+): Record<string, string> {
+  const saida: Record<string, string> = {};
+
+  for (const id of MAES) {
+    const familia = CORES_MAE[id];
+    const cor = familia && traduzidos[familia.mae];
+    if (!cor) continue;
+
+    for (const [nome, valor] of Object.entries(derivar(id, cor, saturacao))) {
+      if (nome in traduzidos) continue;
+      saida[nome] = valor;
+    }
+  }
+
+  return saida;
+}

@@ -39,7 +39,7 @@ export const BotaoDeLink: React.FC<BotaoDeLinkProps> = ({
         className={cn(
           "shrink-0 rounded p-1 text-ink-faint opacity-0 transition",
           "hover:bg-hover hover:text-ink focus-visible:opacity-100 focus-visible:outline-none",
-          "focus-visible:ring-2 focus-visible:ring-brand/60 group-hover/titulo:opacity-100",
+          "focus-visible:ring-2 focus-visible:ring-foco-anel group-hover/titulo:opacity-100",
           copiado && "text-online opacity-100",
         )}
       >

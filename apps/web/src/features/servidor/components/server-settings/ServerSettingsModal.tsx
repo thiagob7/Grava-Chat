@@ -189,7 +189,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             {visivel.excluir && (
               <button data-gc="servidor.server-settings.server-settings-modal.button--2"
                 onClick={() => setSecao("excluir")}
-                className="mt-2 flex w-full items-center justify-between rounded border-t border-line px-2.5 py-1.5 pt-3 text-left text-sm text-danger transition hover:bg-danger/10"
+                className="mt-2 flex w-full items-center justify-between rounded border-t border-line px-2.5 py-1.5 pt-3 text-left text-sm text-danger transition hover:bg-danger-fundo"
               >
                 {t(ROTULOS.excluir)}
                 <Trash2 data-gc="servidor.server-settings.server-settings-modal.trash2" size={14} />

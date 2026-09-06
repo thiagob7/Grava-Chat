@@ -121,7 +121,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
               </p>
 
               {error && (
-                <p data-gc="servidor.moderator-view.p--3" className="rounded bg-danger/10 p-3 text-sm text-danger">
+                <p data-gc="servidor.moderator-view.p--3" className="rounded bg-danger-fundo p-3 text-sm text-danger">
                   {t("servidor.moderacao.semPermissao")}
                 </p>
               )}

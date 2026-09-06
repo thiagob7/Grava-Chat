@@ -9,6 +9,7 @@ import {
   CORES_MAE,
   MAES,
   TOKENS_DERIVADOS,
+  completarComDerivacao,
   derivar,
   montarTema,
 } from "~/features/configuracoes/lib/cores-mae";
@@ -142,5 +143,45 @@ describe("cores-mãe", () => {
     expect(montarTema({}, 1, { "--color-ink": "#fff" })).toEqual({
       "--color-ink": "#fff",
     });
+  });
+
+  /*
+    A queixa que abriu esta leva: "importei o tema e pouca coisa mudou". Um
+    tema de fora nunca fala dos nomes que só existem aqui, então tudo que é
+    nosso ficava de fábrica no meio de um tema vermelho.
+  */
+  it("preenche o que o tema não disse a partir do que ele disse", () => {
+    const doTema = { "--color-surface-0": "#1a0000" };
+    const resto = completarComDerivacao(doTema);
+
+    /// O palco de voz e o véu não existem no vocabulário de nenhum tema de fora.
+    expect(resto["--color-palco"]).toBeTruthy();
+    expect(resto["--color-veu"]).toBeTruthy();
+    expect(resto["--color-line"]).toBeTruthy();
+    expect(resto["--color-hover"]).toBeTruthy();
+
+    /// E acompanham a cor que o tema deu, em vez de ficarem de fábrica.
+    const [, croma = 0, matiz = 0] = Color(resto["--color-surface-3"]!)
+      .lch()
+      .array();
+    expect(croma).toBeGreaterThan(1);
+    expect(Math.abs(matiz - (Color("#1a0000").lch().array()[2] ?? 0))).toBeLessThan(20);
+  });
+
+  it("não encosta no que o tema disse com todas as letras", () => {
+    const doTema = {
+      "--color-surface-0": "#1a0000",
+      "--color-surface-3": "#00ff00",
+      "--color-line": "#0000ff",
+    };
+
+    const resto = completarComDerivacao(doTema);
+
+    expect(resto["--color-surface-3"]).toBeUndefined();
+    expect(resto["--color-line"]).toBeUndefined();
+  });
+
+  it("sem cor de mãe no tema, não inventa nada", () => {
+    expect(completarComDerivacao({ "--color-mencao": "#fff" })).toEqual({});
   });
 });

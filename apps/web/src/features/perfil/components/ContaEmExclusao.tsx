@@ -25,7 +25,7 @@ export const ContaEmExclusao: React.FC<ContaEmExclusaoProps> = ({ user, onSair }
   return (
     <div data-gc="perfil.conta-em-exclusao.div" className="flex h-full items-center justify-center bg-surface-1 p-6">
       <div data-gc="perfil.conta-em-exclusao.div--2" className="w-full max-w-md rounded-xl border border-line bg-surface-2 p-6 text-center">
-        <div data-gc="perfil.conta-em-exclusao.div--3" className="mx-auto flex size-12 items-center justify-center rounded-full bg-danger/10 text-danger">
+        <div data-gc="perfil.conta-em-exclusao.div--3" className="mx-auto flex size-12 items-center justify-center rounded-full bg-danger-fundo text-danger">
           <ShieldAlert data-gc="perfil.conta-em-exclusao.shield-alert" size={24} />
         </div>
 

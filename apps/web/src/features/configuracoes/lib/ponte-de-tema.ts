@@ -13,7 +13,81 @@
   Os nomes do lado esquerdo saíram do CSS publicado do Fluxer e do próprio
   repositório deles.
 */
+/*
+  A ORDEM aqui é regra, não arrumação.
+
+  Vários papéis deles caem num token só nosso: eles têm `--brand-primary` para a
+  marca e `--button-primary-fill` para o preenchimento do botão, que são cores
+  independentes; nós temos `--color-brand` para as duas coisas. Quem escreve
+  depois vence, então o nome CANÔNICO de cada papel fica por último, e os
+  apelidos e os casos específicos vêm antes. Um tema que só mexe no botão pinta
+  a nossa marca; um que mexe nos dois deixa a marca mandar.
+*/
 export const PONTE_DE_TEMA: Record<string, string[]> = {
+  /*
+    A segunda leva, medida no gerador de cores deles.
+
+    Das 136 variáveis de cor que o `GenerateColorSystem.ts` produz, a ponte
+    traduzia 40. As que entram agora explicam o sintoma de "importei e quase
+    nada mudou": boa parte é APELIDO do que já estava aqui — `--bg-primary` é
+    `var(--background-primary)` lá dentro — e um tema que escreveu o apelido
+    passava batido inteiro.
+
+    E uma não é apelido de nada: `--button-primary-fill` é cor própria, verde
+    no padrão deles, sem relação com `--brand-primary`. Era ela que deixava o
+    nosso botão índigo num tema vermelho.
+  */
+  "--bg-primary": ["--color-surface-0"],
+  "--bg-secondary": ["--color-surface-1"],
+  "--bg-tertiary": ["--color-surface-3"],
+  "--bg-hover": ["--color-hover"],
+  "--bg-active": ["--color-selecionado"],
+  "--bg-code": ["--color-codigo"],
+  "--bg-code-block": ["--color-codigo-bloco"],
+  "--bg-table-header": ["--color-surface-3"],
+  "--background-header-primary-hover": ["--color-hover"],
+
+  "--panel-control-bg": ["--color-surface-3"],
+  "--panel-control-border": ["--color-line"],
+  "--panel-control-divider": ["--color-divisor"],
+
+  /// Os botõezinhos do painel de voz — mudo, fone, tela, engrenagem.
+  "--control-button-normal-text": ["--color-ink-muted"],
+  "--control-button-hover-text": ["--color-ink"],
+  "--control-button-active-text": ["--color-ink"],
+  "--control-button-hover-bg": ["--color-hover"],
+  "--control-button-active-bg": ["--color-selecionado"],
+  "--control-button-danger-text": ["--color-danger"],
+  "--control-button-danger-hover-bg": ["--color-danger-fundo"],
+
+  "--interactive-muted": ["--color-ink-faint"],
+  "--interactive-active": ["--color-ink"],
+
+  "--accent-info": ["--color-link"],
+  "--accent-purple": ["--color-everyone"],
+  "--status-warning": ["--color-idle"],
+
+  "--alert-note-color": ["--color-link"],
+  "--alert-tip-color": ["--color-online"],
+  "--alert-important-color": ["--color-everyone"],
+  "--alert-warning-color": ["--color-aviso"],
+  "--alert-caution-color": ["--color-danger"],
+
+  /*
+    Preenchimento e texto de botão. Ficam ANTES dos nomes canônicos de marca e
+    de perigo, logo abaixo, para que um tema que mexe nos dois deixe a marca
+    mandar — e um que só mexe no botão ainda pinte alguma coisa.
+  */
+  "--button-ghost-text": ["--color-ink-muted"],
+  "--button-secondary-text": ["--color-ink"],
+  "--button-primary-active-fill": ["--color-brand-hover"],
+  "--button-primary-fill": ["--color-brand"],
+  "--button-primary-text": ["--color-sobre-marca"],
+  "--button-danger-active-fill": ["--color-danger"],
+  "--button-danger-fill": ["--color-danger", "--color-dnd"],
+  "--button-danger-text": ["--color-sobre-marca"],
+  "--text-on-brand-primary": ["--color-sobre-marca"],
+
   /// Trilho de servidores, barras laterais e faixa de título.
   "--background-secondary": ["--color-surface-1"],
   /// O miolo: conversa, caixa de escrever, coluna da direita.
@@ -77,7 +151,8 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--code-block-bg": ["--color-codigo-bloco"],
   "--code-inline-bg": ["--color-codigo"],
   "--scrollbar-thumb-bg": ["--color-trilho"],
-
+  "--scrollbar-thumb-bg-hover": ["--color-trilho"],
+  "--scrollbar-track-bg": ["--scrollbar-track-bg"],
   "--font-primary": ["--font-sans"],
   "--font-display": ["--font-display"],
   "--font-mono": ["--font-mono"],

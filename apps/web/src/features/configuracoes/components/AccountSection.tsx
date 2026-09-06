@@ -109,7 +109,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
           </Button>
 
           {confirmando ? (
-            <div data-gc="configuracoes.account-section.div--7" className="rounded border border-danger/40 bg-danger/10 p-4">
+            <div data-gc="configuracoes.account-section.div--7" className="rounded border border-danger/40 bg-danger-fundo p-4">
               <p data-gc="configuracoes.account-section.p--3" className="text-sm">
                 Isto derruba a sessão em <strong data-gc="configuracoes.account-section.strong">todos</strong> os aparelhos,
                 inclusive este. Serve para quando você esqueceu a conta aberta

@@ -202,7 +202,7 @@ export const ConstrutorDeConvite: React.FC<ConstrutorDeConviteProps> = ({
         </div>
 
         {escolhidas.includes("ADMINISTRATOR") && (
-          <p data-gc="configuracoes.aplicativos.construtor-de-convite.p--4" className="mt-3 rounded border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-ink-muted">
+          <p data-gc="configuracoes.aplicativos.construtor-de-convite.p--4" className="mt-3 rounded border border-danger/40 bg-danger-fundo px-3 py-2 text-xs text-ink-muted">
             Com <strong data-gc="configuracoes.aplicativos.construtor-de-convite.strong" className="text-danger">Administrador</strong>, o bot pode tudo —
             inclusive apagar canais e banir gente. Só marque se você escreveu o código dele.
           </p>

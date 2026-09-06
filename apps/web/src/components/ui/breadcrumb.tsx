@@ -32,7 +32,7 @@ export const BreadcrumbLink = ({
   return (
     <Comp data-gc="ui.breadcrumb.comp"
       className={cn(
-        "rounded transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+        "rounded transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
         className,
       )}
       {...props}

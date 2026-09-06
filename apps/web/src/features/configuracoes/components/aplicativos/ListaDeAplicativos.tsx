@@ -17,7 +17,7 @@ export const ListaDeAplicativos: React.FC<ListaDeAplicativosProps> = ({ bots, on
         key={bot.id}
         type="button"
         onClick={() => onAbrir(bot.id)}
-        className="flex w-full items-center gap-3 border-b border-divisor px-3 py-2.5 text-left transition last:border-b-0 hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/60"
+        className="flex w-full items-center gap-3 border-b border-divisor px-3 py-2.5 text-left transition last:border-b-0 hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foco-anel"
       >
         <Avatar data-gc="configuracoes.aplicativos.lista-de-aplicativos.avatar"
           id={bot.usuario.id}

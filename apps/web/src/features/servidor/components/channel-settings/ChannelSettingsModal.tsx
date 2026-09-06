@@ -70,7 +70,7 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
                 className={cn(
                   "mb-0.5 flex w-full items-center justify-between rounded px-2.5 py-1.5 text-left text-sm transition",
                   item.danger
-                    ? "text-danger hover:bg-danger/10"
+                    ? "text-danger hover:bg-danger-fundo"
                     : secao === item.id
                       ? "bg-surface-4 text-ink"
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",

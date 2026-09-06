@@ -602,7 +602,7 @@ const Opcao: React.FC<OpcaoProps> = ({
     }}
     className={cn(
       "flex items-start gap-3 rounded-lg border p-3 text-left transition",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
       ativo
         ? "border-brand bg-brand/10"
         : "border-line hover:border-ink-faint hover:bg-surface-3",

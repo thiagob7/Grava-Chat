@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-fluxer";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/60 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-foco-anel disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
   {
     variants: {
       variant: {

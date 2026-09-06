@@ -197,7 +197,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   "relative flex size-12 items-center justify-center rounded-3xl border-2 border-dashed transition-all",
                   "hover:rounded-2xl disabled:cursor-default",
                   atualizacao.estado?.erro && atualizacao.pronta
-                    ? "border-danger text-danger hover:bg-danger/10"
+                    ? "border-danger text-danger hover:bg-danger-fundo"
                     : atualizacao.pronta || atualizacao.instalando
                       ? "border-online text-online hover:bg-online/10"
                       : "border-surface-4 text-ink-muted hover:border-ink hover:text-ink",

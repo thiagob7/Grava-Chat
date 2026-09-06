@@ -27,7 +27,7 @@ export const CampoDeNota: React.FC<{
         onBlur={() => {
           if (texto.trim() !== (nota ?? "").trim()) salvar.mutate(texto.trim());
         }}
-        className="w-full resize-none rounded bg-surface-3/60 px-2 py-1.5 text-sm text-ink-muted outline-none ring-brand/60 transition placeholder:text-ink-faint focus:bg-surface-3 focus:text-ink focus:ring-2"
+        className="w-full resize-none rounded bg-surface-3/60 px-2 py-1.5 text-sm text-ink-muted outline-none ring-foco-anel transition placeholder:text-ink-faint focus:bg-surface-3 focus:text-ink focus:ring-2"
       />
     </div>
   );
