@@ -49,7 +49,8 @@ import {
 import { copiarTexto } from "~/lib/copiar";
 import { uploadArquivo } from "~/lib/upload";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { ativosFaltando, useEstudio } from "~/features/configuracoes/stores/estudio";
+import { TEMA_APLICADO } from "~/features/configuracoes/lib/evento-de-tema";
 import { CORES_MAE, MAES, derivar } from "~/features/configuracoes/lib/cores-mae";
 import { Slider } from "~/components/ui/slider";
 import { cn } from "~/lib/utils";
@@ -915,11 +916,27 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
 
 const AbaDeAtivos: React.FC = () => {
   const ativos = useEstudio((s) => s.ativos);
+  const css = useEstudio((s) => s.css);
   const guardarAtivo = useEstudio((s) => s.guardarAtivo);
   const apagarAtivo = useEstudio((s) => s.apagarAtivo);
   const confirmar = useConfirmar();
   const arquivo = useRef<HTMLInputElement>(null);
   const [subindo, setSubindo] = useState(false);
+
+  /*
+    Quem sabe o que faltou é quem aplica o tema, e isso acontece fora do React.
+    O aviso de tema aplicado é o gancho: sem ele, subir o arquivo que faltava
+    não tiraria o aviso da tela até alguém trocar de aba.
+  */
+  const [faltando, setFaltando] = useState<string[]>(ativosFaltando);
+
+  useEffect(() => {
+    const ler = () => setFaltando(ativosFaltando());
+
+    ler();
+    window.addEventListener(TEMA_APLICADO, ler);
+    return () => window.removeEventListener(TEMA_APLICADO, ler);
+  }, [css, ativos]);
 
   const escolher = async (evento: React.ChangeEvent<HTMLInputElement>) => {
     const escolhido = evento.target.files?.[0];
@@ -958,25 +975,40 @@ const AbaDeAtivos: React.FC = () => {
           onChange={(e) => void escolher(e)}
         />
         <p data-gc="configuracoes.estudio.estudio-de-temas.p--22" className="text-xs text-ink-faint">
-          Imagem ou fonte, pra usar no CSS rápido.
+          Imagem ou fonte. No CSS, chame pelo nome:{" "}
+          <code data-gc="configuracoes.estudio.estudio-de-temas.code--2" className="font-mono">gc-ativo("fundo")</code>.
         </p>
       </div>
 
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--29" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        {faltando.length > 0 && (
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--30" className="mb-4 rounded-lg border border-aviso/40 bg-aviso/10 px-3 py-2 text-xs">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--23" className="font-medium">
+              O tema pede {faltando.length}{" "}
+              {faltando.length === 1 ? "arquivo" : "arquivos"} que não estão
+              aqui.
+            </p>
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--24" className="mt-1 text-ink-muted">
+              Suba com o mesmo nome e ele aparece:{" "}
+              <span data-gc="configuracoes.estudio.estudio-de-temas.span--8" className="font-mono">{faltando.join(", ")}</span>
+            </p>
+          </div>
+        )}
+
         {!ativos.length && (
-          <p data-gc="configuracoes.estudio.estudio-de-temas.p--23" className="py-10 text-center text-sm text-ink-faint">
+          <p data-gc="configuracoes.estudio.estudio-de-temas.p--25" className="py-10 text-center text-sm text-ink-faint">
             Nenhum arquivo ainda. Suba uma imagem e cole o{" "}
-            <code data-gc="configuracoes.estudio.estudio-de-temas.code--2" className="font-mono">url(…)</code> no seu CSS.
+            <code data-gc="configuracoes.estudio.estudio-de-temas.code--3" className="font-mono">url(…)</code> no seu CSS.
           </p>
         )}
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--30" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--31" className="grid grid-cols-2 gap-3 @3xl:grid-cols-3">
           {ativos.map((ativo) => (
-            <div data-gc="configuracoes.estudio.estudio-de-temas.div--31"
+            <div data-gc="configuracoes.estudio.estudio-de-temas.div--32"
               key={ativo.id}
               className="overflow-hidden rounded-lg border border-line"
             >
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--32" className="flex h-28 items-center justify-center bg-surface-1">
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--33" className="flex h-28 items-center justify-center bg-surface-1">
                 {ativo.tipo.startsWith("image/") ? (
                   <img data-gc="configuracoes.estudio.estudio-de-temas.img"
                     src={ativo.url}
@@ -988,8 +1020,8 @@ const AbaDeAtivos: React.FC = () => {
                 )}
               </div>
 
-              <div data-gc="configuracoes.estudio.estudio-de-temas.div--33" className="flex items-center gap-2 p-2">
-                <p data-gc="configuracoes.estudio.estudio-de-temas.p--24"
+              <div data-gc="configuracoes.estudio.estudio-de-temas.div--34" className="flex items-center gap-2 p-2">
+                <p data-gc="configuracoes.estudio.estudio-de-temas.p--26"
                   className="min-w-0 flex-1 truncate text-xs"
                   title={ativo.nome}
                 >
@@ -998,12 +1030,12 @@ const AbaDeAtivos: React.FC = () => {
 
                 <button data-gc="configuracoes.estudio.estudio-de-temas.button--19"
                   onClick={() =>
-                    void copiarTexto(`url("${ativo.url}")`).then(
-                      (ok) => ok && toast.success("Endereço copiado."),
+                    void copiarTexto(`gc-ativo("${ativo.nome}")`).then(
+                      (ok) => ok && toast.success("Copiado. Cole no CSS."),
                     )
                   }
-                  title="Copiar como url(…)"
-                  aria-label={`Copiar o endereço de ${ativo.nome}`}
+                  title={`Copiar como gc-ativo("${ativo.nome}") — é assim que o tema viaja para outra máquina`}
+                  aria-label={`Copiar o nome de ${ativo.nome}`}
                   className="rounded p-1 text-ink-faint transition hover:text-ink"
                 >
                   <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
@@ -1040,20 +1072,20 @@ const AbaDeConfiguracoes: React.FC = () => {
   const confirmar = useConfirmar();
 
   return (
-    <div data-gc="configuracoes.estudio.estudio-de-temas.div--34" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+    <div data-gc="configuracoes.estudio.estudio-de-temas.div--35" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
       <h3 data-gc="configuracoes.estudio.estudio-de-temas.h3" className="mb-1 text-sm font-semibold text-danger">Zona de perigo</h3>
-      <p data-gc="configuracoes.estudio.estudio-de-temas.p--25" className="mb-4 text-sm text-ink-muted">
+      <p data-gc="configuracoes.estudio.estudio-de-temas.p--27" className="mb-4 text-sm text-ink-muted">
         Nada aqui viaja com a conta: tudo o que o estúdio guarda é deste
         aparelho.
       </p>
 
-      <div data-gc="configuracoes.estudio.estudio-de-temas.div--35" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--36" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--37" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--26" className="text-sm font-medium">
+      <div data-gc="configuracoes.estudio.estudio-de-temas.div--36" className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--37" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--38" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--28" className="text-sm font-medium">
               Limpar as substituições de token
             </p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--27" className="text-xs text-ink-faint">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--29" className="text-xs text-ink-faint">
               As cores voltam a ser as do tema. A biblioteca e o CSS ficam.
             </p>
           </div>
@@ -1062,10 +1094,10 @@ const AbaDeConfiguracoes: React.FC = () => {
           </Button>
         </div>
 
-        <div data-gc="configuracoes.estudio.estudio-de-temas.div--38" className="flex items-center gap-4 p-4">
-          <div data-gc="configuracoes.estudio.estudio-de-temas.div--39" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--28" className="text-sm font-medium">Apagar tudo do estúdio</p>
-            <p data-gc="configuracoes.estudio.estudio-de-temas.p--29" className="text-xs text-ink-faint">
+        <div data-gc="configuracoes.estudio.estudio-de-temas.div--39" className="flex items-center gap-4 p-4">
+          <div data-gc="configuracoes.estudio.estudio-de-temas.div--40" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--30" className="text-sm font-medium">Apagar tudo do estúdio</p>
+            <p data-gc="configuracoes.estudio.estudio-de-temas.p--31" className="text-xs text-ink-faint">
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>

@@ -6,6 +6,7 @@ import {
   CORRECOES_DO_FLUXER,
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
+import { resolverAtivos } from "~/features/configuracoes/lib/ativos-do-tema";
 import { derivar } from "~/features/configuracoes/lib/cores-mae";
 import {
   ID_DO_ESCUDO,
@@ -204,11 +205,18 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   /*
-    O CSS entra normalizado: seletor travado no hash de um build do Fluxer não
-    acha nada em lugar nenhum, nem lá com outro build. O arquivo de quem
+    O CSS entra normalizado e com os arquivos resolvidos: seletor travado no
+    hash de um build do Fluxer não acha nada em lugar nenhum, e `gc-ativo("x")`
+    só vira endereço aqui, com a lista de ativos em mãos. O arquivo de quem
     escreveu fica como está; muda só o que é aplicado.
   */
-  estilo.textContent = normalizarSeletoresDoFluxer(estado.css);
+  const resolvido = resolverAtivos(
+    normalizarSeletoresDoFluxer(estado.css),
+    estado.ativos,
+  );
+
+  faltandoAgora = resolvido.faltando;
+  estilo.textContent = resolvido.css;
 
   /*
     Depois da folha do tema, senão não corrige nada: aqui é a última palavra
@@ -238,6 +246,15 @@ function aplicar(estado: EstadoDoEstudio) {
   `!important` contra `!important` empata na especificidade, e quem chega
   depois ganha — então a ordem aqui é a regra, não um detalhe.
 */
+/*
+  Os arquivos que o CSS pediu e não existem. Fica aqui, e não no estado, porque
+  é resultado de aplicar — quem grava não precisa saber, quem olha a aba Ativos
+  precisa. `avisarTemaAplicado()` avisa a tela de que mudou.
+*/
+let faltandoAgora: string[] = [];
+
+export const ativosFaltando = () => faltandoAgora;
+
 let escudoDe: string | null = null;
 
 function aplicarEscudo() {
