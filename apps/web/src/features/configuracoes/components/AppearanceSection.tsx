@@ -27,49 +27,51 @@ import { ehDesktop } from "~/lib/desktop";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { ControleDeEscala } from "~/features/configuracoes/components/ControleDeEscala";
 import { Linha, Opcao } from "~/features/configuracoes/components/campos-de-config";
+import amostrasDeTema from "~/features/configuracoes/lib/amostras-de-tema.json";
 
 interface TemaDaLista {
   id: Tema;
   nome: string;
   icone: React.ReactNode;
-  amostra: string[];
+  /// O Gravaê mostra a marca no lugar da bolinha de acento — ele é a marca.
   marca?: boolean;
-  acento?: string;
 }
+
+/*
+  As cores da miniatura NÃO ficam aqui. Saem de `amostras-de-tema.json`, que
+  `scripts/amostras-de-tema.mjs` tira do `index.css`. Enquanto eram escritas à
+  mão, envelheceram: o "Mais escuro" prometia três cinzas e o tema é um preto só.
+*/
+const AMOSTRAS = amostrasDeTema as Record<
+  Tema,
+  { amostra: string[]; acento: string }
+>;
 
 const TEMAS: TemaDaLista[] = [
   {
     id: "claro",
     nome: "Claro",
     icone: <Sun data-gc="configuracoes.appearance-section.sun" size={14} />,
-    amostra: ["#f0f1f3", "#ebecef", "#e6e7ea"],
-    acento: "#413cdd",
   },
   {
     id: "escuro",
     nome: "Escuro",
     icone: <Moon data-gc="configuracoes.appearance-section.moon" size={14} />,
-    amostra: ["#1e1d23", "#1a181e", "#232028"],
-    acento: "#413cdd",
   },
   {
     id: "mais-escuro",
     nome: "Mais escuro",
     icone: <Moon data-gc="configuracoes.appearance-section.moon--2" size={14} />,
-    amostra: ["#020203", "#0f0e12", "#141217"],
-    acento: "#413cdd",
   },
   {
     id: "sistema",
     nome: "Seguir o sistema",
     icone: <Monitor data-gc="configuracoes.appearance-section.monitor" size={14} />,
-    amostra: ["#ebecef", "#8a8a94", "#1a181e"],
   },
   {
     id: "gravae",
     nome: "Modo Gravaê",
     icone: <Flame data-gc="configuracoes.appearance-section.flame" size={14} />,
-    amostra: ["#171011", "#120c0d", "#0b0708"],
     marca: true,
   },
 ];
@@ -100,9 +102,9 @@ export const AppearanceSection: React.FC = () => {
               )}
             >
               <span data-gc="configuracoes.appearance-section.span" className="relative flex h-14" aria-hidden>
-                {tema.amostra.map((cor) => (
+                {AMOSTRAS[tema.id].amostra.map((cor, i) => (
                   <span data-gc="configuracoes.appearance-section.span--2"
-                    key={cor}
+                    key={i}
                     className="flex-1"
                     style={{ backgroundColor: cor }}
                   />
@@ -116,10 +118,10 @@ export const AppearanceSection: React.FC = () => {
                   />
                 )}
 
-                {tema.acento && (
+                {!tema.marca && (
                   <span data-gc="configuracoes.appearance-section.span--3"
                     className="absolute inset-0 m-auto size-6 rounded-full shadow"
-                    style={{ backgroundColor: tema.acento }}
+                    style={{ backgroundColor: AMOSTRAS[tema.id].acento }}
                   />
                 )}
               </span>

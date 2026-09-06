@@ -13,6 +13,8 @@
     "css:check": "node scripts/checar-css.mjs",
     "ganchos": "node scripts/ganchos-de-tema.mjs",
     "ganchos:check": "node scripts/ganchos-de-tema.mjs --check",
+    "tokens": "node scripts/tokens-vivos.mjs && node scripts/amostras-de-tema.mjs",
+    "tokens:check": "node scripts/tokens-vivos.mjs --check && node scripts/amostras-de-tema.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "emoji": "node scripts/copiar-emoji.mjs"

@@ -1,0 +1,41 @@
+{
+  "escuro": {
+    "amostra": [
+      "#1a181e",
+      "#1a181e",
+      "#1e1d23"
+    ],
+    "acento": "#413cdd"
+  },
+  "mais-escuro": {
+    "amostra": [
+      "#020203",
+      "#020203",
+      "#020203"
+    ],
+    "acento": "#413cdd"
+  },
+  "gravae": {
+    "amostra": [
+      "#0b0708",
+      "#120c0d",
+      "#171011"
+    ],
+    "acento": "#ff0000"
+  },
+  "claro": {
+    "amostra": [
+      "#ebecef",
+      "#ebecef",
+      "#f0f1f3"
+    ],
+    "acento": "#413cdd"
+  },
+  "sistema": {
+    "amostra": [
+      "#f0f1f3",
+      "#1e1d23"
+    ],
+    "acento": "#413cdd"
+  }
+}
