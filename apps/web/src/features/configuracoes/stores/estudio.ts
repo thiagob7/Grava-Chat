@@ -6,6 +6,7 @@ import {
   CORRECOES_DO_FLUXER,
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
+import { derivar } from "~/features/configuracoes/lib/cores-mae";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import { normalizarSeletoresDoFluxer } from "~/features/configuracoes/lib/normalizar-tema";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
@@ -24,6 +25,10 @@ export interface TemaSalvo {
   descricao?: string | null;
   tags?: string[];
   substituicoes: Record<string, string>;
+  /// As quatro cores-mãe escolhidas, e o que a pessoa mexeu à mão.
+  coresMae?: Record<string, string>;
+  saturacao?: number;
+  manuais?: Record<string, string>;
   css: string;
 }
 
@@ -35,7 +40,18 @@ export interface AtivoDoTema {
 }
 
 interface EstadoDoEstudio {
+  /*
+    O que vale de verdade na tela. NÃO é escrito à mão: sai de `coresMae` +
+    `manuais` toda vez que um dos dois muda. Continua guardado porque o script
+    anti-piscada do `index.html` lê exatamente isto, antes do app existir.
+  */
   substituicoes: Record<string, string>;
+  /// Qual cor cada mãe está pintando. Vazio é o tema base.
+  coresMae: Record<string, string>;
+  /// Multiplica a saturação de tudo que é derivado. 1 é como foi medido.
+  saturacao: number;
+  /// O que a pessoa mexeu token a token. Vence a derivação, sempre.
+  manuais: Record<string, string>;
   css: string;
   biblioteca: TemaSalvo[];
   ativos: AtivoDoTema[];
@@ -45,6 +61,8 @@ interface EstadoDoEstudio {
 
 interface EstudioStore extends EstadoDoEstudio {
   definirToken: (nome: string, valor: string | null) => void;
+  definirCorMae: (id: string, valor: string | null) => void;
+  definirSaturacao: (fator: number) => void;
   definirCss: (css: string) => void;
   salvarNaBiblioteca: (nome: string) => void;
   aplicarDaBiblioteca: (id: string) => void;
@@ -67,6 +85,9 @@ const CHAVE = "gravae:estudio";
 let canal: BroadcastChannel | null = null;
 const VAZIO: EstadoDoEstudio = {
   substituicoes: {},
+  coresMae: {},
+  saturacao: 1,
+  manuais: {},
   css: "",
   biblioteca: [],
   ativos: [],
@@ -76,10 +97,57 @@ const VAZIO: EstadoDoEstudio = {
 function ler(): EstadoDoEstudio {
   try {
     const salvo = localStorage.getItem(CHAVE);
-    return salvo ? { ...VAZIO, ...(JSON.parse(salvo) as Partial<EstadoDoEstudio>) } : VAZIO;
+    if (!salvo) return VAZIO;
+
+    const guardado = JSON.parse(salvo) as Partial<EstadoDoEstudio>;
+
+    /*
+      Quem já tinha tema salvo não tinha `manuais`: naquele desenho tudo que
+      estava em `substituicoes` fora escolhido a dedo. Continua sendo verdade
+      — e é o que preserva o tema de quem atualizar o app com um em uso.
+    */
+    return {
+      ...VAZIO,
+      ...guardado,
+      manuais: guardado.manuais ?? guardado.substituicoes ?? {},
+    };
   } catch {
     return VAZIO;
   }
+}
+
+/*
+  O que vai para a tela: as filhas de cada mãe, e por cima o que foi mexido à
+  mão. A ordem é a regra — quem abriu o token e escolheu a cor não pode ver a
+  derivação desmanchar a escolha no clique seguinte.
+*/
+function montar(
+  coresMae: Record<string, string>,
+  saturacao: number,
+  manuais: Record<string, string>,
+): Record<string, string> {
+  const derivadas: Record<string, string> = {};
+
+  for (const [id, cor] of Object.entries(coresMae)) {
+    Object.assign(derivadas, derivar(id, cor, saturacao));
+  }
+
+  return { ...derivadas, ...manuais };
+}
+
+/// Voltar ao tema base: sem mãe, sem mexida à mão, saturação como foi medida.
+const SEM_TEMA = { coresMae: {}, saturacao: 1, manuais: {} };
+
+/*
+  Um tema salvo antes das cores-mãe só tem `substituicoes`. Ele continua
+  valendo: tudo que ele traz entra como escolha à mão.
+*/
+function doTema(tema: TemaSalvo) {
+  return {
+    coresMae: { ...(tema.coresMae ?? {}) },
+    saturacao: tema.saturacao ?? 1,
+    manuais: { ...(tema.manuais ?? tema.substituicoes) },
+  };
 }
 
 const ID_DO_ESTILO = "gc-estudio-css";
@@ -204,14 +272,27 @@ export const useEstudio = create<EstudioStore>((set, store) => {
   const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
     set(mudanca);
 
-    const { substituicoes, css, biblioteca, ativos, ativoId } = store();
-    aplicar({ substituicoes, css, biblioteca, ativos, ativoId });
+    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais } = store();
+
+    /// Nunca se grava `substituicoes` direto: ela é sempre o resultado.
+    const substituicoes = montar(coresMae, saturacao, manuais);
+    set({ substituicoes });
+
+    const inteiro = {
+      substituicoes,
+      coresMae,
+      saturacao,
+      manuais,
+      css,
+      biblioteca,
+      ativos,
+      ativoId,
+    };
+
+    aplicar(inteiro);
 
     try {
-      localStorage.setItem(
-        CHAVE,
-        JSON.stringify({ substituicoes, css, biblioteca, ativos, ativoId }),
-      );
+      localStorage.setItem(CHAVE, JSON.stringify(inteiro));
     } catch {
       /// Sem localStorage o estúdio ainda funciona; só não sobrevive ao F5.
     }
@@ -223,12 +304,27 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     ...ler(),
 
     definirToken: (nome, valor) => {
-      const substituicoes = { ...store().substituicoes };
-      if (valor === null) delete substituicoes[nome];
-      else substituicoes[nome] = valor;
+      const manuais = { ...store().manuais };
+      if (valor === null) delete manuais[nome];
+      else manuais[nome] = valor;
 
-      guardar({ substituicoes });
+      guardar({ manuais });
     },
+
+    /*
+      Escolher uma mãe NÃO apaga o que foi mexido à mão: a derivação entra por
+      baixo. Voltar a mãe para o padrão (null) devolve as filhas ao tema base,
+      e o que estava à mão continua onde estava.
+    */
+    definirCorMae: (id, valor) => {
+      const coresMae = { ...store().coresMae };
+      if (valor === null) delete coresMae[id];
+      else coresMae[id] = valor;
+
+      guardar({ coresMae });
+    },
+
+    definirSaturacao: (fator) => guardar({ saturacao: fator }),
 
     definirCss: (css) => guardar({ css }),
 
@@ -240,6 +336,9 @@ export const useEstudio = create<EstudioStore>((set, store) => {
             id: crypto.randomUUID(),
             nome,
             substituicoes: { ...store().substituicoes },
+            coresMae: { ...store().coresMae },
+            saturacao: store().saturacao,
+            manuais: { ...store().manuais },
             css: store().css,
           },
         ],
@@ -249,7 +348,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       const tema = store().biblioteca.find((t) => t.id === id);
       if (!tema) return;
 
-      guardar({ substituicoes: { ...tema.substituicoes }, css: tema.css, ativoId: id });
+      guardar({ ...doTema(tema), css: tema.css, ativoId: id });
     },
 
     /// Ligar troca o tema que está valendo; desligar volta para o base.
@@ -258,11 +357,11 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       if (!tema) return;
 
       if (store().ativoId === id) {
-        guardar({ substituicoes: {}, css: "", ativoId: null });
+        guardar({ ...SEM_TEMA, css: "", ativoId: null });
         return;
       }
 
-      guardar({ substituicoes: { ...tema.substituicoes }, css: tema.css, ativoId: id });
+      guardar({ ...doTema(tema), css: tema.css, ativoId: id });
     },
 
     atualizarNaBiblioteca: (id, dados) => {
@@ -277,7 +376,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
 
       guardar(
         valendo && atual
-          ? { biblioteca, substituicoes: { ...atual.substituicoes }, css: atual.css }
+          ? { biblioteca, ...doTema(atual), css: atual.css }
           : { biblioteca },
       );
     },
@@ -328,21 +427,29 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     apagarDaBiblioteca: (id) =>
       guardar({
         biblioteca: store().biblioteca.filter((tema) => tema.id !== id),
-        ...(store().ativoId === id ? { substituicoes: {}, css: "", ativoId: null } : {}),
+        ...(store().ativoId === id ? { ...SEM_TEMA, css: "", ativoId: null } : {}),
       }),
 
+    /*
+      O que um tema de fora traz em `substituicoes` foi escolhido a dedo por
+      quem o escreveu: entra como manual, e as mães começam limpas.
+    */
     importar: ({ substituicoes, css }) =>
-      guardar({ substituicoes: { ...(substituicoes ?? {}) }, css: css ?? "" }),
+      guardar({
+        ...SEM_TEMA,
+        manuais: { ...(substituicoes ?? {}) },
+        css: css ?? "",
+      }),
 
     guardarAtivo: (ativo) =>
       guardar({ ativos: [...store().ativos, { ...ativo, id: crypto.randomUUID() }] }),
 
     apagarAtivo: (id) => guardar({ ativos: store().ativos.filter((a) => a.id !== id) }),
 
-    limparSubstituicoes: () => guardar({ substituicoes: {} }),
+    limparSubstituicoes: () => guardar({ ...SEM_TEMA }),
 
     limparTudo: () =>
-      guardar({ substituicoes: {}, css: "", biblioteca: [], ativos: [], ativoId: null }),
+      guardar({ ...SEM_TEMA, css: "", biblioteca: [], ativos: [], ativoId: null }),
   };
 });
 

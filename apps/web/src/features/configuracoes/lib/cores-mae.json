@@ -1,0 +1,356 @@
+{
+  "fundo": {
+    "rotulo": "Fundo",
+    "dica": "as superfícies, as bordas, o hover e o palco de voz",
+    "mae": "--color-surface-0",
+    "padrao": "#1a181e",
+    "filhas": [
+      {
+        "nome": "--color-surface-1",
+        "dL": 0,
+        "razaoC": 1,
+        "dH": 0,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-surface-2",
+        "dL": 2.3971,
+        "razaoC": 0.9587,
+        "dH": -6.1686,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-surface-3",
+        "dL": 4.1721,
+        "razaoC": 1.2903,
+        "dH": 1.5583,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-surface-4",
+        "dL": 7.5787,
+        "razaoC": 1.4029,
+        "dH": 0.06,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-campo",
+        "dL": 4.9946,
+        "razaoC": 1.107,
+        "dH": -1.7775,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-campo-foco",
+        "dL": 9.9693,
+        "razaoC": 1.5242,
+        "dH": -1.1182,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-composer",
+        "dL": 2.3971,
+        "razaoC": 0.9587,
+        "dH": -6.1686,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-cabecalho",
+        "dL": 2.3971,
+        "razaoC": 0.9587,
+        "dH": -6.1686,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-painel",
+        "dL": 4.1721,
+        "razaoC": 1.2903,
+        "dH": 1.5583,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-codigo",
+        "dL": 4.6586,
+        "razaoC": 1.285,
+        "dH": 1.5412,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-codigo-bloco",
+        "dL": 3.1929,
+        "razaoC": 1.3014,
+        "dH": 1.5947,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-hover",
+        "dL": 91.2898,
+        "razaoC": 0,
+        "dH": -145.6898,
+        "alfa": 0.05,
+        "espelha": true
+      },
+      {
+        "nome": "--color-selecionado",
+        "dL": 91.2898,
+        "razaoC": 0,
+        "dH": -145.6898,
+        "alfa": 0.1,
+        "espelha": true
+      },
+      {
+        "nome": "--color-divisor",
+        "dL": 91.2898,
+        "razaoC": 0,
+        "dH": -145.6898,
+        "alfa": 0.05,
+        "espelha": true
+      },
+      {
+        "nome": "--color-line",
+        "dL": 71.4993,
+        "razaoC": 1.6495,
+        "dH": -2.2314,
+        "alfa": 0.15,
+        "espelha": true
+      },
+      {
+        "nome": "--color-line-sutil",
+        "dL": 91.2898,
+        "razaoC": 0,
+        "dH": -145.6898,
+        "alfa": 0.08,
+        "espelha": true
+      },
+      {
+        "nome": "--color-palco",
+        "dL": -5.9266,
+        "razaoC": 0.1846,
+        "dH": -13.7137,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-trilho",
+        "dL": 67.6158,
+        "razaoC": 0.3493,
+        "dH": -13.5638,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-veu",
+        "dL": -8.7102,
+        "razaoC": 0,
+        "dH": 56.1116,
+        "alfa": 0.6,
+        "L": 0,
+        "espelha": true,
+        "ancora": true
+      },
+      {
+        "nome": "--color-sombra",
+        "dL": -8.7102,
+        "razaoC": 0,
+        "dH": 56.1116,
+        "alfa": 0.32,
+        "L": 0,
+        "espelha": true,
+        "ancora": true
+      },
+      {
+        "nome": "--color-brilho",
+        "dL": 91.2898,
+        "razaoC": 0,
+        "dH": -145.6898,
+        "alfa": 0.35,
+        "L": 100,
+        "espelha": true,
+        "ancora": true
+      },
+      {
+        "nome": "--color-sobre-midia",
+        "dL": -8.7102,
+        "razaoC": 0,
+        "dH": 56.1116,
+        "alfa": 0.6,
+        "L": 0,
+        "espelha": true,
+        "ancora": true
+      }
+    ]
+  },
+  "texto": {
+    "rotulo": "Texto",
+    "dica": "o texto forte, o apagado e o do palco",
+    "mae": "--color-ink",
+    "padrao": "#f4f4f6",
+    "filhas": [
+      {
+        "nome": "--color-ink-muted",
+        "dL": -14.084,
+        "razaoC": 1.6335,
+        "dH": 13.0233,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-ink-faint",
+        "dL": -25.067,
+        "razaoC": 2.8053,
+        "dH": 13.2351,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-pilula",
+        "dL": 0,
+        "razaoC": 0.341,
+        "dH": 0,
+        "alfa": null,
+        "espelha": true
+      },
+      {
+        "nome": "--color-palco-ink",
+        "dL": 0,
+        "razaoC": 0.341,
+        "dH": 0,
+        "alfa": null,
+        "espelha": true
+      }
+    ]
+  },
+  "marca": {
+    "rotulo": "Marca",
+    "dica": "botão, link, menção, resposta e o anel de foco",
+    "mae": "--color-brand",
+    "padrao": "#413cdd",
+    "filhas": [
+      {
+        "nome": "--color-brand-hover",
+        "dL": -4.6708,
+        "razaoC": 0.949,
+        "dH": 0.3547,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-foco-anel",
+        "dL": 0,
+        "razaoC": 1,
+        "dH": 0,
+        "alfa": 0.6,
+        "espelha": false
+      },
+      {
+        "nome": "--color-link",
+        "dL": 41.7713,
+        "razaoC": 0.3562,
+        "dH": -63.4779,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-mencao",
+        "dL": 41.7713,
+        "razaoC": 0.3562,
+        "dH": -63.4779,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-resposta",
+        "dL": 18.5628,
+        "razaoC": 0.6958,
+        "dH": -17.6532,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-everyone",
+        "dL": 26.5506,
+        "razaoC": 0.5963,
+        "dH": -2.0489,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-sobre-marca",
+        "dL": 62.9326,
+        "razaoC": 0,
+        "dH": -144.6861,
+        "alfa": null,
+        "L": 100,
+        "espelha": false,
+        "contraste": true
+      }
+    ]
+  },
+  "perigo": {
+    "rotulo": "Perigo e aviso",
+    "dica": "apagar, não perturbe, aviso e destaque",
+    "mae": "--color-danger",
+    "padrao": "#e53734",
+    "filhas": [
+      {
+        "nome": "--color-danger-fundo",
+        "dL": 0,
+        "razaoC": 1,
+        "dH": 0,
+        "alfa": 0.12,
+        "espelha": false
+      },
+      {
+        "nome": "--color-dnd",
+        "dL": 3.409,
+        "razaoC": 0.9689,
+        "dH": -2.3703,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-aviso",
+        "dL": 29.5714,
+        "razaoC": 0.9934,
+        "dH": 52.0234,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-destaque",
+        "dL": 29.1165,
+        "razaoC": 0.924,
+        "dH": 56.9696,
+        "alfa": null,
+        "espelha": false
+      },
+      {
+        "nome": "--color-destaque-fundo",
+        "dL": 29.1165,
+        "razaoC": 0.924,
+        "dH": 56.9696,
+        "alfa": 0.1,
+        "espelha": false
+      },
+      {
+        "nome": "--color-here",
+        "dL": 34.8197,
+        "razaoC": 0.6951,
+        "dH": 56.6252,
+        "alfa": null,
+        "espelha": false
+      }
+    ]
+  }
+}
