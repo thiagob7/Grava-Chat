@@ -38,7 +38,6 @@ import {
   valorDoTema,
 } from "~/lib/tokens";
 import type { TokenDoTema } from "~/lib/tokens";
-import { Switch } from "~/components/ui/switch";
 import { lerCor, SeletorDeCor } from "~/components/ui/color-picker";
 import {
   Popover,
@@ -127,8 +126,6 @@ export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) =
 
 const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
-  const [soLigados, setSoLigados] = useState(false);
-
   const [abertos, setAbertos] = useState<Record<string, boolean>>({});
 
   const substituicoes = useEstudio((s) => s.substituicoes);
@@ -140,7 +137,6 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
     return GRUPOS_DE_TOKENS.map((grupo) => ({
       ...grupo,
       tokens: grupo.tokens.filter((token) => {
-        if (soLigados && !token.ligado) return false;
         if (!termo) return true;
 
         return (
@@ -149,7 +145,7 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
         );
       }),
     })).filter((grupo) => grupo.tokens.length > 0);
-  }, [busca, soLigados]);
+  }, [busca]);
 
   const buscando = Boolean(busca.trim());
 
@@ -172,15 +168,10 @@ const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
           />
         </div>
 
-        <label data-gc="configuracoes.estudio.estudio-de-temas.label" className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-ink-muted">
-          <Switch data-gc="configuracoes.estudio.estudio-de-temas.switch.set-so-ligados" checked={soLigados} onCheckedChange={setSoLigados} />
-          Só os que já pintam
-        </label>
-
         <p data-gc="configuracoes.estudio.estudio-de-temas.p--2" className="ml-auto shrink-0 text-xs text-ink-faint">
           {quantas} {quantas === 1 ? "substituição" : "substituições"} ·{" "}
           {grupos.length} grupos · {totalMostrado} de {TODOS_OS_TOKENS.length}{" "}
-          tokens
+          tokens que pintam
         </p>
 
         <Button data-gc="configuracoes.estudio.estudio-de-temas.button.limpar"
@@ -297,19 +288,10 @@ const LinhaDeToken: React.FC<{
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--9" className="min-w-0 flex-1">
         <p data-gc="configuracoes.estudio.estudio-de-temas.p--4" className="flex items-center gap-2 truncate text-sm font-medium">
           <span data-gc="configuracoes.estudio.estudio-de-temas.span--2" className="truncate">{token.rotulo}</span>
-
-          {!token.ligado && (
-            <span data-gc="configuracoes.estudio.estudio-de-temas.span--3"
-              title="Este token existe e tem valor, mas nenhum componente lê ele ainda."
-              className="shrink-0 rounded-full bg-surface-3 px-1.5 py-px text-10 font-normal uppercase tracking-wide text-ink-faint"
-            >
-              não ligado
-            </span>
-          )}
         </p>
         <p data-gc="configuracoes.estudio.estudio-de-temas.p--5" className="truncate font-mono text-xs text-ink-faint">
           {token.nome}
-          {token.dica && <span data-gc="configuracoes.estudio.estudio-de-temas.span--4" className="font-sans"> — {token.dica}</span>}
+          {token.dica && <span data-gc="configuracoes.estudio.estudio-de-temas.span--3" className="font-sans"> — {token.dica}</span>}
         </p>
       </div>
 
@@ -595,8 +577,8 @@ const TemaImportado: React.FC<{ css: string }> = ({ css }) => {
       >
         <ChevronRight data-gc="configuracoes.estudio.estudio-de-temas.chevron-right--2" size={14} className={cn("transition-transform", aberto && "rotate-90")} />
         Tema importado
-        <span data-gc="configuracoes.estudio.estudio-de-temas.span--5" className="ml-auto normal-case tracking-normal">
-          <span data-gc="configuracoes.estudio.estudio-de-temas.span--6" className={cn("font-mono", faltando.length ? "text-aviso" : "text-online")}>
+        <span data-gc="configuracoes.estudio.estudio-de-temas.span--4" className="ml-auto normal-case tracking-normal">
+          <span data-gc="configuracoes.estudio.estudio-de-temas.span--5" className={cn("font-mono", faltando.length ? "text-aviso" : "text-online")}>
             {achados.length}/{total}
           </span>
         </span>
