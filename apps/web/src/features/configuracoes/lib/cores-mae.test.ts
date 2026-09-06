@@ -10,6 +10,7 @@ import {
   MAES,
   TOKENS_DERIVADOS,
   derivar,
+  montarTema,
 } from "~/features/configuracoes/lib/cores-mae";
 
 const raiz = dirname(fileURLToPath(import.meta.url));
@@ -117,5 +118,29 @@ describe("cores-mãe", () => {
     ]);
 
     expect(todos).toHaveLength(TOKENS_DERIVADOS.size);
+  });
+
+  /*
+    A promessa que sustenta as duas abas juntas: escolher uma cor-mãe não pode
+    desmanchar o que a pessoa ajustou token a token. Se esta cair, a aba Cores
+    passa a comer a aba Tokens no clique seguinte.
+  */
+  it("o que foi mexido à mão sobrevive a uma nova derivação", () => {
+    const meu = { "--color-surface-2": "#0d0d0d" };
+
+    const antes = montarTema({ fundo: "#1a181e" }, 1, meu);
+    const depois = montarTema({ fundo: "#2b1a3d" }, 1, meu);
+
+    expect(antes["--color-surface-2"]).toBe("#0d0d0d");
+    expect(depois["--color-surface-2"]).toBe("#0d0d0d");
+
+    /// E as irmãs dele continuam acompanhando a mãe.
+    expect(depois["--color-surface-3"]).not.toBe(antes["--color-surface-3"]);
+  });
+
+  it("sem mãe escolhida, o tema é só o que foi mexido à mão", () => {
+    expect(montarTema({}, 1, { "--color-ink": "#fff" })).toEqual({
+      "--color-ink": "#fff",
+    });
   });
 });

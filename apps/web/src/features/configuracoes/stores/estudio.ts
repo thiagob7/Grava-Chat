@@ -7,7 +7,7 @@ import {
   pareceTemaDoFluxer,
 } from "~/features/configuracoes/lib/correcoes-do-fluxer";
 import { resolverAtivos } from "~/features/configuracoes/lib/ativos-do-tema";
-import { derivar } from "~/features/configuracoes/lib/cores-mae";
+import { montarTema } from "~/features/configuracoes/lib/cores-mae";
 import {
   ID_DO_ESCUDO,
   cssDoEscudo,
@@ -120,25 +120,6 @@ function ler(): EstadoDoEstudio {
   } catch {
     return VAZIO;
   }
-}
-
-/*
-  O que vai para a tela: as filhas de cada mãe, e por cima o que foi mexido à
-  mão. A ordem é a regra — quem abriu o token e escolheu a cor não pode ver a
-  derivação desmanchar a escolha no clique seguinte.
-*/
-function montar(
-  coresMae: Record<string, string>,
-  saturacao: number,
-  manuais: Record<string, string>,
-): Record<string, string> {
-  const derivadas: Record<string, string> = {};
-
-  for (const [id, cor] of Object.entries(coresMae)) {
-    Object.assign(derivadas, derivar(id, cor, saturacao));
-  }
-
-  return { ...derivadas, ...manuais };
 }
 
 /// Voltar ao tema base: sem mãe, sem mexida à mão, saturação como foi medida.
@@ -336,7 +317,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais } = store();
 
     /// Nunca se grava `substituicoes` direto: ela é sempre o resultado.
-    const substituicoes = montar(coresMae, saturacao, manuais);
+    const substituicoes = montarTema(coresMae, saturacao, manuais);
     set({ substituicoes });
 
     const inteiro = {

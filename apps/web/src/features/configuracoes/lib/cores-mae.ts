@@ -165,3 +165,24 @@ export const TOKENS_DERIVADOS = new Set(
     ...f.filhas.map((c) => c.nome),
   ]),
 );
+
+/*
+  O tema inteiro: as filhas de cada mãe, e por cima o que foi mexido à mão.
+
+  A ordem é a regra. Quem abriu um token e escolheu a cor não pode ver a
+  derivação desmanchar a escolha no clique seguinte — e é o que aconteceria se
+  as duas fontes fossem misturadas em vez de empilhadas.
+*/
+export function montarTema(
+  coresMae: Record<string, string>,
+  saturacao: number,
+  manuais: Record<string, string>,
+): Record<string, string> {
+  const derivadas: Record<string, string> = {};
+
+  for (const [id, cor] of Object.entries(coresMae)) {
+    Object.assign(derivadas, derivar(id, cor, saturacao));
+  }
+
+  return { ...derivadas, ...manuais };
+}
