@@ -572,6 +572,8 @@ const AbaDeCss: React.FC = () => {
           Copiar
         </Button>
 
+        <BotaoDeCompartilhar data-gc="configuracoes.estudio.estudio-de-temas.botao-de-compartilhar" />
+
         <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
           variant="surface"
           size="sm"
@@ -608,6 +610,7 @@ const AbaDeCss: React.FC = () => {
   );
 };
 
+/// Publica o que está no estúdio e copia o link — colado num canal, vira o cartão de importar.
 const BotaoDeCompartilhar: React.FC = () => {
   const substituicoes = useEstudio((s) => s.substituicoes);
   const css = useEstudio((s) => s.css);
@@ -617,7 +620,6 @@ const BotaoDeCompartilhar: React.FC = () => {
 
   return (
     <Button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
-      variant="surface"
       size="sm"
       disabled={vazio || publicar.isPending}
       title={vazio ? "Mexa em alguma cor ou escreva CSS antes" : undefined}

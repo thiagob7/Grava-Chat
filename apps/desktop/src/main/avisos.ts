@@ -1,7 +1,13 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from "electron";
 
 export function registrarAvisos() {
-  const janelaAtiva = () => BrowserWindow.getAllWindows()[0] ?? null;
+  /*
+    A janela de quem chamou, e não "a primeira" — desde que o estúdio de temas
+    abre numa janela própria, existe mais de uma. Minimizar dali tem que
+    minimizar o estúdio, não o app atrás dele.
+  */
+  const daChamada = (evento: IpcMainInvokeEvent) =>
+    BrowserWindow.fromWebContents(evento.sender) ?? BrowserWindow.getAllWindows()[0] ?? null;
 
   ipcMain.handle("janela:contador", (_e, quantas: number) => {
     const numero = Number.isFinite(quantas) ? Math.max(0, Math.trunc(quantas)) : 0;
@@ -9,8 +15,8 @@ export function registrarAvisos() {
     app.setBadgeCount(numero);
   });
 
-  ipcMain.handle("janela:chamar-atencao", () => {
-    const janela = janelaAtiva();
+  ipcMain.handle("janela:chamar-atencao", (evento) => {
+    const janela = daChamada(evento);
     if (!janela || janela.isFocused()) return;
 
     if (process.platform === "darwin") app.dock?.bounce("informational");
@@ -24,22 +30,37 @@ export function registrarAvisos() {
   */
   ipcMain.handle("janela:moldura-propria", () => process.platform !== "darwin");
 
-  ipcMain.handle("janela:minimizar", () => janelaAtiva()?.minimize());
+  ipcMain.handle("janela:minimizar", (evento) => daChamada(evento)?.minimize());
 
-  ipcMain.handle("janela:alternar-maximizada", () => {
-    const janela = janelaAtiva();
+  ipcMain.handle("janela:alternar-maximizada", (evento) => {
+    const janela = daChamada(evento);
     if (!janela) return;
 
     if (janela.isMaximized()) janela.unmaximize();
     else janela.maximize();
   });
 
-  ipcMain.handle("janela:fechar", () => janelaAtiva()?.close());
+  ipcMain.handle("janela:fechar", (evento) => daChamada(evento)?.close());
 
-  ipcMain.handle("janela:esta-maximizada", () => janelaAtiva()?.isMaximized() ?? false);
+  ipcMain.handle("janela:esta-maximizada", (evento) => daChamada(evento)?.isMaximized() ?? false);
 
-  ipcMain.handle("janela:focar", () => {
-    const janela = janelaAtiva();
+  /*
+    "floating" é o nível mais baixo que fica por cima: a janela sobe acima dos
+    outros aplicativos, mas continua abaixo de menu e de tela cheia do sistema.
+    Devolve como de fato ficou.
+  */
+  ipcMain.handle("janela:fixar-por-cima", (evento, fixar: boolean) => {
+    const janela = daChamada(evento);
+    if (!janela) return false;
+
+    janela.setAlwaysOnTop(Boolean(fixar), "floating");
+    return janela.isAlwaysOnTop();
+  });
+
+  ipcMain.handle("janela:esta-por-cima", (evento) => daChamada(evento)?.isAlwaysOnTop() ?? false);
+
+  ipcMain.handle("janela:focar", (evento) => {
+    const janela = daChamada(evento);
     if (!janela) return;
 
     if (janela.isMinimized()) janela.restore();

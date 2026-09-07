@@ -1,7 +1,5 @@
 import { create } from "zustand";
 
-import { ehDesktop } from "~/lib/desktop";
-
 /*
   O estúdio de temas vive fora da tela de configurações.
 
@@ -9,10 +7,11 @@ import { ehDesktop } from "~/lib/desktop";
   digita. Se morasse dentro do modal, fechar as configurações o levaria junto —
   e é justamente fechar as configurações que a pessoa quer fazer para ver o tema.
 
-  No navegador ele sai numa janela do sistema, que dá para arrastar para outra
-  tela e deixar ao lado do app. Se o bloqueador de pop-up barrar, ou se estivermos
-  no aplicativo de mesa — onde a versão instalada ainda manda `window.open` para
-  o navegador — cai na janela de dentro, que faz a mesma coisa sem sair daqui.
+  Ele sai numa janela do sistema, que dá para arrastar para outra tela e deixar
+  ao lado do app. No aplicativo de mesa a casca abre essa mesma janela como
+  janela nativa, com o preload — é lá que ela ganha o botão de fixar por cima.
+  Se o bloqueador de pop-up barrar, ou se a casca for velha demais para abrir,
+  cai na janela de dentro, que faz a mesma coisa sem sair daqui.
 */
 interface JanelaDoEstudio {
   aberto: boolean;
@@ -21,8 +20,6 @@ interface JanelaDoEstudio {
 }
 
 function abrirNoSistema(): boolean {
-  if (ehDesktop()) return false;
-
   const largura = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
   const altura = Math.min(900, Math.round(window.screen.availHeight * 0.85));
 

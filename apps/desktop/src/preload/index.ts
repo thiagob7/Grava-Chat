@@ -68,6 +68,9 @@ const ponte: PonteDesktop = {
     fechar: (): Promise<void> => ipcRenderer.invoke("janela:fechar"),
     molduraPropria: (): Promise<boolean> => ipcRenderer.invoke("janela:moldura-propria"),
     estaMaximizada: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-maximizada"),
+    fixarPorCima: (fixar: boolean): Promise<boolean> =>
+      ipcRenderer.invoke("janela:fixar-por-cima", fixar),
+    estaPorCima: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-por-cima"),
 
     aoMudarMaximizada: (callback: (maximizada: boolean) => void) => {
       const ouvinte = (_e: unknown, maximizada: boolean) => callback(maximizada);

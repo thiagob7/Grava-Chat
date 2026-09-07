@@ -76,6 +76,13 @@ export interface PonteJanela {
   molduraPropria?: () => Promise<boolean>;
   estaMaximizada?: () => Promise<boolean>;
   aoMudarMaximizada?: (callback: (maximizada: boolean) => void) => () => void;
+  /*
+    Fixar a janela por cima das outras — é o que faz o estúdio de temas servir
+    de painel ao lado de qualquer coisa. Devolve como ficou, porque o sistema
+    pode recusar. Opcionais pelo mesmo motivo dos de cima.
+  */
+  fixarPorCima?: (fixar: boolean) => Promise<boolean>;
+  estaPorCima?: () => Promise<boolean>;
 }
 
 export interface PonteLinks {
