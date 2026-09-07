@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Postavke poslužitelja",
+  novasMensagens: "Nove poruke",
   menu: {
     marcarLida: "Označi kao pročitano",
     convidar: "Pozovi članove",

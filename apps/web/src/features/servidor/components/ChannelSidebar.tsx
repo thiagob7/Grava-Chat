@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronDown, Lock, LogOut, Plus, Settings, Trash2 } from "lucide-react";
 
 import type {
@@ -35,6 +35,7 @@ import { usePermissions } from "~/hooks/use-permissions";
 import { copiarTexto } from "~/lib/copiar";
 import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
@@ -59,6 +60,9 @@ interface ChannelSidebarProps {
   onOpenVoiceChat?: (channelId: string) => void;
 }
 
+const PILULA =
+  "absolute left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand px-3 py-1 text-11 font-bold uppercase tracking-wide text-sobre-marca shadow-lg shadow-sombra transition hover:brightness-110";
+
 export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   detail,
   summary,
@@ -72,6 +76,41 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
   const [collapsed, setCollapsed] = useCategoriasFechadas();
+  const { t } = useTranslation();
+  const rolador = useRef<HTMLDivElement>(null);
+  const [foraDaVista, setForaDaVista] = useState({ acima: false, abaixo: false });
+
+  const medirForaDaVista = useCallback(() => {
+    const caixa = rolador.current;
+    if (!caixa) return;
+
+    let acima = false;
+    let abaixo = false;
+    for (const linha of caixa.querySelectorAll<HTMLElement>("[data-nao-lido]")) {
+      const topo = linha.offsetTop - caixa.scrollTop;
+      if (topo + linha.offsetHeight < 0) acima = true;
+      else if (topo > caixa.clientHeight) abaixo = true;
+    }
+
+    setForaDaVista((atual) => (atual.acima === acima && atual.abaixo === abaixo ? atual : { acima, abaixo }));
+  }, []);
+
+  useEffect(() => {
+    medirForaDaVista();
+  }, [medirForaDaVista, readStates, collapsed, detail]);
+
+  const irParaNaoLido = (lado: "acima" | "abaixo") => {
+    const caixa = rolador.current;
+    if (!caixa) return;
+
+    const linhas = [...caixa.querySelectorAll<HTMLElement>("[data-nao-lido]")];
+    const alvo =
+      lado === "acima"
+        ? linhas.filter((l) => l.offsetTop - caixa.scrollTop + l.offsetHeight < 0).at(-1)
+        : linhas.find((l) => l.offsetTop - caixa.scrollTop > caixa.clientHeight);
+
+    alvo?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
   const [creatingIn, setCreatingIn] = useState<string | null | false>(false);
   const [inviting, setInviting] = useState(false);
   const configuracoes = useServerSettingsStore();
@@ -280,15 +319,30 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         </header>
 
         <div data-gc="servidor.channel-sidebar.div--6" className="relative flex min-h-0 flex-1 flex-col">
-          <div data-gc="servidor.channel-sidebar.div--7" {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
+          {/*
+            Canal não lido que ficou fora da vista: a pílula avisa e, clicada,
+            rola até ele. Uma em cima, outra embaixo, cada uma para o seu lado.
+          */}
+          {foraDaVista.acima && (
+            <button data-gc="servidor.channel-sidebar.button--3" type="button" onClick={() => irParaNaoLido("acima")} className={PILULA + " top-2"}>
+              {t("servidor.novasMensagens")}
+            </button>
+          )}
+          {foraDaVista.abaixo && (
+            <button data-gc="servidor.channel-sidebar.button--4" type="button" onClick={() => irParaNaoLido("abaixo")} className={PILULA + " bottom-2"}>
+              {t("servidor.novasMensagens")}
+            </button>
+          )}
+
+          <div data-gc="servidor.channel-sidebar.div.medir-fora-da-vista" ref={rolador} onScroll={medirForaDaVista} {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
 
               return (
                 <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("grupoDeCanais", "mb-4")}>
                   {group.name && (
-                    <div data-gc="servidor.channel-sidebar.div--8" className="group flex items-center justify-between px-1">
-                      <button data-gc="servidor.channel-sidebar.button--3"
+                    <div data-gc="servidor.channel-sidebar.div--7" className="group flex items-center justify-between px-1">
+                      <button data-gc="servidor.channel-sidebar.button--5"
                         onClick={() =>
                           group.id &&
                           setCollapsed({
@@ -306,7 +360,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         <span data-gc="servidor.channel-sidebar.span" className="truncate">{group.name}</span>
                       </button>
                       {canManageChannels && group.id !== "favoritos" && (
-                        <button data-gc="servidor.channel-sidebar.button--4"
+                        <button data-gc="servidor.channel-sidebar.button--6"
                           onClick={() => setCreatingIn(group.id)}
                           title="Criar canal"
                           className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
@@ -340,8 +394,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         : null;
 
                       return (
-                        <div data-gc="servidor.channel-sidebar.div--9" key={channel.id} className="group/canal relative">
-                          <button data-gc="servidor.channel-sidebar.button--5"
+                        <div data-gc="servidor.channel-sidebar.div--8" key={channel.id} className="group/canal relative" data-canal={channel.id} data-nao-lido={unread ? "1" : undefined}>
+                          <button data-gc="servidor.channel-sidebar.button--7"
                             onClick={() => onSelectChannel(channel.id)}
                             className={cn(
                               "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
@@ -444,9 +498,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             </span>
                           </button>
 
-                          <div data-gc="servidor.channel-sidebar.div--10" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
+                          <div data-gc="servidor.channel-sidebar.div--9" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                             {channel.type === "VOICE" && (
-                              <button data-gc="servidor.channel-sidebar.button--6"
+                              <button data-gc="servidor.channel-sidebar.button--8"
                                 onClick={() => onOpenVoiceChat?.(channel.id)}
                                 title="Abrir chat"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
@@ -456,7 +510,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )}
 
                             {can("CREATE_INVITE") && (
-                              <button data-gc="servidor.channel-sidebar.button--7"
+                              <button data-gc="servidor.channel-sidebar.button--9"
                                 onClick={() => setInviting(true)}
                                 title="Convidar pessoas"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
@@ -466,7 +520,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )}
 
                             {(canManageChannels || canManageRoles) && (
-                              <button data-gc="servidor.channel-sidebar.button--8"
+                              <button data-gc="servidor.channel-sidebar.button--10"
                                 onClick={() => setEditandoCanal(channel.id)}
                                 title="Editar canal"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"

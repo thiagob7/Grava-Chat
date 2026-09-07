@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "הגדרות השרת",
+  novasMensagens: "הודעות חדשות",
   menu: {
     marcarLida: "סמן כנקרא",
     convidar: "הזמנת חברים",

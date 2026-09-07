@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverio nustatymai",
+  novasMensagens: "Naujos žinutės",
   menu: {
     marcarLida: "Pažymėti kaip perskaitytą",
     convidar: "Pakviesti narius",

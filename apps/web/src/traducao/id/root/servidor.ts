@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Pengaturan server",
+  novasMensagens: "Pesan baru",
   menu: {
     marcarLida: "Tandai sudah dibaca",
     convidar: "Undang anggota",

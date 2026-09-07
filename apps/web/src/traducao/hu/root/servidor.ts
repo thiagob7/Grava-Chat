@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Szerverbeállítások",
+  novasMensagens: "Új üzenetek",
   menu: {
     marcarLida: "Megjelölés olvasottként",
     convidar: "Tagok meghívása",

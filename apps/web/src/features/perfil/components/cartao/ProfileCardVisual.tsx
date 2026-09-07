@@ -46,6 +46,9 @@ interface ProfileCardVisualProps {
   pronomes?: string | null;
   onPronomes?: (valor: string) => void;
   createdAt?: string | null;
+  /// Quando entrou no servidor aberto, e o nome dele — a segunda data do cartão.
+  entrouEm?: string | null;
+  nomeDoServidor?: string | null;
   mutualFriends?: number;
   mutualGuilds?: number;
   cargos?: Role[];
@@ -111,6 +114,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   pronomes,
   onPronomes,
   createdAt,
+  entrouEm,
+  nomeDoServidor,
   mutualFriends = 0,
   mutualGuilds = 0,
   cargos = [],
@@ -575,11 +580,20 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           {createdAt && (
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
-              <p data-gc="perfil.cartao.profile-card-visual.p--8" className="text-sm text-ink-muted">
-                {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
-                  new Date(createdAt),
+              <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
+                <span data-gc="perfil.cartao.profile-card-visual.span--28" className="flex items-center gap-1.5" title="Gravaê">
+                  <img data-gc="perfil.cartao.profile-card-visual.img--3" src="/brand/logo%20g%20branco.svg" alt="" className="size-3.5 opacity-80" draggable={false} />
+                  {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "medium" }).format(new Date(createdAt))}
+                </span>
+                {entrouEm && (
+                  <span data-gc="perfil.cartao.profile-card-visual.span--29" className="flex items-center gap-1.5" title={nomeDoServidor ?? undefined}>
+                    <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex size-3.5 items-center justify-center rounded-full bg-surface-4 text-[8px] font-bold uppercase text-ink">
+                      {(nomeDoServidor ?? "").slice(0, 1)}
+                    </span>
+                    {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "medium" }).format(new Date(entrouEm))}
+                  </span>
                 )}
-              </p>
+              </div>
             </>
           )}
 

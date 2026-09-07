@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Sunucu ayarları",
+  novasMensagens: "Yeni mesajlar",
   menu: {
     marcarLida: "Okundu olarak işaretle",
     convidar: "Üye davet et",

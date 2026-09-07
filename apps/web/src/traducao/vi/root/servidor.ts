@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Cài đặt máy chủ",
+  novasMensagens: "Tin nhắn mới",
   menu: {
     marcarLida: "Đánh dấu đã đọc",
     convidar: "Mời thành viên",

@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Setările serverului",
+  novasMensagens: "Mesaje noi",
   menu: {
     marcarLida: "Marchează ca citit",
     convidar: "Invită membri",

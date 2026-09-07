@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "ตั้งค่าเซิร์ฟเวอร์",
+  novasMensagens: "ข้อความใหม่",
   menu: {
     marcarLida: "ทำเครื่องหมายว่าอ่านแล้ว",
     convidar: "เชิญสมาชิก",

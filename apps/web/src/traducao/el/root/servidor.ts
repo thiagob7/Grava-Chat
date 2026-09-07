@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Ρυθμίσεις διακομιστή",
+  novasMensagens: "Νέα μηνύματα",
   menu: {
     marcarLida: "Σήμανση ως αναγνωσμένο",
     convidar: "Πρόσκληση μελών",

@@ -5,6 +5,7 @@ export const servidor = {
     emChamada: "{{count}} em chamada",
   },
   titulo: "Configurações do servidor",
+  novasMensagens: "Novas mensagens",
   menu: {
     marcarLida: "Marcar como lida",
     convidar: "Convidar membros",

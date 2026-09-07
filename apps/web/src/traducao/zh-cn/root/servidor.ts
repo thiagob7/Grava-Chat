@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "服务器设置",
+  novasMensagens: "新消息",
   menu: {
     marcarLida: "标记为已读",
     convidar: "邀请成员",

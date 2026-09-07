@@ -319,6 +319,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
       {message.replyToId && (
         <Citacao data-gc="conversa.message-item.citacao"
+          replyToId={message.replyToId}
           respondida={respondida}
           emojis={emojis}
           mencoes={mencoes}
@@ -805,18 +806,32 @@ const PilulaDeReacao: React.FC<{
 
 const Citacao: React.FC<{
   respondida?: PendingMessageModel;
+  replyToId?: string | null;
   emojis: GuildEmoji[];
   mencoes?: ResolverMencoes;
   currentUserId?: string;
-}> = ({ respondida, emojis, mencoes, currentUserId }) => {
+}> = ({ respondida, replyToId, emojis, mencoes, currentUserId }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  /// Clicar na citação leva à mensagem original: a lista rola até ela e destaca.
+  const irParaOriginal = () => {
+    if (replyToId) navigate(`?m=${replyToId}`);
+  };
 
   const me = useMe(true).data;
   const souEu = Boolean(currentUserId && respondida?.author.id === currentUserId);
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("previaDaMensagem"), flxCls("respondida"))}>
+  <div
+    data-gc="conversa.message-item.div.ir-para-original"
+    role={replyToId ? "button" : undefined}
+    tabIndex={replyToId ? 0 : undefined}
+    onClick={irParaOriginal}
+    onKeyDown={(e) => e.key === "Enter" && irParaOriginal()}
+    className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", replyToId && "cursor-pointer [&:hover_.texto-da-citacao]:text-ink", flxCls("previaDaMensagem"), flxCls("respondida"))}
+  >
     <span data-gc="conversa.message-item.span--15"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
@@ -825,7 +840,7 @@ const Citacao: React.FC<{
     {respondida ? (
       <>
         <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--3" userId={respondida.author.id}>
-          <button data-gc="conversa.message-item.button--8" className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
+          <button data-gc="conversa.message-item.button--8" onClick={(e) => e.stopPropagation()} className="flex min-w-0 shrink-0 items-center gap-1.5 rounded transition hover:brightness-110">
             <Avatar data-gc="conversa.message-item.avatar--2"
               id={respondida.author.id}
               name={respondida.author.displayName}
@@ -838,7 +853,7 @@ const Citacao: React.FC<{
             </span>
           </button>
         </UserProfilePopover>
-        <span data-gc="conversa.message-item.span--17" {...flx("textoDaCitacao", "min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
+        <span data-gc="conversa.message-item.span--17" {...flx("textoDaCitacao", "texto-da-citacao min-w-0 truncate text-ink-muted transition [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
           {respondida.content ? (
             <MessageContent data-gc="conversa.message-item.message-content--3" content={respondida.content} emojis={emojis} mencoes={mencoes} />
           ) : (
@@ -870,7 +885,7 @@ const Encaminhada: React.FC<{
   const canal = guild?.channels.find((c) => c.id === origem.channelId);
 
   return (
-    <div data-gc="conversa.message-item.div--13" className={cn(flxCls("caixaDeEncaminhada"), "mb-0.5 flex w-full items-center pl-5")}>
+    <div data-gc="conversa.message-item.div--12" className={cn(flxCls("caixaDeEncaminhada"), "mb-0.5 flex w-full items-center pl-5")}>
       <button data-gc="conversa.message-item.button--9"
         type="button"
         onClick={() =>
@@ -902,8 +917,8 @@ const PreviaDaMensagem: React.FC<{
   message: Message | PendingMessageModel;
   emojis: GuildEmoji[];
 }> = ({ message, emojis }) => (
-  <div data-gc="conversa.message-item.div--14" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
-    <div data-gc="conversa.message-item.div--15" className="flex items-baseline gap-2">
+  <div data-gc="conversa.message-item.div--13" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
+    <div data-gc="conversa.message-item.div--14" className="flex items-baseline gap-2">
       <Avatar data-gc="conversa.message-item.avatar--3"
         id={message.author.id}
         name={message.author.displayName}
@@ -916,7 +931,7 @@ const PreviaDaMensagem: React.FC<{
       </span>
     </div>
 
-    <div data-gc="conversa.message-item.div--16" className="mt-1 break-words text-sm text-ink-muted">
+    <div data-gc="conversa.message-item.div--15" className="mt-1 break-words text-sm text-ink-muted">
       {message.content ? (
         <MessageContent data-gc="conversa.message-item.message-content--4" content={message.content} emojis={emojis} blocos />
       ) : (

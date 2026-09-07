@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverinstellingen",
+  novasMensagens: "Nieuwe berichten",
   menu: {
     marcarLida: "Markeren als gelezen",
     convidar: "Leden uitnodigen",

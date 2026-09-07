@@ -4,6 +4,7 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "サーバー設定",
+  novasMensagens: "新着メッセージ",
   menu: {
     marcarLida: "既読にする",
     convidar: "メンバーを招待",

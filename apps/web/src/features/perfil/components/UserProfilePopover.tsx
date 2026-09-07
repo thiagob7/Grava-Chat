@@ -474,6 +474,8 @@ const ProfileCard: React.FC<{
         corDoCargo={corDoCargo}
         bio={perfil.bio}
         createdAt={perfil.createdAt}
+        entrouEm={detalheDoServidor?.members.find((m) => m.user.id === perfil.id)?.joinedAt}
+        nomeDoServidor={detalheDoServidor?.guild.name}
         mutualFriends={perfil.mutualFriends}
         mutualGuilds={perfil.mutualGuilds}
         cargos={cargosDoMembro}
