@@ -21,3 +21,7 @@ next-env.d.ts
 
 # Twemoji: derivado do @twemoji/svg pelo scripts/copiar-emoji.mjs (16 MB)
 apps/web/public/emoji/
+
+# ficam só na máquina: notas de infra e o inventário de licenças
+THIRD_PARTY_LICENSES.md
+INFRA-GCP.md

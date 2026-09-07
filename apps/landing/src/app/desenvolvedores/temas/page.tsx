@@ -115,7 +115,7 @@ export default function Temas() {
       <Secao id="arquivo" titulo="O arquivo">
         <p>
           Um tema é um <code>.css</code> comum. O que o transforma num tema é o bloco no topo,
-          que diz quem ele é — o mesmo formato que o BetterDiscord e o Fluxer usam, então um
+          que diz quem ele é — o mesmo formato que os temas de outros clientes usam, então um
           arquivo escrito para eles se apresenta certo aqui.
         </p>
 
@@ -140,7 +140,7 @@ export default function Temas() {
 
         <p>
           Vale saber que <strong className="text-ink">78 deles são os que o app realmente lê</strong>
-          . Os outros vieram da camada de referência e ainda não estão ligados em lugar nenhum:
+          . Os outros vieram da camada de compatibilidade e ainda não estão ligados em lugar nenhum:
           mexer neles não muda nada. O estúdio marca quais são quais e tem um filtro para mostrar
           só os que valem.
         </p>
@@ -239,9 +239,9 @@ export default function Temas() {
         </Aviso>
       </Secao>
 
-      <Secao id="fluxer" titulo="Trazendo um tema do Fluxer">
+      <Secao id="de-fora" titulo="Trazendo um tema de fora">
         <p>
-          Temas do Fluxer funcionam aqui, e por dois caminhos. As variáveis atravessam: o estúdio
+          Temas escritos para outros clientes funcionam aqui, e por dois caminhos. As variáveis atravessam: o estúdio
           lê o que o arquivo declarou e escreve nos nomes de cá — o{" "}
           <code>--background-secondary</code> deles é o nosso <code>--color-surface-1</code>, e
           mais cinquenta pares assim. E o vocabulário deles existe na nossa camada de tokens, então
