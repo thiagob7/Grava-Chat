@@ -1,6 +1,5 @@
 [
   "--color-aviso",
-  "--color-black",
   "--color-brand",
   "--color-brand-hover",
   "--color-brilho",
@@ -44,7 +43,6 @@
   "--color-surface-4",
   "--color-trilho",
   "--color-veu",
-  "--color-white",
   "--focus-primary",
   "--font-mono",
   "--font-sans",
