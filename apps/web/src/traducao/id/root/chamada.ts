@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Kembali ke kotak panggilan",
   fecharChat: "Tutup obrolan",
   mostrarChat: "Tampilkan obrolan",
+  aoVivo: "Langsung",
   convidar: "Undang ke panggilan",
   carregandoPrevia: "Memuat pratinjau…",
   maisOpcoes: "Opsi lain",

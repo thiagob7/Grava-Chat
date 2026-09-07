@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Επιστροφή στα πλαίσια της κλήσης",
   fecharChat: "Κλείσιμο συνομιλίας",
   mostrarChat: "Εμφάνιση συνομιλίας",
+  aoVivo: "Ζωντανά",
   convidar: "Πρόσκληση στην κλήση",
   carregandoPrevia: "Φόρτωση προεπισκόπησης…",
   maisOpcoes: "Περισσότερα",

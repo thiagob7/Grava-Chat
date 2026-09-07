@@ -225,6 +225,10 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
     mentionRoleIds: m.mentionRoleIds,
     mentionEveryone: m.mentionEveryone ?? false,
     replyToId: m.replyToId,
+    encaminhadaDe:
+      m.encaminhadaDeCanalId && m.encaminhadaDeMensagemId
+        ? { channelId: m.encaminhadaDeCanalId, messageId: m.encaminhadaDeMensagemId }
+        : null,
     postId: m.postId,
     pinnedAt: m.pinnedAt?.toISOString() ?? null,
     createdAt: m.createdAt.toISOString(),

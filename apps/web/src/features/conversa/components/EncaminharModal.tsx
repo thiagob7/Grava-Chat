@@ -64,6 +64,7 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
       {
         channelId: destino.id,
         content: mensagem.content || t("conversa.encaminhar.semTexto"),
+        encaminhadaDe: { channelId: mensagem.channelId, messageId: mensagem.id },
         nonce: crypto.randomUUID(),
       },
       { onSettled: () => (setEnviandoPara(null), onFechar()) },

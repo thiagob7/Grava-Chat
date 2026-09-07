@@ -189,6 +189,8 @@ export const messageService = {
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
+      encaminhadaDeCanalId: input.encaminhadaDe?.channelId ?? null,
+      encaminhadaDeMensagemId: input.encaminhadaDe?.messageId ?? null,
       mentions: unicos([
         ...extractMentions(content),
         ...(autorRespondido ? [autorRespondido] : []),

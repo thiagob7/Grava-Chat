@@ -499,6 +499,9 @@ model Message {
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
+  /// de onde a mensagem foi encaminhada; nulo quando foi escrita aqui mesmo
+  encaminhadaDeCanalId    String?  @db.ObjectId
+  encaminhadaDeMensagemId String?  @db.ObjectId
   mentions    String[]     @db.ObjectId
   /// Cargos mencionados. SEPARADO de `mentions`, que significa usuario: se os
   /// dois morassem no mesmo array, o contador de nao-lidas e o AutoMod

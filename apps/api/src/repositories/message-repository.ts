@@ -91,6 +91,8 @@ export const messageRepository = {
     fonte?: string;
     attachments: Attachment[];
     replyToId: string | null;
+    encaminhadaDeCanalId?: string | null;
+    encaminhadaDeMensagemId?: string | null;
     mentions: string[];
     tipo?: "USER" | "JOIN" | "COMANDO";
     poll?: Prisma.PollCreateInput;

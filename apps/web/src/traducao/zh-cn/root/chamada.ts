@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "回到通话画面",
   fecharChat: "关闭聊天",
   mostrarChat: "显示聊天",
+  aoVivo: "直播",
   convidar: "邀请加入通话",
   carregandoPrevia: "正在加载预览…",
   maisOpcoes: "更多选项",

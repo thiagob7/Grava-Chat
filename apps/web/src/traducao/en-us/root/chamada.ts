@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Back to the call tiles",
   fecharChat: "Close chat",
   mostrarChat: "Show chat",
+  aoVivo: "Live",
   convidar: "Invite to the call",
   carregandoPrevia: "Loading the preview…",
   maisOpcoes: "More options",

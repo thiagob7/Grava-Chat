@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { ArrowsOut, Pause, Play, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
 import { Download, EyeOff, FileText, Trash2 } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
@@ -99,6 +100,8 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
           <ComSpoiler data-gc="conversa.message-attachments.com-spoiler--3" anexo={anexo}>
             {abrirImagens && isImageType(anexo.contentType) ? (
               <ImageAttachment data-gc="conversa.message-attachments.image-attachment" anexo={anexo} />
+            ) : abrirImagens && anexo.contentType.startsWith("video/") ? (
+              <VideoAttachment data-gc="conversa.message-attachments.video-attachment" anexo={anexo} />
             ) : ehAnexoDeTexto(anexo) ? (
               <PreviaDeTexto data-gc="conversa.message-attachments.previa-de-texto" anexo={anexo} aoFalhar={<FileAttachment data-gc="conversa.message-attachments.file-attachment" anexo={anexo} />} />
             ) : (
@@ -222,6 +225,95 @@ const ImagemDaGrade: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   );
 };
 
+/*
+  Vídeo com os controles nossos, e não os do navegador.
+
+  Os controles nativos vivem numa árvore de sombra que nem CSS nem tema
+  alcançam. Uma fileira própria — tocar, tempo, som, tela cheia — é o que dá ao
+  tema um elemento para pintar, e é o que faz o vídeo parecer parte do app em
+  vez de um quadrado alheio no meio da conversa.
+*/
+const VideoAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
+  const video = useRef<HTMLVideoElement>(null);
+  const [tocando, setTocando] = useState(false);
+  const [mudo, setMudo] = useState(false);
+  const [tempo, setTempo] = useState(0);
+  const [duracao, setDuracao] = useState(0);
+
+  const alternar = () => {
+    const el = video.current;
+    if (!el) return;
+    if (el.paused) void el.play();
+    else el.pause();
+  };
+
+  const relogio = (segundos: number) => {
+    const m = Math.floor(segundos / 60);
+    const s = Math.floor(segundos % 60);
+    return `${m}:${String(s).padStart(2, "0")}`;
+  };
+
+  return (
+    <div data-gc="conversa.message-attachments.div--8"
+      className="group/video relative max-w-full overflow-hidden rounded-lg bg-surface-0"
+      style={{ maxWidth: MAX_W }}
+    >
+      <video data-gc="conversa.message-attachments.video.alternar"
+        ref={video}
+        src={anexo.url}
+        preload="metadata"
+        playsInline
+        muted={mudo}
+        onClick={alternar}
+        onPlay={() => setTocando(true)}
+        onPause={() => setTocando(false)}
+        onTimeUpdate={(e) => setTempo(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuracao(e.currentTarget.duration)}
+        className="block max-h-[var(--max-imagem-h)] w-full cursor-pointer"
+        style={{ maxHeight: MAX_H }}
+      />
+
+      <div data-gc="conversa.message-attachments.div--9"
+        className={cn(
+          flxCls("controlesDoVideo"),
+          "absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-sobre-midia to-transparent px-2 py-1.5 text-xs text-sobre-marca",
+          "opacity-0 transition group-hover/video:opacity-100 focus-within:opacity-100",
+          !tocando && "opacity-100",
+        )}
+      >
+        <button data-gc="conversa.message-attachments.button.alternar" type="button" onClick={alternar} aria-label={tocando ? "Pausar" : "Tocar"} className="rounded p-1 hover:bg-sobre-midia">
+          {tocando ? <Pause data-gc="conversa.message-attachments.pause" size={14} weight="fill" /> : <Play data-gc="conversa.message-attachments.play" size={14} weight="fill" />}
+        </button>
+
+        <span data-gc="conversa.message-attachments.span--4" className="tabular-nums">
+          {relogio(tempo)} / {relogio(duracao)}
+        </span>
+
+        <input data-gc="conversa.message-attachments.input"
+          type="range"
+          min={0}
+          max={duracao || 0}
+          step={0.1}
+          value={tempo}
+          aria-label="Posição"
+          onChange={(e) => {
+            if (video.current) video.current.currentTime = Number(e.target.value);
+          }}
+          className="h-1 flex-1 cursor-pointer accent-sobre-marca"
+        />
+
+        <button data-gc="conversa.message-attachments.button--5" type="button" onClick={() => setMudo((v) => !v)} aria-label={mudo ? "Ligar o som" : "Silenciar"} className="rounded p-1 hover:bg-sobre-midia">
+          {mudo ? <SpeakerSlash data-gc="conversa.message-attachments.speaker-slash" size={14} weight="fill" /> : <SpeakerHigh data-gc="conversa.message-attachments.speaker-high" size={14} weight="fill" />}
+        </button>
+
+        <button data-gc="conversa.message-attachments.button--6" type="button" onClick={() => void video.current?.requestFullscreen()} aria-label="Tela cheia" className="rounded p-1 hover:bg-sobre-midia">
+          <ArrowsOut data-gc="conversa.message-attachments.arrows-out" size={14} weight="bold" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
   <a data-gc="conversa.message-attachments.a"
     href={anexo.url}
@@ -231,7 +323,7 @@ const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
   >
     <FileText data-gc="conversa.message-attachments.file-text" size={28} className="shrink-0 text-brand" />
 
-    <div data-gc="conversa.message-attachments.div--8" className="min-w-0 flex-1">
+    <div data-gc="conversa.message-attachments.div--10" className="min-w-0 flex-1">
       <p data-gc="conversa.message-attachments.p" className="truncate text-sm font-medium text-brand">{anexo.filename}</p>
       <p data-gc="conversa.message-attachments.p--2" className="text-xs text-ink-faint">{formatBytes(anexo.size)}</p>
     </div>

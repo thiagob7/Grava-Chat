@@ -644,6 +644,40 @@ export const LUGARES = {
   campoDeEditarNoLugar: { classes: ["InlineEdit.module__editable_gc"] },
 
   /// O cartãozinho de cada cargo no perfil, e o nome dentro dele.
+  /// A fileira de avatares que se sobrepõem, nos "ativos agora".
+  pilhaDeAvatares: { classes: ["AvatarStack.module__container_gc"] },
+
+  /// O selo de quem está transmitindo a tela na chamada.
+  seloDeAoVivo: { classes: ["LiveBadge.module__liveBadge_gc"] },
+
+  /*
+    A mensagem encaminhada: a caixa com "Encaminhada de", o botão que leva à
+    original, e dentro dele o rótulo e o nome do canal. É o que faltava para o
+    encaminhar ter cara de encaminhar — antes a mensagem chegava sem dizer de
+    onde veio.
+  */
+  caixaDeEncaminhada: { classes: ["MessageAttachments.module__forwardedContainer_gc"] },
+  botaoDaOrigem: {
+    classes: ["MessageAttachments.module__forwardedSourceButton_gc"],
+    flx: "channel.message-attachments.forwarded-from-source.forwarded-source-button.jump-to-original--2",
+  },
+  rotuloDaOrigem: { classes: ["MessageAttachments.module__forwardedSourceLabel_gc"] },
+  nomeDaOrigem: { classes: ["MessageAttachments.module__forwardedSourceName_gc"] },
+
+  /// As mensagens de quem você bloqueou, dobradas numa linha só.
+  grupoDeBloqueadas: { classes: ["BlockedMessageGroups.module__container_gc"] },
+
+  /// A fileira de controles do tocador de vídeo.
+  controlesDoVideo: { classes: ["VideoPlayer.module__controlsRow_gc"] },
+
+  /*
+    A máscara que recorta o círculo do avatar na faixa. É um `<mask>` SVG com
+    um `<circle>` dentro, como lá — o tema que quer a faixa sem recorte apaga
+    o círculo com `display: none`, e para isso o círculo precisa existir.
+  */
+  mascaraDaFaixa: { classes: ["ProfileCardBanner.module__bannerMask_gc"] },
+  mascaraDaFaixaNoPerfil: { classes: ["UserProfileModal.module__bannerMask_gc"] },
+
   seloDeCargo: { classes: ["RoleManagement.module__roleBadge_gc"] },
   nomeDoCargo: { classes: ["RoleManagement.module__roleName_gc"] },
 

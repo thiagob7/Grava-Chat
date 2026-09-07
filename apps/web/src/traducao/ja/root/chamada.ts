@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "通話のタイルに戻る",
   fecharChat: "チャットを閉じる",
   mostrarChat: "チャットを表示",
+  aoVivo: "ライブ",
   convidar: "通話に招待",
   carregandoPrevia: "プレビューを読み込んでいます…",
   maisOpcoes: "その他の操作",

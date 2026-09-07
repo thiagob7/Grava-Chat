@@ -81,7 +81,7 @@ export const AtivosAgora: React.FC = () => {
               </button>
 
               <div data-gc="amizades.ativos-agora.div--4" className="mt-3 flex items-center gap-2">
-                <div data-gc="amizades.ativos-agora.div--5" className="flex -space-x-2">
+                <div data-gc="amizades.ativos-agora.div--5" className={cn(flxCls("pilhaDeAvatares"), "flex -space-x-2")}>
                   {gente.slice(0, 5).map((ativo) => (
                     <Tooltip data-gc="amizades.ativos-agora.tooltip"
                       key={ativo.user.id}

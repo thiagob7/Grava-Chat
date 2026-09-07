@@ -15,7 +15,7 @@ import { corMaisAlta } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
 import { idiomaAtual, useTranslation } from "~/traducao";
-import { flx, flxCls } from "~/lib/compat-de-tema";
+import { flx, flxCls, type Lugares } from "~/lib/compat-de-tema";
 
 interface FullProfileModalProps {
   open: boolean;
@@ -26,6 +26,29 @@ interface FullProfileModalProps {
 
 type Aba = "geral" | "amigos" | "servidores";
 
+/*
+  A máscara que recorta o círculo do avatar na faixa.
+
+  É um `<mask>` SVG com um `<circle>`, e não um `mask-image` de gradiente, por
+  um motivo só: o tema que quer a faixa inteira apaga o círculo com
+  `display: none` — e para isso o círculo precisa ser um elemento. A faixa
+  aplica a máscara por `mask: url(#id)`; sem o círculo, sobra o retângulo
+  branco e nada é recortado.
+*/
+const MascaraDaFaixa: React.FC<{ id: string; lugar: Lugares; cx: number; raio: number }> = ({
+  id,
+  lugar,
+  cx,
+  raio,
+}) => (
+  <svg data-gc="perfil.full-profile-modal.svg" aria-hidden className={cn(flxCls(lugar), "absolute size-0")}>
+    <mask data-gc="perfil.full-profile-modal.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+      <rect data-gc="perfil.full-profile-modal.rect" width="100%" height="100%" fill="white" />
+      <circle data-gc="perfil.full-profile-modal.circle" cx={cx} cy="100%" r={raio} fill="black" />
+    </mask>
+  </svg>
+);
+
 export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
   perfil,
@@ -33,6 +56,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const idDaMascara = React.useId();
   const [aba, setAba] = useState<Aba>("geral");
   const emComum = useFindEmComum(perfil.id, aba !== "geral");
 
@@ -52,9 +76,12 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
       className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("perfilCompleto"), flxCls("conteudoDoPerfilCompleto"))}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
+      <MascaraDaFaixa data-gc="perfil.full-profile-modal.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixaNoPerfil" cx={72} raio={56} />
       <div data-gc="perfil.full-profile-modal.div"
         className="h-28 bg-cover bg-center"
         style={{
+          mask: `url(#${idDaMascara})`,
+          WebkitMask: `url(#${idDaMascara})`,
           backgroundColor: perfil.perfil?.bannerCor ?? avatarColor(perfil.id),
           ...(perfil.perfil?.bannerUrl
             ? { backgroundImage: `url(${perfil.perfil.bannerUrl})` }

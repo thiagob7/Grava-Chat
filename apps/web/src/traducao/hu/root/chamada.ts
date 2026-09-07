@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Vissza a hívás csempéihez",
   fecharChat: "Csevegés bezárása",
   mostrarChat: "Csevegés megjelenítése",
+  aoVivo: "Élő",
   convidar: "Meghívás a hívásba",
   carregandoPrevia: "Előnézet betöltése…",
   maisOpcoes: "További lehetőségek",

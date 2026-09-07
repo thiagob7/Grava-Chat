@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Revenir aux vignettes de l'appel",
   fecharChat: "Fermer le chat",
   mostrarChat: "Afficher le chat",
+  aoVivo: "En direct",
   convidar: "Inviter à l'appel",
   carregandoPrevia: "Chargement de l'aperçu…",
   maisOpcoes: "Plus d'options",

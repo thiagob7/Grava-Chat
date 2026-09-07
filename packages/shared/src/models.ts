@@ -163,6 +163,9 @@ export const messageSchema = z.object({
   mentionRoleIds: z.array(objectId),
   mentionEveryone: z.boolean(),
   replyToId: objectId.nullable(),
+  encaminhadaDe: z
+    .object({ channelId: objectId, messageId: objectId })
+    .nullable(),
   postId: objectId.nullable(),
   pinnedAt: z.iso.datetime().nullable(),
   createdAt: z.iso.datetime(),
@@ -278,6 +281,10 @@ export const sendMessageInput = z.object({
   stickerId: objectId.optional(),
   postId: objectId.nullable().optional(),
   replyToId: objectId.nullable().optional(),
+  encaminhadaDe: z
+    .object({ channelId: objectId, messageId: objectId })
+    .nullable()
+    .optional(),
   mencionarAutor: z.boolean().optional(),
   nonce: z.string().max(64).optional(),
 });

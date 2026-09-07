@@ -24,7 +24,7 @@ import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
 import { idiomaAtual, useTranslation } from "~/traducao";
-import { flx, flxCls } from "~/lib/compat-de-tema";
+import { flx, flxCls, type Lugares } from "~/lib/compat-de-tema";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -70,6 +70,29 @@ interface ProfileCardVisualProps {
   onBio?: (valor: string) => void;
 }
 
+/*
+  A máscara que recorta o círculo do avatar na faixa.
+
+  É um `<mask>` SVG com um `<circle>`, e não um `mask-image` de gradiente, por
+  um motivo só: o tema que quer a faixa inteira apaga o círculo com
+  `display: none` — e para isso o círculo precisa ser um elemento. A faixa
+  aplica a máscara por `mask: url(#id)`; sem o círculo, sobra o retângulo
+  branco e nada é recortado.
+*/
+const MascaraDaFaixa: React.FC<{ id: string; lugar: Lugares; cx: number; raio: number }> = ({
+  id,
+  lugar,
+  cx,
+  raio,
+}) => (
+  <svg data-gc="perfil.cartao.profile-card-visual.svg" aria-hidden className={cn(flxCls(lugar), "absolute size-0")}>
+    <mask data-gc="perfil.cartao.profile-card-visual.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+      <rect data-gc="perfil.cartao.profile-card-visual.rect" width="100%" height="100%" fill="white" />
+      <circle data-gc="perfil.cartao.profile-card-visual.circle" cx={cx} cy="100%" r={raio} fill="black" />
+    </mask>
+  </svg>
+);
+
 export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   id,
   displayName,
@@ -107,6 +130,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   onBio,
 }) => {
   const { t } = useTranslation();
+  const idDaMascara = React.useId();
   const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
   const [editandoBio, setEditandoBio] = useState(false);
 
@@ -143,9 +167,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
         />
       )}
+      <MascaraDaFaixa data-gc="perfil.cartao.profile-card-visual.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixa" cx={60} raio={52} />
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
         className="relative aspect-[5/2] bg-cover bg-center"
         style={{
+          mask: `url(#${idDaMascara})`,
+          WebkitMask: `url(#${idDaMascara})`,
           backgroundColor: perfil?.bannerCor ?? avatarColor(id),
           ...(perfil?.bannerUrl
             ? { backgroundImage: `url(${perfil.bannerUrl})` }

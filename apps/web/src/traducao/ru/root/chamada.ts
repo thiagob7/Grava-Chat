@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Вернуться к плиткам звонка",
   fecharChat: "Закрыть чат",
   mostrarChat: "Показать чат",
+  aoVivo: "В эфире",
   convidar: "Пригласить в звонок",
   carregandoPrevia: "Загрузка превью…",
   maisOpcoes: "Ещё",

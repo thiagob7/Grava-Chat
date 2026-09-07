@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Quay lại các ô của cuộc gọi",
   fecharChat: "Đóng trò chuyện",
   mostrarChat: "Hiện trò chuyện",
+  aoVivo: "Trực tiếp",
   convidar: "Mời vào cuộc gọi",
   carregandoPrevia: "Đang tải bản xem trước…",
   maisOpcoes: "Thêm tuỳ chọn",

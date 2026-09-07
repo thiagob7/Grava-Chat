@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Takaisin puhelun ruutuihin",
   fecharChat: "Sulje keskustelu",
   mostrarChat: "Näytä keskustelu",
+  aoVivo: "Live",
   convidar: "Kutsu puheluun",
   carregandoPrevia: "Ladataan esikatselua…",
   maisOpcoes: "Lisää",

@@ -21,6 +21,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
 interface VoiceMembersProps {
@@ -111,7 +112,15 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                   </Tooltip>
                 )}
                 {state.screenShare && (
-                  <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={14} weight="fill" className="text-online" />
+                  <span data-gc="voz.voice-members.span--4"
+                    className={cn(
+                      flxCls("seloDeAoVivo"),
+                      "flex items-center gap-1 rounded bg-danger px-1 text-10 font-bold uppercase leading-4 text-sobre-marca",
+                    )}
+                  >
+                    <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={11} weight="fill" />
+                    {t("chamada.aoVivo")}
+                  </span>
                 )}
                 {state.camera && <VideoCamera data-gc="voz.voice-members.video-camera" size={14} weight="fill" className="text-online" />}
 

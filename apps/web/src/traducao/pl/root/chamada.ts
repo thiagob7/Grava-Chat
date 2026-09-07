@@ -8,6 +8,7 @@ export const chamada = {
   voltarAosQuadros: "Wróć do kafelków rozmowy",
   fecharChat: "Zamknij czat",
   mostrarChat: "Pokaż czat",
+  aoVivo: "Na żywo",
   convidar: "Zaproś do rozmowy",
   carregandoPrevia: "Wczytywanie podglądu…",
   maisOpcoes: "Więcej opcji",

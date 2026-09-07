@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import {
   Bookmark,
   Copy,
@@ -308,6 +310,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         message.failed && "bg-danger-fundo",
       )}
     >
+      {message.encaminhadaDe && (
+        <Encaminhada data-gc="conversa.message-item.encaminhada"
+          origem={message.encaminhadaDe}
+          guildId={guildId}
+        />
+      )}
+
       {message.replyToId && (
         <Citacao data-gc="conversa.message-item.citacao"
           respondida={respondida}
@@ -843,31 +852,74 @@ const Citacao: React.FC<{
   );
 };
 
+/*
+  "Encaminhada de #canal", com o botão que leva à original.
+
+  Três nomes na árvore, como na referência: a caixa, o botão, e dentro dele o
+  rótulo e o nome do canal. O pulo é o mesmo da busca e das fixadas — a rota
+  do canal com `?m=<id>`, que a lista rola até lá e destaca.
+*/
+const Encaminhada: React.FC<{
+  origem: { channelId: string; messageId: string };
+  guildId?: string;
+}> = ({ origem, guildId }) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { data: guild } = useFindGuild(guildId);
+  const canal = guild?.channels.find((c) => c.id === origem.channelId);
+
+  return (
+    <div data-gc="conversa.message-item.div--13" className={cn(flxCls("caixaDeEncaminhada"), "mb-0.5 flex w-full items-center pl-5")}>
+      <button data-gc="conversa.message-item.button--9"
+        type="button"
+        onClick={() =>
+          navigate(
+            guildId
+              ? `/channels/${guildId}/${origem.channelId}?m=${origem.messageId}`
+              : `/channels/@me/${origem.channelId}?m=${origem.messageId}`,
+          )
+        }
+        title={t("conversa.mensagem.irParaOriginal")}
+        {...flx(
+          "botaoDaOrigem",
+          "flex items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 py-0.5 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink",
+        )}
+      >
+        <Forward data-gc="conversa.message-item.forward--3" size={12} />
+        <span data-gc="conversa.message-item.span--19" className={flxCls("rotuloDaOrigem")}>{t("conversa.mensagem.encaminhadaDe")}</span>
+        <span data-gc="conversa.message-item.span--20" className={cn(flxCls("nomeDaOrigem"), "font-medium text-ink")}>
+          {canal ? `#${canal.name}` : "…"}
+        </span>
+      </button>
+    </div>
+  );
+};
+
 /// A mensagem que vai sumir, dentro da confirmação. Sem ações e sem hover:
 /// aqui ela é só a prova de que é esta mesma, e não a de cima.
 const PreviaDaMensagem: React.FC<{
   message: Message | PendingMessageModel;
   emojis: GuildEmoji[];
 }> = ({ message, emojis }) => (
-  <div data-gc="conversa.message-item.div--13" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
-    <div data-gc="conversa.message-item.div--14" className="flex items-baseline gap-2">
+  <div data-gc="conversa.message-item.div--14" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
+    <div data-gc="conversa.message-item.div--15" className="flex items-baseline gap-2">
       <Avatar data-gc="conversa.message-item.avatar--3"
         id={message.author.id}
         name={message.author.displayName}
         url={message.author.avatarUrl}
         size={20}
       />
-      <span data-gc="conversa.message-item.span--19" className="truncate text-sm font-medium">{message.author.displayName}</span>
-      <span data-gc="conversa.message-item.span--20" className="shrink-0 text-xs text-ink-faint">
+      <span data-gc="conversa.message-item.span--21" className="truncate text-sm font-medium">{message.author.displayName}</span>
+      <span data-gc="conversa.message-item.span--22" className="shrink-0 text-xs text-ink-faint">
         {formatTimestamp(message.createdAt)}
       </span>
     </div>
 
-    <div data-gc="conversa.message-item.div--15" className="mt-1 break-words text-sm text-ink-muted">
+    <div data-gc="conversa.message-item.div--16" className="mt-1 break-words text-sm text-ink-muted">
       {message.content ? (
         <MessageContent data-gc="conversa.message-item.message-content--4" content={message.content} emojis={emojis} blocos />
       ) : (
-        <span data-gc="conversa.message-item.span--21" className="italic text-ink-faint">sem texto</span>
+        <span data-gc="conversa.message-item.span--23" className="italic text-ink-faint">sem texto</span>
       )}
     </div>
   </div>

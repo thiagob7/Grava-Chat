@@ -20,6 +20,8 @@ interface SendMessageVariables {
   stickerId?: string;
   poll?: CreatePollInput;
   postId?: string | null;
+  /// De onde veio, quando é encaminhada. O cabeçalho da mensagem sai daqui.
+  encaminhadaDe?: { channelId: string; messageId: string } | null;
 }
 
 type MessagesCache = { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
@@ -48,6 +50,7 @@ export const useSendMessage = () => {
         mentionRoleIds: [],
         mentionEveryone: false,
         replyToId: variables.replyToId ?? null,
+        encaminhadaDe: variables.encaminhadaDe ?? null,
         postId: variables.postId ?? null,
         pinnedAt: null,
         createdAt: new Date().toISOString(),
