@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "検索を消す",
   },
   busca: {
+    pesquisar: "検索",
+    limpar: "検索をクリア",
+    filtros: "検索フィルター",
+    escopo: {
+      titulo: "検索範囲",
+      servidor: "現在のコミュニティ",
+      canal: "この会話",
+      comunidades: "すべてのコミュニティ",
+      dms: "DMのみ",
+      tudo: "DMとコミュニティ",
+    },
     fechar: "検索を閉じる",
     procurando: "検索中…",
     resultado: "{{quantos}} 件",

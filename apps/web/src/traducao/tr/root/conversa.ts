@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Aramayı temizle",
   },
   busca: {
+    pesquisar: "Ara",
+    limpar: "Aramayı temizle",
+    filtros: "Arama filtreleri",
+    escopo: {
+      titulo: "Arama kapsamı",
+      servidor: "Mevcut topluluk",
+      canal: "Bu sohbet",
+      comunidades: "Tüm topluluklar",
+      dms: "Yalnızca DM’ler",
+      tudo: "DM’ler ve topluluklar",
+    },
     fechar: "Aramayı kapat",
     procurando: "Aranıyor…",
     resultado: "{{quantos}} sonuç",

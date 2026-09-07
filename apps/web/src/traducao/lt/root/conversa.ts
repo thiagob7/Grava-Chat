@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Išvalyti paiešką",
   },
   busca: {
+    pesquisar: "Ieškoti",
+    limpar: "Išvalyti paiešką",
+    filtros: "Paieškos filtrai",
+    escopo: {
+      titulo: "Paieškos apimtis",
+      servidor: "Dabartinė bendruomenė",
+      canal: "Šis pokalbis",
+      comunidades: "Visos bendruomenės",
+      dms: "Tik asmeninės žinutės",
+      tudo: "Asmeninės žinutės ir bendruomenės",
+    },
     fechar: "Uždaryti paiešką",
     procurando: "Ieškoma…",
     resultado: "{{quantos}} rezultatas",

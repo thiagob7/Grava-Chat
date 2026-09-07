@@ -53,8 +53,8 @@ export async function messageRoutes(app: FastifyInstance) {
   });
 
   app.get("/messages/busca", (req) => {
-    const { q, guildId, canalId, autorId, before } = buscaQuery.parse(req.query);
-    return messageService.buscar(req.userId, { guildId, termo: q, canalId, autorId, before });
+    const { q, ...filtros } = buscaQuery.parse(req.query);
+    return messageService.buscar(req.userId, { ...filtros, termo: q });
   });
 
   app.get("/messages/favoritas", (req) => messageFavoriteService.listar(req.userId));

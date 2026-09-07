@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Bersihkan pencarian",
   },
   busca: {
+    pesquisar: "Cari",
+    limpar: "Hapus pencarian",
+    filtros: "Filter pencarian",
+    escopo: {
+      titulo: "Cakupan pencarian",
+      servidor: "Komunitas saat ini",
+      canal: "Percakapan ini",
+      comunidades: "Semua komunitas",
+      dms: "Hanya pesan langsung",
+      tudo: "Pesan langsung dan komunitas",
+    },
     fechar: "Tutup pencarian",
     procurando: "Mencari…",
     resultado: "{{quantos}} hasil",

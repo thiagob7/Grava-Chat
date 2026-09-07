@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Vymazat hledání",
   },
   busca: {
+    pesquisar: "Hledat",
+    limpar: "Vymazat hledání",
+    filtros: "Filtry hledání",
+    escopo: {
+      titulo: "Rozsah hledání",
+      servidor: "Aktuální komunita",
+      canal: "Tato konverzace",
+      comunidades: "Všechny komunity",
+      dms: "Jen soukromé zprávy",
+      tudo: "Soukromé zprávy a komunity",
+    },
     fechar: "Zavřít hledání",
     procurando: "Hledám…",
     resultado: "{{quantos}} výsledek",

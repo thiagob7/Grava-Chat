@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Очистити пошук",
   },
   busca: {
+    pesquisar: "Пошук",
+    limpar: "Очистити пошук",
+    filtros: "Фільтри пошуку",
+    escopo: {
+      titulo: "Область пошуку",
+      servidor: "Поточна спільнота",
+      canal: "Ця розмова",
+      comunidades: "Усі спільноти",
+      dms: "Лише особисті повідомлення",
+      tudo: "Особисті повідомлення і спільноти",
+    },
     fechar: "Закрити пошук",
     procurando: "Шукаю…",
     resultado: "{{quantos}} результат",

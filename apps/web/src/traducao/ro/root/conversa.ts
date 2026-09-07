@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Golește căutarea",
   },
   busca: {
+    pesquisar: "Caută",
+    limpar: "Șterge căutarea",
+    filtros: "Filtre de căutare",
+    escopo: {
+      titulo: "Aria căutării",
+      servidor: "Comunitatea curentă",
+      canal: "Această conversație",
+      comunidades: "Toate comunitățile",
+      dms: "Doar mesaje directe",
+      tudo: "Mesaje directe și comunități",
+    },
     fechar: "Închide căutarea",
     procurando: "Caut…",
     resultado: "{{quantos}} rezultat",

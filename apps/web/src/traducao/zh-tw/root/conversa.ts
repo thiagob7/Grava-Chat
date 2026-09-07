@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "清除搜尋",
   },
   busca: {
+    pesquisar: "搜尋",
+    limpar: "清除搜尋",
+    filtros: "搜尋篩選",
+    escopo: {
+      titulo: "搜尋範圍",
+      servidor: "目前社群",
+      canal: "此對話",
+      comunidades: "所有社群",
+      dms: "僅私訊",
+      tudo: "私訊和社群",
+    },
     fechar: "關閉搜尋",
     procurando: "搜尋中…",
     resultado: "{{quantos}} 筆結果",

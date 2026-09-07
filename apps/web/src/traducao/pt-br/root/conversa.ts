@@ -190,6 +190,28 @@ export const conversa = {
   },
 
   busca: {
+
+    pesquisar: "Pesquisar mensagens",
+
+    limpar: "Limpar a busca",
+
+    filtros: "Filtros de busca",
+
+    escopo: {
+
+      titulo: "Escopo da pesquisa",
+
+      servidor: "Comunidade atual",
+
+      canal: "Esta conversa",
+
+      comunidades: "Todas as comunidades",
+
+      dms: "Apenas as DMs",
+
+      tudo: "DMs e comunidades",
+
+    },
     fechar: "Fechar a busca",
     procurando: "Procurando…",
     resultado: "{{quantos}} resultado",

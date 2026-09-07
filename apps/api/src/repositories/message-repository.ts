@@ -60,7 +60,15 @@ export const messageRepository = {
     channelIds: string[];
     termo: string;
     autorId?: string;
+    mencionaId?: string;
     canalId?: string;
+    tem?: "link" | "imagem" | "video" | "som" | "arquivo" | "anexo";
+    depois?: string;
+    antes?: string;
+    em?: string;
+    fixada?: boolean;
+    tipoDeAutor?: "usuario" | "bot";
+    ordem: "recente" | "antiga";
     limit: number;
     before?: string;
   }) {
@@ -70,16 +78,56 @@ export const messageRepository = {
 
     if (!canais.length) return Promise.resolve([]);
 
+    /// Um dia inteiro, do primeiro ao último instante, no relógio do servidor.
+    const inicioDe = (dia: string) => new Date(`${dia}T00:00:00.000Z`);
+    const fimDe = (dia: string) => new Date(`${dia}T23:59:59.999Z`);
+
+    const porTipo = (prefixo: string): Prisma.MessageWhereInput => ({
+      attachments: { some: { contentType: { startsWith: prefixo } } },
+    });
+
+    const tem: Prisma.MessageWhereInput =
+      params.tem === "link"
+        ? { content: { contains: "http" } }
+        : params.tem === "imagem"
+          ? porTipo("image/")
+          : params.tem === "video"
+            ? porTipo("video/")
+            : params.tem === "som"
+              ? porTipo("audio/")
+              : params.tem === "arquivo" || params.tem === "anexo"
+                ? { attachments: { isEmpty: false } }
+                : {};
+
+    const quando: Prisma.MessageWhereInput = params.em
+      ? { createdAt: { gte: inicioDe(params.em), lte: fimDe(params.em) } }
+      : {
+          createdAt: {
+            ...(params.depois ? { gte: inicioDe(params.depois) } : {}),
+            ...(params.antes ? { lte: fimDe(params.antes) } : {}),
+          },
+        };
+
+    /*
+      Com a ordem invertida, o cursor anda para cima: a página seguinte é a
+      de ids maiores que o último visto.
+    */
+    const antiga = params.ordem === "antiga";
+
     return prisma.message.findMany({
       where: {
         channelId: { in: canais },
-        content: { contains: params.termo, mode: "insensitive" },
+        ...(params.termo ? { content: { contains: params.termo, mode: "insensitive" } } : {}),
         ...(params.autorId ? { authorId: params.autorId } : {}),
-        ...(params.before ? { id: { lt: params.before } } : {}),
-        AND: [notDeleted],
+        ...(params.mencionaId ? { mentions: { has: params.mencionaId } } : {}),
+        ...(params.fixada === true ? { pinnedAt: { not: null } } : {}),
+        ...(params.fixada === false ? { pinnedAt: null } : {}),
+        ...(params.tipoDeAutor ? { author: { isBot: params.tipoDeAutor === "bot" } } : {}),
+        ...(params.before ? { id: antiga ? { gt: params.before } : { lt: params.before } } : {}),
+        AND: [notDeleted, tem, quando],
       },
       include: { ...messageInclude, channel: true },
-      orderBy: { id: "desc" },
+      orderBy: { id: antiga ? "asc" : "desc" },
       take: params.limit,
     });
   },

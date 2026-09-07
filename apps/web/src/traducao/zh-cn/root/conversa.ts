@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "清除搜索",
   },
   busca: {
+    pesquisar: "搜索",
+    limpar: "清除搜索",
+    filtros: "搜索筛选",
+    escopo: {
+      titulo: "搜索范围",
+      servidor: "当前社区",
+      canal: "此对话",
+      comunidades: "所有社区",
+      dms: "仅私信",
+      tudo: "私信和社区",
+    },
     fechar: "关闭搜索",
     procurando: "搜索中…",
     resultado: "{{quantos}} 条结果",

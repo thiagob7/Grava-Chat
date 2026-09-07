@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Tøm søket",
   },
   busca: {
+    pesquisar: "Søk",
+    limpar: "Tøm søk",
+    filtros: "Søkefiltre",
+    escopo: {
+      titulo: "Søkeområde",
+      servidor: "Nåværende fellesskap",
+      canal: "Denne samtalen",
+      comunidades: "Alle fellesskap",
+      dms: "Bare direktemeldinger",
+      tudo: "Direktemeldinger og fellesskap",
+    },
     fechar: "Lukk søket",
     procurando: "Søker…",
     resultado: "{{quantos}} treff",

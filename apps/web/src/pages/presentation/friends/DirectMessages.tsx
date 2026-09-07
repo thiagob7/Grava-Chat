@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
-import { Menu } from "lucide-react";
+import { Menu, Info } from "lucide-react";
 import { Phone, PhoneSlash, User, VideoCamera } from "@phosphor-icons/react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
@@ -11,6 +11,7 @@ import { useReadStates } from "~/@core/application/queries/message/use-read-stat
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { UserName } from "~/features/perfil/components/UserName";
 import {
   AreaDeConversa,
   PainelDaConversa,
@@ -36,6 +37,7 @@ import { estaChamando } from "~/features/voz/lib/chamada-no-privado";
 import { tocarSom } from "~/lib/ui-sounds";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
+import type { EscopoDeBusca } from "~/@core/application/requests/message/buscar-mensagens";
 import { CampoDeBusca } from "~/features/conversa/components/CampoDeBusca";
 import { EstrelaDoCanal } from "~/features/conversa/components/EstrelaDoCanal";
 import { InicioDaDm } from "~/features/conversa/components/InicioDaDm";
@@ -85,6 +87,7 @@ export const DirectMessages: React.FC = () => {
   const convidando = guildsCarregadas && guildsDaConta.length === 0 && !dispensado;
   const [perfilAberto, setPerfilAberto] = useState(true);
   const [busca, setBusca] = useState("");
+  const [escopoDaBusca, setEscopoDaBusca] = useState<EscopoDeBusca>("canal");
 
   const canalEmChamada = useVoiceStore((s) => s.channelId);
   const entrarNaChamada = useVoiceStore((s) => s.join);
@@ -189,7 +192,9 @@ export const DirectMessages: React.FC = () => {
                 status={conversa.user.status}
                 size={24}
               />
-              <h2 data-gc="friends.direct-messages.h2" className="font-semibold">{conversa.user.displayName}</h2>
+              <h2 data-gc="friends.direct-messages.h2" className="font-semibold">
+                <UserName data-gc="friends.direct-messages.user-name" nome={conversa.user.displayName} ehBot={conversa.user.isBot} ehSistema={conversa.user.sistema} />
+              </h2>
 
               {emChamadaAqui ? (
                 <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
@@ -256,7 +261,13 @@ export const DirectMessages: React.FC = () => {
 
                 <EstrelaDoCanal data-gc="friends.direct-messages.estrela-do-canal" channelId={conversa.id} />
 
-                <CampoDeBusca data-gc="friends.direct-messages.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />
+                <CampoDeBusca data-gc="friends.direct-messages.campo-de-busca.set-busca"
+                  termo={busca}
+                  onBuscar={setBusca}
+                  escopo={escopoDaBusca}
+                  escopos={["canal", "dms", "tudo"]}
+                  onEscopo={setEscopoDaBusca}
+                />
 
                 <BotaoDoAplicativo data-gc="friends.direct-messages.botao-do-aplicativo" />
                 <CaixaDeEntrada data-gc="friends.direct-messages.caixa-de-entrada" />
@@ -304,8 +315,17 @@ export const DirectMessages: React.FC = () => {
             </PainelDaConversa>
 
           <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
-            <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />
-            <Composer data-gc="friends.direct-messages.composer" channelId={conversa.id} channelName={conversa.user.displayName} />
+            {conversa.user.sistema ? (
+              <p data-gc="friends.direct-messages.p" className="mx-4 mb-4 flex items-center gap-2.5 rounded-lg bg-surface-2 px-4 py-3 text-sm text-ink-muted">
+                <Info data-gc="friends.direct-messages.info" size={16} className="shrink-0 text-ink-faint" />
+                Comunicados do sistema do Gravaê. Não é possível responder aqui.
+              </p>
+            ) : (
+              <>
+                <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />
+                <Composer data-gc="friends.direct-messages.composer" channelId={conversa.id} channelName={conversa.user.displayName} />
+              </>
+            )}
           </RodapeDaConversa>
           </AreaDeConversa>
           )}
@@ -315,9 +335,10 @@ export const DirectMessages: React.FC = () => {
               <PainelDeBusca data-gc="friends.direct-messages.painel-de-busca"
                 canalId={conversa.id}
                 termo={busca}
+                escopo={escopoDaBusca}
                 currentUserId={user.id}
                 onFechar={() => setBusca("")}
-                onIr={(_canal, messageId) => navigate(`/dm/${conversa.id}?m=${messageId}`)}
+                onIr={(canal, messageId) => navigate(`/dm/${canal}?m=${messageId}`)}
               />
             ) : (
               perfilAberto && <PainelDePerfilDoDm data-gc="friends.direct-messages.painel-de-perfil-do-dm" userId={conversa.user.id} />
@@ -356,7 +377,7 @@ const Chamando: React.FC<{
         <span data-gc="friends.direct-messages.span--4" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
       </span>
 
-      <p data-gc="friends.direct-messages.p" className="text-sm text-ink-muted">
+      <p data-gc="friends.direct-messages.p--2" className="text-sm text-ink-muted">
         Chamando <span data-gc="friends.direct-messages.span--5" className="font-semibold text-ink">{nome}</span>…
       </p>
 

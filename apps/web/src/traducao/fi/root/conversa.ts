@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Tyhjennä haku",
   },
   busca: {
+    pesquisar: "Hae",
+    limpar: "Tyhjennä haku",
+    filtros: "Hakusuodattimet",
+    escopo: {
+      titulo: "Haun laajuus",
+      servidor: "Nykyinen yhteisö",
+      canal: "Tämä keskustelu",
+      comunidades: "Kaikki yhteisöt",
+      dms: "Vain yksityisviestit",
+      tudo: "Yksityisviestit ja yhteisöt",
+    },
     fechar: "Sulje haku",
     procurando: "Haetaan…",
     resultado: "{{quantos}} tulos",

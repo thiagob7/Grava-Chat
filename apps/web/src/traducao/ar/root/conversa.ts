@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "مسح البحث",
   },
   busca: {
+    pesquisar: "بحث",
+    limpar: "مسح البحث",
+    filtros: "مرشحات البحث",
+    escopo: {
+      titulo: "نطاق البحث",
+      servidor: "المجتمع الحالي",
+      canal: "هذه المحادثة",
+      comunidades: "كل المجتمعات",
+      dms: "الرسائل المباشرة فقط",
+      tudo: "الرسائل المباشرة والمجتمعات",
+    },
     fechar: "إغلاق البحث",
     procurando: "جارٍ البحث…",
     resultado: "{{quantos}} نتيجة",

@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Xóa nội dung tìm",
   },
   busca: {
+    pesquisar: "Tìm kiếm",
+    limpar: "Xóa tìm kiếm",
+    filtros: "Bộ lọc tìm kiếm",
+    escopo: {
+      titulo: "Phạm vi tìm kiếm",
+      servidor: "Cộng đồng hiện tại",
+      canal: "Cuộc trò chuyện này",
+      comunidades: "Tất cả cộng đồng",
+      dms: "Chỉ tin nhắn riêng",
+      tudo: "Tin nhắn riêng và cộng đồng",
+    },
     fechar: "Đóng tìm kiếm",
     procurando: "Đang tìm…",
     resultado: "{{quantos}} kết quả",

@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Effacer la recherche",
   },
   busca: {
+    pesquisar: "Rechercher",
+    limpar: "Effacer la recherche",
+    filtros: "Filtres de recherche",
+    escopo: {
+      titulo: "Portée de la recherche",
+      servidor: "Communauté actuelle",
+      canal: "Cette conversation",
+      comunidades: "Toutes les communautés",
+      dms: "Messages privés uniquement",
+      tudo: "Messages privés et communautés",
+    },
     fechar: "Fermer la recherche",
     procurando: "Recherche…",
     resultado: "{{quantos}} résultat",

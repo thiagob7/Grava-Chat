@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+import type { BuscaQuery } from "~/validations/message.js";
+import { guildRepository } from "~/repositories/guild-repository.js";
+import { userRepository } from "~/repositories/user-repository.js";
 import { has, LIMITS } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import {
@@ -81,25 +84,51 @@ export const messageService = {
     };
   },
 
-  async buscar(
-    userId: string,
-    params: { guildId?: string; termo: string; canalId?: string; autorId?: string; before?: string },
-  ) {
+  async buscar(userId: string, params: Omit<BuscaQuery, "q"> & { termo: string }) {
     /*
-      Sem servidor, a busca é dentro de uma conversa só — e o acesso a ela é a
-      mesma pergunta que se faz para abrir o canal.
+      Onde procurar vem do escopo. "servidor" e "canal" são o de sempre; os
+      largos juntam tudo que a pessoa enxerga — cada servidor pela mesma
+      régua de permissão que abre o canal, e as conversas por serem dela.
     */
-    const canais = params.guildId
-      ? await accessService.readableChannels(userId, params.guildId)
-      : await accessService
-          .requireChannelAccess(userId, params.canalId!)
-          .then(({ channel }) => [channel.id]);
+    const escopo =
+      params.escopo ?? (params.guildId ? "servidor" : "canal");
+
+    const dosServidores = async () => {
+      const filiacoes = await guildRepository.findManyByUser(userId);
+      const porServidor = await Promise.all(
+        filiacoes.map((m) => accessService.readableChannels(userId, m.guildId)),
+      );
+      return porServidor.flat();
+    };
+    const dasConversas = async () =>
+      (await dmRepository.findManyForUser(userId)).map((c) => c.id);
+
+    const canais =
+      escopo === "tudo"
+        ? [...(await dosServidores()), ...(await dasConversas())]
+        : escopo === "comunidades"
+          ? await dosServidores()
+          : escopo === "dms"
+            ? await dasConversas()
+            : params.guildId
+              ? await accessService.readableChannels(userId, params.guildId)
+              : await accessService
+                  .requireChannelAccess(userId, params.canalId!)
+                  .then(({ channel }) => [channel.id]);
 
     const linhas = await messageRepository.buscar({
       channelIds: canais,
       termo: params.termo,
-      canalId: params.canalId,
+      canalId: escopo === "servidor" || escopo === "canal" ? params.canalId : undefined,
       autorId: params.autorId,
+      mencionaId: params.mencionaId,
+      tem: params.tem,
+      depois: params.depois,
+      antes: params.antes,
+      em: params.em,
+      fixada: params.fixada,
+      tipoDeAutor: params.tipoDeAutor,
+      ordem: params.ordem ?? "recente",
       before: params.before,
       limit: 25,
     });
@@ -122,6 +151,19 @@ export const messageService = {
     }
 
     if (input.postId) await forumService.requirePostAberto(input.postId, channel.id);
+
+    /*
+      A conversa com a conta da casa é de mão única: os avisos do app chegam
+      por ela, e ninguém responde. Quem escreve lá é só a própria casa.
+    */
+    if (!channel.guildId) {
+      const outroId = (channel.recipients ?? []).find((id) => id !== userId);
+      const outro = outroId ? await userRepository.findById(outroId) : null;
+
+      if (outro?.sistema) {
+        throw new ForbiddenError("Esta conversa é só de avisos da casa. Não dá para responder aqui.");
+      }
+    }
 
     if (contexto) {
       requireNaoEstaDeCastigo(contexto);

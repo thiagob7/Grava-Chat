@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "ล้างการค้นหา",
   },
   busca: {
+    pesquisar: "ค้นหา",
+    limpar: "ล้างการค้นหา",
+    filtros: "ตัวกรองการค้นหา",
+    escopo: {
+      titulo: "ขอบเขตการค้นหา",
+      servidor: "ชุมชนปัจจุบัน",
+      canal: "การสนทนานี้",
+      comunidades: "ทุกชุมชน",
+      dms: "เฉพาะข้อความส่วนตัว",
+      tudo: "ข้อความส่วนตัวและชุมชน",
+    },
     fechar: "ปิดการค้นหา",
     procurando: "กำลังค้นหา…",
     resultado: "{{quantos}} รายการ",

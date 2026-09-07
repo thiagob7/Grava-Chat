@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "검색 지우기",
   },
   busca: {
+    pesquisar: "검색",
+    limpar: "검색 지우기",
+    filtros: "검색 필터",
+    escopo: {
+      titulo: "검색 범위",
+      servidor: "현재 커뮤니티",
+      canal: "이 대화",
+      comunidades: "모든 커뮤니티",
+      dms: "DM만",
+      tudo: "DM과 커뮤니티",
+    },
     fechar: "검색 닫기",
     procurando: "찾는 중…",
     resultado: "{{quantos}}개 결과",

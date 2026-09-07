@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "खोज मिटाएँ",
   },
   busca: {
+    pesquisar: "खोजें",
+    limpar: "खोज साफ़ करें",
+    filtros: "खोज फ़िल्टर",
+    escopo: {
+      titulo: "खोज का दायरा",
+      servidor: "वर्तमान समुदाय",
+      canal: "यह बातचीत",
+      comunidades: "सभी समुदाय",
+      dms: "केवल सीधे संदेश",
+      tudo: "सीधे संदेश और समुदाय",
+    },
     fechar: "खोज बंद करें",
     procurando: "खोज रहे हैं…",
     resultado: "{{quantos}} परिणाम",

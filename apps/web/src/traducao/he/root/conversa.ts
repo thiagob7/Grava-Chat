@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "ניקוי החיפוש",
   },
   busca: {
+    pesquisar: "חיפוש",
+    limpar: "ניקוי החיפוש",
+    filtros: "מסנני חיפוש",
+    escopo: {
+      titulo: "היקף החיפוש",
+      servidor: "הקהילה הנוכחית",
+      canal: "השיחה הזו",
+      comunidades: "כל הקהילות",
+      dms: "הודעות ישירות בלבד",
+      tudo: "הודעות ישירות וקהילות",
+    },
     fechar: "סגירת החיפוש",
     procurando: "מחפש…",
     resultado: "{{quantos}} תוצאה",

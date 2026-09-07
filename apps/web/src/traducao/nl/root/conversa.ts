@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Zoekopdracht wissen",
   },
   busca: {
+    pesquisar: "Zoeken",
+    limpar: "Zoekopdracht wissen",
+    filtros: "Zoekfilters",
+    escopo: {
+      titulo: "Zoekbereik",
+      servidor: "Huidige community",
+      canal: "Dit gesprek",
+      comunidades: "Alle communities",
+      dms: "Alleen privéberichten",
+      tudo: "Privéberichten en communities",
+    },
     fechar: "Zoeken sluiten",
     procurando: "Zoeken…",
     resultado: "{{quantos}} resultaat",

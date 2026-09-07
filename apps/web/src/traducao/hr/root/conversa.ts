@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Očisti pretragu",
   },
   busca: {
+    pesquisar: "Pretraži",
+    limpar: "Očisti pretragu",
+    filtros: "Filtri pretrage",
+    escopo: {
+      titulo: "Opseg pretrage",
+      servidor: "Trenutna zajednica",
+      canal: "Ovaj razgovor",
+      comunidades: "Sve zajednice",
+      dms: "Samo izravne poruke",
+      tudo: "Izravne poruke i zajednice",
+    },
     fechar: "Zatvori pretragu",
     procurando: "Tražim…",
     resultado: "{{quantos}} rezultat",

@@ -80,8 +80,7 @@ export const queryKeys = {
     read_states: "find-read-states",
     favorites: "find-favorite-messages",
     favorite_ids: "find-favorite-message-ids",
-    busca: (guildId: string, termo: string, canalId: string, autorId: string) =>
-      ["buscar-mensagens", guildId, termo, canalId, autorId] as const,
+    busca: (filtros: string) => ["buscar-mensagens", filtros] as const,
   },
 
   tema: {

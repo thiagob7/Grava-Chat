@@ -21,7 +21,7 @@ export const InicioDaDm: React.FC<{ pessoa: PublicUser }> = ({ pessoa }) => {
   const pedir = useRequestFriend();
 
   const servidores = emComum?.servidores ?? [];
-  const podePedir = perfil ? perfil.friendship === "NONE" : false;
+  const podePedir = perfil ? perfil.friendship === "NONE" && !pessoa.sistema : false;
 
   return (
     <div data-gc="conversa.inicio-da-dm.div" className="flex flex-col items-center px-4 pb-8 pt-10 text-center">
@@ -36,8 +36,14 @@ export const InicioDaDm: React.FC<{ pessoa: PublicUser }> = ({ pessoa }) => {
       <h2 data-gc="conversa.inicio-da-dm.h2" className="mt-4 text-2xl font-bold">{pessoa.username}</h2>
 
       <p data-gc="conversa.inicio-da-dm.p" className="mt-3 text-ink-muted">
-        Diga oi para <strong data-gc="conversa.inicio-da-dm.strong" className="font-semibold text-ink">{pessoa.displayName}</strong>. Sua
-        conversa começa aqui.
+        {pessoa.sistema ? (
+          <>Os avisos do Gravaê chegam por aqui.</>
+        ) : (
+          <>
+            Diga oi para <strong data-gc="conversa.inicio-da-dm.strong" className="font-semibold text-ink">{pessoa.displayName}</strong>. Sua
+            conversa começa aqui.
+          </>
+        )}
       </p>
 
       {(servidores.length > 0 || podePedir) && (

@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Keresés törlése",
   },
   busca: {
+    pesquisar: "Keresés",
+    limpar: "Keresés törlése",
+    filtros: "Keresési szűrők",
+    escopo: {
+      titulo: "Keresés hatóköre",
+      servidor: "Jelenlegi közösség",
+      canal: "Ez a beszélgetés",
+      comunidades: "Minden közösség",
+      dms: "Csak privát üzenetek",
+      tudo: "Privát üzenetek és közösségek",
+    },
     fechar: "Keresés bezárása",
     procurando: "Keresés…",
     resultado: "{{quantos}} találat",

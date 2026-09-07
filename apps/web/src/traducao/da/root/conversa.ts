@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Ryd søgningen",
   },
   busca: {
+    pesquisar: "Søg",
+    limpar: "Ryd søgning",
+    filtros: "Søgefiltre",
+    escopo: {
+      titulo: "Søgeområde",
+      servidor: "Nuværende fællesskab",
+      canal: "Denne samtale",
+      comunidades: "Alle fællesskaber",
+      dms: "Kun beskeder",
+      tudo: "Beskeder og fællesskaber",
+    },
     fechar: "Luk søgningen",
     procurando: "Søger…",
     resultado: "{{quantos}} resultat",

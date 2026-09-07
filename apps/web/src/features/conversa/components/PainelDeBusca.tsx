@@ -1,7 +1,10 @@
 import React from "react";
 import { Search, X } from "lucide-react";
 
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useBuscarMensagens } from "~/@core/application/queries/message/use-buscar-mensagens";
+import type { EscopoDeBusca, FiltrosDaBusca } from "~/@core/application/requests/message/buscar-mensagens";
+import { interpretarBusca, temOQueBuscar } from "~/features/conversa/lib/busca";
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import type { ResultadoDaBusca } from "~/@core/application/requests/message/buscar-mensagens";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -19,6 +22,7 @@ interface PainelDeBuscaProps {
   guildId?: string;
   canalId?: string;
   termo: string;
+  escopo?: EscopoDeBusca;
   currentUserId?: string;
   onFechar: () => void;
   onIr: (channelId: string, messageId: string) => void;
@@ -28,12 +32,47 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   guildId,
   canalId,
   termo,
+  escopo,
   currentUserId,
   onFechar,
   onIr,
 }) => {
   const { t } = useTranslation();
-  const busca = useBuscarMensagens({ guildId, canalId, termo });
+  const { data: detail } = useFindGuild(guildId);
+
+  /*
+    O texto vira chaves; nome de gente e de canal vira id pelo servidor que
+    está aberto. Chave que não resolve não filtra — melhor mostrar de mais do
+    que esconder por engano.
+  */
+  const lida = interpretarBusca(termo);
+  const membroPorNome = (nome?: string) => {
+    if (!nome) return undefined;
+    const baixo = nome.toLowerCase();
+    return detail?.members.find(
+      (m) => m.user.username.toLowerCase() === baixo || m.user.displayName.toLowerCase() === baixo,
+    )?.user.id;
+  };
+  const canalPorNome = (nome?: string) =>
+    nome ? detail?.channels.find((c) => c.name.toLowerCase() === nome.toLowerCase())?.id : undefined;
+
+  const filtros: FiltrosDaBusca = {
+    termo: lida.termo,
+    escopo,
+    guildId,
+    canalId: canalPorNome(lida.in) ?? canalId,
+    autorId: membroPorNome(lida.from),
+    mencionaId: membroPorNome(lida.mentions),
+    tem: lida.has,
+    depois: lida.after,
+    antes: lida.before,
+    em: lida.on,
+    fixada: lida.pinned,
+    tipoDeAutor: lida.authorType,
+    ordem: lida.sort,
+  };
+
+  const busca = useBuscarMensagens(filtros, temOQueBuscar(lida));
   const { data: expressoes } = useFindExpressions(guildId);
   const enfeitesDe = useEnfeites(guildId);
   const mencoes = useMencoes(guildId, false, currentUserId);
@@ -65,7 +104,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
       <div data-gc="conversa.painel-de-busca.div" {...flx("resultadosDaBusca", "min-h-0 flex-1 overflow-y-auto p-3")}>
         {!busca.isLoading && !total && (
           <p data-gc="conversa.painel-de-busca.p" className="px-2 py-8 text-center text-sm text-ink-muted">
-            {t("conversa.busca.nadaCom", { termo })}
+            {t("conversa.busca.nadaCom", { termo: lida.termo || termo })}
             <span data-gc="conversa.painel-de-busca.span" className="mt-1 block text-xs text-ink-faint">
               {t("conversa.busca.soOsQuePodeLer")}
             </span>
@@ -77,7 +116,7 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
             <Resultado data-gc="conversa.painel-de-busca.resultado"
               key={resultado.id}
               resultado={resultado}
-              termo={termo}
+              termo={lida.termo}
               emojis={expressoes.emojis}
               enfeites={enfeitesDe(resultado.author.id)}
               mencoes={mencoes}
@@ -113,7 +152,9 @@ const Resultado: React.FC<{
     {...flx("itemDoResultado", "block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3")}
   >
     <p data-gc="conversa.painel-de-busca.p--2" className="mb-1.5 flex items-center gap-1 text-xs text-ink-faint">
-      <span data-gc="conversa.painel-de-busca.span--2" className="min-w-0 truncate">#{resultado.channelName}</span>
+      <span data-gc="conversa.painel-de-busca.span--2" className="min-w-0 truncate">
+        {resultado.channelName ? `#${resultado.channelName}` : "Conversa"}
+      </span>
       <span data-gc="conversa.painel-de-busca.span--3" aria-hidden>·</span>
       <span data-gc="conversa.painel-de-busca.span--4" className="shrink-0">{formatTimestamp(resultado.createdAt)}</span>
     </p>
@@ -147,6 +188,7 @@ const Resultado: React.FC<{
 const MARGEM = 90;
 
 function trechoEmVolta(conteudo: string, termo: string) {
+  if (!termo) return conteudo;
   const onde = conteudo.toLowerCase().indexOf(termo.toLowerCase());
   if (onde < 0 || conteudo.length <= MARGEM * 2) return conteudo;
 

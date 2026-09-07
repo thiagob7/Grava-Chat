@@ -26,6 +26,7 @@ import {
   PainelDaConversa,
   RodapeDaConversa,
 } from "~/features/conversa/components/AreaDeConversa";
+import type { EscopoDeBusca } from "~/@core/application/requests/message/buscar-mensagens";
 import { CampoDeBusca } from "~/features/conversa/components/CampoDeBusca";
 import { ChannelSidebar } from "~/features/servidor/components/ChannelSidebar";
 import { Composer } from "~/features/conversa/components/Composer";
@@ -83,6 +84,7 @@ export const Chat: React.FC = () => {
   const [postAberto, setPostAberto] = useState<ForumPostModel | null>(null);
   const [chatDaVozAberto, setChatDaVozAberto] = useState(false);
   const [busca, setBusca] = useState("");
+  const [escopoDaBusca, setEscopoDaBusca] = useState<EscopoDeBusca>("servidor");
 
   useRealtime(routeGuildId, routeChannelId);
 
@@ -288,7 +290,15 @@ export const Chat: React.FC = () => {
                 </button>
               </Tooltip>
 
-              {routeGuildId && <CampoDeBusca data-gc="chat.chat.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />}
+              {routeGuildId && (
+                <CampoDeBusca data-gc="chat.chat.campo-de-busca.set-busca"
+                  termo={busca}
+                  onBuscar={setBusca}
+                  escopo={escopoDaBusca}
+                  escopos={["servidor", "comunidades", "dms", "tudo"]}
+                  onEscopo={setEscopoDaBusca}
+                />
+              )}
 
               <BotaoDoAplicativo data-gc="chat.chat.botao-do-aplicativo" />
               <CaixaDeEntrada data-gc="chat.chat.caixa-de-entrada" />
@@ -421,11 +431,13 @@ export const Chat: React.FC = () => {
             <PainelDeBusca data-gc="chat.chat.painel-de-busca"
               guildId={routeGuildId}
               termo={busca}
+              escopo={escopoDaBusca}
               currentUserId={user?.id}
               onFechar={() => setBusca("")}
-              onIr={(channelId, messageId) =>
-                navigate(`/channels/${routeGuildId}/${channelId}?m=${messageId}`)
-              }
+              onIr={(channelId, messageId) => {
+                const canal = detail?.channels.find((c) => c.id === channelId);
+                navigate(canal ? `/channels/${routeGuildId}/${channelId}?m=${messageId}` : `/dm/${channelId}?m=${messageId}`);
+              }}
             />
           )}
 

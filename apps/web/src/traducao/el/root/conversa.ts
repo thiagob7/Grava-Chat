@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Καθαρισμός αναζήτησης",
   },
   busca: {
+    pesquisar: "Αναζήτηση",
+    limpar: "Καθαρισμός αναζήτησης",
+    filtros: "Φίλτρα αναζήτησης",
+    escopo: {
+      titulo: "Εύρος αναζήτησης",
+      servidor: "Τρέχουσα κοινότητα",
+      canal: "Αυτή η συνομιλία",
+      comunidades: "Όλες οι κοινότητες",
+      dms: "Μόνο προσωπικά μηνύματα",
+      tudo: "Προσωπικά μηνύματα και κοινότητες",
+    },
     fechar: "Κλείσιμο αναζήτησης",
     procurando: "Ψάχνω…",
     resultado: "{{quantos}} αποτέλεσμα",

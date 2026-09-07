@@ -185,6 +185,17 @@ export const conversa = {
     limparBusca: "Rensa sökningen",
   },
   busca: {
+    pesquisar: "Sök",
+    limpar: "Rensa sökning",
+    filtros: "Sökfilter",
+    escopo: {
+      titulo: "Sökområde",
+      servidor: "Aktuell community",
+      canal: "Den här konversationen",
+      comunidades: "Alla communityn",
+      dms: "Endast direktmeddelanden",
+      tudo: "Direktmeddelanden och communityn",
+    },
     fechar: "Stäng sökningen",
     procurando: "Söker…",
     resultado: "{{quantos}} träff",
