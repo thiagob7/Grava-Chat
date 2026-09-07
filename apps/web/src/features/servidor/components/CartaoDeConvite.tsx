@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import { ConviteModal } from "~/features/servidor/components/ConviteModal";
 import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
-import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
 import { Button } from "~/components/ui/button";
 import { avatarColor, initials } from "~/lib/format";
 
@@ -17,7 +17,7 @@ import { avatarColor, initials } from "~/lib/format";
 export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
   const navigate = useNavigate();
   const { data: convite, isLoading, isError } = useFindInvite(codigo);
-  const entrar = useAcceptInvite();
+  const [perguntando, setPerguntando] = useState(false);
 
   if (isLoading)
     return (
@@ -42,14 +42,12 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
       return;
     }
 
-    /// O erro já vira aviso dentro da própria mutação; aqui só o caminho feliz.
-    void entrar
-      .mutateAsync(codigo)
-      .then((resultado) => navigate(`/channels/${resultado.guildId}`))
-      .catch(() => {});
+    /// Entrar é decisão: o cartão só abre a pergunta.
+    setPerguntando(true);
   };
 
   return (
+    <>
     <article data-gc="servidor.cartao-de-convite.article" className="mt-1 w-80 overflow-hidden rounded-lg border border-line bg-surface-1">
       {guild.bannerUrl ? (
         <img data-gc="servidor.cartao-de-convite.img"
@@ -106,12 +104,14 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
         <Button data-gc="servidor.cartao-de-convite.button.ir"
           size="sm"
           className="w-full"
-          disabled={entrar.isPending}
           onClick={ir}
         >
           {convite.alreadyMember ? "Ir para a comunidade" : "Entrar na comunidade"}
         </Button>
       </div>
     </article>
+
+      <ConviteModal data-gc="servidor.cartao-de-convite.convite-modal" codigo={perguntando ? codigo : null} onFechar={() => setPerguntando(false)} />
+    </>
   );
 };

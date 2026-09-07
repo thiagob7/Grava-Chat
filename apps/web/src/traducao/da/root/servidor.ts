@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverindstillinger",
+  menu: {
+    marcarLida: "Markér som læst",
+    convidar: "Inviter medlemmer",
+    editarPerfil: "Rediger fællesskabets profil",
+    configuracoes: "Fællesskabets indstillinger",
+    sair: "Forlad fællesskabet",
+    sairTitulo: "Forlad {{nome}}?",
+    sairDescricao: "Du skal bruge en ny invitation for at komme tilbage.",
+    copiarId: "Kopiér fællesskabets ID",
+    idCopiado: "ID kopieret.",
+  },
+  convite: {
+    chamado: "Du er inviteret til",
+    aceitarComo: "Acceptér som {{nome}}",
+    abrir: "Åbn fællesskabet",
+    recusar: "Nej tak",
+  },
   selos: {
     verificada: "Verificeret fællesskab",
     detectavel: "Synligt fællesskab",

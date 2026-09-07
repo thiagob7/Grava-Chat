@@ -292,7 +292,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("linhaDoNomeDoPerfil", "flex items-center gap-2")}>
             <p data-gc="perfil.cartao.profile-card-visual.p"
               className={cn(
-                "min-w-0 truncate text-2xl font-bold leading-tight",
+                "min-w-0 truncate text-xl font-bold leading-tight",
                 placa && "gc-placa",
                 placa,
               )}

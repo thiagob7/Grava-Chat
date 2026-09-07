@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "إعدادات الخادم",
+  menu: {
+    marcarLida: "وضع علامة كمقروء",
+    convidar: "دعوة أعضاء",
+    editarPerfil: "تعديل ملف المجتمع",
+    configuracoes: "إعدادات المجتمع",
+    sair: "مغادرة المجتمع",
+    sairTitulo: "مغادرة {{nome}}؟",
+    sairDescricao: "ستحتاج إلى دعوة جديدة للعودة.",
+    copiarId: "نسخ معرف المجتمع",
+    idCopiado: "تم نسخ المعرف.",
+  },
+  convite: {
+    chamado: "تمت دعوتك للانضمام إلى",
+    aceitarComo: "قبول باسم {{nome}}",
+    abrir: "فتح المجتمع",
+    recusar: "لا، شكرًا",
+  },
   selos: {
     verificada: "مجتمع موثّق",
     detectavel: "مجتمع قابل للاكتشاف",

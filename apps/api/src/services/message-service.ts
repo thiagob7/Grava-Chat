@@ -401,6 +401,26 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, messageId);
   },
 
+  /*
+    "Marcar como lida" no servidor inteiro: cada canal que a pessoa enxerga
+    vai para a mensagem mais nova. Devolve o que mudou, para o cliente
+    ajustar a contagem sem pedir tudo de novo.
+  */
+  async marcarServidorLido(userId: string, guildId: string) {
+    const canais = await accessService.readableChannels(userId, guildId);
+    const lidos: { channelId: string; messageId: string }[] = [];
+
+    for (const canalId of canais) {
+      const ultima = await readStateRepository.findLastIn(canalId);
+      if (!ultima) continue;
+
+      await readStateRepository.markRead(userId, canalId, ultima.id);
+      lidos.push({ channelId: canalId, messageId: ultima.id });
+    }
+
+    return lidos;
+  },
+
   async markUnread(userId: string, channelId: string, messageId: string) {
     await accessService.requireChannelAccess(userId, channelId);
 

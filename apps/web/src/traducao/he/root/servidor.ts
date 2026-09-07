@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "הגדרות השרת",
+  menu: {
+    marcarLida: "סמן כנקרא",
+    convidar: "הזמנת חברים",
+    editarPerfil: "עריכת פרופיל הקהילה",
+    configuracoes: "הגדרות הקהילה",
+    sair: "עזיבת הקהילה",
+    sairTitulo: "לעזוב את {{nome}}?",
+    sairDescricao: "תצטרכו הזמנה חדשה כדי לחזור.",
+    copiarId: "העתקת מזהה הקהילה",
+    idCopiado: "המזהה הועתק.",
+  },
+  convite: {
+    chamado: "הוזמנת להצטרף אל",
+    aceitarComo: "קבלה בתור {{nome}}",
+    abrir: "פתיחת הקהילה",
+    recusar: "לא, תודה",
+  },
   selos: {
     verificada: "קהילה מאומתת",
     detectavel: "קהילה ניתנת לגילוי",

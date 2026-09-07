@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Postavke poslužitelja",
+  menu: {
+    marcarLida: "Označi kao pročitano",
+    convidar: "Pozovi članove",
+    editarPerfil: "Uredi profil zajednice",
+    configuracoes: "Postavke zajednice",
+    sair: "Napusti zajednicu",
+    sairTitulo: "Napustiti {{nome}}?",
+    sairDescricao: "Za povratak će ti trebati nova pozivnica.",
+    copiarId: "Kopiraj ID zajednice",
+    idCopiado: "ID kopiran.",
+  },
+  convite: {
+    chamado: "Pozvan(a) si da se pridružiš",
+    aceitarComo: "Prihvati kao {{nome}}",
+    abrir: "Otvori zajednicu",
+    recusar: "Ne, hvala",
+  },
   selos: {
     verificada: "Provjerena zajednica",
     detectavel: "Vidljiva zajednica",

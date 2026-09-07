@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverinnstillinger",
+  menu: {
+    marcarLida: "Merk som lest",
+    convidar: "Inviter medlemmer",
+    editarPerfil: "Rediger fellesskapets profil",
+    configuracoes: "Fellesskapets innstillinger",
+    sair: "Forlat fellesskapet",
+    sairTitulo: "Forlate {{nome}}?",
+    sairDescricao: "Du trenger en ny invitasjon for å komme tilbake.",
+    copiarId: "Kopier fellesskapets ID",
+    idCopiado: "ID kopiert.",
+  },
+  convite: {
+    chamado: "Du er invitert til",
+    aceitarComo: "Godta som {{nome}}",
+    abrir: "Åpne fellesskapet",
+    recusar: "Nei takk",
+  },
   selos: {
     verificada: "Verifisert fellesskap",
     detectavel: "Synlig fellesskap",

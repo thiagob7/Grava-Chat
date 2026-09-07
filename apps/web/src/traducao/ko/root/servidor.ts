@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "서버 설정",
+  menu: {
+    marcarLida: "읽음으로 표시",
+    convidar: "멤버 초대",
+    editarPerfil: "커뮤니티 프로필 편집",
+    configuracoes: "커뮤니티 설정",
+    sair: "커뮤니티 나가기",
+    sairTitulo: "{{nome}}에서 나갈까요?",
+    sairDescricao: "돌아오려면 새 초대가 필요해요.",
+    copiarId: "커뮤니티 ID 복사",
+    idCopiado: "ID를 복사했어요.",
+  },
+  convite: {
+    chamado: "초대받았어요:",
+    aceitarComo: "{{nome}}(으)로 수락",
+    abrir: "커뮤니티 열기",
+    recusar: "아니요, 괜찮아요",
+  },
   selos: {
     verificada: "인증된 커뮤니티",
     detectavel: "검색 가능한 커뮤니티",

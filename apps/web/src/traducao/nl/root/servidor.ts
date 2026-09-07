@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverinstellingen",
+  menu: {
+    marcarLida: "Markeren als gelezen",
+    convidar: "Leden uitnodigen",
+    editarPerfil: "Communityprofiel bewerken",
+    configuracoes: "Community-instellingen",
+    sair: "Community verlaten",
+    sairTitulo: "{{nome}} verlaten?",
+    sairDescricao: "Je hebt een nieuwe uitnodiging nodig om terug te komen.",
+    copiarId: "Community-ID kopiëren",
+    idCopiado: "ID gekopieerd.",
+  },
+  convite: {
+    chamado: "Je bent uitgenodigd voor",
+    aceitarComo: "Accepteren als {{nome}}",
+    abrir: "Community openen",
+    recusar: "Nee, bedankt",
+  },
   selos: {
     verificada: "Geverifieerde community",
     detectavel: "Vindbare community",

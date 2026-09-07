@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "सर्वर सेटिंग्स",
+  menu: {
+    marcarLida: "पढ़ा हुआ चिह्नित करें",
+    convidar: "सदस्यों को आमंत्रित करें",
+    editarPerfil: "समुदाय प्रोफ़ाइल संपादित करें",
+    configuracoes: "समुदाय सेटिंग्स",
+    sair: "समुदाय छोड़ें",
+    sairTitulo: "{{nome}} छोड़ें?",
+    sairDescricao: "वापस आने के लिए नया आमंत्रण चाहिए होगा।",
+    copiarId: "समुदाय आईडी कॉपी करें",
+    idCopiado: "आईडी कॉपी हो गई।",
+  },
+  convite: {
+    chamado: "आपको इसमें शामिल होने का आमंत्रण मिला है",
+    aceitarComo: "{{nome}} के रूप में स्वीकार करें",
+    abrir: "समुदाय खोलें",
+    recusar: "नहीं, धन्यवाद",
+  },
   selos: {
     verificada: "सत्यापित समुदाय",
     detectavel: "खोजने योग्य समुदाय",

@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Palvelimen asetukset",
+  menu: {
+    marcarLida: "Merkitse luetuksi",
+    convidar: "Kutsu jäseniä",
+    editarPerfil: "Muokkaa yhteisön profiilia",
+    configuracoes: "Yhteisön asetukset",
+    sair: "Poistu yhteisöstä",
+    sairTitulo: "Poistu yhteisöstä {{nome}}?",
+    sairDescricao: "Tarvitset uuden kutsun palataksesi.",
+    copiarId: "Kopioi yhteisön tunnus",
+    idCopiado: "Tunnus kopioitu.",
+  },
+  convite: {
+    chamado: "Sinut on kutsuttu yhteisöön",
+    aceitarComo: "Hyväksy nimellä {{nome}}",
+    abrir: "Avaa yhteisö",
+    recusar: "Ei kiitos",
+  },
   selos: {
     verificada: "Vahvistettu yhteisö",
     detectavel: "Löydettävä yhteisö",

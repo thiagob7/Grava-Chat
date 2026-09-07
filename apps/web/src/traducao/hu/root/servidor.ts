@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Szerverbeállítások",
+  menu: {
+    marcarLida: "Megjelölés olvasottként",
+    convidar: "Tagok meghívása",
+    editarPerfil: "Közösségi profil szerkesztése",
+    configuracoes: "Közösség beállításai",
+    sair: "Kilépés a közösségből",
+    sairTitulo: "Kilépsz innen: {{nome}}?",
+    sairDescricao: "A visszatéréshez új meghívó kell.",
+    copiarId: "Közösség azonosítójának másolása",
+    idCopiado: "Azonosító kimásolva.",
+  },
+  convite: {
+    chamado: "Meghívást kaptál ide:",
+    aceitarComo: "Elfogadás mint {{nome}}",
+    abrir: "Közösség megnyitása",
+    recusar: "Nem, köszönöm",
+  },
   selos: {
     verificada: "Ellenőrzött közösség",
     detectavel: "Felfedezhető közösség",

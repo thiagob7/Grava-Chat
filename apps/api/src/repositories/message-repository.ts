@@ -178,6 +178,15 @@ const idNoInstante = (quando: Date) =>
     .padStart(8, "0") + "0".repeat(16);
 
 export const readStateRepository = {
+  /// A mensagem mais nova do canal — o alvo de "marcar como lida".
+  findLastIn(channelId: string) {
+    return prisma.message.findFirst({
+      where: { channelId, ...notDeleted },
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
+  },
+
   findManyByUser(userId: string) {
     return prisma.readState.findMany({ where: { userId } });
   },

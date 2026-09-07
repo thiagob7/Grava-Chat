@@ -11,6 +11,8 @@ import { useTranslation } from "~/traducao";
 import { AdicionarServidorModal } from "~/features/servidor/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
+import { InviteModal } from "~/features/servidor/components/InviteModal";
+import { MenuDoServidor } from "~/features/servidor/components/MenuDoServidor";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
@@ -37,6 +39,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 }) => {
   const { t } = useTranslation();
   const { data: guilds = [] } = useFindManyGuilds(true);
+  const [convidandoEm, setConvidandoEm] = useState<string | null>(null);
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const { data: vozes = {} } = useVoiceStates(true);
   const [creating, setCreating] = useState(false);
@@ -104,7 +107,8 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           const temNovidade = !active && naoLidas > 0;
 
           return (
-            <div data-gc="servidor.guild-rail.div--7" key={guild.id} className="group relative flex w-full justify-center">
+            <MenuDoServidor data-gc="servidor.guild-rail.menu-do-servidor" key={guild.id} guild={guild} onConvidar={() => setConvidandoEm(guild.id)}>
+            <div data-gc="servidor.guild-rail.div--7" className="group relative flex w-full justify-center">
               <span data-gc="servidor.guild-rail.span--3"
                 {...flxAttr("pilulaDoServidor")}
                 className={cn(
@@ -140,7 +144,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   onClick={() => onSelect(guild.id)}
                   className={cn(
                     flxCls("iconeDoServidor"),
-                    "flex size-[var(--guild-icon-size)] items-center justify-center overflow-hidden font-semibold transition-all",
+                    "flex size-[var(--guild-icon-size)] items-center justify-center overflow-hidden font-semibold transition-all duration-200 ease-out active:translate-y-px active:scale-95",
                     active
                       ? cn("rounded-2xl bg-brand", flxCls("iconeDoServidorAtivo"))
                       : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
@@ -181,6 +185,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 </span>
               )}
             </div>
+            </MenuDoServidor>
           );
         })}
 
@@ -264,6 +269,12 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         open={creating}
         onClose={() => setCreating(false)}
         onCreated={onSelect}
+      />
+      <InviteModal data-gc="servidor.guild-rail.invite-modal"
+        open={convidandoEm !== null}
+        guildId={convidandoEm ?? ""}
+        guildName={guilds.find((g) => g.id === convidandoEm)?.name ?? ""}
+        onClose={() => setConvidandoEm(null)}
       />
     </>
   );

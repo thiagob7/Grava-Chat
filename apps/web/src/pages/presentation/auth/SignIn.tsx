@@ -35,14 +35,12 @@ export const SignIn: React.FC = () => {
 
       <div data-gc="auth.sign-in.div--2" {...flx("cartaoDeEntrada", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
         <aside data-gc="auth.sign-in.aside" className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
-          <span data-gc="auth.sign-in.span" className="flex size-24 items-center justify-center rounded-full bg-brand">
-            <img data-gc="auth.sign-in.img"
-              src="/brand/logo%20g%20branco.svg"
-              alt=""
-              className="h-12 w-auto"
-              draggable={false}
-            />
-          </span>
+          <img data-gc="auth.sign-in.img"
+            src="/brand/logo%20g%20branco.svg"
+            alt=""
+            className="h-20 w-auto"
+            draggable={false}
+          />
 
           <img data-gc="auth.sign-in.img--2" src="/brand/logotipo.png" alt="Gravaê" className="h-7 w-auto" draggable={false} />
 
@@ -81,7 +79,7 @@ export const SignIn: React.FC = () => {
                 <GoogleMark data-gc="auth.sign-in.google-mark--2" /> Entrar com Google
               </a>
             ) : (
-              <span data-gc="auth.sign-in.span--2" className="inline-flex items-center gap-2">
+              <span data-gc="auth.sign-in.span" className="inline-flex items-center gap-2">
                 <GoogleMark data-gc="auth.sign-in.google-mark--3" /> Entrar com Google
               </span>
             )}
@@ -103,7 +101,7 @@ export const SignIn: React.FC = () => {
         {apiUnreachable && (
           <div data-gc="auth.sign-in.div--5" className="rounded bg-idle/15 p-3 text-center">
             <p data-gc="auth.sign-in.p--5" className="flex items-center justify-center gap-2 text-sm text-idle">
-              <span data-gc="auth.sign-in.span--3" className="size-1.5 animate-pulse rounded-full bg-idle" />
+              <span data-gc="auth.sign-in.span--2" className="size-1.5 animate-pulse rounded-full bg-idle" />
               Reconectando…
             </p>
             <p data-gc="auth.sign-in.p--6" className="mt-1 text-xs text-ink-muted">
@@ -118,9 +116,9 @@ export const SignIn: React.FC = () => {
         {devLoginEnabled && (
           <>
             <div data-gc="auth.sign-in.div--6" className="mb-4 flex items-center gap-2">
-              <span data-gc="auth.sign-in.span--4" className="h-px flex-1 bg-line" />
-              <span data-gc="auth.sign-in.span--5" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
-              <span data-gc="auth.sign-in.span--6" className="h-px flex-1 bg-line" />
+              <span data-gc="auth.sign-in.span--3" className="h-px flex-1 bg-line" />
+              <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
+              <span data-gc="auth.sign-in.span--5" className="h-px flex-1 bg-line" />
             </div>
 
             <Label data-gc="auth.sign-in.label" htmlFor="email">Email</Label>

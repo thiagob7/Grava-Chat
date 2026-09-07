@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Setările serverului",
+  menu: {
+    marcarLida: "Marchează ca citit",
+    convidar: "Invită membri",
+    editarPerfil: "Editează profilul comunității",
+    configuracoes: "Setările comunității",
+    sair: "Părăsește comunitatea",
+    sairTitulo: "Părăsești {{nome}}?",
+    sairDescricao: "Vei avea nevoie de o invitație nouă ca să revii.",
+    copiarId: "Copiază ID-ul comunității",
+    idCopiado: "ID copiat.",
+  },
+  convite: {
+    chamado: "Ai fost invitat(ă) să intri în",
+    aceitarComo: "Acceptă ca {{nome}}",
+    abrir: "Deschide comunitatea",
+    recusar: "Nu, mulțumesc",
+  },
   selos: {
     verificada: "Comunitate verificată",
     detectavel: "Comunitate descoperibilă",

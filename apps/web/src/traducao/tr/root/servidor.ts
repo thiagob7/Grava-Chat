@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Sunucu ayarları",
+  menu: {
+    marcarLida: "Okundu olarak işaretle",
+    convidar: "Üye davet et",
+    editarPerfil: "Topluluk profilini düzenle",
+    configuracoes: "Topluluk ayarları",
+    sair: "Topluluktan ayrıl",
+    sairTitulo: "{{nome}} topluluğundan ayrılsın mı?",
+    sairDescricao: "Geri dönmek için yeni bir davet gerekecek.",
+    copiarId: "Topluluk ID'sini kopyala",
+    idCopiado: "ID kopyalandı.",
+  },
+  convite: {
+    chamado: "Şuraya davet edildin:",
+    aceitarComo: "{{nome}} olarak kabul et",
+    abrir: "Topluluğu aç",
+    recusar: "Hayır, teşekkürler",
+  },
   selos: {
     verificada: "Doğrulanmış topluluk",
     detectavel: "Keşfedilebilir topluluk",

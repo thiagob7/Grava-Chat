@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Cài đặt máy chủ",
+  menu: {
+    marcarLida: "Đánh dấu đã đọc",
+    convidar: "Mời thành viên",
+    editarPerfil: "Chỉnh sửa hồ sơ cộng đồng",
+    configuracoes: "Cài đặt cộng đồng",
+    sair: "Rời cộng đồng",
+    sairTitulo: "Rời {{nome}}?",
+    sairDescricao: "Bạn sẽ cần lời mời mới để quay lại.",
+    copiarId: "Sao chép ID cộng đồng",
+    idCopiado: "Đã sao chép ID.",
+  },
+  convite: {
+    chamado: "Bạn được mời tham gia",
+    aceitarComo: "Chấp nhận với tên {{nome}}",
+    abrir: "Mở cộng đồng",
+    recusar: "Không, cảm ơn",
+  },
   selos: {
     verificada: "Cộng đồng đã xác minh",
     detectavel: "Cộng đồng có thể khám phá",

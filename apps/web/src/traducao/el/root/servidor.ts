@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Ρυθμίσεις διακομιστή",
+  menu: {
+    marcarLida: "Σήμανση ως αναγνωσμένο",
+    convidar: "Πρόσκληση μελών",
+    editarPerfil: "Επεξεργασία προφίλ κοινότητας",
+    configuracoes: "Ρυθμίσεις κοινότητας",
+    sair: "Αποχώρηση από την κοινότητα",
+    sairTitulo: "Αποχώρηση από {{nome}};",
+    sairDescricao: "Θα χρειαστείς νέα πρόσκληση για να επιστρέψεις.",
+    copiarId: "Αντιγραφή ID κοινότητας",
+    idCopiado: "Το ID αντιγράφηκε.",
+  },
+  convite: {
+    chamado: "Έχεις πρόσκληση για",
+    aceitarComo: "Αποδοχή ως {{nome}}",
+    abrir: "Άνοιγμα κοινότητας",
+    recusar: "Όχι, ευχαριστώ",
+  },
   selos: {
     verificada: "Επαληθευμένη κοινότητα",
     detectavel: "Ανιχνεύσιμη κοινότητα",

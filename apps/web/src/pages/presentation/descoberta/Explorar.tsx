@@ -6,6 +6,7 @@ import {
   MEMBROS_PARA_DESCOBRIR,
   NOMES_DE_CATEGORIA,
   type CategoriaDeComunidade,
+  type ComunidadeDescoberta,
 } from "@gravae/shared";
 
 import {
@@ -19,6 +20,7 @@ import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
+import { ComunidadeModal } from "~/features/descoberta/components/ComunidadeModal";
 import { CartaoDeComunidade } from "~/features/descoberta/components/CartaoDeComunidade";
 import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
@@ -235,8 +237,17 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
 }) => {
   const navigate = useNavigate();
   const entrar = useEntrarNaComunidade();
+  const [escolhida, setEscolhida] = useState<ComunidadeDescoberta | null>(null);
 
   const termo = useAtraso(busca.trim());
+
+  const entrarEm = (comunidade: ComunidadeDescoberta) =>
+    entrar.mutate(comunidade.id, {
+      onSuccess: ({ guildId }) => {
+        setEscolhida(null);
+        navigate(`/channels/${guildId}`);
+      },
+    });
 
   const { data: comunidades, isLoading } = useComunidades({
     categoria: categoria ?? undefined,
@@ -277,13 +288,18 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
           comunidade={comunidade}
           entrando={entrar.isPending && entrar.variables === comunidade.id}
           onAbrir={() => navigate(`/channels/${comunidade.id}`)}
-          onEntrar={() =>
-            entrar.mutate(comunidade.id, {
-              onSuccess: ({ guildId }) => navigate(`/channels/${guildId}`),
-            })
-          }
+          onEntrar={() => entrarEm(comunidade)}
+          onDetalhes={() => setEscolhida(comunidade)}
         />
       ))}
+
+      <ComunidadeModal data-gc="descoberta.explorar.comunidade-modal.entrar-em"
+        comunidade={escolhida}
+        entrando={entrar.isPending && entrar.variables === escolhida?.id}
+        onFechar={() => setEscolhida(null)}
+        onEntrar={entrarEm}
+        onAbrir={(comunidade) => navigate(`/channels/${comunidade.id}`)}
+      />
     </div>
   );
 };

@@ -8,7 +8,6 @@ export const FundoDaMarca: React.FC<{ className?: string }> = ({ className }) =>
       <defs data-gc="app.fundo-da-marca.defs">
         <pattern data-gc="app.fundo-da-marca.pattern" id="marca-gravae" width="180" height="180" patternUnits="userSpaceOnUse">
           <image data-gc="app.fundo-da-marca.image" href="/brand/logo g branco.svg" x="14" y="18" width="34" height="34" opacity="0.10" />
-          <circle data-gc="app.fundo-da-marca.circle" cx="54" cy="52" r="4" fill="white" opacity="0.10" />
 
           <g data-gc="app.fundo-da-marca.g" opacity="0.09" stroke="white" strokeWidth="4" strokeLinecap="round">
             <line data-gc="app.fundo-da-marca.line" x1="112" y1="30" x2="112" y2="46" />
@@ -17,7 +16,6 @@ export const FundoDaMarca: React.FC<{ className?: string }> = ({ className }) =>
           </g>
 
           <image data-gc="app.fundo-da-marca.image--2" href="/brand/logo g branco.svg" x="104" y="108" width="34" height="34" opacity="0.10" />
-          <circle data-gc="app.fundo-da-marca.circle--2" cx="144" cy="142" r="4" fill="white" opacity="0.10" />
 
           <g data-gc="app.fundo-da-marca.g--2" opacity="0.09" stroke="white" strokeWidth="4" strokeLinecap="round">
             <line data-gc="app.fundo-da-marca.line--4" x1="24" y1="120" x2="24" y2="136" />

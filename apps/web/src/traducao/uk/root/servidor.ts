@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Налаштування сервера",
+  menu: {
+    marcarLida: "Позначити як прочитане",
+    convidar: "Запросити учасників",
+    editarPerfil: "Редагувати профіль спільноти",
+    configuracoes: "Налаштування спільноти",
+    sair: "Вийти зі спільноти",
+    sairTitulo: "Вийти з {{nome}}?",
+    sairDescricao: "Щоб повернутися, знадобиться нове запрошення.",
+    copiarId: "Копіювати ID спільноти",
+    idCopiado: "ID скопійовано.",
+  },
+  convite: {
+    chamado: "Вас запросили приєднатися до",
+    aceitarComo: "Прийняти як {{nome}}",
+    abrir: "Відкрити спільноту",
+    recusar: "Ні, дякую",
+  },
   selos: {
     verificada: "Перевірена спільнота",
     detectavel: "Спільнота, яку можна знайти",

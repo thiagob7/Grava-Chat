@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "サーバー設定",
+  menu: {
+    marcarLida: "既読にする",
+    convidar: "メンバーを招待",
+    editarPerfil: "コミュニティのプロフィールを編集",
+    configuracoes: "コミュニティの設定",
+    sair: "コミュニティから退出",
+    sairTitulo: "{{nome}}から退出しますか？",
+    sairDescricao: "戻るには新しい招待が必要です。",
+    copiarId: "コミュニティIDをコピー",
+    idCopiado: "IDをコピーしました。",
+  },
+  convite: {
+    chamado: "招待されました：",
+    aceitarComo: "{{nome}}として参加",
+    abrir: "コミュニティを開く",
+    recusar: "いいえ、結構です",
+  },
   selos: {
     verificada: "認証済みコミュニティ",
     detectavel: "検出可能なコミュニティ",

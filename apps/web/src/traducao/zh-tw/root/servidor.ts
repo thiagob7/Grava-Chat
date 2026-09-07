@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "伺服器設定",
+  menu: {
+    marcarLida: "標示為已讀",
+    convidar: "邀請成員",
+    editarPerfil: "編輯社群資料",
+    configuracoes: "社群設定",
+    sair: "離開社群",
+    sairTitulo: "離開 {{nome}}？",
+    sairDescricao: "想回來需要新的邀請。",
+    copiarId: "複製社群 ID",
+    idCopiado: "已複製 ID。",
+  },
+  convite: {
+    chamado: "你受邀加入",
+    aceitarComo: "以 {{nome}} 的身分接受",
+    abrir: "開啟社群",
+    recusar: "不用了，謝謝",
+  },
   selos: {
     verificada: "已驗證社群",
     detectavel: "可探索社群",

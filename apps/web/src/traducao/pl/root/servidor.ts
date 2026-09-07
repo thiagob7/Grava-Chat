@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Ustawienia serwera",
+  menu: {
+    marcarLida: "Oznacz jako przeczytane",
+    convidar: "Zaproś członków",
+    editarPerfil: "Edytuj profil społeczności",
+    configuracoes: "Ustawienia społeczności",
+    sair: "Opuść społeczność",
+    sairTitulo: "Opuścić {{nome}}?",
+    sairDescricao: "Żeby wrócić, będzie potrzebne nowe zaproszenie.",
+    copiarId: "Kopiuj ID społeczności",
+    idCopiado: "ID skopiowane.",
+  },
+  convite: {
+    chamado: "Masz zaproszenie do",
+    aceitarComo: "Zaakceptuj jako {{nome}}",
+    abrir: "Otwórz społeczność",
+    recusar: "Nie, dzięki",
+  },
   selos: {
     verificada: "Zweryfikowana społeczność",
     detectavel: "Wykrywalna społeczność",

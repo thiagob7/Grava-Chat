@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverinställningar",
+  menu: {
+    marcarLida: "Markera som läst",
+    convidar: "Bjud in medlemmar",
+    editarPerfil: "Redigera communityns profil",
+    configuracoes: "Communityns inställningar",
+    sair: "Lämna communityn",
+    sairTitulo: "Lämna {{nome}}?",
+    sairDescricao: "Du behöver en ny inbjudan för att komma tillbaka.",
+    copiarId: "Kopiera communityns ID",
+    idCopiado: "ID kopierat.",
+  },
+  convite: {
+    chamado: "Du har blivit inbjuden till",
+    aceitarComo: "Acceptera som {{nome}}",
+    abrir: "Öppna communityn",
+    recusar: "Nej tack",
+  },
   selos: {
     verificada: "Verifierad community",
     detectavel: "Upptäckbar community",

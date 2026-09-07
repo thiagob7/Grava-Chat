@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Pengaturan server",
+  menu: {
+    marcarLida: "Tandai sudah dibaca",
+    convidar: "Undang anggota",
+    editarPerfil: "Edit profil komunitas",
+    configuracoes: "Pengaturan komunitas",
+    sair: "Keluar dari komunitas",
+    sairTitulo: "Keluar dari {{nome}}?",
+    sairDescricao: "Kamu perlu undangan baru untuk kembali.",
+    copiarId: "Salin ID komunitas",
+    idCopiado: "ID disalin.",
+  },
+  convite: {
+    chamado: "Kamu diundang untuk bergabung ke",
+    aceitarComo: "Terima sebagai {{nome}}",
+    abrir: "Buka komunitas",
+    recusar: "Tidak, terima kasih",
+  },
   selos: {
     verificada: "Komunitas terverifikasi",
     detectavel: "Komunitas dapat ditemukan",

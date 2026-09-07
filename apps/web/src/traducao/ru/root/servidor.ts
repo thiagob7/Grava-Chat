@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Настройки сервера",
+  menu: {
+    marcarLida: "Отметить как прочитанное",
+    convidar: "Пригласить участников",
+    editarPerfil: "Изменить профиль сообщества",
+    configuracoes: "Настройки сообщества",
+    sair: "Покинуть сообщество",
+    sairTitulo: "Покинуть {{nome}}?",
+    sairDescricao: "Чтобы вернуться, понадобится новое приглашение.",
+    copiarId: "Скопировать ID сообщества",
+    idCopiado: "ID скопирован.",
+  },
+  convite: {
+    chamado: "Вас пригласили в",
+    aceitarComo: "Принять как {{nome}}",
+    abrir: "Открыть сообщество",
+    recusar: "Нет, спасибо",
+  },
   selos: {
     verificada: "Проверенное сообщество",
     detectavel: "Обнаруживаемое сообщество",

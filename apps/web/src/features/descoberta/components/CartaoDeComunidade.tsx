@@ -13,6 +13,7 @@ interface CartaoDeComunidadeProps {
   entrando: boolean;
   onEntrar: () => void;
   onAbrir: () => void;
+  onDetalhes: () => void;
 }
 
 export const CartaoDeComunidade: React.FC<CartaoDeComunidadeProps> = ({
@@ -20,8 +21,9 @@ export const CartaoDeComunidade: React.FC<CartaoDeComunidadeProps> = ({
   entrando,
   onEntrar,
   onAbrir,
+  onDetalhes,
 }) => (
-  <article data-gc="descoberta.cartao-de-comunidade.article" className="group flex flex-col overflow-hidden rounded-lg border border-line bg-surface-2 transition hover:border-ink-faint/30">
+  <article data-gc="descoberta.cartao-de-comunidade.article.on-detalhes" className="group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-line bg-surface-2 transition hover:border-ink-faint/30" onClick={onDetalhes}>
     <div data-gc="descoberta.cartao-de-comunidade.div" className="relative h-24 shrink-0 bg-surface-4">
       {comunidade.bannerUrl && (
         <img data-gc="descoberta.cartao-de-comunidade.img"
@@ -65,11 +67,11 @@ export const CartaoDeComunidade: React.FC<CartaoDeComunidadeProps> = ({
 
       <div data-gc="descoberta.cartao-de-comunidade.div--4" className="mt-3">
         {comunidade.jaSouMembro ? (
-          <Button data-gc="descoberta.cartao-de-comunidade.button.on-abrir" variant="surface" size="sm" className="w-full" onClick={onAbrir}>
+          <Button data-gc="descoberta.cartao-de-comunidade.button" variant="surface" size="sm" className="w-full" onClick={(e) => { e.stopPropagation(); onAbrir(); }}>
             <Check data-gc="descoberta.cartao-de-comunidade.check" size={14} /> Você já está aqui
           </Button>
         ) : (
-          <Button data-gc="descoberta.cartao-de-comunidade.button.on-entrar" size="sm" className="w-full" disabled={entrando} onClick={onEntrar}>
+          <Button data-gc="descoberta.cartao-de-comunidade.button--2" size="sm" className="w-full" disabled={entrando} onClick={(e) => { e.stopPropagation(); onEntrar(); }}>
             {entrando ? <Loader2 data-gc="descoberta.cartao-de-comunidade.loader2" size={14} className="animate-spin" /> : null}
             {entrando ? "Entrando…" : "Entrar"}
           </Button>

@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverio nustatymai",
+  menu: {
+    marcarLida: "Pažymėti kaip perskaitytą",
+    convidar: "Pakviesti narius",
+    editarPerfil: "Redaguoti bendruomenės profilį",
+    configuracoes: "Bendruomenės nustatymai",
+    sair: "Palikti bendruomenę",
+    sairTitulo: "Palikti {{nome}}?",
+    sairDescricao: "Norint grįžti reikės naujo pakvietimo.",
+    copiarId: "Kopijuoti bendruomenės ID",
+    idCopiado: "ID nukopijuotas.",
+  },
+  convite: {
+    chamado: "Esi pakviestas(-a) prisijungti prie",
+    aceitarComo: "Priimti kaip {{nome}}",
+    abrir: "Atidaryti bendruomenę",
+    recusar: "Ne, ačiū",
+  },
   selos: {
     verificada: "Patvirtinta bendruomenė",
     detectavel: "Aptinkama bendruomenė",

@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Nastavení serveru",
+  menu: {
+    marcarLida: "Označit jako přečtené",
+    convidar: "Pozvat členy",
+    editarPerfil: "Upravit profil komunity",
+    configuracoes: "Nastavení komunity",
+    sair: "Opustit komunitu",
+    sairTitulo: "Opustit {{nome}}?",
+    sairDescricao: "K návratu budeš potřebovat novou pozvánku.",
+    copiarId: "Kopírovat ID komunity",
+    idCopiado: "ID zkopírováno.",
+  },
+  convite: {
+    chamado: "Máš pozvánku do",
+    aceitarComo: "Přijmout jako {{nome}}",
+    abrir: "Otevřít komunitu",
+    recusar: "Ne, díky",
+  },
   selos: {
     verificada: "Ověřená komunita",
     detectavel: "Objevitelná komunita",

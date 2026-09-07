@@ -4,6 +4,23 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "ตั้งค่าเซิร์ฟเวอร์",
+  menu: {
+    marcarLida: "ทำเครื่องหมายว่าอ่านแล้ว",
+    convidar: "เชิญสมาชิก",
+    editarPerfil: "แก้ไขโปรไฟล์ชุมชน",
+    configuracoes: "การตั้งค่าชุมชน",
+    sair: "ออกจากชุมชน",
+    sairTitulo: "ออกจาก {{nome}}?",
+    sairDescricao: "คุณจะต้องมีคำเชิญใหม่เพื่อกลับมา",
+    copiarId: "คัดลอก ID ชุมชน",
+    idCopiado: "คัดลอก ID แล้ว",
+  },
+  convite: {
+    chamado: "คุณได้รับเชิญให้เข้าร่วม",
+    aceitarComo: "ยอมรับในชื่อ {{nome}}",
+    abrir: "เปิดชุมชน",
+    recusar: "ไม่ล่ะ ขอบคุณ",
+  },
   selos: {
     verificada: "ชุมชนที่ยืนยันแล้ว",
     detectavel: "ชุมชนที่ค้นพบได้",

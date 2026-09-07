@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
 import { guildService } from "~/services/guild-service.js";
+import { messageService } from "~/services/message-service.js";
 import { emblemaService } from "~/services/emblema-service.js";
 import { io } from "~/realtime/io.js";
 import {
@@ -34,6 +35,11 @@ export async function guildRoutes(app: FastifyInstance) {
   app.get("/guilds/:guildId", (req) => {
     const { guildId } = guildParams.parse(req.params);
     return guildService.detail(req.userId, guildId);
+  });
+
+  app.post("/guilds/:guildId/lidas", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    return messageService.marcarServidorLido(req.userId, guildId);
   });
 
   app.put("/guilds/:guildId/verificacao", async (req) => {
