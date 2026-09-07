@@ -18,6 +18,7 @@ import {
   MessageSquare,
   MoreHorizontal,
   Pencil,
+  Plus,
   SendHorizontal,
   ShieldAlert,
   User,
@@ -263,6 +264,15 @@ const ProfileCard: React.FC<{
     removeFriend.isPending ||
     openDm.isPending;
 
+  /*
+    Bot não faz amizade, não se ignora e não se bloqueia: o que se faz com um
+    bot é adicionar a um servidor. E a conta da casa é menos ainda — dela só
+    se abre a conversa, que é onde os avisos do app chegam.
+  */
+  const ehSistema = Boolean(perfil.sistema);
+  const ehBot = perfil.isBot && !ehSistema;
+  const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema;
+
   const acoes = (
     <>
       {perfil.friendship === "SELF" ? (
@@ -271,13 +281,25 @@ const ProfileCard: React.FC<{
         </Button>
       ) : (
         <>
-          {perfil.friendship === "ACCEPTED" && (
+          {podeConversar && (
             <Button data-gc="perfil.user-profile-popover.button--2"
               size="sm"
               onClick={() => void conversar()}
               disabled={ocupado}
             >
               <MessageSquare data-gc="perfil.user-profile-popover.message-square" size={14} /> {t("perfil.mensagem")}
+            </Button>
+          )}
+
+          {ehBot && perfil.botId && (
+            <Button data-gc="perfil.user-profile-popover.button--3"
+              size="sm"
+              onClick={() => {
+                onFechar();
+                navigate(`/bots/${perfil.botId}/adicionar`);
+              }}
+            >
+              <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
             </Button>
           )}
 
@@ -299,14 +321,16 @@ const ProfileCard: React.FC<{
             </BotaoRedondo>
           )}
 
-          <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade"
-            perfil={perfil}
-            onAdicionar={() => requestFriend.mutate(perfil.username)}
-          />
+          {!ehBot && !ehSistema && (
+            <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade"
+              perfil={perfil}
+              onAdicionar={() => requestFriend.mutate(perfil.username)}
+            />
+          )}
 
           <DropdownMenu data-gc="perfil.user-profile-popover.dropdown-menu">
             <DropdownMenuTrigger data-gc="perfil.user-profile-popover.dropdown-menu-trigger" asChild>
-              <button data-gc="perfil.user-profile-popover.button--3"
+              <button data-gc="perfil.user-profile-popover.button--4"
                 aria-label={t("perfil.mais")}
                 className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
               >
@@ -315,7 +339,7 @@ const ProfileCard: React.FC<{
             </DropdownMenuTrigger>
 
             <DropdownMenuContent data-gc="perfil.user-profile-popover.dropdown-menu-content" align="end">
-              {perfil.friendship === "ACCEPTED" && (
+              {podeConversar && (
                 <>
                   <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void conversar()}>
                     {t("perfil.abrirConversa")} <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} />
@@ -328,6 +352,8 @@ const ProfileCard: React.FC<{
                 {t("perfil.verCompleto")} <User data-gc="perfil.user-profile-popover.user" size={14} />
               </DropdownMenuItem>
 
+              {!ehSistema && (
+                <>
               <DropdownMenuSub data-gc="perfil.user-profile-popover.dropdown-menu-sub">
                 <DropdownMenuSubTrigger data-gc="perfil.user-profile-popover.dropdown-menu-sub-trigger">
                   {t("perfil.convidarParaServidor")}
@@ -368,6 +394,9 @@ const ProfileCard: React.FC<{
                 >
                   {t("perfil.amizade.desfazer")} <UserX data-gc="perfil.user-profile-popover.user-x" size={14} />
                 </DropdownMenuItem>
+              )}
+
+                </>
               )}
 
               <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--3" />
@@ -435,6 +464,8 @@ const ProfileCard: React.FC<{
         id={perfil.id}
         displayName={perfil.displayName}
         username={perfil.username}
+        ehBot={perfil.isBot}
+        ehSistema={perfil.sistema}
         avatarUrl={perfil.avatarUrl}
         status={perfil.status}
         perfil={perfil.perfil}
@@ -480,7 +511,7 @@ const ProfileCard: React.FC<{
                   <p data-gc="perfil.user-profile-popover.p" className="mb-1 text-center text-xs text-ink-faint">
                     {t("perfil.amizade.teMandouPedido")}
                   </p>
-                  <Button data-gc="perfil.user-profile-popover.button--4"
+                  <Button data-gc="perfil.user-profile-popover.button--5"
                     variant="success"
                     onClick={() =>
                       perfil.friendshipId &&
@@ -558,7 +589,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
           disabled={enviando}
           className="border-0 bg-transparent text-sm"
         />
-        <button data-gc="perfil.user-profile-popover.button--5"
+        <button data-gc="perfil.user-profile-popover.button--6"
           onClick={() => void enviar()}
           disabled={!texto.trim() || enviando}
           aria-label={t("perfil.recado.enviar")}

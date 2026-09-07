@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Atverti pokalbį",
   verCompleto: "Peržiūrėti visą profilį",
   convidarParaServidor: "Pakviesti į serverį",
+  adicionarAoServidor: "Pridėti į serverį",
   semServidores: "Neturite serverių",
   conviteEnviado: "Kvietimas išsiųstas {{nome}}.",
   moderador: "Atverti moderatoriaus rodinyje",

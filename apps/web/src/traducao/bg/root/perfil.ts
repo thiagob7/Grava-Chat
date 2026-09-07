@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Отваряне на разговора",
   verCompleto: "Пълен профил",
   convidarParaServidor: "Покани в сървъра",
+  adicionarAoServidor: "Добавяне към сървър",
   semServidores: "Нямаш сървъри",
   conviteEnviado: "Поканата е изпратена до {{nome}}.",
   moderador: "Отваряне в изглед на модератор",

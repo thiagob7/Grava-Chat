@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Avaa keskustelu",
   verCompleto: "Näytä koko profiili",
   convidarParaServidor: "Kutsu palvelimelle",
+  adicionarAoServidor: "Lisää palvelimelle",
   semServidores: "Sinulla ei ole palvelimia",
   conviteEnviado: "Kutsu lähetetty käyttäjälle {{nome}}.",
   moderador: "Avaa valvojanäkymässä",

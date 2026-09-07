@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "대화 열기",
   verCompleto: "전체 프로필 보기",
   convidarParaServidor: "서버에 초대",
+  adicionarAoServidor: "서버에 추가",
   semServidores: "서버가 없습니다",
   conviteEnviado: "{{nome}} 님에게 초대를 보냈습니다.",
   moderador: "관리자 보기로 열기",

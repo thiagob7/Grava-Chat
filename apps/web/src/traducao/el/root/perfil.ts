@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Άνοιγμα συνομιλίας",
   verCompleto: "Πλήρες προφίλ",
   convidarParaServidor: "Πρόσκληση στον διακομιστή",
+  adicionarAoServidor: "Προσθήκη σε διακομιστή",
   semServidores: "Δεν έχεις διακομιστές",
   conviteEnviado: "Η πρόσκληση στάλθηκε στον/στην {{nome}}.",
   moderador: "Άνοιγμα σε προβολή συντονιστή",

@@ -180,7 +180,13 @@ export const friendshipService = {
     const relacao = await friendshipRepository.findBetween(userId, outroId);
 
     if (relacao?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
-    if (!relacao || relacao.status !== "ACCEPTED") {
+
+    /// A conta da casa não tem amigos e não precisa: a conversa com ela é o
+    /// lugar dos avisos do app, e qualquer um pode abrir.
+    const outro = await userRepository.findById(outroId);
+    const ehACasa = Boolean(outro?.sistema);
+
+    if (!ehACasa && (!relacao || relacao.status !== "ACCEPTED")) {
       throw new AppError("Vocês precisam ser amigos para conversar");
     }
 

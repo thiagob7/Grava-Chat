@@ -30,6 +30,8 @@ interface ProfileCardVisualProps {
   id: string;
   displayName: string;
   username: string;
+  ehBot?: boolean;
+  ehSistema?: boolean;
   avatarUrl: string | null;
   status?: PresenceStatus;
   perfil?: EstiloDePerfil | null;
@@ -97,6 +99,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   id,
   displayName,
   username,
+  ehBot = false,
+  ehSistema = false,
   avatarUrl,
   status,
   perfil,
@@ -305,6 +309,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     corDoCargo={corDoCargo}
                     tamanho="md"
                     animar
+                    ehBot={ehBot}
+                    ehSistema={ehSistema}
                   />
                 </button>
               ) : (
@@ -314,6 +320,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   corDoCargo={corDoCargo}
                   tamanho="md"
                   animar
+                  ehBot={ehBot}
+                  ehSistema={ehSistema}
                 />
               )}
             </p>

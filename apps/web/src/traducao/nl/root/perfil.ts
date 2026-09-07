@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Gesprek openen",
   verCompleto: "Volledig profiel bekijken",
   convidarParaServidor: "Uitnodigen voor de server",
+  adicionarAoServidor: "Toevoegen aan server",
   semServidores: "Je hebt geen servers",
   conviteEnviado: "Uitnodiging naar {{nome}} gestuurd.",
   moderador: "Openen in moderatorweergave",

@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Deschide conversația",
   verCompleto: "Vezi profilul complet",
   convidarParaServidor: "Invită pe server",
+  adicionarAoServidor: "Adaugă pe server",
   semServidores: "Nu ai niciun server",
   conviteEnviado: "Invitație trimisă către {{nome}}.",
   moderador: "Deschide în vizualizarea de moderator",

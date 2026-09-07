@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Öppna samtalet",
   verCompleto: "Se hela profilen",
   convidarParaServidor: "Bjud in till servern",
+  adicionarAoServidor: "Lägg till på server",
   semServidores: "Du har inga servrar",
   conviteEnviado: "Inbjudan skickad till {{nome}}.",
   moderador: "Öppna i moderatorvyn",

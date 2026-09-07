@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "เปิดการสนทนา",
   verCompleto: "ดูโปรไฟล์เต็ม",
   convidarParaServidor: "เชิญเข้าเซิร์ฟเวอร์",
+  adicionarAoServidor: "เพิ่มไปยังเซิร์ฟเวอร์",
   semServidores: "คุณยังไม่มีเซิร์ฟเวอร์",
   conviteEnviado: "ส่งคำเชิญให้ {{nome}} แล้ว",
   moderador: "เปิดในมุมมองผู้ดูแล",

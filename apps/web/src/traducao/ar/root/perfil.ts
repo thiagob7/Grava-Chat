@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "فتح المحادثة",
   verCompleto: "عرض الملف الكامل",
   convidarParaServidor: "دعوة إلى الخادم",
+  adicionarAoServidor: "إضافة إلى الخادم",
   semServidores: "ليس لديك خوادم",
   conviteEnviado: "أُرسلت الدعوة إلى {{nome}}.",
   moderador: "فتح في عرض المشرف",

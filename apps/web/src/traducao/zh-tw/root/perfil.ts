@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "開啟對話",
   verCompleto: "查看完整資料",
   convidarParaServidor: "邀請到伺服器",
+  adicionarAoServidor: "新增至伺服器",
   semServidores: "你還沒有伺服器",
   conviteEnviado: "已向 {{nome}} 發送邀請。",
   moderador: "以管理員檢視開啟",

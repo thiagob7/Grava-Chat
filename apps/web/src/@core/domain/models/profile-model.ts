@@ -14,6 +14,8 @@ export interface ProfileModel extends PublicUser {
   perfil: EstiloDePerfil | null;
   etiquetaDoServidor: { guildId: string; tag: string; tagIcon: string | null } | null;
   statusPersonalizado: StatusPersonalizado | null;
+  /// O bot por trás da conta, quando dá para adicionar a um servidor.
+  botId: string | null;
   createdAt: string;
   friendship: ProfileFriendship;
   friendshipId: string | null;

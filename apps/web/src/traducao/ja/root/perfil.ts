@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "会話を開く",
   verCompleto: "プロフィール全体を見る",
   convidarParaServidor: "サーバーに招待",
+  adicionarAoServidor: "サーバーに追加",
   semServidores: "サーバーがありません",
   conviteEnviado: "{{nome}} さんに招待を送りました。",
   moderador: "モデレーター表示で開く",

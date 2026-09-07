@@ -111,6 +111,8 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
             tamanho="md"
             animar
             fundo="#27272a"
+            ehBot={perfil.isBot}
+            ehSistema={perfil.sistema}
           />
         </DialogTitle>
         <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{perfil.username}</DialogDescription>

@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Buka percakapan",
   verCompleto: "Lihat profil lengkap",
   convidarParaServidor: "Undang ke server",
+  adicionarAoServidor: "Tambahkan ke server",
   semServidores: "Kamu belum punya server",
   conviteEnviado: "Undangan dikirim ke {{nome}}.",
   moderador: "Buka di tampilan moderator",

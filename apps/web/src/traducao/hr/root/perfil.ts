@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Otvori razgovor",
   verCompleto: "Pogledaj cijeli profil",
   convidarParaServidor: "Pozovi na poslužitelj",
+  adicionarAoServidor: "Dodaj na poslužitelj",
   semServidores: "Nemaš poslužitelja",
   conviteEnviado: "Pozivnica poslana korisniku {{nome}}.",
   moderador: "Otvori u prikazu moderatora",

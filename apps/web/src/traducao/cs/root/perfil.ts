@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Otevřít konverzaci",
   verCompleto: "Zobrazit celý profil",
   convidarParaServidor: "Pozvat na server",
+  adicionarAoServidor: "Přidat na server",
   semServidores: "Nemáš žádné servery",
   conviteEnviado: "Pozvánka odeslána uživateli {{nome}}.",
   moderador: "Otevřít v zobrazení moderátora",

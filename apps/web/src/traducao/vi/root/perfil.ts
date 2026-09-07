@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Mở cuộc trò chuyện",
   verCompleto: "Xem hồ sơ đầy đủ",
   convidarParaServidor: "Mời vào máy chủ",
+  adicionarAoServidor: "Thêm vào máy chủ",
   semServidores: "Bạn chưa có máy chủ nào",
   conviteEnviado: "Đã gửi lời mời tới {{nome}}.",
   moderador: "Mở ở chế độ kiểm duyệt",

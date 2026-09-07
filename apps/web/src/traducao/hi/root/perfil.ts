@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "बातचीत खोलें",
   verCompleto: "पूरी प्रोफ़ाइल देखें",
   convidarParaServidor: "सर्वर पर आमंत्रित करें",
+  adicionarAoServidor: "सर्वर में जोड़ें",
   semServidores: "आपके पास कोई सर्वर नहीं है",
   conviteEnviado: "{{nome}} को आमंत्रण भेजा गया।",
   moderador: "मॉडरेटर दृश्य में खोलें",

@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "פתיחת השיחה",
   verCompleto: "הצגת הפרופיל המלא",
   convidarParaServidor: "הזמנה לשרת",
+  adicionarAoServidor: "הוספה לשרת",
   semServidores: "אין לך שרתים",
   conviteEnviado: "ההזמנה נשלחה אל {{nome}}.",
   moderador: "פתיחה בתצוגת מנחה",

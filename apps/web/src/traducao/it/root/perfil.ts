@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Apri la conversazione",
   verCompleto: "Vedi il profilo completo",
   convidarParaServidor: "Invita nel server",
+  adicionarAoServidor: "Aggiungi al server",
   semServidores: "Non hai server",
   conviteEnviado: "Invito inviato a {{nome}}.",
   moderador: "Apri nella vista moderatore",

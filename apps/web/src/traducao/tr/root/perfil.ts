@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Sohbeti aç",
   verCompleto: "Tam profili gör",
   convidarParaServidor: "Sunucuya davet et",
+  adicionarAoServidor: "Sunucuya ekle",
   semServidores: "Hiç sunucun yok",
   conviteEnviado: "{{nome}} kişisine davet gönderildi.",
   moderador: "Moderatör görünümünde aç",

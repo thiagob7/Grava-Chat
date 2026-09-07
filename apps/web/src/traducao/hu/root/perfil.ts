@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Beszélgetés megnyitása",
   verCompleto: "Teljes profil megtekintése",
   convidarParaServidor: "Meghívás a szerverre",
+  adicionarAoServidor: "Hozzáadás a szerverhez",
   semServidores: "Nincs szervered",
   conviteEnviado: "Meghívó elküldve neki: {{nome}}.",
   moderador: "Megnyitás moderátor nézetben",

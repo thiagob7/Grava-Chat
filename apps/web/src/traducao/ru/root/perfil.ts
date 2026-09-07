@@ -5,6 +5,7 @@ export const perfil = {
   abrirConversa: "Открыть переписку",
   verCompleto: "Открыть полный профиль",
   convidarParaServidor: "Пригласить на сервер",
+  adicionarAoServidor: "Добавить на сервер",
   semServidores: "У вас нет серверов",
   conviteEnviado: "Приглашение отправлено {{nome}}.",
   moderador: "Открыть в режиме модератора",
