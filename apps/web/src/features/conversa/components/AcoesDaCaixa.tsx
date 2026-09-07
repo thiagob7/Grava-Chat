@@ -4,6 +4,7 @@ import { GifIcon, ImageIcon, Sticker, Smiley } from "@phosphor-icons/react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { ATALHOS, escreverCombo } from "~/features/configuracoes/lib/atalhos";
 import { cn } from "~/lib/utils";
+import { classeDoBotaoDaCaixa } from "~/components/ui/button";
 
 /*
   Os botões do canto direito da caixa.
@@ -28,8 +29,7 @@ export const BotaoDaCaixa: React.FC<{
       aria-label={rotulo}
       aria-pressed={ativo}
       className={cn(
-        "flex size-8 shrink-0 items-center justify-center rounded-md transition",
-        "disabled:cursor-not-allowed disabled:opacity-30",
+        classeDoBotaoDaCaixa,
         ativo ? "bg-hover text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
       )}
     >

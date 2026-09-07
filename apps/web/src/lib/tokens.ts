@@ -326,6 +326,13 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         dica: "menor deixa a conversa mais densa",
       },
       { nome: "--textarea-line-height", rotulo: "Altura de linha da caixa de escrever" },
+      {
+        nome: "--textarea-button-height",
+        rotulo: "Tamanho dos botões da caixa de escrever",
+        dica: "mais, fonte, GIF, imagem, figurinha, emoji e enviar, todos juntos",
+      },
+      { nome: "--textarea-button-icon-size", rotulo: "Ícone dos botões da caixa de escrever" },
+      { nome: "--composer-action-gap", rotulo: "Espaço entre os botões da caixa de escrever" },
     ],
   },
   {

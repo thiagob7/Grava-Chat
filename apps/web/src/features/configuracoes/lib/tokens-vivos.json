@@ -43,6 +43,7 @@
   "--color-surface-4",
   "--color-trilho",
   "--color-veu",
+  "--composer-action-gap",
   "--focus-primary",
   "--font-mono",
   "--font-sans",
@@ -80,6 +81,8 @@
   "--text-sm",
   "--text-xl",
   "--text-xs",
+  "--textarea-button-height",
+  "--textarea-button-icon-size",
   "--textarea-line-height",
   "--user-select"
 ]

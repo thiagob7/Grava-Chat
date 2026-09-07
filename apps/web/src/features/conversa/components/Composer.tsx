@@ -17,6 +17,7 @@ import { CreatePollModal } from "~/features/conversa/components/CreatePollModal"
 import { ExpressionPicker, type Aba } from "~/features/expressao/components/ExpressionPicker";
 import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
 import { AcoesDaCaixa } from "~/features/conversa/components/AcoesDaCaixa";
+import { classeDoBotaoDaCaixa } from "~/components/ui/button";
 import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
 import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
 import {
@@ -500,7 +501,8 @@ export const Composer: React.FC<ComposerProps> = ({
                 aria-label={t("conversa.caixa.mais")}
                 className={cn(
                   flxCls("botaoDaCaixa"),
-                  "py-3 text-ink-muted transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-30",
+                  classeDoBotaoDaCaixa,
+                  "text-ink-muted hover:bg-hover hover:text-ink",
                 )}
               >
                 <Plus data-gc="conversa.composer.plus" size={22} />
@@ -656,7 +658,7 @@ export const Composer: React.FC<ComposerProps> = ({
           />
           </div>
 
-          <div data-gc="conversa.composer.div--7" {...flx("botoesDaCaixa", "mb-1.5 flex shrink-0 items-center gap-0.5")}>
+          <div data-gc="conversa.composer.div--7" {...flx("botoesDaCaixa", "flex shrink-0 items-center gap-[var(--composer-action-gap)]")}>
             <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
             <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}
@@ -674,7 +676,7 @@ export const Composer: React.FC<ComposerProps> = ({
               onOpenChange={(aberto) => setSeletor(aberto ? (seletor ?? "emoji") : null)}
             >
               <PopoverTrigger data-gc="conversa.composer.popover-trigger" asChild>
-                <span data-gc="conversa.composer.span--4" className="flex items-center gap-0.5">
+                <span data-gc="conversa.composer.span--4" className="flex items-center gap-[var(--composer-action-gap)]">
                   <AcoesDaCaixa data-gc="conversa.composer.acoes-da-caixa"
                     podeAnexar={podeAnexar}
                     aberto={seletor}
@@ -710,7 +712,8 @@ export const Composer: React.FC<ComposerProps> = ({
                   aria-label={t("conversa.caixa.enviar")}
                   className={cn(
                     flxCls("botaoDaCaixa"),
-                    "flex size-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-hover hover:text-brand disabled:opacity-30",
+                    classeDoBotaoDaCaixa,
+                    "text-ink-muted hover:bg-hover hover:text-brand",
                   )}
                 >
                   <Send data-gc="conversa.composer.send" size={20} />

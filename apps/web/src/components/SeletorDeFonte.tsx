@@ -12,6 +12,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { FONTES } from "~/features/perfil/lib/catalogo";
 import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
+import { classeDoBotaoDaCaixa } from "~/components/ui/button";
 
 const CHAVE = "gravae:fonte-da-mensagem";
 
@@ -58,7 +59,7 @@ export const SeletorDeFonte: React.FC<SeletorDeFonteProps> = ({
           <button data-gc="seletor-de-fonte.button"
             aria-label="Fonte da mensagem"
             className={cn(
-              "flex size-8 shrink-0 items-center justify-center rounded-md transition disabled:cursor-not-allowed disabled:opacity-50",
+              classeDoBotaoDaCaixa,
               fonte === "padrao"
                 ? "text-ink-muted hover:bg-hover hover:text-ink"
                 : "text-brand hover:bg-hover",
