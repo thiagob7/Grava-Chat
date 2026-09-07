@@ -21,16 +21,30 @@ const ControlesDaJanela: React.FC = () => {
   const [maximizada, setMaximizada] = React.useState(false);
   const janela = window.gravae?.janela;
 
+  /*
+    A casca do desktop pode ser mais velha que o front — ela se atualiza no
+    ritmo dela, e o front chega pela rede. Sem estas perguntas, uma casca de
+    antes desta ponte derrubava a tela inteira em vez de simplesmente não
+    mostrar os botões.
+  */
+  const completa =
+    !!janela?.molduraPropria &&
+    !!janela.estaMaximizada &&
+    !!janela.aoMudarMaximizada &&
+    !!janela.minimizar &&
+    !!janela.alternarMaximizada &&
+    !!janela.fechar;
+
   React.useEffect(() => {
-    if (!janela) return;
+    if (!completa || !janela?.molduraPropria) return;
 
     void janela.molduraPropria().then(setPropria);
-    void janela.estaMaximizada().then(setMaximizada);
+    void janela.estaMaximizada?.().then(setMaximizada);
 
-    return janela.aoMudarMaximizada(setMaximizada);
-  }, [janela]);
+    return janela.aoMudarMaximizada?.(setMaximizada);
+  }, [completa, janela]);
 
-  if (!propria || !janela) return null;
+  if (!completa || !propria || !janela) return null;
 
   const botao = cn(
     flxCls("botaoDaJanela"),
@@ -40,7 +54,7 @@ const ControlesDaJanela: React.FC = () => {
 
   return (
     <div data-gc="app.barra-de-titulo.div" className={cn(flxCls("controlesDaJanela"), "absolute right-0 top-0 flex")}>
-      <button data-gc="app.barra-de-titulo.button" type="button" aria-label="Minimizar" className={botao} onClick={() => void janela.minimizar()}>
+      <button data-gc="app.barra-de-titulo.button" type="button" aria-label="Minimizar" className={botao} onClick={() => void janela.minimizar?.()}>
         <Minus data-gc="app.barra-de-titulo.minus" size={14} />
       </button>
 
@@ -48,7 +62,7 @@ const ControlesDaJanela: React.FC = () => {
         type="button"
         aria-label={maximizada ? "Restaurar" : "Maximizar"}
         className={botao}
-        onClick={() => void janela.alternarMaximizada()}
+        onClick={() => void janela.alternarMaximizada?.()}
       >
         {maximizada ? <CopySimple data-gc="app.barra-de-titulo.copy-simple" size={13} /> : <Square data-gc="app.barra-de-titulo.square" size={12} />}
       </button>
@@ -57,7 +71,7 @@ const ControlesDaJanela: React.FC = () => {
         type="button"
         aria-label="Fechar"
         className={cn(botao, "hover:bg-danger hover:text-sobre-marca")}
-        onClick={() => void janela.fechar()}
+        onClick={() => void janela.fechar?.()}
       >
         <X data-gc="app.barra-de-titulo.x" size={14} />
       </button>

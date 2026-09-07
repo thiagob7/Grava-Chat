@@ -62,14 +62,20 @@ export interface PonteJanela {
     No macOS quem desenha continua sendo o sistema — lá a janela é
     `hiddenInset` e as bolinhas são as de sempre. Fora dele a janela vai sem
     moldura, e estes três são os únicos botões que existem.
+
+    OPCIONAIS de propósito, e não por preguiça de tipar: o front é servido pela
+    rede e a casca que o carrega pode ser mais velha que ele. Uma casca de
+    antes desta ponte não tem estes métodos, e chamar sem conferir derruba a
+    tela inteira — foi o que aconteceu. Marcados como opcionais, o TypeScript
+    obriga quem chama a perguntar antes.
   */
-  minimizar: () => Promise<void>;
-  alternarMaximizada: () => Promise<void>;
-  fechar: () => Promise<void>;
+  minimizar?: () => Promise<void>;
+  alternarMaximizada?: () => Promise<void>;
+  fechar?: () => Promise<void>;
   /// Se a moldura é nossa. `false` no macOS.
-  molduraPropria: () => Promise<boolean>;
-  estaMaximizada: () => Promise<boolean>;
-  aoMudarMaximizada: (callback: (maximizada: boolean) => void) => () => void;
+  molduraPropria?: () => Promise<boolean>;
+  estaMaximizada?: () => Promise<boolean>;
+  aoMudarMaximizada?: (callback: (maximizada: boolean) => void) => () => void;
 }
 
 export interface PonteLinks {
