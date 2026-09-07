@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "伺服器設定",
+  selos: {
+    verificada: "已驗證社群",
+    detectavel: "可探索社群",
+  },
   auditoria: {
     todasAsAcoes: "所有操作",
     todosOsUsuarios: "所有使用者",

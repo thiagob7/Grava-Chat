@@ -118,7 +118,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   className={cn(flxCls("barraDaPilulaDoServidor"), "block size-full rounded-r-full bg-pilula")}
                 />
               </span>
-              <DicaDoServidor data-gc="servidor.guild-rail.dica-do-servidor" nome={guild.name} vozes={vozes[guild.id] ?? []}>
+              <DicaDoServidor data-gc="servidor.guild-rail.dica-do-servidor" nome={guild.name} verificada={guild.verificada} detectavel={guild.detectavel} vozes={vozes[guild.id] ?? []}>
                 {/*
                   Link, e não botão — a mesma decisão que a referência tomou.
 

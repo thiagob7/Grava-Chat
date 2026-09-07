@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "서버 설정",
+  selos: {
+    verificada: "인증된 커뮤니티",
+    detectavel: "검색 가능한 커뮤니티",
+  },
   auditoria: {
     todasAsAcoes: "모든 작업",
     todosOsUsuarios: "모든 사용자",

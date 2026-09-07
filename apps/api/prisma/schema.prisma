@@ -271,6 +271,8 @@ model Guild {
   /// propósito: os servidores criados antes disto não têm o campo no
   /// documento, e ausente vale como ligado.
   descobrivel Boolean? @default(true)
+  /// o selo "comunidade verificada": só a administração do app marca
+  verificada  Boolean?
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
   createdAt DateTime @default(now())

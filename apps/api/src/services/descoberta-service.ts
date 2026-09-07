@@ -51,6 +51,7 @@ export const descobertaService = {
           membros: guild._count.members,
           online: membros.filter((id) => presenca[id] && presenca[id] !== "OFFLINE").length,
           jaSouMembro: membros.includes(userId),
+          verificada: Boolean(guild.verificada),
         };
       })
       .sort((a, b) => b.membros - a.membros);

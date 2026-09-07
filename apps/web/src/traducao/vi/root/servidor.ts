@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Cài đặt máy chủ",
+  selos: {
+    verificada: "Cộng đồng đã xác minh",
+    detectavel: "Cộng đồng có thể khám phá",
+  },
   auditoria: {
     todasAsAcoes: "Mọi hành động",
     todosOsUsuarios: "Mọi người dùng",

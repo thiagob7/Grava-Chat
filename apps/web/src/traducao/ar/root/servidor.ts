@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "إعدادات الخادم",
+  selos: {
+    verificada: "مجتمع موثّق",
+    detectavel: "مجتمع قابل للاكتشاف",
+  },
   auditoria: {
     todasAsAcoes: "كل الإجراءات",
     todosOsUsuarios: "كل المستخدمين",

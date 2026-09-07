@@ -5,6 +5,10 @@ export const servidor = {
     emChamada: "{{count}} em chamada",
   },
   titulo: "Configurações do servidor",
+  selos: {
+    verificada: "Comunidade verificada",
+    detectavel: "Comunidade detectável",
+  },
 
   abas: {
     expressoes: "Expressões",

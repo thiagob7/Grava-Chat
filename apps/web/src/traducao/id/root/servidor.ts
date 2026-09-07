@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Pengaturan server",
+  selos: {
+    verificada: "Komunitas terverifikasi",
+    detectavel: "Komunitas dapat ditemukan",
+  },
   auditoria: {
     todasAsAcoes: "Semua tindakan",
     todosOsUsuarios: "Semua pengguna",

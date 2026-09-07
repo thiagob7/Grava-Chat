@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "सर्वर सेटिंग्स",
+  selos: {
+    verificada: "सत्यापित समुदाय",
+    detectavel: "खोजने योग्य समुदाय",
+  },
   auditoria: {
     todasAsAcoes: "सभी कार्रवाइयाँ",
     todosOsUsuarios: "सभी उपयोगकर्ता",

@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "ตั้งค่าเซิร์ฟเวอร์",
+  selos: {
+    verificada: "ชุมชนที่ยืนยันแล้ว",
+    detectavel: "ชุมชนที่ค้นพบได้",
+  },
   auditoria: {
     todasAsAcoes: "ทุกการกระทำ",
     todosOsUsuarios: "ผู้ใช้ทั้งหมด",

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
+import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
@@ -79,15 +80,18 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
         )}
 
         <div data-gc="servidor.cartao-de-convite.div--5" className="min-w-0 flex-1">
-          <p data-gc="servidor.cartao-de-convite.p--3" className="truncate font-semibold">{guild.name}</p>
+          <p data-gc="servidor.cartao-de-convite.p--3" className="flex items-center gap-1.5 font-semibold">
+            <span data-gc="servidor.cartao-de-convite.span--2" className="truncate">{guild.name}</span>
+            <SeloDaComunidade data-gc="servidor.cartao-de-convite.selo-da-comunidade" verificada={guild.verificada} detectavel={guild.detectavel} tamanho={15} />
+          </p>
 
           <p data-gc="servidor.cartao-de-convite.p--4" className="mt-0.5 flex items-center gap-3 text-xs text-ink-muted">
-            <span data-gc="servidor.cartao-de-convite.span--2" className="flex items-center gap-1.5">
-              <span data-gc="servidor.cartao-de-convite.span--3" className="size-2 rounded-full bg-online" />
+            <span data-gc="servidor.cartao-de-convite.span--3" className="flex items-center gap-1.5">
+              <span data-gc="servidor.cartao-de-convite.span--4" className="size-2 rounded-full bg-online" />
               {guild.onlineCount} online
             </span>
-            <span data-gc="servidor.cartao-de-convite.span--4" className="flex items-center gap-1.5">
-              <span data-gc="servidor.cartao-de-convite.span--5" className="size-2 rounded-full bg-ink-faint" />
+            <span data-gc="servidor.cartao-de-convite.span--5" className="flex items-center gap-1.5">
+              <span data-gc="servidor.cartao-de-convite.span--6" className="size-2 rounded-full bg-ink-faint" />
               {guild.memberCount} {guild.memberCount === 1 ? "membro" : "membros"}
             </span>
           </p>

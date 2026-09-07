@@ -1,6 +1,7 @@
 import React from "react";
 import { Check, Loader2 } from "lucide-react";
 import type { ComunidadeDescoberta } from "@gravae/shared";
+import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
@@ -42,19 +43,22 @@ export const CartaoDeComunidade: React.FC<CartaoDeComunidadeProps> = ({
     </div>
 
     <div data-gc="descoberta.cartao-de-comunidade.div--2" className="flex min-h-0 flex-1 flex-col p-4 pt-7">
-      <h3 data-gc="descoberta.cartao-de-comunidade.h3" className="truncate text-sm font-semibold">{comunidade.name}</h3>
+      <h3 data-gc="descoberta.cartao-de-comunidade.h3" className="flex items-center gap-1.5 text-sm font-semibold">
+        <span data-gc="descoberta.cartao-de-comunidade.span--2" className="truncate">{comunidade.name}</span>
+        <SeloDaComunidade data-gc="descoberta.cartao-de-comunidade.selo-da-comunidade" verificada={comunidade.verificada} detectavel tamanho={15} />
+      </h3>
 
       {comunidade.description && (
         <p data-gc="descoberta.cartao-de-comunidade.p" className="mt-1 line-clamp-4 text-xs text-ink-muted">{comunidade.description}</p>
       )}
 
       <div data-gc="descoberta.cartao-de-comunidade.div--3" className="mt-auto flex items-center gap-3 pt-4 text-xs text-ink-faint">
-        <span data-gc="descoberta.cartao-de-comunidade.span--2" className="flex items-center gap-1.5">
-          <span data-gc="descoberta.cartao-de-comunidade.span--3" className="size-1.5 rounded-full bg-online" />
+        <span data-gc="descoberta.cartao-de-comunidade.span--3" className="flex items-center gap-1.5">
+          <span data-gc="descoberta.cartao-de-comunidade.span--4" className="size-1.5 rounded-full bg-online" />
           {numero.format(comunidade.online)} online
         </span>
-        <span data-gc="descoberta.cartao-de-comunidade.span--4" className="flex items-center gap-1.5">
-          <span data-gc="descoberta.cartao-de-comunidade.span--5" className="size-1.5 rounded-full bg-ink-faint" />
+        <span data-gc="descoberta.cartao-de-comunidade.span--5" className="flex items-center gap-1.5">
+          <span data-gc="descoberta.cartao-de-comunidade.span--6" className="size-1.5 rounded-full bg-ink-faint" />
           {numero.format(comunidade.membros)} membros
         </span>
       </div>

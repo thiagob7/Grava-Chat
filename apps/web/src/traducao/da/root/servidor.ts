@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverindstillinger",
+  selos: {
+    verificada: "Verificeret fællesskab",
+    detectavel: "Synligt fællesskab",
+  },
   auditoria: {
     todasAsAcoes: "Alle handlinger",
     todosOsUsuarios: "Alle brugere",

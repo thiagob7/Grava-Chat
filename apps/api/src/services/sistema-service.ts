@@ -77,6 +77,10 @@ export const sistemaService = {
       log.info(`servidor de temas: "${NOME_DO_SERVIDOR}" criado para ${dono.username}`);
     }
 
+    if (!guild.verificada) {
+      guild = await prisma.guild.update({ where: { id: guild.id }, data: { verificada: true } });
+    }
+
     let canal = await prisma.channel.findFirst({
       where: { guildId: guild.id, name: NOME_DO_CANAL, type: "TEXT" },
     });

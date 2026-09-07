@@ -42,6 +42,7 @@ import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
+import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface ChannelSidebarProps {
@@ -183,6 +184,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
                 )}
               >
+                <SeloDaComunidade data-gc="servidor.channel-sidebar.selo-da-comunidade"
+                  verificada={detail?.guild.verificada}
+                  detectavel={detail?.guild.detectavel}
+                  className={cn(comFaixa && "drop-shadow-[0_1px_2px_rgb(0_0_0/0.8)]")}
+                />
                 <h1 data-gc="servidor.channel-sidebar.h1"
                   className={cn(
                     "truncate font-semibold",

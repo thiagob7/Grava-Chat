@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Sunucu ayarları",
+  selos: {
+    verificada: "Doğrulanmış topluluk",
+    detectavel: "Keşfedilebilir topluluk",
+  },
   auditoria: {
     todasAsAcoes: "Tüm işlemler",
     todosOsUsuarios: "Tüm kullanıcılar",

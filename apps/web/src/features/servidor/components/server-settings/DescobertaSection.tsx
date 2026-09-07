@@ -6,7 +6,10 @@ import {
   type CategoriaDeComunidade,
 } from "@gravae/shared";
 
+import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
+import { useVerificarGuild } from "~/@core/application/queries/guild/use-verificar-guild";
+import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Label } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
@@ -17,6 +20,8 @@ const numero = new Intl.NumberFormat("pt-BR");
 
 export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) => {
   const salvar = useUpdateGuild();
+  const verificar = useVerificarGuild();
+  const admin = useMe(true).data?.admin === true;
 
   const [descobrivel, setDescobrivel] = useState(guild.descobrivel !== false);
   const [categoria, setCategoria] = useState<string>(guild.categoria ?? "");
@@ -67,7 +72,27 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
         <Switch data-gc="servidor.server-settings.descoberta-section.switch.set-descobrivel" checked={descobrivel} onCheckedChange={setDescobrivel} />
       </div>
 
-      <div data-gc="servidor.server-settings.descoberta-section.div--5" className="mt-6">
+      {admin && (
+        <div data-gc="servidor.server-settings.descoberta-section.div--5" className="mt-6 flex items-start gap-4 rounded-lg border border-brand/40 bg-brand/5 p-4">
+          <div data-gc="servidor.server-settings.descoberta-section.div--6" className="min-w-0 flex-1">
+            <p data-gc="servidor.server-settings.descoberta-section.p--6" className="flex items-center gap-1.5 text-sm font-medium">
+              <SeloDaComunidade data-gc="servidor.server-settings.descoberta-section.selo-da-comunidade" verificada semDica />
+              Comunidade verificada
+            </p>
+            <p data-gc="servidor.server-settings.descoberta-section.p--7" className="mt-0.5 text-xs text-ink-faint">
+              Só a administração do app vê este interruptor. O selo aparece ao lado do nome do servidor em todo lugar.
+            </p>
+          </div>
+
+          <Switch data-gc="servidor.server-settings.descoberta-section.switch"
+            checked={guild.verificada === true}
+            disabled={verificar.isPending}
+            onCheckedChange={(valor) => verificar.mutate({ guildId: guild.id, verificada: valor })}
+          />
+        </div>
+      )}
+
+      <div data-gc="servidor.server-settings.descoberta-section.div--7" className="mt-6">
         <Label data-gc="servidor.server-settings.descoberta-section.label" htmlFor="categoria-do-servidor">Categoria</Label>
         <CampoSelect data-gc="servidor.server-settings.descoberta-section.campo-select.set-categoria"
           id="categoria-do-servidor"
@@ -81,7 +106,7 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
             })),
           ]}
         />
-        <p data-gc="servidor.server-settings.descoberta-section.p--6" className="mt-1.5 text-xs text-ink-faint">
+        <p data-gc="servidor.server-settings.descoberta-section.p--8" className="mt-1.5 text-xs text-ink-faint">
           É a aba em que ele aparece. Sem categoria ele continua em "Todos", mas
           some quando alguém filtra.
         </p>

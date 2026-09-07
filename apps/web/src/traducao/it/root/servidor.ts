@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Impostazioni del server",
+  selos: {
+    verificada: "Community verificata",
+    detectavel: "Community individuabile",
+  },
   auditoria: {
     todasAsAcoes: "Tutte le azioni",
     todosOsUsuarios: "Tutti gli utenti",

@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Налаштування сервера",
+  selos: {
+    verificada: "Перевірена спільнота",
+    detectavel: "Спільнота, яку можна знайти",
+  },
   auditoria: {
     todasAsAcoes: "Усі дії",
     todosOsUsuarios: "Усі користувачі",

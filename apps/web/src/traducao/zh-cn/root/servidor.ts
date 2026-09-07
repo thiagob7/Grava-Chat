@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "服务器设置",
+  selos: {
+    verificada: "已验证社区",
+    detectavel: "可发现社区",
+  },
   auditoria: {
     todasAsAcoes: "所有操作",
     todosOsUsuarios: "所有用户",

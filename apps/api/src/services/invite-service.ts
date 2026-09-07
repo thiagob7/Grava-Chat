@@ -1,3 +1,4 @@
+import { selosDoServidor } from "~/lib/selos.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { inviteRepository } from "~/repositories/invite-repository.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
@@ -27,6 +28,7 @@ export const inviteService = {
         bannerUrl: invite.guild.bannerUrl,
         description: invite.guild.description,
         memberCount: invite.guild._count.members,
+        ...selosDoServidor(invite.guild, invite.guild._count.members),
         onlineCount: Object.values(presenca).filter((estado) => estado !== "OFFLINE").length,
       },
       inviter: invite.inviter.displayName,

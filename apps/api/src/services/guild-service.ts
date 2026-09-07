@@ -1,3 +1,5 @@
+import { ehAdmin } from "~/lib/serialize.js";
+import { selosDoServidor } from "~/lib/selos.js";
 import { randomBytes } from "node:crypto";
 import {
   computePermissions,
@@ -6,7 +8,7 @@ import {
   has,
   type Permission,
 } from "@gravae/shared";
-import { AppError, NotFoundError } from "~/lib/http.js";
+import { AppError, NotFoundError, ForbiddenError } from "~/lib/http.js";
 import {
   guildRepository,
   memberRepository,
@@ -71,6 +73,7 @@ export const guildService = {
           memberCount: m.guild._count.members,
           tag: m.guild.tag,
           tagIcon: m.guild.tagIcon,
+          ...selosDoServidor(m.guild, m.guild._count.members),
           isOwner,
           permissions: [...computePermissions({ userId, isOwner, roles })],
         };
@@ -203,6 +206,7 @@ export const guildService = {
         descobrivel: guild.descobrivel,
         ownerId: guild.ownerId,
         memberCount: guild._count.members,
+        ...selosDoServidor(guild, guild._count.members),
       },
       permissions: [...computePermissions({ userId, isOwner, roles: meusCargos })],
       channelPermissions: Object.fromEntries(permissoesPorCanal),
@@ -280,7 +284,22 @@ export const guildService = {
       descobrivel: guild.descobrivel,
       ownerId: guild.ownerId,
       memberCount: guild._count.members,
+      ...selosDoServidor(guild, guild._count.members),
     };
+  },
+
+  /*
+    O selo "verificada" é marca da casa, não do dono: só quem administra o
+    app põe ou tira. Não passa pela permissão do servidor de propósito.
+  */
+  async verificar(adminId: string, guildId: string, verificada: boolean) {
+    const admin = await userRepository.findById(adminId);
+    if (!admin || !ehAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
+
+    await guildRepository.findByIdOrThrow(guildId);
+    const guild = await guildRepository.update(guildId, { verificada });
+
+    return { id: guild.id, verificada: Boolean(guild.verificada) };
   },
 
   async boasVindas(guildId: string, userId: string) {

@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Szerverbeállítások",
+  selos: {
+    verificada: "Ellenőrzött közösség",
+    detectavel: "Felfedezhető közösség",
+  },
   auditoria: {
     todasAsAcoes: "Minden művelet",
     todosOsUsuarios: "Minden felhasználó",

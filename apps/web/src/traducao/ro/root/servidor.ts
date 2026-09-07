@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Setările serverului",
+  selos: {
+    verificada: "Comunitate verificată",
+    detectavel: "Comunitate descoperibilă",
+  },
   auditoria: {
     todasAsAcoes: "Toate acțiunile",
     todosOsUsuarios: "Toți utilizatorii",

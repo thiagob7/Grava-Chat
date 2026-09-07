@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Ρυθμίσεις διακομιστή",
+  selos: {
+    verificada: "Επαληθευμένη κοινότητα",
+    detectavel: "Ανιχνεύσιμη κοινότητα",
+  },
   auditoria: {
     todasAsAcoes: "Όλες οι ενέργειες",
     todosOsUsuarios: "Όλοι οι χρήστες",

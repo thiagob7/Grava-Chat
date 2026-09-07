@@ -48,6 +48,9 @@ export const guildSchema = z.object({
   iconUrl: z.string().nullable(),
   ownerId: objectId,
   memberCount: z.number().int(),
+  /// Os selos da comunidade: verificada é marca da casa; detectável é conta.
+  verificada: z.boolean().optional(),
+  detectavel: z.boolean().optional(),
 });
 export type Guild = z.infer<typeof guildSchema>;
 

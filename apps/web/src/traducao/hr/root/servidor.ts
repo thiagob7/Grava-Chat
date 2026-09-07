@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Postavke poslužitelja",
+  selos: {
+    verificada: "Provjerena zajednica",
+    detectavel: "Vidljiva zajednica",
+  },
   auditoria: {
     todasAsAcoes: "Sve radnje",
     todosOsUsuarios: "Svi korisnici",

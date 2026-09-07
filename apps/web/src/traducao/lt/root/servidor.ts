@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Serverio nustatymai",
+  selos: {
+    verificada: "Patvirtinta bendruomenė",
+    detectavel: "Aptinkama bendruomenė",
+  },
   auditoria: {
     todasAsAcoes: "Visi veiksmai",
     todosOsUsuarios: "Visi naudotojai",

@@ -36,6 +36,13 @@ export async function guildRoutes(app: FastifyInstance) {
     return guildService.detail(req.userId, guildId);
   });
 
+  app.put("/guilds/:guildId/verificacao", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    const { verificada } = z.object({ verificada: z.boolean() }).parse(req.body);
+
+    return guildService.verificar(req.userId, guildId, verificada);
+  });
+
   app.patch("/guilds/:guildId", async (req) => {
     const { guildId } = guildParams.parse(req.params);
     const guild = await guildService.update(req.userId, guildId, updateGuildInput.parse(req.body));

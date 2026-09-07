@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "Palvelimen asetukset",
+  selos: {
+    verificada: "Vahvistettu yhteisö",
+    detectavel: "Löydettävä yhteisö",
+  },
   auditoria: {
     todasAsAcoes: "Kaikki toiminnot",
     todosOsUsuarios: "Kaikki käyttäjät",

@@ -4,6 +4,10 @@ export const servidor = {
     emChamada: "{{count}} in a call",
   },
   titulo: "サーバー設定",
+  selos: {
+    verificada: "認証済みコミュニティ",
+    detectavel: "検出可能なコミュニティ",
+  },
   auditoria: {
     todasAsAcoes: "すべての操作",
     todosOsUsuarios: "すべての人",

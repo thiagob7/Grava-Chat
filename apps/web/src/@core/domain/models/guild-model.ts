@@ -26,6 +26,8 @@ export interface GuildModel {
   descobrivel?: boolean | null;
   ownerId: string;
   memberCount: number;
+  verificada?: boolean;
+  detectavel?: boolean;
 }
 
 export interface GuildInviteModel {
@@ -91,7 +93,7 @@ export interface InviteModel {
 
 export interface InvitePreviewModel {
   code: string;
-  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "bannerUrl" | "description"> & {
+  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "bannerUrl" | "description" | "verificada" | "detectavel"> & {
     memberCount: number;
     onlineCount: number;
   };
