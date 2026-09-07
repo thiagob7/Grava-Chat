@@ -319,15 +319,19 @@ const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
     href={anexo.url}
     target="_blank"
     rel="noreferrer"
-    {...flx("cartaoDeAnexo", "flex w-full max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5 transition hover:border-ink-faint")}
+    {...flx("cartaoDeAnexo", "flex w-full max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-1 p-3 transition hover:border-ink-faint")}
   >
-    <FileText data-gc="conversa.message-attachments.file-text" size={28} className="shrink-0 text-brand" />
+    <span data-gc="conversa.message-attachments.span--5" className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-3 text-brand">
+      <FileText data-gc="conversa.message-attachments.file-text" size={24} />
+    </span>
 
     <div data-gc="conversa.message-attachments.div--10" className="min-w-0 flex-1">
-      <p data-gc="conversa.message-attachments.p" className="truncate text-sm font-medium text-brand">{anexo.filename}</p>
-      <p data-gc="conversa.message-attachments.p--2" className="text-xs text-ink-faint">{formatBytes(anexo.size)}</p>
+      <p data-gc="conversa.message-attachments.p" className="truncate text-sm font-semibold leading-5 text-brand">{anexo.filename}</p>
+      <p data-gc="conversa.message-attachments.p--2" className="text-xs leading-4 text-ink-faint">{formatBytes(anexo.size)}</p>
     </div>
 
-    <Download data-gc="conversa.message-attachments.download" size={18} className="shrink-0 text-ink-muted" />
+    <span data-gc="conversa.message-attachments.span--6" className="flex size-10 shrink-0 items-center justify-center rounded-lg text-ink-muted transition hover:bg-hover hover:text-ink">
+      <Download data-gc="conversa.message-attachments.download" size={18} />
+    </span>
   </a>
 );

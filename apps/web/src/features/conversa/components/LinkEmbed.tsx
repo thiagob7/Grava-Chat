@@ -78,12 +78,12 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
   return (
     <article data-gc="conversa.link-embed.article"
       style={embed.cor ? { borderLeftColor: embed.cor } : undefined}
-      {...flx("cartaoDeLink", "w-full max-w-[26rem] overflow-hidden rounded border-l-4 border-brand bg-surface-1")}
+      {...flx("cartaoDeLink", "w-full max-w-[26rem] overflow-hidden rounded-lg border-l-4 border-brand bg-surface-1")}
     >
-      <div data-gc="conversa.link-embed.div--2" {...flxAttr("mioloDoCartaoDeLink")} className="flex gap-3 p-3">
+      <div data-gc="conversa.link-embed.div--2" {...flxAttr("mioloDoCartaoDeLink")} className="flex gap-2 px-3 pb-3.5 pt-3">
         <div data-gc="conversa.link-embed.div--3" className="min-w-0 flex-1">
           {embed.site && (
-            <p data-gc="conversa.link-embed.p" className="flex items-center gap-1.5 text-xs text-ink-muted">
+            <p data-gc="conversa.link-embed.p" className="flex items-center gap-1.5 text-[0.75em] font-medium leading-[1.333] text-ink-faint">
               {embed.favicon && <Favicon data-gc="conversa.link-embed.favicon" url={embed.favicon} />}
               <span data-gc="conversa.link-embed.span" className="truncate">{embed.site}</span>
             </p>
@@ -103,7 +103,7 @@ const Cartao: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
           {embed.autor && <p data-gc="conversa.link-embed.p--2" className="text-xs text-ink-muted">{embed.autor}</p>}
 
           {embed.descricao && (
-            <p data-gc="conversa.link-embed.p--3" className="mt-1 line-clamp-4 whitespace-pre-wrap text-sm text-ink-muted">
+            <p data-gc="conversa.link-embed.p--3" className="mt-1 line-clamp-4 whitespace-pre-wrap text-[0.875em] leading-[1.2857] text-ink">
               {embed.descricao}
             </p>
           )}
