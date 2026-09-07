@@ -10,8 +10,8 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { cn } from "~/lib/utils";
 import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
-import { flx } from "~/lib/compat-fluxer";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr } from "~/lib/compat-de-tema";
+import { flxCls } from "~/lib/compat-de-tema";
 
 interface DmSidebarProps {
   activeChannelId: string | undefined;
@@ -61,22 +61,24 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   return (
     <aside data-gc="amizades.dm-sidebar.aside"
-      className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+      {...flxAttr("colunaDasConversas")}
+      className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
       style={{ width: largura }}
     >
+      <div data-gc="amizades.dm-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
       {/*
         O painel termina onde o rodapé começa, e o rodapé fica de fora dele. No
-        Fluxer esses dois são irmãos, e é o que faz a borda do tema parar em
+        referência esses dois são irmãos, e é o que faz a borda do tema parar em
         cima em vez de cercar o usuário junto.
       */}
-      <div data-gc="amizades.dm-sidebar.div" {...flx("listaDeConversas", "lista-de-conversas flex min-h-0 flex-1 flex-col")}>
-      <header data-gc="amizades.dm-sidebar.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm">
+      <div data-gc="amizades.dm-sidebar.div--2" {...flx("listaDeConversas", cn("lista-de-conversas flex min-h-0 flex-1 flex-col", flxCls("listaDeConversasDoPainel")))}>
+      <header data-gc="amizades.dm-sidebar.header" className={cn("regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm", flxCls("topoDaListaDeConversas"))}>
         <h1 data-gc="amizades.dm-sidebar.h1" className="truncate font-semibold">Mensagens diretas</h1>
       </header>
 
-      <div data-gc="amizades.dm-sidebar.div--2" className="relative flex min-h-0 flex-1 flex-col">
-      <div data-gc="amizades.dm-sidebar.div--3" className="flex-1 overflow-y-auto px-2 py-3">
-        <div data-gc="amizades.dm-sidebar.div--4" className="relative mb-3">
+      <div data-gc="amizades.dm-sidebar.div--3" className="relative flex min-h-0 flex-1 flex-col">
+      <div data-gc="amizades.dm-sidebar.div--4" {...flx("roladorDeConversas", "flex-1 overflow-y-auto px-2 py-3")}>
+        <div data-gc="amizades.dm-sidebar.div--5" className="relative mb-3">
           <Search data-gc="amizades.dm-sidebar.search" size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-ink-faint" />
           <input data-gc="amizades.dm-sidebar.input"
             value={busca}

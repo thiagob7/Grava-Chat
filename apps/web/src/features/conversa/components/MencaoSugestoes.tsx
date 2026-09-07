@@ -5,7 +5,7 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import type { Mencionavel } from "~/features/conversa/hooks/use-mencoes";
 import { legivel } from "~/features/perfil/lib/contraste";
 import { cn } from "~/lib/utils";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 interface MencaoSugestoesProps {
   itens: Mencionavel[];

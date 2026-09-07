@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Змінити фото профілю",
     trocarFotoCurto: "Змінити фото",
     suaEtiqueta: "Ваша позначка",
+    pronomes: "Займенники",
     editarEtiqueta: "Натисніть, щоб змінити позначку",
     conteAlgo: "Розкажіть про себе",
     adicionarStatus: "Додати статус",

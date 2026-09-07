@@ -30,7 +30,7 @@ import { useParticipante } from "~/features/voz/hooks/use-participante";
 import { useSomDoPainel } from "~/features/voz/lib/soundboard";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface VoiceStageProps {
   channelName: string;
@@ -62,6 +62,7 @@ const CantosDaChamada: React.FC<{
     seja qual for o fundo que o tema escolher.
   */
   const botao = cn(
+    flxCls("botaoDoTopoDaChamada"),
     "pointer-events-auto flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.8125rem]",
     "border border-line-sutil bg-palco text-palco-ink/[0.84] transition-colors duration-75",
     "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--color-palco-ink)_5%,transparent)]",
@@ -72,9 +73,12 @@ const CantosDaChamada: React.FC<{
   return (
     <>
       <div data-gc="voz.voice-stage.div"
-        className={cn(
-          "regiao-de-arrasto pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3",
-          "opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100",
+        {...flx(
+          "topoDaChamada",
+          cn(
+            "regiao-de-arrasto pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 p-3",
+            "opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100",
+          ),
         )}
       >
         <span data-gc="voz.voice-stage.span" className="flex min-w-0 items-center gap-2 text-sm font-semibold text-palco-ink [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]">
@@ -220,15 +224,21 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </button>
 
           <div data-gc="voz.voice-stage.div--6"
-            className={cn(
-              "pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-palco/80 to-transparent px-4",
-              compacto ? "pb-6 pt-2" : "pb-8 pt-3",
+            {...flx(
+              "infoDaTransmissao",
+              cn(
+                flxCls("esmaecidoDoTopo"),
+                "pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-palco/80 to-transparent px-4",
+                compacto ? "pb-6 pt-2" : "pb-8 pt-3",
+              ),
             )}
           >
             {!compacto && (
               <>
                 <MonitorUp data-gc="voz.voice-stage.monitor-up" size={14} className="shrink-0 text-palco-ink/70" />
-                <span data-gc="voz.voice-stage.span--3" className="text-sm font-medium">Tela de {sharing.name}</span>
+                <span data-gc="voz.voice-stage.span--3" {...flx("nomeDeQuemTransmite", "text-sm font-medium")}>
+                  Tela de {sharing.name}
+                </span>
                 <QualidadeDaTela data-gc="voz.voice-stage.qualidade-da-tela" track={sharing.screenTrack!} />
               </>
             )}
@@ -246,7 +256,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
 
           {!compacto && (
-            <div data-gc="voz.voice-stage.div--7" className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-palco/80 to-transparent px-4 pb-3 pt-10">
+            <div data-gc="voz.voice-stage.div--7" {...flx("esmaecidoDaBase", "absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-palco/80 to-transparent px-4 pb-3 pt-10")}>
               <div data-gc="voz.voice-stage.div--8" className="flex shrink-0 gap-2">
                 {tiles.map((tile) => (
                   <ComMenu data-gc="voz.voice-stage.com-menu" key={tile.identity} tile={tile} contexto={contexto}>
@@ -358,7 +368,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     return (
       <div data-gc="voz.voice-stage.div--15"
         ref={palco}
-        className="group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4 pb-20"
+        {...flxAttr("palcoDaChamadaCompacta")}
+        className={cn(
+          flxCls("palcoDaChamadaCompacta"),
+          "group relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden bg-surface-2 p-4 pb-20",
+        )}
       >
         {grade.map((quadro) => (
           <div data-gc="voz.voice-stage.div--16" key={quadro.key} className="h-full max-h-56 min-w-0 max-w-md flex-1">
@@ -460,11 +474,14 @@ const Tile: React.FC<TileProps> = ({
   return (
     <div data-gc="voz.voice-stage.div.on-focar"
       onClick={onFocar}
-      className={cn(
-        "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
-        !semCanto && "rounded-xl",
-        onFocar && "cursor-pointer",
-        compact ? "h-16 w-24 shrink-0" : preencher ? "size-full" : "aspect-video",
+      {...flx(
+        "quadroDeParticipante",
+        cn(
+          "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
+          !semCanto && "rounded-xl",
+          onFocar && "cursor-pointer",
+          compact ? "h-16 w-24 shrink-0" : preencher ? "size-full" : "aspect-video",
+        ),
       )}
     >
       {tile.cameraTrack ? (
@@ -479,13 +496,17 @@ const Tile: React.FC<TileProps> = ({
           size={compact ? 44 : denso ? 52 : 80}
           enfeites={participante.perfil}
           animar={falando}
+          className={flxCls("avatarSemCamera")}
         />
       )}
 
       <div data-gc="voz.voice-stage.div--20"
-        className={cn(
-          "absolute bottom-1.5 left-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded bg-sobre-midia px-1.5 py-0.5",
-          !compact && "bottom-2 left-2 gap-1.5 px-2 py-1",
+        {...flx(
+          "selosDoParticipante",
+          cn(
+            "absolute bottom-1.5 left-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded bg-sobre-midia px-1.5 py-0.5",
+            !compact && "bottom-2 left-2 gap-1.5 px-2 py-1",
+          ),
         )}
       >
         {tile.micEnabled ? (
@@ -498,11 +519,14 @@ const Tile: React.FC<TileProps> = ({
         <UserProfilePopover data-gc="voz.voice-stage.user-profile-popover" userId={tile.identity} guildId={guildId} side="top">
           <button data-gc="voz.voice-stage.button--3"
             onClick={(e) => e.stopPropagation()}
-            className={cn(
-              "min-w-0 truncate whitespace-nowrap font-medium hover:underline",
-              compact
-                ? "w-0 overflow-hidden text-10 opacity-0 transition-all group-hover/tile:w-auto group-hover/tile:opacity-100"
-                : "text-xs",
+            {...flx(
+              "nomeDoParticipante",
+              cn(
+                "min-w-0 truncate whitespace-nowrap font-medium hover:underline",
+                compact
+                  ? "w-0 overflow-hidden text-10 opacity-0 transition-all group-hover/tile:w-auto group-hover/tile:opacity-100"
+                  : "text-xs",
+              ),
             )}
           >
             {participante.nome}

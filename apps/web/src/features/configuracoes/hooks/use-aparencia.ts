@@ -21,7 +21,7 @@ export function useAparenciaAplicada() {
     document.documentElement.dataset.tema = tema;
 
     /*
-      A mesma escolha, no vocabulário deles. Um tema do Fluxer que avisa "só
+      A mesma escolha, no vocabulário deles. Um tema da referência que avisa "só
       funciona no escuro" fala por `theme-dark` e `theme-light`, não por
       `data-tema`.
     */

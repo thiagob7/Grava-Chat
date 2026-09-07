@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  CORRECOES_DO_FLUXER,
-  pareceTemaDoFluxer,
-} from "~/features/configuracoes/lib/correcoes-do-fluxer";
-import { LUGARES } from "~/lib/compat-fluxer";
+  CORRECOES_DE_TEMA,
+  pareceTemaDeFora,
+} from "~/features/configuracoes/lib/correcoes-de-tema";
+import { LUGARES } from "~/lib/compat-de-tema";
 
-describe("correções para tema do Fluxer", () => {
+describe("correções para tema da referência", () => {
   it("reconhece o CSS escrito para a árvore deles", () => {
-    expect(pareceTemaDoFluxer('[data-flx="app.guilds-layout"] { color: red }')).toBe(true);
-    expect(pareceTemaDoFluxer('[class*="GuildNavbar.module__x_"] { color: red }')).toBe(true);
-    expect(pareceTemaDoFluxer(":root { --ThemePanelMargin: 4px }")).toBe(true);
+    expect(pareceTemaDeFora('[data-flx="app.guilds-layout"] { color: red }')).toBe(true);
+    expect(pareceTemaDeFora('[class*="GuildNavbar.module__x_"] { color: red }')).toBe(true);
+    expect(pareceTemaDeFora(":root { --ThemePanelMargin: 4px }")).toBe(true);
   });
 
   it("deixa passar tema escrito para o Gravaê", () => {
-    expect(pareceTemaDoFluxer(':root { --color-brand: #123 }\n.avatar { border-radius: 0 }')).toBe(
+    expect(pareceTemaDeFora(':root { --color-brand: #123 }\n.avatar { border-radius: 0 }')).toBe(
       false,
     );
-    expect(pareceTemaDoFluxer('[data-gc="conversa.message-item.div"] { color: red }')).toBe(false);
+    expect(pareceTemaDeFora('[data-gc="conversa.message-item.div"] { color: red }')).toBe(false);
   });
 
   /*
@@ -26,7 +26,7 @@ describe("correções para tema do Fluxer", () => {
     nenhuma delas, então não há disputa para ganhar.
   */
   it("grita mais alto que o tema em toda declaração", () => {
-    const declaracoes = CORRECOES_DO_FLUXER.split("\n")
+    const declaracoes = CORRECOES_DE_TEMA.split("\n")
       .map((linha) => linha.trim())
       .filter((linha) => linha.endsWith(";"))
       .filter((linha) => !linha.startsWith("--"));
@@ -36,7 +36,7 @@ describe("correções para tema do Fluxer", () => {
   });
 
   /*
-    Pode mirar um nome do Fluxer, mas só um que a gente mesma carimba. Mirar um
+    Pode mirar um nome da referência, mas só um que a gente mesma carimba. Mirar um
     que só existe na árvore deles seria escrever para um elemento que aqui nunca
     aparece — e o teste não pegaria, porque CSS que não casa não dá erro.
   */
@@ -48,7 +48,7 @@ describe("correções para tema do Fluxer", () => {
       if ("flx" in lugar) nossos.add(lugar.flx);
     }
 
-    const emprestados = [...CORRECOES_DO_FLUXER.matchAll(/\[(?:class\*|data-flx)=["']([^"']+)["']\]/g)]
+    const emprestados = [...CORRECOES_DE_TEMA.matchAll(/\[(?:class\*|data-flx)=["']([^"']+)["']\]/g)]
       .map((achado) => achado[1] ?? "")
       .filter((nome) => ![...nossos].some((nosso) => nosso.includes(nome)));
 

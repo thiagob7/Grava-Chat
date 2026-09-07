@@ -8,7 +8,8 @@ import { Button } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useSession } from "~/contexts/session-context";
 import { avatarColor, initials } from "~/lib/format";
-import { flx } from "~/lib/compat-fluxer";
+import { cn } from "~/lib/utils";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 export const AtivosAgora: React.FC = () => {
   const { data: ativos = [], isLoading } = useAtivos();
@@ -26,26 +27,26 @@ export const AtivosAgora: React.FC = () => {
 
   return (
     <aside data-gc="amizades.ativos-agora.aside" {...flx("ativosAgora", "hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block")}>
-      <h2 data-gc="amizades.ativos-agora.h2" className="mb-3 text-sm font-semibold">Ativo agora</h2>
+      <h2 data-gc="amizades.ativos-agora.h2" {...flx("tituloDosAtivos", "mb-3 text-sm font-semibold")}>Ativo agora</h2>
 
       {isLoading ? (
         <p data-gc="amizades.ativos-agora.p" className="text-sm text-ink-faint">Vendo quem está por aí…</p>
       ) : salas.size === 0 ? (
-        <div data-gc="amizades.ativos-agora.div" className="flex flex-col items-center justify-center gap-2 px-2 py-24 text-center">
-          <span data-gc="amizades.ativos-agora.span" aria-hidden className="text-3xl font-bold text-ink-faint/60">
+        <div data-gc="amizades.ativos-agora.div" {...flx("vazioDosAtivos", "flex flex-col items-center justify-center gap-2 px-2 py-24 text-center")}>
+          <span data-gc="amizades.ativos-agora.span" {...flx("iconeDoVazioDosAtivos", "text-3xl font-bold text-ink-faint/60")} aria-hidden>
             z<span data-gc="amizades.ativos-agora.span--2" className="align-super text-xl">Z</span>
           </span>
 
-          <p data-gc="amizades.ativos-agora.p--2" className="text-sm font-semibold">Está tudo tranquilo por enquanto…</p>
-          <p data-gc="amizades.ativos-agora.p--3" className="text-xs leading-relaxed text-ink-muted">
+          <p data-gc="amizades.ativos-agora.p--2" {...flx("tituloDoVazioDosAtivos", "text-sm font-semibold")}>Está tudo tranquilo por enquanto…</p>
+          <p data-gc="amizades.ativos-agora.p--3" {...flx("descricaoDoVazioDosAtivos", "text-xs leading-relaxed text-ink-muted")}>
             Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá pra entrar junto
             com um clique.
           </p>
         </div>
       ) : (
-        <div data-gc="amizades.ativos-agora.div--2" className="space-y-3">
+        <div data-gc="amizades.ativos-agora.div--2" {...flx("conteudoDosAtivos", "space-y-3")}>
           {[...salas.values()].map(({ canal, servidor, gente }) => (
-            <div data-gc="amizades.ativos-agora.div--3" key={canal.id} className="rounded-lg bg-surface-1 p-3">
+            <div data-gc="amizades.ativos-agora.div--3" key={canal.id} className={cn("rounded-lg bg-surface-1 p-3", flxCls("cartaoDeVozAtiva"))}>
               <p data-gc="amizades.ativos-agora.p--4" className="flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-online">
                 <Volume2 data-gc="amizades.ativos-agora.volume2" size={12} className="shrink-0" /> Em voz
               </p>

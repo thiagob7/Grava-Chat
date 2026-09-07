@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
 type Aba = "nao-lidas" | "salvas" | "mencoes";
@@ -46,8 +47,8 @@ export const CaixaDeEntrada: React.FC = () => {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent data-gc="conversa.caixa-de-entrada.popover-content" align="end" className="flex h-[30rem] w-[26rem] gap-0 p-0">
-        <nav data-gc="conversa.caixa-de-entrada.nav" className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-divisor py-2">
+      <PopoverContent data-gc="conversa.caixa-de-entrada.popover-content" align="end" className={cn("flex h-[30rem] w-[26rem] gap-0 p-0", flxCls("caixaDeEntrada"))}>
+        <nav data-gc="conversa.caixa-de-entrada.nav" className={cn("flex w-12 shrink-0 flex-col items-center gap-1 border-r border-divisor py-2", flxCls("lateralDaCaixaDeEntrada"))}>
           {ABAS.map((item) => (
             <Tooltip data-gc="conversa.caixa-de-entrada.tooltip--2" key={item.id} label={item.rotulo} side="left">
               <button data-gc="conversa.caixa-de-entrada.button--2"
@@ -167,7 +168,7 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
           />
 
           <div data-gc="conversa.caixa-de-entrada.div--5" className="min-w-0 flex-1">
-            <p data-gc="conversa.caixa-de-entrada.p--4" className="flex items-baseline gap-2">
+            <p data-gc="conversa.caixa-de-entrada.p--4" className={cn(flxCls("topoDaCaixaDeEntrada"), "flex items-baseline gap-2")}>
               <span data-gc="conversa.caixa-de-entrada.span--6" className="truncate text-sm font-semibold">{mensagem.author.displayName}</span>
               <span data-gc="conversa.caixa-de-entrada.span--7" className="shrink-0 text-xs text-ink-faint">
                 {formatTimestamp(mensagem.createdAt)}
@@ -186,7 +187,10 @@ const Salvas: React.FC<{ ativo: boolean }> = ({ ativo }) => {
           <button data-gc="conversa.caixa-de-entrada.button--4"
             onClick={() => alternar.mutate({ messageId: mensagem.id, favorita: true })}
             aria-label={t("conversa.entrada.tirarDosSalvos")}
-            className="h-fit rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100"
+            className={cn(
+              flxCls("botaoDoTopoDaCaixaDeEntrada"),
+              "h-fit rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100",
+            )}
           >
             <BookmarkSimple data-gc="conversa.caixa-de-entrada.bookmark-simple--3" size={16} weight="fill" className="text-danger" />
           </button>

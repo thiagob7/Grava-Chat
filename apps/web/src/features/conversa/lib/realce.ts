@@ -20,7 +20,7 @@ export const IDIOMA_AUTOMATICO = "auto";
 export interface IdiomaDeCodigo {
   id: string;
   rotulo: string;
-  /// O nome do formato quando ele difere do id, como o Fluxer mostra em
+  /// O nome do formato quando ele difere do id, como a referência mostra em
   /// cinza ao lado (`adoc  ASCIIDOC`).
   formato?: string;
 }

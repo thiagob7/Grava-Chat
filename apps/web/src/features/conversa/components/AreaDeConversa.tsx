@@ -1,6 +1,6 @@
 import React from "react";
 
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 /*
   A conversa e a caixa de escrever, uma acima da outra.
@@ -22,16 +22,17 @@ export const AreaDeConversa: React.FC<{ children: React.ReactNode }> = ({ childr
 
 /// O painel das mensagens. Quem rola é a lista lá dentro, não ele.
 export const PainelDaConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div
-    data-gc="conversa.area-de-conversa.div--2"
+  <section
+    data-gc="conversa.area-de-conversa.section"
+    aria-label="Mensagens"
     {...flx("areaDeMensagens", "area-de-conversa relative flex min-h-0 flex-1 flex-col")}
   >
     {children}
-  </div>
+  </section>
 );
 
 export const RodapeDaConversa: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div data-gc="conversa.area-de-conversa.div--3" className="relative z-10 shrink-0">
+  <div data-gc="conversa.area-de-conversa.div--2" className="relative z-10 shrink-0">
     {children}
   </div>
 );

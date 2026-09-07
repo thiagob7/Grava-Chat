@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Смени профилната снимка",
     trocarFotoCurto: "Смени снимката",
     suaEtiqueta: "Твоят етикет",
+    pronomes: "Местоимения",
     editarEtiqueta: "Щракни, за да редактираш етикета си",
     conteAlgo: "Разкажи нещо за себе си",
     adicionarStatus: "Добави състояние",

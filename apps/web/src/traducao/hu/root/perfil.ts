@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Profilkép cseréje",
     trocarFotoCurto: "Kép cseréje",
     suaEtiqueta: "A címkéd",
+    pronomes: "Névmások",
     editarEtiqueta: "Kattints a címkéd szerkesztéséhez",
     conteAlgo: "Mesélj magadról valamit",
     adicionarStatus: "Állapot hozzáadása",

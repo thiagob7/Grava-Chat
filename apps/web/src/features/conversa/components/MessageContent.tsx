@@ -7,12 +7,19 @@ import { EMOJI } from "~/features/expressao/lib/twemoji";
 import { BlocoDeCodigo } from "~/features/conversa/components/BlocoDeCodigo";
 import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { partirEmCodigo } from "~/features/conversa/lib/codigo";
+import {
+  partirEmAvisos,
+  ROTULO_DO_AVISO,
+  type TipoDeAviso,
+} from "~/features/conversa/lib/avisos";
 import { legivel } from "~/features/perfil/lib/contraste";
 import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { i18next, useTranslation } from "~/traducao";
+import { cn } from "~/lib/utils";
+import { flxCls, type Lugares } from "~/lib/compat-de-tema";
 
 const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
 
@@ -32,7 +39,7 @@ const Pilula: React.FC<{
 }> = ({ children, cor, titulo, familia = "mencao" }) => (
   <span data-gc="conversa.message-content.span"
     title={titulo}
-    className="rounded px-1 py-px font-medium"
+    className={cn("rounded px-1 py-px font-medium", flxCls("mencao"))}
     style={
       cor
         ? { color: legivel(cor), backgroundColor: `${legivel(cor)}26` }
@@ -136,6 +143,63 @@ function enriquecer(
   return partes;
 }
 
+/*
+  O aviso do markdown: um bloco por tipo, com a cor da referência e a nossa de
+  reserva. A cor entra por uma variável no próprio elemento para a borda, o
+  título e o fundo saírem todos dela — assim um tema troca uma coisa só.
+*/
+const COR_DO_AVISO: Record<TipoDeAviso, string> = {
+  note: "var(--alert-note-color, var(--color-link))",
+  tip: "var(--alert-tip-color, var(--color-online))",
+  important: "var(--alert-important-color, var(--color-everyone))",
+  warning: "var(--alert-warning-color, var(--color-aviso))",
+  caution: "var(--alert-caution-color, var(--color-danger))",
+};
+
+const CLASSE_DO_AVISO: Record<TipoDeAviso, Lugares> = {
+  note: "avisoNota",
+  tip: "avisoDica",
+  important: "avisoImportante",
+  warning: "avisoAtencao",
+  caution: "avisoCuidado",
+};
+
+const Aviso: React.FC<{ tipo: TipoDeAviso; children: React.ReactNode }> = ({
+  tipo,
+  children,
+}) => (
+  <div data-gc="conversa.message-content.div"
+    className={cn(
+      flxCls("avisoDoMarkdown"),
+      flxCls(CLASSE_DO_AVISO[tipo]),
+      "my-1 rounded border-l-2 py-1.5 pl-2.5 pr-2",
+    )}
+    style={{
+      borderColor: COR_DO_AVISO[tipo],
+      background: `color-mix(in srgb, ${COR_DO_AVISO[tipo]} 8%, transparent)`,
+    }}
+  >
+    <p data-gc="conversa.message-content.p"
+      className={cn(flxCls("tituloDoAviso"), "mb-0.5 text-xs font-semibold")}
+      style={{ color: COR_DO_AVISO[tipo] }}
+    >
+      {ROTULO_DO_AVISO[tipo]}
+    </p>
+    <div data-gc="conversa.message-content.div--2" className={flxCls("corpoDoAviso")}>{children}</div>
+  </div>
+);
+
+/// A citação comum. O divisor é elemento próprio, como lá — o tema pinta ele.
+const Citacao: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div data-gc="conversa.message-content.div--3" className={cn(flxCls("citacao"), "my-1 flex gap-2")}>
+    <span data-gc="conversa.message-content.span--2"
+      aria-hidden
+      className={cn(flxCls("divisorDaCitacao"), "w-0.5 shrink-0 rounded-full bg-line")}
+    />
+    <div data-gc="conversa.message-content.div--4" className="min-w-0 flex-1 text-ink-muted">{children}</div>
+  </div>
+);
+
 function corrido(
   texto: string,
   porNome: Map<string, GuildEmoji>,
@@ -159,7 +223,7 @@ function corrido(
         href={url}
         target="_blank"
         rel="noreferrer noopener"
-        className="text-link hover:underline"
+        className={cn("text-link hover:underline", flxCls("linkNoTexto"))}
       >
         {url}
       </a>,
@@ -216,7 +280,27 @@ export const MessageContent: React.FC<MessageContentProps> = ({
 
   pedacos.forEach((pedaco, i) => {
     if (pedaco.tipo === "texto") {
-      partes.push(...corrido(pedaco.texto, porNome, `t${i}`, mencoes));
+      for (const [j, trecho] of partirEmAvisos(pedaco.texto).entries()) {
+        const dentro = corrido(trecho.texto, porNome, `t${i}-${j}`, mencoes);
+
+        if (trecho.tipo === "texto") {
+          partes.push(...dentro);
+          continue;
+        }
+
+        temPainel = true;
+
+        partes.push(
+          trecho.tipo === "aviso" ? (
+            <Aviso data-gc="conversa.message-content.aviso" key={`a${i}-${j}`} tipo={trecho.aviso}>
+              {dentro}
+            </Aviso>
+          ) : (
+            <Citacao data-gc="conversa.message-content.citacao" key={`q${i}-${j}`}>{dentro}</Citacao>
+          ),
+        );
+      }
+
       return;
     }
 
@@ -225,7 +309,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
         pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
 
       partes.push(
-        <code data-gc="conversa.message-content.code" key={`c${i}`} className="rounded bg-codigo px-1 py-px font-mono text-[0.9em]">
+        <code data-gc="conversa.message-content.code" key={`c${i}`} className={cn("rounded bg-codigo px-1 py-px font-mono text-[0.9em]", flxCls("codigoEmLinha"))}>
           {codigo}
         </code>,
       );
@@ -236,7 +320,21 @@ export const MessageContent: React.FC<MessageContentProps> = ({
     partes.push(<BlocoDeCodigo data-gc="conversa.message-content.bloco-de-codigo" key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
   });
 
-  if (temPainel) return <div data-gc="conversa.message-content.div" className={className}>{partes}</div>;
+  /*
+    O elemento que sai daqui é o `Markup.markup` da referência: o markdown já
+    renderizado, dentro do corpo da mensagem. É o alvo de mais regra de tema do
+    que qualquer outro — só um tema da comunidade tem 35 mirando `.messageContent .markup`.
+  */
+  if (temPainel)
+    return (
+      <div data-gc="conversa.message-content.div--5" className={cn(flxCls("textoMarcado"), className)}>
+        {partes}
+      </div>
+    );
 
-  return <span data-gc="conversa.message-content.span--2" className={className}>{partes}</span>;
+  return (
+    <span data-gc="conversa.message-content.span--3" className={cn(flxCls("textoMarcado"), className)}>
+      {partes}
+    </span>
+  );
 };

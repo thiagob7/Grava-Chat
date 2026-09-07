@@ -55,17 +55,20 @@ export const ProfileEditorModal: React.FC<{
     perfil,
     statusPersonalizado: user.statusPersonalizado,
     bio: rascunho.bio || null,
+    pronomes: rascunho.pronomes || null,
     createdAt: user.createdAt,
   };
 
   const salvar = () => {
     const displayName = rascunho.displayName.trim();
     const bio = rascunho.bio.trim() || null;
+    const pronomes = rascunho.pronomes.trim() || null;
 
     void updateProfile
       .mutateAsync({
         ...(displayName !== salvo.displayName ? { displayName } : {}),
         ...(bio !== (salvo.bio || null) ? { bio } : {}),
+        ...(pronomes !== (salvo.pronomes || null) ? { pronomes } : {}),
         ...(rascunho.avatarUrl !== salvo.avatarUrl ? { avatarUrl: rascunho.avatarUrl } : {}),
         ...(JSON.stringify(perfil) !== JSON.stringify(paraPerfil(salvo)) ? { perfil } : {}),
       })
@@ -137,6 +140,7 @@ export const ProfileEditorModal: React.FC<{
                     perfil={perfil}
                     statusPersonalizado={user.statusPersonalizado}
                     bio={rascunho.bio || null}
+                    pronomes={rascunho.pronomes || null}
                     createdAt={user.createdAt}
                     editavel
                     onEtiqueta={(valor) => definir("etiqueta", valor)}
@@ -171,6 +175,7 @@ export const ProfileEditorModal: React.FC<{
                       </DropdownMenu>
                     }
                     onBio={(valor) => definir("bio", valor)}
+                    onPronomes={(valor) => definir("pronomes", valor)}
                   />
                 </div>
               </div>

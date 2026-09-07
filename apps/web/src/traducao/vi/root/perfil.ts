@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Đổi ảnh đại diện",
     trocarFotoCurto: "Đổi ảnh",
     suaEtiqueta: "Nhãn của bạn",
+    pronomes: "Đại từ",
     editarEtiqueta: "Nhấn để sửa nhãn của bạn",
     conteAlgo: "Kể gì đó về bạn đi",
     adicionarStatus: "Thêm trạng thái",

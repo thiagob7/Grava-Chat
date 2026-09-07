@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { desktop } from "~/lib/desktop";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 export const SignIn: React.FC = () => {
   const devLogin = useDevLogin();

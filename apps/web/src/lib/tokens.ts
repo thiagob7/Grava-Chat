@@ -266,6 +266,11 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
     titulo: "Mensagens",
     tokens: [
       { nome: "--color-destaque", rotulo: "Fio de quem te menciona" },
+      {
+        nome: "--color-destaque-fundo",
+        rotulo: "Fundo de quem te menciona",
+        dica: "a faixa amarelada por trás da mensagem",
+      },
     ],
   },
   {
@@ -297,6 +302,11 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         nome: "--layout-member-list-width",
         rotulo: "Largura da lista de membros",
         dica: "a coluna da direita",
+      },
+      {
+        nome: "--layout-sidebar-width",
+        rotulo: "Largura da lateral",
+        dica: "a coluna de canais, de conversas e do explorar",
       },
     ],
   },

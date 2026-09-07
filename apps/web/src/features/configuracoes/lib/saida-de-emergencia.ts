@@ -2,7 +2,7 @@
   A saída para quando o tema quebra o app.
 
   A gente decidiu não travar o CSS de um tema, e isso tem um preço: um tema
-  pode esconder o botão que desliga o tema. O NeoFluxer, por exemplo, arranca o
+  pode esconder o botão que desliga o tema. Um tema da comunidade, por exemplo, arranca o
   cartão do usuário do fluxo e joga a lista de membros para fora da tela — na
   árvore deles isso fica bonito, na nossa some com o caminho até as
   configurações.

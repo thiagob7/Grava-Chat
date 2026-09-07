@@ -11,7 +11,7 @@ import { campoNu, grupoDeCampo } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 export type Aba = "gifs" | "figurinhas" | "emoji";
 

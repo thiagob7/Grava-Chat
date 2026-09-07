@@ -3,7 +3,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { DesenhoDaSeta } from "~/components/ui/seta-do-balao";
 import { cn } from "~/lib/utils";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-de-tema";
 
 export const TooltipProvider = TooltipPrimitive.Provider;
 

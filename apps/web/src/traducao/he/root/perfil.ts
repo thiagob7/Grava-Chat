@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "החלפת תמונת הפרופיל",
     trocarFotoCurto: "החלפת התמונה",
     suaEtiqueta: "התג שלך",
+    pronomes: "כינויי גוף",
     editarEtiqueta: "לחץ כדי לערוך את התג",
     conteAlgo: "ספר לנו משהו על עצמך",
     adicionarStatus: "הוספת סטטוס",

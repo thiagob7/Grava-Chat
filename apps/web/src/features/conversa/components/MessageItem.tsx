@@ -70,7 +70,7 @@ import { EncaminharModal } from "~/features/conversa/components/EncaminharModal"
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
-import { flxAttr, flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
 
@@ -296,10 +296,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       className={cn(
         "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
         flxCls("molduraDaMensagem"),
+        !message.content && flxCls("mensagemSemTexto"),
         !compact && "mt-4",
         meMenciona &&
           cn(
-            "bg-destaque/10 shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
+            "bg-destaque-fundo shadow-[inset_2px_0_0_var(--color-destaque)] hover:bg-destaque/15",
             flxCls("mensagemQueMenciona"),
           ),
         destacada && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
@@ -316,9 +317,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         />
       )}
 
-      <div data-gc="conversa.message-item.div--4" className="w-10 shrink-0">
+      <div data-gc="conversa.message-item.div--4" {...flx("calhaDaMensagem", "w-10 shrink-0")}>
         {compact || !mostrarAvatares ? (
-          <span data-gc="conversa.message-item.span--8" className="hidden text-10 leading-6 text-ink-faint group-hover:block">
+          <span data-gc="conversa.message-item.span--8" {...flx("horaAoPassarOMouse", "hidden text-10 leading-6 text-ink-faint group-hover:block")}>
             {formatTime(message.createdAt)}
           </span>
         ) : (
@@ -329,17 +330,18 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 name={message.author.displayName}
                 url={message.author.avatarUrl}
                 enfeites={enfeites?.perfil}
+                className={flxCls("avatarDaMensagem")}
               />
             </button>
           </UserProfilePopover>
         )}
       </div>
 
-      <div data-gc="conversa.message-item.div--5" className="min-w-0 flex-1">
+      <div data-gc="conversa.message-item.div--5" {...flx("colunaDaMensagem", "min-w-0 flex-1")}>
         {!compact && (
-          <div data-gc="conversa.message-item.div--6" className="flex items-baseline gap-x-2">
+          <div data-gc="conversa.message-item.div--6" {...flx("linhaDoAutor", "flex items-baseline gap-x-2")}>
             <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id}>
-              <button data-gc="conversa.message-item.button--2" className="min-w-0 max-w-full truncate font-medium text-ink hover:underline">
+              <button data-gc="conversa.message-item.button--2" {...flx("nomeDoAutor", "min-w-0 max-w-full truncate font-medium text-ink hover:underline")}>
                 <UserName data-gc="conversa.message-item.user-name"
                   nome={message.author.displayName}
                   perfil={enfeites?.perfil}
@@ -349,7 +351,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               </button>
             </UserProfilePopover>
             <ServerTag data-gc="conversa.message-item.server-tag" etiqueta={enfeites?.perfil?.etiquetaDoServidor} />
-            <span data-gc="conversa.message-item.span--9" className="shrink-0 text-xs text-ink-faint" title={formatTimestamp(message.createdAt)}>
+            <span data-gc="conversa.message-item.span--9" {...flx("horaDaMensagem", "shrink-0 text-xs text-ink-faint")} title={formatTimestamp(message.createdAt)}>
               <span data-gc="conversa.message-item.span--10" className="@md:hidden">{formatTime(message.createdAt)}</span>
               <span data-gc="conversa.message-item.span--11" className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
             </span>
@@ -394,12 +396,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <div data-gc="conversa.message-item.div--8"
-              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("corpoDaMensagem"))}
+              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("corpoDaMensagem"), flxCls("textoDaMensagem"))}
               style={{ fontFamily: familiaDaFonte(message.fonte) ?? undefined }}
             >
               <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mencoes={mencoes} blocos />
               {message.editedAt && (
-                <span data-gc="conversa.message-item.span--13" className="ml-1 text-10 text-ink-faint">
+                <span data-gc="conversa.message-item.span--13" {...flx("rotuloDeEditada", "ml-1 text-10 text-ink-faint")}>
                   {t("conversa.mensagem.editado")}
                 </span>
               )}
@@ -775,6 +777,7 @@ const PilulaDeReacao: React.FC<{
 
   return (
     <button data-gc="conversa.message-item.button--7"
+      {...flxAttr("botaoDeReacao")}
       {...useSegurar(onReagir, onSuper)}
       title={t("conversa.mensagem.segureParaSuper", { emoji: reaction.emoji })}
       className={cn(
@@ -803,7 +806,7 @@ const Citacao: React.FC<{
   const avatarUrl = souEu && me ? me.avatarUrl : respondida?.author.avatarUrl;
 
   return (
-  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("citacao"), flxCls("previaDaMensagem"), flxCls("respondida"))}>
+  <div data-gc="conversa.message-item.div--12" className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", flxCls("previaDaMensagem"), flxCls("respondida"))}>
     <span data-gc="conversa.message-item.span--15"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
@@ -818,13 +821,14 @@ const Citacao: React.FC<{
               name={respondida.author.displayName}
               url={avatarUrl}
               size={16}
+              className={flxCls("avatarDaCitacao")}
             />
-            <span data-gc="conversa.message-item.span--16" className="max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]">
+            <span data-gc="conversa.message-item.span--16" {...flx("nomeDaCitacao", "max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]")}>
               @{respondida.author.displayName}
             </span>
           </button>
         </UserProfilePopover>
-        <span data-gc="conversa.message-item.span--17" className="min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom">
+        <span data-gc="conversa.message-item.span--17" {...flx("textoDaCitacao", "min-w-0 truncate text-ink-muted [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
           {respondida.content ? (
             <MessageContent data-gc="conversa.message-item.message-content--3" content={respondida.content} emojis={emojis} mencoes={mencoes} />
           ) : (

@@ -1,0 +1,100 @@
+/*
+  GERADO por scripts/base-de-tema.mjs — não edite à mão.
+
+  Os 89 nós do grafo de cores da referência que o tokens.css não declara.
+  O porquê da camada, e por que isto não sombreia a cadeia do @theme, está no
+  cabeçalho do gerador.
+*/
+@layer variantes-do-app {
+  :root {
+    --accent-danger: var(--status-dnd);
+    --accent-info: var(--text-link);
+    --accent-primary: var(--brand-primary);
+    --accent-purple: hsl(278,calc(85%*var(--saturation-factor)),65%);
+    --accent-success: var(--status-online);
+    --accent-warning: var(--status-idle);
+    --alert-caution-color: hsl(359,calc(75%*var(--saturation-factor)),60%);
+    --alert-important-color: hsl(278,calc(85%*var(--saturation-factor)),65%);
+    --alert-note-color: hsl(198,calc(92%*var(--saturation-factor)),70%);
+    --alert-tip-color: hsl(152,calc(72%*var(--saturation-factor)),45%);
+    --alert-warning-color: hsl(45,calc(93%*var(--saturation-factor)),55%);
+    --background-channel-header: hsl(258,calc(10%*var(--saturation-factor)),15.72%);
+    --background-header-primary-hover: hsl(258,calc(10%*var(--saturation-factor)),23.57%);
+    --background-header-secondary: hsl(258,calc(10%*var(--saturation-factor)),19.25%);
+    --background-modifier-accent: hsla(258,calc(13%*var(--saturation-factor)),80%,.15);
+    --background-modifier-accent-focus: hsla(258,calc(13%*var(--saturation-factor)),80%,.22);
+    --background-modifier-hover: hsla(258,calc(10%*var(--saturation-factor)),100%,.05);
+    --background-modifier-selected: hsla(258,calc(10%*var(--saturation-factor)),100%,.1);
+    --background-primary: hsl(258,calc(10%*var(--saturation-factor)),5%);
+    --background-secondary: hsl(258,calc(10%*var(--saturation-factor)),10.59%);
+    --background-secondary-alt: hsl(258,calc(10%*var(--saturation-factor)),14.15%);
+    --background-secondary-lighter: hsl(258,calc(10%*var(--saturation-factor)),12.44%);
+    --background-tertiary: hsl(258,calc(10%*var(--saturation-factor)),17.16%);
+    --background-textarea: hsl(258,calc(10%*var(--saturation-factor)),14.69%);
+    --bg-active: var(--background-modifier-selected);
+    --bg-code: var(--code-inline-bg);
+    --bg-code-block: var(--code-block-bg);
+    --bg-hover: var(--background-modifier-hover);
+    --bg-primary: var(--background-primary);
+    --bg-secondary: var(--background-secondary);
+    --bg-table-header: var(--background-tertiary);
+    --bg-tertiary: var(--background-tertiary);
+    --border-color: hsla(258,calc(10%*var(--saturation-factor)),50%,.2);
+    --border-color-focus: hsla(198,calc(92%*var(--saturation-factor)),70%,.45);
+    --brand-primary: hsl(242,calc(70%*var(--saturation-factor)),55%);
+    --brand-primary-fill: #fff;
+    --brand-primary-light: hsl(242,calc(100%*var(--saturation-factor)),84%);
+    --brand-secondary: hsl(242,calc(60%*var(--saturation-factor)),49%);
+    --button-danger-active-fill: hsl(359,calc(65%*var(--saturation-factor)),45%);
+    --button-danger-fill: hsl(359,calc(70%*var(--saturation-factor)),54%);
+    --button-danger-text: #fff;
+    --button-ghost-text: #fff;
+    --button-primary-active-fill: hsl(136,calc(60%*var(--saturation-factor)),38%);
+    --button-primary-fill: hsl(139,calc(55%*var(--saturation-factor)),44%);
+    --button-primary-text: #fff;
+    --button-secondary-text: #fff;
+    --code-block-bg: color-mix(in srgb,var(--background-secondary-alt)92%,var(--background-primary)8%);
+    --code-inline-bg: color-mix(in srgb,var(--background-secondary-alt)88%,var(--background-tertiary)12%);
+    --composer-surface-color: var(--background-secondary-lighter);
+    --control-button-active-bg: hsl(258,calc(10%*var(--saturation-factor)),24%);
+    --control-button-active-text: var(--text-primary);
+    --control-button-danger-hover-bg: hsl(1,calc(77%*var(--saturation-factor)),20%);
+    --control-button-danger-text: hsl(1,calc(77%*var(--saturation-factor)),60%);
+    --control-button-hover-bg: hsl(258,calc(10%*var(--saturation-factor)),22%);
+    --control-button-hover-text: var(--text-primary);
+    --control-button-normal-text: var(--text-primary-muted);
+    --custom-zoom: 100;
+    --focus-primary: #00b0f4;
+    --form-surface-background: var(--background-tertiary);
+    --guild-list-foreground: hsl(258,calc(10%*var(--saturation-factor)),16.7%);
+    --interactive-active: color-mix(in oklab,hsl(0,calc(0%*var(--saturation-factor)),100%)100%,hsl(245,calc(100%*var(--saturation-factor)),80%)40%);
+    --interactive-muted: color-mix(in oklab,hsl(228,calc(10%*var(--saturation-factor)),35%)100%,hsl(245,calc(100%*var(--saturation-factor)),80%)40%);
+    --markup-mention-text: var(--text-link);
+    --panel-control-bg: color-mix(in srgb,var(--background-secondary-alt)90%,hsl(258,calc(10%*var(--saturation-factor)),2%)10%);
+    --panel-control-border: hsla(258,calc(30%*var(--saturation-factor)),65%,.45);
+    --panel-control-divider: hsla(258,calc(30%*var(--saturation-factor)),55%,.35);
+    --saturation-factor: 1;
+    --scrollbar-thumb-bg: color-mix(in srgb,var(--background-textarea)35%,var(--text-tertiary)65%);
+    --scrollbar-thumb-bg-hover: color-mix(in srgb,var(--background-textarea)25%,var(--text-secondary)75%);
+    --status-danger: hsl(1,calc(77%*var(--saturation-factor)),55%);
+    --status-dnd: hsl(0,calc(84%*var(--saturation-factor)),60%);
+    --status-idle: hsl(45,calc(93%*var(--saturation-factor)),50%);
+    --status-online: hsl(152,calc(72%*var(--saturation-factor)),40%);
+    --status-warning: var(--status-idle);
+    --surface-interactive-hover-bg: var(--background-modifier-hover);
+    --surface-interactive-selected-bg: var(--background-modifier-selected);
+    --surface-interactive-selected-color: var(--text-primary);
+    --text-chat: hsl(258,calc(10%*var(--saturation-factor)),93.67%);
+    --text-chat-muted: hsl(258,calc(10%*var(--saturation-factor)),81.42%);
+    --text-link: hsl(198,calc(92%*var(--saturation-factor)),70%);
+    --text-on-brand-primary: #fafafa;
+    --text-primary: hsl(258,calc(10%*var(--saturation-factor)),96%);
+    --text-primary-muted: hsl(258,calc(10%*var(--saturation-factor)),81.42%);
+    --text-secondary: hsl(258,calc(10%*var(--saturation-factor)),90.36%);
+    --text-selection: hsla(198,calc(92%*var(--saturation-factor)),70%,.35);
+    --text-tertiary: hsl(258,calc(10%*var(--saturation-factor)),70.4%);
+    --text-tertiary-muted: hsl(258,calc(10%*var(--saturation-factor)),62.88%);
+    --text-warning: hsl(45,calc(93%*var(--saturation-factor)),55%);
+    --user-area-divider-color: color-mix(in srgb,var(--background-modifier-hover)70%,transparent);
+  }
+}

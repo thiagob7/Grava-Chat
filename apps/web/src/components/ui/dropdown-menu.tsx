@@ -4,7 +4,7 @@ import * as DropdownPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight } from "lucide-react";
 
 import { cn } from "~/lib/utils";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-de-tema";
 
 export const DropdownMenu = DropdownPrimitive.Root;
 export const DropdownMenuTrigger = DropdownPrimitive.Trigger;
@@ -34,10 +34,12 @@ interface ItemProps extends React.ComponentProps<typeof DropdownPrimitive.Item> 
 export const DropdownMenuItem = ({ className, danger, ...props }: ItemProps) => (
   <DropdownPrimitive.Item data-gc="ui.dropdown-menu.dropdown-primitiveitem"
     className={cn(
+      flxCls("itemDoMenu"),
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm outline-none transition",
       danger
         ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-sobre-marca"
         : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
+      props.disabled && flxCls("itemDoMenuDesligado"),
       className,
     )}
     {...props}
@@ -71,8 +73,13 @@ export const DropdownMenuRadioItem = ({
   >
     <span data-gc="ui.dropdown-menu.span" className="min-w-0 flex-1 truncate">{children}</span>
 
-    <span data-gc="ui.dropdown-menu.span--2" className="flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint">
-      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator">
+    <span data-gc="ui.dropdown-menu.span--2" className={cn("flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint", flxCls("itemDeRadioDoMenu"))}>
+      {/*
+        O indicador só existe quando a opção está escolhida, então ele é o
+        lugar certo para o nome do estado escolhido — não há condição a
+        escrever, o Radix já monta e desmonta.
+      */}
+      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator" className={flxCls("itemDeRadioDoMenuEscolhido")}>
         <span data-gc="ui.dropdown-menu.span--3" className="block size-2 rounded-full bg-brand" />
       </DropdownPrimitive.ItemIndicator>
     </span>
@@ -94,7 +101,7 @@ export const DropdownMenuCheckboxItem = ({
   >
     <span data-gc="ui.dropdown-menu.span--4" className="min-w-0 flex-1 truncate">{children}</span>
 
-    <span data-gc="ui.dropdown-menu.span--5" className="flex size-4 shrink-0 items-center justify-center rounded border border-ink-faint">
+    <span data-gc="ui.dropdown-menu.span--5" className={cn("grid size-4 shrink-0 place-content-center rounded border border-ink-faint", flxCls("caixaDeMarcar"), props.checked && flxCls("caixaDeMarcarLigada"))}>
       <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator--2">
         <Check data-gc="ui.dropdown-menu.check" size={12} />
       </DropdownPrimitive.ItemIndicator>
@@ -136,6 +143,7 @@ export const DropdownMenuSubContent = ({
   <DropdownPrimitive.Portal>
     <DropdownPrimitive.SubContent data-gc="ui.dropdown-menu.dropdown-primitivesub-content"
       className={cn(
+        flxCls("submenu"),
         "regiao-sem-arrasto z-50 max-h-[70vh] min-w-48 overflow-y-auto rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
         className,
       )}

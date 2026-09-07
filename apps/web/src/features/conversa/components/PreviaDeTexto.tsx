@@ -21,6 +21,7 @@ import { api } from "~/@core/lib/api";
 import { copiarTexto } from "~/lib/copiar";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
 /// Quantas linhas ficam à mostra com o cartão recolhido. Recolhido não é
@@ -134,7 +135,7 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
 
   return (
     <>
-      <div data-gc="conversa.previa-de-texto.div--2" className="w-full max-w-4xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink">
+      <div data-gc="conversa.previa-de-texto.div--2" {...flx("previaDeTexto", "w-full max-w-4xl overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink")}>
         <div data-gc="conversa.previa-de-texto.div--3" className="relative">
           <div data-gc="conversa.previa-de-texto.div--4"
             className={cn(aberto ? "max-h-[32rem] overflow-y-auto" : "overflow-hidden")}

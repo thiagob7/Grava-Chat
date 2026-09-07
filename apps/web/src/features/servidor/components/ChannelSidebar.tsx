@@ -42,8 +42,7 @@ import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
-import { flx } from "~/lib/compat-fluxer";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface ChannelSidebarProps {
   detail: GuildDetailModel | undefined;
@@ -128,18 +127,24 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   return (
     <>
       <aside data-gc="servidor.channel-sidebar.aside"
-        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        {...flxAttr("molduraDaListaDeCanais")}
+        className={cn(
+          "canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1",
+          flxCls("molduraDaListaDeCanais"),
+        )}
         style={{ width: largura }}
       >
         {/*
           O painel dos canais termina onde o rodapé começa, e o rodapé fica de
-          fora dele. No Fluxer esses dois são irmãos, e é o que faz a borda do
+          fora dele. Na referência esses dois são irmãos, e é o que faz a borda do
           tema parar em cima em vez de cercar o usuário junto.
         */}
-        <div data-gc="servidor.channel-sidebar.div" {...flx("listaDeCanais", "lista-de-canais flex min-h-0 flex-1 flex-col")}>
+        <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
+        <div data-gc="servidor.channel-sidebar.div--2" {...flx("listaDeCanais", "lista-de-canais flex min-h-0 flex-1 flex-col")}>
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
             flxCls("cabecalhoDoServidor"),
+            flxCls("molduraDoCabecalhoDoServidor"),
             "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
             !comFaixa && "h-[var(--layout-header-height)]",
           )}
@@ -155,19 +160,19 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         >
           {comFaixa && (
             <>
-              <div data-gc="servidor.channel-sidebar.div--2"
+              <div data-gc="servidor.channel-sidebar.div--3"
                 aria-hidden
                 className="absolute inset-0 bg-cover bg-top bg-no-repeat"
                 style={{ backgroundImage: `url(${detail!.guild.bannerUrl})` }}
               />
-              <div data-gc="servidor.channel-sidebar.div--3"
+              <div data-gc="servidor.channel-sidebar.div--4"
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-sobre-midia to-transparent"
               />
             </>
           )}
 
-          <div data-gc="servidor.channel-sidebar.div--4" className="relative z-10 flex h-[var(--layout-header-height)] w-full items-center justify-between px-2">
+          <div data-gc="servidor.channel-sidebar.div--5" className="relative z-10 flex h-[var(--layout-header-height)] w-full items-center justify-between px-2">
           <DropdownMenu data-gc="servidor.channel-sidebar.dropdown-menu">
             <DropdownMenuTrigger data-gc="servidor.channel-sidebar.dropdown-menu-trigger" asChild disabled={!detail}>
               <button data-gc="servidor.channel-sidebar.button"
@@ -268,15 +273,15 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </div>
         </header>
 
-        <div data-gc="servidor.channel-sidebar.div--5" className="relative flex min-h-0 flex-1 flex-col">
-          <div data-gc="servidor.channel-sidebar.div--6" {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
+        <div data-gc="servidor.channel-sidebar.div--6" className="relative flex min-h-0 flex-1 flex-col">
+          <div data-gc="servidor.channel-sidebar.div--7" {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
 
               return (
-                <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} className="mb-4">
+                <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("grupoDeCanais", "mb-4")}>
                   {group.name && (
-                    <div data-gc="servidor.channel-sidebar.div--7" className="group flex items-center justify-between px-1">
+                    <div data-gc="servidor.channel-sidebar.div--8" className="group flex items-center justify-between px-1">
                       <button data-gc="servidor.channel-sidebar.button--3"
                         onClick={() =>
                           group.id &&
@@ -329,7 +334,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         : null;
 
                       return (
-                        <div data-gc="servidor.channel-sidebar.div--8" key={channel.id} className="group/canal relative">
+                        <div data-gc="servidor.channel-sidebar.div--9" key={channel.id} className="group/canal relative">
                           <button data-gc="servidor.channel-sidebar.button--5"
                             onClick={() => onSelectChannel(channel.id)}
                             className={cn(
@@ -418,6 +423,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                         : undefined
                                     }
                                     className={cn(
+                                      flxCls("seloDeMencao"),
                                       "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
                                       mencoes > 0
                                         ? "bg-danger text-sobre-marca"
@@ -432,7 +438,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             </span>
                           </button>
 
-                          <div data-gc="servidor.channel-sidebar.div--9" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
+                          <div data-gc="servidor.channel-sidebar.div--10" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                             {channel.type === "VOICE" && (
                               <button data-gc="servidor.channel-sidebar.button--6"
                                 onClick={() => onOpenVoiceChat?.(channel.id)}

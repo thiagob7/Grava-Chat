@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "تغيير صورة الملف الشخصي",
     trocarFotoCurto: "تغيير الصورة",
     suaEtiqueta: "وسمك",
+    pronomes: "الضمائر",
     editarEtiqueta: "انقر لتعديل وسمك",
     conteAlgo: "احكِ لنا شيئًا عنك",
     adicionarStatus: "إضافة حالة",

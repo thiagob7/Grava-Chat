@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Promijeni profilnu sliku",
     trocarFotoCurto: "Promijeni sliku",
     suaEtiqueta: "Tvoja oznaka",
+    pronomes: "Zamjenice",
     editarEtiqueta: "Klikni da urediš svoju oznaku",
     conteAlgo: "Reci nam nešto o sebi",
     adicionarStatus: "Dodaj status",

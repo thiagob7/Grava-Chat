@@ -45,7 +45,7 @@ import { TypingIndicator } from "~/features/conversa/components/TypingIndicator"
 import { useSession } from "~/contexts/session-context";
 import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 export const DirectMessages: React.FC = () => {
   const { channelId } = useParams();
@@ -153,7 +153,7 @@ export const DirectMessages: React.FC = () => {
   );
 
   return (
-    <div data-gc="friends.direct-messages.div" className="flex h-full bg-surface-0">
+    <div data-gc="friends.direct-messages.div" {...flx("paginaDeConversas", "flex h-full bg-surface-0")}>
       <PrimeiroServidor data-gc="friends.direct-messages.primeiro-servidor" aberto={convidando} onFechar={() => setDispensado(true)} />
 
       {telaEstreita ? (
@@ -168,104 +168,109 @@ export const DirectMessages: React.FC = () => {
       )}
 
       {conversa ? (
-        <div data-gc="friends.direct-messages.div--2" className="topo-do-miolo flex min-w-0 flex-1 flex-col">
-          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-surface-2 px-4 shadow-sm")}>
-            {telaEstreita && (
-              <button data-gc="friends.direct-messages.button"
-                onClick={() => setMenuAberto(true)}
-                aria-label="Abrir conversas"
-                className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
-              >
-                <Menu data-gc="friends.direct-messages.menu" size={20} />
-              </button>
-            )}
-            <Avatar data-gc="friends.direct-messages.avatar"
-              id={conversa.user.id}
-              name={conversa.user.displayName}
-              url={conversa.user.avatarUrl}
-              status={conversa.user.status}
-              size={24}
-            />
-            <h2 data-gc="friends.direct-messages.h2" className="font-semibold">{conversa.user.displayName}</h2>
-
-            {emChamadaAqui ? (
-              <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
-                <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> Em uma chamada
-              </span>
-            ) : (
-              <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{conversa.user.username}</span>
-            )}
-
-            <div data-gc="friends.direct-messages.div--3" className="ml-auto flex items-center gap-1">
-              <Tooltip data-gc="friends.direct-messages.tooltip" label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
-                <button data-gc="friends.direct-messages.button--2"
-                  onClick={() =>
-                    void (emChamadaAqui ? sairDaChamada() : entrarNaChamada(conversa.id))
-                  }
-                  aria-label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}
-                  className={cn(
-                    "flex size-8 items-center justify-center rounded-full transition",
-                    emChamadaAqui
-                      ? "bg-danger text-sobre-marca hover:brightness-110"
-                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-                  )}
+        <div data-gc="friends.direct-messages.div--2" {...flx("colunaDaConversaDireta", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
+          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-surface-2 shadow-sm")}>
+            <div data-gc="friends.direct-messages.div--3"
+              {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-2 px-4")}
+            >
+              {telaEstreita && (
+                <button data-gc="friends.direct-messages.button"
+                  onClick={() => setMenuAberto(true)}
+                  aria-label="Abrir conversas"
+                  className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
                 >
-                  {emChamadaAqui ? (
-                    <PhoneSlash data-gc="friends.direct-messages.phone-slash" size={17} weight="fill" />
-                  ) : (
-                    <Phone data-gc="friends.direct-messages.phone--2" size={17} weight="fill" />
-                  )}
+                  <Menu data-gc="friends.direct-messages.menu" size={20} />
                 </button>
-              </Tooltip>
+              )}
+              <Avatar data-gc="friends.direct-messages.avatar"
+                id={conversa.user.id}
+                name={conversa.user.displayName}
+                url={conversa.user.avatarUrl}
+                status={conversa.user.status}
+                size={24}
+              />
+              <h2 data-gc="friends.direct-messages.h2" className="font-semibold">{conversa.user.displayName}</h2>
 
-              <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
-                <button data-gc="friends.direct-messages.button--3"
-                  onClick={() => void (cameraLigada ? ligarCamera() : ligarComVideo(conversa.id))}
-                  aria-label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
-                  className={cn(
-                    "flex size-8 items-center justify-center rounded-full transition",
-                    cameraLigada && emChamadaAqui
-                      ? "bg-surface-4 text-ink"
-                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-                  )}
-                >
-                  <VideoCamera data-gc="friends.direct-messages.video-camera" size={17} weight="fill" />
-                </button>
-              </Tooltip>
+              {emChamadaAqui ? (
+                <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
+                  <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> Em uma chamada
+                </span>
+              ) : (
+                <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{conversa.user.username}</span>
+              )}
 
-              <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={conversa.id} canManage />
+              <div data-gc="friends.direct-messages.div--4" className="ml-auto flex items-center gap-1">
+                <Tooltip data-gc="friends.direct-messages.tooltip" label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
+                  <button data-gc="friends.direct-messages.button--2"
+                    onClick={() =>
+                      void (emChamadaAqui ? sairDaChamada() : entrarNaChamada(conversa.id))
+                    }
+                    aria-label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-full transition",
+                      emChamadaAqui
+                        ? "bg-danger text-sobre-marca hover:brightness-110"
+                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                    )}
+                  >
+                    {emChamadaAqui ? (
+                      <PhoneSlash data-gc="friends.direct-messages.phone-slash" size={17} weight="fill" />
+                    ) : (
+                      <Phone data-gc="friends.direct-messages.phone--2" size={17} weight="fill" />
+                    )}
+                  </button>
+                </Tooltip>
 
-              <Tooltip data-gc="friends.direct-messages.tooltip--3" label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
-                <button data-gc="friends.direct-messages.button--4"
-                  onClick={() => setPerfilAberto((aberto) => !aberto)}
-                  aria-label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}
-                  aria-pressed={perfilAberto}
-                  className={cn(
-                    "flex size-8 items-center justify-center rounded-full transition",
-                    perfilAberto
-                      ? "bg-surface-4 text-ink"
-                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-                  )}
-                >
-                  <User data-gc="friends.direct-messages.user" weight="fill" size={17} />
-                </button>
-              </Tooltip>
+                <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
+                  <button data-gc="friends.direct-messages.button--3"
+                    onClick={() => void (cameraLigada ? ligarCamera() : ligarComVideo(conversa.id))}
+                    aria-label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-full transition",
+                      cameraLigada && emChamadaAqui
+                        ? "bg-surface-4 text-ink"
+                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                    )}
+                  >
+                    <VideoCamera data-gc="friends.direct-messages.video-camera" size={17} weight="fill" />
+                  </button>
+                </Tooltip>
 
-              <EstrelaDoCanal data-gc="friends.direct-messages.estrela-do-canal" channelId={conversa.id} />
+                <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={conversa.id} canManage />
 
-              <CampoDeBusca data-gc="friends.direct-messages.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />
+                <Tooltip data-gc="friends.direct-messages.tooltip--3" label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
+                  <button data-gc="friends.direct-messages.button--4"
+                    onClick={() => setPerfilAberto((aberto) => !aberto)}
+                    aria-label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}
+                    aria-pressed={perfilAberto}
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-full transition",
+                      perfilAberto
+                        ? "bg-surface-4 text-ink"
+                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                    )}
+                  >
+                    <User data-gc="friends.direct-messages.user" weight="fill" size={17} />
+                  </button>
+                </Tooltip>
 
-              <BotaoDoAplicativo data-gc="friends.direct-messages.botao-do-aplicativo" />
-              <CaixaDeEntrada data-gc="friends.direct-messages.caixa-de-entrada" />
+                <EstrelaDoCanal data-gc="friends.direct-messages.estrela-do-canal" channelId={conversa.id} />
+
+                <CampoDeBusca data-gc="friends.direct-messages.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />
+
+                <BotaoDoAplicativo data-gc="friends.direct-messages.botao-do-aplicativo" />
+                <CaixaDeEntrada data-gc="friends.direct-messages.caixa-de-entrada" />
+              </div>
             </div>
           </header>
 
-          <div data-gc="friends.direct-messages.div--4" className="flex min-h-0 flex-1">
+          <div data-gc="friends.direct-messages.div--5" className="flex min-h-0 flex-1">
             <main data-gc="friends.direct-messages.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
           {emChamadaAqui && (
-            <div data-gc="friends.direct-messages.div--5"
+            <div data-gc="friends.direct-messages.div--6"
               className={cn(
+                flxCls("chamadaCompacta"),
                 "flex flex-col overflow-hidden border-b border-divisor",
                 chatDaChamada
                   ? cn("shrink-0", assistindo ? "h-96 max-h-[50vh]" : "h-56")
@@ -345,7 +350,7 @@ const Chamando: React.FC<{
   }, []);
 
   return (
-    <div data-gc="friends.direct-messages.div--6" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
+    <div data-gc="friends.direct-messages.div--7" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
       <span data-gc="friends.direct-messages.span--3" className="relative">
         <Avatar data-gc="friends.direct-messages.avatar--2" id={userId} name={nome} url={avatarUrl} size={72} />
         <span data-gc="friends.direct-messages.span--4" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />

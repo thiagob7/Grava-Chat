@@ -48,26 +48,71 @@ function bloco(css, abertura) {
   return css.slice(chave, fim);
 }
 
-function corDe(corpo, nome) {
-  const achado = new RegExp(`^\\s+${nome}:\\s*([^;]+);`, "m").exec(corpo);
-  if (!achado?.[1]) throw new Error(`o bloco não declara ${nome}`);
+function declarado(corpo, nome) {
+  return new RegExp(`^\\s+${nome}:\\s*([^;]+);`, "m").exec(corpo)?.[1]?.trim() ?? null;
+}
 
-  return achado[1].trim();
+/*
+  A cor de um token, em qualquer bloco.
+
+  Desde que as cores nascem do nome da referência, o `@theme` guarda
+  `--color-surface-0: var(--background-primary, #1a181e)` e as variantes giram a
+  maçaneta — declaram `--background-primary: #020203`, não a nossa cor. Então
+  procurar só pelo nosso nome não acha mais nada fora do padrão.
+
+  A busca é: a maçaneta no bloco, depois o nosso nome no bloco, e por último a
+  reserva no fim da cadeia — que é justamente o valor do tema escuro.
+*/
+function corDe(corpo, nome, cadeia) {
+  const laco = cadeia?.[nome];
+
+  for (const macaneta of laco?.nomes ?? []) {
+    const achado = declarado(corpo, macaneta);
+    if (achado) return achado;
+  }
+
+  const nosso = declarado(corpo, nome);
+
+  /// No `@theme` o valor É a cadeia; a cor do tema escuro é a reserva dela.
+  return (nosso?.startsWith("var(") ? null : nosso) ?? laco?.reserva ?? null;
+}
+
+/// A cadeia de cada token, lida do próprio @theme.
+function cadeiaDoTema(css) {
+  const corpo = bloco(css, "@theme {");
+  const mapa = {};
+
+  for (const [, nome, valor] of corpo.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)) {
+    const nomes = [...valor.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]);
+    let reserva = valor.trim();
+
+    while (reserva.startsWith("var(")) {
+      const virgula = reserva.indexOf(",");
+      if (virgula < 0) break;
+      reserva = reserva.slice(virgula + 1, reserva.lastIndexOf(")")).trim();
+    }
+
+    mapa[nome] = { nomes, reserva };
+  }
+
+  return mapa;
 }
 
 export function extrairAmostras(css) {
   const porTema = {};
+  const cadeia = cadeiaDoTema(css);
 
   for (const [tema, abertura] of Object.entries(ONDE)) {
     const corpo = bloco(css, abertura);
+    const cor = (nome) => {
+      const achado = corDe(corpo, nome, cadeia);
+      if (!achado) throw new Error(`não achei ${nome} em \`${abertura}\``);
+      return achado;
+    };
 
     porTema[tema] = {
-      amostra: [
-        corDe(corpo, "--color-surface-0"),
-        corDe(corpo, "--color-surface-1"),
-        corDe(corpo, "--color-surface-2"),
-      ],
-      acento: corDe(corpo, "--color-brand"),
+      amostra: [cor("--color-surface-0"), cor("--color-surface-1"), cor("--color-surface-2")],
+      acento: cor("--color-brand"),
     };
   }
 

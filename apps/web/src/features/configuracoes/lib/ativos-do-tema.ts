@@ -11,10 +11,10 @@
   gente troca pelo endereço do arquivo que está guardado com esse nome. Quem
   importa o tema sobe a sua própria imagem com o mesmo nome e ela aparece.
 
-  `fluxer-theme-asset("fundo")` é a mesma coisa, escrita no vocabulário da
-  referência — vale pelo mesmo motivo que a ponte de nomes de variável vale.
+  Uma sintaxe só, a nossa. Chegou a aceitar também a de outro cliente, e saiu:
+  nenhum tema que temos em mãos usava, e o app não carrega nome de fora.
 */
-const CHAMADA = /(?:gc-ativo|fluxer-theme-asset)\(\s*(["']?)([^"')]+)\1\s*\)/g;
+const CHAMADA = /gc-ativo\(\s*(["']?)([^"')]+)\1\s*\)/g;
 
 export interface AtivoNomeado {
   nome: string;

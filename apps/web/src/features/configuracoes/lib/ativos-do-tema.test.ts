@@ -29,15 +29,6 @@ describe("ativos do tema", () => {
     expect(css).toContain(`url("https://cdn/2.jpg")`);
   });
 
-  it("entende o nome da referência do mesmo jeito", () => {
-    const { css } = resolverAtivos(
-      `a { background: fluxer-theme-asset("fundo"); }`,
-      ATIVOS,
-    );
-
-    expect(css).toContain(`url("https://cdn/1.png")`);
-  });
-
   /*
     Deixar como está faz a declaração inteira ser inválida, e o navegador a
     ignora. Trocar por vazio pintaria por cima e a pessoa acharia que o tema é

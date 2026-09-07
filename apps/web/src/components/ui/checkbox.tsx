@@ -2,6 +2,7 @@ import React from "react";
 import { Check } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-de-tema";
 
 export interface CheckboxProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -26,6 +27,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     <span data-gc="ui.checkbox.span--2"
       aria-hidden
       className={cn(
+        flxCls("caixaDeMarcarSolta"),
         "pointer-events-none flex size-4 items-center justify-center rounded border transition",
         "border-ink-faint/60 bg-transparent",
         "peer-hover:border-ink-faint",

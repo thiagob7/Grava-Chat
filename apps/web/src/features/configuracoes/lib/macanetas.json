@@ -1,0 +1,193 @@
+{
+  "--color-surface-0": [
+    "--background-primary",
+    "--bg-primary",
+    "--background-mobile-primary"
+  ],
+  "--color-surface-1": [
+    "--background-secondary",
+    "--bg-secondary",
+    "--background-mobile-secondary"
+  ],
+  "--color-surface-2": [
+    "--background-secondary-lighter",
+    "--settings-surface-background"
+  ],
+  "--color-surface-3": [
+    "--guild-list-foreground",
+    "--background-tertiary",
+    "--panel-control-bg",
+    "--bg-table-header",
+    "--bg-tertiary"
+  ],
+  "--color-surface-4": [
+    "--form-surface-background",
+    "--background-floating"
+  ],
+  "--color-trilho": [
+    "--scrollbar-thumb-bg-hover",
+    "--scrollbar-thumb-bg"
+  ],
+  "--color-line": [
+    "--border-color",
+    "--background-header-secondary",
+    "--panel-control-border",
+    "--settings-border-color"
+  ],
+  "--color-campo": [
+    "--background-textarea",
+    "--deprecated-quickswitcher-input-background",
+    "--channeltextarea-background"
+  ],
+  "--color-campo-foco": [
+    "--background-modifier-accent-focus",
+    "--border-color-focus"
+  ],
+  "--color-composer": [
+    "--composer-surface-color",
+    "--background-secondary-lighter"
+  ],
+  "--color-cabecalho": [
+    "--background-channel-header"
+  ],
+  "--color-painel": [
+    "--background-secondary-alt",
+    "--deprecated-panel-background"
+  ],
+  "--color-selecionado": [
+    "--text-selection",
+    "--background-modifier-selected",
+    "--control-button-active-bg",
+    "--bg-active",
+    "--surface-interactive-selected-bg",
+    "--background-modifier-active"
+  ],
+  "--color-ink": [
+    "--text-chat",
+    "--text-primary",
+    "--button-secondary-text",
+    "--interactive-active",
+    "--control-button-active-text",
+    "--control-button-hover-text",
+    "--surface-interactive-selected-color",
+    "--voice-text-strong",
+    "--interactive-hover",
+    "--header-primary"
+  ],
+  "--color-ink-muted": [
+    "--text-chat-muted",
+    "--text-primary-muted",
+    "--text-secondary",
+    "--button-ghost-text",
+    "--control-button-normal-text",
+    "--interactive-normal",
+    "--channels-default",
+    "--text-normal",
+    "--header-secondary"
+  ],
+  "--color-ink-faint": [
+    "--text-tertiary-muted",
+    "--text-tertiary",
+    "--interactive-muted",
+    "--text-muted"
+  ],
+  "--color-brand": [
+    "--accent-primary",
+    "--brand-primary",
+    "--button-primary-fill",
+    "--brand-500",
+    "--brand-experiment",
+    "--background-accent"
+  ],
+  "--color-brand-hover": [
+    "--brand-primary-light",
+    "--brand-secondary",
+    "--button-primary-active-fill",
+    "--brand-560"
+  ],
+  "--color-online": [
+    "--status-online",
+    "--accent-success",
+    "--alert-tip-color",
+    "--info-positive-foreground",
+    "--status-positive"
+  ],
+  "--color-idle": [
+    "--status-idle",
+    "--accent-warning",
+    "--status-warning",
+    "--info-warning-foreground",
+    "--status-warning-background"
+  ],
+  "--color-dnd": [
+    "--status-dnd",
+    "--button-danger-fill"
+  ],
+  "--color-danger": [
+    "--status-danger",
+    "--accent-danger",
+    "--button-danger-fill",
+    "--button-danger-active-fill",
+    "--alert-caution-color",
+    "--control-button-danger-text",
+    "--info-danger-foreground"
+  ],
+  "--color-link": [
+    "--text-link",
+    "--alert-note-color",
+    "--accent-info"
+  ],
+  "--color-mencao": [
+    "--markup-mention-text",
+    "--text-link"
+  ],
+  "--color-everyone": [
+    "--alert-important-color",
+    "--accent-purple"
+  ],
+  "--color-destaque": [
+    "--message-mention-color"
+  ],
+  "--color-destaque-fundo": [
+    "--message-mention-bg"
+  ],
+  "--color-codigo": [
+    "--code-inline-bg",
+    "--bg-code"
+  ],
+  "--color-codigo-bloco": [
+    "--code-block-bg",
+    "--bg-code-block"
+  ],
+  "--color-aviso": [
+    "--accent-warning",
+    "--text-warning",
+    "--alert-warning-color"
+  ],
+  "--color-divisor": [
+    "--user-area-divider-color",
+    "--background-modifier-accent",
+    "--panel-control-divider"
+  ],
+  "--color-hover": [
+    "--background-modifier-hover",
+    "--control-button-hover-bg",
+    "--background-header-primary-hover",
+    "--bg-hover",
+    "--surface-interactive-hover-bg",
+    "--settings-hover-background",
+    "--background-message-hover"
+  ],
+  "--color-sobre-marca": [
+    "--brand-primary-fill",
+    "--text-on-brand-primary",
+    "--button-danger-text",
+    "--button-primary-text"
+  ],
+  "--color-danger-fundo": [
+    "--control-button-danger-hover-bg"
+  ],
+  "--color-foco-anel": [
+    "--focus-primary"
+  ]
+}

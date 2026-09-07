@@ -41,6 +41,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { nomeDoDispositivo, useDispositivos } from "~/features/voz/hooks/use-dispositivos";
 import { useTelaCheia } from "~/features/voz/hooks/use-tela-cheia";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
@@ -83,12 +84,15 @@ export const VoiceStageControls: React.FC<{
 
   return (
     <div data-gc="voz.voice-stage-controls.div"
-      className={cn(
-        "pointer-events-none absolute inset-x-0 bottom-4 flex items-center gap-2 px-4",
-        "transition-opacity duration-150",
-        menusAbertos > 0
-          ? "opacity-100"
-          : "opacity-0 focus-within:opacity-100 group-hover:opacity-100",
+      {...flx(
+        "barraDeControlesDaChamada",
+        cn(
+          "pointer-events-none absolute inset-x-0 bottom-4 flex items-center gap-2 px-4",
+          "transition-opacity duration-150",
+          menusAbertos > 0
+            ? "opacity-100"
+            : "opacity-0 focus-within:opacity-100 group-hover:opacity-100",
+        ),
       )}
     >
       <div data-gc="voz.voice-stage-controls.div--2" className="flex flex-1 justify-start">

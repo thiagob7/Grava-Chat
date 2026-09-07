@@ -7,7 +7,7 @@ import { ehDeArquivo, folgaDaDecoracao } from "~/features/perfil/lib/decoracoes"
 import { classeDoEnfeite, variaveisDoEnfeite } from "~/features/perfil/lib/estilos";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
-import { flx, flxAttr, flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface AvatarProps {
   id: string;
@@ -63,6 +63,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   return (
     <div data-gc="perfil.avatar.div"
       className={cn(
+        flxCls("molduraDoAvatar"),
         "avatar relative shrink-0 rounded-full transition-shadow duration-100",
         flxCls("avatar"),
         speaking && "shadow-[0_0_0_3px_var(--color-online)]",

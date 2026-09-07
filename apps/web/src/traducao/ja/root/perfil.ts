@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "プロフィール画像を変更",
     trocarFotoCurto: "画像を変更",
     suaEtiqueta: "あなたのタグ",
+    pronomes: "代名詞",
     editarEtiqueta: "クリックしてタグを編集",
     conteAlgo: "自分のことを書いてください",
     adicionarStatus: "ステータスを追加",

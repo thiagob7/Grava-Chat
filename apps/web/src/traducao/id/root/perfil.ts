@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Ganti foto profil",
     trocarFotoCurto: "Ganti foto",
     suaEtiqueta: "Tagmu",
+    pronomes: "Kata ganti",
     editarEtiqueta: "Klik untuk mengedit tagmu",
     conteAlgo: "Ceritakan sesuatu tentang dirimu",
     adicionarStatus: "Tambah status",

@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
 
 interface PinnedMessagesPanelProps {

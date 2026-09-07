@@ -17,6 +17,7 @@ export interface RascunhoDePerfil {
   etiqueta: string;
   tagGuildId: string | null;
   bio: string;
+  pronomes: string;
   avatarUrl: string | null;
 
   fonte: FonteDeNome;
@@ -44,6 +45,7 @@ export function doUsuario(user: SelfUserModel): RascunhoDePerfil {
     etiqueta: p?.etiqueta ?? "",
     tagGuildId: p?.tagGuildId ?? null,
     bio: user.bio ?? "",
+    pronomes: user.pronomes ?? "",
     avatarUrl: user.avatarUrl,
 
     fonte: p?.nome?.fonte ?? "padrao",

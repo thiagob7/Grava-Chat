@@ -1,4 +1,9 @@
 import React, { useMemo, useState } from "react";
+import {
+  classeDaOpcaoDeRadio,
+  classeDoGrupoDeRadio,
+  IndicadorDeRadio,
+} from "~/components/ui/radio-group";
 
 import { CampoSelect } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
@@ -54,7 +59,7 @@ export const IdiomaSection: React.FC = () => {
         <div data-gc="configuracoes.idioma-section.div--2"
           role="radiogroup"
           aria-label={t("idioma.formatoDaHora.titulo")}
-          className="space-y-2"
+          className={cn(classeDoGrupoDeRadio(), "space-y-2")}
         >
           {FORMATOS.map((formato) => {
             const escolhido = prefs.horaEm24h === formato.vinteQuatro;
@@ -64,34 +69,26 @@ export const IdiomaSection: React.FC = () => {
                 key={formato.chave}
                 type="button"
                 role="radio"
+                data-state={escolhido ? "checked" : "unchecked"}
                 aria-checked={escolhido}
                 onClick={() =>
                   prefs.definir({ horaEm24h: formato.vinteQuatro })
                 }
                 className={cn(
+                  classeDaOpcaoDeRadio(),
                   "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition",
                   escolhido
                     ? "border-brand bg-brand/5"
                     : "border-line hover:bg-surface-3",
                 )}
               >
-                <span data-gc="configuracoes.idioma-section.span"
-                  aria-hidden
-                  className={cn(
-                    "relative mt-0.5 size-4 shrink-0 rounded-full border transition",
-                    escolhido ? "border-brand" : "border-surface-4",
-                  )}
-                >
-                  {escolhido && (
-                    <span data-gc="configuracoes.idioma-section.span--2" className="absolute inset-[3px] rounded-full bg-brand" />
-                  )}
-                </span>
+                <IndicadorDeRadio data-gc="configuracoes.idioma-section.indicador-de-radio" escolhido={escolhido} className="mt-0.5" />
 
-                <span data-gc="configuracoes.idioma-section.span--3" className="min-w-0 flex-1">
-                  <span data-gc="configuracoes.idioma-section.span--4" className="block text-sm font-medium">
+                <span data-gc="configuracoes.idioma-section.span" className="min-w-0 flex-1">
+                  <span data-gc="configuracoes.idioma-section.span--2" className="block text-sm font-medium">
                     {t(formato.chave)}
                   </span>
-                  <span data-gc="configuracoes.idioma-section.span--5" className="mt-0.5 block font-mono text-xs text-ink-faint">
+                  <span data-gc="configuracoes.idioma-section.span--3" className="mt-0.5 block font-mono text-xs text-ink-faint">
                     {formato.exemplo}
                   </span>
                 </span>
@@ -128,10 +125,10 @@ const EscolherIdioma: React.FC = () => {
         opcoes={IDIOMAS.map((idioma) => ({
           valor: idioma.lng,
           rotulo: (
-            <span data-gc="configuracoes.idioma-section.span--6" className="flex w-full min-w-0 items-center gap-3">
-              <span data-gc="configuracoes.idioma-section.span--7" className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
-              <span data-gc="configuracoes.idioma-section.span--8" className="shrink-0 text-ink-faint">{idioma.nome}</span>
-              <span data-gc="configuracoes.idioma-section.span--9" aria-hidden className="shrink-0 text-base leading-none">
+            <span data-gc="configuracoes.idioma-section.span--4" className="flex w-full min-w-0 items-center gap-3">
+              <span data-gc="configuracoes.idioma-section.span--5" className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
+              <span data-gc="configuracoes.idioma-section.span--6" className="shrink-0 text-ink-faint">{idioma.nome}</span>
+              <span data-gc="configuracoes.idioma-section.span--7" aria-hidden className="shrink-0 text-base leading-none">
                 {idioma.bandeira}
               </span>
             </span>

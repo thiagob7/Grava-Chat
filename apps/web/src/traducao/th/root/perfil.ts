@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "เปลี่ยนรูปโปรไฟล์",
     trocarFotoCurto: "เปลี่ยนรูป",
     suaEtiqueta: "แท็กของคุณ",
+    pronomes: "สรรพนาม",
     editarEtiqueta: "คลิกเพื่อแก้ไขแท็กของคุณ",
     conteAlgo: "เล่าอะไรเกี่ยวกับตัวคุณหน่อย",
     adicionarStatus: "เพิ่มสถานะ",

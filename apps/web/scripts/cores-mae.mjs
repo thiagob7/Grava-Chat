@@ -37,6 +37,26 @@ const LISTA = join(
 );
 
 /*
+  O valor de reserva no fim da cadeia.
+
+  Desde que as cores nascem do nome da referência, o `@theme` guarda
+  `var(--background-primary, var(--bg-primary, #1a181e))` em vez de `#1a181e`.
+  A cor do tema base é a última — a que vale quando nenhum tema declarou nada — e
+  é dela que as distâncias das cores-mãe são medidas.
+*/
+function corDaReserva(valor) {
+  let v = valor.trim();
+
+  while (v.startsWith("var(")) {
+    const virgula = v.indexOf(",");
+    if (virgula < 0) return v;
+    v = v.slice(virgula + 1, v.lastIndexOf(")")).trim();
+  }
+
+  return v;
+}
+
+/*
   Quem é mãe de quem. Isto é a parte que uma máquina não descobre: que o
   `--color-hover` pertence à família do fundo e o `--color-foco-anel` à da
   marca é significado, não medida. Os números vêm do CSS; a família vem daqui.
@@ -134,7 +154,7 @@ function coresDoTema(css) {
   for (const [, nome, valor] of corpo.matchAll(
     /^\s+(--color-[\w-]+):\s*([^;]+);/gm,
   )) {
-    cores[nome] = valor.trim();
+    cores[nome] = corDaReserva(valor);
   }
 
   return cores;

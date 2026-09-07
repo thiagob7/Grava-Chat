@@ -97,7 +97,7 @@ describe("o que o tema declarou", () => {
   });
 
   /*
-    A camada de tokens já declara o vocabulário inteiro do Fluxer. Se ler uma
+    A camada de tokens já declara o vocabulário inteiro da referência. Se ler uma
     variável contasse como declarar, a ponte escreveria a camada de referência
     por cima das cores reais — que foi o que deixou o cabeçalho de outra cor.
   */
@@ -161,5 +161,49 @@ describe("o que o tema declarou", () => {
     const nomes = Object.keys(PONTE_DE_TEMA);
 
     expect(nomes).toHaveLength(new Set(nomes).size);
+  });
+
+  /*
+    Metade dos temas da comunidade escreve em `:root` e a outra metade em
+    `body`. As duas formas são corretas, e quem lê os nomes declarados não
+    pode distinguir uma da outra — a leitura do computado acontece depois, no
+    `body`, justamente para cobrir as duas.
+  */
+  it("acha os nomes tanto em :root quanto em body", () => {
+    const declaracoes = "--background-primary: #120e1a; --brand-primary: #8a5cf6;";
+
+    const naRaiz = nomesDeclaradosNoTema(`:root { ${declaracoes} }`);
+    const noBody = nomesDeclaradosNoTema(`body { ${declaracoes} }`);
+
+    expect([...noBody].sort()).toEqual([...naRaiz].sort());
+    expect(noBody.has("--background-primary")).toBe(true);
+  });
+
+  it("traduz o vocabulário do Discord, não só o da referência", () => {
+    const saida = traduzirTema({
+      "--header-primary": "#ffffff",
+      "--text-muted": "#888888",
+      "--brand-experiment": "#5865f2",
+      "--channeltextarea-background": "#1e182e",
+    });
+
+    expect(saida["--color-ink"]).toBe("#ffffff");
+    expect(saida["--color-ink-faint"]).toBe("#888888");
+    expect(saida["--color-brand"]).toBe("#5865f2");
+    expect(saida["--color-campo"]).toBe("#1e182e");
+  });
+
+  /*
+    Os dois dialetos usam nomes iguais para papéis diferentes. Quando o tema
+    fala os dois, o da referência é o nosso canônico e tem que vencer — é ele que
+    está no fim da tabela.
+  */
+  it("o nome da referência vence o do Discord quando o tema fala os dois", () => {
+    const saida = traduzirTema({
+      "--header-primary": "#111111",
+      "--text-primary": "#222222",
+    });
+
+    expect(saida["--color-ink"]).toBe("#222222");
   });
 });

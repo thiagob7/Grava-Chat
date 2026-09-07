@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Změnit profilovou fotku",
     trocarFotoCurto: "Změnit fotku",
     suaEtiqueta: "Tvůj štítek",
+    pronomes: "Zájmena",
     editarEtiqueta: "Klikni pro úpravu štítku",
     conteAlgo: "Napiš něco o sobě",
     adicionarStatus: "Přidat stav",

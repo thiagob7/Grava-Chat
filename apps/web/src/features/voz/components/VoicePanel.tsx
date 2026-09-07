@@ -12,6 +12,7 @@ import { corDoPing, useVoicePing, type PingDaChamada } from "~/features/voz/hook
 import { desktop } from "~/lib/desktop";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
@@ -71,7 +72,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
   const channel = channels.find((c) => c.id === channelId);
 
   return (
-    <div data-gc="voz.voice-panel.div" className={SECAO_DA_CHAMADA}>
+    <div data-gc="voz.voice-panel.div" {...flx("chamadaNoRodape", SECAO_DA_CHAMADA)}>
       <div data-gc="voz.voice-panel.div--2" className="mb-2 flex items-center justify-between">
         <div data-gc="voz.voice-panel.div--3" className="min-w-0">
           <VoiceDetailsPopover data-gc="voz.voice-panel.voice-details-popover" ping={ping} regiao={regiaoDaChamada(config?.voiceUrl)}>

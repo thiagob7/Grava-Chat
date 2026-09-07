@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Profil fotoğrafını değiştir",
     trocarFotoCurto: "Fotoğrafı değiştir",
     suaEtiqueta: "Etiketin",
+    pronomes: "Zamirler",
     editarEtiqueta: "Etiketini düzenlemek için tıkla",
     conteAlgo: "Kendinden biraz bahset",
     adicionarStatus: "Durum ekle",

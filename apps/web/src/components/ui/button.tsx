@@ -3,22 +3,27 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "~/lib/utils";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-de-tema";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-foco-anel disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
+  cn(
+    flxCls("botao"),
+    "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-foco-anel disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
+  ),
   {
     variants: {
       variant: {
-        primary: "bg-brand text-ink hover:bg-brand-hover",
+        primary: cn("bg-brand text-ink hover:bg-brand-hover", flxCls("botaoPrimario")),
         success: "bg-online text-sobre-marca hover:brightness-110",
-        danger: "bg-danger text-sobre-marca hover:brightness-110",
+        danger: cn("bg-danger text-sobre-marca hover:brightness-110", flxCls("botaoDePerigo")),
         surface: cn(
           "bg-surface-3 text-ink-muted hover:bg-surface-4 hover:text-ink",
           flxCls("botaoSecundario"),
         ),
-        outline:
+        outline: cn(
           "border border-line bg-surface-4 text-ink hover:bg-[color-mix(in_srgb,var(--color-surface-4)_94%,var(--color-ink)_6%)]",
+          flxCls("botaoInvertido"),
+        ),
         ghost: "text-ink-muted hover:bg-surface-3 hover:text-ink",
         link: "text-brand hover:underline",
       },

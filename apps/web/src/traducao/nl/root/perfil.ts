@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "De profielfoto wijzigen",
     trocarFotoCurto: "De foto wijzigen",
     suaEtiqueta: "Jouw label",
+    pronomes: "Voornaamwoorden",
     editarEtiqueta: "Klik om je label te bewerken",
     conteAlgo: "Vertel iets over jezelf",
     adicionarStatus: "Status toevoegen",

@@ -88,9 +88,6 @@ const PADRAO: PrefsDeAparencia = {
 const CHAVE = "gravae:aparencia";
 
 const NOMES_ANTIGOS: Record<string, Tema> = {
-  fluxer: "escuro",
-  "fluxer-carvao": "mais-escuro",
-  "fluxer-claro": "claro",
   indigo: "escuro",
   "indigo-carvao": "mais-escuro",
   "indigo-claro": "claro",

@@ -3,6 +3,7 @@ import { Check, ChevronDown } from "lucide-react";
 
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
+import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 export interface OpcaoDoCombobox<T extends string | number> {
   valor: T;
@@ -93,8 +94,10 @@ export function Combobox<T extends string | number>({
     <Popover data-gc="ui.combobox.popover" open={aberto} onOpenChange={(proximo) => (proximo ? setAberto(true) : fechar())}>
       <PopoverAnchor data-gc="ui.combobox.popover-anchor" asChild>
         <div data-gc="ui.combobox.div"
+          {...flxAttr("grupoDeCombo")}
           ref={ancora}
           className={cn(
+            flxCls("grupoDeCombo"),
             "flex h-10 w-full items-center gap-2 rounded-lg border border-line bg-campo px-3 transition",
             "focus-within:border-ink-faint/40",
             disabled && "pointer-events-none opacity-50",

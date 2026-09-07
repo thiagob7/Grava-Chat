@@ -5,6 +5,7 @@ import { Pipette } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { CampoSelect } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-de-tema";
 
 export interface Cor {
   h: number;
@@ -90,7 +91,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <ContextoDaCor.Provider value={{ cor, mudar }}>
-      <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", className)}>{children}</div>
+      <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", flxCls("molduraDoSeletorDeCor"), className)}>{children}</div>
     </ContextoDaCor.Provider>
   );
 };

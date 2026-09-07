@@ -18,7 +18,7 @@ import { useLightbox } from "~/stores/lightbox";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 /*
   Um roxo mais claro que a marca, misturado na hora em vez de fixo: assim ele

@@ -10,6 +10,7 @@ export type ProfileFriendship =
 
 export interface ProfileModel extends PublicUser {
   bio: string | null;
+  pronomes: string | null;
   perfil: EstiloDePerfil | null;
   etiquetaDoServidor: { guildId: string; tag: string; tagIcon: string | null } | null;
   statusPersonalizado: StatusPersonalizado | null;

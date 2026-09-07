@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
 
 interface CampoDeBuscaProps {
@@ -18,10 +18,12 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
 
   return (
     <div data-gc="conversa.campo-de-busca.div"
+      {...flxAttr("campoDaBusca")}
       className={cn(
         "relative hidden items-center @2xl:flex",
         flxCls("molduraDaBusca"),
         flxCls("ancoraDaBusca"),
+        flxCls("campoDaBusca"),
       )}
     >
       <MagnifyingGlass data-gc="conversa.campo-de-busca.magnifying-glass" size={14} className="pointer-events-none absolute left-2 text-ink-faint" />
@@ -41,7 +43,7 @@ export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({ termo, onBuscar }) =
         aria-label="Buscar mensagens neste servidor"
         className={cn(
           "h-7 w-36 rounded bg-surface-1 pl-7 pr-6 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:w-56 focus:ring-1 focus:ring-brand",
-          flxCls("campoDaBusca"),
+          flxCls("campoDoTextoDaBusca"),
         )}
       />
 

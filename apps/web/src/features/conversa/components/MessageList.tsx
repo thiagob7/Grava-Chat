@@ -14,7 +14,8 @@ import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { cn } from "~/lib/utils";
 
 interface MessageListProps {
   channelId: string;
@@ -175,7 +176,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       <div data-gc="conversa.message-list.div"
         aria-busy
         aria-label={t("conversa.lista.carregando")}
-        className="@container flex-1 overflow-hidden pt-4"
+        className="mede-a-largura flex-1 overflow-hidden pt-4"
       >
         {Array.from({ length: 8 }, (_, i) => (
           <div data-gc="conversa.message-list.div--2" key={i} className="mt-4 flex gap-x-2 px-2 @sm:gap-x-4 @sm:px-4">
@@ -211,17 +212,18 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <div data-gc="conversa.message-list.div.on-scroll"
       ref={scroller}
+      {...flxAttr("conteudoDoRolador")}
       onScroll={onScroll}
-      className="lista-de-mensagens @container flex-1 overflow-y-auto pt-4"
+      className={cn("lista-de-mensagens mede-a-largura flex-1 overflow-y-auto pt-4", flxCls("rolador"), flxCls("conteudoDoRolador"))}
     >
-      <div data-gc="conversa.message-list.div--5" ref={conteudo} className="pb-4">
+      <div data-gc="conversa.message-list.div--5" ref={conteudo} {...flx("conteudoDasMensagens", "pb-4")}>
       {hasNextPage ? (
         <p data-gc="conversa.message-list.p" className="py-3 text-center text-xs text-ink-faint">
           {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}
         </p>
       ) : (
         (header ?? (
-          <div data-gc="conversa.message-list.div--6" className="px-2 pb-6 pt-4 @sm:px-4">
+          <div data-gc="conversa.message-list.div--6" {...flx("boasVindasDoCanal", "px-2 pb-6 pt-4 @sm:px-4")}>
             <div data-gc="conversa.message-list.div--7" className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
               {semHistorico ? (
                 <Lock data-gc="conversa.message-list.lock" size={32} className="text-ink-muted" />

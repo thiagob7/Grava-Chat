@@ -5,6 +5,7 @@ import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
 import { carregarFonte } from "~/features/perfil/lib/fontes";
 import { estiloDoNome } from "~/features/perfil/lib/nome";
 import { cn } from "~/lib/utils";
+import { flx } from "~/lib/compat-de-tema";
 
 interface UserNameProps {
   nome: string;
@@ -55,7 +56,7 @@ export const UserName: React.FC<UserNameProps> = ({
 };
 
 export const SeloDeApp: React.FC = () => (
-  <span data-gc="perfil.user-name.span--3" className="shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-sobre-marca">
+  <span data-gc="perfil.user-name.span--3" {...flx("seloDeApp", "shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-sobre-marca")}>
     app
   </span>
 );

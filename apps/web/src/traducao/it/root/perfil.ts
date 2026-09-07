@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Cambia la foto del profilo",
     trocarFotoCurto: "Cambia la foto",
     suaEtiqueta: "La tua etichetta",
+    pronomes: "Pronomi",
     editarEtiqueta: "Clicca per modificare la tua etichetta",
     conteAlgo: "Raccontaci qualcosa di te",
     adicionarStatus: "Aggiungi uno stato",

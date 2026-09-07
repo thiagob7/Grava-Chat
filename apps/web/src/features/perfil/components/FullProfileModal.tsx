@@ -15,7 +15,7 @@ import { corMaisAlta } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
 import { idiomaAtual, useTranslation } from "~/traducao";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface FullProfileModalProps {
   open: boolean;
@@ -49,7 +49,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   return (
   <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
     <DialogContent data-gc="perfil.full-profile-modal.dialog-content"
-      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("perfilCompleto"))}
+      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("perfilCompleto"), flxCls("conteudoDoPerfilCompleto"))}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
       <div data-gc="perfil.full-profile-modal.div"
@@ -62,7 +62,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         }}
       />
 
-      <div data-gc="perfil.full-profile-modal.div--2" className="px-6 pb-6">
+      <div data-gc="perfil.full-profile-modal.div--2" {...flx("conteudoDoPerfil", "px-6 pb-6")}>
         <div data-gc="perfil.full-profile-modal.div--3" className="-mt-14 mb-4">
           <Avatar data-gc="perfil.full-profile-modal.avatar"
             id={perfil.id}
@@ -89,7 +89,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{perfil.username}</DialogDescription>
 
         {abas.length > 1 && (
-          <div data-gc="perfil.full-profile-modal.div--4" className="mt-4 flex gap-4 border-b border-line">
+          <div data-gc="perfil.full-profile-modal.div--4" {...flx("molduraDasAbas", "mt-4 flex gap-4 border-b border-line")}>
             {abas.map((item) => (
               <button data-gc="perfil.full-profile-modal.button"
                 key={item.id}
@@ -149,9 +149,17 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
           </div>
         )}
 
+        {aba === "geral" && perfil.pronomes && (
+          <p data-gc="perfil.full-profile-modal.p--2"
+            className={cn("text-sm text-ink-faint", flxCls("pronomesNoPerfil"))}
+          >
+            {perfil.pronomes}
+          </p>
+        )}
+
         {aba === "geral" && perfil.bio && (
           <Bloco data-gc="perfil.full-profile-modal.bloco" titulo={t("perfil.sobre")}>
-            <p data-gc="perfil.full-profile-modal.p--2"
+            <p data-gc="perfil.full-profile-modal.p--3"
               className={cn("whitespace-pre-wrap text-sm text-ink-muted", flxCls("bioDoPerfil"))}
             >
               {perfil.bio}
@@ -165,13 +173,16 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
               {cargos.map((cargo) => (
                 <span data-gc="perfil.full-profile-modal.span--5"
                   key={cargo.id}
-                  className="flex items-center gap-1.5 rounded bg-surface-1 px-2 py-1 text-xs"
+                  className={cn(
+                    flxCls("seloDeCargo"),
+                    "flex items-center gap-1.5 rounded bg-surface-1 px-2 py-1 text-xs",
+                  )}
                 >
                   <span data-gc="perfil.full-profile-modal.span--6"
                     className="size-2 rounded-full"
                     style={{ backgroundColor: cargo.color || "#99aab5" }}
                   />
-                  {cargo.name}
+                  <span data-gc="perfil.full-profile-modal.span--7" className={flxCls("nomeDoCargo")}>{cargo.name}</span>
                 </span>
               ))}
             </div>
@@ -180,7 +191,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 
         {aba === "geral" && (
           <Bloco data-gc="perfil.full-profile-modal.bloco--3" titulo={t("perfil.membroDesde")}>
-            <p data-gc="perfil.full-profile-modal.p--3" className="text-sm text-ink-muted">
+            <p data-gc="perfil.full-profile-modal.p--4" className="text-sm text-ink-muted">
               {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
                 new Date(perfil.createdAt),
               )}

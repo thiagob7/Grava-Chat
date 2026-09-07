@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Schimbă poza de profil",
     trocarFotoCurto: "Schimbă poza",
     suaEtiqueta: "Eticheta ta",
+    pronomes: "Pronume",
     editarEtiqueta: "Dă clic ca să îți editezi eticheta",
     conteAlgo: "Spune-ne ceva despre tine",
     adicionarStatus: "Adaugă o stare",

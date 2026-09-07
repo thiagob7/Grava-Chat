@@ -37,7 +37,7 @@ if (import.meta.env.DEV) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("app")!).render(
   <StrictMode>
     <App data-gc="main.app" />
   </StrictMode>,

@@ -10,7 +10,7 @@ import { cn } from "~/lib/utils";
 import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { flx, flxCls } from "~/lib/compat-fluxer";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface MemberListProps {
   members: GuildMember[];
@@ -74,13 +74,14 @@ export const MemberList: React.FC<MemberListProps> = ({
       <aside data-gc="servidor.member-list.aside"
         aria-busy
         aria-label={t("comum.carregando")}
-        {...flx("listaDeMembros", "lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block")}
+        {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}
       >
-        <div data-gc="servidor.member-list.div" className="h-full overflow-hidden px-2 py-4">
+        <div data-gc="servidor.member-list.div" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-divisor")} />
+        <div data-gc="servidor.member-list.div--2" className="h-full overflow-hidden px-2 py-4">
           <Skeleton data-gc="servidor.member-list.skeleton" className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
 
           {Array.from({ length: 9 }, (_, i) => (
-            <div data-gc="servidor.member-list.div--2" key={i} className="flex items-center gap-2 px-2 py-1.5">
+            <div data-gc="servidor.member-list.div--3" key={i} className="flex items-center gap-2 px-2 py-1.5">
               <Skeleton data-gc="servidor.member-list.skeleton--2" className="size-8 shrink-0 rounded-full" />
               <Skeleton data-gc="servidor.member-list.skeleton--3" className="h-3 rounded-sm" style={{ width: larguraDaLinha(i) }} />
             </div>
@@ -91,8 +92,9 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros hidden w-[var(--layout-member-list-width)] shrink-0 border-l border-divisor bg-surface-2 lg:block")}>
-      <div data-gc="servidor.member-list.div--3" {...flx("roladorDeMembros", cn("h-full overflow-y-auto px-2 py-4", flxCls("conteudoDaListaDeMembros")))}>
+    <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}>
+      <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-divisor")} />
+      <div data-gc="servidor.member-list.div--5" {...flx("roladorDeMembros", cn("h-full overflow-y-auto px-2 py-4", flxCls("conteudoDaListaDeMembros")))}>
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
             key={grupo.titulo}
@@ -154,7 +156,8 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
                 flxCls("linhaDeMembro"),
                 flxCls("itemDeMembro"),
-                dim && "opacity-40",
+                flxCls("botaoDoMembro"),
+                dim && cn("opacity-40", flxCls("botaoDoMembroOffline")),
               )}
             >
               <Avatar data-gc="servidor.member-list.avatar"
@@ -165,6 +168,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 status={member.user.status}
                 emVoz={emVoz?.has(member.user.id)}
                 enfeites={perfil}
+                className={flxCls("avatarDoMembro")}
               />
               <UserName data-gc="servidor.member-list.user-name"
                 nome={member.nickname ?? member.user.displayName}
@@ -173,6 +177,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 ehBot={member.user.isBot}
                 className={cn(
                   "min-w-0 truncate text-sm font-medium",
+                  flxCls("nomeDoMembro"),
                   corDoCargo || perfil?.nome ? "" : "text-ink-muted",
                 )}
               />

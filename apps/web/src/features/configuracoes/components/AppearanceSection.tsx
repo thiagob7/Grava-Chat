@@ -23,6 +23,7 @@ import {
   type Tema,
 } from "~/features/configuracoes/stores/aparencia";
 import { cn } from "~/lib/utils";
+import { flxCls } from "~/lib/compat-de-tema";
 import { ehDesktop } from "~/lib/desktop";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { ControleDeEscala } from "~/features/configuracoes/components/ControleDeEscala";
@@ -95,6 +96,7 @@ export const AppearanceSection: React.FC = () => {
               onClick={() => prefs.definir({ tema: tema.id })}
               aria-pressed={prefs.tema === tema.id}
               className={cn(
+                flxCls("botaoDeTema"),
                 "relative w-36 overflow-hidden rounded-lg border-2 text-left transition",
                 prefs.tema === tema.id
                   ? "border-brand"

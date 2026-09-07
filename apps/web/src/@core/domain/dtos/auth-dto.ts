@@ -9,6 +9,7 @@ export interface UpdateProfileDTO {
   displayName?: string;
   avatarUrl?: string | null;
   bio?: string | null;
+  pronomes?: string | null;
   perfil?: EstiloDePerfil | null;
   statusPersonalizado?: StatusPersonalizado | null;
 

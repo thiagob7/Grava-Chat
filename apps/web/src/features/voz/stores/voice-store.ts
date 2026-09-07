@@ -10,6 +10,10 @@ import {
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
 import { proximoAlvo } from "~/features/voz/lib/assistir";
+import {
+  reacaoAFalhaDeMicrofone,
+  type ReacaoAFalhaDeMicrofone,
+} from "~/features/voz/lib/falha-de-microfone";
 import { descreverFonte } from "~/lib/fonte-da-tela";
 import { ProcessadorDeVoz } from "~/features/voz/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
@@ -45,6 +49,7 @@ type VoiceStore = {
 
   micEnabled: boolean;
   micBlocked: boolean;
+  reconectando: boolean;
   processador: ProcessadorDeVoz | null;
   noiseFilterAvailable: boolean;
   noiseFilterBusy: boolean;
@@ -204,6 +209,68 @@ function opcoesDeCaptura() {
 const permissaoDoSistema = (): Promise<boolean> =>
   desktop()?.midia.garantir("microphone") ?? Promise.resolve(true);
 
+/*
+  Traduz a falha na reação, e a reação em estado.
+
+  `adiar` é o caso que não existia: mantém o microfone como estava e não pinta o
+  aviso, porque a falha veio da conexão e vai embora com ela. Se marcássemos
+  bloqueado aqui, a pessoa iria procurar um problema no aparelho dela.
+*/
+function aplicarFalhaDeMicrofone(
+  erro: unknown,
+  set: (parcial: Partial<VoiceStore>) => void,
+  store: () => VoiceStore,
+): ReacaoAFalhaDeMicrofone {
+  const reacao = reacaoAFalhaDeMicrofone(erro, { reconectando: store().reconectando });
+
+  if (reacao === "estourar") {
+    console.error("[voz] falha de microfone que é bug nosso:", erro);
+    set({ micEnabled: false, micBlocked: true });
+    return reacao;
+  }
+
+  if (reacao === "mutar") {
+    console.warn("[voz] não deu pra publicar o microfone:", erro);
+    set({ micEnabled: false, micBlocked: true });
+    return reacao;
+  }
+
+  if (reacao === "adiar") {
+    console.info("[voz] microfone falhou por algo passageiro; tentando de novo depois:", erro);
+    set({ micBlocked: false });
+  }
+
+  return reacao;
+}
+
+/*
+  Reaplica a intenção do microfone depois que a sala se reergue.
+
+  É isto que faz `adiar` significar alguma coisa. Sem esta volta, adiar seria só
+  não avisar: a interface seguiria mostrando o microfone ligado, a faixa nunca
+  teria sido publicada, e a pessoa falaria sozinha — o caso exato que o módulo
+  de falhas existe para evitar.
+*/
+async function reaplicarMicrofone(
+  room: Room,
+  set: (parcial: Partial<VoiceStore>) => void,
+  store: () => VoiceStore,
+) {
+  const { micEnabled, deafened, processador } = store();
+
+  try {
+    await room.localParticipant.setMicrophoneEnabled(
+      micEnabled && !deafened,
+      opcoesDeCaptura(),
+    );
+
+    if (processador) await prenderProcessador(room, processador);
+    set({ micBlocked: false });
+  } catch (erro) {
+    aplicarFalhaDeMicrofone(erro, set, store);
+  }
+}
+
 async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
   const publicacao = room.localParticipant.getTrackPublication(Track.Source.Microphone);
   const track = publicacao?.track as LocalAudioTrack | undefined;
@@ -241,6 +308,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   error: null,
   micEnabled: true,
   micBlocked: false,
+  reconectando: false,
   processador: null,
   noiseFilterAvailable: true,
   noiseFilterBusy: false,
@@ -327,8 +395,18 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         .on(RoomEvent.TrackMuted, refresh)
         .on(RoomEvent.TrackUnmuted, refresh)
         .on(RoomEvent.ActiveSpeakersChanged, refresh)
+        /*
+          Sem saber que a sala está se reerguendo, uma falha de microfone no meio
+          da queda viraria "microfone bloqueado" — um aviso vermelho sobre um
+          problema que a pessoa não tem como consertar e que some sozinho.
+        */
+        .on(RoomEvent.Reconnecting, () => set({ reconectando: true }))
+        .on(RoomEvent.Reconnected, () => {
+          set({ reconectando: false });
+          void reaplicarMicrofone(room, set, store);
+        })
         .on(RoomEvent.Disconnected, () => {
-          set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false });
+          set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, reconectando: false });
         });
 
       await room.connect(url, token);
@@ -354,8 +432,15 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         set({ micBlocked: false, noiseFilterAvailable: disponibilidade(processador) });
         bipe("entrarNaChamada");
       } catch (erro) {
-        console.warn("[voz] não deu pra publicar o microfone:", erro);
-        set({ micEnabled: false, micBlocked: true });
+        /*
+          Mesma regra do toggle: adiar só vale se a reconexão for voltar para
+          reaplicar. Entrando na chamada sem reconexão a caminho, ninguém tenta
+          de novo — então o honesto é assumir mudo em vez de deixar o ícone
+          ligado sobre uma faixa que não subiu.
+        */
+        if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
+          set({ micEnabled: false, micBlocked: true });
+        }
       }
 
       if (prefs.saidaId) {
@@ -410,8 +495,15 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       if (room && processador) await prenderProcessador(room, processador);
       set({ micBlocked: false });
       bipe(next ? "desmutar" : "mutar");
-    } catch {
-      set({ micEnabled: false, micBlocked: true });
+    } catch (erro) {
+      /*
+        `adiar` conta com alguém tentando de novo, e quem tenta é a volta da
+        reconexão. Fora dela ninguém vem, então manter o botão ligado seria
+        mentir sobre estar sendo ouvida — desfaz o clique.
+      */
+      if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
+        set({ micEnabled: !next });
+      }
       return;
     }
 

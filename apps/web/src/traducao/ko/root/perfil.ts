@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "프로필 사진 바꾸기",
     trocarFotoCurto: "사진 바꾸기",
     suaEtiqueta: "내 태그",
+    pronomes: "대명사",
     editarEtiqueta: "클릭해서 태그를 수정하세요",
     conteAlgo: "자신에 대해 알려 주세요",
     adicionarStatus: "상태 추가",

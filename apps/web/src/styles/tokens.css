@@ -74,7 +74,6 @@
   --outline-frame-border-width: 0.0625rem;
   --composer-mobile-box-height: 3rem;
   --composer-action-gap: 0.25rem;
-  --composer-surface-color: var(--background-secondary-lighter);
   --composer-status-line-height: 1.125rem;
   --composer-status-safe-gap: 0.5rem;
   --composer-status-safe-area: calc(
@@ -109,17 +108,17 @@
   );
   --floating-surface-ring-color: color-mix(
     in srgb,
-    var(--background-modifier-accent) 20%,
+    rgb(201 197 211 / 0.15) 20%,
     transparent
   );
   --floating-surface-ring-color-strong: color-mix(
     in srgb,
-    var(--background-modifier-accent) 45%,
+    rgb(201 197 211 / 0.15) 45%,
     transparent
   );
   --skeleton-chrome-border-color: color-mix(
     in srgb,
-    var(--background-modifier-accent) 25%,
+    rgb(201 197 211 / 0.15) 25%,
     transparent
   );
   --skeleton-chrome-border: 0.0625rem solid var(--skeleton-chrome-border-color);
@@ -226,8 +225,8 @@
   --guild-icon-gap: var(--spacing-2);
   --mobile-bottom-nav-height: 3.75rem;
   --message-compact-text-indent-from-username: 2rem;
-  --guilds-layout-item-bg: var(--guild-list-foreground);
-  --guild-badge-surface: var(--background-secondary);
+  --guilds-layout-item-bg: #29262f;
+  --guild-badge-surface: #1a181e;
   --layout-member-list-width: 15rem;
   --layout-header-height-mobile: 4rem;
   --channel-header-gap: var(--spacing-4);
@@ -299,111 +298,48 @@
   --count-indicator-gap: 0.25rem;
   --guild-members-table-row-min-height: 3rem;
   --guild-members-table-row-border-width: 0.0625rem;
-  --form-surface-background: var(--background-tertiary);
   --message-preview-card-background: rgba(255, 255, 255, 0.024);
   --message-preview-card-border: rgba(255, 255, 255, 0.07);
   --message-preview-card-divider: rgba(255, 255, 255, 0.05);
-  --surface-interactive-hover-bg: var(--background-modifier-hover);
-  --surface-interactive-selected-bg: var(--background-modifier-selected);
-  --surface-interactive-selected-color: var(--text-primary);
-  --scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
-  --scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
   --scrollbar-track-bg: transparent;
-  --focus-primary: #00b0f4;
-  --text-primary: #f4f4f6;
-  --text-secondary: #e5e4e9;
-  --text-tertiary: #b1acbb;
-  --text-link: #6ccff9;
-  --border-color: rgb(122 115 140 / 0.2);
-  --background-primary: #0c0b0e;
-  --background-secondary: #1a181e;
-  --background-secondary-lighter: #1e1d23;
-  --background-secondary-alt: #232028;
-  --background-tertiary: #2a2730;
-  --background-channel-header: #26242c;
-  --guild-list-foreground: #29262f;
-  --background-header-secondary: #2f2c36;
   --background-header-primary: #2f2c36;
-  --background-textarea: #242229;
-  --background-header-primary-hover: #3a3642;
   --text-tertiary-secondary: #958fa3;
-  --text-tertiary-muted: #9d97aa;
-  --text-primary-muted: #cecbd4;
-  --text-chat-muted: #cecbd4;
-  --text-chat: #eeedf0;
-  --panel-control-bg: color-mix(
-    in srgb,
-    var(--background-secondary-alt) 90%,
-    hsl(258, 10%, 2%) 10%
-  );
-  --panel-control-border: rgb(155 139 193 / 0.45);
-  --panel-control-divider: rgb(126 106 175 / 0.35);
   --panel-control-highlight: rgba(255, 255, 255, 0.04);
-  --background-modifier-hover: rgb(255 255 255 / 0.05);
-  --background-modifier-selected: rgb(255 255 255 / 0.1);
-  --background-modifier-accent: rgb(201 197 211 / 0.15);
-  --background-modifier-accent-focus: rgb(201 197 211 / 0.22);
   --control-button-normal-bg: transparent;
-  --control-button-normal-text: var(--text-primary-muted);
-  --control-button-hover-bg: #36323e;
-  --control-button-hover-text: var(--text-primary);
-  --control-button-active-bg: #3b3743;
-  --control-button-active-text: var(--text-primary);
-  --control-button-danger-text: #e84d4a;
-  --control-button-danger-hover-bg: #5a0d0c;
-  --brand-primary: #413cdd;
-  --brand-secondary: #3732c8;
-  --brand-primary-light: #b0adff;
-  --brand-primary-fill: #fff;
-  --status-online: #1daf6b;
-  --status-idle: #f6bb09;
-  --status-dnd: #ef4343;
   --status-offline: #9ca3b0;
-  --status-danger: #e53734;
-  --status-warning: var(--status-idle);
-  --text-warning: #f7c222;
-  --plutonium: var(--brand-primary);
-  --plutonium-hover: var(--brand-secondary);
-  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium: #413cdd;
+  --plutonium-hover: #3732c8;
+  --plutonium-text: #fafafa;
   --plutonium-icon: #f59f0a;
-  --invite-verified-icon-color: var(--text-on-brand-primary);
-  --text-on-brand-primary: #fafafa;
+  --invite-verified-icon-color: #fafafa;
   --code-text: color-mix(
     in srgb,
-    var(--text-secondary) 82%,
+    #e5e4e9 82%,
     hsl(340, 50%, 90%) 18%
   );
   --text-code: var(--code-text);
   --code-muted: color-mix(
     in srgb,
     var(--text-code) 42%,
-    var(--text-tertiary) 58%
+    #b1acbb 58%
   );
-  --code-inline-bg: color-mix(
-    in srgb,
-    var(--background-secondary-alt) 88%,
-    var(--background-tertiary) 12%
-  );
-  --bg-code: var(--code-inline-bg);
-  --code-block-bg: color-mix(
-    in srgb,
-    var(--background-secondary-alt) 92%,
-    var(--background-primary) 8%
-  );
-  --bg-code-block: var(--code-block-bg);
   --code-block-border: color-mix(
     in srgb,
-    var(--border-color) 90%,
+    rgb(122 115 140 / 0.2) 90%,
     var(--text-code) 10%
   );
   --code-block-highlight: color-mix(
     in srgb,
-    var(--text-primary) 10%,
+    #f4f4f6 10%,
     transparent
   );
-  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-text: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  );
   --ansi-inverse-bg: var(--text-code);
-  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, #b1acbb 28%);
   --ansi-fg-red: color-mix(in srgb, hsl(0, 88%, 62%) 92%, var(--text-code) 8%);
   --ansi-fg-green: color-mix(
     in srgb,
@@ -430,124 +366,186 @@
     hsl(168, 53%, 55%) 92%,
     var(--text-code) 8%
   );
-  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, #e5e4e9 12%);
   --ansi-fg-bright-black: color-mix(
     in srgb,
     gray 86%,
-    var(--text-tertiary) 14%
+    #b1acbb 14%
   );
   --ansi-fg-bright-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 88%,
-    var(--text-primary) 12%
+    #f4f4f6 12%
   );
   --ansi-fg-bright-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
-  --ansi-fg-bright-white: var(--text-primary);
-  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+  --ansi-fg-bright-white: #f4f4f6;
+  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
   --ansi-bg-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
-  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
   --ansi-bg-bright-black: color-mix(
     in srgb,
     gray 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
-  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, var(--code-block-bg) 8%);
-  --text-selection: rgb(108 207 249 / 0.35);
-  --markup-mention-text: var(--text-link);
-  --markup-mention-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%);
+  --markup-mention-fill: color-mix(in srgb, #6ccff9 20%, transparent);
   --markup-mention-border: rgb(108 207 249 / 0.3);
-  --markup-jump-link-text: var(--text-link);
+  --markup-jump-link-text: #6ccff9;
   --markup-jump-link-fill: color-mix(
     in srgb,
-    var(--text-link) 12%,
+    #6ccff9 12%,
     transparent
   );
   --markup-jump-link-hover-fill: color-mix(
     in srgb,
-    var(--text-link) 20%,
+    #6ccff9 20%,
     transparent
   );
   --markup-everyone-text: #9d8cf2;
@@ -560,37 +558,19 @@
   --markup-here-text: #f7d56e;
   --markup-here-fill: color-mix(in srgb, hsl(45, 90%, 70%) 18%, transparent);
   --markup-here-border: rgb(247 213 110 / 0.3);
-  --markup-interactive-hover-text: var(--text-link);
+  --markup-interactive-hover-text: #6ccff9;
   --markup-interactive-hover-fill: color-mix(
     in srgb,
-    var(--text-link) 30%,
+    #6ccff9 30%,
     transparent
   );
-  --interactive-muted: color-mix(
-    in oklab,
-    hsl(228, 10%, 35%) 100%,
-    hsl(245, 100%, 80%) 40%
-  );
-  --interactive-active: color-mix(
-    in oklab,
-    hsl(0, 0%, 100%) 100%,
-    hsl(245, 100%, 80%) 40%
-  );
-  --button-primary-fill: #32ae5a;
-  --button-primary-active-fill: #279b46;
-  --button-primary-text: #fff;
   --button-secondary-fill: rgba(255, 255, 255, 0.1);
   --button-secondary-active-fill: rgba(255, 255, 255, 0.15);
-  --button-secondary-text: #fff;
-  --button-secondary-active-text: var(--button-secondary-text);
-  --button-danger-fill: #dc383a;
-  --button-danger-active-fill: #bd282b;
-  --button-danger-text: #fff;
+  --button-secondary-active-text: #fff;
   --button-danger-outline-border: 1px solid hsl(359, 70%, 54%);
   --button-danger-outline-text: #fff;
   --button-danger-outline-active-fill: #ca2b2d;
   --button-danger-outline-active-border: transparent;
-  --button-ghost-text: #fff;
   --button-inverted-fill: #fff;
   --button-inverted-text: #000;
   --button-outline-border: 1px solid rgba(255, 255, 255, 0.3);
@@ -599,28 +579,10 @@
   --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.4);
   --theme-border: transparent;
   --theme-border-width: 0px;
-  --bg-primary: var(--background-primary);
-  --bg-secondary: var(--background-secondary);
-  --bg-tertiary: var(--background-tertiary);
-  --bg-hover: var(--background-modifier-hover);
-  --bg-active: var(--background-modifier-selected);
-  --bg-blockquote: var(--background-secondary-alt);
-  --bg-table-header: var(--background-tertiary);
-  --bg-table-row-odd: var(--background-primary);
-  --bg-table-row-even: var(--background-secondary);
+  --bg-blockquote: #232028;
+  --bg-table-row-odd: #0c0b0e;
+  --bg-table-row-even: #1a181e;
   --border-color-hover: rgb(122 115 140 / 0.3);
-  --border-color-focus: rgb(108 207 249 / 0.45);
-  --accent-primary: var(--brand-primary);
-  --accent-success: var(--status-online);
-  --accent-warning: var(--status-idle);
-  --accent-danger: var(--status-dnd);
-  --accent-info: var(--text-link);
-  --accent-purple: #ba5af2;
-  --alert-note-color: #6ccff9;
-  --alert-tip-color: #20c578;
-  --alert-important-color: #ba5af2;
-  --alert-warning-color: #f7c222;
-  --alert-caution-color: #e64c4f;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -630,11 +592,6 @@
   --transition-slow: 0.3s ease;
   --spoiler-overlay-color: rgba(0, 0, 0, 0.2);
   --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
-  --user-area-divider-color: color-mix(
-    in srgb,
-    var(--background-modifier-hover) 70%,
-    transparent
-  );
   --message-avatar-size: 2.5rem;
   --message-avatar-size-compact: 1rem;
   --message-gutter: 0.75rem;
@@ -682,7 +639,7 @@
     calc((1.375rem * 2 - 2.5rem) / 2),
     0.5rem
   );
-  --message-timestamp-color: var(--text-primary-muted);
+  --message-timestamp-color: #cecbd4;
   --system-message-icon-opacity: 0.6;
   --message-highlight-bar-width: 0.125rem;
   --message-mention-color: #eac532;
@@ -697,78 +654,42 @@
   --message-unknown-warning-color: #f93;
   --message-transition-highlight: 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   --keybind-hint-default-background: #2e2e2e;
-  --keybind-hint-default-color: var(--text-on-brand-primary);
+  --keybind-hint-default-color: #fafafa;
 }
 
 :root[data-tema="mais-escuro"] {
-  --scrollbar-thumb-bg: rgba(160, 160, 160, 0.35);
-  --scrollbar-thumb-bg-hover: rgba(200, 200, 200, 0.55);
   --scrollbar-track-bg: rgba(0, 0, 0, 0.45);
-  --background-primary: #020203;
-  --background-secondary: var(--background-primary);
-  --background-secondary-lighter: var(--background-primary);
-  --background-secondary-alt: #0f0e12;
-  --background-tertiary: #141217;
-  --background-channel-header: #121114;
-  --guild-list-foreground: #131216;
-  --background-header-secondary: #17151a;
   --background-header-primary: #17151a;
-  --background-textarea: #100f13;
-  --background-header-primary-hover: #1d1b21;
-  --panel-control-bg: color-mix(
-    in srgb,
-    var(--background-primary) 90%,
-    hsl(258, 10%, 0%) 10%
-  );
-  --panel-control-border: rgb(70 61 92 / 0.35);
-  --panel-control-divider: rgb(59 51 76 / 0.28);
   --panel-control-highlight: rgba(255, 255, 255, 0.06);
-  --background-modifier-hover: rgb(255 255 255 / 0.04);
-  --background-modifier-selected: rgb(255 255 255 / 0.08);
-  --background-modifier-accent: rgb(162 157 175 / 0.18);
-  --background-modifier-accent-focus: rgb(175 171 186 / 0.26);
   --control-button-normal-bg: transparent;
-  --control-button-normal-text: var(--text-primary-muted);
-  --control-button-hover-bg: #1d1c22;
-  --control-button-hover-text: var(--text-primary);
-  --control-button-active-bg: #222027;
-  --control-button-active-text: var(--text-primary);
   --code-text: color-mix(
     in srgb,
-    var(--text-secondary) 82%,
+    #e5e4e9 82%,
     hsl(340, 50%, 90%) 18%
   );
   --text-code: var(--code-text);
   --code-muted: color-mix(
     in srgb,
     var(--text-code) 42%,
-    var(--text-tertiary) 58%
+    #b1acbb 58%
   );
-  --code-inline-bg: color-mix(
-    in srgb,
-    var(--background-tertiary) 86%,
-    var(--text-code) 14%
-  );
-  --bg-code: var(--code-inline-bg);
-  --code-block-bg: color-mix(
-    in srgb,
-    var(--background-secondary-alt) 84%,
-    #000 16%
-  );
-  --bg-code-block: var(--code-block-bg);
   --code-block-border: color-mix(
     in srgb,
-    var(--border-color) 84%,
+    rgb(122 115 140 / 0.2) 84%,
     var(--text-code) 16%
   );
   --code-block-highlight: color-mix(
     in srgb,
-    var(--text-primary) 10%,
+    #f4f4f6 10%,
     transparent
   );
-  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-text: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  );
   --ansi-inverse-bg: var(--text-code);
-  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+  --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, #b1acbb 28%);
   --ansi-fg-red: color-mix(in srgb, hsl(0, 88%, 62%) 92%, var(--text-code) 8%);
   --ansi-fg-green: color-mix(
     in srgb,
@@ -795,247 +716,237 @@
     hsl(168, 53%, 55%) 92%,
     var(--text-code) 8%
   );
-  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+  --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, #e5e4e9 12%);
   --ansi-fg-bright-black: color-mix(
     in srgb,
     gray 86%,
-    var(--text-tertiary) 14%
+    #b1acbb 14%
   );
   --ansi-fg-bright-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 88%,
-    var(--text-primary) 12%
+    #f4f4f6 12%
   );
   --ansi-fg-bright-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
   --ansi-fg-bright-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 94%,
-    var(--text-primary) 6%
+    #f4f4f6 6%
   );
-  --ansi-fg-bright-white: var(--text-primary);
-  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+  --ansi-fg-bright-white: #f4f4f6;
+  --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
   --ansi-bg-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
-  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+  --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
   --ansi-bg-bright-black: color-mix(
     in srgb,
     gray 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-red: color-mix(
     in srgb,
     hsl(0, 88%, 62%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-green: color-mix(
     in srgb,
     hsl(99, 29%, 47%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-yellow: color-mix(
     in srgb,
     hsl(41, 53%, 67%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-blue: color-mix(
     in srgb,
     hsl(207, 61%, 59%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-magenta: color-mix(
     in srgb,
     hsl(305, 35%, 65%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
   --ansi-bg-bright-cyan: color-mix(
     in srgb,
     hsl(168, 53%, 55%) 92%,
-    var(--code-block-bg) 8%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
   );
-  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-white: color-mix(in srgb, #fff 92%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%);
   --button-secondary-fill: rgba(255, 255, 255, 0.04);
   --button-secondary-active-fill: rgba(255, 255, 255, 0.07);
-  --button-secondary-text: var(--text-primary);
-  --button-secondary-active-text: var(--text-primary);
+  --button-secondary-active-text: #f4f4f6;
   --button-outline-border: 1px solid rgba(255, 255, 255, 0.08);
   --button-outline-active-fill: rgba(255, 255, 255, 0.12);
   --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.16);
-  --bg-primary: var(--background-primary);
-  --bg-secondary: var(--background-secondary);
-  --bg-tertiary: var(--background-tertiary);
-  --bg-hover: var(--background-modifier-hover);
-  --bg-active: var(--background-modifier-selected);
-  --bg-blockquote: var(--background-secondary);
-  --bg-table-header: var(--background-tertiary);
-  --bg-table-row-odd: var(--background-primary);
-  --bg-table-row-even: var(--background-secondary);
+  --bg-blockquote: #1a181e;
+  --bg-table-row-odd: #0c0b0e;
+  --bg-table-row-even: #1a181e;
   --spoiler-overlay-color: rgba(255, 255, 255, 0.08);
   --spoiler-overlay-hover-color: rgba(255, 255, 255, 0.14);
-  --user-area-divider-color: color-mix(
-    in srgb,
-    var(--background-modifier-hover) 80%,
-    transparent
-  );
 }
 
 :root[data-tema="claro"],
 :root[data-tema="sistema"] {
   --guilds-layout-item-bg: color-mix(
     in srgb,
-    var(--guild-list-foreground) 72%,
-    var(--background-primary) 28%
+    #29262f 72%,
+    #0c0b0e 28%
   );
-  --form-surface-background: var(--background-primary);
   --message-preview-card-background: #fff;
   --message-preview-card-border: rgba(0, 0, 0, 0.07);
   --message-preview-card-divider: rgba(0, 0, 0, 0.05);
-  --surface-interactive-hover-bg: var(--background-modifier-hover);
-  --surface-interactive-selected-bg: var(--background-modifier-selected);
-  --surface-interactive-selected-color: var(--text-primary);
-  --scrollbar-thumb-bg: color-mix(
-    in srgb,
-    var(--background-header-secondary) 40%,
-    var(--text-secondary) 60%
-  );
-  --scrollbar-thumb-bg-hover: color-mix(
-    in srgb,
-    var(--background-header-secondary) 30%,
-    var(--text-primary) 70%
-  );
   --scrollbar-track-bg: color-mix(
     in srgb,
-    var(--background-secondary) 50%,
+    #1a181e 50%,
     transparent
   );
-  --text-primary: #22252a;
-  --text-secondary: #4e535f;
-  --text-tertiary: #6e7686;
-  --text-link: #099ddc;
-  --border-color: rgb(92 99 112 / 0.15);
-  --background-primary: #fbfbfc;
-  --background-secondary: #ebecef;
-  --background-secondary-lighter: #f0f1f3;
-  --background-secondary-alt: #e6e7ea;
-  --background-tertiary: #dee0e4;
-  --background-channel-header: #e1e2e6;
-  --guild-list-foreground: #dcdee2;
-  --background-header-secondary: #d9dbe0;
   --background-header-primary: #d8dbdf;
-  --background-textarea: #f3f4f5;
-  --background-header-primary-hover: #d8dadf;
   --text-tertiary-secondary: #777f90;
-  --text-tertiary-muted: #7c8393;
-  --text-primary-muted: #616876;
-  --text-chat-muted: #616876;
-  --text-chat: #30343b;
-  --panel-control-bg: color-mix(
-    in srgb,
-    var(--background-secondary) 65%,
-    #fff 35%
-  );
-  --panel-control-border: rgb(86 105 143 / 0.25);
-  --panel-control-divider: rgb(62 80 116 / 0.2);
   --panel-control-highlight: rgba(255, 255, 255, 0.65);
-  --background-modifier-hover: rgb(23 25 28 / 0.05);
-  --background-modifier-selected: rgb(23 25 28 / 0.1);
-  --background-modifier-accent: rgb(92 99 112 / 0.22);
-  --background-modifier-accent-focus: rgb(92 99 112 / 0.32);
   --control-button-normal-bg: transparent;
-  --control-button-normal-text: #737b8c;
-  --control-button-hover-bg: #dddfe3;
-  --control-button-hover-text: #2e3138;
-  --control-button-active-bg: #d5d7dd;
-  --control-button-active-text: #22252a;
-  --control-button-danger-text: #d92629;
-  --control-button-danger-hover-bg: #fbe9ea;
-  --status-online: #1fad6b;
-  --status-idle: #daa60b;
-  --status-dnd: #d92629;
   --status-offline: #818c98;
-  --plutonium: var(--brand-primary);
-  --plutonium-hover: var(--brand-secondary);
-  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium: #413cdd;
+  --plutonium-hover: #3732c8;
+  --plutonium-text: #fafafa;
   --plutonium-icon: #dc8f09;
-  --invite-verified-icon-color: var(--brand-primary);
+  --invite-verified-icon-color: #413cdd;
   --code-text: color-mix(
     in srgb,
-    var(--text-secondary) 72%,
+    #e5e4e9 72%,
     hsl(340, 50%, 38%) 28%
   );
   --text-code: var(--code-text);
   --code-muted: color-mix(
     in srgb,
     var(--text-code) 34%,
-    var(--text-tertiary) 66%
+    #b1acbb 66%
   );
-  --code-inline-bg: color-mix(
-    in srgb,
-    var(--background-secondary-alt) 92%,
-    var(--text-code) 8%
-  );
-  --bg-code: var(--code-inline-bg);
-  --code-block-bg: color-mix(
-    in srgb,
-    var(--background-primary) 88%,
-    var(--background-secondary) 12%
-  );
-  --bg-code-block: var(--code-block-bg);
   --code-block-border: color-mix(
     in srgb,
-    var(--border-color) 92%,
+    rgb(122 115 140 / 0.2) 92%,
     var(--text-code) 8%
   );
   --code-block-highlight: rgba(255, 255, 255, 0.82);
-  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-text: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  );
   --ansi-inverse-bg: var(--text-code);
-  --ansi-fg-black: var(--text-primary);
+  --ansi-fg-black: #f4f4f6;
   --ansi-fg-red: color-mix(in srgb, hsl(0, 62%, 50%) 92%, var(--text-code) 8%);
   --ansi-fg-green: color-mix(
     in srgb,
@@ -1062,122 +973,185 @@
     hsl(192, 95%, 38%) 92%,
     var(--text-code) 8%
   );
-  --ansi-fg-white: color-mix(in srgb, #545454 88%, var(--text-secondary) 12%);
+  --ansi-fg-white: color-mix(in srgb, #545454 88%, #e5e4e9 12%);
   --ansi-fg-bright-black: color-mix(
     in srgb,
     #666 88%,
-    var(--text-tertiary) 12%
+    #b1acbb 12%
   );
   --ansi-fg-bright-red: color-mix(
     in srgb,
     hsl(0, 62%, 50%) 92%,
-    var(--text-primary) 8%
+    #f4f4f6 8%
   );
   --ansi-fg-bright-green: color-mix(
     in srgb,
     hsl(120, 82%, 44%) 90%,
-    var(--text-primary) 10%
+    #f4f4f6 10%
   );
   --ansi-fg-bright-yellow: color-mix(
     in srgb,
     hsl(62, 100%, 36%) 90%,
-    var(--text-primary) 10%
+    #f4f4f6 10%
   );
   --ansi-fg-bright-blue: color-mix(
     in srgb,
     hsl(211, 95%, 33%) 92%,
-    var(--text-primary) 8%
+    #f4f4f6 8%
   );
   --ansi-fg-bright-magenta: color-mix(
     in srgb,
     hsl(300, 95%, 38%) 92%,
-    var(--text-primary) 8%
+    #f4f4f6 8%
   );
   --ansi-fg-bright-cyan: color-mix(
     in srgb,
     hsl(192, 95%, 38%) 92%,
-    var(--text-primary) 8%
+    #f4f4f6 8%
   );
   --ansi-fg-bright-white: color-mix(
     in srgb,
     #a6a6a6 86%,
-    var(--text-primary) 14%
+    #f4f4f6 14%
   );
-  --ansi-bg-black: color-mix(in srgb, #000 86%, var(--code-block-bg) 14%);
+  --ansi-bg-black: color-mix(in srgb, #000 86%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%);
   --ansi-bg-red: color-mix(
     in srgb,
     hsl(0, 62%, 50%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
   --ansi-bg-green: color-mix(
     in srgb,
     hsl(120, 100%, 25%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
   --ansi-bg-yellow: color-mix(
     in srgb,
     hsl(37, 52%, 31%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
   --ansi-bg-blue: color-mix(
     in srgb,
     hsl(211, 95%, 33%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
   --ansi-bg-magenta: color-mix(
     in srgb,
     hsl(288, 100%, 43%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
   --ansi-bg-cyan: color-mix(
     in srgb,
     hsl(192, 95%, 38%) 86%,
-    var(--code-block-bg) 14%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%
   );
-  --ansi-bg-white: color-mix(in srgb, #e6e6e6 86%, var(--code-block-bg) 14%);
+  --ansi-bg-white: color-mix(in srgb, #e6e6e6 86%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 14%);
   --ansi-bg-bright-black: color-mix(
     in srgb,
     #666 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-red: color-mix(
     in srgb,
     hsl(0, 62%, 50%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-green: color-mix(
     in srgb,
     hsl(120, 82%, 44%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-yellow: color-mix(
     in srgb,
     hsl(62, 100%, 36%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-blue: color-mix(
     in srgb,
     hsl(211, 95%, 33%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-magenta: color-mix(
     in srgb,
     hsl(300, 95%, 38%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-cyan: color-mix(
     in srgb,
     hsl(192, 95%, 38%) 88%,
-    var(--code-block-bg) 12%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
   );
   --ansi-bg-bright-white: color-mix(
     in srgb,
     #e6e6e6 90%,
-    var(--code-block-bg) 10%
+    color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 10%
   );
-  --text-selection: rgb(13 127 242 / 0.2);
   --markup-mention-border: rgb(9 157 220 / 0.4);
-  --markup-jump-link-fill: color-mix(in srgb, var(--text-link) 8%, transparent);
+  --markup-jump-link-fill: color-mix(in srgb, #6ccff9 8%, transparent);
   --markup-everyone-text: #3d22c3;
   --markup-everyone-fill: color-mix(
     in srgb,
@@ -1190,142 +1164,73 @@
   --markup-here-border: rgb(189 131 15 / 0.4);
   --button-secondary-fill: rgb(23 25 28 / 0.1);
   --button-secondary-active-fill: rgb(23 25 28 / 0.15);
-  --button-secondary-text: #22252a;
   --button-secondary-active-text: #17191c;
   --button-danger-outline-border: 1px solid hsl(359, 70%, 50%);
   --button-danger-outline-text: #c32225;
   --button-danger-outline-active-fill: #d92629;
-  --button-ghost-text: #2e3138;
   --button-inverted-fill: #fff;
   --button-inverted-text: #1a1a1a;
   --button-outline-border: 1px solid hsla(220, 10%, 40%, 0.3);
   --button-outline-text: #2e3138;
   --button-outline-active-fill: rgb(23 25 28 / 0.1);
   --button-outline-active-border: 1px solid hsla(220, 10%, 40%, 0.5);
-  --bg-primary: var(--background-primary);
-  --bg-secondary: var(--background-secondary);
-  --bg-tertiary: var(--background-tertiary);
-  --bg-hover: var(--background-modifier-hover);
-  --bg-active: var(--background-modifier-selected);
-  --bg-blockquote: var(--background-secondary-alt);
-  --bg-table-header: var(--background-tertiary);
-  --bg-table-row-odd: var(--background-primary);
-  --bg-table-row-even: var(--background-secondary);
+  --bg-blockquote: #232028;
+  --bg-table-row-odd: #0c0b0e;
+  --bg-table-row-even: #1a181e;
   --border-color-hover: rgb(92 99 112 / 0.25);
-  --border-color-focus: rgb(13 127 242 / 0.4);
-  --alert-note-color: #099ddc;
-  --alert-tip-color: #12a159;
-  --alert-important-color: #9c13ec;
-  --alert-warning-color: #daa60b;
-  --alert-caution-color: #e61920;
   --spoiler-overlay-color: rgba(0, 0, 0, 0.1);
   --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.15);
-  --user-area-divider-color: rgb(92 99 112 / 0.2);
   --keybind-hint-default-background: #2e2e2e;
-  --keybind-hint-default-color: var(--text-on-brand-primary);
+  --keybind-hint-default-color: #fafafa;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
     color-scheme: dark;
-    --guilds-layout-item-bg: var(--guild-list-foreground);
-    --form-surface-background: var(--background-tertiary);
+    --guilds-layout-item-bg: #29262f;
     --message-preview-card-background: rgba(255, 255, 255, 0.024);
     --message-preview-card-border: rgba(255, 255, 255, 0.07);
     --message-preview-card-divider: rgba(255, 255, 255, 0.05);
-    --surface-interactive-hover-bg: var(--background-modifier-hover);
-    --surface-interactive-selected-bg: var(--background-modifier-selected);
-    --surface-interactive-selected-color: var(--text-primary);
-    --scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
-    --scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
     --scrollbar-track-bg: transparent;
-    --text-primary: #f4f4f6;
-    --text-secondary: #e5e4e9;
-    --text-tertiary: #b1acbb;
-    --text-link: #6ccff9;
-    --border-color: rgb(122 115 140 / 0.2);
-    --background-primary: #0c0b0e;
-    --background-secondary: #1a181e;
-    --background-secondary-lighter: #1e1d23;
-    --background-secondary-alt: #232028;
-    --background-tertiary: #2a2730;
-    --background-channel-header: #26242c;
-    --guild-list-foreground: #29262f;
-    --background-header-secondary: #2f2c36;
     --background-header-primary: #2f2c36;
-    --background-textarea: #242229;
-    --background-header-primary-hover: #3a3642;
     --text-tertiary-secondary: #958fa3;
-    --text-tertiary-muted: #9d97aa;
-    --text-primary-muted: #cecbd4;
-    --text-chat-muted: #cecbd4;
-    --text-chat: #eeedf0;
-    --panel-control-bg: color-mix(
-      in srgb,
-      var(--background-secondary-alt) 90%,
-      hsl(258, 10%, 2%) 10%
-    );
-    --panel-control-border: rgb(155 139 193 / 0.45);
-    --panel-control-divider: rgb(126 106 175 / 0.35);
     --panel-control-highlight: rgba(255, 255, 255, 0.04);
-    --background-modifier-hover: rgb(255 255 255 / 0.05);
-    --background-modifier-selected: rgb(255 255 255 / 0.1);
-    --background-modifier-accent: rgb(201 197 211 / 0.15);
-    --background-modifier-accent-focus: rgb(201 197 211 / 0.22);
     --control-button-normal-bg: transparent;
-    --control-button-normal-text: var(--text-primary-muted);
-    --control-button-hover-bg: #36323e;
-    --control-button-hover-text: var(--text-primary);
-    --control-button-active-bg: #3b3743;
-    --control-button-active-text: var(--text-primary);
-    --control-button-danger-text: #e84d4a;
-    --control-button-danger-hover-bg: #5a0d0c;
-    --status-online: #1daf6b;
-    --status-idle: #f6bb09;
-    --status-dnd: #ef4343;
     --status-offline: #9ca3b0;
-    --plutonium: var(--brand-primary);
-    --plutonium-hover: var(--brand-secondary);
-    --plutonium-text: var(--text-on-brand-primary);
+    --plutonium: #413cdd;
+    --plutonium-hover: #3732c8;
+    --plutonium-text: #fafafa;
     --plutonium-icon: #f59f0a;
-    --invite-verified-icon-color: var(--text-on-brand-primary);
+    --invite-verified-icon-color: #fafafa;
     --code-text: color-mix(
       in srgb,
-      var(--text-secondary) 82%,
+      #e5e4e9 82%,
       hsl(340, 50%, 90%) 18%
     );
     --text-code: var(--code-text);
     --code-muted: color-mix(
       in srgb,
       var(--text-code) 42%,
-      var(--text-tertiary) 58%
+      #b1acbb 58%
     );
-    --code-inline-bg: color-mix(
-      in srgb,
-      var(--background-secondary-alt) 88%,
-      var(--background-tertiary) 12%
-    );
-    --bg-code: var(--code-inline-bg);
-    --code-block-bg: color-mix(
-      in srgb,
-      var(--background-secondary-alt) 92%,
-      var(--background-primary) 8%
-    );
-    --bg-code-block: var(--code-block-bg);
     --code-block-border: color-mix(
       in srgb,
-      var(--border-color) 90%,
+      rgb(122 115 140 / 0.2) 90%,
       var(--text-code) 10%
     );
     --code-block-highlight: color-mix(
       in srgb,
-      var(--text-primary) 10%,
+      #f4f4f6 10%,
       transparent
     );
-    --ansi-inverse-text: var(--code-block-bg);
+    --ansi-inverse-text: color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  );
     --ansi-inverse-bg: var(--text-code);
-    --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, var(--text-tertiary) 28%);
+    --ansi-fg-black: color-mix(in srgb, #1f1f1f 72%, #b1acbb 28%);
     --ansi-fg-red: color-mix(
       in srgb,
       hsl(0, 88%, 62%) 92%,
@@ -1356,120 +1261,183 @@
       hsl(168, 53%, 55%) 92%,
       var(--text-code) 8%
     );
-    --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, var(--text-secondary) 12%);
+    --ansi-fg-white: color-mix(in srgb, #d4d4d4 88%, #e5e4e9 12%);
     --ansi-fg-bright-black: color-mix(
       in srgb,
       gray 86%,
-      var(--text-tertiary) 14%
+      #b1acbb 14%
     );
     --ansi-fg-bright-red: color-mix(
       in srgb,
       hsl(0, 88%, 62%) 94%,
-      var(--text-primary) 6%
+      #f4f4f6 6%
     );
     --ansi-fg-bright-green: color-mix(
       in srgb,
       hsl(99, 29%, 47%) 88%,
-      var(--text-primary) 12%
+      #f4f4f6 12%
     );
     --ansi-fg-bright-yellow: color-mix(
       in srgb,
       hsl(41, 53%, 67%) 94%,
-      var(--text-primary) 6%
+      #f4f4f6 6%
     );
     --ansi-fg-bright-blue: color-mix(
       in srgb,
       hsl(207, 61%, 59%) 94%,
-      var(--text-primary) 6%
+      #f4f4f6 6%
     );
     --ansi-fg-bright-magenta: color-mix(
       in srgb,
       hsl(305, 35%, 65%) 94%,
-      var(--text-primary) 6%
+      #f4f4f6 6%
     );
     --ansi-fg-bright-cyan: color-mix(
       in srgb,
       hsl(168, 53%, 55%) 94%,
-      var(--text-primary) 6%
+      #f4f4f6 6%
     );
-    --ansi-fg-bright-white: var(--text-primary);
-    --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, var(--code-block-bg) 12%);
+    --ansi-fg-bright-white: #f4f4f6;
+    --ansi-bg-black: color-mix(in srgb, #1f1f1f 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
     --ansi-bg-red: color-mix(
       in srgb,
       hsl(0, 88%, 62%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-green: color-mix(
       in srgb,
       hsl(99, 29%, 47%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-yellow: color-mix(
       in srgb,
       hsl(41, 53%, 67%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-blue: color-mix(
       in srgb,
       hsl(207, 61%, 59%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-magenta: color-mix(
       in srgb,
       hsl(305, 35%, 65%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-cyan: color-mix(
       in srgb,
       hsl(168, 53%, 55%) 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
-    --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, var(--code-block-bg) 12%);
+    --ansi-bg-white: color-mix(in srgb, #d4d4d4 88%, color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%);
     --ansi-bg-bright-black: color-mix(
       in srgb,
       gray 88%,
-      var(--code-block-bg) 12%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 12%
     );
     --ansi-bg-bright-red: color-mix(
       in srgb,
       hsl(0, 88%, 62%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-green: color-mix(
       in srgb,
       hsl(99, 29%, 47%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-yellow: color-mix(
       in srgb,
       hsl(41, 53%, 67%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-blue: color-mix(
       in srgb,
       hsl(207, 61%, 59%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-magenta: color-mix(
       in srgb,
       hsl(305, 35%, 65%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-cyan: color-mix(
       in srgb,
       hsl(168, 53%, 55%) 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
     --ansi-bg-bright-white: color-mix(
       in srgb,
       #fff 92%,
-      var(--code-block-bg) 8%
+      color-mix(
+    in srgb,
+    var(--background-secondary-alt) 92%,
+    #0c0b0e 8%
+  ) 8%
     );
-    --text-selection: rgb(108 207 249 / 0.35);
     --markup-mention-border: rgb(108 207 249 / 0.3);
     --markup-jump-link-fill: color-mix(
       in srgb,
-      var(--text-link) 12%,
+      #6ccff9 12%,
       transparent
     );
     --markup-everyone-text: #9d8cf2;
@@ -1484,42 +1452,23 @@
     --markup-here-border: rgb(247 213 110 / 0.3);
     --button-secondary-fill: rgba(255, 255, 255, 0.1);
     --button-secondary-active-fill: rgba(255, 255, 255, 0.15);
-    --button-secondary-text: #fff;
-    --button-secondary-active-text: var(--button-secondary-text);
+    --button-secondary-active-text: #fff;
     --button-danger-outline-border: 1px solid hsl(359, 70%, 54%);
     --button-danger-outline-text: #fff;
     --button-danger-outline-active-fill: #ca2b2d;
-    --button-ghost-text: #fff;
     --button-inverted-fill: #fff;
     --button-inverted-text: #000;
     --button-outline-border: 1px solid rgba(255, 255, 255, 0.3);
     --button-outline-text: #fff;
     --button-outline-active-fill: rgba(255, 255, 255, 0.15);
     --button-outline-active-border: 1px solid rgba(255, 255, 255, 0.4);
-    --bg-primary: var(--background-primary);
-    --bg-secondary: var(--background-secondary);
-    --bg-tertiary: var(--background-tertiary);
-    --bg-hover: var(--background-modifier-hover);
-    --bg-active: var(--background-modifier-selected);
-    --bg-blockquote: var(--background-secondary-alt);
-    --bg-table-header: var(--background-tertiary);
-    --bg-table-row-odd: var(--background-primary);
-    --bg-table-row-even: var(--background-secondary);
+    --bg-blockquote: #232028;
+    --bg-table-row-odd: #0c0b0e;
+    --bg-table-row-even: #1a181e;
     --border-color-hover: rgb(122 115 140 / 0.3);
-    --border-color-focus: rgb(108 207 249 / 0.45);
-    --alert-note-color: #6ccff9;
-    --alert-tip-color: #20c578;
-    --alert-important-color: #ba5af2;
-    --alert-warning-color: #f7c222;
-    --alert-caution-color: #e64c4f;
     --spoiler-overlay-color: rgba(0, 0, 0, 0.2);
     --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
-    --user-area-divider-color: color-mix(
-      in srgb,
-      var(--background-modifier-hover) 70%,
-      transparent
-    );
     --keybind-hint-default-background: #2e2e2e;
-    --keybind-hint-default-color: var(--text-on-brand-primary);
+    --keybind-hint-default-color: #fafafa;
   }
 }

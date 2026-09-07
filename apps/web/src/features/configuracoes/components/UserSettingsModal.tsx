@@ -64,7 +64,7 @@ import { RodapeDeVersoes } from "~/features/configuracoes/components/RodapeDeVer
 import { ContextoDaSecao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { subSecaoAtiva } from "~/features/configuracoes/components/espiao-da-rolagem";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 export type { Secao };
 
@@ -348,7 +348,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             Configurações do usuário
           </DialogPrimitive.Title>
 
-          <nav data-gc="configuracoes.user-settings-modal.nav" className="flex w-[max(15.75rem,min(24svw,20rem))] shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4">
+          <nav data-gc="configuracoes.user-settings-modal.nav" {...flx("lateralDeConfiguracoes", cn("flex w-[max(15.75rem,min(24svw,20rem))] shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4", flxCls("lateralInternaDeConfiguracoes")))} {...flxAttr("lateralInternaDeConfiguracoes")}>
             <div data-gc="configuracoes.user-settings-modal.div" className="relative">
               <Search data-gc="configuracoes.user-settings-modal.search"
                 size={15}
@@ -365,7 +365,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
             <button data-gc="configuracoes.user-settings-modal.button.on-editar-perfil"
               onClick={onEditarPerfil}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition hover:bg-hover"
+              className={cn("flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition hover:bg-hover", flxCls("perfilNasConfiguracoes"))}
             >
               <Avatar data-gc="configuracoes.user-settings-modal.avatar"
                 id={user.id}
@@ -386,8 +386,8 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
             <div data-gc="configuracoes.user-settings-modal.div--2" className="flex flex-col gap-2">
               {grupos.map((grupo) => (
-                <div data-gc="configuracoes.user-settings-modal.div--3" key={grupo.chave} className="flex flex-col gap-[3px]">
-                  <p data-gc="configuracoes.user-settings-modal.p" className="truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint">
+                <div data-gc="configuracoes.user-settings-modal.div--3" key={grupo.chave} {...flx("grupoDeConfiguracoes", "flex flex-col gap-[3px]")}>
+                  <p data-gc="configuracoes.user-settings-modal.p" {...flx("tituloDoGrupoDeConfiguracoes", "truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint")}>
                     {t(grupo.chave)}
                   </p>
 
@@ -426,8 +426,8 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             </div>
           </nav>
 
-          <div data-gc="configuracoes.user-settings-modal.div--5" className="flex min-w-0 flex-1 flex-col">
-            <div data-gc="configuracoes.user-settings-modal.div--6" className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4">
+          <div data-gc="configuracoes.user-settings-modal.div--5" {...flx("conteudoDeConfiguracoes", "flex min-w-0 flex-1 flex-col")}>
+            <div data-gc="configuracoes.user-settings-modal.div--6" {...flx("topoDeConfiguracoes", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("topoDaJanelaDeConfiguracoes")))}>
               <h2 data-gc="configuracoes.user-settings-modal.h2" className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
                 <span data-gc="configuracoes.user-settings-modal.span--4" className="truncate">{t(TITULOS[secao])}</span>
                 <BotaoDeLink data-gc="configuracoes.user-settings-modal.botao-de-link" secao={secao} oQue="esta página" />
@@ -531,21 +531,23 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
         aria-current={ativo}
         aria-expanded={temSub ? ativo : undefined}
         className={cn(
+          flxCls("itemDeConfiguracoes"),
           "flex w-full items-center gap-2 rounded-lg border px-2.5 py-[5px] text-left text-sm transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
           ativo
-            ? "border-transparent bg-selecionado font-medium text-ink"
+            ? cn("border-transparent bg-selecionado font-medium text-ink", flxCls("itemDeConfiguracoesAtivo"))
             : "border-transparent text-ink-muted hover:bg-hover hover:text-ink",
         )}
       >
         <item.icone data-gc="configuracoes.user-settings-modal.itemicone"
           size={20}
           className={cn(
+            flxCls("iconeDoItemDeConfiguracoes"),
             "shrink-0 transition",
             ativo ? "text-ink" : "text-ink-faint",
           )}
         />
-        <span data-gc="configuracoes.user-settings-modal.span--5" className="min-w-0 flex-1 truncate">{t(item.chave)}</span>
+        <span data-gc="configuracoes.user-settings-modal.span--5" {...flx("rotuloDoItemDeConfiguracoes", "min-w-0 flex-1 truncate")}>{t(item.chave)}</span>
 
         {temSub && (
           <ChevronRight data-gc="configuracoes.user-settings-modal.chevron-right"

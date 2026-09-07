@@ -4,6 +4,13 @@
 
 @import "./tokens.css";
 
+/*
+  Os 89 nós centrais do grafo de cores da referência, gerados. Entram depois do
+  tokens.css e antes das variantes, que são mais específicas e continuam
+  mandando; um tema importado, que vive fora de camada, vence os dois.
+*/
+@import "./base-de-tema.css";
+
 @theme {
 
   /*
@@ -15,40 +22,40 @@
   --radius-full: 624.938rem;
 
 
-  --color-surface-0: #1a181e;
-  --color-surface-1: #1a181e;
-  --color-surface-2: #1e1d23;
-  --color-surface-3: #232028;
-  --color-surface-4: #2a2730;
-  --color-trilho: #bcbcbf;
-  --color-line: rgb(201 197 211 / 0.15);
-  --color-campo: #242229;
-  --color-campo-foco: #2f2c36;
-  --color-composer: #1e1d23;
-  --color-cabecalho: #1e1d23;
-  --color-painel: #232028;
-  --color-selecionado: rgb(255 255 255 / 0.1);
-  --color-ink: #f4f4f6;
-  --color-ink-muted: #cecbd4;
-  --color-ink-faint: #b1acbb;
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-  --color-online: #1daf6b;
-  --color-idle: #f6bb09;
-  --color-dnd: #ef4343;
-  --color-danger: #e53734;
-  --color-link: #6ccff9;
-  --color-mencao: #6ccff9;
-  --color-everyone: #9d8cf2;
+  --color-surface-0: var(--background-primary, var(--bg-primary, var(--background-mobile-primary, #1a181e)));
+  --color-surface-1: var(--background-secondary, var(--bg-secondary, var(--background-mobile-secondary, #1a181e)));
+  --color-surface-2: var(--background-secondary-lighter, var(--settings-surface-background, #1e1d23));
+  --color-surface-3: var(--guild-list-foreground, var(--background-tertiary, var(--panel-control-bg, var(--bg-table-header, var(--bg-tertiary, #232028)))));
+  --color-surface-4: var(--form-surface-background, var(--background-floating, #2a2730));
+  --color-trilho: var(--scrollbar-thumb-bg-hover, var(--scrollbar-thumb-bg, #bcbcbf));
+  --color-line: var(--border-color, var(--background-header-secondary, var(--panel-control-border, var(--settings-border-color, rgb(201 197 211 / 0.15)))));
+  --color-campo: var(--background-textarea, var(--deprecated-quickswitcher-input-background, var(--channeltextarea-background, #242229)));
+  --color-campo-foco: var(--background-modifier-accent-focus, var(--border-color-focus, #2f2c36));
+  --color-composer: var(--composer-surface-color, var(--background-secondary-lighter, #1e1d23));
+  --color-cabecalho: var(--background-channel-header, #1e1d23);
+  --color-painel: var(--background-secondary-alt, var(--deprecated-panel-background, #232028));
+  --color-selecionado: var(--text-selection, var(--background-modifier-selected, var(--control-button-active-bg, var(--bg-active, var(--surface-interactive-selected-bg, var(--background-modifier-active, rgb(255 255 255 / 0.1)))))));
+  --color-ink: var(--text-chat, var(--text-primary, var(--button-secondary-text, var(--interactive-active, var(--control-button-active-text, var(--control-button-hover-text, var(--surface-interactive-selected-color, var(--voice-text-strong, var(--interactive-hover, var(--header-primary, #f4f4f6))))))))));
+  --color-ink-muted: var(--text-chat-muted, var(--text-primary-muted, var(--text-secondary, var(--button-ghost-text, var(--control-button-normal-text, var(--interactive-normal, var(--channels-default, var(--text-normal, var(--header-secondary, #cecbd4)))))))));
+  --color-ink-faint: var(--text-tertiary-muted, var(--text-tertiary, var(--interactive-muted, var(--text-muted, #b1acbb))));
+  --color-brand: var(--accent-primary, var(--brand-primary, var(--button-primary-fill, var(--brand-500, var(--brand-experiment, var(--background-accent, #413cdd))))));
+  --color-brand-hover: var(--brand-primary-light, var(--brand-secondary, var(--button-primary-active-fill, var(--brand-560, #3732c8))));
+  --color-online: var(--status-online, var(--accent-success, var(--alert-tip-color, var(--info-positive-foreground, var(--status-positive, #1daf6b)))));
+  --color-idle: var(--status-idle, var(--accent-warning, var(--status-warning, var(--info-warning-foreground, var(--status-warning-background, #f6bb09)))));
+  --color-dnd: var(--status-dnd, var(--button-danger-fill, #ef4343));
+  --color-danger: var(--status-danger, var(--accent-danger, var(--button-danger-fill, var(--button-danger-active-fill, var(--alert-caution-color, var(--control-button-danger-text, var(--info-danger-foreground, #e53734)))))));
+  --color-link: var(--text-link, var(--alert-note-color, var(--accent-info, #6ccff9)));
+  --color-mencao: var(--markup-mention-text, var(--text-link, #6ccff9));
+  --color-everyone: var(--alert-important-color, var(--accent-purple, #9d8cf2));
   --color-here: #f7d56e;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
+  --color-destaque: var(--message-mention-color, #eac532);
+  --color-destaque-fundo: var(--message-mention-bg, rgb(234 197 50 / 0.1));
   --color-resposta: #3b82f6;
-  --color-codigo: #242129;
-  --color-codigo-bloco: #211e26;
-  --color-aviso: #f7c222;
-  --color-divisor: rgb(255 255 255 / 0.05);
-  --color-hover: rgb(255 255 255 / 0.05);
+  --color-codigo: var(--code-inline-bg, var(--bg-code, #242129));
+  --color-codigo-bloco: var(--code-block-bg, var(--bg-code-block, #211e26));
+  --color-aviso: var(--accent-warning, var(--text-warning, var(--alert-warning-color, #f7c222)));
+  --color-divisor: var(--user-area-divider-color, var(--background-modifier-accent, var(--panel-control-divider, rgb(255 255 255 / 0.05))));
+  --color-hover: var(--background-modifier-hover, var(--control-button-hover-bg, var(--background-header-primary-hover, var(--bg-hover, var(--surface-interactive-hover-bg, var(--settings-hover-background, var(--background-message-hover, rgb(255 255 255 / 0.05))))))));
   --color-pilula: #f4f4f6;
 
   /*
@@ -59,11 +66,11 @@
     de perigo 13, o anel de foco 12. Eram todos cor crava, fora do alcance de
     qualquer tema — e é por isso que trocar de tema quase não mudava nada.
   */
-  --color-sobre-marca: #ffffff;
+  --color-sobre-marca: var(--brand-primary-fill, var(--text-on-brand-primary, var(--button-danger-text, var(--button-primary-text, #ffffff))));
   --color-veu: rgb(0 0 0 / 0.6);
   --color-line-sutil: rgb(255 255 255 / 0.08);
-  --color-danger-fundo: rgb(229 55 52 / 0.12);
-  --color-foco-anel: rgb(65 60 221 / 0.6);
+  --color-danger-fundo: var(--control-button-danger-hover-bg, rgb(229 55 52 / 0.12));
+  --color-foco-anel: var(--focus-primary, rgb(65 60 221 / 0.6));
   --color-palco: #0a0a0c;
   --color-sobre-midia: rgb(0 0 0 / 0.6);
   --color-sombra: rgb(0 0 0 / 0.32);
@@ -100,160 +107,177 @@
 
 }
 
-:root[data-tema="mais-escuro"] {
+/*
+  As variantes do app moram numa camada, e é isso que deixa um tema importado
+  vencê-las.
 
-  --color-sobre-marca: #ffffff;
-  --color-veu: rgb(0 0 0 / 0.72);
-  --color-line-sutil: rgb(255 255 255 / 0.06);
-  --color-danger-fundo: rgb(229 55 52 / 0.14);
-  --color-foco-anel: rgb(65 60 221 / 0.6);
-  --color-palco: #000000;
-  --color-sobre-midia: rgb(0 0 0 / 0.66);
-  --color-sombra: rgb(0 0 0 / 0.4);
-  --color-brilho: rgb(255 255 255 / 0.3);
-  --color-palco-ink: #f4f4f6;
-  --color-surface-0: #020203;
-  --color-surface-1: #020203;
-  --color-surface-2: #020203;
-  --color-surface-3: #0f0e12;
-  --color-surface-4: #141217;
-  --color-trilho: #b8b8ba;
-  --color-line: rgb(162 157 175 / 0.18);
-  --color-campo: #100f13;
-  --color-campo-foco: #17151a;
-  --color-composer: #0f0e12;
-  --color-cabecalho: #020203;
-  --color-painel: #0f0e12;
-  --color-selecionado: rgb(255 255 255 / 0.08);
-  --color-ink: #f4f4f6;
-  --color-ink-muted: #cecbd4;
-  --color-ink-faint: #b1acbb;
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-  --color-online: #1daf6b;
-  --color-idle: #f6bb09;
-  --color-dnd: #ef4343;
-  --color-danger: #e53734;
-  --color-link: #6ccff9;
-  --color-mencao: #6ccff9;
-  --color-everyone: #9d8cf2;
-  --color-here: #f7d56e;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
-  --color-resposta: #3b82f6;
-  --color-codigo: #322f34;
-  --color-codigo-bloco: #0d0c0f;
-  --color-aviso: #f7c222;
-  --color-divisor: rgb(255 255 255 / 0.05);
-  --color-hover: rgb(255 255 255 / 0.04);
-  --color-pilula: #f4f4f6;
+  A regra da cascata: **o que está fora de camada vence o que está dentro**, não
+  importa a especificidade. Sem isto, `:root[data-tema="mais-escuro"]` (0,2,0)
+  ganharia de um `:root` (0,1,0) escrito por um tema da comunidade — e quem
+  usasse o tema mais escuro do app não conseguiria importar tema nenhum.
+
+  E as variantes giram a maçaneta da referência, não a nossa cor: escrevem
+  `--background-primary`, e a nossa `--color-surface-0` sai dele. Assim há um
+  caminho só, e o tema entra pela mesma porta que a variante.
+*/
+@layer variantes-do-app {
+  :root[data-tema="mais-escuro"] {
+
+    --brand-primary-fill: #ffffff;
+    --color-veu: rgb(0 0 0 / 0.72);
+    --color-line-sutil: rgb(255 255 255 / 0.06);
+    --control-button-danger-hover-bg: rgb(229 55 52 / 0.14);
+    --focus-primary: rgb(65 60 221 / 0.6);
+    --color-palco: #000000;
+    --color-sobre-midia: rgb(0 0 0 / 0.66);
+    --color-sombra: rgb(0 0 0 / 0.4);
+    --color-brilho: rgb(255 255 255 / 0.3);
+    --color-palco-ink: #f4f4f6;
+    --background-primary: #020203;
+    --background-secondary: #020203;
+    --background-secondary-lighter: #020203;
+    --guild-list-foreground: #0f0e12;
+    --form-surface-background: #141217;
+    --scrollbar-thumb-bg-hover: #b8b8ba;
+    --scrollbar-thumb-bg: color-mix(in oklab, #b8b8ba, transparent 55%);
+    --border-color: rgb(162 157 175 / 0.18);
+    --background-textarea: #100f13;
+    --background-modifier-accent-focus: #17151a;
+    --composer-surface-color: #0f0e12;
+    --background-channel-header: #020203;
+    --background-secondary-alt: #0f0e12;
+    --text-selection: rgb(255 255 255 / 0.08);
+    --text-chat: #f4f4f6;
+    --text-chat-muted: #cecbd4;
+    --text-tertiary-muted: #b1acbb;
+    --accent-primary: #413cdd;
+    --brand-primary-light: #3732c8;
+    --status-online: #1daf6b;
+    --status-idle: #f6bb09;
+    --status-dnd: #ef4343;
+    --status-danger: #e53734;
+    --text-link: #6ccff9;
+    --markup-mention-text: #6ccff9;
+    --alert-important-color: #9d8cf2;
+    --color-here: #f7d56e;
+    --code-inline-bg: #322f34;
+    --code-block-bg: #0d0c0f;
+    --accent-warning: #f7c222;
+    --user-area-divider-color: rgb(255 255 255 / 0.05);
+    --background-modifier-hover: rgb(255 255 255 / 0.04);
+    --color-pilula: #f4f4f6;
+  }
+
+
+  :root[data-tema="gravae"] {
+
+    --brand-primary-fill: #ffffff;
+    --color-veu: rgb(0 0 0 / 0.66);
+    --color-line-sutil: rgb(255 255 255 / 0.08);
+    --control-button-danger-hover-bg: rgb(229 55 52 / 0.14);
+    --focus-primary: rgb(211 4 4 / 0.6);
+    --color-palco: #0b0709;
+    --color-sobre-midia: rgb(0 0 0 / 0.62);
+    --color-sombra: rgb(0 0 0 / 0.36);
+    --color-brilho: rgb(255 255 255 / 0.32);
+    --color-palco-ink: #f4f4f6;
+    --background-primary: #0b0708;
+    --background-secondary: #120c0d;
+    --background-secondary-lighter: #171011;
+    --guild-list-foreground: #201617;
+    --form-surface-background: #2b1e1f;
+    --scrollbar-thumb-bg-hover: #bcbcbf;
+    --scrollbar-thumb-bg: color-mix(in oklab, #bcbcbf, transparent 55%);
+    --border-color: #2e2021;
+    --background-textarea: #201617;
+    --background-modifier-accent-focus: #6b3134;
+
+    --text-chat: #f4ecec;
+    --text-chat-muted: #bda9aa;
+    --text-tertiary-muted: #806c6d;
+
+    --accent-primary: #ff0000;
+    --brand-primary-light: #cc0000;
+
+    --composer-surface-color: #171011;
+    --background-channel-header: #171011;
+    --background-secondary-alt: #201617;
+    --text-selection: rgb(255 255 255 / 0.08);
+
+    --user-area-divider-color: rgb(0 0 0 / 0.45);
+    --background-modifier-hover: rgb(255 0 0 / 0.06);
+    --color-pilula: #ff0000;
+  }
+
+
+  :root ::-webkit-scrollbar-thumb,
+  :root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb,
+  :root[data-tema="claro"] ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-bg, rgb(121 122 124 / 0.4));
+  }
+
+  :root ::-webkit-scrollbar-thumb:hover,
+  :root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb:hover,
+  :root[data-tema="claro"] ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-bg-hover);
+  }
+
+  :root[data-tema="gravae"] ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklab, var(--color-brand), transparent 55%);
+  }
+
+
+  :root[data-tema="claro"],
+  :root[data-tema="sistema"] {
+
+    --brand-primary-fill: #ffffff;
+    --color-veu: rgb(23 25 28 / 0.45);
+    --color-line-sutil: rgb(23 25 28 / 0.08);
+    --control-button-danger-hover-bg: rgb(229 55 52 / 0.1);
+    --focus-primary: rgb(65 60 221 / 0.5);
+    --color-palco: #22252a;
+    --color-sobre-midia: rgb(0 0 0 / 0.55);
+    --color-sombra: rgb(0 0 0 / 0.18);
+    --color-brilho: rgb(23 25 28 / 0.28);
+    --color-palco-ink: #f4f4f6;
+    --background-primary: #ebecef;
+    --background-secondary: #ebecef;
+    --background-secondary-lighter: #f0f1f3;
+    --guild-list-foreground: #e6e7ea;
+    --form-surface-background: #fbfbfc;
+    --scrollbar-thumb-bg-hover: #c4c7cc;
+    --scrollbar-thumb-bg: color-mix(in oklab, #c4c7cc, transparent 55%);
+    --border-color: rgb(92 99 112 / 0.22);
+    --background-textarea: #f3f4f5;
+    --background-modifier-accent-focus: #d8dbdf;
+    --composer-surface-color: #f0f1f3;
+    --background-channel-header: #f0f1f3;
+    --background-secondary-alt: #e6e7ea;
+    --text-selection: rgb(23 25 28 / 0.1);
+    --text-chat: #22252a;
+    --text-chat-muted: #616876;
+    --text-tertiary-muted: #6e7686;
+    --accent-primary: #413cdd;
+    --brand-primary-light: #3732c8;
+    --status-online: #1fad6b;
+    --status-idle: #daa60b;
+    --status-dnd: #d92629;
+    --status-danger: #d92629;
+    --text-link: #099ddc;
+    --markup-mention-text: #099ddc;
+    --alert-important-color: #3d22c3;
+    --color-here: #bd830f;
+    --code-inline-bg: #dbdadf;
+    --code-block-bg: #f9f9fa;
+    --accent-warning: #f7c222;
+    --user-area-divider-color: rgb(23 25 28 / 0.05);
+    --background-modifier-hover: rgb(23 25 28 / 0.05);
+    --color-pilula: #22252a;
+    color-scheme: light;
+  }
 }
 
-:root[data-tema="gravae"] {
 
-  --color-sobre-marca: #ffffff;
-  --color-veu: rgb(0 0 0 / 0.66);
-  --color-line-sutil: rgb(255 255 255 / 0.08);
-  --color-danger-fundo: rgb(229 55 52 / 0.14);
-  --color-foco-anel: rgb(211 4 4 / 0.6);
-  --color-palco: #0b0709;
-  --color-sobre-midia: rgb(0 0 0 / 0.62);
-  --color-sombra: rgb(0 0 0 / 0.36);
-  --color-brilho: rgb(255 255 255 / 0.32);
-  --color-palco-ink: #f4f4f6;
-  --color-surface-0: #0b0708;
-  --color-surface-1: #120c0d;
-  --color-surface-2: #171011;
-  --color-surface-3: #201617;
-  --color-surface-4: #2b1e1f;
-  --color-trilho: #bcbcbf;
-  --color-line: #2e2021;
-  --color-campo: #201617;
-  --color-campo-foco: #6b3134;
-
-  --color-ink: #f4ecec;
-  --color-ink-muted: #bda9aa;
-  --color-ink-faint: #806c6d;
-
-  --color-brand: #ff0000;
-  --color-brand-hover: #cc0000;
-
-  --color-composer: #171011;
-  --color-cabecalho: #171011;
-  --color-painel: #201617;
-  --color-selecionado: rgb(255 255 255 / 0.08);
-
-  --color-divisor: rgb(0 0 0 / 0.45);
-  --color-hover: rgb(255 0 0 / 0.06);
-  --color-pilula: #ff0000;
-}
-
-:root ::-webkit-scrollbar-thumb,
-:root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb,
-:root[data-tema="claro"] ::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb-bg);
-}
-
-:root ::-webkit-scrollbar-thumb:hover,
-:root[data-tema="mais-escuro"] ::-webkit-scrollbar-thumb:hover,
-:root[data-tema="claro"] ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--scrollbar-thumb-bg-hover);
-}
-
-:root[data-tema="gravae"] ::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklab, var(--color-brand), transparent 55%);
-}
-
-:root[data-tema="claro"],
-:root[data-tema="sistema"] {
-
-  --color-sobre-marca: #ffffff;
-  --color-veu: rgb(23 25 28 / 0.45);
-  --color-line-sutil: rgb(23 25 28 / 0.08);
-  --color-danger-fundo: rgb(229 55 52 / 0.1);
-  --color-foco-anel: rgb(65 60 221 / 0.5);
-  --color-palco: #22252a;
-  --color-sobre-midia: rgb(0 0 0 / 0.55);
-  --color-sombra: rgb(0 0 0 / 0.18);
-  --color-brilho: rgb(23 25 28 / 0.28);
-  --color-palco-ink: #f4f4f6;
-  --color-surface-0: #ebecef;
-  --color-surface-1: #ebecef;
-  --color-surface-2: #f0f1f3;
-  --color-surface-3: #e6e7ea;
-  --color-surface-4: #fbfbfc;
-  --color-trilho: #c4c7cc;
-  --color-line: rgb(92 99 112 / 0.22);
-  --color-campo: #f3f4f5;
-  --color-campo-foco: #d8dbdf;
-  --color-composer: #f0f1f3;
-  --color-cabecalho: #f0f1f3;
-  --color-painel: #e6e7ea;
-  --color-selecionado: rgb(23 25 28 / 0.1);
-  --color-ink: #22252a;
-  --color-ink-muted: #616876;
-  --color-ink-faint: #6e7686;
-  --color-brand: #413cdd;
-  --color-brand-hover: #3732c8;
-  --color-online: #1fad6b;
-  --color-idle: #daa60b;
-  --color-dnd: #d92629;
-  --color-danger: #d92629;
-  --color-link: #099ddc;
-  --color-mencao: #099ddc;
-  --color-everyone: #3d22c3;
-  --color-here: #bd830f;
-  --color-destaque: #eac532;
-  --color-destaque-fundo: rgb(234 197 50 / 0.1);
-  --color-resposta: #3b82f6;
-  --color-codigo: #dbdadf;
-  --color-codigo-bloco: #f9f9fa;
-  --color-aviso: #f7c222;
-  --color-divisor: rgb(23 25 28 / 0.05);
-  --color-hover: rgb(23 25 28 / 0.05);
-  --color-pilula: #22252a;
-  color-scheme: light;
-}
 
 @media (prefers-color-scheme: dark) {
   :root[data-tema="sistema"] {
@@ -294,9 +318,6 @@
     --color-mencao: #6ccff9;
     --color-everyone: #9d8cf2;
     --color-here: #f7d56e;
-    --color-destaque: #eac532;
-    --color-destaque-fundo: rgb(234 197 50 / 0.1);
-    --color-resposta: #3b82f6;
     --color-codigo: #242129;
     --color-codigo-bloco: #211e26;
     --color-aviso: #f7c222;
@@ -309,16 +330,37 @@
 @layer base {
   html,
   body,
-  #root {
+  #app {
     height: 100%;
   }
 
-  #root {
+  /*
+    O anel de 1px em volta do app é a nossa moldura de fora — o que na referência
+    é o `OutlineFrame`. Vivia no `#app`, sem nome, e por isso nenhum tema
+    conseguia apagá-lo: ficava por baixo do contorno que o tema desenha.
+    Agora mora na `.moldura-externa`, que carrega o nome deles.
+  */
+  /*
+    A moldura pinta um fundo, como a da referência.
+
+    O `OutlineFrame.frame` deles tem `background: var(--background-secondary-lighter)`
+    — a mesma altura de superfície que o nosso `surface-2`. Parece detalhe e não é:
+    quando um tema deixa a coluna da conversa transparente (o Galaxy faz isso, com
+    `background: transparent` no `ChannelChatLayout.container`), o que aparece por
+    baixo lá é este fundo, e aqui era o `body` — ou seja, o degradê de nebulosa do
+    tema inteiro, concentrado só na coluna do meio.
+
+    Era o que fazia a nossa tela ter um borrão roxo no meio que a deles não tem.
+
+    Sem tema não muda nada: tudo o que fica por cima já é opaco.
+  */
+  .moldura-externa {
+    background: var(--color-surface-2);
     box-shadow: inset 0 0 0 1px var(--color-divisor);
   }
 
   body {
-    @apply bg-surface-2 text-ink font-sans antialiased;
+    @apply bg-surface-0 text-ink font-sans antialiased;
     margin: 0;
     overscroll-behavior: none;
   }
@@ -498,6 +540,24 @@ body[data-scroll-locked] .regiao-de-arrasto {
 .regiao-sem-arrasto * {
   -webkit-app-region: no-drag;
   app-region: no-drag;
+}
+
+/*
+  O mesmo que o `@container` do Tailwind, com outro nome.
+
+  Um tema da comunidade mira painel por pedaço de nome. O Galaxy, por exemplo,
+  escreve `[class*="ChannelChatLayout"][class*="container"]` para pegar a coluna
+  da conversa — na referência só ela tem `container` no nome. Aqui a caixa de
+  escrever também passava a ter, porque a classe do Tailwind se chama
+  `@container`, e levava junto o `padding: 19px` que era da coluna: a caixa
+  ficava 20px mais alta que a de lá.
+
+  Mesmo efeito, sem a palavra que o tema procura. Quem for pôr uma consulta de
+  largura num elemento carimbado usa esta; o `scripts/checar-fantasmas.mjs`
+  reclama se voltar a usar a outra.
+*/
+.mede-a-largura {
+  container-type: inline-size;
 }
 
 .palco-de-um {

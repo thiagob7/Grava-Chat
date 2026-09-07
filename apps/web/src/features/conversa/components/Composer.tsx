@@ -52,7 +52,7 @@ import { cercarCodigo, pareceCodigo, textoParaArquivo } from "~/features/convers
 import { converterEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
-import { flx, flxAttr } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface ComposerProps {
   channelId: string;
@@ -362,7 +362,7 @@ export const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div data-gc="conversa.composer.div" {...flx("caixaDeEscrever", "caixa-de-escrever @container bg-composer px-2 pb-3 @sm:px-3")}>
+    <section data-gc="conversa.composer.section" aria-label="Caixa de escrever" {...flx("caixaDeEscrever", "caixa-de-escrever mede-a-largura bg-composer px-2 pb-3 @sm:px-3")}>
       <ModalIlustrado data-gc="conversa.composer.modal-ilustrado"
         aberto={Boolean(textoLongo)}
         onFechar={() => setTextoLongo(null)}
@@ -392,14 +392,16 @@ export const Composer: React.FC<ComposerProps> = ({
         <Button data-gc="conversa.composer.button.esquecer-grande-demais" onClick={anexos.esquecerGrandeDemais}>{t("comum.fechar")}</Button>
       </ModalIlustrado>
       {faltam > 0 && (
-        <Tooltip data-gc="conversa.composer.tooltip" label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
-          <p data-gc="conversa.composer.p" className="mb-1 flex items-center justify-end gap-1 text-right text-xs font-medium text-danger">
-            {t("conversa.caixa.modoLento", {
-              tempo: `${String(Math.floor(faltam / 60)).padStart(2, "0")}:${String(faltam % 60).padStart(2, "0")}`,
-            })}
-            <Timer data-gc="conversa.composer.timer" size={13} />
-          </p>
-        </Tooltip>
+        <div data-gc="conversa.composer.div" {...flx("trilhoDeAviso", "mb-1 flex items-center justify-end")}>
+          <Tooltip data-gc="conversa.composer.tooltip" label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
+            <p data-gc="conversa.composer.p" {...flx("avisoDeModoLento", "flex items-center gap-1 text-right text-xs font-medium text-danger")}>
+              {t("conversa.caixa.modoLento", {
+                tempo: `${String(Math.floor(faltam / 60)).padStart(2, "0")}:${String(faltam % 60).padStart(2, "0")}`,
+              })}
+              <Timer data-gc="conversa.composer.timer" size={13} />
+            </p>
+          </Tooltip>
+        </div>
       )}
 
       <div data-gc="conversa.composer.div--2"
@@ -417,6 +419,7 @@ export const Composer: React.FC<ComposerProps> = ({
         }}
         {...flxAttr("campoDeEscrever")}
         className={cn(
+          flxCls("campoDeEscrever"),
           "rounded bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
@@ -463,7 +466,12 @@ export const Composer: React.FC<ComposerProps> = ({
           onPatch={anexos.patchAttachment}
         />
 
-        <div data-gc="conversa.composer.div--4" className="relative flex items-end gap-1 px-1.5 @sm:gap-1.5 @sm:px-2">
+        {/*
+          A pilha por fora e a linha por dentro, como na referência: lá é
+          `stackSection` > `textareaOuterRow`, e o tema encadeia os dois.
+        */}
+        <div data-gc="conversa.composer.div--4" {...flx("pilhaDeEscrever")}>
+        <div data-gc="conversa.composer.div--5" {...flx("linhaDeEscrever", "relative flex items-end gap-1 px-1.5 @sm:gap-1.5 @sm:px-2")}>
           <MencaoSugestoes data-gc="conversa.composer.mencao-sugestoes.inserir-mencao"
             itens={sugestoes}
             indice={escolhido}
@@ -490,7 +498,10 @@ export const Composer: React.FC<ComposerProps> = ({
             <DropdownMenuTrigger data-gc="conversa.composer.dropdown-menu-trigger" asChild disabled={!podeEscrever}>
               <button data-gc="conversa.composer.button--2"
                 aria-label={t("conversa.caixa.mais")}
-                className="py-3 text-ink-muted transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
+                className={cn(
+                  flxCls("botaoDaCaixa"),
+                  "py-3 text-ink-muted transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-30",
+                )}
               >
                 <Plus data-gc="conversa.composer.plus" size={22} />
               </button>
@@ -528,7 +539,7 @@ export const Composer: React.FC<ComposerProps> = ({
             className="hidden"
           />
 
-          <div data-gc="conversa.composer.div--5" className="relative min-w-0 flex-1">
+          <div data-gc="conversa.composer.div--6" {...flx("colunaDoTexto", "relative min-w-0 flex-1")}>
           <EspelhoDoCompositor data-gc="conversa.composer.espelho-do-compositor"
             ref={espelho}
             texto={value}
@@ -638,11 +649,14 @@ export const Composer: React.FC<ComposerProps> = ({
               if (espelho.current) espelho.current.scrollTop = e.currentTarget.scrollTop;
             }}
             style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
-            className="relative block max-h-[50vh] w-full resize-none bg-transparent py-3 text-transparent caret-ink outline-none selection:bg-brand/40 placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed"
+            className={cn(
+              flxCls("paragrafoDaCaixa"),
+              "relative block max-h-[50vh] w-full resize-none bg-transparent py-3 text-transparent caret-ink outline-none selection:bg-brand/40 placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed",
+            )}
           />
           </div>
 
-          <div data-gc="conversa.composer.div--6" className="mb-1.5 flex shrink-0 items-center gap-0.5">
+          <div data-gc="conversa.composer.div--7" {...flx("botoesDaCaixa", "mb-1.5 flex shrink-0 items-center gap-0.5")}>
             <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
             <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}
@@ -694,13 +708,17 @@ export const Composer: React.FC<ComposerProps> = ({
                   onClick={submit}
                   disabled={!podeEnviar}
                   aria-label={t("conversa.caixa.enviar")}
-                  className="flex size-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-hover hover:text-brand disabled:opacity-30"
+                  className={cn(
+                    flxCls("botaoDaCaixa"),
+                    "flex size-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-hover hover:text-brand disabled:opacity-30",
+                  )}
                 >
                   <Send data-gc="conversa.composer.send" size={20} />
                 </button>
               </Tooltip>
             )}
           </div>
+        </div>
         </div>
       </div>
 
@@ -712,7 +730,7 @@ export const Composer: React.FC<ComposerProps> = ({
           setCriandoEnquete(false);
         }}
       />
-    </div>
+    </section>
   );
 };
 

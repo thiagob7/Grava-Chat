@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { BarraDeTitulo } from "~/features/app/components/BarraDeTitulo";
+import { CascaCarregando } from "~/features/app/components/CascaCarregando";
 import { FaixaDaComunidade } from "~/features/servidor/components/FaixaDaComunidade";
 import { Splash } from "~/features/app/components/Splash";
 
@@ -25,14 +26,15 @@ import { EstudioEmJanela } from "~/pages/presentation/estudio/EstudioEmJanela";
 import { VerTema } from "~/pages/presentation/tema/VerTema";
 import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
-import { flx } from "~/lib/compat-fluxer";
+import { cn } from "~/lib/utils";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 export const AppRoutes: React.FC = () => {
   useConfigPorUrl();
 
   return (
   <BrowserRouter>
-    <div data-gc="routes.div" className="flex h-full flex-col">
+    <div data-gc="routes.div" {...flx("containerDoApp", "flex h-full flex-col")}>
       <CascaDoApp data-gc="routes.casca-do-app">
       {/*
         O app não rola para o lado, nunca. Um tema pode empurrar um painel para
@@ -41,7 +43,7 @@ export const AppRoutes: React.FC = () => {
         aqui, esse empurrão vira barra de rolagem horizontal e o trilho sai pela
         esquerda.
       */}
-      <div data-gc="routes.div--2" {...flx("molduraDoApp", "min-h-0 flex-1 overflow-x-hidden")}>
+      <div data-gc="routes.div--2" {...flxAttr("molduraExterna")} {...flx("molduraDoApp", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("molduraExterna")))}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route
@@ -159,7 +161,7 @@ const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useAvisoNoTitulo(Boolean(user));
   useConviteDeAviso(Boolean(user));
 
-  if (isBooting) return <Splash data-gc="routes.splash" />;
+  if (isBooting) return <CascaCarregando data-gc="routes.casca-carregando" />;
 
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
@@ -172,7 +174,7 @@ const PublicOnly: React.FC = () => {
   const { user, isBooting } = useSession();
   const location = useLocation() as { state?: { from?: string } };
 
-  if (isBooting) return <Splash data-gc="routes.splash--2" />;
+  if (isBooting) return <Splash data-gc="routes.splash" />;
   if (user) return <Navigate to={location.state?.from ?? "/channels"} replace />;
 
   return <SignIn data-gc="routes.sign-in" />;

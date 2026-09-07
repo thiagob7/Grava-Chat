@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Αλλαγή φωτογραφίας προφίλ",
     trocarFotoCurto: "Αλλαγή φωτογραφίας",
     suaEtiqueta: "Η ετικέτα σου",
+    pronomes: "Αντωνυμίες",
     editarEtiqueta: "Κάνε κλικ για να επεξεργαστείς την ετικέτα σου",
     conteAlgo: "Πες μας κάτι για σένα",
     adicionarStatus: "Προσθήκη κατάστασης",

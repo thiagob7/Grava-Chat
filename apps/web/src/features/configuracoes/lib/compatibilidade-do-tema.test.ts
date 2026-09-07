@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { conferirCompatibilidade } from "~/features/configuracoes/lib/compatibilidade-do-tema";
 
-describe("compatibilidade com um tema do Fluxer", () => {
+describe("compatibilidade com um tema da referência", () => {
   it("acha o que o tema mira e a gente tem", () => {
     const { achados, faltando } = conferirCompatibilidade(`
       [class*="GuildNavbar.module__guildNavbarContainer_"] { border: 1px solid red }

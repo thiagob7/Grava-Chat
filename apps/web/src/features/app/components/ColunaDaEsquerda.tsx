@@ -1,7 +1,7 @@
 import React from "react";
 
 /*
-  Trilho, lateral e rodapé, na relação que o Fluxer usa.
+  Trilho, lateral e rodapé, na relação que a referência usa.
 
   O rodapé era filho da lateral, e por isso a borda que um tema desenha na
   lateral descia e cercava o usuário junto — enquanto o trilho, que é irmão,

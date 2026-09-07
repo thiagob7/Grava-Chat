@@ -1,6 +1,6 @@
 /*
   Um tema de CSS é escrito contra a árvore e os nomes de variável de UM app.
-  O Fluxer chama o fundo da lateral de `--background-secondary`; aqui ele é
+  A referência chama o fundo da lateral de `--background-secondary`; aqui ele é
   `--color-surface-1`. Por isso um tema deles, colado cru no nosso estúdio,
   quase não muda nada: ele pinta variáveis que ninguém lê.
 
@@ -10,7 +10,7 @@
   existem na nossa árvore. Mas cor e tipografia, que é o grosso do que se vê,
   passam a valer.
 
-  Os nomes do lado esquerdo saíram do CSS publicado do Fluxer e do próprio
+  Os nomes do lado esquerdo saíram do CSS publicado da referência e do próprio
   repositório deles.
 */
 /*
@@ -24,6 +24,49 @@
   a nossa marca; um que mexe nos dois deixa a marca mandar.
 */
 export const PONTE_DE_TEMA: Record<string, string[]> = {
+  /*
+    O vocabulário do Discord, para os temas de BetterDiscord e Vencord.
+
+    Vem PRIMEIRO de propósito. A regra do arquivo é que o nome canônico de cada
+    papel fica por último, e o nosso canônico é o da referência — um tema que fale
+    os dois dialetos deve terminar mandado pelo mais específico.
+
+    Alguns nomes são os mesmos nos dois mundos (`--background-primary`,
+    `--text-link`); esses aparecem uma vez só, mais abaixo, e servem aos dois.
+
+    A tradução não é literal, é por PAPEL. O `--channels-default` deles é a cor
+    do nome do canal na lateral, que aqui é a mesma tinta apagada do resto —
+    daí cair em `--color-ink-muted` e não numa cor de fundo.
+  */
+  "--background-floating": ["--color-surface-4"],
+  "--background-accent": ["--color-brand"],
+  "--background-mobile-primary": ["--color-surface-0"],
+  "--background-mobile-secondary": ["--color-surface-1"],
+  "--background-message-hover": ["--color-hover"],
+  "--background-modifier-active": ["--color-selecionado"],
+  "--channeltextarea-background": ["--color-campo"],
+  "--deprecated-panel-background": ["--color-painel"],
+  "--deprecated-quickswitcher-input-background": ["--color-campo"],
+
+  "--header-primary": ["--color-ink"],
+  "--header-secondary": ["--color-ink-muted"],
+  "--text-normal": ["--color-ink-muted"],
+  "--text-muted": ["--color-ink-faint"],
+  "--channels-default": ["--color-ink-muted"],
+
+  "--interactive-normal": ["--color-ink-muted"],
+  "--interactive-hover": ["--color-ink"],
+
+  "--brand-experiment": ["--color-brand"],
+  "--brand-500": ["--color-brand"],
+  "--brand-560": ["--color-brand-hover"],
+
+  "--status-positive": ["--color-online"],
+  "--status-warning-background": ["--color-idle"],
+  "--info-danger-foreground": ["--color-danger"],
+  "--info-warning-foreground": ["--color-idle"],
+  "--info-positive-foreground": ["--color-online"],
+
   /*
     A segunda leva, medida no gerador de cores deles.
 
@@ -91,6 +134,20 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   /// Trilho de servidores, barras laterais e faixa de título.
   "--background-secondary": ["--color-surface-1"],
   /// O miolo: conversa, caixa de escrever, coluna da direita.
+  /// A menção tem nome próprio lá; aqui dividia o `--text-link` com o link.
+  "--markup-mention-text": ["--color-mencao"],
+
+  /*
+    O destaque da menção a você e a linha da resposta. Chegaram junto com os
+    avisos do markdown: os três já existiam aqui com o valor exato da referência,
+    só não estavam ligados ao nome dele.
+  */
+  "--message-mention-color": ["--color-destaque"],
+  "--message-mention-bg": ["--color-destaque-fundo"],
+
+  /// O fundo da caixa de escrever tem nome próprio lá; aqui dividia com a superfície.
+  "--composer-surface-color": ["--color-composer"],
+
   "--background-secondary-lighter": ["--color-surface-2", "--color-composer"],
   /// Cartão de chamada e de usuário.
   "--background-secondary-alt": ["--color-painel"],
@@ -118,7 +175,13 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--text-warning": ["--color-aviso"],
 
   "--brand-primary": ["--color-brand"],
-  "--brand-primary-fill": ["--color-brand"],
+  /*
+    `brand-primary-fill` é o que fica EM CIMA da marca, não a marca.
+    Na referência ele vale branco e só aparece em `color:` de botão e no
+    `fill=` do ícone. Apontando para `--color-brand`, um tema que o
+    declarasse repintava o fundo dos botões com a cor do texto.
+  */
+  "--brand-primary-fill": ["--color-sobre-marca"],
   "--brand-secondary": ["--color-brand-hover"],
   "--accent-primary": ["--color-brand"],
   "--accent-danger": ["--color-danger"],
@@ -147,6 +210,21 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--settings-border-color": ["--color-line"],
   "--settings-surface-background": ["--color-surface-2"],
   "--background-modifier-accent-focus": ["--color-campo-foco"],
+
+  /*
+    A terceira leva, da mesma contagem. Sobraram estas três, todas de papel
+    claro: a tinta dos ícones do trilho, o anel de foco e a cor da seleção de
+    texto. Nenhuma é apelido de outra — cada uma pinta um lugar que os temas
+    de fora mexem e aqui ficava de fábrica.
+  */
+  /*
+    `guild-list-foreground` tem "foreground" no nome e é fundo: lá ele
+    vale `hsl(258 10% 16,7%)` e pinta o quadrado do ícone de servidor e o
+    ícone da boas-vindas do canal. Apontava para a cor do texto.
+  */
+  "--guild-list-foreground": ["--color-surface-3"],
+  "--focus-primary": ["--color-foco-anel"],
+  "--text-selection": ["--color-selecionado"],
 
   "--code-block-bg": ["--color-codigo-bloco"],
   "--code-inline-bg": ["--color-codigo"],
@@ -190,7 +268,7 @@ export function traduzirTema(
   Quais variáveis o próprio arquivo declara.
 
   Sem esta pergunta a ponte lia o computado da raiz e achava valor para TODO
-  nome do vocabulário do Fluxer — porque a nossa camada de tokens já declara
+  nome do vocabulário da referência — porque a nossa camada de tokens já declara
   esse vocabulário inteiro. O tema não tinha dito nada sobre
   `--background-channel-header`, e mesmo assim o valor da nossa camada de
   referência era escrito por cima do `--color-cabecalho` real. Era por isso que

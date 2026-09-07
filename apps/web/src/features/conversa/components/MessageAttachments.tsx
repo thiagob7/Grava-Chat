@@ -5,11 +5,15 @@ import type { Attachment } from "@gravae/shared";
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
 import { PreviaDeTexto } from "~/features/conversa/components/PreviaDeTexto";
 import { ehAnexoDeTexto } from "~/features/conversa/lib/anexo-de-texto";
+import {
+  arranjoDeAnexos,
+  colunasDoItem,
+} from "~/features/conversa/lib/grade-de-anexos";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
+import { flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
 
 interface MessageAttachmentsProps {
@@ -31,11 +35,68 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
 
   if (!attachments.length) return null;
 
+  /*
+    A grade só entra quando é só imagem e ninguém está editando: com a lixeira
+    ao lado, cada anexo precisa da linha inteira, e um arquivo que não é imagem
+    não tem proporção para caber numa célula.
+  */
+  const soImagens = attachments.every((a) => isImageType(a.contentType));
+  const arranjo =
+    !onRemover && abrirImagens && soImagens ? arranjoDeAnexos(attachments.length) : null;
+
+  if (arranjo) {
+    const emCima = arranjo.emCima ?? 0;
+    const debaixo = attachments.slice(emCima);
+
+    const grade = (
+      <div data-gc="conversa.message-attachments.div"
+        className={cn(flxCls(arranjo.grade), "grid gap-1")}
+        style={{ gridTemplateColumns: `repeat(${arranjo.colunas}, minmax(0, 1fr))` }}
+      >
+        {debaixo.map((anexo, i) => (
+          <div data-gc="conversa.message-attachments.div--2"
+            key={anexo.id}
+            style={{ gridColumn: `span ${colunasDoItem(attachments.length, i)}` }}
+          >
+            <ComSpoiler data-gc="conversa.message-attachments.com-spoiler" anexo={anexo}>
+              <ImagemDaGrade data-gc="conversa.message-attachments.imagem-da-grade" anexo={anexo} />
+            </ComSpoiler>
+          </div>
+        ))}
+      </div>
+    );
+
+    return (
+      <div data-gc="conversa.message-attachments.div--3"
+        className={cn(
+          "mt-1 max-w-[26rem]",
+          flxCls("mosaicoDeAnexos"),
+          arranjo.fora && cn(flxCls(arranjo.fora), "grid gap-1"),
+        )}
+      >
+        {emCima > 0 && (
+          <div data-gc="conversa.message-attachments.div--4"
+            className="grid gap-1"
+            style={{ gridTemplateColumns: `repeat(${emCima}, minmax(0, 1fr))` }}
+          >
+            {attachments.slice(0, emCima).map((anexo) => (
+              <ComSpoiler data-gc="conversa.message-attachments.com-spoiler--2" key={anexo.id} anexo={anexo}>
+                <ImagemDaGrade data-gc="conversa.message-attachments.imagem-da-grade--2" anexo={anexo} />
+              </ComSpoiler>
+            ))}
+          </div>
+        )}
+
+        {grade}
+      </div>
+    );
+  }
+
   return (
-    <div data-gc="conversa.message-attachments.div" className={cn("mt-1 flex flex-wrap gap-2", flxCls("mosaicoDeAnexos"))}>
+    <div data-gc="conversa.message-attachments.div--5" className={cn("mt-1 flex flex-wrap gap-2", flxCls("mosaicoDeAnexos"))}>
       {attachments.map((anexo) => (
-        <div data-gc="conversa.message-attachments.div--2" key={anexo.id} className="group/anexo flex w-full items-start gap-2">
-          <ComSpoiler data-gc="conversa.message-attachments.com-spoiler" anexo={anexo}>
+        <div data-gc="conversa.message-attachments.div--6" key={anexo.id} className="group/anexo flex w-full items-start gap-2">
+          <ComSpoiler data-gc="conversa.message-attachments.com-spoiler--3" anexo={anexo}>
             {abrirImagens && isImageType(anexo.contentType) ? (
               <ImageAttachment data-gc="conversa.message-attachments.image-attachment" anexo={anexo} />
             ) : ehAnexoDeTexto(anexo) ? (
@@ -75,17 +136,27 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
   return (
     <button data-gc="conversa.message-attachments.button--2"
       onClick={() => setAberto(true)}
-      className={cn("group relative overflow-hidden rounded-lg", flxCls("spoiler"))}
+      className={cn("group relative overflow-hidden rounded-lg", flxCls("envoltorioDoSpoiler"))}
       aria-label={t("conversa.anexos.mostrarSpoiler", { arquivo: anexo.filename })}
     >
-      <div data-gc="conversa.message-attachments.div--3"
-        className={cn("pointer-events-none blur-xl brightness-50", flxCls("conteudoDoSpoiler"))}
+      {/*
+        Três níveis, como na referência: `spoilerWrapper` fora, `spoiler` no meio,
+        `spoilerContent` dentro. Os dois primeiros já moraram no mesmo elemento
+        aqui, e aí toda regra `.spoilerWrapper .spoiler` do tema passava batido.
+      */}
+      <span data-gc="conversa.message-attachments.span"
+        className={cn("block", flxCls("spoiler"), flxCls("spoilerEmLinha"))}
+        data-revealed="false"
       >
-        {children}
-      </div>
+        <div data-gc="conversa.message-attachments.div--7"
+          className={cn("pointer-events-none blur-xl brightness-50", flxCls("conteudoDoSpoiler"))}
+        >
+          {children}
+        </div>
+      </span>
 
-      <span data-gc="conversa.message-attachments.span" className="absolute inset-0 flex items-center justify-center">
-        <span data-gc="conversa.message-attachments.span--2" className="flex items-center gap-1.5 rounded-full bg-surface-0/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink transition group-hover:bg-surface-0">
+      <span data-gc="conversa.message-attachments.span--2" className="absolute inset-0 flex items-center justify-center">
+        <span data-gc="conversa.message-attachments.span--3" className="flex items-center gap-1.5 rounded-full bg-surface-0/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink transition group-hover:bg-surface-0">
           <EyeOff data-gc="conversa.message-attachments.eye-off" size={13} /> {t("conversa.anexos.spoilerTitulo")}
         </span>
       </span>
@@ -124,6 +195,33 @@ const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   );
 };
 
+/*
+  A imagem dentro de uma célula da grade preenche e corta. A `ImageAttachment`
+  respeita a proporção do arquivo, que é o certo quando ela está sozinha e é
+  exatamente o que faria a grade ficar torta.
+*/
+const ImagemDaGrade: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
+  const { t } = useTranslation();
+  const abrir = useLightbox((s) => s.abrir);
+
+  return (
+    <button data-gc="conversa.message-attachments.button--4"
+      type="button"
+      onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
+      aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
+      className="block aspect-square overflow-hidden rounded transition hover:brightness-110"
+    >
+      <img data-gc="conversa.message-attachments.img--2"
+        src={anexo.url}
+        alt={anexo.description || anexo.filename}
+        loading="lazy"
+        decoding="async"
+        className="size-full bg-surface-1 object-cover"
+      />
+    </button>
+  );
+};
+
 const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
   <a data-gc="conversa.message-attachments.a"
     href={anexo.url}
@@ -133,7 +231,7 @@ const FileAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => (
   >
     <FileText data-gc="conversa.message-attachments.file-text" size={28} className="shrink-0 text-brand" />
 
-    <div data-gc="conversa.message-attachments.div--4" className="min-w-0 flex-1">
+    <div data-gc="conversa.message-attachments.div--8" className="min-w-0 flex-1">
       <p data-gc="conversa.message-attachments.p" className="truncate text-sm font-medium text-brand">{anexo.filename}</p>
       <p data-gc="conversa.message-attachments.p--2" className="text-xs text-ink-faint">{formatBytes(anexo.size)}</p>
     </div>

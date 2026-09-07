@@ -12,7 +12,7 @@ import { useConfirmar } from "~/components/ui/confirm";
 import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import { flx, flxCls } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 type Aba = "online" | "todos" | "pendentes" | "adicionar";
 
@@ -54,54 +54,69 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
   ];
 
   return (
-    <main data-gc="friends.friends.main" {...flx("listaDeAmigos", cn("flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("colunaDeAmigos")))}>
-      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-1 border-b border-divisor px-4 shadow-sm")}>
-        <span data-gc="friends.friends.span" className="mr-2 flex items-center gap-2 font-semibold">
-          <Users data-gc="friends.friends.users" size={18} className="text-ink-muted" /> Meus amigos
-        </span>
-        <span data-gc="friends.friends.span--2" className="mr-2 h-5 w-px bg-line" />
-        {abas.map((item) => (
-          <button data-gc="friends.friends.button"
-            key={item.id}
-            onClick={() => setAba(item.id)}
-            className={cn(
-              "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
-              item.id === "adicionar"
-                ? aba === item.id
-                  ? "bg-brand font-medium text-sobre-marca"
-                  : "font-medium text-brand hover:bg-brand/10"
-                : aba === item.id
-                  ? "bg-surface-4 text-ink"
-                  : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-            )}
-          >
-            {item.label}
-            {Boolean(item.badge) && (
-              <span data-gc="friends.friends.span--3" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
-                {item.badge}
-              </span>
-            )}
-          </button>
-        ))}
+    <main data-gc="friends.friends.main" {...flxAttr("colunaDeAmigos")} {...flx("listaDeAmigos", cn("flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("colunaDeAmigos")))}>
+      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
+        <div data-gc="friends.friends.div"
+          {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-1 px-4")}
+        >
+          <span data-gc="friends.friends.span" {...flx("tituloDosAmigos", "mr-2 flex items-center gap-2 font-semibold")}>
+            <Users data-gc="friends.friends.users" size={18} className={cn("text-ink-muted", flxCls("iconeDoTituloDeAmigos"))} />
+            <span data-gc="friends.friends.span--2" {...flx("textoDoTituloDeAmigos")}>Meus amigos</span>
+          </span>
+          <span data-gc="friends.friends.span--3" {...flx("divisorDoTopoDeAmigos", "mr-2 h-5 w-px bg-line")} />
+          {abas.map((item) => (
+            <button data-gc="friends.friends.button"
+              key={item.id}
+              onClick={() => setAba(item.id)}
+              {...flx(
+                "abaDeAmigos",
+                cn(
+                  "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
+                  item.id === "adicionar"
+                    ? aba === item.id
+                      ? "bg-brand font-medium text-sobre-marca"
+                      : "font-medium text-brand hover:bg-brand/10"
+                    : aba === item.id
+                      ? "bg-surface-4 text-ink"
+                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                  flxCls("aba"),
+                  aba === item.id && cn(flxCls("abaDeAmigosAtiva"), flxCls("abaEscolhida")),
+                  item.id === "adicionar" && flxCls("abaDeAmigosPrincipal"),
+                ),
+              )}
+            >
+              {item.label}
+              {Boolean(item.badge) && (
+                <span data-gc="friends.friends.span--4" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
 
-        <div data-gc="friends.friends.div" className="ml-auto">
-          <CaixaDeEntrada data-gc="friends.friends.caixa-de-entrada" />
+          <div data-gc="friends.friends.div--2" className="ml-auto">
+            <CaixaDeEntrada data-gc="friends.friends.caixa-de-entrada" />
+          </div>
         </div>
       </header>
 
-      <div data-gc="friends.friends.div--2" className="flex-1 overflow-y-auto px-6 py-5">
+      <div data-gc="friends.friends.div--3" {...flx("corpoDaAbaDeAmigos", "flex-1 overflow-y-auto px-6 py-5")}>
         {aba === "adicionar" ? (
           <AddFriendForm data-gc="friends.friends.add-friend-form" />
         ) : isLoading ? (
           <p data-gc="friends.friends.p" className="text-sm text-ink-faint">Carregando…</p>
         ) : (
           <>
-            <div data-gc="friends.friends.div--3" className="relative mb-4">
+            <div data-gc="friends.friends.div--4" {...flx("molduraDaBuscaDeAmigos", "relative mb-4")}>
               <Search data-gc="friends.friends.search"
                 size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
+                className={cn(
+                  "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint",
+                  flxCls("iconeDaBuscaDeAmigos"),
+                )}
               />
               <Input data-gc="friends.friends.input"
+                {...flxAttr("buscaDeAmigos")}
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder={
@@ -125,7 +140,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
                   — {visiveis.length}
                 </h3>
 
-                <div data-gc="friends.friends.div--4" className="space-y-px">
+                <div data-gc="friends.friends.div--5" className="space-y-px">
                   {visiveis.map((relacao) => (
                     <FriendRow data-gc="friends.friends.friend-row.on-open-conversation"
                       key={relacao.id}
@@ -144,7 +159,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
 };
 
 const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando }) => (
-  <div data-gc="friends.friends.div--5" className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+  <div data-gc="friends.friends.div--6" className="flex flex-col items-center justify-center gap-3 py-24 text-center">
     <Users data-gc="friends.friends.users--2" size={48} className="text-ink-faint/60" strokeWidth={1.5} />
 
     <p data-gc="friends.friends.p--2" className="text-lg font-semibold">
@@ -162,7 +177,7 @@ const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando
         "Tente outro nome — a busca olha o apelido e o nome de usuário."
       ) : (
         <>
-          Use a aba <span data-gc="friends.friends.span--4" className="font-medium text-brand">Adicionar amigo</span> e o nome de
+          Use a aba <span data-gc="friends.friends.span--5" className="font-medium text-brand">Adicionar amigo</span> e o nome de
           usuário da pessoa.
         </>
       )}
@@ -225,7 +240,7 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
         : `@${relacao.user.username}`;
 
   return (
-    <div data-gc="friends.friends.div--6" className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
+    <div data-gc="friends.friends.div--7" className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
       <Avatar data-gc="friends.friends.avatar"
         id={relacao.user.id}
         name={relacao.user.displayName}
@@ -234,12 +249,12 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
         status={relacao.status === "ACCEPTED" ? relacao.user.status : undefined}
       />
 
-      <div data-gc="friends.friends.div--7" className="min-w-0 flex-1">
+      <div data-gc="friends.friends.div--8" className="min-w-0 flex-1">
         <p data-gc="friends.friends.p--4" className="truncate text-sm font-semibold">{relacao.user.displayName}</p>
         <p data-gc="friends.friends.p--5" className="truncate text-xs text-ink-faint">{legenda}</p>
       </div>
 
-      <div data-gc="friends.friends.div--8" className="flex shrink-0 items-center gap-2">
+      <div data-gc="friends.friends.div--9" className="flex shrink-0 items-center gap-2">
         {relacao.status === "ACCEPTED" && (
           <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
             <button data-gc="friends.friends.button--2"

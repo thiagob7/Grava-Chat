@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Keisti profilio nuotrauką",
     trocarFotoCurto: "Keisti nuotrauką",
     suaEtiqueta: "Jūsų žyma",
+    pronomes: "Įvardžiai",
     editarEtiqueta: "Spustelėkite, kad redaguotumėte žymą",
     conteAlgo: "Papasakokite ką nors apie save",
     adicionarStatus: "Pridėti būseną",

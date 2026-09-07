@@ -12,7 +12,7 @@ import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 interface PainelDeBuscaProps {
   /// Ausente quando a busca é dentro de uma conversa.

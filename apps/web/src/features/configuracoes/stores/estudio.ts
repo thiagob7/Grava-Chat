@@ -3,9 +3,9 @@ import { create } from "zustand";
 import { lerCabecalhoDoTema } from "@gravae/shared";
 
 import {
-  CORRECOES_DO_FLUXER,
-  pareceTemaDoFluxer,
-} from "~/features/configuracoes/lib/correcoes-do-fluxer";
+  CORRECOES_DE_TEMA,
+  pareceTemaDeFora,
+} from "~/features/configuracoes/lib/correcoes-de-tema";
 import { resolverAtivos } from "~/features/configuracoes/lib/ativos-do-tema";
 import {
   completarComDerivacao,
@@ -17,7 +17,10 @@ import {
   medirBase,
 } from "~/features/configuracoes/lib/escudo-do-estudio";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
-import { normalizarSeletoresDoFluxer } from "~/features/configuracoes/lib/normalizar-tema";
+import {
+  deveTraduzir,
+  traduzirSeletoresTravados,
+} from "~/features/configuracoes/lib/normalizar-tema";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
 import {
   NOMES_DE_ORIGEM,
@@ -39,6 +42,14 @@ export interface TemaSalvo {
   saturacao?: number;
   manuais?: Record<string, string>;
   css: string;
+  /*
+    Se este tema entra como está escrito, sem tradução de nome.
+
+    Ausente é o normal, e quer dizer "decida por mim": o app olha o arquivo e
+    escolhe — veja `deveTraduzir` no `normalizar-tema.ts`. Só vira `true` ou
+    `false` quando alguém mexe na chave, e aí a escolha manda.
+  */
+  aRisca?: boolean | null;
 }
 
 export interface AtivoDoTema {
@@ -66,6 +77,14 @@ interface EstadoDoEstudio {
   ativos: AtivoDoTema[];
   /// Qual tema da biblioteca está valendo agora. Null é o tema base.
   ativoId: string | null;
+  /*
+    A escolha de quem está com CSS colado à mão, sem tema da biblioteca ativo.
+
+    `null` é o padrão e quer dizer "decida por mim". Ligada, o arquivo entra
+    exatamente como foi escrito — que é o que o `useCustomThemeStyle` da referência
+    faz. Desligada, a gente traduz o que o build de quem escreveu datou.
+  */
+  aRisca: boolean | null;
 }
 
 interface EstudioStore extends EstadoDoEstudio {
@@ -81,6 +100,7 @@ interface EstudioStore extends EstadoDoEstudio {
   atualizarNaBiblioteca: (id: string, dados: Partial<Omit<TemaSalvo, "id">>) => void;
   duplicarDaBiblioteca: (id: string) => void;
   alternarTema: (id: string) => void;
+  definirARisca: (aRisca: boolean) => void;
   importarBiblioteca: (temas: TemaSalvo[]) => void;
   guardarAtivo: (ativo: Omit<AtivoDoTema, "id">) => void;
   apagarAtivo: (id: string) => void;
@@ -101,6 +121,7 @@ const VAZIO: EstadoDoEstudio = {
   biblioteca: [],
   ativos: [],
   ativoId: null,
+  aRisca: null,
 };
 
 function ler(): EstadoDoEstudio {
@@ -115,10 +136,20 @@ function ler(): EstadoDoEstudio {
       estava em `substituicoes` fora escolhido a dedo. Continua sendo verdade
       — e é o que preserva o tema de quem atualizar o app com um em uso.
     */
+    /*
+      O `aRisca` nasceu desligado e virou ligado no mesmo dia, depois de
+      comparar tema a tema com a referência. Quem guardou o `false` guardou o meu
+      padrão de então, não uma escolha — e nenhum tema da biblioteca tinha a
+      chave própria ainda. Nesse caso ele volta ao padrão de hoje; assim que
+      alguém mexer na chave, a escolha passa a valer e não é mais tocada.
+    */
+    const escolheuARisca = (guardado.biblioteca ?? []).some((t) => t.aRisca !== undefined);
+
     return {
       ...VAZIO,
       ...guardado,
       manuais: guardado.manuais ?? guardado.substituicoes ?? {},
+      aRisca: escolheuARisca ? (guardado.aRisca ?? null) : null,
     };
   } catch {
     return VAZIO;
@@ -141,7 +172,7 @@ function doTema(tema: TemaSalvo) {
 }
 
 const ID_DO_ESTILO = "gc-estudio-css";
-const ID_DAS_CORRECOES = "gc-correcoes-fluxer";
+const ID_DAS_CORRECOES = "gc-correcoes-de-tema";
 
 /*
   A janela do estúdio não veste o tema.
@@ -181,6 +212,22 @@ function aplicar(estado: EstadoDoEstudio) {
     raiz.style.setProperty(nome, valor);
   }
 
+  /*
+    A saturação virou CSS.
+
+    Ela nasceu como número de JavaScript, dentro do `derivar()`: cada filha saía
+    da mãe já com a saturação embutida no valor. Só que a referência resolve isso na
+    folha — 86 variáveis da base dele passam por `calc(x% * var(--saturation-factor))`,
+    e o `base-de-tema.css` trouxe essa cadeia para cá. Escrever a propriedade faz
+    o app inteiro reagir, e não só as filhas das quatro mães.
+
+    Só quando alguém mexeu de verdade: valor embutido na raiz vence a folha do
+    tema, então no padrão a gente cala a boca e deixa o arquivo mandar — um tema
+    da referência pode declarar `--saturation-factor` e tem o direito de valer.
+  */
+  if (estado.saturacao === 1) raiz.style.removeProperty("--saturation-factor");
+  else raiz.style.setProperty("--saturation-factor", String(estado.saturacao));
+
   let estilo = document.getElementById(ID_DO_ESTILO);
   if (!estilo) {
     estilo = document.createElement("style");
@@ -189,13 +236,23 @@ function aplicar(estado: EstadoDoEstudio) {
   }
 
   /*
-    O CSS entra normalizado e com os arquivos resolvidos: seletor travado no
-    hash de um build do Fluxer não acha nada em lugar nenhum, e `gc-ativo("x")`
-    só vira endereço aqui, com a lista de ativos em mãos. O arquivo de quem
-    escreveu fica como está; muda só o que é aplicado.
+    A tag do seletor entra intocada — a nossa árvore usa as mesmas da referência, e
+    reescrever faria o tema pegar onde lá não pega. Só o hash é traduzido, e só
+    com a chave desligada; o porquê está no `normalizar-tema.ts`.
+
+    O `gc-ativo("x")` vira endereço aqui de qualquer jeito, com a lista de
+    ativos em mãos — eles fazem o mesmo com a biblioteca de temas deles.
   */
+  /*
+    Quem escolheu, manda. Quem não escolheu, o arquivo decide: um tema que é
+    quase só hash não tem como entrar "como está" — como está, ele é nada.
+  */
+  const doAtivo = estado.biblioteca.find((t) => t.id === estado.ativoId);
+  const escolha = doAtivo ? doAtivo.aRisca : estado.aRisca;
+  const aRisca = escolha ?? !deveTraduzir(estado.css);
+
   const resolvido = resolverAtivos(
-    normalizarSeletoresDoFluxer(estado.css),
+    aRisca ? estado.css : traduzirSeletoresTravados(estado.css),
     estado.ativos,
   );
 
@@ -208,14 +265,14 @@ function aplicar(estado: EstadoDoEstudio) {
   */
   let correcoes = document.getElementById(ID_DAS_CORRECOES);
 
-  if (pareceTemaDoFluxer(estado.css)) {
+  if (pareceTemaDeFora(estado.css)) {
     if (!correcoes) {
       correcoes = document.createElement("style");
       correcoes.id = ID_DAS_CORRECOES;
       document.head.appendChild(correcoes);
     }
 
-    correcoes.textContent = CORRECOES_DO_FLUXER;
+    correcoes.textContent = CORRECOES_DE_TEMA;
   } else {
     correcoes?.remove();
   }
@@ -293,12 +350,23 @@ function aplicarPonte(estado: EstadoDoEstudio) {
 
   /*
     Só os nomes que o próprio arquivo declara. Ler tudo do computado achava
-    valor para o vocabulário inteiro do Fluxer — que a nossa camada de tokens
+    valor para o vocabulário inteiro da referência — que a nossa camada de tokens
     já declara — e escrevia a camada de referência por cima das cores reais.
   */
   const declarados = nomesDeclaradosNoTema(estado.css);
 
-  const lido = getComputedStyle(raiz);
+  /*
+    Lê do `body`, não da raiz.
+
+    Metade dos temas da comunidade escreve `:root { --background-primary: … }`
+    e a outra metade escreve `body { … }` — as duas formas são corretas no
+    mundo deles. Lendo a raiz, a segunda ficava invisível: o `<html>` não
+    enxerga o que o `<body>` declara, e a ponte traduzia zero.
+
+    O `body` resolve as duas de uma vez, porque herda o que veio da raiz e
+    ainda vê o que foi declarado nele mesmo. A escrita continua na raiz.
+  */
+  const lido = getComputedStyle(document.body ?? raiz);
   const origens: Record<string, string> = {};
 
   for (const nome of NOMES_DE_ORIGEM) {
@@ -334,17 +402,28 @@ function aplicarPonte(estado: EstadoDoEstudio) {
     daPonte.add(nome);
   }
 
-  for (const [nome, valor] of Object.entries(traduzidos)) {
-    raiz.style.setProperty(nome, valor);
-    daPonte.add(nome);
-  }
+  /*
+    A tradução em si saiu daqui — agora é CSS.
+
+    As cores do `@theme` nascem do nome da referência: `--color-surface-0` é
+    `var(--background-primary, …)`. Um tema que declara `--background-primary`
+    repinta tudo que é `bg-surface-0` sozinho, sem JS, sem ler estilo computado,
+    e sem esta função saber que aquele nome existe.
+
+    Escrever `traduzidos` na raiz aqui era pior do que redundante: um valor
+    embutido no elemento VENCE a cadeia, então congelava a cor e o que viesse
+    depois no arquivo do tema não valia mais.
+
+    O que sobra é o que o CSS não sabe fazer: deduzir o que o tema NÃO disse a
+    partir do que ele disse.
+  */
 }
 
 export const useEstudio = create<EstudioStore>((set, store) => {
   const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
     set(mudanca);
 
-    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais } = store();
+    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais, aRisca } = store();
 
     /// Nunca se grava `substituicoes` direto: ela é sempre o resultado.
     const substituicoes = montarTema(coresMae, saturacao, manuais);
@@ -359,6 +438,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       biblioteca,
       ativos,
       ativoId,
+      aRisca,
     };
 
     aplicar(inteiro);
@@ -397,6 +477,16 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     },
 
     definirSaturacao: (fator) => guardar({ saturacao: fator }),
+
+    definirARisca: (aRisca) => {
+      const { ativoId, biblioteca } = store();
+      if (!ativoId) return guardar({ aRisca });
+
+      guardar({
+        aRisca,
+        biblioteca: biblioteca.map((t) => (t.id === ativoId ? { ...t, aRisca } : t)),
+      });
+    },
 
     definirCss: (css) => guardar({ css }),
 

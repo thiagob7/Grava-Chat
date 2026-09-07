@@ -26,7 +26,7 @@ import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { useAtraso } from "~/hooks/use-atraso";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 type Aba = "comunidades" | "aplicativos" | "temas";
 
@@ -73,20 +73,25 @@ export const Explorar: React.FC = () => {
       />
 
       <aside data-gc="descoberta.explorar.aside"
-        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col border-x border-divisor bg-surface-1"
+        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
         style={{ width: largura }}
       >
+        <div data-gc="descoberta.explorar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
       {/*
         O painel termina onde o rodapé começa, e o rodapé fica de fora dele. No
-        Fluxer esses dois são irmãos, e é o que faz a borda do tema parar em
+        referência esses dois são irmãos, e é o que faz a borda do tema parar em
         cima em vez de cercar o usuário junto.
       */}
-        <div data-gc="descoberta.explorar.div" {...flx("listaDeConversas", "lista-de-comunidades flex min-h-0 flex-1 flex-col")}>
-        <header data-gc="descoberta.explorar.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center border-b border-divisor px-4 shadow-sm")}>
-          <h1 data-gc="descoberta.explorar.h1" className="truncate font-semibold">Explorar</h1>
+        <div data-gc="descoberta.explorar.div--2" {...flx("listaDeConversas", "lista-de-comunidades flex min-h-0 flex-1 flex-col")}>
+        <header data-gc="descoberta.explorar.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
+          <div data-gc="descoberta.explorar.div--3"
+            {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center px-4")}
+          >
+            <h1 data-gc="descoberta.explorar.h1" className="truncate font-semibold">Explorar</h1>
+          </div>
         </header>
 
-        <nav data-gc="descoberta.explorar.nav" className="flex flex-col gap-0.5 px-2 py-3">
+        <nav data-gc="descoberta.explorar.nav" {...flxAttr("navegacaoDoExplorar")} className="flex flex-col gap-0.5 px-2 py-3">
           {ABAS.map((item) => (
             <button data-gc="descoberta.explorar.button"
               key={item.id}
@@ -116,7 +121,7 @@ export const Explorar: React.FC = () => {
           ))}
         </nav>
 
-        <div data-gc="descoberta.explorar.div--2" className="mt-auto" />
+        <div data-gc="descoberta.explorar.div--4" className="mt-auto" />
         </div>
 
 
@@ -132,7 +137,7 @@ export const Explorar: React.FC = () => {
   );
 
   return (
-    <div data-gc="descoberta.explorar.div--3" className="flex h-full bg-surface-0">
+    <div data-gc="descoberta.explorar.div--5" className="flex h-full bg-surface-0">
       {telaEstreita ? (
         <Sheet data-gc="descoberta.explorar.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
           <SheetContent data-gc="descoberta.explorar.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
@@ -144,58 +149,62 @@ export const Explorar: React.FC = () => {
         navegacao
       )}
 
-      <div data-gc="descoberta.explorar.div--4" {...flx("explorar", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
-        <header data-gc="descoberta.explorar.header--2" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-3 border-b border-divisor bg-surface-2 px-4")}>
-          {telaEstreita && (
-            <button data-gc="descoberta.explorar.button--2"
-              onClick={() => setMenuAberto(true)}
-              aria-label="Abrir o Explorar"
-              className="rounded p-1 text-ink-faint transition hover:text-ink"
-            >
-              <Menu data-gc="descoberta.explorar.menu" size={20} />
-            </button>
-          )}
-
-          <div data-gc="descoberta.explorar.div--5" className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
-            <Filtro data-gc="descoberta.explorar.filtro"
-              ativo={categoria === null}
-              nome="Todos"
-              onEscolher={() => setCategoria(null)}
-            />
-
-            {CATEGORIAS_DE_COMUNIDADE.map((id) => (
-              <Filtro data-gc="descoberta.explorar.filtro--2"
-                key={id}
-                ativo={categoria === id}
-                nome={NOMES_DE_CATEGORIA[id]}
-                onEscolher={() => setCategoria(id)}
-              />
-            ))}
-          </div>
-
-          <div data-gc="descoberta.explorar.div--6" className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
-            <Search data-gc="descoberta.explorar.search" size={14} className="shrink-0 text-ink-faint" />
-            <input data-gc="descoberta.explorar.input"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar comunidades"
-              aria-label="Buscar comunidades"
-              className={campoNu}
-            />
-            {busca && (
-              <button data-gc="descoberta.explorar.button--3"
-                type="button"
-                onClick={() => setBusca("")}
-                aria-label="Limpar a busca"
-                className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
+      <div data-gc="descoberta.explorar.div--6" {...flx("explorar", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
+        <header data-gc="descoberta.explorar.header--2" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-surface-2")}>
+          <div data-gc="descoberta.explorar.div--7"
+            {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-3 px-4")}
+          >
+            {telaEstreita && (
+              <button data-gc="descoberta.explorar.button--2"
+                onClick={() => setMenuAberto(true)}
+                aria-label="Abrir o Explorar"
+                className="rounded p-1 text-ink-faint transition hover:text-ink"
               >
-                <X data-gc="descoberta.explorar.x" size={14} />
+                <Menu data-gc="descoberta.explorar.menu" size={20} />
               </button>
             )}
+
+            <div data-gc="descoberta.explorar.div--8" className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+              <Filtro data-gc="descoberta.explorar.filtro"
+                ativo={categoria === null}
+                nome="Todos"
+                onEscolher={() => setCategoria(null)}
+              />
+
+              {CATEGORIAS_DE_COMUNIDADE.map((id) => (
+                <Filtro data-gc="descoberta.explorar.filtro--2"
+                  key={id}
+                  ativo={categoria === id}
+                  nome={NOMES_DE_CATEGORIA[id]}
+                  onEscolher={() => setCategoria(id)}
+                />
+              ))}
+            </div>
+
+            <div data-gc="descoberta.explorar.div--9" className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
+              <Search data-gc="descoberta.explorar.search" size={14} className="shrink-0 text-ink-faint" />
+              <input data-gc="descoberta.explorar.input"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar comunidades"
+                aria-label="Buscar comunidades"
+                className={cn(campoNu, flxCls("campoDaDescoberta"))}
+              />
+              {busca && (
+                <button data-gc="descoberta.explorar.button--3"
+                  type="button"
+                  onClick={() => setBusca("")}
+                  aria-label="Limpar a busca"
+                  className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
+                >
+                  <X data-gc="descoberta.explorar.x" size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </header>
 
-        <div data-gc="descoberta.explorar.div--7" className="min-h-0 flex-1 overflow-y-auto p-5">
+        <div data-gc="descoberta.explorar.div--10" className="min-h-0 flex-1 overflow-y-auto p-5">
           {aba === "comunidades" && <Comunidades data-gc="descoberta.explorar.comunidades" categoria={categoria} busca={busca} />}
         </div>
       </div>
@@ -236,7 +245,7 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
 
   if (isLoading || !comunidades)
     return (
-      <div data-gc="descoberta.explorar.div--8" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <div data-gc="descoberta.explorar.div--11" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton data-gc="descoberta.explorar.skeleton" key={i} className="h-64 rounded-lg" />
         ))}
@@ -245,9 +254,9 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
 
   if (!comunidades.length)
     return (
-      <div data-gc="descoberta.explorar.div--9" className="flex flex-col items-center gap-3 py-20 text-center">
+      <div data-gc="descoberta.explorar.div--12" className="flex flex-col items-center gap-3 py-20 text-center">
         <Compass data-gc="descoberta.explorar.compass" size={36} className="text-ink-faint" />
-        <div data-gc="descoberta.explorar.div--10">
+        <div data-gc="descoberta.explorar.div--13">
           <p data-gc="descoberta.explorar.p" className="text-sm font-medium">
             {termo ? "Nenhuma comunidade com esse nome" : "Ainda não há o que explorar"}
           </p>
@@ -261,7 +270,7 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
     );
 
   return (
-    <div data-gc="descoberta.explorar.div--11" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+    <div data-gc="descoberta.explorar.div--14" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
       {comunidades.map((comunidade) => (
         <CartaoDeComunidade data-gc="descoberta.explorar.cartao-de-comunidade"
           key={comunidade.id}

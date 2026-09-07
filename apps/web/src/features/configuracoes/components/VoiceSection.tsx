@@ -8,6 +8,7 @@ import {
   Volume2,
 } from "lucide-react";
 
+import { classeDaOpcaoDeRadio } from "~/components/ui/radio-group";
 import { PermissoesDoMac } from "~/features/app/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
 import { CampoSelect } from "~/components/ui/select";
@@ -590,6 +591,7 @@ const Opcao: React.FC<OpcaoProps> = ({
 }) => (
   <button data-gc="configuracoes.voice-section.button.on-click"
     role="radio"
+    data-state={ativo ? "checked" : "unchecked"}
     aria-checked={ativo}
     tabIndex={ativo ? 0 : -1}
     onClick={onClick}
@@ -601,6 +603,7 @@ const Opcao: React.FC<OpcaoProps> = ({
       onIrParaOutro();
     }}
     className={cn(
+      classeDaOpcaoDeRadio(),
       "flex items-start gap-3 rounded-lg border p-3 text-left transition",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
       ativo

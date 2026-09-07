@@ -1,7 +1,7 @@
 /*
   O que a nossa árvore mede, reafirmado depois do tema.
 
-  Um tema do Fluxer traz, junto com o estilo, um punhado de regras que são
+  Um tema da referência traz, junto com o estilo, um punhado de regras que são
   encanamento da árvore deles: larguras e alturas calculadas para painéis que
   aqui estão em outro lugar. O nome que a gente empresta traz a borda e o rótulo
   que a pessoa quer, e a medida errada de brinde.
@@ -13,7 +13,7 @@
   Só entra quando o CSS do tema fala a língua deles — tema escrito para o Gravaê
   não paga por isso, e continua mandando na largura de tudo.
 */
-export const CORRECOES_DO_FLUXER = `
+export const CORRECOES_DE_TEMA = `
 /*
   O trilho é a coluna, e não um rolador dentro dela: a largura é nossa. A
   altura fica com o tema, que é o que encurta trilho e lateral para o rodapé
@@ -47,9 +47,9 @@ export const CORRECOES_DO_FLUXER = `
 
 `;
 
-/// Marcas de que o CSS foi escrito para a árvore do Fluxer.
-const SINAIS = ["data-flx", ".module__", "--Theme", "fluxer"];
+/// Marcas de que o CSS foi escrito para a árvore da referência.
+const SINAIS = ["data-flx", ".module__", "--Theme", "referencia"];
 
-export function pareceTemaDoFluxer(css: string) {
+export function pareceTemaDeFora(css: string) {
   return SINAIS.some((sinal) => css.includes(sinal));
 }

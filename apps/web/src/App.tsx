@@ -18,7 +18,7 @@ import { SeletorDeTela } from "~/features/voz/components/SeletorDeTela";
 import { VisualizadorDeImagem } from "~/components/VisualizadorDeImagem";
 import { useAparenciaAplicada } from "~/features/configuracoes/hooks/use-aparencia";
 import { usePushToTalk } from "~/features/voz/hooks/use-push-to-talk";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flxCls } from "~/lib/compat-de-tema";
 
 export const queryClient = new QueryClient({
   defaultOptions: {

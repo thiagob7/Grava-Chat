@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { LUGARES } from "~/lib/compat-fluxer";
+import { LUGARES } from "~/lib/compat-de-tema";
 
 const raiz = dirname(fileURLToPath(import.meta.url));
 
@@ -22,7 +22,7 @@ function todoOCodigo(): string {
       } else if (
         /\.tsx?$/.test(item.name) &&
         !item.name.endsWith(".test.ts") &&
-        item.name !== "compat-fluxer.ts"
+        item.name !== "compat-de-tema.ts"
       ) {
         partes.push(readFileSync(caminho, "utf8"));
       }
@@ -37,7 +37,7 @@ function todoOCodigo(): string {
 const nomes = Object.keys(LUGARES);
 const codigo = todoOCodigo();
 
-describe("compatibilidade com temas do Fluxer", () => {
+describe("compatibilidade com temas da referência", () => {
   /*
     Um lugar que ninguém carimba é pior que lugar nenhum: o tema mira e não
     acha, e a pessoa fica procurando erro no CSS dela.
@@ -48,7 +48,7 @@ describe("compatibilidade com temas do Fluxer", () => {
     expect(orfaos).toEqual([]);
   });
 
-  it("não repete o mesmo nome do Fluxer em dois lugares", () => {
+  it("não repete o mesmo nome da referência em dois lugares", () => {
     const vistos = new Map<string, string>();
     const repetidos: string[] = [];
 
@@ -82,7 +82,7 @@ describe("compatibilidade com temas do Fluxer", () => {
     expect(fora).toEqual([]);
   });
 
-  it("mira o data-flx com o caminho que o Fluxer usa", () => {
+  it("mira o data-flx com o caminho que a referência usa", () => {
     const fora: string[] = [];
 
     for (const alvo of Object.values(LUGARES)) {

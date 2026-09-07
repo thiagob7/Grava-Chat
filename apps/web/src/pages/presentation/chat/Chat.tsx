@@ -63,7 +63,7 @@ import { useModeracao } from "~/features/servidor/stores/moderacao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
-import { flx } from "~/lib/compat-fluxer";
+import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 export const Chat: React.FC = () => {
   const { guildId: routeGuildId, channelId: routeChannelId } = useParams();
@@ -208,7 +208,7 @@ export const Chat: React.FC = () => {
   );
 
   return (
-    <div data-gc="chat.chat.div" {...flx("linhaDoApp", "flex h-full bg-surface-0")}>
+    <div data-gc="chat.chat.div" {...flx("linhaDoApp", "flex h-full")}>
       {telaEstreita ? (
         <Sheet data-gc="chat.chat.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
           <SheetContent data-gc="chat.chat.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
@@ -222,79 +222,83 @@ export const Chat: React.FC = () => {
 
       <div data-gc="chat.chat.div--2" {...flx("colunaDoMiolo", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
         {!semCabecalho && (
-        <header data-gc="chat.chat.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto @container flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 border-b border-divisor bg-cabecalho px-4 shadow-sm")}>
-          {telaEstreita && (
-            <button data-gc="chat.chat.button"
-              onClick={() => setMenuAberto(true)}
-              aria-label="Abrir servidores e canais"
-              className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
-            >
-              <Menu data-gc="chat.chat.menu" size={20} />
-            </button>
-          )}
-
-          {channel?.type === "VOICE" ? (
-            <SpeakerHigh data-gc="chat.chat.speaker-high" size={20} weight="fill" className="text-ink-faint" />
-          ) : channel?.type === "FORUM" ? (
-            <ChatsCircle data-gc="chat.chat.chats-circle" size={20} weight="fill" className="text-ink-faint" />
-          ) : (
-            <Hash data-gc="chat.chat.hash" size={20} weight="bold" className="text-ink-faint" />
-          )}
-          <h2 data-gc="chat.chat.h2" className="font-semibold">{channel?.name ?? "…"}</h2>
-
-          {channel?.topic && (
-            <>
-              <span data-gc="chat.chat.span" className="mx-1 h-5 w-px bg-line" />
-              <p data-gc="chat.chat.p" className="truncate text-sm text-ink-muted">{channel.topic}</p>
-            </>
-          )}
-
-          <div data-gc="chat.chat.div--3" className="ml-auto flex items-center gap-3">
-            {channel && channel.type !== "VOICE" && <SinoDoCanal data-gc="chat.chat.sino-do-canal" channelId={channel.id} />}
-
-            {channel && channel.type !== "VOICE" && (
-              <PinnedMessagesPanel data-gc="chat.chat.pinned-messages-panel"
-                channelId={channel.id}
-                canManage={canInChannel(channel.id, "MANAGE_MESSAGES")}
-              />
+        <header data-gc="chat.chat.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
+          <div data-gc="chat.chat.div--3"
+            {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-2 px-4")}
+          >
+            {telaEstreita && (
+              <button data-gc="chat.chat.button"
+                onClick={() => setMenuAberto(true)}
+                aria-label="Abrir servidores e canais"
+                className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+              >
+                <Menu data-gc="chat.chat.menu" size={20} />
+              </button>
             )}
 
-            {channel && <EstrelaDoCanal data-gc="chat.chat.estrela-do-canal" channelId={channel.id} />}
+            {channel?.type === "VOICE" ? (
+              <SpeakerHigh data-gc="chat.chat.speaker-high" size={20} weight="fill" className={cn("text-ink-faint", flxCls("iconeDoCanal"))} />
+            ) : channel?.type === "FORUM" ? (
+              <ChatsCircle data-gc="chat.chat.chats-circle" size={20} weight="fill" className={cn("text-ink-faint", flxCls("iconeDoCanal"))} />
+            ) : (
+              <Hash data-gc="chat.chat.hash" size={20} weight="bold" className={cn("text-ink-faint", flxCls("iconeDoCanal"))} />
+            )}
+            <h2 data-gc="chat.chat.h2" {...flx("nomeDoCanal", "font-semibold")}>{channel?.name ?? "…"}</h2>
 
-            {channel?.type === "VOICE" && (
-              <Tooltip data-gc="chat.chat.tooltip" label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
-                <button data-gc="chat.chat.button--2"
-                  onClick={() => setChatDaVozAberto((aberto) => !aberto)}
-                  aria-label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}
-                  className={cn(
-                    "transition hover:text-ink",
-                    chatDaVozAberto ? "text-ink" : "text-ink-muted",
-                  )}
+            {channel?.topic && (
+              <>
+                <span data-gc="chat.chat.span" {...flx("divisorDoTopico", "mx-1 h-5 w-px bg-line")} />
+                <p data-gc="chat.chat.p" {...flx("topicoDoCanal", "truncate text-sm text-ink-muted")}>{channel.topic}</p>
+              </>
+            )}
+
+            <div data-gc="chat.chat.div--4" {...flx("ladoDireitoDoTopo", "ml-auto flex items-center gap-3")}>
+              {channel && channel.type !== "VOICE" && <SinoDoCanal data-gc="chat.chat.sino-do-canal" channelId={channel.id} />}
+
+              {channel && channel.type !== "VOICE" && (
+                <PinnedMessagesPanel data-gc="chat.chat.pinned-messages-panel"
+                  channelId={channel.id}
+                  canManage={canInChannel(channel.id, "MANAGE_MESSAGES")}
+                />
+              )}
+
+              {channel && <EstrelaDoCanal data-gc="chat.chat.estrela-do-canal" channelId={channel.id} />}
+
+              {channel?.type === "VOICE" && (
+                <Tooltip data-gc="chat.chat.tooltip" label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}>
+                  <button data-gc="chat.chat.button--2"
+                    onClick={() => setChatDaVozAberto((aberto) => !aberto)}
+                    aria-label={chatDaVozAberto ? "Fechar chat" : "Abrir chat"}
+                    className={cn(
+                      "transition hover:text-ink",
+                      chatDaVozAberto ? "text-ink" : "text-ink-muted",
+                    )}
+                  >
+                    <ChatCircle data-gc="chat.chat.chat-circle" size={20} weight="fill" />
+                  </button>
+                </Tooltip>
+              )}
+
+              <Tooltip data-gc="chat.chat.tooltip--2" label="Membros">
+                <button data-gc="chat.chat.button--3"
+                  onClick={() => setShowMembers((v) => !v)}
+                  className={cn("transition hover:text-ink", flxCls("botaoDoTopoDoCanal"), showMembers ? "text-ink" : "text-ink-muted")}
                 >
-                  <ChatCircle data-gc="chat.chat.chat-circle" size={20} weight="fill" />
+                  <Users data-gc="chat.chat.users" size={20} weight="fill" />
                 </button>
               </Tooltip>
-            )}
 
-            <Tooltip data-gc="chat.chat.tooltip--2" label="Membros">
-              <button data-gc="chat.chat.button--3"
-                onClick={() => setShowMembers((v) => !v)}
-                className={`transition hover:text-ink ${showMembers ? "text-ink" : "text-ink-muted"}`}
-              >
-                <Users data-gc="chat.chat.users" size={20} weight="fill" />
-              </button>
-            </Tooltip>
+              {routeGuildId && <CampoDeBusca data-gc="chat.chat.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />}
 
-            {routeGuildId && <CampoDeBusca data-gc="chat.chat.campo-de-busca.set-busca" termo={busca} onBuscar={setBusca} />}
-
-            <BotaoDoAplicativo data-gc="chat.chat.botao-do-aplicativo" />
-            <CaixaDeEntrada data-gc="chat.chat.caixa-de-entrada" />
+              <BotaoDoAplicativo data-gc="chat.chat.botao-do-aplicativo" />
+              <CaixaDeEntrada data-gc="chat.chat.caixa-de-entrada" />
+            </div>
           </div>
         </header>
         )}
 
-        <div data-gc="chat.chat.div--4" {...flx("molduraDoCanal", "flex min-h-0 flex-1")}>
-          <main data-gc="chat.chat.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
+        <main data-gc="chat.chat.main" {...flx("molduraDoCanal", "flex min-h-0 flex-1")}>
+          <div data-gc="chat.chat.div--5" {...flx("colunaDaConversa", "flex min-w-0 flex-1 flex-col bg-surface-2")}>
 
         {channel?.type === "VOICE" ? (
           voiceChannelId === channel.id ? (
@@ -313,9 +317,9 @@ export const Chat: React.FC = () => {
               podeConvidar={can("CREATE_INVITE")}
             />
           ) : (
-            <div data-gc="chat.chat.div--5" className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
+            <div data-gc="chat.chat.div--6" {...flxAttr("vaziaDeVoz")} className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
               {semCabecalho && (
-                <div data-gc="chat.chat.div--6" className="regiao-de-arrasto absolute inset-x-0 top-0 h-12" />
+                <div data-gc="chat.chat.div--7" className="regiao-de-arrasto absolute inset-x-0 top-0 h-12" />
               )}
 
               <SpeakerHigh data-gc="chat.chat.speaker-high--2" size={48} weight="fill" className="text-ink-faint" />
@@ -397,9 +401,9 @@ export const Chat: React.FC = () => {
             </RodapeDaConversa>
           </AreaDeConversa>
         ) : (
-          <div data-gc="chat.chat.div--7" className="flex-1" />
+          <div data-gc="chat.chat.div--8" className="flex-1" />
         )}
-          </main>
+          </div>
 
           {chatDaVozVisivel && channel && detail && (
             <VoiceChatPanel data-gc="chat.chat.voice-chat-panel"
@@ -438,7 +442,7 @@ export const Chat: React.FC = () => {
           )}
 
           <ModeratorView data-gc="chat.chat.moderator-view" roles={detail?.roles ?? []} />
-        </div>
+        </main>
       </div>
 
       <ConfirmacaoDeVoz data-gc="chat.chat.confirmacao-de-voz"

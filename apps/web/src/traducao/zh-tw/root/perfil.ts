@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "更換大頭貼",
     trocarFotoCurto: "更換圖片",
     suaEtiqueta: "你的標籤",
+    pronomes: "代名詞",
     editarEtiqueta: "點一下編輯你的標籤",
     conteAlgo: "說說你自己",
     adicionarStatus: "新增狀態",

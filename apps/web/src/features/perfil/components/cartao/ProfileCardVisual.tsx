@@ -24,7 +24,7 @@ import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
 import { idiomaAtual, useTranslation } from "~/traducao";
-import { flxCls } from "~/lib/compat-fluxer";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -41,6 +41,8 @@ interface ProfileCardVisualProps {
   statusPersonalizado?: StatusPersonalizado | null;
   corDoCargo?: string | null;
   bio?: string | null;
+  pronomes?: string | null;
+  onPronomes?: (valor: string) => void;
   createdAt?: string | null;
   mutualFriends?: number;
   mutualGuilds?: number;
@@ -54,7 +56,7 @@ interface ProfileCardVisualProps {
   children?: ReactNode;
   className?: string;
   editavel?: boolean;
-  /// Clicar no nome ou no @usuário abre o perfil inteiro, como no Fluxer.
+  /// Clicar no nome ou no @usuário abre o perfil inteiro, como na referência.
   /// Sem isto os dois seguem sendo texto — é o que vale no próprio cartão.
   onAbrirPerfil?: () => void;
   /// O lápis ao lado do nome, que leva direto para a nota.
@@ -79,6 +81,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   statusPersonalizado,
   corDoCargo,
   bio,
+  pronomes,
+  onPronomes,
   createdAt,
   mutualFriends = 0,
   mutualGuilds = 0,
@@ -167,7 +171,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
       </div>
 
-      <div data-gc="perfil.cartao.profile-card-visual.div--4" className="relative px-5 pb-5 [--gc-recorte:var(--color-surface-0)]">
+      <div data-gc="perfil.cartao.profile-card-visual.div--4" className={cn("relative px-5 pb-5 [--gc-recorte:var(--color-surface-0)]", flxCls("secaoDoCartaoDePerfil"))}>
         {efeito && (
           <span data-gc="perfil.cartao.profile-card-visual.span--2"
             aria-hidden
@@ -177,7 +181,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
 
         <div data-gc="perfil.cartao.profile-card-visual.div--5" className="relative -mt-12 mb-3 flex items-start gap-3">
-          <span data-gc="perfil.cartao.profile-card-visual.span--3" className="relative shrink-0">
+          <span data-gc="perfil.cartao.profile-card-visual.span--3" {...flx("molduraDaFotoDoPerfil", "relative shrink-0")}>
           <Avatar data-gc="perfil.cartao.profile-card-visual.avatar"
             id={id}
             name={displayName}
@@ -206,7 +210,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           </span>
 
           {(statusPersonalizado || onStatus) && (
-            <span data-gc="perfil.cartao.profile-card-visual.span--4" className="relative ml-2 mt-8 min-w-0">
+            <span data-gc="perfil.cartao.profile-card-visual.span--4" {...flx("recadoDoPerfil", "relative ml-2 mt-8 min-w-0")}>
               <span data-gc="perfil.cartao.profile-card-visual.span--5"
                 aria-hidden
                 className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
@@ -226,14 +230,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                       {statusPersonalizado.emoji && (
                         <span data-gc="perfil.cartao.profile-card-visual.span--7">{statusPersonalizado.emoji}</span>
                       )}
-                      <span data-gc="perfil.cartao.profile-card-visual.span--8" className="min-w-0 truncate italic">
+                      <span data-gc="perfil.cartao.profile-card-visual.span--8" {...flx("textoDoRecado", "min-w-0 truncate italic")}>
                         {statusPersonalizado.texto}
                       </span>
                     </>
                   ) : (
                     <>
                       <PlusCircle data-gc="perfil.cartao.profile-card-visual.plus-circle" size={14} className="shrink-0" />
-                      <span data-gc="perfil.cartao.profile-card-visual.span--9" className="truncate italic">{t("perfil.cartao.adicionarStatus")}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--9" {...flx("recadoVazio", "truncate italic")}>{t("perfil.cartao.adicionarStatus")}</span>
                     </>
                   )}
                 </button>
@@ -243,7 +247,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     {statusPersonalizado.emoji && (
                       <span data-gc="perfil.cartao.profile-card-visual.span--11">{statusPersonalizado.emoji}</span>
                     )}
-                    <span data-gc="perfil.cartao.profile-card-visual.span--12" className="min-w-0 truncate italic">
+                    <span data-gc="perfil.cartao.profile-card-visual.span--12" {...flx("textoDoRecado", "min-w-0 truncate italic")}>
                       {statusPersonalizado.texto}
                     </span>
                   </span>
@@ -253,8 +257,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
         </div>
 
-        <div data-gc="perfil.cartao.profile-card-visual.div--6" className="relative">
-          <div data-gc="perfil.cartao.profile-card-visual.div--7" className="flex items-center gap-2">
+        <div data-gc="perfil.cartao.profile-card-visual.div--6" {...flx("dadosDoPerfil", "relative")}>
+          <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("linhaDoNomeDoPerfil", "flex items-center gap-2")}>
             <p data-gc="perfil.cartao.profile-card-visual.p"
               className={cn(
                 "min-w-0 truncate text-2xl font-bold leading-tight",
@@ -301,20 +305,49 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             )}
           </div>
 
-          <p data-gc="perfil.cartao.profile-card-visual.p--2" className="flex flex-wrap items-center gap-1.5 text-sm text-ink-muted">
+          <p data-gc="perfil.cartao.profile-card-visual.p--2" {...flx("linhaDoUsuarioDoPerfil", "flex flex-wrap items-center gap-1.5 text-sm text-ink-muted")}>
             {onAbrirPerfil ? (
-              <button data-gc="perfil.cartao.profile-card-visual.button.on-abrir-perfil--2" type="button" onClick={onAbrirPerfil} className="hover:underline">
+              <button data-gc="perfil.cartao.profile-card-visual.button.on-abrir-perfil--2" type="button" onClick={onAbrirPerfil} {...flx("botaoDoUsuarioDoPerfil", "hover:underline")}>
                 @{username}
               </button>
             ) : (
-              <span data-gc="perfil.cartao.profile-card-visual.span--13">@{username}</span>
+              <span data-gc="perfil.cartao.profile-card-visual.span--13" className={flxCls("botaoDoUsuarioDoPerfil")}>@{username}</span>
+            )}
+
+            {(pronomes || onPronomes) && (
+              <>
+                <span data-gc="perfil.cartao.profile-card-visual.span--14" className="text-ink-faint">•</span>
+                {onPronomes ? (
+                  <input data-gc="perfil.cartao.profile-card-visual.input"
+                    value={pronomes ?? ""}
+                    onChange={(e) => onPronomes(e.target.value)}
+                    maxLength={LIMITS.pronomes}
+                    placeholder={t("perfil.cartao.pronomes")}
+                    aria-label={t("perfil.cartao.pronomes")}
+                    size={12}
+                    className={cn(
+                      flxCls("pronomesNoCartao"),
+                      flxCls("campoDeEditarNoLugar"),
+                      "w-24 rounded bg-surface-3 px-1.5 py-0 text-sm text-ink outline-none ring-ink-faint/70 transition focus:ring-2",
+                    )}
+                  />
+                ) : (
+                  <span data-gc="perfil.cartao.profile-card-visual.span--15" className={cn(flxCls("pronomesNoCartao"), "truncate")}>{pronomes}</span>
+                )}
+              </>
             )}
 
             {editavel ? (
-              <>
-                <span data-gc="perfil.cartao.profile-card-visual.span--14" className="text-ink-faint">•</span>
+              <span data-gc="perfil.cartao.profile-card-visual.span--16"
+                className={cn(
+                  flxCls("molduraDeEditarNoLugar"),
+                  flxCls("caixaDeEditarNoLugar"),
+                  "flex items-center gap-1.5",
+                )}
+              >
+                <span data-gc="perfil.cartao.profile-card-visual.span--17" className="text-ink-faint">•</span>
                 {editandoEtiqueta ? (
-                  <input data-gc="perfil.cartao.profile-card-visual.input"
+                  <input data-gc="perfil.cartao.profile-card-visual.input--2"
                     autoFocus
                     value={perfil?.etiqueta ?? ""}
                     onChange={(e) => onEtiqueta?.(e.target.value)}
@@ -326,25 +359,31 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     placeholder="etiqueta"
                     aria-label={t("perfil.cartao.suaEtiqueta")}
                     size={LIMITS.etiqueta}
-                    className="w-16 rounded bg-surface-3 px-1.5 py-0 text-sm font-semibold text-ink outline-none ring-ink-faint/70 transition focus:ring-2"
+                    className={cn(
+                      flxCls("campoDeEditarNoLugar"),
+                      "w-16 rounded bg-surface-3 px-1.5 py-0 text-sm font-semibold text-ink outline-none ring-ink-faint/70 transition focus:ring-2",
+                    )}
                   />
                 ) : (
                   <button data-gc="perfil.cartao.profile-card-visual.button"
                     onClick={() => setEditandoEtiqueta(true)}
                     title={t("perfil.cartao.editarEtiqueta")}
-                    className="rounded px-1 font-semibold text-ink transition hover:bg-surface-3"
+                    className={cn(
+                      flxCls("botaoDeEditarNoLugar"),
+                      "rounded px-1 font-semibold text-ink transition hover:bg-surface-3",
+                    )}
                   >
                     {perfil?.etiqueta || (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--15" className="text-ink-faint">etiqueta</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--18" className="text-ink-faint">etiqueta</span>
                     )}
                   </button>
                 )}
-              </>
+              </span>
             ) : (
               perfil?.etiqueta && (
                 <>
-                  <span data-gc="perfil.cartao.profile-card-visual.span--16" className="text-ink-faint">•</span>
-                  <span data-gc="perfil.cartao.profile-card-visual.span--17" className="font-semibold text-ink">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--19" className="text-ink-faint">•</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--20" className="font-semibold text-ink">
                     {perfil.etiqueta}
                   </span>
                 </>
@@ -365,13 +404,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             )}
 
             {emblemas.map((emblema) => (
-              <span data-gc="perfil.cartao.profile-card-visual.span--18"
+              <span data-gc="perfil.cartao.profile-card-visual.span--21"
                 key={emblema.id}
                 title={emblema.nome}
                 className="inline-flex items-center"
               >
                 {emblema.emoji ? (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--19" className="text-base leading-none">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--22" className="text-base leading-none">
                     {emblema.emoji}
                   </span>
                 ) : emblema.iconUrl ? (
@@ -424,9 +463,9 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 className="mt-4 block w-full rounded-lg px-1 py-0.5 text-left text-sm transition hover:bg-surface-3/60"
               >
                 {bio ? (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--20" className="whitespace-pre-wrap text-ink">{bio}</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--23" className="whitespace-pre-wrap text-ink">{bio}</span>
                 ) : (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--21" className="italic text-ink-faint">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--24" className="italic text-ink-faint">
                     {t("perfil.cartao.adicionarDescricao")}
                   </span>
                 )}
@@ -448,12 +487,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
               <div data-gc="perfil.cartao.profile-card-visual.div--10" className="flex flex-wrap items-center gap-1.5">
                 {cargos.map((cargo) => (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--22"
+                  <span data-gc="perfil.cartao.profile-card-visual.span--25"
                     key={cargo.id}
                     className="flex items-center gap-1.5 rounded bg-surface-3 px-2 py-0.5 text-xs font-medium"
                   >
                     {cargo.iconEmoji ? (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--23">{cargo.iconEmoji}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--26">{cargo.iconEmoji}</span>
                     ) : cargo.iconUrl ? (
                       <img data-gc="perfil.cartao.profile-card-visual.img--2"
                         src={cargo.iconUrl}
@@ -461,7 +500,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                         className="size-3.5 rounded-sm object-cover"
                       />
                     ) : (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--24"
+                      <span data-gc="perfil.cartao.profile-card-visual.span--27"
                         className="size-2.5 rounded-full"
                         style={{
                           backgroundColor:

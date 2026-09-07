@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Bytt profilbilde",
     trocarFotoCurto: "Bytt bilde",
     suaEtiqueta: "Etiketten din",
+    pronomes: "Pronomen",
     editarEtiqueta: "Klikk for å redigere etiketten",
     conteAlgo: "Fortell noe om deg selv",
     adicionarStatus: "Legg til en status",

@@ -6,6 +6,7 @@ import { adivinharLingua } from "~/features/conversa/lib/codigo";
 import { normalizarIdioma, realcar } from "~/features/conversa/lib/realce";
 import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
+import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
 interface BlocoDeCodigoProps {
@@ -53,7 +54,9 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
 
   return (
     <div data-gc="conversa.bloco-de-codigo.div"
+      {...flxAttr("blocoDeCodigo")}
       className={cn(
+        flxCls("blocoDeCodigo"),
         "relative my-1 overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink",
         className,
       )}
@@ -73,7 +76,7 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
           aria-label={t(
             copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
           )}
-          className="absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink"
+          className={cn("absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink", flxCls("acoesDoCodigo"))}
         >
           {copiado ? <Check data-gc="conversa.bloco-de-codigo.check" size={14} className="text-online" /> : <Copy data-gc="conversa.bloco-de-codigo.copy" size={14} />}
         </button>

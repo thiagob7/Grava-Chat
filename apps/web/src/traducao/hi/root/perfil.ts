@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "प्रोफ़ाइल फ़ोटो बदलें",
     trocarFotoCurto: "फ़ोटो बदलें",
     suaEtiqueta: "आपका टैग",
+    pronomes: "सर्वनाम",
     editarEtiqueta: "टैग संपादित करने के लिए क्लिक करें",
     conteAlgo: "अपने बारे में कुछ बताइए",
     adicionarStatus: "स्टेटस जोड़ें",

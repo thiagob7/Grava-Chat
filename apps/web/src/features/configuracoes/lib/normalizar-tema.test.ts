@@ -1,21 +1,22 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  contarSeletoresTravados,
-  normalizarSeletoresDoFluxer,
+  contarSeletoresDatados,
+  deveTraduzir,
+  traduzirSeletoresTravados,
 } from "~/features/configuracoes/lib/normalizar-tema";
 
-describe("seletor travado no hash", () => {
-  it("vira o seletor por pedaço, que é o que acha os nossos elementos", () => {
-    const saida = normalizarSeletoresDoFluxer(
+describe("seletor preso ao hash de um build", () => {
+  it("vira o nome do lugar, que é o que a ponte carimba", () => {
+    const saida = traduzirSeletoresTravados(
       ".ChannelChatLayout\\.module__textareaArea___YjY1N2 { color: red }",
     );
 
     expect(saida).toBe('[class*="ChannelChatLayout.module__textareaArea_"] { color: red }');
   });
 
-  it("traduz os dois lados de um seletor aninhado", () => {
-    const saida = normalizarSeletoresDoFluxer(
+  it("traduz cada lado de um seletor aninhado", () => {
+    const saida = traduzirSeletoresTravados(
       ".Menu\\.module__menu___AAA .Item\\.module__item___BBB { color: red }",
     );
 
@@ -24,30 +25,110 @@ describe("seletor travado no hash", () => {
     );
   });
 
-  /// O que já mira por pedaço está certo e não pode ser mexido.
-  it("não mexe no que já está solto do hash", () => {
+  /*
+    O `div` sai pela mesma razão que o hash sai: os dois datam do build contra
+    o qual a pessoa escreveu. Honrar um e traduzir o outro revive metade do
+    tema, e meio tema parece defeito.
+  */
+  it("solta o div da frente do seletor por pedaço", () => {
+    const saida = traduzirSeletoresTravados(
+      'div[class*="MemberListContainer"][class*="memberListContainer"] { color: red }',
+    );
+
+    expect(saida).toBe(
+      '[class*="MemberListContainer"][class*="memberListContainer"] { color: red }',
+    );
+  });
+
+  /// Botão é botão aqui também. O que pede um `<button>` de verdade fica.
+  it("deixa as outras tags em paz", () => {
+    const pronto = 'button[class*="Button"] { color: red }';
+
+    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
+  });
+
+  /// `div` dentro de um nome de classe não é tag e não pode ser tocado.
+  it("não confunde div dentro de nome com a tag", () => {
+    const pronto = '[class*="Divider.module__divider_"] { color: red }';
+
+    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
+  });
+
+  it("não mexe no que já mira por pedaço", () => {
     const pronto = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
 
-    expect(normalizarSeletoresDoFluxer(pronto)).toBe(pronto);
+    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
   });
 
   it("não mexe em classe nossa", () => {
     const nosso = '.area-do-usuario { color: red }\n[data-gc="conversa.message-item.div"] { }';
 
-    expect(normalizarSeletoresDoFluxer(nosso)).toBe(nosso);
+    expect(traduzirSeletoresTravados(nosso)).toBe(nosso);
   });
 
-  it("conta quantos travados o arquivo tem, sem repetir", () => {
+  it("conta quantos presos ao hash o arquivo tem, sem repetir", () => {
     const css = [
       ".A\\.module__a___XX { color: red }",
       ".A\\.module__a___XX:hover { color: blue }",
       ".B\\.module__b___YY { color: red }",
     ].join("\n");
 
-    expect(contarSeletoresTravados(css)).toBe(2);
+    expect(contarSeletoresDatados(css).presos).toBe(2);
+  });
+
+  /*
+    Os dois tipos entram separados porque o estúdio mostra os dois: é o par que
+    diz de que lado o tema pende — o Galaxy pende para o `div`, um tema da comunidade para
+    o hash.
+  */
+  it("conta os dois tipos de datado em separado", () => {
+    const css = [
+      ".A\\.module__a___XX { color: red }",
+      'div[class*="B.module__b_"] { color: red }',
+      'div[class*="C.module__c_"] { color: blue }',
+    ].join("\n");
+
+    expect(contarSeletoresDatados(css)).toEqual({ presos: 1, comDiv: 2, soltos: 2 });
+  });
+
+  /// Quem mira por pedaço, sem tag e sem hash, não está preso a build nenhum.
+  it("não conta quem já mira por pedaço", () => {
+    const css = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
+
+    expect(contarSeletoresDatados(css)).toEqual({ presos: 0, comDiv: 0, soltos: 1 });
   });
 
   it("conta zero num tema escrito para o Gravaê", () => {
-    expect(contarSeletoresTravados(":root { --color-brand: #123 }")).toBe(0);
+    expect(contarSeletoresDatados(":root { --color-brand: #123 }")).toEqual({
+      presos: 0,
+      comDiv: 0,
+      soltos: 0,
+    });
+  });
+});
+
+/*
+  A regra que decide sozinha se o arquivo entra como está. Os três casos são os
+  dos temas de verdade que temos em mãos, medidos: Galaxy 16%, Gruvbox 2%,
+  um tema da comunidade 89%.
+*/
+describe("quando traduzir sem perguntar", () => {
+  const preso = (n: number) =>
+    Array.from({ length: n }, (_, i) => `.A\\.module__c${i}___XX${i} { color: red }`).join("\n");
+
+  const solto = (n: number) =>
+    Array.from({ length: n }, (_, i) => `[class*="A.module__c${i}_"] { color: red }`).join("\n");
+
+  it("deixa como está o tema com seletor solto de sobra", () => {
+    expect(deveTraduzir(`${preso(5)}\n${solto(26)}`)).toBe(false);
+  });
+
+  it("traduz o tema que é quase só nome preso a build", () => {
+    expect(deveTraduzir(`${preso(158)}\n${solto(20)}`)).toBe(true);
+  });
+
+  /// Tema de tokens não mira classe nenhuma: não há o que traduzir.
+  it("deixa como está um tema que não mira classe", () => {
+    expect(deveTraduzir(":root { --color-brand: #123 }")).toBe(false);
   });
 });

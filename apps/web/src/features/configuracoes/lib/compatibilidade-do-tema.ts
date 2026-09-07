@@ -1,7 +1,7 @@
-import { LUGARES } from "~/lib/compat-fluxer";
+import { LUGARES } from "~/lib/compat-de-tema";
 
 /*
-  O que um tema do Fluxer procura, e o que ele acha aqui.
+  O que um tema da referência procura, e o que ele acha aqui.
 
   "Está quase igual mas não está" é impossível de resolver no olho: o tema tem
   centenas de seletores e a diferença mora em três ou quatro que não acham nada.
@@ -12,7 +12,7 @@ import { LUGARES } from "~/lib/compat-fluxer";
 */
 
 export interface Compatibilidade {
-  /// Nomes do Fluxer que o tema mira e que existem aqui.
+  /// Nomes da referência que o tema mira e que existem aqui.
   achados: string[];
   /// Os que não existem — cada um é um pedaço do tema sem efeito.
   faltando: string[];

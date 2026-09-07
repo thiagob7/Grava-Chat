@@ -20,6 +20,26 @@ const css = readFileSync(
   "utf8",
 );
 
+/*
+  O valor de reserva no fim da cadeia.
+
+  Desde que as cores nascem do nome da referência, o `@theme` guarda
+  `var(--background-primary, var(--bg-primary, #1a181e))` em vez de `#1a181e`.
+  A cor do tema base é a última — a que vale quando nenhum tema declarou nada — e
+  é dela que as distâncias das cores-mãe são medidas.
+*/
+function corDaReserva(valor: string): string {
+  let v = valor.trim();
+
+  while (v.startsWith("var(")) {
+    const virgula = v.indexOf(",");
+    if (virgula < 0) return v;
+    v = v.slice(virgula + 1, v.lastIndexOf(")")).trim();
+  }
+
+  return v;
+}
+
 function coresDoTema(): Record<string, string> {
   const inicio = css.indexOf("@theme {");
   const corpo = css.slice(inicio, css.indexOf("\n}", inicio));
@@ -28,7 +48,7 @@ function coresDoTema(): Record<string, string> {
   for (const [, nome, valor] of corpo.matchAll(
     /^\s+(--color-[\w-]+):\s*([^;]+);/gm,
   )) {
-    if (nome && valor) cores[nome] = valor.trim();
+    if (nome && valor) cores[nome] = corDaReserva(valor);
   }
 
   return cores;

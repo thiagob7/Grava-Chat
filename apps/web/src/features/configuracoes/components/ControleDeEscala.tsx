@@ -28,6 +28,8 @@ export const ControleDeEscala: React.FC<ControleDeEscalaProps> = ({
         step={passo}
         value={valor}
         preenchido={(valor - min) / (max - min)}
+        padrao={(100 - min) / (max - min)}
+        rotuloDoPadrao="100%"
         onChange={(e) => onMudar(Number(e.target.value))}
         aria-label="Tamanho, em porcentagem"
       />

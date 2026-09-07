@@ -47,6 +47,7 @@ export const perfil = {
     trocarFoto: "Vaihda profiilikuva",
     trocarFotoCurto: "Vaihda kuva",
     suaEtiqueta: "Sinun merkkisi",
+    pronomes: "Pronominit",
     editarEtiqueta: "Muokkaa merkkiäsi napsauttamalla",
     conteAlgo: "Kerro jotain itsestäsi",
     adicionarStatus: "Lisää tila",

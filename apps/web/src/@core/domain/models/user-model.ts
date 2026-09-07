@@ -17,6 +17,7 @@ export interface PublicUserModel {
 export interface SelfUserModel extends PublicUserModel {
   email: string;
   bio: string | null;
+  pronomes: string | null;
   providers: string[];
   createdAt: string;
   perfil: EstiloDePerfil | null;

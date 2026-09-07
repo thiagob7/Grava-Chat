@@ -46,7 +46,7 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { flx } from "~/lib/compat-fluxer";
+import { flx } from "~/lib/compat-de-tema";
 
 type Detalhe = "todas" | "links" | "midia" | null;
 
