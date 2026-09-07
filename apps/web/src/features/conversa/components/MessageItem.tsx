@@ -296,7 +296,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       data-mensagem={message.id}
       {...flxAttr("grupoDeMensagens")}
       className={cn(
-        "group relative flex flex-wrap gap-x-2 px-2 py-0.5 transition hover:bg-hover @sm:gap-x-4 @sm:px-4",
+        "group relative flex flex-wrap gap-x-2 px-2 py-0.5 leading-[var(--message-line-height)] transition hover:bg-hover @sm:gap-x-[var(--message-gutter)] @sm:px-4",
         flxCls("molduraDaMensagem"),
         !message.content && flxCls("mensagemSemTexto"),
         !compact && "mt-4",

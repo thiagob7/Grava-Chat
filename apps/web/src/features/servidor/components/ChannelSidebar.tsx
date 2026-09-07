@@ -113,7 +113,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   ];
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("canais", {
-    padrao: 240,
+    padrao: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,
@@ -177,7 +177,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             <DropdownMenuTrigger data-gc="servidor.channel-sidebar.dropdown-menu-trigger" asChild disabled={!detail}>
               <button data-gc="servidor.channel-sidebar.button"
                 className={cn(
-                  "group/nome flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition",
+                  "group/nome flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-left transition",
                   comFaixa
                     ? "hover:bg-sobre-midia data-[state=open]:bg-sobre-midia"
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",

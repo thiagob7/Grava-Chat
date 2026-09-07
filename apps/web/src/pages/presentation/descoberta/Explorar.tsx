@@ -49,7 +49,7 @@ export const Explorar: React.FC = () => {
   };
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("explorar", {
-    padrao: 240,
+    padrao: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,

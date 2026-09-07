@@ -153,7 +153,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
           >
             <button data-gc="servidor.member-list.button"
               className={cn(
-                "flex w-full items-center gap-3 rounded px-2 py-1.5 text-left transition hover:bg-surface-3",
+                "flex w-full items-center gap-2.5 rounded px-2 py-1 text-left transition hover:bg-surface-3",
                 flxCls("linhaDeMembro"),
                 flxCls("itemDeMembro"),
                 flxCls("botaoDoMembro"),

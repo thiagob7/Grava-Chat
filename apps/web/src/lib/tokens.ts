@@ -308,6 +308,24 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         rotulo: "Largura da lateral",
         dica: "a coluna de canais, de conversas e do explorar",
       },
+      { nome: "--guild-icon-size", rotulo: "Tamanho do ícone de servidor" },
+      {
+        nome: "--footer-box-height",
+        rotulo: "Altura do rodapé e da caixa de escrever",
+        dica: "os dois sobem e descem juntos, como na referência",
+      },
+      { nome: "--footer-box-radius", rotulo: "Canto do rodapé e da caixa de escrever" },
+      {
+        nome: "--message-gutter",
+        rotulo: "Calha da mensagem",
+        dica: "o espaço entre o avatar e o texto",
+      },
+      {
+        nome: "--message-line-height",
+        rotulo: "Altura de linha da mensagem",
+        dica: "menor deixa a conversa mais densa",
+      },
+      { nome: "--textarea-line-height", rotulo: "Altura de linha da caixa de escrever" },
     ],
   },
   {

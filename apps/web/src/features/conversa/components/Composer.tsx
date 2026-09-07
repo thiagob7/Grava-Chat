@@ -420,7 +420,7 @@ export const Composer: React.FC<ComposerProps> = ({
         {...flxAttr("campoDeEscrever")}
         className={cn(
           flxCls("campoDeEscrever"),
-          "rounded bg-campo transition",
+          "min-h-[var(--footer-box-height)] rounded-[var(--footer-box-radius)] leading-[var(--textarea-line-height)] bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >

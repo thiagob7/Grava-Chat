@@ -52,7 +52,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   const pedidosRecebidos = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
   const { largura, arrastando, alca, limites } = useLarguraAjustavel("dm", {
-    padrao: 240,
+    padrao: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,

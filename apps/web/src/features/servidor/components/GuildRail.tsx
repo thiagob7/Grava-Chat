@@ -68,7 +68,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
             <button data-gc="servidor.guild-rail.button.on-open-friends"
               onClick={onOpenFriends}
               className={cn(
-                "relative flex size-12 items-center justify-center text-xl font-bold transition-all",
+                "relative flex size-[var(--guild-icon-size)] items-center justify-center text-xl font-bold transition-all",
                 activeGuildId === null
                   ? "rounded-2xl bg-brand"
                   : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
@@ -140,7 +140,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                   onClick={() => onSelect(guild.id)}
                   className={cn(
                     flxCls("iconeDoServidor"),
-                    "flex size-12 items-center justify-center overflow-hidden font-semibold transition-all",
+                    "flex size-[var(--guild-icon-size)] items-center justify-center overflow-hidden font-semibold transition-all",
                     active
                       ? cn("rounded-2xl bg-brand", flxCls("iconeDoServidorAtivo"))
                       : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",

@@ -108,7 +108,7 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
             deles também está. Sem tema nada muda: o cartão media 296px antes e
             mede 296px agora.
           */
-          "flex w-full flex-col overflow-hidden rounded-lg bg-painel p-2 shadow-lg shadow-sombra [--gc-recorte:var(--color-painel)]",
+          "flex min-h-[var(--footer-box-height)] w-full flex-col justify-center overflow-hidden rounded-[var(--footer-box-radius)] bg-painel p-2 shadow-lg shadow-sombra [--gc-recorte:var(--color-painel)]",
         )}
       >
         <VoicePanel data-gc="app.rodape-da-barra.voice-panel" accountChannelId={accountChannelId} />
