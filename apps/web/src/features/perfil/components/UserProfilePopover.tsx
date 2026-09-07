@@ -106,7 +106,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
         side={side}
-        className="max-h-[80vh] w-80 overflow-y-auto p-0"
+        className="max-h-[80vh] w-[300px] overflow-y-auto p-0 shadow-lg shadow-sombra"
       >
         {isLoading || !perfil ? (
           <div data-gc="perfil.user-profile-popover.div" className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
@@ -273,148 +273,135 @@ const ProfileCard: React.FC<{
   const ehBot = perfil.isBot && !ehSistema;
   const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema;
 
-  const acoes = (
-    <>
-      {perfil.friendship === "SELF" ? (
-        <Button data-gc="perfil.user-profile-popover.button" size="sm" onClick={() => setEditandoPerfil(true)}>
-          <Pencil data-gc="perfil.user-profile-popover.pencil" size={14} /> {t("perfil.editar")}
-        </Button>
-      ) : (
-        <>
-          {podeConversar && (
-            <Button data-gc="perfil.user-profile-popover.button--2"
-              size="sm"
-              onClick={() => void conversar()}
-              disabled={ocupado}
-            >
-              <MessageSquare data-gc="perfil.user-profile-popover.message-square" size={14} /> {t("perfil.mensagem")}
-            </Button>
-          )}
+  /*
+    Dois lugares. Em cima, na faixa e só com o mouse em cima do cartão, os
+    botões redondos: moderar, amizade, o menu. Embaixo, de largura inteira, o
+    que se faz mais: mandar mensagem, adicionar o bot, editar o próprio perfil.
+  */
+  const acoesDoTopo =
+    perfil.friendship === "SELF" ? null : (
+      <>
+        {podeModerar && guildId && (
+          <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo"
+            label={t("perfil.moderador")}
+            onClick={() => {
+              useModeracao.getState().abrir({
+                guildId,
+                userId: perfil.id,
+                displayName: perfil.displayName,
+                username: perfil.username,
+                avatarUrl: perfil.avatarUrl,
+              });
+              onFechar();
+            }}
+          >
+            <ShieldAlert data-gc="perfil.user-profile-popover.shield-alert" size={15} />
+          </BotaoRedondo>
+        )}
 
-          {ehBot && perfil.botId && (
-            <Button data-gc="perfil.user-profile-popover.button--3"
-              size="sm"
-              onClick={() => {
-                onFechar();
-                navigate(`/bots/${perfil.botId}/adicionar`);
-              }}
-            >
-              <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
-            </Button>
-          )}
+        {!ehBot && !ehSistema && (
+          <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade" perfil={perfil} onAdicionar={() => requestFriend.mutate(perfil.username)} />
+        )}
 
-          {podeModerar && guildId && (
-            <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo"
-              label={t("perfil.moderador")}
-              onClick={() => {
-                useModeracao.getState().abrir({
-                  guildId,
-                  userId: perfil.id,
-                  displayName: perfil.displayName,
-                  username: perfil.username,
-                  avatarUrl: perfil.avatarUrl,
-                });
-                onFechar();
-              }}
-            >
-              <ShieldAlert data-gc="perfil.user-profile-popover.shield-alert" size={16} />
-            </BotaoRedondo>
-          )}
+        <DropdownMenu data-gc="perfil.user-profile-popover.dropdown-menu">
+          <DropdownMenuTrigger data-gc="perfil.user-profile-popover.dropdown-menu-trigger" asChild>
+            <button data-gc="perfil.user-profile-popover.button" aria-label={t("perfil.mais")} className={BOTAO_DA_FAIXA}>
+              <MoreHorizontal data-gc="perfil.user-profile-popover.more-horizontal" size={15} />
+            </button>
+          </DropdownMenuTrigger>
 
-          {!ehBot && !ehSistema && (
-            <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade"
-              perfil={perfil}
-              onAdicionar={() => requestFriend.mutate(perfil.username)}
-            />
-          )}
-
-          <DropdownMenu data-gc="perfil.user-profile-popover.dropdown-menu">
-            <DropdownMenuTrigger data-gc="perfil.user-profile-popover.dropdown-menu-trigger" asChild>
-              <button data-gc="perfil.user-profile-popover.button--4"
-                aria-label={t("perfil.mais")}
-                className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
-              >
-                <MoreHorizontal data-gc="perfil.user-profile-popover.more-horizontal" size={16} />
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent data-gc="perfil.user-profile-popover.dropdown-menu-content" align="end">
-              {podeConversar && (
-                <>
-                  <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void conversar()}>
-                    {t("perfil.abrirConversa")} <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} />
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator" />
-                </>
-              )}
-
-              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--2" onSelect={() => setPerfilCompleto(true)}>
-                {t("perfil.verCompleto")} <User data-gc="perfil.user-profile-popover.user" size={14} />
-              </DropdownMenuItem>
-
-              {!ehSistema && (
-                <>
-              <DropdownMenuSub data-gc="perfil.user-profile-popover.dropdown-menu-sub">
-                <DropdownMenuSubTrigger data-gc="perfil.user-profile-popover.dropdown-menu-sub-trigger">
-                  {t("perfil.convidarParaServidor")}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent data-gc="perfil.user-profile-popover.dropdown-menu-sub-content">
-                  {guilds.data?.length ? (
-                    guilds.data.map((servidor) => (
-                      <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--3"
-                        key={servidor.id}
-                        onSelect={() => void convidarPara(servidor.id)}
-                      >
-                        {servidor.name}
-                      </DropdownMenuItem>
-                    ))
-                  ) : (
-                    <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--4" disabled>
-                      {t("perfil.semServidores")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-
-              <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--2" />
-
-              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--5" onSelect={() => alternarIgnorado(perfil.id)}>
-                {t(ignorado ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
-                {ignorado ? <Eye data-gc="perfil.user-profile-popover.eye" size={14} /> : <EyeOff data-gc="perfil.user-profile-popover.eye-off" size={14} />}
-              </DropdownMenuItem>
-
-              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--6" danger onSelect={() => void bloquearUsuario()}>
-                {t("perfil.amizade.bloquear")} <Ban data-gc="perfil.user-profile-popover.ban" size={14} />
-              </DropdownMenuItem>
-
-              {perfil.friendship === "ACCEPTED" && (
-                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--7"
-                  danger
-                  onSelect={() => void desfazerAmizade()}
-                >
-                  {t("perfil.amizade.desfazer")} <UserX data-gc="perfil.user-profile-popover.user-x" size={14} />
+          <DropdownMenuContent data-gc="perfil.user-profile-popover.dropdown-menu-content" align="end">
+            {podeConversar && (
+              <>
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void conversar()}>
+                  {t("perfil.abrirConversa")} <MessageSquare data-gc="perfil.user-profile-popover.message-square" size={14} />
                 </DropdownMenuItem>
-              )}
+                <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator" />
+              </>
+            )}
 
-                </>
-              )}
+            <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--2" onSelect={() => setPerfilCompleto(true)}>
+              {t("perfil.verCompleto")} <User data-gc="perfil.user-profile-popover.user" size={14} />
+            </DropdownMenuItem>
 
-              <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--3" />
+            {!ehSistema && (
+              <>
+                <DropdownMenuSub data-gc="perfil.user-profile-popover.dropdown-menu-sub">
+                  <DropdownMenuSubTrigger data-gc="perfil.user-profile-popover.dropdown-menu-sub-trigger">{t("perfil.convidarParaServidor")}</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent data-gc="perfil.user-profile-popover.dropdown-menu-sub-content">
+                    {guilds.data?.length ? (
+                      guilds.data.map((servidor) => (
+                        <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--3" key={servidor.id} onSelect={() => void convidarPara(servidor.id)}>
+                          {servidor.name}
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--4" disabled>{t("perfil.semServidores")}</DropdownMenuItem>
+                    )}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
 
-              <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--8"
-                onSelect={() => {
-                  void copiarTexto(perfil.id);
-                  aviso.success(t("perfil.idCopiado"));
-                }}
-              >
-                {t("perfil.copiarId")} <Copy data-gc="perfil.user-profile-popover.copy" size={14} />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </>
-      )}
-    </>
-  );
+                <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--2" />
+
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--5" onSelect={() => alternarIgnorado(perfil.id)}>
+                  {t(ignorado ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
+                  {ignorado ? <Eye data-gc="perfil.user-profile-popover.eye" size={14} /> : <EyeOff data-gc="perfil.user-profile-popover.eye-off" size={14} />}
+                </DropdownMenuItem>
+
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--6" danger onSelect={() => void bloquearUsuario()}>
+                  {t("perfil.amizade.bloquear")} <Ban data-gc="perfil.user-profile-popover.ban" size={14} />
+                </DropdownMenuItem>
+
+                {perfil.friendship === "ACCEPTED" && (
+                  <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--7" danger onSelect={() => void desfazerAmizade()}>
+                    {t("perfil.amizade.desfazer")} <UserX data-gc="perfil.user-profile-popover.user-x" size={14} />
+                  </DropdownMenuItem>
+                )}
+              </>
+            )}
+
+            <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--3" />
+
+            <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--8"
+              onSelect={() => {
+                void copiarTexto(perfil.id);
+                aviso.success(t("perfil.idCopiado"));
+              }}
+            >
+              {t("perfil.copiarId")} <Copy data-gc="perfil.user-profile-popover.copy" size={14} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+
+  const acoesDeBaixo =
+    perfil.friendship === "SELF" ? (
+      <Button data-gc="perfil.user-profile-popover.button--2" className="w-full" onClick={() => setEditandoPerfil(true)}>
+        <Pencil data-gc="perfil.user-profile-popover.pencil" size={14} /> {t("perfil.editar")}
+      </Button>
+    ) : (
+      <>
+        {podeConversar && (
+          <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void conversar()} disabled={ocupado}>
+            <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} /> {t("perfil.mensagem")}
+          </Button>
+        )}
+
+        {ehBot && perfil.botId && (
+          <Button data-gc="perfil.user-profile-popover.button--4"
+            className="w-full"
+            variant={podeConversar ? "surface" : "primary"}
+            onClick={() => {
+              onFechar();
+              navigate(`/bots/${perfil.botId}/adicionar`);
+            }}
+          >
+            <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
+          </Button>
+        )}
+      </>
+    );
 
   return (
     <>
@@ -488,7 +475,8 @@ const ProfileCard: React.FC<{
             : undefined
         }
         emblemas={emblemas}
-        acoes={acoes}
+        acoesDoTopo={acoesDoTopo}
+        acoesDeBaixo={acoesDeBaixo}
         className="rounded-none"
       >
         <ConexoesDoPerfil data-gc="perfil.user-profile-popover.conexoes-do-perfil" conexoes={perfil.perfil?.conexoes} />
@@ -610,6 +598,10 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   );
 };
 
+/// O botão que mora na faixa do cartão: escuro e translúcido, para ler sobre qualquer foto.
+const BOTAO_DA_FAIXA =
+  "flex size-8 items-center justify-center rounded-full bg-sobre-midia text-palco-ink/85 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-palco-ink";
+
 const BotaoRedondo: React.FC<{
   children: ReactNode;
   label: string;
@@ -621,7 +613,7 @@ const BotaoRedondo: React.FC<{
       onClick={onClick}
       disabled={desabilitado}
       aria-label={label}
-      className="rounded-full bg-surface-3 p-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:cursor-default disabled:hover:bg-surface-3"
+      className={BOTAO_DA_FAIXA + " disabled:cursor-default"}
     >
       {children}
     </button>

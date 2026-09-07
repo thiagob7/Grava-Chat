@@ -56,8 +56,11 @@ interface ProfileCardVisualProps {
   onAlternarCargo?: (roleId: string) => void;
   salvandoCargos?: boolean;
   emblemas?: Emblema[];
+  /// No canto de cima da faixa; só aparecem com o mouse em cima do cartão.
   acoesDoTopo?: ReactNode;
   acoes?: ReactNode;
+  /// Os botões grandes do rodapé, de largura inteira.
+  acoesDeBaixo?: ReactNode;
   children?: ReactNode;
   className?: string;
   editavel?: boolean;
@@ -125,6 +128,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   emblemas = [],
   acoesDoTopo,
   acoes,
+  acoesDeBaixo,
   children,
   className,
   editavel = false,
@@ -176,9 +180,9 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
         />
       )}
-      <MascaraDaFaixa data-gc="perfil.cartao.profile-card-visual.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixa" cx={60} raio={52} />
+      <MascaraDaFaixa data-gc="perfil.cartao.profile-card-visual.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixa" cx={56} raio={47} />
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
-        className="relative aspect-[5/2] bg-cover bg-center"
+        className="relative aspect-[20/7] bg-cover bg-center"
         style={{
           mask: `url(#${idDaMascara})`,
           WebkitMask: `url(#${idDaMascara})`,
@@ -188,7 +192,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             : null),
         }}
       >
-        {acoesDoTopo}
 
         {menuDaFaixa && (
           <div data-gc="perfil.cartao.profile-card-visual.div--3" className="absolute right-3 top-3">{menuDaFaixa}</div>
@@ -207,7 +210,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
       </div>
 
-      <div data-gc="perfil.cartao.profile-card-visual.div--4" className={cn("relative px-5 pb-5 [--gc-recorte:var(--color-surface-0)]", flxCls("secaoDoCartaoDePerfil"))}>
+      {/* Fora da faixa mascarada, para a máscara não engolir os botões. */}
+      {acoesDoTopo && (
+        <div data-gc="perfil.cartao.profile-card-visual.div--4" className="absolute right-3 top-3 z-10 flex items-center gap-1.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/cartao:opacity-100">
+          {acoesDoTopo}
+        </div>
+      )}
+
+      <div data-gc="perfil.cartao.profile-card-visual.div--5" className={cn("relative px-4 pb-4 [--gc-recorte:var(--color-surface-0)]", flxCls("secaoDoCartaoDePerfil"))}>
         {efeito && (
           <span data-gc="perfil.cartao.profile-card-visual.span--2"
             aria-hidden
@@ -216,13 +226,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           />
         )}
 
-        <div data-gc="perfil.cartao.profile-card-visual.div--5" className="relative -mt-12 mb-3 flex items-start gap-3">
+        <div data-gc="perfil.cartao.profile-card-visual.div--6" className="relative -mt-10 mb-3 flex items-start gap-3">
           <span data-gc="perfil.cartao.profile-card-visual.span--3" {...flx("molduraDaFotoDoPerfil", "relative shrink-0")}>
           <Avatar data-gc="perfil.cartao.profile-card-visual.avatar"
             id={id}
             name={displayName}
             url={avatarUrl}
-            size={88}
+            size={80}
             status={status}
             enfeites={perfil}
             animar
@@ -293,8 +303,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
         </div>
 
-        <div data-gc="perfil.cartao.profile-card-visual.div--6" {...flx("dadosDoPerfil", "relative")}>
-          <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("linhaDoNomeDoPerfil", "flex items-center gap-2")}>
+        <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("dadosDoPerfil", "relative")}>
+          <div data-gc="perfil.cartao.profile-card-visual.div--8" {...flx("linhaDoNomeDoPerfil", "flex items-center gap-2")}>
             <p data-gc="perfil.cartao.profile-card-visual.p"
               className={cn(
                 "min-w-0 truncate text-xl font-bold leading-tight",
@@ -337,7 +347,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   type="button"
                   onClick={onIrParaNota}
                   aria-label={t("perfil.nota.adicionar")}
-                  className="shrink-0 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+                  className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-ink focus-visible:opacity-100 group-hover/cartao:opacity-100"
                 >
                   <NotebookPen data-gc="perfil.cartao.profile-card-visual.notebook-pen" size={16} />
                 </button>
@@ -464,7 +474,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             ))}
           </p>
 
-          {acoes && <div data-gc="perfil.cartao.profile-card-visual.div--8" className="mt-3 flex items-center gap-2">{acoes}</div>}
+          {acoes && <div data-gc="perfil.cartao.profile-card-visual.div--9" className="mt-3 flex items-center gap-2">{acoes}</div>}
 
           {(mutualGuilds > 0 || mutualFriends > 0) && (
             <p data-gc="perfil.cartao.profile-card-visual.p--3" className="mt-2 text-xs text-ink-faint">
@@ -481,7 +491,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {onBio ? (
             editandoBio ? (
-              <div data-gc="perfil.cartao.profile-card-visual.div--9" className="mt-4">
+              <div data-gc="perfil.cartao.profile-card-visual.div--10" className="mt-4">
                 <textarea data-gc="perfil.cartao.profile-card-visual.textarea"
                   autoFocus
                   rows={3}
@@ -525,7 +535,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     : t("perfil.cartao.cargosCom", { quantidade: cargos.length })}
               </p>
 
-              <div data-gc="perfil.cartao.profile-card-visual.div--10" className="flex flex-wrap items-center gap-1.5">
+              <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-1.5">
                 {cargos.map((cargo) => (
                   <span data-gc="perfil.cartao.profile-card-visual.span--25"
                     key={cargo.id}
@@ -580,8 +590,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           {createdAt && (
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
-              <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
-                <span data-gc="perfil.cartao.profile-card-visual.span--28" className="flex items-center gap-1.5" title="Gravaê">
+              <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">
+                <span data-gc="perfil.cartao.profile-card-visual.span--28" className="flex items-start gap-1.5" title="Gravaê">
                   <img data-gc="perfil.cartao.profile-card-visual.img--3" src="/brand/logo%20g%20branco.svg" alt="" className="size-3.5 opacity-80" draggable={false} />
                   {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "medium" }).format(new Date(createdAt))}
                 </span>
@@ -598,6 +608,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
 
           {children}
+
+          {acoesDeBaixo && <div data-gc="perfil.cartao.profile-card-visual.div--13" className="mt-4 flex flex-col gap-2">{acoesDeBaixo}</div>}
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { ESCOPOS_OAUTH, PERMISSION_LABELS, ehEscopo, type EscopoOAuth, type Perm
 import { useBotDestinations } from "~/@core/application/queries/bot/use-bots";
 import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
+import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { Checkbox } from "~/components/ui/checkbox";
 import { CampoSelect } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
@@ -279,8 +280,9 @@ export const AutorizarApp: React.FC = () => {
 };
 
 const Moldura: React.FC<{ titulo: string; onFechar: () => void; children: React.ReactNode }> = ({ titulo, onFechar, children }) => (
-  <main data-gc="bot.autorizar-app.main" className="flex min-h-dvh items-center justify-center bg-surface-0 p-4">
-    <div data-gc="bot.autorizar-app.div--8" className={cn("w-full max-w-md rounded-lg bg-surface-1 shadow-2xl")}>
+  <main data-gc="bot.autorizar-app.main" className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-surface-0 p-4">
+    <FundoDaMarca data-gc="bot.autorizar-app.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+    <div data-gc="bot.autorizar-app.div--8" className={cn("relative w-full max-w-md rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil")}>
       <div data-gc="bot.autorizar-app.div--9" className="flex items-center justify-between border-b border-line px-5 py-4">
         <h1 data-gc="bot.autorizar-app.h1" className="text-base font-semibold">{titulo}</h1>
         <button data-gc="bot.autorizar-app.button.on-fechar" type="button" onClick={onFechar} aria-label="Fechar" className="text-ink-faint transition hover:text-ink">

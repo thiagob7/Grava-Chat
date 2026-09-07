@@ -11,6 +11,7 @@ import {
 } from "~/@core/application/queries/bot/use-bots";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { CampoSelect } from "~/components/ui/select";
 import { Label } from "~/components/ui/input";
 import { PERMISSION_LABELS } from "@gravae/shared";
@@ -155,7 +156,8 @@ const SemDestino: React.FC<{ onde?: DestinosDoBotModel }> = ({ onde }) => {
 };
 
 const Moldura: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <main data-gc="bot.adicionar-bot.main" className="flex min-h-dvh items-center justify-center bg-surface-0 p-4">
-    <div data-gc="bot.adicionar-bot.div--5" className="w-full max-w-md rounded-lg bg-surface-1 p-6 shadow-2xl">{children}</div>
+  <main data-gc="bot.adicionar-bot.main" className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-surface-0 p-4">
+    <FundoDaMarca data-gc="bot.adicionar-bot.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+    <div data-gc="bot.adicionar-bot.div--5" className="relative w-full max-w-md rounded-xl bg-surface-1 p-6 shadow-2xl ring-1 ring-line-sutil">{children}</div>
   </main>
 );
