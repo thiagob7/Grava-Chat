@@ -1,6 +1,6 @@
 import type { Message } from "@gravae/shared";
 
-import { prefsDeAviso } from "~/stores/notificacoes";
+import { prefsDeAviso, servidorSilenciado } from "~/stores/notificacoes";
 import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
 import { tocarSom } from "~/lib/ui-sounds";
 
@@ -25,6 +25,7 @@ export async function pedirPermissaoDeAviso(): Promise<PermissaoDeAviso> {
 }
 
 interface Contexto {
+  guildId?: string | null;
   message: Message;
   meuId: string | undefined;
   canalAberto: string | undefined;
@@ -60,12 +61,19 @@ export function avisarDeMensagem({
   ehDm,
   ignorado,
   onAbrir,
+  guildId,
 }: Contexto) {
   if (!meuId || message.author.id === meuId || ignorado) return;
 
   const prefs = prefsDeAviso();
   const doCanal = prefs.porCanal[message.channelId] ?? null;
   if (doCanal === "nada") return;
+
+  /// O servidor fala antes do canal: silenciado é silêncio, e "só menções" vale para todos os canais dele.
+  if (servidorSilenciado(prefs, guildId)) return;
+  const doServidor = guildId ? (prefs.porServidor[guildId]?.modo ?? null) : null;
+  if (doServidor === "nada") return;
+  if (doServidor === "mencoes" && !meMenciona) return;
   const emFoco = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();
   const lendoEsteCanal = emFoco && canalAberto === message.channelId;
 

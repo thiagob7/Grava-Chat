@@ -82,7 +82,7 @@ function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
   };
 }
 
-const ADMINS = new Set(
+export const ADMINS = new Set(
   env.ADMIN_EMAILS.split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean),

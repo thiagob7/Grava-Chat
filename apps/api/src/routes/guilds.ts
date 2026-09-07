@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
+import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
 import { emblemaService } from "~/services/emblema-service.js";
@@ -36,6 +37,23 @@ export async function guildRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     return guildService.detail(req.userId, guildId);
   });
+
+  app.post(
+    "/guilds/:guildId/denuncias",
+    { config: { rateLimit: { max: 3, timeWindow: "1 hour" } } },
+    async (req, reply) => {
+      const { guildId } = guildParams.parse(req.params);
+      const dados = z
+        .object({
+          motivo: z.enum(MOTIVOS_DE_DENUNCIA),
+          detalhes: z.string().trim().max(1000).optional(),
+        })
+        .parse(req.body);
+
+      const resultado = await denunciaService.denunciarServidor(req.userId, guildId, dados, req.log);
+      return reply.code(201).send(resultado);
+    },
+  );
 
   app.post("/guilds/:guildId/lidas", async (req) => {
     const { guildId } = guildParams.parse(req.params);

@@ -905,3 +905,16 @@ model Tema {
 
   @@index([autorId])
 }
+
+/// Uma denúncia de comunidade. Quem administra o app recebe o aviso pela
+/// conta da casa; o registro fica para consulta.
+model Denuncia {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildId   String   @db.ObjectId
+  autorId   String   @db.ObjectId
+  motivo    String
+  detalhes  String?
+  createdAt DateTime @default(now())
+
+  @@index([guildId])
+}

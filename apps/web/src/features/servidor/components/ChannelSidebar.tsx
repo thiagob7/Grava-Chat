@@ -36,6 +36,7 @@ import { copiarTexto } from "~/lib/copiar";
 import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { useAvisos } from "~/stores/notificacoes";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
@@ -77,6 +78,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
   const [collapsed, setCollapsed] = useCategoriasFechadas();
   const { t } = useTranslation();
+  const porCanal = useAvisos((s) => s.porCanal);
+  const esconderSilenciados = useAvisos((s) => (detail ? (s.porServidor[detail.guild.id]?.esconderSilenciados ?? false) : false));
   const rolador = useRef<HTMLDivElement>(null);
   const [foraDaVista, setForaDaVista] = useState({ acima: false, abaixo: false });
 
@@ -374,6 +377,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                   {!isCollapsed &&
                     group.channels.map((channel) => {
                       const active = channel.id === activeChannelId;
+                      if (!active && esconderSilenciados && porCanal[channel.id] === "nada") return null;
                       const leitura = readStates[channel.id];
                       const unread =
                         !active &&

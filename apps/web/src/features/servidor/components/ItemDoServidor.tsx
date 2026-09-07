@@ -9,6 +9,7 @@ import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { MenuDoServidor } from "~/features/servidor/components/MenuDoServidor";
 import type { Destino } from "~/features/servidor/lib/trilho";
 import { avatarColor, initials } from "~/lib/format";
+import { servidorSilenciado, useAvisos } from "~/stores/notificacoes";
 import { cn } from "~/lib/utils";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 
@@ -67,7 +68,8 @@ export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
 
   const transmitindo = vozes.some((canal) => canal.transmitindo);
   const naChamada = vozes.reduce((total, canal) => total + canal.pessoas.length, 0);
-  const temNovidade = !active && naoLidas > 0;
+  const silenciado = useAvisos((s) => servidorSilenciado(s, guild.id));
+  const temNovidade = !active && naoLidas > 0 && !silenciado;
 
   const arrastando = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
 
@@ -135,6 +137,7 @@ export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
                 ? cn("rounded-2xl bg-brand", flxCls("iconeDoServidorAtivo"))
                 : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
               zona === "juntar" && !pastaId && "ring-2 ring-brand ring-offset-2 ring-offset-surface-1",
+              silenciado && !active && "opacity-60",
             )}
             style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
           >

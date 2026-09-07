@@ -2,12 +2,20 @@ import { create } from "zustand";
 
 export type ModoDoCanal = "tudo" | "mencoes" | "nada";
 
+/// O que a pessoa decidiu para um servidor inteiro. `silenciadoAte` em -1 é "até eu reativar".
+export interface PrefsDoServidor {
+  modo: ModoDoCanal | null;
+  silenciadoAte: number | null;
+  esconderSilenciados: boolean;
+}
+
 export interface PrefsDeAviso {
   aviso: boolean;
   soMencoes: boolean;
   som: boolean;
   contador: boolean;
   porCanal: Record<string, ModoDoCanal>;
+  porServidor: Record<string, PrefsDoServidor>;
   sonsDesligados: Record<string, boolean>;
 }
 
@@ -17,6 +25,7 @@ const PADRAO: PrefsDeAviso = {
   som: true,
   contador: true,
   porCanal: {},
+  porServidor: {},
   sonsDesligados: {},
 };
 
@@ -34,6 +43,7 @@ function ler(): PrefsDeAviso {
 interface StoreDeAvisos extends PrefsDeAviso {
   definir: (mudanca: Partial<PrefsDeAviso>) => void;
   definirCanal: (channelId: string, modo: ModoDoCanal | null) => void;
+  definirServidor: (guildId: string, mudanca: Partial<PrefsDoServidor>) => void;
   definirSom: (nome: string, ligado: boolean) => void;
 }
 
@@ -44,9 +54,10 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
     set(mudanca);
 
     try {
-      const { definir, definirCanal, definirSom, ...prefs } = store();
+      const { definir, definirCanal, definirServidor, definirSom, ...prefs } = store();
       void definir;
       void definirCanal;
+      void definirServidor;
       void definirSom;
       localStorage.setItem(CHAVE, JSON.stringify(prefs));
     } catch {
@@ -61,6 +72,11 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
 
     store().definir({ sonsDesligados });
   },
+  definirServidor: (guildId, mudanca) => {
+    const atual = store().porServidor[guildId] ?? { modo: null, silenciadoAte: null, esconderSilenciados: false };
+    store().definir({ porServidor: { ...store().porServidor, [guildId]: { ...atual, ...mudanca } } });
+  },
+
   definirCanal: (channelId, modo) => {
     const porCanal = { ...store().porCanal };
 
@@ -70,6 +86,13 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
     store().definir({ porCanal });
   },
 }));
+
+/// Se o servidor está silenciado agora: para sempre (-1) ou até um instante que ainda não chegou.
+export const servidorSilenciado = (prefs: Pick<PrefsDeAviso, "porServidor">, guildId: string | null | undefined): boolean => {
+  if (!guildId) return false;
+  const ate = prefs.porServidor[guildId]?.silenciadoAte ?? null;
+  return ate === -1 || (ate !== null && ate > Date.now());
+};
 
 export const modoDoCanal = (channelId: string): ModoDoCanal | null =>
   useAvisos.getState().porCanal[channelId] ?? null;

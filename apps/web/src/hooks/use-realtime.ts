@@ -346,6 +346,7 @@ export function useRealtime(
         meMenciona,
         nomeDoCanal: lugar?.canal.name,
         ehDm: !lugar,
+        guildId: lugar?.detalhe.guild.id ?? null,
         ignorado: useIgnoreStore.getState().estaIgnorado(message.author.id),
         onAbrir: () =>
           navigate(
