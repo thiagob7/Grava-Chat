@@ -335,6 +335,15 @@
   }
 
   /*
+    O fundo de tudo é o `body`, e está numa camada de propósito: um tema que
+    escreva `html, body { background }` fora de camada vence isto — é assim que
+    a nebulosa do Galaxy aparece por trás dos painéis transparentes.
+  */
+  body {
+    background: var(--color-surface-0);
+  }
+
+  /*
     O anel de 1px em volta do app é a nossa moldura de fora — o que na referência
     é o `OutlineFrame`. Vivia no `#app`, sem nome, e por isso nenhum tema
     conseguia apagá-lo: ficava por baixo do contorno que o tema desenha.
@@ -354,8 +363,16 @@
 
     Sem tema não muda nada: tudo o que fica por cima já é opaco.
   */
+  /*
+    A moldura NÃO pinta fundo. Ela chegou a pintar `surface-2`, para que uma
+    coluna transparente mostrasse a moldura em vez do `body`. Só que é no
+    `body` que um tema de fundo desenha a nebulosa — o Galaxy pinta
+    `html, body` e deixa os painéis transparentes de propósito — e a moldura
+    opaca tapava tudo isso com um retângulo do tamanho da tela.
+
+    Cada painel pinta o seu próprio fundo; o que fica entre eles é o `body`.
+  */
   .moldura-externa {
-    background: var(--color-surface-2);
     box-shadow: inset 0 0 0 1px var(--color-divisor);
   }
 

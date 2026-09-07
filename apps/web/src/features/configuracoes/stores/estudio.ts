@@ -18,7 +18,6 @@ import {
 } from "~/features/configuracoes/lib/escudo-do-estudio";
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import {
-  deveTraduzir,
   traduzirSeletoresTravados,
 } from "~/features/configuracoes/lib/normalizar-tema";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
@@ -249,7 +248,18 @@ function aplicar(estado: EstadoDoEstudio) {
   */
   const doAtivo = estado.biblioteca.find((t) => t.id === estado.ativoId);
   const escolha = doAtivo ? doAtivo.aRisca : estado.aRisca;
-  const aRisca = escolha ?? !deveTraduzir(estado.css);
+
+  /*
+    Traduzir é o padrão, sempre. A conta dos 70% decidia "à risca" para tema
+    com pouco hash — e foi assim que o Galaxy ficou meses sem pintar a lateral:
+    as cinco regras presas a hash dele eram justamente a lateral e o trilho.
+
+    Traduzir nunca tira uma regra que pousaria: um hash nunca casa com o nosso
+    `_gc`, e um `div` na frente só deixa de casar com `aside`, `nav`, `header`.
+    A chave "à risca" continua existindo para quem quiser, mas é escolha, não
+    padrão. O `deveTraduzir` fica só para o estúdio mostrar o custo.
+  */
+  const aRisca = escolha ?? false;
 
   const resolvido = resolverAtivos(
     aRisca ? estado.css : traduzirSeletoresTravados(estado.css),
