@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "開啟社群",
     recusar: "不用了，謝謝",
   },
+  pasta: {
+    marcarLida: "將資料夾標示為已讀",
+    configuracoes: "資料夾設定",
+    desfazer: "解散資料夾",
+    titulo: "資料夾",
+    nome: "名稱",
+    semNome: "未命名",
+    cor: "顏色",
+    semCor: "無顏色",
+    salvar: "儲存",
+  },
   selos: {
     verificada: "已驗證社群",
     detectavel: "可探索社群",

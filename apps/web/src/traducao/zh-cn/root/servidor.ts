@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "打开社区",
     recusar: "不用了，谢谢",
   },
+  pasta: {
+    marcarLida: "将文件夹标记为已读",
+    configuracoes: "文件夹设置",
+    desfazer: "解散文件夹",
+    titulo: "文件夹",
+    nome: "名称",
+    semNome: "未命名",
+    cor: "颜色",
+    semCor: "无颜色",
+    salvar: "保存",
+  },
   selos: {
     verificada: "已验证社区",
     detectavel: "可发现社区",

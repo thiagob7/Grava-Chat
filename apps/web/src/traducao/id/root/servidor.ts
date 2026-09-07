@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Buka komunitas",
     recusar: "Tidak, terima kasih",
   },
+  pasta: {
+    marcarLida: "Tandai folder sudah dibaca",
+    configuracoes: "Pengaturan folder",
+    desfazer: "Bubarkan folder",
+    titulo: "Folder",
+    nome: "Nama",
+    semNome: "Tanpa nama",
+    cor: "Warna",
+    semCor: "Tanpa warna",
+    salvar: "Simpan",
+  },
   selos: {
     verificada: "Komunitas terverifikasi",
     detectavel: "Komunitas dapat ditemukan",

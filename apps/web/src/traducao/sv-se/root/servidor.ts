@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Öppna communityn",
     recusar: "Nej tack",
   },
+  pasta: {
+    marcarLida: "Markera mapp som läst",
+    configuracoes: "Mappinställningar",
+    desfazer: "Upplös mapp",
+    titulo: "Mapp",
+    nome: "Namn",
+    semNome: "Utan namn",
+    cor: "Färg",
+    semCor: "Ingen färg",
+    salvar: "Spara",
+  },
   selos: {
     verificada: "Verifierad community",
     detectavel: "Upptäckbar community",

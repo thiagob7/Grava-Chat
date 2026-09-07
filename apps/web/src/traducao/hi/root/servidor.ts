@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "समुदाय खोलें",
     recusar: "नहीं, धन्यवाद",
   },
+  pasta: {
+    marcarLida: "फ़ोल्डर को पढ़ा हुआ चिह्नित करें",
+    configuracoes: "फ़ोल्डर सेटिंग्स",
+    desfazer: "फ़ोल्डर हटाएँ",
+    titulo: "फ़ोल्डर",
+    nome: "नाम",
+    semNome: "बिना नाम",
+    cor: "रंग",
+    semCor: "कोई रंग नहीं",
+    salvar: "सहेजें",
+  },
   selos: {
     verificada: "सत्यापित समुदाय",
     detectavel: "खोजने योग्य समुदाय",

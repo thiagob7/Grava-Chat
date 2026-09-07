@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Open community",
     recusar: "No, thanks",
   },
+  pasta: {
+    marcarLida: "Mark folder as read",
+    configuracoes: "Folder settings",
+    desfazer: "Ungroup folder",
+    titulo: "Folder",
+    nome: "Name",
+    semNome: "No name",
+    cor: "Colour",
+    semCor: "No colour",
+    salvar: "Save",
+  },
   selos: {
     verificada: "Verified community",
     detectavel: "Discoverable community",

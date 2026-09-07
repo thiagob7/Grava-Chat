@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Otvori zajednicu",
     recusar: "Ne, hvala",
   },
+  pasta: {
+    marcarLida: "Označi mapu kao pročitanu",
+    configuracoes: "Postavke mape",
+    desfazer: "Rastavi mapu",
+    titulo: "Mapa",
+    nome: "Naziv",
+    semNome: "Bez naziva",
+    cor: "Boja",
+    semCor: "Bez boje",
+    salvar: "Spremi",
+  },
   selos: {
     verificada: "Provjerena zajednica",
     detectavel: "Vidljiva zajednica",

@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Atidaryti bendruomenę",
     recusar: "Ne, ačiū",
   },
+  pasta: {
+    marcarLida: "Pažymėti aplanką kaip perskaitytą",
+    configuracoes: "Aplanko nustatymai",
+    desfazer: "Išardyti aplanką",
+    titulo: "Aplankas",
+    nome: "Pavadinimas",
+    semNome: "Be pavadinimo",
+    cor: "Spalva",
+    semCor: "Be spalvos",
+    salvar: "Išsaugoti",
+  },
   selos: {
     verificada: "Patvirtinta bendruomenė",
     detectavel: "Aptinkama bendruomenė",

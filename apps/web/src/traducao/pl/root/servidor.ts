@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Otwórz społeczność",
     recusar: "Nie, dzięki",
   },
+  pasta: {
+    marcarLida: "Oznacz folder jako przeczytany",
+    configuracoes: "Ustawienia folderu",
+    desfazer: "Rozgrupuj folder",
+    titulo: "Folder",
+    nome: "Nazwa",
+    semNome: "Bez nazwy",
+    cor: "Kolor",
+    semCor: "Bez koloru",
+    salvar: "Zapisz",
+  },
   selos: {
     verificada: "Zweryfikowana społeczność",
     detectavel: "Wykrywalna społeczność",

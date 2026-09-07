@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "فتح المجتمع",
     recusar: "لا، شكرًا",
   },
+  pasta: {
+    marcarLida: "وضع علامة على المجلد كمقروء",
+    configuracoes: "إعدادات المجلد",
+    desfazer: "فك المجلد",
+    titulo: "المجلد",
+    nome: "الاسم",
+    semNome: "بدون اسم",
+    cor: "اللون",
+    semCor: "بدون لون",
+    salvar: "حفظ",
+  },
   selos: {
     verificada: "مجتمع موثّق",
     detectavel: "مجتمع قابل للاكتشاف",

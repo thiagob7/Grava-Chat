@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Ouvrir la communauté",
     recusar: "Non merci",
   },
+  pasta: {
+    marcarLida: "Marquer le dossier comme lu",
+    configuracoes: "Paramètres du dossier",
+    desfazer: "Dissoudre le dossier",
+    titulo: "Dossier",
+    nome: "Nom",
+    semNome: "Sans nom",
+    cor: "Couleur",
+    semCor: "Sans couleur",
+    salvar: "Enregistrer",
+  },
   selos: {
     verificada: "Communauté vérifiée",
     detectavel: "Communauté visible",

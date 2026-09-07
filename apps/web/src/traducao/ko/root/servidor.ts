@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "커뮤니티 열기",
     recusar: "아니요, 괜찮아요",
   },
+  pasta: {
+    marcarLida: "폴더를 읽음으로 표시",
+    configuracoes: "폴더 설정",
+    desfazer: "폴더 해제",
+    titulo: "폴더",
+    nome: "이름",
+    semNome: "이름 없음",
+    cor: "색상",
+    semCor: "색상 없음",
+    salvar: "저장",
+  },
   selos: {
     verificada: "인증된 커뮤니티",
     detectavel: "검색 가능한 커뮤니티",

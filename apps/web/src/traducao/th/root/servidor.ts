@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "เปิดชุมชน",
     recusar: "ไม่ล่ะ ขอบคุณ",
   },
+  pasta: {
+    marcarLida: "ทำเครื่องหมายโฟลเดอร์ว่าอ่านแล้ว",
+    configuracoes: "การตั้งค่าโฟลเดอร์",
+    desfazer: "ยกเลิกโฟลเดอร์",
+    titulo: "โฟลเดอร์",
+    nome: "ชื่อ",
+    semNome: "ไม่มีชื่อ",
+    cor: "สี",
+    semCor: "ไม่มีสี",
+    salvar: "บันทึก",
+  },
   selos: {
     verificada: "ชุมชนที่ยืนยันแล้ว",
     detectavel: "ชุมชนที่ค้นพบได้",

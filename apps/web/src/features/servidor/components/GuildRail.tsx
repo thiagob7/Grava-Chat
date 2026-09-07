@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { ArrowDownToLine, Compass, Download, Plus, RotateCw } from "lucide-react";
-import { Headphones, MonitorPlay } from "@phosphor-icons/react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
-import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { AdicionarServidorModal } from "~/features/servidor/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
-import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
 import { InviteModal } from "~/features/servidor/components/InviteModal";
-import { MenuDoServidor } from "~/features/servidor/components/MenuDoServidor";
+import { ItemDoServidor, TIPO_DE_ARRASTO } from "~/features/servidor/components/ItemDoServidor";
+import { PastaDoTrilho } from "~/features/servidor/components/PastaDoTrilho";
+import { montarTrilho, type Destino } from "~/features/servidor/lib/trilho";
+import { usePastas } from "~/features/servidor/stores/pastas";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
 import { desktop, ehDesktop } from "~/lib/desktop";
 import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
@@ -40,6 +40,11 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const { t } = useTranslation();
   const { data: guilds = [] } = useFindManyGuilds(true);
   const [convidandoEm, setConvidandoEm] = useState<string | null>(null);
+  const arrumacao = usePastas((s) => s.arrumacao);
+  const mover = usePastas((s) => s.mover);
+  const [soltandoNoFim, setSoltandoNoFim] = useState(false);
+  const itens = montarTrilho(guilds, arrumacao);
+  const soltar = (guildId: string, destino: Destino) => mover(guilds.map((g) => g.id), guildId, destino);
   const { data: porServidor = {} } = useReadStatesPorServidor(true);
   const { data: vozes = {} } = useVoiceStates(true);
   const [creating, setCreating] = useState(false);
@@ -97,98 +102,56 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
         <div data-gc="servidor.guild-rail.div--6" {...flx("secaoDeServidores", "flex w-full flex-col items-center gap-2")}>
 
-        {guilds.map((guild) => {
-          const active = guild.id === activeGuildId;
-          const { naoLidas = 0, mencoes = 0 } = porServidor[guild.id] ?? {};
-          const emVoz = vozes[guild.id] ?? [];
-          const transmitindo = emVoz.some((canal) => canal.transmitindo);
-          const naChamada = emVoz.reduce((total, canal) => total + canal.pessoas.length, 0);
+        {/*
+          O trilho como a pessoa arrumou: servidores soltos e pastas. Arrastar um
+          servidor em cima de outro faz pasta; em cima de uma pasta, entra nela;
+          entre dois, muda de lugar. Soltar no vão do fim tira de qualquer pasta.
+        */}
+        {itens.map((item) =>
+          item.tipo === "pasta" ? (
+            <PastaDoTrilho data-gc="servidor.guild-rail.pasta-do-trilho.on-select"
+              key={`pasta:${item.pasta.id}`}
+              pasta={item.pasta}
+              guilds={item.guilds}
+              activeGuildId={activeGuildId}
+              porServidor={porServidor}
+              vozes={vozes}
+              onSelect={onSelect}
+              onConvidar={setConvidandoEm}
+              onSoltar={soltar}
+            />
+          ) : (
+            <ItemDoServidor data-gc="servidor.guild-rail.item-do-servidor.on-select"
+              key={item.guild.id}
+              guild={item.guild}
+              active={item.guild.id === activeGuildId}
+              naoLidas={porServidor[item.guild.id]?.naoLidas ?? 0}
+              mencoes={porServidor[item.guild.id]?.mencoes ?? 0}
+              vozes={vozes[item.guild.id] ?? []}
+              onSelect={onSelect}
+              onConvidar={() => setConvidandoEm(item.guild.id)}
+              onSoltar={soltar}
+            />
+          ),
+        )}
 
-          const temNovidade = !active && naoLidas > 0;
-
-          return (
-            <MenuDoServidor data-gc="servidor.guild-rail.menu-do-servidor" key={guild.id} guild={guild} onConvidar={() => setConvidandoEm(guild.id)}>
-            <div data-gc="servidor.guild-rail.div--7" className="group relative flex w-full justify-center">
-              <span data-gc="servidor.guild-rail.span--3"
-                {...flxAttr("pilulaDoServidor")}
-                className={cn(
-                  flxCls("pilulaDoServidor"),
-                  "absolute left-0 top-1/2 w-1 -translate-y-1/2 transition-all",
-                  active ? "h-10" : temNovidade ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
-                )}
-              >
-                <span data-gc="servidor.guild-rail.span--4"
-                  {...flxAttr("barraDaPilulaDoServidor")}
-                  className={cn(flxCls("barraDaPilulaDoServidor"), "block size-full rounded-r-full bg-pilula")}
-                />
-              </span>
-              <DicaDoServidor data-gc="servidor.guild-rail.dica-do-servidor" nome={guild.name} verificada={guild.verificada} detectavel={guild.detectavel} vozes={vozes[guild.id] ?? []}>
-                {/*
-                  Link, e não botão — a mesma decisão que a referência tomou.
-
-                  Lá o ícone de servidor é um elemento próprio
-                  (`<flx-app-guild-list-item-icon>`), enquanto o de amigos, o
-                  `+`, a bússola e o download são `<button>` de verdade. Isso
-                  não é detalhe: um tema muito comum escreve
-                  `button { border-radius: 12px }` — o Galaxy escreve — e lá a
-                  regra pega só nos quatro de cima. Os servidores ficam com a
-                  forma deles.
-
-                  Aqui os servidores eram `<button>` e levavam a regra junto,
-                  virando quadradinho com o mesmo salto no hover. Como isto
-                  navega para `/channels/:id`, link é o que ele sempre foi — e
-                  de brinde ganha abrir em aba nova.
-                */}
-                <Link data-gc="servidor.guild-rail.link"
-                  to={`/channels/${guild.id}`}
-                  onClick={() => onSelect(guild.id)}
-                  className={cn(
-                    flxCls("iconeDoServidor"),
-                    "flex size-[var(--guild-icon-size)] items-center justify-center overflow-hidden font-semibold transition-all duration-200 ease-out active:translate-y-px active:scale-95",
-                    active
-                      ? cn("rounded-2xl bg-brand", flxCls("iconeDoServidorAtivo"))
-                      : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
-                  )}
-                  style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
-                >
-                  {guild.iconUrl ? (
-                    <img data-gc="servidor.guild-rail.img--2" src={guild.iconUrl} alt={guild.name} className="size-full object-cover" />
-                  ) : (
-                    initials(guild.name)
-                  )}
-                </Link>
-              </DicaDoServidor>
-
-              {naChamada > 0 && (
-                <span data-gc="servidor.guild-rail.span--5"
-                  title={
-                    transmitindo
-                      ? t("servidor.trilho.transmitindo")
-                      : t("servidor.trilho.emChamada", { count: naChamada })
-                  }
-                  className="pointer-events-none absolute -top-0.5 right-2 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-surface-0 text-ink"
-                >
-                  {transmitindo ? (
-                    <MonitorPlay data-gc="servidor.guild-rail.monitor-play" size={11} weight="fill" />
-                  ) : (
-                    <Headphones data-gc="servidor.guild-rail.headphones" size={11} weight="fill" />
-                  )}
-                </span>
-              )}
-
-              {mencoes > 0 && (
-                <span data-gc="servidor.guild-rail.span--6"
-                  title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
-                  className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-sobre-marca"
-                >
-                  {mencoes > 99 ? "99+" : mencoes}
-                </span>
-              )}
-            </div>
-            </MenuDoServidor>
-          );
-        })}
-
+        <div data-gc="servidor.guild-rail.div--7"
+          aria-hidden
+          className={cn("h-2 w-full transition-all", soltandoNoFim && "h-6")}
+          onDragOver={(e) => {
+            if (!e.dataTransfer.types.includes(TIPO_DE_ARRASTO)) return;
+            e.preventDefault();
+            setSoltandoNoFim(true);
+          }}
+          onDragLeave={() => setSoltandoNoFim(false)}
+          onDrop={(e) => {
+            const arrastado = e.dataTransfer.getData(TIPO_DE_ARRASTO);
+            setSoltandoNoFim(false);
+            if (!arrastado) return;
+            e.preventDefault();
+            soltar(arrastado, { tipo: "fim" });
+          }}
+        />
         </div>
 
         {guilds.length > 0 && (
@@ -255,7 +218,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 )}
 
                 {atualizacao.pronta && (
-                  <span data-gc="servidor.guild-rail.span--7" className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
+                  <span data-gc="servidor.guild-rail.span--3" className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
                 )}
               </button>
             </Tooltip>

@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Topluluğu aç",
     recusar: "Hayır, teşekkürler",
   },
+  pasta: {
+    marcarLida: "Klasörü okundu olarak işaretle",
+    configuracoes: "Klasör ayarları",
+    desfazer: "Klasörü dağıt",
+    titulo: "Klasör",
+    nome: "Ad",
+    semNome: "Adsız",
+    cor: "Renk",
+    semCor: "Renksiz",
+    salvar: "Kaydet",
+  },
   selos: {
     verificada: "Doğrulanmış topluluk",
     detectavel: "Keşfedilebilir topluluk",

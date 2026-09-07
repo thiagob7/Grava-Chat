@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Avaa yhteisö",
     recusar: "Ei kiitos",
   },
+  pasta: {
+    marcarLida: "Merkitse kansio luetuksi",
+    configuracoes: "Kansion asetukset",
+    desfazer: "Pura kansio",
+    titulo: "Kansio",
+    nome: "Nimi",
+    semNome: "Ei nimeä",
+    cor: "Väri",
+    semCor: "Ei väriä",
+    salvar: "Tallenna",
+  },
   selos: {
     verificada: "Vahvistettu yhteisö",
     detectavel: "Löydettävä yhteisö",

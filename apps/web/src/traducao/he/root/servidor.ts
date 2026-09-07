@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "פתיחת הקהילה",
     recusar: "לא, תודה",
   },
+  pasta: {
+    marcarLida: "סמן תיקייה כנקראה",
+    configuracoes: "הגדרות התיקייה",
+    desfazer: "פירוק התיקייה",
+    titulo: "תיקייה",
+    nome: "שם",
+    semNome: "ללא שם",
+    cor: "צבע",
+    semCor: "ללא צבע",
+    salvar: "שמירה",
+  },
   selos: {
     verificada: "קהילה מאומתת",
     detectavel: "קהילה ניתנת לגילוי",

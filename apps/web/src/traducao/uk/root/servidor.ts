@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Відкрити спільноту",
     recusar: "Ні, дякую",
   },
+  pasta: {
+    marcarLida: "Позначити папку як прочитану",
+    configuracoes: "Налаштування папки",
+    desfazer: "Розгрупувати папку",
+    titulo: "Папка",
+    nome: "Назва",
+    semNome: "Без назви",
+    cor: "Колір",
+    semCor: "Без кольору",
+    salvar: "Зберегти",
+  },
   selos: {
     verificada: "Перевірена спільнота",
     detectavel: "Спільнота, яку можна знайти",

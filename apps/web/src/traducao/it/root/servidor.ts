@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Apri la community",
     recusar: "No, grazie",
   },
+  pasta: {
+    marcarLida: "Segna cartella come letta",
+    configuracoes: "Impostazioni cartella",
+    desfazer: "Sciogli cartella",
+    titulo: "Cartella",
+    nome: "Nome",
+    semNome: "Senza nome",
+    cor: "Colore",
+    semCor: "Nessun colore",
+    salvar: "Salva",
+  },
   selos: {
     verificada: "Community verificata",
     detectavel: "Community individuabile",

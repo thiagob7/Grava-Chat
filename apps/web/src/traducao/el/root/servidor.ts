@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Άνοιγμα κοινότητας",
     recusar: "Όχι, ευχαριστώ",
   },
+  pasta: {
+    marcarLida: "Σήμανση φακέλου ως αναγνωσμένου",
+    configuracoes: "Ρυθμίσεις φακέλου",
+    desfazer: "Διάλυση φακέλου",
+    titulo: "Φάκελος",
+    nome: "Όνομα",
+    semNome: "Χωρίς όνομα",
+    cor: "Χρώμα",
+    semCor: "Χωρίς χρώμα",
+    salvar: "Αποθήκευση",
+  },
   selos: {
     verificada: "Επαληθευμένη κοινότητα",
     detectavel: "Ανιχνεύσιμη κοινότητα",

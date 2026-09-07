@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Community öffnen",
     recusar: "Nein, danke",
   },
+  pasta: {
+    marcarLida: "Ordner als gelesen markieren",
+    configuracoes: "Ordnereinstellungen",
+    desfazer: "Ordner auflösen",
+    titulo: "Ordner",
+    nome: "Name",
+    semNome: "Ohne Namen",
+    cor: "Farbe",
+    semCor: "Keine Farbe",
+    salvar: "Speichern",
+  },
   selos: {
     verificada: "Verifizierte Community",
     detectavel: "Auffindbare Community",

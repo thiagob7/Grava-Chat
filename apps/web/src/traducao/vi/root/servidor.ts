@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Mở cộng đồng",
     recusar: "Không, cảm ơn",
   },
+  pasta: {
+    marcarLida: "Đánh dấu thư mục đã đọc",
+    configuracoes: "Cài đặt thư mục",
+    desfazer: "Bỏ nhóm thư mục",
+    titulo: "Thư mục",
+    nome: "Tên",
+    semNome: "Không tên",
+    cor: "Màu",
+    semCor: "Không màu",
+    salvar: "Lưu",
+  },
   selos: {
     verificada: "Cộng đồng đã xác minh",
     detectavel: "Cộng đồng có thể khám phá",

@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Åpne fellesskapet",
     recusar: "Nei takk",
   },
+  pasta: {
+    marcarLida: "Merk mappe som lest",
+    configuracoes: "Mappeinnstillinger",
+    desfazer: "Løs opp mappe",
+    titulo: "Mappe",
+    nome: "Navn",
+    semNome: "Uten navn",
+    cor: "Farge",
+    semCor: "Ingen farge",
+    salvar: "Lagre",
+  },
   selos: {
     verificada: "Verifisert fellesskap",
     detectavel: "Synlig fellesskap",

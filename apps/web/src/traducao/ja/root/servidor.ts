@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "コミュニティを開く",
     recusar: "いいえ、結構です",
   },
+  pasta: {
+    marcarLida: "フォルダを既読にする",
+    configuracoes: "フォルダの設定",
+    desfazer: "フォルダを解除",
+    titulo: "フォルダ",
+    nome: "名前",
+    semNome: "名前なし",
+    cor: "色",
+    semCor: "色なし",
+    salvar: "保存",
+  },
   selos: {
     verificada: "認証済みコミュニティ",
     detectavel: "検出可能なコミュニティ",

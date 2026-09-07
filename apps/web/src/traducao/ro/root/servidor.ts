@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Deschide comunitatea",
     recusar: "Nu, mulțumesc",
   },
+  pasta: {
+    marcarLida: "Marchează dosarul ca citit",
+    configuracoes: "Setările dosarului",
+    desfazer: "Desfă dosarul",
+    titulo: "Dosar",
+    nome: "Nume",
+    semNome: "Fără nume",
+    cor: "Culoare",
+    semCor: "Fără culoare",
+    salvar: "Salvează",
+  },
   selos: {
     verificada: "Comunitate verificată",
     detectavel: "Comunitate descoperibilă",

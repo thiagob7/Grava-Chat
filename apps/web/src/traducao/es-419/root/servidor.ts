@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Abrir comunidad",
     recusar: "No, gracias",
   },
+  pasta: {
+    marcarLida: "Marcar carpeta como leída",
+    configuracoes: "Configuración de la carpeta",
+    desfazer: "Deshacer carpeta",
+    titulo: "Carpeta",
+    nome: "Nombre",
+    semNome: "Sin nombre",
+    cor: "Color",
+    semCor: "Sin color",
+    salvar: "Guardar",
+  },
   selos: {
     verificada: "Comunidad verificada",
     detectavel: "Comunidad detectable",

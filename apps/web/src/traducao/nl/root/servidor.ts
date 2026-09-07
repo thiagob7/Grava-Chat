@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Community openen",
     recusar: "Nee, bedankt",
   },
+  pasta: {
+    marcarLida: "Map markeren als gelezen",
+    configuracoes: "Mapinstellingen",
+    desfazer: "Map opheffen",
+    titulo: "Map",
+    nome: "Naam",
+    semNome: "Geen naam",
+    cor: "Kleur",
+    semCor: "Geen kleur",
+    salvar: "Opslaan",
+  },
   selos: {
     verificada: "Geverifieerde community",
     detectavel: "Vindbare community",

@@ -22,6 +22,17 @@ export const servidor = {
     abrir: "Abrir a comunidade",
     recusar: "Não, valeu",
   },
+  pasta: {
+    marcarLida: "Marcar pasta como lida",
+    configuracoes: "Configurações da pasta",
+    desfazer: "Desfazer pasta",
+    titulo: "Pasta",
+    nome: "Nome",
+    semNome: "Sem nome",
+    cor: "Cor",
+    semCor: "Sem cor",
+    salvar: "Salvar",
+  },
   selos: {
     verificada: "Comunidade verificada",
     detectavel: "Comunidade detectável",

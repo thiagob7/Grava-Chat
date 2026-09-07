@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Открыть сообщество",
     recusar: "Нет, спасибо",
   },
+  pasta: {
+    marcarLida: "Отметить папку как прочитанную",
+    configuracoes: "Настройки папки",
+    desfazer: "Разгруппировать папку",
+    titulo: "Папка",
+    nome: "Название",
+    semNome: "Без названия",
+    cor: "Цвет",
+    semCor: "Без цвета",
+    salvar: "Сохранить",
+  },
   selos: {
     verificada: "Проверенное сообщество",
     detectavel: "Обнаруживаемое сообщество",

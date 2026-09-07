@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Otevřít komunitu",
     recusar: "Ne, díky",
   },
+  pasta: {
+    marcarLida: "Označit složku jako přečtenou",
+    configuracoes: "Nastavení složky",
+    desfazer: "Zrušit složku",
+    titulo: "Složka",
+    nome: "Název",
+    semNome: "Bez názvu",
+    cor: "Barva",
+    semCor: "Bez barvy",
+    salvar: "Uložit",
+  },
   selos: {
     verificada: "Ověřená komunita",
     detectavel: "Objevitelná komunita",

@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Отвори общността",
     recusar: "Не, благодаря",
   },
+  pasta: {
+    marcarLida: "Маркирай папката като прочетена",
+    configuracoes: "Настройки на папката",
+    desfazer: "Разгрупирай папката",
+    titulo: "Папка",
+    nome: "Име",
+    semNome: "Без име",
+    cor: "Цвят",
+    semCor: "Без цвят",
+    salvar: "Запази",
+  },
   selos: {
     verificada: "Проверена общност",
     detectavel: "Откриваема общност",

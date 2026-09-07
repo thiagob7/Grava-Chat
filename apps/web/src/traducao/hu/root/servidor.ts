@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Közösség megnyitása",
     recusar: "Nem, köszönöm",
   },
+  pasta: {
+    marcarLida: "Mappa megjelölése olvasottként",
+    configuracoes: "Mappa beállításai",
+    desfazer: "Mappa feloldása",
+    titulo: "Mappa",
+    nome: "Név",
+    semNome: "Nincs név",
+    cor: "Szín",
+    semCor: "Nincs szín",
+    salvar: "Mentés",
+  },
   selos: {
     verificada: "Ellenőrzött közösség",
     detectavel: "Felfedezhető közösség",

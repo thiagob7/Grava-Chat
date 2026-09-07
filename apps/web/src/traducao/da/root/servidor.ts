@@ -21,6 +21,17 @@ export const servidor = {
     abrir: "Åbn fællesskabet",
     recusar: "Nej tak",
   },
+  pasta: {
+    marcarLida: "Markér mappe som læst",
+    configuracoes: "Mappeindstillinger",
+    desfazer: "Opløs mappe",
+    titulo: "Mappe",
+    nome: "Navn",
+    semNome: "Uden navn",
+    cor: "Farve",
+    semCor: "Ingen farve",
+    salvar: "Gem",
+  },
   selos: {
     verificada: "Verificeret fællesskab",
     detectavel: "Synligt fællesskab",
