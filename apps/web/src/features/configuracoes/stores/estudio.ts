@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import existeNaReferencia from "~/features/configuracoes/lib/existe-na-referencia.json";
+
 import { lerCabecalhoDoTema } from "@gravae/shared";
 
 import {
@@ -19,6 +21,7 @@ import {
 import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
 import {
   traduzirSeletoresTravados,
+  filtrarRegrasMortas,
 } from "~/features/configuracoes/lib/normalizar-tema";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
 import {
@@ -49,6 +52,8 @@ export interface TemaSalvo {
     `false` quando alguém mexe na chave, e aí a escolha manda.
   */
   aRisca?: boolean | null;
+  /// Só as regras que pegam no app da referência hoje. `null` = o padrão do app (ligado).
+  soOQueExisteLa?: boolean | null;
 }
 
 export interface AtivoDoTema {
@@ -84,6 +89,7 @@ interface EstadoDoEstudio {
     faz. Desligada, a gente traduz o que o build de quem escreveu datou.
   */
   aRisca: boolean | null;
+  soOQueExisteLa: boolean | null;
 }
 
 interface EstudioStore extends EstadoDoEstudio {
@@ -100,6 +106,7 @@ interface EstudioStore extends EstadoDoEstudio {
   duplicarDaBiblioteca: (id: string) => void;
   alternarTema: (id: string) => void;
   definirARisca: (aRisca: boolean) => void;
+  definirSoOQueExisteLa: (ligado: boolean) => void;
   importarBiblioteca: (temas: TemaSalvo[]) => void;
   guardarAtivo: (ativo: Omit<AtivoDoTema, "id">) => void;
   apagarAtivo: (id: string) => void;
@@ -121,6 +128,7 @@ const VAZIO: EstadoDoEstudio = {
   ativos: [],
   ativoId: null,
   aRisca: null,
+  soOQueExisteLa: null,
 };
 
 function ler(): EstadoDoEstudio {
@@ -261,8 +269,18 @@ function aplicar(estado: EstadoDoEstudio) {
   */
   const aRisca = escolha ?? false;
 
+  /*
+    "Só o que existe lá hoje" — ligado por padrão. É o que faz o tema aparecer
+    aqui como aparece no app da referência: as regras que lá morreram (nome de
+    um build antigo) morrem aqui também. Desligado, o arquivo vale inteiro, e um
+    tema escrito para a casca antiga pinta tudo que carregamos dela.
+  */
+  const escolhaDeExistir = doAtivo ? doAtivo.soOQueExisteLa : estado.soOQueExisteLa;
+  const soOQueExisteLa = escolhaDeExistir ?? true;
+  const cssVisto = soOQueExisteLa ? filtrarRegrasMortas(estado.css, existeNaReferencia) : estado.css;
+
   const resolvido = resolverAtivos(
-    aRisca ? estado.css : traduzirSeletoresTravados(estado.css),
+    aRisca ? cssVisto : traduzirSeletoresTravados(cssVisto),
     estado.ativos,
   );
 
@@ -433,7 +451,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
   const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
     set(mudanca);
 
-    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais, aRisca } = store();
+    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais, aRisca, soOQueExisteLa } = store();
 
     /// Nunca se grava `substituicoes` direto: ela é sempre o resultado.
     const substituicoes = montarTema(coresMae, saturacao, manuais);
@@ -449,6 +467,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       ativos,
       ativoId,
       aRisca,
+      soOQueExisteLa,
     };
 
     aplicar(inteiro);
@@ -495,6 +514,16 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       guardar({
         aRisca,
         biblioteca: biblioteca.map((t) => (t.id === ativoId ? { ...t, aRisca } : t)),
+      });
+    },
+
+    definirSoOQueExisteLa: (ligado) => {
+      const { ativoId, biblioteca } = store();
+      if (!ativoId) return guardar({ soOQueExisteLa: ligado });
+
+      guardar({
+        soOQueExisteLa: ligado,
+        biblioteca: biblioteca.map((t) => (t.id === ativoId ? { ...t, soOQueExisteLa: ligado } : t)),
       });
     },
 

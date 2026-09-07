@@ -39,6 +39,24 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const VOCABULARIO = join(AQUI, "vocabulario-de-temas.json");
 const TOKENS = join(AQUI, "..", "src", "styles", "tokens.css");
 const SAIDA = join(AQUI, "..", "src", "styles", "base-de-tema.css");
+/*
+  O que EXISTE no app da referência hoje, em forma pequena o bastante para o
+  navegador carregar: os 371 nomes de módulo e as 435 áreas de `data-flx`
+  (`area.arquivo`). Serve para a chave "só o que existe lá hoje": um tema
+  escrito para um build antigo mira nomes que já não existem lá, e no app deles
+  essas regras estão mortas. Aqui a gente carrega os nomes antigos de propósito
+  — é o que faz os temas funcionarem — mas quem quer ver o tema como ele fica
+  LÁ precisa saber quais regras lá não pegam.
+*/
+const EXISTENTES = join(
+  AQUI, "..", "src", "features", "configuracoes", "lib", "existe-na-referencia.json",
+);
+
+export function montarExistentes(vocabulario) {
+  const modulos = [...new Set(vocabulario.classes.map((c) => c.split(".module__")[0]))].sort();
+  const areas = [...new Set(vocabulario.flx.map((f) => f.split(".").slice(0, 2).join(".")))].sort();
+  return `${JSON.stringify({ modulos, areas })}\n`;
+}
 
 /*
   Só o `:root` pelado. As variantes (`:root[data-tema=…]`) declaram de propósito
@@ -84,14 +102,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(1);
   }
 
-  const { variaveis } = JSON.parse(readFileSync(VOCABULARIO, "utf8"));
-  const css = montar(variaveis, declaradasNaRaiz(readFileSync(TOKENS, "utf8")));
+  const vocabulario = JSON.parse(readFileSync(VOCABULARIO, "utf8"));
+  const css = montar(vocabulario.variaveis, declaradasNaRaiz(readFileSync(TOKENS, "utf8")));
+  const existentes = montarExistentes(vocabulario);
 
   if (process.argv[2] === "--check") {
     const atual = existsSync(SAIDA) ? readFileSync(SAIDA, "utf8") : "";
 
-    if (atual !== css) {
-      console.error("\nbase-de-tema.css está fora de dia. Rode: yarn base-de-tema\n");
+    const atualExistentes = existsSync(EXISTENTES) ? readFileSync(EXISTENTES, "utf8") : "";
+
+    if (atual !== css || atualExistentes !== existentes) {
+      console.error("\nbase-de-tema.css ou existe-na-referencia.json está fora de dia. Rode: yarn base-de-tema\n");
       process.exit(1);
     }
 
@@ -99,6 +120,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`base da referência em dia — ${quantos} nós`);
   } else {
     writeFileSync(SAIDA, css);
+    writeFileSync(EXISTENTES, existentes);
     const quantos = css.match(/^ {4}--/gm)?.length ?? 0;
     console.log(`${quantos} nós em ${relative(process.cwd(), SAIDA)}`);
   }

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { CAMINHO_DO_TEMA, lerCabecalhoDoTema } from "@gravae/shared";
+import existeNaReferencia from "~/features/configuracoes/lib/existe-na-referencia.json";
 
 import { usePublicarTema } from "~/@core/application/queries/tema/use-temas";
 import { AbaDaBiblioteca } from "~/features/configuracoes/components/estudio/AbaDaBiblioteca";
@@ -30,6 +31,7 @@ import { conferirTokens } from "~/features/configuracoes/lib/compatibilidade-de-
 import {
   contarSeletoresDatados,
   deveTraduzir,
+  contarRegrasMortas,
 } from "~/features/configuracoes/lib/normalizar-tema";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
@@ -785,6 +787,14 @@ const SeletoresDatados: React.FC<{ presos: number; comDiv: number; css: string }
   const automatico = escolha === undefined || escolha === null;
   const aRisca = escolha ?? !deveTraduzir(css);
 
+  const existeSolto = useEstudio((e) => e.soOQueExisteLa);
+  const existeDaBiblioteca = useEstudio(
+    (e) => e.biblioteca.find((t) => t.id === e.ativoId)?.soOQueExisteLa,
+  );
+  const definirSoOQueExisteLa = useEstudio((e) => e.definirSoOQueExisteLa);
+  const soOQueExisteLa = (ativoId ? existeDaBiblioteca : existeSolto) ?? true;
+  const mortas = contarRegrasMortas(css, existeNaReferencia);
+
   const partes = [
     presos > 0 && `${presos} ${presos === 1 ? "presa ao hash" : "presas ao hash"} do build`,
     comDiv > 0 && `${comDiv} ${comDiv === 1 ? "escrita" : "escritas"} com \`div\` na frente`,
@@ -798,6 +808,15 @@ const SeletoresDatados: React.FC<{ presos: number; comDiv: number; css: string }
         elemento naquela versão. Aplicado como está, o que morreu lá morre aqui também: é isso
         que faz o tema aparecer aqui igual ao que você vê na referência.
       </p>
+
+      <Opcao data-gc="configuracoes.estudio.estudio-de-temas.opcao.definir-so-oque-existe-la"
+        titulo="Só o que existe na referência hoje"
+        detalhe={
+          `Ligado, as regras deste tema que miram nome de um build antigo — que lá já não pegam — não pegam aqui também: ${mortas} regra(s). É o que faz o tema aparecer aqui como aparece lá. Desligado, o arquivo vale inteiro.`
+        }
+        ligado={soOQueExisteLa}
+        onMudar={definirSoOQueExisteLa}
+      />
 
       <Opcao data-gc="configuracoes.estudio.estudio-de-temas.opcao.definir-arisca"
         titulo="Seguir o tema à risca"

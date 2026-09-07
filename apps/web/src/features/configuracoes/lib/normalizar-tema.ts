@@ -137,3 +137,108 @@ export function marcarTemaDaRaiz(tema: string | undefined) {
   const escolhida = CLASSE_DO_TEMA[tema ?? ""] ?? CLASSE_DO_TEMA.escuro;
   if (escolhida) raiz.classList.add(escolhida);
 }
+
+/*
+  As regras que no app da referência já não pegam.
+
+  Um tema é escrito contra um build. Quando eles reescrevem a casca, o nome
+  some de lá e a regra morre — e é assim que o Galaxy fica "sutil" no app
+  deles: as bordas neon e os painéis de vidro miram `ChannelChatLayout` e
+  `MemberListContainer`, que hoje não existem lá. Aqui a gente carrega esses
+  nomes de propósito, e as 51 regras pousam, inclusive as 12 que lá estão
+  mortas.
+
+  Esta função tira do CSS toda regra cujo alvo é SÓ nome que não existe mais
+  lá (módulo de classe, ou área de `data-flx`). Regra sem nome nenhum — `:root`,
+  `body`, `@keyframes` — fica. Regra que mira ao menos um nome vivo lá fica.
+  É o que faz o tema aqui parecer o tema lá, quando é isso que a pessoa quer.
+*/
+export interface ExisteNaReferencia {
+  modulos: string[];
+  areas: string[];
+}
+
+export function filtrarRegrasMortas(css: string, existe: ExisteNaReferencia): string {
+  const modulos = new Set(existe.modulos);
+  const areas = new Set(existe.areas);
+
+  const viva = (seletor: string) => {
+    const limpo = seletor.replace(/\\/g, "");
+    const nomes: string[] = [];
+
+    for (const [, modulo] of limpo.matchAll(/([A-Za-z][A-Za-z0-9]*)\.module__/g)) nomes.push(`m:${modulo}`);
+    for (const [, modulo] of limpo.matchAll(/\[class\*="([A-Za-z][A-Za-z0-9]*)"\]\s*\[class\*="[A-Za-z][A-Za-z0-9]*"\]/g)) nomes.push(`m:${modulo}`);
+    for (const [, caminho] of limpo.matchAll(/data-flx\s*=\s*["']([^"']+)["']/g)) nomes.push(`a:${(caminho ?? "").split(".").slice(0, 2).join(".")}`);
+
+    if (!nomes.length) return true;
+    return nomes.some((n) => (n.startsWith("m:") ? modulos.has(n.slice(2)) : areas.has(n.slice(2))));
+  };
+
+  /*
+    Anda pelo texto respeitando chaves aninhadas: um `@media` guarda regras
+    inteiras dentro, e um regex plano de `{…}` engoliria o bloco errado.
+  */
+  let saida = "";
+  let i = 0;
+
+  while (i < css.length) {
+    const abre = css.indexOf("{", i);
+    if (abre === -1) {
+      saida += css.slice(i);
+      break;
+    }
+
+    const seletor = css.slice(i, abre);
+
+    /*
+      At-rule com bloco (`@media`, `@supports`, `@container`, `@layer`): copia
+      o cabeçalho e desce para dentro, regra a regra. `@keyframes` é o único que
+      guarda passos e não regras — vai inteiro, sem olhar.
+    */
+    const cabecalho = /@([a-z-]+)[^{}]*$/.exec(seletor);
+    if (cabecalho) {
+      if (cabecalho[1] === "keyframes" || cabecalho[1] === "font-face" || cabecalho[1] === "property") {
+        let fundo = 0;
+        let fim = abre;
+        for (; fim < css.length; fim++) {
+          if (css[fim] === "{") fundo++;
+          else if (css[fim] === "}" && --fundo === 0) break;
+        }
+        saida += css.slice(i, fim + 1);
+        i = fim + 1;
+        continue;
+      }
+
+      saida += css.slice(i, abre + 1);
+      i = abre + 1;
+      continue;
+    }
+
+    // o `}` que fecha um at-rule aberto acima volta como está
+    if (seletor.includes("}")) {
+      const k = seletor.lastIndexOf("}");
+      saida += seletor.slice(0, k + 1);
+      i += k + 1;
+      continue;
+    }
+
+    let fundo = 0;
+    let fim = abre;
+    for (; fim < css.length; fim++) {
+      if (css[fim] === "{") fundo++;
+      else if (css[fim] === "}" && --fundo === 0) break;
+    }
+
+    const corpo = css.slice(abre, fim + 1);
+    saida += viva(seletor) ? seletor + corpo : seletor.replace(/[^\n]/g, "");
+    i = fim + 1;
+  }
+
+  return saida;
+}
+
+/// Quantas regras o filtro tiraria — o número que o estúdio mostra ao lado da chave.
+export function contarRegrasMortas(css: string, existe: ExisteNaReferencia): number {
+  const conta = (texto: string) => (texto.match(/\{[^{}]*:[^{}]*\}/g) ?? []).length;
+  return Math.max(0, conta(css) - conta(filtrarRegrasMortas(css, existe)));
+}
