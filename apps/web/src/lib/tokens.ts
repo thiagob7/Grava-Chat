@@ -351,6 +351,7 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         rotulo: "Seleção de texto com o mouse",
         dica: "auto seleciona; none faz o app parecer programa, não página",
       },
+      { nome: "--text-selection", rotulo: "Realce do texto selecionado" },
     ],
   },
 ];

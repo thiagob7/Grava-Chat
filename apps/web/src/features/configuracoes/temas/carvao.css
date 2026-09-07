@@ -1,0 +1,63 @@
+/**
+ * @name Carvão
+ * @description Cinza quente, sem azul nenhum, com âmbar na marca. Para ficar horas sem cansar.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, quente, âmbar
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: #1b1917;
+  --background-secondary: #161412;
+  --background-secondary-lighter: #211e1b;
+  --guild-list-foreground: #2a2622;
+  --form-surface-background: #252220;
+  --background-secondary-alt: #1f1c19;
+  --background-channel-header: #1b1917;
+  --composer-surface-color: #221f1c;
+  --background-textarea: #26221f;
+  --background-modifier-accent-focus: #332e29;
+
+  --border-color: rgb(230 200 160 / 0.12);
+  --color-line-sutil: rgb(255 255 255 / 0.06);
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(255 255 255 / 0.045);
+  --background-modifier-selected: rgb(255 200 120 / 0.12);
+  --scrollbar-thumb-bg: rgb(138 128 122 / 0.45);
+  --scrollbar-thumb-bg-hover: #8a807a;
+
+  --text-chat: #f2ede6;
+  --text-chat-muted: #c6bdb2;
+  --text-tertiary-muted: #8d847a;
+  --color-pilula: #f2ede6;
+
+  --accent-primary: #e0962e;
+  --brand-primary-light: #c98325;
+  --text-on-brand-primary: #1b1917;
+  --focus-primary: rgb(224 150 46 / 0.55);
+
+  --status-online: #3ec27a;
+  --status-idle: #e8b923;
+  --status-dnd: #e6553f;
+  --status-danger: #e04a3a;
+  --control-button-danger-hover-bg: rgb(224 74 58 / 0.14);
+
+  --text-link: #7fc5e8;
+  --markup-mention-text: #f0b35c;
+  --alert-important-color: #f0b35c;
+  --color-here: #f7d56e;
+  --message-mention-color: #f0b35c;
+  --message-mention-bg: rgb(224 150 46 / 0.16);
+  --code-inline-bg: #2d2925;
+  --code-block-bg: #141210;
+  --accent-warning: #f2b632;
+  --text-selection: rgb(224 150 46 / 0.3);
+
+  --color-veu: rgb(10 8 6 / 0.7);
+  --color-palco: #0f0e0c;
+  --color-palco-ink: #f2ede6;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.45);
+  --color-brilho: rgb(255 235 200 / 0.3);
+}

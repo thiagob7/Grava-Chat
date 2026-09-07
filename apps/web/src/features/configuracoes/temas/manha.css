@@ -1,0 +1,63 @@
+/**
+ * @name Manhã
+ * @description Claro e frio, branco de verdade no chat e índigo na marca.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags claro, branco, índigo
+ */
+:root {
+  color-scheme: light;
+
+  --background-primary: #ffffff;
+  --background-secondary: #f3f4f8;
+  --background-secondary-lighter: #f7f8fb;
+  --guild-list-foreground: #e6e8ef;
+  --form-surface-background: #ffffff;
+  --background-secondary-alt: #eceef4;
+  --background-channel-header: #ffffff;
+  --composer-surface-color: #f3f4f8;
+  --background-textarea: #eef0f5;
+  --background-modifier-accent-focus: #dfe2ea;
+
+  --border-color: rgb(40 45 70 / 0.14);
+  --color-line-sutil: rgb(40 45 70 / 0.07);
+  --user-area-divider-color: rgb(40 45 70 / 0.08);
+  --background-modifier-hover: rgb(40 45 70 / 0.05);
+  --background-modifier-selected: rgb(79 70 229 / 0.1);
+  --scrollbar-thumb-bg: rgb(184 188 203 / 0.6);
+  --scrollbar-thumb-bg-hover: #b8bccb;
+
+  --text-chat: #1c1f2e;
+  --text-chat-muted: #5b6078;
+  --text-tertiary-muted: #8188a3;
+  --color-pilula: #1c1f2e;
+
+  --accent-primary: #4f46e5;
+  --brand-primary-light: #4338ca;
+  --text-on-brand-primary: #ffffff;
+  --focus-primary: rgb(79 70 229 / 0.5);
+
+  --status-online: #16a34a;
+  --status-idle: #d97706;
+  --status-dnd: #dc2626;
+  --status-danger: #dc2626;
+  --control-button-danger-hover-bg: rgb(220 38 38 / 0.1);
+
+  --text-link: #0284c7;
+  --markup-mention-text: #4f46e5;
+  --alert-important-color: #4338ca;
+  --color-here: #b45309;
+  --message-mention-color: #4338ca;
+  --message-mention-bg: rgb(79 70 229 / 0.12);
+  --code-inline-bg: #e7e9f0;
+  --code-block-bg: #f7f8fb;
+  --accent-warning: #d97706;
+  --text-selection: rgb(79 70 229 / 0.22);
+
+  --color-veu: rgb(28 31 46 / 0.45);
+  --color-palco: #1c1f2e;
+  --color-palco-ink: #f7f8fb;
+  --color-sobre-midia: rgb(0 0 0 / 0.55);
+  --color-sombra: rgb(28 31 46 / 0.16);
+  --color-brilho: rgb(28 31 46 / 0.25);
+}

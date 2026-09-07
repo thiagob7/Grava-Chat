@@ -1,0 +1,63 @@
+/**
+ * @name Nebulosa
+ * @description Índigo profundo com violeta na marca e ciano nos links. Escuro sem ser preto.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, roxo, índigo
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: #0e0f1a;
+  --background-secondary: #0a0b14;
+  --background-secondary-lighter: #14162a;
+  --guild-list-foreground: #1c1e36;
+  --form-surface-background: #1a1c30;
+  --background-secondary-alt: #141628;
+  --background-channel-header: #0e0f1a;
+  --composer-surface-color: #15172b;
+  --background-textarea: #191b30;
+  --background-modifier-accent-focus: #24264a;
+
+  --border-color: rgb(150 140 255 / 0.14);
+  --color-line-sutil: rgb(255 255 255 / 0.06);
+  --user-area-divider-color: rgb(0 0 0 / 0.35);
+  --background-modifier-hover: rgb(150 140 255 / 0.08);
+  --background-modifier-selected: rgb(150 140 255 / 0.16);
+  --scrollbar-thumb-bg: rgb(139 131 217 / 0.45);
+  --scrollbar-thumb-bg-hover: #8b83d9;
+
+  --text-chat: #eeeefc;
+  --text-chat-muted: #b9b8d6;
+  --text-tertiary-muted: #7f7ea3;
+  --color-pilula: #eeeefc;
+
+  --accent-primary: #7c6cf6;
+  --brand-primary-light: #6a59ec;
+  --text-on-brand-primary: #ffffff;
+  --focus-primary: rgb(124 108 246 / 0.6);
+
+  --status-online: #34d399;
+  --status-idle: #fbbf24;
+  --status-dnd: #fb5c7a;
+  --status-danger: #f04e69;
+  --control-button-danger-hover-bg: rgb(240 78 105 / 0.14);
+
+  --text-link: #67d3f9;
+  --markup-mention-text: #67d3f9;
+  --alert-important-color: #b7a6ff;
+  --color-here: #f7d56e;
+  --message-mention-color: #c9bfff;
+  --message-mention-bg: rgb(124 108 246 / 0.18);
+  --code-inline-bg: #22243c;
+  --code-block-bg: #0a0b14;
+  --accent-warning: #f7c222;
+  --text-selection: rgb(103 211 249 / 0.35);
+
+  --color-veu: rgb(4 4 12 / 0.7);
+  --color-palco: #06070f;
+  --color-palco-ink: #eeeefc;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.45);
+  --color-brilho: rgb(255 255 255 / 0.3);
+}
