@@ -125,6 +125,17 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--button-secondary-text": ["--color-ink"],
   "--button-primary-active-fill": ["--color-brand-hover"],
   "--button-primary-fill": ["--color-brand"],
+  /*
+    `brand-primary-fill` é o que fica EM CIMA da marca, não a marca.
+    Na referência ele vale branco e só aparece em `color:` de botão e no
+    `fill=` do ícone. Apontando para `--color-brand`, um tema que o
+    declarasse repintava o fundo dos botões com a cor do texto.
+
+    Vem antes de `--text-on-brand-primary` porque o nome engana: tem tema
+    escrito de fora que põe a cor da marca nele. Quando os dois aparecem, o
+    canônico é o que vale.
+  */
+  "--brand-primary-fill": ["--color-sobre-marca"],
   "--button-primary-text": ["--color-sobre-marca"],
   "--button-danger-active-fill": ["--color-danger"],
   "--button-danger-fill": ["--color-danger", "--color-dnd"],
@@ -175,13 +186,6 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--text-warning": ["--color-aviso"],
 
   "--brand-primary": ["--color-brand"],
-  /*
-    `brand-primary-fill` é o que fica EM CIMA da marca, não a marca.
-    Na referência ele vale branco e só aparece em `color:` de botão e no
-    `fill=` do ícone. Apontando para `--color-brand`, um tema que o
-    declarasse repintava o fundo dos botões com a cor do texto.
-  */
-  "--brand-primary-fill": ["--color-sobre-marca"],
   "--brand-secondary": ["--color-brand-hover"],
   "--accent-primary": ["--color-brand"],
   "--accent-danger": ["--color-danger"],
@@ -224,7 +228,6 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   */
   "--guild-list-foreground": ["--color-surface-3"],
   "--focus-primary": ["--color-foco-anel"],
-  "--text-selection": ["--color-selecionado"],
 
   "--code-block-bg": ["--color-codigo-bloco"],
   "--code-inline-bg": ["--color-codigo"],

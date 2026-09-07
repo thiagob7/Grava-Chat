@@ -55,11 +55,10 @@
     "--deprecated-panel-background"
   ],
   "--color-selecionado": [
-    "--text-selection",
     "--background-modifier-selected",
-    "--control-button-active-bg",
-    "--bg-active",
     "--surface-interactive-selected-bg",
+    "--bg-active",
+    "--control-button-active-bg",
     "--background-modifier-active"
   ],
   "--color-ink": [
@@ -179,10 +178,10 @@
     "--background-message-hover"
   ],
   "--color-sobre-marca": [
-    "--brand-primary-fill",
     "--text-on-brand-primary",
+    "--button-primary-text",
     "--button-danger-text",
-    "--button-primary-text"
+    "--brand-primary-fill"
   ],
   "--color-danger-fundo": [
     "--control-button-danger-hover-bg"

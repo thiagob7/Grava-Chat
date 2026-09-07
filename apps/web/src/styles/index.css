@@ -34,7 +34,7 @@
   --color-composer: var(--composer-surface-color, var(--background-secondary-lighter, #1e1d23));
   --color-cabecalho: var(--background-channel-header, #1e1d23);
   --color-painel: var(--background-secondary-alt, var(--deprecated-panel-background, #232028));
-  --color-selecionado: var(--text-selection, var(--background-modifier-selected, var(--control-button-active-bg, var(--bg-active, var(--surface-interactive-selected-bg, var(--background-modifier-active, rgb(255 255 255 / 0.1)))))));
+  --color-selecionado: var(--background-modifier-selected, var(--surface-interactive-selected-bg, var(--bg-active, var(--control-button-active-bg, var(--background-modifier-active, rgb(255 255 255 / 0.1))))));
   --color-ink: var(--text-chat, var(--text-primary, var(--button-secondary-text, var(--interactive-active, var(--control-button-active-text, var(--control-button-hover-text, var(--surface-interactive-selected-color, var(--voice-text-strong, var(--interactive-hover, var(--header-primary, #f4f4f6))))))))));
   --color-ink-muted: var(--text-chat-muted, var(--text-primary-muted, var(--text-secondary, var(--button-ghost-text, var(--control-button-normal-text, var(--interactive-normal, var(--channels-default, var(--text-normal, var(--header-secondary, #cecbd4)))))))));
   --color-ink-faint: var(--text-tertiary-muted, var(--text-tertiary, var(--interactive-muted, var(--text-muted, #b1acbb))));
@@ -66,7 +66,7 @@
     de perigo 13, o anel de foco 12. Eram todos cor crava, fora do alcance de
     qualquer tema — e é por isso que trocar de tema quase não mudava nada.
   */
-  --color-sobre-marca: var(--brand-primary-fill, var(--text-on-brand-primary, var(--button-danger-text, var(--button-primary-text, #ffffff))));
+  --color-sobre-marca: var(--text-on-brand-primary, var(--button-primary-text, var(--button-danger-text, var(--brand-primary-fill, #ffffff))));
   --color-veu: rgb(0 0 0 / 0.6);
   --color-line-sutil: rgb(255 255 255 / 0.08);
   --color-danger-fundo: var(--control-button-danger-hover-bg, rgb(229 55 52 / 0.12));
@@ -146,7 +146,7 @@
     --composer-surface-color: #0f0e12;
     --background-channel-header: #020203;
     --background-secondary-alt: #0f0e12;
-    --text-selection: rgb(255 255 255 / 0.08);
+    --background-modifier-selected: rgb(255 255 255 / 0.08);
     --text-chat: #f4f4f6;
     --text-chat-muted: #cecbd4;
     --text-tertiary-muted: #b1acbb;
@@ -202,7 +202,7 @@
     --composer-surface-color: #171011;
     --background-channel-header: #171011;
     --background-secondary-alt: #201617;
-    --text-selection: rgb(255 255 255 / 0.08);
+    --background-modifier-selected: rgb(255 255 255 / 0.08);
 
     --user-area-divider-color: rgb(0 0 0 / 0.45);
     --background-modifier-hover: rgb(255 0 0 / 0.06);
@@ -253,7 +253,7 @@
     --composer-surface-color: #f0f1f3;
     --background-channel-header: #f0f1f3;
     --background-secondary-alt: #e6e7ea;
-    --text-selection: rgb(23 25 28 / 0.1);
+    --background-modifier-selected: rgb(23 25 28 / 0.1);
     --text-chat: #22252a;
     --text-chat-muted: #616876;
     --text-tertiary-muted: #6e7686;
@@ -332,6 +332,15 @@
   body,
   #app {
     height: 100%;
+  }
+
+  /*
+    `--text-selection` é o realce do texto selecionado, não um fundo de item.
+    Ele já foi lido como cor do canal ativo, e um tema que o declara opaco
+    pintava a lateral de branco.
+  */
+  ::selection {
+    background-color: var(--text-selection, rgb(120 200 255 / 0.35));
   }
 
   /*
