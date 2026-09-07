@@ -41,7 +41,7 @@ const VAZIO: CabecalhoDoTema = {
 const cortar = (valor: string, tamanho: number) => valor.trim().slice(0, tamanho) || null;
 
 /// Lê o bloco `/** @name ... */` do topo do CSS, no mesmo formato que o
-/// Fluxer e o BetterDiscord usam. Sem o bloco, devolve tudo vazio — o CSS
+/// referência e o BetterDiscord usam. Sem o bloco, devolve tudo vazio — o CSS
 /// continua valendo, só não se apresenta.
 export function lerCabecalhoDoTema(css: string): CabecalhoDoTema {
   const bloco = /^\s*\/\*\*([\s\S]*?)\*\//.exec(css);

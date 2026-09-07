@@ -15,7 +15,7 @@ describe("código do convite no link", () => {
 
   /// Convite de outro app é link comum, e vira a prévia de sempre.
   it("ignora link de fora", () => {
-    expect(codigoDoConviteNoLink("https://fluxer.gg/44wvtfoy", AQUI)).toBeNull();
+    expect(codigoDoConviteNoLink("https://referencia.gg/44wvtfoy", AQUI)).toBeNull();
     expect(codigoDoConviteNoLink("https://discord.gg/abcd", AQUI)).toBeNull();
   });
 

@@ -23,6 +23,7 @@ export type PublicUser = z.infer<typeof publicUserSchema>;
 export const selfUserSchema = publicUserSchema.extend({
   email: z.email(),
   bio: z.string().nullable(),
+  pronomes: z.string().nullable(),
   providers: z.array(z.string()),
   createdAt: z.iso.datetime(),
   perfil: estiloDePerfilSchema.nullable(),

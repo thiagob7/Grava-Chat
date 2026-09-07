@@ -98,6 +98,7 @@ export function toSelfUser(
     ...toPublicUser(u),
     email: u.email,
     bio: u.bio,
+    pronomes: u.pronomes,
     providers,
     createdAt: u.createdAt.toISOString(),
     perfil: u.perfil ? (u.perfil as SelfUser["perfil"]) : null,

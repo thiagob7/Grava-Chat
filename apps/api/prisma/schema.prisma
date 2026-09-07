@@ -106,6 +106,8 @@ model User {
   displayName String
   avatarUrl   String?
   bio         String?
+  /// como a pessoa quer ser tratada; texto livre, curto
+  pronomes    String?
   /// conta de webhook: não faz login, não aparece na lista de membros
   isBot       Boolean        @default(false)
   status      PresenceStatus @default(OFFLINE)

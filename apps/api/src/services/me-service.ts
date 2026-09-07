@@ -90,6 +90,7 @@ export const meService = {
         username: usuario.username,
         displayName: usuario.displayName,
         bio: usuario.bio,
+        pronomes: usuario.pronomes,
         criadaEm: usuario.createdAt.toISOString(),
         aceitaPedidos: usuario.aceitaPedidos,
         mostraAtividade: usuario.mostraAtividade,
@@ -151,6 +152,7 @@ export const meService = {
         : {}),
       ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
       ...(input.bio !== undefined ? { bio: input.bio } : {}),
+      ...(input.pronomes !== undefined ? { pronomes: input.pronomes } : {}),
       ...(input.perfil !== undefined
         ? {
             perfil: input.perfil

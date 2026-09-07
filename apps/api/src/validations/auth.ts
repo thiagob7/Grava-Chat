@@ -22,6 +22,7 @@ export const updateProfileInput = z.object({
   displayName: z.string().min(1).max(LIMITS.displayName).optional(),
   avatarUrl: r2Url.nullable().optional(),
   bio: z.string().max(LIMITS.bio).nullable().optional(),
+  pronomes: z.string().max(LIMITS.pronomes).nullable().optional(),
   perfil: estiloDePerfilSchema
     .extend({ bannerUrl: r2Url.nullable().optional() })
     .nullable()

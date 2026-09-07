@@ -49,6 +49,7 @@ export const profileService = {
       ...toPublicUser(user),
       status: presenca[userId] ?? "OFFLINE",
       bio: user.bio,
+      pronomes: user.pronomes,
       perfil: (user.perfil as SelfUser["perfil"]) ?? null,
       etiquetaDoServidor: etiquetaDoServidor
         ? { guildId: escolhida, ...etiquetaDoServidor }
