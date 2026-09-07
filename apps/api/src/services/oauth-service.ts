@@ -1,6 +1,6 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
 
-import { has, type Permission } from "@gravae/shared";
+import { ESCOPOS, has, type EscopoOAuth, type Permission } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
 import { keys, redis } from "~/lib/redis.js";
 import { toPublicUser } from "~/lib/serialize.js";
@@ -8,12 +8,12 @@ import { botRepository } from "~/repositories/bot-repository.js";
 import { guildRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
+import { botService } from "~/services/bot-service.js";
 
 const CODIGO_TTL = 120;
 const TOKEN_TTL = 7 * 24 * 60 * 60;
 
-export const ESCOPOS = ["identify", "guilds"] as const;
-export type Escopo = (typeof ESCOPOS)[number];
+type Escopo = EscopoOAuth;
 
 interface Codigo {
   userId: string;
@@ -56,14 +56,31 @@ export const oauthService = {
         id: bot.id,
         usuario: toPublicUser(bot.usuario),
         descricao: bot.descricao,
+        permissoesPedidas: bot.permissoesPedidas as Permission[],
       },
       escopos: pedidos,
       redirectUri: params.redirectUri,
     };
   },
 
-  async emitirCodigo(userId: string, params: { botId: string; redirectUri: string; escopos: string[] }) {
+  /*
+    Com o escopo `bot`, autorizar também é pôr o bot na comunidade escolhida,
+    com as permissões que a pessoa deixou marcadas — nunca mais do que as
+    pedidas. Bot que já está lá não entra duas vezes.
+  */
+  async emitirCodigo(
+    userId: string,
+    params: { botId: string; redirectUri: string; escopos: string[]; guildId?: string; permissoes?: string[] },
+  ) {
     const pedido = await oauthService.descreverPedido(params);
+
+    if (pedido.escopos.includes("bot")) {
+      if (!params.guildId) throw new AppError("Escolha a comunidade onde o bot vai entrar.", 400);
+
+      const jaEsta = await botService.estaEm(pedido.bot.id, params.guildId);
+      if (!jaEsta) await botService.adicionarAoServidor(userId, pedido.bot.id, params.guildId, params.permissoes);
+    }
+
     const codigo = randomBytes(32).toString("base64url");
 
     const dados: Codigo = {
@@ -222,7 +239,13 @@ export const oauthService = {
     const user = await userRepository.findById(sessao.userId);
     if (!user) throw new NotFoundError("Usuário não encontrado");
 
-    return toPublicUser(user);
+    const perfil = user.perfil as { conexoes?: unknown[] } | null;
+
+    return {
+      ...toPublicUser(user),
+      ...(sessao.escopos.includes("email") ? { email: user.email } : {}),
+      ...(sessao.escopos.includes("connections") ? { conexoes: perfil?.conexoes ?? [] } : {}),
+    };
   },
 
   async servidoresDe(sessao: TokenGuardado) {

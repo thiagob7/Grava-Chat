@@ -137,9 +137,21 @@ export const botService = {
     return paraConvite(bot);
   },
 
-  async adicionarAoServidor(userId: string, botId: string, guildId: string) {
+  async estaEm(botId: string, guildId: string) {
     const bot = await botRepository.findById(botId);
     if (!bot) throw new NotFoundError("Bot não encontrado");
+
+    return Boolean(await memberRepository.find(guildId, bot.botUserId));
+  },
+
+  /// `escolhidas` é o que a pessoa deixou marcado na autorização: sempre um subconjunto do pedido.
+  async adicionarAoServidor(userId: string, botId: string, guildId: string, escolhidas?: string[]) {
+    const bot = await botRepository.findById(botId);
+    if (!bot) throw new NotFoundError("Bot não encontrado");
+
+    const permissoes = escolhidas
+      ? bot.permissoesPedidas.filter((p) => escolhidas.includes(p))
+      : bot.permissoesPedidas;
 
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
@@ -150,11 +162,11 @@ export const botService = {
     const jaEsta = await memberRepository.find(guildId, bot.botUserId);
     if (jaEsta) throw new AppError("Esse bot já está nesse servidor.", 400);
 
-    const cargo = bot.permissoesPedidas.length
+    const cargo = permissoes.length
       ? await roleRepository.create({
           guildId,
           name: (bot.usuario.displayName || "Bot").slice(0, 32),
-          permissions: bot.permissoesPedidas,
+          permissions: permissoes,
           position: 1,
         })
       : null;

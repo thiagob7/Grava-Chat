@@ -1,6 +1,7 @@
 export * from "./constants.js";
 export * from "./comunidades.js";
 export * from "./conexoes.js";
+export * from "./oauth.js";
 export * from "./cosmeticos.js";
 export * from "./models.js";
 export * from "./events.js";

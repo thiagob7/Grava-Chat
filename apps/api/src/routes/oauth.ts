@@ -11,6 +11,11 @@ const pedido = z.object({
   scope: z.string().min(1).max(200),
 });
 
+const autorizacao = pedido.extend({
+  guild_id: objectId.optional(),
+  permissions: z.array(z.string().max(64)).max(64).optional(),
+});
+
 const troca = z.object({
   code: z.string().min(1).max(200),
   client_id: objectId,
@@ -37,12 +42,14 @@ export async function oauthRoutes(app: FastifyInstance) {
   });
 
   app.post("/oauth2/autorizar", { preHandler: [app.authenticate] }, (req) => {
-    const { client_id, redirect_uri, scope } = pedido.parse(req.body);
+    const { client_id, redirect_uri, scope, guild_id, permissions } = autorizacao.parse(req.body);
 
     return oauthService.emitirCodigo(req.userId, {
       botId: client_id,
       redirectUri: redirect_uri,
       escopos: scope.split(/[\s+]+/).filter(Boolean),
+      guildId: guild_id,
+      permissoes: permissions,
     });
   });
 

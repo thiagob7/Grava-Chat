@@ -91,14 +91,15 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
       salvar.mutate({ botId: bot.id, dados: { avatarUrl: enviado.attachment.url } });
   };
 
-  const linkDeLogin = () => {
+  /// Com `bot` no escopo, o link também põe o bot numa comunidade que a pessoa escolhe.
+  const linkDeLogin = (comBot = false) => {
     const endereco = new URL(`${window.location.origin}/oauth2/autorizar`);
     endereco.searchParams.set("client_id", bot.id);
     endereco.searchParams.set(
       "redirect_uri",
       listaDeUris[0] ?? "https://seu-painel.com/callback",
     );
-    endereco.searchParams.set("scope", "identify guilds");
+    endereco.searchParams.set("scope", comBot ? "identify email guilds connections bot" : "identify guilds");
     endereco.searchParams.set("state", "algo-aleatorio");
     return endereco.toString();
   };
@@ -294,21 +295,32 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               avisoCopiado="Link copiado."
               mono={false}
             />
+            <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--7" className="mt-4">Link de login com o bot</Label>
+            <CampoDeSegredo data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.campo-de-segredo--4"
+              valor={linkDeLogin(true)}
+              rotuloCopiar="Copiar o link com o bot"
+              avisoCopiado="Link copiado."
+              mono={false}
+            />
             <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--6" className="mt-1.5 text-xs text-ink-faint">
+              Este pede também o e-mail, as conexões e o bot: a pessoa escolhe as permissões e a comunidade onde ele entra.
+            </p>
+
+            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--7" className="mt-1.5 text-xs text-ink-faint">
               Mande a pessoa para cá. Ela volta pro seu site com <code data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.code">?code=</code>, que
               você troca por um token em <code data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.code--2">POST /api/oauth2/token</code>.
             </p>
           </div>
 
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--11" className="mt-4 rounded-lg border border-line bg-surface-2 p-3">
-            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--7" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--8" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
               Com o token em mãos
             </p>
             <ul data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.ul" className="mt-1.5 space-y-1 font-mono text-xs text-ink-muted">
               <li data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.li">GET /api/oauth2/usuario — quem entrou</li>
               <li data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.li--2">GET /api/oauth2/servidores — onde ela está e onde manda</li>
             </ul>
-            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--8" className="mt-2 text-xs text-ink-faint">
+            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--9" className="mt-2 text-xs text-ink-faint">
               Exemplo de painel completo em <code data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.code--3">exemplos/painel/</code>.
             </p>
           </div>
@@ -325,8 +337,8 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--12" className="flex items-start gap-4">
             <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--13" className="min-w-0 flex-1">
-              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--9" className="text-sm font-medium">Apagar {bot.usuario.displayName}</p>
-              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--10" className="mt-0.5 text-xs text-ink-faint">
+              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--10" className="text-sm font-medium">Apagar {bot.usuario.displayName}</p>
+              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--11" className="mt-0.5 text-xs text-ink-faint">
                 O bot sai de todos os servidores, o token para de valer e as
                 mensagens que ele mandou somem.
               </p>
