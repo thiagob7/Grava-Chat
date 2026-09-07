@@ -1,9 +1,34 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
+import { lerCabecalhoDoTema } from "@gravae/shared";
 
 import macanetas from "~/features/configuracoes/lib/macanetas.json";
-import { AUTOR_DA_CASA, TEMAS_DA_CASA } from "~/features/configuracoes/lib/temas-da-casa";
 import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
-import { lerCabecalhoDoTema } from "@gravae/shared";
+
+/*
+  Os temas da casa moram na API (`apps/api/temas/`), que é quem os publica no
+  servidor "Gravaê Temas". O contrato deles, porém, é com este app: são as
+  variáveis daqui que eles têm que falar. Por isso o teste fica aqui e lê de lá.
+*/
+const PASTA = fileURLToPath(new URL("../../../../../api/temas/", import.meta.url));
+const AUTOR_DA_CASA = "Gravaê";
+
+const TEMAS_DA_CASA = readdirSync(PASTA)
+  .filter((a) => a.endsWith(".css"))
+  .sort()
+  .map((arquivo) => {
+    const css = readFileSync(PASTA + arquivo, "utf8");
+    const cabecalho = lerCabecalhoDoTema(css);
+
+    return {
+      chave: arquivo.replace(/\.css$/, ""),
+      nome: cabecalho.nome ?? "",
+      descricao: cabecalho.descricao ?? "",
+      css,
+    };
+  });
 
 /*
   Cada tema é uma sequência de blocos `seletor { declarações }` sem
@@ -34,7 +59,7 @@ const PALETA = Object.values(macanetas as Record<string, string[]>).map((nomes) 
 
 describe("temas da casa", () => {
   it("tem quatro, com nome, descrição e autor", () => {
-    expect(TEMAS_DA_CASA.map((t) => t.chave)).toEqual(["nebulosa", "carvao", "manha", "floresta"]);
+    expect(TEMAS_DA_CASA.map((t) => t.chave)).toEqual(["carvao", "floresta", "manha", "nebulosa"]);
 
     for (const tema of TEMAS_DA_CASA) {
       expect(tema.nome).not.toBe("");

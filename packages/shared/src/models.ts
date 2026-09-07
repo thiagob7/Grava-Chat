@@ -17,6 +17,8 @@ export const publicUserSchema = z.object({
   avatarUrl: z.string().nullable(),
   status: z.enum(PRESENCE_STATUSES),
   isBot: z.boolean(),
+  /// A conta da casa: publica os temas e manda os avisos do app. Só ela tem.
+  sistema: z.boolean().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 

@@ -26,6 +26,7 @@ export function toPublicUser(u: UserRow): PublicUser {
     avatarUrl: u.avatarUrl,
     status: u.status,
     isBot: u.isBot,
+    ...(u.sistema ? { sistema: true } : {}),
   };
 }
 

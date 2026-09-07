@@ -37,6 +37,11 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
+  /// O e-mail de quem é dono do servidor "Gravaê Temas". Com isto preenchido,
+  /// a API garante o servidor a cada subida e a conta da casa publica os temas
+  /// lá. Vazio, nada acontece.
+  SERVIDOR_DE_TEMAS_DONO: z.string().default(""),
+
   /// A tela do Swagger em /api/docs. Em desenvolvimento ela abre sempre; em
   /// producao so com isto ligado, para nao publicar o mapa da API sem querer.
   DOCS_ABERTAS: z.stringbool().default(false),

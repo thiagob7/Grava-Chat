@@ -110,6 +110,9 @@ model User {
   pronomes    String?
   /// conta de webhook: não faz login, não aparece na lista de membros
   isBot       Boolean        @default(false)
+  /// a conta da casa, que publica os temas e manda os avisos do app; opcional
+  /// de propósito, para não precisar preencher quem já existe
+  sistema     Boolean?
   status      PresenceStatus @default(OFFLINE)
   /// enfeites; ausente em quem nunca personalizou nada
   perfil              EstiloDePerfil?

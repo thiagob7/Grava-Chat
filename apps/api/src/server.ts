@@ -4,6 +4,7 @@ import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { createGateway } from "~/realtime/gateway.js";
 import { exclusaoService } from "~/services/exclusao-service.js";
+import { sistemaService } from "~/services/sistema-service.js";
 import { statusService } from "~/services/status-service.js";
 
 const app = await buildApp();
@@ -18,6 +19,10 @@ try {
 
   pararDeVigiarExclusoes = exclusaoService.vigiar(app.log);
   pararDeVigiarStatus = statusService.vigiar(app.log);
+
+  /// Depois do gateway: a publicação dos temas avisa as salas como qualquer
+  /// mensagem. Não segura a subida — se falhar, fica no log.
+  void sistemaService.semearServidorDeTemas(app.log).catch((err) => app.log.error(err));
 } catch (err) {
   app.log.error(err);
   process.exit(1);

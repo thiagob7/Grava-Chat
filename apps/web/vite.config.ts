@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
@@ -25,13 +25,6 @@ export default defineConfig({
   define: { __VERSAO_WEB__: JSON.stringify(VERSAO_WEB) },
   resolve: {
     alias: { "~": path.resolve(import.meta.dirname, "src") },
-  },
-  /*
-    O vitest devolve vazio para todo `.css`, inclusive com `?raw` — e os temas
-    da casa são `.css` lidos como texto. Só eles passam inteiros.
-  */
-  test: {
-    css: { include: [/\/temas\/[^/?]+\.css(?:\?|$)/] },
   },
   server: {
     port: 5173,

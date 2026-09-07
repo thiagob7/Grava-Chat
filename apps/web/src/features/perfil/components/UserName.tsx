@@ -19,6 +19,7 @@ interface UserNameProps {
   className?: string;
   title?: string;
   ehBot?: boolean;
+  ehSistema?: boolean;
 }
 
 export const UserName: React.FC<UserNameProps> = ({
@@ -33,6 +34,7 @@ export const UserName: React.FC<UserNameProps> = ({
   className,
   title,
   ehBot = false,
+  ehSistema = false,
 }) => {
   useEffect(() => carregarFonte(perfil?.nome?.fonte), [perfil?.nome?.fonte]);
 
@@ -45,18 +47,22 @@ export const UserName: React.FC<UserNameProps> = ({
     </span>
   );
 
-  if (!ehBot) return escrito;
+  if (!ehBot && !ehSistema) return escrito;
 
   return (
     <span data-gc="perfil.user-name.span--2" className="inline-flex items-center gap-1.5">
       {escrito}
-      <SeloDeApp data-gc="perfil.user-name.selo-de-app" />
+      <SeloDeApp data-gc="perfil.user-name.selo-de-app" sistema={ehSistema} />
     </span>
   );
 };
 
-export const SeloDeApp: React.FC = () => (
+/*
+  "app" é qualquer bot; "sistema" é a conta da casa, a que publica os temas e
+  manda os avisos do próprio Gravaê. O selo é o mesmo; só a palavra muda.
+*/
+export const SeloDeApp: React.FC<{ sistema?: boolean }> = ({ sistema = false }) => (
   <span data-gc="perfil.user-name.span--3" {...flx("seloDeApp", "shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-sobre-marca")}>
-    app
+    {sistema ? "sistema" : "app"}
   </span>
 );

@@ -12,6 +12,7 @@ export interface PublicUserModel {
   avatarUrl: string | null;
   status: PresenceStatus;
   isBot: boolean;
+  sistema?: boolean;
 }
 
 export interface SelfUserModel extends PublicUserModel {

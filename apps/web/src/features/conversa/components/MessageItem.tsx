@@ -356,6 +356,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   perfil={enfeites?.perfil}
                   corDoCargo={enfeites?.corDoCargo}
                   ehBot={message.author.isBot}
+                  ehSistema={message.author.sistema}
                 />
               </button>
             </UserProfilePopover>

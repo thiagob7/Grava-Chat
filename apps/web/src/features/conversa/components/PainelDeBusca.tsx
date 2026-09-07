@@ -132,6 +132,7 @@ const Resultado: React.FC<{
           perfil={enfeites?.perfil}
           corDoCargo={enfeites?.corDoCargo}
           ehBot={resultado.author.isBot}
+          ehSistema={resultado.author.sistema}
           className="text-sm font-medium"
         />
 
