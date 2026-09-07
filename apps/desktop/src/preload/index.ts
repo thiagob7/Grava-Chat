@@ -61,6 +61,19 @@ const ponte: PonteDesktop = {
     contador: (quantas: number): Promise<void> => ipcRenderer.invoke("janela:contador", quantas),
     chamarAtencao: (): Promise<void> => ipcRenderer.invoke("janela:chamar-atencao"),
     focar: (): Promise<void> => ipcRenderer.invoke("janela:focar"),
+
+    minimizar: (): Promise<void> => ipcRenderer.invoke("janela:minimizar"),
+    alternarMaximizada: (): Promise<void> =>
+      ipcRenderer.invoke("janela:alternar-maximizada"),
+    fechar: (): Promise<void> => ipcRenderer.invoke("janela:fechar"),
+    molduraPropria: (): Promise<boolean> => ipcRenderer.invoke("janela:moldura-propria"),
+    estaMaximizada: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-maximizada"),
+
+    aoMudarMaximizada: (callback: (maximizada: boolean) => void) => {
+      const ouvinte = (_e: unknown, maximizada: boolean) => callback(maximizada);
+      ipcRenderer.on("janela:maximizada", ouvinte);
+      return () => ipcRenderer.off("janela:maximizada", ouvinte);
+    },
   },
 
   login: {

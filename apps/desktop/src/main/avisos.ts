@@ -17,6 +17,27 @@ export function registrarAvisos() {
     else janela.flashFrame(true);
   });
 
+  /*
+    Os controles da janela sem moldura. `molduraPropria` é o que o front usa
+    para decidir se desenha os três botões: no macOS o sistema já desenha as
+    bolinhas, e um segundo jogo de botões seria estranho.
+  */
+  ipcMain.handle("janela:moldura-propria", () => process.platform !== "darwin");
+
+  ipcMain.handle("janela:minimizar", () => janelaAtiva()?.minimize());
+
+  ipcMain.handle("janela:alternar-maximizada", () => {
+    const janela = janelaAtiva();
+    if (!janela) return;
+
+    if (janela.isMaximized()) janela.unmaximize();
+    else janela.maximize();
+  });
+
+  ipcMain.handle("janela:fechar", () => janelaAtiva()?.close());
+
+  ipcMain.handle("janela:esta-maximizada", () => janelaAtiva()?.isMaximized() ?? false);
+
   ipcMain.handle("janela:focar", () => {
     const janela = janelaAtiva();
     if (!janela) return;
