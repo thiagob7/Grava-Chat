@@ -13,6 +13,25 @@ export const r2Url = z
     "A imagem precisa ter sido enviada aqui",
   );
 
+const senha = z.string().min(8, "A senha precisa de pelo menos 8 caracteres").max(128);
+
+export const registrarInput = z.object({
+  email: z.email(),
+  senha,
+  displayName: z.string().trim().min(1).max(LIMITS.displayName),
+});
+
+export const entrarInput = z.object({
+  email: z.email(),
+  senha: z.string().min(1).max(128),
+});
+
+/// `atual` só é obrigatória para quem já tem senha; quem entra pelo Google cria a primeira sem ela.
+export const trocarSenhaInput = z.object({
+  atual: z.string().max(128).optional(),
+  nova: senha,
+});
+
 export const devLoginInput = z.object({
   email: z.email(),
   displayName: z.string().min(1).max(LIMITS.displayName).optional(),

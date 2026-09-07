@@ -1,11 +1,18 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
 import { env, isDev } from "~/env.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
 import { toSelfUser } from "~/lib/serialize.js";
-import { devLoginInput, desktopExchangeInput, desktopStartInput } from "~/validations/auth.js";
+import {
+  devLoginInput,
+  desktopExchangeInput,
+  desktopStartInput,
+  entrarInput,
+  registrarInput,
+  trocarSenhaInput,
+} from "~/validations/auth.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -82,6 +89,34 @@ export async function authRoutes(app: FastifyInstance) {
         .send({ accessToken: app.jwt.sign({ sub: user.id }), user: toSelfUser(user, await authService.providersOf(user.id)) });
     });
   }
+
+  /// A sessão que nasce de um registro ou de um login por senha: cookie de refresh e token de acesso.
+  const abrirSessao = async (req: FastifyRequest, reply: FastifyReply, user: { id: string }) => {
+    const completo = await authService.requireUser(user.id);
+    const refresh = await authService.issueRefreshToken(completo.id, metaOf(req));
+
+    return reply
+      .setCookie(REFRESH_COOKIE, refresh.raw, refreshCookieOptions)
+      .send({
+        accessToken: app.jwt.sign({ sub: completo.id }),
+        user: toSelfUser(completo, await authService.providersOf(completo.id)),
+      });
+  };
+
+  app.post("/auth/registrar", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (req, reply) => {
+    const user = await authService.registrar(registrarInput.parse(req.body));
+    return abrirSessao(req, reply, user);
+  });
+
+  app.post("/auth/entrar", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req, reply) => {
+    const user = await authService.entrarComSenha(entrarInput.parse(req.body));
+    return abrirSessao(req, reply, user);
+  });
+
+  app.put("/auth/senha", { preHandler: [app.authenticate] }, async (req, reply) => {
+    await authService.trocarSenha(req.userId, trocarSenhaInput.parse(req.body));
+    return reply.code(204).send();
+  });
 
   app.post("/auth/refresh", async (req, reply) => {
     const raw = req.cookies[REFRESH_COOKIE];
@@ -192,6 +227,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.get("/auth/config", () => ({
     devLogin: isDev,
     google: googleConfigured,
+    senha: true,
     voiceUrl: env.LIVEKIT_URL,
   }));
 }

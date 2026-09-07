@@ -113,6 +113,8 @@ model User {
   /// a conta da casa, que publica os temas e manda os avisos do app; opcional
   /// de propósito, para não precisar preencher quem já existe
   sistema     Boolean?
+  /// a senha, quando a conta entra por e-mail; ausente em quem só usa Google
+  senhaHash   String?
   status      PresenceStatus @default(OFFLINE)
   /// enfeites; ausente em quem nunca personalizou nada
   perfil              EstiloDePerfil?

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
 import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
+import { useEntrar, useRegistrar } from "~/@core/application/queries/auth/use-senha";
+import { apiErrorMessage } from "~/@core/lib/api";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
@@ -10,11 +12,39 @@ import { flx } from "~/lib/compat-de-tema";
 
 export const SignIn: React.FC = () => {
   const devLogin = useDevLogin();
-  const { devLoginEnabled, googleEnabled, apiUnreachable, retry, startSession } = useSession();
+  const entrar = useEntrar();
+  const registrar = useRegistrar();
+  const { devLoginEnabled, googleEnabled, senhaEnabled, apiUnreachable, retry, startSession } = useSession();
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  /// Entrar ou criar conta: o mesmo formulário, com um campo a mais no segundo.
+  const [modo, setModo] = useState<"entrar" | "criar">("entrar");
+  const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [erroDaSenha, setErroDaSenha] = useState<string | null>(null);
+  const ocupado = entrar.isPending || registrar.isPending;
+
+  const comSenha = async () => {
+    if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
+    if (senha.length < 8) return setErroDaSenha("A senha precisa de pelo menos 8 caracteres");
+    if (modo === "criar" && !nome.trim()) return setErroDaSenha("Diga como quer ser chamado");
+
+    setErroDaSenha(null);
+
+    try {
+      const session =
+        modo === "criar"
+          ? await registrar.mutateAsync({ email: email.trim(), senha, displayName: nome.trim() })
+          : await entrar.mutateAsync({ email: email.trim(), senha });
+
+      startSession(session.user);
+    } catch (erro) {
+      setErroDaSenha(apiErrorMessage(erro, "Não deu para entrar."));
+    }
+  };
 
   const ponte = desktop();
 
@@ -113,16 +143,84 @@ export const SignIn: React.FC = () => {
           </div>
         )}
 
-        {devLoginEnabled && (
+        {senhaEnabled && (
           <>
             <div data-gc="auth.sign-in.div--6" className="mb-4 flex items-center gap-2">
               <span data-gc="auth.sign-in.span--3" className="h-px flex-1 bg-line" />
-              <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
+              <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">{modo === "criar" ? "ou crie uma conta" : "ou entre com e-mail"}</span>
               <span data-gc="auth.sign-in.span--5" className="h-px flex-1 bg-line" />
             </div>
 
-            <Label data-gc="auth.sign-in.label" htmlFor="email">Email</Label>
+            <Label data-gc="auth.sign-in.label" htmlFor="email-senha">E-mail</Label>
             <Input data-gc="auth.sign-in.input"
+              id="email-senha"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+              placeholder="voce@exemplo.com"
+              className="mb-3"
+            />
+
+            {modo === "criar" && (
+              <>
+                <Label data-gc="auth.sign-in.label--2" htmlFor="nome-de-exibicao">Nome de exibição</Label>
+                <Input data-gc="auth.sign-in.input--2"
+                  id="nome-de-exibicao"
+                  autoComplete="nickname"
+                  value={nome}
+                  maxLength={32}
+                  onChange={(e) => setNome(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+                  placeholder="Como seus amigos te chamam"
+                  className="mb-3"
+                />
+              </>
+            )}
+
+            <Label data-gc="auth.sign-in.label--3" htmlFor="senha">Senha</Label>
+            <Input data-gc="auth.sign-in.input--3"
+              id="senha"
+              type="password"
+              autoComplete={modo === "criar" ? "new-password" : "current-password"}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+              placeholder={modo === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
+              erro={erroDaSenha ?? undefined}
+            />
+
+            <Button data-gc="auth.sign-in.button--3" onClick={() => void comSenha()} disabled={ocupado} className="mt-5 w-full">
+              {ocupado ? "Um instante…" : modo === "criar" ? "Criar conta" : "Entrar"}
+            </Button>
+
+            <p data-gc="auth.sign-in.p--7" className="mt-3 text-center text-xs text-ink-faint">
+              {modo === "criar" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
+              <button data-gc="auth.sign-in.button--4"
+                type="button"
+                onClick={() => {
+                  setModo(modo === "criar" ? "entrar" : "criar");
+                  setErroDaSenha(null);
+                }}
+                className="font-medium text-link hover:underline"
+              >
+                {modo === "criar" ? "Entrar" : "Criar uma"}
+              </button>
+            </p>
+          </>
+        )}
+
+        {devLoginEnabled && (
+          <>
+            <div data-gc="auth.sign-in.div--7" className="mb-4 flex items-center gap-2">
+              <span data-gc="auth.sign-in.span--6" className="h-px flex-1 bg-line" />
+              <span data-gc="auth.sign-in.span--7" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
+              <span data-gc="auth.sign-in.span--8" className="h-px flex-1 bg-line" />
+            </div>
+
+            <Label data-gc="auth.sign-in.label--4" htmlFor="email">Email</Label>
+            <Input data-gc="auth.sign-in.input--4"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -131,8 +229,8 @@ export const SignIn: React.FC = () => {
               className="mb-3"
             />
 
-            <Label data-gc="auth.sign-in.label--2" htmlFor="display-name">Nome de exibição</Label>
-            <Input data-gc="auth.sign-in.input--2"
+            <Label data-gc="auth.sign-in.label--5" htmlFor="display-name">Nome de exibição</Label>
+            <Input data-gc="auth.sign-in.input--5"
               id="display-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -140,9 +238,9 @@ export const SignIn: React.FC = () => {
               placeholder="Como seus amigos te chamam"
             />
 
-            {error && <p data-gc="auth.sign-in.p--7" className="mt-2 text-sm text-danger">{error}</p>}
+            {error && <p data-gc="auth.sign-in.p--8" className="mt-2 text-sm text-danger">{error}</p>}
 
-            <Button data-gc="auth.sign-in.button--3"
+            <Button data-gc="auth.sign-in.button--5"
               onClick={() => void submit()}
               disabled={devLogin.isPending}
               className="mt-5 w-full"
@@ -150,7 +248,7 @@ export const SignIn: React.FC = () => {
               {devLogin.isPending ? "Entrando…" : "Entrar"}
             </Button>
 
-            <p data-gc="auth.sign-in.p--8" className="mt-4 text-center text-xs text-ink-faint">
+            <p data-gc="auth.sign-in.p--9" className="mt-4 text-center text-xs text-ink-faint">
               Login de desenvolvimento: cria a conta na hora, sem senha. Some em produção.
             </p>
           </>

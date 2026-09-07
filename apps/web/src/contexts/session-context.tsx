@@ -17,6 +17,7 @@ interface SessionContextValue {
   isBooting: boolean;
   devLoginEnabled: boolean;
   googleEnabled: boolean;
+  senhaEnabled: boolean;
   voiceReachable: boolean;
   apiUnreachable: boolean;
   retry: () => void;
@@ -113,6 +114,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     isBooting: !demorouDemais && (isBooting || (hasSession && me.isLoading)),
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,
+    senhaEnabled: config.data?.senha ?? false,
     voiceReachable: alcancaOServidorDeVoz(config.data?.voiceUrl),
     apiUnreachable: config.isError,
     retry: () => {

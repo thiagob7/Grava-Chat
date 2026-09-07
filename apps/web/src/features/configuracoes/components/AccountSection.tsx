@@ -7,6 +7,9 @@ import { useLogoutAll } from "~/@core/application/queries/auth/use-logout-all";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Input, Label } from "~/components/ui/input";
+import { useTrocarSenha } from "~/@core/application/queries/auth/use-senha";
 import {
   useEncerrarSessao,
   useSessoes,
@@ -32,6 +35,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
 }) => {
   const logoutAll = useLogoutAll();
   const [confirmando, setConfirmando] = useState(false);
+  const [trocandoSenha, setTrocandoSenha] = useState(false);
 
   return (
     <div data-gc="configuracoes.account-section.div">
@@ -59,9 +63,12 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
             <Campo data-gc="configuracoes.account-section.campo--2"
               rotulo="Entrar com"
               valor={
-                user.providers.includes("google")
-                  ? "Conta Google"
-                  : "Login de desenvolvimento"
+                [
+                  user.providers.includes("google") && "Conta Google",
+                  user.providers.includes("senha") && "E-mail e senha",
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Login de desenvolvimento"
               }
             />
             <Campo data-gc="configuracoes.account-section.campo--3"
@@ -74,7 +81,29 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         </div>
       </Secao>
 
-      <Secao data-gc="configuracoes.account-section.secao--2"
+      <Secao data-gc="configuracoes.account-section.secao--2" id="senha" titulo="Senha">
+        <div data-gc="configuracoes.account-section.div--6" className="flex items-center justify-between gap-4 rounded-lg bg-surface-2 p-5">
+          <div data-gc="configuracoes.account-section.div--7" className="min-w-0">
+            <p data-gc="configuracoes.account-section.p--3" className="text-sm font-medium">{user.providers.includes("senha") ? "Alterar a senha" : "Criar uma senha"}</p>
+            <p data-gc="configuracoes.account-section.p--4" className="mt-0.5 text-xs text-ink-faint">
+              {user.providers.includes("senha")
+                ? "Você entra com e-mail e senha. Troque quando quiser."
+                : "Com uma senha, você entra por e-mail também, sem depender do Google."}
+            </p>
+          </div>
+          <Button data-gc="configuracoes.account-section.button" variant="surface" size="sm" onClick={() => setTrocandoSenha(true)}>
+            {user.providers.includes("senha") ? "Alterar" : "Criar"}
+          </Button>
+        </div>
+      </Secao>
+
+      <TrocarSenha data-gc="configuracoes.account-section.trocar-senha"
+        aberto={trocandoSenha}
+        temSenha={user.providers.includes("senha")}
+        onFechar={() => setTrocandoSenha(false)}
+      />
+
+      <Secao data-gc="configuracoes.account-section.secao--3"
         id="dispositivos"
         titulo="Dispositivos"
         detalhe="Onde a sua conta está aberta agora. Não reconheceu algum? Desconecte."
@@ -82,7 +111,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         <ListaDeDispositivos data-gc="configuracoes.account-section.lista-de-dispositivos" />
       </Secao>
 
-      <Secao data-gc="configuracoes.account-section.secao--3"
+      <Secao data-gc="configuracoes.account-section.secao--4"
         id="usuarios-bloqueados"
         titulo="Usuários bloqueados"
         detalhe="Quem você bloqueou não te manda mensagem nem pedido de amizade. Desbloquear não refaz a amizade — só tira o bloqueio."
@@ -90,7 +119,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         <ListaDeBloqueados data-gc="configuracoes.account-section.lista-de-bloqueados" />
       </Secao>
 
-      <Secao data-gc="configuracoes.account-section.secao--4"
+      <Secao data-gc="configuracoes.account-section.secao--5"
         id="aplicativos-autorizados"
         titulo="Aplicativos autorizados"
         detalhe="Programas de fora que você deixou entrar na sua conta. Revogar corta o acesso na hora."
@@ -98,8 +127,8 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         <ListaDeAplicativos data-gc="configuracoes.account-section.lista-de-aplicativos" />
       </Secao>
 
-      <Secao data-gc="configuracoes.account-section.secao--5" id="sessoes" titulo="Sessões">
-        <div data-gc="configuracoes.account-section.div--6" className="space-y-3">
+      <Secao data-gc="configuracoes.account-section.secao--6" id="sessoes" titulo="Sessões">
+        <div data-gc="configuracoes.account-section.div--8" className="space-y-3">
           <Button data-gc="configuracoes.account-section.button.on-logout"
             variant="surface"
             onClick={onLogout}
@@ -109,14 +138,14 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
           </Button>
 
           {confirmando ? (
-            <div data-gc="configuracoes.account-section.div--7" className="rounded border border-danger/40 bg-danger-fundo p-4">
-              <p data-gc="configuracoes.account-section.p--3" className="text-sm">
+            <div data-gc="configuracoes.account-section.div--9" className="rounded border border-danger/40 bg-danger-fundo p-4">
+              <p data-gc="configuracoes.account-section.p--5" className="text-sm">
                 Isto derruba a sessão em <strong data-gc="configuracoes.account-section.strong">todos</strong> os aparelhos,
                 inclusive este. Serve para quando você esqueceu a conta aberta
                 em outro computador.
               </p>
-              <div data-gc="configuracoes.account-section.div--8" className="mt-3 flex gap-2">
-                <Button data-gc="configuracoes.account-section.button"
+              <div data-gc="configuracoes.account-section.div--10" className="mt-3 flex gap-2">
+                <Button data-gc="configuracoes.account-section.button--2"
                   variant="danger"
                   size="sm"
                   disabled={logoutAll.isPending}
@@ -124,7 +153,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
                 >
                   Encerrar em todos
                 </Button>
-                <Button data-gc="configuracoes.account-section.button--2"
+                <Button data-gc="configuracoes.account-section.button--3"
                   variant="surface"
                   size="sm"
                   onClick={() => setConfirmando(false)}
@@ -134,7 +163,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
               </div>
             </div>
           ) : (
-            <Button data-gc="configuracoes.account-section.button--3"
+            <Button data-gc="configuracoes.account-section.button--4"
               variant="ghost"
               onClick={() => setConfirmando(true)}
               className="w-full justify-start text-danger"
@@ -145,6 +174,68 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
         </div>
       </Secao>
     </div>
+  );
+};
+
+const TrocarSenha: React.FC<{ aberto: boolean; temSenha: boolean; onFechar: () => void }> = ({
+  aberto,
+  temSenha,
+  onFechar,
+}) => {
+  const trocar = useTrocarSenha();
+  const [atual, setAtual] = useState("");
+  const [nova, setNova] = useState("");
+  const [confirmacao, setConfirmacao] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
+
+  const salvar = () => {
+    if (nova.length < 8) return setErro("A senha precisa de pelo menos 8 caracteres");
+    if (nova !== confirmacao) return setErro("As duas senhas não batem");
+
+    setErro(null);
+    trocar.mutate(
+      { atual: temSenha ? atual : undefined, nova },
+      {
+        onSuccess: () => {
+          setAtual("");
+          setNova("");
+          setConfirmacao("");
+          onFechar();
+        },
+      },
+    );
+  };
+
+  return (
+    <Dialog data-gc="configuracoes.account-section.dialog" open={aberto} onOpenChange={(a) => !a && onFechar()}>
+      <DialogContent data-gc="configuracoes.account-section.dialog-content" className="max-w-sm">
+        <DialogHeader data-gc="configuracoes.account-section.dialog-header">
+          <DialogTitle data-gc="configuracoes.account-section.dialog-title">{temSenha ? "Alterar a senha" : "Criar uma senha"}</DialogTitle>
+        </DialogHeader>
+
+        <DialogBody data-gc="configuracoes.account-section.dialog-body" className="space-y-4">
+          {temSenha && (
+            <div data-gc="configuracoes.account-section.div--11">
+              <Label data-gc="configuracoes.account-section.label" htmlFor="senha-atual">Senha atual</Label>
+              <Input data-gc="configuracoes.account-section.input" id="senha-atual" type="password" autoComplete="current-password" value={atual} onChange={(e) => setAtual(e.target.value)} />
+            </div>
+          )}
+          <div data-gc="configuracoes.account-section.div--12">
+            <Label data-gc="configuracoes.account-section.label--2" htmlFor="senha-nova">Nova senha</Label>
+            <Input data-gc="configuracoes.account-section.input--2" id="senha-nova" type="password" autoComplete="new-password" value={nova} onChange={(e) => setNova(e.target.value)} placeholder="Pelo menos 8 caracteres" />
+          </div>
+          <div data-gc="configuracoes.account-section.div--13">
+            <Label data-gc="configuracoes.account-section.label--3" htmlFor="senha-confirmacao">Repita a nova senha</Label>
+            <Input data-gc="configuracoes.account-section.input--3" id="senha-confirmacao" type="password" autoComplete="new-password" value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} erro={erro ?? undefined} />
+          </div>
+        </DialogBody>
+
+        <DialogFooter data-gc="configuracoes.account-section.dialog-footer">
+          <Button data-gc="configuracoes.account-section.button.on-fechar" variant="surface" onClick={onFechar}>Cancelar</Button>
+          <Button data-gc="configuracoes.account-section.button.salvar" onClick={salvar} disabled={trocar.isPending}>{trocar.isPending ? "Salvando…" : "Salvar"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -159,20 +250,20 @@ const Campo: React.FC<{
     sigiloso && !revelado && prefs.modoStreamer && prefs.streamerEscondeDados;
 
   return (
-    <div data-gc="configuracoes.account-section.div--9">
-      <p data-gc="configuracoes.account-section.p--4" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+    <div data-gc="configuracoes.account-section.div--14">
+      <p data-gc="configuracoes.account-section.p--6" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
         {rotulo}
       </p>
 
       {escondido ? (
-        <button data-gc="configuracoes.account-section.button--4"
+        <button data-gc="configuracoes.account-section.button--5"
           onClick={() => setRevelado(true)}
           className="mt-0.5 rounded bg-surface-3 px-2 py-0.5 text-sm text-ink-faint transition hover:text-ink"
         >
           Escondido pelo modo streamer — clique para ver
         </button>
       ) : (
-        <p data-gc="configuracoes.account-section.p--5" className="mt-0.5 text-sm">{valor}</p>
+        <p data-gc="configuracoes.account-section.p--7" className="mt-0.5 text-sm">{valor}</p>
       )}
     </div>
   );
@@ -182,25 +273,25 @@ const ListaDeDispositivos: React.FC = () => {
   const { data: sessoes = [], isLoading } = useSessoes();
   const encerrar = useEncerrarSessao();
 
-  if (isLoading) return <p data-gc="configuracoes.account-section.p--6" className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--8" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!sessoes.length) {
     return (
-      <p data-gc="configuracoes.account-section.p--7" className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>
+      <p data-gc="configuracoes.account-section.p--9" className="text-sm text-ink-faint">Nenhuma outra sessão aberta.</p>
     );
   }
 
   return (
-    <div data-gc="configuracoes.account-section.div--10" className="overflow-hidden rounded-lg border border-line">
+    <div data-gc="configuracoes.account-section.div--15" className="overflow-hidden rounded-lg border border-line">
       {sessoes.map((sessao) => (
-        <div data-gc="configuracoes.account-section.div--11"
+        <div data-gc="configuracoes.account-section.div--16"
           key={sessao.id}
           className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
         >
           <Monitor data-gc="configuracoes.account-section.monitor" size={18} className="shrink-0 text-ink-faint" />
 
-          <div data-gc="configuracoes.account-section.div--12" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.account-section.p--8" className="flex items-center gap-2 text-sm font-medium">
+          <div data-gc="configuracoes.account-section.div--17" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.account-section.p--10" className="flex items-center gap-2 text-sm font-medium">
               <span data-gc="configuracoes.account-section.span" className="truncate">
                 {nomeDoAparelho(sessao.userAgent)}
               </span>
@@ -210,7 +301,7 @@ const ListaDeDispositivos: React.FC = () => {
                 </span>
               )}
             </p>
-            <p data-gc="configuracoes.account-section.p--9" className="mt-0.5 truncate text-xs text-ink-faint">
+            <p data-gc="configuracoes.account-section.p--11" className="mt-0.5 truncate text-xs text-ink-faint">
               {sessao.ip ?? "IP desconhecido"} · desde{" "}
               {new Intl.DateTimeFormat("pt-BR", {
                 dateStyle: "short",
@@ -220,7 +311,7 @@ const ListaDeDispositivos: React.FC = () => {
           </div>
 
           {!sessao.atual && (
-            <Button data-gc="configuracoes.account-section.button--5"
+            <Button data-gc="configuracoes.account-section.button--6"
               variant="ghost"
               size="sm"
               disabled={encerrar.isPending}
@@ -252,21 +343,21 @@ const ListaDeAplicativos: React.FC = () => {
   const revogar = useRevogarAplicativo();
   const confirmar = useConfirmar();
 
-  if (isLoading) return <p data-gc="configuracoes.account-section.p--10" className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--12" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!apps.length) {
     return (
-      <p data-gc="configuracoes.account-section.p--11" className="text-sm text-ink-faint">
+      <p data-gc="configuracoes.account-section.p--13" className="text-sm text-ink-faint">
         Nenhum aplicativo tem acesso à sua conta.
       </p>
     );
   }
 
   return (
-    <div data-gc="configuracoes.account-section.div--13" className="space-y-2">
+    <div data-gc="configuracoes.account-section.div--18" className="space-y-2">
       {apps.map((app) => (
-        <div data-gc="configuracoes.account-section.div--14" key={app.id} className="rounded-lg border border-line p-3">
-          <div data-gc="configuracoes.account-section.div--15" className="flex items-center gap-3">
+        <div data-gc="configuracoes.account-section.div--19" key={app.id} className="rounded-lg border border-line p-3">
+          <div data-gc="configuracoes.account-section.div--20" className="flex items-center gap-3">
             <Avatar data-gc="configuracoes.account-section.avatar--2"
               id={app.usuario.id}
               name={app.usuario.displayName}
@@ -274,11 +365,11 @@ const ListaDeAplicativos: React.FC = () => {
               size={36}
             />
 
-            <div data-gc="configuracoes.account-section.div--16" className="min-w-0 flex-1">
-              <p data-gc="configuracoes.account-section.p--12" className="truncate text-sm font-medium">
+            <div data-gc="configuracoes.account-section.div--21" className="min-w-0 flex-1">
+              <p data-gc="configuracoes.account-section.p--14" className="truncate text-sm font-medium">
                 {app.usuario.displayName}
               </p>
-              <p data-gc="configuracoes.account-section.p--13" className="mt-0.5 truncate text-xs text-ink-faint">
+              <p data-gc="configuracoes.account-section.p--15" className="mt-0.5 truncate text-xs text-ink-faint">
                 {app.autorizadoEm
                   ? `Autorizado em ${quando(app.autorizadoEm)}`
                   : "Autorizado antes desta lista existir"}
@@ -286,7 +377,7 @@ const ListaDeAplicativos: React.FC = () => {
               </p>
             </div>
 
-            <Button data-gc="configuracoes.account-section.button--6"
+            <Button data-gc="configuracoes.account-section.button--7"
               variant="ghost"
               size="sm"
               disabled={revogar.isPending}
@@ -330,16 +421,16 @@ const ListaDeBloqueados: React.FC = () => {
 
   const bloqueados = relacoes.filter((relacao) => relacao.status === "BLOCKED");
 
-  if (isLoading) return <p data-gc="configuracoes.account-section.p--14" className="text-sm text-ink-faint">Carregando…</p>;
+  if (isLoading) return <p data-gc="configuracoes.account-section.p--16" className="text-sm text-ink-faint">Carregando…</p>;
 
   if (!bloqueados.length) {
-    return <p data-gc="configuracoes.account-section.p--15" className="text-sm text-ink-faint">Você não bloqueou ninguém.</p>;
+    return <p data-gc="configuracoes.account-section.p--17" className="text-sm text-ink-faint">Você não bloqueou ninguém.</p>;
   }
 
   return (
-    <div data-gc="configuracoes.account-section.div--17" className="overflow-hidden rounded-lg border border-line">
+    <div data-gc="configuracoes.account-section.div--22" className="overflow-hidden rounded-lg border border-line">
       {bloqueados.map((relacao) => (
-        <div data-gc="configuracoes.account-section.div--18"
+        <div data-gc="configuracoes.account-section.div--23"
           key={relacao.id}
           className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
         >
@@ -350,16 +441,16 @@ const ListaDeBloqueados: React.FC = () => {
             size={32}
           />
 
-          <div data-gc="configuracoes.account-section.div--19" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.account-section.p--16" className="truncate text-sm font-medium">
+          <div data-gc="configuracoes.account-section.div--24" className="min-w-0 flex-1">
+            <p data-gc="configuracoes.account-section.p--18" className="truncate text-sm font-medium">
               {relacao.user.displayName}
             </p>
-            <p data-gc="configuracoes.account-section.p--17" className="truncate text-xs text-ink-faint">
+            <p data-gc="configuracoes.account-section.p--19" className="truncate text-xs text-ink-faint">
               @{relacao.user.username}
             </p>
           </div>
 
-          <Button data-gc="configuracoes.account-section.button--7"
+          <Button data-gc="configuracoes.account-section.button--8"
             variant="ghost"
             size="sm"
             disabled={desbloquear.isPending}

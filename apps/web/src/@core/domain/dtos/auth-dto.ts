@@ -23,3 +23,19 @@ export interface DesktopLoginDTO {
   codigo: string;
   verificador: string;
 }
+
+export interface RegistrarDTO {
+  email: string;
+  senha: string;
+  displayName: string;
+}
+
+export interface EntrarDTO {
+  email: string;
+  senha: string;
+}
+
+export interface TrocarSenhaDTO {
+  atual?: string;
+  nova: string;
+}

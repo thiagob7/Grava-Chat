@@ -42,5 +42,6 @@ export interface SessionModel {
 export interface AuthConfigModel {
   devLogin: boolean;
   google: boolean;
+  senha?: boolean;
   voiceUrl: string;
 }

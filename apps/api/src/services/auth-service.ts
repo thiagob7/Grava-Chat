@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { AppError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
+import { conferirSenha, gerarHash } from "~/lib/senha.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
 import { accountRepository } from "~/repositories/account-repository.js";
@@ -118,6 +119,58 @@ export const authService = {
       displayName: params.displayName ?? seed,
       avatarUrl: params.avatarUrl ?? null,
     });
+  },
+
+  /*
+    Conta por e-mail e senha. O e-mail é a identidade, como no Google: se já
+    existe conta com ele, não se cria outra — a pessoa entra com a que tem.
+  */
+  async registrar(params: { email: string; senha: string; displayName: string }) {
+    const email = params.email.toLowerCase();
+
+    if (await userRepository.findByEmail(email)) {
+      throw new AppError("Já existe uma conta com esse e-mail. Entre com ela.", 409);
+    }
+
+    const user = await userRepository.create({
+      email,
+      username: await authService.uniqueUsername(email.split("@")[0] ?? "user"),
+      displayName: params.displayName,
+      senhaHash: await gerarHash(params.senha),
+    });
+
+    await accountRepository.create({ userId: user.id, provider: "senha", providerAccountId: email });
+
+    return user;
+  },
+
+  /// Erro igual para e-mail que não existe e senha errada: não se entrega qual dos dois.
+  async entrarComSenha(params: { email: string; senha: string }) {
+    const user = await userRepository.findByEmail(params.email.toLowerCase());
+    const guardado = user?.senhaHash;
+
+    if (!user || !guardado || !(await conferirSenha(params.senha, guardado))) {
+      throw new UnauthorizedError("E-mail ou senha errados");
+    }
+
+    return user;
+  },
+
+  async trocarSenha(userId: string, params: { atual?: string; nova: string }) {
+    const user = await authService.requireUser(userId);
+
+    if (user.senhaHash) {
+      if (!params.atual || !(await conferirSenha(params.atual, user.senhaHash))) {
+        throw new AppError("A senha atual não confere");
+      }
+    }
+
+    await userRepository.update(userId, { senhaHash: await gerarHash(params.nova) });
+
+    const contas = await accountRepository.findManyByUser(userId);
+    if (!contas.some((c) => c.provider === "senha")) {
+      await accountRepository.create({ userId, provider: "senha", providerAccountId: user.email });
+    }
   },
 
   async signInWithProvider(params: {
