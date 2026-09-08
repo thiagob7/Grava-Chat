@@ -74,6 +74,7 @@
     "@types/color": "^4.2.1",
     "@types/react": "19.2.5",
     "@types/react-dom": "19.2.3",
+    "@vercel/config": "^0.7.0",
     "@vitejs/plugin-react": "5.1.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
