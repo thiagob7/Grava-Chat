@@ -1,4 +1,4 @@
-import { lerCabecalhoDoTema, type TemaCompartilhado } from "@gravae/shared";
+import { lerCabecalhoDoTema, type TemaCompartilhado, type TemaDaGaleria } from "@gravae/shared";
 
 import { CAMINHO_DO_TEMA } from "@gravae/shared";
 import { env } from "~/env.js";
@@ -37,7 +37,34 @@ function serializar(tema: TemaComAutor): TemaCompartilhado {
   };
 }
 
+function paraGaleria(tema: Omit<TemaComAutor, "css">): TemaDaGaleria {
+  return {
+    id: tema.id,
+    nome: tema.nome,
+    descricao: tema.descricao,
+    autor: tema.autor,
+    versao: tema.versao,
+    tags: tema.tags,
+    substituicoes: (tema.substituicoes ?? {}) as Record<string, string>,
+    publicadoPor: tema.usuario,
+    createdAt: tema.createdAt.toISOString(),
+  };
+}
+
 const AUTOR = { select: { id: true, displayName: true, avatarUrl: true } };
+
+/// O cartão não precisa da folha, e ela é a parte pesada do registro.
+const SEM_CSS = {
+  id: true,
+  nome: true,
+  descricao: true,
+  autor: true,
+  versao: true,
+  tags: true,
+  substituicoes: true,
+  createdAt: true,
+  usuario: AUTOR,
+} as const;
 
 export const temaService = {
   async publicar(userId: string, entrada: PublicarTemaInput): Promise<TemaCompartilhado> {
@@ -87,6 +114,35 @@ export const temaService = {
     if (!tema) throw new NotFoundError("Tema não encontrado");
 
     return serializar(tema);
+  },
+
+  /*
+    A galeria de temas do Explorar.
+
+    Publicar já é tornar público — o link do tema abre para qualquer um desde
+    sempre. O que faltava era um lugar de encontrar sem o link na mão. Vai sem
+    o CSS: a folha inteira pesa mais que a página de cartões, e quem escolhe
+    um busca o tema pelo caminho que já existe.
+  */
+  async galeria(busca?: string): Promise<TemaDaGaleria[]> {
+    const termo = busca?.trim();
+
+    const temas = await prisma.tema.findMany({
+      where: termo
+        ? {
+            OR: [
+              { nome: { contains: termo, mode: "insensitive" } },
+              { descricao: { contains: termo, mode: "insensitive" } },
+              { tags: { has: termo.toLowerCase() } },
+            ],
+          }
+        : {},
+      select: SEM_CSS,
+      orderBy: { createdAt: "desc" },
+      take: 60,
+    });
+
+    return temas.map(paraGaleria);
   },
 
   async meus(userId: string): Promise<TemaCompartilhado[]> {

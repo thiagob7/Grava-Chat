@@ -10,6 +10,24 @@ export const botRepository = {
     });
   },
 
+  /*
+    Os bots que qualquer um pode adicionar. Bot fechado só entra em servidor
+    do próprio dono, então não tem por que aparecer na vitrine de ninguém.
+  */
+  findPublicos(busca?: string) {
+    return prisma.bot.findMany({
+      where: {
+        publico: true,
+        ...(busca
+          ? { usuario: { is: { displayName: { contains: busca, mode: "insensitive" } } } }
+          : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      take: 60,
+      include: { usuario: true, owner: { select: { id: true, displayName: true } } },
+    });
+  },
+
   findById(id: string) {
     return prisma.bot.findUnique({ where: { id }, include: { usuario: true } });
   },

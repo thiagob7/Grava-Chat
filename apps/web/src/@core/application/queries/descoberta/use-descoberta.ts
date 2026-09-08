@@ -3,7 +3,9 @@ import { toast } from "react-toastify";
 
 import {
   entrarNaComunidade,
+  findAplicativos,
   findComunidades,
+  findTemasDaGaleria,
   type FiltroDeDescoberta,
 } from "~/@core/application/requests/descoberta/descoberta";
 import { apiErrorMessage } from "~/@core/lib/api";
@@ -13,6 +15,20 @@ export const useComunidades = (filtro: FiltroDeDescoberta) =>
   useQuery({
     queryKey: queryKeys.descoberta.comunidades(filtro.categoria ?? "", filtro.busca ?? ""),
     queryFn: () => findComunidades(filtro),
+    placeholderData: keepPreviousData,
+  });
+
+export const useTemasDaGaleria = (busca: string) =>
+  useQuery({
+    queryKey: queryKeys.descoberta.temas(busca),
+    queryFn: () => findTemasDaGaleria(busca || undefined),
+    placeholderData: keepPreviousData,
+  });
+
+export const useAplicativos = (busca: string) =>
+  useQuery({
+    queryKey: queryKeys.descoberta.aplicativos(busca),
+    queryFn: () => findAplicativos(busca || undefined),
     placeholderData: keepPreviousData,
   });
 

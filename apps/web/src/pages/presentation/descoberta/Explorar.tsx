@@ -10,8 +10,10 @@ import {
 } from "@gravae/shared";
 
 import {
+  useAplicativos,
   useComunidades,
   useEntrarNaComunidade,
+  useTemasDaGaleria,
 } from "~/@core/application/queries/descoberta/use-descoberta";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
@@ -21,7 +23,10 @@ import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ComunidadeModal } from "~/features/descoberta/components/ComunidadeModal";
+import { CartaoDeAplicativo } from "~/features/descoberta/components/CartaoDeAplicativo";
 import { CartaoDeComunidade } from "~/features/descoberta/components/CartaoDeComunidade";
+import { CartaoDeTemaDaGaleria } from "~/features/descoberta/components/CartaoDeTema";
+import { useImportarTema } from "~/features/tema/stores/importar-tema";
 import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
@@ -32,11 +37,19 @@ import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 type Aba = "comunidades" | "aplicativos" | "temas";
 
-const ABAS: { id: Aba; nome: string; icone: React.ElementType; emBreve?: boolean }[] = [
+const ABAS: { id: Aba; nome: string; icone: React.ElementType }[] = [
   { id: "comunidades", nome: "Comunidades", icone: Users },
-  { id: "aplicativos", nome: "Aplicativos", icone: LayoutGrid, emBreve: true },
-  { id: "temas", nome: "Temas", icone: Palette, emBreve: true },
+  { id: "aplicativos", nome: "Aplicativos", icone: LayoutGrid },
+  { id: "temas", nome: "Temas", icone: Palette },
 ];
+
+/// O que a busca procura muda com a aba, e o filtro de categoria só existe
+/// para comunidade: aplicativo e tema não têm categoria para filtrar.
+const PROCURAR: Record<Aba, string> = {
+  comunidades: "Buscar comunidades",
+  aplicativos: "Buscar aplicativos",
+  temas: "Buscar temas",
+};
 
 export const Explorar: React.FC = () => {
   const navigate = useNavigate();
@@ -98,9 +111,9 @@ export const Explorar: React.FC = () => {
             <button data-gc="descoberta.explorar.button"
               key={item.id}
               type="button"
-              disabled={item.emBreve}
               onClick={() => {
                 setAba(item.id);
+                setBusca("");
                 setMenuAberto(false);
               }}
               className={cn(
@@ -108,17 +121,11 @@ export const Explorar: React.FC = () => {
                 aba === item.id
                   ? "bg-selecionado text-ink"
                   : "text-ink-muted hover:bg-hover hover:text-ink",
-                item.emBreve && "cursor-default opacity-60 hover:bg-transparent",
               )}
             >
               <item.icone data-gc="descoberta.explorar.itemicone" size={18} className="shrink-0" />
               <span data-gc="descoberta.explorar.span" className="min-w-0 flex-1 truncate font-medium">{item.nome}</span>
 
-              {item.emBreve && (
-                <span data-gc="descoberta.explorar.span--2" className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 text-10 font-semibold uppercase tracking-wide text-ink-faint">
-                  em breve
-                </span>
-              )}
             </button>
           ))}
         </nav>
@@ -167,6 +174,8 @@ export const Explorar: React.FC = () => {
             )}
 
             <div data-gc="descoberta.explorar.div--8" className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+              {aba === "comunidades" && (
+                <>
               <Filtro data-gc="descoberta.explorar.filtro"
                 ativo={categoria === null}
                 nome="Todos"
@@ -181,6 +190,8 @@ export const Explorar: React.FC = () => {
                   onEscolher={() => setCategoria(id)}
                 />
               ))}
+                </>
+              )}
             </div>
 
             <div data-gc="descoberta.explorar.div--9" className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
@@ -188,8 +199,8 @@ export const Explorar: React.FC = () => {
               <input data-gc="descoberta.explorar.input"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar comunidades"
-                aria-label="Buscar comunidades"
+                placeholder={PROCURAR[aba]}
+                aria-label={PROCURAR[aba]}
                 className={cn(campoNu, flxCls("campoDaDescoberta"))}
               />
               {busca && (
@@ -208,6 +219,8 @@ export const Explorar: React.FC = () => {
 
         <div data-gc="descoberta.explorar.div--10" className="min-h-0 flex-1 overflow-y-auto p-5">
           {aba === "comunidades" && <Comunidades data-gc="descoberta.explorar.comunidades" categoria={categoria} busca={busca} />}
+          {aba === "aplicativos" && <Aplicativos data-gc="descoberta.explorar.aplicativos" busca={busca} />}
+          {aba === "temas" && <Temas data-gc="descoberta.explorar.temas" busca={busca} />}
         </div>
       </div>
     </div>
@@ -301,5 +314,104 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
         onAbrir={(comunidade) => navigate(`/channels/${comunidade.id}`)}
       />
     </div>
+  );
+};
+
+/*
+  A grade das duas abas novas.
+
+  Comunidade tem cartão alto por causa do banner; tema e aplicativo cabem em
+  cartão mais baixo, mas dividem a mesma medida de coluna — trocar de aba não
+  pode remontar a página inteira debaixo do cursor.
+*/
+const Grade: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div data-gc="descoberta.explorar.div--15" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">{children}</div>
+);
+
+const Vazio: React.FC<{ icone: React.ElementType; titulo: string; detalhe: string }> = ({
+  icone: Icone,
+  titulo,
+  detalhe,
+}) => (
+  <div data-gc="descoberta.explorar.div--16" className="flex flex-col items-center gap-3 py-20 text-center">
+    <Icone data-gc="descoberta.explorar.icone" size={36} className="text-ink-faint" />
+    <div data-gc="descoberta.explorar.div--17">
+      <p data-gc="descoberta.explorar.p--3" className="text-sm font-medium">{titulo}</p>
+      <p data-gc="descoberta.explorar.p--4" className="mt-1 max-w-sm text-xs text-ink-faint">{detalhe}</p>
+    </div>
+  </div>
+);
+
+const Carregando: React.FC = () => (
+  <Grade data-gc="descoberta.explorar.grade">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <Skeleton data-gc="descoberta.explorar.skeleton--2" key={i} className="h-56 rounded-lg" />
+    ))}
+  </Grade>
+);
+
+const Temas: React.FC<{ busca: string }> = ({ busca }) => {
+  const termo = useAtraso(busca.trim());
+  const abrirImportacao = useImportarTema((s) => s.abrir);
+  const { data: temas, isLoading } = useTemasDaGaleria(termo);
+
+  if (isLoading || !temas) return <Carregando data-gc="descoberta.explorar.carregando" />;
+
+  if (!temas.length)
+    return (
+      <Vazio data-gc="descoberta.explorar.vazio"
+        icone={Palette}
+        titulo={termo ? "Nenhum tema com esse nome" : "Ainda não há tema publicado"}
+        detalhe={
+          termo
+            ? "Tente outro termo, ou procure por uma das etiquetas do tema."
+            : "Todo tema publicado no estúdio aparece aqui, para qualquer um importar."
+        }
+      />
+    );
+
+  return (
+    <Grade data-gc="descoberta.explorar.grade--2">
+      {temas.map((tema) => (
+        <CartaoDeTemaDaGaleria data-gc="descoberta.explorar.cartao-de-tema-da-galeria"
+          key={tema.id}
+          tema={tema}
+          onImportar={() => abrirImportacao(tema.id)}
+        />
+      ))}
+    </Grade>
+  );
+};
+
+const Aplicativos: React.FC<{ busca: string }> = ({ busca }) => {
+  const navigate = useNavigate();
+  const termo = useAtraso(busca.trim());
+  const { data: aplicativos, isLoading } = useAplicativos(termo);
+
+  if (isLoading || !aplicativos) return <Carregando data-gc="descoberta.explorar.carregando--2" />;
+
+  if (!aplicativos.length)
+    return (
+      <Vazio data-gc="descoberta.explorar.vazio--2"
+        icone={LayoutGrid}
+        titulo={termo ? "Nenhum aplicativo com esse nome" : "Ainda não há aplicativo aberto"}
+        detalhe={
+          termo
+            ? "Tente outro termo."
+            : "Só aparecem aqui os aplicativos abertos, que qualquer um pode adicionar ao servidor onde manda."
+        }
+      />
+    );
+
+  return (
+    <Grade data-gc="descoberta.explorar.grade--3">
+      {aplicativos.map((aplicativo) => (
+        <CartaoDeAplicativo data-gc="descoberta.explorar.cartao-de-aplicativo"
+          key={aplicativo.id}
+          aplicativo={aplicativo}
+          onAdicionar={() => navigate(`/bots/${aplicativo.id}/adicionar`)}
+        />
+      ))}
+    </Grade>
   );
 };

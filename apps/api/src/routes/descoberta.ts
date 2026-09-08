@@ -3,7 +3,9 @@ import { z } from "zod";
 import { rooms } from "@gravae/shared";
 
 import { io } from "~/realtime/io.js";
+import { botService } from "~/services/bot-service.js";
 import { descobertaService } from "~/services/descoberta-service.js";
+import { temaService } from "~/services/tema-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { objectId } from "~/validations/common.js";
 
@@ -18,6 +20,10 @@ export async function descobertaRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
   app.get("/descobrir", (req) => descobertaService.listar(req.userId, filtro.parse(req.query)));
+
+  app.get("/descobrir/temas", (req) => temaService.galeria(filtro.parse(req.query).busca));
+
+  app.get("/descobrir/aplicativos", (req) => botService.publicos(filtro.parse(req.query).busca));
 
   app.post("/descobrir/:guildId/entrar", async (req) => {
     const { guildId } = params.parse(req.params);

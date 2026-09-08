@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import {
   PERMISSIONS,
   comandoDeBotSchema,
+  type AplicativoDescoberto,
   type ComandoDeBot,
   type Permission,
 } from "@gravae/shared";
@@ -52,6 +53,28 @@ const paraConvite = (bot: BotComUsuario) => ({
 export const botService = {
   async listar(ownerId: string) {
     return (await botRepository.findManyOf(ownerId)).map((b) => paraDono(b));
+  },
+
+  /*
+    A vitrine de aplicativos do Explorar.
+
+    Chega sem token e sem segredo: o que vale para quem procura é o nome, o
+    que o bot faz e o que ele pede ao entrar. O convite continua sendo o
+    caminho de adicionar, e é lá que a pessoa decide.
+  */
+  async publicos(busca?: string): Promise<AplicativoDescoberto[]> {
+    const bots = await botRepository.findPublicos(busca?.trim() || undefined);
+
+    return bots.map((bot) => ({
+      id: bot.id,
+      nome: bot.usuario.displayName,
+      avatarUrl: bot.usuario.avatarUrl,
+      descricao: bot.descricao,
+      permissoesPedidas: bot.permissoesPedidas,
+      comandos: Array.isArray(bot.comandos) ? bot.comandos.length : 0,
+      dono: bot.owner,
+      createdAt: bot.createdAt.toISOString(),
+    }));
   },
 
   async criar(ownerId: string, nome: string) {

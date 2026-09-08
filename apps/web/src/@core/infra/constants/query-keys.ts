@@ -91,6 +91,8 @@ export const queryKeys = {
   descoberta: {
     comunidades: (categoria: string, busca: string) =>
       ["descobrir-comunidades", categoria, busca] as const,
+    temas: (busca: string) => ["descobrir-temas", busca] as const,
+    aplicativos: (busca: string) => ["descobrir-aplicativos", busca] as const,
   },
 
   bot: {
