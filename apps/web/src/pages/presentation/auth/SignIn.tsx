@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
 import { useEntrar, usePedirSenhaNova, useRegistrar } from "~/@core/application/queries/auth/use-senha";
-import { apiErrorMessage } from "~/@core/lib/api";
+import { apiErrorMessage, BASE_DA_API } from "~/@core/lib/api";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
@@ -138,7 +138,7 @@ export const SignIn: React.FC = () => {
             className="mb-4 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
           >
             {googleEnabled ? (
-              <a data-gc="auth.sign-in.a" href="/api/auth/google">
+              <a data-gc="auth.sign-in.a" href={`${BASE_DA_API}/auth/google`}>
                 <GoogleMark data-gc="auth.sign-in.google-mark--2" /> Entrar com Google
               </a>
             ) : (
