@@ -1,5 +1,5 @@
 import React from "react";
-import { Download, Loader2, RotateCw, Sparkles, TriangleAlert } from "lucide-react";
+import { CircleArrowUp, Download, Loader2, PackageCheck, RotateCw, TriangleAlert } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
@@ -10,19 +10,27 @@ export const AvisoDeAtualizacao: React.FC = () => {
 
   if (!estado || !temNovidade) return null;
 
+  /*
+    `pointer-events-none` no envoltório: ele atravessa a tela inteira e, sem
+    isso, come o clique do cabeçalho atrás dele mesmo sendo invisível. Só a
+    pílula recebe o mouse de volta.
+
+    E `regiao-sem-arrasto` na pílula: ela pousa em cima do topo do canal, que é
+    área de arrastar a janela — e área de arrastar engole clique. Era por isso
+    que o botão "Reiniciar agora" não respondia.
+  */
   return (
     <div data-gc="app.aviso-de-atualizacao.div"
-      className={cn(
-        "fixed inset-x-0 z-50 flex justify-center",
-        "top-10",
-      )}
+      className={cn("pointer-events-none fixed inset-x-0 z-50 flex justify-center", "top-10")}
     >
-      <div data-gc="app.aviso-de-atualizacao.div--2" className="flex items-center gap-3 rounded-full bg-surface-0 py-1.5 pl-4 pr-1.5 text-xs shadow-lg ring-1 ring-line">
+      <div data-gc="app.aviso-de-atualizacao.div--2" className="regiao-sem-arrasto pointer-events-auto flex items-center gap-3 rounded-full bg-surface-0 py-1.5 pl-4 pr-1.5 text-xs shadow-lg ring-1 ring-line">
         <span data-gc="app.aviso-de-atualizacao.span" className="flex max-w-sm items-center gap-2">
           {estado.erro ? (
             <TriangleAlert data-gc="app.aviso-de-atualizacao.triangle-alert" size={14} className="shrink-0 text-danger" />
+          ) : pronta || instalando ? (
+            <PackageCheck data-gc="app.aviso-de-atualizacao.package-check" size={14} className="shrink-0 text-online" />
           ) : (
-            <Sparkles data-gc="app.aviso-de-atualizacao.sparkles" size={14} className="shrink-0 text-brand" />
+            <CircleArrowUp data-gc="app.aviso-de-atualizacao.circle-arrow-up" size={14} className="shrink-0 text-brand" />
           )}
           {estado.erro ? (
             <span data-gc="app.aviso-de-atualizacao.span--2" className="text-danger">{estado.erro}</span>
