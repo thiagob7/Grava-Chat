@@ -3,16 +3,11 @@ import { Palette } from "lucide-react";
 
 import { useTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
-import { toast } from "react-toastify";
+import { useImportarTema } from "~/features/tema/stores/importar-tema";
 
 export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
   const { data: tema, isLoading, isError } = useTema(temaId);
-  const importar = useEstudio((s) => s.importar);
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
-  const confirmar = useConfirmar();
+  const abrirImportacao = useImportarTema((s) => s.abrir);
 
   if (isLoading)
     return (
@@ -72,21 +67,7 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
         <Button data-gc="tema.cartao-de-tema.button"
           size="sm"
           className="w-full"
-          onClick={() =>
-            void confirmar({
-              titulo: `Importar ${tema.nome}?`,
-              descricao: temCss
-                ? "O tema que você tem hoje no estúdio é substituído por este. Um tema traz CSS de quem escreveu, que pode mexer em qualquer canto da tela — só importe de gente em quem você confia."
-                : "As cores que você tem hoje no estúdio são substituídas por estas.",
-              acao: "Importar",
-            }).then(({ confirmado }) => {
-              if (!confirmado) return;
-
-              importar({ css: tema.css, substituicoes: tema.substituicoes, nome: tema.nome });
-              abrirConfiguracoes("aparencia", "tema");
-              toast.success(`${tema.nome} aplicado. Está no estúdio de temas.`);
-            })
-          }
+          onClick={() => abrirImportacao(tema.id)}
         >
           Importar tema
         </Button>

@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
 import { AvisoDeAtualizacao } from "~/features/app/components/AvisoDeAtualizacao";
+import { ModalDeImportarTema } from "~/features/tema/components/ModalDeImportarTema";
 import { AvisoDeNovoDispositivo } from "~/features/app/components/AvisoDeNovoDispositivo";
 import { AvisoDePermissoes } from "~/features/app/components/AvisoDePermissoes";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
@@ -48,6 +49,7 @@ export const App: React.FC = () => {
               <VoiceAudioSink data-gc="app.voice-audio-sink" />
               <SeletorDeTela data-gc="app.seletor-de-tela" />
               <VisualizadorDeImagem data-gc="app.visualizador-de-imagem" />
+              <ModalDeImportarTema data-gc="app.modal-de-importar-tema" />
               <ChuvaDeSuperReacao data-gc="app.chuva-de-super-reacao" />
               <ToastContainer data-gc="app.toast-container"
                 toastClassName={flxCls("aviso")}

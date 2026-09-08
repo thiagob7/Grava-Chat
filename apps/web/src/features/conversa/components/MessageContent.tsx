@@ -1,6 +1,7 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
+import { LinkDoTexto } from "~/features/conversa/components/LinkDoTexto";
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { EMOJI } from "~/features/expressao/lib/twemoji";
 
@@ -218,15 +219,7 @@ function corrido(
     }
 
     partes.push(
-      <a data-gc="conversa.message-content.a"
-        key={`${chave}-l${casamento.index}`}
-        href={url}
-        target="_blank"
-        rel="noreferrer noopener"
-        className={cn("text-link hover:underline", flxCls("linkNoTexto"))}
-      >
-        {url}
-      </a>,
+      <LinkDoTexto data-gc="conversa.message-content.link-do-texto" key={`${chave}-l${casamento.index}`} url={url} />,
     );
 
     ultimo = casamento.index + url.length;
