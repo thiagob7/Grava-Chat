@@ -1,10 +1,12 @@
-import type { Message } from "@gravae/shared";
+import type { Message, MotivoDeFalha } from "@gravae/shared";
 
 export type MessageModel = Message;
 
 export type PendingMessageModel = MessageModel & {
   pending?: true;
   failed?: true;
+  /// Por que não foi entregue. Só daqui: o aviso não vira mensagem guardada.
+  motivo?: MotivoDeFalha;
   nonce?: string;
 };
 

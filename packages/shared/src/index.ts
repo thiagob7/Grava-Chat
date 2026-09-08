@@ -5,6 +5,7 @@ export * from "./oauth.js";
 export * from "./cosmeticos.js";
 export * from "./models.js";
 export * from "./events.js";
+export * from "./falhas.js";
 export * from "./permissions.js";
 export * from "./convites.js";
 export * from "./temas.js";

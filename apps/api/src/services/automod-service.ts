@@ -46,7 +46,7 @@ export const autoModService = {
       }
 
       if (regra.acoes.includes("BLOCK")) {
-        throw new ForbiddenError(`Bloqueado pelo AutoMod (${regra.name}): ${motivo}`);
+        throw new ForbiddenError(`Bloqueado pelo AutoMod (${regra.name}): ${motivo}`).com("automod");
       }
     }
   },

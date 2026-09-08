@@ -161,7 +161,9 @@ export const messageService = {
       const outro = outroId ? await userRepository.findById(outroId) : null;
 
       if (outro?.sistema) {
-        throw new ForbiddenError("Esta conversa é só de avisos da casa. Não dá para responder aqui.");
+        throw new ForbiddenError("Esta conversa é só de avisos da casa. Não dá para responder aqui.").com(
+          "recusada",
+        );
       }
     }
 
@@ -169,15 +171,15 @@ export const messageService = {
       requireNaoEstaDeCastigo(contexto);
 
       if (!has(contexto.permissions, "SEND_MESSAGES")) {
-        throw new ForbiddenError("Você não pode escrever neste canal");
+        throw new ForbiddenError("Você não pode escrever neste canal").com("sem-permissao");
       }
 
       if (input.attachments?.length && !has(contexto.permissions, "ATTACH_FILES")) {
-        throw new ForbiddenError("Você não pode anexar arquivos neste canal");
+        throw new ForbiddenError("Você não pode anexar arquivos neste canal").com("sem-permissao");
       }
 
       if (input.poll && !has(contexto.permissions, "CREATE_POLLS")) {
-        throw new ForbiddenError("Você não pode criar enquetes neste canal");
+        throw new ForbiddenError("Você não pode criar enquetes neste canal").com("sem-permissao");
       }
 
       await respeitarModoLento(userId, channel, contexto);
@@ -592,7 +594,7 @@ function requireNaoEstaDeCastigo(contexto: Contexto) {
   if (!ate || ate <= new Date()) return;
 
   const minutos = Math.ceil((ate.getTime() - Date.now()) / 60_000);
-  throw new ForbiddenError(`Você está de castigo neste servidor por mais ${minutos} min`);
+  throw new ForbiddenError(`Você está de castigo neste servidor por mais ${minutos} min`).com("castigo");
 }
 
 async function respeitarModoLento(
@@ -615,7 +617,7 @@ async function respeitarModoLento(
 
   if (!primeiro) {
     const faltam = await redis.ttl(chave);
-    throw new AppError(`Modo lento: espere ${Math.max(faltam, 1)}s para mandar de novo`, 429);
+    throw new AppError(`Modo lento: espere ${Math.max(faltam, 1)}s para mandar de novo`, 429).com("modo-lento");
   }
 }
 
@@ -626,7 +628,7 @@ async function garantirFluxo(userId: string) {
   if (usos === 1) await redis.expire(chave, JANELA_DO_FLUXO_S);
 
   if (passouDoFluxo(usos)) {
-    throw new AppError(mensagemDeFluxo(await redis.ttl(chave)), 429);
+    throw new AppError(mensagemDeFluxo(await redis.ttl(chave)), 429).com("depressa");
   }
 }
 

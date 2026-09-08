@@ -59,7 +59,7 @@ function on<E extends ClientEventName>(
 
       if (!isDomainError) console.error(`[socket:${event}]`, err);
 
-      ack?.({ ok: false, error: message });
+      ack?.({ ok: false, error: message, motivo: isDomainError ? err.motivo : undefined });
 
       if (!isDomainError || err.avisar) socket.emit("error", { event, message });
     }

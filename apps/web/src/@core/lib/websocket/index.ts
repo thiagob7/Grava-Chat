@@ -1,7 +1,16 @@
 import { io, type Socket } from "socket.io-client";
-import type { ClientToServerEvents, ServerToClientEvents } from "@gravae/shared";
+import type { ClientToServerEvents, MotivoDeFalha, ServerToClientEvents } from "@gravae/shared";
 
 import { getAccessToken } from "~/@core/lib/api";
+
+/*
+  A recusa carrega o motivo pendurado no erro. Quem chama não precisa saber
+  de socket: lê a propriedade e decide o que a tela diz. Cair a conexão e o
+  servidor não responder são a mesma coisa para quem escreveu — em ambos a
+  mensagem não saiu daqui, e insistir depois resolve.
+*/
+const comMotivo = (mensagem: string, motivo: MotivoDeFalha) =>
+  Object.assign(new Error(mensagem), { motivo });
 
 export type GravaeSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -34,7 +43,7 @@ function whenConnected(timeoutMs = 10_000): Promise<GravaeSocket> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       s.off("connect", onConnect);
-      reject(new Error("Sem conexão com o servidor"));
+      reject(comMotivo("Sem conexão com o servidor", "sem-conexao"));
     }, timeoutMs);
 
     const onConnect = () => {
@@ -53,17 +62,20 @@ export async function emit<E extends keyof ClientToServerEvents>(
   const s = await whenConnected();
 
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("O servidor não respondeu")), 10_000);
+    const timer = setTimeout(
+      () => reject(comMotivo("O servidor não respondeu", "sem-conexao")),
+      10_000,
+    );
 
     (
       s.emit as (
         e: string,
         p: unknown,
-        ack: (r: { ok: boolean; data?: unknown; error?: string }) => void,
+        ack: (r: { ok: boolean; data?: unknown; error?: string; motivo?: MotivoDeFalha }) => void,
       ) => void
     )(event as string, payload, (res) => {
       clearTimeout(timer);
-      res.ok ? resolve(res.data) : reject(new Error(res.error ?? "Erro"));
+      res.ok ? resolve(res.data) : reject(comMotivo(res.error ?? "Erro", res.motivo ?? "erro"));
     });
   });
 }

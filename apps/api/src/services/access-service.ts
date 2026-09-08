@@ -70,16 +70,16 @@ export const accessService = {
 
   async requireChannelAccess(userId: string, channelId: string) {
     const channel = await channelRepository.findById(channelId);
-    if (!channel) throw new NotFoundError("Canal não encontrado");
+    if (!channel) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
 
     if (channel.guildId === null) {
-      if (!channel.recipients.includes(userId)) throw new NotFoundError("Canal não encontrado");
+      if (!channel.recipients.includes(userId)) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
       return { channel, contexto: null };
     }
 
     const contexto = await accessService.contextOf(userId, channel.guildId, channelId);
 
-    if (!has(contexto.permissions, "VIEW_CHANNEL")) throw new NotFoundError("Canal não encontrado");
+    if (!has(contexto.permissions, "VIEW_CHANNEL")) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
 
     return { channel, contexto };
   },

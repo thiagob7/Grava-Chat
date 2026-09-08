@@ -10,6 +10,7 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { CreatePollInput } from "@gravae/shared";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
+import { motivoDaFalha } from "~/features/conversa/lib/falha-de-envio";
 
 interface SendMessageVariables {
   channelId: string;
@@ -90,7 +91,9 @@ export const useSendMessage = () => {
       });
     },
 
-    onError: (_error, variables) => {
+    onError: (error, variables) => {
+      const motivo = motivoDaFalha(error);
+
       queryClient.setQueryData(queryKeys.channel.messages(variables.channelId), (old: MessagesCache) => {
         if (!old) return old;
 
@@ -100,7 +103,7 @@ export const useSendMessage = () => {
             ...page,
             messages: page.messages.map((m) =>
               (m as PendingMessageModel).nonce === variables.nonce
-                ? { ...m, pending: undefined, failed: true }
+                ? { ...m, pending: undefined, failed: true, motivo }
                 : m,
             ),
           })),

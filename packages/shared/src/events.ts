@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { DESIRED_STATUSES, type DesiredStatus } from "./constants.js";
 import { perfilPublicoSchema } from "./cosmeticos.js";
+import type { MotivoDeFalha } from "./falhas.js";
 import {
   objectId,
   messageSchema,
@@ -70,7 +71,13 @@ export const clientEventSchemas = {
 export type ClientEventName = keyof typeof clientEventSchemas;
 export type ClientEventPayload<E extends ClientEventName> = z.infer<(typeof clientEventSchemas)[E]>;
 
-export type Ack<T = void> = (res: { ok: true; data: T } | { ok: false; error: string }) => void;
+/*
+  A recusa leva o `motivo` junto do texto: o texto é para quem lê o log, e o
+  motivo é para a tela decidir o que dizer e se oferece tentar de novo.
+*/
+export type Ack<T = void> = (
+  res: { ok: true; data: T } | { ok: false; error: string; motivo?: MotivoDeFalha },
+) => void;
 
 export type ClientToServerEvents = {
   [E in ClientEventName]: (payload: ClientEventPayload<E>, ack?: Ack<unknown>) => void;

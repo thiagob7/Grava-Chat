@@ -1,4 +1,13 @@
+import type { MotivoDeFalha } from "@gravae/shared";
+
+/*
+  O erro de domínio. O `motivo` é opcional e serve à tela: o texto explica a
+  quem lê, o motivo deixa o cliente escolher o que mostrar e se adianta
+  tentar de novo. Só o caminho de mandar mensagem preenche por enquanto.
+*/
 export class AppError extends Error {
+  motivo?: MotivoDeFalha;
+
   constructor(
     message: string,
     readonly statusCode: number = 400,
@@ -6,6 +15,11 @@ export class AppError extends Error {
   ) {
     super(message);
     this.name = new.target.name;
+  }
+
+  com(motivo: MotivoDeFalha) {
+    this.motivo = motivo;
+    return this;
   }
 }
 
