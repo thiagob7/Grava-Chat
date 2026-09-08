@@ -1,6 +1,20 @@
+import { execSync } from "node:child_process";
 import { defineConfig } from "tsup";
 
+const git = (comando: string) => {
+  try {
+    return execSync(comando, { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+};
+
 export default defineConfig({
+  define: {
+    __VERSAO__: JSON.stringify(git("git rev-parse --short HEAD")),
+    __BRANCH__: JSON.stringify(git("git rev-parse --abbrev-ref HEAD")),
+    __CONSTRUIDO_EM__: JSON.stringify(new Date().toISOString()),
+  },
   entry: ["src/server.ts"],
   format: ["esm"],
   target: "node22",

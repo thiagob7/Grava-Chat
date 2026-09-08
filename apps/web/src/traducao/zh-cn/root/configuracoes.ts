@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "服务器",
     comunicado: "系统公告",
     denuncias: "举报",
+    publicacoes: "部署",
   },
   grupos: {
     conta: "账号",

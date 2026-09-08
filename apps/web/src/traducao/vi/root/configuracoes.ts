@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Máy chủ",
     comunicado: "Thông báo hệ thống",
     denuncias: "Báo cáo",
+    publicacoes: "Triển khai",
   },
   grupos: {
     conta: "Tài khoản",

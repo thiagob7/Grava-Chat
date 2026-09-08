@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "서버",
     comunicado: "시스템 공지",
     denuncias: "신고",
+    publicacoes: "배포",
   },
   grupos: {
     conta: "계정",

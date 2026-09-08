@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Serveris",
     comunicado: "Sistemos pranešimas",
     denuncias: "Pranešimai",
+    publicacoes: "Diegimai",
   },
   grupos: {
     conta: "Paskyra",

@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Διακομιστής",
     comunicado: "Ανακοίνωση συστήματος",
     denuncias: "Αναφορές",
+    publicacoes: "Αναπτύξεις",
   },
   grupos: {
     conta: "Λογαριασμός",

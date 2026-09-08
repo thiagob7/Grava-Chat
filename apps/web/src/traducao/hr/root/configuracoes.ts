@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Poslužitelj",
     comunicado: "Obavijest sustava",
     denuncias: "Prijave",
+    publicacoes: "Postavljanja",
   },
   grupos: {
     conta: "Račun",

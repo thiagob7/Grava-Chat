@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "เซิร์ฟเวอร์",
     comunicado: "ประกาศจากระบบ",
     denuncias: "รายงาน",
+    publicacoes: "การปรับใช้",
   },
   grupos: {
     conta: "บัญชี",

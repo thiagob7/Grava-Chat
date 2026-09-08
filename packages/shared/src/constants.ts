@@ -11,6 +11,7 @@ export const LIMITS = {
   messageLength: 4000,
   guildName: 64,
   channelName: 48,
+  statusDoCanal: 500,
   username: 32,
   displayName: 48,
   attachmentsPerMessage: 10,

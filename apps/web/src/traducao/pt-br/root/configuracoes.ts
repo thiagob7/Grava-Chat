@@ -24,6 +24,7 @@ export const configuracoes = {
     servidor: "Servidor",
     comunicado: "Comunicado do sistema",
     denuncias: "Denúncias",
+    publicacoes: "Publicações",
   },
   grupos: {
     conta: "Conta",

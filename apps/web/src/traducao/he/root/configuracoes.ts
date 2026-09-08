@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "שרת",
     comunicado: "הודעת מערכת",
     denuncias: "דיווחים",
+    publicacoes: "פריסות",
   },
   grupos: {
     conta: "חשבון",
