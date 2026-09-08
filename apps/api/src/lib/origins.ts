@@ -8,12 +8,23 @@ export function originPermitida(origin: string | undefined): boolean {
   if (!origin) return true;
   if (configuradas.includes(origin)) return true;
 
+  if (env.ACEITAR_PREVIAS_VERCEL && ehPreviaDaVercel(origin)) return true;
+
   if (!isDev) return false;
 
   try {
     const { hostname } = new URL(origin);
     if (hostname === "localhost" || hostname === "127.0.0.1") return true;
     return TUNEIS_DEV.some((padrao) => padrao.test(hostname));
+  } catch {
+    return false;
+  }
+}
+
+function ehPreviaDaVercel(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === "https:" && /\.vercel\.app$/.test(hostname);
   } catch {
     return false;
   }

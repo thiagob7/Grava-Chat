@@ -45,6 +45,12 @@ const schema = z.object({
   /// pela mesma origem.
   COOKIE_ENTRE_SITES: z.stringbool().default(false),
 
+  /// Aceita qualquer endereço `*.vercel.app` como origem. Existe só para o
+  /// staging: a Vercel dá uma URL nova a cada publicação de prévia, e fixar
+  /// uma no `WEB_ORIGIN` quebraria o CORS na publicação seguinte. Em produção
+  /// fica desligado — lá a origem é uma só e conhecida.
+  ACEITAR_PREVIAS_VERCEL: z.stringbool().default(false),
+
   /// O correio da casa. Com a chave do Resend preenchida, a API manda e-mail —
   /// hoje só o de "esqueci a senha". Vazia, a rota responde que o serviço não
   /// está configurado, em vez de fingir que mandou.
