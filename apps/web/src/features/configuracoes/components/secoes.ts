@@ -15,11 +15,7 @@ export type Secao =
   | "aplicativo"
   | "desktop"
   | "atalhos"
-  | "avancado"
-  | "servidor"
-  | "comunicado"
-  | "denuncias"
-  | "publicacoes";
+  | "avancado";
 
 export interface SubSecao {
   id: string;
@@ -110,8 +106,4 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   desktop: [],
   atalhos: [],
   avancado: [],
-  servidor: [],
-  comunicado: [],
-  denuncias: [],
-  publicacoes: [],
 };
