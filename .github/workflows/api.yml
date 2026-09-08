@@ -7,6 +7,10 @@
 #
 # O build acontece aqui, não na VM: ela tem 1/8 de núcleo e 1 GB, e compilar
 # lá seria lento e arriscaria estourar a memória.
+#
+# O pacote vai por UMA conexão, para a entrada padrão de um script fixo do
+# outro lado. A chave do GitHub não escolhe comando nem ganha terminal: se
+# vazar, o pior que fazem é republicar o que já está no repositório.
 name: API
 
 on:
@@ -62,33 +66,30 @@ jobs:
           chmod 600 ~/.ssh/id_deploy
           ssh-keyscan -H "${{ vars.VM_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Enviar
-        env:
-          ALVO: ubuntu@${{ vars.VM_HOST }}
-          DESTINO: /opt/gravae-api
-        run: |
-          SSH="ssh -i ~/.ssh/id_deploy -o BatchMode=yes"
-          rsync -az --delete -e "$SSH" apps/api/dist/ "$ALVO:$DESTINO/dist/"
-          rsync -az -e "$SSH" apps/api/prisma/schema.prisma "$ALVO:$DESTINO/prisma/"
-          rsync -az -e "$SSH" /tmp/api-package.json "$ALVO:$DESTINO/package.json"
-
-      - name: Instalar e reiniciar
+      - name: Publicar
         env:
           ALVO: ubuntu@${{ vars.VM_HOST }}
         run: |
-          SSH="ssh -i ~/.ssh/id_deploy -o BatchMode=yes"
-          $SSH "$ALVO" "cd /opt/gravae-api \
-            && npm install --omit=dev --no-audit --no-fund --silent \
-            && npx prisma generate --schema prisma/schema.prisma \
-            && sudo systemctl restart gravae-api"
+          mkdir -p pacote/prisma
+          cp -r apps/api/dist pacote/dist
+          cp apps/api/prisma/schema.prisma pacote/prisma/
+          cp /tmp/api-package.json pacote/package.json
 
-      - name: Conferir que voltou
+          tar czf - -C pacote . \
+            | ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$ALVO"
+
+      - name: Conferir que voltou com este commit
         run: |
+          esperado=$(git rev-parse --short HEAD)
+
           for i in $(seq 1 20); do
             resposta=$(curl -sS --max-time 5 https://gravaechat-api.duckdns.org/api/publico/versao || true)
-            echo "$resposta" | grep -q "$(git rev-parse --short HEAD)" && {
-              echo "no ar: $resposta"; exit 0;
-            }
+            if echo "$resposta" | grep -q "$esperado"; then
+              echo "no ar: $resposta"
+              exit 0
+            fi
             sleep 3
           done
-          echo "a API não voltou com este commit"; exit 1
+
+          echo "a API nao voltou com $esperado"
+          exit 1
