@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "App desktop",
     avancado: "Avanzate",
     servidor: "Server",
+    comunicado: "Comunicato di sistema",
   },
   grupos: {
     conta: "Account",

@@ -87,6 +87,42 @@ export const sistemaService = {
   },
 
   /*
+    Um comunicado da casa para muita gente.
+
+    Vai em segundo plano e devolve na hora quantos vão receber: com mil
+    pessoas na fila, esperar a última seria segurar a resposta por minutos.
+    Cada entrega é independente — uma que falha não para as outras, só entra
+    no log. Não pede amizade nem passa pelo freio de spam, porque quem manda
+    é a casa e o destino é a conversa que ela já tem com cada um.
+  */
+  async comunicar(userIds: string[], texto: string, log: FastifyBaseLogger) {
+    const casa = await sistemaService.usuario();
+    const destinos = [...new Set(userIds)].filter((id) => id !== casa.id);
+
+    void (async () => {
+      let entregues = 0;
+      let falhas = 0;
+
+      for (const userId of destinos) {
+        try {
+          const canal =
+            (await dmRepository.findBetween(casa.id, userId)) ?? (await dmRepository.create([casa.id, userId]));
+
+          await enviarMensagem(casa.id, { channelId: canal.id, content: texto });
+          entregues++;
+        } catch (err) {
+          falhas++;
+          log.error({ err, userId }, "comunicado não chegou");
+        }
+      }
+
+      log.info({ entregues, falhas }, "comunicado do sistema entregue");
+    })();
+
+    return { destinatarios: destinos.length };
+  },
+
+  /*
     Garante o servidor "Gravaê Temas" e publica cada tema da casa lá, fixado.
 
     Roda a cada subida e não repete nada: servidor, canal, membro e mensagem

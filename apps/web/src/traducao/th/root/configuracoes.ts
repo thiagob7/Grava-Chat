@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "แอปเดสก์ท็อป",
     avancado: "ขั้นสูง",
     servidor: "เซิร์ฟเวอร์",
+    comunicado: "ประกาศจากระบบ",
   },
   grupos: {
     conta: "บัญชี",

@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Приложение для компьютера",
     avancado: "Дополнительно",
     servidor: "Сервер",
+    comunicado: "Системное объявление",
   },
   grupos: {
     conta: "Аккаунт",

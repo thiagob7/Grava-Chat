@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Työpöytäsovellus",
     avancado: "Lisäasetukset",
     servidor: "Palvelin",
+    comunicado: "Järjestelmätiedote",
   },
   grupos: {
     conta: "Tili",

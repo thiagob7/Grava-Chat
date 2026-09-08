@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Skrivbordsapp",
     avancado: "Avancerat",
     servidor: "Server",
+    comunicado: "Systemmeddelande",
   },
   grupos: {
     conta: "Konto",

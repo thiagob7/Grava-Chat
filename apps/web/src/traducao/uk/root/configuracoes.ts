@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Застосунок для комп’ютера",
     avancado: "Додатково",
     servidor: "Сервер",
+    comunicado: "Системне оголошення",
   },
   grupos: {
     conta: "Обліковий запис",

@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "אפליקציית שולחן עבודה",
     avancado: "מתקדם",
     servidor: "שרת",
+    comunicado: "הודעת מערכת",
   },
   grupos: {
     conta: "חשבון",

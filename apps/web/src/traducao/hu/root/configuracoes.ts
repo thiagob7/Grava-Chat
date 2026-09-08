@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Asztali alkalmazás",
     avancado: "Speciális",
     servidor: "Kiszolgáló",
+    comunicado: "Rendszerüzenet",
   },
   grupos: {
     conta: "Fiók",

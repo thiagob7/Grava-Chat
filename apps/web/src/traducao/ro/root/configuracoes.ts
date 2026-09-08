@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Aplicație desktop",
     avancado: "Avansat",
     servidor: "Server",
+    comunicado: "Anunț de sistem",
   },
   grupos: {
     conta: "Cont",

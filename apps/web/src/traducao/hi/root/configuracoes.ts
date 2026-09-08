@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "डेस्कटॉप ऐप",
     avancado: "उन्नत",
     servidor: "सर्वर",
+    comunicado: "सिस्टम घोषणा",
   },
   grupos: {
     conta: "खाता",

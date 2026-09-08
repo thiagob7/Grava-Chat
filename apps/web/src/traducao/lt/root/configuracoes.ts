@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Kompiuterio programa",
     avancado: "Išplėstiniai",
     servidor: "Serveris",
+    comunicado: "Sistemos pranešimas",
   },
   grupos: {
     conta: "Paskyra",

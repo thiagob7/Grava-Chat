@@ -1,4 +1,5 @@
 import type { Prisma, PresenceStatus } from "@prisma/client";
+import { unset } from "~/lib/mongo.js";
 import { prisma } from "~/lib/prisma.js";
 
 export const userRepository = {
@@ -8,6 +9,27 @@ export const userRepository = {
 
   findByIdOrThrow(id: string) {
     return prisma.user.findUniqueOrThrow({ where: { id } });
+  },
+
+  /*
+    Só gente: bot e a conta da casa não recebem comunicado.
+
+    `NOT: { sistema: true }` não serve: em quem nunca foi marcado o campo
+    nem existe, e o Mongo não devolve documento por um campo ausente. É a
+    mesma armadilha do `deletedAt`, e a saída é a mesma — perguntar pelas
+    duas formas de "não é", que é o que o `unset` faz.
+  */
+  contar() {
+    return prisma.user.count({ where: { isBot: false, ...unset("sistema") } });
+  },
+
+  async idsDeTodos(): Promise<string[]> {
+    const linhas = await prisma.user.findMany({
+      where: { isBot: false, ...unset("sistema") },
+      select: { id: true },
+    });
+
+    return linhas.map((l) => l.id);
   },
 
   findByEmail(email: string) {

@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Приложение за компютър",
     avancado: "Разширени",
     servidor: "Сървър",
+    comunicado: "Системно съобщение",
   },
   grupos: {
     conta: "Акаунт",

@@ -315,13 +315,24 @@ export const DirectMessages: React.FC = () => {
             </PainelDaConversa>
 
           <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
+            {/*
+              O aviso ocupa o lugar da caixa de escrever, e por isso veste a
+              forma dela: mesma moldura, mesmo recuo, mesmo canto. Uma faixa de
+              ponta a ponta dizia "isto é outra coisa" — e não é: é o que
+              existe ali onde se escreveria.
+            */}
             {conversa.user.sistema ? (
-              <p data-gc="friends.direct-messages.p" className="flex items-center gap-3 border-t border-divisor bg-surface-1 px-5 py-4 text-sm text-ink-muted">
-                <span data-gc="friends.direct-messages.span--3" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-ink-faint text-surface-1">
-                  <Info data-gc="friends.direct-messages.info" size={13} strokeWidth={2.5} />
-                </span>
-                Comunicados do sistema do Gravaê. Não é possível responder aqui.
-              </p>
+              <section
+                data-gc="friends.direct-messages.section"
+                className="caixa-de-escrever bg-composer px-2 pb-3 @sm:px-3"
+              >
+                <p data-gc="friends.direct-messages.p" className="flex min-h-[var(--footer-box-height)] items-center gap-3 rounded-[var(--footer-box-radius)] bg-campo px-3 text-sm text-ink-muted">
+                  <span data-gc="friends.direct-messages.span--3" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-ink-faint text-surface-1">
+                    <Info data-gc="friends.direct-messages.info" size={13} strokeWidth={2.5} />
+                  </span>
+                  Comunicados do sistema do Gravaê. Não é possível responder aqui.
+                </p>
+              </section>
             ) : (
               <>
                 <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />

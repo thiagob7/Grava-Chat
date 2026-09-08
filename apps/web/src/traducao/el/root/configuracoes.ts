@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Εφαρμογή υπολογιστή",
     avancado: "Για προχωρημένους",
     servidor: "Διακομιστής",
+    comunicado: "Ανακοίνωση συστήματος",
   },
   grupos: {
     conta: "Λογαριασμός",

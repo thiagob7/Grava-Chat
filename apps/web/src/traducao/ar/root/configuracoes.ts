@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "تطبيق سطح المكتب",
     avancado: "متقدم",
     servidor: "الخادم",
+    comunicado: "بيان النظام",
   },
   grupos: {
     conta: "الحساب",

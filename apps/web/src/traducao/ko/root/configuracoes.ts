@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "데스크톱 앱",
     avancado: "고급",
     servidor: "서버",
+    comunicado: "시스템 공지",
   },
   grupos: {
     conta: "계정",

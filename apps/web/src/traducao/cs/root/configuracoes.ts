@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Aplikace pro počítač",
     avancado: "Pokročilé",
     servidor: "Server",
+    comunicado: "Systémové oznámení",
   },
   grupos: {
     conta: "Účet",

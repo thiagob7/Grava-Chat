@@ -553,7 +553,13 @@ export const Composer: React.FC<ComposerProps> = ({
             ref={espelho}
             texto={value}
             fontFamily={familiaDaFonte(fonte) ?? undefined}
-            className="py-3"
+            /*
+              Cinco, e não doze: a linha tem 22 e o botão ao lado tem 32, então
+              é (32 - 22) / 2 que faz o meio do texto bater com o meio do "+".
+              Com doze o texto subia sete pixels acima dos botões. O espelho
+              usa o mesmo recuo, senão o que se lê e o cursor andam separados.
+            */
+            className="py-[5px]"
           />
 
           <textarea data-gc="conversa.composer.textarea.colar"
@@ -660,7 +666,7 @@ export const Composer: React.FC<ComposerProps> = ({
             style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
             className={cn(
               flxCls("paragrafoDaCaixa"),
-              "relative block max-h-[50vh] w-full resize-none bg-transparent py-3 text-transparent caret-ink outline-none selection:bg-brand/40 placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed",
+              "relative block max-h-[50vh] w-full resize-none bg-transparent py-[5px] text-transparent caret-ink outline-none selection:bg-brand/40 placeholder:truncate placeholder:text-ink-faint disabled:cursor-not-allowed",
             )}
           />
           </div>

@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "桌面應用程式",
     avancado: "進階",
     servidor: "伺服器",
+    comunicado: "系統公告",
   },
   grupos: {
     conta: "帳號",

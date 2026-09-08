@@ -29,8 +29,7 @@ import {
   SlidersHorizontal,
   User,
   X,
-  LogOut,
-} from "lucide-react";
+  LogOut, Megaphone } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -48,6 +47,7 @@ import { AcessibilidadeSection } from "~/features/configuracoes/components/Acess
 import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection";
 import { BatePapoSection } from "~/features/configuracoes/components/BatePapoSection";
 import { PrivacidadeSection } from "~/features/configuracoes/components/PrivacidadeSection";
+import { ComunicadosSection } from "~/features/configuracoes/components/ComunicadosSection";
 import { ServidorSection } from "~/features/configuracoes/components/ServidorSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -206,6 +206,12 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
               icone: Server,
               subitens: SUBSECOES.servidor,
             },
+            {
+              id: "comunicado" as const,
+              chave: "configuracoes.telas.comunicado",
+              icone: Megaphone,
+              subitens: [],
+            },
           ],
         },
       ]
@@ -229,6 +235,7 @@ const TITULOS: Record<Secao, string> = {
   atalhos: "configuracoes.telas.atalhos",
   avancado: "configuracoes.telas.avancado",
   servidor: "configuracoes.telas.servidor",
+  comunicado: "configuracoes.telas.comunicado",
 };
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -477,6 +484,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "atalhos" && <AtalhosSection data-gc="configuracoes.user-settings-modal.atalhos-section" />}
                     {secao === "avancado" && <AvancadoSection data-gc="configuracoes.user-settings-modal.avancado-section" />}
                     {secao === "servidor" && user.admin && <ServidorSection data-gc="configuracoes.user-settings-modal.servidor-section" />}
+                    {secao === "comunicado" && user.admin && <ComunicadosSection data-gc="configuracoes.user-settings-modal.comunicados-section" />}
                   </ErrorBoundary>
                 </ContextoDaSecao.Provider>
               </div>

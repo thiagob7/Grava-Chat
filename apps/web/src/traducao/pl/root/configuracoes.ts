@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Aplikacja na komputer",
     avancado: "Zaawansowane",
     servidor: "Serwer",
+    comunicado: "Komunikat systemowy",
   },
   grupos: {
     conta: "Konto",

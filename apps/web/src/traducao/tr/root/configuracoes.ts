@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Masaüstü uygulaması",
     avancado: "Gelişmiş",
     servidor: "Sunucu",
+    comunicado: "Sistem duyurusu",
   },
   grupos: {
     conta: "Hesap",

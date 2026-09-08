@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Aplikacija za računalo",
     avancado: "Napredno",
     servidor: "Poslužitelj",
+    comunicado: "Obavijest sustava",
   },
   grupos: {
     conta: "Račun",

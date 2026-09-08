@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Aplikasi desktop",
     avancado: "Lanjutan",
     servidor: "Server",
+    comunicado: "Pengumuman sistem",
   },
   grupos: {
     conta: "Akun",

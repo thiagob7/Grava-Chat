@@ -21,6 +21,7 @@ export const configuracoes = {
     desktop: "Ứng dụng máy tính",
     avancado: "Nâng cao",
     servidor: "Máy chủ",
+    comunicado: "Thông báo hệ thống",
   },
   grupos: {
     conta: "Tài khoản",

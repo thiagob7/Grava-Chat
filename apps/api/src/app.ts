@@ -14,6 +14,7 @@ import { TETO_DE_CABECALHO } from "~/lib/limites-http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
 import { statusPublicoRoutes } from "~/routes/status-publico.js";
+import { adminRoutes } from "~/routes/admin.js";
 import { statusRoutes } from "~/routes/status.js";
 import { authRoutes } from "~/routes/auth.js";
 import { meRoutes } from "~/routes/me.js";
@@ -87,6 +88,7 @@ export async function buildApp() {
       await api.register(healthRoutes);
       await api.register(statusPublicoRoutes);
       await api.register(statusRoutes);
+      await api.register(adminRoutes);
       await api.register(authRoutes);
       await api.register(meRoutes);
       await api.register(guildRoutes);
