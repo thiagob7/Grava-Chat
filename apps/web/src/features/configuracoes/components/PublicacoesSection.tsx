@@ -1,8 +1,29 @@
 import React from "react";
-import { AlertTriangle, Check, ExternalLink, GitBranch, RefreshCw } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  CircleDashed,
+  ExternalLink,
+  GitBranch,
+  Hourglass,
+  Loader2,
+  RefreshCw,
+  X,
+} from "lucide-react";
 
-import { usePublicacoes, useBranchDoGit } from "~/@core/application/queries/admin/use-publicacoes";
-import { atraso, escreverDesde, REPOSITORIO } from "~/features/configuracoes/lib/publicacoes";
+import {
+  useBranchDoGit,
+  useHistoricoDePublicacoes,
+  usePublicacoes,
+} from "~/@core/application/queries/admin/use-publicacoes";
+import {
+  atraso,
+  escreverDesde,
+  ESPERANDO_APROVACAO,
+  FLUXO_DA_API,
+  REPOSITORIO,
+  type Publicacao,
+} from "~/features/configuracoes/lib/publicacoes";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
@@ -12,6 +33,9 @@ const quando = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle:
 export const PublicacoesSection: React.FC = () => {
   const linhas = usePublicacoes(true);
   const dev = useBranchDoGit("dev", true);
+  const historico = useHistoricoDePublicacoes(true);
+
+  const esperando = (historico.data ?? []).filter(ESPERANDO_APROVACAO);
 
   return (
     <div data-gc="configuracoes.publicacoes-section.div" className="max-w-2xl pb-10">
@@ -149,4 +173,14 @@ export const PublicacoesSection: React.FC = () => {
       </Secao>
     </div>
   );
+};
+
+const Marca: React.FC<{ situacao: Publicacao["situacao"] }> = ({ situacao }) => {
+  if (situacao === "boa") return <Check data-gc="configuracoes.publicacoes-section.check--2" size={14} className="shrink-0 text-online" />;
+  if (situacao === "falhou") return <X data-gc="configuracoes.publicacoes-section.x" size={14} className="shrink-0 text-danger" />;
+  if (situacao === "esperando") return <Hourglass data-gc="configuracoes.publicacoes-section.hourglass" size={14} className="shrink-0 text-idle" />;
+  if (situacao === "cancelada")
+    return <CircleDashed data-gc="configuracoes.publicacoes-section.circle-dashed" size={14} className="shrink-0 text-ink-faint" />;
+
+  return <Loader2 data-gc="configuracoes.publicacoes-section.loader2" size={14} className="shrink-0 animate-spin text-ink-muted" />;
 };
