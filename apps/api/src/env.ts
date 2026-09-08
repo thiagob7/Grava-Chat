@@ -37,6 +37,14 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
+  /// Liga quando o front vive noutro domínio que a API — é o caso do staging,
+  /// com a tela na Vercel e a API no DuckDNS. Sem isto o cookie de sessão sai
+  /// como `SameSite=Lax` e o navegador simplesmente não o manda para o outro
+  /// site: a pessoa entra e cai na primeira renovação, sem erro nenhum na
+  /// tela. Em produção fica desligado, porque lá o front e a API respondem
+  /// pela mesma origem.
+  COOKIE_ENTRE_SITES: z.stringbool().default(false),
+
   /// O correio da casa. Com a chave do Resend preenchida, a API manda e-mail —
   /// hoje só o de "esqueci a senha". Vazia, a rota responde que o serviço não
   /// está configurado, em vez de fingir que mandou.

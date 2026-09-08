@@ -24,21 +24,24 @@ declare module "fastify" {
   }
 }
 
-const refreshCookieOptions = {
+/// `SameSite=None` só existe com `Secure`; é regra do navegador, não escolha.
+const entreSites = env.COOKIE_ENTRE_SITES;
+const politicaDoCookie = {
   httpOnly: true,
   path: "/api/auth",
-  sameSite: "lax" as const,
-  secure: env.NODE_ENV === "production",
+  sameSite: (entreSites ? "none" : "lax") as "none" | "lax",
+  secure: entreSites || env.NODE_ENV === "production",
+};
+
+const refreshCookieOptions = {
+  ...politicaDoCookie,
   maxAge: 30 * 24 * 60 * 60,
 };
 
 const DESKTOP_COOKIE = "gravae_desktop";
 
 const desktopCookieOptions = {
-  httpOnly: true,
-  path: "/api/auth",
-  sameSite: "lax" as const,
-  secure: env.NODE_ENV === "production",
+  ...politicaDoCookie,
   maxAge: 10 * 60,
 };
 
