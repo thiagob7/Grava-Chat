@@ -40,8 +40,12 @@ const schema = z.object({
   /// O correio da casa. Com a chave do Resend preenchida, a API manda e-mail —
   /// hoje só o de "esqueci a senha". Vazia, a rota responde que o serviço não
   /// está configurado, em vez de fingir que mandou.
+  ///
+  /// O remetente de fábrica é o endereço de teste do próprio Resend, que não
+  /// depende de domínio nenhum. Para o e-mail chegar em qualquer pessoa, e não
+  /// só na caixa da conta, é preciso verificar um domínio e trocar isto.
   RESEND_API_KEY: z.string().default(""),
-  EMAIL_REMETENTE: z.string().default("Gravaê <nao-responda@gravae.io>"),
+  EMAIL_REMETENTE: z.string().default("Gravaê <onboarding@resend.dev>"),
 
   /// O e-mail de quem é dono do servidor "Gravaê Temas". Com isto preenchido,
   /// a API garante o servidor a cada subida e a conta da casa publica os temas
