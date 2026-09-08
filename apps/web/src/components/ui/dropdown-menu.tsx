@@ -126,7 +126,18 @@ export const DropdownMenuSubTrigger = ({
   <DropdownPrimitive.SubTrigger data-gc="ui.dropdown-menu.dropdown-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca data-[state=open]:bg-surface-3",
+      /*
+        A ordem importa aqui, e não é a ordem do texto: as duas regras pintam
+        o mesmo fundo, e a que o Tailwind gera por último vence. O submenu
+        aberto vinha depois e apagava o realce do mouse — o item sob o ponteiro
+        ficava cinza como os outros, e parecia que o hover tinha sumido.
+
+        Com `not-data-[highlighted]`, o cinza do aberto só vale quando o mouse
+        NÃO está nele. As duas deixam de disputar: o aberto lembra qual submenu
+        ficou de pé, e o realce sempre mostra onde o ponteiro está.
+      */
+      "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
+      "not-data-[highlighted]:data-[state=open]:bg-surface-3",
       className,
     )}
     {...props}
