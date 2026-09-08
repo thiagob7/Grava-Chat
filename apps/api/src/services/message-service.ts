@@ -228,6 +228,8 @@ export const messageService = {
         height: a.height ?? null,
         spoiler: a.spoiler ?? false,
         description: a.description ?? null,
+        duracaoMs: a.duracaoMs ?? null,
+        ondas: a.ondas ?? null,
       })),
       ...(input.poll ? { poll: montarEnquete(input.poll) } : {}),
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),

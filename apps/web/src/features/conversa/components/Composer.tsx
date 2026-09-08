@@ -17,6 +17,10 @@ import { CreatePollModal } from "~/features/conversa/components/CreatePollModal"
 import { ExpressionPicker, type Aba } from "~/features/expressao/components/ExpressionPicker";
 import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
 import { AcoesDaCaixa } from "~/features/conversa/components/AcoesDaCaixa";
+import { BarraDeGravacao } from "~/features/conversa/components/BarraDeGravacao";
+import type { RecadoGravado } from "~/features/conversa/hooks/use-gravador-de-voz";
+import { uploadArquivo } from "~/lib/upload";
+import { apiErrorMessage } from "~/@core/lib/api";
 import { classeDoBotaoDaCaixa } from "~/components/ui/button";
 import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
 import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
@@ -84,6 +88,7 @@ export const Composer: React.FC<ComposerProps> = ({
   const resposta = respostaAberta?.channelId === channelId ? respostaAberta : null;
 
   const [fonte, setFonte] = useState<FonteDeNome>(lerFonteSalva);
+  const [gravando, setGravando] = useState(false);
   const anexos = useAttachments();
 
   const [value, setValue] = useState("");
@@ -236,6 +241,31 @@ export const Composer: React.FC<ComposerProps> = ({
     anexos.clear();
     cancelarResposta();
     marcarEspera();
+  };
+
+  /*
+    O recado sobe e vira mensagem sozinho — sem passar pela bandeja de
+    anexos. Recado não é arquivo que se junta a um texto: ele já É a
+    mensagem, e pedir um segundo clique em "enviar" seria só atrito.
+  */
+  const enviarRecado = async (recado: RecadoGravado) => {
+    try {
+      const anexo = await uploadArquivo(recado.file);
+
+      sendMessage.mutate({
+        channelId,
+        content: "",
+        attachments: [{ ...anexo, duracaoMs: recado.duracaoMs, ondas: recado.ondas }],
+        replyToId: resposta?.messageId ?? null,
+        postId,
+        nonce: crypto.randomUUID(),
+      });
+
+      cancelarResposta();
+      marcarEspera();
+    } catch (erro) {
+      toast.error(apiErrorMessage(erro, "Não deu para mandar o recado."));
+    }
   };
 
   const enviarFigurinha = (sticker: Sticker) => {
@@ -548,7 +578,10 @@ export const Composer: React.FC<ComposerProps> = ({
             className="hidden"
           />
 
-          <div data-gc="conversa.composer.div--6" {...flx("colunaDoTexto", "relative min-w-0 flex-1")}>
+          <div
+            data-gc="conversa.composer.div--6"
+            {...flx("colunaDoTexto", cn("relative min-w-0 flex-1", gravando && "hidden"))}
+          >
           <EspelhoDoCompositor data-gc="conversa.composer.espelho-do-compositor"
             ref={espelho}
             texto={value}
@@ -671,7 +704,19 @@ export const Composer: React.FC<ComposerProps> = ({
           />
           </div>
 
-          <div data-gc="conversa.composer.div--7" {...flx("botoesDaCaixa", "flex shrink-0 items-center gap-[var(--composer-action-gap)]")}>
+          <BarraDeGravacao data-gc="conversa.composer.barra-de-gravacao.set-gravando"
+            desligado={!podeAnexar}
+            onPronto={(recado) => void enviarRecado(recado)}
+            onGravandoMudou={setGravando}
+          />
+
+          <div
+            data-gc="conversa.composer.div--7"
+            {...flx(
+              "botoesDaCaixa",
+              cn("flex shrink-0 items-center gap-[var(--composer-action-gap)]", gravando && "hidden"),
+            )}
+          >
             <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
             <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}

@@ -200,6 +200,8 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
       height: a.height,
       spoiler: a.spoiler,
       description: a.description,
+      duracaoMs: a.duracaoMs,
+      ondas: a.ondas,
     })),
     poll: m.poll
       ? {

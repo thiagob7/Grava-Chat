@@ -4,6 +4,7 @@ import { Download, EyeOff, FileText, Trash2 } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
 import { formatBytes, isImageType, MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
+import { MensagemDeVoz } from "~/features/conversa/components/MensagemDeVoz";
 import { PreviaDeTexto } from "~/features/conversa/components/PreviaDeTexto";
 import { ehAnexoDeTexto } from "~/features/conversa/lib/anexo-de-texto";
 import {
@@ -36,6 +37,14 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
   const { t } = useTranslation();
 
   if (!attachments.length) return null;
+
+  /*
+    Recado de voz não é anexo comum: quem manda não mandou um arquivo, mandou
+    uma fala. Reconhece-se pela duração gravada — só a gravação daqui a tem —,
+    e vai antes de qualquer outro tratamento.
+  */
+  const recado = attachments.find((a) => a.duracaoMs);
+  if (recado && attachments.length === 1) return <MensagemDeVoz data-gc="conversa.message-attachments.mensagem-de-voz" anexo={recado} />;
 
   /*
     A grade só entra quando é só imagem e ninguém está editando: com a lixeira

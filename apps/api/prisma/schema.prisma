@@ -78,6 +78,10 @@ type Attachment {
   spoiler     Boolean @default(false)
   /// texto alternativo, para quem usa leitor de tela
   description String?
+  /// Só em mensagem de voz: quanto dura, e a onda medida na hora de gravar.
+  /// Anexo comum não tem nenhum dos dois, e por isso são opcionais.
+  duracaoMs   Int?
+  ondas       String?
 }
 
 /// Uma opção da enquete. Os votos ficam com a opção porque é assim que a tela
