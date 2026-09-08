@@ -147,7 +147,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
               />
               <span data-gc="amizades.dm-sidebar.span--2" className="min-w-0 flex-1 text-left">
                 <span data-gc="amizades.dm-sidebar.span--3" className="block truncate">
-                  <UserName data-gc="amizades.dm-sidebar.user-name" nome={dm.user.displayName} ehBot={dm.user.isBot} ehSistema={dm.user.sistema} />
+                  <UserName data-gc="amizades.dm-sidebar.user-name" nome={dm.user.displayName} ehBot={dm.user.isBot} ehSistema={dm.user.sistema} selo="sm" />
                 </span>
 
                 {(() => {

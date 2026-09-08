@@ -316,8 +316,10 @@ export const DirectMessages: React.FC = () => {
 
           <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
             {conversa.user.sistema ? (
-              <p data-gc="friends.direct-messages.p" className="mx-4 mb-4 flex items-center gap-2.5 rounded-lg bg-surface-2 px-4 py-3 text-sm text-ink-muted">
-                <Info data-gc="friends.direct-messages.info" size={16} className="shrink-0 text-ink-faint" />
+              <p data-gc="friends.direct-messages.p" className="flex items-center gap-3 border-t border-divisor bg-surface-1 px-5 py-4 text-sm text-ink-muted">
+                <span data-gc="friends.direct-messages.span--3" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-ink-faint text-surface-1">
+                  <Info data-gc="friends.direct-messages.info" size={13} strokeWidth={2.5} />
+                </span>
                 Comunicados do sistema do Gravaê. Não é possível responder aqui.
               </p>
             ) : (
@@ -372,13 +374,13 @@ const Chamando: React.FC<{
 
   return (
     <div data-gc="friends.direct-messages.div--7" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
-      <span data-gc="friends.direct-messages.span--3" className="relative">
+      <span data-gc="friends.direct-messages.span--4" className="relative">
         <Avatar data-gc="friends.direct-messages.avatar--2" id={userId} name={nome} url={avatarUrl} size={72} />
-        <span data-gc="friends.direct-messages.span--4" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
+        <span data-gc="friends.direct-messages.span--5" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
       </span>
 
       <p data-gc="friends.direct-messages.p--2" className="text-sm text-ink-muted">
-        Chamando <span data-gc="friends.direct-messages.span--5" className="font-semibold text-ink">{nome}</span>…
+        Chamando <span data-gc="friends.direct-messages.span--6" className="font-semibold text-ink">{nome}</span>…
       </p>
 
       <button data-gc="friends.direct-messages.button.on-desistir"

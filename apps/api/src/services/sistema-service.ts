@@ -33,9 +33,23 @@ function textoDoTema(tema: TemaDaCasa): string {
 }
 
 export const sistemaService = {
+  /*
+    A conta da casa não é bot.
+
+    Bot é o que alguém cria com código, ganha token e responde por conta
+    própria — e por isso leva o selo "bot" e recebe mensagem. Esta aqui é o
+    sistema: quem escreve por ela é a própria API, ninguém a controla, e o
+    selo é "sistema". Nasceu marcada como bot por engano; quem já existe é
+    corrigida aqui, uma vez.
+  */
   async usuario() {
     const existente = await userRepository.findByEmail(EMAIL_DA_CASA);
-    if (existente) return existente;
+
+    if (existente) {
+      if (!existente.isBot) return existente;
+
+      return userRepository.update(existente.id, { isBot: false, sistema: true });
+    }
 
     const livre = !(await userRepository.findByUsername("gravae"));
 
@@ -44,7 +58,7 @@ export const sistemaService = {
       username: livre ? "gravae" : "gravae-sistema",
       displayName: "Gravaê",
       avatarUrl: `${env.WEB_ORIGIN}/brand/icone-512.png`,
-      isBot: true,
+      isBot: false,
       sistema: true,
     });
   },

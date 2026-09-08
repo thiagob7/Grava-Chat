@@ -176,6 +176,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 corDoCargo={corDoCargo}
                 ehBot={member.user.isBot}
                 ehSistema={member.user.sistema}
+                selo="sm"
                 className={cn(
                   "min-w-0 truncate text-sm font-medium",
                   flxCls("nomeDoMembro"),

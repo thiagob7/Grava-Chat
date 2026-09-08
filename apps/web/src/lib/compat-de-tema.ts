@@ -584,6 +584,8 @@ export const LUGARES = {
 
   /// O selo de quem não é gente: app e webhook usam o mesmo aqui.
   seloDeApp: { classes: ["ChannelUserTag.module__tag_gc"] },
+  /// O mesmo selo, na medida de lista — lá eles têm três tamanhos.
+  seloDeAppMiudo: { classes: ["ChannelUserTag.module__tagSm_gc"] },
 
   listaDeAmigos: { classes: ["DMFriendsView.module__content_gc"] },
   ativosAgora: { classes: ["ActiveNowSidebar.module__sidebar_gc"] },

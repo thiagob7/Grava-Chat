@@ -271,7 +271,8 @@ const ProfileCard: React.FC<{
   */
   const ehSistema = Boolean(perfil.sistema);
   const ehBot = perfil.isBot && !ehSistema;
-  const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema;
+  /// Bot não faz amizade, mas responde: dá para abrir conversa com ele.
+  const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema || ehBot;
 
   /*
     Dois lugares. Em cima, na faixa e só com o mouse em cima do cartão, os

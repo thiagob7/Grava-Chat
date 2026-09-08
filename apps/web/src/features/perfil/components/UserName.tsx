@@ -20,6 +20,8 @@ interface UserNameProps {
   title?: string;
   ehBot?: boolean;
   ehSistema?: boolean;
+  /// O selo miúdo é o das listas; o de sempre, o do resto.
+  selo?: "sm" | "md";
 }
 
 export const UserName: React.FC<UserNameProps> = ({
@@ -35,6 +37,7 @@ export const UserName: React.FC<UserNameProps> = ({
   title,
   ehBot = false,
   ehSistema = false,
+  selo = "md",
 }) => {
   useEffect(() => carregarFonte(perfil?.nome?.fonte), [perfil?.nome?.fonte]);
 
@@ -52,17 +55,34 @@ export const UserName: React.FC<UserNameProps> = ({
   return (
     <span data-gc="perfil.user-name.span--2" className="inline-flex items-center gap-1.5">
       {escrito}
-      <SeloDeApp data-gc="perfil.user-name.selo-de-app" sistema={ehSistema} />
+      <SeloDeApp data-gc="perfil.user-name.selo-de-app" sistema={ehSistema} tamanho={selo} />
     </span>
   );
 };
 
 /*
-  "app" é qualquer bot; "sistema" é a conta da casa, a que publica os temas e
-  manda os avisos do próprio Gravaê. O selo é o mesmo; só a palavra muda.
+  Dois selos, e a diferença importa.
+
+  "bot" é o que alguém criou com código: tem token, responde sozinho, e dá
+  para conversar com ele. "sistema" é a conta da casa — quem escreve por ela
+  é a própria API, e ninguém responde ali.
+
+  O tamanho segue o da referência, que tem três: o miúdo para lista, o de
+  sempre para o resto.
 */
-export const SeloDeApp: React.FC<{ sistema?: boolean }> = ({ sistema = false }) => (
-  <span data-gc="perfil.user-name.span--3" {...flx("seloDeApp", "shrink-0 rounded bg-brand px-1 py-px text-10 font-bold uppercase leading-tight text-sobre-marca")}>
-    {sistema ? "sistema" : "app"}
+export const SeloDeApp: React.FC<{ sistema?: boolean; tamanho?: "sm" | "md" }> = ({
+  sistema = false,
+  tamanho = "md",
+}) => (
+  <span data-gc="perfil.user-name.span--3"
+    {...flx(
+      tamanho === "sm" ? "seloDeAppMiudo" : "seloDeApp",
+      cn(
+        "shrink-0 rounded-[3px] bg-brand font-bold uppercase text-sobre-marca",
+        tamanho === "sm" ? "px-1 py-0 text-[0.5625rem] leading-[1.35]" : "px-1 py-px text-10 leading-tight",
+      ),
+    )}
+  >
+    {sistema ? "sistema" : "bot"}
   </span>
 );
