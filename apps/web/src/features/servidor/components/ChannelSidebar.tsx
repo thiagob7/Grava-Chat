@@ -37,6 +37,18 @@ import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { useAvisos } from "~/stores/notificacoes";
+import { useCreateCategory } from "~/@core/application/queries/guild/use-create-category";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "~/components/ui/context-menu";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Input, Label } from "~/components/ui/input";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
@@ -115,6 +127,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     alvo?.scrollIntoView({ block: "center", behavior: "smooth" });
   };
   const [creatingIn, setCreatingIn] = useState<string | null | false>(false);
+  const [criandoCategoria, setCriandoCategoria] = useState(false);
+  const [nomeDaCategoria, setNomeDaCategoria] = useState("");
+  const criarCategoria = useCreateCategory();
+  const definirServidor = useAvisos((s) => s.definirServidor);
   const [inviting, setInviting] = useState(false);
   const configuracoes = useServerSettingsStore();
 
@@ -337,6 +353,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </button>
           )}
 
+          {/*
+            O vazio embaixo da lista também é um lugar: clicar com o botão
+            direito ali é como se pede um canal novo, sem caçar o "+" da
+            categoria certa.
+          */}
+          <ContextMenu data-gc="servidor.channel-sidebar.context-menu">
+          <ContextMenuTrigger data-gc="servidor.channel-sidebar.context-menu-trigger" asChild>
           <div data-gc="servidor.channel-sidebar.div.medir-fora-da-vista" ref={rolador} onScroll={medirForaDaVista} {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
@@ -554,6 +577,34 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               );
             })}
           </div>
+          </ContextMenuTrigger>
+
+          <ContextMenuContent data-gc="servidor.channel-sidebar.context-menu-content">
+            <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item"
+              onSelect={() =>
+                detail && definirServidor(detail.guild.id, { esconderSilenciados: !esconderSilenciados })
+              }
+            >
+              Ocultar canais silenciados
+              <Checkbox data-gc="servidor.channel-sidebar.checkbox" checked={esconderSilenciados} readOnly tabIndex={-1} className="pointer-events-none" />
+            </ContextMenuItem>
+
+            {canManageChannels && (
+              <>
+                <ContextMenuSeparator data-gc="servidor.channel-sidebar.context-menu-separator" />
+                <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--2" onSelect={() => setCreatingIn(null)}>Criar canal</ContextMenuItem>
+                <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--3" onSelect={() => setCriandoCategoria(true)}>Criar categoria</ContextMenuItem>
+              </>
+            )}
+
+            {can("CREATE_INVITE") && (
+              <>
+                <ContextMenuSeparator data-gc="servidor.channel-sidebar.context-menu-separator--2" />
+                <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--4" onSelect={() => setInviting(true)}>Convidar para o servidor</ContextMenuItem>
+              </>
+            )}
+          </ContextMenuContent>
+          </ContextMenu>
 
           <AlcaDeLargura data-gc="servidor.channel-sidebar.alca-de-largura"
             borda="direita"
@@ -573,6 +624,49 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         categoryId={creatingIn === false ? null : creatingIn}
         onClose={() => setCreatingIn(false)}
       />
+      <Dialog data-gc="servidor.channel-sidebar.dialog" open={criandoCategoria} onOpenChange={(aberto) => !aberto && setCriandoCategoria(false)}>
+        <DialogContent data-gc="servidor.channel-sidebar.dialog-content" className="max-w-sm">
+          <DialogHeader data-gc="servidor.channel-sidebar.dialog-header">
+            <DialogTitle data-gc="servidor.channel-sidebar.dialog-title">Criar categoria</DialogTitle>
+          </DialogHeader>
+
+          <DialogBody data-gc="servidor.channel-sidebar.dialog-body">
+            <Label data-gc="servidor.channel-sidebar.label" htmlFor="nome-da-categoria">Nome da categoria</Label>
+            <Input data-gc="servidor.channel-sidebar.input"
+              id="nome-da-categoria"
+              value={nomeDaCategoria}
+              maxLength={48}
+              autoFocus
+              placeholder="Ex: Conversas"
+              onChange={(e) => setNomeDaCategoria(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter" || !nomeDaCategoria.trim() || !detail) return;
+                criarCategoria.mutate(
+                  { guildId: detail.guild.id, name: nomeDaCategoria.trim() },
+                  { onSuccess: () => { setNomeDaCategoria(""); setCriandoCategoria(false); } },
+                );
+              }}
+            />
+          </DialogBody>
+
+          <DialogFooter data-gc="servidor.channel-sidebar.dialog-footer">
+            <Button data-gc="servidor.channel-sidebar.button--11" variant="surface" onClick={() => setCriandoCategoria(false)}>Cancelar</Button>
+            <Button data-gc="servidor.channel-sidebar.button--12"
+              disabled={!nomeDaCategoria.trim() || criarCategoria.isPending}
+              onClick={() =>
+                detail &&
+                criarCategoria.mutate(
+                  { guildId: detail.guild.id, name: nomeDaCategoria.trim() },
+                  { onSuccess: () => { setNomeDaCategoria(""); setCriandoCategoria(false); } },
+                )
+              }
+            >
+              Criar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <InviteModal data-gc="servidor.channel-sidebar.invite-modal"
         open={inviting}
         guildId={detail?.guild.id}

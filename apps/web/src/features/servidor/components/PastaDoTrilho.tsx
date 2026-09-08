@@ -178,9 +178,7 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
       <ContextMenu data-gc="servidor.pasta-do-trilho.context-menu">
         <ContextMenuTrigger data-gc="servidor.pasta-do-trilho.context-menu-trigger" asChild>
           <div data-gc="servidor.pasta-do-trilho.div"
-            className={cn("group relative flex w-full flex-col items-center", pasta.aberta && "rounded-2xl pb-1")}
-            /// Aberta, o fundo veste a cor da pasta bem de leve — é o que dá a ela corpo de grupo.
-            style={pasta.aberta ? { backgroundColor: `color-mix(in oklab, ${cor}, transparent 88%)` } : undefined}
+            className={cn("group relative flex w-full flex-col items-center", pasta.aberta && "py-1.5")}
             onDragOver={(e) => {
               if (!arrastando(e)) return;
               e.preventDefault();
@@ -200,22 +198,35 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
               else onSoltar(arrastado, { tipo: z === "antes" ? "antes" : "depois", de: `pasta:${pasta.id}` });
             }}
           >
+            {/*
+              O fundo é uma camada atrás, recuada das bordas — e não o fundo do
+              próprio bloco. A pasta ganha respiro nas laterais sem levar junto a
+              pílula de servidor ativo, que mora colada na borda do trilho.
+            */}
+            {pasta.aberta && (
+              <span data-gc="servidor.pasta-do-trilho.span--3"
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-1.5 right-1.5 rounded-2xl"
+                style={{ backgroundColor: `color-mix(in oklab, ${cor}, transparent 88%)` }}
+              />
+            )}
+
             <MarcaDeSoltar data-gc="servidor.pasta-do-trilho.marca-de-soltar" zona={zona} />
 
             <div data-gc="servidor.pasta-do-trilho.div--2" className="relative flex w-full justify-center">
-              <span data-gc="servidor.pasta-do-trilho.span--3"
+              <span data-gc="servidor.pasta-do-trilho.span--4"
                 className={cn(
                   "absolute left-0 top-1/2 w-1 -translate-y-1/2 transition-all",
                   ativa && !pasta.aberta ? "h-10" : naoLidas > 0 && !pasta.aberta && !silenciada ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
                 )}
               >
-                <span data-gc="servidor.pasta-do-trilho.span--4" className="block size-full rounded-r-full bg-pilula" />
+                <span data-gc="servidor.pasta-do-trilho.span--5" className="block size-full rounded-r-full bg-pilula" />
               </span>
 
               <Tooltip data-gc="servidor.pasta-do-trilho.tooltip" side="right" label={nome}>{capa}</Tooltip>
 
               {mencoes > 0 && !pasta.aberta && (
-                <span data-gc="servidor.pasta-do-trilho.span--5" className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-sobre-marca">
+                <span data-gc="servidor.pasta-do-trilho.span--6" className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-sobre-marca">
                   {mencoes > 99 ? "99+" : mencoes}
                 </span>
               )}
@@ -423,7 +434,7 @@ const ConfiguracoesDaPasta: React.FC<{
                 return {
                   valor: nomeDoIcone,
                   rotulo: (
-                    <span data-gc="servidor.pasta-do-trilho.span--6" className="flex items-center gap-2">
+                    <span data-gc="servidor.pasta-do-trilho.span--7" className="flex items-center gap-2">
                       <Desenho data-gc="servidor.pasta-do-trilho.desenho--2" size={15} />
                       {t(`servidor.pasta.icones.${nomeDoIcone}`)}
                     </span>
@@ -439,7 +450,7 @@ const ConfiguracoesDaPasta: React.FC<{
             {t("servidor.pasta.excluir")}
           </Button>
 
-          <span data-gc="servidor.pasta-do-trilho.span--7" className="flex gap-2">
+          <span data-gc="servidor.pasta-do-trilho.span--8" className="flex gap-2">
             <Button data-gc="servidor.pasta-do-trilho.button.on-fechar" variant="surface" onClick={onFechar}>
               {t("comum.cancelar")}
             </Button>

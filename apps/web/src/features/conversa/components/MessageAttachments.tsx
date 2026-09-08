@@ -10,6 +10,7 @@ import {
   arranjoDeAnexos,
   colunasDoItem,
 } from "~/features/conversa/lib/grade-de-anexos";
+import { MenuDaImagem } from "~/features/conversa/components/MenuDaImagem";
 import { useLightbox } from "~/stores/lightbox";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
@@ -180,21 +181,23 @@ const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
       : null;
 
   return (
-    <button data-gc="conversa.message-attachments.button--3"
-      onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
-      aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
-      className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
-      style={medida ? { width: medida.largura } : { maxWidth: MAX_W }}
-    >
-      <img data-gc="conversa.message-attachments.img"
-        src={anexo.url}
-        alt={anexo.description || anexo.filename}
-        loading="lazy"
-        decoding="async"
-        className="block h-auto w-full bg-surface-1 object-cover"
-        style={medida ? { aspectRatio: medida.proporcao } : { maxHeight: MAX_H }}
-      />
-    </button>
+    <MenuDaImagem data-gc="conversa.message-attachments.menu-da-imagem" anexo={anexo}>
+      <button data-gc="conversa.message-attachments.button--3"
+        onClick={() => abrir(anexo.url, anexo.description || anexo.filename, { nome: anexo.filename, tamanho: anexo.size })}
+        aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
+        className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
+        style={medida ? { width: medida.largura } : { maxWidth: MAX_W }}
+      >
+        <img data-gc="conversa.message-attachments.img"
+          src={anexo.url}
+          alt={anexo.description || anexo.filename}
+          loading="lazy"
+          decoding="async"
+          className="block h-auto w-full bg-surface-1 object-cover"
+          style={medida ? { aspectRatio: medida.proporcao } : { maxHeight: MAX_H }}
+        />
+      </button>
+    </MenuDaImagem>
   );
 };
 
@@ -208,20 +211,22 @@ const ImagemDaGrade: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   const abrir = useLightbox((s) => s.abrir);
 
   return (
-    <button data-gc="conversa.message-attachments.button--4"
-      type="button"
-      onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
-      aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
-      className="block aspect-square overflow-hidden rounded transition hover:brightness-110"
-    >
-      <img data-gc="conversa.message-attachments.img--2"
-        src={anexo.url}
-        alt={anexo.description || anexo.filename}
-        loading="lazy"
-        decoding="async"
-        className="size-full bg-surface-1 object-cover"
-      />
-    </button>
+    <MenuDaImagem data-gc="conversa.message-attachments.menu-da-imagem--2" anexo={anexo}>
+      <button data-gc="conversa.message-attachments.button--4"
+        type="button"
+        onClick={() => abrir(anexo.url, anexo.description || anexo.filename)}
+        aria-label={t("conversa.anexos.ver", { arquivo: anexo.filename })}
+        className="block aspect-square overflow-hidden rounded transition hover:brightness-110"
+      >
+        <img data-gc="conversa.message-attachments.img--2"
+          src={anexo.url}
+          alt={anexo.description || anexo.filename}
+          loading="lazy"
+          decoding="async"
+          className="size-full bg-surface-1 object-cover"
+        />
+      </button>
+    </MenuDaImagem>
   );
 };
 

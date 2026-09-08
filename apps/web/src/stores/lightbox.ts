@@ -1,15 +1,23 @@
 import { create } from "zustand";
 
+/// O que o visualizador mostra no rodapé, quando quem abriu sabe dizer.
+export interface InfoDaImagem {
+  nome?: string;
+  tamanho?: number;
+}
+
 interface Lightbox {
   url: string | null;
   alt: string;
-  abrir: (url: string, alt?: string) => void;
+  info: InfoDaImagem;
+  abrir: (url: string, alt?: string, info?: InfoDaImagem) => void;
   fechar: () => void;
 }
 
 export const useLightbox = create<Lightbox>((set) => ({
   url: null,
   alt: "",
-  abrir: (url, alt = "") => set({ url, alt }),
-  fechar: () => set({ url: null, alt: "" }),
+  info: {},
+  abrir: (url, alt = "", info = {}) => set({ url, alt, info }),
+  fechar: () => set({ url: null, alt: "", info: {} }),
 }));
