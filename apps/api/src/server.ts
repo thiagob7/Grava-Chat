@@ -1,6 +1,7 @@
 import { buildApp } from "~/app.js";
 import { env } from "~/env.js";
 import { prisma } from "~/lib/prisma.js";
+import { fecharIo } from "~/realtime/io.js";
 import { redis } from "~/lib/redis.js";
 import { createGateway } from "~/realtime/gateway.js";
 import { exclusaoService } from "~/services/exclusao-service.js";
@@ -28,12 +29,32 @@ try {
   process.exit(1);
 }
 
+/// Nenhuma publicação pode ficar refém de uma conexão emperrada. Passou
+/// disto, sai de qualquer jeito — o que estava aberto já foi avisado.
+const PRAZO_DE_SAIDA_MS = 5000;
+
+let saindo = false;
+
 const shutdown = async (signal: string) => {
+  if (saindo) return;
+  saindo = true;
+
   app.log.info({ signal }, "encerrando");
+
+  const forca = setTimeout(() => {
+    app.log.warn("encerramento demorou demais; saindo à força");
+    process.exit(0);
+  }, PRAZO_DE_SAIDA_MS);
+  forca.unref();
+
   pararDeVigiarExclusoes?.();
   pararDeVigiarStatus?.();
-  await app.close();
+
+  await fecharIo().catch(() => undefined);
+  await app.close().catch(() => undefined);
   await Promise.allSettled([prisma.$disconnect(), redis.quit()]);
+
+  clearTimeout(forca);
   process.exit(0);
 };
 
