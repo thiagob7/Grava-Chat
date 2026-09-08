@@ -1,5 +1,8 @@
 import { lerCabecalhoDoTema, type TemaCompartilhado } from "@gravae/shared";
 
+import { CAMINHO_DO_TEMA } from "@gravae/shared";
+import { env } from "~/env.js";
+import { sistemaService } from "~/services/sistema-service.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { prisma } from "~/lib/prisma.js";
 import type { PublicarTemaInput } from "~/validations/tema.js";
@@ -64,6 +67,13 @@ export const temaService = {
       },
       include: { usuario: AUTOR },
     });
+
+    /// O link recém-criado chega também pela conversa da casa: é onde a
+    /// pessoa reencontra o que publicou sem precisar ter guardado o endereço.
+    void sistemaService.avisar(
+      userId,
+      `Seu tema "${tema.nome}" foi publicado. O link abaixo vira um cartão de importar em qualquer canal.\n${env.WEB_ORIGIN.split(",")[0]?.trim() ?? ""}${CAMINHO_DO_TEMA}${tema.id}`,
+    );
 
     return serializar(tema);
   },

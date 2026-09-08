@@ -1,5 +1,6 @@
 import { ehAdmin } from "~/lib/serialize.js";
 import { selosDoServidor } from "~/lib/selos.js";
+import { sistemaService } from "~/services/sistema-service.js";
 import { randomBytes } from "node:crypto";
 import {
   computePermissions,
@@ -298,6 +299,13 @@ export const guildService = {
 
     await guildRepository.findByIdOrThrow(guildId);
     const guild = await guildRepository.update(guildId, { verificada });
+
+    void sistemaService.avisar(
+      guild.ownerId,
+      verificada
+        ? `A comunidade "${guild.name}" foi verificada. O selo já aparece ao lado do nome dela.`
+        : `A verificação da comunidade "${guild.name}" foi retirada.`,
+    );
 
     return { id: guild.id, verificada: Boolean(guild.verificada) };
   },

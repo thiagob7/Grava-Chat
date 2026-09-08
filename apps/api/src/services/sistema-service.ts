@@ -1,14 +1,16 @@
 import type { FastifyBaseLogger } from "fastify";
 
+import { CAMINHO_DO_TEMA } from "@gravae/shared";
+
 import { env } from "~/env.js";
 import { unset } from "~/lib/mongo.js";
 import { prisma } from "~/lib/prisma.js";
 import { enviarMensagem } from "~/realtime/difusao.js";
+import { dmRepository } from "~/repositories/friendship-repository.js";
 import { categoryRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
-import { uploadService } from "~/services/upload-service.js";
 import { lerTemasDaCasa, type TemaDaCasa } from "~/temas-da-casa.js";
 
 /*
@@ -23,16 +25,37 @@ export const EMAIL_DA_CASA = "sistema@gravae.local";
 const NOME_DO_SERVIDOR = "Gravaê Temas";
 const NOME_DO_CANAL = "temas";
 
-function textoDoTema(tema: TemaDaCasa): string {
+function textoDoTema(tema: TemaDaCasa, link: string): string {
   return [
     `${tema.nome}: ${tema.descricao}`,
     "",
     `Versão ${tema.versao || "1.0.0"} · feito pela casa.`,
-    "Baixe o arquivo e importe em Configurações > Aparência > Estúdio de temas > Biblioteca > Importar CSS.",
+    link,
   ].join("\n");
 }
 
 export const sistemaService = {
+  /*
+    Um aviso da casa para uma pessoa.
+
+    Vai pela conversa que ela já tem com a conta do sistema, ou por uma nova
+    — é o mesmo lugar onde chegam os outros comunicados. Nunca derruba quem
+    chamou: um aviso que falha é um aviso perdido, não uma ação perdida.
+  */
+  async avisar(userId: string, texto: string, log?: FastifyBaseLogger) {
+    try {
+      const casa = await sistemaService.usuario();
+      if (casa.id === userId) return;
+
+      const canal =
+        (await dmRepository.findBetween(casa.id, userId)) ?? (await dmRepository.create([casa.id, userId]));
+
+      await enviarMensagem(casa.id, { channelId: canal.id, content: texto });
+    } catch (err) {
+      log?.error({ err }, "aviso do sistema não chegou");
+    }
+  },
+
   /*
     A conta da casa não é bot.
 
@@ -123,13 +146,50 @@ export const sistemaService = {
     }
   },
 
+  /*
+    O tema da casa como registro publicado, para ter link.
+
+    Um por nome: se já existe, só acompanha o CSS quando ele muda. Assim o
+    link nunca troca — quem já colou o dele em algum canto continua valendo.
+  */
+  async temaPublicado(tema: TemaDaCasa, casaId: string) {
+    const existente = await prisma.tema.findFirst({ where: { autorId: casaId, nome: tema.nome } });
+
+    if (!existente) {
+      return prisma.tema.create({
+        data: {
+          nome: tema.nome,
+          descricao: tema.descricao,
+          autor: "Gravaê",
+          versao: tema.versao,
+          tags: [],
+          css: tema.css,
+          substituicoes: {},
+          autorId: casaId,
+        },
+      });
+    }
+
+    if (existente.css === tema.css) return existente;
+
+    return prisma.tema.update({
+      where: { id: existente.id },
+      data: { css: tema.css, descricao: tema.descricao, versao: tema.versao },
+    });
+  },
+
   async publicarTema(
     tema: TemaDaCasa,
     ids: { canalId: string; casaId: string; donoId: string },
     log: FastifyBaseLogger,
   ) {
-    const arquivo = `${tema.chave}.css`;
-    const content = textoDoTema(tema);
+    /*
+      O tema vai como LINK, e não como arquivo: colado no canal, o link vira
+      o cartão de importar, e quem lê aplica num clique em vez de baixar um
+      `.css` e procurar onde enfiá-lo.
+    */
+    const publicado = await sistemaService.temaPublicado(tema, ids.casaId);
+    const content = textoDoTema(tema, `${env.WEB_ORIGIN.split(",")[0]?.trim() ?? ""}${CAMINHO_DO_TEMA}${publicado.id}`);
 
     const existente = await prisma.message.findFirst({
       /// `deletedAt: null` não acha documento sem o campo no Mongo; o certo
@@ -138,7 +198,7 @@ export const sistemaService = {
         channelId: ids.canalId,
         authorId: ids.casaId,
         ...unset("deletedAt"),
-        attachments: { some: { filename: arquivo } },
+        content: { contains: publicado.id },
       },
     });
 
@@ -149,17 +209,23 @@ export const sistemaService = {
 
     if (existente) await messageService.remove(ids.casaId, existente.id);
 
-    const anexo = await uploadService.upload(ids.casaId, {
-      filename: arquivo,
-      contentType: "text/css",
-      body: Buffer.from(tema.css, "utf8"),
+    /*
+      A versão antiga deste tema vinha como arquivo anexado. Ela sai quando o
+      link entra — senão o canal fica com o mesmo tema duas vezes, e a pessoa
+      não sabe qual dos dois é o de verdade.
+    */
+    const comArquivo = await prisma.message.findFirst({
+      where: {
+        channelId: ids.canalId,
+        authorId: ids.casaId,
+        ...unset("deletedAt"),
+        attachments: { some: { filename: `${tema.chave}.css` } },
+      },
     });
 
-    const mensagem = await enviarMensagem(ids.casaId, {
-      channelId: ids.canalId,
-      content,
-      attachments: [anexo],
-    });
+    if (comArquivo) await messageService.remove(ids.casaId, comArquivo.id);
+
+    const mensagem = await enviarMensagem(ids.casaId, { channelId: ids.canalId, content });
 
     await messageService.pin(ids.donoId, mensagem.id, true);
     log.info(`servidor de temas: ${tema.nome} publicado e fixado`);
