@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Išplėstiniai",
     servidor: "Serveris",
     comunicado: "Sistemos pranešimas",
+    denuncias: "Pranešimai",
   },
   grupos: {
     conta: "Paskyra",

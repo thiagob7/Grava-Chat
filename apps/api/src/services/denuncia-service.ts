@@ -59,6 +59,34 @@ async function avisarAdministradores(texto: string, log?: FastifyBaseLogger) {
   app tem com a conta da casa — o mesmo canal dos outros avisos. Quem
   denuncia precisa estar na comunidade: não se denuncia o que não se viu.
 */
+/*
+  Uma denúncia pronta para a fila da administração.
+
+  Vem com o alvo já resolvido: quem lê precisa do nome da comunidade ou do
+  trecho da mensagem, não de um id para procurar à mão. O trecho sai do
+  registro, e não da mensagem — ela pode ter sido apagada justamente por
+  causa disto, e o que valia julgar é o que foi escrito na hora.
+*/
+export interface DenunciaNaFila {
+  id: string;
+  tipo: "comunidade" | "mensagem";
+  motivo: MotivoDeDenuncia;
+  motivoEscrito: string;
+  detalhes: string | null;
+  createdAt: string;
+  resolvidaEm: string | null;
+  decisao: string | null;
+  autor: { id: string; username: string; displayName: string } | null;
+  comunidade: { id: string; nome: string } | null;
+  mensagem: {
+    id: string;
+    channelId: string;
+    guildId: string | null;
+    trecho: string;
+    autor: { id: string; username: string; displayName: string } | null;
+  } | null;
+}
+
 export const denunciaService = {
   async denunciarServidor(
     userId: string,
@@ -87,6 +115,105 @@ export const denunciaService = {
     );
 
     return { id: denuncia.id };
+  },
+
+  /*
+    A fila da administração.
+
+    Por padrão só o que ainda não teve desfecho, da mais nova para a mais
+    velha: quem abre a tela quer ver o que falta, não o arquivo. Uma página
+    de cada vez, porque a lista cresce e ninguém lê mil de uma vez.
+  */
+  async listar(filtro: { pendentes?: boolean; antesDe?: string; limite?: number } = {}) {
+    const limite = Math.min(filtro.limite ?? 50, 100);
+
+    const denuncias = await prisma.denuncia.findMany({
+      where: {
+        ...(filtro.pendentes ? { resolvidaEm: null } : {}),
+        ...(filtro.antesDe ? { id: { lt: filtro.antesDe } } : {}),
+      },
+      orderBy: { id: "desc" },
+      take: limite + 1,
+    });
+
+    const temMais = denuncias.length > limite;
+    const pagina = temMais ? denuncias.slice(0, limite) : denuncias;
+
+    const idsDeGente = [
+      ...new Set(pagina.flatMap((d) => [d.autorId, d.acusadoId].filter(Boolean) as string[])),
+    ];
+    const idsDeServidor = [...new Set(pagina.map((d) => d.guildId).filter(Boolean) as string[])];
+
+    const [gente, servidores] = await Promise.all([
+      idsDeGente.length ? userRepository.findManyByIds(idsDeGente) : [],
+      idsDeServidor.length ? guildRepository.findManyByIds(idsDeServidor) : [],
+    ]);
+
+    const quem = new Map(gente.map((u) => [u.id, { id: u.id, username: u.username, displayName: u.displayName }]));
+    const onde = new Map(servidores.map((g) => [g.id, g]));
+
+    const itens: DenunciaNaFila[] = pagina.map((d) => {
+      const ehDeMensagem = d.tipo === "mensagem";
+      const servidor = d.guildId ? onde.get(d.guildId) : null;
+
+      return {
+        id: d.id,
+        tipo: ehDeMensagem ? "mensagem" : "comunidade",
+        motivo: d.motivo as MotivoDeDenuncia,
+        motivoEscrito: NOME_DO_MOTIVO[d.motivo as MotivoDeDenuncia] ?? d.motivo,
+        detalhes: d.detalhes,
+        createdAt: d.createdAt.toISOString(),
+        resolvidaEm: d.resolvidaEm?.toISOString() ?? null,
+        decisao: d.decisao,
+        autor: quem.get(d.autorId) ?? null,
+        comunidade: servidor ? { id: servidor.id, nome: servidor.name } : null,
+        mensagem:
+          ehDeMensagem && d.messageId && d.channelId
+            ? {
+                id: d.messageId,
+                channelId: d.channelId,
+                guildId: d.guildId,
+                trecho: d.trecho ?? "",
+                autor: d.acusadoId ? (quem.get(d.acusadoId) ?? null) : null,
+              }
+            : null,
+      };
+    });
+
+    return { itens, proxima: temMais ? (pagina.at(-1)?.id ?? null) : null };
+  },
+
+  /*
+    Dar desfecho a uma denúncia.
+
+    Não age sozinha: apagar mensagem, banir e verificar comunidade continuam
+    sendo decisões separadas, tomadas com as ferramentas de sempre. Isto aqui
+    só tira o item da fila e registra quem olhou — a fila existe para não
+    perder denúncia de vista, não para agir por conta própria.
+  */
+  async resolver(adminId: string, denunciaId: string, decisao: "procede" | "arquivada") {
+    const existente = await prisma.denuncia.findUnique({ where: { id: denunciaId } });
+    if (!existente) throw new NotFoundError("Denúncia não encontrada");
+
+    await prisma.denuncia.update({
+      where: { id: denunciaId },
+      data: { resolvidaEm: new Date(), resolvidaPor: adminId, decisao },
+    });
+
+    return { id: denunciaId, decisao };
+  },
+
+  /*
+    Reabrir: engano acontece, e uma denúncia arquivada por engano some da
+    fila para sempre se não houver volta.
+  */
+  async reabrir(denunciaId: string) {
+    await prisma.denuncia.update({
+      where: { id: denunciaId },
+      data: { resolvidaEm: null, resolvidaPor: null, decisao: null },
+    });
+
+    return { id: denunciaId };
   },
 
   /*

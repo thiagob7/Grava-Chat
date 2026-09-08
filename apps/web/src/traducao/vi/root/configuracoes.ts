@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Nâng cao",
     servidor: "Máy chủ",
     comunicado: "Thông báo hệ thống",
+    denuncias: "Báo cáo",
   },
   grupos: {
     conta: "Tài khoản",

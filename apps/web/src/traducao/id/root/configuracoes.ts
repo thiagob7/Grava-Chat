@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Lanjutan",
     servidor: "Server",
     comunicado: "Pengumuman sistem",
+    denuncias: "Laporan",
   },
   grupos: {
     conta: "Akun",

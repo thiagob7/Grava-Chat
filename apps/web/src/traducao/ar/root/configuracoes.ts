@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "متقدم",
     servidor: "الخادم",
     comunicado: "بيان النظام",
+    denuncias: "البلاغات",
   },
   grupos: {
     conta: "الحساب",

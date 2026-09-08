@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Napredno",
     servidor: "Poslužitelj",
     comunicado: "Obavijest sustava",
+    denuncias: "Prijave",
   },
   grupos: {
     conta: "Račun",

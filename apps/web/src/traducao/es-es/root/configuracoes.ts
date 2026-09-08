@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Avanzado",
     servidor: "Servidor",
     comunicado: "Comunicado del sistema",
+    denuncias: "Denuncias",
   },
   grupos: {
     conta: "Cuenta",

@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "ขั้นสูง",
     servidor: "เซิร์ฟเวอร์",
     comunicado: "ประกาศจากระบบ",
+    denuncias: "รายงาน",
   },
   grupos: {
     conta: "บัญชี",

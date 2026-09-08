@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "उन्नत",
     servidor: "सर्वर",
     comunicado: "सिस्टम घोषणा",
+    denuncias: "शिकायतें",
   },
   grupos: {
     conta: "खाता",

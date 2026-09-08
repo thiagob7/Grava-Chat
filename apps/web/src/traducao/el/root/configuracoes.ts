@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Για προχωρημένους",
     servidor: "Διακομιστής",
     comunicado: "Ανακοίνωση συστήματος",
+    denuncias: "Αναφορές",
   },
   grupos: {
     conta: "Λογαριασμός",

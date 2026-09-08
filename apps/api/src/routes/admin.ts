@@ -5,6 +5,7 @@ import { ForbiddenError } from "~/lib/http.js";
 import { ehAdmin } from "~/lib/serialize.js";
 import { objectId } from "~/validations/common.js";
 import { userRepository } from "~/repositories/user-repository.js";
+import { denunciaService } from "~/services/denuncia-service.js";
 import { sistemaService } from "~/services/sistema-service.js";
 
 const comunicado = z.object({
@@ -12,6 +13,15 @@ const comunicado = z.object({
   /// Sem lista, vai para todo mundo. Com lista, só para quem está nela.
   userIds: z.array(objectId).max(10_000).optional(),
 });
+
+const filaDeDenuncias = z.object({
+  /// Sem isto, a lista vem inteira; com, só o que ainda não teve desfecho.
+  pendentes: z.stringbool().optional(),
+  antesDe: objectId.optional(),
+  limite: z.coerce.number().int().min(1).max(100).optional(),
+});
+
+const desfecho = z.object({ decisao: z.enum(["procede", "arquivada", "reabrir"]) });
 
 /*
   O que só a administração do app pode fazer.
@@ -30,6 +40,21 @@ export async function adminRoutes(app: FastifyInstance) {
   app.get("/admin/pessoas", async () => {
     const total = await userRepository.contar();
     return { total };
+  });
+
+  app.get("/admin/denuncias", (req) => {
+    const { pendentes, antesDe, limite } = filaDeDenuncias.parse(req.query);
+
+    return denunciaService.listar({ pendentes, antesDe, limite });
+  });
+
+  app.patch("/admin/denuncias/:denunciaId", (req) => {
+    const { denunciaId } = z.object({ denunciaId: objectId }).parse(req.params);
+    const { decisao } = desfecho.parse(req.body);
+
+    return decisao === "reabrir"
+      ? denunciaService.reabrir(denunciaId)
+      : denunciaService.resolver(req.userId, denunciaId, decisao);
   });
 
   app.post(

@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "고급",
     servidor: "서버",
     comunicado: "시스템 공지",
+    denuncias: "신고",
   },
   grupos: {
     conta: "계정",

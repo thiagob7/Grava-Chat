@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Pokročilé",
     servidor: "Server",
     comunicado: "Systémové oznámení",
+    denuncias: "Nahlášení",
   },
   grupos: {
     conta: "Účet",

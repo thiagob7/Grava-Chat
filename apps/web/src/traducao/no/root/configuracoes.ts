@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Avansert",
     servidor: "Server",
     comunicado: "Systemmelding",
+    denuncias: "Rapporter",
   },
   grupos: {
     conta: "Konto",

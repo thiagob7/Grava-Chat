@@ -29,7 +29,7 @@ import {
   SlidersHorizontal,
   User,
   X,
-  LogOut, Megaphone } from "lucide-react";
+  LogOut, Megaphone, Flag } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -48,6 +48,7 @@ import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection
 import { BatePapoSection } from "~/features/configuracoes/components/BatePapoSection";
 import { PrivacidadeSection } from "~/features/configuracoes/components/PrivacidadeSection";
 import { ComunicadosSection } from "~/features/configuracoes/components/ComunicadosSection";
+import { DenunciasSection } from "~/features/configuracoes/components/DenunciasSection";
 import { ServidorSection } from "~/features/configuracoes/components/ServidorSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -212,6 +213,12 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
               icone: Megaphone,
               subitens: [],
             },
+            {
+              id: "denuncias" as const,
+              chave: "configuracoes.telas.denuncias",
+              icone: Flag,
+              subitens: [],
+            },
           ],
         },
       ]
@@ -236,6 +243,7 @@ const TITULOS: Record<Secao, string> = {
   avancado: "configuracoes.telas.avancado",
   servidor: "configuracoes.telas.servidor",
   comunicado: "configuracoes.telas.comunicado",
+  denuncias: "configuracoes.telas.denuncias",
 };
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -485,6 +493,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "avancado" && <AvancadoSection data-gc="configuracoes.user-settings-modal.avancado-section" />}
                     {secao === "servidor" && user.admin && <ServidorSection data-gc="configuracoes.user-settings-modal.servidor-section" />}
                     {secao === "comunicado" && user.admin && <ComunicadosSection data-gc="configuracoes.user-settings-modal.comunicados-section" />}
+                    {secao === "denuncias" && user.admin && <DenunciasSection data-gc="configuracoes.user-settings-modal.denuncias-section" />}
                   </ErrorBoundary>
                 </ContextoDaSecao.Provider>
               </div>

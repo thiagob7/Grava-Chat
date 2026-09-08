@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "詳細設定",
     servidor: "サーバー",
     comunicado: "システムのお知らせ",
+    denuncias: "通報",
   },
   grupos: {
     conta: "アカウント",

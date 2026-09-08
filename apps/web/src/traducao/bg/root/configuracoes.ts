@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Разширени",
     servidor: "Сървър",
     comunicado: "Системно съобщение",
+    denuncias: "Сигнали",
   },
   grupos: {
     conta: "Акаунт",

@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const criarDenuncia = vi.fn();
+const listarDenuncias = vi.fn();
+const acharDenuncia = vi.fn();
+const atualizarDenuncia = vi.fn();
+const gentePorIds = vi.fn();
+const servidoresPorIds = vi.fn();
 const acharMensagem = vi.fn();
 const acessoAoCanal = vi.fn();
 const acharUsuario = vi.fn();
@@ -9,7 +14,14 @@ const criarDm = vi.fn();
 const enviar = vi.fn();
 
 vi.mock("~/lib/prisma.js", () => ({
-  prisma: { denuncia: { create: (...a: unknown[]) => criarDenuncia(...a) } },
+  prisma: {
+    denuncia: {
+      create: (...a: unknown[]) => criarDenuncia(...a),
+      findMany: (...a: unknown[]) => listarDenuncias(...a),
+      findUnique: (...a: unknown[]) => acharDenuncia(...a),
+      update: (...a: unknown[]) => atualizarDenuncia(...a),
+    },
+  },
 }));
 
 vi.mock("~/lib/serialize.js", () => ({ ADMINS: ["chefe@exemplo.com"] }));
@@ -26,7 +38,10 @@ vi.mock("~/repositories/friendship-repository.js", () => ({
 }));
 
 vi.mock("~/repositories/guild-repository.js", () => ({
-  guildRepository: { findByIdOrThrow: async (id: string) => ({ id, name: "Casa" }) },
+  guildRepository: {
+    findByIdOrThrow: async (id: string) => ({ id, name: "Casa" }),
+    findManyByIds: (...a: unknown[]) => servidoresPorIds(...a),
+  },
 }));
 
 vi.mock("~/repositories/message-repository.js", () => ({
@@ -36,6 +51,7 @@ vi.mock("~/repositories/message-repository.js", () => ({
 vi.mock("~/repositories/user-repository.js", () => ({
   userRepository: {
     findByIdOrThrow: (...a: unknown[]) => acharUsuario(...a),
+    findManyByIds: (...a: unknown[]) => gentePorIds(...a),
     findByEmail: async () => ({ id: "admin", username: "chefe" }),
   },
 }));
@@ -68,6 +84,9 @@ beforeEach(() => {
   acessoAoCanal.mockResolvedValue({ channel: canal() });
   acharDm.mockResolvedValue({ id: "dm" });
   acharUsuario.mockImplementation(async (id: string) => ({ id, username: id }));
+  gentePorIds.mockResolvedValue([]);
+  servidoresPorIds.mockResolvedValue([]);
+  listarDenuncias.mockResolvedValue([]);
 });
 
 describe("denúncia de mensagem", () => {
@@ -147,5 +166,111 @@ describe("denúncia de mensagem", () => {
     enviar.mockRejectedValue(new Error("dm fechada"));
 
     expect(await denunciaService.denunciarMensagem("quem", "m1", { motivo: "outro" })).toEqual({ id: "d1" });
+  });
+});
+
+const guardada = (extras = {}) => ({
+  id: "d1",
+  tipo: "mensagem",
+  guildId: "g1",
+  channelId: "c1",
+  messageId: "m1",
+  acusadoId: "reu",
+  trecho: "olha o golpe",
+  autorId: "quem",
+  motivo: "golpe",
+  detalhes: null,
+  resolvidaEm: null,
+  resolvidaPor: null,
+  decisao: null,
+  createdAt: new Date("2026-09-08T12:00:00Z"),
+  ...extras,
+});
+
+describe("a fila da administração", () => {
+  it("por padrão traz tudo; com o filtro, só o que não teve desfecho", async () => {
+    await denunciaService.listar();
+    expect(listarDenuncias.mock.calls[0]![0]).toMatchObject({ where: {} });
+
+    await denunciaService.listar({ pendentes: true });
+    expect(listarDenuncias.mock.calls[1]![0]).toMatchObject({ where: { resolvidaEm: null } });
+  });
+
+  it("resolve o alvo: nome da comunidade e quem escreveu", async () => {
+    listarDenuncias.mockResolvedValue([guardada()]);
+    gentePorIds.mockResolvedValue([
+      { id: "quem", username: "quem", displayName: "Quem" },
+      { id: "reu", username: "reu", displayName: "Réu" },
+    ]);
+    servidoresPorIds.mockResolvedValue([{ id: "g1", name: "Casa" }]);
+
+    const { itens } = await denunciaService.listar();
+
+    expect(itens[0]).toMatchObject({
+      tipo: "mensagem",
+      motivoEscrito: "Golpe ou fraude",
+      autor: { username: "quem" },
+      comunidade: { nome: "Casa" },
+      mensagem: { trecho: "olha o golpe", autor: { username: "reu" } },
+    });
+  });
+
+  it("aguenta conta apagada sem quebrar a linha", async () => {
+    listarDenuncias.mockResolvedValue([guardada()]);
+
+    const { itens } = await denunciaService.listar();
+
+    expect(itens[0]!.autor).toBeNull();
+    expect(itens[0]!.mensagem!.autor).toBeNull();
+  });
+
+  it("denúncia velha, sem tipo, é de comunidade", async () => {
+    listarDenuncias.mockResolvedValue([guardada({ tipo: null, messageId: null, channelId: null })]);
+
+    const { itens } = await denunciaService.listar();
+
+    expect(itens[0]!.tipo).toBe("comunidade");
+    expect(itens[0]!.mensagem).toBeNull();
+  });
+
+  it("só diz que há próxima página quando veio uma a mais", async () => {
+    listarDenuncias.mockResolvedValue([guardada({ id: "d1" }), guardada({ id: "d2" })]);
+
+    const { itens, proxima } = await denunciaService.listar({ limite: 1 });
+
+    expect(itens).toHaveLength(1);
+    expect(proxima).toBe("d1");
+
+    listarDenuncias.mockResolvedValue([guardada({ id: "d1" })]);
+    expect((await denunciaService.listar({ limite: 1 })).proxima).toBeNull();
+  });
+});
+
+describe("dar desfecho", () => {
+  it("recusa denúncia que não existe", async () => {
+    acharDenuncia.mockResolvedValue(null);
+
+    await expect(denunciaService.resolver("admin", "d1", "procede")).rejects.toThrow("não encontrada");
+    expect(atualizarDenuncia).not.toHaveBeenCalled();
+  });
+
+  it("registra quem olhou e o que concluiu", async () => {
+    acharDenuncia.mockResolvedValue(guardada());
+
+    await denunciaService.resolver("admin", "d1", "arquivada");
+
+    expect(atualizarDenuncia).toHaveBeenCalledWith({
+      where: { id: "d1" },
+      data: expect.objectContaining({ resolvidaPor: "admin", decisao: "arquivada" }),
+    });
+  });
+
+  it("reabrir devolve a denúncia para a fila", async () => {
+    await denunciaService.reabrir("d1");
+
+    expect(atualizarDenuncia).toHaveBeenCalledWith({
+      where: { id: "d1" },
+      data: { resolvidaEm: null, resolvidaPor: null, decisao: null },
+    });
   });
 });

@@ -922,8 +922,15 @@ model Denuncia {
   autorId   String   @db.ObjectId
   motivo    String
   detalhes  String?
+  /// Quem da administração cuidou disto, quando, e o que concluiu. Nulo nos
+  /// três é denúncia que ainda está na fila.
+  resolvidaEm  DateTime?
+  resolvidaPor String?  @db.ObjectId
+  /// "procede" ou "arquivada".
+  decisao      String?
   createdAt DateTime @default(now())
 
   @@index([guildId])
   @@index([messageId])
+  @@index([resolvidaEm])
 }

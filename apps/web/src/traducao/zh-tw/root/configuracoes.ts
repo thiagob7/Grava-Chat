@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "進階",
     servidor: "伺服器",
     comunicado: "系統公告",
+    denuncias: "檢舉",
   },
   grupos: {
     conta: "帳號",

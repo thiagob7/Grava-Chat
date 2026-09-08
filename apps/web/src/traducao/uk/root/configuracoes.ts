@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Додатково",
     servidor: "Сервер",
     comunicado: "Системне оголошення",
+    denuncias: "Скарги",
   },
   grupos: {
     conta: "Обліковий запис",

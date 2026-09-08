@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "מתקדם",
     servidor: "שרת",
     comunicado: "הודעת מערכת",
+    denuncias: "דיווחים",
   },
   grupos: {
     conta: "חשבון",

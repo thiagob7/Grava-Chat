@@ -22,6 +22,7 @@ export const configuracoes = {
     avancado: "Lisäasetukset",
     servidor: "Palvelin",
     comunicado: "Järjestelmätiedote",
+    denuncias: "Raportit",
   },
   grupos: {
     conta: "Tili",
