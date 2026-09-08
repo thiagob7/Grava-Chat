@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Type } from "lucide-react";
+import { TextAa } from "@phosphor-icons/react";
 import { FONTES_DE_NOME, type FonteDeNome } from "@gravae/shared";
 
 import {
@@ -33,8 +33,10 @@ export function guardarFonte(fonte: FonteDeNome) {
   }
 }
 
+/// O "Aa" do Phosphor, e não o "T" do lucide: na fila da caixa ele é o único
+/// vizinho dos outros quatro, que são todos Phosphor — e o T destoava.
 export const IconeDeFonte: React.FC<{ size: number }> = ({ size }) => (
-  <Type data-gc="seletor-de-fonte.type" size={size * 1.25} strokeWidth={1.6} />
+  <TextAa data-gc="seletor-de-fonte.text-aa" size={size} />
 );
 
 interface SeletorDeFonteProps {

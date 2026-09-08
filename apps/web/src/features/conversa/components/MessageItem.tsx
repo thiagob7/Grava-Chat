@@ -80,12 +80,14 @@ import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
 
-/// Os quatro que a pessoa mais usa, completados com os de fábrica quando ela
-/// ainda não reagiu o bastante para haver histórico.
+/// Os três que a pessoa mais usa, completados com os de fábrica quando ela
+/// ainda não reagiu o bastante para haver histórico. Três, e não quatro,
+/// porque a barra também mostra encaminhar — e a fila fica do tamanho da
+/// referência.
 function atalhosDeReacao(): string[] {
   const usados = emojisRecentes().filter((e) => e.length <= 8);
 
-  return [...new Set([...usados, ...QUICK_PADRAO])].slice(0, 4);
+  return [...new Set([...usados, ...QUICK_PADRAO])].slice(0, 3);
 }
 
 const SUPER_PADRAO = "🔥";
@@ -523,9 +525,73 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             <CornerUpLeft data-gc="conversa.message-item.corner-up-left" size={14} />
           </AcaoDaBarra>
 
+          <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--2" titulo={t("conversa.acoes.encaminhar")} onClick={() => setEncaminhando(true)}>
+            <Forward data-gc="conversa.message-item.forward" size={14} />
+          </AcaoDaBarra>
+
+          {/*
+            Com o Shift, a barra abre: o que estava guardado no "mais" vem
+            para a mesma linha. É o atalho de quem já sabe onde cada coisa
+            fica e não quer o menu no caminho.
+          */}
+          {shift && (
+            <>
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--3"
+                titulo={t(favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar")}
+                onClick={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
+              >
+                <Bookmark data-gc="conversa.message-item.bookmark" size={14} className={favorita ? "fill-current text-brand" : undefined} />
+              </AcaoDaBarra>
+
+              {canPin && (
+                <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--4"
+                  titulo={t(message.pinnedAt ? "conversa.acoes.desafixarMensagem" : "conversa.acoes.fixarMensagem")}
+                  onClick={() => onPin?.(message, !message.pinnedAt)}
+                >
+                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off" size={14} /> : <Pin data-gc="conversa.message-item.pin--2" size={14} />}
+                </AcaoDaBarra>
+              )}
+
+              {isOwn && (
+                <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--5"
+                  titulo={t("conversa.acoes.editarMensagem")}
+                  onClick={() => {
+                    setDraft(message.content);
+                    setEditing(true);
+                  }}
+                >
+                  <Pencil data-gc="conversa.message-item.pencil" size={14} />
+                </AcaoDaBarra>
+              )}
+
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra.marcar-nao-lido" titulo={t("conversa.acoes.marcarNaoLida")} onClick={marcarNaoLido}>
+                <MailOpen data-gc="conversa.message-item.mail-open" size={14} />
+              </AcaoDaBarra>
+
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--6"
+                titulo={t("conversa.acoes.copiarLink")}
+                onClick={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
+              >
+                <Link2 data-gc="conversa.message-item.link2" size={14} />
+              </AcaoDaBarra>
+
+              {podeDenunciar && (
+                <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--7" titulo={t("conversa.acoes.denunciarMensagem")} onClick={() => setDenunciando(true)}>
+                  <Flag data-gc="conversa.message-item.flag" size={14} />
+                </AcaoDaBarra>
+              )}
+
+              {canDelete && (
+                <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra.apagar" titulo={t("conversa.acoes.apagarMensagem")} onClick={apagar}>
+                  <Trash2 data-gc="conversa.message-item.trash2--2" size={14} className="text-danger" />
+                </AcaoDaBarra>
+              )}
+            </>
+          )}
+
           <DropdownMenu data-gc="conversa.message-item.dropdown-menu.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
             <DropdownMenuTrigger data-gc="conversa.message-item.dropdown-menu-trigger" asChild>
-              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--2" titulo={t("conversa.acoes.mais")}>
+              <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--8" titulo={t("conversa.acoes.mais")}>
                 <MoreHorizontal data-gc="conversa.message-item.more-horizontal" size={14} />
               </AcaoDaBarra>
             </DropdownMenuTrigger>
@@ -548,7 +614,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     />
                   ))}
 
-                  <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--3"
+                  <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--9"
                     titulo={t("conversa.acoes.reagir")}
                     className="ml-auto"
                     onClick={() => {
@@ -566,7 +632,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               </DropdownMenuItem>
 
               <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item" onSelect={() => setEncaminhando(true)}>
-                {t("conversa.acoes.encaminhar")} <Forward data-gc="conversa.message-item.forward" size={16} />
+                {t("conversa.acoes.encaminhar")} <Forward data-gc="conversa.message-item.forward--2" size={16} />
               </DropdownMenuItem>
 
               {mostrarReacoes && (
@@ -591,7 +657,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                       ? "conversa.acoes.desafixarMensagem"
                       : "conversa.acoes.fixarMensagem",
                   )}
-                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off" size={16} /> : <Pin data-gc="conversa.message-item.pin--2" size={16} />}
+                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off--2" size={16} /> : <Pin data-gc="conversa.message-item.pin--3" size={16} />}
                 </DropdownMenuItem>
               )}
 
@@ -602,7 +668,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     setEditing(true);
                   }}
                 >
-                  {t("conversa.acoes.editarMensagem")} <Pencil data-gc="conversa.message-item.pencil" size={16} />
+                  {t("conversa.acoes.editarMensagem")} <Pencil data-gc="conversa.message-item.pencil--2" size={16} />
                 </DropdownMenuItem>
               )}
 
@@ -610,18 +676,18 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 onSelect={() => alternarFavorita.mutate({ messageId: message.id, favorita })}
               >
                 {t(favorita ? "conversa.acoes.tirarDosFavoritos" : "conversa.acoes.favoritar")}
-                <Bookmark data-gc="conversa.message-item.bookmark" size={16} className={favorita ? "fill-current text-brand" : undefined} />
+                <Bookmark data-gc="conversa.message-item.bookmark--2" size={16} className={favorita ? "fill-current text-brand" : undefined} />
               </DropdownMenuItem>
 
               {canPin && (
                 <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--7" onSelect={() => onPin?.(message, !message.pinnedAt)}>
                   {t(message.pinnedAt ? "conversa.acoes.desafixarMensagem" : "conversa.acoes.fixarMensagem")}
-                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off--2" size={16} /> : <Pin data-gc="conversa.message-item.pin--3" size={16} />}
+                  {message.pinnedAt ? <PinOff data-gc="conversa.message-item.pin-off--3" size={16} /> : <Pin data-gc="conversa.message-item.pin--4" size={16} />}
                 </DropdownMenuItem>
               )}
 
               <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.marcar-nao-lido" onSelect={marcarNaoLido}>
-                {t("conversa.acoes.marcarNaoLida")} <MailOpen data-gc="conversa.message-item.mail-open" size={16} />
+                {t("conversa.acoes.marcarNaoLida")} <MailOpen data-gc="conversa.message-item.mail-open--2" size={16} />
               </DropdownMenuItem>
 
               <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator--2" />
@@ -629,7 +695,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--8"
                 onSelect={() => copiar(linkDaMensagem(), t("conversa.mensagem.linkCopiado"))}
               >
-                {t("conversa.acoes.copiarLink")} <Link2 data-gc="conversa.message-item.link2" size={16} />
+                {t("conversa.acoes.copiarLink")} <Link2 data-gc="conversa.message-item.link2--2" size={16} />
               </DropdownMenuItem>
 
               <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--9"
@@ -644,7 +710,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
               {canDelete && (
                 <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.apagar" onSelect={apagar} className="text-danger focus:text-danger">
-                  {t("conversa.acoes.apagarMensagem")} <Trash2 data-gc="conversa.message-item.trash2--2" size={16} />
+                  {t("conversa.acoes.apagarMensagem")} <Trash2 data-gc="conversa.message-item.trash2--3" size={16} />
                 </DropdownMenuItem>
               )}
 
@@ -653,7 +719,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   onSelect={() => setDenunciando(true)}
                   className="text-danger focus:text-danger"
                 >
-                  {t("conversa.acoes.denunciarMensagem")} <Flag data-gc="conversa.message-item.flag" size={16} />
+                  {t("conversa.acoes.denunciarMensagem")} <Flag data-gc="conversa.message-item.flag--2" size={16} />
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -857,7 +923,7 @@ const Encaminhada: React.FC<{
           "flex items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 py-0.5 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink",
         )}
       >
-        <Forward data-gc="conversa.message-item.forward--2" size={12} />
+        <Forward data-gc="conversa.message-item.forward--3" size={12} />
         <span data-gc="conversa.message-item.span--20" className={flxCls("rotuloDaOrigem")}>{t("conversa.mensagem.encaminhadaDe")}</span>
         <span data-gc="conversa.message-item.span--21" className={cn(flxCls("nomeDaOrigem"), "font-medium text-ink")}>
           {canal ? `#${canal.name}` : "…"}
