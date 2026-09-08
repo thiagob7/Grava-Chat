@@ -1,0 +1,19 @@
+[Unit]
+Description=Gravae API (staging)
+After=network-online.target redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/gravae-api-staging
+EnvironmentFile=/opt/gravae-api-staging/.env
+ExecStart=/usr/bin/node dist/server.js
+Restart=on-failure
+RestartSec=3
+MemoryMax=300M
+LimitNOFILE=65535
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
