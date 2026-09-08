@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Kiszolgáló",
     comunicado: "Rendszerüzenet",
     denuncias: "Jelentések",
+    publicacoes: "Telepítések",
   },
   grupos: {
     conta: "Fiók",

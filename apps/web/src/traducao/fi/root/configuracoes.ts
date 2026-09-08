@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Palvelin",
     comunicado: "Järjestelmätiedote",
     denuncias: "Raportit",
+    publicacoes: "Julkaisut",
   },
   grupos: {
     conta: "Tili",

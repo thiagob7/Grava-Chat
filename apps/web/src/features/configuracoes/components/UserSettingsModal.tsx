@@ -29,7 +29,7 @@ import {
   SlidersHorizontal,
   User,
   X,
-  LogOut, Megaphone, Flag } from "lucide-react";
+  LogOut, Megaphone, Flag, Rocket } from "lucide-react";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -49,6 +49,7 @@ import { BatePapoSection } from "~/features/configuracoes/components/BatePapoSec
 import { PrivacidadeSection } from "~/features/configuracoes/components/PrivacidadeSection";
 import { ComunicadosSection } from "~/features/configuracoes/components/ComunicadosSection";
 import { DenunciasSection } from "~/features/configuracoes/components/DenunciasSection";
+import { PublicacoesSection } from "~/features/configuracoes/components/PublicacoesSection";
 import { ServidorSection } from "~/features/configuracoes/components/ServidorSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
@@ -219,6 +220,12 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
               icone: Flag,
               subitens: [],
             },
+            {
+              id: "publicacoes" as const,
+              chave: "configuracoes.telas.publicacoes",
+              icone: Rocket,
+              subitens: [],
+            },
           ],
         },
       ]
@@ -244,6 +251,7 @@ const TITULOS: Record<Secao, string> = {
   servidor: "configuracoes.telas.servidor",
   comunicado: "configuracoes.telas.comunicado",
   denuncias: "configuracoes.telas.denuncias",
+  publicacoes: "configuracoes.telas.publicacoes",
 };
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({

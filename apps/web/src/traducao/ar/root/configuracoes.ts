@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "الخادم",
     comunicado: "بيان النظام",
     denuncias: "البلاغات",
+    publicacoes: "عمليات النشر",
   },
   grupos: {
     conta: "الحساب",

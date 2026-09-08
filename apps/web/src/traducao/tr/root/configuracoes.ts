@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Sunucu",
     comunicado: "Sistem duyurusu",
     denuncias: "Şikayetler",
+    publicacoes: "Dağıtımlar",
   },
   grupos: {
     conta: "Hesap",

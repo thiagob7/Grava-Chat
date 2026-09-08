@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Server",
     comunicado: "System announcement",
     denuncias: "Reports",
+    publicacoes: "Deployments",
   },
   grupos: {
     conta: "Account",

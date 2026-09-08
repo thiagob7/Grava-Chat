@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "サーバー",
     comunicado: "システムのお知らせ",
     denuncias: "通報",
+    publicacoes: "デプロイ",
   },
   grupos: {
     conta: "アカウント",

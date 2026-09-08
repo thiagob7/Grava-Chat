@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Сервер",
     comunicado: "Системне оголошення",
     denuncias: "Скарги",
+    publicacoes: "Розгортання",
   },
   grupos: {
     conta: "Обліковий запис",

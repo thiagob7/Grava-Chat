@@ -23,6 +23,7 @@ export const configuracoes = {
     servidor: "Server",
     comunicado: "Anunț de sistem",
     denuncias: "Raportări",
+    publicacoes: "Implementări",
   },
   grupos: {
     conta: "Cont",

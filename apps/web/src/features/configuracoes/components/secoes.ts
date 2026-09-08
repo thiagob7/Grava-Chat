@@ -18,7 +18,8 @@ export type Secao =
   | "avancado"
   | "servidor"
   | "comunicado"
-  | "denuncias";
+  | "denuncias"
+  | "publicacoes";
 
 export interface SubSecao {
   id: string;
@@ -112,4 +113,5 @@ export const SUBSECOES: Record<Secao, SubSecao[]> = {
   servidor: [],
   comunicado: [],
   denuncias: [],
+  publicacoes: [],
 };
