@@ -139,7 +139,7 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
                 value={valor}
                 onChange={(e) => setValor(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && adicionar()}
-                placeholder={servico === "site" ? "gravae.io" : "@voce"}
+                placeholder={servico === "site" ? "seusite.com" : "@voce"}
                 aria-label={
                   servico === "site" ? "Endereço do site" : "Nome de usuário"
                 }

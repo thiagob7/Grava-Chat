@@ -30,8 +30,8 @@ describe("endereço da conexão", () => {
   });
 
   it("completa o site com https quando falta", () => {
-    expect(enderecoDaConexao({ servico: "site", valor: "gravae.io" })).toBe(
-      "https://gravae.io/",
+    expect(enderecoDaConexao({ servico: "site", valor: "exemplo.com" })).toBe(
+      "https://exemplo.com/",
     );
   });
 
@@ -61,8 +61,8 @@ describe("como a conexão é escrita", () => {
 
   it("mostra só o domínio do site", () => {
     expect(
-      comoSeLe({ servico: "site", valor: "https://gravae.io/sobre" }),
-    ).toBe("gravae.io");
-    expect(comoSeLe({ servico: "site", valor: "gravae.io" })).toBe("gravae.io");
+      comoSeLe({ servico: "site", valor: "https://exemplo.com/sobre" }),
+    ).toBe("exemplo.com");
+    expect(comoSeLe({ servico: "site", valor: "exemplo.com" })).toBe("exemplo.com");
   });
 });

@@ -22,7 +22,9 @@ const CACHE_MS = 30 * 60_000;
 const CACHE_FALHA_MS = 5 * 60_000;
 const CACHE_MAXIMO = 500;
 
-const UA = "Mozilla/5.0 (compatible; GravaeBot/1.0; +https://gravae.io)";
+/// Sem endereço de contato: o app ainda não tem domínio próprio, e apontar
+/// para um que não é nosso seria mandar quem reclama bater na porta errada.
+const UA = "Mozilla/5.0 (compatible; GravaeBot/1.0)";
 
 const cache = new Map<string, { em: number; ate: number; valor: Embed | null }>();
 

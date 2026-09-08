@@ -12,7 +12,7 @@ vi.mock("~/lib/prisma.js", () => ({
   prisma: { denuncia: { create: (...a: unknown[]) => criarDenuncia(...a) } },
 }));
 
-vi.mock("~/lib/serialize.js", () => ({ ADMINS: ["chefe@gravae.io"] }));
+vi.mock("~/lib/serialize.js", () => ({ ADMINS: ["chefe@exemplo.com"] }));
 
 vi.mock("~/env.js", () => ({ env: { WEB_ORIGIN: "https://gravae.chat,https://outro" } }));
 

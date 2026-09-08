@@ -319,7 +319,7 @@ export const SignIn: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void submit()}
-              placeholder="voce@gravae.io"
+              placeholder="voce@exemplo.com"
               className="mb-3"
             />
 

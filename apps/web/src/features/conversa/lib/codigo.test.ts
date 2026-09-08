@@ -51,10 +51,10 @@ describe("partirEmCodigo", () => {
   });
 
   it("link dentro da cerca fica no código, longe do enriquecedor", () => {
-    expect(partirEmCodigo("```\nhttps://gravae.io :teste: <@000000000000000000000000>\n```")).toEqual([
+    expect(partirEmCodigo("```\nhttps://exemplo.com :teste: <@000000000000000000000000>\n```")).toEqual([
       {
         tipo: "bloco",
-        codigo: "https://gravae.io :teste: <@000000000000000000000000>",
+        codigo: "https://exemplo.com :teste: <@000000000000000000000000>",
         lingua: null,
       },
     ]);
@@ -130,7 +130,7 @@ Se alguém puder anotar o que foi decidido eu agradeço muito.`,
   "lista numerada": `1. primeiro a gente alinha o escopo
 2. depois eu mando o orçamento
 3. e aí você me diz se fecha`,
-  "endereços": `https://gravae.io
+  "endereços": `https://exemplo.com
 https://github.com/thiagob7
 https://gravae-chat.vercel.app`,
   "conversa colada": `Thiago: bom dia
