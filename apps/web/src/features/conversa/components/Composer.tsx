@@ -421,7 +421,14 @@ export const Composer: React.FC<ComposerProps> = ({
         {...flxAttr("campoDeEscrever")}
         className={cn(
           flxCls("campoDeEscrever"),
-          "min-h-[var(--footer-box-height)] rounded-[var(--footer-box-radius)] leading-[var(--textarea-line-height)] bg-campo transition",
+          /*
+            Coluna centrada, e não bloco: a caixa tem altura mínima de uma
+            linha e meia, e a linha de escrever é mais baixa que isso. Em
+            bloco ela encostava no topo e o texto nascia alto, com um vão
+            embaixo. Centrada, a linha fica no meio; quando o texto cresce e
+            passa da mínima, centrar não faz diferença nenhuma.
+          */
+          "flex min-h-[var(--footer-box-height)] flex-col justify-center rounded-[var(--footer-box-radius)] leading-[var(--textarea-line-height)] bg-campo transition",
           arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >
@@ -472,7 +479,7 @@ export const Composer: React.FC<ComposerProps> = ({
           `stackSection` > `textareaOuterRow`, e o tema encadeia os dois.
         */}
         <div data-gc="conversa.composer.div--4" {...flx("pilhaDeEscrever")}>
-        <div data-gc="conversa.composer.div--5" {...flx("linhaDeEscrever", "relative flex items-end gap-1 px-1.5 @sm:gap-1.5 @sm:px-2")}>
+        <div data-gc="conversa.composer.div--5" {...flx("linhaDeEscrever", "relative flex items-end gap-1 px-2 @sm:gap-1.5 @sm:px-3")}>
           <MencaoSugestoes data-gc="conversa.composer.mencao-sugestoes.inserir-mencao"
             itens={sugestoes}
             indice={escolhido}
