@@ -76,7 +76,7 @@ const PADRAO: PrefsDeAparencia = {
 
   sugestoes: true,
   emoticons: true,
-  botaoDeEnviar: true,
+  botaoDeEnviar: false,
 
   modoStreamer: false,
   streamerEscondeDados: true,
