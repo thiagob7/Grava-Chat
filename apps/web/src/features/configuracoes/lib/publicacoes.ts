@@ -31,6 +31,33 @@ export const AMBIENTES: Ambiente[] = [
 ];
 
 export const REPOSITORIO = "thiagob7/Grava-Chat";
+export const FLUXO_DA_API = "api.yml";
+
+export interface Publicacao {
+  id: number;
+  titulo: string;
+  commit: string;
+  situacao: "esperando" | "rodando" | "boa" | "falhou" | "cancelada";
+  quando: string;
+  link: string;
+}
+
+const SITUACAO: Record<string, Publicacao["situacao"]> = {
+  waiting: "esperando",
+  queued: "rodando",
+  requested: "rodando",
+  pending: "rodando",
+  in_progress: "rodando",
+};
+
+export function lerSituacao(status: string, conclusao: string | null): Publicacao["situacao"] {
+  if (status !== "completed") return SITUACAO[status] ?? "rodando";
+  if (conclusao === "success") return "boa";
+
+  return conclusao === "cancelled" ? "cancelada" : "falhou";
+}
+
+export const ESPERANDO_APROVACAO = (p: Publicacao) => p.situacao === "esperando";
 
 export function escreverDesde(segundos: number | null): string {
   if (segundos === null) return "—";

@@ -1,0 +1,94 @@
+# Publica a API na VM — e só depois que alguém aprovar.
+#
+# O deploy sempre saiu da máquina de quem estava programando, sem aprovação e
+# sem registro. Em 08/09 isso publicou um commit não aprovado em produção,
+# porque o script constrói a partir da branch aberta. Aqui o commit é o do
+# `master`, e o ambiente `producao` segura o trabalho até um revisor liberar.
+#
+# O build acontece aqui, não na VM: ela tem 1/8 de núcleo e 1 GB, e compilar
+# lá seria lento e arriscaria estourar a memória.
+name: API
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/api/**"
+      - "packages/shared/**"
+      - "yarn.lock"
+      - ".github/workflows/api.yml"
+  workflow_dispatch:
+
+concurrency:
+  # Uma publicação de cada vez. Duas ao mesmo tempo deixariam a VM com metade
+  # de cada uma.
+  group: publicar-api
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Publicar em produção
+    runs-on: ubuntu-latest
+    environment:
+      name: producao
+      url: https://gravaechat-api.duckdns.org/api/publico/versao
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn workspace @gravae/api build
+
+      - name: package.json enxuto
+        run: |
+          node -e '
+            const p = require("./apps/api/package.json");
+            delete p.dependencies["@gravae/shared"];
+            p.devDependencies = { prisma: p.devDependencies.prisma };
+            p.scripts = { start: "node dist/server.js" };
+            require("fs").writeFileSync("/tmp/api-package.json", JSON.stringify(p, null, 2));
+          '
+
+      - name: Preparar a chave
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ vars.VM_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Enviar
+        env:
+          ALVO: ubuntu@${{ vars.VM_HOST }}
+          DESTINO: /opt/gravae-api
+        run: |
+          SSH="ssh -i ~/.ssh/id_deploy -o BatchMode=yes"
+          rsync -az --delete -e "$SSH" apps/api/dist/ "$ALVO:$DESTINO/dist/"
+          rsync -az -e "$SSH" apps/api/prisma/schema.prisma "$ALVO:$DESTINO/prisma/"
+          rsync -az -e "$SSH" /tmp/api-package.json "$ALVO:$DESTINO/package.json"
+
+      - name: Instalar e reiniciar
+        env:
+          ALVO: ubuntu@${{ vars.VM_HOST }}
+        run: |
+          SSH="ssh -i ~/.ssh/id_deploy -o BatchMode=yes"
+          $SSH "$ALVO" "cd /opt/gravae-api \
+            && npm install --omit=dev --no-audit --no-fund --silent \
+            && npx prisma generate --schema prisma/schema.prisma \
+            && sudo systemctl restart gravae-api"
+
+      - name: Conferir que voltou
+        run: |
+          for i in $(seq 1 20); do
+            resposta=$(curl -sS --max-time 5 https://gravaechat-api.duckdns.org/api/publico/versao || true)
+            echo "$resposta" | grep -q "$(git rev-parse --short HEAD)" && {
+              echo "no ar: $resposta"; exit 0;
+            }
+            sleep 3
+          done
+          echo "a API não voltou com este commit"; exit 1
