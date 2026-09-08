@@ -18,7 +18,7 @@ interface StoreDePastas {
   arrumacao: Arrumacao;
   mover: (guildIds: string[], guildId: string, destino: Destino) => void;
   alternar: (pastaId: string) => void;
-  editar: (pastaId: string, dados: { nome?: string; cor?: string | null }) => void;
+  editar: (pastaId: string, dados: Parameters<typeof editarPasta>[2]) => void;
   desfazer: (pastaId: string) => void;
 }
 

@@ -317,11 +317,13 @@ export function useRealtime(
         lugar?.detalhe.members.find((m) => m.user.id === eu?.id)?.roleIds ?? [],
       );
 
-      const meMenciona =
-        Boolean(eu) &&
-        (message.mentionEveryone ||
-          message.mentions.includes(eu?.id ?? "") ||
-          message.mentionRoleIds.some((id) => meusCargos.has(id)));
+      const mencao = {
+        direta: Boolean(eu) && message.mentions.includes(eu?.id ?? ""),
+        everyone: Boolean(eu) && Boolean(message.mentionEveryone),
+        cargo: Boolean(eu) && message.mentionRoleIds.some((id) => meusCargos.has(id)),
+      };
+
+      const meMenciona = mencao.direta || mencao.everyone || mencao.cargo;
 
       const lendoAgora =
         currentChannelId === message.channelId &&
@@ -343,7 +345,7 @@ export function useRealtime(
         message,
         meuId: eu?.id,
         canalAberto: currentChannelId,
-        meMenciona,
+        mencao,
         nomeDoCanal: lugar?.canal.name,
         ehDm: !lugar,
         guildId: lugar?.detalhe.guild.id ?? null,

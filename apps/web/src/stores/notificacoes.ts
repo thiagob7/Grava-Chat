@@ -7,6 +7,10 @@ export interface PrefsDoServidor {
   modo: ModoDoCanal | null;
   silenciadoAte: number | null;
   esconderSilenciados: boolean;
+  /// Se @everyone e @here avisam. Ausente é "sim", que é o padrão.
+  everyone?: boolean;
+  /// Se menção ao seu cargo avisa. Ausente é "sim".
+  cargos?: boolean;
 }
 
 export interface PrefsDeAviso {
@@ -74,6 +78,7 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
   },
   definirServidor: (guildId, mudanca) => {
     const atual = store().porServidor[guildId] ?? { modo: null, silenciadoAte: null, esconderSilenciados: false };
+
     store().definir({ porServidor: { ...store().porServidor, [guildId]: { ...atual, ...mudanca } } });
   },
 

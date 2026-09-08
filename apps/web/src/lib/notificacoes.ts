@@ -29,7 +29,8 @@ interface Contexto {
   message: Message;
   meuId: string | undefined;
   canalAberto: string | undefined;
-  meMenciona: boolean;
+  /// De onde veio a menção: direta, @everyone/@here, ou cargo. Cada uma se desliga por servidor.
+  mencao: { direta: boolean; everyone: boolean; cargo: boolean };
   nomeDoCanal: string | undefined;
   ehDm: boolean;
   ignorado: boolean;
@@ -56,7 +57,7 @@ export function avisarDeMensagem({
   message,
   meuId,
   canalAberto,
-  meMenciona,
+  mencao,
   nomeDoCanal,
   ehDm,
   ignorado,
@@ -66,12 +67,24 @@ export function avisarDeMensagem({
   if (!meuId || message.author.id === meuId || ignorado) return;
 
   const prefs = prefsDeAviso();
+  const doServidorPrefs = guildId ? prefs.porServidor[guildId] : undefined;
+
+  /*
+    Menção só conta quando a pessoa quer ser chamada por aquele caminho. Um
+    servidor grande vive de @everyone; desligar isso ali não pode desligar o
+    seu nome, e é por isso que os três vêm separados.
+  */
+  const meMenciona =
+    mencao.direta ||
+    (mencao.everyone && doServidorPrefs?.everyone !== false) ||
+    (mencao.cargo && doServidorPrefs?.cargos !== false);
+
   const doCanal = prefs.porCanal[message.channelId] ?? null;
   if (doCanal === "nada") return;
 
   /// O servidor fala antes do canal: silenciado é silêncio, e "só menções" vale para todos os canais dele.
   if (servidorSilenciado(prefs, guildId)) return;
-  const doServidor = guildId ? (prefs.porServidor[guildId]?.modo ?? null) : null;
+  const doServidor = doServidorPrefs?.modo ?? null;
   if (doServidor === "nada") return;
   if (doServidor === "mencoes" && !meMenciona) return;
   const emFoco = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();

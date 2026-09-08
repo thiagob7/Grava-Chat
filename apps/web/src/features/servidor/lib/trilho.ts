@@ -6,12 +6,19 @@
   servidores; o que fica aqui é só a forma. Servidor novo entra no fim;
   servidor que saiu some da arrumação sozinho. Tudo puro, para testar.
 */
+/// Os desenhos que uma pasta pode vestir. O nome é a chave; quem desenha é o trilho.
+export const ICONES_DE_PASTA = ["pasta", "estrela", "coracao", "salvar", "jogo", "escudo", "nota"] as const;
+export type IconeDaPasta = (typeof ICONES_DE_PASTA)[number];
+
 export interface Pasta {
   id: string;
   nome: string;
   cor: string | null;
   guildIds: string[];
   aberta: boolean;
+  icone?: IconeDaPasta;
+  /// Fechada, mostra o ícone em vez dos quatro primeiros servidores.
+  mostrarIconeMinimizado?: boolean;
 }
 
 export interface Arrumacao {
@@ -116,7 +123,7 @@ export function moverServidor(guildIds: string[], atual: Arrumacao, guildId: str
 
   if (destino.tipo === "juntar") {
     if (destino.com === guildId) return atual;
-    const pasta: Pasta = { id: novoId(), nome: "", cor: null, guildIds: [destino.com, guildId], aberta: true };
+    const pasta: Pasta = { id: novoId(), nome: "", cor: null, guildIds: [destino.com, guildId], aberta: true, icone: "pasta" };
     const semOOutro = semServidor(base, destino.com);
     const onde = base.ordem.indexOf(destino.com);
     const ordem = [...semOOutro.ordem];
@@ -137,7 +144,11 @@ export function alternarPasta(a: Arrumacao, pastaId: string): Arrumacao {
   return { ...a, pastas: a.pastas.map((p) => (p.id === pastaId ? { ...p, aberta: !p.aberta } : p)) };
 }
 
-export function editarPasta(a: Arrumacao, pastaId: string, dados: { nome?: string; cor?: string | null }): Arrumacao {
+export function editarPasta(
+  a: Arrumacao,
+  pastaId: string,
+  dados: Partial<Pick<Pasta, "nome" | "cor" | "icone" | "mostrarIconeMinimizado">>,
+): Arrumacao {
   return { ...a, pastas: a.pastas.map((p) => (p.id === pastaId ? { ...p, ...dados } : p)) };
 }
 
