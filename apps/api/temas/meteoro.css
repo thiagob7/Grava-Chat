@@ -1,0 +1,200 @@
+/**
+ * @name Meteoro
+ * @description Espaço profundo, poeira de estrelas e um meteoro de vez em quando. Os painéis são translúcidos e deixam o céu passar.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, espaço, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(9 11 26 / 0.58);
+  --background-secondary: rgb(6 8 20 / 0.62);
+  --background-secondary-lighter: rgb(14 17 38 / 0.68);
+  --guild-list-foreground: rgb(20 24 50 / 0.9);
+  --form-surface-background: rgb(16 19 42 / 0.94);
+  --background-secondary-alt: rgb(12 15 34 / 0.86);
+  --background-channel-header: rgb(7 9 22 / 0.55);
+  --composer-surface-color: rgb(11 14 32 / 0.66);
+  --background-textarea: rgb(13 16 36 / 0.86);
+  --background-modifier-accent-focus: rgb(38 42 88 / 0.9);
+
+  --border-color: rgb(150 140 255 / 0.16);
+  --color-line-sutil: rgb(255 255 255 / 0.06);
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(150 140 255 / 0.1);
+  --background-modifier-selected: rgb(150 140 255 / 0.18);
+  --scrollbar-thumb-bg: rgb(124 108 246 / 0.45);
+  --scrollbar-thumb-bg-hover: #9b8cff;
+
+  --text-chat: #eef0ff;
+  --text-chat-muted: #b6bade;
+  --text-tertiary-muted: #7c81ab;
+  --color-pilula: #cfd4ff;
+
+  --accent-primary: #7c5cff;
+  --brand-primary-light: #6a49f0;
+  --text-on-brand-primary: #ffffff;
+  --focus-primary: rgb(124 92 255 / 0.6);
+
+  --status-online: #3ddca0;
+  --status-idle: #f7c948;
+  --status-dnd: #ff5f7e;
+  --status-danger: #f4506f;
+  --control-button-danger-hover-bg: rgb(244 80 111 / 0.16);
+
+  --text-link: #6fdcff;
+  --markup-mention-text: #6fdcff;
+  --alert-important-color: #b9a6ff;
+  --color-here: #ffd97a;
+  --message-mention-color: #cbbcff;
+  --message-mention-bg: rgb(124 92 255 / 0.2);
+  --code-inline-bg: rgb(30 34 68 / 0.9);
+  --code-block-bg: rgb(6 8 20 / 0.92);
+  --accent-warning: #ffcb3d;
+  --text-selection: rgb(111 220 255 / 0.35);
+
+  --color-veu: rgb(2 3 10 / 0.74);
+  --color-palco: #03040c;
+  --color-palco-ink: #eef0ff;
+  --color-sobre-midia: rgb(0 0 0 / 0.64);
+  --color-sombra: rgb(0 0 0 / 0.5);
+  --color-brilho: rgb(190 200 255 / 0.32);
+}
+
+/*
+  O céu fica no fundo da página, e as superfícies acima nascem translúcidas
+  para deixá-lo passar. Só isso não bastaria: painel sobre painel fecha o
+  fundo. Por isso a luz vem também de cima, no `screen` logo abaixo.
+*/
+body {
+  background-color: #03040c;
+  background-image:
+    radial-gradient(ellipse 60% 55% at 50% 40%, rgb(104 58 237 / 0.3), transparent 72%),
+    radial-gradient(ellipse 50% 40% at 94% 6%, rgb(20 170 255 / 0.2), transparent 74%),
+    radial-gradient(ellipse 55% 45% at 4% 92%, rgb(132 43 255 / 0.24), transparent 74%),
+    linear-gradient(160deg, #03040c, #080b20 58%, #03040c);
+  background-attachment: fixed;
+}
+
+/*
+  Nebulosa, poeira e meteoro passam POR CIMA de tudo, com `screen`: mistura
+  que só soma luz e nunca esconde o que está embaixo — é o que faz o céu
+  aparecer mesmo sob um painel, sem sujar o texto. E `pointer-events: none`,
+  senão o céu comeria o clique do app inteiro.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: 9989;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(ellipse 34% 24% at 22% 38%, rgb(126 63 255 / 0.55), transparent 70%),
+    radial-gradient(ellipse 30% 20% at 78% 62%, rgb(0 174 255 / 0.4), transparent 70%),
+    radial-gradient(ellipse 24% 18% at 56% 86%, rgb(255 60 170 / 0.28), transparent 70%);
+  filter: blur(30px);
+  animation: meteoro-nebulosa 60s ease-in-out infinite alternate;
+}
+
+@keyframes meteoro-nebulosa {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.1);
+  }
+}
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(1.3px 1.3px at 18% 26%, rgb(255 255 255 / 0.95), transparent 60%),
+    radial-gradient(1.1px 1.1px at 68% 61%, rgb(190 215 255 / 0.9), transparent 60%),
+    radial-gradient(1.5px 1.5px at 41% 78%, rgb(255 255 255 / 0.85), transparent 60%),
+    radial-gradient(1.1px 1.1px at 84% 33%, rgb(205 190 255 / 0.9), transparent 60%),
+    radial-gradient(1.2px 1.2px at 7% 64%, rgb(255 255 255 / 0.8), transparent 60%);
+  background-size: 240px 240px, 310px 310px, 390px 390px, 470px 470px, 550px 550px;
+  animation: meteoro-ceu 300s linear infinite;
+}
+
+@keyframes meteoro-ceu {
+  to {
+    background-position: 240px 480px, -310px 620px, 390px 780px, -470px 940px, 550px 1100px;
+  }
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: -14%;
+  left: 14%;
+  z-index: 9991;
+  width: 2px;
+  height: 150px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.95) 45%, rgb(140 190 255 / 0.7) 72%, transparent);
+  filter: drop-shadow(0 0 7px rgb(160 200 255 / 0.85));
+  transform: rotate(148deg);
+  animation: meteoro-risca 11s linear infinite;
+}
+
+@keyframes meteoro-risca {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(148deg) scaleY(0.35);
+  }
+  3% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+    transform: translate3d(66vw, 82vh, 0) rotate(148deg) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Vidro nos painéis: o céu passa, e o texto continua legível em cima dele. */
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+/*
+  Quem pediu menos movimento no sistema recebe o mesmo céu, parado. A poeira
+  continua lá; o que some é o que se move.
+*/
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  html::before {
+    animation: none;
+  }
+
+  body::after {
+    display: none;
+  }
+}
