@@ -906,15 +906,24 @@ model Tema {
   @@index([autorId])
 }
 
-/// Uma denúncia de comunidade. Quem administra o app recebe o aviso pela
-/// conta da casa; o registro fica para consulta.
+/// Uma denúncia de comunidade ou de mensagem. Quem administra o app recebe o
+/// aviso pela conta da casa; o registro fica para consulta.
 model Denuncia {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  guildId   String   @db.ObjectId
+  /// "comunidade" ou "mensagem". Denúncia antiga, sem o campo, é de comunidade.
+  tipo      String?
+  guildId   String?  @db.ObjectId
+  /// Só na denúncia de mensagem: a mensagem, o canal e quem a escreveu.
+  messageId String?  @db.ObjectId
+  channelId String?  @db.ObjectId
+  acusadoId String?  @db.ObjectId
+  /// Cópia do texto no momento da denúncia — a mensagem pode sumir depois.
+  trecho    String?
   autorId   String   @db.ObjectId
   motivo    String
   detalhes  String?
   createdAt DateTime @default(now())
 
   @@index([guildId])
+  @@index([messageId])
 }

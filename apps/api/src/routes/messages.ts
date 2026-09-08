@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { messageService } from "~/services/message-service.js";
 import { messageFavoriteService } from "~/services/message-favorite-service.js";
 import { accessService } from "~/services/access-service.js";
+import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
 import { objectId, channelParams } from "~/validations/common.js";
 import { rooms } from "@gravae/shared";
 import { z } from "zod";
@@ -51,6 +52,23 @@ export async function messageRoutes(app: FastifyInstance) {
 
     return reply.status(204).send();
   });
+
+  app.post(
+    "/messages/:messageId/denuncias",
+    { config: { rateLimit: { max: 5, timeWindow: "1 hour" } } },
+    async (req, reply) => {
+      const { messageId } = messageParams.parse(req.params);
+      const dados = z
+        .object({
+          motivo: z.enum(MOTIVOS_DE_DENUNCIA),
+          detalhes: z.string().trim().max(1000).optional(),
+        })
+        .parse(req.body);
+
+      const resultado = await denunciaService.denunciarMensagem(req.userId, messageId, dados, req.log);
+      return reply.code(201).send(resultado);
+    },
+  );
 
   app.get("/messages/busca", (req) => {
     const { q, ...filtros } = buscaQuery.parse(req.query);

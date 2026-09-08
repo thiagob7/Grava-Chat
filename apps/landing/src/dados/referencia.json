@@ -464,6 +464,12 @@
           "limite": null
         },
         {
+          "nome": "encaminhadaDe",
+          "tipo": "vários",
+          "obrigatorio": false,
+          "limite": null
+        },
+        {
           "nome": "mencionarAutor",
           "tipo": "boolean",
           "obrigatorio": false,

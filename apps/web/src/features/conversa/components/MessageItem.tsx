@@ -6,6 +6,7 @@ import {
   Bookmark,
   Copy,
   CornerUpLeft,
+  Flag,
   Hash,
   Link2,
   MailOpen,
@@ -68,6 +69,7 @@ import { useSegurar } from "~/hooks/use-segurar";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useSuperReacao } from "~/features/expressao/stores/super-reacao";
 import { ExpressionPicker } from "~/features/expressao/components/ExpressionPicker";
+import { DenunciarMensagem } from "~/features/conversa/components/DenunciarMensagem";
 import { EncaminharModal } from "~/features/conversa/components/EncaminharModal";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
@@ -153,6 +155,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const [reagindo, setReagindo] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [encaminhando, setEncaminhando] = useState(false);
+  const [denunciando, setDenunciando] = useState(false);
+  const podeDenunciar = !isOwn && !message.author.sistema;
   const raiz = useRef<HTMLDivElement>(null);
 
   const saveEdit = async () => {
@@ -628,13 +632,23 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 {t("conversa.acoes.copiarId")} <Copy data-gc="conversa.message-item.copy" size={16} />
               </DropdownMenuItem>
 
+              {(canDelete || podeDenunciar) && (
+                <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator--3" />
+              )}
+
               {canDelete && (
-                <>
-                  <DropdownMenuSeparator data-gc="conversa.message-item.dropdown-menu-separator--3" />
-                  <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.apagar" onSelect={apagar} className="text-danger focus:text-danger">
-                    {t("conversa.acoes.apagarMensagem")} <Trash2 data-gc="conversa.message-item.trash2--2" size={16} />
-                  </DropdownMenuItem>
-                </>
+                <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item.apagar" onSelect={apagar} className="text-danger focus:text-danger">
+                  {t("conversa.acoes.apagarMensagem")} <Trash2 data-gc="conversa.message-item.trash2--2" size={16} />
+                </DropdownMenuItem>
+              )}
+
+              {podeDenunciar && (
+                <DropdownMenuItem data-gc="conversa.message-item.dropdown-menu-item--10"
+                  onSelect={() => setDenunciando(true)}
+                  className="text-danger focus:text-danger"
+                >
+                  {t("conversa.acoes.denunciarMensagem")} <Flag data-gc="conversa.message-item.flag" size={16} />
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -647,6 +661,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         mensagem={message}
         guildId={guildId}
       />
+
+      <DenunciarMensagem data-gc="conversa.message-item.denunciar-mensagem" mensagem={message} aberto={denunciando} onFechar={() => setDenunciando(false)} />
     </div>
   );
 };
