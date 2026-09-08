@@ -17,6 +17,8 @@ import { useLinksDoDesktop } from "~/features/app/hooks/use-links-do-desktop";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
 import { RedefinirSenha } from "~/pages/presentation/auth/RedefinirSenha";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
+
+const Admin = React.lazy(() => import("~/pages/presentation/admin/Admin"));
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
 import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
@@ -54,9 +56,19 @@ export const AppRoutes: React.FC = () => {
       */}
       <Route path="/redefinir" element={<RedefinirSenha data-gc="routes.redefinir-senha" />} />
       <Route
-        path="/invite/:code"
+        path="/admin/:tela?"
         element={
           <Protected data-gc="routes.protected">
+            <React.Suspense data-gc="routes.reactsuspense" fallback={<Splash data-gc="routes.splash" />}>
+              <Admin data-gc="routes.admin" />
+            </React.Suspense>
+          </Protected>
+        }
+      />
+      <Route
+        path="/invite/:code"
+        element={
+          <Protected data-gc="routes.protected--2">
             <AcceptInvite data-gc="routes.accept-invite" />
           </Protected>
         }
@@ -64,7 +76,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/oauth2/autorizar"
         element={
-          <Protected data-gc="routes.protected--2">
+          <Protected data-gc="routes.protected--3">
             <AutorizarApp data-gc="routes.autorizar-app" />
           </Protected>
         }
@@ -72,7 +84,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/bots/:botId/adicionar"
         element={
-          <Protected data-gc="routes.protected--3">
+          <Protected data-gc="routes.protected--4">
             <AdicionarBot data-gc="routes.adicionar-bot" />
           </Protected>
         }
@@ -80,7 +92,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/dm/:channelId?"
         element={
-          <Protected data-gc="routes.protected--4">
+          <Protected data-gc="routes.protected--5">
             <DirectMessages data-gc="routes.direct-messages" />
           </Protected>
         }
@@ -88,7 +100,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/tema/:temaId"
         element={
-          <Protected data-gc="routes.protected--5">
+          <Protected data-gc="routes.protected--6">
             <VerTema data-gc="routes.ver-tema" />
           </Protected>
         }
@@ -96,7 +108,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/estudio"
         element={
-          <Protected data-gc="routes.protected--6">
+          <Protected data-gc="routes.protected--7">
             <EstudioEmJanela data-gc="routes.estudio-em-janela" />
           </Protected>
         }
@@ -104,7 +116,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/explorar"
         element={
-          <Protected data-gc="routes.protected--7">
+          <Protected data-gc="routes.protected--8">
             <Explorar data-gc="routes.explorar" />
           </Protected>
         }
@@ -112,7 +124,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--8">
+          <Protected data-gc="routes.protected--9">
             <Chat data-gc="routes.chat" />
           </Protected>
         }
@@ -181,7 +193,7 @@ const PublicOnly: React.FC = () => {
   const { user, isBooting } = useSession();
   const location = useLocation() as { state?: { from?: string } };
 
-  if (isBooting) return <Splash data-gc="routes.splash" />;
+  if (isBooting) return <Splash data-gc="routes.splash--2" />;
   if (user) return <Navigate to={location.state?.from ?? "/channels"} replace />;
 
   return <SignIn data-gc="routes.sign-in" />;

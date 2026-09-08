@@ -29,7 +29,9 @@ import {
   SlidersHorizontal,
   User,
   X,
-  LogOut, Megaphone, Flag, Rocket } from "lucide-react";
+  LogOut, Shield } from "lucide-react";
+
+import { useNavigate } from "react-router";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -47,10 +49,6 @@ import { AcessibilidadeSection } from "~/features/configuracoes/components/Acess
 import { IdiomaSection } from "~/features/configuracoes/components/IdiomaSection";
 import { BatePapoSection } from "~/features/configuracoes/components/BatePapoSection";
 import { PrivacidadeSection } from "~/features/configuracoes/components/PrivacidadeSection";
-import { ComunicadosSection } from "~/features/configuracoes/components/ComunicadosSection";
-import { DenunciasSection } from "~/features/configuracoes/components/DenunciasSection";
-import { PublicacoesSection } from "~/features/configuracoes/components/PublicacoesSection";
-import { ServidorSection } from "~/features/configuracoes/components/ServidorSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { ehDesktop } from "~/lib/desktop";
@@ -197,39 +195,7 @@ const gruposPara = (admin: boolean): { chave: string; itens: Item[] }[] => [
       },
     ],
   },
-  ...(admin
-    ? [
-        {
-          chave: "configuracoes.grupos.administracao",
-          itens: [
-            {
-              id: "servidor" as const,
-              chave: "configuracoes.telas.servidor",
-              icone: Server,
-              subitens: SUBSECOES.servidor,
-            },
-            {
-              id: "comunicado" as const,
-              chave: "configuracoes.telas.comunicado",
-              icone: Megaphone,
-              subitens: [],
-            },
-            {
-              id: "denuncias" as const,
-              chave: "configuracoes.telas.denuncias",
-              icone: Flag,
-              subitens: [],
-            },
-            {
-              id: "publicacoes" as const,
-              chave: "configuracoes.telas.publicacoes",
-              icone: Rocket,
-              subitens: [],
-            },
-          ],
-        },
-      ]
-    : []),
+
 ];
 
 const TITULOS: Record<Secao, string> = {
@@ -248,10 +214,6 @@ const TITULOS: Record<Secao, string> = {
   desktop: "configuracoes.telas.desktop",
   atalhos: "configuracoes.telas.atalhos",
   avancado: "configuracoes.telas.avancado",
-  servidor: "configuracoes.telas.servidor",
-  comunicado: "configuracoes.telas.comunicado",
-  denuncias: "configuracoes.telas.denuncias",
-  publicacoes: "configuracoes.telas.publicacoes",
 };
 
 export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
@@ -263,6 +225,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   onEditarPerfil,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [secao, setSecao] = useState<Secao>(secaoInicial);
   const [busca, setBusca] = useState("");
   const [subAtiva, setSubAtiva] = useState<string | null>(null);
@@ -435,6 +398,19 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             )}
 
             <div data-gc="configuracoes.user-settings-modal.div--4" className="mt-auto flex flex-col pb-3 pt-2">
+              {user.admin && (
+                <button data-gc="configuracoes.user-settings-modal.button"
+                  onClick={() => {
+                    onClose();
+                    navigate("/admin");
+                  }}
+                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-ink-muted transition hover:bg-hover hover:text-ink"
+                >
+                  <Shield data-gc="configuracoes.user-settings-modal.shield" size={16} className="shrink-0" />
+                  {t("configuracoes.grupos.administracao")}
+                </button>
+              )}
+
               <button data-gc="configuracoes.user-settings-modal.button.on-logout"
                 onClick={onLogout}
                 className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-danger transition hover:bg-danger-fundo"
@@ -499,9 +475,6 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {secao === "desktop" && <DesktopSection data-gc="configuracoes.user-settings-modal.desktop-section" />}
                     {secao === "atalhos" && <AtalhosSection data-gc="configuracoes.user-settings-modal.atalhos-section" />}
                     {secao === "avancado" && <AvancadoSection data-gc="configuracoes.user-settings-modal.avancado-section" />}
-                    {secao === "servidor" && user.admin && <ServidorSection data-gc="configuracoes.user-settings-modal.servidor-section" />}
-                    {secao === "comunicado" && user.admin && <ComunicadosSection data-gc="configuracoes.user-settings-modal.comunicados-section" />}
-                    {secao === "denuncias" && user.admin && <DenunciasSection data-gc="configuracoes.user-settings-modal.denuncias-section" />}
                   </ErrorBoundary>
                 </ContextoDaSecao.Provider>
               </div>
@@ -597,7 +570,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
               className="subarvore-de-config ml-[21px] mt-[3px] flex flex-col gap-0.5 pl-[7px]"
             >
               {item.subitens.map((sub) => (
-                <button data-gc="configuracoes.user-settings-modal.button"
+                <button data-gc="configuracoes.user-settings-modal.button--2"
                   key={sub.id}
                   data-ativo={subAtiva === sub.id}
                   tabIndex={ativo ? 0 : -1}
