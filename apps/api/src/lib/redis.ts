@@ -25,4 +25,6 @@ export const keys = {
   oauthCode: (codigo: string) => `oauth:code:${codigo}`,
   oauthToken: (token: string) => `oauth:token:${token}`,
   oauthDaPessoa: (userId: string) => `oauth:usuario:${userId}`,
+  redefinicaoDeSenha: (token: string) => `senha:redefinir:${token}`,
+  pedidoDeRedefinicao: (userId: string) => `senha:pedido:${userId}`,
 } as const;

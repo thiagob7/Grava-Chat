@@ -15,6 +15,7 @@ import { useAvisoNoTitulo } from "~/features/app/hooks/use-aviso-no-titulo";
 import { useConviteDeAviso } from "~/features/app/hooks/use-convite-de-aviso";
 import { useLinksDoDesktop } from "~/features/app/hooks/use-links-do-desktop";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
+import { RedefinirSenha } from "~/pages/presentation/auth/RedefinirSenha";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
@@ -46,6 +47,12 @@ export const AppRoutes: React.FC = () => {
       <div data-gc="routes.div--2" {...flxAttr("molduraExterna")} {...flx("molduraDoApp", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("molduraExterna")))}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
+      {/*
+        Aberta a quem está de fora e a quem está dentro: o link do e-mail é
+        justamente para quem não consegue entrar, e mandá-lo para o app
+        seria devolver a pessoa ao problema.
+      */}
+      <Route path="/redefinir" element={<RedefinirSenha data-gc="routes.redefinir-senha" />} />
       <Route
         path="/invite/:code"
         element={

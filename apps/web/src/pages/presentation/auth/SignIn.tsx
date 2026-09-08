@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
-import { useEntrar, useRegistrar } from "~/@core/application/queries/auth/use-senha";
+import { useEntrar, usePedirSenhaNova, useRegistrar } from "~/@core/application/queries/auth/use-senha";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
@@ -14,20 +14,53 @@ export const SignIn: React.FC = () => {
   const devLogin = useDevLogin();
   const entrar = useEntrar();
   const registrar = useRegistrar();
-  const { devLoginEnabled, googleEnabled, senhaEnabled, apiUnreachable, retry, startSession } = useSession();
+  const pedirSenhaNova = usePedirSenhaNova();
+  const {
+    devLoginEnabled,
+    googleEnabled,
+    senhaEnabled,
+    esqueciSenhaEnabled,
+    apiUnreachable,
+    retry,
+    startSession,
+  } = useSession();
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  /// Entrar ou criar conta: o mesmo formulário, com um campo a mais no segundo.
-  const [modo, setModo] = useState<"entrar" | "criar">("entrar");
+  /*
+    Entrar, criar conta ou pedir senha nova: o mesmo cartão, três estados. O
+    de pedir some com os campos de senha e nome e fica só com o e-mail, que é
+    tudo o que o servidor precisa.
+  */
+  const [modo, setModo] = useState<"entrar" | "criar" | "esqueci">("entrar");
+  const [pedido, setPedido] = useState(false);
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
   const [erroDaSenha, setErroDaSenha] = useState<string | null>(null);
-  const ocupado = entrar.isPending || registrar.isPending;
+  const ocupado = entrar.isPending || registrar.isPending || pedirSenhaNova.isPending;
+
+  /*
+    O pedido responde a mesma coisa exista a conta ou não — de propósito. Se
+    a tela dissesse "esse e-mail não tem conta", ela viraria um jeito de
+    descobrir quem está aqui.
+  */
+  const pedirNova = async () => {
+    if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
+
+    setErroDaSenha(null);
+
+    try {
+      await pedirSenhaNova.mutateAsync(email.trim());
+      setPedido(true);
+    } catch (erro) {
+      setErroDaSenha(apiErrorMessage(erro, "Não deu para pedir agora."));
+    }
+  };
 
   const comSenha = async () => {
+    if (modo === "esqueci") return pedirNova();
     if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
     if (senha.length < 8) return setErroDaSenha("A senha precisa de pelo menos 8 caracteres");
     if (modo === "criar" && !nome.trim()) return setErroDaSenha("Diga como quer ser chamado");
@@ -147,7 +180,9 @@ export const SignIn: React.FC = () => {
           <>
             <div data-gc="auth.sign-in.div--6" className="mb-4 flex items-center gap-2">
               <span data-gc="auth.sign-in.span--3" className="h-px flex-1 bg-line" />
-              <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">{modo === "criar" ? "ou crie uma conta" : "ou entre com e-mail"}</span>
+              <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">
+                {modo === "criar" ? "ou crie uma conta" : modo === "esqueci" ? "recuperar a senha" : "ou entre com e-mail"}
+              </span>
               <span data-gc="auth.sign-in.span--5" className="h-px flex-1 bg-line" />
             </div>
 
@@ -179,44 +214,103 @@ export const SignIn: React.FC = () => {
               </>
             )}
 
-            <Label data-gc="auth.sign-in.label--3" htmlFor="senha">Senha</Label>
-            <Input data-gc="auth.sign-in.input--3"
-              id="senha"
-              type="password"
-              autoComplete={modo === "criar" ? "new-password" : "current-password"}
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void comSenha()}
-              placeholder={modo === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
-              erro={erroDaSenha ?? undefined}
-            />
+            {modo !== "esqueci" && (
+              <>
+                <div data-gc="auth.sign-in.div--7" className="flex items-baseline justify-between">
+                  <Label data-gc="auth.sign-in.label--3" htmlFor="senha">Senha</Label>
 
-            <Button data-gc="auth.sign-in.button--3" onClick={() => void comSenha()} disabled={ocupado} className="mt-5 w-full">
-              {ocupado ? "Um instante…" : modo === "criar" ? "Criar conta" : "Entrar"}
-            </Button>
+                  {modo === "entrar" && esqueciSenhaEnabled && (
+                    <button data-gc="auth.sign-in.button--3"
+                      type="button"
+                      onClick={() => {
+                        setModo("esqueci");
+                        setErroDaSenha(null);
+                        setPedido(false);
+                      }}
+                      className="text-xs font-medium text-link hover:underline"
+                    >
+                      Esqueci a senha
+                    </button>
+                  )}
+                </div>
 
-            <p data-gc="auth.sign-in.p--7" className="mt-3 text-center text-xs text-ink-faint">
-              {modo === "criar" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
-              <button data-gc="auth.sign-in.button--4"
-                type="button"
-                onClick={() => {
-                  setModo(modo === "criar" ? "entrar" : "criar");
-                  setErroDaSenha(null);
-                }}
-                className="font-medium text-link hover:underline"
-              >
-                {modo === "criar" ? "Entrar" : "Criar uma"}
-              </button>
+                <Input data-gc="auth.sign-in.input--3"
+                  id="senha"
+                  type="password"
+                  autoComplete={modo === "criar" ? "new-password" : "current-password"}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+                  placeholder={modo === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
+                  erro={erroDaSenha ?? undefined}
+                />
+              </>
+            )}
+
+            {modo === "esqueci" &&
+              (pedido ? (
+                <p data-gc="auth.sign-in.p--7" className="rounded bg-surface-2 px-3 py-2 text-sm text-ink-muted">
+                  Se houver uma conta com esse e-mail, o link de senha nova já está a caminho.
+                  Ele vale por 30 minutos.
+                </p>
+              ) : (
+                <p data-gc="auth.sign-in.p--8" className="text-xs text-ink-faint">
+                  Mandamos um link para escolher uma senha nova. Ele vale por 30 minutos e só
+                  serve uma vez.
+                  {erroDaSenha && <span data-gc="auth.sign-in.span--6" className="mt-1 block text-danger">{erroDaSenha}</span>}
+                </p>
+              ))}
+
+            {!(modo === "esqueci" && pedido) && (
+              <Button data-gc="auth.sign-in.button--4" onClick={() => void comSenha()} disabled={ocupado} className="mt-5 w-full">
+                {ocupado
+                  ? "Um instante…"
+                  : modo === "criar"
+                    ? "Criar conta"
+                    : modo === "esqueci"
+                      ? "Mandar o link"
+                      : "Entrar"}
+              </Button>
+            )}
+
+            <p data-gc="auth.sign-in.p--9" className="mt-3 text-center text-xs text-ink-faint">
+              {modo === "esqueci" ? (
+                <button data-gc="auth.sign-in.button--5"
+                  type="button"
+                  onClick={() => {
+                    setModo("entrar");
+                    setErroDaSenha(null);
+                    setPedido(false);
+                  }}
+                  className="font-medium text-link hover:underline"
+                >
+                  Voltar para entrar
+                </button>
+              ) : (
+                <>
+                  {modo === "criar" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
+                  <button data-gc="auth.sign-in.button--6"
+                    type="button"
+                    onClick={() => {
+                      setModo(modo === "criar" ? "entrar" : "criar");
+                      setErroDaSenha(null);
+                    }}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {modo === "criar" ? "Entrar" : "Criar uma"}
+                  </button>
+                </>
+              )}
             </p>
           </>
         )}
 
         {devLoginEnabled && (
           <>
-            <div data-gc="auth.sign-in.div--7" className="mb-4 flex items-center gap-2">
-              <span data-gc="auth.sign-in.span--6" className="h-px flex-1 bg-line" />
-              <span data-gc="auth.sign-in.span--7" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
-              <span data-gc="auth.sign-in.span--8" className="h-px flex-1 bg-line" />
+            <div data-gc="auth.sign-in.div--8" className="mb-4 flex items-center gap-2">
+              <span data-gc="auth.sign-in.span--7" className="h-px flex-1 bg-line" />
+              <span data-gc="auth.sign-in.span--8" className="text-xs uppercase text-ink-faint">ou, em desenvolvimento</span>
+              <span data-gc="auth.sign-in.span--9" className="h-px flex-1 bg-line" />
             </div>
 
             <Label data-gc="auth.sign-in.label--4" htmlFor="email">Email</Label>
@@ -238,9 +332,9 @@ export const SignIn: React.FC = () => {
               placeholder="Como seus amigos te chamam"
             />
 
-            {error && <p data-gc="auth.sign-in.p--8" className="mt-2 text-sm text-danger">{error}</p>}
+            {error && <p data-gc="auth.sign-in.p--10" className="mt-2 text-sm text-danger">{error}</p>}
 
-            <Button data-gc="auth.sign-in.button--5"
+            <Button data-gc="auth.sign-in.button--7"
               onClick={() => void submit()}
               disabled={devLogin.isPending}
               className="mt-5 w-full"
@@ -248,7 +342,7 @@ export const SignIn: React.FC = () => {
               {devLogin.isPending ? "Entrando…" : "Entrar"}
             </Button>
 
-            <p data-gc="auth.sign-in.p--9" className="mt-4 text-center text-xs text-ink-faint">
+            <p data-gc="auth.sign-in.p--11" className="mt-4 text-center text-xs text-ink-faint">
               Login de desenvolvimento: cria a conta na hora, sem senha. Some em produção.
             </p>
           </>

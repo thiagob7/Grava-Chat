@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import { entrar, registrar, trocarSenha } from "~/@core/application/requests/auth/senha";
+import {
+  entrar,
+  pedirSenhaNova,
+  redefinirSenha,
+  registrar,
+  trocarSenha,
+} from "~/@core/application/requests/auth/senha";
 import type { EntrarDTO, RegistrarDTO, TrocarSenhaDTO } from "~/@core/domain/dtos/auth-dto";
 import type { SessionModel } from "~/@core/domain/models/user-model";
 import { apiErrorMessage } from "~/@core/lib/api";
@@ -38,3 +44,9 @@ export const useTrocarSenha = () =>
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Não deu para salvar a senha.")),
   });
+
+export const usePedirSenhaNova = () =>
+  useMutation({ mutationFn: (email: string) => pedirSenhaNova(email) });
+
+export const useRedefinirSenha = () =>
+  useMutation({ mutationFn: (data: { token: string; senha: string }) => redefinirSenha(data) });

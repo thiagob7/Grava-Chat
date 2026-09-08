@@ -4,12 +4,16 @@ import { env, isDev } from "~/env.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
+import { redefinicaoService } from "~/services/redefinicao-service.js";
+import { correio } from "~/lib/correio.js";
 import { toSelfUser } from "~/lib/serialize.js";
 import {
   devLoginInput,
   desktopExchangeInput,
   desktopStartInput,
   entrarInput,
+  esqueciInput,
+  redefinirInput,
   registrarInput,
   trocarSenhaInput,
 } from "~/validations/auth.js";
@@ -112,6 +116,29 @@ export async function authRoutes(app: FastifyInstance) {
     const user = await authService.entrarComSenha(entrarInput.parse(req.body));
     return abrirSessao(req, reply, user);
   });
+
+  app.post(
+    "/auth/esqueci",
+    { config: { rateLimit: { max: 5, timeWindow: "15 minutes" } } },
+    async (req, reply) => {
+      await redefinicaoService.pedir(esqueciInput.parse(req.body).email);
+
+      /// Sempre 204, exista a conta ou não: a diferença entre as duas
+      /// respostas seria uma lista de quem tem conta aqui.
+      return reply.code(204).send();
+    },
+  );
+
+  app.post(
+    "/auth/redefinir",
+    { config: { rateLimit: { max: 10, timeWindow: "15 minutes" } } },
+    async (req, reply) => {
+      const { token, senha } = redefinirInput.parse(req.body);
+      await redefinicaoService.redefinir(token, senha);
+
+      return reply.code(204).send();
+    },
+  );
 
   app.put("/auth/senha", { preHandler: [app.authenticate] }, async (req, reply) => {
     await authService.trocarSenha(req.userId, trocarSenhaInput.parse(req.body));
@@ -228,6 +255,9 @@ export async function authRoutes(app: FastifyInstance) {
     devLogin: isDev,
     google: googleConfigured,
     senha: true,
+    /// Sem correio não adianta oferecer "esqueci a senha": o link nunca
+    /// chegaria, e a tela promete o que o servidor não faz.
+    esqueciSenha: correio.ligado(),
     voiceUrl: env.LIVEKIT_URL,
   }));
 }

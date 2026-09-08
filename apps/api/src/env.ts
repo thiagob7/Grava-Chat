@@ -37,6 +37,12 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
+  /// O correio da casa. Com a chave do Resend preenchida, a API manda e-mail —
+  /// hoje só o de "esqueci a senha". Vazia, a rota responde que o serviço não
+  /// está configurado, em vez de fingir que mandou.
+  RESEND_API_KEY: z.string().default(""),
+  EMAIL_REMETENTE: z.string().default("Gravaê <nao-responda@gravae.io>"),
+
   /// O e-mail de quem é dono do servidor "Gravaê Temas". Com isto preenchido,
   /// a API garante o servidor a cada subida e a conta da casa publica os temas
   /// lá. Vazio, nada acontece.

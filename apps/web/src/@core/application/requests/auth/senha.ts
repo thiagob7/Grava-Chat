@@ -17,3 +17,11 @@ export async function entrar(data: EntrarDTO): Promise<SessionModel> {
 export async function trocarSenha(data: TrocarSenhaDTO): Promise<void> {
   await api.put("/auth/senha", data);
 }
+
+export async function pedirSenhaNova(email: string): Promise<void> {
+  await api.post("/auth/esqueci", { email });
+}
+
+export async function redefinirSenha(data: { token: string; senha: string }): Promise<void> {
+  await api.post("/auth/redefinir", data);
+}

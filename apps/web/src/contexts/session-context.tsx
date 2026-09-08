@@ -18,6 +18,7 @@ interface SessionContextValue {
   devLoginEnabled: boolean;
   googleEnabled: boolean;
   senhaEnabled: boolean;
+  esqueciSenhaEnabled: boolean;
   voiceReachable: boolean;
   apiUnreachable: boolean;
   retry: () => void;
@@ -115,6 +116,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,
     senhaEnabled: config.data?.senha ?? false,
+    esqueciSenhaEnabled: config.data?.esqueciSenha ?? false,
     voiceReachable: alcancaOServidorDeVoz(config.data?.voiceUrl),
     apiUnreachable: config.isError,
     retry: () => {

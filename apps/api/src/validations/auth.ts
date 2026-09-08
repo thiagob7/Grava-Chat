@@ -26,6 +26,13 @@ export const entrarInput = z.object({
   senha: z.string().min(1).max(128),
 });
 
+export const esqueciInput = z.object({ email: z.email() });
+
+export const redefinirInput = z.object({
+  token: z.string().min(16).max(200),
+  senha,
+});
+
 /// `atual` só é obrigatória para quem já tem senha; quem entra pelo Google cria a primeira sem ela.
 export const trocarSenhaInput = z.object({
   atual: z.string().max(128).optional(),
