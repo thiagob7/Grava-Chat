@@ -27,13 +27,6 @@ const TRECHO = 300;
 
 const web = () => env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
 
-/*
-  Levar o aviso a quem administra o app.
-
-  Cada administrador recebe na conversa que tem com a conta da casa. Um que
-  não exista, ou uma DM que não abra, não pode derrubar a denúncia: o registro
-  já está gravado, então a falha só vai para o log.
-*/
 async function avisarAdministradores(texto: string, log?: FastifyBaseLogger) {
   const casa = await sistemaService.usuario();
 
@@ -52,21 +45,6 @@ async function avisarAdministradores(texto: string, log?: FastifyBaseLogger) {
   }
 }
 
-/*
-  Denunciar uma comunidade.
-
-  Fica registrado e vai, na hora, para a conversa que cada administrador do
-  app tem com a conta da casa — o mesmo canal dos outros avisos. Quem
-  denuncia precisa estar na comunidade: não se denuncia o que não se viu.
-*/
-/*
-  Uma denúncia pronta para a fila da administração.
-
-  Vem com o alvo já resolvido: quem lê precisa do nome da comunidade ou do
-  trecho da mensagem, não de um id para procurar à mão. O trecho sai do
-  registro, e não da mensagem — ela pode ter sido apagada justamente por
-  causa disto, e o que valia julgar é o que foi escrito na hora.
-*/
 export interface DenunciaNaFila {
   id: string;
   tipo: "comunidade" | "mensagem";
@@ -117,13 +95,6 @@ export const denunciaService = {
     return { id: denuncia.id };
   },
 
-  /*
-    A fila da administração.
-
-    Por padrão só o que ainda não teve desfecho, da mais nova para a mais
-    velha: quem abre a tela quer ver o que falta, não o arquivo. Uma página
-    de cada vez, porque a lista cresce e ninguém lê mil de uma vez.
-  */
   async listar(filtro: { pendentes?: boolean; antesDe?: string; limite?: number } = {}) {
     const limite = Math.min(filtro.limite ?? 50, 100);
 
@@ -183,14 +154,6 @@ export const denunciaService = {
     return { itens, proxima: temMais ? (pagina.at(-1)?.id ?? null) : null };
   },
 
-  /*
-    Dar desfecho a uma denúncia.
-
-    Não age sozinha: apagar mensagem, banir e verificar comunidade continuam
-    sendo decisões separadas, tomadas com as ferramentas de sempre. Isto aqui
-    só tira o item da fila e registra quem olhou — a fila existe para não
-    perder denúncia de vista, não para agir por conta própria.
-  */
   async resolver(adminId: string, denunciaId: string, decisao: "procede" | "arquivada") {
     const existente = await prisma.denuncia.findUnique({ where: { id: denunciaId } });
     if (!existente) throw new NotFoundError("Denúncia não encontrada");
@@ -203,10 +166,6 @@ export const denunciaService = {
     return { id: denunciaId, decisao };
   },
 
-  /*
-    Reabrir: engano acontece, e uma denúncia arquivada por engano some da
-    fila para sempre se não houver volta.
-  */
   async reabrir(denunciaId: string) {
     await prisma.denuncia.update({
       where: { id: denunciaId },
@@ -216,13 +175,6 @@ export const denunciaService = {
     return { id: denunciaId };
   },
 
-  /*
-    Denunciar uma mensagem.
-
-    Vale onde a pessoa enxerga: canal de comunidade ou conversa privada. Não
-    se denuncia a própria mensagem nem a da conta da casa. O texto vai copiado
-    para o registro porque quem escreveu pode apagar antes de alguém olhar.
-  */
   async denunciarMensagem(
     userId: string,
     messageId: string,
