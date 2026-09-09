@@ -4,35 +4,19 @@ import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 
 interface SliderProps extends Omit<React.ComponentProps<"input">, "type"> {
-  preenchido: number;
-  /// Onde fica o valor de fábrica, de 0 a 1. Sem isso, nenhuma marca é desenhada.
-  padrao?: number;
-  /// O que escrever embaixo da marca. Sem isso, só o risquinho.
-  rotuloDoPadrao?: string;
+  filled: number;
+  defaultAt?: number;
+  defaultLabel?: string;
 }
 
-/*
-  Quatro elementos desenham, e o `<input type="range">` invisível manda.
-
-  A árvore é a da referência — `control > sliderControl > track > barFill`, com o
-  `grabber` ao lado do trilho — porque os temas encadeiam esses nomes e cadeia
-  não casa com nome no mesmo elemento. O `<input>` fica por cima, transparente,
-  e continua sendo quem ouve arraste, teclado e leitor de tela: assim a árvore
-  muda e o comportamento não, inclusive no volume da chamada, que vive girado
-  90° e onde refazer o arraste na mão seria caro.
-
-  O input vem ANTES no DOM para o `group-focus-within` alcançar o punho — e as
-  camadas de desenho são `pointer-events-none`, senão elas roubariam o clique
-  de quem está por baixo.
-*/
 export const Slider = ({
   className,
-  preenchido,
-  padrao,
-  rotuloDoPadrao,
+  filled,
+  defaultAt,
+  defaultLabel,
   ...props
 }: SliderProps) => {
-  const posicao = `${Math.min(Math.max(preenchido, 0), 1) * 100}%`;
+  const position = `${Math.min(Math.max(filled, 0), 1) * 100}%`;
 
   return (
     <div data-gc="ui.slider.div"
@@ -60,7 +44,7 @@ export const Slider = ({
         >
           <div data-gc="ui.slider.div--4"
             className={cn(flxCls("preenchimentoDoSlider"), "h-full rounded-full bg-brand")}
-            style={{ width: posicao }}
+            style={{ width: position }}
           />
         </div>
 
@@ -70,30 +54,30 @@ export const Slider = ({
             "absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink shadow",
             "group-focus-within/slider:ring-2 group-focus-within/slider:ring-brand",
           )}
-          style={{ left: posicao }}
+          style={{ left: position }}
         />
       </div>
 
-      {padrao !== undefined && (
+      {defaultAt !== undefined && (
         <span data-gc="ui.slider.span"
           className={cn(
             flxCls("marcaDoPadrao"),
             "pointer-events-none absolute top-full -translate-x-1/2 text-center",
           )}
-          style={{ left: `${Math.min(Math.max(padrao, 0), 1) * 100}%` }}
+          style={{ left: `${Math.min(Math.max(defaultAt, 0), 1) * 100}%` }}
         >
           <span data-gc="ui.slider.span--2"
             aria-hidden
             className={cn(flxCls("risquinhoDaMarca"), "mx-auto block h-1 w-px bg-ink-faint")}
           />
-          {rotuloDoPadrao && (
+          {defaultLabel && (
             <span data-gc="ui.slider.span--3"
               className={cn(
                 flxCls("numeroDaMarca"),
                 "block text-10 tabular-nums text-ink-faint",
               )}
             >
-              {rotuloDoPadrao}
+              {defaultLabel}
             </span>
           )}
         </span>
