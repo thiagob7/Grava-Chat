@@ -1,17 +1,7 @@
-/*
-  Gera `src/assets/decoracoes/gelo.json`.
-
-  O Lottie fica versionado pronto — isto aqui existe pra quando alguem quiser
-  mudar a cor, a espessura ou o formato da neve sem editar 5 KB de JSON na mao.
-  A geometria da neve depende do raio do anel, entao mexer num numero solto no
-  JSON descola a neve do aro; aqui os controles de bezier sao recalculados.
-
-    node scripts/decoracoes/gelo.mjs src/assets/decoracoes/gelo.json
-*/
 import { writeFileSync } from "node:fs";
 
-const R = 84;              // mesmo raio do aro.json (elipse 168)
-const FIM = 90;            // 3s a 30fps, igual as outras decoracoes
+const R = 84;
+const FIM = 90;
 const rad = (g) => (g * Math.PI) / 180;
 const ponto = (g, r = R) => [r * Math.cos(rad(g)), r * Math.sin(rad(g))];
 const cor = (hex) => {
@@ -60,10 +50,6 @@ const camada = (ind, nm, shapes, ks = {}) => ({
   ao: 0, shapes, ip: 0, op: FIM, st: 0, bm: 0,
 });
 
-/* ---------- a neve acumulada na base do anel ----------
-   O topo e uma linha irregular; o fundo acompanha a curva do anel, com os
-   controles de bezier calculados a partir do raio — e nao chutados, senao a
-   neve descola do aro em tamanho grande. */
 const A_ESQ = 125, A_DIR = 55, A_BASE = 90;
 const k = (4 / 3) * Math.tan(rad((A_BASE - A_DIR) / 4)) * R;
 const tang = (g, sinal) => [sinal * -Math.sin(rad(g)) * k, sinal * Math.cos(rad(g)) * k];
@@ -92,11 +78,6 @@ const caminho = (p) => ({
   }),
 });
 
-/* ---------- cristais que piscam fora de fase ----------
-   Os quadros-chave saem SEMPRE em ordem crescente e comecam e terminam no
-   mesmo valor. A primeira versao calculava o fim com `(meio + 45) % 90`, o que
-   punha t:15 depois de t:60 na lista — o Lottie nao ordena por conta propria,
-   e o cristal ficava com o pisca embaralhado. */
 const JANELA = 18;
 
 const cristal = (g, r, tamanho, pico) => ({
@@ -123,8 +104,6 @@ const lottie = {
   layers: [
     camada(1, "cristais", [cristal(298, 90, 9, 20), cristal(214, 92, 7, 45), cristal(22, 88, 8, 70)]),
     camada(2, "neve", [{ ty: "gr", nm: "monte", it: [caminho(neve), preenche("#f4fbff", 96), transformar()] }]),
-    /// O brilho e um pedaco curto do anel girando: mesma ideia do aro.json,
-    /// e e o que faz o gelo parecer gelo em vez de um circulo azul.
     camada(3, "brilho", [{ ty: "gr", nm: "lampejo", it: [elipse(168), trim(0, 13), traco("#eaf8ff", 5), transformar()] }],
       { r: anima([{ t: 0, v: 0 }, { t: FIM, v: 360 }], LINEAR) }),
     camada(4, "anel", [
