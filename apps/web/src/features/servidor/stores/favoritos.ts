@@ -31,7 +31,6 @@ export const useFavoritos = create<StoreDeFavoritos>((set, store) => ({
     try {
       localStorage.setItem(CHAVE, JSON.stringify(canais));
     } catch {
-      /// Sem localStorage a estrela vale só até recarregar — melhor que travar.
     }
   },
 
