@@ -1,18 +1,3 @@
-/*
-  As miniaturas de tema, tiradas do CSS.
-
-  Elas eram três hex escritos à mão por tema — e mentiam. O "Mais escuro"
-  prometia três cinzas diferentes quando o tema é `#020203` chapado nas três
-  superfícies; o "Modo Gravaê" mostrava as suas na ordem invertida. Quem
-  escolhia pelo quadradinho escolhia outra coisa.
-
-  Agora sai daqui, do mesmo `index.css` que pinta o app de verdade. A ordem das
-  amostras é a ordem da tela: trilho, lateral, conversa — surface-0, 1 e 2.
-
-  Rodar:
-    node scripts/amostras-de-tema.mjs           escreve o JSON
-    node scripts/amostras-de-tema.mjs --check   falha se o JSON estiver velho
-*/
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,7 +14,6 @@ const LISTA = join(
   "amostras-de-tema.json",
 );
 
-/// Cada tema e o seletor que o declara. O escuro é o padrão, mora no @theme.
 const ONDE = {
   escuro: "@theme {",
   "mais-escuro": ':root[data-tema="mais-escuro"] {',
@@ -52,17 +36,6 @@ function declarado(corpo, nome) {
   return new RegExp(`^\\s+${nome}:\\s*([^;]+);`, "m").exec(corpo)?.[1]?.trim() ?? null;
 }
 
-/*
-  A cor de um token, em qualquer bloco.
-
-  Desde que as cores nascem do nome da referência, o `@theme` guarda
-  `--color-surface-0: var(--background-primary, #1a181e)` e as variantes giram a
-  maçaneta — declaram `--background-primary: #020203`, não a nossa cor. Então
-  procurar só pelo nosso nome não acha mais nada fora do padrão.
-
-  A busca é: a maçaneta no bloco, depois o nosso nome no bloco, e por último a
-  reserva no fim da cadeia — que é justamente o valor do tema escuro.
-*/
 function corDe(corpo, nome, cadeia) {
   const laco = cadeia?.[nome];
 
@@ -73,11 +46,9 @@ function corDe(corpo, nome, cadeia) {
 
   const nosso = declarado(corpo, nome);
 
-  /// No `@theme` o valor É a cadeia; a cor do tema escuro é a reserva dela.
   return (nosso?.startsWith("var(") ? null : nosso) ?? laco?.reserva ?? null;
 }
 
-/// A cadeia de cada token, lida do próprio @theme.
 function cadeiaDoTema(css) {
   const corpo = bloco(css, "@theme {");
   const mapa = {};
@@ -116,11 +87,6 @@ export function extrairAmostras(css) {
     };
   }
 
-  /*
-    O "Seguir o sistema" não tem cor própria: ele é claro ou escuro conforme a
-    hora do dia de quem olha. Então a miniatura mostra as duas caras, uma de
-    cada lado, em vez de inventar um terceiro tema.
-  */
   porTema.sistema = {
     amostra: [porTema.claro.amostra[2], porTema.escuro.amostra[2]],
     acento: porTema.escuro.acento,
