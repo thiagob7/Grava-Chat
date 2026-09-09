@@ -15,6 +15,4 @@ qualquer versão modificada seja distribuída sob os mesmos termos. O crédito a
 `calendar.json` é vetor puro, 30 KB, e pode ser recolorido.
 
 `marking-a-calendar.json` tem PNGs embutidos e não pode ser recolorido. Está
-como veio do autor. O borrão azul-claro do desenho é `#ebf3fa`; a prancheta
-arredondada atrás dele, no estado vazio dos Eventos, usa essa mesma cor para os
-dois virarem uma coisa só.
+como veio do autor, com o borrão azul-claro que faz o fundo do desenho.
