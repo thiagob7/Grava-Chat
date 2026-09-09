@@ -209,13 +209,6 @@ function opcoesDeCaptura() {
 const permissaoDoSistema = (): Promise<boolean> =>
   desktop()?.midia.garantir("microphone") ?? Promise.resolve(true);
 
-/*
-  Traduz a falha na reação, e a reação em estado.
-
-  `adiar` é o caso que não existia: mantém o microfone como estava e não pinta o
-  aviso, porque a falha veio da conexão e vai embora com ela. Se marcássemos
-  bloqueado aqui, a pessoa iria procurar um problema no aparelho dela.
-*/
 function aplicarFalhaDeMicrofone(
   erro: unknown,
   set: (parcial: Partial<VoiceStore>) => void,
@@ -243,14 +236,6 @@ function aplicarFalhaDeMicrofone(
   return reacao;
 }
 
-/*
-  Reaplica a intenção do microfone depois que a sala se reergue.
-
-  É isto que faz `adiar` significar alguma coisa. Sem esta volta, adiar seria só
-  não avisar: a interface seguiria mostrando o microfone ligado, a faixa nunca
-  teria sido publicada, e a pessoa falaria sozinha — o caso exato que o módulo
-  de falhas existe para evitar.
-*/
 async function reaplicarMicrofone(
   room: Room,
   set: (parcial: Partial<VoiceStore>) => void,
@@ -389,17 +374,10 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         .on(RoomEvent.TrackUnpublished, refresh)
         .on(RoomEvent.LocalTrackPublished, refresh)
         .on(RoomEvent.LocalTrackUnpublished, refresh)
-        /// sem isto o selo de conexao so mudaria quando outra coisa mexesse
-        /// na sala — alguem entrando, mutando, publicando faixa
         .on(RoomEvent.ConnectionQualityChanged, refresh)
         .on(RoomEvent.TrackMuted, refresh)
         .on(RoomEvent.TrackUnmuted, refresh)
         .on(RoomEvent.ActiveSpeakersChanged, refresh)
-        /*
-          Sem saber que a sala está se reerguendo, uma falha de microfone no meio
-          da queda viraria "microfone bloqueado" — um aviso vermelho sobre um
-          problema que a pessoa não tem como consertar e que some sozinho.
-        */
         .on(RoomEvent.Reconnecting, () => set({ reconectando: true }))
         .on(RoomEvent.Reconnected, () => {
           set({ reconectando: false });
@@ -432,12 +410,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         set({ micBlocked: false, noiseFilterAvailable: disponibilidade(processador) });
         bipe("entrarNaChamada");
       } catch (erro) {
-        /*
-          Mesma regra do toggle: adiar só vale se a reconexão for voltar para
-          reaplicar. Entrando na chamada sem reconexão a caminho, ninguém tenta
-          de novo — então o honesto é assumir mudo em vez de deixar o ícone
-          ligado sobre uma faixa que não subiu.
-        */
         if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
           set({ micEnabled: false, micBlocked: true });
         }
@@ -496,11 +468,6 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       set({ micBlocked: false });
       bipe(next ? "desmutar" : "mutar");
     } catch (erro) {
-      /*
-        `adiar` conta com alguém tentando de novo, e quem tenta é a volta da
-        reconexão. Fora dela ninguém vem, então manter o botão ligado seria
-        mentir sobre estar sendo ouvida — desfaz o clique.
-      */
       if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
         set({ micEnabled: !next });
       }
