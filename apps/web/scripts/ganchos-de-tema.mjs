@@ -1,21 +1,3 @@
-/*
-  Põe um `data-gc` em cada elemento JSX do app.
-
-  É o gancho que um tema mira. Sem ele, escrever CSS de tema aqui só alcança as
-  variáveis de cor: as classes que o Tailwind gera não servem, porque mudam a
-  cada build e não dizem o que a coisa é.
-
-  O nome tem três partes: de onde o arquivo vem, o que o elemento é, e o que ele
-  faz. `MessageItem.tsx` com um `onClick={apagar}` vira
-  `conversa.message-item.acao-da-barra.apagar`.
-
-  Rodar:
-    node scripts/ganchos-de-tema.mjs           escreve nos arquivos
-    node scripts/ganchos-de-tema.mjs --check   só confere, e falha se faltar
-    node scripts/ganchos-de-tema.mjs --lista   emite o JSON dos ganchos
-
-  É idempotente: rodar de novo reescreve o valor onde mudou e não duplica nada.
-*/
 import { readdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
 import { dirname, extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,7 +12,6 @@ const ATRIBUTO = "data-gc";
 
 const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
 
-/// Componentes que não desenham nada: pôr o gancho neles só suja o código.
 const SEM_DOM = new Set([
   "Fragment",
   "React.Fragment",
@@ -50,7 +31,6 @@ const SEM_DOM = new Set([
 
 const FINAIS_SEM_DOM = new Set(["Provider", "Consumer", "Portal", "Trigger", "Close"]);
 
-/// Segmentos de caminho que não dizem nada sobre onde a coisa está.
 const SEGMENTOS_GENERICOS = new Set([
   "components",
   "component",
@@ -72,7 +52,6 @@ function kebab(valor) {
     .toLowerCase();
 }
 
-/// De onde o arquivo vem, virando prefixo do gancho.
 function escopoDoArquivo(caminho) {
   const partes = relative(RAIZ, caminho)
     .split(sep)
@@ -89,7 +68,6 @@ function escopoDoArquivo(caminho) {
     const token = kebab(parte);
     if (!token) return;
 
-    /// Segmento genérico só sai se não for o nome do próprio arquivo.
     if (SEGMENTOS_GENERICOS.has(token) && indice !== partes.length - 1) return;
 
     limpo.push(token);
@@ -112,8 +90,6 @@ function nomeDoElemento(no) {
 const ehSemDom = (nome) =>
   SEM_DOM.has(nome) || FINAIS_SEM_DOM.has(nome.split(".").pop() ?? "");
 
-/// O nome do handler diz o que o elemento faz, e é o que separa dois botões
-/// iguais no mesmo componente.
 function acaoDoElemento(no) {
   for (const atributo of no.attributes.properties) {
     if (!ts.isJsxAttribute(atributo) || !atributo.name) continue;
@@ -180,11 +156,6 @@ function processar(caminho, texto) {
             }
           }
         } else {
-          /*
-            Entra depois do nome da tag e, quando houver, depois dos argumentos
-            de tipo: `<CampoSelect<Formato>` quebraria se o atributo entrasse
-            entre o nome e o `<Formato>`.
-          */
           const posicao = (no.typeArguments?.end ?? no.tagName.getEnd()) + (no.typeArguments ? 1 : 0);
 
           edicoes.push({ inicio: posicao, fim: posicao, texto: ` ${ATRIBUTO}="${valor}"` });
@@ -197,18 +168,12 @@ function processar(caminho, texto) {
 
   visitar(fonte);
 
-  /// De trás para frente, senão cada inserção desloca as seguintes.
   let saida = texto;
 
   for (const edicao of [...edicoes].sort((a, b) => b.inicio - a.inicio)) {
     saida = saida.slice(0, edicao.inicio) + edicao.texto + saida.slice(edicao.fim);
   }
 
-  /*
-    Trava: relê o resultado antes de devolver. Um codemod que mexe em 195
-    arquivos não pode escrever código quebrado e descobrir isso no typecheck —
-    foi o que aconteceu com os argumentos de tipo genérico.
-  */
   if (saida !== texto) {
     const conferencia = ts.createSourceFile(
       caminho,
