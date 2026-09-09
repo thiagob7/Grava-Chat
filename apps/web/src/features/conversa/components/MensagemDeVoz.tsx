@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
 import { OndaDeVoz } from "~/features/conversa/components/OndaDeVoz";
@@ -8,21 +8,12 @@ import { cn } from "~/lib/utils";
 
 const VELOCIDADES = [1, 1.5, 2];
 
-/*
-  O recado de voz na conversa.
-
-  Não mostra nome de arquivo nem tamanho: quem manda um recado não mandou um
-  arquivo, mandou uma fala. O que importa é quanto dura e onde você parou.
-
-  A duração vem do anexo, não do elemento de áudio: assim o balão nasce do
-  tamanho certo, antes de qualquer byte ser baixado. Só depois de tocar é que
-  o tempo passa a vir do próprio áudio, que é quem sabe a verdade.
-*/
 export const MensagemDeVoz: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   const audio = useRef<HTMLAudioElement>(null);
   const [tocando, setTocando] = useState(false);
   const [emSegundos, setEmSegundos] = useState(0);
   const [velocidade, setVelocidade] = useState(1);
+  const [mudo, setMudo] = useState(false);
 
   const total = (anexo.duracaoMs ?? 0) / 1000;
   const picos = lerOndas(anexo.ondas);
@@ -30,6 +21,10 @@ export const MensagemDeVoz: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   useEffect(() => {
     if (audio.current) audio.current.playbackRate = velocidade;
   }, [velocidade]);
+
+  useEffect(() => {
+    if (audio.current) audio.current.muted = mudo;
+  }, [mudo]);
 
   const alternar = () => {
     const el = audio.current;
@@ -56,7 +51,7 @@ export const MensagemDeVoz: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
         type="button"
         onClick={alternar}
         aria-label={tocando ? "Pausar" : "Tocar"}
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca transition hover:brightness-110"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca transition hover:brightness-110"
       >
         {tocando ? <Pause data-gc="conversa.mensagem-de-voz.pause" size={15} className="fill-current" /> : <Play data-gc="conversa.mensagem-de-voz.play" size={15} className="ml-0.5 fill-current" />}
       </button>

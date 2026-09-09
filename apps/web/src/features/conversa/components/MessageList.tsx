@@ -13,7 +13,7 @@ import { MessageItem, shouldGroup } from "~/features/conversa/components/Message
 import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
-import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
+import { lineWidth, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
@@ -58,12 +58,6 @@ export const MessageList: React.FC<MessageListProps> = ({
   const alvo = params.get("m");
   const [destacada, setDestacada] = useState<string | null>(null);
 
-  /*
-    Quem você bloqueou não some da conversa — a mensagem continua lá, dobrada
-    numa linha só, com quantas são e um botão para abrir. Some da tela, não da
-    história: é o que deixa quem bloqueou seguir a conversa dos outros sem ver
-    o que não quer.
-  */
   const { data: amizades = [] } = useFindFriends(Boolean(currentUserId));
   const bloqueados = useMemo(
     () => new Set(amizades.filter((a) => a.status === "BLOCKED").map((a) => a.user.id)),
@@ -113,12 +107,6 @@ export const MessageList: React.FC<MessageListProps> = ({
       caixa.scrollTop = caixa.scrollHeight;
     });
 
-    /*
-      O conteúdo, porque ele cresce quando chega mensagem. E o rolador, porque
-      ele encolhe quando a caixa de escrever cresce — a caixa é irmã da lista,
-      então quem perde altura é a caixa de rolagem, não o conteúdo. Sem observar
-      os dois, escrever uma mensagem de várias linhas descolava a lista do fim.
-    */
     observador.observe(alvo);
     observador.observe(caixa);
 
@@ -204,12 +192,12 @@ export const MessageList: React.FC<MessageListProps> = ({
 
               <Skeleton data-gc="conversa.message-list.skeleton--4"
                 className="h-3 rounded-sm"
-                style={{ width: larguraDaLinha(i) }}
+                style={{ width: lineWidth(i) }}
               />
               {i % 3 !== 1 && (
                 <Skeleton data-gc="conversa.message-list.skeleton--5"
                   className="h-3 rounded-sm"
-                  style={{ width: larguraDaLinha(i + 3) }}
+                  style={{ width: lineWidth(i + 3) }}
                 />
               )}
             </div>
