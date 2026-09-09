@@ -14,7 +14,7 @@ import type { GuildMember } from "@gravae/shared";
 import { useFindAuditLog } from "~/@core/application/queries/moderation/use-moderation";
 import type { AuditEntryModel } from "~/@core/application/requests/moderation/moderation";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";
 
@@ -90,15 +90,15 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
 
         <label data-gc="servidor.server-settings.audit-log-section.label" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           {t("servidor.auditoria.porUsuario")}
-          <CampoSelect data-gc="servidor.server-settings.audit-log-section.campo-select.set-actor-id"
-            valor={actorId}
-            onEscolher={setActorId}
+          <SelectField data-gc="servidor.server-settings.audit-log-section.select-field.set-actor-id"
+            value={actorId}
+            onSelect={setActorId}
             className="mt-1 w-44 font-normal normal-case"
-            opcoes={[
-              { valor: "", rotulo: t("servidor.auditoria.todosOsUsuarios") },
+            options={[
+              { value: "", label: t("servidor.auditoria.todosOsUsuarios") },
               ...members.map((m) => ({
-                valor: m.user.id,
-                rotulo: m.user.displayName,
+                value: m.user.id,
+                label: m.user.displayName,
               })),
             ]}
           />
@@ -106,11 +106,11 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
 
         <label data-gc="servidor.server-settings.audit-log-section.label--2" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           {t("servidor.auditoria.porAcao")}
-          <CampoSelect data-gc="servidor.server-settings.audit-log-section.campo-select.set-action"
-            valor={action}
-            onEscolher={setAction}
+          <SelectField data-gc="servidor.server-settings.audit-log-section.select-field.set-action"
+            value={action}
+            onSelect={setAction}
             className="mt-1 w-40 font-normal normal-case"
-            opcoes={FILTROS.map((f) => ({ valor: f.valor, rotulo: t(f.label) }))}
+            options={FILTROS.map((f) => ({ value: f.valor, label: t(f.label) }))}
           />
         </label>
       </div>

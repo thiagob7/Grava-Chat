@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -63,7 +63,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   canManageRoles,
 }) => {
   const { t } = useTranslation();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const removeMember = useRemoveMember();
   const banir = useBanMember(guild.id);
   const castigar = useTimeoutMember(guild.id);
@@ -76,42 +76,42 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
     member.nickname ?? member.user.displayName;
 
   const expulsar = async (member: GuildMember) => {
-    const { confirmado } = await confirmar({
-      titulo: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
-      descricao: (
+    const { confirmed } = await confirm({
+      title: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
+      description: (
         <>
           <strong data-gc="servidor.server-settings.members-section.strong">{nomeDe(member)}</strong>{" "}
           {t("servidor.membros.expulsarDescricao", { servidor: guild.name })}
         </>
       ),
-      acao: t("servidor.membros.expulsar"),
+      action: t("servidor.membros.expulsar"),
     });
 
-    if (confirmado)
+    if (confirmed)
       removeMember.mutate({ guildId: guild.id, userId: member.user.id });
   };
 
   const banirMembro = async (member: GuildMember) => {
-    const { confirmado, texto } = await confirmar({
-      titulo: t("servidor.membros.banirTitulo", { nome: nomeDe(member) }),
-      descricao: (
+    const { confirmed, text } = await confirm({
+      title: t("servidor.membros.banirTitulo", { nome: nomeDe(member) }),
+      description: (
         <>
           <strong data-gc="servidor.server-settings.members-section.strong--2">{nomeDe(member)}</strong>{" "}
           {t("servidor.membros.banirDescricao", { servidor: guild.name })}
         </>
       ),
-      acao: t("servidor.membros.banir"),
-      campo: {
-        rotulo: t("servidor.membros.motivo"),
+      action: t("servidor.membros.banir"),
+      field: {
+        label: t("servidor.membros.motivo"),
         placeholder: t("servidor.membros.motivoDica"),
       },
     });
 
-    if (confirmado) {
+    if (confirmed) {
       banir.mutate({
         guildId: guild.id,
         userId: member.user.id,
-        reason: texto || null,
+        reason: text || null,
       });
     }
   };

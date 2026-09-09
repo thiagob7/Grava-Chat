@@ -16,14 +16,14 @@ import {
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
 import { Button } from "~/components/ui/button";
-import { campoBase, Input, Label } from "~/components/ui/input";
+import { fieldBase, Input, Label } from "~/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
 import { uploadArquivo } from "~/lib/upload";
 import { cn } from "~/lib/utils";
@@ -36,8 +36,8 @@ interface SecaoProps {
 
 const VOLUME_PADRAO = 0.5;
 
-const nomeSeguro = (texto: string) =>
-  texto
+const nomeSeguro = (text: string) =>
+  text
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-zA-Z0-9_]/g, "_")
@@ -50,7 +50,7 @@ export const EmojiSection: React.FC<SecaoProps> = ({
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateEmoji(guildId);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const apagar = useDeleteEmoji(guildId);
   const input = useRef<HTMLInputElement>(null);
   const [subindo, setSubindo] = useState(false);
@@ -152,11 +152,11 @@ export const EmojiSection: React.FC<SecaoProps> = ({
                 {podeGerenciar && (
                   <button data-gc="servidor.server-settings.expressions-sections.button--2"
                     onClick={() =>
-                      void confirmar(
+                      void confirm(
                         pedidoDeExclusao("emoji", emoji.name),
                       ).then(
-                        ({ confirmado }) =>
-                          confirmado &&
+                        ({ confirmed }) =>
+                          confirmed &&
                           apagar.mutate({ guildId, emojiId: emoji.id }),
                       )
                     }
@@ -188,7 +188,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSticker(guildId);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const apagar = useDeleteSticker(guildId);
   const input = useRef<HTMLInputElement>(null);
   const [pendente, setPendente] = useState<{ file: File; url: string } | null>(
@@ -319,11 +319,11 @@ export const StickersSection: React.FC<SecaoProps> = ({
             {podeGerenciar && (
               <button data-gc="servidor.server-settings.expressions-sections.button--6"
                 onClick={() =>
-                  void confirmar(
+                  void confirm(
                     pedidoDeExclusao("figurinha", sticker.name),
                   ).then(
-                    ({ confirmado }) =>
-                      confirmado &&
+                    ({ confirmed }) =>
+                      confirmed &&
                       apagar.mutate({ guildId, stickerId: sticker.id }),
                   )
                 }
@@ -356,7 +356,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
   const criar = useCreateSound(guildId);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const apagar = useDeleteSound(guildId);
   const input = useRef<HTMLInputElement>(null);
 
@@ -441,7 +441,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
               max={1}
               step={0.05}
               value={volume}
-              preenchido={volume}
+              filled={volume}
               onChange={(e) => setVolume(Number(e.target.value))}
             />
           </div>
@@ -515,9 +515,9 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
             {podeGerenciar && (
               <button data-gc="servidor.server-settings.expressions-sections.button--11"
                 onClick={() =>
-                  void confirmar(pedidoDeExclusao("som", som.name)).then(
-                    ({ confirmado }) =>
-                      confirmado && apagar.mutate({ guildId, soundId: som.id }),
+                  void confirm(pedidoDeExclusao("som", som.name)).then(
+                    ({ confirmed }) =>
+                      confirmed && apagar.mutate({ guildId, soundId: som.id }),
                   )
                 }
                 title={t("comum.apagar")}
@@ -554,7 +554,7 @@ const CampoDeEmoji: React.FC<{
         id={id}
         type="button"
         className={cn(
-          campoBase,
+          fieldBase,
           "flex h-10 items-center gap-2 py-1 text-left hover:border-campo-foco",
         )}
       >
@@ -599,7 +599,7 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
           max={1}
           step={0.05}
           value={volume}
-          preenchido={volume}
+          filled={volume}
           aria-label={t("servidor.expressoes.volumeDe", { nome: som.name })}
           onChange={(e) => setVolume(Number(e.target.value))}
           onPointerUp={salvar}
@@ -628,8 +628,8 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
 
 function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
   return {
-    titulo: i18next.t("servidor.expressoes.excluirTitulo", { tipo, nome }),
-    descricao: i18next.t("servidor.expressoes.excluirDescricao"),
-    acao: i18next.t("comum.excluir"),
+    title: i18next.t("servidor.expressoes.excluirTitulo", { tipo, nome }),
+    description: i18next.t("servidor.expressoes.excluirDescricao"),
+    action: i18next.t("comum.excluir"),
   } as const;
 }

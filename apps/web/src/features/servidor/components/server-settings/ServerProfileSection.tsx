@@ -62,7 +62,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
     if (file) await enviarFaixa(file);
   };
 
-  const [arrastando, setArrastando] = useState(false);
+  const [dragging, setArrastando] = useState(false);
   const [arrastandoIcone, setArrastandoIcone] = useState(false);
 
   const mudou =
@@ -194,7 +194,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               "group/faixa relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-cover bg-center outline-none transition",
               !bannerUrl && "bg-surface-1",
               "focus-visible:border-brand",
-              arrastando
+              dragging
                 ? "border-solid border-brand"
                 : bannerUrl
                   ? "border-solid border-transparent hover:border-line"
@@ -218,7 +218,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
               <ImageUp data-gc="servidor.server-settings.server-profile-section.image-up" size={20} />
               {uploadImage.isPending
                 ? "Enviando…"
-                : arrastando
+                : dragging
                   ? "Solte a imagem aqui"
                   : bannerUrl
                     ? "Alterar faixa"
