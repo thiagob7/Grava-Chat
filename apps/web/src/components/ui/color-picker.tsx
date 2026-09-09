@@ -3,108 +3,108 @@ import Color from "color";
 import { Pipette } from "lucide-react";
 
 import { Input } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 
-export interface Cor {
+export interface Color {
   h: number;
   s: number;
   l: number;
   a: number;
 }
 
-export function lerCor(texto: string): Cor | null {
+export function parseColor(text: string): Color | null {
   try {
-    const cor = Color(texto.trim());
-    const [h = 0, s = 0, l = 0] = cor.hsl().array();
+    const color = Color(text.trim());
+    const [h = 0, s = 0, l = 0] = color.hsl().array();
 
-    return { h: Number.isFinite(h) ? h : 0, s, l, a: cor.alpha() };
+    return { h: Number.isFinite(h) ? h : 0, s, l, a: color.alpha() };
   } catch {
     return null;
   }
 }
 
-export function escreverCor({ h, s, l, a }: Cor): string {
-  const cor = Color.hsl(h, s, l);
+export function formatColor({ h, s, l, a }: Color): string {
+  const color = Color.hsl(h, s, l);
 
-  if (a >= 1) return cor.hex().toLowerCase();
+  if (a >= 1) return color.hex().toLowerCase();
 
-  const [r = 0, g = 0, b = 0] = cor.rgb().array().map(Math.round);
+  const [r = 0, g = 0, b = 0] = color.rgb().array().map(Math.round);
   return `rgb(${r} ${g} ${b} / ${Number(a.toFixed(3))})`;
 }
 
-const paraCss = (cor: Cor, alpha = cor.a) =>
-  Color.hsl(cor.h, cor.s, cor.l).alpha(alpha).string();
+const paraCss = (color: Color, alpha = color.a) =>
+  Color.hsl(color.h, color.s, color.l).alpha(alpha).string();
 
-interface Contexto {
-  cor: Cor;
-  mudar: (parcial: Partial<Cor>) => void;
+interface ColorContextValue {
+  color: Color;
+  change: (partial: Partial<Color>) => void;
 }
 
-const ContextoDaCor = React.createContext<Contexto | null>(null);
+const ColorContext = React.createContext<ColorContextValue | null>(null);
 
-const usarCor = () => {
-  const ctx = React.useContext(ContextoDaCor);
+const useColor = () => {
+  const ctx = React.useContext(ColorContext);
   if (!ctx) throw new Error("Use as peças do seletor dentro de <ColorPicker>.");
   return ctx;
 };
 
 export interface ColorPickerProps {
-  valor: string;
-  onMudar: (valor: string) => void;
+  value: string;
+  onChange: (value: string) => void;
   className?: string;
   children?: React.ReactNode;
 }
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({
-  valor,
-  onMudar,
+  value,
+  onChange,
   className,
   children,
 }) => {
-  const [cor, setCor] = React.useState<Cor>(() => lerCor(valor) ?? PRETO);
+  const [color, setColor] = React.useState<Color>(() => parseColor(value) ?? PRETO);
 
-  const emitido = React.useRef<string | null>(null);
+  const emitted = React.useRef<string | null>(null);
 
   React.useEffect(() => {
-    if (valor === emitido.current) return;
+    if (value === emitted.current) return;
 
-    const lida = lerCor(valor);
-    if (lida) setCor(lida);
-  }, [valor]);
+    const parsed = parseColor(value);
+    if (parsed) setColor(parsed);
+  }, [value]);
 
-  const mudar = React.useCallback(
-    (parcial: Partial<Cor>) => {
-      setCor((atual) => {
-        const proxima = { ...atual, ...parcial };
-        const texto = escreverCor(proxima);
+  const change = React.useCallback(
+    (partial: Partial<Color>) => {
+      setColor((current) => {
+        const proxima = { ...current, ...partial };
+        const text = formatColor(proxima);
 
-        emitido.current = texto;
-        onMudar(texto);
+        emitted.current = text;
+        onChange(text);
 
         return proxima;
       });
     },
-    [onMudar],
+    [onChange],
   );
 
   return (
-    <ContextoDaCor.Provider value={{ cor, mudar }}>
+    <ColorContext.Provider value={{ color, change }}>
       <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", flxCls("molduraDoSeletorDeCor"), className)}>{children}</div>
-    </ContextoDaCor.Provider>
+    </ColorContext.Provider>
   );
 };
 
-const PRETO: Cor = { h: 0, s: 0, l: 0, a: 1 };
+const PRETO: Color = { h: 0, s: 0, l: 0, a: 1 };
 
 const claroNoTopo = (x: number) => (x < 0.01 ? 100 : 50 + 50 * (1 - x));
 
-export function corDaPosicao(x: number, y: number): Pick<Cor, "s" | "l"> {
+export function colorAtPosition(x: number, y: number): Pick<Color, "s" | "l"> {
   return { s: x * 100, l: claroNoTopo(x) * (1 - y) };
 }
 
-export function posicaoDaCor({ s, l }: Pick<Cor, "s" | "l">): { x: number; y: number } {
+export function colorPosition({ s, l }: Pick<Color, "s" | "l">): { x: number; y: number } {
   const x = s / 100;
   const topo = claroNoTopo(x);
 
@@ -112,53 +112,53 @@ export function posicaoDaCor({ s, l }: Pick<Cor, "s" | "l">): { x: number; y: nu
 }
 
 export const ColorPickerSelection: React.FC<{ className?: string }> = ({ className }) => {
-  const { cor, mudar } = usarCor();
-  const caixa = React.useRef<HTMLDivElement>(null);
-  const [arrastando, setArrastando] = React.useState(false);
+  const { color, change } = useColor();
+  const box = React.useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = React.useState(false);
 
-  const mover = React.useCallback(
-    (evento: PointerEvent | React.PointerEvent) => {
-      const alvo = caixa.current;
-      if (!alvo) return;
+  const move = React.useCallback(
+    (event: PointerEvent | React.PointerEvent) => {
+      const target = box.current;
+      if (!target) return;
 
-      const area = alvo.getBoundingClientRect();
-      const x = Math.max(0, Math.min(1, (evento.clientX - area.left) / area.width));
-      const y = Math.max(0, Math.min(1, (evento.clientY - area.top) / area.height));
+      const area = target.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (event.clientX - area.left) / area.width));
+      const y = Math.max(0, Math.min(1, (event.clientY - area.top) / area.height));
 
-      mudar(corDaPosicao(x, y));
+      change(colorAtPosition(x, y));
     },
-    [mudar],
+    [change],
   );
 
   React.useEffect(() => {
-    if (!arrastando) return;
+    if (!dragging) return;
 
-    const soltar = () => setArrastando(false);
+    const release = () => setDragging(false);
 
-    window.addEventListener("pointermove", mover);
-    window.addEventListener("pointerup", soltar);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", release);
 
     return () => {
-      window.removeEventListener("pointermove", mover);
-      window.removeEventListener("pointerup", soltar);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", release);
     };
-  }, [arrastando, mover]);
+  }, [dragging, move]);
 
-  const { x, y } = posicaoDaCor(cor);
+  const { x, y } = colorPosition(color);
 
   return (
     <div data-gc="ui.color-picker.div--2"
-      ref={caixa}
+      ref={box}
       onPointerDown={(e) => {
         e.preventDefault();
-        setArrastando(true);
-        mover(e);
+        setDragging(true);
+        move(e);
       }}
       className={cn("relative h-32 w-full cursor-crosshair rounded", className)}
       style={{
         background: `linear-gradient(0deg, #000, transparent),
                      linear-gradient(90deg, #fff, transparent),
-                     hsl(${cor.h}, 100%, 50%)`,
+                     hsl(${color.h}, 100%, 50%)`,
       }}
     >
       <span data-gc="ui.color-picker.span"
@@ -182,7 +182,7 @@ const REGUA = cn(
 );
 
 export const ColorPickerHue: React.FC = () => {
-  const { cor, mudar } = usarCor();
+  const { color, change } = useColor();
 
   return (
     <input data-gc="ui.color-picker.input"
@@ -190,8 +190,8 @@ export const ColorPickerHue: React.FC = () => {
       min={0}
       max={360}
       step={1}
-      value={Math.round(cor.h)}
-      onChange={(e) => mudar({ h: Number(e.target.value) })}
+      value={Math.round(color.h)}
+      onChange={(e) => change({ h: Number(e.target.value) })}
       aria-label="Matiz"
       className={REGUA}
       style={{
@@ -203,7 +203,7 @@ export const ColorPickerHue: React.FC = () => {
 };
 
 export const ColorPickerAlpha: React.FC = () => {
-  const { cor, mudar } = usarCor();
+  const { color, change } = useColor();
 
   return (
     <input data-gc="ui.color-picker.input--2"
@@ -211,12 +211,12 @@ export const ColorPickerAlpha: React.FC = () => {
       min={0}
       max={100}
       step={1}
-      value={Math.round(cor.a * 100)}
-      onChange={(e) => mudar({ a: Number(e.target.value) / 100 })}
+      value={Math.round(color.a * 100)}
+      onChange={(e) => change({ a: Number(e.target.value) / 100 })}
       aria-label="Opacidade"
       className={REGUA}
       style={{
-        backgroundImage: `linear-gradient(90deg, ${paraCss(cor, 0)}, ${paraCss(cor, 1)}),
+        backgroundImage: `linear-gradient(90deg, ${paraCss(color, 0)}, ${paraCss(color, 1)}),
                           repeating-conic-gradient(rgb(255 255 255 / 0.22) 0 25%, transparent 0 50%)`,
         backgroundSize: "auto, 8px 8px",
       }}
@@ -225,30 +225,29 @@ export const ColorPickerAlpha: React.FC = () => {
 };
 
 export const ColorPickerEyeDropper: React.FC = () => {
-  const { mudar } = usarCor();
+  const { change } = useColor();
   const existe = typeof window !== "undefined" && "EyeDropper" in window;
 
   if (!existe) return null;
 
-  const pingar = async () => {
+  const pickFromScreen = async () => {
     try {
       const conta = new (window as unknown as {
         EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> };
       }).EyeDropper();
 
       const { sRGBHex } = await conta.open();
-      const lida = lerCor(sRGBHex);
+      const parsed = parseColor(sRGBHex);
 
-      if (lida) mudar({ h: lida.h, s: lida.s, l: lida.l });
+      if (parsed) change({ h: parsed.h, s: parsed.s, l: parsed.l });
     } catch {
-      /// Fechar com Esc rejeita a promessa. Desistir não é erro.
     }
   };
 
   return (
     <button data-gc="ui.color-picker.button"
       type="button"
-      onClick={() => void pingar()}
+      onClick={() => void pickFromScreen()}
       title="Pescar uma cor da tela"
       aria-label="Pescar uma cor da tela"
       className="flex size-8 shrink-0 items-center justify-center rounded-md border border-line text-ink-muted transition hover:bg-surface-3 hover:text-ink"
@@ -258,73 +257,73 @@ export const ColorPickerEyeDropper: React.FC = () => {
   );
 };
 
-type Formato = "hex" | "rgb" | "hsl" | "css";
+type Format = "hex" | "rgb" | "hsl" | "css";
 
-const FORMATOS: Formato[] = ["hex", "rgb", "hsl", "css"];
+const FORMATS: Format[] = ["hex", "rgb", "hsl", "css"];
 
 export const ColorPickerFormat: React.FC = () => {
-  const { cor, mudar } = usarCor();
-  const [formato, setFormato] = React.useState<Formato>("hex");
+  const { color, change } = useColor();
+  const [format, setFormat] = React.useState<Format>("hex");
 
-  const [rascunho, setRascunho] = React.useState<string | null>(null);
-  const cheia = Color.hsl(cor.h, cor.s, cor.l).alpha(cor.a);
-  const hex = cheia.hex().toLowerCase();
+  const [draft, setDraft] = React.useState<string | null>(null);
+  const full = Color.hsl(color.h, color.s, color.l).alpha(color.a);
+  const hex = full.hex().toLowerCase();
 
-  const campo = "h-8 flex-1 px-2 font-mono text-xs";
+  const fieldClass = "h-8 flex-1 px-2 font-mono text-xs";
 
   return (
     <div data-gc="ui.color-picker.div--3" className="flex items-center gap-2">
-      <CampoSelect<Formato> data-gc="ui.color-picker.campo-select"
-        valor={formato}
-        onEscolher={(f) => {
-          setFormato(f);
-          setRascunho(null);
+      <SelectField<Format> data-gc="ui.color-picker.select-field"
+        value={format}
+        onSelect={(f) => {
+          setFormat(f);
+          setDraft(null);
         }}
-        opcoes={FORMATOS.map((f) => ({ valor: f, rotulo: f.toUpperCase() }))}
+        options={FORMATS.map((f) => ({ value: f, label: f.toUpperCase() }))}
         className="h-8 w-[4.5rem] shrink-0 text-xs"
       />
 
-      {formato === "hex" && (
+      {format === "hex" && (
         <Input data-gc="ui.color-picker.input--3"
-          value={rascunho ?? hex}
+          value={draft ?? hex}
           onChange={(e) => {
-            setRascunho(e.target.value);
+            setDraft(e.target.value);
 
-            const lida = lerCor(e.target.value);
-            if (lida) mudar(lida);
+            const parsed = parseColor(e.target.value);
+            if (parsed) change(parsed);
           }}
-          onBlur={() => setRascunho(null)}
+          onBlur={() => setDraft(null)}
           aria-label="Valor em hexadecimal"
-          className={campo}
+          className={fieldClass}
         />
       )}
 
-      {formato !== "hex" && (
+      {format !== "hex" && (
         <Input data-gc="ui.color-picker.input--4"
           readOnly
           value={
-            formato === "rgb"
-              ? cheia.rgb().array().map(Math.round).join(", ")
-              : formato === "hsl"
-                ? cheia.hsl().array().map(Math.round).join(", ")
-                : escreverCor(cor)
+            format === "rgb"
+              ? full.rgb().array().map(Math.round).join(", ")
+              : format === "hsl"
+                ? full.hsl().array().map(Math.round).join(", ")
+                : formatColor(color)
           }
-          aria-label={`Valor em ${formato.toUpperCase()}`}
-          className={cn(campo, "text-ink-muted")}
+          aria-label={`Valor em ${format.toUpperCase()}`}
+          className={cn(fieldClass, "text-ink-muted")}
         />
       )}
 
-      {formato !== "css" && (
+      {format !== "css" && (
         <span data-gc="ui.color-picker.span--2" className="flex h-8 shrink-0 items-center rounded-md border border-line px-1.5 font-mono text-xs tabular-nums text-ink-muted">
-          {Math.round(cor.a * 100)}%
+          {Math.round(color.a * 100)}%
         </span>
       )}
     </div>
   );
 };
 
-export const SeletorDeCor: React.FC<ColorPickerProps> = ({ valor, onMudar, className }) => (
-  <ColorPicker data-gc="ui.color-picker.color-picker.on-mudar" valor={valor} onMudar={onMudar} className={className}>
+export const ColorField: React.FC<ColorPickerProps> = ({ value, onChange, className }) => (
+  <ColorPicker data-gc="ui.color-picker.color-picker.on-change" value={value} onChange={onChange} className={className}>
     <ColorPickerSelection data-gc="ui.color-picker.color-picker-selection" />
 
     <div data-gc="ui.color-picker.div--4" className="flex items-center gap-2">

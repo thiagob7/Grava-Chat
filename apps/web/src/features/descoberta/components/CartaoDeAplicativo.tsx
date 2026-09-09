@@ -8,13 +8,6 @@ import { Button } from "~/components/ui/button";
 const nomeDaPermissao = (permissao: string) =>
   PERMISSION_LABELS[permissao as Permission]?.nome ?? permissao;
 
-/*
-  O cartão de um aplicativo na vitrine do Explorar.
-
-  Mostra o que ele PEDE antes de qualquer clique. A tela de adicionar repete
-  a lista e é lá que se decide, mas quem só está passando os olhos merece
-  saber, do cartão, que aquele bot quer banir gente.
-*/
 export const CartaoDeAplicativo: React.FC<{
   aplicativo: AplicativoDescoberto;
   onAdicionar: () => void;

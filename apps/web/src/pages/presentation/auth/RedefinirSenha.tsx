@@ -7,16 +7,6 @@ import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 
-/*
-  A tela do link do e-mail.
-
-  Pública de propósito: quem chega aqui é justamente quem não consegue
-  entrar. O token vem na URL e não é mostrado — só viaja de volta ao
-  servidor, que decide se ele ainda vale.
-
-  Ao salvar, toda sessão da conta cai no servidor. Por isso o fim é a tela de
-  entrar, e não o app: a senha nova precisa ser usada uma vez.
-*/
 export const RedefinirSenha: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -100,7 +90,7 @@ export const RedefinirSenha: React.FC = () => {
               onChange={(e) => setRepetida(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void salvar()}
               placeholder="A mesma coisa"
-              erro={erro ?? undefined}
+              error={erro ?? undefined}
             />
 
             <Button data-gc="auth.redefinir-senha.button--2" className="mt-5 w-full" disabled={redefinir.isPending} onClick={() => void salvar()}>

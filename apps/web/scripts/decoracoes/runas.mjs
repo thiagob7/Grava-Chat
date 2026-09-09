@@ -1,14 +1,6 @@
-/*
-  Gera `src/assets/decoracoes/runas.svg` — anel de pedra escura com glifos que
-  acendem, girando devagar.
-
-    node scripts/decoracoes/runas.mjs src/assets/decoracoes/runas.svg
-*/
 import { writeFileSync } from "node:fs";
 import { C, R, em, emVolta, gira, n, pulsa, svg } from "./_comum.mjs";
 
-/// Glifos angulares: cada um é uma lista de segmentos num quadro de 12x12
-/// centrado na origem. Traço reto de propósito — runa não tem curva.
 const GLIFOS = [
   "M-4-5 L-4 5 M-4 0 L4-4", "M0-5 L0 5 M-4-2 L0 1 L4-2", "M-4-5 L4-5 M0-5 L0 5",
   "M-4 5 L0-5 L4 5 M-2 1 L2 1", "M-4-5 L-4 5 L4 5", "M-4-4 L4-4 M-4 0 L2 0 M-4 4 L4 4",

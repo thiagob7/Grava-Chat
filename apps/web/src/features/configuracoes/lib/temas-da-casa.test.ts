@@ -8,12 +8,6 @@ import { CLASSES_DE_TEMA } from "~/features/configuracoes/lib/ganchos-de-tema";
 import macanetas from "~/features/configuracoes/lib/macanetas.json";
 import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
 
-/*
-  Os temas da casa moram na API (`apps/api/temas/`), que é quem os publica no
-  servidor "Gravaê Temas". O contrato deles, porém, é com este app: são as
-  variáveis e os ganchos daqui que eles têm que falar. Por isso o teste fica
-  aqui e lê de lá.
-*/
 const PASTA = fileURLToPath(new URL("../../../../../api/temas/", import.meta.url));
 const AUTOR_DA_CASA = "Gravaê";
 
@@ -38,12 +32,7 @@ interface Regra {
   declaracoes: string[];
 }
 
-/*
-  As regras do arquivo, entrando em `@media` e `@supports` e pulando o miolo
-  de `@keyframes` — lá dentro "0%" é passo de animação, não seletor.
-*/
 function regras(css: string): Regra[] {
-  /// Comentário some antes de tudo: o de cima é prelúdio de regra nenhuma.
   const semCabecalho = css.replace(/\/\*[\s\S]*?\*\//g, "");
   const achadas: Regra[] = [];
 
@@ -92,22 +81,15 @@ function regras(css: string): Regra[] {
   return achadas;
 }
 
-/// Tudo que o app lê: as portas de cada cadeia de cor e os tokens vivos.
 const LIDAS = new Set<string>([
   ...Object.values(macanetas as Record<string, string[]>).flat(),
   ...(tokensVivos as string[]),
 ]);
 
-/// A paleta inteira: a primeira porta de cada cadeia de cor.
 const PALETA = Object.values(macanetas as Record<string, string[]>).map((nomes) => nomes[0]!);
 
 const RAIZES = new Set(["html", "body", "#app", ":root"]);
 
-/*
-  Um seletor é nosso quando cada peça dele é uma raiz da página ou um gancho
-  que a gente publica. É o que separa "tema que envelhece bem" de "tema que
-  mira nome de módulo gerado e quebra no próximo build".
-*/
 function peçasDeFora(seletor: string): string[] {
   return seletor
     .split(",")
@@ -147,10 +129,6 @@ describe("temas da casa", () => {
     }
   });
 
-  /*
-    A regra que faz o tema durar: ele pode ter CSS à vontade, desde que mire
-    só o que é nosso e estável. Nome de módulo gerado some no build seguinte.
-  */
   it("só mira raízes da página e ganchos que a gente publica", () => {
     for (const tema of TEMAS_DA_CASA) {
       const forasteiros = regras(tema.css).flatMap((r) => peçasDeFora(r.seletor));
@@ -159,8 +137,6 @@ describe("temas da casa", () => {
     }
   });
 
-  /// `!important` é confissão de que a especificidade está errada — e a folha
-  /// do tema entra sem camada, ganhando das utilitárias sem precisar disso.
   it("não usa !important", () => {
     for (const tema of TEMAS_DA_CASA) {
       expect(tema.css.includes("!important"), tema.chave).toBe(false);

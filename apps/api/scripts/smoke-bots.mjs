@@ -119,8 +119,6 @@ await recusa(404, "quem nem e membro nao ve o servidor pra adicionar", () =>
   api(`/bots/${criado.id}/servidores/${guild.id}`, { token: ze.accessToken, method: "PUT" }),
 );
 
-/// O Ze precisa ESTAR no servidor para o proximo caso valer: sem isso ele
-/// esbarra em "nao e membro" e a permissao nunca chega a ser consultada.
 const conviteDoDono = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
 await api(`/invites/${conviteDoDono.code}/join`, { token: ze.accessToken });
 
@@ -199,13 +197,6 @@ ok("respondeu no canal, assinando como ele mesmo");
 
 console.log("\n== escrever por HTTP ==");
 
-/*
-  A mesma escrita, pela outra porta.
-
-  O que importa aqui nao e so o 201: e o socketDono receber o evento. Gravar
-  sem avisar deixaria a mensagem no banco e a tela de todo mundo parada ate
-  alguem dar refresh — e um teste que so olha o status nao veria isso.
-*/
 await recusa(401, "sem token de bot nao escreve", () =>
   api(`/bot/canais/${geral.id}/mensagens`, { body: { content: "invasor" } }),
 );
@@ -278,13 +269,9 @@ await api(`/bot/mensagens/${mandada.id}`, { botToken: criado.token, method: "DEL
 await apagada;
 ok("DELETE apaga e o canal ve sumir");
 
-/// A permissao nao e checada na rota: quem cobra e o messageService, o mesmo
-/// que cobra de qualquer pessoa. Este caso e o que prova isso.
 const detalheDoZe = await api(`/guilds/${doZe.id}`, { token: ze.accessToken, method: "GET" });
 const geralDoZe = detalheDoZe.channels.find((c) => c.type === "TEXT");
 
-/// 404, e nao 403: um canal onde o bot nao entra nem existe, do ponto de
-/// vista dele. Responder "proibido" ja confirmaria que o id e real.
 await recusa(404, "canal de servidor onde o bot nao esta nem existe pra ele", () =>
   api(`/bot/canais/${geralDoZe.id}/mensagens`, { botToken: criado.token, body: { content: "oi" } }),
 );
@@ -354,8 +341,6 @@ if (!play) throw new Error("o /play nao apareceu na lista do servidor");
 if (play.bot.id !== criado.usuario.id) throw new Error("o comando nao veio com o dono dele");
 ok(`o servidor lista o que da pra digitar, com o bot de cada um (${doServidor.length})`);
 
-/// O Ze é membro do servidor (entrou pelo convite lá em cima), então ele vê
-/// os comandos — quem não é membro nem enxerga o servidor.
 await api(`/guilds/${guild.id}/comandos`, { token: ze.accessToken, method: "GET" });
 ok("qualquer membro ve a lista");
 
@@ -363,7 +348,6 @@ await recusa(404, "quem nao e membro nao ve a lista", () =>
   api(`/guilds/${doZe.id}/comandos`, { token: dono.accessToken, method: "GET" }),
 );
 
-/// O bot precisa estar ouvindo para receber a invocação.
 const recebido = new Promise((resolve, reject) => {
   const prazo = setTimeout(() => reject(new Error("o comando nao chegou no bot")), 5000);
   socketBot.on("command:invoked", (dado) => {
@@ -399,7 +383,6 @@ if (rastro.content !== "/play tim maia azul da cor do mar") throw new Error(`ras
 if (rastro.author.id !== dono.user.id) throw new Error("o rastro nao e de quem digitou");
 ok(`e o canal ficou com a linha "${rastro.content}", assinada por quem digitou`);
 
-/// A conversão é do servidor, e é o motivo de existir tipo na opção.
 const numerico = new Promise((resolve, reject) => {
   const prazo = setTimeout(() => reject(new Error("o /volume nao chegou")), 5000);
   socketBot.on("command:invoked", (d) => (d.comando === "volume" ? (clearTimeout(prazo), resolve(d)) : null));
@@ -454,8 +437,6 @@ await recusaEmit("comando que nao existe", {
   opcoes: {},
 });
 
-/// Servidor do dono onde o bot NAO foi adicionado: ele enxerga o canal, mas
-/// o bot nao esta la para ser acionado.
 const semBot = await api("/guilds", { token: dono.accessToken, body: { name: "Sem o bot" } });
 const detalheSemBot = await api(`/guilds/${semBot.id}`, { token: dono.accessToken, method: "GET" });
 

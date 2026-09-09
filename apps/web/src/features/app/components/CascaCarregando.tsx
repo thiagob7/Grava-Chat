@@ -1,26 +1,9 @@
 import React from "react";
 
 import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
-import { Skeleton, larguraDaLinha } from "~/components/ui/skeleton";
+import { Skeleton, lineWidth } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
-
-/*
-  O desenho da casca enquanto a sessão não chegou.
-
-  Antes daqui entrava a Splash: logo pulsando no meio de uma tela vazia. O
-  problema não é ela ser feia, é que a tela vazia não promete nada — quem abre
-  não sabe se vai cair num app, num erro ou num login, e o salto para o app
-  montado chega sem aviso.
-
-  O esqueleto usa os mesmos nomes de `flx` que a tela de verdade. Isso não é
-  capricho: um tema importado mira aqueles nomes, então ele pinta o esqueleto
-  com as mesmas bordas e fundos que vai pintar o app um instante depois. Sem
-  isso o carregamento apareceria sempre no tema padrão e a troca piscaria.
-
-  As medidas vêm dos mesmos tokens de layout que o Chat usa. Se alguém mudar a
-  largura do trilho ou da lista de membros, os dois andam juntos.
-*/
 
 const SERVIDORES = 7;
 
@@ -59,11 +42,6 @@ export const CascaCarregando: React.FC = () => {
       aria-label={t("comum.carregando")}
       {...flx("linhaDoApp", "flex h-full bg-surface-0")}
     >
-      {/*
-        Em tela estreita o trilho e os canais moram numa gaveta, e a gaveta
-        começa fechada. Mostrar a coluna aqui prometeria uma tela que não é a
-        que vai aparecer.
-      */}
       <div data-gc="app.casca-carregando.div--4" className="hidden md:flex">
         <ColunaDaEsquerda data-gc="app.casca-carregando.coluna-da-esquerda" rodape={<RodapeFantasma data-gc="app.casca-carregando.rodape-fantasma" />}>
           <nav data-gc="app.casca-carregando.nav"
@@ -86,7 +64,7 @@ export const CascaCarregando: React.FC = () => {
             <div data-gc="app.casca-carregando.div--7"
               {...flx(
                 "listaDeCanais",
-                "lista-de-canais flex min-h-0 flex-1 flex-col",
+                "lista-de-canais miolo-recortado flex min-h-0 flex-1 flex-col",
               )}
             >
               <header data-gc="app.casca-carregando.header" className="flex h-[var(--layout-header-height)] shrink-0 items-center border-b border-divisor px-4">
@@ -111,7 +89,7 @@ export const CascaCarregando: React.FC = () => {
                         <Skeleton data-gc="app.casca-carregando.skeleton--9" className="size-4 shrink-0 rounded-sm" />
                         <Skeleton data-gc="app.casca-carregando.skeleton--10"
                           className="h-3 rounded-sm"
-                          style={{ width: larguraDaLinha(grupo * 3 + i) }}
+                          style={{ width: lineWidth(grupo * 3 + i) }}
                         />
                       </div>
                     ))}
@@ -166,13 +144,13 @@ export const CascaCarregando: React.FC = () => {
 
                     <Skeleton data-gc="app.casca-carregando.skeleton--16"
                       className="h-3 rounded-sm"
-                      style={{ width: larguraDaLinha(i) }}
+                      style={{ width: lineWidth(i) }}
                     />
 
                     {i % 3 !== 1 && (
                       <Skeleton data-gc="app.casca-carregando.skeleton--17"
                         className="h-3 rounded-sm"
-                        style={{ width: larguraDaLinha(i + 3) }}
+                        style={{ width: lineWidth(i + 3) }}
                       />
                     )}
                   </div>
@@ -204,7 +182,7 @@ export const CascaCarregando: React.FC = () => {
                   <Skeleton data-gc="app.casca-carregando.skeleton--20" className="size-8 shrink-0 rounded-full" />
                   <Skeleton data-gc="app.casca-carregando.skeleton--21"
                     className="h-3 rounded-sm"
-                    style={{ width: larguraDaLinha(i) }}
+                    style={{ width: lineWidth(i) }}
                   />
                 </div>
               ))}

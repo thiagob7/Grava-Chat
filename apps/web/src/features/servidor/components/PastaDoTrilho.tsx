@@ -34,8 +34,8 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Input, Label, campoDeCor } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { Input, Label, colorFieldClass } from "~/components/ui/input";
+import { SelectField } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
 import { Tooltip } from "~/components/ui/tooltip";
 import {
@@ -87,15 +87,6 @@ interface PastaDoTrilhoProps {
   onSoltar: (guildId: string, destino: Destino) => void;
 }
 
-/*
-  A pasta do trilho: fechada, um quadrado com os servidores dentro — ou o
-  ícone escolhido; aberta, uma coluna com todos eles, sobre um fundo com a
-  cor da pasta. Clicar alterna.
-
-  O botão direito manda em todas as comunidades de dentro de uma vez: marcar
-  como lidas, silenciar, o modo de aviso, esconder os canais silenciados. É a
-  mesma decisão do menu de um servidor, aplicada ao grupo.
-*/
 export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
   pasta,
   guilds,
@@ -123,7 +114,6 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
   const cor = pasta.cor ?? "var(--color-brand)";
   const Desenho = DESENHOS[pasta.icone ?? "pasta"];
 
-  /// Silenciada quando todas as de dentro estão: uma só falando já é barulho.
   const silenciada = guilds.every((g) => servidorSilenciado({ porServidor: prefs }, g.id));
   const modoEmComum = (() => {
     const modos = new Set(ids.map((id) => prefs[id]?.modo ?? null));
@@ -134,7 +124,7 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
   const paraTodas = (mudanca: Parameters<typeof definirServidor>[1]) =>
     ids.forEach((id) => definirServidor(id, mudanca));
 
-  const arrastando = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
+  const dragging = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
 
   const modos: { modo: ModoDoCanal | null; chave: string }[] = [
     { modo: "tudo", chave: "todas" },
@@ -180,7 +170,7 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
           <div data-gc="servidor.pasta-do-trilho.div"
             className={cn("group relative flex w-full flex-col items-center", pasta.aberta && "py-1.5")}
             onDragOver={(e) => {
-              if (!arrastando(e)) return;
+              if (!dragging(e)) return;
               e.preventDefault();
               e.dataTransfer.dropEffect = "move";
               setZona(pasta.aberta ? "juntar" : zonaDoPonteiro(e));
@@ -198,11 +188,6 @@ export const PastaDoTrilho: React.FC<PastaDoTrilhoProps> = ({
               else onSoltar(arrastado, { tipo: z === "antes" ? "antes" : "depois", de: `pasta:${pasta.id}` });
             }}
           >
-            {/*
-              O fundo é uma camada atrás, recuada das bordas — e não o fundo do
-              próprio bloco. A pasta ganha respiro nas laterais sem levar junto a
-              pílula de servidor ativo, que mora colada na borda do trilho.
-            */}
             {pasta.aberta && (
               <span data-gc="servidor.pasta-do-trilho.span--3"
                 aria-hidden
@@ -402,13 +387,12 @@ const ConfiguracoesDaPasta: React.FC<{
                 placeholder={t("servidor.pasta.semCor")}
                 onChange={(e) => setCor(e.target.value)}
               />
-              {/* O seletor do sistema só fala hexadecimal; o campo ao lado aceita o resto. */}
               <input data-gc="servidor.pasta-do-trilho.input--3"
                 type="color"
                 aria-label={t("servidor.pasta.cor")}
                 value={/^#[0-9a-f]{6}$/i.test(cor) ? cor : "#5865f2"}
                 onChange={(e) => setCor(e.target.value)}
-                className={cn(campoDeCor, "size-10")}
+                className={cn(colorFieldClass, "size-10")}
               />
             </div>
             <p data-gc="servidor.pasta-do-trilho.p" className="mt-1.5 text-xs text-ink-faint">{t("servidor.pasta.dicaDaCor")}</p>
@@ -424,16 +408,16 @@ const ConfiguracoesDaPasta: React.FC<{
 
           <div data-gc="servidor.pasta-do-trilho.div--9">
             <Label data-gc="servidor.pasta-do-trilho.label--3" htmlFor="icone-da-pasta">{t("servidor.pasta.icone")}</Label>
-            <CampoSelect data-gc="servidor.pasta-do-trilho.campo-select"
+            <SelectField data-gc="servidor.pasta-do-trilho.select-field"
               id="icone-da-pasta"
-              valor={icone}
-              onEscolher={(valor) => setIcone(valor as IconeDaPasta)}
-              opcoes={ICONES_DE_PASTA.map((nomeDoIcone) => {
+              value={icone}
+              onSelect={(valor) => setIcone(valor as IconeDaPasta)}
+              options={ICONES_DE_PASTA.map((nomeDoIcone) => {
                 const Desenho = DESENHOS[nomeDoIcone];
 
                 return {
-                  valor: nomeDoIcone,
-                  rotulo: (
+                  value: nomeDoIcone,
+                  label: (
                     <span data-gc="servidor.pasta-do-trilho.span--7" className="flex items-center gap-2">
                       <Desenho data-gc="servidor.pasta-do-trilho.desenho--2" size={15} />
                       {t(`servidor.pasta.icones.${nomeDoIcone}`)}

@@ -7,16 +7,6 @@ import { duracaoEscrita, LIMITE_MS } from "~/features/conversa/lib/gravador-de-v
 import { BotaoDaCaixa } from "~/features/conversa/components/AcoesDaCaixa";
 import { cn } from "~/lib/utils";
 
-/*
-  Gravar um recado, dentro da própria caixa de escrever.
-
-  Enquanto grava, a caixa some e a barra toma o lugar: não dá para escrever e
-  falar ao mesmo tempo, e deixar os dois à mostra só convida ao engano de
-  mandar um sem o outro.
-
-  Sair pelo lixo apaga de verdade — o áudio nunca sobe. É o contrário do
-  enviar, e por isso fica do outro lado da barra, longe do dedo.
-*/
 export const BarraDeGravacao: React.FC<{
   desligado?: boolean;
   onPronto: (recado: RecadoGravado) => void;
@@ -24,8 +14,6 @@ export const BarraDeGravacao: React.FC<{
 }> = ({ desligado, onPronto, onGravandoMudou }) => {
   const { gravando, ms, picos, erro, comecar, parar } = useGravadorDeVoz();
 
-  /// A caixa de escrever some enquanto se grava, e quem decide isso é o
-  /// compositor — daí o aviso para fora em vez de um estado duplicado lá.
   useEffect(() => onGravandoMudou?.(gravando), [gravando, onGravandoMudou]);
 
   const encerrar = async (guardar: boolean) => {

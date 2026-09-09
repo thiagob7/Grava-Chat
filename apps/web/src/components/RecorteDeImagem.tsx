@@ -123,7 +123,7 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
               max={3}
               step={0.02}
               value={zoom}
-              preenchido={(zoom - 1) / 2}
+              filled={(zoom - 1) / 2}
               onChange={(e) => {
                 const proximo = Number(e.target.value);
                 setZoom(proximo);

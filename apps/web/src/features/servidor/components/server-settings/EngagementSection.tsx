@@ -6,7 +6,7 @@ import { useSession } from "~/contexts/session-context";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Label, Textarea } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
@@ -66,15 +66,15 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
 
         <div data-gc="servidor.server-settings.engagement-section.div--4" className="mt-5">
           <Label data-gc="servidor.server-settings.engagement-section.label" htmlFor="canal-sistema">{t("servidor.engajamento.canalDoSistema")}</Label>
-          <CampoSelect data-gc="servidor.server-settings.engagement-section.campo-select.set-canal"
+          <SelectField data-gc="servidor.server-settings.engagement-section.select-field.set-canal"
             id="canal-sistema"
-            valor={canal}
-            onEscolher={setCanal}
-            opcoes={[
-              { valor: "", rotulo: t("servidor.engajamento.semCanal") },
+            value={canal}
+            onSelect={setCanal}
+            options={[
+              { value: "", label: t("servidor.engajamento.semCanal") },
               ...canaisDeTexto.map((c) => ({
-                valor: c.id,
-                rotulo: `#${c.name}`,
+                value: c.id,
+                label: `#${c.name}`,
               })),
             ]}
           />
@@ -132,14 +132,14 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
       </section>
 
       <UnsavedBar data-gc="servidor.server-settings.engagement-section.unsaved-bar"
-        visivel={mudou}
-        salvando={salvar.isPending}
-        onDescartar={() => {
+        visible={mudou}
+        saving={salvar.isPending}
+        onDiscard={() => {
           setWelcome(guild.welcomeEnabled ?? true);
           setCanal(guild.systemChannelId ?? "");
           setTexto(guild.welcomeMessage ?? "");
         }}
-        onSalvar={() =>
+        onSave={() =>
           salvar.mutate({
             guildId: guild.id,
             welcomeEnabled: welcome,

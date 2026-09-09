@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Check } from "@phosphor-icons/react";
 import type { PerfilPublico, Role } from "@gravae/shared";
 
 import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
@@ -20,7 +21,6 @@ interface UserNameProps {
   title?: string;
   ehBot?: boolean;
   ehSistema?: boolean;
-  /// O selo miúdo é o das listas; o de sempre, o do resto.
   selo?: "sm" | "md";
 }
 
@@ -60,16 +60,6 @@ export const UserName: React.FC<UserNameProps> = ({
   );
 };
 
-/*
-  Dois selos, e a diferença importa.
-
-  "bot" é o que alguém criou com código: tem token, responde sozinho, e dá
-  para conversar com ele. "sistema" é a conta da casa — quem escreve por ela
-  é a própria API, e ninguém responde ali.
-
-  O tamanho segue o da referência, que tem três: o miúdo para lista, o de
-  sempre para o resto.
-*/
 export const SeloDeApp: React.FC<{ sistema?: boolean; tamanho?: "sm" | "md" }> = ({
   sistema = false,
   tamanho = "md",
@@ -78,11 +68,12 @@ export const SeloDeApp: React.FC<{ sistema?: boolean; tamanho?: "sm" | "md" }> =
     {...flx(
       tamanho === "sm" ? "seloDeAppMiudo" : "seloDeApp",
       cn(
-        "shrink-0 rounded-[3px] bg-brand font-bold uppercase text-sobre-marca",
+        "inline-flex shrink-0 items-center gap-0.5 rounded-[3px] bg-brand font-bold uppercase text-sobre-marca",
         tamanho === "sm" ? "px-1 py-0 text-[0.5625rem] leading-[1.35]" : "px-1 py-px text-10 leading-tight",
       ),
     )}
   >
-    {sistema ? "sistema" : "bot"}
+    {sistema && <Check data-gc="perfil.user-name.check" size={tamanho === "sm" ? 8 : 10} weight="bold" />}
+    {sistema ? "oficial" : "bot"}
   </span>
 );

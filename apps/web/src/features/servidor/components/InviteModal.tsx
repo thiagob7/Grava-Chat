@@ -7,7 +7,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { openDm } from "~/@core/application/requests/friend/open-dm";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { CarrosselDeEtapas } from "~/components/ui/carrossel-de-etapas";
+import { StepCarousel } from "~/components/ui/step-carousel";
 import {
   ConfiguracoesDoConvite,
   type OpcoesDoConvite,
@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { CampoComAcao, Input } from "~/components/ui/input";
+import { FieldWithAction, Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
 interface InviteModalProps {
@@ -135,10 +135,10 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
     <>
       <Dialog data-gc="servidor.invite-modal.dialog" open={open} onOpenChange={(next) => !next && onClose()}>
         <DialogContent data-gc="servidor.invite-modal.dialog-content" className="overflow-hidden">
-          <CarrosselDeEtapas data-gc="servidor.invite-modal.carrossel-de-etapas"
-            etapa={vista}
-            etapas={ETAPAS}
-            paineis={{
+          <StepCarousel data-gc="servidor.invite-modal.step-carousel"
+            step={vista}
+            steps={ETAPAS}
+            panels={{
               opcoes: (
                 <ConfiguracoesDoConvite data-gc="servidor.invite-modal.configuracoes-do-convite.gerar"
                   atuais={opcoes}
@@ -230,12 +230,12 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                 <p data-gc="servidor.invite-modal.p--3" className="mb-2 text-sm font-medium text-ink">
                   Ou envie um link de convite para um amigo:
                 </p>
-                <CampoComAcao data-gc="servidor.invite-modal.campo-com-acao"
+                <FieldWithAction data-gc="servidor.invite-modal.field-with-action"
                   readOnly
                   value={link ? (escondido ? MASCARA : link) : "Gerando…"}
                   onFocus={() => setRevelado(true)}
                   title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
-                  acao={
+                  action={
                     <Button data-gc="servidor.invite-modal.button--2" size="sm" onClick={() => void copy()} disabled={!link}>
                       {copied ? <Check data-gc="servidor.invite-modal.check--2" size={14} /> : <Copy data-gc="servidor.invite-modal.copy" size={14} />}
                       {copied ? "Copiado" : "Copiar"}

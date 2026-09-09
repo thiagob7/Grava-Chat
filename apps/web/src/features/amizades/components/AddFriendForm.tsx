@@ -3,7 +3,7 @@ import { UserRoundPlus } from "lucide-react";
 
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
 import { Button } from "~/components/ui/button";
-import { CampoComAcao } from "~/components/ui/input";
+import { FieldWithAction } from "~/components/ui/input";
 
 export const AddFriendForm: React.FC = () => {
   const requestFriend = useRequestFriend();
@@ -29,12 +29,12 @@ export const AddFriendForm: React.FC = () => {
       </p>
 
       <div data-gc="amizades.add-friend-form.div--2" className="mt-6 w-full max-w-lg text-left">
-        <CampoComAcao data-gc="amizades.add-friend-form.campo-com-acao"
+        <FieldWithAction data-gc="amizades.add-friend-form.field-with-action"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && void enviar()}
           placeholder="Nome de usuário, ex: thiago"
-          acao={
+          action={
             <Button data-gc="amizades.add-friend-form.button"
               size="sm"
               onClick={() => void enviar()}

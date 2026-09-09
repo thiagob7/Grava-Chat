@@ -1,8 +1,3 @@
-/*
-  A busca fala por chaves: `from:fulano in:geral has:imagem before:2026-09-01`.
-  Aqui o texto vira o que sobra dele (o termo) mais cada chave entendida. Quem
-  resolve nome em id é o componente, que conhece o servidor; aqui é só gramática.
-*/
 export type TemNaBusca = "link" | "imagem" | "video" | "som" | "arquivo" | "anexo";
 
 export interface BuscaInterpretada {
@@ -88,7 +83,6 @@ export function interpretarBusca(texto: string): BuscaInterpretada {
   return saida;
 }
 
-/// Se há o que procurar: texto de duas letras, ou ao menos um filtro que vale.
 export function temOQueBuscar(b: BuscaInterpretada): boolean {
   return (
     b.termo.length >= 2 ||

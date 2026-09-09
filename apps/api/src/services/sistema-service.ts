@@ -16,19 +16,6 @@ import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
 import { lerTemasDaCasa, type TemaDaCasa } from "~/temas-da-casa.js";
 
-/*
-  A conta da casa.
-
-  É um usuário de verdade, como os bots: tem linha na tabela e aparece como
-  autor. A diferença é que ninguém a controla por token — é a própria API que
-  escreve em nome dela, e o cliente a mostra com o selo "sistema".
-
-  E ela não entra em servidor nenhum. Ficar de membro dava a ela "servidores
-  em comum" no cartão de perfil, como se fosse mais uma pessoa da comunidade;
-  a casa não é gente, é o app falando. Quando precisa escrever num canal de
-  servidor — o de temas — escreve por `escreverNoCanal`, que não passa pela
-  checagem de permissão porque quem escreve ali é a própria API.
-*/
 export const EMAIL_DA_CASA = "sistema@gravae.local";
 const NOME_DO_SERVIDOR = "Gravaê Temas";
 const NOME_DO_CANAL = "temas";
@@ -43,13 +30,6 @@ function textoDoTema(tema: TemaDaCasa, link: string): string {
 }
 
 export const sistemaService = {
-  /*
-    Um aviso da casa para uma pessoa.
-
-    Vai pela conversa que ela já tem com a conta do sistema, ou por uma nova
-    — é o mesmo lugar onde chegam os outros comunicados. Nunca derruba quem
-    chamou: um aviso que falha é um aviso perdido, não uma ação perdida.
-  */
   async avisar(userId: string, texto: string, log?: FastifyBaseLogger) {
     try {
       const casa = await sistemaService.usuario();
@@ -64,14 +44,6 @@ export const sistemaService = {
     }
   },
 
-  /*
-    A casa escrevendo num canal de servidor.
-
-    Sem passar por `messageService.send`, que exigiria membro e permissão —
-    exigências que existem para gente, e a casa não é gente. Fica só neste
-    caminho, o da semeadura dos temas: em qualquer outro lugar quem escreve
-    é uma pessoa, e aí a checagem tem de valer.
-  */
   async escreverNoCanal(channelId: string, content: string) {
     const casa = await sistemaService.usuario();
 
@@ -90,15 +62,6 @@ export const sistemaService = {
     return mensagem;
   },
 
-  /*
-    A conta da casa não é bot.
-
-    Bot é o que alguém cria com código, ganha token e responde por conta
-    própria — e por isso leva o selo "bot" e recebe mensagem. Esta aqui é o
-    sistema: quem escreve por ela é a própria API, ninguém a controla, e o
-    selo é "sistema". Nasceu marcada como bot por engano; quem já existe é
-    corrigida aqui, uma vez.
-  */
   async usuario() {
     const existente = await userRepository.findByEmail(EMAIL_DA_CASA);
 
@@ -120,15 +83,6 @@ export const sistemaService = {
     });
   },
 
-  /*
-    Um comunicado da casa para muita gente.
-
-    Vai em segundo plano e devolve na hora quantos vão receber: com mil
-    pessoas na fila, esperar a última seria segurar a resposta por minutos.
-    Cada entrega é independente — uma que falha não para as outras, só entra
-    no log. Não pede amizade nem passa pelo freio de spam, porque quem manda
-    é a casa e o destino é a conversa que ela já tem com cada um.
-  */
   async comunicar(userIds: string[], texto: string, log: FastifyBaseLogger) {
     const casa = await sistemaService.usuario();
     const destinos = [...new Set(userIds)].filter((id) => id !== casa.id);
@@ -156,13 +110,6 @@ export const sistemaService = {
     return { destinatarios: destinos.length };
   },
 
-  /*
-    Garante o servidor "Gravaê Temas" e publica cada tema da casa lá, fixado.
-
-    Roda a cada subida e não repete nada: servidor, canal e mensagem só
-    nascem se não existirem. Um tema que mudou de texto é publicado de novo —
-    a mensagem antiga sai, a nova entra e é fixada.
-  */
   async semearServidorDeTemas(log: FastifyBaseLogger) {
     if (!env.SERVIDOR_DE_TEMAS_DONO) return;
 
@@ -203,8 +150,6 @@ export const sistemaService = {
       canal = await prisma.channel.findUniqueOrThrow({ where: { id: criado.id } });
     }
 
-    /// A casa já foi membro daqui. Sai — e sai de qualquer outro em que
-    /// tenha entrado antes, para o cartão dela não ter servidor em comum.
     const saiu = await prisma.guildMember.deleteMany({ where: { userId: casa.id } });
     if (saiu.count) log.info(`servidor de temas: a conta da casa saiu de ${saiu.count} servidor(es)`);
 
@@ -217,12 +162,6 @@ export const sistemaService = {
     }
   },
 
-  /*
-    O tema da casa como registro publicado, para ter link.
-
-    Um por nome: se já existe, só acompanha o CSS quando ele muda. Assim o
-    link nunca troca — quem já colou o dele em algum canto continua valendo.
-  */
   async temaPublicado(tema: TemaDaCasa, casaId: string) {
     const existente = await prisma.tema.findFirst({ where: { autorId: casaId, nome: tema.nome } });
 
@@ -254,17 +193,10 @@ export const sistemaService = {
     ids: { canalId: string; casaId: string; donoId: string },
     log: FastifyBaseLogger,
   ) {
-    /*
-      O tema vai como LINK, e não como arquivo: colado no canal, o link vira
-      o cartão de importar, e quem lê aplica num clique em vez de baixar um
-      `.css` e procurar onde enfiá-lo.
-    */
     const publicado = await sistemaService.temaPublicado(tema, ids.casaId);
     const content = textoDoTema(tema, `${env.WEB_ORIGIN.split(",")[0]?.trim() ?? ""}${CAMINHO_DO_TEMA}${publicado.id}`);
 
     const existente = await prisma.message.findFirst({
-      /// `deletedAt: null` não acha documento sem o campo no Mongo; o certo
-      /// é perguntar se o campo está ausente, como o repositório faz.
       where: {
         channelId: ids.canalId,
         authorId: ids.casaId,
@@ -280,11 +212,6 @@ export const sistemaService = {
 
     if (existente) await messageService.remove(ids.donoId, existente.id);
 
-    /*
-      A versão antiga deste tema vinha como arquivo anexado. Ela sai quando o
-      link entra — senão o canal fica com o mesmo tema duas vezes, e a pessoa
-      não sabe qual dos dois é o de verdade.
-    */
     const comArquivo = await prisma.message.findFirst({
       where: {
         channelId: ids.canalId,

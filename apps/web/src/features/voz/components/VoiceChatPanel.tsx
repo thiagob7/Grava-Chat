@@ -9,7 +9,7 @@ import {
 } from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
 import { MessageList } from "~/features/conversa/components/MessageList";
-import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 
 interface VoiceChatPanelProps {
   channelId: string;
@@ -31,19 +31,19 @@ export const VoiceChatPanel: React.FC<VoiceChatPanelProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { largura, arrastando, alca, limites } = useLarguraAjustavel("chat-da-voz", {
-    padrao: 384,
+  const { width, dragging, handle, bounds } = useResizableWidth("chat-da-voz", {
+    initial: 384,
     min: 280,
     max: 620,
-    borda: "esquerda",
+    edge: "left",
   });
 
   return (
     <aside data-gc="voz.voice-chat-panel.aside"
       className="relative flex shrink-0 flex-col border-l border-divisor bg-surface-2"
-      style={{ width: largura }}
+      style={{ width: width }}
     >
-      <AlcaDeLargura data-gc="voz.voice-chat-panel.alca-de-largura" borda="esquerda" arrastando={arrastando} largura={largura} limites={limites} {...alca} />
+      <WidthHandle data-gc="voz.voice-chat-panel.width-handle" edge="left" dragging={dragging} width={width} bounds={bounds} {...handle} />
     <header data-gc="voz.voice-chat-panel.header" className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4 shadow-sm">
       <MessageSquare data-gc="voz.voice-chat-panel.message-square" size={18} className="text-ink-faint" />
       <h2 data-gc="voz.voice-chat-panel.h2" className="min-w-0 flex-1 truncate font-semibold">{channelName}</h2>

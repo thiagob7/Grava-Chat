@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { desktop } from "~/lib/desktop";
 import { AtualizacaoDoApp } from "~/features/configuracoes/components/AtualizacaoDoApp";
 import { Opcao } from "~/features/configuracoes/components/campos-de-config";
@@ -10,7 +10,7 @@ import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/Seca
 
 export const DesktopSection: React.FC = () => {
   const ponte = desktop()?.sistema ?? null;
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const [suportado, setSuportado] = useState(false);
   const [noLogin, setNoLogin] = useState(false);
@@ -77,12 +77,12 @@ export const DesktopSection: React.FC = () => {
             variant="surface"
             disabled={!ponte}
             onClick={() =>
-              void confirmar({
-                titulo: "Reiniciar o Gravaê?",
-                descricao:
+              void confirm({
+                title: "Reiniciar o Gravaê?",
+                description:
                   "O aplicativo fecha e abre de novo na hora. Se você estiver numa chamada, sai dela.",
-                acao: "Reiniciar",
-              }).then(({ confirmado }) => confirmado && void ponte?.reiniciar())
+                action: "Reiniciar",
+              }).then(({ confirmed }) => confirmed && void ponte?.reiniciar())
             }
           >
             <RotateCcw data-gc="configuracoes.desktop-section.rotate-ccw" size={16} /> Reiniciar

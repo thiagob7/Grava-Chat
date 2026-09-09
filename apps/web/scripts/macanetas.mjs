@@ -1,19 +1,3 @@
-/*
-  Qual nome da referência gira cada token nosso.
-
-  Desde que as cores nascem do vocabulário deles — `--color-surface-0` é
-  `var(--background-primary, …)` — quem escreve tema precisa saber QUAL nome
-  mexer. Essa informação mora no `index.css`, dentro da cadeia de cada cor, e
-  ninguém consegue ler de lá enquanto edita.
-
-  Este script tira a lista de dentro da cadeia e entrega ao estúdio, que mostra
-  os nomes ao lado do campo. Gerado, e não escrito à mão, porque a cadeia muda
-  quando a ponte muda — e uma lista escrita por gente ia atrasar.
-
-  Rodar:
-    node scripts/macanetas.mjs           escreve o JSON
-    node scripts/macanetas.mjs --check   falha se o JSON estiver velho
-*/
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";

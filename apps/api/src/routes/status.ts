@@ -31,7 +31,6 @@ async function memoria() {
 
     if (disponivel) return { total, livre, disponivel: Number(disponivel[1]) * 1024 };
   } catch {
-    /* não é Linux, ou /proc não está montado: o número do os já serve */
   }
 
   return { total, livre, disponivel: livre };

@@ -4,12 +4,6 @@ import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-/*
-  O script anti-piscada mora no `index.html`, porque precisa rodar antes do
-  primeiro quadro — antes de existir React para testar. Então o teste vai
-  buscá-lo lá e roda de verdade, com um documento e um armazenamento de
-  mentira. Se alguém mexer no HTML e quebrar a conta, quebra aqui.
-*/
 const raiz = dirname(fileURLToPath(import.meta.url));
 const html = readFileSync(join(raiz, "..", "..", "..", "..", "index.html"), "utf8");
 const hook = readFileSync(
@@ -87,12 +81,6 @@ describe("script anti-piscada", () => {
     expect(props.naoEhToken).toBeUndefined();
   });
 
-  /*
-    A mesma regra do `use-aparencia.ts`: quem escolheu a marca no estúdio ganha
-    da cor de destaque. Sem isto o app abriria com a cor de destaque e trocaria
-    para a do tema no primeiro efeito — a piscada que este script existe para
-    tirar, só que na marca.
-  */
   it("deixa a marca do estúdio ganhar da cor de destaque", () => {
     const semEstudio = rodar({
       "gravae:aparencia": { destaque: "#ff0000" },
@@ -124,11 +112,6 @@ describe("script anti-piscada", () => {
     ).not.toThrow();
   });
 
-  /*
-    As marcas escritas no HTML são as mesmas que o hook escreve depois. Se uma
-    ponta ganhar uma marca nova e a outra não, volta a piscar naquele detalhe —
-    e ninguém repara até alguém reclamar. Esta é a cobrança que falta ao HTML.
-  */
   it("escreve as mesmas marcas que o hook de aparência", () => {
     const marcas = ["tema", "densidade", "cantos", "animacao", "foco"];
 

@@ -8,10 +8,10 @@ import {
   Volume2,
 } from "lucide-react";
 
-import { classeDaOpcaoDeRadio } from "~/components/ui/radio-group";
+import { radioOptionClass } from "~/components/ui/radio-group";
 import { PermissoesDoMac } from "~/features/app/components/PermissoesDoMac";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
@@ -197,16 +197,16 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                 <span data-gc="configuracoes.voice-section.span" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                   <Mic data-gc="configuracoes.voice-section.mic" size={13} /> Dispositivo de entrada
                 </span>
-                <CampoSelect data-gc="configuracoes.voice-section.campo-select"
-                  valor={prefs.entradaId ?? ""}
-                  onEscolher={(id) =>
+                <SelectField data-gc="configuracoes.voice-section.select-field"
+                  value={prefs.entradaId ?? ""}
+                  onSelect={(id) =>
                     void aplicarAjustes({ entradaId: id || null })
                   }
-                  opcoes={[
-                    { valor: "", rotulo: "Padrão do sistema" },
+                  options={[
+                    { value: "", label: "Padrão do sistema" },
                     ...entradas.map((d) => ({
-                      valor: d.deviceId,
-                      rotulo: d.label || "Microfone",
+                      value: d.deviceId,
+                      label: d.label || "Microfone",
                     })),
                   ]}
                 />
@@ -216,17 +216,17 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                 <span data-gc="configuracoes.voice-section.span--2" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                   <Volume2 data-gc="configuracoes.voice-section.volume2" size={13} /> Dispositivo de saída
                 </span>
-                <CampoSelect data-gc="configuracoes.voice-section.campo-select--2"
-                  valor={prefs.saidaId ?? ""}
+                <SelectField data-gc="configuracoes.voice-section.select-field--2"
+                  value={prefs.saidaId ?? ""}
                   disabled={!suportaTrocaDeSaida}
-                  onEscolher={(id) =>
+                  onSelect={(id) =>
                     void aplicarAjustes({ saidaId: id || null })
                   }
-                  opcoes={[
-                    { valor: "", rotulo: "Padrão do sistema" },
+                  options={[
+                    { value: "", label: "Padrão do sistema" },
                     ...saidas.map((d) => ({
-                      valor: d.deviceId,
-                      rotulo: d.label || "Alto-falante",
+                      value: d.deviceId,
+                      label: d.label || "Alto-falante",
                     })),
                   ]}
                 />
@@ -394,7 +394,7 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
                   max={0.5}
                   step={0.005}
                   value={prefs.limiar}
-                  preenchido={prefs.limiar / 0.5}
+                  filled={prefs.limiar / 0.5}
                   onChange={(e) =>
                     void aplicarAjustes({ limiar: Number(e.target.value) })
                   }
@@ -457,14 +457,14 @@ export const VoiceSection: React.FC<{ parte?: "audio" | "video" }> = ({
               <span data-gc="configuracoes.voice-section.span--4" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 <Video data-gc="configuracoes.voice-section.video" size={13} /> Câmera
               </span>
-              <CampoSelect data-gc="configuracoes.voice-section.campo-select--3"
-                valor={prefs.cameraId ?? ""}
-                onEscolher={(id) => prefs.definir({ cameraId: id || null })}
-                opcoes={[
-                  { valor: "", rotulo: "Padrão do sistema" },
+              <SelectField data-gc="configuracoes.voice-section.select-field--3"
+                value={prefs.cameraId ?? ""}
+                onSelect={(id) => prefs.definir({ cameraId: id || null })}
+                options={[
+                  { value: "", label: "Padrão do sistema" },
                   ...cameras.map((d) => ({
-                    valor: d.deviceId,
-                    rotulo: d.label || "Câmera",
+                    value: d.deviceId,
+                    label: d.label || "Câmera",
                   })),
                 ]}
               />
@@ -566,7 +566,7 @@ const Controle: React.FC<ControleProps> = ({
     </span>
     <Slider data-gc="configuracoes.voice-section.slider--2"
       {...props}
-      preenchido={preenchido}
+      filled={preenchido}
       onChange={(e) => onChange(Number(e.target.value))}
     />
   </label>
@@ -603,7 +603,7 @@ const Opcao: React.FC<OpcaoProps> = ({
       onIrParaOutro();
     }}
     className={cn(
-      classeDaOpcaoDeRadio(),
+      radioOptionClass(),
       "flex items-start gap-3 rounded-lg border p-3 text-left transition",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel",
       ativo

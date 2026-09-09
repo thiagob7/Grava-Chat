@@ -1,5 +1,3 @@
-
-
 export type ModoDeLeitura = "nunca" | "canal-aberto" | "todos";
 
 const IDIOMAS_PREFERIDOS = ["pt-BR", "pt-PT", "pt"];
@@ -13,20 +11,15 @@ const MAXIMO = 300;
 
 export function comoSeFala({ autor, texto }: Falado): string {
   let limpo = texto
-    /// Blocos de código não se leem — viram "crase crase crase js".
     .replace(/```[\s\S]*?```/g, " bloco de código ")
     .replace(/`([^`]+)`/g, "$1")
-    /// Link inteiro é impronunciável. O domínio já diz de onde veio.
     .replace(
       /https?:\/\/([^\s/]+)\S*/g,
       (_, dominio: string) => ` link de ${dominio} `,
     )
-    /// `<@id>` e `<#id>` são o formato interno da menção; o número não ajuda.
     .replace(/<@!?[0-9a-f]{24}>/gi, " menção ")
     .replace(/<#[0-9a-f]{24}>/gi, " canal ")
-    /// Emoji personalizado vira o nome dele, que é a única parte pronunciável.
     .replace(/<a?:([a-z0-9_]+):[0-9a-f]{24}>/gi, " $1 ")
-    /// Marcação de ênfase é para os olhos.
     .replace(/[*_~|]{1,2}/g, "")
     .replace(/\s+/g, " ")
     .trim();

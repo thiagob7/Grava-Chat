@@ -12,7 +12,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { FONTES } from "~/features/perfil/lib/catalogo";
 import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
-import { classeDoBotaoDaCaixa } from "~/components/ui/button";
+import { boxButtonClass } from "~/components/ui/button";
 
 const CHAVE = "gravae:fonte-da-mensagem";
 
@@ -29,12 +29,9 @@ export function guardarFonte(fonte: FonteDeNome) {
   try {
     localStorage.setItem(CHAVE, fonte);
   } catch {
-    /* modo privado: a escolha vale só nesta aba */
   }
 }
 
-/// O "Aa" do Phosphor, e não o "T" do lucide: na fila da caixa ele é o único
-/// vizinho dos outros quatro, que são todos Phosphor — e o T destoava.
 export const IconeDeFonte: React.FC<{ size: number }> = ({ size }) => (
   <TextAa data-gc="seletor-de-fonte.text-aa" size={size} />
 );
@@ -61,7 +58,7 @@ export const SeletorDeFonte: React.FC<SeletorDeFonteProps> = ({
           <button data-gc="seletor-de-fonte.button"
             aria-label="Fonte da mensagem"
             className={cn(
-              classeDoBotaoDaCaixa,
+              boxButtonClass,
               fonte === "padrao"
                 ? "text-ink-muted hover:bg-hover hover:text-ink"
                 : "text-brand hover:bg-hover",

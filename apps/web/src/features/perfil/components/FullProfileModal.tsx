@@ -26,15 +26,6 @@ interface FullProfileModalProps {
 
 type Aba = "geral" | "amigos" | "servidores";
 
-/*
-  A máscara que recorta o círculo do avatar na faixa.
-
-  É um `<mask>` SVG com um `<circle>`, e não um `mask-image` de gradiente, por
-  um motivo só: o tema que quer a faixa inteira apaga o círculo com
-  `display: none` — e para isso o círculo precisa ser um elemento. A faixa
-  aplica a máscara por `mask: url(#id)`; sem o círculo, sobra o retângulo
-  branco e nada é recortado.
-*/
 const MascaraDaFaixa: React.FC<{ id: string; lugar: Lugares; cx: number; raio: number }> = ({
   id,
   lugar,

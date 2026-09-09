@@ -7,7 +7,7 @@ import type { GifModel } from "~/@core/application/requests/gif/gifs";
 import { AbaEmoji } from "~/features/expressao/components/seletor/AbaEmoji";
 import { AbaFigurinhas } from "~/features/expressao/components/seletor/AbaFigurinhas";
 import { AbaGifs } from "~/features/expressao/components/seletor/AbaGifs";
-import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { bareField, fieldGroup } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useTranslation } from "~/traducao";
@@ -103,7 +103,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
       )}
 
       <div data-gc="expressao.expression-picker.div--2" className={cn("shrink-0 px-3 pb-2", soEmoji && "pt-3")}>
-        <div data-gc="expressao.expression-picker.div--3" className={grupoDeCampo}>
+        <div data-gc="expressao.expression-picker.div--3" className={fieldGroup}>
           <Search data-gc="expressao.expression-picker.search" size={14} className="shrink-0 text-ink-faint" />
 
           <input data-gc="expressao.expression-picker.input"
@@ -111,7 +111,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder={placeholder}
-            className={campoNu}
+            className={bareField}
           />
 
           {busca && (

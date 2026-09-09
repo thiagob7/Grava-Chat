@@ -63,11 +63,6 @@ export const oauthService = {
     };
   },
 
-  /*
-    Com o escopo `bot`, autorizar também é pôr o bot na comunidade escolhida,
-    com as permissões que a pessoa deixou marcadas — nunca mais do que as
-    pedidas. Bot que já está lá não entra duas vezes.
-  */
   async emitirCodigo(
     userId: string,
     params: { botId: string; redirectUri: string; escopos: string[]; guildId?: string; permissoes?: string[] },

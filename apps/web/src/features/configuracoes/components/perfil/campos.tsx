@@ -2,7 +2,7 @@ import React from "react";
 import { Check, X } from "lucide-react";
 
 import type { Opcao } from "~/features/perfil/lib/catalogo";
-import { Label, campoDeCor } from "~/components/ui/input";
+import { Label, colorFieldClass } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
 interface CampoDeCorProps {
@@ -21,7 +21,7 @@ export const CampoDeCor: React.FC<CampoDeCorProps> = ({ label, valor, onMudar, p
         type="color"
         value={valor ?? padrao}
         onChange={(e) => onMudar(e.target.value)}
-        className={cn(campoDeCor, "size-9")}
+        className={cn(colorFieldClass, "size-9")}
         aria-label={label}
       />
       <span data-gc="configuracoes.perfil.campos.span" className="flex-1 font-mono text-xs text-ink-faint">{valor ?? "herdada"}</span>

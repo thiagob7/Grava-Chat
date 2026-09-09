@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import {
-  classeDaOpcaoDeRadio,
-  classeDoGrupoDeRadio,
-  IndicadorDeRadio,
+  radioOptionClass,
+  radioGroupClass,
+  RadioIndicator,
 } from "~/components/ui/radio-group";
 
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import { IDIOMAS, idiomaAtual, trocarIdioma, useTranslation } from "~/traducao";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
@@ -59,7 +59,7 @@ export const IdiomaSection: React.FC = () => {
         <div data-gc="configuracoes.idioma-section.div--2"
           role="radiogroup"
           aria-label={t("idioma.formatoDaHora.titulo")}
-          className={cn(classeDoGrupoDeRadio(), "space-y-2")}
+          className={cn(radioGroupClass(), "space-y-2")}
         >
           {FORMATOS.map((formato) => {
             const escolhido = prefs.horaEm24h === formato.vinteQuatro;
@@ -75,14 +75,14 @@ export const IdiomaSection: React.FC = () => {
                   prefs.definir({ horaEm24h: formato.vinteQuatro })
                 }
                 className={cn(
-                  classeDaOpcaoDeRadio(),
+                  radioOptionClass(),
                   "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition",
                   escolhido
                     ? "border-brand bg-brand/5"
                     : "border-line hover:bg-surface-3",
                 )}
               >
-                <IndicadorDeRadio data-gc="configuracoes.idioma-section.indicador-de-radio" escolhido={escolhido} className="mt-0.5" />
+                <RadioIndicator data-gc="configuracoes.idioma-section.radio-indicator" selected={escolhido} className="mt-0.5" />
 
                 <span data-gc="configuracoes.idioma-section.span" className="min-w-0 flex-1">
                   <span data-gc="configuracoes.idioma-section.span--2" className="block text-sm font-medium">
@@ -116,15 +116,15 @@ const EscolherIdioma: React.FC = () => {
         {t("idioma.emAndamento")}
       </p>
 
-      <CampoSelect data-gc="configuracoes.idioma-section.campo-select"
-        valor={atual}
-        onEscolher={(lng) => {
+      <SelectField data-gc="configuracoes.idioma-section.select-field"
+        value={atual}
+        onSelect={(lng) => {
           setAtual(lng);
           void trocarIdioma(lng);
         }}
-        opcoes={IDIOMAS.map((idioma) => ({
-          valor: idioma.lng,
-          rotulo: (
+        options={IDIOMAS.map((idioma) => ({
+          value: idioma.lng,
+          label: (
             <span data-gc="configuracoes.idioma-section.span--4" className="flex w-full min-w-0 items-center gap-3">
               <span data-gc="configuracoes.idioma-section.span--5" className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
               <span data-gc="configuracoes.idioma-section.span--6" className="shrink-0 text-ink-faint">{idioma.nome}</span>

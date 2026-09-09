@@ -17,10 +17,10 @@ import {
 } from "~/@core/application/queries/moderation/use-moderation";
 import type { AutoModRuleModel } from "~/@core/application/requests/moderation/moderation";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Input, Label } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 import { i18next, useTranslation } from "~/traducao";
 
@@ -73,7 +73,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
   const { t } = useTranslation();
   const { data: regras = [] } = useFindAutoModRules(guildId);
   const salvar = useSaveAutoModRule(guildId);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const apagar = useDeleteAutoModRule(guildId);
   const [editando, setEditando] = useState<AutoModRuleModel | null>(null);
 
@@ -144,14 +144,14 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                     </Button>
                     <button data-gc="servidor.server-settings.auto-mod-section.button--2"
                       onClick={() =>
-                        void confirmar({
-                          titulo: t("servidor.automod.excluirTitulo"),
-                          descricao:
+                        void confirm({
+                          title: t("servidor.automod.excluirTitulo"),
+                          description:
                             t("servidor.automod.excluirDescricao"),
-                          acao: t("servidor.automod.excluirAcao"),
+                          action: t("servidor.automod.excluirAcao"),
                         }).then(
-                          ({ confirmado }) =>
-                            confirmado &&
+                          ({ confirmed }) =>
+                            confirmed &&
                             apagar.mutate({ guildId, ruleId: existente.id }),
                         )
                       }
@@ -348,17 +348,17 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         {rascunho.acoes.includes("ALERT") && (
           <div data-gc="servidor.server-settings.auto-mod-section.div--16">
             <Label data-gc="servidor.server-settings.auto-mod-section.label--6" htmlFor="regra-canal">{t("servidor.automod.canalDoAlerta")}</Label>
-            <CampoSelect data-gc="servidor.server-settings.auto-mod-section.campo-select"
+            <SelectField data-gc="servidor.server-settings.auto-mod-section.select-field"
               id="regra-canal"
-              valor={rascunho.alertChannelId ?? ""}
-              onEscolher={(id) =>
+              value={rascunho.alertChannelId ?? ""}
+              onSelect={(id) =>
                 setRascunho({ ...rascunho, alertChannelId: id || null })
               }
-              opcoes={[
-                { valor: "", rotulo: t("servidor.automod.escolhaCanal") },
+              options={[
+                { value: "", label: t("servidor.automod.escolhaCanal") },
                 ...canais.map((canal) => ({
-                  valor: canal.id,
-                  rotulo: `#${canal.name}`,
+                  value: canal.id,
+                  label: `#${canal.name}`,
                 })),
               ]}
             />

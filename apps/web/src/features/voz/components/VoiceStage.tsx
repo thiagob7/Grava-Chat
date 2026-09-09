@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
-import { ChatCircle, SpeakerHigh, UserPlus } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, ChatCircle, PhoneCall, SpeakerHigh, UserPlus, UsersThree } from "@phosphor-icons/react";
 
 import { InviteModal } from "~/features/servidor/components/InviteModal";
 import { QualidadeDaTela } from "~/features/voz/components/QualidadeDaTela";
@@ -24,6 +24,8 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
+import { BackToCallCard } from "~/features/voz/components/BackToCallCard";
+import { CallInviteCard } from "~/features/voz/components/CallInviteCard";
 import { VoiceStageControls } from "~/features/voz/components/VoiceStageControls";
 import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import { useParticipante } from "~/features/voz/hooks/use-participante";
@@ -56,11 +58,6 @@ const CantosDaChamada: React.FC<{
 }> = ({ nome, chatAberto, onAlternarChat, onConvidar }) => {
   const { t } = useTranslation();
 
-  /*
-    O hover e o ligado eram `#111` cravado — um cinza que só existia aqui e que
-    nenhum tema alcançava. Agora é o próprio palco clareado, então acompanha
-    seja qual for o fundo que o tema escolher.
-  */
   const botao = cn(
     flxCls("botaoDoTopoDaChamada"),
     "pointer-events-auto flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.8125rem]",
@@ -153,6 +150,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   const palco = useRef<HTMLDivElement>(null);
   const quadro = useRef<HTMLDivElement>(null);
   const [focado, setFocado] = useState<string | null>(null);
+  const [membrosOcultos, setMembrosOcultos] = useState(false);
   const [convidando, setConvidando] = useState(false);
 
   const todosOsTiles = useVoiceStore((s) => s.tiles);
@@ -287,16 +285,19 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
     tiles.map((tile) => ({ identity: tile.identity, transmitindo: Boolean(tile.screenTrack), tile })),
   );
 
-  const { colunas, denso } = formatoDaGrade(grade.length);
   const emFoco = focar(grade, focado);
 
-  const ampliado = emFoco?.faixa.length === 0;
+  const mostrarConvite = podeConvidar && grade.length <= 1 && !emFoco;
+  const celulas = grade.length + (mostrarConvite ? 1 : 0);
+
+  const { colunas, denso } = formatoDaGrade(celulas);
 
   const desenhar = (
     quadro: (typeof grade)[number],
     compacto?: boolean,
     preencher?: boolean,
     semCanto?: boolean,
+    onClick?: () => void,
   ) =>
     quadro.tipo === "tela" ? (
       <TileDaLive data-gc="voz.voice-stage.tile-da-live"
@@ -314,12 +315,12 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           denso={denso || compacto}
           preencher={preencher}
           semCanto={semCanto}
-          onFocar={() => setFocado((atual) => (atual === quadro.key ? null : quadro.key))}
+          onFocar={onClick ?? (() => setFocado((atual) => (atual === quadro.key ? null : quadro.key)))}
         />
       </ComMenu>
     );
 
-  if (emFoco && emFoco.faixa.length) {
+  if (emFoco) {
     return (
       <div data-gc="voz.voice-stage.div--10"
         ref={palco}
@@ -344,12 +345,47 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </div>
         </div>
 
-        <div data-gc="voz.voice-stage.div--13" className="flex shrink-0 justify-center gap-2">
-          {emFoco.faixa.map((quadro) => (
-            <div data-gc="voz.voice-stage.div--14" key={quadro.key} className="w-40 shrink-0">
-              {desenhar(quadro, true)}
+        <div data-gc="voz.voice-stage.div--13" className="relative flex shrink-0 flex-col items-center">
+          <Tooltip data-gc="voz.voice-stage.tooltip--3" label={membrosOcultos ? "Mostrar membros" : "Ocultar membros"}>
+            <button data-gc="voz.voice-stage.button--3"
+              type="button"
+              onClick={() => setMembrosOcultos((atual) => !atual)}
+              aria-label={membrosOcultos ? "Mostrar membros" : "Ocultar membros"}
+              aria-expanded={!membrosOcultos}
+              className="absolute -top-4 z-10 flex items-center gap-1 rounded-full bg-surface-4/90 px-2.5 py-1 text-ink-muted opacity-0 shadow-lg backdrop-blur transition focus-visible:opacity-100 group-hover:opacity-100 hover:text-ink"
+            >
+              {membrosOcultos ? <CaretUp data-gc="voz.voice-stage.caret-up" size={12} weight="bold" /> : <CaretDown data-gc="voz.voice-stage.caret-down" size={12} weight="bold" />}
+              <UsersThree data-gc="voz.voice-stage.users-three" size={14} weight="fill" />
+            </button>
+          </Tooltip>
+
+          {!membrosOcultos && (
+            <div data-gc="voz.voice-stage.div--14" className="flex shrink-0 justify-center gap-2">
+              {!emFoco.faixa.length && (
+                <BackToCallCard data-gc="voz.voice-stage.back-to-call-card"
+                  name={emFoco.destaque.de.tile.name}
+                  onBack={() => setFocado(null)}
+                />
+              )}
+
+              {emFoco.faixa.map((quadro) => (
+                <Tooltip data-gc="voz.voice-stage.tooltip--4" key={quadro.key} label="Voltar para a chamada">
+                  <div data-gc="voz.voice-stage.div--15" className="relative w-40 shrink-0">
+                    {desenhar(quadro, true, false, false, () => setFocado(null))}
+
+                    <span data-gc="voz.voice-stage.span--5"
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                    >
+                      <span data-gc="voz.voice-stage.span--6" className="flex size-9 items-center justify-center rounded-full bg-surface-4/80 text-ink shadow-lg backdrop-blur">
+                        <PhoneCall data-gc="voz.voice-stage.phone-call" size={18} weight="fill" />
+                      </span>
+                    </span>
+                  </div>
+                </Tooltip>
+              ))}
             </div>
-          ))}
+          )}
         </div>
 
         <VoiceStageControls data-gc="voz.voice-stage.voice-stage-controls--2" alvoTelaCheia={palco} mostrarChat={compacto} />
@@ -366,7 +402,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
   if (compacto) {
     return (
-      <div data-gc="voz.voice-stage.div--15"
+      <div data-gc="voz.voice-stage.div--16"
         ref={palco}
         {...flxAttr("palcoDaChamadaCompacta")}
         className={cn(
@@ -375,7 +411,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         )}
       >
         {grade.map((quadro) => (
-          <div data-gc="voz.voice-stage.div--16" key={quadro.key} className="h-full max-h-56 min-w-0 max-w-md flex-1">
+          <div data-gc="voz.voice-stage.div--17" key={quadro.key} className="h-full max-h-56 min-w-0 max-w-md flex-1">
             {desenhar(quadro, false, true)}
           </div>
         ))}
@@ -388,16 +424,12 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }
 
   return (
-    <div data-gc="voz.voice-stage.div--17"
+    <div data-gc="voz.voice-stage.div--18"
       ref={palco}
       className={cn(
         flxCls("palcoDeVoz"),
         "group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden",
-        ampliado
-          ? "palco-de-um bg-surface-2"
-          : grade.length === 1
-            ? "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5"
-            : "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5",
+        "palco-de-um bg-surface-2 px-3 pb-20 pt-3.5",
       )}
     >
         <CantosDaChamada data-gc="voz.voice-stage.cantos-da-chamada.on-alternar-chat--2"
@@ -407,26 +439,34 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           onConvidar={podeConvidar ? () => setConvidando(true) : undefined}
         />
 
-      <div data-gc="voz.voice-stage.div--18"
+      <div data-gc="voz.voice-stage.div--19"
         className={cn(
-          grade.length > 1 && "grade-de-varios",
-          grade.length === 1 && "grid max-h-full quadro-de-um [&>*]:size-full",
-          ampliado && "quadro-de-um-ampliado",
+          celulas > 1 && "grade-de-varios",
+          celulas === 1 && "grid max-h-full quadro-de-um [&>*]:size-full",
         )}
         style={
-          grade.length > 1
+          celulas > 1
             ? 
               ({
                 "--colunas": colunas,
-                "--linhas": Math.ceil(grade.length / colunas),
-                "--espaco": `${espacoDaGrade(grade.length)}px`,
+                "--linhas": Math.ceil(celulas / colunas),
+                "--espaco": `${espacoDaGrade(celulas)}px`,
               } as React.CSSProperties)
             : { gridTemplateColumns: "repeat(1, minmax(0, 1fr))", gridAutoRows: "minmax(0, 1fr)" }
         }
       >
-        {grade.map((quadro) => desenhar(quadro, false, grade.length === 1, ampliado))}
+        {grade.map((quadro) => desenhar(quadro, false, celulas === 1))}
+
+        {mostrarConvite && (
+          <CallInviteCard data-gc="voz.voice-stage.call-invite-card"
+            key="convite"
+            channelName={channelName}
+            onInvite={() => setConvidando(true)}
+          />
+        )}
       </div>
-      {!tiles.length && (
+
+      {!tiles.length && !mostrarConvite && (
         <p data-gc="voz.voice-stage.p--4" className="text-ink-muted">Ninguém em {channelName} ainda.</p>
       )}
 
@@ -485,7 +525,7 @@ const Tile: React.FC<TileProps> = ({
       )}
     >
       {tile.cameraTrack ? (
-        <div data-gc="voz.voice-stage.div--19" className={cn("size-full", falando && "ring-2 ring-online")}>
+        <div data-gc="voz.voice-stage.div--20" className={cn("size-full", falando && "ring-2 ring-online")}>
           <VoiceVideo data-gc="voz.voice-stage.voice-video--2" track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
         </div>
       ) : (
@@ -500,7 +540,7 @@ const Tile: React.FC<TileProps> = ({
         />
       )}
 
-      <div data-gc="voz.voice-stage.div--20"
+      <div data-gc="voz.voice-stage.div--21"
         {...flx(
           "selosDoParticipante",
           cn(
@@ -517,7 +557,7 @@ const Tile: React.FC<TileProps> = ({
 
         <AvisoDeConexao data-gc="voz.voice-stage.aviso-de-conexao" qualidade={tile.qualidade} />
         <UserProfilePopover data-gc="voz.voice-stage.user-profile-popover" userId={tile.identity} guildId={guildId} side="top">
-          <button data-gc="voz.voice-stage.button--3"
+          <button data-gc="voz.voice-stage.button--4"
             onClick={(e) => e.stopPropagation()}
             {...flx(
               "nomeDoParticipante",
@@ -547,7 +587,7 @@ const TileDaLive: React.FC<{
   const { t } = useTranslation();
 
   return (
-  <div data-gc="voz.voice-stage.div--21"
+  <div data-gc="voz.voice-stage.div--22"
     className={cn(
       "group/live relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-sobre-midia ring-1 ring-line-sutil",
       className,
@@ -557,8 +597,8 @@ const TileDaLive: React.FC<{
       <button data-gc="voz.voice-stage.button.on-assistir" onClick={onAssistir} className="absolute inset-0 size-full">
         <VoiceVideo data-gc="voz.voice-stage.voice-video--3" track={tile.screenTrack} />
 
-        <span data-gc="voz.voice-stage.span--5" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
-          <span data-gc="voz.voice-stage.span--6" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--7" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--8" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
       </button>
     ) : (
@@ -566,11 +606,11 @@ const TileDaLive: React.FC<{
         onClick={onAssistir}
         className="absolute inset-0 flex items-center justify-center transition hover:bg-palco-ink/5"
       >
-        <span data-gc="voz.voice-stage.span--7" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
-          <span data-gc="voz.voice-stage.span--8" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--9" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--10" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
 
-        <span data-gc="voz.voice-stage.span--9"
+        <span data-gc="voz.voice-stage.span--11"
           title={t("chamada.live.assistir")}
           className={cn(
             "flex items-center justify-center bg-brand font-medium text-palco-ink shadow-lg",
@@ -586,9 +626,9 @@ const TileDaLive: React.FC<{
       </button>
     )}
 
-    <div data-gc="voz.voice-stage.div--22" className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-sobre-midia px-2 py-1">
+    <div data-gc="voz.voice-stage.div--23" className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-sobre-midia px-2 py-1">
       <Monitor data-gc="voz.voice-stage.monitor" size={12} className="shrink-0 text-online" />
-      <span data-gc="voz.voice-stage.span--10" className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
+      <span data-gc="voz.voice-stage.span--12" className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
         {tile.name}
         {tile.isLocal && " (sua tela)"}
       </span>
@@ -608,9 +648,9 @@ const ControleDeVolumeDaLive: React.FC<{ identity: string; className?: string }>
 
   return (
     <Popover data-gc="voz.voice-stage.popover">
-      <Tooltip data-gc="voz.voice-stage.tooltip--3" label={volume === 0 ? "Live sem som" : `Volume da live · ${Math.round(volume * 100)}%`}>
+      <Tooltip data-gc="voz.voice-stage.tooltip--5" label={volume === 0 ? "Live sem som" : `Volume da live · ${Math.round(volume * 100)}%`}>
         <PopoverTrigger data-gc="voz.voice-stage.popover-trigger" asChild>
-          <button data-gc="voz.voice-stage.button--4"
+          <button data-gc="voz.voice-stage.button--5"
             aria-label="Volume da live"
             className={cn(
               "pointer-events-auto rounded bg-sobre-midia p-1.5 text-palco-ink/80 transition hover:bg-sobre-midia hover:text-palco-ink",
@@ -632,7 +672,7 @@ const ControleDeVolumeDaLive: React.FC<{ identity: string; className?: string }>
           max={1}
           step={0.05}
           value={volume}
-          preenchido={volume}
+          filled={volume}
           onChange={(e) => definir(identity, Number(e.target.value))}
         />
       </PopoverContent>
@@ -645,8 +685,8 @@ const AvisoDeConexao: React.FC<{ qualidade: string }> = ({ qualidade }) => {
   if (!aviso) return null;
 
   return (
-    <Tooltip data-gc="voz.voice-stage.tooltip--4" label={aviso.rotulo}>
-      <span data-gc="voz.voice-stage.span--11" className={cn("flex shrink-0 items-center", aviso.cor)} aria-label={aviso.rotulo}>
+    <Tooltip data-gc="voz.voice-stage.tooltip--6" label={aviso.rotulo}>
+      <span data-gc="voz.voice-stage.span--13" className={cn("flex shrink-0 items-center", aviso.cor)} aria-label={aviso.rotulo}>
         <SignalLow data-gc="voz.voice-stage.signal-low" size={12} className={aviso.pulsando ? "animate-pulse" : undefined} />
       </span>
     </Tooltip>
@@ -661,9 +701,9 @@ const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
   const participante = resolver(tile.identity, { name: tile.name, avatarUrl: tile.avatarUrl });
 
   return (
-    <div data-gc="voz.voice-stage.div--23" className="relative shrink-0" title={participante.nome}>
+    <div data-gc="voz.voice-stage.div--24" className="relative shrink-0" title={participante.nome}>
       {tile.cameraTrack ? (
-        <div data-gc="voz.voice-stage.div--24" className="size-11 overflow-hidden rounded-full">
+        <div data-gc="voz.voice-stage.div--25" className="size-11 overflow-hidden rounded-full">
           <VoiceVideo data-gc="voz.voice-stage.voice-video--4" track={tile.cameraTrack} mirrored={tile.isLocal && espelhar} />
         </div>
       ) : (
@@ -678,7 +718,7 @@ const RostoDaColuna: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
       )}
 
       {!tile.micEnabled && (
-        <span data-gc="voz.voice-stage.span--12" className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
+        <span data-gc="voz.voice-stage.span--14" className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
           <MicOff data-gc="voz.voice-stage.mic-off--2" size={9} className="text-danger" />
         </span>
       )}
@@ -717,7 +757,7 @@ const ComMenu: React.FC<{
       minhasPermissoes={contexto.minhasPermissoes}
       currentUserId={contexto.currentUserId}
     >
-      <div data-gc="voz.voice-stage.div--25">{children}</div>
+      <div data-gc="voz.voice-stage.div--26">{children}</div>
     </VoiceMemberMenu>
   );
 };

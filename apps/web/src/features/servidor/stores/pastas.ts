@@ -9,11 +9,6 @@ import {
   type Destino,
 } from "~/features/servidor/lib/trilho";
 
-/*
-  A arrumação do trilho é da pessoa e deste aparelho: fica no localStorage,
-  como os favoritos. Não vai para a API de propósito — ninguém mais precisa
-  saber em que pasta você pôs o quê.
-*/
 interface StoreDePastas {
   arrumacao: Arrumacao;
   mover: (guildIds: string[], guildId: string, destino: Destino) => void;
@@ -38,7 +33,6 @@ function guardar(arrumacao: Arrumacao) {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(arrumacao));
   } catch {
-    /// Sem localStorage a arrumação vale só até recarregar — melhor que travar.
   }
 }
 

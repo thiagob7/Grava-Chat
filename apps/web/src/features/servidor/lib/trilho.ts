@@ -1,12 +1,3 @@
-/*
-  O trilho como a pessoa arrumou: servidores soltos e pastas, na ordem dela.
-
-  A arrumação é um vetor de ids — servidor solto pelo id, pasta por
-  `pasta:<id>` — mais as pastas em si. O que a API manda é a lista de
-  servidores; o que fica aqui é só a forma. Servidor novo entra no fim;
-  servidor que saiu some da arrumação sozinho. Tudo puro, para testar.
-*/
-/// Os desenhos que uma pasta pode vestir. O nome é a chave; quem desenha é o trilho.
 export const ICONES_DE_PASTA = ["pasta", "estrela", "coracao", "salvar", "jogo", "escudo", "nota"] as const;
 export type IconeDaPasta = (typeof ICONES_DE_PASTA)[number];
 
@@ -17,7 +8,6 @@ export interface Pasta {
   guildIds: string[];
   aberta: boolean;
   icone?: IconeDaPasta;
-  /// Fechada, mostra o ícone em vez dos quatro primeiros servidores.
   mostrarIconeMinimizado?: boolean;
 }
 
@@ -32,7 +22,6 @@ export type ItemDoTrilho<G> =
 
 const marca = (pastaId: string) => `pasta:${pastaId}`;
 
-/// Monta o que o trilho desenha, tolerando arrumação velha e servidor que já saiu.
 export function montarTrilho<G extends { id: string }>(
   guilds: G[],
   arrumacao: Arrumacao,
@@ -66,7 +55,6 @@ export function montarTrilho<G extends { id: string }>(
   return itens;
 }
 
-/// A arrumação completa, com todo servidor conhecido no lugar — base das mudanças.
 function completar(guildIds: string[], a: Arrumacao): Arrumacao {
   const nasPastas = new Set(a.pastas.flatMap((p) => p.guildIds));
   const naOrdem = new Set(a.ordem);
@@ -87,7 +75,6 @@ function semServidor(a: Arrumacao, guildId: string): Arrumacao {
   };
 }
 
-/// Pasta que ficou com um servidor só volta a ser o servidor solto, no lugar dela.
 function desfazerPastasDeUm(a: Arrumacao): Arrumacao {
   const sozinhas = a.pastas.filter((p) => p.guildIds.length === 1);
   if (!sozinhas.length) return a;
@@ -108,7 +95,6 @@ export type Destino =
 let contador = 0;
 const novoId = () => `${Date.now().toString(36)}${(contador++).toString(36)}`;
 
-/// Move um servidor para um destino: antes/depois de algo, dentro de uma pasta, ou junto de outro (vira pasta).
 export function moverServidor(guildIds: string[], atual: Arrumacao, guildId: string, destino: Destino): Arrumacao {
   const base = semServidor(completar(guildIds, atual), guildId);
 
@@ -152,7 +138,6 @@ export function editarPasta(
   return { ...a, pastas: a.pastas.map((p) => (p.id === pastaId ? { ...p, ...dados } : p)) };
 }
 
-/// Desfaz a pasta: os servidores voltam soltos, no lugar onde ela estava.
 export function desfazerPasta(a: Arrumacao, pastaId: string): Arrumacao {
   const pasta = a.pastas.find((p) => p.id === pastaId);
   if (!pasta) return a;

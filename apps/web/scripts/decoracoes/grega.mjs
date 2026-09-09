@@ -1,22 +1,8 @@
-/*
-  Gera `src/assets/molduras/grega.svg` — meandro grego, a única geométrica do
-  conjunto. Existe porque as outras são todas orgânicas e curvas: quem quer
-  moldura sóbria não tinha opção desenhada.
-
-    node scripts/decoracoes/grega.mjs src/assets/molduras/grega.svg
-*/
 import { writeFileSync } from "node:fs";
 import { F, L, montar } from "./_moldura.mjs";
 
 const COR = "#cbb98a";
 
-/*
-  O passo do meandro divide EXATAMENTE o vão entre os cantos (204 = 6 x 34).
-
-  Se não dividir, o ladrilho corta um passo no meio e a emenda salta à vista —
-  e o `round` do border-image só ajusta a escala, não conserta um motivo
-  incompleto.
-*/
 const PASSO = 34;
 const VAO = L - 2 * F;
 
@@ -28,7 +14,6 @@ const beira = `
         fill="none" stroke="${COR}" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   <path d="M${F} 44 L${L - F} 44" stroke="${COR}" stroke-width="1.4" opacity=".55"/>`;
 
-/// No canto a chave vira: entra pelo topo e sai pela lateral, no mesmo traço.
 const canto = `
   <path d="M10 ${F} L10 10 L${F} 10" fill="none" stroke="${COR}" stroke-width="3"
         stroke-linejoin="miter" stroke-linecap="square"/>

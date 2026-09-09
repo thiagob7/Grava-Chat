@@ -248,13 +248,13 @@ export const ProfileEditorModal: React.FC<{
         </DialogPrimitive.Content>
 
         <UnsavedBar data-gc="perfil.cartao.profile-editor-modal.unsaved-bar.descartar"
-          visivel={sujo}
-          salvando={updateProfile.isPending}
-          onDescartar={descartar}
-          onSalvar={salvar}
-          texto={t("perfil.editor.naoSalvo")}
-          acaoDescartar={t("comum.redefinir")}
-          flutuante
+          visible={sujo}
+          saving={updateProfile.isPending}
+          onDiscard={descartar}
+          onSave={salvar}
+          text={t("perfil.editor.naoSalvo")}
+          discardLabel={t("comum.redefinir")}
+          floating
         />
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

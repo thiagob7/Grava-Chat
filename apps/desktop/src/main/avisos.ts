@@ -1,11 +1,6 @@
 import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from "electron";
 
 export function registrarAvisos() {
-  /*
-    A janela de quem chamou, e não "a primeira" — desde que o estúdio de temas
-    abre numa janela própria, existe mais de uma. Minimizar dali tem que
-    minimizar o estúdio, não o app atrás dele.
-  */
   const daChamada = (evento: IpcMainInvokeEvent) =>
     BrowserWindow.fromWebContents(evento.sender) ?? BrowserWindow.getAllWindows()[0] ?? null;
 
@@ -23,11 +18,6 @@ export function registrarAvisos() {
     else janela.flashFrame(true);
   });
 
-  /*
-    Os controles da janela sem moldura. `molduraPropria` é o que o front usa
-    para decidir se desenha os três botões: no macOS o sistema já desenha as
-    bolinhas, e um segundo jogo de botões seria estranho.
-  */
   ipcMain.handle("janela:moldura-propria", () => process.platform !== "darwin");
 
   ipcMain.handle("janela:minimizar", (evento) => daChamada(evento)?.minimize());
@@ -44,11 +34,6 @@ export function registrarAvisos() {
 
   ipcMain.handle("janela:esta-maximizada", (evento) => daChamada(evento)?.isMaximized() ?? false);
 
-  /*
-    "floating" é o nível mais baixo que fica por cima: a janela sobe acima dos
-    outros aplicativos, mas continua abaixo de menu e de tela cheia do sistema.
-    Devolve como de fato ficou.
-  */
   ipcMain.handle("janela:fixar-por-cima", (evento, fixar: boolean) => {
     const janela = daChamada(evento);
     if (!janela) return false;

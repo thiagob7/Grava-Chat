@@ -1,11 +1,5 @@
-/// Quantos membros um servidor precisa ter para aparecer no Explorar.
 export const MEMBROS_PARA_DESCOBRIR = 100;
 
-/*
-  "Comunidade detectável" é o selo de quem está no Explorar — e a regra de
-  estar lá é uma só: passou dos membros e não pediu para ficar de fora.
-  Ninguém marca à mão; a conta é feita na hora, sempre que o servidor sai.
-*/
 export function ehDetectavel(descobrivel: boolean | null | undefined, membros: number): boolean {
   return descobrivel !== false && membros >= MEMBROS_PARA_DESCOBRIR;
 }

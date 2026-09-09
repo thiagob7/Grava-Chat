@@ -4,6 +4,7 @@ import { prisma } from "~/lib/prisma.js";
 import { fecharIo } from "~/realtime/io.js";
 import { redis } from "~/lib/redis.js";
 import { createGateway } from "~/realtime/gateway.js";
+import { guildEventService } from "~/services/guild-event-service.js";
 import { exclusaoService } from "~/services/exclusao-service.js";
 import { sistemaService } from "~/services/sistema-service.js";
 import { statusService } from "~/services/status-service.js";
@@ -12,6 +13,7 @@ const app = await buildApp();
 
 let pararDeVigiarExclusoes: (() => void) | null = null;
 let pararDeVigiarStatus: (() => void) | null = null;
+let stopWatchingEvents: (() => void) | null = null;
 
 try {
   await createGateway(app);
@@ -20,17 +22,14 @@ try {
 
   pararDeVigiarExclusoes = exclusaoService.vigiar(app.log);
   pararDeVigiarStatus = statusService.vigiar(app.log);
+  stopWatchingEvents = guildEventService.watch(app.log);
 
-  /// Depois do gateway: a publicação dos temas avisa as salas como qualquer
-  /// mensagem. Não segura a subida — se falhar, fica no log.
   void sistemaService.semearServidorDeTemas(app.log).catch((err) => app.log.error(err));
 } catch (err) {
   app.log.error(err);
   process.exit(1);
 }
 
-/// Nenhuma publicação pode ficar refém de uma conexão emperrada. Passou
-/// disto, sai de qualquer jeito — o que estava aberto já foi avisado.
 const PRAZO_DE_SAIDA_MS = 5000;
 
 let saindo = false;
@@ -49,6 +48,7 @@ const shutdown = async (signal: string) => {
 
   pararDeVigiarExclusoes?.();
   pararDeVigiarStatus?.();
+  stopWatchingEvents?.();
 
   await fecharIo().catch(() => undefined);
   await app.close().catch(() => undefined);

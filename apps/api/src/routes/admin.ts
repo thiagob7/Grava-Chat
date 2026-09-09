@@ -10,12 +10,10 @@ import { sistemaService } from "~/services/sistema-service.js";
 
 const comunicado = z.object({
   conteudo: z.string().trim().min(1).max(4000),
-  /// Sem lista, vai para todo mundo. Com lista, só para quem está nela.
   userIds: z.array(objectId).max(10_000).optional(),
 });
 
 const filaDeDenuncias = z.object({
-  /// Sem isto, a lista vem inteira; com, só o que ainda não teve desfecho.
   pendentes: z.stringbool().optional(),
   antesDe: objectId.optional(),
   limite: z.coerce.number().int().min(1).max(100).optional(),
@@ -23,12 +21,6 @@ const filaDeDenuncias = z.object({
 
 const desfecho = z.object({ decisao: z.enum(["procede", "arquivada", "reabrir"]) });
 
-/*
-  O que só a administração do app pode fazer.
-
-  A permissão não é de servidor: é a lista de e-mails do `.env`. Quem não
-  está nela recebe 403 antes de qualquer coisa acontecer.
-*/
 export async function adminRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 

@@ -24,7 +24,6 @@ declare module "fastify" {
   }
 }
 
-/// `SameSite=None` só existe com `Secure`; é regra do navegador, não escolha.
 const entreSites = env.COOKIE_ENTRE_SITES;
 const politicaDoCookie = {
   httpOnly: true,
@@ -97,7 +96,6 @@ export async function authRoutes(app: FastifyInstance) {
     });
   }
 
-  /// A sessão que nasce de um registro ou de um login por senha: cookie de refresh e token de acesso.
   const abrirSessao = async (req: FastifyRequest, reply: FastifyReply, user: { id: string }) => {
     const completo = await authService.requireUser(user.id);
     const refresh = await authService.issueRefreshToken(completo.id, metaOf(req));
@@ -126,8 +124,6 @@ export async function authRoutes(app: FastifyInstance) {
     async (req, reply) => {
       await redefinicaoService.pedir(esqueciInput.parse(req.body).email);
 
-      /// Sempre 204, exista a conta ou não: a diferença entre as duas
-      /// respostas seria uma lista de quem tem conta aqui.
       return reply.code(204).send();
     },
   );
@@ -258,8 +254,6 @@ export async function authRoutes(app: FastifyInstance) {
     devLogin: isDev,
     google: googleConfigured,
     senha: true,
-    /// Sem correio não adianta oferecer "esqueci a senha": o link nunca
-    /// chegaria, e a tela promete o que o servidor não faz.
     esqueciSenha: correio.ligado(),
     voiceUrl: env.LIVEKIT_URL,
   }));

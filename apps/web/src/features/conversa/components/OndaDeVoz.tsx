@@ -3,14 +3,6 @@ import React from "react";
 import { BARRAS } from "~/features/conversa/lib/gravador-de-voz";
 import { cn } from "~/lib/utils";
 
-/*
-  O desenho da onda.
-
-  Serve tanto para quem está gravando quanto para quem ouve depois — a
-  diferença é só de onde vêm os picos e quanto já passou. Barra de silêncio
-  ainda aparece, com altura mínima: uma fileira com buracos lê como erro de
-  carregamento, e não como pausa na fala.
-*/
 export const OndaDeVoz: React.FC<{
   picos: number[];
   progresso?: number;
@@ -25,10 +17,10 @@ export const OndaDeVoz: React.FC<{
         <span data-gc="conversa.onda-de-voz.span"
           key={i}
           className={cn(
-            "flex-1 rounded-full transition-colors",
-            i < ate ? "bg-brand" : "bg-ink-faint/40",
+            "w-[3px] shrink-0 rounded-full transition-colors",
+            i < ate ? "bg-brand" : "bg-ink-faint/50",
           )}
-          style={{ height: `${Math.max(10, Math.min(1, pico) * 100)}%` }}
+          style={{ height: `${Math.max(14, Math.min(1, pico) * 100)}%` }}
         />
       ))}
     </div>

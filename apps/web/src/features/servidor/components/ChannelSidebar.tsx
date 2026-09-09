@@ -13,6 +13,7 @@ import { CallTimer } from "~/features/voz/components/CallTimer";
 import { VoiceMembers } from "~/features/voz/components/VoiceMembers";
 import { useVoiceSync } from "~/features/voz/hooks/use-voice-sync";
 import {
+  CalendarBlank,
   CaretDown,
   ChatCircle,
   ChatsCircle,
@@ -52,11 +53,15 @@ import { Input, Label } from "~/components/ui/input";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
 import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
+import { StatusDoCanal } from "~/features/servidor/components/StatusDoCanal";
+import { EventsModal } from "~/features/servidor/components/EventsModal";
+import { InviteFriendsCard } from "~/features/servidor/components/InviteFriendsCard";
+import { useEvents } from "~/@core/application/queries/guild/use-events";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface ChannelSidebarProps {
@@ -88,9 +93,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 }) => {
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
+  const [viewingEvents, setViewingEvents] = useState(false);
   const [collapsed, setCollapsed] = useCategoriasFechadas();
   const { t } = useTranslation();
   const porCanal = useAvisos((s) => s.porCanal);
+  const events = useEvents(detail?.guild.id, true);
   const esconderSilenciados = useAvisos((s) => (detail ? (s.porServidor[detail.guild.id]?.esconderSilenciados ?? false) : false));
   const rolador = useRef<HTMLDivElement>(null);
   const [foraDaVista, setForaDaVista] = useState({ acima: false, abaixo: false });
@@ -171,12 +178,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     })),
   ];
 
-  const { largura, arrastando, alca, limites } = useLarguraAjustavel("canais", {
-    padrao: 320,
+  const { width, dragging, handle, bounds } = useResizableWidth("canais", {
+    initial: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,
-    borda: "direita",
+    edge: "right",
   });
 
   const comFaixa = Boolean(detail?.guild.bannerUrl) && faixaDoServidor;
@@ -191,15 +198,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           "canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1",
           flxCls("molduraDaListaDeCanais"),
         )}
-        style={{ width: largura }}
+        style={{ width: width }}
       >
-        {/*
-          O painel dos canais termina onde o rodapé começa, e o rodapé fica de
-          fora dele. Na referência esses dois são irmãos, e é o que faz a borda do
-          tema parar em cima em vez de cercar o usuário junto.
-        */}
         <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
-        <div data-gc="servidor.channel-sidebar.div--2" {...flx("listaDeCanais", "lista-de-canais flex min-h-0 flex-1 flex-col")}>
+        <div data-gc="servidor.channel-sidebar.div--2" {...flx("listaDeCanais", "lista-de-canais miolo-recortado flex min-h-0 flex-1 flex-col")}>
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
             flxCls("cabecalhoDoServidor"),
@@ -210,7 +212,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           style={
             comFaixa
               ? {
-                  height: largura / proporcao,
+                  height: width / proporcao,
                   minHeight: "var(--layout-header-height)",
                   maxHeight: "30vh",
                 }
@@ -337,11 +339,11 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </div>
         </header>
 
+        {detail && detail.members.length <= 2 && can("CREATE_INVITE") && (
+          <InviteFriendsCard data-gc="servidor.channel-sidebar.invite-friends-card" guildId={detail.guild.id} guildName={detail.guild.name} />
+        )}
+
         <div data-gc="servidor.channel-sidebar.div--6" className="relative flex min-h-0 flex-1 flex-col">
-          {/*
-            Canal não lido que ficou fora da vista: a pílula avisa e, clicada,
-            rola até ele. Uma em cima, outra embaixo, cada uma para o seu lado.
-          */}
           {foraDaVista.acima && (
             <button data-gc="servidor.channel-sidebar.button--3" type="button" onClick={() => irParaNaoLido("acima")} className={PILULA + " top-2"}>
               {t("servidor.novasMensagens")}
@@ -353,22 +355,34 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             </button>
           )}
 
-          {/*
-            O vazio embaixo da lista também é um lugar: clicar com o botão
-            direito ali é como se pede um canal novo, sem caçar o "+" da
-            categoria certa.
-          */}
           <ContextMenu data-gc="servidor.channel-sidebar.context-menu">
           <ContextMenuTrigger data-gc="servidor.channel-sidebar.context-menu-trigger" asChild>
           <div data-gc="servidor.channel-sidebar.div.medir-fora-da-vista" ref={rolador} onScroll={medirForaDaVista} {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
+            <div data-gc="servidor.channel-sidebar.div--7" className="mb-2 border-b border-divisor pb-2">
+              <button data-gc="servidor.channel-sidebar.button--5"
+                type="button"
+                onClick={() => setViewingEvents(true)}
+                className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-base font-medium leading-5 text-ink-faint transition hover:bg-hover hover:text-ink"
+              >
+                <CalendarBlank data-gc="servidor.channel-sidebar.calendar-blank" size={20} weight="fill" className="shrink-0" />
+                <span data-gc="servidor.channel-sidebar.span" className="min-w-0 flex-1 truncate">Eventos</span>
+
+                {Boolean(events.data?.length) && (
+                  <span data-gc="servidor.channel-sidebar.span--2" className="shrink-0 rounded-full bg-selecionado px-1.5 text-11 font-semibold text-ink-muted">
+                    {events.data?.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
             {groups.map((group) => {
               const isCollapsed = group.id ? collapsed[group.id] : false;
 
               return (
                 <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("grupoDeCanais", "mb-4")}>
                   {group.name && (
-                    <div data-gc="servidor.channel-sidebar.div--7" className="group flex items-center justify-between px-1">
-                      <button data-gc="servidor.channel-sidebar.button--5"
+                    <div data-gc="servidor.channel-sidebar.div--8" className="group flex items-center justify-between px-1">
+                      <button data-gc="servidor.channel-sidebar.button--6"
                         onClick={() =>
                           group.id &&
                           setCollapsed({
@@ -383,10 +397,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                           weight="bold"
                           className={cn("shrink-0 transition-transform", isCollapsed && "-rotate-90")}
                         />
-                        <span data-gc="servidor.channel-sidebar.span" className="truncate">{group.name}</span>
+                        <span data-gc="servidor.channel-sidebar.span--3" className="truncate">{group.name}</span>
                       </button>
                       {canManageChannels && group.id !== "favoritos" && (
-                        <button data-gc="servidor.channel-sidebar.button--6"
+                        <button data-gc="servidor.channel-sidebar.button--7"
                           onClick={() => setCreatingIn(group.id)}
                           title="Criar canal"
                           className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
@@ -421,8 +435,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         : null;
 
                       return (
-                        <div data-gc="servidor.channel-sidebar.div--8" key={channel.id} className="group/canal relative" data-canal={channel.id} data-nao-lido={unread ? "1" : undefined}>
-                          <button data-gc="servidor.channel-sidebar.button--7"
+                        <div data-gc="servidor.channel-sidebar.div--9" key={channel.id} className="group/canal relative" data-canal={channel.id} data-nao-lido={unread ? "1" : undefined}>
+                          <button data-gc="servidor.channel-sidebar.button--8"
                             onClick={() => onSelectChannel(channel.id)}
                             className={cn(
                               "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
@@ -471,20 +485,35 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 className="shrink-0 text-ink-faint"
                               />
                             )}
-                            <span data-gc="servidor.channel-sidebar.span--2"
-                              className="truncate"
-                              style={{
-                                fontFamily:
-                                  familiaDaFonte(channel.fonte) ?? undefined,
-                              }}
+                            <span data-gc="servidor.channel-sidebar.span--4"
+                              className="flex min-w-0 flex-1 flex-col items-start justify-center text-left leading-[18px]"
                             >
-                              {channel.name}
+                              <span data-gc="servidor.channel-sidebar.span--5"
+                                className="w-full truncate"
+                                style={{
+                                  fontFamily:
+                                    familiaDaFonte(channel.fonte) ?? undefined,
+                                }}
+                              >
+                                {channel.name}
+                              </span>
+
+                              {channel.type === "VOICE" && detail && (
+                                <StatusDoCanal data-gc="servidor.channel-sidebar.status-do-canal"
+                                  guildId={detail.guild.id}
+                                  channelId={channel.id}
+                                  nomeDoCanal={channel.name}
+                                  status={channel.status}
+                                  podeEditar={inThisCall || canInChannel(channel.id, "MANAGE_CHANNELS")}
+                                  sempreVisivel={inThisCall}
+                                />
+                              )}
                             </span>
 
-                            <span data-gc="servidor.channel-sidebar.span--3" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            <span data-gc="servidor.channel-sidebar.span--6" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
-                                  <span data-gc="servidor.channel-sidebar.span--4"
+                                  <span data-gc="servidor.channel-sidebar.span--7"
                                     title={`${entradas.length} de ${channel.userLimit}`}
                                     className={cn(
                                       "text-11 font-medium tabular-nums",
@@ -503,7 +532,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                               {unread &&
                                 (naoLidas > 0 ? (
-                                  <span data-gc="servidor.channel-sidebar.span--5"
+                                  <span data-gc="servidor.channel-sidebar.span--8"
                                     title={
                                       mencoes > 0
                                         ? `${mencoes} menção(ões) a você`
@@ -520,14 +549,14 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     {naoLidas > 99 ? "99+" : naoLidas}
                                   </span>
                                 ) : (
-                                  <span data-gc="servidor.channel-sidebar.span--6" className="size-2 rounded-full bg-ink" />
+                                  <span data-gc="servidor.channel-sidebar.span--9" className="size-2 rounded-full bg-ink" />
                                 ))}
                             </span>
                           </button>
 
-                          <div data-gc="servidor.channel-sidebar.div--9" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
+                          <div data-gc="servidor.channel-sidebar.div--10" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                             {channel.type === "VOICE" && (
-                              <button data-gc="servidor.channel-sidebar.button--8"
+                              <button data-gc="servidor.channel-sidebar.button--9"
                                 onClick={() => onOpenVoiceChat?.(channel.id)}
                                 title="Abrir chat"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
@@ -537,7 +566,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )}
 
                             {can("CREATE_INVITE") && (
-                              <button data-gc="servidor.channel-sidebar.button--9"
+                              <button data-gc="servidor.channel-sidebar.button--10"
                                 onClick={() => setInviting(true)}
                                 title="Convidar pessoas"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
@@ -547,7 +576,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )}
 
                             {(canManageChannels || canManageRoles) && (
-                              <button data-gc="servidor.channel-sidebar.button--10"
+                              <button data-gc="servidor.channel-sidebar.button--11"
                                 onClick={() => setEditandoCanal(channel.id)}
                                 title="Editar canal"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
@@ -606,12 +635,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </ContextMenuContent>
           </ContextMenu>
 
-          <AlcaDeLargura data-gc="servidor.channel-sidebar.alca-de-largura"
-            borda="direita"
-            arrastando={arrastando}
-            largura={largura}
-            limites={limites}
-            {...alca}
+          <WidthHandle data-gc="servidor.channel-sidebar.width-handle"
+            edge="right"
+            dragging={dragging}
+            width={width}
+            bounds={bounds}
+            {...handle}
           />
         </div>
         </div>
@@ -650,8 +679,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </DialogBody>
 
           <DialogFooter data-gc="servidor.channel-sidebar.dialog-footer">
-            <Button data-gc="servidor.channel-sidebar.button--11" variant="surface" onClick={() => setCriandoCategoria(false)}>Cancelar</Button>
-            <Button data-gc="servidor.channel-sidebar.button--12"
+            <Button data-gc="servidor.channel-sidebar.button--12" variant="surface" onClick={() => setCriandoCategoria(false)}>Cancelar</Button>
+            <Button data-gc="servidor.channel-sidebar.button--13"
               disabled={!nomeDaCategoria.trim() || criarCategoria.isPending}
               onClick={() =>
                 detail &&
@@ -666,6 +695,15 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {detail && (
+        <EventsModal data-gc="servidor.channel-sidebar.events-modal"
+          guildId={detail.guild.id}
+          open={viewingEvents}
+          canCreate={isOwner || detail.permissions.includes("MANAGE_EVENTS")}
+          onClose={() => setViewingEvents(false)}
+        />
+      )}
 
       <InviteModal data-gc="servidor.channel-sidebar.invite-modal"
         open={inviting}

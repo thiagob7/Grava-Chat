@@ -144,11 +144,6 @@ function enriquecer(
   return partes;
 }
 
-/*
-  O aviso do markdown: um bloco por tipo, com a cor da referência e a nossa de
-  reserva. A cor entra por uma variável no próprio elemento para a borda, o
-  título e o fundo saírem todos dela — assim um tema troca uma coisa só.
-*/
 const COR_DO_AVISO: Record<TipoDeAviso, string> = {
   note: "var(--alert-note-color, var(--color-link))",
   tip: "var(--alert-tip-color, var(--color-online))",
@@ -190,7 +185,6 @@ const Aviso: React.FC<{ tipo: TipoDeAviso; children: React.ReactNode }> = ({
   </div>
 );
 
-/// A citação comum. O divisor é elemento próprio, como lá — o tema pinta ele.
 const Citacao: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div data-gc="conversa.message-content.div--3" className={cn(flxCls("citacao"), "my-1 flex gap-2")}>
     <span data-gc="conversa.message-content.span--2"
@@ -313,11 +307,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
     partes.push(<BlocoDeCodigo data-gc="conversa.message-content.bloco-de-codigo" key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
   });
 
-  /*
-    O elemento que sai daqui é o `Markup.markup` da referência: o markdown já
-    renderizado, dentro do corpo da mensagem. É o alvo de mais regra de tema do
-    que qualquer outro — só um tema da comunidade tem 35 mirando `.messageContent .markup`.
-  */
   if (temPainel)
     return (
       <div data-gc="conversa.message-content.div--5" className={cn(flxCls("textoMarcado"), className)}>

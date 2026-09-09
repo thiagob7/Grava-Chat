@@ -4,7 +4,6 @@ import { cercarCodigo, pareceCodigo, partirEmCodigo, rotuloDaLingua } from "./co
 
 const COLADO = `import { cameraTimeline } from "@gravae/ai-analytics";
 
-// mínimo — só path e result
 await cameraTimeline({
   path: { left: "/capturas/cam01", right: "/capturas/cam02" },
   result: (ev) => { if (ev.switched) console.log(ev.t, ev.camera); },

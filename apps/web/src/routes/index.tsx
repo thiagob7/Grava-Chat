@@ -39,21 +39,9 @@ export const AppRoutes: React.FC = () => {
   <BrowserRouter>
     <div data-gc="routes.div" {...flx("containerDoApp", "flex h-full flex-col")}>
       <CascaDoApp data-gc="routes.casca-do-app">
-      {/*
-        O app não rola para o lado, nunca. Um tema pode empurrar um painel para
-        fora — o jeito de encolher a lista de membros, por exemplo, é jogá-la
-        13rem para a direita e só trazer de volta no hover. Sem alguém cortando
-        aqui, esse empurrão vira barra de rolagem horizontal e o trilho sai pela
-        esquerda.
-      */}
       <div data-gc="routes.div--2" {...flxAttr("molduraExterna")} {...flx("molduraDoApp", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("molduraExterna")))}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
-      {/*
-        Aberta a quem está de fora e a quem está dentro: o link do e-mail é
-        justamente para quem não consegue entrar, e mandá-lo para o app
-        seria devolver a pessoa ao problema.
-      */}
       <Route path="/redefinir" element={<RedefinirSenha data-gc="routes.redefinir-senha" />} />
       <Route
         path="/admin/:tela?"
@@ -144,11 +132,6 @@ export const AppRoutes: React.FC = () => {
   );
 };
 
-/*
-  A janela à parte do estúdio roda na mesma aplicação, então cai nas mesmas
-  rotas. Ela não é o app: não leva a barra de título do servidor nem a faixa da
-  comunidade em cima.
-*/
 const CascaDoApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
 

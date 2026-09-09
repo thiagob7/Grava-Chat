@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 
 import { useBotGuilds, useRemoveBotFromGuild } from "~/@core/application/queries/bot/use-bots";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { copiar } from "~/features/configuracoes/components/aplicativos/comum";
 
 interface SecaoDeServidoresProps {
@@ -14,7 +14,7 @@ interface SecaoDeServidoresProps {
 export const SecaoDeServidores: React.FC<SecaoDeServidoresProps> = ({ botId, link }) => {
   const servidores = useBotGuilds(botId);
   const remover = useRemoveBotFromGuild();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   return (
     <>
@@ -51,14 +51,14 @@ export const SecaoDeServidores: React.FC<SecaoDeServidoresProps> = ({ botId, lin
               <button data-gc="configuracoes.aplicativos.secao-de-servidores.button"
                 type="button"
                 onClick={() =>
-                  void confirmar({
-                    titulo: `Tirar de ${servidor.name}?`,
-                    descricao:
+                  void confirm({
+                    title: `Tirar de ${servidor.name}?`,
+                    description:
                       "O bot sai do servidor e para de responder por lá. Dá pra pôr de volta pelo link de convite.",
-                    acao: "Tirar",
+                    action: "Tirar",
                   }).then(
-                    ({ confirmado }) =>
-                      confirmado && remover.mutate({ botId, guildId: servidor.id }),
+                    ({ confirmed }) =>
+                      confirmed && remover.mutate({ botId, guildId: servidor.id }),
                   )
                 }
                 aria-label={`Tirar de ${servidor.name}`}

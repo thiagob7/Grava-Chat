@@ -1,9 +1,3 @@
-/*
-  Gera `src/assets/decoracoes/coroa.svg` — anel de ouro cravejado, com gemas
-  piscando e um lampejo dando a volta na faixa.
-
-    node scripts/decoracoes/coroa.mjs src/assets/decoracoes/coroa.svg
-*/
 import { writeFileSync } from "node:fs";
 import { C, R, em, emVolta, gira, n, pulsa, svg } from "./_comum.mjs";
 
@@ -27,8 +21,6 @@ const gemas = [45, 135, 225, 315]
   })
   .join("");
 
-/// O lampejo é um pedaço curto do próprio anel, girando: um traço tracejado
-/// cujo "risco" tem 14% da volta e o "vão", o resto.
 const volta = 2 * Math.PI * R;
 const lampejo = `<g>${gira(7)}
   <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="#fffbe8" stroke-width="9"

@@ -9,7 +9,6 @@ import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidad
 
 const numero = new Intl.NumberFormat("pt-BR");
 
-/// A comunidade em detalhe, antes de entrar: o que o cartão corta, aqui cabe.
 export const ComunidadeModal: React.FC<{
   comunidade: ComunidadeDescoberta | null;
   entrando: boolean;

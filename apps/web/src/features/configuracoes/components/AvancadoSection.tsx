@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ChevronRight, Search, X } from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
-import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { bareField, fieldGroup } from "~/components/ui/input";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import {
   AJUSTES,
@@ -47,14 +47,14 @@ export const AvancadoSection: React.FC = () => {
         interruptores valem daqui mesmo; o resto leva você até onde ele mora.
       </p>
 
-      <div data-gc="configuracoes.avancado-section.div--2" className={cn(grupoDeCampo, "mt-5")}>
+      <div data-gc="configuracoes.avancado-section.div--2" className={cn(fieldGroup, "mt-5")}>
         <Search data-gc="configuracoes.avancado-section.search" size={14} className="shrink-0 text-ink-faint" />
         <input data-gc="configuracoes.avancado-section.input"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Procurar em todas as configurações"
           aria-label="Procurar configuração"
-          className={campoNu}
+          className={bareField}
         />
         {busca && (
           <button data-gc="configuracoes.avancado-section.button"

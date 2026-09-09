@@ -1,15 +1,5 @@
 import React from "react";
 
-/*
-  Desenhadas aqui em SVG, e não baixadas de um banco de animações: assim as
-  cores saem dos tokens do tema — funcionam no claro e no escuro, e seguem a
-  cor de destaque que a pessoa escolher — e não há licença de terceiro
-  presa ao produto.
-
-  A flutuação usa motion-safe: quem pede menos movimento no sistema recebe a
-  arte parada.
-*/
-
 const Fundo: React.FC = () => (
   <>
     <defs data-gc="conversa.artes.arte-de-limite.defs">
@@ -27,7 +17,6 @@ const Fundo: React.FC = () => (
   </>
 );
 
-/// Uma página cujas linhas não cabem: as três últimas passam da borda.
 export const ArteDeTextoLongo: React.FC = () => (
   <svg data-gc="conversa.artes.arte-de-limite.svg"
     viewBox="0 0 120 120"
@@ -83,7 +72,6 @@ export const ArteDeTextoLongo: React.FC = () => (
   </svg>
 );
 
-/// Um arquivo que não passa pela porta: a seta bate no traço do limite.
 export const ArteDeArquivoGrande: React.FC = () => (
   <svg data-gc="conversa.artes.arte-de-limite.svg--2"
     viewBox="0 0 120 120"

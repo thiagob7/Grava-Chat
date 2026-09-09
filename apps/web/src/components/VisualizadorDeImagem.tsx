@@ -31,13 +31,6 @@ function tamanhoLegivel(bytes?: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/*
-  A imagem em tela cheia, com a barra de baixo.
-
-  O zoom anda por passos, e não por multiplicação livre: com passos a pessoa
-  volta ao 100% sem caçar, e dois cliques em lados opostos sempre desfazem um
-  ao outro. Girar é só transformação — o arquivo nunca muda.
-*/
 export const VisualizadorDeImagem: React.FC = () => {
   const { t } = useTranslation();
   const url = useLightbox((s) => s.url);
@@ -50,7 +43,6 @@ export const VisualizadorDeImagem: React.FC = () => {
   const [medida, setMedida] = useState<{ largura: number; altura: number } | null>(null);
   const imagem = useRef<HTMLImageElement>(null);
 
-  /// Cada imagem começa do zero: o zoom da anterior não é da próxima.
   useEffect(() => {
     setPasso(3);
     setGiro(0);
@@ -137,10 +129,6 @@ export const VisualizadorDeImagem: React.FC = () => {
             />
           </div>
 
-          {/*
-            A barra fica embaixo, longe da imagem: no topo ela cobriria
-            justamente o canto que a pessoa costuma querer ver.
-          */}
           <div data-gc="visualizador-de-imagem.div--2" className="flex shrink-0 items-center gap-1 border-t border-line bg-surface-1 px-3 py-2">
             {acoes.map((acao) => (
               <Tooltip data-gc="visualizador-de-imagem.tooltip" key={acao.chave} label={acao.rotulo} side="top">

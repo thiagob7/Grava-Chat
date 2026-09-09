@@ -3,7 +3,7 @@ import { Volume2 } from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import {
   calar,
@@ -196,16 +196,16 @@ const TextoEmVoz: React.FC = () => {
             <span data-gc="configuracoes.acessibilidade-section.span--8" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
               Voz
             </span>
-            <CampoSelect data-gc="configuracoes.acessibilidade-section.campo-select"
-              valor={prefs.vozDaLeitura ?? ""}
-              onEscolher={(valor) =>
+            <SelectField data-gc="configuracoes.acessibilidade-section.select-field"
+              value={prefs.vozDaLeitura ?? ""}
+              onSelect={(valor) =>
                 prefs.definir({ vozDaLeitura: valor || null })
               }
-              opcoes={[
-                { valor: "", rotulo: "A que o sistema escolher" },
+              options={[
+                { value: "", label: "A que o sistema escolher" },
                 ...vozes.map((voz) => ({
-                  valor: voz.name,
-                  rotulo: `${voz.name} (${voz.lang})`,
+                  value: voz.name,
+                  label: `${voz.name} (${voz.lang})`,
                 })),
               ]}
             />

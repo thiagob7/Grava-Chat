@@ -29,11 +29,6 @@ describe("ativos do tema", () => {
     expect(css).toContain(`url("https://cdn/2.jpg")`);
   });
 
-  /*
-    Deixar como está faz a declaração inteira ser inválida, e o navegador a
-    ignora. Trocar por vazio pintaria por cima e a pessoa acharia que o tema é
-    assim mesmo.
-  */
   it("deixa quieto o que não existe, e diz o que faltou", () => {
     const { css, faltando } = resolverAtivos(
       `a { background: gc-ativo("sumido"); }`,

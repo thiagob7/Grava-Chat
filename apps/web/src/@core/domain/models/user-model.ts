@@ -43,8 +43,6 @@ export interface AuthConfigModel {
   devLogin: boolean;
   google: boolean;
   senha?: boolean;
-  /// Sem correio configurado no servidor o link nunca chegaria, então a tela
-  /// nem oferece "esqueci a senha".
   esqueciSenha?: boolean;
   voiceUrl: string;
 }

@@ -20,11 +20,6 @@ describe("correções para tema da referência", () => {
     expect(pareceTemaDeFora('[data-gc="conversa.message-item.div"] { color: red }')).toBe(false);
   });
 
-  /*
-    Uma correção sem !important perde para a folha do tema — que é justamente a
-    que estamos corrigindo. Variável nossa fica de fora: o tema não declara
-    nenhuma delas, então não há disputa para ganhar.
-  */
   it("grita mais alto que o tema em toda declaração", () => {
     const declaracoes = CORRECOES_DE_TEMA.split("\n")
       .map((linha) => linha.trim())
@@ -35,11 +30,6 @@ describe("correções para tema da referência", () => {
     expect(declaracoes.filter((linha) => !linha.includes("!important"))).toEqual([]);
   });
 
-  /*
-    Pode mirar um nome da referência, mas só um que a gente mesma carimba. Mirar um
-    que só existe na árvore deles seria escrever para um elemento que aqui nunca
-    aparece — e o teste não pegaria, porque CSS que não casa não dá erro.
-  */
   it("só mira nome que a ponte carimba de verdade", () => {
     const nossos = new Set<string>();
 

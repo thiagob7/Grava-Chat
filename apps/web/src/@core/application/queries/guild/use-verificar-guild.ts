@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { verificarGuild, type VerificarGuildDTO } from "~/@core/application/requests/guild/verificar-guild";
 import { apiErrorMessage } from "~/@core/lib/api";
 
-/// Raro e de administração: invalida tudo, que é barato e não deixa selo velho.
 export const useVerificarGuild = () => {
   const queryClient = useQueryClient();
 

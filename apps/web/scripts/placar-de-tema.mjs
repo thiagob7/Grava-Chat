@@ -1,32 +1,3 @@
-/*
-  Quantas regras de um tema pousam aqui — e quais nomes fazem perder mais.
-
-  A pergunta "melhorou?" vinha sendo respondida por print, e print mente: o
-  Galaxy pousa 100% das regras dele e mesmo assim a tela sai diferente da do
-  referência, porque o que ele NÃO declara vem da base de cada app. Contar nome
-  também mente na direção contrária — um nome carimbado pode estar no elemento
-  errado da árvore, e aí a regra casa e não pinta (é o que o `checar-cadeias`
-  pega).
-
-  Aqui a conta é por REGRA, que é a unidade que a pessoa sente: para cada bloco
-  do arquivo, algum dos nossos elementos pode casar com o seletor?
-
-    - regra sem nome da referência (`:root`, `body`, variável) conta como pousada,
-      porque não depende de carimbo nenhum;
-    - regra que mira classe ou `data-flx` pousa se pelo menos UM dos nomes que
-      ela mira está vivo aqui — carimbado em algum elemento, não só declarado
-      no mapa.
-
-  A lista de perdidas vem marcada com o que existe na referência de verdade, lendo
-  o `vocabulario-de-temas.json`: nome que nem lá existe é erro de digitação do
-  tema, e não trabalho nosso.
-
-  Rodar:
-    node scripts/placar-de-tema.mjs ~/Downloads/*.css
-    node scripts/placar-de-tema.mjs --detalhe ~/Downloads/um tema da comunidade.theme.css
-
-  Fora do `yarn check`: depende de arquivo de tema, que não mora no repo.
-*/
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,11 +7,6 @@ const RAIZ = join(AQUI, "..", "src");
 const VOCABULARIO = join(AQUI, "vocabulario-de-temas.json");
 const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
 
-/*
-  Um lugar só conta quando algum elemento o carimba. O mapa tem entrada que
-  ainda não foi para lugar nenhum, e contar essas daria placar inflado — o erro
-  que a contagem de nomes cometia.
-*/
 function lugaresVivos() {
   const mapa = readFileSync(join(RAIZ, "lib", "compat-de-tema.ts"), "utf8");
   const codigo = [];
@@ -66,7 +32,6 @@ function lugaresVivos() {
 
   const classes = new Set();
   const flx = new Set();
-  /// classe da referência -> o lugar nosso que a carrega, para conferir cadeia
   const dono = new Map();
 
   for (const achado of mapa.matchAll(/^ {2}(\w+): \{/gm)) {
@@ -83,12 +48,6 @@ function lugaresVivos() {
 
     const corpo = mapa.slice(inicio, fim + 1);
 
-    /*
-      A mesma régua do `compat-de-tema.test.ts`: o nome aparecer entre aspas em
-      algum arquivo. Procurar `flx("nome")` era mais apertado e dava falso
-      negativo — os avisos do markdown escolhem a classe por uma tabela, e o
-      nome nunca fica colado na chamada.
-    */
     const usado = todoOCodigo.includes(`"${nome}"`);
 
     if (!usado) continue;
@@ -105,15 +64,6 @@ function lugaresVivos() {
   return { classes, flx, dono };
 }
 
-/*
-  Uma cadeia (`.A .B`) exige que B seja DESCENDENTE de A. Se os dois nomes
-  moram no mesmo elemento aqui, a regra casa por contagem e não pinta nada — foi
-  assim que o slider ficou meses com cinco regras mortas parecendo vivas.
-
-  Aqui a conta é grosseira de propósito: dois nomes seguidos na cadeia que caem
-  no MESMO lugar nosso reprovam a regra. Quem investiga caso a caso é o
-  `checar-cadeias.mjs`; este só evita o placar mentir para cima.
-*/
 function cadeiaQuebrada(seletor, dono) {
   for (const parte of seletor.split(",")) {
     const degraus = parte
@@ -135,15 +85,6 @@ function cadeiaQuebrada(seletor, dono) {
 
 const semComentario = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-/*
-  Nem todo tema escreve o nome inteiro.
-
-  O Galaxy mira `div[class*="ChannelChatLayout"][class*="messagesArea"]` — o
-  módulo e o nome local em dois pedaços, sem o `module__` no meio. Contando só
-  a forma completa, essas regras passavam por "sem nome nenhum" e entravam como
-  pousadas de graça: o Galaxy marcava 100% enquanto a nebulosa dele nem
-  aparecia.
-*/
 function nomesDoSeletor(seletor) {
   const limpo = seletor.replace(/\\/g, "");
   const nomes = new Set(
@@ -167,7 +108,6 @@ export function placar(css, vivos) {
   for (const [, seletor, corpo] of semComentario(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const alvo = seletor.trim();
 
-    // `@media`, `@container` e companhia entram pelas regras de dentro.
     if (!alvo || alvo.startsWith("@") || !corpo.includes(":")) continue;
 
     total++;
@@ -192,10 +132,6 @@ export function placar(css, vivos) {
       continue;
     }
 
-    /*
-      Só o que falta. Numa regra reprovada por cadeia os outros nomes estão
-      vivos, e listá-los mandaria consertar o que não está quebrado.
-    */
     for (const nome of [...classes].filter((c) => !vivos.classes.has(c))) {
       perdidas.set(nome, (perdidas.get(nome) ?? 0) + 1);
     }

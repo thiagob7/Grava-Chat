@@ -5,7 +5,7 @@ import { LIMITS } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import {
   Dialog,
   DialogBody,
@@ -118,13 +118,13 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
 
           <div data-gc="conversa.create-poll-modal.div--7">
             <Label data-gc="conversa.create-poll-modal.label--3" htmlFor="duracao">Duração</Label>
-            <CampoSelect data-gc="conversa.create-poll-modal.campo-select"
+            <SelectField data-gc="conversa.create-poll-modal.select-field"
               id="duracao"
-              valor={duracao === null ? "" : String(duracao)}
-              onEscolher={(v) => setDuracao(v ? Number(v) : null)}
-              opcoes={[
-                ...DURACOES.map((item) => ({ valor: String(item.horas), rotulo: item.label })),
-                { valor: "", rotulo: "Até eu encerrar" },
+              value={duracao === null ? "" : String(duracao)}
+              onSelect={(v) => setDuracao(v ? Number(v) : null)}
+              options={[
+                ...DURACOES.map((item) => ({ value: String(item.horas), label: item.label })),
+                { value: "", label: "Até eu encerrar" },
               ]}
             />
           </div>

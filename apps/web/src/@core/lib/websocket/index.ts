@@ -3,12 +3,6 @@ import type { ClientToServerEvents, MotivoDeFalha, ServerToClientEvents } from "
 
 import { getAccessToken } from "~/@core/lib/api";
 
-/*
-  A recusa carrega o motivo pendurado no erro. Quem chama não precisa saber
-  de socket: lê a propriedade e decide o que a tela diz. Cair a conexão e o
-  servidor não responder são a mesma coisa para quem escreveu — em ambos a
-  mensagem não saiu daqui, e insistir depois resolve.
-*/
 const comMotivo = (mensagem: string, motivo: MotivoDeFalha) =>
   Object.assign(new Error(mensagem), { motivo });
 

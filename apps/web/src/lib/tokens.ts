@@ -1,18 +1,3 @@
-/*
-  Os rótulos do estúdio — e só isso.
-
-  Quem manda na LISTA é `tokens-vivos.json`, extraído do CSS construído por
-  `scripts/tokens-vivos.mjs`. Este arquivo diz como cada token se chama em
-  português e o que ele pinta; não decide quem existe.
-
-  A divisão importa porque a lista à mão apodreceu: chegou a oferecer 521
-  campos, dos quais 450 não pintavam nada, e escondia os que pintavam. Uma lista
-  escrita por gente sempre atrasa em relação ao CSS; um rótulo escrito por gente
-  é justamente o que o CSS não sabe dizer.
-
-  Mexeu no CSS e apareceu token novo? `yarn tokens` atualiza o JSON e o teste
-  cobra o rótulo aqui.
-*/
 export interface TokenDoTema {
   nome: string;
   rotulo: string;
@@ -34,6 +19,7 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
         dica: "selo de contagem, o menor da escala",
       },
       { nome: "--text-11", rotulo: "Tamanho 11px", dica: "rótulos e legendas" },
+      { nome: "--text-12", rotulo: "Tamanho 12px", dica: "os passos de um assistente, e o status do canal" },
       {
         nome: "--text-13",
         rotulo: "Tamanho 13px",
@@ -310,9 +296,14 @@ export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
       },
       { nome: "--guild-icon-size", rotulo: "Tamanho do ícone de servidor" },
       {
-        nome: "--footer-box-height",
-        rotulo: "Altura do rodapé e da caixa de escrever",
-        dica: "os dois sobem e descem juntos, como na referência",
+        nome: "--user-card-min-height",
+        rotulo: "Altura do cartão do usuário",
+        dica: "o mínimo; ele cresce sozinho quando você entra numa chamada",
+      },
+      {
+        nome: "--composer-box-height",
+        rotulo: "Altura da caixa de escrever",
+        dica: "a caixa cresce com o texto; isto é a altura de uma linha",
       },
       { nome: "--footer-box-radius", rotulo: "Canto do rodapé e da caixa de escrever" },
       {
@@ -360,11 +351,6 @@ export const TODOS_OS_TOKENS = GRUPOS_DE_TOKENS.flatMap(
   (grupo) => grupo.tokens,
 );
 
-/*
-  O valor que o TEMA daria a este token, ignorando o que o estúdio escreveu em
-  linha. Sem isso o campo mostraria o próprio rascunho como se fosse o padrão, e
-  "voltar ao padrão" nunca teria para onde voltar.
-*/
 export function valorDoTema(nome: string): string {
   const raiz = document.documentElement;
   const emLinha = raiz.style.getPropertyValue(nome);

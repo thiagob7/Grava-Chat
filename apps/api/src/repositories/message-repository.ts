@@ -15,7 +15,7 @@ export const messageRepository = {
   findMentions(userId: string, channelIds: string[], desde: Date) {
     return prisma.message.findMany({
       where: {
-        deletedAt: null,
+        ...notDeleted,
         channelId: { in: channelIds },
         mentions: { has: userId },
         authorId: { not: userId },
@@ -33,7 +33,7 @@ export const messageRepository = {
 
   findPreviousIn(channelId: string, messageId: string) {
     return prisma.message.findFirst({
-      where: { channelId, deletedAt: null, id: { lt: messageId } },
+      where: { channelId, ...notDeleted, id: { lt: messageId } },
       orderBy: { id: "desc" },
       select: { id: true },
     });
@@ -78,7 +78,6 @@ export const messageRepository = {
 
     if (!canais.length) return Promise.resolve([]);
 
-    /// Um dia inteiro, do primeiro ao último instante, no relógio do servidor.
     const inicioDe = (dia: string) => new Date(`${dia}T00:00:00.000Z`);
     const fimDe = (dia: string) => new Date(`${dia}T23:59:59.999Z`);
 
@@ -108,10 +107,6 @@ export const messageRepository = {
           },
         };
 
-    /*
-      Com a ordem invertida, o cursor anda para cima: a página seguinte é a
-      de ids maiores que o último visto.
-    */
     const antiga = params.ordem === "antiga";
 
     return prisma.message.findMany({
@@ -226,7 +221,6 @@ const idNoInstante = (quando: Date) =>
     .padStart(8, "0") + "0".repeat(16);
 
 export const readStateRepository = {
-  /// A mensagem mais nova do canal — o alvo de "marcar como lida".
   findLastIn(channelId: string) {
     return prisma.message.findFirst({
       where: { channelId, ...notDeleted },

@@ -21,8 +21,6 @@ import { cn } from "~/lib/utils";
 
 interface MessageAttachmentsProps {
   attachments: Attachment[];
-  /// Quando dá para apagar, cada anexo ganha a lixeira ao lado. Sem isto o
-  /// componente segue servindo para quem só lê.
   onRemover?: (anexo: Attachment) => void;
 }
 
@@ -38,19 +36,9 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
 
   if (!attachments.length) return null;
 
-  /*
-    Recado de voz não é anexo comum: quem manda não mandou um arquivo, mandou
-    uma fala. Reconhece-se pela duração gravada — só a gravação daqui a tem —,
-    e vai antes de qualquer outro tratamento.
-  */
   const recado = attachments.find((a) => a.duracaoMs);
   if (recado && attachments.length === 1) return <MensagemDeVoz data-gc="conversa.message-attachments.mensagem-de-voz" anexo={recado} />;
 
-  /*
-    A grade só entra quando é só imagem e ninguém está editando: com a lixeira
-    ao lado, cada anexo precisa da linha inteira, e um arquivo que não é imagem
-    não tem proporção para caber numa célula.
-  */
   const soImagens = attachments.every((a) => isImageType(a.contentType));
   const arranjo =
     !onRemover && abrirImagens && soImagens ? arranjoDeAnexos(attachments.length) : null;
@@ -152,11 +140,6 @@ const ComSpoiler: React.FC<{ anexo: Attachment; children: React.ReactNode }> = (
       className={cn("group relative overflow-hidden rounded-lg", flxCls("envoltorioDoSpoiler"))}
       aria-label={t("conversa.anexos.mostrarSpoiler", { arquivo: anexo.filename })}
     >
-      {/*
-        Três níveis, como na referência: `spoilerWrapper` fora, `spoiler` no meio,
-        `spoilerContent` dentro. Os dois primeiros já moraram no mesmo elemento
-        aqui, e aí toda regra `.spoilerWrapper .spoiler` do tema passava batido.
-      */}
       <span data-gc="conversa.message-attachments.span"
         className={cn("block", flxCls("spoiler"), flxCls("spoilerEmLinha"))}
         data-revealed="false"
@@ -210,11 +193,6 @@ const ImageAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   );
 };
 
-/*
-  A imagem dentro de uma célula da grade preenche e corta. A `ImageAttachment`
-  respeita a proporção do arquivo, que é o certo quando ela está sozinha e é
-  exatamente o que faria a grade ficar torta.
-*/
 const ImagemDaGrade: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   const { t } = useTranslation();
   const abrir = useLightbox((s) => s.abrir);
@@ -239,14 +217,6 @@ const ImagemDaGrade: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   );
 };
 
-/*
-  Vídeo com os controles nossos, e não os do navegador.
-
-  Os controles nativos vivem numa árvore de sombra que nem CSS nem tema
-  alcançam. Uma fileira própria — tocar, tempo, som, tela cheia — é o que dá ao
-  tema um elemento para pintar, e é o que faz o vídeo parecer parte do app em
-  vez de um quadrado alheio no meio da conversa.
-*/
 const VideoAttachment: React.FC<{ anexo: Attachment }> = ({ anexo }) => {
   const video = useRef<HTMLVideoElement>(null);
   const [tocando, setTocando] = useState(false);

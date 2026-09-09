@@ -7,7 +7,7 @@ import { UserName } from "~/features/perfil/components/UserName";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { useEnfeites, type ResolverEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
-import { larguraDaLinha, Skeleton } from "~/components/ui/skeleton";
+import { lineWidth, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { flx, flxCls } from "~/lib/compat-de-tema";
@@ -83,7 +83,7 @@ export const MemberList: React.FC<MemberListProps> = ({
           {Array.from({ length: 9 }, (_, i) => (
             <div data-gc="servidor.member-list.div--3" key={i} className="flex items-center gap-2 px-2 py-1.5">
               <Skeleton data-gc="servidor.member-list.skeleton--2" className="size-8 shrink-0 rounded-full" />
-              <Skeleton data-gc="servidor.member-list.skeleton--3" className="h-3 rounded-sm" style={{ width: larguraDaLinha(i) }} />
+              <Skeleton data-gc="servidor.member-list.skeleton--3" className="h-3 rounded-sm" style={{ width: lineWidth(i) }} />
             </div>
           ))}
         </div>

@@ -51,16 +51,7 @@ export const Button = ({ className, variant, size, asChild = false, ...props }: 
 
 export { buttonVariants };
 
-/*
-  O botão da caixa de escrever, um só para os sete: mais, fonte, GIF, imagem,
-  figurinha, emoji e enviar.
-
-  Tamanho e ícone saem do token, não da classe — `--textarea-button-height`
-  e `--textarea-button-icon-size` são os da referência (32px e 22px), e um
-  tema que mexa neles move todos de uma vez. O ícone lê o token pelo `svg`
-  filho, porque o `size` numérico do componente de ícone não obedece tema.
-*/
-export const classeDoBotaoDaCaixa = cn(
+export const boxButtonClass = cn(
   "flex shrink-0 items-center justify-center rounded-md transition",
   "size-[var(--textarea-button-height)] [&>svg]:size-[var(--textarea-button-icon-size)]",
   "disabled:cursor-not-allowed disabled:opacity-30",

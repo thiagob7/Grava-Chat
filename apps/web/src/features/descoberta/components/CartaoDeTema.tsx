@@ -5,14 +5,6 @@ import { CORES_DA_PREVIA, type TemaDaGaleria } from "@gravae/shared";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 
-/*
-  O cartão de um tema na galeria do Explorar.
-
-  A prévia é uma fita das cores que o tema troca, na ordem em que a gente as
-  procura — quem varreu a lista já sabe qual é o roxo e qual é o fundo antes
-  de abrir. Tema que não mexeu em nenhuma delas não ganha fita: fita cinza
-  seria mentir sobre o que ele faz.
-*/
 export const CartaoDeTemaDaGaleria: React.FC<{
   tema: TemaDaGaleria;
   onImportar: () => void;

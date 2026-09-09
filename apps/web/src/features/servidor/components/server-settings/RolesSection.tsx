@@ -34,7 +34,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
   const reorderRoles = useReorderRoles(guildId);
 
   const [selecionado, setSelecionado] = useState<string | null>(null);
-  const [arrastando, setArrastando] = useState<string | null>(null);
+  const [dragging, setArrastando] = useState<string | null>(null);
   const [ordem, setOrdem] = useState<RoleModel[] | null>(null);
 
   const ordenados = useMemo(() => {
@@ -50,10 +50,10 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
     isOwner || role.position < minhaPosicao;
 
   const soltar = (alvoId: string) => {
-    if (!arrastando || arrastando === alvoId) return setArrastando(null);
+    if (!dragging || dragging === alvoId) return setArrastando(null);
 
     const base = [...lista];
-    const de = base.findIndex((r) => r.id === arrastando);
+    const de = base.findIndex((r) => r.id === dragging);
     const para = base.findIndex((r) => r.id === alvoId);
     if (de < 0 || para < 0) return setArrastando(null);
 
@@ -116,7 +116,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
                 atual?.id === role.id
                   ? "bg-surface-4 text-ink"
                   : "text-ink-muted hover:bg-surface-3",
-                arrastando === role.id && "opacity-40",
+                dragging === role.id && "opacity-40",
               )}
             >
               <GripVertical data-gc="servidor.server-settings.roles-section.grip-vertical"

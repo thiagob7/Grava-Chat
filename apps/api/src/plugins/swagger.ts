@@ -4,8 +4,6 @@ import swaggerUi from "@fastify/swagger-ui";
 
 import { env, isDev } from "~/env.js";
 
-/// Cada grupo vira uma aba na tela do Swagger. A chave é o primeiro pedaço
-/// do caminho depois do /api.
 const GRUPOS: Record<string, { nome: string; descricao: string }> = {
   auth: { nome: "Autenticação", descricao: "Entrar, sair e renovar a sessão." },
   me: { nome: "Minha conta", descricao: "Perfil, preferências e dados de quem está logado." },
@@ -50,9 +48,6 @@ function grupoDe(url: string): string {
   return GRUPOS[pedaco]?.nome ?? "Outras";
 }
 
-/// Um resumo automático, para a rota não aparecer só com o caminho cru. É
-/// grosseiro de propósito: melhor um resumo pobre em 177 rotas do que um
-/// bom em doze e nada no resto.
 function resumoDe(metodo: string, url: string): string {
   const alvo = semPrefixo(url)
     .replace(/^\//, "")
@@ -65,9 +60,6 @@ function resumoDe(metodo: string, url: string): string {
 
 export const swaggerPlugin = fp(async (app) => {
   await app.register(swagger, {
-    /// O transform roda para toda rota que entra na especificação, inclusive
-    /// as que outros plugins criam por dentro — o onRoute não alcançava a do
-    /// login com o Google, por exemplo.
     transform: ({ schema, url, route }) => {
       const metodos = Array.isArray(route?.method) ? route.method : [route?.method];
       const metodo = String(metodos[0] ?? "GET");

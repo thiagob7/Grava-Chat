@@ -14,7 +14,6 @@ export interface PaginaDaBusca {
 
 export type EscopoDeBusca = "servidor" | "canal" | "comunidades" | "dms" | "tudo";
 
-/// O que se manda para a API: o texto, o escopo e cada filtro já resolvido em id.
 export interface FiltrosDaBusca {
   termo: string;
   escopo?: EscopoDeBusca;

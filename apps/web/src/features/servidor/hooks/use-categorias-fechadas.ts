@@ -22,7 +22,6 @@ export function useCategoriasFechadas(): [
     try {
       localStorage.removeItem(CHAVE);
     } catch {
-      /// Navegador com armazenamento bloqueado. Não lembrar já era o pedido.
     }
   }, [lembrar]);
 
@@ -38,7 +37,6 @@ export function useCategoriasFechadas(): [
 
         localStorage.setItem(CHAVE, JSON.stringify(fechadasSo));
       } catch {
-        /// Idem: sem armazenamento, vale só para esta sessão.
       }
     },
     [lembrar],

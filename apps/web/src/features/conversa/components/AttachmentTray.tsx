@@ -20,13 +20,6 @@ import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
 
-/*
-  Um roxo mais claro que a marca, misturado na hora em vez de fixo: assim ele
-  acompanha o tema e a cor de destaque que a pessoa escolher no estúdio.
-
-  Não virou token porque o estúdio exige que todo token seja editável, e um
-  derivado pararia de seguir a marca no instante em que alguém o editasse.
-*/
 const TINTA_SUAVE = "text-[color-mix(in_srgb,var(--color-brand)_55%,white)]";
 
 const ARTE_DO_ARQUIVO = cn(
