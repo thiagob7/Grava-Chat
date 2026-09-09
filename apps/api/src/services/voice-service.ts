@@ -223,12 +223,12 @@ export const voiceService = {
     const state = await voiceService.get(alvoId);
     if (!state) return null;
 
+    if (patch.serverMute !== undefined) {
+      await voiceService.mutarNoSfu(state.channelId, alvoId, patch.serverMute);
+    }
+
     const proximo: VoiceState = { ...state, ...patch };
     await redis.set(keys.voiceState(alvoId), JSON.stringify(proximo));
-
-    if (patch.serverMute !== undefined) {
-      await voiceService.mutarNoSfu(state.channelId, alvoId, patch.serverMute).catch(() => undefined);
-    }
 
     return proximo;
   },
@@ -238,10 +238,17 @@ export const voiceService = {
     const participantes = await roomService().listParticipants(sala);
     const alvo = participantes.find((p) => p.identity === userId);
 
-    for (const track of alvo?.tracks ?? []) {
-      if (track.source === TrackSource.MICROPHONE) {
-        await roomService().mutePublishedTrack(sala, userId, track.sid, mudo);
-      }
+    if (!alvo) throw new AppError("Essa pessoa não está mais na chamada", 409);
+
+    const microfones = alvo.tracks.filter((t) => t.source === TrackSource.MICROPHONE);
+
+    if (!microfones.length) {
+      if (mudo) return;
+      throw new AppError("Não achei o microfone dessa pessoa na chamada", 409);
+    }
+
+    for (const track of microfones) {
+      await roomService().mutePublishedTrack(sala, userId, track.sid, mudo);
     }
   },
 
