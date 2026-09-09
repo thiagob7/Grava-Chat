@@ -12,8 +12,9 @@ export const DialogClose = DialogPrimitive.Close;
 export const DialogContent = ({
   className,
   children,
+  showClose = true,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) => (
+}: React.ComponentProps<typeof DialogPrimitive.Content> & { showClose?: boolean }) => (
   <DialogPrimitive.Portal>
     <DialogPrimitive.Overlay data-gc="ui.dialog.dialog-primitiveoverlay"
       className={cn(
@@ -32,12 +33,14 @@ export const DialogContent = ({
       {...props}
     >
       {children}
-      <DialogPrimitive.Close
-        aria-label="Fechar"
-        className="absolute right-5 top-4 text-ink-faint transition hover:text-ink"
-      >
-        <X data-gc="ui.dialog.x" size={20} />
-      </DialogPrimitive.Close>
+      {showClose && (
+        <DialogPrimitive.Close
+          aria-label="Fechar"
+          className="absolute right-5 top-4 text-ink-faint transition hover:text-ink"
+        >
+          <X data-gc="ui.dialog.x" size={20} />
+        </DialogPrimitive.Close>
+      )}
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 );
