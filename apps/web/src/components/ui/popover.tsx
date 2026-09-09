@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-import { DesenhoDaSeta } from "~/components/ui/seta-do-balao";
+import { ArrowShape } from "~/components/ui/bubble-arrow";
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 
@@ -16,7 +16,7 @@ export const PopoverArrow = ({
 }: React.ComponentProps<typeof PopoverPrimitive.Arrow>) => (
   <PopoverPrimitive.Arrow data-gc="ui.popover.popover-primitivearrow" asChild width={14} height={7} {...props}>
     <svg data-gc="ui.popover.svg" className={cn("overflow-visible", className)}>
-      <DesenhoDaSeta data-gc="ui.popover.desenho-da-seta" />
+      <ArrowShape data-gc="ui.popover.arrow-shape" />
     </svg>
   </PopoverPrimitive.Arrow>
 );
@@ -28,7 +28,7 @@ export const PopoverContent = ({
   portal = true,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content> & { portal?: boolean }) => {
-  const conteudo = (
+  const content = (
     <PopoverPrimitive.Content data-gc="ui.popover.popover-primitivecontent"
       align={align}
       sideOffset={sideOffset}
@@ -42,5 +42,5 @@ export const PopoverContent = ({
     />
   );
 
-  return portal ? <PopoverPrimitive.Portal>{conteudo}</PopoverPrimitive.Portal> : conteudo;
+  return portal ? <PopoverPrimitive.Portal>{content}</PopoverPrimitive.Portal> : content;
 };
