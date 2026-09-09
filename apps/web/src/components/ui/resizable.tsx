@@ -3,112 +3,85 @@ import React, { useEffect, useRef, useState } from "react";
 import { TEMA_APLICADO } from "~/features/configuracoes/lib/evento-de-tema";
 import { cn } from "~/lib/utils";
 
-type Borda = "esquerda" | "direita";
+type Edge = "left" | "right";
 
-interface Opcoes {
-  padrao: number;
+interface Options {
+  initial: number;
   min: number;
   max: number;
-  borda: Borda;
-  /// Token que dá a largura de partida, para um tema poder mudá-la.
+  edge: Edge;
   token?: string;
 }
 
-const chaveDe = (nome: string) => `gravae:largura:${nome}`;
+const storageKey = (name: string) => `gravae:largura:${name}`;
 
-/*
-  O token vem em rem, e daqui para baixo tudo é px. Em vez de converter na
-  unha — o que amarraria o cálculo ao tamanho de fonte da raiz — deixamos o
-  próprio navegador resolver: um elemento com essa largura, medido e jogado
-  fora.
-*/
-function medir(token: string | undefined, padrao: number) {
-  if (!token) return padrao;
+function measure(token: string | undefined, initial: number) {
+  if (!token) return initial;
 
   try {
-    const regua = document.createElement("div");
-    regua.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;width:var(${token})`;
-    document.body.appendChild(regua);
+    const ruler = document.createElement("div");
+    ruler.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;width:var(${token})`;
+    document.body.appendChild(ruler);
 
-    const medida = regua.getBoundingClientRect().width;
-    regua.remove();
+    const measured = ruler.getBoundingClientRect().width;
+    ruler.remove();
 
-    return medida > 0 ? medida : padrao;
+    return measured > 0 ? measured : initial;
   } catch {
-    return padrao;
+    return initial;
   }
 }
 
-function guardada(nome: string) {
+function stored(name: string) {
   try {
-    const salvo = Number(localStorage.getItem(chaveDe(nome)));
-    return Number.isFinite(salvo) && salvo > 0 ? salvo : null;
+    const saved = Number(localStorage.getItem(storageKey(name)));
+    return Number.isFinite(saved) && saved > 0 ? saved : null;
   } catch {
     return null;
   }
 }
 
-export function useLarguraAjustavel(nome: string, { padrao, min, max, borda, token }: Opcoes) {
-  /*
-    O tema também abre a gaveta: se ele pede uma lateral mais larga que o
-    nosso teto, o teto sobe junto — senão a largura pedida seria aparada em
-    silêncio, e ninguém entenderia por que o tema não pegou.
-  */
-  const [pedida, setPedida] = useState(() => medir(token, padrao));
+export function useResizableWidth(name: string, { initial, min, max, edge, token }: Options) {
+  const [wanted, setWanted] = useState(() => measure(token, initial));
 
-  const piso = Math.min(min, pedida);
-  const teto = Math.max(max, pedida);
-  const limitar = (valor: number) => Math.min(teto, Math.max(piso, valor));
+  const floorWidth = Math.min(min, wanted);
+  const ceilWidth = Math.max(max, wanted);
+  const clamp = (value: number) => Math.min(ceilWidth, Math.max(floorWidth, value));
 
-  const [largura, setLargura] = useState(() => guardada(nome) ?? pedida);
-  const [arrastando, setArrastando] = useState(false);
-  const inicio = useRef<{ x: number; largura: number } | null>(null);
+  const [width, setWidth] = useState(() => stored(name) ?? wanted);
+  const [dragging, setDragging] = useState(false);
+  const start = useRef<{ x: number; width: number } | null>(null);
 
-  /*
-    Quem já arrastou fica com a largura que escolheu — a pessoa mandou, e um
-    tema não desfaz isso. Para quem nunca mexeu, o tema manda.
-  */
   useEffect(() => {
     if (!token) return;
 
-    const refazer = () => {
-      const alvo = medir(token, padrao);
-      setPedida(alvo);
+    const remeasure = () => {
+      const target = measure(token, initial);
+      setWanted(target);
 
-      if (guardada(nome) === null) setLargura(alvo);
+      if (stored(name) === null) setWidth(target);
     };
 
-    refazer();
-    window.addEventListener(TEMA_APLICADO, refazer);
+    remeasure();
+    window.addEventListener(TEMA_APLICADO, remeasure);
 
-    return () => window.removeEventListener(TEMA_APLICADO, refazer);
-  }, [nome, token, padrao]);
+    return () => window.removeEventListener(TEMA_APLICADO, remeasure);
+  }, [name, token, initial]);
 
-  /*
-    Depois de arrastar, o token passa a contar a largura de verdade.
-
-    Um tema faz conta com ele — a faixa do usuário lá embaixo, por exemplo, é
-    "trilho mais lateral". Se o token continuasse dizendo o valor de fábrica, a
-    conta daria um número fixo e a faixa ficaria mais curta que a lateral assim
-    que alguém arrastasse.
-
-    Só depois de arrastar: enquanto ninguém mexeu, quem manda no token é o tema,
-    e escrever por cima o calaria.
-  */
   useEffect(() => {
-    if (!token || guardada(nome) === null) return;
+    if (!token || stored(name) === null) return;
 
-    const raiz = document.documentElement;
-    raiz.style.setProperty(token, `${Math.round(largura)}px`);
+    const root = document.documentElement;
+    root.style.setProperty(token, `${Math.round(width)}px`);
 
     return () => {
-      raiz.style.removeProperty(token);
+      root.style.removeProperty(token);
     };
-  }, [nome, token, largura]);
+  }, [name, token, width]);
 
-  const guardar = (valor: number) => {
+  const store = (value: number) => {
     try {
-      localStorage.setItem(chaveDe(nome), String(valor));
+      localStorage.setItem(storageKey(name), String(value));
     } catch {
     }
   };
@@ -117,64 +90,64 @@ export function useLarguraAjustavel(nome: string, { padrao, min, max, borda, tok
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
-      inicio.current = { x: e.clientX, largura };
-      setArrastando(true);
+      start.current = { x: e.clientX, width };
+      setDragging(true);
     },
 
     onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!inicio.current) return;
+      if (!start.current) return;
 
-      const delta = e.clientX - inicio.current.x;
-      setLargura(limitar(inicio.current.largura + (borda === "direita" ? delta : -delta)));
+      const delta = e.clientX - start.current.x;
+      setWidth(clamp(start.current.width + (edge === "right" ? delta : -delta)));
     },
 
     onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!inicio.current) return;
+      if (!start.current) return;
 
       e.currentTarget.releasePointerCapture(e.pointerId);
-      inicio.current = null;
-      setArrastando(false);
-      guardar(largura);
+      start.current = null;
+      setDragging(false);
+      store(width);
     },
 
     onDoubleClick: () => {
-      setLargura(padrao);
-      guardar(padrao);
+      setWidth(initial);
+      store(initial);
     },
 
     onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
-      const passo = e.key === "ArrowLeft" ? -16 : e.key === "ArrowRight" ? 16 : 0;
-      if (!passo) return;
+      const step = e.key === "ArrowLeft" ? -16 : e.key === "ArrowRight" ? 16 : 0;
+      if (!step) return;
 
       e.preventDefault();
-      const nova = limitar(largura + (borda === "direita" ? passo : -passo));
-      setLargura(nova);
-      guardar(nova);
+      const next = clamp(width + (edge === "right" ? step : -step));
+      setWidth(next);
+      store(next);
     },
   };
 
-  return { largura, arrastando, alca: props, limites: { min: piso, max: teto } };
+  return { width, dragging, handle: props, bounds: { min: floorWidth, max: ceilWidth } };
 }
 
-export const AlcaDeLargura: React.FC<
+export const WidthHandle: React.FC<
   {
-    borda: Borda;
-    arrastando: boolean;
-    largura: number;
-    limites: { min: number; max: number };
+    edge: Edge;
+    dragging: boolean;
+    width: number;
+    bounds: { min: number; max: number };
   } & React.ComponentProps<"div">
-> = ({ borda, arrastando, largura, limites, className, ...props }) => (
+> = ({ edge, dragging, width, bounds, className, ...props }) => (
   <div data-gc="ui.resizable.div"
     role="separator"
     aria-orientation="vertical"
     aria-label="Ajustar a largura"
-    aria-valuenow={Math.round(largura)}
-    aria-valuemin={limites.min}
-    aria-valuemax={limites.max}
+    aria-valuenow={Math.round(width)}
+    aria-valuemin={bounds.min}
+    aria-valuemax={bounds.max}
     tabIndex={0}
     className={cn(
       "group/alca absolute inset-y-0 z-20 w-2 cursor-col-resize",
-      borda === "direita" ? "-right-1" : "-left-1",
+      edge === "right" ? "-right-1" : "-left-1",
       className,
     )}
     {...props}
@@ -183,7 +156,7 @@ export const AlcaDeLargura: React.FC<
       aria-hidden
       className={cn(
         "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
-        arrastando
+        dragging
           ? "w-0.5 bg-brand"
           : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-brand",
       )}
