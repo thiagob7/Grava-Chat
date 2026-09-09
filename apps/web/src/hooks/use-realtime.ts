@@ -97,6 +97,10 @@ import {
   offExpressionsChanged,
 } from "~/@core/lib/websocket/on-expressions-changed";
 import {
+  onEventUpdated,
+  offEventUpdated,
+} from "~/@core/lib/websocket/on-event-updated";
+import {
   onPostCreated,
   offPostCreated,
 } from "~/@core/lib/websocket/on-post-created";
@@ -599,6 +603,10 @@ export function useRealtime(
       });
     });
 
+    onEventUpdated(({ guildId }) => {
+      void queryClient.invalidateQueries({ queryKey: ["events", guildId] });
+    });
+
     onPostCreated((post) => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.forum.posts(post.channelId),
@@ -769,17 +777,6 @@ export function useRealtime(
 
     const handleDisconnect = () => useConexaoStore.getState().caiu();
 
-    /*
-      O socket manda o access token no aperto de mão e tenta reconectar para
-      sempre — mas sempre com o MESMO token. Se ele venceu enquanto a conexão
-      estava caída, toda tentativa é recusada e a tela fica em "Reconectando"
-      até alguém recarregar na mão. Nada mais renova sozinho: quem renova é o
-      interceptador do axios, e ele só roda se houver chamada HTTP.
-
-      Então, ao ser recusado por token, trocamos a cópia da sessão aqui e
-      reconectamos — o auth é uma função, e a próxima tentativa já leva o
-      token novo.
-    */
     let ultimaTroca = 0;
 
     const handleConnectError = (erro: Error) => {
@@ -827,6 +824,7 @@ export function useRealtime(
       offGuildRefresh();
       offCommandsChanged();
       offExpressionsChanged();
+      offEventUpdated();
       offPostCreated();
       offPostUpdated();
       offVoiceSound();
