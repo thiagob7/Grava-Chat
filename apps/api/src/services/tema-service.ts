@@ -53,7 +53,6 @@ function paraGaleria(tema: Omit<TemaComAutor, "css">): TemaDaGaleria {
 
 const AUTOR = { select: { id: true, displayName: true, avatarUrl: true } };
 
-/// O cartão não precisa da folha, e ela é a parte pesada do registro.
 const SEM_CSS = {
   id: true,
   nome: true,
@@ -95,8 +94,6 @@ export const temaService = {
       include: { usuario: AUTOR },
     });
 
-    /// O link recém-criado chega também pela conversa da casa: é onde a
-    /// pessoa reencontra o que publicou sem precisar ter guardado o endereço.
     void sistemaService.avisar(
       userId,
       `Seu tema "${tema.nome}" foi publicado. O link abaixo vira um cartão de importar em qualquer canal.\n${env.WEB_ORIGIN.split(",")[0]?.trim() ?? ""}${CAMINHO_DO_TEMA}${tema.id}`,
@@ -116,14 +113,6 @@ export const temaService = {
     return serializar(tema);
   },
 
-  /*
-    A galeria de temas do Explorar.
-
-    Publicar já é tornar público — o link do tema abre para qualquer um desde
-    sempre. O que faltava era um lugar de encontrar sem o link na mão. Vai sem
-    o CSS: a folha inteira pesa mais que a página de cartões, e quem escolhe
-    um busca o tema pelo caminho que já existe.
-  */
   async galeria(busca?: string): Promise<TemaDaGaleria[]> {
     const termo = busca?.trim();
 
