@@ -12,58 +12,58 @@ import {
 } from "~/components/ui/dialog";
 import { Input, Label } from "~/components/ui/input";
 
-export interface PedidoDeConfirmacao {
-  titulo: string;
-  descricao: React.ReactNode;
-  acao?: string;
-  destrutivo?: boolean;
-  campo?: { rotulo: string; placeholder?: string; obrigatorio?: boolean };
-  dicaDoShift?: boolean;
+export interface ConfirmRequest {
+  title: string;
+  description: React.ReactNode;
+  action?: string;
+  destructive?: boolean;
+  field?: { label: string; placeholder?: string; required?: boolean };
+  shiftHint?: boolean;
 }
 
-type Resposta = { confirmado: boolean; texto: string };
+type ConfirmAnswer = { confirmed: boolean; text: string };
 
-const ConfirmContext = createContext<((pedido: PedidoDeConfirmacao) => Promise<Resposta>) | null>(
+const ConfirmContext = createContext<((request: ConfirmRequest) => Promise<ConfirmAnswer>) | null>(
   null,
 );
 
 export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [pedido, setPedido] = useState<PedidoDeConfirmacao | null>(null);
-  const [texto, setTexto] = useState("");
+  const [request, setRequest] = useState<ConfirmRequest | null>(null);
+  const [text, setTexto] = useState("");
 
-  const pendente = useRef<((r: Resposta) => void) | null>(null);
+  const pending = useRef<((r: ConfirmAnswer) => void) | null>(null);
 
-  const confirmar = useCallback((novo: PedidoDeConfirmacao) => {
-    setPedido(novo);
+  const confirm = useCallback((next: ConfirmRequest) => {
+    setRequest(next);
     setTexto("");
 
-    return new Promise<Resposta>((resolve) => {
-      pendente.current = resolve;
+    return new Promise<ConfirmAnswer>((resolve) => {
+      pending.current = resolve;
     });
   }, []);
 
-  const responder = (confirmado: boolean) => {
-    pendente.current?.({ confirmado, texto: texto.trim() });
-    pendente.current = null;
-    setPedido(null);
+  const answer = (confirmed: boolean) => {
+    pending.current?.({ confirmed, text: text.trim() });
+    pending.current = null;
+    setRequest(null);
   };
 
-  const faltaCampo = Boolean(pedido?.campo?.obrigatorio) && !texto.trim();
+  const missingField = Boolean(request?.field?.required) && !text.trim();
 
   return (
-    <ConfirmContext.Provider value={confirmar}>
+    <ConfirmContext.Provider value={confirm}>
       {children}
 
       <Dialog data-gc="ui.confirm.dialog"
-        open={Boolean(pedido)}
-        onOpenChange={(aberto) => !aberto && responder(false)}
+        open={Boolean(request)}
+        onOpenChange={(open) => !open && answer(false)}
       >
         <DialogContent data-gc="ui.confirm.dialog-content" className="max-w-md">
           <DialogHeader data-gc="ui.confirm.dialog-header">
-            <DialogTitle data-gc="ui.confirm.dialog-title">{pedido?.titulo}</DialogTitle>
-            <DialogDescription data-gc="ui.confirm.dialog-description">{pedido?.descricao}</DialogDescription>
+            <DialogTitle data-gc="ui.confirm.dialog-title">{request?.title}</DialogTitle>
+            <DialogDescription data-gc="ui.confirm.dialog-description">{request?.description}</DialogDescription>
 
-            {pedido?.dicaDoShift && (
+            {request?.shiftHint && (
               <p data-gc="ui.confirm.p" className="mt-2 text-sm text-ink-muted">
                 <span data-gc="ui.confirm.span" className="font-semibold text-online">Dica:</span> segure Shift ao clicar
                 para pular esta confirmação.
@@ -71,32 +71,32 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
             )}
           </DialogHeader>
 
-          {pedido?.campo && (
+          {request?.field && (
             <DialogBody data-gc="ui.confirm.dialog-body">
-              <Label data-gc="ui.confirm.label" htmlFor="confirm-campo">{pedido.campo.rotulo}</Label>
+              <Label data-gc="ui.confirm.label" htmlFor="confirm-campo">{request.field.label}</Label>
               <Input data-gc="ui.confirm.input"
                 id="confirm-campo"
                 autoFocus
-                value={texto}
+                value={text}
                 onChange={(e) => setTexto(e.target.value)}
-                placeholder={pedido.campo.placeholder}
+                placeholder={request.field.placeholder}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !faltaCampo) responder(true);
+                  if (e.key === "Enter" && !missingField) answer(true);
                 }}
               />
             </DialogBody>
           )}
 
-          <DialogFooter data-gc="ui.confirm.dialog-footer" className={pedido?.campo ? undefined : "pt-5"}>
-            <Button data-gc="ui.confirm.button" variant="surface" onClick={() => responder(false)}>
+          <DialogFooter data-gc="ui.confirm.dialog-footer" className={request?.field ? undefined : "pt-5"}>
+            <Button data-gc="ui.confirm.button" variant="surface" onClick={() => answer(false)}>
               Cancelar
             </Button>
             <Button data-gc="ui.confirm.button--2"
-              variant={pedido?.destrutivo === false ? "primary" : "danger"}
-              disabled={faltaCampo}
-              onClick={() => responder(true)}
+              variant={request?.destructive === false ? "primary" : "danger"}
+              disabled={missingField}
+              onClick={() => answer(true)}
             >
-              {pedido?.acao ?? "Excluir"}
+              {request?.action ?? "Excluir"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -105,9 +105,9 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
   );
 };
 
-export function useConfirmar() {
-  const contexto = useContext(ConfirmContext);
-  if (!contexto) throw new Error("useConfirmar precisa do <ConfirmProvider>");
+export function useConfirm() {
+  const context = useContext(ConfirmContext);
+  if (!context) throw new Error("useConfirm precisa do <ConfirmProvider>");
 
-  return contexto;
+  return context;
 }
