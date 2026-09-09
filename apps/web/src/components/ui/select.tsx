@@ -30,7 +30,7 @@ export const SelectTrigger = ({
   </SelectPrimitive.Trigger>
 );
 
-const BotaoDeRolagem = ({
+const ScrollButton = ({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) => (
@@ -59,9 +59,9 @@ export const SelectContent = ({
       {...props}
     >
       <SelectPrimitive.ScrollUpButton data-gc="ui.select.select-primitivescroll-up-button" asChild>
-        <BotaoDeRolagem data-gc="ui.select.botao-de-rolagem">
+        <ScrollButton data-gc="ui.select.scroll-button">
           <ChevronUp data-gc="ui.select.chevron-up" size={14} />
-        </BotaoDeRolagem>
+        </ScrollButton>
       </SelectPrimitive.ScrollUpButton>
 
       <SelectPrimitive.Viewport data-gc="ui.select.select-primitiveviewport"
@@ -74,9 +74,9 @@ export const SelectContent = ({
       </SelectPrimitive.Viewport>
 
       <SelectPrimitive.ScrollDownButton data-gc="ui.select.select-primitivescroll-down-button" asChild>
-        <BotaoDeRolagem data-gc="ui.select.botao-de-rolagem--2">
+        <ScrollButton data-gc="ui.select.scroll-button--2">
           <ChevronDown data-gc="ui.select.chevron-down--2" size={14} />
-        </BotaoDeRolagem>
+        </ScrollButton>
       </SelectPrimitive.ScrollDownButton>
     </SelectPrimitive.Content>
   </SelectPrimitive.Portal>
@@ -115,46 +115,49 @@ export const SelectSeparator = ({
   />
 );
 
-interface CampoSelectProps<T extends string | number> {
+interface SelectFieldProps<T extends string | number> {
   id?: string;
-  valor: T;
-  onEscolher: (valor: T) => void;
-  opcoes: { valor: T; rotulo: React.ReactNode }[];
+  value: T;
+  onSelect: (value: T) => void;
+  options: { value: T; label: React.ReactNode }[];
   placeholder?: string;
   disabled?: boolean;
   className?: string;
 }
 
-const VAZIO = "__vazio__";
+const EMPTY = "__empty__";
 
-export function CampoSelect<T extends string | number>({
+export function SelectField<T extends string | number>({
   id,
-  valor,
-  onEscolher,
-  opcoes,
+  value,
+  onSelect,
+  options,
   placeholder,
   disabled,
   className,
-}: CampoSelectProps<T>) {
-  const numerico = typeof valor === "number";
-  const paraRadix = (v: T) => (String(v) === "" ? VAZIO : String(v));
+}: SelectFieldProps<T>) {
+  const isNumeric = typeof value === "number";
+  const toRadix = (v: T) => (String(v) === "" ? EMPTY : String(v));
+
+  const hasEmptyOption = options.some((option) => String(option.value) === "");
+  const selected = String(value) === "" && !hasEmptyOption ? "" : toRadix(value);
 
   return (
     <Select data-gc="ui.select.select"
-      value={paraRadix(valor)}
+      value={selected}
       disabled={disabled}
-      onValueChange={(bruto) => {
-        const limpo = bruto === VAZIO ? "" : bruto;
-        onEscolher((numerico ? Number(limpo) : limpo) as T);
+      onValueChange={(raw) => {
+        const clean = raw === EMPTY ? "" : raw;
+        onSelect((isNumeric ? Number(clean) : clean) as T);
       }}
     >
       <SelectTrigger data-gc="ui.select.select-trigger" id={id} className={className}>
         <SelectValue data-gc="ui.select.select-value" placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent data-gc="ui.select.select-content">
-        {opcoes.map((o) => (
-          <SelectItem data-gc="ui.select.select-item" key={String(o.valor)} value={paraRadix(o.valor)}>
-            {o.rotulo}
+        {options.map((o) => (
+          <SelectItem data-gc="ui.select.select-item" key={String(o.value)} value={toRadix(o.value)}>
+            {o.label}
           </SelectItem>
         ))}
       </SelectContent>
