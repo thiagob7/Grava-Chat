@@ -5,13 +5,6 @@ import { Button } from "~/components/ui/button";
 import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
 
-/*
-  A faixa que aparece quando o app abre com `?sem-tema`.
-
-  Ela precisa ser imune ao próprio tema — se ficasse na mão dele, o tema
-  quebrado esconderia a única saída. Por isso o estilo é inline e o z fica
-  acima de tudo, em vez de vir das nossas classes.
-*/
 export const AvisoDeTemaDesligado: React.FC = () => {
   const ativoId = useEstudio((s) => s.ativoId);
   const alternarTema = useEstudio((s) => s.alternarTema);

@@ -12,17 +12,6 @@ import { cn } from "~/lib/utils";
 
 const quando = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" });
 
-/*
-  A fila de denúncias da administração.
-
-  Até aqui a denúncia só chegava como mensagem da conta do sistema, e uma
-  conversa não é fila: a que você leu ontem e não resolveu já desceu. Esta
-  tela existe para nenhuma sumir de vista.
-
-  Dar desfecho NÃO age no conteúdo. Apagar mensagem, banir e tirar comunidade
-  do Explorar continuam sendo decisões separadas, com as ferramentas de
-  sempre — aqui só se registra que alguém olhou, e o que concluiu.
-*/
 export const DenunciasSection: React.FC = () => {
   const [pendentes, setPendentes] = useState(true);
   const fila = useDenuncias(pendentes, true);

@@ -4,14 +4,6 @@ import { Pin, PinOff } from "lucide-react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
-/*
-  Deixar a janela do estúdio por cima das outras.
-
-  Só existe no aplicativo de mesa, e só quando a casca instalada sabe fazer —
-  ela é servida pela rede e pode ser mais velha que este front, então a ponte
-  é perguntada antes de ser chamada. No navegador não há o que fixar: quem
-  manda na janela é o próprio navegador.
-*/
 export const FixarPorCima: React.FC = () => {
   const [fixado, setFixado] = React.useState(false);
   const janela = window.gravae?.janela;
