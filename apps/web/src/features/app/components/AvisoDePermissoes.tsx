@@ -32,7 +32,6 @@ export const AvisoDePermissoes: React.FC = () => {
     try {
       localStorage.setItem(CHAVE, "1");
     } catch {
-      /* sem armazenamento: volta na próxima abertura, e tudo bem */
     }
   };
 
