@@ -15,22 +15,8 @@ export interface RecadoGravado {
   ondas: string;
 }
 
-/// De quanto em quanto tempo se olha o microfone para desenhar a onda. 50ms
-/// dá 40 medidas em 2 segundos — sobra desenho e não pesa nada.
 const PASSO_MS = 50;
 
-/*
-  Gravar um recado de voz.
-
-  A onda é medida ENQUANTO se grava, com o analisador do próprio navegador:
-  é o único momento em que o som passa por aqui de graça. Depois só sobraria
-  decodificar o arquivo inteiro para desenhar barrinha, o que é caro e não
-  acrescenta nada.
-
-  Tudo o que é aberto — microfone, contexto de áudio, relógio — fecha em um
-  lugar só. Microfone esquecido aberto acende a luz da câmera do computador e
-  assusta, com razão.
-*/
 export function useGravadorDeVoz() {
   const [gravando, setGravando] = useState(false);
   const [ms, setMs] = useState(0);
@@ -99,8 +85,6 @@ export function useGravadorDeVoz() {
     relogio.current = setInterval(() => {
       analisador.getByteTimeDomainData(amostra);
 
-      /// O analisador entrega a onda centrada em 128; o pico é a maior
-      /// distância desse meio, normalizada.
       let maior = 0;
       for (const v of amostra) maior = Math.max(maior, Math.abs(v - 128) / 128);
 
@@ -117,11 +101,6 @@ export function useGravadorDeVoz() {
     return true;
   }, []);
 
-  /*
-    Fecha a gravação e devolve o arquivo. `guardar: false` é o descartar:
-    para tudo do mesmo jeito, mas não entrega nada — o áudio some sem nunca
-    ter saído do aparelho.
-  */
   const parar = useCallback(
     (guardar = true): Promise<RecadoGravado | null> => {
       const rec = gravador.current;
