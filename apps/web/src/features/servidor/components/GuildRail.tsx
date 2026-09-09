@@ -57,7 +57,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
   return (
     <>
-      <nav data-gc="servidor.guild-rail.nav" {...flx("trilhoDeServidores", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col border-r border-line-sutil bg-surface-1")}>
+      <nav data-gc="servidor.guild-rail.nav" {...flx("trilhoDeServidores", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col bg-surface-1")}>
         <div data-gc="servidor.guild-rail.div" {...flx("roladorDoTrilho", "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
         <div data-gc="servidor.guild-rail.div--2" {...flx("conteudoDoTrilho", "flex flex-col items-center gap-2 pb-36 pt-3")}>
         <div data-gc="servidor.guild-rail.div--3" {...flx("secaoDoTopoDoTrilho", "flex w-full flex-col items-center gap-2")}>
