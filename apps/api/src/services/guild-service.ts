@@ -289,10 +289,6 @@ export const guildService = {
     };
   },
 
-  /*
-    O selo "verificada" é marca da casa, não do dono: só quem administra o
-    app põe ou tira. Não passa pela permissão do servidor de propósito.
-  */
   async verificar(adminId: string, guildId: string, verificada: boolean) {
     const admin = await userRepository.findById(adminId);
     if (!admin || !ehAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
