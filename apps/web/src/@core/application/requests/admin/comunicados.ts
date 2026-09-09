@@ -2,7 +2,6 @@ import { api } from "~/@core/lib/api";
 
 export interface ComunicadoDTO {
   conteudo: string;
-  /// Ausente é "todo mundo".
   userIds?: string[];
 }
 
