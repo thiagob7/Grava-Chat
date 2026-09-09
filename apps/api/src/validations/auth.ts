@@ -33,7 +33,6 @@ export const redefinirInput = z.object({
   senha,
 });
 
-/// `atual` só é obrigatória para quem já tem senha; quem entra pelo Google cria a primeira sem ela.
 export const trocarSenhaInput = z.object({
   atual: z.string().max(128).optional(),
   nova: senha,
