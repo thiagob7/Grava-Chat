@@ -1,27 +1,3 @@
-/*
-  Mede o app rodando, em vez de adivinhar pelo fonte.
-
-  Todos os erros de tema que passaram por aqui foram invisíveis para as
-  ferramentas que leem código: uma classe do Tailwind roubando uma regra do
-  tema, dois nomes da referência no mesmo elemento matando 35 regras de uma vez,
-  uma chave com o padrão invertido. Contar nome dizia "217 de 312 pousam"
-  enquanto a tela estava errada. Quem pegou os três foi um print.
-
-  Este script abre o app num Chrome de verdade, aplica um tema, e anota o que
-  o navegador REALMENTE calculou para cada elemento carimbado. Aí "faltou
-  estilização" vira uma linha de diferença, não uma impressão.
-
-  Sem dependência nova: usa o Chrome que já está instalado e conversa com ele
-  por CDP, com o `WebSocket` que o Node já traz. O disco desta máquina não tem
-  espaço para um Chromium do Playwright, e nem precisa.
-
-  Rodar (com o `yarn dev` de pé):
-    node scripts/medir-tema.mjs --saida /tmp/sem.json
-    node scripts/medir-tema.mjs --tema ~/Downloads/Galaxy.css --saida /tmp/com.json
-    node scripts/medir-tema.mjs --diff /tmp/sem.json /tmp/com.json
-    node scripts/medir-tema.mjs --tema … --gancho app.rodape   só o que casa
-    node scripts/medir-tema.mjs --tema … --foto /tmp/tela.png  a tela renderizada
-*/
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -35,11 +11,6 @@ const arg = (nome, padrao = null) => {
   return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : padrao;
 };
 
-/*
-  As propriedades que um tema mexe. A lista é curta de propósito: despejar o
-  `getComputedStyle` inteiro dá 340 linhas por elemento e some com a diferença
-  que importa no meio do ruído.
-*/
 const OLHAR = [
   "backgroundColor",
   "backgroundImage",
@@ -83,22 +54,12 @@ async function esperar(condicao, quanto = 20_000, passo = 200) {
       const r = await condicao();
       if (r) return r;
     } catch {
-      /* ainda não */
     }
     await new Promise((r) => setTimeout(r, passo));
   }
   return null;
 }
 
-/*
-  A comparação olha COR primeiro, e só em elemento que aparece uma vez de cada
-  lado.
-
-  Duas medições do mesmo app não são idênticas: o canal selecionado muda, um
-  tooltip abre, a contagem de elementos oscila. Comparando tudo, esse ruído
-  afogava a diferença de verdade — a primeira rodada acusou 44 elementos
-  "mudados" e nenhum era cor.
-*/
 const PINTA = [
   "backgroundColor",
   "backgroundImage",
@@ -169,7 +130,6 @@ const chrome = spawn(
 
 let encerrado = false;
 
-/// O Chrome ainda escreve no perfil por um instante depois do kill.
 const encerrar = () => {
   if (encerrado) return;
   encerrado = true;
@@ -180,7 +140,6 @@ const encerrar = () => {
       rmSync(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
       return;
     } catch {
-      /* ainda escrevendo */
     }
   }
 };
@@ -206,11 +165,6 @@ try {
   await cdp(ws, "Runtime.enable", {}, id);
   await cdp(ws, "Page.enable", {}, id);
 
-  /*
-    Entra com o login de desenvolvimento — sem sessão a tela é a de entrar, e
-    já perdi uma medição inteira fotografando a tela de login sem perceber.
-    Por isso o status é conferido, não torcido.
-  */
   const email = arg("--email", "thbp777@gmail.com");
   const entrou = await rodar(`
     fetch("/api/auth/dev-login", {
@@ -222,7 +176,6 @@ try {
 
   if (entrou !== 200) throw new Error(`o login de desenvolvimento devolveu ${entrou}`);
 
-  /// O tema entra pelo mesmo caminho do estúdio: a chave do localStorage.
   const caminhoDoTema = arg("--tema");
   const css = caminhoDoTema ? readFileSync(caminhoDoTema, "utf8") : "";
   await rodar(`
@@ -236,11 +189,6 @@ try {
 
   await cdp(ws, "Page.navigate", { url }, id);
 
-  /*
-    Espera a casca montar em vez de contar até seis. O app monta em tempos
-    diferentes conforme a máquina, e medir cedo demais devolve a tela de
-    carregamento — que não é a que interessa.
-  */
   const montou = await esperar(
     () => rodar(`document.querySelectorAll("[data-gc]").length > ${arg("--minimo", "80")}`),
     25_000,
@@ -249,11 +197,6 @@ try {
 
   if (!montou) throw new Error("o app não montou a tempo");
 
-  /*
-    O tema DO APP — escuro, mais escuro, claro, gravaê — é outra dimensão do
-    tema importado, e as duas se cruzam. Medir só o padrão deixava as variantes
-    sem prova.
-  */
   const temaDoApp = arg("--tema-do-app");
   if (temaDoApp) {
     await rodar(
@@ -261,7 +204,6 @@ try {
     );
   }
 
-  /// Um respiro para a fonte do tema e as animações assentarem.
   await new Promise((r) => setTimeout(r, 2500));
 
   const filtro = arg("--gancho", "");
@@ -294,10 +236,6 @@ try {
     })()
   `);
 
-  /*
-    A foto sai do mesmo canal. Não é enfeite: com ela eu vejo a tela que você vê,
-    em vez de pedir print e adivinhar pelo que dá para ler numa imagem comprimida.
-  */
   const foto = arg("--foto");
   if (foto) {
     const { data } = await cdp(ws, "Page.captureScreenshot", { format: "png" }, id);
