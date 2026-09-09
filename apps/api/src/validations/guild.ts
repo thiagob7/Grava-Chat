@@ -1,9 +1,12 @@
 import { z } from "zod";
+import { objectId } from "~/validations/common.js";
 import {
   CATEGORIAS_DE_COMUNIDADE,
   FONTES_DE_NOME,
   createGuildInput,
   createChannelInput,
+  EVENT_FREQUENCIES,
+  EVENT_LIMITS,
   LIMITS,
 } from "@gravae/shared";
 import { r2Url } from "./auth.js";
@@ -55,3 +58,20 @@ export const criarEmblemaInput = z.object({
   iconUrl: r2Url.nullable().optional(),
 });
 export type CriarEmblemaInput = z.infer<typeof criarEmblemaInput>;
+
+export const guildEventInput = z
+  .object({
+    name: z.string().trim().min(1).max(EVENT_LIMITS.name),
+    description: z.string().max(EVENT_LIMITS.description).nullable().optional(),
+    imageUrl: z.string().nullable().optional(),
+    startsAt: z.iso.datetime(),
+    frequency: z.enum(EVENT_FREQUENCIES),
+    channelId: objectId.nullable().optional(),
+    externalLocation: z.string().max(EVENT_LIMITS.location).nullable().optional(),
+  })
+  .refine(
+    (v) => Boolean(v.channelId) !== Boolean(v.externalLocation?.trim()),
+    "Escolha um canal de voz OU um lugar de fora",
+  );
+
+export type GuildEventInput = z.infer<typeof guildEventInput>;
