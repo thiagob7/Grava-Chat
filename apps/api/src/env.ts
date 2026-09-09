@@ -37,37 +37,15 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
-  /// Liga quando o front vive noutro domínio que a API — é o caso do staging,
-  /// com a tela na Vercel e a API no DuckDNS. Sem isto o cookie de sessão sai
-  /// como `SameSite=Lax` e o navegador simplesmente não o manda para o outro
-  /// site: a pessoa entra e cai na primeira renovação, sem erro nenhum na
-  /// tela. Em produção fica desligado, porque lá o front e a API respondem
-  /// pela mesma origem.
   COOKIE_ENTRE_SITES: z.stringbool().default(false),
 
-  /// Aceita qualquer endereço `*.vercel.app` como origem. Existe só para o
-  /// staging: a Vercel dá uma URL nova a cada publicação de prévia, e fixar
-  /// uma no `WEB_ORIGIN` quebraria o CORS na publicação seguinte. Em produção
-  /// fica desligado — lá a origem é uma só e conhecida.
   ACEITAR_PREVIAS_VERCEL: z.stringbool().default(false),
 
-  /// O correio da casa. Com a chave do Resend preenchida, a API manda e-mail —
-  /// hoje só o de "esqueci a senha". Vazia, a rota responde que o serviço não
-  /// está configurado, em vez de fingir que mandou.
-  ///
-  /// O remetente de fábrica é o endereço de teste do próprio Resend, que não
-  /// depende de domínio nenhum. Para o e-mail chegar em qualquer pessoa, e não
-  /// só na caixa da conta, é preciso verificar um domínio e trocar isto.
   RESEND_API_KEY: z.string().default(""),
   EMAIL_REMETENTE: z.string().default("Gravaê <onboarding@resend.dev>"),
 
-  /// O e-mail de quem é dono do servidor "Gravaê Temas". Com isto preenchido,
-  /// a API garante o servidor a cada subida e a conta da casa publica os temas
-  /// lá. Vazio, nada acontece.
   SERVIDOR_DE_TEMAS_DONO: z.string().default(""),
 
-  /// A tela do Swagger em /api/docs. Em desenvolvimento ela abre sempre; em
-  /// producao so com isto ligado, para nao publicar o mapa da API sem querer.
   DOCS_ABERTAS: z.stringbool().default(false),
 });
 
