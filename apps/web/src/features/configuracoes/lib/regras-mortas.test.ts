@@ -26,10 +26,6 @@ describe("regras que no app da referência já não pegam", () => {
     expect(saida).not.toContain("guilds-layout");
   });
 
-  /*
-    Uma lista com um nome vivo e um morto é uma regra viva: o navegador aplica
-    ao que casar, e o nome morto simplesmente não casa.
-  */
   it("uma lista com um vivo é viva", () => {
     const css = ".Markup\\.module__x___1, .Sumido\\.module__y___2 { color: red }";
     expect(filtrarRegrasMortas(css, EXISTE)).toContain("color: red");

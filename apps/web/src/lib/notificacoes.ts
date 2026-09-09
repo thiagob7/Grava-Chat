@@ -29,7 +29,6 @@ interface Contexto {
   message: Message;
   meuId: string | undefined;
   canalAberto: string | undefined;
-  /// De onde veio a menção: direta, @everyone/@here, ou cargo. Cada uma se desliga por servidor.
   mencao: { direta: boolean; everyone: boolean; cargo: boolean };
   nomeDoCanal: string | undefined;
   ehDm: boolean;
@@ -39,8 +38,6 @@ interface Contexto {
 
 function corpoDoAviso(message: Message) {
   const texto = message.content
-    /// menções vão como `<@id>` no texto cru; no aviso viram o nome só quando
-    /// não dá para resolver — melhor "@alguém" que um id de 24 caracteres
     .replace(/<@&?[a-f\d]{24}>/gi, "@alguém")
     .replace(/<a?:(\w+):\d+>/g, ":$1:")
     .trim();
@@ -69,11 +66,6 @@ export function avisarDeMensagem({
   const prefs = prefsDeAviso();
   const doServidorPrefs = guildId ? prefs.porServidor[guildId] : undefined;
 
-  /*
-    Menção só conta quando a pessoa quer ser chamada por aquele caminho. Um
-    servidor grande vive de @everyone; desligar isso ali não pode desligar o
-    seu nome, e é por isso que os três vêm separados.
-  */
   const meMenciona =
     mencao.direta ||
     (mencao.everyone && doServidorPrefs?.everyone !== false) ||
@@ -82,7 +74,6 @@ export function avisarDeMensagem({
   const doCanal = prefs.porCanal[message.channelId] ?? null;
   if (doCanal === "nada") return;
 
-  /// O servidor fala antes do canal: silenciado é silêncio, e "só menções" vale para todos os canais dele.
   if (servidorSilenciado(prefs, guildId)) return;
   const doServidor = doServidorPrefs?.modo ?? null;
   if (doServidor === "nada") return;
@@ -122,7 +113,5 @@ export function avisarDeMensagem({
       aviso.close();
     };
   } catch {
-    /// Safari em aba não segura, permissão revogada no meio do caminho: o som
-    /// já tocou, e o contador no título continua contando.
   }
 }

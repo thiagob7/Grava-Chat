@@ -289,10 +289,6 @@ export const guildService = {
     };
   },
 
-  /*
-    O selo "verificada" é marca da casa, não do dono: só quem administra o
-    app põe ou tira. Não passa pela permissão do servidor de propósito.
-  */
   async verificar(adminId: string, guildId: string, verificada: boolean) {
     const admin = await userRepository.findById(adminId);
     if (!admin || !ehAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
@@ -421,6 +417,24 @@ export const guildService = {
     });
 
     return toChannel(channel);
+  },
+
+  async definirStatusDoCanal(userId: string, guildId: string, channelId: string, status: string | null) {
+    const canal = await channelRepository.findById(channelId);
+    if (!canal || canal.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
+    if (canal.type !== "VOICE") throw new AppError("Só canal de voz tem status");
+
+    const naSala = await voiceService.get(userId);
+
+    if (naSala?.channelId !== channelId) {
+      await accessService.requirePermission(userId, guildId, "MANAGE_CHANNELS", channelId);
+    } else {
+      await accessService.requirePermission(userId, guildId, "VIEW_CHANNEL", channelId);
+    }
+
+    const limpo = status?.trim() || null;
+
+    return toChannel(await channelRepository.update(channelId, { status: limpo }));
   },
 
   async updateChannel(userId: string, guildId: string, channelId: string, input: UpdateChannelInput) {

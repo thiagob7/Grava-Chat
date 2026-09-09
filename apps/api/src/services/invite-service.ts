@@ -11,11 +11,6 @@ export const inviteService = {
     const invite = await inviteRepository.findByCodeWithRelations(code);
     if (!invite) throw new NotFoundError("Convite inválido ou expirado");
 
-    /*
-      O cartão que aparece no chat mostra quantos estão online agora — é o que
-      diz se a comunidade está viva. Por isso a presença sai daqui, e não de uma
-      segunda chamada.
-    */
     const membros = await memberRepository.findManyByGuild(invite.guildId);
     const presenca = await presenceService.mapFor(membros.map((m) => m.userId));
 

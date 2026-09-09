@@ -11,7 +11,7 @@ import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-me
 import { MOTIVOS_DE_DENUNCIA, type MotivoDeDenuncia } from "~/@core/application/requests/guild/denunciar-guild";
 import type { GuildSummaryModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -24,7 +24,7 @@ import {
 } from "~/components/ui/context-menu";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Label, Textarea } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { copiarTexto } from "~/lib/copiar";
 import { servidorSilenciado, useAvisos, type ModoDoCanal } from "~/stores/notificacoes";
@@ -42,14 +42,6 @@ const Marca: React.FC<{ ligado: boolean }> = ({ ligado }) => (
   <Check data-gc="servidor.menu-do-servidor.check" size={14} className={ligado ? "text-brand" : "opacity-0"} />
 );
 
-/*
-  O menu do botão direito num servidor do trilho.
-
-  Só oferece o que a pessoa pode fazer ali: convidar pede a permissão de
-  convite, editar pede a de gerir, e sair não aparece para quem é dono.
-  Silenciar, o modo de aviso e esconder os canais silenciados são decisões
-  deste aparelho, como os avisos de canal. Denunciar vai para a casa.
-*/
 export const MenuDoServidor: React.FC<{
   guild: GuildSummaryModel;
   onConvidar: () => void;
@@ -57,7 +49,7 @@ export const MenuDoServidor: React.FC<{
 }> = ({ guild, onConvidar, children }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const { data: eu } = useMe(true);
   const marcarLido = useMarcarServidorLido();
   const sair = useRemoveMember();
@@ -72,14 +64,14 @@ export const MenuDoServidor: React.FC<{
   const sairDaComunidade = async () => {
     if (!eu) return;
 
-    const { confirmado } = await confirmar({
-      titulo: t("servidor.menu.sairTitulo", { nome: guild.name }),
-      descricao: t("servidor.menu.sairDescricao"),
-      acao: t("servidor.menu.sair"),
-      destrutivo: true,
+    const { confirmed } = await confirm({
+      title: t("servidor.menu.sairTitulo", { nome: guild.name }),
+      description: t("servidor.menu.sairDescricao"),
+      action: t("servidor.menu.sair"),
+      destructive: true,
     });
 
-    if (!confirmado) return;
+    if (!confirmed) return;
 
     sair.mutate({ guildId: guild.id, userId: eu.id }, { onSuccess: () => navigate("/channels") });
   };
@@ -215,11 +207,11 @@ const DenunciarComunidade: React.FC<{ guild: GuildSummaryModel; aberto: boolean;
 
           <div data-gc="servidor.menu-do-servidor.div">
             <Label data-gc="servidor.menu-do-servidor.label" htmlFor="motivo-da-denuncia">{t("servidor.denuncia.motivo")}</Label>
-            <CampoSelect data-gc="servidor.menu-do-servidor.campo-select"
+            <SelectField data-gc="servidor.menu-do-servidor.select-field"
               id="motivo-da-denuncia"
-              valor={motivo}
-              onEscolher={(valor) => setMotivo(valor as MotivoDeDenuncia)}
-              opcoes={MOTIVOS_DE_DENUNCIA.map((m) => ({ valor: m, rotulo: t(`servidor.denuncia.motivos.${m}`) }))}
+              value={motivo}
+              onSelect={(valor) => setMotivo(valor as MotivoDeDenuncia)}
+              options={MOTIVOS_DE_DENUNCIA.map((m) => ({ value: m, label: t(`servidor.denuncia.motivos.${m}`) }))}
             />
           </div>
 

@@ -12,9 +12,9 @@ import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Input, campoDeCor } from "~/components/ui/input";
+import { Input, colorFieldClass } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { ESTILOS_DO_CARGO } from "~/features/perfil/lib/catalogo";
 import { estiloDoCargo } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
@@ -69,7 +69,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
     role.permissions as Permission[],
   );
   const [busca, setBusca] = useState("");
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   useEffect(() => {
     setNome(role.name);
@@ -164,14 +164,14 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         {!role.isEveryone && editavel && (
           <button data-gc="servidor.server-settings.role-editor.button"
             onClick={() =>
-              void confirmar({
-                titulo: t("servidor.cargos.excluirTitulo", { nome: role.name }),
-                descricao:
+              void confirm({
+                title: t("servidor.cargos.excluirTitulo", { nome: role.name }),
+                description:
                   t("servidor.cargos.excluirDescricao"),
-                acao: t("servidor.cargos.excluirAcao"),
+                action: t("servidor.cargos.excluirAcao"),
               }).then(
-                ({ confirmado }) =>
-                  confirmado &&
+                ({ confirmed }) =>
+                  confirmed &&
                   deleteRole.mutate(
                     { guildId, roleId: role.id },
                     { onSuccess: onDeleted },
@@ -263,7 +263,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   value={cor ?? "#99aab5"}
                   disabled={!editavel}
                   onChange={(e) => setCor(e.target.value)}
-                  className={cn(campoDeCor, "size-8 rounded")}
+                  className={cn(colorFieldClass, "size-8 rounded")}
                   title={t("servidor.cargos.corPersonalizada")}
                 />
               </div>
@@ -300,7 +300,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     value={cor2 ?? "#a855f7"}
                     disabled={!editavel}
                     onChange={(e) => setCor2(e.target.value)}
-                    className={cn(campoDeCor, "size-8 rounded")}
+                    className={cn(colorFieldClass, "size-8 rounded")}
                   />
                   {cor2 && (
                     <button data-gc="servidor.server-settings.role-editor.button--6"
@@ -497,9 +497,9 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
       </div>
 
       <UnsavedBar data-gc="servidor.server-settings.role-editor.unsaved-bar.salvar"
-        visivel={sujo && editavel}
-        salvando={updateRole.isPending}
-        onDescartar={() => {
+        visible={sujo && editavel}
+        saving={updateRole.isPending}
+        onDiscard={() => {
           setNome(role.name);
           setCor(role.color);
           setCor2(role.colorSecondary);
@@ -509,7 +509,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
           setMentionable(role.mentionable);
           setPermissoes(role.permissions as Permission[]);
         }}
-        onSalvar={salvar}
+        onSave={salvar}
       />
     </div>
   );

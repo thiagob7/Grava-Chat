@@ -4,15 +4,8 @@ import { GifIcon, ImageIcon, Sticker, Smiley } from "@phosphor-icons/react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { ATALHOS, escreverCombo } from "~/features/configuracoes/lib/atalhos";
 import { cn } from "~/lib/utils";
-import { classeDoBotaoDaCaixa } from "~/components/ui/button";
+import { boxButtonClass } from "~/components/ui/button";
 
-/*
-  Os botões do canto direito da caixa.
-
-  Todos no mesmo quadrado, com o mesmo fundo no hover: em fila, tamanho
-  diferente entre eles lê como erro. O que muda de um para o outro é só o
-  desenho.
-*/
 export const BotaoDaCaixa: React.FC<{
   rotulo: string;
   atalho?: string[];
@@ -21,7 +14,7 @@ export const BotaoDaCaixa: React.FC<{
   onClick?: () => void;
   children: React.ReactNode;
 }> = ({ rotulo, atalho, ativo, desligado, onClick, children }) => (
-  <Tooltip data-gc="conversa.acoes-da-caixa.tooltip" label={rotulo} atalho={atalho}>
+  <Tooltip data-gc="conversa.acoes-da-caixa.tooltip" label={rotulo} shortcut={atalho}>
     <button data-gc="conversa.acoes-da-caixa.button.on-click"
       type="button"
       onClick={onClick}
@@ -29,7 +22,7 @@ export const BotaoDaCaixa: React.FC<{
       aria-label={rotulo}
       aria-pressed={ativo}
       className={cn(
-        classeDoBotaoDaCaixa,
+        boxButtonClass,
         ativo ? "bg-hover text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
       )}
     >

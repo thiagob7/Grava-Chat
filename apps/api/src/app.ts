@@ -41,12 +41,11 @@ import { embedRoutes } from "~/routes/embeds.js";
 
 export async function buildApp() {
   const app = Fastify({
-    /// Por que não o padrão do Node: veja `lib/limites-http.ts`.
     serverFactory: (atender) => createServer({ maxHeaderSize: TETO_DE_CABECALHO }, atender),
     logger: isDev
       ? { transport: { target: "pino-pretty", options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" } } }
       : true,
-    trustProxy: true, // atras do Caddy/Cloudflare em producao
+    trustProxy: true,
   });
 
   await app.register(sensible);

@@ -1,8 +1,3 @@
-/*
-  Os escopos que uma aplicação pode pedir, com o texto que a tela de
-  autorização mostra. `bot` é o único que não se desliga: pedir o bot é
-  pedir para pô-lo numa comunidade, e sem isso o pedido não faz sentido.
-*/
 export const ESCOPOS_OAUTH = [
   { id: "identify", descricao: "Acessar suas informações básicas de perfil (nome de usuário, avatar, etc.)", obrigatorio: false },
   { id: "email", descricao: "Ver seu endereço de e-mail", obrigatorio: false },

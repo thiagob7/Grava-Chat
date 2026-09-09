@@ -31,8 +31,6 @@ export const uploadService = {
     await redis
       .multi()
       .incrby(chave, tamanho)
-      /// só na primeira gravação da janela; renovar a cada envio faria a hora
-      /// nunca virar pra quem manda sem parar
       .expire(chave, JANELA_DA_COTA_S, "NX")
       .exec()
       .catch(() => undefined);

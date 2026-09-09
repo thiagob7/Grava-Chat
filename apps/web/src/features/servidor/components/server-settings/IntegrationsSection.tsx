@@ -19,9 +19,9 @@ import {
 import type { WebhookModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { copiarTexto } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
@@ -113,7 +113,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
   const [nome, setNome] = useState(webhook.name);
   const [mostrandoUrl, setMostrandoUrl] = useState(false);
   const [copiado, setCopiado] = useState(false);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const copiar = async () => {
     await copiarTexto(webhook.url);
@@ -157,14 +157,14 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
             <span data-gc="servidor.server-settings.integrations-section.span--2" className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
               {t("servidor.integracoes.canal")}
             </span>
-            <CampoSelect data-gc="servidor.server-settings.integrations-section.campo-select"
-              valor={webhook.channelId}
-              onEscolher={(channelId) =>
+            <SelectField data-gc="servidor.server-settings.integrations-section.select-field"
+              value={webhook.channelId}
+              onSelect={(channelId) =>
                 salvar.mutate({ guildId, webhookId: webhook.id, channelId })
               }
-              opcoes={canais.map((canal) => ({
-                valor: canal.id,
-                rotulo: `#${canal.name}`,
+              options={canais.map((canal) => ({
+                value: canal.id,
+                label: `#${canal.name}`,
               }))}
             />
           </label>
@@ -172,14 +172,14 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
 
         <button data-gc="servidor.server-settings.integrations-section.button--2"
           onClick={() =>
-            void confirmar({
-              titulo: `Apagar webhook "${webhook.name}"?`,
-              descricao:
+            void confirm({
+              title: `Apagar webhook "${webhook.name}"?`,
+              description:
                 t("servidor.integracoes.apagarDescricao"),
-              acao: t("servidor.integracoes.apagar"),
+              action: t("servidor.integracoes.apagar"),
             }).then(
-              ({ confirmado }) =>
-                confirmado && apagar.mutate({ guildId, webhookId: webhook.id }),
+              ({ confirmed }) =>
+                confirmed && apagar.mutate({ guildId, webhookId: webhook.id }),
             )
           }
           title={t("servidor.integracoes.apagar")}

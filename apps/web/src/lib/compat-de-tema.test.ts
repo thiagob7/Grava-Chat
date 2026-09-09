@@ -38,10 +38,6 @@ const nomes = Object.keys(LUGARES);
 const codigo = todoOCodigo();
 
 describe("compatibilidade com temas da referência", () => {
-  /*
-    Um lugar que ninguém carimba é pior que lugar nenhum: o tema mira e não
-    acha, e a pessoa fica procurando erro no CSS dela.
-  */
   it("carimba em algum elemento cada lugar do mapa", () => {
     const orfaos = nomes.filter((nome) => !codigo.includes(`"${nome}"`));
 
@@ -70,10 +66,6 @@ describe("compatibilidade com temas da referência", () => {
     expect(repetidos).toEqual([]);
   });
 
-  /*
-    O `_gc` no fim é o que separa o nosso nome do deles se um dia os dois
-    rodarem juntos, e é o que deixa claro na tela que a classe é uma ponte.
-  */
   it("termina toda classe de ponte em _gc", () => {
     const fora = Object.values(LUGARES)
       .flatMap((alvo) => alvo.classes as readonly string[])

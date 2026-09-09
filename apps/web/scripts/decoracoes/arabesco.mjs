@@ -1,17 +1,9 @@
-/*
-  Gera `src/assets/molduras/arabesco.svg` — volutas douradas, no espírito da
-  filigrana de rosas mas sem flor: só o desenho do ferro trabalhado.
-
-    node scripts/decoracoes/arabesco.mjs src/assets/molduras/arabesco.svg
-*/
 import { writeFileSync } from "node:fs";
 import { F, L, montar } from "./_moldura.mjs";
 
 const OURO = "#e8c266";
 const SOMBRA = "#8a6516";
 
-/// A voluta é o motivo inteiro: um caracol que abre num traço. Três voltas
-/// bastam — mais que isso vira borrão no tamanho em que ela é vista.
 const voluta = (x, y, r, giro) => `<g transform="translate(${x} ${y}) rotate(${giro})">
   <path d="M0 0 A${r * 0.34} ${r * 0.34} 0 1 1 ${-r * 0.5} ${-r * 0.16}
            A${r * 0.66} ${r * 0.66} 0 1 0 ${r * 0.22} ${-r * 0.86}"
@@ -38,14 +30,6 @@ const beira = `
   ${voluta(150, 30, 15, 0)}
   ${gota(96, 12, 16)}${gota(196, 12, -16)}`;
 
-/*
-  O brilho corre pelo GRADIENTE, não pelo desenho.
-
-  Um lampejo viajando pelo traço não daria a volta no cartão: o border-image
-  fatia e ladrilha, então cada pedaço é independente e o lampejo apareceria
-  repetido em todos ao mesmo tempo. Deslocar a parada clara do gradiente faz o
-  metal pegar luz por inteiro, que é um efeito que não depende de continuidade.
-*/
 const defs = `<linearGradient id="ferro" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#fff0c2"/>
     <stop offset=".5" stop-color="${OURO}">

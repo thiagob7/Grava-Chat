@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 
 import { TETO_DE_CABECALHO } from "~/lib/limites-http.js";
 
-/// Sobe um servidor mínimo e devolve a porta em que ele atende.
 async function servir(maxHeaderSize?: number): Promise<{ porta: number; parar: () => void }> {
   const servidor: Server = createServer(
     maxHeaderSize ? { maxHeaderSize } : {},
@@ -32,10 +31,6 @@ describe("teto de cabeçalho", () => {
     expect(TETO_DE_CABECALHO).toBeGreaterThan(16 * 1024);
   });
 
-  /*
-    Sem o teto maior, um cookie de 20 KB derruba o pedido — que é exatamente o
-    que acontece em localhost com vários projetos na mesma máquina.
-  */
   it("no padrão do Node, cookie de 20 KB volta 431", async () => {
     const { porta, parar } = await servir();
 

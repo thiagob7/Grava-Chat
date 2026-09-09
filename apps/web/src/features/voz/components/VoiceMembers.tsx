@@ -112,15 +112,14 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                   </Tooltip>
                 )}
                 {state.screenShare && (
-                  <span data-gc="voz.voice-members.span--4"
-                    className={cn(
-                      flxCls("seloDeAoVivo"),
-                      "flex items-center gap-1 rounded bg-danger px-1 text-10 font-bold uppercase leading-4 text-sobre-marca",
-                    )}
-                  >
-                    <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={11} weight="fill" />
-                    {t("chamada.aoVivo")}
-                  </span>
+                  <Tooltip data-gc="voz.voice-members.tooltip--2" label={t("chamada.aoVivo")}>
+                    <span data-gc="voz.voice-members.span--4"
+                      className={cn(flxCls("seloDeAoVivo"), "flex items-center text-danger")}
+                      aria-label={t("chamada.aoVivo")}
+                    >
+                      <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={14} weight="fill" />
+                    </span>
+                  </Tooltip>
                 )}
                 {state.camera && <VideoCamera data-gc="voz.voice-members.video-camera" size={14} weight="fill" className="text-online" />}
 

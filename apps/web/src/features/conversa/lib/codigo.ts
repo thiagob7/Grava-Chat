@@ -1,5 +1,3 @@
-
-
 const CERCA = /```([^\n`]*)\n?([\s\S]*?)```/g;
 const EM_LINHA = /`([^`\n]*[^\s`][^`\n]*)`/g;
 
@@ -153,14 +151,12 @@ export function adivinharLingua(texto: string): string | null {
       JSON.parse(t);
       return "json";
     } catch {
-      /// Objeto de JavaScript quase-JSON cai fora daqui e segue a fila.
     }
   }
 
   if (/^\s*(SELECT|INSERT|UPDATE|DELETE|CREATE TABLE)\b/i.test(t)) return "sql";
   if (/^\s*<(\?xml|!doctype|html|div|span|section)\b/i.test(t)) return "html";
 
-  /// Uma folha que abre com regra-arroba não é outra coisa.
   if (/^\s*@(import|media|charset|font-face|keyframes|tailwind)\b/m.test(t)) return "css";
   if (/^\s*(#!|\$ )|^\s*(npm|yarn|pnpm|git|docker|cd|sudo|apt|brew|curl)\s/m.test(t)) return "sh";
   if (/^\s*(def|class)\s+\w+.*:\s*$/m.test(t) || /^\s*(from|import)\s+\w+\s*$/m.test(t)) return "py";
@@ -168,11 +164,6 @@ export function adivinharLingua(texto: string): string | null {
   if (/:\s*(string|number|boolean|void|any|unknown|Promise<)/.test(t)) return "ts";
   if (/\b(const|let|function|=>|import .* from|require\()/.test(t)) return "js";
 
-  /*
-    Por último, e só depois de JavaScript ter tido a vez: um seletor seguido de
-    bloco com `propriedade: valor`. O seletor não pode ter `=` nem parêntese,
-    senão `const a = { cor: azul }` entraria aqui.
-  */
   if (/(^|\})\s*[.#:a-z[][^{}\n=()]{0,120}\{[^}]*[a-z-]+\s*:[^;}]+[;}]/i.test(t)) {
     return "css";
   }
@@ -211,16 +202,6 @@ export interface ArquivoDeTexto {
   conteudo: string;
 }
 
-/*
-  Transforma o que está na caixa num arquivo só.
-
-  Quando é tudo bloco de código, as cercas saem e os corpos são emendados: um
-  `.js` com ``` dentro não é JavaScript válido, e quem abre o anexo quer o
-  código, não a marcação que o chat usou para exibi-lo.
-
-  Sobrando qualquer texto solto entre os blocos, vira `.txt` com tudo como
-  está — ali as cercas são a única coisa que separa uma parte da outra.
-*/
 export function textoParaArquivo(texto: string, base = "mensagem"): ArquivoDeTexto {
   const pedacos = partirEmCodigo(texto).filter(
     (p) => p.tipo !== "texto" || p.texto.trim().length > 0,

@@ -25,11 +25,6 @@ describe("compatibilidade de tokens", () => {
     expect(ignorados).toEqual(["--coisa-que-nao-existe"]);
   });
 
-  /*
-    O caso que motivou o arquivo: um tema define as próprias variáveis e usa
-    nas próprias regras. Chamar isso de "ignorado" mandaria a pessoa caçar um
-    problema que não existe.
-  */
   it("não acusa a variável que o próprio tema usa", () => {
     const { ignorados } = conferirTokens(
       "body { --primary-theme-accent: #ff0000; } .x { color: var(--primary-theme-accent); }",
@@ -47,11 +42,6 @@ describe("compatibilidade de tokens", () => {
     expect(ignorados).toEqual([]);
   });
 
-  /*
-    Quem declara o fundo ganha as superfícies de graça; quem não declara nada
-    não deduz nada que valha contar — mas a lista de derivados existe sempre,
-    porque ela é o que as cores-mãe sabem preencher.
-  */
   it("não conta como deduzido o token que o tema mandou direto", () => {
     const { deduzidos } = conferirTokens(":root { --background-primary: #120e1a; }");
 

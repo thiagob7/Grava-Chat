@@ -71,10 +71,6 @@ export const clientEventSchemas = {
 export type ClientEventName = keyof typeof clientEventSchemas;
 export type ClientEventPayload<E extends ClientEventName> = z.infer<(typeof clientEventSchemas)[E]>;
 
-/*
-  A recusa leva o `motivo` junto do texto: o texto é para quem lê o log, e o
-  motivo é para a tela decidir o que dizer e se oferece tentar de novo.
-*/
 export type Ack<T = void> = (
   res: { ok: true; data: T } | { ok: false; error: string; motivo?: MotivoDeFalha },
 ) => void;
@@ -143,6 +139,7 @@ export type ServerToClientEvents = {
   "channel:created": (channel: z.infer<typeof channelSchema>) => void;
   "channel:updated": (channel: z.infer<typeof channelSchema>) => void;
   "channel:deleted": (p: { channelId: string; guildId: string }) => void;
+  "event:updated": (p: { guildId: string }) => void;
   "guild:refresh": (p: { guildId: string }) => void;
   "post:created": (post: ForumPostPayload) => void;
   "post:updated": (post: ForumPostPayload) => void;

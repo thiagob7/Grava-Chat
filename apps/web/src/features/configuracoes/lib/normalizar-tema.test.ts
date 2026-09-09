@@ -25,11 +25,6 @@ describe("seletor preso ao hash de um build", () => {
     );
   });
 
-  /*
-    O `div` sai pela mesma razão que o hash sai: os dois datam do build contra
-    o qual a pessoa escreveu. Honrar um e traduzir o outro revive metade do
-    tema, e meio tema parece defeito.
-  */
   it("solta o div da frente do seletor por pedaço", () => {
     const saida = traduzirSeletoresTravados(
       'div[class*="MemberListContainer"][class*="memberListContainer"] { color: red }',
@@ -40,14 +35,12 @@ describe("seletor preso ao hash de um build", () => {
     );
   });
 
-  /// Botão é botão aqui também. O que pede um `<button>` de verdade fica.
   it("deixa as outras tags em paz", () => {
     const pronto = 'button[class*="Button"] { color: red }';
 
     expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
   });
 
-  /// `div` dentro de um nome de classe não é tag e não pode ser tocado.
   it("não confunde div dentro de nome com a tag", () => {
     const pronto = '[class*="Divider.module__divider_"] { color: red }';
 
@@ -76,11 +69,6 @@ describe("seletor preso ao hash de um build", () => {
     expect(contarSeletoresDatados(css).presos).toBe(2);
   });
 
-  /*
-    Os dois tipos entram separados porque o estúdio mostra os dois: é o par que
-    diz de que lado o tema pende — o Galaxy pende para o `div`, um tema da comunidade para
-    o hash.
-  */
   it("conta os dois tipos de datado em separado", () => {
     const css = [
       ".A\\.module__a___XX { color: red }",
@@ -91,7 +79,6 @@ describe("seletor preso ao hash de um build", () => {
     expect(contarSeletoresDatados(css)).toEqual({ presos: 1, comDiv: 2, soltos: 2 });
   });
 
-  /// Quem mira por pedaço, sem tag e sem hash, não está preso a build nenhum.
   it("não conta quem já mira por pedaço", () => {
     const css = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
 
@@ -107,11 +94,6 @@ describe("seletor preso ao hash de um build", () => {
   });
 });
 
-/*
-  A regra que decide sozinha se o arquivo entra como está. Os três casos são os
-  dos temas de verdade que temos em mãos, medidos: Galaxy 16%, Gruvbox 2%,
-  um tema da comunidade 89%.
-*/
 describe("quando traduzir sem perguntar", () => {
   const preso = (n: number) =>
     Array.from({ length: n }, (_, i) => `.A\\.module__c${i}___XX${i} { color: red }`).join("\n");
@@ -127,7 +109,6 @@ describe("quando traduzir sem perguntar", () => {
     expect(deveTraduzir(`${preso(158)}\n${solto(20)}`)).toBe(true);
   });
 
-  /// Tema de tokens não mira classe nenhuma: não há o que traduzir.
   it("deixa como está um tema que não mira classe", () => {
     expect(deveTraduzir(":root { --color-brand: #123 }")).toBe(false);
   });

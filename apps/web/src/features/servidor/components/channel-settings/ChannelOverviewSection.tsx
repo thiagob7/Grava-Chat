@@ -4,9 +4,9 @@ import { MODO_LENTO_OPCOES } from "@gravae/shared";
 
 import { useUpdateChannel } from "~/@core/application/queries/guild/use-update-channel";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { GrupoSegmentado, Label, OpcaoEmCartao, Textarea } from "~/components/ui/input";
+import { SegmentedGroup, Label, CardOption, Textarea } from "~/components/ui/input";
 import { CampoDeNomeDeCanal } from "~/features/servidor/components/CampoDeNomeDeCanal";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/traducao";
@@ -102,13 +102,13 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
         <div data-gc="servidor.channel-settings.channel-overview-section.div--5">
           <Label data-gc="servidor.channel-settings.channel-overview-section.label--3" htmlFor="modo-lento">Modo lento — {rotuloDoModoLento(slowmode)}</Label>
-          <CampoSelect data-gc="servidor.channel-settings.channel-overview-section.campo-select.set-slowmode"
+          <SelectField data-gc="servidor.channel-settings.channel-overview-section.select-field.set-slowmode"
             id="modo-lento"
-            valor={slowmode}
-            onEscolher={setSlowmode}
-            opcoes={MODO_LENTO_OPCOES.map((segundos) => ({
-              valor: segundos,
-              rotulo: rotuloDoModoLento(segundos),
+            value={slowmode}
+            onSelect={setSlowmode}
+            options={MODO_LENTO_OPCOES.map((segundos) => ({
+              value: segundos,
+              label: rotuloDoModoLento(segundos),
             }))}
           />
           <p data-gc="servidor.channel-settings.channel-overview-section.p" className="mt-1.5 text-xs text-ink-faint">
@@ -120,12 +120,12 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
           <Label data-gc="servidor.channel-settings.channel-overview-section.label--4">{t("servidor.canal.visibilidade")}</Label>
           <div data-gc="servidor.channel-settings.channel-overview-section.div--7" className="space-y-2">
             {VISIBILIDADES.map((opcao) => (
-              <OpcaoEmCartao data-gc="servidor.channel-settings.channel-overview-section.opcao-em-cartao"
+              <CardOption data-gc="servidor.channel-settings.channel-overview-section.card-option"
                 key={opcao.valor}
-                escolhido={visibilidade === opcao.valor}
-                onEscolher={() => setVisibilidade(opcao.valor)}
-                titulo={t(opcao.titulo)}
-                descricao={t(opcao.descricao)}
+                selected={visibilidade === opcao.valor}
+                onSelect={() => setVisibilidade(opcao.valor)}
+                title={t(opcao.titulo)}
+                description={t(opcao.descricao)}
               />
             ))}
           </div>
@@ -140,7 +140,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
                 max={96000}
                 step={8000}
                 value={bitrate}
-                preenchido={(bitrate - 8000) / 88000}
+                filled={(bitrate - 8000) / 88000}
                 onChange={(e) => setBitrate(Number(e.target.value))}
               />
               <p data-gc="servidor.channel-settings.channel-overview-section.p--2" className="mt-1.5 text-xs text-ink-faint">
@@ -150,12 +150,12 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
 
             <div data-gc="servidor.channel-settings.channel-overview-section.div--9">
               <Label data-gc="servidor.channel-settings.channel-overview-section.label--6">{t("servidor.canal.qualidadeDeVideo")}</Label>
-              <GrupoSegmentado data-gc="servidor.channel-settings.channel-overview-section.grupo-segmentado.set-video-quality"
-                valor={videoQuality}
-                onEscolher={setVideoQuality}
-                opcoes={[
-                  { valor: "AUTO" as const, rotulo: t("servidor.canal.automatica") },
-                  { valor: "HD" as const, rotulo: "720p" },
+              <SegmentedGroup data-gc="servidor.channel-settings.channel-overview-section.segmented-group.set-video-quality"
+                value={videoQuality}
+                onSelect={setVideoQuality}
+                options={[
+                  { value: "AUTO" as const, label: t("servidor.canal.automatica") },
+                  { value: "HD" as const, label: "720p" },
                 ]}
               />
             </div>
@@ -173,7 +173,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
                 max={99}
                 step={1}
                 value={userLimit}
-                preenchido={userLimit / 99}
+                filled={userLimit / 99}
                 onChange={(e) => setUserLimit(Number(e.target.value))}
               />
             </div>
@@ -182,9 +182,9 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
       </div>
 
       <UnsavedBar data-gc="servidor.channel-settings.channel-overview-section.unsaved-bar"
-        visivel={mudou}
-        salvando={salvar.isPending}
-        onDescartar={() => {
+        visible={mudou}
+        saving={salvar.isPending}
+        onDiscard={() => {
           setName(channel.name);
           setTopic(channel.topic ?? "");
           setSlowmode(channel.slowmodeSeconds);
@@ -194,7 +194,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
           setUserLimit(channel.userLimit);
           setFonte(channel.fonte ?? "padrao");
         }}
-        onSalvar={() =>
+        onSave={() =>
           salvar.mutate({
             guildId,
             channelId: channel.id,

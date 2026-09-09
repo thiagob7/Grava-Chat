@@ -1,31 +1,11 @@
-/*
-  Gera `src/assets/molduras/rosas.svg` — filigrana de rosas para `border-image`.
-
-  A faixa é FINA de propósito: a moldura mora sobre a borda do cartão, não numa
-  moldura em volta dele. Por isso o desenho cabe em 48px do quadro de 300, e não
-  em 92 como na primeira versão — com fatia grossa, encolher a borda pra não
-  comer o banner reduzia a rosa a um ponto.
-
-    node scripts/decoracoes/rosas.mjs src/assets/molduras/rosas.svg
-*/
 import { writeFileSync } from "node:fs";
 
-const L = 300;      // lado do quadro
-const F = 48;       // a fatia: a espessura da faixa desenhada
+const L = 300;
+const F = 48;
 const CREME = "#f7f2e7";
 const SOMBRA = "#b9a6e0";
 const RAMO = "#8f7cc4";
 
-/// Caracol de arcos: três voltas bastam pra ler como rosa em miniatura.
-/*
-  A rosa respira: um `scale` de sopro, num grupo INTERNO.
-
-  Interno porque o de fora já carrega o `translate` que a põe no lugar — dois
-  transforms no mesmo elemento se substituem, e a rosa ia parar na origem.
-
-  O `atraso` desencontra as rosas: em uníssono o canto inteiro pulsa junto e
-  lê como piscada, não como respiração.
-*/
 const rosa = (x, y, r, atraso = 0) => `<g transform="translate(${x} ${y})"><g>
   <animateTransform attributeName="transform" type="scale"
     values="1;1.07;1" dur="6s" begin="${atraso}s" repeatCount="indefinite"
@@ -41,7 +21,6 @@ const folha = (x, y, g, e = 1) =>
   `<ellipse rx="${6.5 * e}" ry="${2.7 * e}" fill="${CREME}" stroke="${SOMBRA}"
      stroke-width="1" transform="translate(${x} ${y}) rotate(${g})"/>`;
 
-/// O canto: ramo abraçando a quina, uma rosa mandando e duas folhas.
 const canto = `<g id="canto">
   <path d="M48 12 C32 12 20 20 14 30 C10 37 10 42 10 48"
         fill="none" stroke="${RAMO}" stroke-width="3.2" stroke-linecap="round"/>
@@ -51,11 +30,6 @@ const canto = `<g id="canto">
   ${rosa(19, 19, 14)}
 </g>`;
 
-/*
-  A beira: uma onda inteira entre x=48 e x=252, entrando e saindo em y=15 — é o
-  que faz o ladrilho emendar sem degrau. Só ramo e folha; rosa aqui deixava a
-  borda pesada e virava corrente de contas.
-*/
 const beira = `<g id="beira">
   <path d="M48 15 C82 2 116 30 150 15 C184 0 218 28 252 15"
         fill="none" stroke="${RAMO}" stroke-width="3" stroke-linecap="round"/>

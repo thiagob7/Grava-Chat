@@ -29,11 +29,6 @@ export const SignIn: React.FC = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  /*
-    Entrar, criar conta ou pedir senha nova: o mesmo cartão, três estados. O
-    de pedir some com os campos de senha e nome e fica só com o e-mail, que é
-    tudo o que o servidor precisa.
-  */
   const [modo, setModo] = useState<"entrar" | "criar" | "esqueci">("entrar");
   const [pedido, setPedido] = useState(false);
   const [senha, setSenha] = useState("");
@@ -41,11 +36,6 @@ export const SignIn: React.FC = () => {
   const [erroDaSenha, setErroDaSenha] = useState<string | null>(null);
   const ocupado = entrar.isPending || registrar.isPending || pedirSenhaNova.isPending;
 
-  /*
-    O pedido responde a mesma coisa exista a conta ou não — de propósito. Se
-    a tela dissesse "esse e-mail não tem conta", ela viraria um jeito de
-    descobrir quem está aqui.
-  */
   const pedirNova = async () => {
     if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
 
@@ -242,7 +232,7 @@ export const SignIn: React.FC = () => {
                   onChange={(e) => setSenha(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && void comSenha()}
                   placeholder={modo === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
-                  erro={erroDaSenha ?? undefined}
+                  error={erroDaSenha ?? undefined}
                 />
               </>
             )}

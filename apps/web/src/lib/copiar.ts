@@ -1,4 +1,3 @@
-
 export async function copiarTexto(texto: string): Promise<boolean> {
   try {
     if (navigator.clipboard?.writeText) {
@@ -6,7 +5,6 @@ export async function copiarTexto(texto: string): Promise<boolean> {
       return true;
     }
   } catch {
-    /* sem permissão, ou fora de contexto seguro: cai no plano B */
   }
 
   try {

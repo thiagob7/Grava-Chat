@@ -15,5 +15,5 @@ export const Skeleton: React.FC<{ className?: string; style?: React.CSSPropertie
 
 const LARGURAS = ["92%", "64%", "78%", "45%", "85%", "58%", "70%", "38%"];
 
-export const larguraDaLinha = (indice: number) =>
-  LARGURAS[indice % LARGURAS.length]!;
+export const lineWidth = (index: number) =>
+  LARGURAS[index % LARGURAS.length]!;

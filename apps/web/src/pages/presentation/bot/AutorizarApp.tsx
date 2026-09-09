@@ -9,7 +9,7 @@ import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
 import { Checkbox } from "~/components/ui/checkbox";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { cn } from "~/lib/utils";
@@ -27,14 +27,6 @@ interface PedidoModel {
 
 type Passo = "escopos" | "permissoes" | "destino";
 
-/*
-  Autorizar uma aplicação, em até três passos.
-
-  O primeiro é sempre o dos escopos: cada um tem a chave, menos o `bot`,
-  que é obrigatório quando pedido. Com o bot vêm mais dois: as permissões
-  que ele vai ter (com aviso quando pede administrador) e a comunidade onde
-  entra. Sem o bot, é um passo só.
-*/
 export const AutorizarApp: React.FC = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -241,11 +233,11 @@ export const AutorizarApp: React.FC = () => {
 
           <div data-gc="bot.autorizar-app.div--6" className="mt-5">
             {destinos.data?.destinos.length ? (
-              <CampoSelect data-gc="bot.autorizar-app.campo-select.set-guild-id"
+              <SelectField data-gc="bot.autorizar-app.select-field.set-guild-id"
                 id="destino-do-bot"
-                valor={guildId}
-                onEscolher={setGuildId}
-                opcoes={destinos.data.destinos.map((d) => ({ valor: d.id, rotulo: d.name }))}
+                value={guildId}
+                onSelect={setGuildId}
+                options={destinos.data.destinos.map((d) => ({ value: d.id, label: d.name }))}
               />
             ) : (
               <p data-gc="bot.autorizar-app.p--12" className="rounded-lg bg-surface-0 p-3 text-sm text-ink-muted">

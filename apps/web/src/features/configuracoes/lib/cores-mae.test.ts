@@ -20,14 +20,6 @@ const css = readFileSync(
   "utf8",
 );
 
-/*
-  O valor de reserva no fim da cadeia.
-
-  Desde que as cores nascem do nome da referência, o `@theme` guarda
-  `var(--background-primary, var(--bg-primary, #1a181e))` em vez de `#1a181e`.
-  A cor do tema base é a última — a que vale quando nenhum tema declarou nada — e
-  é dela que as distâncias das cores-mãe são medidas.
-*/
 function corDaReserva(valor: string): string {
   let v = valor.trim();
 
@@ -66,11 +58,6 @@ const mesmaCor = (a: string, b: string) => {
 };
 
 describe("cores-mãe", () => {
-  /*
-    A invariante que sustenta o resto: derivar com a cor que já está lá tem que
-    devolver o tema de hoje. Se a derivação não for a identidade no padrão, ela
-    é um chute — e ninguém consegue conferir um chute cor por cor.
-  */
   it("derivar o padrão devolve o tema base, cor por cor", () => {
     const base = coresDoTema();
     const diferentes: string[] = [];
@@ -141,11 +128,6 @@ describe("cores-mãe", () => {
     expect(todos).toHaveLength(TOKENS_DERIVADOS.size);
   });
 
-  /*
-    A promessa que sustenta as duas abas juntas: escolher uma cor-mãe não pode
-    desmanchar o que a pessoa ajustou token a token. Se esta cair, a aba Cores
-    passa a comer a aba Tokens no clique seguinte.
-  */
   it("o que foi mexido à mão sobrevive a uma nova derivação", () => {
     const meu = { "--color-surface-2": "#0d0d0d" };
 
@@ -155,7 +137,6 @@ describe("cores-mãe", () => {
     expect(antes["--color-surface-2"]).toBe("#0d0d0d");
     expect(depois["--color-surface-2"]).toBe("#0d0d0d");
 
-    /// E as irmãs dele continuam acompanhando a mãe.
     expect(depois["--color-surface-3"]).not.toBe(antes["--color-surface-3"]);
   });
 
@@ -165,22 +146,15 @@ describe("cores-mãe", () => {
     });
   });
 
-  /*
-    A queixa que abriu esta leva: "importei o tema e pouca coisa mudou". Um
-    tema de fora nunca fala dos nomes que só existem aqui, então tudo que é
-    nosso ficava de fábrica no meio de um tema vermelho.
-  */
   it("preenche o que o tema não disse a partir do que ele disse", () => {
     const doTema = { "--color-surface-0": "#1a0000" };
     const resto = completarComDerivacao(doTema);
 
-    /// O palco de voz e o véu não existem no vocabulário de nenhum tema de fora.
     expect(resto["--color-palco"]).toBeTruthy();
     expect(resto["--color-veu"]).toBeTruthy();
     expect(resto["--color-line"]).toBeTruthy();
     expect(resto["--color-hover"]).toBeTruthy();
 
-    /// E acompanham a cor que o tema deu, em vez de ficarem de fábrica.
     const [, croma = 0, matiz = 0] = Color(resto["--color-surface-3"]!)
       .lch()
       .array();

@@ -4,16 +4,6 @@ import { dirname, join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-/*
-  Cor escrita na mão é cor que nenhum tema alcança.
-
-  Foi assim que o app juntou 322 classes fora de token e trocar de tema quase
-  não mudava nada. Este teste segura o número em zero.
-
-  As exceções abaixo não são preguiça: são os lugares onde a cor é DADO, não
-  estilo. Cada uma precisa de motivo escrito.
-*/
-
 const raiz = dirname(fileURLToPath(import.meta.url));
 const FORA = new Set(["traducao", "assets", "node_modules"]);
 
@@ -38,6 +28,11 @@ const PERDOADOS: { arquivo: string; porque: string }[] = [
     arquivo: "features/configuracoes/components/AppearanceSection.tsx",
     porque: "as miniaturas desenham cada tema base; são amostra, não interface",
   },
+  {
+    arquivo: "features/servidor/components/EventsModal.tsx",
+    porque:
+      "a prancheta atrás da ilustração casa com o borrão do próprio desenho (#ebf3fa); é cor da arte, não do tema, e um token deixaria o tema descolar dela",
+  },
 ];
 
 function arquivos(pasta: string, achados: string[] = []) {
@@ -53,11 +48,9 @@ function arquivos(pasta: string, achados: string[] = []) {
   return achados;
 }
 
-/// Classe do Tailwind que pinta com cor de fora do nosso vocabulário.
 const CRUA =
   /\b(?:bg|text|border|ring|shadow|fill|stroke|from|to|via|divide|caret|accent|outline)-(?:white|black|slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-\d{2,3})?(?:\/\[?[\d.]+\]?)?\b/g;
 
-/// Cor literal dentro de valor arbitrário: `bg-[#111]`, `shadow-[...rgba(...)]`.
 const LITERAL_NA_CLASSE = /\[[^\]]*(?:#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\()[^\]]*\]/g;
 
 describe("cor fora de token", () => {

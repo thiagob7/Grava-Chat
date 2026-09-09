@@ -13,8 +13,8 @@ import {
 import { comCabecalho, lerCabecalhoDoTema } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
-import { Input, Label, Textarea, campoNu, grupoDeCampo } from "~/components/ui/input";
+import { useConfirm } from "~/components/ui/confirm";
+import { Input, Label, Textarea, bareField, fieldGroup } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useEstudio, type TemaSalvo } from "~/features/configuracoes/stores/estudio";
 import { cn } from "~/lib/utils";
@@ -33,9 +33,6 @@ function baixar(nome: string, conteudo: string, tipo: string) {
 
 const semExtensao = (nome: string) => nome.replace(/\.[^.]+$/, "");
 
-/// O arquivo que sai no Exportar: o CSS com o cabeçalho reescrito a partir do
-/// que a pessoa preencheu, para o tema se apresentar em qualquer outro app
-/// que entenda esse formato.
 function arquivoDoTema(tema: TemaSalvo): string {
   return comCabecalho(tema.css, {
     nome: tema.nome,
@@ -60,7 +57,7 @@ export const AbaDaBiblioteca: React.FC = () => {
   const importarCss = useEstudio((s) => s.importarCssComoTema);
   const importarBiblioteca = useEstudio((s) => s.importarBiblioteca);
 
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const arquivoCss = useRef<HTMLInputElement>(null);
   const pasta = useRef<HTMLInputElement>(null);
   const arquivoJson = useRef<HTMLInputElement>(null);
@@ -129,7 +126,6 @@ export const AbaDaBiblioteca: React.FC = () => {
           multiple
           className="hidden"
           // @ts-expect-error -- só o Chromium tem, e é degradação limpa: sem
-          // isto o seletor abre em modo de arquivos soltos.
           webkitdirectory=""
           onChange={(e) => {
             const arquivos = [...(e.target.files ?? [])];
@@ -185,14 +181,14 @@ export const AbaDaBiblioteca: React.FC = () => {
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--2" className="flex min-h-0 flex-1">
         <aside data-gc="configuracoes.estudio.aba-da-biblioteca.aside" className="flex w-64 shrink-0 flex-col border-r border-line">
           <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--3" className="p-3">
-            <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--4" className={grupoDeCampo}>
+            <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--4" className={fieldGroup}>
               <Search data-gc="configuracoes.estudio.aba-da-biblioteca.search" size={14} className="shrink-0 text-ink-faint" />
               <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--4"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar temas"
                 aria-label="Pesquisar temas"
-                className={campoNu}
+                className={bareField}
               />
               {busca && (
                 <button data-gc="configuracoes.estudio.aba-da-biblioteca.button--5"
@@ -282,13 +278,13 @@ export const AbaDaBiblioteca: React.FC = () => {
                 baixar(`${escolhido.nome}.css`, arquivoDoTema(escolhido), "text/css")
               }
               onExcluir={() =>
-                void confirmar({
-                  titulo: `Excluir ${escolhido.nome}?`,
-                  descricao: "O tema sai da biblioteca. Não dá para desfazer.",
-                  acao: "Excluir",
-                  destrutivo: true,
-                }).then(({ confirmado }) => {
-                  if (!confirmado) return;
+                void confirm({
+                  title: `Excluir ${escolhido.nome}?`,
+                  description: "O tema sai da biblioteca. Não dá para desfazer.",
+                  action: "Excluir",
+                  destructive: true,
+                }).then(({ confirmed }) => {
+                  if (!confirmed) return;
 
                   apagar(escolhido.id);
                   setEscolhidoId(null);

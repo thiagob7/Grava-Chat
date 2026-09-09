@@ -24,13 +24,6 @@ interface CampoDeBuscaProps {
   onEscopo?: (escopo: EscopoDeBusca) => void;
 }
 
-/*
-  O campo de busca, com as chaves e o escopo.
-
-  Com o campo focado, a lista de chaves aparece embaixo: clicar numa põe
-  `chave:` no texto, e o resto a pessoa completa. O escopo mora num botão ao
-  lado, e diz onde procurar — este servidor, todos, só as conversas.
-*/
 export const CampoDeBusca: React.FC<CampoDeBuscaProps> = ({
   termo,
   onBuscar,

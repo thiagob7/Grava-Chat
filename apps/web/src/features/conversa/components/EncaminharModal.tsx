@@ -7,7 +7,7 @@ import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Dialog, DialogBody, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { bareField, fieldGroup } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -79,14 +79,14 @@ export const EncaminharModal: React.FC<EncaminharModalProps> = ({
         <DialogTitle data-gc="conversa.encaminhar-modal.dialog-title">{t("conversa.encaminhar.titulo")}</DialogTitle>
 
         <DialogBody data-gc="conversa.encaminhar-modal.dialog-body">
-          <div data-gc="conversa.encaminhar-modal.div" className={grupoDeCampo}>
+          <div data-gc="conversa.encaminhar-modal.div" className={fieldGroup}>
             <Search data-gc="conversa.encaminhar-modal.search" size={14} className="shrink-0 text-ink-faint" />
             <input data-gc="conversa.encaminhar-modal.input"
               autoFocus
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder={t("conversa.encaminhar.paraOnde")}
-              className={campoNu}
+              className={bareField}
             />
           </div>
 

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import { useTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
@@ -13,7 +13,7 @@ import { useEstudio } from "~/features/configuracoes/stores/estudio";
 export const VerTema: React.FC = () => {
   const { temaId } = useParams();
   const navigate = useNavigate();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const { data: tema, isLoading, isError } = useTema(temaId);
   const importar = useEstudio((s) => s.importar);
@@ -111,13 +111,13 @@ export const VerTema: React.FC = () => {
           <Button data-gc="tema.ver-tema.button"
             className="flex-1"
             onClick={() =>
-              void confirmar({
-                titulo: `Importar ${tema.nome}?`,
-                descricao:
+              void confirm({
+                title: `Importar ${tema.nome}?`,
+                description:
                   "O tema que você tem hoje no estúdio é substituído por este. Dá para voltar atrás pelo próprio estúdio.",
-                acao: "Importar",
-              }).then(({ confirmado }) => {
-                if (!confirmado) return;
+                action: "Importar",
+              }).then(({ confirmed }) => {
+                if (!confirmed) return;
 
                 importar({
                   css: tema.css,

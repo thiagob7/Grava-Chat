@@ -37,11 +37,6 @@ describe("reacaoAFalhaDeMicrofone", () => {
     expect(reacaoAFalhaDeMicrofone(erro("TypeError"))).toBe("estourar");
   });
 
-  /*
-    O caso que motivou o módulo: durante uma reconexão, uma falha que não
-    sabemos ler não pode virar "microfone bloqueado" — a pessoa ia procurar um
-    problema que não existe, e ele some sozinho quando a rede volta.
-  */
   it("falha desconhecida no meio de uma reconexão adia", () => {
     expect(reacaoAFalhaDeMicrofone(erro("AlgoNovoDoLiveKit"), reconectando)).toBe("adiar");
   });
@@ -50,11 +45,6 @@ describe("reacaoAFalhaDeMicrofone", () => {
     expect(reacaoAFalhaDeMicrofone(erro("AlgoNovoDoLiveKit"))).toBe("mutar");
   });
 
-  /*
-    Permissão e aparelho não mudam porque a rede caiu. Escondê-los durante a
-    reconexão só adiaria a descoberta para o momento em que a pessoa já achava
-    que estava tudo certo.
-  */
   it("permissão negada continua pedindo ação mesmo reconectando", () => {
     expect(reacaoAFalhaDeMicrofone(erro("NotAllowedError"), reconectando)).toBe("mutar");
   });

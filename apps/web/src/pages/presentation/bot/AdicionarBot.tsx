@@ -12,7 +12,7 @@ import {
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Label } from "~/components/ui/input";
 import { PERMISSION_LABELS } from "@gravae/shared";
 
@@ -72,12 +72,12 @@ export const AdicionarBot: React.FC = () => {
         <Label data-gc="bot.adicionar-bot.label" htmlFor="servidor">Adicionar em</Label>
 
         {disponiveis.length ? (
-          <CampoSelect data-gc="bot.adicionar-bot.campo-select.set-escolhido"
+          <SelectField data-gc="bot.adicionar-bot.select-field.set-escolhido"
             id="servidor"
-            valor={escolhido}
-            onEscolher={setEscolhido}
+            value={escolhido}
+            onSelect={setEscolhido}
             placeholder="Escolha o servidor"
-            opcoes={disponiveis.map((g) => ({ valor: g.id, rotulo: g.name }))}
+            options={disponiveis.map((g) => ({ value: g.id, label: g.name }))}
           />
         ) : (
           <p data-gc="bot.adicionar-bot.p--5" className="rounded bg-surface-0 px-3 py-2 text-sm text-ink-faint">

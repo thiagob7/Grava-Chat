@@ -4,9 +4,9 @@ import { LIMITS, type StatusPersonalizado } from "@gravae/shared";
 
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Button } from "~/components/ui/button";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { Label, campoNu, grupoDeCampo } from "~/components/ui/input";
+import { Label, bareField, fieldGroup } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
@@ -102,7 +102,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         <div data-gc="perfil.cartao.status-modal.div--2" className="mt-5">
           <Label data-gc="perfil.cartao.status-modal.label" htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
 
-          <div data-gc="perfil.cartao.status-modal.div--3" className={cn(grupoDeCampo, "gap-1 px-1.5")}>
+          <div data-gc="perfil.cartao.status-modal.div--3" className={cn(fieldGroup, "gap-1 px-1.5")}>
             <SeletorDeEmoji data-gc="perfil.cartao.status-modal.seletor-de-emoji.set-emoji" onEscolher={setEmoji}>
               <button data-gc="perfil.cartao.status-modal.button"
                 type="button"
@@ -120,7 +120,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               onChange={(e) => setTexto(e.target.value)}
               maxLength={LIMITS.statusPersonalizado}
               placeholder={t("perfil.status.oQuePensa")}
-              className={campoNu}
+              className={bareField}
             />
 
             {emoji && (
@@ -137,11 +137,11 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         </div>
 
         <div data-gc="perfil.cartao.status-modal.div--4" className="mt-4 flex items-center gap-3">
-          <CampoSelect data-gc="perfil.cartao.status-modal.campo-select.set-prazo"
-            valor={prazo}
-            onEscolher={setPrazo}
+          <SelectField data-gc="perfil.cartao.status-modal.select-field.set-prazo"
+            value={prazo}
+            onSelect={setPrazo}
             className="flex-1"
-            opcoes={PRAZOS.map((p) => ({ valor: p.id, rotulo: rotuloComHora(p) }))}
+            options={PRAZOS.map((p) => ({ value: p.id, label: rotuloComHora(p) }))}
           />
 
           <Button data-gc="perfil.cartao.status-modal.button.salvar" onClick={salvar} disabled={salvando}>

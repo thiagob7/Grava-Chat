@@ -17,25 +17,25 @@ export interface OpcoesDoConvite {
 
 const SEM_LIMITE = 0;
 
-const VALIDADES: { valor: number; rotulo: string }[] = [
-  { valor: 0.5, rotulo: "30 minutos" },
-  { valor: 1, rotulo: "1 hora" },
-  { valor: 6, rotulo: "6 horas" },
-  { valor: 12, rotulo: "12 horas" },
-  { valor: 24, rotulo: "1 dia" },
-  { valor: 24 * 7, rotulo: "7 dias" },
-  { valor: 24 * 30, rotulo: "30 dias" },
-  { valor: SEM_LIMITE, rotulo: "Nunca" },
+const VALIDADES: { value: number; label: string }[] = [
+  { value: 0.5, label: "30 minutos" },
+  { value: 1, label: "1 hora" },
+  { value: 6, label: "6 horas" },
+  { value: 12, label: "12 horas" },
+  { value: 24, label: "1 dia" },
+  { value: 24 * 7, label: "7 dias" },
+  { value: 24 * 30, label: "30 dias" },
+  { value: SEM_LIMITE, label: "Nunca" },
 ];
 
-const USOS: { valor: number; rotulo: string }[] = [
-  { valor: SEM_LIMITE, rotulo: "Sem limite" },
-  { valor: 1, rotulo: "1 uso" },
-  { valor: 5, rotulo: "5 usos" },
-  { valor: 10, rotulo: "10 usos" },
-  { valor: 25, rotulo: "25 usos" },
-  { valor: 50, rotulo: "50 usos" },
-  { valor: 100, rotulo: "100 usos" },
+const USOS: { value: number; label: string }[] = [
+  { value: SEM_LIMITE, label: "Sem limite" },
+  { value: 1, label: "1 uso" },
+  { value: 5, label: "5 usos" },
+  { value: 10, label: "10 usos" },
+  { value: 25, label: "25 usos" },
+  { value: 50, label: "50 usos" },
+  { value: 100, label: "100 usos" },
 ];
 
 interface Props {
@@ -70,9 +70,9 @@ export const ConfiguracoesDoConvite: React.FC<Props> = ({
           <Label data-gc="servidor.configuracoes-do-convite.label" htmlFor="convite-validade">Expira em</Label>
           <Combobox data-gc="servidor.configuracoes-do-convite.combobox.set-validade"
             id="convite-validade"
-            valor={validade}
-            onEscolher={setValidade}
-            opcoes={VALIDADES}
+            value={validade}
+            onSelect={setValidade}
+            options={VALIDADES}
             placeholder="Escolha ou digite…"
           />
         </div>
@@ -81,9 +81,9 @@ export const ConfiguracoesDoConvite: React.FC<Props> = ({
           <Label data-gc="servidor.configuracoes-do-convite.label--2" htmlFor="convite-usos">Número máximo de usos</Label>
           <Combobox data-gc="servidor.configuracoes-do-convite.combobox.set-usos"
             id="convite-usos"
-            valor={usos}
-            onEscolher={setUsos}
-            opcoes={USOS}
+            value={usos}
+            onSelect={setUsos}
+            options={USOS}
             placeholder="Escolha ou digite…"
           />
         </div>

@@ -12,7 +12,7 @@ import { useVerificarGuild } from "~/@core/application/queries/guild/use-verific
 import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Label } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 
@@ -94,15 +94,15 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
 
       <div data-gc="servidor.server-settings.descoberta-section.div--7" className="mt-6">
         <Label data-gc="servidor.server-settings.descoberta-section.label" htmlFor="categoria-do-servidor">Categoria</Label>
-        <CampoSelect data-gc="servidor.server-settings.descoberta-section.campo-select.set-categoria"
+        <SelectField data-gc="servidor.server-settings.descoberta-section.select-field.set-categoria"
           id="categoria-do-servidor"
-          valor={categoria}
-          onEscolher={setCategoria}
-          opcoes={[
-            { valor: "", rotulo: "Sem categoria" },
+          value={categoria}
+          onSelect={setCategoria}
+          options={[
+            { value: "", label: "Sem categoria" },
             ...CATEGORIAS_DE_COMUNIDADE.map((id) => ({
-              valor: id,
-              rotulo: NOMES_DE_CATEGORIA[id],
+              value: id,
+              label: NOMES_DE_CATEGORIA[id],
             })),
           ]}
         />
@@ -113,13 +113,13 @@ export const DescobertaSection: React.FC<{ guild: GuildModel }> = ({ guild }) =>
       </div>
 
       <UnsavedBar data-gc="servidor.server-settings.descoberta-section.unsaved-bar"
-        visivel={mudou}
-        salvando={salvar.isPending}
-        onDescartar={() => {
+        visible={mudou}
+        saving={salvar.isPending}
+        onDiscard={() => {
           setDescobrivel(guild.descobrivel !== false);
           setCategoria(guild.categoria ?? "");
         }}
-        onSalvar={() =>
+        onSave={() =>
           salvar.mutate({
             guildId: guild.id,
             descobrivel,

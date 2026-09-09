@@ -1,10 +1,5 @@
 import type { HLJSApi } from "highlight.js";
 
-/*
-  O highlight.js entra por import dinâmico: são ~120 KB que só interessam a
-  quem abre uma conversa com código, e não a quem só está lendo texto. O
-  módulo fica em cache depois da primeira vez.
-*/
 let carregando: Promise<HLJSApi> | null = null;
 
 export function carregarRealce(): Promise<HLJSApi> {
@@ -13,15 +8,11 @@ export function carregarRealce(): Promise<HLJSApi> {
   return carregando;
 }
 
-/// O que o seletor de idioma oferece. `auto` deixa o próprio highlight.js
-/// decidir, que é o padrão de quem cola sem dizer a linguagem.
 export const IDIOMA_AUTOMATICO = "auto";
 
 export interface IdiomaDeCodigo {
   id: string;
   rotulo: string;
-  /// O nome do formato quando ele difere do id, como a referência mostra em
-  /// cinza ao lado (`adoc  ASCIIDOC`).
   formato?: string;
 }
 
@@ -63,8 +54,6 @@ export const IDIOMAS: IdiomaDeCodigo[] = [
   { id: "yaml", rotulo: "yaml", formato: "YML" },
 ];
 
-/// Os apelidos que a cerca costuma trazer, para cair no id que o
-/// highlight.js conhece.
 const APELIDOS: Record<string, string> = {
   "c++": "cpp",
   "c#": "csharp",
@@ -88,14 +77,6 @@ const APELIDOS: Record<string, string> = {
 
 const CONHECIDOS = new Set(IDIOMAS.map((i) => i.id));
 
-/*
-  Normaliza o que veio da cerca. Devolve `auto` quando não reconhece, em vez de
-  inventar: melhor o highlight.js chutar do que pintar com a gramática errada.
-
-  `txt` de propósito não vira `plaintext`: um .txt costuma ter código dentro, e
-  a gramática de texto puro desligaria o realce justamente onde ele ajuda.
-  Quem quiser texto cru escolhe `plaintext` na lista.
-*/
 export function normalizarIdioma(bruto: string | null | undefined): string {
   const chave = bruto?.trim().toLowerCase();
   if (!chave) return IDIOMA_AUTOMATICO;
@@ -107,8 +88,6 @@ export function normalizarIdioma(bruto: string | null | undefined): string {
 
 export interface Realce {
   html: string;
-  /// Qual gramática acabou sendo usada — o `auto` precisa disto para o
-  /// rodapé mostrar o que ele decidiu.
   idioma: string | null;
 }
 

@@ -1,24 +1,3 @@
-/*
-  Procura o carimbo que pousa onde não devia.
-
-  Um tema da comunidade mira painel por pedaço de nome, não pelo nome inteiro:
-  o Galaxy escreve `[class*="ChannelChatLayout"][class*="container"]` para pegar
-  a coluna da conversa, porque na referência só ela tem `container` no nome.
-
-  Na referência isso é seguro: lá cada elemento só carrega as classes do módulo
-  dele. Aqui cada elemento carrega também um punhado de classes do Tailwind, e
-  basta uma delas ter a palavra dentro para o seletor pousar num vizinho. Foi o
-  que aconteceu com a caixa de escrever: ela tinha a classe `@container` do
-  Tailwind, o seletor da coluna da conversa a pegou junto, e ela levou um
-  `padding: 19px` que não era dela — 20px mais alta que a da referência.
-
-  A regra: num elemento carimbado com `Arquivo.module__parte_gc`, nenhuma outra
-  classe pode conter uma `parte` que exista nesse mesmo `Arquivo`. Só o par
-  arquivo+parte importa, porque é o que um autor de tema tem como escrever.
-
-  Rodar:
-    node scripts/checar-fantasmas.mjs
-*/
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,7 +9,6 @@ const RAIZ = join(AQUI, "..", "src");
 const PONTE = join(RAIZ, "lib", "compat-de-tema.ts");
 const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
 
-/// nome do lugar -> classes que ele carimba
 const LUGARES = {};
 {
   const fonte = readFileSync(PONTE, "utf8");
@@ -41,7 +19,6 @@ const LUGARES = {};
   }
 }
 
-/// Arquivo da referência -> partes que a ponte usa dele
 const PARTES = {};
 for (const classes of Object.values(LUGARES)) {
   for (const classe of classes) {
@@ -60,10 +37,6 @@ function arquivos(pasta, achados = []) {
   return achados;
 }
 
-/*
-  Só o que vira `class` de verdade: o `className` e o segundo argumento do
-  `flx()`. O `data-gc` tem palavra parecida e não pinta nada.
-*/
 function classesDoElemento(no, fonte) {
   const nomes = [];
   const literais = [];
@@ -133,7 +106,6 @@ for (const caminho of arquivos(RAIZ)) {
 
         for (const arquivo of meusArquivos) {
           for (const parte of PARTES[arquivo] ?? []) {
-            /// O elemento é o alvo legítimo desse par: pousar aqui é o certo.
             if (carimbos.some((c) => c.startsWith(`${arquivo}.module__${parte}_`))) continue;
 
             for (const util of utilitarias) {

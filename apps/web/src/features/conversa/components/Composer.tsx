@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, FileUp, Paperclip, Plus, Send, Timer, X } from "lucide-react";
 import { LIMITS, type FonteDeNome, type Sticker } from "@gravae/shared";
@@ -21,7 +21,7 @@ import { BarraDeGravacao } from "~/features/conversa/components/BarraDeGravacao"
 import type { RecadoGravado } from "~/features/conversa/hooks/use-gravador-de-voz";
 import { uploadArquivo } from "~/lib/upload";
 import { apiErrorMessage } from "~/@core/lib/api";
-import { classeDoBotaoDaCaixa } from "~/components/ui/button";
+import { boxButtonClass } from "~/components/ui/button";
 import { ComandoSugestoes, DicaDoComando } from "~/features/conversa/components/ComandoSugestoes";
 import { MencaoSugestoes } from "~/features/conversa/components/MencaoSugestoes";
 import {
@@ -47,7 +47,7 @@ import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { Button } from "~/components/ui/button";
-import { ModalIlustrado } from "~/components/ui/modal-ilustrado";
+import { IllustratedModal } from "~/components/ui/illustrated-modal";
 import {
   ArteDeArquivoGrande,
   ArteDeTextoLongo,
@@ -110,7 +110,7 @@ export const Composer: React.FC<ComposerProps> = ({
     pedirEdicao(alvo);
     return true;
   };
-  const [arrastando, setArrastando] = useState(false);
+  const [dragging, setArrastando] = useState(false);
   const [seletor, setSeletor] = useState<Aba | null>(null);
 
   useAtalhoGlobal("expressoes", () => {
@@ -180,11 +180,20 @@ export const Composer: React.FC<ComposerProps> = ({
     !anexos.subindo &&
     !invocacao?.faltando.length;
 
+  const ajustarAltura = useCallback(() => {
+    const campo = textarea.current;
+    if (!campo) return;
+
+    campo.style.height = "auto";
+    if (campo.value) campo.style.height = `${Math.min(campo.scrollHeight, window.innerHeight / 2)}px`;
+  }, []);
+
+  useEffect(ajustarAltura, [value, gravando, ajustarAltura]);
+
   const limparCaixa = () => {
     setValue("");
     setMencao(null);
     setComando(null);
-    if (textarea.current) textarea.current.style.height = "auto";
   };
 
   const [esperaAte, setEsperaAte] = useState(0);
@@ -243,11 +252,6 @@ export const Composer: React.FC<ComposerProps> = ({
     marcarEspera();
   };
 
-  /*
-    O recado sobe e vira mensagem sozinho — sem passar pela bandeja de
-    anexos. Recado não é arquivo que se junta a um texto: ele já É a
-    mensagem, e pedir um segundo clique em "enviar" seria só atrito.
-  */
   const enviarRecado = async (recado: RecadoGravado) => {
     try {
       const anexo = await uploadArquivo(recado.file);
@@ -323,10 +327,6 @@ export const Composer: React.FC<ComposerProps> = ({
       value.length -
       ((campoDeTexto?.selectionEnd ?? 0) - (campoDeTexto?.selectionStart ?? 0));
 
-    /*
-      Colar mais do que cabe: em vez de truncar em silêncio, oferecemos mandar
-      como arquivo. É o caso de quem cola um arquivo inteiro na conversa.
-    */
     if (jaTem + texto.length > LIMITS.messageLength) {
       evento.preventDefault();
       setTextoLongo(texto);
@@ -351,36 +351,19 @@ export const Composer: React.FC<ComposerProps> = ({
       campo.focus();
       campo.setSelectionRange(cursor, cursor);
 
-      campo.style.height = "auto";
-      campo.style.height = `${Math.min(campo.scrollHeight, window.innerHeight / 2)}px`;
+      ajustarAltura();
     });
   };
 
-  /// Vira anexo com a extensão que o próprio texto denuncia, e não um .txt
-  /// genérico: assim a prévia já abre com o realce certo do outro lado.
   const virarArquivo = (texto: string) => {
     const { nome, conteudo } = textoParaArquivo(texto);
 
     void anexos.add([new File([conteudo], nome, { type: "text/plain;charset=utf-8" })]);
   };
 
-  /*
-    Vai TUDO no mesmo arquivo: o que já estava escrito mais o que foi colado.
-    Mandar só o pedaço que estourou deixava o resto como texto solto na caixa,
-    e a mensagem saía partida entre blocos e anexo.
-  */
   const mandarComoArquivo = () => {
     if (!textoLongo) return;
 
-    /*
-      O que já estava na caixa vem cercado (o colar de código cerca na hora),
-      mas o texto novo costuma chegar cru. Emendar os dois assim daria
-      "bloco + texto solto", e o arquivo cairia para .txt em vez de .js.
-
-      Só que quem cola um markdown inteiro já traz as cercas — e cercar de
-      novo aninhava uma na outra, que é o que fazia o arquivo sair .txt com
-      ``` no meio.
-    */
     const jaVemCercado = textoLongo.includes("```");
     const novo =
       !jaVemCercado && pareceCodigo(textoLongo)
@@ -394,12 +377,12 @@ export const Composer: React.FC<ComposerProps> = ({
 
   return (
     <section data-gc="conversa.composer.section" aria-label="Caixa de escrever" {...flx("caixaDeEscrever", "caixa-de-escrever mede-a-largura bg-composer px-2 pb-3 @sm:px-3")}>
-      <ModalIlustrado data-gc="conversa.composer.modal-ilustrado"
-        aberto={Boolean(textoLongo)}
-        onFechar={() => setTextoLongo(null)}
-        arte={<ArteDeTextoLongo data-gc="conversa.composer.arte-de-texto-longo" />}
-        titulo={t("conversa.caixa.longaTitulo")}
-        descricao={t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
+      <IllustratedModal data-gc="conversa.composer.illustrated-modal"
+        open={Boolean(textoLongo)}
+        onClose={() => setTextoLongo(null)}
+        art={<ArteDeTextoLongo data-gc="conversa.composer.arte-de-texto-longo" />}
+        title={t("conversa.caixa.longaTitulo")}
+        description={t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
       >
         <Button data-gc="conversa.composer.button.mandar-como-arquivo" onClick={mandarComoArquivo}>
           <Paperclip data-gc="conversa.composer.paperclip" size={16} /> {t("conversa.caixa.enviarComoArquivo")}
@@ -408,20 +391,20 @@ export const Composer: React.FC<ComposerProps> = ({
         <Button data-gc="conversa.composer.button" variant="ghost" onClick={() => setTextoLongo(null)}>
           {t("comum.cancelar")}
         </Button>
-      </ModalIlustrado>
+      </IllustratedModal>
 
-      <ModalIlustrado data-gc="conversa.composer.modal-ilustrado.esquecer-grande-demais"
-        aberto={Boolean(anexos.grandeDemais)}
-        onFechar={anexos.esquecerGrandeDemais}
-        arte={<ArteDeArquivoGrande data-gc="conversa.composer.arte-de-arquivo-grande" />}
-        titulo={t("conversa.caixa.arquivoGrandeTitulo")}
-        descricao={t("conversa.caixa.arquivoGrandeDescricao", {
+      <IllustratedModal data-gc="conversa.composer.illustrated-modal.esquecer-grande-demais"
+        open={Boolean(anexos.grandeDemais)}
+        onClose={anexos.esquecerGrandeDemais}
+        art={<ArteDeArquivoGrande data-gc="conversa.composer.arte-de-arquivo-grande" />}
+        title={t("conversa.caixa.arquivoGrandeTitulo")}
+        description={t("conversa.caixa.arquivoGrandeDescricao", {
           arquivo: anexos.grandeDemais ?? "",
           limite: Math.round(LIMITS.attachmentBytes / (1024 * 1024)),
         })}
       >
         <Button data-gc="conversa.composer.button.esquecer-grande-demais" onClick={anexos.esquecerGrandeDemais}>{t("comum.fechar")}</Button>
-      </ModalIlustrado>
+      </IllustratedModal>
       {faltam > 0 && (
         <div data-gc="conversa.composer.div" {...flx("trilhoDeAviso", "mb-1 flex items-center justify-end")}>
           <Tooltip data-gc="conversa.composer.tooltip" label={t("conversa.caixa.modoLentoDica", { segundos: modoLento })}>
@@ -451,15 +434,8 @@ export const Composer: React.FC<ComposerProps> = ({
         {...flxAttr("campoDeEscrever")}
         className={cn(
           flxCls("campoDeEscrever"),
-          /*
-            Coluna centrada, e não bloco: a caixa tem altura mínima de uma
-            linha e meia, e a linha de escrever é mais baixa que isso. Em
-            bloco ela encostava no topo e o texto nascia alto, com um vão
-            embaixo. Centrada, a linha fica no meio; quando o texto cresce e
-            passa da mínima, centrar não faz diferença nenhuma.
-          */
-          "flex min-h-[var(--footer-box-height)] flex-col justify-center rounded-[var(--footer-box-radius)] leading-[var(--textarea-line-height)] bg-campo transition",
-          arrastando && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
+          "flex min-h-[var(--composer-box-height)] flex-col justify-center rounded-[var(--footer-box-radius)] leading-[var(--textarea-line-height)] bg-campo transition",
+          dragging && "ring-2 ring-brand ring-offset-2 ring-offset-surface-2",
         )}
       >
         {resposta && (
@@ -504,10 +480,6 @@ export const Composer: React.FC<ComposerProps> = ({
           onPatch={anexos.patchAttachment}
         />
 
-        {/*
-          A pilha por fora e a linha por dentro, como na referência: lá é
-          `stackSection` > `textareaOuterRow`, e o tema encadeia os dois.
-        */}
         <div data-gc="conversa.composer.div--4" {...flx("pilhaDeEscrever")}>
         <div data-gc="conversa.composer.div--5" {...flx("linhaDeEscrever", "relative flex items-end gap-1 px-2 @sm:gap-1.5 @sm:px-3")}>
           <MencaoSugestoes data-gc="conversa.composer.mencao-sugestoes.inserir-mencao"
@@ -538,7 +510,7 @@ export const Composer: React.FC<ComposerProps> = ({
                 aria-label={t("conversa.caixa.mais")}
                 className={cn(
                   flxCls("botaoDaCaixa"),
-                  classeDoBotaoDaCaixa,
+                  boxButtonClass,
                   "text-ink-muted hover:bg-hover hover:text-ink",
                 )}
               >
@@ -586,12 +558,6 @@ export const Composer: React.FC<ComposerProps> = ({
             ref={espelho}
             texto={value}
             fontFamily={familiaDaFonte(fonte) ?? undefined}
-            /*
-              Cinco, e não doze: a linha tem 22 e o botão ao lado tem 32, então
-              é (32 - 22) / 2 que faz o meio do texto bater com o meio do "+".
-              Com doze o texto subia sete pixels acima dos botões. O espelho
-              usa o mesmo recuo, senão o que se lê e o cursor andam separados.
-            */
             className="py-[5px]"
           />
 
@@ -604,7 +570,7 @@ export const Composer: React.FC<ComposerProps> = ({
             placeholder={
               !podeEscrever
                 ? t("conversa.caixa.semPermissao")
-                : arrastando
+                : dragging
                   ? t("conversa.caixa.solteParaAnexar")
                   : channelName
                     ? t("conversa.caixa.escrever", { canal: channelName })
@@ -616,8 +582,7 @@ export const Composer: React.FC<ComposerProps> = ({
               detectar(e.target.value, e.target.selectionStart ?? 0);
               setEscolhido(0);
               notifyTyping();
-              e.target.style.height = "auto";
-              e.target.style.height = `${Math.min(e.target.scrollHeight, window.innerHeight / 2)}px`;
+              ajustarAltura();
             }}
             onClick={(e) => detectar(value, e.currentTarget.selectionStart ?? 0)}
             onBlur={() => {
@@ -770,7 +735,7 @@ export const Composer: React.FC<ComposerProps> = ({
                   aria-label={t("conversa.caixa.enviar")}
                   className={cn(
                     flxCls("botaoDaCaixa"),
-                    classeDoBotaoDaCaixa,
+                    boxButtonClass,
                     "text-ink-muted hover:bg-hover hover:text-brand",
                   )}
                 >

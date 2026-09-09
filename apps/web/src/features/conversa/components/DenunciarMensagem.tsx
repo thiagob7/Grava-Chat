@@ -8,17 +8,10 @@ import { MOTIVOS_DE_DENUNCIA, type MotivoDeDenuncia } from "~/@core/application/
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Label, Textarea } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 
 const TRECHO = 300;
 
-/*
-  Denunciar uma mensagem.
-
-  Mostra de volta o que está sendo denunciado — quem abre o menu no lugar
-  errado percebe antes de enviar. O texto aparece cortado no mesmo tamanho que
-  o servidor guarda, para não prometer mais do que vai chegar lá.
-*/
 export const DenunciarMensagem: React.FC<{
   mensagem: Message;
   aberto: boolean;
@@ -52,11 +45,11 @@ export const DenunciarMensagem: React.FC<{
 
           <div data-gc="conversa.denunciar-mensagem.div--2">
             <Label data-gc="conversa.denunciar-mensagem.label" htmlFor="motivo-da-denuncia-da-mensagem">{t("conversa.denuncia.motivo")}</Label>
-            <CampoSelect data-gc="conversa.denunciar-mensagem.campo-select"
+            <SelectField data-gc="conversa.denunciar-mensagem.select-field"
               id="motivo-da-denuncia-da-mensagem"
-              valor={motivo}
-              onEscolher={(valor) => setMotivo(valor as MotivoDeDenuncia)}
-              opcoes={MOTIVOS_DE_DENUNCIA.map((m) => ({ valor: m, rotulo: t(`conversa.denuncia.motivos.${m}`) }))}
+              value={motivo}
+              onSelect={(valor) => setMotivo(valor as MotivoDeDenuncia)}
+              options={MOTIVOS_DE_DENUNCIA.map((m) => ({ value: m, label: t(`conversa.denuncia.motivos.${m}`) }))}
             />
           </div>
 

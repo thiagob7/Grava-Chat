@@ -368,7 +368,7 @@ const VolumeDaLive: React.FC<{ onOpenChange?: (aberto: boolean) => void }> = ({
             max={1}
             step={0.05}
             value={volume}
-            preenchido={volume}
+            filled={volume}
             aria-label={t("chamada.volume.live")}
             onChange={(e) => definir(assistindo, Number(e.target.value))}
             className="w-32 -rotate-90"
@@ -441,7 +441,7 @@ const FaixaDeVolume: React.FC<{
       max={max}
       step={0.05}
       value={valor}
-      preenchido={valor / max}
+      filled={valor / max}
       aria-label={rotulo}
       onChange={(e) => onMudar(Number(e.target.value))}
     />

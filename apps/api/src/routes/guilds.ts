@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
-import { rooms } from "@gravae/shared";
+import { LIMITS, rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
 import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
+import { guildEventService } from "~/services/guild-event-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
 import { emblemaService } from "~/services/emblema-service.js";
@@ -14,6 +15,7 @@ import {
 import { z } from "zod";
 import { objectId } from "@gravae/shared";
 import {
+  guildEventInput,
   createGuildInput,
   createChannelInput,
   updateChannelInput,
@@ -54,6 +56,50 @@ export async function guildRoutes(app: FastifyInstance) {
       return reply.code(201).send(resultado);
     },
   );
+
+  app.get("/guilds/:guildId/events", (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    return guildEventService.list(req.userId, guildId);
+  });
+
+  app.post("/guilds/:guildId/events", async (req, reply) => {
+    const { guildId } = guildParams.parse(req.params);
+    const event = await guildEventService.create(req.userId, guildId, guildEventInput.parse(req.body));
+
+    io().to(rooms.guild(guildId)).emit("event:updated", { guildId });
+    return reply.code(201).send(event);
+  });
+
+  app.patch("/guilds/:guildId/events/:eventId", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    const { eventId } = z.object({ eventId: objectId }).parse(req.params);
+
+    const event = await guildEventService.update(req.userId, guildId, eventId, guildEventInput.parse(req.body));
+
+    io().to(rooms.guild(guildId)).emit("event:updated", { guildId });
+    return event;
+  });
+
+  app.delete("/guilds/:guildId/events/:eventId", async (req, reply) => {
+    const { guildId } = guildParams.parse(req.params);
+    const { eventId } = z.object({ eventId: objectId }).parse(req.params);
+
+    await guildEventService.cancel(req.userId, guildId, eventId);
+
+    io().to(rooms.guild(guildId)).emit("event:updated", { guildId });
+    return reply.code(204).send();
+  });
+
+  app.put("/guilds/:guildId/events/:eventId/interest", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    const { eventId } = z.object({ eventId: objectId }).parse(req.params);
+    const { interested } = z.object({ interested: z.boolean() }).parse(req.body);
+
+    const result = await guildEventService.setInterest(req.userId, guildId, eventId, interested);
+
+    io().to(rooms.guild(guildId)).emit("event:updated", { guildId });
+    return result;
+  });
 
   app.post("/guilds/:guildId/lidas", async (req) => {
     const { guildId } = guildParams.parse(req.params);
@@ -118,6 +164,18 @@ export async function guildRoutes(app: FastifyInstance) {
 
     io().to(rooms.guild(guildId)).emit("channel:updated", channel);
     return channel;
+  });
+
+  app.put("/guilds/:guildId/channels/:channelId/status", async (req) => {
+    const { guildId, channelId } = guildChannelParams.parse(req.params);
+    const { status } = z
+      .object({ status: z.string().max(LIMITS.statusDoCanal).nullable() })
+      .parse(req.body);
+
+    const canal = await guildService.definirStatusDoCanal(req.userId, guildId, channelId, status);
+
+    io().to(rooms.guild(guildId)).emit("channel:updated", canal);
+    return canal;
   });
 
   app.delete("/guilds/:guildId/channels/:channelId", async (req, reply) => {

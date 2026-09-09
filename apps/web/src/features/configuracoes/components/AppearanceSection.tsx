@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useJanelaDoEstudio } from "~/features/configuracoes/stores/janela-do-estudio";
@@ -34,15 +34,9 @@ interface TemaDaLista {
   id: Tema;
   nome: string;
   icone: React.ReactNode;
-  /// O Gravaê mostra a marca no lugar da bolinha de acento — ele é a marca.
   marca?: boolean;
 }
 
-/*
-  As cores da miniatura NÃO ficam aqui. Saem de `amostras-de-tema.json`, que
-  `scripts/amostras-de-tema.mjs` tira do `index.css`. Enquanto eram escritas à
-  mão, envelheceram: o "Mais escuro" prometia três cinzas e o tema é um preto só.
-*/
 const AMOSTRAS = amostrasDeTema as Record<
   Tema,
   { amostra: string[]; acento: string }
@@ -148,11 +142,6 @@ export const AppearanceSection: React.FC = () => {
         </div>
 
         <div data-gc="configuracoes.appearance-section.div--3" className="mt-4">
-          {/*
-            O estúdio é oficina, não janela de leitura: escrever tema com a
-            tela do app tapada não funciona. Ele abre como janela dentro do app
-            e as configurações saem da frente — a janela fica.
-          */}
           <Button data-gc="configuracoes.appearance-section.button--2"
             variant="surface"
             onClick={() => {

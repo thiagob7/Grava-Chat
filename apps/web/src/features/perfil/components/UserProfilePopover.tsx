@@ -70,7 +70,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
 import { copiarTexto } from "~/lib/copiar";
@@ -220,31 +220,31 @@ const ProfileCard: React.FC<{
   const navigate = useNavigate();
   const requestFriend = useRequestFriend();
   const respondFriend = useRespondFriend();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const removeFriend = useRemoveFriend();
   const openDm = useOpenDm();
 
   const desfazerAmizade = async () => {
-    const { confirmado } = await confirmar({
-      titulo: t("perfil.amizade.desfazerTitulo", { nome: perfil.displayName }),
-      descricao:
+    const { confirmed } = await confirm({
+      title: t("perfil.amizade.desfazerTitulo", { nome: perfil.displayName }),
+      description:
         t("perfil.amizade.desfazerDescricao"),
-      acao: t("perfil.amizade.desfazer"),
+      action: t("perfil.amizade.desfazer"),
     });
 
-    if (confirmado && perfil.friendshipId)
+    if (confirmed && perfil.friendshipId)
       removeFriend.mutate(perfil.friendshipId);
   };
 
   const bloquearUsuario = async () => {
-    const { confirmado } = await confirmar({
-      titulo: t("perfil.amizade.bloquearTitulo", { nome: perfil.displayName }),
-      descricao:
+    const { confirmed } = await confirm({
+      title: t("perfil.amizade.bloquearTitulo", { nome: perfil.displayName }),
+      description:
         t("perfil.amizade.bloquearDescricao"),
-      acao: t("perfil.amizade.bloquear"),
+      action: t("perfil.amizade.bloquear"),
     });
 
-    if (confirmado) {
+    if (confirmed) {
       bloquear.mutate(perfil.id);
       onFechar();
     }
@@ -264,21 +264,10 @@ const ProfileCard: React.FC<{
     removeFriend.isPending ||
     openDm.isPending;
 
-  /*
-    Bot não faz amizade, não se ignora e não se bloqueia: o que se faz com um
-    bot é adicionar a um servidor. E a conta da casa é menos ainda — dela só
-    se abre a conversa, que é onde os avisos do app chegam.
-  */
   const ehSistema = Boolean(perfil.sistema);
   const ehBot = perfil.isBot && !ehSistema;
-  /// Bot não faz amizade, mas responde: dá para abrir conversa com ele.
   const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema || ehBot;
 
-  /*
-    Dois lugares. Em cima, na faixa e só com o mouse em cima do cartão, os
-    botões redondos: moderar, amizade, o menu. Embaixo, de largura inteira, o
-    que se faz mais: mandar mensagem, adicionar o bot, editar o próprio perfil.
-  */
   const acoesDoTopo =
     perfil.friendship === "SELF" ? null : (
       <>
@@ -536,12 +525,12 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
 }) => {
   const { t } = useTranslation();
   const openDm = useOpenDm();
-  const [texto, setTexto] = useState("");
+  const [text, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviada, setEnviada] = useState(false);
 
   const enviar = async () => {
-    const conteudo = texto.trim();
+    const conteudo = text.trim();
     if (!conteudo || enviando) return;
 
     setEnviando(true);
@@ -568,7 +557,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
     <div data-gc="perfil.user-profile-popover.div--3" className="border-t border-line p-3">
       <div data-gc="perfil.user-profile-popover.div--4" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
-          value={texto}
+          value={text}
           onChange={(e) => setTexto(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -582,7 +571,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
         />
         <button data-gc="perfil.user-profile-popover.button--6"
           onClick={() => void enviar()}
-          disabled={!texto.trim() || enviando}
+          disabled={!text.trim() || enviando}
           aria-label={t("perfil.recado.enviar")}
           className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
         >
@@ -599,7 +588,6 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   );
 };
 
-/// O botão que mora na faixa do cartão: escuro e translúcido, para ler sobre qualquer foto.
 const BOTAO_DA_FAIXA =
   "flex size-8 items-center justify-center rounded-full bg-sobre-midia text-palco-ink/85 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-palco-ink";
 

@@ -24,11 +24,6 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
   void byChannel;
   const users = activeIn(channelId, currentUserId);
 
-  /*
-    Sem ninguém digitando, o aviso não ocupa espaço nenhum: ele flutua por
-    cima da caixa em vez de empurrá-la. Antes uma faixa de 24px ficava
-    reservada o tempo todo só para não haver salto quando alguém começasse.
-  */
   if (!users.length) return null;
 
   const names = users.map((entry) => entry.user.displayName);

@@ -17,13 +17,6 @@ import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes"
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
 import { useImportarTema } from "~/features/tema/stores/importar-tema";
 
-/*
-  Importar um tema compartilhado, sem sair de onde se está.
-
-  Antes o link abria uma página — e, no aplicativo, uma segunda janela do
-  Gravaê. Agora tanto o link quanto o botão do cartão abrem isto, com o CSS
-  à mostra: quem vai aplicar precisa poder ler o que está aplicando.
-*/
 export const ModalDeImportarTema: React.FC = () => {
   const temaId = useImportarTema((s) => s.temaId);
   const fechar = useImportarTema((s) => s.fechar);

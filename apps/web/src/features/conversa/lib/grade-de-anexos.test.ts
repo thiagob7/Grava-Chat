@@ -15,10 +15,6 @@ describe("grade de anexos", () => {
     for (let n = 2; n <= 10; n++) expect(arranjoDeAnexos(n)).not.toBeNull();
   });
 
-  /*
-    Acima de dez o desenho por contagem perde a graça: viram fileiras de três,
-    que é o que a `flex-wrap` já entregava.
-  */
   it("desiste acima de dez", () => {
     expect(arranjoDeAnexos(11)).toBeNull();
     expect(arranjoDeAnexos(40)).toBeNull();
@@ -30,17 +26,12 @@ describe("grade de anexos", () => {
     for (let n = 2; n <= 10; n++) {
       const a = arranjoDeAnexos(n);
       if (a?.fora) comDuasPartes.push(n);
-      // invólucro e fileira de cima andam juntos, sempre
       expect(Boolean(a?.fora)).toBe(a?.emCima !== undefined);
     }
 
     expect(comDuasPartes).toEqual([7, 8, 10]);
   });
 
-  /*
-    A conta que faz o desenho fechar: o que sobra depois da fileira de cima tem
-    que caber inteiro em fileiras completas da grade de baixo.
-  */
   it("o resto de baixo fecha em fileiras cheias", () => {
     for (const n of [7, 8, 10]) {
       const a = arranjoDeAnexos(n)!;

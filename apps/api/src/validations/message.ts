@@ -12,10 +12,6 @@ export const historyQuery = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(LIMITS.messagePageSize),
 });
 
-/*
-  Ou se busca num servidor, ou dentro de uma conversa. Sem um dos dois não há
-  onde procurar, e a checagem sai aqui em vez de virar um caso a mais no serviço.
-*/
 const dia = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "data no formato AAAA-MM-DD");
 
 export const ESCOPOS_DE_BUSCA = ["servidor", "canal", "comunidades", "dms", "tudo"] as const;
@@ -38,14 +34,12 @@ export const buscaQuery = z
     ordem: z.enum(["recente", "antiga"]).optional(),
     before: objectId.optional(),
   })
-  /// Sem escopo largo, precisa de um lugar: o servidor ou a conversa.
   .refine(
     (valor) =>
       ["comunidades", "dms", "tudo"].includes(valor.escopo ?? "") ||
       Boolean(valor.guildId ?? valor.canalId),
     { message: "Diga em que servidor ou em que canal procurar", path: ["guildId"] },
   )
-  /// Só filtro, sem texto, vale — desde que haja algum filtro.
   .refine(
     (valor) =>
       valor.q.length >= 2 ||

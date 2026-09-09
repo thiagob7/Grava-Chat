@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-/// O que o visualizador mostra no rodapé, quando quem abriu sabe dizer.
 export interface InfoDaImagem {
   nome?: string;
   tamanho?: number;

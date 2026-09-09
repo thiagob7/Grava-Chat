@@ -9,24 +9,11 @@ import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { flx, flxCls } from "~/lib/compat-de-tema";
 
-/*
-  Os três controles da janela.
-
-  Aparecem só quando a moldura é nossa, que hoje quer dizer fora do macOS: lá a
-  janela é `hiddenInset` e as bolinhas continuam sendo as do sistema, que
-  nenhum CSS alcança — nem aqui nem em app nenhum.
-*/
 const ControlesDaJanela: React.FC = () => {
   const [propria, setPropria] = React.useState(false);
   const [maximizada, setMaximizada] = React.useState(false);
   const janela = window.gravae?.janela;
 
-  /*
-    A casca do desktop pode ser mais velha que o front — ela se atualiza no
-    ritmo dela, e o front chega pela rede. Sem estas perguntas, uma casca de
-    antes desta ponte derrubava a tela inteira em vez de simplesmente não
-    mostrar os botões.
-  */
   const completa =
     !!janela?.molduraPropria &&
     !!janela.estaMaximizada &&

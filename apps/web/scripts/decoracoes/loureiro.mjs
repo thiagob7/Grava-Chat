@@ -1,14 +1,6 @@
-/*
-  Gera `src/assets/decoracoes/loureiro.svg` — coroa de louros, dois ramos
-  subindo do laço até o topo, com um balanço leve.
-
-    node scripts/decoracoes/loureiro.mjs src/assets/decoracoes/loureiro.svg
-*/
 import { writeFileSync } from "node:fs";
 import { C, R, em, n, svg } from "./_comum.mjs";
 
-/// Uma folha é uma elipse deitada na tangente do anel, alternando pra dentro e
-/// pra fora — é isso que dá o volume de ramo em vez de fileira de contas.
 const folha = (g, lado, escala) => {
   const [x, y] = em(g, R + lado * 4);
   return `<ellipse cx="0" cy="0" rx="${n(9 * escala)}" ry="${n(3.6 * escala)}"
@@ -16,7 +8,6 @@ const folha = (g, lado, escala) => {
     transform="translate(${x} ${y}) rotate(${n(g + 90 + lado * 34)})"/>`;
 };
 
-/// Do laço (90°) subindo pelos dois lados até quase o topo.
 const ramo = (sentido) =>
   Array.from({ length: 11 }, (_, i) => {
     const g = 90 + sentido * (12 + i * 15);

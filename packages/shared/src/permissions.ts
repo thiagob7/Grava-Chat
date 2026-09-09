@@ -3,6 +3,7 @@ export const PERMISSIONS = [
   "MANAGE_GUILD",
   "MANAGE_ROLES",
   "MANAGE_CHANNELS",
+  "MANAGE_EVENTS",
   "MANAGE_WEBHOOKS",
   "MANAGE_EXPRESSIONS",
   "CREATE_EXPRESSIONS",
@@ -44,6 +45,7 @@ export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] =
       "MANAGE_GUILD",
       "MANAGE_ROLES",
       "MANAGE_CHANNELS",
+      "MANAGE_EVENTS",
       "MANAGE_WEBHOOKS",
       "MANAGE_EXPRESSIONS",
       "CREATE_EXPRESSIONS",
@@ -103,6 +105,10 @@ export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: st
     descricao: "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
   },
   MANAGE_CHANNELS: { nome: "Gerenciar canais", descricao: "Criar, editar e apagar canais." },
+  MANAGE_EVENTS: {
+    nome: "Gerenciar eventos",
+    descricao: "Criar, editar e cancelar os eventos do servidor.",
+  },
   MANAGE_WEBHOOKS: { nome: "Gerenciar webhooks", descricao: "Criar e apagar integrações." },
   MANAGE_EXPRESSIONS: {
     nome: "Gerenciar expressões",

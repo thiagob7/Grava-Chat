@@ -121,10 +121,6 @@ export const authService = {
     });
   },
 
-  /*
-    Conta por e-mail e senha. O e-mail é a identidade, como no Google: se já
-    existe conta com ele, não se cria outra — a pessoa entra com a que tem.
-  */
   async registrar(params: { email: string; senha: string; displayName: string }) {
     const email = params.email.toLowerCase();
 
@@ -144,7 +140,6 @@ export const authService = {
     return user;
   },
 
-  /// Erro igual para e-mail que não existe e senha errada: não se entrega qual dos dois.
   async entrarComSenha(params: { email: string; senha: string }) {
     const user = await userRepository.findByEmail(params.email.toLowerCase());
     const guardado = user?.senhaHash;

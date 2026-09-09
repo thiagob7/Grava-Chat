@@ -31,8 +31,6 @@ function criarCarregador(janela: BrowserWindow) {
       await janela.loadURL(APP_URL);
       tentativas = 0;
     } catch {
-      /// O `did-fail-load` cuida de mostrar a espera e reagendar; aqui só não
-      /// deixamos a promessa rejeitada subir sem dono.
     }
   };
 
@@ -62,11 +60,6 @@ export function criarJanela() {
     minHeight: 560,
     backgroundColor: "#2b2d31",
     show: false,
-    /*
-      No macOS a moldura é do sistema e as bolinhas continuam sendo as dele —
-      é o que todo mundo espera lá. Fora dele a janela vai sem moldura e a
-      `BarraDeTitulo` desenha os três botões, que aí um tema alcança.
-    */
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
     ...(process.platform === "darwin" ? {} : { frame: false, icon: ICONE }),
     webPreferences: {
@@ -80,7 +73,6 @@ export function criarJanela() {
 
   janela.once("ready-to-show", () => janela.show());
 
-  /// O botão de maximizar troca de desenho, então o front precisa saber.
   const avisarMaximizada = () =>
     janela.webContents.send("janela:maximizada", janela.isMaximized());
 
@@ -111,11 +103,6 @@ export function criarJanela() {
 
   janela.on("closed", () => carregador.encerrar());
 
-  /*
-    Link de fora vai para o navegador. Mas uma janela nossa — o estúdio de
-    temas, que precisa ficar ao lado do app para a pessoa ver o tema mudando —
-    abre aqui dentro, com a mesma casca e o mesmo preload.
-  */
   janela.webContents.setWindowOpenHandler(({ url }) => {
     const nossa = (() => {
       try {

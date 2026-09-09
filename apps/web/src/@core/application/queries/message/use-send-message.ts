@@ -21,7 +21,6 @@ interface SendMessageVariables {
   stickerId?: string;
   poll?: CreatePollInput;
   postId?: string | null;
-  /// De onde veio, quando é encaminhada. O cabeçalho da mensagem sai daqui.
   encaminhadaDe?: { channelId: string; messageId: string } | null;
 }
 
