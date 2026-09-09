@@ -20,14 +20,8 @@ export function useAparenciaAplicada() {
   useEffect(() => {
     document.documentElement.dataset.tema = tema;
 
-    /*
-      A mesma escolha, no vocabulário deles. Um tema da referência que avisa "só
-      funciona no escuro" fala por `theme-dark` e `theme-light`, não por
-      `data-tema`.
-    */
     marcarTemaDaRaiz(tema);
 
-    /// A base do estúdio é outra em cada variante; ele remede agora.
     revisarEscudo();
   }, [tema]);
 
