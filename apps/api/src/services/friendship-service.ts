@@ -181,11 +181,6 @@ export const friendshipService = {
 
     if (relacao?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
 
-    /*
-      Amizade é entre gente. A conta da casa não tem amigos e não precisa — a
-      conversa com ela é o lugar dos avisos do app. E bot também não: quem
-      adiciona um bot quer poder falar com ele, e ele responde por código.
-    */
     const outro = await userRepository.findById(outroId);
     const semAmizade = Boolean(outro?.sistema || outro?.isBot);
 

@@ -21,7 +21,6 @@ export function useColapso(aba: string) {
         try {
           localStorage.setItem(chave, JSON.stringify([...proximas]));
         } catch {
-          /* modo privado: vale só nesta aba */
         }
 
         return proximas;
@@ -41,7 +40,6 @@ export function useColapso(aba: string) {
         try {
           localStorage.setItem(chave, JSON.stringify([...proximas]));
         } catch {
-          /* modo privado: vale só nesta aba */
         }
 
         return proximas;

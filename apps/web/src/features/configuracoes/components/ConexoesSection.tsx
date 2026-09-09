@@ -13,7 +13,7 @@ import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-pr
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 const TETO = 8;
@@ -121,12 +121,12 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
               <span data-gc="configuracoes.conexoes-section.span" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 Onde
               </span>
-              <CampoSelect data-gc="configuracoes.conexoes-section.campo-select.set-servico"
-                valor={servico}
-                onEscolher={setServico}
-                opcoes={SERVICOS.map((s) => ({
-                  valor: s,
-                  rotulo: NOMES_DOS_SERVICOS[s],
+              <SelectField data-gc="configuracoes.conexoes-section.select-field.set-servico"
+                value={servico}
+                onSelect={setServico}
+                options={SERVICOS.map((s) => ({
+                  value: s,
+                  label: NOMES_DOS_SERVICOS[s],
                 }))}
               />
             </label>

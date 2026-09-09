@@ -60,16 +60,6 @@ describe("ponte de tema", () => {
     expect(NOMES_DE_ORIGEM.every((n) => n.startsWith("--"))).toBe(true);
   });
 
-  /*
-    Antes isto só conferia o prefixo do nome, e prefixo certo em token morto
-    passa liso: a ponte traduziria para um lugar que ninguém lê, e o tema
-    pareceria não pegar. Agora a pergunta é a mesma do estúdio — o token está
-    vivo no CSS construído?
-
-    `--font-display` é a exceção, e é de propósito: nós não temos esse token, e
-    a linha existe para o dia em que tiver. Fica anotada aqui em vez de virar
-    uma tradução silenciosa para o vazio.
-  */
   it("todo destino é um token que o app realmente lê", () => {
     const vivos = new Set(tokensVivos as string[]);
     const combinado = new Set(["--font-display"]);
@@ -96,11 +86,6 @@ describe("o que o tema declarou", () => {
     ]);
   });
 
-  /*
-    A camada de tokens já declara o vocabulário inteiro da referência. Se ler uma
-    variável contasse como declarar, a ponte escreveria a camada de referência
-    por cima das cores reais — que foi o que deixou o cabeçalho de outra cor.
-  */
   it("não conta variável que o tema só lê", () => {
     const nomes = nomesDeclaradosNoTema(
       ".x { color: var(--background-channel-header); border: 1px solid var(--text-primary) }",
@@ -115,12 +100,6 @@ describe("o que o tema declarou", () => {
     expect([...nomes]).toEqual(["--background-primary"]);
   });
 
-  /*
-    A ordem da tabela É a regra de precedência, e é fácil de quebrar sem
-    perceber: basta alguém acrescentar um nome no lugar errado. Eles têm cores
-    independentes para a marca e para o preenchimento do botão; nós temos um
-    token só. Quem mexeu nos dois quis que a marca mandasse.
-  */
   it("deixa o nome canônico vencer o específico", () => {
     const nomes = Object.keys(PONTE_DE_TEMA);
     const antes = (especifico: string, canonico: string) =>
@@ -163,12 +142,6 @@ describe("o que o tema declarou", () => {
     expect(nomes).toHaveLength(new Set(nomes).size);
   });
 
-  /*
-    Metade dos temas da comunidade escreve em `:root` e a outra metade em
-    `body`. As duas formas são corretas, e quem lê os nomes declarados não
-    pode distinguir uma da outra — a leitura do computado acontece depois, no
-    `body`, justamente para cobrir as duas.
-  */
   it("acha os nomes tanto em :root quanto em body", () => {
     const declaracoes = "--background-primary: #120e1a; --brand-primary: #8a5cf6;";
 
@@ -193,11 +166,6 @@ describe("o que o tema declarou", () => {
     expect(saida["--color-campo"]).toBe("#1e182e");
   });
 
-  /*
-    Os dois dialetos usam nomes iguais para papéis diferentes. Quando o tema
-    fala os dois, o da referência é o nosso canônico e tem que vencer — é ele que
-    está no fim da tabela.
-  */
   it("o nome da referência vence o do Discord quando o tema fala os dois", () => {
     const saida = traduzirTema({
       "--header-primary": "#111111",

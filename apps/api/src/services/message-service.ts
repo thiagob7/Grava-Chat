@@ -85,11 +85,6 @@ export const messageService = {
   },
 
   async buscar(userId: string, params: Omit<BuscaQuery, "q"> & { termo: string }) {
-    /*
-      Onde procurar vem do escopo. "servidor" e "canal" são o de sempre; os
-      largos juntam tudo que a pessoa enxerga — cada servidor pela mesma
-      régua de permissão que abre o canal, e as conversas por serem dela.
-    */
     const escopo =
       params.escopo ?? (params.guildId ? "servidor" : "canal");
 
@@ -152,10 +147,6 @@ export const messageService = {
 
     if (input.postId) await forumService.requirePostAberto(input.postId, channel.id);
 
-    /*
-      A conversa com a conta da casa é de mão única: os avisos do app chegam
-      por ela, e ninguém responde. Quem escreve lá é só a própria casa.
-    */
     if (!channel.guildId) {
       const outroId = (channel.recipients ?? []).find((id) => id !== userId);
       const outro = outroId ? await userRepository.findById(outroId) : null;
@@ -288,11 +279,6 @@ export const messageService = {
     return { messageId, channelId: existing.channelId };
   },
 
-  /*
-    Tira um anexo de uma mensagem que já saiu. Se ele era a única coisa ali —
-    sem texto, sem enquete, sem figurinha — a mensagem vai junto: sobraria um
-    balão vazio na conversa.
-  */
   async removerAnexo(userId: string, messageId: string, anexoId: string) {
     const existing = await messageRepository.findById(messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
@@ -447,11 +433,6 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, messageId);
   },
 
-  /*
-    "Marcar como lida" no servidor inteiro: cada canal que a pessoa enxerga
-    vai para a mensagem mais nova. Devolve o que mudou, para o cliente
-    ajustar a contagem sem pedir tudo de novo.
-  */
   async marcarServidorLido(userId: string, guildId: string) {
     const canais = await accessService.readableChannels(userId, guildId);
     const lidos: { channelId: string; messageId: string }[] = [];

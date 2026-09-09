@@ -17,13 +17,6 @@ import {
 import { copiarTexto } from "~/lib/copiar";
 import { baixarImagem, copiarImagem } from "~/lib/imagem";
 
-/*
-  O botão direito numa imagem.
-
-  Só o que é da imagem mora aqui — copiar, baixar, o link, o id do anexo. O
-  que é da mensagem (responder, encaminhar, fixar) continua na barra que
-  aparece ao passar o mouse, que é onde já estava e onde a pessoa procura.
-*/
 export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNode }> = ({
   anexo,
   children,

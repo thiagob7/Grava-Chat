@@ -12,13 +12,6 @@ import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidad
 
 const numero = new Intl.NumberFormat("pt-BR");
 
-/*
-  O convite, antes de entrar.
-
-  Clicar num cartão de convite não põe ninguém dentro de um servidor: abre
-  isto, que mostra quem convida, quantos estão lá, e pergunta. É o mesmo
-  passo que o link `/invite/:code` faz numa página inteira, só que no lugar.
-*/
 export const ConviteModal: React.FC<{
   codigo: string | null;
   onFechar: () => void;

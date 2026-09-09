@@ -60,7 +60,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
       <nav data-gc="servidor.guild-rail.nav" {...flx("trilhoDeServidores", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col border-r border-line-sutil bg-surface-1")}>
         <div data-gc="servidor.guild-rail.div" {...flx("roladorDoTrilho", "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
         <div data-gc="servidor.guild-rail.div--2" {...flx("conteudoDoTrilho", "flex flex-col items-center gap-2 pb-36 pt-3")}>
-        {/* As duas seções de dentro do trilho, como na referência: o topo e os servidores. */}
         <div data-gc="servidor.guild-rail.div--3" {...flx("secaoDoTopoDoTrilho", "flex w-full flex-col items-center gap-2")}>
         <div data-gc="servidor.guild-rail.div--4" {...flx("itemDoTrilho", "group relative flex w-full justify-center")}>
           <span data-gc="servidor.guild-rail.span"
@@ -102,11 +101,6 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 
         <div data-gc="servidor.guild-rail.div--6" {...flx("secaoDeServidores", "flex w-full flex-col items-center gap-2")}>
 
-        {/*
-          O trilho como a pessoa arrumou: servidores soltos e pastas. Arrastar um
-          servidor em cima de outro faz pasta; em cima de uma pasta, entra nela;
-          entre dois, muda de lugar. Soltar no vão do fim tira de qualquer pasta.
-        */}
         {itens.map((item) =>
           item.tipo === "pasta" ? (
             <PastaDoTrilho data-gc="servidor.guild-rail.pasta-do-trilho.on-select"
@@ -250,7 +244,7 @@ const AcaoDoTrilho: React.FC<{
   onClick: () => void;
   children: React.ReactNode;
 }> = ({ label, atalho, lugar, onClick, children }) => (
-  <Tooltip data-gc="servidor.guild-rail.tooltip--3" label={label} atalho={atalho} side="right">
+  <Tooltip data-gc="servidor.guild-rail.tooltip--3" label={label} shortcut={atalho} side="right">
     <button data-gc="servidor.guild-rail.button.on-click"
       {...(lugar ? flxAttr(lugar) : {})}
       onClick={onClick}

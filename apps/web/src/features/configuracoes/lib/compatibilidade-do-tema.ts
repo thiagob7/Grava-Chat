@@ -1,20 +1,7 @@
 import { LUGARES } from "~/lib/compat-de-tema";
 
-/*
-  O que um tema da referência procura, e o que ele acha aqui.
-
-  "Está quase igual mas não está" é impossível de resolver no olho: o tema tem
-  centenas de seletores e a diferença mora em três ou quatro que não acham nada.
-  Então em vez de comparar print, a gente pergunta ao próprio CSS: quais nomes
-  ele mira, e quais desses existem na nossa árvore.
-
-  O que sobra na lista de faltando é a lista de trabalho.
-*/
-
 export interface Compatibilidade {
-  /// Nomes da referência que o tema mira e que existem aqui.
   achados: string[];
-  /// Os que não existem — cada um é um pedaço do tema sem efeito.
   faltando: string[];
 }
 
@@ -29,11 +16,6 @@ const nomesQueTemos = () => {
   return todos;
 };
 
-/*
-  O tema escreve `[class*="GuildNavbar.module__x_"]`, e a nossa classe é
-  `GuildNavbar.module__x_gc`. Casar é perguntar se alguma das nossas começa com
-  o que ele pediu — que é exatamente o que o navegador faz com o `*=`.
-*/
 export function conferirCompatibilidade(css: string): Compatibilidade {
   const nossos = nomesQueTemos();
 

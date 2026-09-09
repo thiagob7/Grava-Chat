@@ -25,15 +25,6 @@ interface UserPanelProps {
 }
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
-  /*
-    O estado de "configurações abertas" mora só na loja.
-
-    Havia dois donos: um useState daqui e a seção pedida pela loja. Quem abria
-    pela engrenagem ficava fora do alcance de quem só sabia da loja — e o
-    estúdio, que pede para as configurações saírem da frente ao abrir a janela,
-    falava com a metade errada. A tela ficava por cima e parecia que o clique
-    não tinha feito nada.
-  */
   const secaoPedida = useConfiguracoes((s) => s.secao);
   const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
   const fecharPedido = useConfiguracoes((s) => s.fechar);
@@ -121,14 +112,6 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
           </PopoverContent>
         </Popover>
 
-        {/*
-          Os três controles numa caixa só, como na referência.
-
-          Soltos, eles eram irmãos do botão do perfil, e um tema que encolhe a
-          linha — `display: inline-flex; width: auto` — não tinha o que
-          agrupar: o botão espremia e os controles espalhavam. Com a caixa, a
-          linha tem duas partes e encolhe inteira.
-        */}
         <div data-gc="perfil.user-panel.div--3" {...flx("controlesDoUsuario", "flex shrink-0 items-center gap-1")}>
           <BotaoDoPainel data-gc="perfil.user-panel.botao-do-painel"
             label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}

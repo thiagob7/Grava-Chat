@@ -1,13 +1,5 @@
 import { env } from "~/env.js";
 
-/*
-  O correio da casa.
-
-  Um provedor só, o Resend, e por HTTP puro: mandar e-mail é um POST com
-  JSON, e uma biblioteca inteira para isso seria peso sem troco. Sem chave
-  configurada o correio se declara desligado, e quem chama decide o que
-  fazer — fingir que mandou seria pior do que dizer que não dá.
-*/
 const ENDERECO = "https://api.resend.com/emails";
 
 export const correio = {

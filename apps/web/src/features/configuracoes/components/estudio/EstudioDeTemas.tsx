@@ -36,7 +36,7 @@ import {
 } from "~/features/configuracoes/lib/normalizar-tema";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import macanetas from "~/features/configuracoes/lib/macanetas.json";
 import {
   GRUPOS_DE_TOKENS,
@@ -44,7 +44,7 @@ import {
   valorDoTema,
 } from "~/lib/tokens";
 import type { TokenDoTema } from "~/lib/tokens";
-import { lerCor, SeletorDeCor } from "~/components/ui/color-picker";
+import { parseColor, ColorField } from "~/components/ui/color-picker";
 import {
   Popover,
   PopoverArrow,
@@ -84,14 +84,7 @@ const NOME_DO_TEMA: Record<string, string> = {
   gravae: "Base Gravaê",
 };
 
-/*
-  O corpo vale sozinho: é o mesmo dentro do modal e dentro da janela à parte.
-  Escrever tema com a tela do app tapada não funciona — a graça é ver a
-  mudança acontecer atrás enquanto se digita.
-*/
 export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) => {
-  /// A biblioteca primeiro: é onde se importa e se liga um tema, que é o que
-  /// se quer fazer ao abrir o estúdio. Mexer em token vem depois.
   const [aba, setAba] = useState<Aba>("biblioteca");
   const tema = useAparencia((s) => s.tema);
 
@@ -135,18 +128,6 @@ export const CorpoDoEstudio: React.FC<{ acao?: React.ReactNode }> = ({ acao }) =
   );
 };
 
-
-/*
-  Quatro cores, e o resto vem junto.
-
-  Mexer em 41 tokens um a um não é fazer tema, é preencher formulário — e era
-  por isso que a aba Tokens, sozinha, não bastava. Aqui se escolhe o fundo e a
-  tela inteira acompanha: superfícies, hover, bordas, campo, painel, e o palco
-  de voz, que era justamente a ilha que nenhum tema alcançava.
-
-  A derivação nunca briga com quem mexeu à mão: o que está em `manuais` entra
-  por cima, sempre. Quem quiser o azul exato daquele token continua tendo.
-*/
 const AbaDeCores: React.FC = () => {
   const coresMae = useEstudio((s) => s.coresMae);
   const saturacao = useEstudio((s) => s.saturacao);
@@ -169,7 +150,7 @@ const AbaDeCores: React.FC = () => {
             min={0}
             max={150}
             value={Math.round(saturacao * 100)}
-            preenchido={saturacao / 1.5}
+            filled={saturacao / 1.5}
             onChange={(e) => definirSaturacao(Number(e.target.value) / 100)}
             aria-label="Saturação das cores derivadas"
             className="w-28"
@@ -216,7 +197,6 @@ const CartaoDeMae: React.FC<{ id: string }> = ({ id }) => {
 
   const valor = escolhida ?? familia.padrao;
 
-  /// A prévia mostra o que ESTA mãe geraria — inclusive o que a mão já venceu.
   const filhas = useMemo(
     () => derivar(id, valor, saturacao),
     [id, valor, saturacao],
@@ -237,9 +217,9 @@ const CartaoDeMae: React.FC<{ id: string }> = ({ id }) => {
 
           <PopoverContent data-gc="configuracoes.estudio.estudio-de-temas.popover-content" align="start" className="w-60 p-3">
             <PopoverArrow data-gc="configuracoes.estudio.estudio-de-temas.popover-arrow" />
-            <SeletorDeCor data-gc="configuracoes.estudio.estudio-de-temas.seletor-de-cor"
-              valor={valor}
-              onMudar={(nova) => definirCorMae(id, nova)}
+            <ColorField data-gc="configuracoes.estudio.estudio-de-temas.color-field"
+              value={valor}
+              onChange={(nova) => definirCorMae(id, nova)}
             />
           </PopoverContent>
         </Popover>
@@ -296,7 +276,6 @@ const CartaoDeMae: React.FC<{ id: string }> = ({ id }) => {
     </section>
   );
 };
-
 
 const AbaDeTokens: React.FC<{ tema: string }> = ({ tema }) => {
   const [busca, setBusca] = useState("");
@@ -416,12 +395,6 @@ const LinhaDeToken: React.FC<{
   token: TokenDoTema;
   tema: string;
 }> = ({ token, tema }) => {
-  /*
-    Dois valores, e a diferença importa: `manual` é o que ESTA pessoa escolheu
-    neste token, `valendo` é o que está na tela — que pode ter vindo de uma
-    cor-mãe. Sem separar, um token derivado apareceria como escolha sua, com um
-    botão de desfazer que não desfaz nada.
-  */
   const manual = useEstudio((s) => s.manuais[token.nome]);
   const valendo = useEstudio((s) => s.substituicoes[token.nome]);
   const definir = useEstudio((s) => s.definirToken);
@@ -431,7 +404,7 @@ const LinhaDeToken: React.FC<{
   const valor = valendo ?? doTema;
   const daMae = Boolean(valendo) && !manual;
 
-  const legivel = lerCor(valor);
+  const legivel = parseColor(valor);
   const giram: string[] = (macanetas as Record<string, string[]>)[token.nome] ?? [];
 
   return (
@@ -460,9 +433,9 @@ const LinhaDeToken: React.FC<{
           <PopoverArrow data-gc="configuracoes.estudio.estudio-de-temas.popover-arrow--2" />
 
           {legivel && (
-            <SeletorDeCor data-gc="configuracoes.estudio.estudio-de-temas.seletor-de-cor--2"
-              valor={valor}
-              onMudar={(nova) => definir(token.nome, nova)}
+            <ColorField data-gc="configuracoes.estudio.estudio-de-temas.color-field--2"
+              value={valor}
+              onChange={(nova) => definir(token.nome, nova)}
             />
           )}
         </PopoverContent>
@@ -477,14 +450,6 @@ const LinhaDeToken: React.FC<{
           {token.dica && <span data-gc="configuracoes.estudio.estudio-de-temas.span--5" className="font-sans"> — {token.dica}</span>}
         </p>
 
-        {/*
-          O nome que um tema da comunidade tem que mexer para girar este token.
-
-          As cores nascem do vocabulário da referência — `--color-surface-0` é
-          `var(--background-primary, …)` — e quem escreve tema precisa saber
-          qual nome usar. A lista sai da própria cadeia do `index.css`, gerada
-          pelo `scripts/macanetas.mjs`, então não atrasa quando a ponte muda.
-        */}
         {giram.length > 0 && (
           <p data-gc="configuracoes.estudio.estudio-de-temas.p--10"
             title={`Um tema gira este token por: ${giram.join(", ")}`}
@@ -611,7 +576,6 @@ const AbaDeCss: React.FC = () => {
   );
 };
 
-/// Publica o que está no estúdio e copia o link — colado num canal, vira o cartão de importar.
 const BotaoDeCompartilhar: React.FC = () => {
   const substituicoes = useEstudio((s) => s.substituicoes);
   const css = useEstudio((s) => s.css);
@@ -646,7 +610,6 @@ const BotaoDeCompartilhar: React.FC = () => {
   );
 };
 
-
 const ENCOLHER = `/* A lista de membros encolhe sozinha e volta quando o mouse chega. */
 .lista-de-membros {
   transition: width 0.3s ease;
@@ -656,11 +619,6 @@ body:not(:has(.lista-de-membros:hover)) .lista-de-membros {
   width: 3rem;
 }`;
 
-/*
-  A lista dos data-gc tem 4754 nomes e uns 200 KB. Carregar isso junto com o
-  app para uma gaveta que quase ninguém abre seria caro, então ela vem por
-  import() quando a busca é usada pela primeira vez.
-*/
 function useListaDeGanchos(precisa: boolean) {
   const [lista, setLista] = useState<string[] | null>(null);
 
@@ -681,21 +639,6 @@ function useListaDeGanchos(precisa: boolean) {
   return lista;
 }
 
-/*
-  Quando o tema vem de outro cliente, mostra o que ele mira e não acha aqui.
-
-  Sem isto, "está quase igual mas não está" vira comparação de print. Com isto,
-  é uma lista: cada nome que sobra é um pedaço do tema sem efeito, e cada um
-  vale uma linha nova na ponte.
-*/
-/*
-  O aviso que explica o "importei e metade não pegou".
-
-  Um comentário que fecha e reabre errado faz o navegador engolir a declaração
-  seguinte inteira. Quem escreveu não vê: o editor pinta tudo como comentário.
-  Então a gente aponta a linha, diz qual variável se perdeu, e oferece o
-  conserto — que é só tirar o lixo, sem tocar em mais nada.
-*/
 const ComentariosQuebrados: React.FC<{
   css: string;
   onConsertar: (css: string) => void;
@@ -742,20 +685,6 @@ const ComentariosQuebrados: React.FC<{
   );
 };
 
-/*
-  O aviso do que o tema traz datado, e a chave que decide o que fazer com isso.
-
-  Duas coisas envelhecem num tema da comunidade, e as duas apontam para o build
-  contra o qual a pessoa escreveu: o hash no nome da classe, e o `div` na frente
-  do seletor, posto quando aquele elemento ainda era um div.
-
-  O padrão é aplicar o arquivo como está, então este aviso existe para o caso
-  contrário: o tema entrou e quase nada mudou. O número diz o porquê e o que
-  custa desligar a chave — num tema da comunidade são 621 regras, no Galaxy são 27.
-
-  E a chave é por tema porque os temas pendem para lados opostos: o Galaxy tem
-  21 seletores com `div` e 6 presos a hash; um tema da comunidade tem 0 e 621.
-*/
 const SeletoresDatados: React.FC<{ presos: number; comDiv: number; css: string }> = ({
   presos,
   comDiv,
@@ -766,7 +695,6 @@ const SeletoresDatados: React.FC<{ presos: number; comDiv: number; css: string }
   const daBiblioteca = useEstudio((e) => e.biblioteca.find((t) => t.id === e.ativoId)?.aRisca);
   const definirARisca = useEstudio((e) => e.definirARisca);
 
-  /// A mesma conta do importador: quem não escolheu vê o que o arquivo decidiu.
   const escolha = ativoId ? daBiblioteca : solto;
   const automatico = escolha === undefined || escolha === null;
   const aRisca = escolha ?? !deveTraduzir(css);
@@ -822,17 +750,11 @@ const SeletoresDatados: React.FC<{ presos: number; comDiv: number; css: string }
 const TemaImportado: React.FC<{ css: string }> = ({ css }) => {
   const [aberto, setAberto] = useState(false);
 
-  /// O CSS chega na tela como está escrito, então é assim que se confere.
   const { achados, faltando } = useMemo(() => conferirCompatibilidade(css), [css]);
 
   const datados = useMemo(() => contarSeletoresDatados(css), [css]);
   const total = achados.length + faltando.length;
 
-  /*
-    A maioria dos temas da comunidade não mira classe nenhuma: declara
-    variável e conta que o app leia. Para esses, a contagem de lugares acima
-    dá zero e não explica nada — quem explica é esta.
-  */
   const tokens = useMemo(() => conferirTokens(css), [css]);
   const totalDeTokens = tokens.traduzidos.length + tokens.ignorados.length;
 
@@ -926,7 +848,6 @@ const Ganchos: React.FC<{ onUsar: (trecho: string) => void }> = ({ onUsar }) => 
   const lista = useListaDeGanchos(aberto);
   const termo = busca.trim().toLowerCase();
 
-  /// Sem busca a lista inteira não cabe na tela nem ajuda: só o que casa.
   const { mostrar, total } = useMemo(() => {
     if (!lista || termo.length < 2) return { mostrar: [], total: 0 };
 
@@ -1041,15 +962,10 @@ const AbaDeAtivos: React.FC = () => {
   const css = useEstudio((s) => s.css);
   const guardarAtivo = useEstudio((s) => s.guardarAtivo);
   const apagarAtivo = useEstudio((s) => s.apagarAtivo);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const arquivo = useRef<HTMLInputElement>(null);
   const [subindo, setSubindo] = useState(false);
 
-  /*
-    Quem sabe o que faltou é quem aplica o tema, e isso acontece fora do React.
-    O aviso de tema aplicado é o gancho: sem ele, subir o arquivo que faltava
-    não tiraria o aviso da tela até alguém trocar de aba.
-  */
   const [faltando, setFaltando] = useState<string[]>(ativosFaltando);
 
   useEffect(() => {
@@ -1165,13 +1081,13 @@ const AbaDeAtivos: React.FC = () => {
 
                 <button data-gc="configuracoes.estudio.estudio-de-temas.button--20"
                   onClick={() =>
-                    void confirmar({
-                      titulo: `Tirar "${ativo.nome}" da lista?`,
-                      descricao:
+                    void confirm({
+                      title: `Tirar "${ativo.nome}" da lista?`,
+                      description:
                         "O CSS que usa este endereço para de achar o arquivo. O arquivo em si continua onde está.",
-                      acao: "Tirar",
+                      action: "Tirar",
                     }).then(
-                      ({ confirmado }) => confirmado && apagarAtivo(ativo.id),
+                      ({ confirmed }) => confirmed && apagarAtivo(ativo.id),
                     )
                   }
                   aria-label={`Tirar ${ativo.nome}`}
@@ -1191,7 +1107,7 @@ const AbaDeAtivos: React.FC = () => {
 const AbaDeConfiguracoes: React.FC = () => {
   const limparSubstituicoes = useEstudio((s) => s.limparSubstituicoes);
   const limparTudo = useEstudio((s) => s.limparTudo);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--37" className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
@@ -1227,12 +1143,12 @@ const AbaDeConfiguracoes: React.FC = () => {
             variant="danger"
             size="sm"
             onClick={() =>
-              void confirmar({
-                titulo: "Apagar tudo do estúdio?",
-                descricao:
+              void confirm({
+                title: "Apagar tudo do estúdio?",
+                description:
                   "As cores, o CSS e os temas salvos somem deste aparelho. Os temas exportados continuam valendo.",
-                acao: "Apagar tudo",
-              }).then(({ confirmado }) => confirmado && limparTudo())
+                action: "Apagar tudo",
+              }).then(({ confirmed }) => confirmed && limparTudo())
             }
           >
             <Trash2 data-gc="configuracoes.estudio.estudio-de-temas.trash2--2" size={14} /> Apagar tudo

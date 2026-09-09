@@ -99,13 +99,13 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
       </div>
 
       <UnsavedBar data-gc="servidor.server-settings.server-tag-section.unsaved-bar"
-        visivel={mudou}
-        salvando={salvar.isPending}
-        onDescartar={() => {
+        visible={mudou}
+        saving={salvar.isPending}
+        onDiscard={() => {
           setTag(guild.tag ?? "");
           setIcone(guild.tagIcon ?? INSIGNIAS[0]!);
         }}
-        onSalvar={() =>
+        onSave={() =>
           salvar.mutate({
             guildId: guild.id,
             tag: tag.trim() || null,

@@ -1,18 +1,9 @@
-/*
-  Gera `src/assets/molduras/espinheiro.svg` — ramo de espinhos, o contraponto
-  escuro das outras duas.
-
-    node scripts/decoracoes/espinheiro.mjs src/assets/molduras/espinheiro.svg
-*/
 import { writeFileSync } from "node:fs";
 import { F, L, montar, n } from "./_moldura.mjs";
 
 const RAMO = "#7d9470";
 const PONTA = "#eaf2e4";
 
-/// O espinho é um triângulo fino saindo do ramo, sempre pro lado de fora.
-/// O espinho cresce e recolhe. O `scale` só no eixo Y: crescer nos dois
-/// engorda a base e o espinho vira folha.
 const espinho = (x, y, g, t = 1, atraso = 0) =>
   `<g transform="translate(${x} ${y}) rotate(${g})"><g>
     <animateTransform attributeName="transform" type="scale" values="1 0.55;1 1;1 0.55"

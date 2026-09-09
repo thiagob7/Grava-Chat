@@ -31,7 +31,7 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import { Slider } from "~/components/ui/slider";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useTranslation } from "~/traducao";
 import { copiarTexto } from "~/lib/copiar";
@@ -65,7 +65,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const navigate = useNavigate();
   const openDm = useOpenDm();
   const setRoles = useSetMemberRoles(guildId);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const setNickname = useSetNickname(guildId);
 
   const volumes = useVoiceStore((s) => s.volumesLocais);
@@ -99,19 +99,19 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--2"
               disabled={!pode("CHANGE_NICKNAME") && !pode("MANAGE_NICKNAMES")}
               onSelect={() =>
-                void confirmar({
-                  titulo: t("chamada.membro.apelidoTitulo"),
-                  descricao: t("chamada.membro.apelidoDicaPropria"),
-                  acao: t("comum.salvar"),
-                  destrutivo: false,
-                  campo: { rotulo: t("chamada.membro.apelidoCampo"), placeholder: displayName },
+                void confirm({
+                  title: t("chamada.membro.apelidoTitulo"),
+                  description: t("chamada.membro.apelidoDicaPropria"),
+                  action: t("comum.salvar"),
+                  destructive: false,
+                  field: { label: t("chamada.membro.apelidoCampo"), placeholder: displayName },
                 }).then(
-                  ({ confirmado, texto }) =>
-                    confirmado &&
+                  ({ confirmed, text }) =>
+                    confirmed &&
                     setNickname.mutate({
                       guildId,
                       userId,
-                      nickname: texto || null,
+                      nickname: text || null,
                     }),
                 )
               }
@@ -192,7 +192,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                 max={1}
                 step={0.05}
                 value={volume}
-                preenchido={volume}
+                filled={volume}
                 onChange={(e) => setVolumeLocal(userId, Number(e.target.value))}
               />
             </div>
@@ -216,19 +216,19 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--9"
               disabled={!pode("MANAGE_NICKNAMES")}
               onSelect={() =>
-                void confirmar({
-                  titulo: t("chamada.membro.apelidoDeAlguem", { nome: displayName }),
-                  descricao: t("chamada.membro.apelidoDicaDeOutro"),
-                  acao: t("comum.salvar"),
-                  destrutivo: false,
-                  campo: { rotulo: t("chamada.membro.apelidoCampo"), placeholder: displayName },
+                void confirm({
+                  title: t("chamada.membro.apelidoDeAlguem", { nome: displayName }),
+                  description: t("chamada.membro.apelidoDicaDeOutro"),
+                  action: t("comum.salvar"),
+                  destructive: false,
+                  field: { label: t("chamada.membro.apelidoCampo"), placeholder: displayName },
                 }).then(
-                  ({ confirmado, texto }) =>
-                    confirmado &&
+                  ({ confirmed, text }) =>
+                    confirmed &&
                     setNickname.mutate({
                       guildId,
                       userId,
-                      nickname: texto || null,
+                      nickname: text || null,
                     }),
                 )
               }

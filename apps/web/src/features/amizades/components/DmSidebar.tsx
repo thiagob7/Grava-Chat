@@ -10,7 +10,7 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserName } from "~/features/perfil/components/UserName";
 import { cn } from "~/lib/utils";
-import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { flx, flxAttr } from "~/lib/compat-de-tema";
 import { flxCls } from "~/lib/compat-de-tema";
 
@@ -52,27 +52,22 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
   const pedidosRecebidos = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
-  const { largura, arrastando, alca, limites } = useLarguraAjustavel("dm", {
-    padrao: 320,
+  const { width, dragging, handle, bounds } = useResizableWidth("dm", {
+    initial: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,
-    borda: "direita",
+    edge: "right",
   });
 
   return (
     <aside data-gc="amizades.dm-sidebar.aside"
       {...flxAttr("colunaDasConversas")}
       className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
-      style={{ width: largura }}
+      style={{ width: width }}
     >
       <div data-gc="amizades.dm-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
-      {/*
-        O painel termina onde o rodapé começa, e o rodapé fica de fora dele. No
-        referência esses dois são irmãos, e é o que faz a borda do tema parar em
-        cima em vez de cercar o usuário junto.
-      */}
-      <div data-gc="amizades.dm-sidebar.div--2" {...flx("listaDeConversas", cn("lista-de-conversas flex min-h-0 flex-1 flex-col", flxCls("listaDeConversasDoPainel")))}>
+      <div data-gc="amizades.dm-sidebar.div--2" {...flx("listaDeConversas", cn("lista-de-conversas miolo-recortado flex min-h-0 flex-1 flex-col", flxCls("listaDeConversasDoPainel")))}>
       <header data-gc="amizades.dm-sidebar.header" className={cn("regiao-de-arrasto flex h-[var(--layout-header-height)] items-center border-b border-divisor px-4 shadow-sm", flxCls("topoDaListaDeConversas"))}>
         <h1 data-gc="amizades.dm-sidebar.h1" className="truncate font-semibold">Mensagens diretas</h1>
       </header>
@@ -177,12 +172,12 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
         })}
       </div>
 
-        <AlcaDeLargura data-gc="amizades.dm-sidebar.alca-de-largura"
-          borda="direita"
-          arrastando={arrastando}
-          largura={largura}
-          limites={limites}
-          {...alca}
+        <WidthHandle data-gc="amizades.dm-sidebar.width-handle"
+          edge="right"
+          dragging={dragging}
+          width={width}
+          bounds={bounds}
+          {...handle}
         />
       </div>
       </div>

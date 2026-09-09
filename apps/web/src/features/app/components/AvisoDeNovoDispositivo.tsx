@@ -91,7 +91,6 @@ export const AvisoDeNovoDispositivo: React.FC = () => {
           JSON.stringify([...lerIgnorados(), novo.nome]),
         );
       } catch {
-        /* sem armazenamento: ele volta a sugerir, e tudo bem */
       }
     }
 

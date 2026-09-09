@@ -4,14 +4,6 @@ import macanetas from "~/features/configuracoes/lib/macanetas.json";
 import { PONTE_DE_TEMA } from "~/features/configuracoes/lib/ponte-de-tema";
 import { TODOS_OS_TOKENS } from "~/lib/tokens";
 
-/*
-  A lista de maçanetas é gerada do `index.css` — mas gerada não quer dizer certa.
-  Duas travas:
-
-    1. toda maçaneta é um nome que a ponte conhece, senão é invenção;
-    2. todo token com maçaneta tem rótulo no estúdio, senão a informação sai
-       para uma tela que ninguém vê.
-*/
 const MAPA = macanetas as Record<string, string[]>;
 
 describe("maçanetas do tema", () => {

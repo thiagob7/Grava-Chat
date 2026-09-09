@@ -17,14 +17,12 @@ export const TIPO_DE_ARRASTO = "text/gravae-servidor";
 
 export type ZonaDeSoltar = "antes" | "depois" | "juntar" | null;
 
-/// Onde no item o ponteiro está: no terço de cima, no de baixo, ou no meio.
 export function zonaDoPonteiro(e: React.DragEvent<HTMLElement>): ZonaDeSoltar {
   const r = e.currentTarget.getBoundingClientRect();
   const y = (e.clientY - r.top) / r.height;
   return y < 0.3 ? "antes" : y > 0.7 ? "depois" : "juntar";
 }
 
-/// A linha que mostra onde o servidor arrastado vai cair.
 export const MarcaDeSoltar: React.FC<{ zona: ZonaDeSoltar }> = ({ zona }) =>
   zona === "antes" || zona === "depois" ? (
     <span data-gc="servidor.item-do-servidor.span"
@@ -44,9 +42,7 @@ interface ItemDoServidorProps {
   vozes: VozNoServidor[];
   onSelect: (guildId: string) => void;
   onConvidar: () => void;
-  /// Sem isto, o item não recebe nada em cima dele (dentro de pasta fechada, por exemplo).
   onSoltar?: (guildId: string, destino: Destino) => void;
-  /// Dentro de uma pasta, soltar em cima é "entrar na pasta", não "juntar".
   pastaId?: string;
   compacto?: boolean;
 }
@@ -71,14 +67,14 @@ export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
   const silenciado = useAvisos((s) => servidorSilenciado(s, guild.id));
   const temNovidade = !active && naoLidas > 0 && !silenciado;
 
-  const arrastando = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
+  const dragging = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
 
   return (
     <MenuDoServidor data-gc="servidor.item-do-servidor.menu-do-servidor.on-convidar" guild={guild} onConvidar={onConvidar}>
       <div data-gc="servidor.item-do-servidor.div"
         className="group relative flex w-full justify-center"
         onDragOver={(e) => {
-          if (!onSoltar || !arrastando(e)) return;
+          if (!onSoltar || !dragging(e)) return;
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
           setZona(zonaDoPonteiro(e));
@@ -115,12 +111,6 @@ export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
         </span>
 
         <DicaDoServidor data-gc="servidor.item-do-servidor.dica-do-servidor" nome={guild.name} verificada={guild.verificada} detectavel={guild.detectavel} vozes={vozes}>
-          {/*
-            Link, e não botão — a mesma decisão que a referência tomou: um tema
-            comum escreve `button { border-radius }`, e os servidores ficam
-            com a forma deles. E o link é arrastável: é assim que se arruma o
-            trilho, juntando um no outro.
-          */}
           <Link data-gc="servidor.item-do-servidor.link"
             to={`/channels/${guild.id}`}
             onClick={() => onSelect(guild.id)}

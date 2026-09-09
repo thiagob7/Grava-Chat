@@ -15,11 +15,6 @@ interface BlocoDeCodigoProps {
   className?: string;
 }
 
-/*
-  O bloco no meio da mensagem é só o código: realce e um botão de copiar no
-  canto. Rodapé com nome, tamanho e seletor de idioma é coisa de ANEXO — ver
-  PreviaDeTexto. Aqui não há arquivo nenhum para nomear.
-*/
 export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
   codigo,
   lingua,

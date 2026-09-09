@@ -10,15 +10,6 @@ export const AvisoDeAtualizacao: React.FC = () => {
 
   if (!estado || !temNovidade) return null;
 
-  /*
-    `pointer-events-none` no envoltório: ele atravessa a tela inteira e, sem
-    isso, come o clique do cabeçalho atrás dele mesmo sendo invisível. Só a
-    pílula recebe o mouse de volta.
-
-    E `regiao-sem-arrasto` na pílula: ela pousa em cima do topo do canal, que é
-    área de arrastar a janela — e área de arrastar engole clique. Era por isso
-    que o botão "Reiniciar agora" não respondia.
-  */
   return (
     <div data-gc="app.aviso-de-atualizacao.div"
       className={cn("pointer-events-none fixed inset-x-0 z-50 flex justify-center", "top-10")}

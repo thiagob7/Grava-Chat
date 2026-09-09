@@ -19,8 +19,6 @@ export const setSessionLostHandler = (fn: () => void) => {
   onSessionLost = fn;
 };
 
-/// Para quem descobre a sessão morta fora do caminho HTTP — o socket, por
-/// exemplo, que é recusado no aperto de mão e não passa pelo interceptador.
 export const avisarSessaoPerdida = () => onSessionLost?.();
 
 api.interceptors.request.use((config) => {
@@ -32,12 +30,6 @@ let refreshing: Promise<{ accessToken: string; user: unknown }> | null = null;
 
 export function refreshSession<U>(): Promise<{ accessToken: string; user: U }> {
   refreshing ??= api
-    /*
-      Prazo curto, porque isto roda na ABERTURA e em quatro tentativas: com os
-      30s do cliente, um servidor pendurado segurava o app por mais de dois
-      minutos antes de qualquer tela aparecer. Trocar uma cópia de sessão é uma
-      chamada pequena — oito segundos é muito mais do que ela precisa.
-    */
     .post<{ accessToken: string; user: unknown }>("/auth/refresh", undefined, {
       timeout: 8_000,
     })

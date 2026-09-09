@@ -8,7 +8,7 @@ import {
 } from "~/@core/application/queries/guild/use-emblemas";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label } from "~/components/ui/input";
 import { useTranslation } from "~/traducao";
 
@@ -29,7 +29,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
   const criar = useCriarEmblema(guildId);
   const remover = useRemoverEmblema(guildId);
   const uploadImage = useUploadImage();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const arquivo = useRef<HTMLInputElement>(null);
 
   const [nome, setNome] = useState("");
@@ -96,14 +96,14 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             {editavel && (
               <button data-gc="servidor.server-settings.emblemas-section.button"
                 onClick={() =>
-                  void confirmar({
-                    titulo: `Apagar o emblema ${emblema.nome}?`,
-                    descricao:
+                  void confirm({
+                    title: `Apagar o emblema ${emblema.nome}?`,
+                    description:
                       t("servidor.emblemas.apagarDescricao"),
-                    acao: t("comum.apagar"),
+                    action: t("comum.apagar"),
                   }).then(
-                    ({ confirmado }) =>
-                      confirmado && remover.mutate(emblema.id),
+                    ({ confirmed }) =>
+                      confirmed && remover.mutate(emblema.id),
                   )
                 }
                 aria-label={`Apagar ${emblema.nome}`}

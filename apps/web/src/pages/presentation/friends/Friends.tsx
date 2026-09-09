@@ -8,7 +8,7 @@ import type { FriendshipModel } from "~/@core/domain/models/friend-model";
 import { AddFriendForm } from "~/features/amizades/components/AddFriendForm";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
@@ -193,21 +193,21 @@ interface FriendRowProps {
 const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) => {
   const respond = useRespondFriend();
   const remove = useRemoveFriend();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const responder = async (evento: React.MouseEvent, aceitar: boolean) => {
     if (!evento.shiftKey) {
-      const { confirmado } = await confirmar({
-        titulo: aceitar ? "Aceitar pedido de amizade" : "Recusar pedido de amizade",
-        descricao: aceitar
+      const { confirmed } = await confirm({
+        title: aceitar ? "Aceitar pedido de amizade" : "Recusar pedido de amizade",
+        description: aceitar
           ? `Aceitar o pedido de amizade de ${relacao.user.displayName}?`
           : `Recusar o pedido de ${relacao.user.displayName}? Ela não é avisada — e pode pedir de novo.`,
-        acao: aceitar ? "Aceitar" : "Recusar",
-        destrutivo: !aceitar,
-        dicaDoShift: true,
+        action: aceitar ? "Aceitar" : "Recusar",
+        destructive: !aceitar,
+        shiftHint: true,
       });
 
-      if (!confirmado) return;
+      if (!confirmed) return;
     }
 
     respond.mutate({ friendshipId: relacao.id, accept: aceitar });
@@ -215,18 +215,18 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
 
   const desfazer = async (evento: React.MouseEvent) => {
     if (!evento.shiftKey) {
-      const { confirmado } = await confirmar({
-        titulo:
+      const { confirmed } = await confirm({
+        title:
           relacao.status === "ACCEPTED" ? "Desfazer amizade" : "Cancelar o pedido enviado",
-        descricao:
+        description:
           relacao.status === "ACCEPTED"
             ? `Tirar ${relacao.user.displayName} da sua lista de amigos? A conversa continua onde está.`
             : `Cancelar o pedido enviado para ${relacao.user.displayName}?`,
-        acao: relacao.status === "ACCEPTED" ? "Desfazer" : "Cancelar pedido",
-        dicaDoShift: true,
+        action: relacao.status === "ACCEPTED" ? "Desfazer" : "Cancelar pedido",
+        shiftHint: true,
       });
 
-      if (!confirmado) return;
+      if (!confirmed) return;
     }
 
     remove.mutate(relacao.id);

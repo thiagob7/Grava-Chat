@@ -5,14 +5,14 @@ import { useFindGuildInvites } from "~/@core/application/queries/guild/use-find-
 import { useDeleteInvite } from "~/@core/application/queries/guild/use-delete-invite";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
 export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
   const { t } = useTranslation();
   const { data: convites = [], isLoading } = useFindGuildInvites(guildId, true);
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const deleteInvite = useDeleteInvite();
 
   return (
@@ -71,15 +71,15 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
               <Tooltip data-gc="servidor.server-settings.invites-section.tooltip" label={t("servidor.convites.revogar")}>
                 <button data-gc="servidor.server-settings.invites-section.button"
                   onClick={() =>
-                    void confirmar({
-                      titulo: t("servidor.convites.revogarTitulo"),
-                      descricao: t("servidor.convites.revogarDescricao", {
+                    void confirm({
+                      title: t("servidor.convites.revogarTitulo"),
+                      description: t("servidor.convites.revogarDescricao", {
                         codigo: convite.code,
                       }),
-                      acao: t("servidor.convites.revogarAcao"),
+                      action: t("servidor.convites.revogarAcao"),
                     }).then(
-                      ({ confirmado }) =>
-                        confirmado &&
+                      ({ confirmed }) =>
+                        confirmed &&
                         deleteInvite.mutate({ guildId, inviteId: convite.id }),
                     )
                   }

@@ -40,9 +40,6 @@ const VAZIO: CabecalhoDoTema = {
 
 const cortar = (valor: string, tamanho: number) => valor.trim().slice(0, tamanho) || null;
 
-/// Lê o bloco `/** @name ... */` do topo do CSS, no mesmo formato que o
-/// referência e o BetterDiscord usam. Sem o bloco, devolve tudo vazio — o CSS
-/// continua valendo, só não se apresenta.
 export function lerCabecalhoDoTema(css: string): CabecalhoDoTema {
   const bloco = /^\s*\/\*\*([\s\S]*?)\*\//.exec(css);
   if (!bloco?.[1]) return VAZIO;
@@ -74,7 +71,6 @@ export function lerCabecalhoDoTema(css: string): CabecalhoDoTema {
   };
 }
 
-/// Monta o bloco de volta, para o arquivo que sai no "Exportar".
 export function escreverCabecalhoDoTema(cabecalho: CabecalhoDoTema): string {
   const linhas = [
     cabecalho.nome && ` * @name ${cabecalho.nome}`,
@@ -89,7 +85,6 @@ export function escreverCabecalhoDoTema(cabecalho: CabecalhoDoTema): string {
   return ["/**", ...linhas, " */"].join("\n");
 }
 
-/// Troca o cabeçalho existente por um novo, sem duplicar o bloco.
 export function comCabecalho(css: string, cabecalho: CabecalhoDoTema): string {
   const corpo = css.replace(/^\s*\/\*\*[\s\S]*?\*\/\s*/, "");
   const bloco = escreverCabecalhoDoTema(cabecalho);
@@ -97,8 +92,6 @@ export function comCabecalho(css: string, cabecalho: CabecalhoDoTema): string {
   return bloco ? `${bloco}\n\n${corpo}` : corpo;
 }
 
-/// O caminho de um tema publicado. Uma mensagem que traga este link vira o
-/// cartão de "Tema compartilhado" em vez da prévia de link de sempre.
 export const CAMINHO_DO_TEMA = "/tema/";
 
 export function idDoTemaNoLink(url: string, origem: string): string | null {

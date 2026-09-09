@@ -1,23 +1,3 @@
-/*
-  As quatro cores-mãe, e a distância de cada filha até a sua mãe.
-
-  Mexer em 41 cores uma a uma não é fazer tema, é preencher formulário. Quem
-  quer um tema quer dizer "o fundo é este verde" e ver a tela inteira ir junto:
-  superfícies, hover, bordas, campo, painel, palco de voz.
-
-  A referência resolve isso gerando as cores de 17 famílias HSL com sete rampas
-  de luminosidade curvadas. A curva existe porque o L do HSL não é perceptual —
-  o mesmo passo clareia muito no azul e quase nada no amarelo. Aqui a conta é
-  feita em LCh, onde o L já é perceptual, então a rampa reta É a curva deles.
-
-  E as distâncias não são inventadas: saem do `index.css`, medindo o tema base.
-  Assim derivar sem mexer em nada devolve exatamente o tema de hoje — a
-  derivação começa sendo a identidade, e é isso que a torna conferível.
-
-  Rodar:
-    node scripts/cores-mae.mjs           escreve o JSON
-    node scripts/cores-mae.mjs --check   falha se o JSON estiver velho
-*/
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,14 +16,6 @@ const LISTA = join(
   "cores-mae.json",
 );
 
-/*
-  O valor de reserva no fim da cadeia.
-
-  Desde que as cores nascem do nome da referência, o `@theme` guarda
-  `var(--background-primary, var(--bg-primary, #1a181e))` em vez de `#1a181e`.
-  A cor do tema base é a última — a que vale quando nenhum tema declarou nada — e
-  é dela que as distâncias das cores-mãe são medidas.
-*/
 function corDaReserva(valor) {
   let v = valor.trim();
 
@@ -56,20 +28,6 @@ function corDaReserva(valor) {
   return v;
 }
 
-/*
-  Quem é mãe de quem. Isto é a parte que uma máquina não descobre: que o
-  `--color-hover` pertence à família do fundo e o `--color-foco-anel` à da
-  marca é significado, não medida. Os números vêm do CSS; a família vem daqui.
-
-  `espelha` diz o que fazer quando a mãe troca de lado — de escuro para claro.
-  A borda do tema escuro é um branco a 15%: no claro ela tem que virar um preto
-  a 15%, senão some.
-
-  `ancora` é a filha que NÃO é degrau de rampa: o véu do modal, a sombra e o
-  brilho do vidro são pretos e brancos absolutos, e seguir a mãe os arruinaria
-  — véu claro não escurece nada, e sombra clara não é sombra. Ela guarda o
-  matiz da mãe, para tingir de leve, mas mantém a própria luminosidade.
-*/
 const FAMILIAS = {
   fundo: {
     rotulo: "Fundo",
@@ -120,11 +78,6 @@ const FAMILIAS = {
       "--color-mencao",
       "--color-resposta",
       "--color-everyone",
-      /*
-        O texto de cima do botão não é um degrau da rampa: ele é o CONTRASTE da
-        mãe. Derivar por distância daria preto sobre marca escura assim que
-        alguém escolhesse uma marca clara.
-      */
       { nome: "--color-sobre-marca", contraste: true },
     ],
   },
@@ -185,18 +138,10 @@ export function extrairCoresMae(css) {
 
       return {
         nome,
-        /// Quanto mais clara (ou escura) que a mãe, em L perceptual.
         dL: arredonda(L - maeL),
-        /*
-          A saturação anda em PROPORÇÃO, não em soma: uma mãe cinza gera filhas
-          cinzas, uma mãe berrante gera filhas berrantes. O piso evita que uma
-          mãe quase neutra faça a razão explodir.
-        */
         razaoC: arredonda(C / Math.max(maeC, 3)),
-        /// O giro de matiz que a filha mantém em relação à mãe.
         dH: arredonda(((H - maeH) % 360 + 540) % 360 - 180),
         alfa: filha.alpha() < 1 ? arredonda(filha.alpha()) : null,
-        /// Âncora e contraste guardam o L absoluto: são polos, não degraus.
         ...(extras.contraste || extras.ancora ? { L: arredonda(L) } : {}),
         espelha: familia.espelha,
         ...extras,

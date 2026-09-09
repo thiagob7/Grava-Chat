@@ -26,12 +26,12 @@ export async function resizeImage(
     return { file, ...dimensoes };
   }
 
-  const largura = Math.round(bitmap.width * escala);
-  const altura = Math.round(bitmap.height * escala);
+  const width = Math.round(bitmap.width * escala);
+  const height = Math.round(bitmap.height * escala);
 
   const canvas = document.createElement("canvas");
-  canvas.width = largura;
-  canvas.height = altura;
+  canvas.width = width;
+  canvas.height = height;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -39,17 +39,17 @@ export async function resizeImage(
     return { file, width: bitmap.width, height: bitmap.height };
   }
 
-  ctx.drawImage(bitmap, 0, 0, largura, altura);
+  ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/webp", quality),
   );
 
-  if (!blob || blob.size >= file.size) return { file, width: largura, height: altura };
+  if (!blob || blob.size >= file.size) return { file, width: width, height: height };
 
   const nome = file.name.replace(/\.[^.]+$/, "") + ".webp";
-  return { file: new File([blob], nome, { type: "image/webp" }), width: largura, height: altura };
+  return { file: new File([blob], nome, { type: "image/webp" }), width: width, height: height };
 }
 
 async function medir(file: File): Promise<{ width: number | null; height: number | null }> {

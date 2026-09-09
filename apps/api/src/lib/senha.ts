@@ -1,10 +1,5 @@
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 
-/*
-  A senha nunca é guardada: guarda-se o scrypt dela com um sal por conta,
-  no formato `scrypt$N$sal$hash`. O N vai junto para o dia em que subir — o
-  hash antigo continua conferindo, e o novo nasce mais caro.
-*/
 const CUSTO = 16384;
 const TAMANHO = 64;
 

@@ -34,7 +34,7 @@ import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import { copiarTexto } from "~/lib/copiar";
 import { extrairLinks } from "~/features/conversa/lib/links";
 import { Tooltip } from "~/components/ui/tooltip";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import {
   DropdownMenu,
@@ -223,7 +223,7 @@ const BarraDeAcoes: React.FC<{
 }> = ({ guildId, userId, displayName, onFechar }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const openDm = useOpenDm();
   const removeMember = useRemoveMember();
   const banir = useBanMember(guildId);
@@ -238,43 +238,43 @@ const BarraDeAcoes: React.FC<{
   };
 
   const expulsar = async () => {
-    const { confirmado } = await confirmar({
-      titulo: t("servidor.membros.expulsarTitulo", { nome: displayName }),
-      descricao: t("servidor.moderacao.expulsarDescricao"),
-      acao: t("servidor.membros.expulsar"),
+    const { confirmed } = await confirm({
+      title: t("servidor.membros.expulsarTitulo", { nome: displayName }),
+      description: t("servidor.moderacao.expulsarDescricao"),
+      action: t("servidor.membros.expulsar"),
     });
 
-    if (confirmado) {
+    if (confirmed) {
       removeMember.mutate({ guildId, userId });
       onFechar();
     }
   };
 
   const banirMembro = async () => {
-    const { confirmado, texto } = await confirmar({
-      titulo: t("servidor.membros.banirTitulo", { nome: displayName }),
-      descricao: t("servidor.moderacao.banirDescricao"),
-      acao: t("servidor.membros.banir"),
-      campo: { rotulo: t("servidor.membros.motivo"), placeholder: t("servidor.membros.motivoDica") },
+    const { confirmed, text } = await confirm({
+      title: t("servidor.membros.banirTitulo", { nome: displayName }),
+      description: t("servidor.moderacao.banirDescricao"),
+      action: t("servidor.membros.banir"),
+      field: { label: t("servidor.membros.motivo"), placeholder: t("servidor.membros.motivoDica") },
     });
 
-    if (confirmado) {
-      banir.mutate({ guildId, userId, reason: texto || null });
+    if (confirmed) {
+      banir.mutate({ guildId, userId, reason: text || null });
       onFechar();
     }
   };
 
   const castigarMembro = async () => {
-    const { confirmado, texto } = await confirmar({
-      titulo: t("servidor.moderacao.castigarTitulo", { nome: displayName }),
-      descricao: t("servidor.moderacao.castigoDescricao"),
-      acao: t("servidor.moderacao.aplicarCastigo"),
-      campo: { rotulo: t("servidor.moderacao.duracao"), placeholder: "60", obrigatorio: true },
+    const { confirmed, text } = await confirm({
+      title: t("servidor.moderacao.castigarTitulo", { nome: displayName }),
+      description: t("servidor.moderacao.castigoDescricao"),
+      action: t("servidor.moderacao.aplicarCastigo"),
+      field: { label: t("servidor.moderacao.duracao"), placeholder: "60", required: true },
     });
 
-    if (!confirmado) return;
+    if (!confirmed) return;
 
-    const minutos = Number(texto);
+    const minutos = Number(text);
     if (!Number.isFinite(minutos) || minutos <= 0) {
       return toast.error(t("servidor.moderacao.informeDuracao"));
     }

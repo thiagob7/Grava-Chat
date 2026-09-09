@@ -74,11 +74,6 @@ export const DropdownMenuRadioItem = ({
     <span data-gc="ui.dropdown-menu.span" className="min-w-0 flex-1 truncate">{children}</span>
 
     <span data-gc="ui.dropdown-menu.span--2" className={cn("flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint", flxCls("itemDeRadioDoMenu"))}>
-      {/*
-        O indicador só existe quando a opção está escolhida, então ele é o
-        lugar certo para o nome do estado escolhido — não há condição a
-        escrever, o Radix já monta e desmonta.
-      */}
       <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator" className={flxCls("itemDeRadioDoMenuEscolhido")}>
         <span data-gc="ui.dropdown-menu.span--3" className="block size-2 rounded-full bg-brand" />
       </DropdownPrimitive.ItemIndicator>
@@ -126,16 +121,6 @@ export const DropdownMenuSubTrigger = ({
   <DropdownPrimitive.SubTrigger data-gc="ui.dropdown-menu.dropdown-primitivesub-trigger"
     className={cn(
       "flex cursor-pointer items-center justify-between gap-3 rounded px-2.5 py-2 text-sm text-ink-muted outline-none transition",
-      /*
-        A ordem importa aqui, e não é a ordem do texto: as duas regras pintam
-        o mesmo fundo, e a que o Tailwind gera por último vence. O submenu
-        aberto vinha depois e apagava o realce do mouse — o item sob o ponteiro
-        ficava cinza como os outros, e parecia que o hover tinha sumido.
-
-        Com `not-data-[highlighted]`, o cinza do aberto só vale quando o mouse
-        NÃO está nele. As duas deixam de disputar: o aberto lembra qual submenu
-        ficou de pé, e o realce sempre mostra onde o ponteiro está.
-      */
       "data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
       "not-data-[highlighted]:data-[state=open]:bg-surface-3",
       className,

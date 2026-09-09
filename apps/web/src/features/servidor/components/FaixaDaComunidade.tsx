@@ -27,7 +27,6 @@ export const FaixaDaComunidade: React.FC = () => {
     try {
       localStorage.setItem(CHAVE, "1");
     } catch {
-      /* navegador sem armazenamento: a faixa volta na próxima, e tudo bem */
     }
   };
 

@@ -46,11 +46,6 @@ export const profileService = {
     else if (relacao?.status === "BLOCKED") friendship = "BLOCKED";
     else if (relacao) friendship = relacao.requesterId === viewerId ? "PENDING_OUT" : "PENDING_IN";
 
-    /*
-      O id do bot, para o cartão oferecer "Adicionar ao servidor". Só vai se
-      quem olha puder adicionar: bot público, ou bot de quem está olhando. A
-      conta da casa não é bot de ninguém — não se adiciona, já está onde precisa.
-    */
     const [bot] = user.isBot && !user.sistema ? await botRepository.findManyByUserIds([userId]) : [];
     const botId = bot && (bot.publico || bot.ownerId === viewerId) ? bot.id : null;
 

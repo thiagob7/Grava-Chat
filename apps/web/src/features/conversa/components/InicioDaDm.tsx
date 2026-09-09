@@ -8,13 +8,6 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import type { PublicUser } from "@gravae/shared";
 
-/*
-  O topo de uma conversa vazia.
-
-  Não é decoração: é onde a pessoa decide se conhece quem está do outro lado.
-  Por isso as comunidades em comum vêm antes do botão de amizade — primeiro o
-  que vocês têm junto, depois o convite.
-*/
 export const InicioDaDm: React.FC<{ pessoa: PublicUser }> = ({ pessoa }) => {
   const { data: perfil } = useFindProfile(pessoa.id);
   const { data: emComum } = useFindEmComum(pessoa.id, true);
@@ -37,7 +30,10 @@ export const InicioDaDm: React.FC<{ pessoa: PublicUser }> = ({ pessoa }) => {
 
       <p data-gc="conversa.inicio-da-dm.p" className="mt-3 text-ink-muted">
         {pessoa.sistema ? (
-          <>Os avisos do Gravaê chegam por aqui.</>
+          <>
+            Esta é uma mensagem oficial da equipe do Gravaê. Não esqueça: o Gravaê nunca vai
+            pedir sua senha nem o token da sua conta.
+          </>
         ) : (
           <>
             Diga oi para <strong data-gc="conversa.inicio-da-dm.strong" className="font-semibold text-ink">{pessoa.displayName}</strong>. Sua

@@ -163,7 +163,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
                   max={1}
                   step={0.05}
                   value={volumeDoPainel}
-                  preenchido={somDoPainel ? volumeDoPainel : 0}
+                  filled={somDoPainel ? volumeDoPainel : 0}
                   disabled={!somDoPainel}
                   aria-label="Volume dos efeitos sonoros"
                   onChange={(e) => definir({ volumeDoPainel: Number(e.target.value) })}

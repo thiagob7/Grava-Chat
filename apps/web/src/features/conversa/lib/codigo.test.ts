@@ -92,7 +92,6 @@ describe("rotuloDaLingua", () => {
 const CODIGO: Record<string, string> = {
   "o TypeScript do print": `import { cameraTimeline } from "@gravae/ai-analytics";
 
-// mínimo — só path e result
 await cameraTimeline({
   path: { left: "/capturas/cam01", right: "/capturas/cam02" },
   result: (ev) => { if (ev.switched) console.log(ev.t, ev.camera); },
@@ -222,7 +221,6 @@ describe("mas continua pegando o que é código", () => {
     it(nome, () => expect(pareceCodigo(texto)).toBe(true));
   }
 });
-
 
 describe("virar arquivo", () => {
   const bloco = (lingua: string, corpo: string) => "```" + lingua + "\n" + corpo + "\n```";

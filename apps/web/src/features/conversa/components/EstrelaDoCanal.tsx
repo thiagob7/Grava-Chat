@@ -5,7 +5,6 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { useFavoritos } from "~/features/servidor/stores/favoritos";
 import { cn } from "~/lib/utils";
 
-/// Vale para canal de servidor e para conversa: os dois são canal.
 export const EstrelaDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
   const favorito = useFavoritos((s) => s.canais.includes(channelId));
   const alternar = useFavoritos((s) => s.alternar);

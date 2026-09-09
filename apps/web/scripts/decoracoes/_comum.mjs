@@ -1,10 +1,3 @@
-/*
-  Geometria compartilhada pelos geradores de decoração em SVG.
-
-  Todas desenham num quadro 200x200 com o anel a 84 de raio — o mesmo do
-  `aro.json` e do `gelo.json`. É isso que faz todas ocuparem o mesmo lugar em
-  volta do retrato com `folga: "-16%"`.
-*/
 export const C = 100;
 export const R = 84;
 
@@ -12,17 +5,9 @@ export const rad = (g) => (g * Math.PI) / 180;
 export const n = (v) => Math.round(v * 100) / 100;
 export const em = (g, r = R) => [n(C + r * Math.cos(rad(g))), n(C + r * Math.sin(rad(g)))];
 
-/// Distribui `quantos` itens em volta do círculo, começando em `de`.
 export const emVolta = (quantos, de = -90) =>
   Array.from({ length: quantos }, (_, i) => de + (i * 360) / quantos);
 
-/*
-  Animação declarativa, e não CSS de fora.
-
-  Um SVG dentro de `<img>` roda em modo animado seguro: SMIL e CSS de dentro do
-  arquivo funcionam, script não. Folha de estilo do app não alcança aqui — por
-  isso a animação vive dentro do próprio arquivo.
-*/
 export const gira = (dur, de = 0, ate = 360) =>
   `<animateTransform attributeName="transform" type="rotate" values="${de} ${C} ${C};${ate} ${C} ${C}" dur="${dur}s" repeatCount="indefinite"/>`;
 

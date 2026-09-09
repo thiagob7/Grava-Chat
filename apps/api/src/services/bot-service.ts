@@ -55,13 +55,6 @@ export const botService = {
     return (await botRepository.findManyOf(ownerId)).map((b) => paraDono(b));
   },
 
-  /*
-    A vitrine de aplicativos do Explorar.
-
-    Chega sem token e sem segredo: o que vale para quem procura é o nome, o
-    que o bot faz e o que ele pede ao entrar. O convite continua sendo o
-    caminho de adicionar, e é lá que a pessoa decide.
-  */
   async publicos(busca?: string): Promise<AplicativoDescoberto[]> {
     const bots = await botRepository.findPublicos(busca?.trim() || undefined);
 
@@ -167,7 +160,6 @@ export const botService = {
     return Boolean(await memberRepository.find(guildId, bot.botUserId));
   },
 
-  /// `escolhidas` é o que a pessoa deixou marcado na autorização: sempre um subconjunto do pedido.
   async adicionarAoServidor(userId: string, botId: string, guildId: string, escolhidas?: string[]) {
     const bot = await botRepository.findById(botId);
     if (!bot) throw new NotFoundError("Bot não encontrado");

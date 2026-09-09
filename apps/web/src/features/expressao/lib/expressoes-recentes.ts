@@ -15,6 +15,5 @@ export function registrarFigurinha(id: string) {
     const atual = figurinhasRecentes().filter((s) => s !== id);
     localStorage.setItem(CHAVE_FIGURINHAS, JSON.stringify([id, ...atual].slice(0, QUANTAS)));
   } catch {
-    /* modo privado: a lista vale só nesta aba */
   }
 }

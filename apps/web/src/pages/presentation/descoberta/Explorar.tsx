@@ -18,8 +18,8 @@ import {
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useSession } from "~/contexts/session-context";
-import { campoNu, grupoDeCampo } from "~/components/ui/input";
-import { AlcaDeLargura, useLarguraAjustavel } from "~/components/ui/resizable";
+import { bareField, fieldGroup } from "~/components/ui/input";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ComunidadeModal } from "~/features/descoberta/components/ComunidadeModal";
@@ -43,8 +43,6 @@ const ABAS: { id: Aba; nome: string; icone: React.ElementType }[] = [
   { id: "temas", nome: "Temas", icone: Palette },
 ];
 
-/// O que a busca procura muda com a aba, e o filtro de categoria só existe
-/// para comunidade: aplicativo e tema não têm categoria para filtrar.
 const PROCURAR: Record<Aba, string> = {
   comunidades: "Buscar comunidades",
   aplicativos: "Buscar aplicativos",
@@ -63,12 +61,12 @@ export const Explorar: React.FC = () => {
     endSession();
   };
 
-  const { largura, arrastando, alca, limites } = useLarguraAjustavel("explorar", {
-    padrao: 320,
+  const { width, dragging, handle, bounds } = useResizableWidth("explorar", {
+    initial: 320,
     token: "--layout-sidebar-width",
     min: 180,
     max: 420,
-    borda: "direita",
+    edge: "right",
   });
 
   const [aba, setAba] = useState<Aba>("comunidades");
@@ -89,15 +87,10 @@ export const Explorar: React.FC = () => {
 
       <aside data-gc="descoberta.explorar.aside"
         className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
-        style={{ width: largura }}
+        style={{ width: width }}
       >
         <div data-gc="descoberta.explorar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
-      {/*
-        O painel termina onde o rodapé começa, e o rodapé fica de fora dele. No
-        referência esses dois são irmãos, e é o que faz a borda do tema parar em
-        cima em vez de cercar o usuário junto.
-      */}
-        <div data-gc="descoberta.explorar.div--2" {...flx("listaDeConversas", "lista-de-comunidades flex min-h-0 flex-1 flex-col")}>
+        <div data-gc="descoberta.explorar.div--2" {...flx("listaDeConversas", "lista-de-comunidades miolo-recortado flex min-h-0 flex-1 flex-col")}>
         <header data-gc="descoberta.explorar.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
           <div data-gc="descoberta.explorar.div--3"
             {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center px-4")}
@@ -133,13 +126,12 @@ export const Explorar: React.FC = () => {
         <div data-gc="descoberta.explorar.div--4" className="mt-auto" />
         </div>
 
-
-        <AlcaDeLargura data-gc="descoberta.explorar.alca-de-largura"
-          borda="direita"
-          arrastando={arrastando}
-          largura={largura}
-          limites={limites}
-          {...alca}
+        <WidthHandle data-gc="descoberta.explorar.width-handle"
+          edge="right"
+          dragging={dragging}
+          width={width}
+          bounds={bounds}
+          {...handle}
         />
       </aside>
     </ColunaDaEsquerda>
@@ -194,14 +186,14 @@ export const Explorar: React.FC = () => {
               )}
             </div>
 
-            <div data-gc="descoberta.explorar.div--9" className={cn(grupoDeCampo, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
+            <div data-gc="descoberta.explorar.div--9" className={cn(fieldGroup, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
               <Search data-gc="descoberta.explorar.search" size={14} className="shrink-0 text-ink-faint" />
               <input data-gc="descoberta.explorar.input"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder={PROCURAR[aba]}
                 aria-label={PROCURAR[aba]}
-                className={cn(campoNu, flxCls("campoDaDescoberta"))}
+                className={cn(bareField, flxCls("campoDaDescoberta"))}
               />
               {busca && (
                 <button data-gc="descoberta.explorar.button--3"
@@ -317,13 +309,6 @@ const Comunidades: React.FC<{ categoria: CategoriaDeComunidade | null; busca: st
   );
 };
 
-/*
-  A grade das duas abas novas.
-
-  Comunidade tem cartão alto por causa do banner; tema e aplicativo cabem em
-  cartão mais baixo, mas dividem a mesma medida de coluna — trocar de aba não
-  pode remontar a página inteira debaixo do cursor.
-*/
 const Grade: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div data-gc="descoberta.explorar.div--15" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">{children}</div>
 );

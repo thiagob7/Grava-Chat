@@ -49,7 +49,7 @@ import { formatTime, formatTimestamp } from "~/lib/format";
 import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useEdicaoStore } from "~/features/conversa/stores/edicao-store";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Textarea } from "~/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import {
@@ -80,10 +80,6 @@ import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 const QUICK_PADRAO = ["👍", "🔥", "😂", "❤️"];
 
-/// Os três que a pessoa mais usa, completados com os de fábrica quando ela
-/// ainda não reagiu o bastante para haver histórico. Três, e não quatro,
-/// porque a barra também mostra encaminhar — e a fila fica do tamanho da
-/// referência.
 function atalhosDeReacao(): string[] {
   const usados = emojisRecentes().filter((e) => e.length <= 8);
 
@@ -128,7 +124,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onPin,
 }) => {
   const { t } = useTranslation();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const ignorado = useIgnoreStore((s) => s.ignorados).includes(message.author.id);
   useAparencia((s) => s.horaEm24h);
@@ -203,8 +199,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     setReagindo(false);
   };
 
-  const copiar = (texto: string, aviso: string) => {
-    void copiarTexto(texto).then((deu) =>
+  const copiar = (text: string, aviso: string) => {
+    void copiarTexto(text).then((deu) =>
       deu ? toast.success(aviso) : toast.error(t("conversa.mensagem.naoDeuParaCopiar")),
     );
   };
@@ -220,13 +216,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const apagarMesmo = () => void deleteMessage(message.id).catch(() => undefined);
 
   const apagarAnexo = (anexo: Attachment) =>
-    void confirmar({
-      titulo: t("conversa.anexos.excluirTitulo"),
-      descricao: t("conversa.anexos.excluirDescricao", { arquivo: anexo.filename }),
-      acao: t("conversa.anexos.excluirAcao"),
-      destrutivo: true,
-    }).then(({ confirmado }) => {
-      if (!confirmado) return;
+    void confirm({
+      title: t("conversa.anexos.excluirTitulo"),
+      description: t("conversa.anexos.excluirDescricao", { arquivo: anexo.filename }),
+      action: t("conversa.anexos.excluirAcao"),
+      destructive: true,
+    }).then(({ confirmed }) => {
+      if (!confirmed) return;
 
       void removerAnexo(message.id, anexo.id).catch(() =>
         toast.error(t("conversa.anexos.excluirFalhou")),
@@ -234,21 +230,20 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     });
 
   const apagar = () => {
-    /// Segurando Shift, some direto — é a saída pra quem está limpando várias.
     if (shift) return apagarMesmo();
 
-    void confirmar({
-      titulo: t("conversa.mensagem.apagarTitulo"),
-      descricao: (
+    void confirm({
+      title: t("conversa.mensagem.apagarTitulo"),
+      description: (
         <>
           {t("conversa.mensagem.apagarDescricao")}
           <PreviaDaMensagem data-gc="conversa.message-item.previa-da-mensagem" message={message} emojis={emojis} />
         </>
       ),
-      acao: t("conversa.mensagem.apagarAcao"),
-      destrutivo: true,
-      dicaDoShift: true,
-    }).then(({ confirmado }) => confirmado && apagarMesmo());
+      action: t("conversa.mensagem.apagarAcao"),
+      destructive: true,
+      shiftHint: true,
+    }).then(({ confirmed }) => confirmed && apagarMesmo());
   };
 
   const iniciarResposta = () =>
@@ -515,7 +510,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 guildId={guildId}
                 modo="reacao"
                 onFechar={() => setReagindo(false)}
-                onEmoji={(texto) => void toggleReaction(texto)}
+                onEmoji={(text) => void toggleReaction(text)}
               />
             </PopoverContent>
           </Popover>
@@ -529,11 +524,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             <Forward data-gc="conversa.message-item.forward" size={14} />
           </AcaoDaBarra>
 
-          {/*
-            Com o Shift, a barra abre: o que estava guardado no "mais" vem
-            para a mesma linha. É o atalho de quem já sabe onde cada coisa
-            fica e não quer o menu no caminho.
-          */}
           {shift && (
             <>
               <AcaoDaBarra data-gc="conversa.message-item.acao-da-barra--3"
@@ -836,7 +826,6 @@ const Citacao: React.FC<{
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  /// Clicar na citação leva à mensagem original: a lista rola até ela e destaca.
   const irParaOriginal = () => {
     if (replyToId) navigate(`?m=${replyToId}`);
   };
@@ -890,13 +879,6 @@ const Citacao: React.FC<{
   );
 };
 
-/*
-  "Encaminhada de #canal", com o botão que leva à original.
-
-  Três nomes na árvore, como na referência: a caixa, o botão, e dentro dele o
-  rótulo e o nome do canal. O pulo é o mesmo da busca e das fixadas — a rota
-  do canal com `?m=<id>`, que a lista rola até lá e destaca.
-*/
 const Encaminhada: React.FC<{
   origem: { channelId: string; messageId: string };
   guildId?: string;
@@ -933,8 +915,6 @@ const Encaminhada: React.FC<{
   );
 };
 
-/// A mensagem que vai sumir, dentro da confirmação. Sem ações e sem hover:
-/// aqui ela é só a prova de que é esta mesma, e não a de cima.
 const PreviaDaMensagem: React.FC<{
   message: Message | PendingMessageModel;
   emojis: GuildEmoji[];
@@ -957,7 +937,7 @@ const PreviaDaMensagem: React.FC<{
       {message.content ? (
         <MessageContent data-gc="conversa.message-item.message-content--4" content={message.content} emojis={emojis} blocos />
       ) : (
-        <span data-gc="conversa.message-item.span--24" className="italic text-ink-faint">sem texto</span>
+        <span data-gc="conversa.message-item.span--24" className="italic text-ink-faint">sem text</span>
       )}
     </div>
   </div>

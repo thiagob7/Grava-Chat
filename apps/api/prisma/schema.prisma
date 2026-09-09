@@ -13,7 +13,6 @@ enum ChannelType {
   FORUM
 }
 
-/// Como o conteúdo do canal se comporta: normal, borrado até clicar, ou +18.
 enum ContentVisibility {
   DEFAULT
   SPOILER
@@ -25,12 +24,9 @@ enum VideoQuality {
   HD
 }
 
-/// O que gerou a mensagem. USER é gente escrevendo; o resto o sistema cria.
 enum MessageType {
   USER
   JOIN
-  /// "fulano usou /play" — o rastro visível de um comando de barra. Fica no
-  /// histórico como qualquer mensagem, e é ela que o bot cita ao responder.
   COMANDO
 }
 
@@ -64,8 +60,6 @@ enum FriendshipStatus {
   BLOCKED
 }
 
-/// Anexo fica embutido na mensagem (composite type do Mongo) em vez de colecao
-/// separada: sempre e lido junto com a mensagem e nunca e consultado sozinho.
 type Attachment {
   id          String
   url         String
@@ -74,30 +68,22 @@ type Attachment {
   size        Int
   width       Int?
   height      Int?
-  /// chega borrado e só abre no clique
   spoiler     Boolean @default(false)
-  /// texto alternativo, para quem usa leitor de tela
   description String?
-  /// Só em mensagem de voz: quanto dura, e a onda medida na hora de gravar.
-  /// Anexo comum não tem nenhum dos dois, e por isso são opcionais.
   duracaoMs   Int?
   ondas       String?
 }
 
-/// Uma opção da enquete. Os votos ficam com a opção porque é assim que a tela
-/// lê — nunca precisamos "todos os votos de uma pessoa" no servidor inteiro.
 type PollOption {
   id      String
   texto   String
   emoji   String?
-  /// ids de quem votou nesta opção
   userIds String[] @db.ObjectId
 }
 
 type Poll {
   pergunta    String
   opcoes      PollOption[]
-  /// permite marcar mais de uma opção
   multiSelect Boolean     @default(false)
   expiresAt   DateTime?
   closedAt    DateTime?
@@ -110,57 +96,21 @@ model User {
   displayName String
   avatarUrl   String?
   bio         String?
-  /// como a pessoa quer ser tratada; texto livre, curto
   pronomes    String?
-  /// conta de webhook: não faz login, não aparece na lista de membros
   isBot       Boolean        @default(false)
-  /// a conta da casa, que publica os temas e manda os avisos do app; opcional
-  /// de propósito, para não precisar preencher quem já existe
   sistema     Boolean?
-  /// a senha, quando a conta entra por e-mail; ausente em quem só usa Google
   senhaHash   String?
   status      PresenceStatus @default(OFFLINE)
-  /// enfeites; ausente em quem nunca personalizou nada
   perfil              EstiloDePerfil?
   statusPersonalizado StatusPersonalizado?
   lastSeenAt  DateTime?
 
-  /*
-    Privacidade.
-
-    Mora no banco, e não no aparelho como as outras preferências: estas duas
-    valem contra OUTRAS pessoas. Uma escolha que o servidor não conhece não
-    protege ninguém — quem manda o pedido não passa pelo seu navegador.
-
-    Ambas nascem `true` porque é o comportamento que já existia; conta antiga
-    não pode acordar mais fechada do que dormiu.
-  */
   aceitaPedidos   Boolean @default(true)
   mostraAtividade Boolean @default(true)
 
-  /*
-    O que o SEU perfil conta sobre você para quem o abre.
-
-    Servidores em comum e amigos em comum parecem a mesma pergunta e nao sao:
-    a lista de servidores desenha a sua rotina — onde voce passa o dia, o que
-    joga, de que comunidade faz parte —, e a de amigos desenha a sua rede.
-    Quem quer esconder uma raramente quer esconder a outra.
-
-    Valem so contra terceiros: a sua propria aba continua completa, porque
-    esconder de voce mesmo o que voce escolheu esconder dos outros e so
-    confundir.
-  */
   mostraServidoresEmComum Boolean @default(true)
   mostraAmigosEmComum     Boolean @default(true)
 
-  /*
-    Quando esta conta deve ser apagada de verdade.
-
-    `null` = conta viva. Com data, ela está desativada e o relógio corre: até lá
-    NADA é destruído — nem mensagem, nem amizade, nem participação em servidor.
-    É o que torna a volta possível, e é a única forma honesta de prometer
-    recuperação: dizer "dá pra voltar" e ter apagado no caminho é mentira.
-  */
   excluirEm DateTime?
 
   createdAt   DateTime       @default(now())
@@ -191,11 +141,6 @@ model User {
   botIdentity         Bot?           @relation("BotIdentity")
 }
 
-/// Um endereço que posta num canal sem login: quem tem o token, escreve.
-///
-/// Cada webhook tem um `User` marcado com `isBot` e a mensagem é DELE. Assim
-/// nada no resto do sistema precisa saber que webhooks existem — histórico,
-/// avatar, nome e serialização já funcionam.
 model Webhook {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId   String   @db.ObjectId
@@ -204,10 +149,7 @@ model Webhook {
   channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
   name      String
   avatarUrl String?
-  /// Em texto puro de propósito: a URL completa precisa poder ser copiada de
-  /// novo depois, como no Discord. Quem tem o token posta — trate como senha.
   token     String   @unique
-  /// o usuário-bot que assina as mensagens deste webhook
   botUserId String   @unique @db.ObjectId
   bot       User     @relation("WebhookBot", fields: [botUserId], references: [id], onDelete: Cascade)
   createdById String @db.ObjectId
@@ -218,8 +160,6 @@ model Webhook {
   @@index([channelId])
 }
 
-/// Uma conta de provedor externo (hoje so google). Model separado do User pra
-/// que amanha dar pra plugar Discord/GitHub sem migrar nada.
 model Account {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String   @db.ObjectId
@@ -232,9 +172,6 @@ model Account {
   @@index([userId])
 }
 
-/// Guardamos o HASH do refresh token, nunca o token. Se o banco vazar, ninguem
-/// consegue se passar por usuario. Ter no banco (em vez de so JWT) e o que
-/// permite "sair de todos os dispositivos".
 model RefreshToken {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userId    String    @db.ObjectId
@@ -243,9 +180,7 @@ model RefreshToken {
   userAgent String?
   ip        String?
   expiresAt DateTime
-  /// Substituido por um refresh normal. Aceita a janela de tolerancia.
   supersededAt DateTime?
-  /// Revogado de verdade (logout). NUNCA aceito de novo.
   revokedAt DateTime?
   createdAt DateTime  @default(now())
 
@@ -256,28 +191,15 @@ model Guild {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   iconUrl     String?
-  /// A faixa larga no alto da lista de canais. Opcional: sem ela a lista
-  /// começa direto no nome do servidor, como sempre foi.
   bannerUrl   String?
   description String?
-  /// etiqueta de até 4 letras que aparece do lado do nome de quem é membro
   tag       String?
   tagIcon   String?
-  /// canal onde caem as mensagens do sistema (boas-vindas)
   systemChannelId String? @db.ObjectId
   welcomeEnabled  Boolean @default(true)
-  /// O texto das boas-vindas. Vazio cai nas frases sorteadas de sempre —
-  /// servidor que nunca configurou nada continua com a saudação variada.
   welcomeMessage  String?
-  /// Em que aba do Explorar a comunidade cai. Sem categoria ela ainda
-  /// aparece em "Todos", mas some quando alguém filtra.
   categoria   String?
-  /// Passando de MEMBROS_PARA_DESCOBRIR membros o servidor entra no
-  /// Explorar sozinho. O dono desliga isto para ficar de fora. Anulável de
-  /// propósito: os servidores criados antes disto não têm o campo no
-  /// documento, e ausente vale como ligado.
   descobrivel Boolean? @default(true)
-  /// o selo "comunidade verificada": só a administração do app marca
   verificada  Boolean?
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
@@ -288,6 +210,7 @@ model Guild {
   categories Category[]
   channels   Channel[]
   invites    Invite[]
+  events     GuildEvent[]
   roles      Role[]
   webhooks   Webhook[]
   bans       Ban[]
@@ -301,7 +224,6 @@ model Guild {
   @@index([ownerId])
 }
 
-/// Como o nome da pessoa e pintado. Ver `packages/shared/src/cosmeticos.ts`.
 type EstiloDeNome {
   fonte  String?
   efeito String?
@@ -309,23 +231,10 @@ type EstiloDeNome {
   cor2   String?
 }
 
-/// Enfeites do perfil, num documento embutido.
-///
-/// Um no so em vez de doze colunas soltas em `User`: da pra incluir ou excluir
-/// inteiro num select, normalizar inteiro numa escrita e espelhar 1:1 no schema
-/// Zod. `User` e lido em massa (lista de membros, autor de cada mensagem), entao
-/// poder tratar o cosmetico como grupo importa.
 type EstiloDePerfil {
   nome           EstiloDeNome?
-  /// O nome curto que a pessoa escolhe pra si, ao lado do @usuario. NAO e a
-  /// etiqueta do servidor (`Guild.tag`), que e do servidor e vale pra todos.
   etiqueta       String?
-  /// De qual servidor a pessoa veste a etiqueta. A escolha e dela e vale em
-  /// todo lugar — inclusive fora deste servidor e na conversa privada.
   tagGuildId     String?  @db.ObjectId
-  /// A insignia ao lado do nome. Nao confundir com `GuildMember.emblemIds`: a
-  /// patente e da PESSOA e vem do conjunto fechado que acompanha o app; emblema
-  /// e do servidor e some quando ela sai dali.
   patente        String?
   decoracao      String?
   moldura        String?
@@ -335,26 +244,14 @@ type EstiloDePerfil {
   bannerCor      String?
   temaPrimario   String?
   temaSecundario String?
-  /// As contas de fora que a pessoa DECLARA. Nao sao verificadas — ver
-  /// `packages/shared/src/conexoes.ts` para o porque de guardar o handle e nao
-  /// a URL.
   conexoes       Conexao[]
 }
 
-/// Uma conta de fora, declarada pela pessoa. `servico` vem da lista fechada em
-/// `SERVICOS`; `valor` e o nome de usuario, ou o endereco quando o servico e
-/// "site".
 type Conexao {
   servico String
   valor   String
 }
 
-/// Status personalizado. `expiraEm` nulo = nao expira.
-///
-/// Fica no Mongo, e nao no Redis com TTL: presenca e efemera por definicao
-/// (`presenceService.reset()` limpa na subida do processo), e "de ferias ate
-/// sexta" nao pode estar no raio dessa vassoura. Vindo daqui tambem chega de
-/// graca no `include: { user: true }` que a lista de membros ja faz.
 type StatusPersonalizado {
   texto    String
   emoji    String?
@@ -367,19 +264,10 @@ model GuildMember {
   guild    Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   userId   String   @db.ObjectId
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// Cargos desta pessoa neste servidor. O @everyone é implícito — todo membro
-  /// o tem, então guardá-lo aqui seria só ruído duplicado em cada documento.
   roleIds  String[] @db.ObjectId
-  /// Os emblemas do servidor que esta pessoa escolheu vestir. Fica no MEMBRO e
-  /// nao no usuario porque emblema e do servidor: o mesmo perfil aparece com o
-  /// emblema aqui e sem ele no servidor ao lado.
   emblemIds String[] @db.ObjectId
   nickname String?
-  /// de castigo até esta hora: não escreve nem fala
   timeoutUntil DateTime?
-  /// Por qual convite entrou, e de quem era. Guardado no MEMBRO e não lido do
-  /// convite depois porque convite é apagável: revogar um link não pode apagar
-  /// a história de como as pessoas chegaram aqui.
   inviteCode String?
   invitedById String? @db.ObjectId
   joinedAt DateTime @default(now())
@@ -388,35 +276,20 @@ model GuildMember {
   @@index([userId])
 }
 
-/// Cargo do servidor. As permissões são nomes, não bitfield — ver
-/// packages/shared/src/permissions.ts.
 model Role {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId     String   @db.ObjectId
   guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   name        String
-  /// hex (#5865f2); null usa a cor padrão do tema
   color       String?
-  /// hierarquia: maior manda mais. O @everyone é sempre 0.
   position    Int      @default(0)
   permissions String[]
-  /// exibir os membros deste cargo separadamente na lista
   hoist       Boolean  @default(false)
-  /// segunda cor do gradiente
   colorSecondary String?
-  /// imagem OU emoji; a exclusividade e garantida no service, nao no banco
   iconUrl        String?
   iconEmoji      String?
-  /// "solido" | "gradiente" | "holografico"
-  ///
-  /// NULLABLE de proposito, mesmo tendo um padrao obvio. No conector Mongo o
-  /// `@default` so vale no create: um cargo que ja existe nao tem o campo, e
-  /// campo obrigatorio ausente estoura na LEITURA — o que derrubaria
-  /// `findManyByGuild`, ou seja, toda carga de servidor. `null` e tratado como
-  /// "solido" no `toRole`.
   estilo         String?
   mentionable Boolean  @default(false)
-  /// o cargo padrão do servidor; exatamente um por servidor
   isEveryone  Boolean  @default(false)
   createdAt   DateTime @default(now())
 
@@ -425,12 +298,10 @@ model Role {
   @@index([guildId, position])
 }
 
-/// Exceção de permissão dentro de um canal, para um cargo ou uma pessoa.
 model PermissionOverwrite {
   id        String        @id @default(auto()) @map("_id") @db.ObjectId
   channelId String        @db.ObjectId
   channel   Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  /// id de um Role ou de um User, conforme `type`
   targetId  String        @db.ObjectId
   role      Role?         @relation(fields: [targetId], references: [id], onDelete: Cascade)
   type      OverwriteType
@@ -455,28 +326,22 @@ model Category {
 
 model Channel {
   id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  /// null = DM (conversa direta, fora de qualquer servidor)
   guildId    String?     @db.ObjectId
   guild      Guild?      @relation(fields: [guildId], references: [id], onDelete: Cascade)
   categoryId String?     @db.ObjectId
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   name       String
-  /// Fonte do NOME do canal. Anulavel: campo obrigatorio com default estoura na
-  /// leitura de documento antigo no conector do Mongo.
   fonte      String?
   type       ChannelType @default(TEXT)
   topic      String?
   position   Int         @default(0)
   isPrivate  Boolean     @default(false)
-  /// segundos entre uma mensagem e a próxima da mesma pessoa; 0 = desligado
   slowmodeSeconds Int    @default(0)
   contentVisibility ContentVisibility @default(DEFAULT)
-  /// só canal de voz daqui pra baixo
+  status     String?
   bitrate    Int         @default(64000)
   videoQuality VideoQuality @default(AUTO)
-  /// 0 = sem limite
   userLimit  Int         @default(0)
-  /// so usado quando guildId e null
   recipients String[]    @db.ObjectId
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -500,30 +365,18 @@ model Message {
   authorId    String       @db.ObjectId
   author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   content     String
-  /// A fonte que a pessoa escolheu no compositor. Anulavel: campo obrigatorio
-  /// com default estoura na LEITURA de documento antigo no conector do Mongo.
   fonte       String?
   tipo        MessageType  @default(USER)
   attachments Attachment[]
   poll        Poll?
-  /// figurinha do servidor, quando a mensagem é só ela
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
-  /// de onde a mensagem foi encaminhada; nulo quando foi escrita aqui mesmo
   encaminhadaDeCanalId    String?  @db.ObjectId
   encaminhadaDeMensagemId String?  @db.ObjectId
   mentions    String[]     @db.ObjectId
-  /// Cargos mencionados. SEPARADO de `mentions`, que significa usuario: se os
-  /// dois morassem no mesmo array, o contador de nao-lidas e o AutoMod
-  /// passariam a tratar um cargo como se fosse uma pessoa. E a expansao
-  /// cargo -> membros NAO pode ser congelada aqui: quem entrasse depois seria
-  /// ignorado, e quem saisse continuaria sendo pingado pra sempre.
   mentionRoleIds String[]  @db.ObjectId
-  /// `@everyone` ou `@here`. Anulavel de proposito — no conector do Mongo um
-  /// campo obrigatorio com default estoura na LEITURA de documento antigo.
   mentionEveryone Boolean?
-  /// post do fórum a que esta mensagem pertence; null nos canais normais
   postId      String?      @db.ObjectId
   post        ForumPost?   @relation(fields: [postId], references: [id], onDelete: Cascade)
   pinnedAt    DateTime?
@@ -535,7 +388,6 @@ model Message {
   reactions Reaction[]
   favoritada MensagemFavorita[]
 
-  /// Indice que sustenta a paginacao por cursor do historico do canal.
   @@index([channelId, createdAt])
   @@index([postId, createdAt])
   @@index([channelId, pinnedAt])
@@ -549,9 +401,6 @@ model Reaction {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   emoji     String
-  /// super reação: a mesma reação, mas que dispara a animação em quem está no
-  /// canal na hora. Fica na própria linha da reação, e não numa tabela à
-  /// parte, porque não existe super reação que não seja também uma reação.
   burst     Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -559,8 +408,6 @@ model Reaction {
   @@index([messageId])
 }
 
-/// Onde cada usuario parou de ler em cada canal — e o que acende a bolinha de
-/// nao-lidas na sidebar.
 model ReadState {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String   @db.ObjectId
@@ -592,7 +439,6 @@ model Invite {
   @@index([guildId])
 }
 
-/// Chave de transmissao do OBS (Fase 4). Uma por usuario+canal, rotacionavel.
 model StreamKey {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   key       String   @unique
@@ -619,20 +465,16 @@ model Friendship {
   @@index([addresseeId])
 }
 
-/// Quem fez o quê no servidor. Só cresce — nada aqui é editado depois.
 model AuditLog {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId    String   @db.ObjectId
   guild      Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   actorId    String   @db.ObjectId
   actor      User     @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
-  /// ex.: "role.create", "member.ban", "channel.update"
   action     String
   targetType String
   targetId   String?
-  /// nome no momento da ação: o alvo pode ser apagado depois
   targetName String?
-  /// o que mudou, campo a campo — { nome: { de: "x", para: "y" } }
   changes    Json?
   reason     String?
   createdAt  DateTime @default(now())
@@ -661,14 +503,11 @@ model AutoModRule {
   name           String
   enabled        Boolean         @default(true)
   trigger        AutoModTrigger
-  /// para WORDS: as palavras barradas, já em minúsculas
   palavras       String[]
-  /// para MENTION_SPAM: a partir de quantas menções bloqueia
   limiteMencoes  Int?
   acoes          AutoModAction[]
   alertChannelId String?         @db.ObjectId
   timeoutSeconds Int?
-  /// cargos que a regra ignora
   cargosIsentos  String[]        @db.ObjectId
   createdAt      DateTime        @default(now())
 
@@ -695,7 +534,6 @@ model GuildSticker {
   guild         Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   name          String
   description   String?
-  /// emoji que representa a figurinha na busca
   relatedEmoji  String
   url           String
   createdById   String   @db.ObjectId
@@ -713,7 +551,6 @@ model GuildSound {
   name        String
   emoji       String?
   url         String
-  /// 0..1 — volume gravado com o som, para não estourar na chamada
   volume      Float    @default(1)
   createdById String   @db.ObjectId
   createdAt   DateTime @default(now())
@@ -721,7 +558,6 @@ model GuildSound {
   @@index([guildId])
 }
 
-/// Um assunto dentro de um canal de fórum. As respostas são Messages com postId.
 model ForumPost {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   channelId     String    @db.ObjectId
@@ -731,7 +567,6 @@ model ForumPost {
   author        User      @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   title         String
   tags          String[]
-  /// ordena a lista: assunto com resposta nova sobe
   lastMessageAt DateTime  @default(now())
   messageCount  Int       @default(0)
   closedAt      DateTime?
@@ -742,12 +577,6 @@ model ForumPost {
   @@index([channelId, lastMessageAt])
 }
 
-/// Uma anotacao PRIVADA sobre outra pessoa: "amigo do Leo", "cuidado".
-///
-/// So quem escreveu le. Nao e um campo do perfil do outro — e uma lembranca
-/// sua sobre ele, e por isso mora numa colecao propria com dono e alvo, em vez
-/// de virar mais um campo em `User` que a serializacao teria que se lembrar de
-/// nunca mandar pra ninguem.
 model UserNote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   ownerId   String   @db.ObjectId
@@ -760,13 +589,11 @@ model UserNote {
   @@unique([ownerId, targetId])
 }
 
-/// Um emblema do servidor. O servidor cria; cada membro escolhe se veste.
 model GuildEmblem {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId     String   @db.ObjectId
   guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   nome        String
-  /// emoji OU imagem; o service garante que so um esta preenchido
   emoji       String?
   iconUrl     String?
   createdById String   @db.ObjectId
@@ -775,17 +602,10 @@ model GuildEmblem {
   @@index([guildId])
 }
 
-/// Um GIF que a pessoa guardou. Fica na conta, e não no navegador, porque a
-/// mesma lista tem que aparecer no app de desktop e na web.
-///
-/// Os campos do GIF vêm copiados da Klipy em vez de guardarmos só o id: a
-/// aba de favoritos precisa desenhar a grade sem depender de a Klipy estar
-/// no ar, e sem gastar uma chamada por GIF salvo.
 model GifFavorito {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// o id na Klipy — é o que evita salvar o mesmo GIF duas vezes
   gifId     String
   descricao String
   url       String
@@ -798,8 +618,6 @@ model GifFavorito {
   @@index([userId, createdAt])
 }
 
-/// Uma mensagem que a pessoa guardou pra achar depois. É particular: ninguém
-/// vê o que você favoritou, nem o autor da mensagem.
 model MensagemFavorita {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
@@ -812,75 +630,30 @@ model MensagemFavorita {
   @@index([userId, createdAt])
 }
 
-/// Um bot criado por alguém daqui. O código dele roda ONDE O DONO QUISER — a
-/// gente não hospeda nada: entrega token e endereço do gateway, e o bot se
-/// conecta de fora, como qualquer cliente.
-///
-/// A identidade do bot é um `User` marcado com `isBot`, e não um tipo à parte:
-/// assim ele entra na lista de membros, recebe cargo, aparece na mensagem e
-/// obedece às permissões sem que nada disso precise saber que bots existem.
 model Bot {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   ownerId   String   @db.ObjectId
   owner     User     @relation("BotOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  /// o usuário que representa o bot nas conversas
   botUserId String   @unique @db.ObjectId
   usuario   User     @relation("BotIdentity", fields: [botUserId], references: [id], onDelete: Cascade)
-  /// Em texto puro, como o do webhook: quem tem o token É o bot. Some da API
-  /// depois de criado, e só volta se o dono mandar gerar outro.
   token     String   @unique
-  /// aparece na tela de convite, antes de a pessoa decidir se adiciona
   descricao String?
-  /// O que o bot PEDE ao ser adicionado. Vira o cargo dele no servidor — quem
-  /// adiciona vê a lista antes de aceitar, e pode mexer depois como em
-  /// qualquer outro cargo.
   permissoesPedidas String[]
-  /// Bot fechado só entra em servidor do próprio dono. Aberto, qualquer um
-  /// com o link adiciona no servidor onde MANDA.
   publico   Boolean  @default(true)
-  /// O par do token para o OAuth2. Vive separado porque serve a outra coisa:
-  /// o token É o bot; o segredo só prova, no servidor do dev, que o pedido de
-  /// troca de código veio mesmo do app dele.
   clientSecret String @default("")
-  /// Para onde o OAuth2 pode devolver a pessoa depois de autorizar. Lista
-  /// fechada de propósito: sem isso, qualquer site poria o `redirect_uri`
-  /// dele no link e roubaria o código no meio do caminho.
   redirectUris String[]
-  /// Os comandos de barra que ele declara: nome, descrição e opções.
-  ///
-  /// `Json` porque nada aqui é consultado — a lista é lida inteira, do bot
-  /// que já foi encontrado por outro caminho. Modelar como relação criaria
-  /// tabela, índices e migração para uma coisa que sempre viaja junta.
-  ///
-  /// E anulável: no conector do Mongo, campo obrigatório com default estoura
-  /// na LEITURA de documento antigo — e todo bot criado até ontem é antigo.
   comandos  Json?
   createdAt DateTime @default(now())
 
   @@index([ownerId])
 }
 
-/*
-  Um registro por PEÇA e por DIA, e não uma linha por medição.
-
-  Medir de minuto em minuto, quatro peças, dá 5.760 documentos por dia — meio
-  milhão em noventa dias. O banco é um Atlas M0 de 512 MB, e gastar isso com
-  histórico de status seria trocar a conversa das pessoas por barrinha verde.
-
-  Guardando contadores, o mesmo período cabe em 360 documentos, e a conta que a
-  página precisa — quanto por cento do dia a peça respondeu — sai de uma
-  divisão. O que se perde é saber a hora exata de uma queda dentro do dia; o
-  que se ganha é o histórico existir.
-*/
 model StatusDoDia {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
-  /// "api" | "banco" | "cache" | "sfu"
   peca    String
-  /// "2026-09-03", em UTC — o dia é o balde, e fuso de visitante não pode movê-lo
   dia     String
   medidas Int    @default(0)
   falhas  Int    @default(0)
-  /// soma dos tempos de resposta, pra média sair sem guardar cada um
   msSoma  Int    @default(0)
 
   atualizadoEm DateTime @updatedAt
@@ -889,19 +662,14 @@ model StatusDoDia {
   @@index([dia])
 }
 
-/// Um tema do estúdio publicado para virar link. Quem abre o link importa
-/// as substituições e o CSS para o próprio estúdio.
 model Tema {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   nome      String
   descricao String?
-  /// O nome que o autor escreveu no cabeçalho do CSS, que não é
-  /// necessariamente quem publicou.
   autor     String?
   versao    String?
   tags      String[] @default([])
   css       String
-  /// Os tokens trocados, no formato { "--color-brand": "#413cdd" }.
   substituicoes Json
   autorId   String   @db.ObjectId
   usuario   User     @relation("TemaAutor", fields: [autorId], references: [id], onDelete: Cascade)
@@ -910,27 +678,40 @@ model Tema {
   @@index([autorId])
 }
 
-/// Uma denúncia de comunidade ou de mensagem. Quem administra o app recebe o
-/// aviso pela conta da casa; o registro fica para consulta.
+model GuildEvent {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  guildId          String    @db.ObjectId
+  guild            Guild     @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  authorId         String    @db.ObjectId
+  name             String
+  description      String?
+  imageUrl         String?
+  startsAt         DateTime
+  frequency        String    @default("once")
+  channelId        String?   @db.ObjectId
+  externalLocation String?
+  interestedIds    String[]  @db.ObjectId
+  startedAt        DateTime?
+  canceledAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([guildId, startsAt])
+}
+
 model Denuncia {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  /// "comunidade" ou "mensagem". Denúncia antiga, sem o campo, é de comunidade.
   tipo      String?
   guildId   String?  @db.ObjectId
-  /// Só na denúncia de mensagem: a mensagem, o canal e quem a escreveu.
   messageId String?  @db.ObjectId
   channelId String?  @db.ObjectId
   acusadoId String?  @db.ObjectId
-  /// Cópia do texto no momento da denúncia — a mensagem pode sumir depois.
   trecho    String?
   autorId   String   @db.ObjectId
   motivo    String
   detalhes  String?
-  /// Quem da administração cuidou disto, quando, e o que concluiu. Nulo nos
-  /// três é denúncia que ainda está na fila.
   resolvidaEm  DateTime?
   resolvidaPor String?  @db.ObjectId
-  /// "procede" ou "arquivada".
   decisao      String?
   createdAt DateTime @default(now())
 

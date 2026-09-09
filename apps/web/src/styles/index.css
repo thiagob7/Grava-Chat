@@ -474,19 +474,18 @@ body {
   border-top: 1px solid var(--color-divisor);
 }
 
-.no-aplicativo .canto-do-miolo {
-
+.canto-do-miolo {
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
 
-.no-aplicativo .canto-do-miolo > :first-child {
+.canto-do-miolo .miolo-recortado {
   overflow: hidden;
 
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
 
 :root[data-cantos="retos"] .canto-do-miolo,
-:root[data-cantos="retos"] .canto-do-miolo > :first-child {
+:root[data-cantos="retos"] .canto-do-miolo .miolo-recortado {
   border-top-left-radius: 0;
 }
 
@@ -630,12 +629,6 @@ body[data-scroll-locked] .regiao-de-arrasto {
     calc(100cqw - 2 * var(--folga-lateral)),
     calc((100cqh - var(--folga-do-topo) - var(--folga-dos-controles)) * 16 / 9)
   );
-}
-
-.quadro-de-um-ampliado {
-  --folga-lateral: 0px;
-  --folga-do-topo: 0px;
-  --folga-dos-controles: 0px;
 }
 
 @keyframes bloco-desce {
