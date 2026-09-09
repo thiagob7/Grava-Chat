@@ -17,7 +17,6 @@ export const publicUserSchema = z.object({
   avatarUrl: z.string().nullable(),
   status: z.enum(PRESENCE_STATUSES),
   isBot: z.boolean(),
-  /// A conta da casa: publica os temas e manda os avisos do app. Só ela tem.
   sistema: z.boolean().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
@@ -48,7 +47,6 @@ export const guildSchema = z.object({
   iconUrl: z.string().nullable(),
   ownerId: objectId,
   memberCount: z.number().int(),
-  /// Os selos da comunidade: verificada é marca da casa; detectável é conta.
   verificada: z.boolean().optional(),
   detectavel: z.boolean().optional(),
 });
@@ -91,15 +89,6 @@ export const attachmentSchema = z.object({
   height: z.number().int().nullable().optional(),
   spoiler: z.boolean().optional(),
   description: z.string().max(1024).nullable().optional(),
-  /*
-    Só em mensagem de voz: quanto dura, e o desenho da onda.
-
-    A duração vem gravada porque a tela precisa dela ANTES de baixar o áudio
-    — sem ela o balão nasceria sem tamanho e pularia quando o arquivo
-    chegasse. A onda é medida enquanto se grava, que é o único momento em
-    que o som passa por aqui de graça; depois exigiria decodificar o arquivo
-    inteiro só para desenhar barrinha.
-  */
   duracaoMs: z.number().int().nullable().optional(),
   ondas: z.string().max(200).nullable().optional(),
 });
