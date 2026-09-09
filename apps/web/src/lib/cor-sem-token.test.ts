@@ -28,11 +28,6 @@ const PERDOADOS: { arquivo: string; porque: string }[] = [
     arquivo: "features/configuracoes/components/AppearanceSection.tsx",
     porque: "as miniaturas desenham cada tema base; são amostra, não interface",
   },
-  {
-    arquivo: "features/servidor/components/EventsModal.tsx",
-    porque:
-      "a prancheta atrás da ilustração casa com o borrão do próprio desenho (#ebf3fa); é cor da arte, não do tema, e um token deixaria o tema descolar dela",
-  },
 ];
 
 function arquivos(pasta: string, achados: string[] = []) {
