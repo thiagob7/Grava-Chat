@@ -24,14 +24,11 @@ import { cn } from "~/lib/utils";
 import { flx } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
-/// Quantas linhas ficam à mostra com o cartão recolhido. Recolhido não é
-/// fechado: dá pra saber o que tem ali sem abrir.
 const LINHAS_NA_PREVIA = 5;
 const LINHAS_ATE_RECOLHER = 15;
 
 interface PreviaDeTextoProps {
   anexo: Attachment;
-  /// O que mostrar quando o arquivo não desce — cartão de anexo comum.
   aoFalhar: React.ReactNode;
 }
 
@@ -57,10 +54,6 @@ export const PreviaDeTexto: React.FC<PreviaDeTextoProps> = ({ anexo, aoFalhar })
   useEffect(() => {
     let vivo = true;
 
-    /*
-      Passa pela nossa API de propósito: o bucket público do R2 não devolve
-      CORS, então buscar direto daqui é recusado pelo navegador.
-    */
     void api
       .get<{ conteudo: string }>("/anexos/texto", { params: { url: anexo.url } })
       .then(({ data }) => vivo && setConteudo(data.conteudo))
