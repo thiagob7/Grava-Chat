@@ -1,13 +1,3 @@
-/*
-  Os nomes de classe que um tema pode mirar com segurança.
-
-  São nossos e estáveis: não saem de um build, saem daqui. Um tema que fale
-  só por eles continua valendo quando a árvore mudar de forma — o contrário
-  do que acontece com quem mira nome de módulo gerado.
-
-  A lista aparece no estúdio, para quem escreve tema, e é a mesma que o teste
-  dos temas da casa usa para recusar CSS mirando qualquer outra coisa.
-*/
 export const GANCHOS_DE_TEMA: { classe: string; oQueE: string }[] = [
   { classe: "trilho-de-servidores", oQueE: "a coluna estreita dos ícones" },
   { classe: "lista-de-canais", oQueE: "a barra dos canais do servidor" },
