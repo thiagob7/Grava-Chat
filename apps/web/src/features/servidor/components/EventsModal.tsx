@@ -104,16 +104,14 @@ const loadCalendar = () =>
 
 const EmptyState: React.FC<{ canCreate: boolean }> = ({ canCreate }) => (
   <div data-gc="servidor.events-modal.div--4" className="flex flex-col items-center justify-center gap-4 py-10 text-center">
-    <div data-gc="servidor.events-modal.div--5" className="rounded-2xl bg-[#ebf3fa] px-6 py-2">
-      <LottieArt data-gc="servidor.events-modal.lottie-art"
-        name="marking-a-calendar"
-        load={loadCalendar}
-        label="Alguém marcando uma data num calendário grande"
-        className="h-40 w-64"
-      />
-    </div>
+    <LottieArt data-gc="servidor.events-modal.lottie-art"
+      name="marking-a-calendar"
+      load={loadCalendar}
+      label="Alguém marcando uma data num calendário grande"
+      className="h-44 w-72"
+    />
 
-    <div data-gc="servidor.events-modal.div--6">
+    <div data-gc="servidor.events-modal.div--5">
       <p data-gc="servidor.events-modal.p" className="text-lg font-semibold">Não há eventos futuros.</p>
       <p data-gc="servidor.events-modal.p--2" className="mt-1 max-w-sm text-sm text-ink-muted">
         {canCreate
@@ -150,7 +148,7 @@ const EventCard: React.FC<{ guildId: string; event: GuildEvent; canManage: boole
         <img data-gc="servidor.events-modal.img" src={event.imageUrl} alt="" className="h-32 w-full object-cover" />
       )}
 
-      <div data-gc="servidor.events-modal.div--7" className="p-4">
+      <div data-gc="servidor.events-modal.div--6" className="p-4">
         <header data-gc="servidor.events-modal.header--2" className="flex items-center gap-2">
           <CalendarBlank data-gc="servidor.events-modal.calendar-blank--2" size={14} weight="fill" className="shrink-0 text-brand" />
           <span data-gc="servidor.events-modal.span" className="text-xs font-semibold text-brand">{formatEventDate(event.startsAt)}</span>
