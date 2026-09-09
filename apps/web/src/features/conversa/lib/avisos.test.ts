@@ -19,10 +19,6 @@ describe("avisos do markdown", () => {
     }
   });
 
-  /*
-    `[!SPOILER]` não é aviso — e virar citação é melhor do que sumir: quem
-    escreveu queria destacar de algum jeito.
-  */
   it("um tipo que não existe continua sendo citação", () => {
     expect(partirEmAvisos("> [!SPOILER]\n> psiu")).toEqual([
       { tipo: "citacao", texto: "[!SPOILER]\npsiu" },
@@ -43,10 +39,6 @@ describe("avisos do markdown", () => {
     ]);
   });
 
-  /*
-    Linha em branco fecha o bloco. Sem isto, duas citações distantes uma da
-    outra viravam uma só, com o vazio no meio.
-  */
   it("linha em branco encerra o bloco", () => {
     expect(partirEmAvisos("> um\n\n> dois")).toEqual([
       { tipo: "citacao", texto: "um" },
@@ -65,10 +57,6 @@ describe("avisos do markdown", () => {
     expect(partirEmAvisos("   ")).toEqual([]);
   });
 
-  /*
-    `> x` e `>x` são a mesma coisa para o GitHub, e uma seta no meio da frase
-    não é citação nenhuma.
-  */
   it("aceita `>` sem espaço e ignora seta no meio da linha", () => {
     expect(partirEmAvisos(">grudado")).toEqual([{ tipo: "citacao", texto: "grudado" }]);
     expect(partirEmAvisos("a > b")).toEqual([{ tipo: "texto", texto: "a > b" }]);
