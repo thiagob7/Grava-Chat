@@ -7,13 +7,6 @@ import { useFindInvite } from "~/@core/application/queries/invite/use-find-invit
 import { Button } from "~/components/ui/button";
 import { avatarColor, initials } from "~/lib/format";
 
-/*
-  O cartão que um link de convite vira no chat.
-
-  Quem manda o link quer que a pessoa entre sem sair da conversa, então o cartão
-  responde as três perguntas que decidem isso — que comunidade é, se tem gente
-  agora, quantos são — e traz o botão. Sem clicar em nada antes.
-*/
 export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
   const navigate = useNavigate();
   const { data: convite, isLoading, isError } = useFindInvite(codigo);
@@ -42,7 +35,6 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
       return;
     }
 
-    /// Entrar é decisão: o cartão só abre a pergunta.
     setPerguntando(true);
   };
 
