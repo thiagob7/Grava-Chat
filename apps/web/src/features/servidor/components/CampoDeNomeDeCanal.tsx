@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Tooltip } from "~/components/ui/tooltip";
-import { campoNu, grupoDeCampo } from "~/components/ui/input";
+import { bareField, fieldGroup } from "~/components/ui/input";
 import { FONTES } from "~/features/perfil/lib/catalogo";
 import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
@@ -60,7 +60,7 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
   };
 
   return (
-    <div data-gc="servidor.campo-de-nome-de-canal.div" className={grupoDeCampo}>
+    <div data-gc="servidor.campo-de-nome-de-canal.div" className={fieldGroup}>
       {icone}
 
       <input data-gc="servidor.campo-de-nome-de-canal.input"
@@ -73,7 +73,7 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
         onChange={(e) => onMudar(normalizar(e.target.value))}
         onKeyDown={(e) => e.key === "Enter" && onEnter?.()}
         style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
-        className={campoNu}
+        className={bareField}
       />
 
       <SeletorDeEmoji data-gc="servidor.campo-de-nome-de-canal.seletor-de-emoji.inserir-emoji" onEscolher={inserirEmoji}>

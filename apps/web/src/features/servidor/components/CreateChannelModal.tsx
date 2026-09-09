@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Label, cartaoDeEscolha } from "~/components/ui/input";
+import { Label, choiceCard } from "~/components/ui/input";
 import { CampoDeNomeDeCanal } from "~/features/servidor/components/CampoDeNomeDeCanal";
 import { Switch } from "~/components/ui/switch";
 import { cn } from "~/lib/utils";
@@ -93,7 +93,7 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
               <button data-gc="servidor.create-channel-modal.button"
                 key={option.value}
                 onClick={() => setType(option.value)}
-                className={cartaoDeEscolha(type === option.value)}
+                className={choiceCard(type === option.value)}
               >
                 <option.icon data-gc="servidor.create-channel-modal.optionicon" size={20} className="text-ink-faint" />
                 <div data-gc="servidor.create-channel-modal.div--2" className="flex-1">
