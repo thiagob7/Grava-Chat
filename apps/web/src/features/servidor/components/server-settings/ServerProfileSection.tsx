@@ -169,6 +169,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             }
             className={cn(
               "group/faixa relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border-2 bg-cover bg-center outline-none transition",
+              !bannerUrl && "bg-surface-1",
               "focus-visible:border-brand",
               arrastando
                 ? "border-solid border-brand"
@@ -177,17 +178,18 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
                   : "border-dashed border-line hover:border-ink-faint",
               uploadImage.isPending && "cursor-wait opacity-70",
             )}
-            style={{
-              backgroundColor: avatarColor(guild.id),
-              ...(bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : null),
-            }}
+            style={
+              bannerUrl
+                ? { backgroundColor: avatarColor(guild.id), backgroundImage: `url(${bannerUrl})` }
+                : undefined
+            }
           >
             <span data-gc="servidor.server-settings.server-profile-section.span"
               className={cn(
                 "flex flex-col items-center gap-1.5 rounded-lg px-4 py-3 text-xs transition",
                 bannerUrl
                   ? "bg-sobre-midia text-palco-ink opacity-0 group-hover/faixa:opacity-100"
-                  : "text-palco-ink/80",
+                  : "text-ink-faint group-hover/faixa:text-ink-muted",
               )}
             >
               <ImageUp data-gc="servidor.server-settings.server-profile-section.image-up" size={20} />

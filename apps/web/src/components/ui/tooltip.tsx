@@ -24,6 +24,7 @@ export const Tooltip = ({
       <TooltipPrimitive.Content data-gc="ui.tooltip.tooltip-primitivecontent"
         side={side}
         sideOffset={6}
+        collisionPadding={{ top: 40, right: 8, bottom: 8, left: 8 }}
         className={cn(
           "dica z-50 rounded-md border border-line bg-surface-4 px-2.5 py-[7px] text-xs font-medium text-ink",
           flxCls("dica"),
