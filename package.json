@@ -29,5 +29,8 @@
   "devDependencies": {
     "turbo": "2.10.11",
     "typescript": "5.9.3"
+  },
+  "resolutions": {
+    "fast-uri": "^4.1.4"
   }
 }
