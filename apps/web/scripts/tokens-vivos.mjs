@@ -1,25 +1,3 @@
-/*
-  Lista as variáveis que o app REALMENTE lê.
-
-  O catálogo do estúdio era escrito à mão, com um campo `ligado` que alguém
-  marcava. Ele envelheceu nos dois sentidos: oferecia 511 tokens, dos quais 450
-  não faziam nada, e escondia 26 que mandavam na tela. Quem abria a aba Tokens
-  mexia em campo morto e não achava o vivo.
-
-  A verdade está no CSS construído, não numa lista. Este script lê o `dist` e
-  pergunta: que variável alguma regra de componente ou de utilidade consome?
-
-  A distinção que importa: `:root` é onde a camada de tokens define uma variável
-  em função de outra. Contar isso como uso faria a camada declarar-se viva
-  sozinha — foi exatamente o vazamento da trava antiga, que dava `--color-*`
-  como lido só porque o nome aparecia na própria declaração.
-
-  Rodar:
-    node scripts/tokens-vivos.mjs           escreve o JSON
-    node scripts/tokens-vivos.mjs --check   falha se o JSON estiver velho
-
-  Precisa de `yarn build` antes: sem o `dist` não há o que ler.
-*/
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,44 +14,13 @@ const LISTA = join(
   "tokens-vivos.json",
 );
 
-/*
-  Maquinário, não vocabulário. `--tw-*` é o encanamento interno do Tailwind e
-  `--radix-*` é o do Radix: mexer neles não pinta nada, quebra. As escalas que o
-  Tailwind declara sozinho ficam de fora pelo mesmo motivo — quem manda no
-  espaçamento é a classe, não o tema.
-*/
 const MAQUINARIO =
   /^--(tw|radix|default|animate|ease|aspect|blur|perspective|breakpoint|container|leading|tracking|spacing|inset|drop)-|^--(tw|s|y|g|spacing)$/;
 
-/// Variáveis que a gente escreve em tempo de execução, não que o tema define.
 const DE_RUNTIME = /^--gc-/;
 
-/*
-  Vocabulário de biblioteca de terceiro. O react-toastify tem 35 variáveis
-  próprias; listá-las no estúdio seria despejar o dicionário dos outros na cara
-  de quem quer trocar uma cor. Em vez disso, o nosso CSS aponta as delas para as
-  nossas — assim o aviso segue o tema sem virar campo de formulário.
-*/
 const DE_BIBLIOTECA = /^--toastify-/;
 
-/*
-  Um token é vocabulário de tema quando duas coisas valem ao mesmo tempo:
-
-  1. alguma regra de componente o CONSOME, e
-  2. a raiz o DECLARA.
-
-  A segunda condição é o que separa token de variável de trabalho. `--colunas`
-  e `--largura-do-quadro`, por exemplo, nascem dentro de `.grade-de-varios` e
-  existem para uma conta de grade — mexer nelas pelo estúdio não seria tema,
-  seria quebrar a conta.
-*/
-/*
-  A raiz reconhecida pela FORMA, não pelo prefixo. O Tailwind emite o @theme em
-  `:root,:host`, e o `:host` sozinho também aparece; já `:root ::-webkit-scrollbar-thumb`
-  começa com `:root` mas é regra de componente — mede o rolador, não declara token.
-  Vale como declaração quando toda parte da lista é a raiz e nada mais: sem
-  espaço, sem `>`, sem `+`, sem `~`.
-*/
 const RAIZ = /^(:root|:host|html)(\[[^\]]*\]|[.:][^\s>+~,]+)*$/;
 
 function ehRaiz(seletor) {
