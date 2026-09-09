@@ -67,6 +67,8 @@
     )
   );
   --footer-box-height: 3rem;
+  --user-card-min-height: 3rem;
+  --composer-box-height: 3rem;
   --footer-box-inset: 0.375rem;
   --footer-box-inset-inline: var(--footer-box-inset);
   --footer-box-radius: var(--radius-lg);
@@ -129,6 +131,10 @@
     0rem,
     calc((var(--footer-box-height) - var(--textarea-button-height, 2rem)) / 2)
   );
+  --composer-padding-y: max(
+    0rem,
+    calc((var(--composer-box-height) - var(--textarea-button-height, 2rem)) / 2)
+  );
   --composer-mobile-padding-y: max(
     0rem,
     calc(
@@ -142,9 +148,11 @@
   --footer-row-height: calc(
     var(--footer-box-height) + var(--footer-box-inset) * 2
   );
-  --input-container-min-height: var(--footer-row-height);
-  --textarea-min-height: var(--footer-box-height);
-  --textarea-padding-y: var(--footer-box-padding-y);
+  --input-container-min-height: calc(
+    var(--composer-box-height) + var(--footer-box-inset) * 2
+  );
+  --textarea-min-height: var(--composer-box-height);
+  --textarea-padding-y: var(--composer-padding-y);
   --composer-box-inset: max(
     0rem,
     calc((var(--input-container-min-height) - var(--textarea-min-height)) / 2)
