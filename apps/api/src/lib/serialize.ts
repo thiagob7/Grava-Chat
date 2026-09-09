@@ -127,6 +127,7 @@ export function toChannel(c: Prisma.ChannelGetPayload<object>): Channel {
     isPrivate: c.isPrivate,
     slowmodeSeconds: c.slowmodeSeconds,
     contentVisibility: c.contentVisibility,
+    status: c.status,
     bitrate: c.bitrate,
     videoQuality: c.videoQuality,
     userLimit: c.userLimit,

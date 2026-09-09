@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { rooms } from "@gravae/shared";
+import { LIMITS, rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
 import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
 import { guildService } from "~/services/guild-service.js";
@@ -118,6 +118,18 @@ export async function guildRoutes(app: FastifyInstance) {
 
     io().to(rooms.guild(guildId)).emit("channel:updated", channel);
     return channel;
+  });
+
+  app.put("/guilds/:guildId/channels/:channelId/status", async (req) => {
+    const { guildId, channelId } = guildChannelParams.parse(req.params);
+    const { status } = z
+      .object({ status: z.string().max(LIMITS.statusDoCanal).nullable() })
+      .parse(req.body);
+
+    const canal = await guildService.definirStatusDoCanal(req.userId, guildId, channelId, status);
+
+    io().to(rooms.guild(guildId)).emit("channel:updated", canal);
+    return canal;
   });
 
   app.delete("/guilds/:guildId/channels/:channelId", async (req, reply) => {

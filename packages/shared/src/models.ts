@@ -74,6 +74,7 @@ export const channelSchema = z.object({
   isPrivate: z.boolean(),
   slowmodeSeconds: z.number().int(),
   contentVisibility: z.enum(["DEFAULT", "SPOILER", "AGE_RESTRICTED"]),
+  status: z.string().nullable().optional(),
   bitrate: z.number().int(),
   videoQuality: z.enum(["AUTO", "HD"]),
   userLimit: z.number().int(),

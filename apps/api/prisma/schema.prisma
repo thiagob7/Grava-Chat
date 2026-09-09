@@ -472,6 +472,9 @@ model Channel {
   slowmodeSeconds Int    @default(0)
   contentVisibility ContentVisibility @default(DEFAULT)
   /// só canal de voz daqui pra baixo
+  /// O que está acontecendo na chamada agora. Quem está na sala escreve, e
+  /// some quando o último sai — é recado do momento, não descrição do canal.
+  status     String?
   bitrate    Int         @default(64000)
   videoQuality VideoQuality @default(AUTO)
   /// 0 = sem limite

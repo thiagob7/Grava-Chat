@@ -57,6 +57,7 @@ import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
 import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
+import { StatusDoCanal } from "~/features/servidor/components/StatusDoCanal";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
 interface ChannelSidebarProps {
@@ -472,19 +473,34 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               />
                             )}
                             <span data-gc="servidor.channel-sidebar.span--2"
-                              className="truncate"
-                              style={{
-                                fontFamily:
-                                  familiaDaFonte(channel.fonte) ?? undefined,
-                              }}
+                              className="flex min-w-0 flex-1 flex-col items-start leading-tight"
                             >
-                              {channel.name}
+                              <span data-gc="servidor.channel-sidebar.span--3"
+                                className="w-full truncate"
+                                style={{
+                                  fontFamily:
+                                    familiaDaFonte(channel.fonte) ?? undefined,
+                                }}
+                              >
+                                {channel.name}
+                              </span>
+
+                              {channel.type === "VOICE" && detail && (
+                                <StatusDoCanal data-gc="servidor.channel-sidebar.status-do-canal"
+                                  guildId={detail.guild.id}
+                                  channelId={channel.id}
+                                  nomeDoCanal={channel.name}
+                                  status={channel.status}
+                                  podeEditar={inThisCall || canInChannel(channel.id, "MANAGE_CHANNELS")}
+                                  className="w-full"
+                                />
+                              )}
                             </span>
 
-                            <span data-gc="servidor.channel-sidebar.span--3" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            <span data-gc="servidor.channel-sidebar.span--4" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
-                                  <span data-gc="servidor.channel-sidebar.span--4"
+                                  <span data-gc="servidor.channel-sidebar.span--5"
                                     title={`${entradas.length} de ${channel.userLimit}`}
                                     className={cn(
                                       "text-11 font-medium tabular-nums",
@@ -503,7 +519,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                               {unread &&
                                 (naoLidas > 0 ? (
-                                  <span data-gc="servidor.channel-sidebar.span--5"
+                                  <span data-gc="servidor.channel-sidebar.span--6"
                                     title={
                                       mencoes > 0
                                         ? `${mencoes} menção(ões) a você`
@@ -520,7 +536,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     {naoLidas > 99 ? "99+" : naoLidas}
                                   </span>
                                 ) : (
-                                  <span data-gc="servidor.channel-sidebar.span--6" className="size-2 rounded-full bg-ink" />
+                                  <span data-gc="servidor.channel-sidebar.span--7" className="size-2 rounded-full bg-ink" />
                                 ))}
                             </span>
                           </button>
