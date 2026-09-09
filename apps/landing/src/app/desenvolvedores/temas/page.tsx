@@ -33,7 +33,6 @@ const GANCHO = `/* Toda foto de pessoa vira quadrada. */
   border-radius: 4px;
 }
 
-/* Só o botão de apagar da barra da mensagem. */
 [data-gc="conversa.message-item.acao-da-barra.apagar"] {
   color: #b4232a;
 }`;
