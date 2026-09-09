@@ -44,6 +44,7 @@
   "--color-trilho",
   "--color-veu",
   "--composer-action-gap",
+  "--composer-box-height",
   "--focus-primary",
   "--font-mono",
   "--font-sans",
@@ -52,7 +53,6 @@
   "--font-weight-medium",
   "--font-weight-normal",
   "--font-weight-semibold",
-  "--footer-box-height",
   "--footer-box-radius",
   "--guild-icon-size",
   "--layout-guild-list-width",
@@ -73,6 +73,7 @@
   "--scrollbar-track-bg",
   "--text-10",
   "--text-11",
+  "--text-12",
   "--text-13",
   "--text-2xl",
   "--text-3xl",
@@ -85,5 +86,6 @@
   "--textarea-button-height",
   "--textarea-button-icon-size",
   "--textarea-line-height",
+  "--user-card-min-height",
   "--user-select"
 ]
