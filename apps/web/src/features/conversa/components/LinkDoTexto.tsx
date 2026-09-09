@@ -6,15 +6,6 @@ import { useImportarTema } from "~/features/tema/stores/importar-tema";
 import { flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
 
-/*
-  Um link escrito no meio da mensagem.
-
-  Link de fora abre onde sempre abriu: no navegador. Link nosso, não — desde
-  que a casca do aplicativo passou a abrir o nosso próprio site como janela
-  nativa, clicar num link interno abria um segundo Gravaê por cima do
-  primeiro. Link nosso navega aqui dentro, e o de tema abre a importação no
-  lugar, sem sair da conversa.
-*/
 export const LinkDoTexto: React.FC<{ url: string }> = ({ url }) => {
   const navigate = useNavigate();
   const abrirTema = useImportarTema((s) => s.abrir);
