@@ -2,14 +2,11 @@ import { create } from "zustand";
 
 export type ModoDoCanal = "tudo" | "mencoes" | "nada";
 
-/// O que a pessoa decidiu para um servidor inteiro. `silenciadoAte` em -1 é "até eu reativar".
 export interface PrefsDoServidor {
   modo: ModoDoCanal | null;
   silenciadoAte: number | null;
   esconderSilenciados: boolean;
-  /// Se @everyone e @here avisam. Ausente é "sim", que é o padrão.
   everyone?: boolean;
-  /// Se menção ao seu cargo avisa. Ausente é "sim".
   cargos?: boolean;
 }
 
@@ -92,7 +89,6 @@ export const useAvisos = create<StoreDeAvisos>((set, store) => ({
   },
 }));
 
-/// Se o servidor está silenciado agora: para sempre (-1) ou até um instante que ainda não chegou.
 export const servidorSilenciado = (prefs: Pick<PrefsDeAviso, "porServidor">, guildId: string | null | undefined): boolean => {
   if (!guildId) return false;
   const ate = prefs.porServidor[guildId]?.silenciadoAte ?? null;
