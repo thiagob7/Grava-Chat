@@ -5,18 +5,10 @@ import { useTranslation } from "react-i18next";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
-/*
-  Os selos de comunidade, ao lado do nome do servidor.
-
-  "Verificada" é marca da casa e vence: quem tem os dois mostra só ela.
-  "Detectável" é a conta do Explorar — passou dos membros e não se escondeu.
-  Sem nenhum dos dois, não desenha nada.
-*/
 interface SeloDaComunidadeProps {
   verificada?: boolean | null;
   detectavel?: boolean | null;
   tamanho?: number;
-  /// Sem balão: para dentro de outro balão, onde um segundo não abre.
   semDica?: boolean;
   className?: string;
 }
