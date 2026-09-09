@@ -70,7 +70,6 @@ export function useAttachments() {
 
       for (const file of aceitos) {
         if (file.size > LIMITS.attachmentBytes) {
-          /// Quem recusa aqui não sabe desenhar modal — só avisa quem sabe.
           setGrandeDemais(file.name);
           continue;
         }
