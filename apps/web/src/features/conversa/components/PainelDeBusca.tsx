@@ -18,7 +18,6 @@ import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
 
 interface PainelDeBuscaProps {
-  /// Ausente quando a busca é dentro de uma conversa.
   guildId?: string;
   canalId?: string;
   termo: string;
@@ -40,11 +39,6 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   const { t } = useTranslation();
   const { data: detail } = useFindGuild(guildId);
 
-  /*
-    O texto vira chaves; nome de gente e de canal vira id pelo servidor que
-    está aberto. Chave que não resolve não filtra — melhor mostrar de mais do
-    que esconder por engano.
-  */
   const lida = interpretarBusca(termo);
   const membroPorNome = (nome?: string) => {
     if (!nome) return undefined;
