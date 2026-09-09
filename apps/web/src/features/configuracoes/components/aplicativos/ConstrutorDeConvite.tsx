@@ -6,7 +6,7 @@ import {
   type Permission,
 } from "@gravae/shared";
 
-import { Label, campoNu, grupoDeCampo } from "~/components/ui/input";
+import { Label, bareField, fieldGroup } from "~/components/ui/input";
 import { CampoDeSegredo } from "~/features/configuracoes/components/aplicativos/comum";
 import { cn } from "~/lib/utils";
 
@@ -127,14 +127,14 @@ export const ConstrutorDeConvite: React.FC<ConstrutorDeConviteProps> = ({
           )}
         </div>
 
-        <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--4" className={cn(grupoDeCampo, "mt-3")}>
+        <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--4" className={cn(fieldGroup, "mt-3")}>
           <Search data-gc="configuracoes.aplicativos.construtor-de-convite.search" size={14} className="shrink-0 text-ink-faint" />
           <input data-gc="configuracoes.aplicativos.construtor-de-convite.input"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Procurar permissão"
             aria-label="Procurar permissão"
-            className={campoNu}
+            className={bareField}
           />
           {busca && (
             <button data-gc="configuracoes.aplicativos.construtor-de-convite.button--3"

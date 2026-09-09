@@ -18,7 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -47,7 +47,7 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
   const salvar = useUpdateBot();
   const regenerar = useRegenerateBotToken();
   const apagar = useDeleteBot();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
   const enviarImagem = useUploadImage();
   const escolherFoto = useRef<HTMLInputElement>(null);
 
@@ -91,7 +91,6 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
       salvar.mutate({ botId: bot.id, dados: { avatarUrl: enviado.attachment.url } });
   };
 
-  /// Com `bot` no escopo, o link também põe o bot numa comunidade que a pessoa escolhe.
   const linkDeLogin = (comBot = false) => {
     const endereco = new URL(`${window.location.origin}/oauth2/autorizar`);
     endereco.searchParams.set("client_id", bot.id);
@@ -204,14 +203,14 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               variant="surface"
               disabled={regenerar.isPending}
               onClick={() =>
-                void confirmar({
-                  titulo: "Gerar outro token?",
-                  descricao:
+                void confirm({
+                  title: "Gerar outro token?",
+                  description:
                     "O token de agora para de valer na hora. Todo código que usa ele precisa ser atualizado.",
-                  acao: "Gerar outro",
+                  action: "Gerar outro",
                 }).then(
-                  ({ confirmado }) =>
-                    confirmado &&
+                  ({ confirmed }) =>
+                    confirmed &&
                     regenerar.mutate(bot.id, {
                       onSuccess: (novo) => novo.token && onTokenNovo(novo.token),
                     }),
@@ -347,13 +346,13 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
             <Button data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.button--3"
               variant="danger"
               onClick={() =>
-                void confirmar({
-                  titulo: `Apagar ${bot.usuario.displayName}?`,
-                  descricao:
+                void confirm({
+                  title: `Apagar ${bot.usuario.displayName}?`,
+                  description:
                     "O bot sai de todos os servidores e o token para de valer. As mensagens que ele mandou também somem.",
-                  acao: "Apagar",
-                }).then(({ confirmado }) => {
-                  if (!confirmado) return;
+                  action: "Apagar",
+                }).then(({ confirmed }) => {
+                  if (!confirmed) return;
                   apagar.mutate(bot.id, { onSuccess: onVoltar });
                 })
               }
@@ -364,10 +363,10 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
         </Secao>
 
         <UnsavedBar data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.unsaved-bar.descartar"
-          visivel={mudou}
-          salvando={salvar.isPending}
-          onDescartar={descartar}
-          onSalvar={() =>
+          visible={mudou}
+          saving={salvar.isPending}
+          onDiscard={descartar}
+          onSave={() =>
             salvar.mutate({
               botId: bot.id,
               dados: {

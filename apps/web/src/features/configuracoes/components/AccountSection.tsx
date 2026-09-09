@@ -18,7 +18,7 @@ import {
   useAplicativosAutorizados,
   useRevogarAplicativo,
 } from "~/@core/application/queries/aplicativo/use-aplicativos-autorizados";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useUnblockUser } from "~/@core/application/queries/friend/use-block-user";
 import { nomeDoAparelho } from "~/lib/aparelho";
@@ -226,7 +226,7 @@ const TrocarSenha: React.FC<{ aberto: boolean; temSenha: boolean; onFechar: () =
           </div>
           <div data-gc="configuracoes.account-section.div--13">
             <Label data-gc="configuracoes.account-section.label--3" htmlFor="senha-confirmacao">Repita a nova senha</Label>
-            <Input data-gc="configuracoes.account-section.input--3" id="senha-confirmacao" type="password" autoComplete="new-password" value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} erro={erro ?? undefined} />
+            <Input data-gc="configuracoes.account-section.input--3" id="senha-confirmacao" type="password" autoComplete="new-password" value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} error={erro ?? undefined} />
           </div>
         </DialogBody>
 
@@ -341,7 +341,7 @@ const quando = (iso: string) =>
 const ListaDeAplicativos: React.FC = () => {
   const { data: apps = [], isLoading } = useAplicativosAutorizados();
   const revogar = useRevogarAplicativo();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   if (isLoading) return <p data-gc="configuracoes.account-section.p--12" className="text-sm text-ink-faint">Carregando…</p>;
 
@@ -382,14 +382,14 @@ const ListaDeAplicativos: React.FC = () => {
               size="sm"
               disabled={revogar.isPending}
               onClick={() =>
-                void confirmar({
-                  titulo: `Revogar o acesso de ${app.usuario.displayName}?`,
-                  descricao:
+                void confirm({
+                  title: `Revogar o acesso de ${app.usuario.displayName}?`,
+                  description:
                     "O aplicativo perde o acesso à sua conta agora, em todos os lugares onde você o autorizou. Ele pode pedir de novo, e você decide de novo.",
-                  acao: "Revogar",
-                  destrutivo: true,
+                  action: "Revogar",
+                  destructive: true,
                 }).then(
-                  ({ confirmado }) => confirmado && revogar.mutate(app.id),
+                  ({ confirmed }) => confirmed && revogar.mutate(app.id),
                 )
               }
               className="shrink-0 text-danger"

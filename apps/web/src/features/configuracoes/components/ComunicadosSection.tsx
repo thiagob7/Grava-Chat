@@ -4,40 +4,33 @@ import { toast } from "react-toastify";
 
 import { useContarPessoas, useMandarComunicado } from "~/@core/application/queries/admin/use-comunicados";
 import { Button } from "~/components/ui/button";
-import { useConfirmar } from "~/components/ui/confirm";
+import { useConfirm } from "~/components/ui/confirm";
 import { Label, Textarea } from "~/components/ui/input";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 
 const LIMITE = 4000;
 
-/*
-  O comunicado da casa.
-
-  Sai pela conta do sistema, na conversa que ela tem com cada pessoa — a
-  mesma onde chegam os outros avisos. Não pede amizade e não passa pelo
-  freio de spam, então confirma antes: mandar não tem desfazer.
-*/
 export const ComunicadosSection: React.FC = () => {
-  const [texto, setTexto] = useState("");
+  const [text, setTexto] = useState("");
   const pessoas = useContarPessoas(true);
   const mandar = useMandarComunicado();
-  const confirmar = useConfirmar();
+  const confirm = useConfirm();
 
   const quantos = pessoas.data?.total ?? 0;
 
   const enviar = async () => {
-    const { confirmado } = await confirmar({
-      titulo: `Mandar para ${quantos} ${quantos === 1 ? "pessoa" : "pessoas"}?`,
-      descricao:
+    const { confirmed } = await confirm({
+      title: `Mandar para ${quantos} ${quantos === 1 ? "pessoa" : "pessoas"}?`,
+      description:
         "A mensagem chega na conversa de cada uma com a conta do sistema, na hora. Depois de enviada não dá para tirar.",
-      acao: "Mandar",
-      destrutivo: true,
+      action: "Mandar",
+      destructive: true,
     });
 
-    if (!confirmado) return;
+    if (!confirmed) return;
 
     mandar.mutate(
-      { conteudo: texto.trim() },
+      { conteudo: text.trim() },
       {
         onSuccess: ({ destinatarios }) => {
           toast.success(`Comunicado a caminho de ${destinatarios} ${destinatarios === 1 ? "pessoa" : "pessoas"}.`);
@@ -60,7 +53,7 @@ export const ComunicadosSection: React.FC = () => {
             <Label data-gc="configuracoes.comunicados-section.label" htmlFor="texto-do-comunicado">Mensagem</Label>
             <Textarea data-gc="configuracoes.comunicados-section.textarea"
               id="texto-do-comunicado"
-              value={texto}
+              value={text}
               rows={6}
               maxLength={LIMITE}
               placeholder="Ex: O Gravaê vai ficar fora do ar hoje às 22h, por uns dez minutos."
@@ -68,13 +61,13 @@ export const ComunicadosSection: React.FC = () => {
             />
             <p data-gc="configuracoes.comunicados-section.p--2" className="mt-1.5 flex items-center justify-between text-xs text-ink-faint">
               <span data-gc="configuracoes.comunicados-section.span">Vai para {quantos} {quantos === 1 ? "pessoa" : "pessoas"}, sem contar bots.</span>
-              <span data-gc="configuracoes.comunicados-section.span--2">{texto.length} / {LIMITE}</span>
+              <span data-gc="configuracoes.comunicados-section.span--2">{text.length} / {LIMITE}</span>
             </p>
           </div>
 
           <Button data-gc="configuracoes.comunicados-section.button"
             className="mt-5"
-            disabled={!texto.trim() || mandar.isPending || !quantos}
+            disabled={!text.trim() || mandar.isPending || !quantos}
             onClick={() => void enviar()}
           >
             {mandar.isPending ? "Mandando…" : "Mandar comunicado"}

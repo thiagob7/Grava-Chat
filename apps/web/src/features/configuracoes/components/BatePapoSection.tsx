@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CampoSelect } from "~/components/ui/select";
+import { SelectField } from "~/components/ui/select";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
 import { Linha, Opcao } from "~/features/configuracoes/components/campos-de-config";
 import {
@@ -38,25 +38,25 @@ export const BatePapoSection: React.FC = () => {
         />
 
         <Linha data-gc="configuracoes.bate-papo-section.linha" titulo="Mostrar spoilers">
-          <CampoSelect data-gc="configuracoes.bate-papo-section.campo-select"
-            valor={prefs.spoilers}
-            onEscolher={(v) =>
+          <SelectField data-gc="configuracoes.bate-papo-section.select-field"
+            value={prefs.spoilers}
+            onSelect={(v) =>
               prefs.definir({ spoilers: v as QuandoMostrarSpoiler })
             }
-            opcoes={[
-              { valor: "ao-clicar", rotulo: "Ao clicar" },
-              { valor: "sempre", rotulo: "Sempre" },
+            options={[
+              { value: "ao-clicar", label: "Ao clicar" },
+              { value: "sempre", label: "Sempre" },
             ]}
           />
         </Linha>
 
         <Linha data-gc="configuracoes.bate-papo-section.linha--2" titulo="Espaçamento das mensagens">
-          <CampoSelect data-gc="configuracoes.bate-papo-section.campo-select--2"
-            valor={prefs.densidade}
-            onEscolher={(v) => prefs.definir({ densidade: v as Densidade })}
-            opcoes={[
-              { valor: "confortavel", rotulo: "Confortável" },
-              { valor: "compacta", rotulo: "Compacta" },
+          <SelectField data-gc="configuracoes.bate-papo-section.select-field--2"
+            value={prefs.densidade}
+            onSelect={(v) => prefs.definir({ densidade: v as Densidade })}
+            options={[
+              { value: "confortavel", label: "Confortável" },
+              { value: "compacta", label: "Compacta" },
             ]}
           />
         </Linha>
