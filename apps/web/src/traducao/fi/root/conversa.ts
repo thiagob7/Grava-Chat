@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Ei toimitettu — lähetät liian nopeasti",
     automod: "Ei toimitettu — AutoMod esti sen",
     recusada: "Ei toimitettu — tämä keskustelu ei ota vastaan vastauksia",
+    naoEntregue: "Ei toimitettu — tämä henkilö ei ota vastaan viestejäsi",
   },
   mencao: {
     cargo: "Roolimaininta",
