@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "앱 확대 수준",
     escalaDaFonte: "채팅 글꼴 크기",
     modoStreamer: "방송 개인정보",
+    cursores: "커서",
     movimento: "모션",
     textoEmVoz: "텍스트 음성 변환",
     teclado: "키보드",
