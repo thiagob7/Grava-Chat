@@ -10,6 +10,7 @@ import { useTranslation } from "~/traducao";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Accessibility,
+  ArrowLeft,
   Bell,
   Code2,
   ChevronRight,
@@ -229,6 +230,15 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   const [secao, setSecao] = useState<Secao>(secaoInicial);
   const [busca, setBusca] = useState("");
   const [subAtiva, setSubAtiva] = useState<string | null>(null);
+
+  /*
+    No celular a janela não cabe partida em duas: a lateral tem 252 px de
+    mínimo, o que sobrava para o conteúdo era menos de um terço da tela. Aqui
+    ela vira mestre-detalhe — a lista ocupa tudo, escolher abre a seção por
+    cima dela, e um botão de voltar desfaz. A partir de `md` volta a ser a
+    janela de sempre, com as duas colunas lado a lado.
+  */
+  const [conteudoAberto, setConteudoAberto] = useState(false);
   const rolagem = useRef<HTMLDivElement>(null);
 
   const grupos = useMemo(() => {
@@ -285,6 +295,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     if (!open) return;
 
     setSecao(secaoInicial);
+    setConteudoAberto(false);
     if (!subInicial) return;
 
     irPara(secaoInicial, subInicial);
@@ -325,7 +336,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
         <DialogPrimitive.Overlay data-gc="configuracoes.user-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
         <DialogPrimitive.Content data-gc="configuracoes.user-settings-modal.dialog-primitivecontent"
           className={cn(
-            "regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[min(60rem,92vh)] w-[min(87.5rem,94vw)] overflow-hidden rounded-xl bg-surface-1 shadow-2xl outline-none",
+            "regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-full w-full overflow-hidden bg-surface-1 shadow-2xl outline-none md:h-[min(60rem,92vh)] md:w-[min(87.5rem,94vw)] md:rounded-xl",
             flxCls("janelaDeConfiguracoes"),
           )}
           aria-label="Configurações do usuário"
@@ -334,8 +345,29 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             Configurações do usuário
           </DialogPrimitive.Title>
 
-          <nav data-gc="configuracoes.user-settings-modal.nav" {...flx("lateralDeConfiguracoes", cn("flex w-[max(15.75rem,min(24svw,20rem))] shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4", flxCls("lateralInternaDeConfiguracoes")))} {...flxAttr("lateralInternaDeConfiguracoes")}>
-            <div data-gc="configuracoes.user-settings-modal.div" className="relative">
+          <nav data-gc="configuracoes.user-settings-modal.nav" {...flx("lateralDeConfiguracoes", cn(
+              "w-full shrink-0 flex-col gap-4 overflow-y-auto border-r border-line bg-surface-4 px-3 pb-0 pt-4",
+              "md:flex md:w-[max(15.75rem,min(24svw,20rem))]",
+              conteudoAberto ? "hidden" : "flex",
+              flxCls("lateralInternaDeConfiguracoes"),
+            ))} {...flxAttr("lateralInternaDeConfiguracoes")}>
+            {/*
+              No celular a lista ocupa a tela inteira e o X da janela fica do
+              outro lado, escondido junto com o conteúdo. Sem este botão não há
+              saída: nem fechar, nem voltar.
+            */}
+            <div data-gc="configuracoes.user-settings-modal.div" className="flex items-center justify-between gap-2 md:hidden">
+              <span data-gc="configuracoes.user-settings-modal.span" className="text-base font-semibold">Configurações</span>
+
+              <DialogPrimitive.Close
+                aria-label="Fechar"
+                className="flex size-9 shrink-0 items-center justify-center rounded-lg text-ink-faint transition hover:bg-hover hover:text-ink"
+              >
+                <X data-gc="configuracoes.user-settings-modal.x" size={20} />
+              </DialogPrimitive.Close>
+            </div>
+
+            <div data-gc="configuracoes.user-settings-modal.div--2" className="relative">
               <Search data-gc="configuracoes.user-settings-modal.search"
                 size={15}
                 className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
@@ -360,19 +392,19 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 size={36}
                 enfeites={user.perfil}
               />
-              <span data-gc="configuracoes.user-settings-modal.span" className="min-w-0 flex-1">
-                <span data-gc="configuracoes.user-settings-modal.span--2" className="block truncate text-sm font-semibold">
+              <span data-gc="configuracoes.user-settings-modal.span--2" className="min-w-0 flex-1">
+                <span data-gc="configuracoes.user-settings-modal.span--3" className="block truncate text-sm font-semibold">
                   {user.displayName}
                 </span>
-                <span data-gc="configuracoes.user-settings-modal.span--3" className="flex items-center gap-1 text-xs text-ink-muted">
+                <span data-gc="configuracoes.user-settings-modal.span--4" className="flex items-center gap-1 text-xs text-ink-muted">
                   Editar perfil <Pencil data-gc="configuracoes.user-settings-modal.pencil" size={11} />
                 </span>
               </span>
             </button>
 
-            <div data-gc="configuracoes.user-settings-modal.div--2" className="flex flex-col gap-2">
+            <div data-gc="configuracoes.user-settings-modal.div--3" className="flex flex-col gap-2">
               {grupos.map((grupo) => (
-                <div data-gc="configuracoes.user-settings-modal.div--3" key={grupo.chave} {...flx("grupoDeConfiguracoes", "flex flex-col gap-[3px]")}>
+                <div data-gc="configuracoes.user-settings-modal.div--4" key={grupo.chave} {...flx("grupoDeConfiguracoes", "flex flex-col gap-[3px]")}>
                   <p data-gc="configuracoes.user-settings-modal.p" {...flx("tituloDoGrupoDeConfiguracoes", "truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint")}>
                     {t(grupo.chave)}
                   </p>
@@ -383,8 +415,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                       item={item}
                       ativo={secao === item.id}
                       subAtiva={secao === item.id ? subAtiva : null}
-                      onEscolher={() => setSecao(item.id)}
-                      onEscolherSub={(sub) => irPara(item.id, sub)}
+                      onEscolher={() => {
+                        setSecao(item.id);
+                        setConteudoAberto(true);
+                      }}
+                      onEscolherSub={(sub) => {
+                        irPara(item.id, sub);
+                        setConteudoAberto(true);
+                      }}
                     />
                   ))}
                 </div>
@@ -397,7 +435,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </p>
             )}
 
-            <div data-gc="configuracoes.user-settings-modal.div--4" className="mt-auto flex flex-col pb-3 pt-2">
+            <div data-gc="configuracoes.user-settings-modal.div--5" className="mt-auto flex flex-col pb-3 pt-2">
               {user.admin && (
                 <button data-gc="configuracoes.user-settings-modal.button"
                   onClick={() => {
@@ -425,10 +463,18 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             </div>
           </nav>
 
-          <div data-gc="configuracoes.user-settings-modal.div--5" {...flx("conteudoDeConfiguracoes", "flex min-w-0 flex-1 flex-col")}>
-            <div data-gc="configuracoes.user-settings-modal.div--6" {...flx("topoDeConfiguracoes", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("topoDaJanelaDeConfiguracoes")))}>
+          <div data-gc="configuracoes.user-settings-modal.div--6" {...flx("conteudoDeConfiguracoes", cn("min-w-0 flex-1 flex-col md:flex", conteudoAberto ? "flex" : "hidden"))}>
+            <div data-gc="configuracoes.user-settings-modal.div--7" {...flx("topoDeConfiguracoes", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("topoDaJanelaDeConfiguracoes")))}>
               <h2 data-gc="configuracoes.user-settings-modal.h2" className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
-                <span data-gc="configuracoes.user-settings-modal.span--4" className="truncate">{t(TITULOS[secao])}</span>
+                <button data-gc="configuracoes.user-settings-modal.button--2"
+                  type="button"
+                  onClick={() => setConteudoAberto(false)}
+                  aria-label="Voltar para a lista"
+                  className="-ml-1 shrink-0 rounded p-1 text-ink-muted transition hover:bg-hover hover:text-ink md:hidden"
+                >
+                  <ArrowLeft data-gc="configuracoes.user-settings-modal.arrow-left" size={18} />
+                </button>
+                <span data-gc="configuracoes.user-settings-modal.span--5" className="truncate">{t(TITULOS[secao])}</span>
                 <BotaoDeLink data-gc="configuracoes.user-settings-modal.botao-de-link" secao={secao} oQue="esta página" />
               </h2>
 
@@ -436,7 +482,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                 aria-label="Fechar"
                 className="flex size-[34px] shrink-0 items-center justify-center rounded-lg text-ink-faint transition hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
               >
-                <X data-gc="configuracoes.user-settings-modal.x" size={20} />
+                <X data-gc="configuracoes.user-settings-modal.x--2" size={20} />
               </DialogPrimitive.Close>
             </div>
 
@@ -448,7 +494,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               onKeyDown={soltarEscolha}
               className="min-h-0 flex-1 overflow-y-auto"
             >
-              <div data-gc="configuracoes.user-settings-modal.div--7" className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
+              <div data-gc="configuracoes.user-settings-modal.div--8" className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
                 <ContextoDaSecao.Provider value={secao}>
                   <ErrorBoundary
                     key={secao}
@@ -523,7 +569,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
   const temSub = item.subitens.length > 0;
 
   return (
-    <div data-gc="configuracoes.user-settings-modal.div--8" className="flex flex-col">
+    <div data-gc="configuracoes.user-settings-modal.div--9" className="flex flex-col">
       <button data-gc="configuracoes.user-settings-modal.button.on-escolher"
         onClick={onEscolher}
         aria-current={ativo}
@@ -545,7 +591,7 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
             ativo ? "text-ink" : "text-ink-faint",
           )}
         />
-        <span data-gc="configuracoes.user-settings-modal.span--5" {...flx("rotuloDoItemDeConfiguracoes", "min-w-0 flex-1 truncate")}>{t(item.chave)}</span>
+        <span data-gc="configuracoes.user-settings-modal.span--6" {...flx("rotuloDoItemDeConfiguracoes", "min-w-0 flex-1 truncate")}>{t(item.chave)}</span>
 
         {temSub && (
           <ChevronRight data-gc="configuracoes.user-settings-modal.chevron-right"
@@ -559,18 +605,18 @@ const ItemDaLateral: React.FC<ItemDaLateralProps> = ({
       </button>
 
       {temSub && (
-        <div data-gc="configuracoes.user-settings-modal.div--9"
+        <div data-gc="configuracoes.user-settings-modal.div--10"
           className="grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none"
           style={{ gridTemplateRows: ativo ? "1fr" : "0fr" }}
           aria-hidden={!ativo}
         >
-          <div data-gc="configuracoes.user-settings-modal.div--10" className="overflow-hidden">
-            <div data-gc="configuracoes.user-settings-modal.div--11"
+          <div data-gc="configuracoes.user-settings-modal.div--11" className="overflow-hidden">
+            <div data-gc="configuracoes.user-settings-modal.div--12"
               ref={lista}
               className="subarvore-de-config ml-[21px] mt-[3px] flex flex-col gap-0.5 pl-[7px]"
             >
               {item.subitens.map((sub) => (
-                <button data-gc="configuracoes.user-settings-modal.button--2"
+                <button data-gc="configuracoes.user-settings-modal.button--3"
                   key={sub.id}
                   data-ativo={subAtiva === sub.id}
                   tabIndex={ativo ? 0 : -1}
