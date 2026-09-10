@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Nivel de zoom al aplicației",
     escalaDaFonte: "Scara fontului din chat",
     modoStreamer: "Confidențialitate la transmisiune",
+    cursores: "Cursoare",
     movimento: "Mișcare",
     textoEmVoz: "Text în vorbire",
     teclado: "Tastatură",
