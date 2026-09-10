@@ -301,7 +301,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
         </div>
       )}
 
-      <div data-gc="servidor.server-settings.expressions-sections.div--7" className="mt-6 grid grid-cols-5 gap-3">
+      <div data-gc="servidor.server-settings.expressions-sections.div--7" className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
         {data.stickers.map((sticker) => (
           <div data-gc="servidor.server-settings.expressions-sections.div--8"
             key={sticker.id}
