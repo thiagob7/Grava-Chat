@@ -1,0 +1,83 @@
+/**
+ * @name Vitral
+ * @description Cacos de vidro mudando de forma atrás de painéis foscos, num azul de manhã fria.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, azul, vidro, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(17 23 38 / 0.44);
+  --background-secondary: rgb(13 18 30 / 0.56);
+  --background-secondary-lighter: rgb(26 34 51 / 0.56);
+  --guild-list-foreground: rgb(36 48 71 / 0.62);
+  --form-surface-background: rgb(36 48 71 / 0.95);
+  --scrollbar-thumb-bg-hover: #8996ae;
+  --border-color: rgb(75 92 126 / 0.16);
+  --background-textarea: rgb(26 34 51 / 0.8);
+  --background-modifier-accent-focus: #243047;
+  --composer-surface-color: rgb(26 34 51 / 0.7);
+  --background-channel-header: rgb(17 23 38 / 0.44);
+  --background-secondary-alt: rgb(13 18 30 / 0.62);
+  --background-modifier-selected: rgb(111 168 255 / 0.16);
+  --text-chat: #e4ecf8;
+  --text-chat-muted: #c3cfe3;
+  --text-tertiary-muted: #8996ae;
+  --accent-primary: #6fa8ff;
+  --brand-primary-light: #5a8fe6;
+  --status-online: #67c99a;
+  --status-idle: #f0c674;
+  --status-dnd: #ef6a6a;
+  --status-danger: #ef6a6a;
+  --text-link: #72d5e0;
+  --markup-mention-text: #f0c674;
+  --alert-important-color: #b39ddb;
+  --message-mention-color: #f0c674;
+  --message-mention-bg: rgb(240 198 116 / 0.16);
+  --code-inline-bg: rgb(26 34 51 / 0.7);
+  --code-block-bg: rgb(10 14 24 / 0.72);
+  --accent-warning: #f0c674;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(111 168 255 / 0.07);
+  --text-on-brand-primary: #0d121e;
+  --control-button-danger-hover-bg: rgb(239 106 106 / 0.16);
+  --focus-primary: rgb(111 168 255 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: facetas;
+}
+
+/* Manhã fria por uma janela grande: azul frio em cima, luz baixa embaixo. */
+body {
+  background-color: #0a0e18;
+  background-image:
+    radial-gradient(ellipse 66% 44% at 76% 6%, rgb(111 168 255 / 0.16), transparent 74%),
+    radial-gradient(ellipse 70% 36% at 22% 98%, rgb(114 213 224 / 0.1), transparent 74%),
+    linear-gradient(172deg, #0c1120, #111726 56%, #080b14);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}
