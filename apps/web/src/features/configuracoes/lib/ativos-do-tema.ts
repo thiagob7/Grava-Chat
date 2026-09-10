@@ -47,3 +47,24 @@ export function resolverAtivos(
 export function contarPedidosDeAtivo(css: string): number {
   return (css.match(CHAMADA) ?? []).length;
 }
+
+/*
+  Os nomes que o CSS chama, do jeito que estão escritos. É por essa lista que
+  o estúdio decide o que mandar junto quando o tema é publicado.
+*/
+export function nomesDeAtivosPedidos(css: string): string[] {
+  const nomes = new Set<string>();
+
+  for (const [, , pedido] of css.matchAll(CHAMADA)) {
+    if (pedido) nomes.add(pedido.trim());
+  }
+
+  return [...nomes];
+}
+
+export function combinaComPedido(nomeDoArquivo: string, pedido: string): boolean {
+  const arquivo = nomeDoArquivo.trim().toLowerCase();
+  const pedida = pedido.trim().toLowerCase();
+
+  return arquivo === pedida || achatar(nomeDoArquivo) === achatar(pedido);
+}
