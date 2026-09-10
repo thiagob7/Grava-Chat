@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nepristatyta — siunti per greitai",
     automod: "Nepristatyta — AutoMod užblokavo",
     recusada: "Nepristatyta — šis pokalbis nepriima atsakymų",
+    naoEntregue: "Nepristatyta — šis žmogus nepriima tavo žinučių",
   },
   mencao: {
     cargo: "Rolės paminėjimas",

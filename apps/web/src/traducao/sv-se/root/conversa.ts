@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Levererades inte — du skickar för snabbt",
     automod: "Levererades inte — AutoMod blockerade den",
     recusada: "Levererades inte — den här konversationen tar inte emot svar",
+    naoEntregue: "Levererades inte — den här personen tar inte emot meddelanden från dig",
   },
   mencao: {
     cargo: "Rollomnämnande",

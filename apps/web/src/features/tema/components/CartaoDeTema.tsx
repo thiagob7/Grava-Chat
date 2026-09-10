@@ -1,6 +1,8 @@
 import React from "react";
 import { Palette } from "lucide-react";
 
+import { pesoDoTema, pesoLegivel } from "@gravae/shared";
+
 import { useTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import { useImportarTema } from "~/features/tema/stores/importar-tema";
@@ -30,12 +32,30 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
   const resumo = [
     temCss && "Você tem CSS!",
     quantosTokens > 0 && `${quantosTokens} ${quantosTokens === 1 ? "cor" : "cores"}`,
+    tema.ativos.length > 0 &&
+      `${tema.ativos.length} ${tema.ativos.length === 1 ? "imagem" : "imagens"}`,
+    tema.ativos.length > 0 && pesoLegivel(pesoDoTema(tema.css, tema.ativos)),
   ]
     .filter(Boolean)
     .join(" · ");
 
+  const capa = tema.ativos.find((ativo) =>
+    ativo.tipo
+      ? ativo.tipo.startsWith("image/")
+      : /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(ativo.nome),
+  );
+
   return (
     <article data-gc="tema.cartao-de-tema.article" className="mt-1 w-72 overflow-hidden rounded-lg border border-line bg-surface-2">
+      {capa && (
+        <img data-gc="tema.cartao-de-tema.img"
+          src={capa.url}
+          alt=""
+          loading="lazy"
+          className="h-24 w-full border-b border-line object-cover"
+        />
+      )}
+
       <div data-gc="tema.cartao-de-tema.div--3" className="flex items-center gap-3 p-3">
         <span data-gc="tema.cartao-de-tema.span" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca">
           <Palette data-gc="tema.cartao-de-tema.palette" size={20} />

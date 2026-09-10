@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "ऐप ज़ूम स्तर",
     escalaDaFonte: "चैट फ़ॉन्ट आकार",
     modoStreamer: "स्ट्रीमिंग गोपनीयता",
+    cursores: "कर्सर",
     movimento: "गति",
     textoEmVoz: "टेक्स्ट से वाणी",
     teclado: "कीबोर्ड",

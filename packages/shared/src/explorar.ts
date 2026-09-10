@@ -1,3 +1,5 @@
+import type { AtivoDoTema } from "./temas.js";
+
 export interface TemaDaGaleria {
   id: string;
   nome: string;
@@ -6,6 +8,8 @@ export interface TemaDaGaleria {
   versao: string | null;
   tags: string[];
   substituicoes: Record<string, string>;
+  ativos: AtivoDoTema[];
+  pesoEmBytes: number;
   publicadoPor: { id: string; displayName: string; avatarUrl: string | null };
   createdAt: string;
 }

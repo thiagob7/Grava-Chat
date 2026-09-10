@@ -1,0 +1,82 @@
+/**
+ * @name Circuito
+ * @description Corredores que se desenham sozinhos e somem atrás, em verde de terminal antigo.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, verde, terminal, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(11 18 16 / 0.44);
+  --background-secondary: rgb(7 13 12 / 0.56);
+  --background-secondary-lighter: rgb(16 26 23 / 0.56);
+  --guild-list-foreground: rgb(22 36 31 / 0.62);
+  --form-surface-background: rgb(22 36 31 / 0.95);
+  --scrollbar-thumb-bg-hover: #6b9585;
+  --border-color: rgb(47 92 74 / 0.16);
+  --background-textarea: rgb(16 26 23 / 0.8);
+  --background-modifier-accent-focus: #16241f;
+  --composer-surface-color: rgb(16 26 23 / 0.7);
+  --background-channel-header: rgb(11 18 16 / 0.44);
+  --background-secondary-alt: rgb(7 13 12 / 0.62);
+  --background-modifier-selected: rgb(63 217 155 / 0.16);
+  --text-chat: #c6f0dd;
+  --text-chat-muted: #9ad4bd;
+  --text-tertiary-muted: #6b9585;
+  --accent-primary: #3fd99b;
+  --brand-primary-light: #2fbb83;
+  --status-online: #3fd99b;
+  --status-idle: #d8d35a;
+  --status-dnd: #e05a5a;
+  --status-danger: #e05a5a;
+  --text-link: #5ad8d0;
+  --markup-mention-text: #d8d35a;
+  --alert-important-color: #7ec8ff;
+  --message-mention-color: #d8d35a;
+  --message-mention-bg: rgb(216 211 90 / 0.16);
+  --code-inline-bg: rgb(16 26 23 / 0.7);
+  --code-block-bg: rgb(5 10 9 / 0.72);
+  --accent-warning: #d8d35a;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(63 217 155 / 0.07);
+  --text-on-brand-primary: #06100c;
+  --control-button-danger-hover-bg: rgb(224 90 90 / 0.16);
+  --focus-primary: rgb(63 217 155 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: labirinto;
+}
+
+/* Sala de máquinas: quase preto, com o verde do monitor pintando o ar. */
+body {
+  background-color: #050a09;
+  background-image:
+    radial-gradient(ellipse 70% 46% at 50% 50%, rgb(63 217 155 / 0.09), transparent 72%),
+    linear-gradient(170deg, #060d0b, #0b1210 56%, #040807);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}

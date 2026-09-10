@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Razina zumiranja aplikacije",
     escalaDaFonte: "Veličina fonta chata",
     modoStreamer: "Privatnost pri emitiranju",
+    cursores: "Pokazivači",
     movimento: "Kretanje",
     textoEmVoz: "Tekst u govor",
     teclado: "Tipkovnica",

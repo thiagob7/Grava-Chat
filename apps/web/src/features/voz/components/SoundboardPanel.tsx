@@ -102,7 +102,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, podeU
         </button>
       </PopoverTrigger>
 
-      <PopoverContent data-gc="voz.soundboard-panel.popover-content" side="top" align="center" collisionPadding={12} className="w-[21rem] p-0">
+      <PopoverContent data-gc="voz.soundboard-panel.popover-content" side="top" align="center" collisionPadding={12} className="w-[min(21rem,92vw)] p-0">
         <div data-gc="voz.soundboard-panel.div" className="flex items-center gap-2 border-b border-divisor p-3">
           <div data-gc="voz.soundboard-panel.div--2" className="relative flex-1">
             <Search data-gc="voz.soundboard-panel.search"

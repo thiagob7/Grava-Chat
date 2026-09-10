@@ -77,7 +77,18 @@ export const Explorar: React.FC = () => {
   const pendentes = relacoes.filter((r) => r.status === "PENDING_IN").length;
 
   const navegacao = (
-    <ColunaDaEsquerda data-gc="descoberta.explorar.coluna-da-esquerda" rodape={<RodapeDaBarra data-gc="descoberta.explorar.rodape-da-barra" user={user} onLogout={() => void sair()} />}>
+    <ColunaDaEsquerda data-gc="descoberta.explorar.coluna-da-esquerda"
+      rodape={<RodapeDaBarra data-gc="descoberta.explorar.rodape-da-barra" user={user} onLogout={() => void sair()} />}
+      alca={
+        <WidthHandle data-gc="descoberta.explorar.width-handle"
+          edge="right"
+          dragging={dragging}
+          width={width}
+          bounds={bounds}
+          {...handle}
+        />
+      }
+    >
       <GuildRail data-gc="descoberta.explorar.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
@@ -86,10 +97,10 @@ export const Explorar: React.FC = () => {
       />
 
       <aside data-gc="descoberta.explorar.aside"
-        className="canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
+        className="group/coluna canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1"
         style={{ width: width }}
       >
-        <div data-gc="descoberta.explorar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
+        <div data-gc="descoberta.explorar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-transparent")} />
         <div data-gc="descoberta.explorar.div--2" {...flx("listaDeConversas", "lista-de-comunidades miolo-recortado flex min-h-0 flex-1 flex-col")}>
         <header data-gc="descoberta.explorar.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
           <div data-gc="descoberta.explorar.div--3"
@@ -126,13 +137,6 @@ export const Explorar: React.FC = () => {
         <div data-gc="descoberta.explorar.div--4" className="mt-auto" />
         </div>
 
-        <WidthHandle data-gc="descoberta.explorar.width-handle"
-          edge="right"
-          dragging={dragging}
-          width={width}
-          bounds={bounds}
-          {...handle}
-        />
       </aside>
     </ColunaDaEsquerda>
   );

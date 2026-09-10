@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nedoručeno — posíláš příliš rychle",
     automod: "Nedoručeno — AutoMod to zablokoval",
     recusada: "Nedoručeno — tato konverzace nepřijímá odpovědi",
+    naoEntregue: "Nedoručeno — tato osoba od tebe zprávy nepřijímá",
   },
   mencao: {
     cargo: "Zmínka role",

@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Az alkalmazás nagyítása",
     escalaDaFonte: "Csevegés betűmérete",
     modoStreamer: "Adatvédelem közvetítés közben",
+    cursores: "Kurzorok",
     movimento: "Mozgás",
     textoEmVoz: "Szövegfelolvasás",
     teclado: "Billentyűzet",

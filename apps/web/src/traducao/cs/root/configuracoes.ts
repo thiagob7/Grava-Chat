@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Úroveň přiblížení aplikace",
     escalaDaFonte: "Velikost písma chatu",
     modoStreamer: "Soukromí při vysílání",
+    cursores: "Kurzory",
     movimento: "Pohyb",
     textoEmVoz: "Převod textu na řeč",
     teclado: "Klávesnice",

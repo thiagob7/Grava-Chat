@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Sovelluksen zoomaustaso",
     escalaDaFonte: "Keskustelun fonttikoko",
     modoStreamer: "Yksityisyys lähetyksessä",
+    cursores: "Osoittimet",
     movimento: "Liike",
     textoEmVoz: "Teksti puheeksi",
     teclado: "Näppäimistö",

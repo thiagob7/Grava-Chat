@@ -58,7 +58,7 @@ export function GradeDeOpcoes<T extends string>({
   return (
     <div data-gc="configuracoes.perfil.campos.div--3">
       <Label data-gc="configuracoes.perfil.campos.label--2">{label}</Label>
-      <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-3 gap-2">
+      <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {opcoes.map((opcao) => (
           <button data-gc="configuracoes.perfil.campos.button--2"
             key={opcao.id}

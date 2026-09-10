@@ -59,8 +59,8 @@ export const CascaCarregando: React.FC = () => {
             ))}
           </nav>
 
-          <aside data-gc="app.casca-carregando.aside" className="canto-do-miolo topo-do-miolo relative flex w-[var(--layout-sidebar-width)] shrink-0 flex-col bg-surface-1">
-            <div data-gc="app.casca-carregando.div--6" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
+          <aside data-gc="app.casca-carregando.aside" className="group/coluna canto-do-miolo topo-do-miolo relative flex w-[var(--layout-sidebar-width)] shrink-0 flex-col bg-surface-1">
+            <div data-gc="app.casca-carregando.div--6" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-transparent")} />
             <div data-gc="app.casca-carregando.div--7"
               {...flx(
                 "listaDeCanais",

@@ -90,14 +90,14 @@ export const ProfileEditorModal: React.FC<{
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay data-gc="perfil.cartao.profile-editor-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
         <DialogPrimitive.Content data-gc="perfil.cartao.profile-editor-modal.dialog-primitivecontent"
-          className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-[78vh] w-full max-w-6xl overflow-hidden rounded-lg bg-surface-2 shadow-2xl outline-none"
+          className="regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-full w-full flex-col overflow-hidden bg-surface-2 shadow-2xl outline-none md:h-[78vh] md:max-w-6xl md:flex-row md:rounded-lg"
           aria-label={t("perfil.editar")}
         >
           <DialogPrimitive.Title data-gc="perfil.cartao.profile-editor-modal.dialog-primitivetitle" className="sr-only">
             {t("perfil.editar")}
           </DialogPrimitive.Title>
 
-          <aside data-gc="perfil.cartao.profile-editor-modal.aside" className="w-80 shrink-0 overflow-y-auto bg-surface-1 p-5">
+          <aside data-gc="perfil.cartao.profile-editor-modal.aside" className="w-full shrink-0 overflow-y-auto bg-surface-1 p-5 md:w-80">
             <h2 data-gc="perfil.cartao.profile-editor-modal.h2" className="mb-4 text-sm font-semibold">{t("perfil.editor.principal")}</h2>
 
             <div data-gc="perfil.cartao.profile-editor-modal.div" className="space-y-6">
@@ -112,7 +112,7 @@ export const ProfileEditorModal: React.FC<{
             </div>
           </aside>
 
-          <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-8">
+          <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-4 md:p-8">
             <input data-gc="perfil.cartao.profile-editor-modal.input"
               ref={escolherFoto}
               type="file"
@@ -128,7 +128,7 @@ export const ProfileEditorModal: React.FC<{
               onChange={(e) => void enviar(e, "bannerUrl")}
             />
 
-            <div data-gc="perfil.cartao.profile-editor-modal.div--3" className="mx-auto w-96">
+            <div data-gc="perfil.cartao.profile-editor-modal.div--3" className="mx-auto w-full max-w-96">
               <div data-gc="perfil.cartao.profile-editor-modal.div--4">
                 <div data-gc="perfil.cartao.profile-editor-modal.div--5">
                   <ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual"

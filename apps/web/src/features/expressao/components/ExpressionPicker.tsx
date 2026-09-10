@@ -73,7 +73,7 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
   const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
 
   return (
-    <div data-gc="expressao.expression-picker.div" {...flx("seletorDeExpressao", "flex h-[440px] w-[460px] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl")}>
+    <div data-gc="expressao.expression-picker.div" {...flx("seletorDeExpressao", "flex h-[min(440px,70svh)] w-[min(460px,92vw)] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl")}>
       {!soEmoji && (
         <nav data-gc="expressao.expression-picker.nav" className="flex shrink-0 items-center gap-1 p-3 pb-2">
           {ABAS.map((item) => (

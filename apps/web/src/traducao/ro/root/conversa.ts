@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nu a fost livrat — trimiți prea repede",
     automod: "Nu a fost livrat — AutoMod l-a blocat",
     recusada: "Nu a fost livrat — această conversație nu primește răspunsuri",
+    naoEntregue: "Nu a fost livrat — persoana nu acceptă mesaje de la tine",
   },
   mencao: {
     cargo: "Menționare de rol",

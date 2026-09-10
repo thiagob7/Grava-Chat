@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Non remis — vous envoyez trop vite",
     automod: "Non remis — AutoMod l'a bloqué",
     recusada: "Non remis — cette conversation n'accepte pas de réponse",
+    naoEntregue: "Non remis — cette personne n'accepte pas vos messages",
   },
   mencao: {
     cargo: "Mention de rôle",

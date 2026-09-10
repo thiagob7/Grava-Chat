@@ -1,0 +1,83 @@
+/**
+ * @name Bruma
+ * @description Faixas de luz atravessando devagar um roxo de amanhecer. Paleta na linha do Rosé Pine.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, roxo, rosa, ondas, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(25 23 36 / 0.44);
+  --background-secondary: rgb(31 29 46 / 0.56);
+  --background-secondary-lighter: rgb(38 35 58 / 0.56);
+  --guild-list-foreground: rgb(51 47 74 / 0.62);
+  --form-surface-background: rgb(51 47 74 / 0.95);
+  --scrollbar-thumb-bg-hover: #908caa;
+  --border-color: rgb(110 106 134 / 0.16);
+  --background-textarea: rgb(38 35 58 / 0.8);
+  --background-modifier-accent-focus: #332f4a;
+  --composer-surface-color: rgb(38 35 58 / 0.7);
+  --background-channel-header: rgb(25 23 36 / 0.44);
+  --background-secondary-alt: rgb(31 29 46 / 0.62);
+  --background-modifier-selected: rgb(196 167 231 / 0.16);
+  --text-chat: #e0def4;
+  --text-chat-muted: #c8c3e0;
+  --text-tertiary-muted: #908caa;
+  --accent-primary: #c4a7e7;
+  --brand-primary-light: #b192dd;
+  --status-online: #31748f;
+  --status-idle: #f6c177;
+  --status-dnd: #eb6f92;
+  --status-danger: #eb6f92;
+  --text-link: #9ccfd8;
+  --markup-mention-text: #f6c177;
+  --alert-important-color: #eb6f92;
+  --message-mention-color: #f6c177;
+  --message-mention-bg: rgb(246 193 119 / 0.16);
+  --code-inline-bg: rgb(38 35 58 / 0.7);
+  --code-block-bg: rgb(18 16 27 / 0.72);
+  --accent-warning: #f6c177;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(196 167 231 / 0.07);
+  --text-on-brand-primary: #191724;
+  --control-button-danger-hover-bg: rgb(235 111 146 / 0.16);
+  --focus-primary: rgb(196 167 231 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: ondas;
+}
+
+/* Antes do sol: o rosa entrando por baixo do roxo que ainda não foi embora. */
+body {
+  background-color: #12101b;
+  background-image:
+    radial-gradient(ellipse 80% 30% at 40% 102%, rgb(235 111 146 / 0.14), transparent 72%),
+    radial-gradient(ellipse 50% 42% at 90% 10%, rgb(196 167 231 / 0.16), transparent 74%),
+    linear-gradient(170deg, #12101b, #191724 56%, #0e0c15);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}

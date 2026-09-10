@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nie dostarczono — wysyłasz zbyt szybko",
     automod: "Nie dostarczono — AutoMod to zablokował",
     recusada: "Nie dostarczono — ta rozmowa nie przyjmuje odpowiedzi",
+    naoEntregue: "Nie dostarczono — ta osoba nie przyjmuje twoich wiadomości",
   },
   mencao: {
     cargo: "Wzmianka o roli",
