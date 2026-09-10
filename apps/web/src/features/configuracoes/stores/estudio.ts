@@ -44,6 +44,7 @@ export interface TemaSalvo {
   css: string;
   aRisca?: boolean | null;
   soOQueExisteLa?: boolean | null;
+  origemId?: string | null;
 }
 
 export interface AtivoDoTema {
@@ -51,6 +52,14 @@ export interface AtivoDoTema {
   nome: string;
   url: string;
   tipo: string;
+  bytes?: number;
+}
+
+interface AtivoQueChegou {
+  nome: string;
+  url: string;
+  tipo?: string;
+  bytes?: number;
 }
 
 interface EstadoDoEstudio {
@@ -64,6 +73,12 @@ interface EstadoDoEstudio {
   ativoId: string | null;
   aRisca: boolean | null;
   soOQueExisteLa: boolean | null;
+  /*
+    De qual tema publicado o CSS de agora veio. Sem isso o tema importado
+    congela: quem publicou solta uma versão nova e a cópia daqui nunca fica
+    sabendo.
+  */
+  origemId: string | null;
 }
 
 interface EstudioStore extends EstadoDoEstudio {
@@ -74,7 +89,13 @@ interface EstudioStore extends EstadoDoEstudio {
   salvarNaBiblioteca: (nome: string) => void;
   aplicarDaBiblioteca: (id: string) => void;
   apagarDaBiblioteca: (id: string) => void;
-  importar: (tema: { substituicoes?: Record<string, string>; css?: string; nome?: string }) => void;
+  importar: (tema: {
+    substituicoes?: Record<string, string>;
+    css?: string;
+    nome?: string;
+    ativos?: AtivoQueChegou[];
+    origemId?: string | null;
+  }) => void;
   importarCssComoTema: (css: string, nomeDoArquivo?: string) => string;
   atualizarNaBiblioteca: (id: string, dados: Partial<Omit<TemaSalvo, "id">>) => void;
   duplicarDaBiblioteca: (id: string) => void;
@@ -102,6 +123,7 @@ const VAZIO: EstadoDoEstudio = {
   ativoId: null,
   aRisca: null,
   soOQueExisteLa: null,
+  origemId: null,
 };
 
 function ler(): EstadoDoEstudio {
@@ -273,7 +295,18 @@ export const useEstudio = create<EstudioStore>((set, store) => {
   const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
     set(mudanca);
 
-    const { css, biblioteca, ativos, ativoId, coresMae, saturacao, manuais, aRisca, soOQueExisteLa } = store();
+    const {
+      css,
+      biblioteca,
+      ativos,
+      ativoId,
+      coresMae,
+      saturacao,
+      manuais,
+      aRisca,
+      soOQueExisteLa,
+      origemId,
+    } = store();
 
     const substituicoes = montarTema(coresMae, saturacao, manuais);
     set({ substituicoes });
@@ -289,6 +322,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       ativoId,
       aRisca,
       soOQueExisteLa,
+      origemId,
     };
 
     aplicar(inteiro);
@@ -356,6 +390,7 @@ export const useEstudio = create<EstudioStore>((set, store) => {
             saturacao: store().saturacao,
             manuais: { ...store().manuais },
             css: store().css,
+            origemId: store().origemId,
           },
         ],
       }),
@@ -364,7 +399,12 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       const tema = store().biblioteca.find((t) => t.id === id);
       if (!tema) return;
 
-      guardar({ ...doTema(tema), css: tema.css, ativoId: id });
+      guardar({
+        ...doTema(tema),
+        css: tema.css,
+        ativoId: id,
+        origemId: tema.origemId ?? null,
+      });
     },
 
     alternarTema: (id) => {
@@ -372,11 +412,16 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       if (!tema) return;
 
       if (store().ativoId === id) {
-        guardar({ ...SEM_TEMA, css: "", ativoId: null });
+        guardar({ ...SEM_TEMA, css: "", ativoId: null, origemId: null });
         return;
       }
 
-      guardar({ ...doTema(tema), css: tema.css, ativoId: id });
+      guardar({
+        ...doTema(tema),
+        css: tema.css,
+        ativoId: id,
+        origemId: tema.origemId ?? null,
+      });
     },
 
     atualizarNaBiblioteca: (id, dados) => {
@@ -443,12 +488,30 @@ export const useEstudio = create<EstudioStore>((set, store) => {
         ...(store().ativoId === id ? { ...SEM_TEMA, css: "", ativoId: null } : {}),
       }),
 
-    importar: ({ substituicoes, css }) =>
+    /*
+      O tema chega com as imagens dele. Um arquivo com o mesmo nome que já
+      estava aqui sai do caminho, senão o `gc-ativo()` do tema novo resolveria
+      para a imagem do tema velho.
+    */
+    importar: ({ substituicoes, css, ativos, origemId }) => {
+      const chegaram = (ativos ?? []).map((ativo) => ({
+        id: crypto.randomUUID(),
+        nome: ativo.nome,
+        url: ativo.url,
+        tipo: ativo.tipo ?? "",
+        ...(ativo.bytes === undefined ? {} : { bytes: ativo.bytes }),
+      }));
+
+      const nomes = new Set(chegaram.map((ativo) => ativo.nome));
+
       guardar({
         ...SEM_TEMA,
         manuais: { ...(substituicoes ?? {}) },
         css: css ?? "",
-      }),
+        ativos: [...store().ativos.filter((a) => !nomes.has(a.nome)), ...chegaram],
+        origemId: origemId ?? null,
+      });
+    },
 
     guardarAtivo: (ativo) =>
       guardar({ ativos: [...store().ativos, { ...ativo, id: crypto.randomUUID() }] }),
@@ -458,7 +521,14 @@ export const useEstudio = create<EstudioStore>((set, store) => {
     limparSubstituicoes: () => guardar({ ...SEM_TEMA }),
 
     limparTudo: () =>
-      guardar({ ...SEM_TEMA, css: "", biblioteca: [], ativos: [], ativoId: null }),
+      guardar({
+        ...SEM_TEMA,
+        css: "",
+        biblioteca: [],
+        ativos: [],
+        ativoId: null,
+        origemId: null,
+      }),
   };
 });
 
