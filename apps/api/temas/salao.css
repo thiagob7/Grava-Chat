@@ -1,0 +1,87 @@
+/**
+ * @name Salão
+ * @description Velas boiando num salão de pedra, luz de tocha e pergaminho. Para quem queria o clima de castelo.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, quente, dourado, velas, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(29 23 16 / 0.44);
+  --background-secondary: rgb(23 18 9 / 0.56);
+  --background-secondary-lighter: rgb(38 30 20 / 0.56);
+  --guild-list-foreground: rgb(51 41 27 / 0.62);
+  --form-surface-background: rgb(51 41 27 / 0.95);
+  --scrollbar-thumb-bg-hover: #9c8a68;
+  --border-color: rgb(122 96 52 / 0.16);
+  --background-textarea: rgb(38 30 20 / 0.8);
+  --background-modifier-accent-focus: #33291b;
+  --composer-surface-color: rgb(38 30 20 / 0.7);
+  --background-channel-header: rgb(29 23 16 / 0.44);
+  --background-secondary-alt: rgb(23 18 9 / 0.62);
+  --background-modifier-selected: rgb(217 164 65 / 0.16);
+  --text-chat: #efe3c8;
+  --text-chat-muted: #d6c6a4;
+  --text-tertiary-muted: #9c8a68;
+  --accent-primary: #d9a441;
+  --brand-primary-light: #b8862c;
+  --status-online: #7f9a5c;
+  --status-idle: #e8c46a;
+  --status-dnd: #a8382f;
+  --status-danger: #a8382f;
+  --text-link: #c9a86a;
+  --markup-mention-text: #e8c46a;
+  --alert-important-color: #a88bd0;
+  --message-mention-color: #e8c46a;
+  --message-mention-bg: rgb(232 196 106 / 0.16);
+  --code-inline-bg: rgb(38 30 20 / 0.7);
+  --code-block-bg: rgb(18 14 7 / 0.72);
+  --accent-warning: #e8c46a;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(217 164 65 / 0.07);
+  --text-on-brand-primary: #1d1710;
+  --control-button-danger-hover-bg: rgb(168 56 47 / 0.16);
+  --focus-primary: rgb(217 164 65 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: velas;
+}
+
+/*
+  Pedra e madeira à luz de vela: escuro embaixo, quente em cima, e um foco de
+  tocha em cada canto. O motor põe as velas boiando por cima disso.
+*/
+body {
+  background-color: #120e07;
+  background-image:
+    radial-gradient(ellipse 44% 34% at 8% 22%, rgb(217 164 65 / 0.14), transparent 72%),
+    radial-gradient(ellipse 44% 34% at 92% 18%, rgb(217 164 65 / 0.12), transparent 72%),
+    radial-gradient(ellipse 90% 34% at 50% 104%, rgb(168 56 47 / 0.1), transparent 72%),
+    linear-gradient(176deg, #241c11, #1d1710 52%, #0e0b05);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}
