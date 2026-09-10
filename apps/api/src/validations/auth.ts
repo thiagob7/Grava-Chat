@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   estiloDePerfilSchema,
+  FILTROS_DE_SPAM,
   LIMITS,
   statusPersonalizadoSchema,
 } from "@gravae/shared";
@@ -58,6 +59,8 @@ export const updateProfileInput = z.object({
   mostraAtividade: z.boolean().optional(),
   mostraServidoresEmComum: z.boolean().optional(),
   mostraAmigosEmComum: z.boolean().optional(),
+  permitirDmDeMembros: z.boolean().optional(),
+  filtroDeSpam: z.enum(FILTROS_DE_SPAM).optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 
