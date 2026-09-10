@@ -20,12 +20,13 @@ import {
 import { Composer } from "~/features/conversa/components/Composer";
 import { AtivosAgora } from "~/features/amizades/components/AtivosAgora";
 import { DmSidebar } from "~/features/amizades/components/DmSidebar";
-import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { Sheet, SheetCloseButton, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { PrimeiroServidor } from "~/features/servidor/components/PrimeiroServidor";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
@@ -47,9 +48,10 @@ import { TypingIndicator } from "~/features/conversa/components/TypingIndicator"
 import { useSession } from "~/contexts/session-context";
 import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
+import { SolicitacoesDeMensagens } from "~/features/amizades/components/SolicitacoesDeMensagens";
 import { flx, flxCls } from "~/lib/compat-de-tema";
 
-export const DirectMessages: React.FC = () => {
+export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitacoes = false }) => {
   const { channelId } = useParams();
   const navigate = useNavigate();
 
@@ -133,8 +135,27 @@ export const DirectMessages: React.FC = () => {
 
   if (!user) return null;
 
+  const lateral = useResizableWidth("dm", {
+    initial: 320,
+    token: "--layout-sidebar-width",
+    min: 180,
+    max: 420,
+    edge: "right",
+  });
+
   const navegacao = (
-    <ColunaDaEsquerda data-gc="friends.direct-messages.coluna-da-esquerda" rodape={<RodapeDaBarra data-gc="friends.direct-messages.rodape-da-barra" user={user} onLogout={() => void sair()} />}>
+    <ColunaDaEsquerda data-gc="friends.direct-messages.coluna-da-esquerda"
+      rodape={<RodapeDaBarra data-gc="friends.direct-messages.rodape-da-barra" user={user} onLogout={() => void sair()} />}
+      alca={
+        <WidthHandle data-gc="friends.direct-messages.width-handle"
+          edge="right"
+          dragging={lateral.dragging}
+          width={lateral.width}
+          bounds={lateral.bounds}
+          {...lateral.handle}
+        />
+      }
+    >
       <GuildRail data-gc="friends.direct-messages.guild-rail"
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
@@ -144,6 +165,10 @@ export const DirectMessages: React.FC = () => {
 
       <DmSidebar data-gc="friends.direct-messages.dm-sidebar"
         activeChannelId={channelId}
+        largura={lateral.width}
+        fluida={telaEstreita}
+        solicitacoesAbertas={solicitacoes}
+        onOpenSolicitacoes={() => navigate("/dm/solicitacoes")}
         readStates={readStates}
         user={user}
         onOpenFriends={() => navigate("/dm")}
@@ -161,8 +186,9 @@ export const DirectMessages: React.FC = () => {
 
       {telaEstreita ? (
         <Sheet data-gc="friends.direct-messages.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
-          <SheetContent data-gc="friends.direct-messages.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
+          <SheetContent data-gc="friends.direct-messages.sheet-content" className="inset-y-0 left-0 right-auto w-full max-w-none flex-row p-0 sm:w-[min(24rem,93vw)]">
             <SheetTitle data-gc="friends.direct-messages.sheet-title" className="sr-only">Conversas</SheetTitle>
+            <SheetCloseButton data-gc="friends.direct-messages.sheet-close-button" className="absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
             {navegacao}
           </SheetContent>
         </Sheet>
@@ -172,7 +198,7 @@ export const DirectMessages: React.FC = () => {
 
       {conversa ? (
         <div data-gc="friends.direct-messages.div--2" {...flx("colunaDaConversaDireta", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
-          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-surface-2 shadow-sm")}>
+          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-line bg-surface-2 shadow-sm")}>
             <div data-gc="friends.direct-messages.div--3"
               {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-2 px-4")}
             >
@@ -359,9 +385,14 @@ export const DirectMessages: React.FC = () => {
             )}
           </div>
         </div>
+      ) : solicitacoes ? (
+        <SolicitacoesDeMensagens data-gc="friends.direct-messages.solicitacoes-de-mensagens" />
       ) : (
         <>
-          <Friends data-gc="friends.direct-messages.friends" onOpenConversation={(userId) => void abrirConversa(userId)} />
+          <Friends data-gc="friends.direct-messages.friends"
+            onOpenConversation={(userId) => void abrirConversa(userId)}
+            onAbrirMenu={telaEstreita ? () => setMenuAberto(true) : undefined}
+          />
           <AtivosAgora data-gc="friends.direct-messages.ativos-agora" />
         </>
       )}
