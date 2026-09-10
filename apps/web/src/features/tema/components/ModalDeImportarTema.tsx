@@ -1,6 +1,8 @@
 import React from "react";
 import { toast } from "react-toastify";
 
+import { pesoDoTema } from "@gravae/shared";
+
 import { useTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,6 +17,8 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { PreviaDosAtivos } from "~/features/tema/components/PreviaDosAtivos";
+import { PreviaDoTema } from "~/features/tema/components/PreviaDoTema";
 import { useImportarTema } from "~/features/tema/stores/importar-tema";
 
 export const ModalDeImportarTema: React.FC = () => {
@@ -28,7 +32,13 @@ export const ModalDeImportarTema: React.FC = () => {
   const aplicar = () => {
     if (!tema) return;
 
-    importar({ css: tema.css, substituicoes: tema.substituicoes, nome: tema.nome });
+    importar({
+      css: tema.css,
+      substituicoes: tema.substituicoes,
+      ativos: tema.ativos,
+      nome: tema.nome,
+      origemId: tema.id,
+    });
     abrirConfiguracoes("aparencia", "tema");
     toast.success(`${tema.nome} aplicado. Está no estúdio de temas.`);
     fechar();
@@ -75,6 +85,16 @@ export const ModalDeImportarTema: React.FC = () => {
                   {quantosTokens} {quantosTokens === 1 ? "cor trocada" : "cores trocadas"}
                 </p>
               )}
+
+              <PreviaDoTema data-gc="tema.modal-de-importar-tema.previa-do-tema"
+                temaId={tema.id}
+                className="aspect-video w-full overflow-hidden rounded-lg border border-line"
+              />
+
+              <PreviaDosAtivos data-gc="tema.modal-de-importar-tema.previa-dos-ativos"
+                ativos={tema.ativos}
+                peso={pesoDoTema(tema.css, tema.ativos)}
+              />
 
               {tema.css.trim() ? (
                 <>
