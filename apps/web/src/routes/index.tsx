@@ -10,6 +10,7 @@ import { ChamadaRecebida } from "~/features/voz/components/ChamadaRecebida";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
 import { AvisoDeTemaDesligado } from "~/features/configuracoes/components/AvisoDeTemaDesligado";
 import { JanelaDoEstudio } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
+import { JanelaDeCursores } from "~/features/configuracoes/components/estudio/JanelaDeCursores";
 import { useSession } from "~/contexts/session-context";
 import { useAvisoNoTitulo } from "~/features/app/hooks/use-aviso-no-titulo";
 import { useConviteDeAviso } from "~/features/app/hooks/use-convite-de-aviso";
@@ -26,9 +27,11 @@ import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
 import { Explorar } from "~/pages/presentation/descoberta/Explorar";
 import { EstudioEmJanela } from "~/pages/presentation/estudio/EstudioEmJanela";
+import { CursoresEmJanela } from "~/pages/presentation/cursores/CursoresEmJanela";
 import { VerTema } from "~/pages/presentation/tema/VerTema";
 import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
 import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
+import { FundoDoTema } from "~/features/tema/components/FundoDoTema";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
@@ -37,6 +40,7 @@ export const AppRoutes: React.FC = () => {
 
   return (
   <BrowserRouter>
+    <FundoDoTema data-gc="routes.fundo-do-tema" />
     <div data-gc="routes.div" {...flx("containerDoApp", "flex h-full flex-col")}>
       <CascaDoApp data-gc="routes.casca-do-app">
       <div data-gc="routes.div--2" {...flxAttr("molduraExterna")} {...flx("molduraDoApp", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("molduraExterna")))}>
@@ -78,17 +82,25 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/dm/:channelId?"
+        path="/dm/solicitacoes"
         element={
           <Protected data-gc="routes.protected--5">
-            <DirectMessages data-gc="routes.direct-messages" />
+            <DirectMessages data-gc="routes.direct-messages" solicitacoes />
+          </Protected>
+        }
+      />
+      <Route
+        path="/dm/:channelId?"
+        element={
+          <Protected data-gc="routes.protected--6">
+            <DirectMessages data-gc="routes.direct-messages--2" />
           </Protected>
         }
       />
       <Route
         path="/tema/:temaId"
         element={
-          <Protected data-gc="routes.protected--6">
+          <Protected data-gc="routes.protected--7">
             <VerTema data-gc="routes.ver-tema" />
           </Protected>
         }
@@ -96,15 +108,23 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/estudio"
         element={
-          <Protected data-gc="routes.protected--7">
+          <Protected data-gc="routes.protected--8">
             <EstudioEmJanela data-gc="routes.estudio-em-janela" />
+          </Protected>
+        }
+      />
+      <Route
+        path="/cursores"
+        element={
+          <Protected data-gc="routes.protected--9">
+            <CursoresEmJanela data-gc="routes.cursores-em-janela" />
           </Protected>
         }
       />
       <Route
         path="/explorar"
         element={
-          <Protected data-gc="routes.protected--8">
+          <Protected data-gc="routes.protected--10">
             <Explorar data-gc="routes.explorar" />
           </Protected>
         }
@@ -112,7 +132,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--9">
+          <Protected data-gc="routes.protected--11">
             <Chat data-gc="routes.chat" />
           </Protected>
         }
@@ -125,6 +145,7 @@ export const AppRoutes: React.FC = () => {
 
     <FloatingScreenShare data-gc="routes.floating-screen-share" />
     <JanelaDoEstudio data-gc="routes.janela-do-estudio" />
+    <JanelaDeCursores data-gc="routes.janela-de-cursores" />
     <AvisoDeTemaDesligado data-gc="routes.aviso-de-tema-desligado" />
     <ChamadaRecebida data-gc="routes.chamada-recebida" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
@@ -135,7 +156,7 @@ export const AppRoutes: React.FC = () => {
 const CascaDoApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
 
-  if (pathname === "/estudio") return <>{children}</>;
+  if (pathname === "/estudio" || pathname === "/cursores") return <>{children}</>;
 
   return (
     <>
