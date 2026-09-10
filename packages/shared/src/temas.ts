@@ -6,6 +6,37 @@ export interface CabecalhoDoTema {
   tags: string[];
 }
 
+/*
+  Um ativo do tema: a imagem que o CSS chama por `gc-ativo("nome")`.
+
+  Ele viaja junto com o tema porque sem isso o tema chega quebrado do outro
+  lado: o CSS pede o fundo, não acha nada para resolver, e a pessoa instala um
+  tema sem a imagem que era o motivo dele existir.
+*/
+export interface AtivoDoTema {
+  nome: string;
+  url: string;
+  tipo?: string;
+  bytes?: number;
+}
+
+export const LIMITE_DE_ATIVOS = 12;
+
+/*
+  O peso que a pessoa vê antes de instalar: o CSS mais o que cada imagem pesa.
+  Ativo sem tamanho conhecido não some do total, só não soma nada.
+*/
+export function pesoDoTema(css: string, ativos: AtivoDoTema[] = []): number {
+  const doCss = new TextEncoder().encode(css).length;
+  return ativos.reduce((total, ativo) => total + (ativo.bytes ?? 0), doCss);
+}
+
+export function pesoLegivel(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export interface TemaCompartilhado {
   id: string;
   nome: string;
@@ -15,6 +46,7 @@ export interface TemaCompartilhado {
   tags: string[];
   css: string;
   substituicoes: Record<string, string>;
+  ativos: AtivoDoTema[];
   publicadoPor: { id: string; displayName: string; avatarUrl: string | null };
   createdAt: string;
 }
