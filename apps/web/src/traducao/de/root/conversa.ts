@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nicht zugestellt — du sendest zu schnell",
     automod: "Nicht zugestellt — AutoMod hat es blockiert",
     recusada: "Nicht zugestellt — diese Unterhaltung nimmt keine Antworten an",
+    naoEntregue: "Nicht zugestellt — diese Person nimmt keine Nachrichten von dir an",
   },
   mencao: {
     cargo: "Rollenerwähnung",
