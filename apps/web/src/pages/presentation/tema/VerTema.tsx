@@ -3,12 +3,16 @@ import { useNavigate, useParams } from "react-router";
 import { Palette } from "lucide-react";
 import { toast } from "react-toastify";
 
+import { pesoDoTema, pesoLegivel } from "@gravae/shared";
+
 import { useTema } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { PreviaDosAtivos } from "~/features/tema/components/PreviaDosAtivos";
+import { PreviaDoTema } from "~/features/tema/components/PreviaDoTema";
 
 export const VerTema: React.FC = () => {
   const { temaId } = useParams();
@@ -47,6 +51,7 @@ export const VerTema: React.FC = () => {
 
   const temCss = tema.css.trim().length > 0;
   const quantosTokens = Object.keys(tema.substituicoes).length;
+  const peso = pesoDoTema(tema.css, tema.ativos);
 
   return (
     <div data-gc="tema.ver-tema.div--4" className="flex h-full items-center justify-center overflow-y-auto bg-surface-0 p-6">
@@ -83,6 +88,11 @@ export const VerTema: React.FC = () => {
           </div>
         )}
 
+        <PreviaDoTema data-gc="tema.ver-tema.previa-do-tema"
+          temaId={tema.id}
+          className="mt-5 aspect-video w-full overflow-hidden rounded-lg border border-line"
+        />
+
         <dl data-gc="tema.ver-tema.dl" className="mt-5 flex gap-6 border-t border-line pt-4 text-xs">
           <div data-gc="tema.ver-tema.div--8">
             <dt data-gc="tema.ver-tema.dt" className="text-ink-faint">Cores trocadas</dt>
@@ -94,7 +104,13 @@ export const VerTema: React.FC = () => {
               {temCss ? `${Math.ceil(tema.css.length / 1024)} KB` : "nenhum"}
             </dd>
           </div>
+          <div data-gc="tema.ver-tema.div--10">
+            <dt data-gc="tema.ver-tema.dt--3" className="text-ink-faint">Tudo junto</dt>
+            <dd data-gc="tema.ver-tema.dd--3" className="mt-0.5 text-sm font-medium">{pesoLegivel(peso)}</dd>
+          </div>
         </dl>
+
+        <PreviaDosAtivos data-gc="tema.ver-tema.previa-dos-ativos" ativos={tema.ativos} peso={peso} />
 
         {temCss && (
           <p data-gc="tema.ver-tema.p--5" className="mt-4 rounded-lg border border-aviso/40 bg-aviso/10 px-3 py-2 text-xs text-ink-muted">
@@ -103,7 +119,7 @@ export const VerTema: React.FC = () => {
           </p>
         )}
 
-        <div data-gc="tema.ver-tema.div--10" className="mt-5 flex gap-2">
+        <div data-gc="tema.ver-tema.div--11" className="mt-5 flex gap-2">
           <Button data-gc="tema.ver-tema.button.voltar--2" variant="ghost" className="flex-1" onClick={voltar}>
             Agora não
           </Button>
@@ -122,7 +138,9 @@ export const VerTema: React.FC = () => {
                 importar({
                   css: tema.css,
                   substituicoes: tema.substituicoes,
+                  ativos: tema.ativos,
                   nome: tema.nome,
+                  origemId: tema.id,
                 });
                 toast.success(`${tema.nome} aplicado.`);
                 navigate("/channels", { replace: true });
