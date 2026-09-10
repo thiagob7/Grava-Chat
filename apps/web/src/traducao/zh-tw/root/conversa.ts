@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "未送出：你傳送得太快了",
     automod: "未送出：AutoMod 攔截了這則訊息",
     recusada: "未送出：這個對話不接受回覆",
+    naoEntregue: "未送達 — 對方不接收你的訊息",
   },
   mencao: {
     cargo: "身分組提及",
