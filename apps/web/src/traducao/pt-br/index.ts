@@ -1,3 +1,4 @@
+import { amizades } from "./root/amizades";
 import { chamada } from "./root/chamada";
 import { comum } from "./root/comum";
 import { configuracoes } from "./root/configuracoes";
@@ -7,6 +8,7 @@ import { perfil } from "./root/perfil";
 import { servidor } from "./root/servidor";
 
 const catalogo = {
+  amizades,
   chamada,
   comum,
   configuracoes,
