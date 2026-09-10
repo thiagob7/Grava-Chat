@@ -289,7 +289,7 @@ const BarraDeAcoes: React.FC<{
   };
 
   return (
-    <div data-gc="servidor.moderator-view.div--6" className="grid grid-cols-5 gap-1 border-t border-divisor p-2">
+    <div data-gc="servidor.moderator-view.div--6" className="grid grid-cols-3 gap-1 border-t border-divisor p-2 sm:grid-cols-5">
       <AcaoDoTopo data-gc="servidor.moderator-view.acao-do-topo" label={t("servidor.moderacao.mensagem")} onClick={() => void conversar()}>
         <MessageSquare data-gc="servidor.moderator-view.message-square--2" size={18} />
       </AcaoDoTopo>
