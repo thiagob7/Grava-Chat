@@ -274,7 +274,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                 {t("servidor.cargos.estilo")}
               </span>
 
-              <div data-gc="servidor.server-settings.role-editor.div--7" className="mb-3 grid grid-cols-3 gap-2">
+              <div data-gc="servidor.server-settings.role-editor.div--7" className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {ESTILOS_DO_CARGO.map((opcao) => (
                   <button data-gc="servidor.server-settings.role-editor.button--5"
                     key={opcao.id}
