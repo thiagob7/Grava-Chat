@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { Adiante, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
-import { RotasRest } from "~/components/docs/ReferenciaDaApi";
+import { IndiceDeObjetos, RotasRest } from "~/components/docs/ReferenciaDaApi";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
@@ -27,20 +27,37 @@ export default function Referencia() {
         </p>
       </Secao>
 
-      <Secao id="rotas" titulo="As rotas">
-        <RotasRest />
+      <Secao id="objetos" titulo="Por objeto">
+        <p>
+          Cada página reúne o que aquele objeto é, os campos que ele tem, as
+          rotas que mexem nele e os eventos que ele dispara. É por aqui que a
+          pergunta &ldquo;como mando uma mensagem&rdquo; se responde num lugar só.
+        </p>
+
+        <IndiceDeObjetos />
       </Secao>
 
       <Secao id="erros" titulo="Quando dá errado">
         <p>
-          <code>401</code> é token ausente, errado ou já trocado. <code>403</code> é bot fora do
-          servidor, ou mexendo em mensagem que não é dele. <code>404</code> é canal ou mensagem que
-          não existe. <code>429</code> é vazão estourada. Todo erro vem com um{" "}
-          <code>message</code> em português dizendo o quê.
+          Todo erro volta com um <code>message</code> em português. Os códigos,
+          o formato da resposta e os motivos que chegam pelo socket estão na{" "}
+          <a href="/desenvolvedores/erros" className="text-brand hover:underline">
+            página de erros
+          </a>
+          .
         </p>
       </Secao>
 
-      <Adiante href="/desenvolvedores/referencia" />
+      <Secao id="tudo" titulo="Todas as rotas, de uma vez">
+        <p>
+          A lista inteira, agrupada como antes. Serve para procurar uma rota
+          quando você já sabe o nome dela.
+        </p>
+
+        <RotasRest />
+      </Secao>
+
+      <Adiante href="/desenvolvedores/eventos" />
     </article>
   );
 }
