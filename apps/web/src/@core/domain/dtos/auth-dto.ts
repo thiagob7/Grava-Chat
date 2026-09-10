@@ -1,4 +1,4 @@
-import type { EstiloDePerfil, StatusPersonalizado } from "@gravae/shared";
+import type { EstiloDePerfil, FiltroDeSpam, StatusPersonalizado } from "@gravae/shared";
 
 export interface DevLoginDTO {
   email: string;
@@ -17,6 +17,8 @@ export interface UpdateProfileDTO {
   mostraAtividade?: boolean;
   mostraServidoresEmComum?: boolean;
   mostraAmigosEmComum?: boolean;
+  permitirDmDeMembros?: boolean;
+  filtroDeSpam?: FiltroDeSpam;
 }
 
 export interface DesktopLoginDTO {
