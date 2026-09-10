@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { lerCabecalhoDoTema } from "@gravae/shared";
 
 import { CLASSES_DE_TEMA } from "~/features/configuracoes/lib/ganchos-de-tema";
+import { MOTORES, NOME_DA_CAMADA, NOME_DA_VARIAVEL } from "~/features/tema/lib/fundos";
 import macanetas from "~/features/configuracoes/lib/macanetas.json";
 import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
 
@@ -81,9 +82,17 @@ function regras(css: string): Regra[] {
   return achadas;
 }
 
+/*
+  `--gc-fundo` e `--gc-fundo-camada` não são cor: são o tema escolhendo um
+  motor de fundo pelo nome e dizendo se ele pinta atrás ou na frente. O app
+  lê as duas em `features/tema/lib/fundos`, então contam como lidas mesmo
+  não estando na lista de tokens de tema.
+*/
 const LIDAS = new Set<string>([
   ...Object.values(macanetas as Record<string, string[]>).flat(),
   ...(tokensVivos as string[]),
+  NOME_DA_VARIAVEL,
+  NOME_DA_CAMADA,
 ]);
 
 const PALETA = Object.values(macanetas as Record<string, string[]>).map((nomes) => nomes[0]!);
@@ -112,6 +121,15 @@ describe("temas da casa", () => {
       expect(tema.nome, tema.chave).not.toBe("");
       expect(tema.descricao, tema.chave).not.toBe("");
       expect(tema.autor, tema.chave).toBe(AUTOR_DA_CASA);
+    }
+  });
+
+  it("só pede motor de fundo que existe", () => {
+    for (const tema of TEMAS_DA_CASA) {
+      const pedido = new RegExp(`${NOME_DA_VARIAVEL}\\s*:\\s*["']?([a-z0-9-]+)`, "i")
+        .exec(tema.css)?.[1];
+
+      if (pedido) expect(Object.keys(MOTORES), tema.chave).toContain(pedido);
     }
   });
 
