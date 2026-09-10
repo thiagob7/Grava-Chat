@@ -4,6 +4,7 @@ import {
   Flame,
   Monitor,
   Moon,
+  MousePointer2,
   Palette,
   Sparkles,
   Sun,
@@ -15,6 +16,7 @@ import { SelectField } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
 import { useJanelaDoEstudio } from "~/features/configuracoes/stores/janela-do-estudio";
+import { useJanelaDeCursores } from "~/features/configuracoes/stores/janela-de-cursores";
 import {
   CORES_DE_DESTAQUE,
   useAparencia,
@@ -74,6 +76,7 @@ const TEMAS: TemaDaLista[] = [
 export const AppearanceSection: React.FC = () => {
   const prefs = useAparencia();
   const abrirEstudio = useJanelaDoEstudio((s) => s.abrir);
+  const abrirCursores = useJanelaDeCursores((s) => s.abrir);
   const fecharConfiguracoes = useConfiguracoes((s) => s.fechar);
 
   return (
@@ -151,6 +154,17 @@ export const AppearanceSection: React.FC = () => {
           >
             <Palette data-gc="configuracoes.appearance-section.palette" size={16} /> Abrir estúdio de temas…
           </Button>
+
+          <Button data-gc="configuracoes.appearance-section.button--3"
+            className="ml-2"
+            variant="surface"
+            onClick={() => {
+              abrirCursores();
+              fecharConfiguracoes();
+            }}
+          >
+            <MousePointer2 data-gc="configuracoes.appearance-section.mouse-pointer2" size={16} /> Abrir cursores…
+          </Button>
           <p data-gc="configuracoes.appearance-section.p--2" className="mt-1.5 text-xs text-ink-faint">
             Muda cor por cor em cima do tema base, escreve CSS e guarda o
             resultado. Vale só neste aparelho.
@@ -170,7 +184,7 @@ export const AppearanceSection: React.FC = () => {
             const escolhida = prefs.destaque === valor;
 
             return (
-              <button data-gc="configuracoes.appearance-section.button--3"
+              <button data-gc="configuracoes.appearance-section.button--4"
                 key={cor.valor}
                 onClick={() => prefs.definir({ destaque: valor })}
                 title={cor.nome}
