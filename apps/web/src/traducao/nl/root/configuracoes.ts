@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Zoomniveau van de app",
     escalaDaFonte: "Lettergrootte in de chat",
     modoStreamer: "Streamingprivacy",
+    cursores: "Cursors",
     movimento: "Beweging",
     textoEmVoz: "Tekst naar spraak",
     teclado: "Toetsenbord",
