@@ -9,7 +9,7 @@ import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
-import { Opcao } from "~/features/configuracoes/components/campos-de-config";
+import { Escolha, Opcao } from "~/features/configuracoes/components/campos-de-config";
 
 interface PrivacidadeSectionProps {
   user: SelfUserModel;
@@ -63,10 +63,27 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           onMudar={(aceitaPedidos) => salvar.mutate({ aceitaPedidos })}
         />
 
-        <p data-gc="configuracoes.privacidade-section.p--2" className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
-          Mensagem direta só entre amigos, sempre. Não há como abrir conversa
-          com quem não aceitou o seu pedido — isso não é ajustável.
-        </p>
+        <Opcao data-gc="configuracoes.privacidade-section.opcao--2"
+          titulo="Permitir mensagens de membros dos meus servidores"
+          detalhe="Ligado, quem divide um servidor com você consegue mandar a primeira mensagem — e ela cai em Solicitações de mensagens, não nas suas conversas. Desligado, só amigos alcançam você, e quem tentar recebe um aviso de que a mensagem não foi entregue."
+          ligado={user.permitirDmDeMembros}
+          onMudar={(permitirDmDeMembros) => salvar.mutate({ permitirDmDeMembros })}
+        />
+
+        <Escolha data-gc="configuracoes.privacidade-section.escolha"
+          titulo="Filtro de spam"
+          detalhe="O que fazer com a solicitação antes de você ver. O que for separado não some: fica na aba Spam, dentro de Solicitações de mensagens."
+          valor={user.filtroDeSpam}
+          opcoes={[
+            { valor: "TODOS", rotulo: "Separar toda solicitação de quem não é meu amigo" },
+            {
+              valor: "DESCONHECIDOS",
+              rotulo: "Separar só quem não tem nenhum amigo em comum comigo (recomendado)",
+            },
+            { valor: "NENHUM", rotulo: "Não separar nada; tudo cai em Pedidos" },
+          ]}
+          onMudar={(filtroDeSpam) => salvar.mutate({ filtroDeSpam })}
+        />
       </Secao>
 
       <Secao data-gc="configuracoes.privacidade-section.secao--2"
@@ -74,7 +91,7 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
         titulo="Compartilhamento de atividade"
         detalhe="O que os seus amigos veem sobre o que você está fazendo."
       >
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--2"
+        <Opcao data-gc="configuracoes.privacidade-section.opcao--3"
           titulo="Mostrar quando estou em chamada"
           detalhe="Aparecer em 'Ativos agora' na tela de mensagens diretas. Desligado, você some de lá para os outros — mas continua se vendo, senão perderia o próprio caminho de volta pra chamada."
           ligado={user.mostraAtividade}
@@ -87,7 +104,7 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
         titulo="Visibilidade do perfil"
         detalhe="O que o seu perfil conta sobre você para quem abre ele."
       >
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--3"
+        <Opcao data-gc="configuracoes.privacidade-section.opcao--4"
           titulo="Mostrar servidores em comum"
           detalhe="A aba que diz de quais servidores vocês dois participam. A lista desenha a sua rotina — onde você passa o dia, de que comunidade faz parte. Desligado, ela vem vazia para todo mundo; a sua continua completa."
           ligado={user.mostraServidoresEmComum}
@@ -96,7 +113,7 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           }
         />
 
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--4"
+        <Opcao data-gc="configuracoes.privacidade-section.opcao--5"
           titulo="Mostrar amigos em comum"
           detalhe="A aba com as pessoas que vocês dois conhecem. É a sua rede, e é uma pergunta diferente da de cima — por isso são dois interruptores, e não um."
           ligado={user.mostraAmigosEmComum}
@@ -105,7 +122,7 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           }
         />
 
-        <p data-gc="configuracoes.privacidade-section.p--3" className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
+        <p data-gc="configuracoes.privacidade-section.p--2" className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Quem esconde, esconde no servidor: com o interruptor desligado a lista
           nem sai daqui. Não é a outra tela deixando de desenhar.
         </p>
@@ -118,8 +135,8 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
       >
         <div data-gc="configuracoes.privacidade-section.div--2" className="flex items-start gap-4">
           <div data-gc="configuracoes.privacidade-section.div--3" className="min-w-0 flex-1">
-            <p data-gc="configuracoes.privacidade-section.p--4" className="text-sm font-medium">Baixar os meus dados</p>
-            <p data-gc="configuracoes.privacidade-section.p--5" className="mt-0.5 text-xs text-ink-faint">
+            <p data-gc="configuracoes.privacidade-section.p--3" className="text-sm font-medium">Baixar os meus dados</p>
+            <p data-gc="configuracoes.privacidade-section.p--4" className="mt-0.5 text-xs text-ink-faint">
               Conta, servidores em que você está, amigos e as suas mensagens, em
               JSON. Só o que é seu: mensagens de outras pessoas e listas de
               membros ficam de fora.
@@ -163,8 +180,8 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
     return (
       <div data-gc="configuracoes.privacidade-section.div--4" className="flex items-start gap-4">
         <div data-gc="configuracoes.privacidade-section.div--5" className="min-w-0 flex-1">
-          <p data-gc="configuracoes.privacidade-section.p--6" className="text-sm font-medium">Excluir a minha conta</p>
-          <p data-gc="configuracoes.privacidade-section.p--7" className="mt-0.5 text-xs text-ink-faint">
+          <p data-gc="configuracoes.privacidade-section.p--5" className="text-sm font-medium">Excluir a minha conta</p>
+          <p data-gc="configuracoes.privacidade-section.p--6" className="mt-0.5 text-xs text-ink-faint">
             A conta é desativada na hora e apagada em quinze dias. Nesse tempo
             nada é destruído: entrar de novo mostra a tela de recuperação, e
             tudo volta inteiro.
@@ -180,11 +197,11 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
 
   return (
     <div data-gc="configuracoes.privacidade-section.div--6" className="rounded-lg border border-danger/40 bg-danger/5 p-4">
-      <p data-gc="configuracoes.privacidade-section.p--8" className="text-sm font-medium text-ink">
+      <p data-gc="configuracoes.privacidade-section.p--7" className="text-sm font-medium text-ink">
         Para confirmar, escreva <span data-gc="configuracoes.privacidade-section.span" className="font-semibold">{nome}</span>{" "}
         abaixo.
       </p>
-      <p data-gc="configuracoes.privacidade-section.p--9" className="mt-1 text-xs text-ink-muted">
+      <p data-gc="configuracoes.privacidade-section.p--8" className="mt-1 text-xs text-ink-muted">
         Você sai de todos os aparelhos agora. Se voltar dentro de quinze dias,
         encontra tudo como deixou — mensagens, amigos e servidores.
       </p>
