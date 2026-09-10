@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Appens zoomnivå",
     escalaDaFonte: "Skriftstørrelse i chatten",
     modoStreamer: "Personvern under strømming",
+    cursores: "Markører",
     movimento: "Bevegelse",
     textoEmVoz: "Tekst til tale",
     teclado: "Tastatur",
