@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { ChevronRight, PhoneCall, Volume2 } from "lucide-react";
 
 import { useAtivos } from "~/@core/application/queries/friend/use-ativos";
+import { LottieArt } from "~/components/LottieArt";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -10,8 +11,13 @@ import { useSession } from "~/contexts/session-context";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { flx, flxCls } from "~/lib/compat-de-tema";
+import { useTranslation } from "~/traducao";
+
+const loadCatCrying = () =>
+  import("~/assets/animations/cat-crying.json").then((mod) => mod.default);
 
 export const AtivosAgora: React.FC = () => {
+  const { t } = useTranslation();
   const { data: ativos = [], isLoading } = useAtivos();
   const { user } = useSession();
   const meuId = user?.id;
@@ -26,21 +32,28 @@ export const AtivosAgora: React.FC = () => {
   }
 
   return (
-    <aside data-gc="amizades.ativos-agora.aside" {...flx("ativosAgora", "hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block")}>
-      <h2 data-gc="amizades.ativos-agora.h2" {...flx("tituloDosAtivos", "mb-3 text-sm font-semibold")}>Ativo agora</h2>
+    <aside data-gc="amizades.ativos-agora.aside" {...flx("ativosAgora", "topo-do-miolo hidden w-72 shrink-0 border-l border-divisor bg-surface-2 p-4 xl:block")}>
+      <h2 data-gc="amizades.ativos-agora.h2" {...flx("tituloDosAtivos", "mb-3 text-sm font-semibold")}>{t("amizades.ativosAgora")}</h2>
 
       {isLoading ? (
-        <p data-gc="amizades.ativos-agora.p" className="text-sm text-ink-faint">Vendo quem está por aí…</p>
+        <p data-gc="amizades.ativos-agora.p" className="text-sm text-ink-faint">{t("amizades.procurando")}</p>
       ) : salas.size === 0 ? (
         <div data-gc="amizades.ativos-agora.div" {...flx("vazioDosAtivos", "flex flex-col items-center justify-center gap-2 px-2 py-24 text-center")}>
-          <span data-gc="amizades.ativos-agora.span" {...flx("iconeDoVazioDosAtivos", "text-3xl font-bold text-ink-faint/60")} aria-hidden>
-            z<span data-gc="amizades.ativos-agora.span--2" className="align-super text-xl">Z</span>
+          <span data-gc="amizades.ativos-agora.span"
+            {...flx("iconeDoVazioDosAtivos", "flex h-18 items-start justify-center overflow-hidden")}
+            aria-hidden
+          >
+            <LottieArt data-gc="amizades.ativos-agora.lottie-art"
+              name="cat-crying"
+              load={loadCatCrying}
+              label="Um gatinho chorando"
+              className="size-36 shrink-0 -translate-x-[7px] -translate-y-10"
+            />
           </span>
 
-          <p data-gc="amizades.ativos-agora.p--2" {...flx("tituloDoVazioDosAtivos", "text-sm font-semibold")}>Está tudo tranquilo por enquanto…</p>
+          <p data-gc="amizades.ativos-agora.p--2" {...flx("tituloDoVazioDosAtivos", "text-sm font-semibold")}>{t("amizades.tudoTranquilo")}</p>
           <p data-gc="amizades.ativos-agora.p--3" {...flx("descricaoDoVazioDosAtivos", "text-xs leading-relaxed text-ink-muted")}>
-            Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá pra entrar junto
-            com um clique.
+            {t("amizades.tudoTranquiloDetalhe")}
           </p>
         </div>
       ) : (
@@ -48,12 +61,12 @@ export const AtivosAgora: React.FC = () => {
           {[...salas.values()].map(({ canal, servidor, gente }) => (
             <div data-gc="amizades.ativos-agora.div--3" key={canal.id} className={cn("rounded-lg bg-surface-1 p-3", flxCls("cartaoDeVozAtiva"))}>
               <p data-gc="amizades.ativos-agora.p--4" className="flex items-center gap-1.5 text-11 font-semibold uppercase tracking-wide text-online">
-                <Volume2 data-gc="amizades.ativos-agora.volume2" size={12} className="shrink-0" /> Em voz
+                <Volume2 data-gc="amizades.ativos-agora.volume2" size={12} className="shrink-0" /> {t("amizades.emVoz")}
               </p>
 
               <button data-gc="amizades.ativos-agora.button"
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
-                title={`Abrir ${canal.nome} em ${servidor.nome}`}
+                title={t("amizades.abrirCanal", { canal: canal.nome, servidor: servidor.nome })}
                 className="mt-2 flex w-full min-w-0 items-center gap-1.5 text-left"
               >
                 {servidor.iconUrl ? (
@@ -63,7 +76,7 @@ export const AtivosAgora: React.FC = () => {
                     className="size-5 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <span data-gc="amizades.ativos-agora.span--3"
+                  <span data-gc="amizades.ativos-agora.span--2"
                     aria-hidden
                     className="flex size-5 shrink-0 items-center justify-center rounded-full text-10 font-bold text-sobre-marca"
                     style={{ backgroundColor: avatarColor(servidor.id) }}
@@ -75,7 +88,7 @@ export const AtivosAgora: React.FC = () => {
                 <ChevronRight data-gc="amizades.ativos-agora.chevron-right" size={12} className="shrink-0 text-ink-faint" />
                 <Volume2 data-gc="amizades.ativos-agora.volume2--2" size={13} className="shrink-0 text-ink-muted" />
 
-                <span data-gc="amizades.ativos-agora.span--4" className="min-w-0 truncate text-sm font-medium hover:underline">
+                <span data-gc="amizades.ativos-agora.span--3" className="min-w-0 truncate text-sm font-medium hover:underline">
                   {canal.nome}
                 </span>
               </button>
@@ -85,9 +98,9 @@ export const AtivosAgora: React.FC = () => {
                   {gente.slice(0, 5).map((ativo) => (
                     <Tooltip data-gc="amizades.ativos-agora.tooltip"
                       key={ativo.user.id}
-                      label={ativo.user.id === meuId ? "Você" : ativo.user.displayName}
+                      label={ativo.user.id === meuId ? t("amizades.voce") : ativo.user.displayName}
                     >
-                      <span data-gc="amizades.ativos-agora.span--5" className="rounded-full">
+                      <span data-gc="amizades.ativos-agora.span--4" className="rounded-full">
                         <Avatar data-gc="amizades.ativos-agora.avatar"
                           id={ativo.user.id}
                           name={ativo.user.displayName}
@@ -100,12 +113,12 @@ export const AtivosAgora: React.FC = () => {
                   ))}
                 </div>
 
-                <span data-gc="amizades.ativos-agora.span--6" className="min-w-0 flex-1 truncate text-xs text-ink-muted">
+                <span data-gc="amizades.ativos-agora.span--5" className="min-w-0 flex-1 truncate text-xs text-ink-muted">
                   {gente.length === 1
                     ? gente[0]!.user.id === meuId
-                      ? "Só você"
+                      ? t("amizades.soVoce")
                       : gente[0]!.user.displayName
-                    : `${gente.length} pessoas`}
+                    : t("amizades.pessoas", { quantas: gente.length })}
                 </span>
               </div>
 
@@ -115,7 +128,9 @@ export const AtivosAgora: React.FC = () => {
                 onClick={() => navigate(`/channels/${servidor.id}/${canal.id}`)}
               >
                 <PhoneCall data-gc="amizades.ativos-agora.phone-call" size={14} />
-                {gente.some((a) => a.user.id === meuId) ? "Voltar para a chamada" : "Entrar na chamada"}
+                {gente.some((a) => a.user.id === meuId)
+                  ? t("amizades.voltarParaChamada")
+                  : t("amizades.entrarNaChamada")}
               </Button>
             </div>
           ))}
