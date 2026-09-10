@@ -11,11 +11,13 @@ const ehImagem = (ativo: AtivoDoTema) =>
   é a imagem, e quanto isso vai pesar. Sem isso ela clica em importar às cegas.
 */
 export const PreviaDosAtivos: React.FC<{
-  ativos: AtivoDoTema[];
+  ativos: AtivoDoTema[] | undefined;
   peso: number;
   compacto?: boolean;
 }> = ({ ativos, peso, compacto }) => {
-  if (!ativos.length) return null;
+  /* Aceita `undefined` de propósito: quem desenha conteúdo remoto não confia
+     no formato dele. Ver o comentário em `requests/tema/temas.ts`. */
+  if (!ativos?.length) return null;
 
   const imagens = ativos.filter(ehImagem);
   const mostrar = imagens.slice(0, compacto ? 3 : 4);
