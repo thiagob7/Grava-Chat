@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "アプリの拡大率",
     escalaDaFonte: "チャットの文字サイズ",
     modoStreamer: "配信時のプライバシー",
+    cursores: "カーソル",
     movimento: "モーション",
     textoEmVoz: "テキスト読み上げ",
     teclado: "キーボード",

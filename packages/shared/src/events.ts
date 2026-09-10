@@ -131,6 +131,7 @@ export type ServerToClientEvents = {
 
   "friend:updated": () => void;
   "dm:created": (p: { channelId: string }) => void;
+  "dm:pedido": (p: { channelId: string }) => void;
 
   "member:joined": (member: z.infer<typeof guildMemberSchema>) => void;
   "member:updated": (member: z.infer<typeof guildMemberSchema>) => void;

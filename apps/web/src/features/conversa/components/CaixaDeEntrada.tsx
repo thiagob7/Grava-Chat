@@ -47,7 +47,7 @@ export const CaixaDeEntrada: React.FC = () => {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent data-gc="conversa.caixa-de-entrada.popover-content" align="end" className={cn("flex h-[30rem] w-[26rem] gap-0 p-0", flxCls("caixaDeEntrada"))}>
+      <PopoverContent data-gc="conversa.caixa-de-entrada.popover-content" align="end" className={cn("flex h-[min(30rem,72svh)] w-[min(26rem,92vw)] gap-0 p-0", flxCls("caixaDeEntrada"))}>
         <nav data-gc="conversa.caixa-de-entrada.nav" className={cn("flex w-12 shrink-0 flex-col items-center gap-1 border-r border-divisor py-2", flxCls("lateralDaCaixaDeEntrada"))}>
           {ABAS.map((item) => (
             <Tooltip data-gc="conversa.caixa-de-entrada.tooltip--2" key={item.id} label={item.rotulo} side="left">

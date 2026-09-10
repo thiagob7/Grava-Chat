@@ -22,6 +22,21 @@ const VERSAO_WEB = [
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+
+  build: {
+    /*
+      Os cursores ficam como ARQUIVO, nunca embutidos.
+
+      São 181 desenhos de uns 4 KB, abaixo do limite em que o Vite embute a
+      imagem no JavaScript como texto. Embutidos, virariam quase 1 MB que todo
+      mundo baixa de uma vez para ver uma grade onde só uma dúzia aparece na
+      tela. Soltos, o navegador busca os que entram no campo de visão e guarda
+      cada um em cache com o nome versionado.
+    */
+    assetsInlineLimit: (arquivo: string) =>
+      arquivo.includes("/assets/cursores/") ? false : undefined,
+  },
+
   define: { __VERSAO_WEB__: JSON.stringify(VERSAO_WEB) },
   resolve: {
     alias: { "~": path.resolve(import.meta.dirname, "src") },

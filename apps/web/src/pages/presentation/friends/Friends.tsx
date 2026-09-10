@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { List } from "@phosphor-icons/react";
 import { Check, MessageSquare, Search, Users, X } from "lucide-react";
 
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -13,14 +14,17 @@ import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { useTranslation } from "~/traducao";
 
 type Aba = "online" | "todos" | "pendentes" | "adicionar";
 
 interface FriendsProps {
   onOpenConversation: (userId: string) => void;
+  onAbrirMenu?: () => void;
 }
 
-export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
+export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onAbrirMenu }) => {
+  const { t } = useTranslation();
   const { data: relacoes = [], isLoading } = useFindFriends(true);
   const [aba, setAba] = useState<Aba>("online");
   const [busca, setBusca] = useState("");
@@ -54,16 +58,26 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
   ];
 
   return (
-    <main data-gc="friends.friends.main" {...flxAttr("colunaDeAmigos")} {...flx("listaDeAmigos", cn("flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("colunaDeAmigos")))}>
-      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
+    <main data-gc="friends.friends.main" {...flxAttr("colunaDeAmigos")} {...flx("listaDeAmigos", cn("topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("colunaDeAmigos")))}>
+      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-line shadow-sm")}>
         <div data-gc="friends.friends.div"
-          {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-1 px-4")}
+          {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-1 overflow-x-auto px-4")}
         >
-          <span data-gc="friends.friends.span" {...flx("tituloDosAmigos", "mr-2 flex items-center gap-2 font-semibold")}>
+          {onAbrirMenu && (
+            <button data-gc="friends.friends.button.on-abrir-menu"
+              onClick={onAbrirMenu}
+              aria-label={t("amizades.abrirMenu")}
+              className="-ml-1 mr-1 shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink md:hidden"
+            >
+              <List data-gc="friends.friends.list" size={20} />
+            </button>
+          )}
+
+          <span data-gc="friends.friends.span" {...flx("tituloDosAmigos", "mr-2 flex shrink-0 items-center gap-2 font-semibold")}>
             <Users data-gc="friends.friends.users" size={18} className={cn("text-ink-muted", flxCls("iconeDoTituloDeAmigos"))} />
-            <span data-gc="friends.friends.span--2" {...flx("textoDoTituloDeAmigos")}>Meus amigos</span>
+            <span data-gc="friends.friends.span--2" {...flx("textoDoTituloDeAmigos", "hidden sm:inline")}>{t("amizades.amigos")}</span>
           </span>
-          <span data-gc="friends.friends.span--3" {...flx("divisorDoTopoDeAmigos", "mr-2 h-5 w-px bg-line")} />
+          <span data-gc="friends.friends.span--3" {...flx("divisorDoTopoDeAmigos", "mr-2 hidden h-5 w-px shrink-0 bg-line sm:block")} />
           {abas.map((item) => (
             <button data-gc="friends.friends.button"
               key={item.id}
@@ -71,7 +85,7 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation }) => {
               {...flx(
                 "abaDeAmigos",
                 cn(
-                  "flex items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
+                  "flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
                   item.id === "adicionar"
                     ? aba === item.id
                       ? "bg-brand font-medium text-sobre-marca"

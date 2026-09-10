@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Масштаб приложения",
     escalaDaFonte: "Размер шрифта в чате",
     modoStreamer: "Приватность при трансляции",
+    cursores: "Курсоры",
     movimento: "Движение",
     textoEmVoz: "Текст в речь",
     teclado: "Клавиатура",

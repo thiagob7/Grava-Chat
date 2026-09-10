@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "送信できませんでした：送信が速すぎます",
     automod: "送信できませんでした：AutoMod がブロックしました",
     recusada: "送信できませんでした：この会話は返信を受け付けません",
+    naoEntregue: "配信されませんでした — この人はあなたからのメッセージを受け取っていません",
   },
   mencao: {
     cargo: "ロールのメンション",

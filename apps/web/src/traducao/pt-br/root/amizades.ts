@@ -1,0 +1,40 @@
+export const amizades = {
+  ativosAgora: "Ativo agora",
+  procurando: "Vendo quem está por aí…",
+  tudoTranquilo: "Está tudo tranquilo por enquanto…",
+  tudoTranquiloDetalhe:
+    "Quando você ou um amigo entrar numa chamada, ela aparece aqui — e dá pra entrar junto com um clique.",
+  emVoz: "Em voz",
+  voce: "Você",
+  soVoce: "Só você",
+  pessoas: "{{quantas}} pessoas",
+  voltarParaChamada: "Voltar para a chamada",
+  entrarNaChamada: "Entrar na chamada",
+  abrirCanal: "Abrir {{canal}} em {{servidor}}",
+
+  mensagensDiretas: "Mensagens diretas",
+  encontreConversa: "Encontre uma conversa",
+  amigos: "Amigos",
+  conversas: "Conversas",
+  semConversas: "Nenhuma conversa ainda. Adicione um amigo para começar.",
+  semConversaComEsseNome: "Nenhuma conversa com esse nome.",
+  abrirMenu: "Abrir servidores e conversas",
+
+  solicitacoes: "Solicitações de mensagens",
+  pedidos: "Pedidos",
+  spam: "Spam",
+  pedidosPendentes: "Pedidos pendentes",
+  marcadosComoSpam: "Marcados como spam",
+  aceitar: "Aceitar",
+  ignorar: "Ignorar",
+  marcarSpam: "Marcar spam",
+  semPedidos: "Nenhum pedido esperando.",
+  semPedidosDetalhe:
+    "Quem não é seu amigo mas divide um servidor com você cai aqui antes de chegar às suas conversas.",
+  semSpam: "Nada marcado como spam.",
+  semSpamDetalhe:
+    "O que o filtro de spam separar, ou o que você marcar, fica guardado nesta aba.",
+  umServidorEmComum: "1 servidor em comum",
+  servidoresEmComum: "{{quantos}} servidores em comum",
+  semServidoresEmComum: "Sem servidores em comum",
+};

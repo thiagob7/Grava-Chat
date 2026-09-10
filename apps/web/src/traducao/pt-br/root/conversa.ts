@@ -116,6 +116,7 @@ export const conversa = {
     depressa: "Não foi entregue — você está mandando rápido demais",
     automod: "Não foi entregue — o AutoMod bloqueou",
     recusada: "Não foi entregue — esta conversa não aceita resposta",
+    naoEntregue: "Não foi entregue — essa pessoa não recebe mensagens suas",
   },
   mencao: {
     cargo: "Menção de cargo",

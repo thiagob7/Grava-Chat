@@ -1,0 +1,160 @@
+# Gravaê — documentação para desenvolvedores
+
+Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
+
+## Páginas
+
+- [Introdução](/desenvolvedores): O que dá pra construir no Gravaê e por onde começar.
+- [Aplicativos e bots](/desenvolvedores/aplicativos): Como nasce um aplicativo, e como ele entra num servidor.
+- [Autenticação](/desenvolvedores/autenticacao): O token, onde ele vai e como não deixar vazar.
+- [Permissões](/desenvolvedores/permissoes): As 33 permissões, o que cada uma libera e quais já vêm de fábrica.
+- [Seu primeiro bot](/desenvolvedores/primeiro-bot): Do token à primeira mensagem em três comandos.
+- [Tempo real](/desenvolvedores/tempo-real): A conexão que faz o bot reagir sozinho ao que acontece.
+- [Comandos de barra](/desenvolvedores/comandos): Registrar comandos e responder quando alguém chama.
+- [Bot de moderação](/desenvolvedores/moderacao): Expulsar, banir, castigar e mexer em cargos — e o que o servidor não deixa.
+- [REST](/desenvolvedores/referencia): Todas as rotas que um bot pode chamar.
+- [Eventos](/desenvolvedores/eventos): O que o bot manda e o que ele recebe pela conexão.
+- [Mensagem](/desenvolvedores/referencia/mensagem): O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.
+- [Canal](/desenvolvedores/referencia/canal): Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.
+- [Servidor](/desenvolvedores/referencia/servidor): A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.
+- [Membro](/desenvolvedores/referencia/membro): Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.
+- [Cargo](/desenvolvedores/referencia/cargo): O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.
+- [Moderação](/desenvolvedores/referencia/moderacao): Castigo e banimento. As duas ações que tiram alguém de circulação.
+- [Expressão](/desenvolvedores/referencia/expressao): Emojis, figurinhas e sons do servidor.
+- [Voz](/desenvolvedores/referencia/voz): Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.
+- [Aplicativo](/desenvolvedores/referencia/aplicativo): O próprio bot: quem ele é e quais comandos de barra ele oferece.
+- [Webhook](/desenvolvedores/referencia/webhook): Um endereço que escreve num canal sem precisar de bot conectado.
+- [Convite](/desenvolvedores/referencia/convite): O link que leva alguém para dentro do servidor.
+- [Auditoria](/desenvolvedores/referencia/auditoria): O registro do que a equipe fez no servidor, e de quem fez.
+- [Biblioteca](/desenvolvedores/biblioteca): O cliente oficial em JavaScript, com os tipos do próprio servidor.
+- [Comunidade](/desenvolvedores/comunidade): Exemplos que rodam, e onde pedir ajuda quando algo não fecha.
+- [Servidores e canais](/desenvolvedores/servidores-e-canais): O que o bot pode mudar e qual permissão cada coisa exige.
+- [Webhooks](/desenvolvedores/webhooks): Um endereço que escreve num canal sem bot conectado.
+- [Registro de mudanças](/desenvolvedores/mudancas): O que mudou na API, com data, e o que isso quebra.
+- [Políticas](/desenvolvedores/politicas): O que é permitido fazer com dados de quem usa o seu bot.
+- [Erros](/desenvolvedores/erros): Os códigos, o formato da resposta e os motivos que vêm pelo socket.
+- [Limites](/desenvolvedores/limites): Vazão, tamanhos e tetos que o servidor aplica.
+- [Temas](/desenvolvedores/temas): Escrever um tema: as cores, os ganchos em cada elemento e a forma da tela.
+
+## Rotas REST
+
+- GET /bot/eu — Quem é o bot deste token.
+- GET /bot/servidores — Os servidores em que o bot está.
+- GET /bot/servidores/:guildId/canais — Os canais de um servidor, com o que o bot alcança.
+- GET /bot/servidores/:guildId/membros — Quem está no servidor, com apelido, cargos e desde quando.
+- GET /bot/servidores/:guildId/cargos — Os cargos do servidor, com as permissões de cada um.
+- PATCH /bot/servidores/:guildId/membros/:userId/apelido — Troca o apelido de alguém no servidor. `null` devolve o nome de origem.
+- PUT /bot/servidores/:guildId/membros/:userId/cargos — Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.
+- DELETE /bot/servidores/:guildId/membros/:userId — Expulsa. Quem foi expulso volta com convite novo.
+- PUT /bot/servidores/:guildId/castigos/:userId — Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.
+- GET /bot/servidores/:guildId/banimentos — Quem está banido, e por quê.
+- PUT /bot/servidores/:guildId/banimentos/:userId — Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.
+- DELETE /bot/servidores/:guildId/banimentos/:userId — Desbane, devolvendo o acesso na hora.
+- POST /bot/servidores/:guildId/canais — Cria um canal de texto, voz ou fórum.
+- PATCH /bot/servidores/:guildId/canais/:channelId — Muda nome, tópico, categoria, posição ou modo lento do canal.
+- DELETE /bot/servidores/:guildId/canais/:channelId — Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.
+- POST /bot/servidores/:guildId/convites — Cria um link de convite pro servidor.
+- PATCH /bot/servidores/:guildId — Muda nome, ícone, banner ou descrição do servidor.
+- GET /bot/servidores/:guildId/auditoria — Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.
+- POST /bot/servidores/:guildId/cargos — Cria um cargo, já com as permissões dele.
+- PATCH /bot/servidores/:guildId/cargos/:roleId — Muda nome, permissões, cor ou ícone do cargo.
+- DELETE /bot/servidores/:guildId/cargos/:roleId — Apaga o cargo e tira ele de quem o tinha.
+- PUT /bot/servidores/:guildId/cargos — Reordena os cargos. A ordem é quem manda em quem.
+- GET /bot/servidores/:guildId/expressoes — Emojis, figurinhas e sons do servidor.
+- POST /bot/servidores/:guildId/emojis — Sobe um emoji a partir de uma URL de imagem.
+- PATCH /bot/servidores/:guildId/emojis/:emojiId — Renomeia o emoji.
+- DELETE /bot/servidores/:guildId/emojis/:emojiId — Apaga o emoji do servidor.
+- GET /bot/servidores/:guildId/webhooks — Os webhooks do servidor, com a URL de cada um.
+- POST /bot/servidores/:guildId/webhooks — Cria um webhook apontado pra um canal.
+- PUT /bot/comandos — Registra a lista de comandos de barra do bot. Substitui a anterior.
+- POST /bot/canais/:channelId/mensagens — Manda uma mensagem no canal.
+- GET /bot/canais/:channelId/mensagens — Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.
+- GET /bot/canais/:channelId/fixadas — As mensagens fixadas do canal.
+- PUT /bot/mensagens/:messageId/fixar — Fixa a mensagem no canal.
+- DELETE /bot/mensagens/:messageId/fixar — Desafixa a mensagem.
+- PATCH /bot/mensagens/:messageId — Edita uma mensagem do próprio bot.
+- DELETE /bot/mensagens/:messageId — Apaga uma mensagem do próprio bot.
+- PUT /bot/mensagens/:messageId/reacoes/:emoji — Reage a uma mensagem.
+- DELETE /bot/mensagens/:messageId/reacoes/:emoji — Tira a reação do bot.
+
+## Eventos que o bot envia
+
+- channel:subscribe
+- channel:unsubscribe
+- message:send
+- message:edit
+- message:delete
+- message:react
+- message:unreact
+- message:ack
+- message:unread
+- poll:vote
+- poll:close
+- typing:start
+- command:invoke
+- presence:update
+- presence:afk
+- voice:join
+- voice:leave
+- voice:token
+- voice:onde
+- voice:sound
+- voice:moderate
+- voice:recusar
+- voice:kick
+- voice:moveMember
+- voice:state
+
+## Eventos que o bot recebe
+
+- message:created — Mensagem nova num canal que o bot acompanha.
+- message:updated — Mensagem editada.
+- message:deleted — Mensagem apagada.
+- message:reactions — A lista de reações da mensagem inteira, já recontada.
+- message:super — Alguém mandou a reação em destaque.
+- typing:started — Alguém começou a digitar no canal.
+- command:invoked — Chamaram um comando de barra do bot. É por aqui que ele trabalha.
+- commands:changed — A lista de comandos do servidor mudou.
+- presence:changed — Alguém ficou on-line, ausente ou saiu.
+- presence:self — O estado que o servidor guardou para esta conexão.
+- user:updated — Perfil ou apelido de alguém mudou.
+- friend:updated — Algo mudou na lista de amizades.
+- dm:created — Abriram uma conversa direta.
+- dm:pedido — Uma solicitação de mensagem entrou, saiu ou mudou de estado na sua caixa de pedidos.
+- member:joined — Entrou gente no servidor.
+- member:updated — Cargo ou apelido de um membro mudou.
+- member:left — Saiu gente do servidor.
+- channel:created — Canal novo.
+- channel:updated — Canal renomeado ou remexido.
+- channel:deleted — Canal apagado.
+- event:updated — A agenda de eventos do servidor mudou: criaram, editaram, cancelaram ou marcaram interesse.
+- guild:refresh — Recarregue o servidor: mudou coisa demais pra avisar campo a campo.
+- post:created — Post novo no fórum.
+- post:updated — Post do fórum editado.
+- expressions:changed — Os emojis ou figurinhas do servidor mudaram.
+- guild:deleted — O servidor foi apagado.
+- guild:updated — Nome, ícone ou descrição do servidor mudou.
+- voice:states — O retrato completo de quem está na chamada do canal.
+- voice:sound — Alguém tocou um som na chamada.
+- voice:move — Arrastaram esta conexão para outro canal de voz.
+- voice:joined — Alguém entrou na chamada.
+- voice:left — Alguém saiu da chamada.
+- voice:updated — Mudou o microfone, o fone ou a transmissão de alguém.
+- voice:recusada — A entrada na chamada foi recusada.
+- live:started — Começou uma transmissão de tela.
+- live:ended — A transmissão de tela acabou.
+- error — Deu errado o que o bot pediu. Vem com o nome do evento e o motivo.
+
+## Motivos de falha
+
+- sem-conexao — A conexão de tempo real caiu no meio do envio.
+- sem-acesso — O canal saiu do alcance do bot, ou nunca esteve.
+- sem-permissao — Falta a permissão que a ação exige.
+- castigo — O bot está de castigo neste servidor.
+- modo-lento — O modo lento do canal ainda não liberou.
+- depressa — Passou do limite de velocidade.
+- automod — A automoderação bloqueou o conteúdo.
+- recusada — A conversa não aceita resposta, como as de aviso da casa.
+- nao-entregue — A pessoa não recebe mensagem de quem não é amigo.
+- erro — Falha genérica. Vale tentar de novo.
+

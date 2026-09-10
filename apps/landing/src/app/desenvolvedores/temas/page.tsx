@@ -27,6 +27,53 @@ const CORES = `:root {
   --color-brand: #8a5a2b;
 }`;
 
+const FUNDO = `body {
+  background-image: gc-ativo("fundo");
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* O app por cima, translúcido, para o fundo aparecer. */
+.lista-de-mensagens,
+.lista-de-canais {
+  background-color: color-mix(in srgb, var(--color-surface-0) 82%, transparent);
+}`;
+
+const POR_PESSOA = `/* Um fundo só no seu nome, onde quer que ele apareça. */
+[data-gc-usuario="65f0c1a2b3d4e5f6a7b8c9d0"] {
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.55)),
+    gc-ativo("fundo");
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius-lg, 0.5rem);
+}`;
+
+const MOTOR = `:root {
+  /* Fogos em canvas, com física, atrás do app inteiro. */
+  --gc-fundo: fogos;
+}`;
+
+const MOTOR_NA_FRENTE = `:root {
+  /* Neve caindo POR CIMA da cena, como no tema Natal. */
+  --gc-fundo: neve;
+  --gc-fundo-camada: frente;
+}`;
+
+const FUNDOS: [string, string][] = [
+  ["dunas", "Cristas de areia, uma atrás da outra, andando devagar."],
+  ["estrelas", "Campo de estrelas com paralaxe e umas poucas cintilando."],
+  ["facetas", "Cacos de vidro que mudam de forma e atravessam a tela."],
+  ["favos", "Colmeia quase invisível com pulsos de luz cruzando."],
+  ["fitas", "Fitas de cetim torcendo enquanto atravessam."],
+  ["fogos", "Fogos com física: foguete sobe, abre e as faíscas caem."],
+  ["labirinto", "Corredores que se desenham sozinhos e somem atrás."],
+  ["nebulosa", "Nuvens de cor que se atravessam e nascem uma terceira."],
+  ["neve", "Neve em três profundidades, com rajada de vento."],
+  ["ondas", "Faixas de luz atravessando em compassos que não fecham."],
+  ["velas", "Velas boiando no ar, cada chama tremendo no seu ritmo."],
+];
+
 const GANCHO = `/* Toda foto de pessoa vira quadrada. */
 .avatar,
 .avatar img {
@@ -283,6 +330,104 @@ export default function Temas() {
             Baixar reto.css
           </a>{" "}
           e arrastar para o estúdio.
+        </p>
+      </Secao>
+
+      <Secao id="imagens" titulo="Imagens de fundo">
+        <p>
+          A aba <strong className="text-ink">Arquivos</strong> do estúdio sobe imagem e fonte. No
+          CSS, chame pelo nome em vez de colar o endereço:{" "}
+          <code>gc-ativo(&quot;fundo&quot;)</code> vira o <code>url()</code> do arquivo na hora de
+          aplicar. Pode escrever com ou sem a extensão.
+        </p>
+
+        <Codigo legenda="um fundo atrás do app inteiro">{FUNDO}</Codigo>
+
+        <p>
+          Escrever assim é o que faz o tema atravessar. Quando ele é publicado, os arquivos que o
+          CSS chama sobem junto, até doze — quem importa recebe as imagens e o{" "}
+          <code>gc-ativo()</code> resolve na máquina dele. Um <code>url()</code> escrito à mão
+          continua funcionando, mas depende do endereço original continuar de pé.
+        </p>
+
+        <p>
+          A tela do tema mostra as imagens e o peso somado antes de instalar, então dá para ver que
+          um tema tem 8 MB de fundo em vez de descobrir depois.
+        </p>
+      </Secao>
+
+      <Secao id="fundo-animado" titulo="Fundo animado">
+        <p>
+          Tem coisa que CSS não faz. Faísca que cai, perde velocidade no ar e apaga uma antes da
+          outra é simulação, não desenho. Para isso o app traz motores de fundo prontos, e o tema
+          escolhe um pelo nome.
+        </p>
+
+        <Codigo legenda="pedindo o motor">{MOTOR}</Codigo>
+
+        <p>
+          O motor desenha num canvas atrás de tudo, sem receber clique. Ele para sozinho quando a
+          aba sai da frente, e não desenha nada para quem pediu menos movimento no sistema. Nome
+          que não existe simplesmente não liga nada.
+        </p>
+
+        <Aviso>
+          Um tema não traz código, e não vai trazer: CSS de estranho já mexe na tela inteira, e
+          deixar um tema rodar JavaScript junto seria entregar a sessão de quem instalou. O tema
+          diz o que quer, o app decide se atende — a mesma troca do <code>gc-ativo()</code>.
+        </Aviso>
+
+        <p>
+          Por padrão o motor pinta atrás dos painéis, e só aparece se as superfícies do tema
+          forem translúcidas. Para o que cai sobre a cena, como neve, existe a outra camada:
+        </p>
+
+        <Codigo legenda="por cima de tudo">{MOTOR_NA_FRENTE}</Codigo>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-line text-ink">
+                <th className="py-2 pr-4 font-medium">Nome</th>
+                <th className="py-2 font-medium">O que desenha</th>
+              </tr>
+            </thead>
+            <tbody className="text-ink-muted">
+              {FUNDOS.map(([nome, oQueFaz]) => (
+                <tr key={nome} className="border-b border-line/60">
+                  <td className="py-2 pr-4 font-mono text-ink">{nome}</td>
+                  <td className="py-2">{oQueFaz}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A lista é fechada de propósito: nome que não está aqui não liga nada. E a prévia na
+          galeria roda sem script, então ela mostra o céu do tema mas não o motor. O cartão avisa
+          quando o tema tem um.
+        </p>
+      </Secao>
+
+      <Secao id="por-pessoa" titulo="Enfeitar uma pessoa só">
+        <p>
+          A linha da lista de membros, a linha de quem está numa sala de voz e a área do
+          usuário no rodapé carregam <code>data-gc-usuario</code> com o id de quem está ali. Dá
+          para pintar uma pessoa sem tocar nas outras.
+        </p>
+
+        <Codigo legenda="fundo no seu próprio nome">{POR_PESSOA}</Codigo>
+
+        <p>
+          O degradê escuro vai na mesma pilha do <code>background-image</code>, por cima da
+          imagem. É o que mantém o nome legível seja qual for a foto. O estúdio traz essa receita
+          pronta, com o seu id já preenchido, na aba <strong className="text-ink">CSS</strong>.
+        </p>
+
+        <p>
+          Vale lembrar que tema é local: quem vê o enfeite é você e quem instalar o mesmo tema.
+          Não é um enfeite de conta que aparece para o servidor inteiro.
         </p>
       </Secao>
 

@@ -8,3 +8,7 @@ export const requestFriendInput = z.object({
 export const friendshipParams = z.object({ friendshipId: objectId });
 export const respondFriendInput = z.object({ accept: z.boolean() });
 export const openDmInput = z.object({ userId: objectId });
+
+export const responderPedidoDeDmInput = z.object({
+  acao: z.enum(["aceitar", "ignorar", "spam"]),
+});

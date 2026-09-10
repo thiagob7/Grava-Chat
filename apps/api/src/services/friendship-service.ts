@@ -1,6 +1,11 @@
 import type { PublicUser } from "@gravae/shared";
 import { AppError, NotFoundError } from "~/lib/http.js";
-import { friendshipRepository, dmRepository } from "~/repositories/friendship-repository.js";
+import {
+  friendshipRepository,
+  dmRepository,
+  mutualRepository,
+  pedidoDeDmRepository,
+} from "~/repositories/friendship-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import {
   channelRepository,
@@ -182,32 +187,100 @@ export const friendshipService = {
     if (relacao?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
 
     const outro = await userRepository.findById(outroId);
-    const semAmizade = Boolean(outro?.sistema || outro?.isBot);
+    if (!outro) throw new NotFoundError("Pessoa não encontrada");
 
-    if (!semAmizade && (!relacao || relacao.status !== "ACCEPTED")) {
-      throw new AppError("Vocês precisam ser amigos para conversar");
-    }
+    const diretoSemAmizade = Boolean(outro.sistema || outro.isBot);
+    const saoAmigos = relacao?.status === "ACCEPTED";
 
     const existente = await dmRepository.findBetween(userId, outroId);
-    if (existente) return toChannel(existente);
 
-    return toChannel(await dmRepository.create([userId, outroId]));
+    if (diretoSemAmizade || saoAmigos) {
+      if (existente) return { canal: toChannel(existente), pedido: false };
+      return { canal: toChannel(await dmRepository.create([userId, outroId])), pedido: false };
+    }
+
+    if (existente) {
+      const pedido = await pedidoDeDmRepository.findByChannel(existente.id);
+      if (!pedido || pedido.status === "ACCEPTED") return { canal: toChannel(existente), pedido: false };
+
+      return { canal: toChannel(existente), pedido: true };
+    }
+
+    if (!outro.permitirDmDeMembros) throw naoEntregue();
+
+    const emComum = await mutualRepository.guildIdsInCommon(userId, outroId);
+    if (!emComum.length) throw naoEntregue();
+
+    const canal = await dmRepository.create([userId, outroId]);
+    const suspeito = await ehSuspeito(outro, userId);
+    await pedidoDeDmRepository.create(canal.id, userId, outroId, suspeito);
+
+    return { canal: toChannel(canal), pedido: true };
+  },
+
+  async listPedidos(userId: string) {
+    const pedidos = await pedidoDeDmRepository.pendentesPara(userId);
+    if (!pedidos.length) return { pedidos: [], spam: [] };
+
+    const [previas, ...emComum] = await Promise.all([
+      pedidoDeDmRepository.previas(pedidos.map((p) => p.channelId)),
+      ...pedidos.map((p) => mutualRepository.guildIdsInCommon(userId, p.fromId)),
+    ]);
+
+    const lista = pedidos.map((pedido, i) => ({
+      channelId: pedido.channelId,
+      de: toPublicUser(pedido.from),
+      spam: pedido.spam,
+      servidoresEmComum: emComum[i]?.length ?? 0,
+      criadoEm: pedido.createdAt.toISOString(),
+      previa: previas.get(pedido.channelId) ?? null,
+    }));
+
+    return {
+      pedidos: lista.filter((p) => !p.spam),
+      spam: lista.filter((p) => p.spam),
+    };
+  },
+
+  async responderPedido(userId: string, channelId: string, acao: "aceitar" | "ignorar" | "spam") {
+    const pedido = await pedidoDeDmRepository.findByChannel(channelId);
+
+    if (!pedido || pedido.toId !== userId || pedido.status !== "PENDING") {
+      throw new NotFoundError("Pedido não encontrado");
+    }
+
+    if (acao === "aceitar") {
+      await pedidoDeDmRepository.aceitar(channelId);
+      return { aceito: true };
+    }
+
+    await pedidoDeDmRepository.ignorar(channelId, acao === "spam");
+    return { aceito: false };
   },
 
   async listDms(userId: string) {
+
     const canais = await dmRepository.findManyForUser(userId);
     if (!canais.length) return [];
 
-    const outrosIds = canais.map((c) => c.recipients.find((r) => r !== userId)!).filter(Boolean);
+    const pedidos = await pedidoDeDmRepository.porCanal(canais.map((c) => c.id));
+    const visiveis = canais.filter((canal) => {
+      const pedido = pedidos.get(canal.id);
+      return !pedido || pedido.status === "ACCEPTED" || pedido.toId !== userId;
+    });
+
+    if (!visiveis.length) return [];
+
+    const outrosIds = visiveis.map((c) => c.recipients.find((r) => r !== userId)!).filter(Boolean);
     const [usuarios, presenca, ultimas] = await Promise.all([
       userRepository.findManyByIds(outrosIds),
       presenceService.mapFor(outrosIds),
-      channelRepository.lastMessageIdByChannel(canais.map((c) => c.id)),
+      channelRepository.lastMessageIdByChannel(visiveis.map((c) => c.id)),
     ]);
 
     const porId = new Map(usuarios.map((u) => [u.id, u]));
 
-    return canais.flatMap((canal) => {
+    return visiveis.flatMap((canal) => {
       const outroId = canal.recipients.find((r) => r !== userId);
       const outro = outroId ? porId.get(outroId) : undefined;
       if (!outro) return [];
@@ -222,3 +295,17 @@ export const friendshipService = {
     });
   },
 };
+
+function naoEntregue() {
+  return new AppError(
+    "Sua mensagem não pôde ser entregue. Isso costuma acontecer porque vocês não compartilham nenhuma comunidade, ou porque essa pessoa só recebe mensagens de amigos.",
+  ).com("nao-entregue");
+}
+
+async function ehSuspeito(destino: { id: string; filtroDeSpam: string }, remetenteId: string) {
+  if (destino.filtroDeSpam === "NENHUM") return false;
+  if (destino.filtroDeSpam === "TODOS") return true;
+
+  const amigosEmComum = await mutualRepository.friendIdsInCommon(destino.id, remetenteId);
+  return amigosEmComum.length === 0;
+}

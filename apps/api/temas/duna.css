@@ -1,0 +1,83 @@
+/**
+ * @name Duna
+ * @description Cristas de areia sumindo na névoa, com o ocre quente do Gruvbox por cima.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, quente, ocre, deserto, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(40 40 40 / 0.44);
+  --background-secondary: rgb(29 32 33 / 0.56);
+  --background-secondary-lighter: rgb(50 48 47 / 0.56);
+  --guild-list-foreground: rgb(60 56 54 / 0.62);
+  --form-surface-background: rgb(60 56 54 / 0.95);
+  --scrollbar-thumb-bg-hover: #a89984;
+  --border-color: rgb(124 111 100 / 0.16);
+  --background-textarea: rgb(50 48 47 / 0.8);
+  --background-modifier-accent-focus: #3c3836;
+  --composer-surface-color: rgb(50 48 47 / 0.7);
+  --background-channel-header: rgb(40 40 40 / 0.44);
+  --background-secondary-alt: rgb(29 32 33 / 0.62);
+  --background-modifier-selected: rgb(215 153 33 / 0.16);
+  --text-chat: #ebdbb2;
+  --text-chat-muted: #d5c4a1;
+  --text-tertiary-muted: #a89984;
+  --accent-primary: #d79921;
+  --brand-primary-light: #b57614;
+  --status-online: #98971a;
+  --status-idle: #fabd2f;
+  --status-dnd: #cc241d;
+  --status-danger: #cc241d;
+  --text-link: #83a598;
+  --markup-mention-text: #fabd2f;
+  --alert-important-color: #d3869b;
+  --message-mention-color: #fabd2f;
+  --message-mention-bg: rgb(250 189 47 / 0.16);
+  --code-inline-bg: rgb(50 48 47 / 0.7);
+  --code-block-bg: rgb(27 27 27 / 0.72);
+  --accent-warning: #fabd2f;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(215 153 33 / 0.07);
+  --text-on-brand-primary: #1d2021;
+  --control-button-danger-hover-bg: rgb(204 36 29 / 0.16);
+  --focus-primary: rgb(215 153 33 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: dunas;
+}
+
+/* Fim de tarde no deserto: o céu ainda claro em cima, a areia esfriando. */
+body {
+  background-color: #1b1b1b;
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% 96%, rgb(215 153 33 / 0.12), transparent 74%),
+    radial-gradient(ellipse 60% 44% at 24% 4%, rgb(254 128 25 / 0.12), transparent 74%),
+    linear-gradient(174deg, #232323, #282828 54%, #171717);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}

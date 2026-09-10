@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import { registrarServiceWorker } from "~/lib/service-worker";
+import { aplicarCursores, useCursores } from "~/features/configuracoes/stores/cursores";
 import "~/traducao";
 
 import { App, queryClient } from "~/App";
@@ -36,6 +38,9 @@ if (import.meta.env.DEV) {
     },
   });
 }
+
+registrarServiceWorker();
+aplicarCursores(useCursores.getState().cursores);
 
 createRoot(document.getElementById("app")!).render(
   <StrictMode>

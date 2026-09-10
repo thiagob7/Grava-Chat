@@ -97,3 +97,56 @@ export const dmRepository = {
     });
   },
 };
+
+const comQuemMandou = { from: true } as const;
+
+export const pedidoDeDmRepository = {
+  findByChannel(channelId: string) {
+    return prisma.pedidoDeDm.findUnique({ where: { channelId } });
+  },
+
+  create(channelId: string, fromId: string, toId: string, spam: boolean) {
+    return prisma.pedidoDeDm.create({ data: { channelId, fromId, toId, spam } });
+  },
+
+  pendentesPara(toId: string) {
+    return prisma.pedidoDeDm.findMany({
+      where: { toId, status: "PENDING" },
+      include: comQuemMandou,
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  contarPendentes(toId: string) {
+    return prisma.pedidoDeDm.count({ where: { toId, status: "PENDING", spam: false } });
+  },
+
+  aceitar(channelId: string) {
+    return prisma.pedidoDeDm.update({ where: { channelId }, data: { status: "ACCEPTED" } });
+  },
+
+  ignorar(channelId: string, spam: boolean) {
+    return prisma.pedidoDeDm.update({
+      where: { channelId },
+      data: { status: "IGNORED", spam },
+    });
+  },
+
+  async porCanal(channelIds: string[]) {
+    const pedidos = await prisma.pedidoDeDm.findMany({ where: { channelId: { in: channelIds } } });
+    return new Map(pedidos.map((p) => [p.channelId, p]));
+  },
+
+  async previas(channelIds: string[]) {
+    const mensagens = await prisma.message.findMany({
+      where: { channelId: { in: channelIds } },
+      orderBy: { createdAt: "asc" },
+      select: { channelId: true, content: true },
+    });
+
+    const mapa = new Map<string, string>();
+    for (const m of mensagens) if (!mapa.has(m.channelId)) mapa.set(m.channelId, m.content);
+
+    return mapa;
+  },
+};

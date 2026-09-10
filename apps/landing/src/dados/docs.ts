@@ -83,6 +83,101 @@ export const GRUPOS: Grupo[] = [
         resumo: "O que o bot manda e o que ele recebe pela conexão.",
       },
       {
+        href: "/desenvolvedores/referencia/mensagem",
+        titulo: "Mensagem",
+        resumo: "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
+      },
+      {
+        href: "/desenvolvedores/referencia/canal",
+        titulo: "Canal",
+        resumo: "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
+      },
+      {
+        href: "/desenvolvedores/referencia/servidor",
+        titulo: "Servidor",
+        resumo: "A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.",
+      },
+      {
+        href: "/desenvolvedores/referencia/membro",
+        titulo: "Membro",
+        resumo: "Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.",
+      },
+      {
+        href: "/desenvolvedores/referencia/cargo",
+        titulo: "Cargo",
+        resumo: "O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.",
+      },
+      {
+        href: "/desenvolvedores/referencia/moderacao",
+        titulo: "Moderação",
+        resumo: "Castigo e banimento. As duas ações que tiram alguém de circulação.",
+      },
+      {
+        href: "/desenvolvedores/referencia/expressao",
+        titulo: "Expressão",
+        resumo: "Emojis, figurinhas e sons do servidor.",
+      },
+      {
+        href: "/desenvolvedores/referencia/voz",
+        titulo: "Voz",
+        resumo: "Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.",
+      },
+      {
+        href: "/desenvolvedores/referencia/aplicativo",
+        titulo: "Aplicativo",
+        resumo: "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
+      },
+      {
+        href: "/desenvolvedores/referencia/webhook",
+        titulo: "Webhook",
+        resumo: "Um endereço que escreve num canal sem precisar de bot conectado.",
+      },
+      {
+        href: "/desenvolvedores/referencia/convite",
+        titulo: "Convite",
+        resumo: "O link que leva alguém para dentro do servidor.",
+      },
+      {
+        href: "/desenvolvedores/referencia/auditoria",
+        titulo: "Auditoria",
+        resumo: "O registro do que a equipe fez no servidor, e de quem fez.",
+      },
+      {
+        href: "/desenvolvedores/biblioteca",
+        titulo: "Biblioteca",
+        resumo: "O cliente oficial em JavaScript, com os tipos do próprio servidor.",
+      },
+      {
+        href: "/desenvolvedores/comunidade",
+        titulo: "Comunidade",
+        resumo: "Exemplos que rodam, e onde pedir ajuda quando algo não fecha.",
+      },
+      {
+        href: "/desenvolvedores/servidores-e-canais",
+        titulo: "Servidores e canais",
+        resumo: "O que o bot pode mudar e qual permissão cada coisa exige.",
+      },
+      {
+        href: "/desenvolvedores/webhooks",
+        titulo: "Webhooks",
+        resumo: "Um endereço que escreve num canal sem bot conectado.",
+      },
+      {
+        href: "/desenvolvedores/mudancas",
+        titulo: "Registro de mudanças",
+        resumo: "O que mudou na API, com data, e o que isso quebra.",
+      },
+      {
+        href: "/desenvolvedores/politicas",
+        titulo: "Políticas",
+        resumo: "O que é permitido fazer com dados de quem usa o seu bot.",
+      },
+      {
+        href: "/desenvolvedores/erros",
+        titulo: "Erros",
+        resumo: "Os códigos, o formato da resposta e os motivos que vêm pelo socket.",
+      },
+      {
         href: "/desenvolvedores/limites",
         titulo: "Limites",
         resumo: "Vazão, tamanhos e tetos que o servidor aplica.",

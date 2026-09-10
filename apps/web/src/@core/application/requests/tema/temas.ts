@@ -1,10 +1,11 @@
-import type { TemaCompartilhado } from "@gravae/shared";
+import type { AtivoDoTema, TemaCompartilhado } from "@gravae/shared";
 
 import { api } from "~/@core/lib/api";
 
 export interface PublicarTemaDTO {
   css: string;
   substituicoes: Record<string, string>;
+  ativos: AtivoDoTema[];
   nome?: string;
 }
 

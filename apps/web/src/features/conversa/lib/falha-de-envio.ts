@@ -9,6 +9,7 @@ const CHAVES: Record<MotivoDeFalha, string> = {
   depressa: "conversa.falha.depressa",
   automod: "conversa.falha.automod",
   recusada: "conversa.falha.recusada",
+  "nao-entregue": "conversa.falha.naoEntregue",
   erro: "conversa.falha.erro",
 };
 

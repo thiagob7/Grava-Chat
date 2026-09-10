@@ -60,6 +60,18 @@ enum FriendshipStatus {
   BLOCKED
 }
 
+enum FiltroDeSpam {
+  TODOS
+  DESCONHECIDOS
+  NENHUM
+}
+
+enum PedidoDeDmStatus {
+  PENDING
+  ACCEPTED
+  IGNORED
+}
+
 type Attachment {
   id          String
   url         String
@@ -108,6 +120,9 @@ model User {
   aceitaPedidos   Boolean @default(true)
   mostraAtividade Boolean @default(true)
 
+  permitirDmDeMembros Boolean      @default(true)
+  filtroDeSpam        FiltroDeSpam @default(DESCONHECIDOS)
+
   mostraServidoresEmComum Boolean @default(true)
   mostraAmigosEmComum     Boolean @default(true)
 
@@ -127,6 +142,8 @@ model User {
   streamKeys          StreamKey[]
   friendshipsSent     Friendship[]   @relation("FriendshipRequester")
   friendshipsReceived Friendship[]   @relation("FriendshipAddressee")
+  pedidosDeDmEnviados  PedidoDeDm[]  @relation("PedidoDeDmDe")
+  pedidosDeDmRecebidos PedidoDeDm[]  @relation("PedidoDeDmPara")
   webhookIdentity     Webhook?       @relation("WebhookBot")
   webhooksCreated     Webhook[]      @relation("WebhookCreator")
   auditLogs           AuditLog[]     @relation("AuditActor")
@@ -350,6 +367,7 @@ model Channel {
   readStates ReadState[]
   invites    Invite[]
   streamKeys StreamKey[]
+  pedidoDeDm PedidoDeDm?
   overwrites PermissionOverwrite[]
   webhooks   Webhook[]
   posts      ForumPost[]
@@ -463,6 +481,21 @@ model Friendship {
 
   @@unique([requesterId, addresseeId])
   @@index([addresseeId])
+}
+
+model PedidoDeDm {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String           @unique @db.ObjectId
+  channel   Channel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  fromId    String           @db.ObjectId
+  from      User             @relation("PedidoDeDmDe", fields: [fromId], references: [id], onDelete: Cascade)
+  toId      String           @db.ObjectId
+  to        User             @relation("PedidoDeDmPara", fields: [toId], references: [id], onDelete: Cascade)
+  status    PedidoDeDmStatus @default(PENDING)
+  spam      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([toId, status])
 }
 
 model AuditLog {
@@ -671,6 +704,8 @@ model Tema {
   tags      String[] @default([])
   css       String
   substituicoes Json
+  ativos    Json?
+  bytes     Int      @default(0)
   autorId   String   @db.ObjectId
   usuario   User     @relation("TemaAutor", fields: [autorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
