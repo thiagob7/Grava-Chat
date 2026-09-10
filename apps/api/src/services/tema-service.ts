@@ -1,4 +1,10 @@
-import { lerCabecalhoDoTema, type TemaCompartilhado, type TemaDaGaleria } from "@gravae/shared";
+import {
+  lerCabecalhoDoTema,
+  pesoDoTema,
+  type AtivoDoTema,
+  type TemaCompartilhado,
+  type TemaDaGaleria,
+} from "@gravae/shared";
 
 import { CAMINHO_DO_TEMA } from "@gravae/shared";
 import { env } from "~/env.js";
@@ -18,6 +24,8 @@ type TemaComAutor = {
   tags: string[];
   css: string;
   substituicoes: unknown;
+  ativos: unknown;
+  bytes: number;
   createdAt: Date;
   usuario: { id: string; displayName: string; avatarUrl: string | null };
 };
@@ -32,9 +40,33 @@ function serializar(tema: TemaComAutor): TemaCompartilhado {
     tags: tema.tags,
     css: tema.css,
     substituicoes: (tema.substituicoes ?? {}) as Record<string, string>,
+    ativos: lerAtivos(tema.ativos),
     publicadoPor: tema.usuario,
     createdAt: tema.createdAt.toISOString(),
   };
+}
+
+/*
+  O que está no banco é Json, e Json aceita qualquer coisa. Antes de entregar
+  para quem vai instalar, só passa o que tem nome e URL de texto.
+*/
+function lerAtivos(valor: unknown): AtivoDoTema[] {
+  if (!Array.isArray(valor)) return [];
+
+  return valor.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const { nome, url, tipo, bytes } = item as Record<string, unknown>;
+    if (typeof nome !== "string" || typeof url !== "string") return [];
+
+    return [
+      {
+        nome,
+        url,
+        ...(typeof tipo === "string" ? { tipo } : {}),
+        ...(typeof bytes === "number" ? { bytes } : {}),
+      },
+    ];
+  });
 }
 
 function paraGaleria(tema: Omit<TemaComAutor, "css">): TemaDaGaleria {
@@ -46,6 +78,8 @@ function paraGaleria(tema: Omit<TemaComAutor, "css">): TemaDaGaleria {
     versao: tema.versao,
     tags: tema.tags,
     substituicoes: (tema.substituicoes ?? {}) as Record<string, string>,
+    ativos: lerAtivos(tema.ativos),
+    pesoEmBytes: tema.bytes,
     publicadoPor: tema.usuario,
     createdAt: tema.createdAt.toISOString(),
   };
@@ -61,6 +95,8 @@ const SEM_CSS = {
   versao: true,
   tags: true,
   substituicoes: true,
+  ativos: true,
+  bytes: true,
   createdAt: true,
   usuario: AUTOR,
 } as const;
@@ -89,6 +125,8 @@ export const temaService = {
         tags: cabecalho.tags,
         css: entrada.css,
         substituicoes: entrada.substituicoes,
+        ativos: entrada.ativos,
+        bytes: pesoDoTema(entrada.css, entrada.ativos),
         autorId: userId,
       },
       include: { usuario: AUTOR },

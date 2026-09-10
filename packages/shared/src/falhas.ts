@@ -7,6 +7,7 @@ export const MOTIVOS_DE_FALHA = [
   "depressa",
   "automod",
   "recusada",
+  "nao-entregue",
   "erro",
 ] as const;
 

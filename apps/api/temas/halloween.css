@@ -1,0 +1,162 @@
+/**
+ * @name Halloween
+ * @description Abóbora acesa sobre noite quase preta, com névoa no chão e a luz tremendo como vela.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, sazonal, laranja, halloween, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: #16100c;
+  --background-secondary: #120c09;
+  --background-secondary-lighter: #1c1410;
+  --guild-list-foreground: #241a13;
+  --form-surface-background: #201711;
+  --background-secondary-alt: #1a1310;
+  --background-channel-header: #16100c;
+  --composer-surface-color: #1d1510;
+  --background-textarea: #221913;
+  --background-modifier-accent-focus: #33241a;
+
+  --border-color: rgb(255 150 60 / 0.14);
+  --color-line-sutil: rgb(255 190 120 / 0.07);
+  --user-area-divider-color: rgb(0 0 0 / 0.5);
+  --background-modifier-hover: rgb(255 140 40 / 0.06);
+  --background-modifier-selected: rgb(255 130 30 / 0.14);
+  --scrollbar-thumb-bg: rgb(150 100 60 / 0.45);
+  --scrollbar-thumb-bg-hover: #96643c;
+
+  --text-chat: #f6e9dc;
+  --text-chat-muted: #cbb39c;
+  --text-tertiary-muted: #8f7862;
+  --color-pilula: #f6e9dc;
+
+  --accent-primary: #ff7518;
+  --brand-primary-light: #e0620d;
+  --text-on-brand-primary: #16100c;
+  --focus-primary: rgb(255 117 24 / 0.55);
+
+  --status-online: #6fbf3f;
+  --status-idle: #e8b923;
+  --status-dnd: #d93a2b;
+  --status-danger: #d93a2b;
+  --control-button-danger-hover-bg: rgb(217 58 43 / 0.16);
+
+  --text-link: #b98cf0;
+  --markup-mention-text: #c39bf5;
+  --alert-important-color: #a06cd5;
+  --color-here: #ffbe5c;
+  --message-mention-color: #c39bf5;
+  --message-mention-bg: rgb(160 108 213 / 0.16);
+  --code-inline-bg: #251a14;
+  --code-block-bg: #0f0b08;
+  --accent-warning: #ffa62b;
+  --text-selection: rgb(255 117 24 / 0.3);
+
+  --color-veu: rgb(8 5 3 / 0.72);
+  --color-palco: #0c0806;
+  --color-palco-ink: #f6e9dc;
+  --color-sobre-midia: rgb(0 0 0 / 0.64);
+  --color-sombra: rgb(0 0 0 / 0.5);
+  --color-brilho: rgb(255 190 120 / 0.32);
+}
+
+/*
+  A noite: preto quente, com a abóbora acesa embaixo à esquerda e um roxo
+  frio no alto. Preso na tela — céu que rola junto com a conversa dá enjoo.
+*/
+body {
+  background-color: #0b0705;
+  background-image:
+    radial-gradient(ellipse 50% 45% at 14% 92%, rgb(255 117 24 / 0.2), transparent 72%),
+    radial-gradient(ellipse 55% 40% at 86% 6%, rgb(120 60 200 / 0.16), transparent 74%),
+    linear-gradient(170deg, #0b0705, #150d09 55%, #090605);
+  background-attachment: fixed;
+}
+
+/*
+  A luz da vela. Não pisca: treme. A diferença é o `ease-in-out` com tempos
+  desiguais — piscar em ritmo certo lê como LED com defeito, e não como fogo.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: 9989;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(ellipse 32% 30% at 16% 84%, rgb(255 140 30 / 0.6), transparent 70%),
+    radial-gradient(ellipse 26% 22% at 74% 26%, rgb(150 70 230 / 0.35), transparent 72%);
+  filter: blur(42px);
+  animation: halloween-vela 7s ease-in-out infinite alternate;
+}
+
+@keyframes halloween-vela {
+  0% {
+    opacity: 0.34;
+    transform: scale(1);
+  }
+  37% {
+    opacity: 0.52;
+  }
+  61% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(1.06);
+  }
+}
+
+/*
+  A névoa no rodapé, andando de lado bem devagar. Fica só na faixa de baixo:
+  névoa na tela inteira viraria um filtro cinza em cima do texto.
+*/
+html::before {
+  content: "";
+  position: fixed;
+  inset: auto -30% 0 -30%;
+  height: 38%;
+  z-index: 9990;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.3;
+  background-image:
+    radial-gradient(ellipse 40% 70% at 20% 100%, rgb(190 160 200 / 0.35), transparent 72%),
+    radial-gradient(ellipse 46% 60% at 62% 100%, rgb(160 140 190 / 0.3), transparent 74%),
+    radial-gradient(ellipse 38% 66% at 92% 100%, rgb(200 170 210 / 0.28), transparent 72%);
+  filter: blur(30px);
+  animation: halloween-nevoa 48s ease-in-out infinite alternate;
+}
+
+@keyframes halloween-nevoa {
+  from {
+    transform: translate3d(-6%, 2%, 0);
+  }
+  to {
+    transform: translate3d(6%, -1%, 0);
+  }
+}
+
+/* Vidro nos painéis: a névoa passa por trás, e o texto continua legível. */
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(12px) saturate(125%);
+}
+
+/* Menos movimento: a mesma noite, com a vela firme e a névoa parada. */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  html::before {
+    animation: none;
+  }
+}
+

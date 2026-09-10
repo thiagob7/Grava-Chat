@@ -1,0 +1,188 @@
+# Gravaê — developer documentation
+
+One base URL, one header: `Authorization: Bot <token>`.
+The full documentation is written in Portuguese; this index is the map.
+
+Base URL: https://gravaechat-api.duckdns.org/api
+
+## Pages
+
+- /desenvolvedores
+- /desenvolvedores/aplicativos
+- /desenvolvedores/autenticacao
+- /desenvolvedores/permissoes
+- /desenvolvedores/primeiro-bot
+- /desenvolvedores/tempo-real
+- /desenvolvedores/comandos
+- /desenvolvedores/moderacao
+- /desenvolvedores/referencia
+- /desenvolvedores/eventos
+- /desenvolvedores/referencia/mensagem
+- /desenvolvedores/referencia/canal
+- /desenvolvedores/referencia/servidor
+- /desenvolvedores/referencia/membro
+- /desenvolvedores/referencia/cargo
+- /desenvolvedores/referencia/moderacao
+- /desenvolvedores/referencia/expressao
+- /desenvolvedores/referencia/voz
+- /desenvolvedores/referencia/aplicativo
+- /desenvolvedores/referencia/webhook
+- /desenvolvedores/referencia/convite
+- /desenvolvedores/referencia/auditoria
+- /desenvolvedores/biblioteca
+- /desenvolvedores/comunidade
+- /desenvolvedores/servidores-e-canais
+- /desenvolvedores/webhooks
+- /desenvolvedores/mudancas
+- /desenvolvedores/politicas
+- /desenvolvedores/erros
+- /desenvolvedores/limites
+- /desenvolvedores/temas
+
+## Objects
+
+- Mensagem (mensagem) — 19 fields, 9 routes, 6 events
+- Canal (canal) — 15 fields, 4 routes, 5 events
+- Servidor (servidor) — 7 fields, 2 routes, 4 events
+- Membro (membro) — 7 fields, 4 routes, 5 events
+- Cargo (cargo) — 13 fields, 5 routes, 0 events
+- Moderação (moderacao) — 0 fields, 4 routes, 0 events
+- Expressão (expressao) — 5 fields, 4 routes, 1 events
+- Voz (voz) — 13 fields, 0 routes, 9 events
+- Aplicativo (aplicativo) — 3 fields, 2 routes, 2 events
+- Webhook (webhook) — 0 fields, 2 routes, 0 events
+- Convite (convite) — 0 fields, 1 routes, 0 events
+- Auditoria (auditoria) — 0 fields, 1 routes, 0 events
+
+## REST routes
+
+- GET /bot/eu
+- GET /bot/servidores
+- GET /bot/servidores/:guildId/canais
+- GET /bot/servidores/:guildId/membros
+- GET /bot/servidores/:guildId/cargos
+- PATCH /bot/servidores/:guildId/membros/:userId/apelido
+- PUT /bot/servidores/:guildId/membros/:userId/cargos
+- DELETE /bot/servidores/:guildId/membros/:userId
+- PUT /bot/servidores/:guildId/castigos/:userId
+- GET /bot/servidores/:guildId/banimentos
+- PUT /bot/servidores/:guildId/banimentos/:userId
+- DELETE /bot/servidores/:guildId/banimentos/:userId
+- POST /bot/servidores/:guildId/canais
+- PATCH /bot/servidores/:guildId/canais/:channelId
+- DELETE /bot/servidores/:guildId/canais/:channelId
+- POST /bot/servidores/:guildId/convites
+- PATCH /bot/servidores/:guildId
+- GET /bot/servidores/:guildId/auditoria
+- POST /bot/servidores/:guildId/cargos
+- PATCH /bot/servidores/:guildId/cargos/:roleId
+- DELETE /bot/servidores/:guildId/cargos/:roleId
+- PUT /bot/servidores/:guildId/cargos
+- GET /bot/servidores/:guildId/expressoes
+- POST /bot/servidores/:guildId/emojis
+- PATCH /bot/servidores/:guildId/emojis/:emojiId
+- DELETE /bot/servidores/:guildId/emojis/:emojiId
+- GET /bot/servidores/:guildId/webhooks
+- POST /bot/servidores/:guildId/webhooks
+- PUT /bot/comandos
+- POST /bot/canais/:channelId/mensagens
+- GET /bot/canais/:channelId/mensagens
+- GET /bot/canais/:channelId/fixadas
+- PUT /bot/mensagens/:messageId/fixar
+- DELETE /bot/mensagens/:messageId/fixar
+- PATCH /bot/mensagens/:messageId
+- DELETE /bot/mensagens/:messageId
+- PUT /bot/mensagens/:messageId/reacoes/:emoji
+- DELETE /bot/mensagens/:messageId/reacoes/:emoji
+
+## Events the bot sends
+
+- channel:subscribe
+- channel:unsubscribe
+- message:send
+- message:edit
+- message:delete
+- message:react
+- message:unreact
+- message:ack
+- message:unread
+- poll:vote
+- poll:close
+- typing:start
+- command:invoke
+- presence:update
+- presence:afk
+- voice:join
+- voice:leave
+- voice:token
+- voice:onde
+- voice:sound
+- voice:moderate
+- voice:recusar
+- voice:kick
+- voice:moveMember
+- voice:state
+
+## Events the bot receives
+
+- message:created
+- message:updated
+- message:deleted
+- message:reactions
+- message:super
+- typing:started
+- command:invoked
+- commands:changed
+- presence:changed
+- presence:self
+- user:updated
+- friend:updated
+- dm:created
+- dm:pedido
+- member:joined
+- member:updated
+- member:left
+- channel:created
+- channel:updated
+- channel:deleted
+- event:updated
+- guild:refresh
+- post:created
+- post:updated
+- expressions:changed
+- guild:deleted
+- guild:updated
+- voice:states
+- voice:sound
+- voice:move
+- voice:joined
+- voice:left
+- voice:updated
+- voice:recusada
+- live:started
+- live:ended
+- error
+
+## Failure reasons
+
+- sem-conexao
+- sem-acesso
+- sem-permissao
+- castigo
+- modo-lento
+- depressa
+- automod
+- recusada
+- nao-entregue
+- erro
+
+## HTTP codes
+
+- 400
+- 401
+- 403
+- 404
+- 409
+- 429
+- 500
+

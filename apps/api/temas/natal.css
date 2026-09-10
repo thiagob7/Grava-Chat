@@ -1,0 +1,154 @@
+/**
+ * @name Natal
+ * @description Verde pinheiro à noite, com neve caindo e a luz de uma janela acesa ao longe.
+ * @author Gravaê
+ * @version 3.0.0
+ * @tags escuro, sazonal, verde, natal, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: #0e1712;
+  --background-secondary: #0a120e;
+  --background-secondary-lighter: #121c16;
+  --guild-list-foreground: #17241c;
+  --form-surface-background: #142019;
+  --background-secondary-alt: #101a14;
+  --background-channel-header: #0e1712;
+  --composer-surface-color: #131e17;
+  --background-textarea: #16231b;
+  --background-modifier-accent-focus: #1f3227;
+
+  --border-color: rgb(140 220 170 / 0.13);
+  --color-line-sutil: rgb(200 255 220 / 0.06);
+  --user-area-divider-color: rgb(0 0 0 / 0.42);
+  --background-modifier-hover: rgb(160 255 200 / 0.05);
+  --background-modifier-selected: rgb(217 43 58 / 0.14);
+  --scrollbar-thumb-bg: rgb(110 140 120 / 0.45);
+  --scrollbar-thumb-bg-hover: #6e8c78;
+
+  --text-chat: #eef5f0;
+  --text-chat-muted: #b8c9bf;
+  --text-tertiary-muted: #7e8f85;
+  --color-pilula: #eef5f0;
+
+  --accent-primary: #d92b3a;
+  --brand-primary-light: #bf2130;
+  --text-on-brand-primary: #fff5f5;
+  --focus-primary: rgb(217 43 58 / 0.55);
+
+  --status-online: #3fbf6f;
+  --status-idle: #e8b923;
+  --status-dnd: #e0503f;
+  --status-danger: #e0503f;
+  --control-button-danger-hover-bg: rgb(224 80 63 / 0.16);
+
+  --text-link: #7fd3a8;
+  --markup-mention-text: #e8b33c;
+  --alert-important-color: #e8b33c;
+  --color-here: #f2d98a;
+  --message-mention-color: #e8b33c;
+  --message-mention-bg: rgb(232 179 60 / 0.16);
+  --code-inline-bg: #172420;
+  --code-block-bg: #09110d;
+  --accent-warning: #e8b33c;
+  --text-selection: rgb(217 43 58 / 0.28);
+
+  --color-veu: rgb(4 10 7 / 0.72);
+  --color-palco: #070d0a;
+  --color-palco-ink: #eef5f0;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.46);
+  /*
+    A neve agora é do motor do app, e cai NA FRENTE: neve por cima da cena é
+    o que o olho espera, e assim ela aparece mesmo com os painéis fechados.
+    As duas camadas de CSS que faziam isso antes saíram — a de flocos era um
+    asterisco de 2,6px sob máscara, e não aparecia em tela nenhuma.
+  */
+  --gc-fundo: neve;
+  --gc-fundo-camada: frente;
+
+  --color-brilho: rgb(220 255 235 / 0.3);
+}
+
+/*
+  A noite lá fora: pinheiro escuro, com a luz quente de uma janela no canto e
+  o frio azulado vindo de cima. Fica preso na tela para não rolar junto com a
+  conversa — céu que rola dá enjoo.
+
+  Os dois bonecos de neve no rodapé são SVG escrito aqui dentro, não arquivo:
+  o tema segue sendo um `.css` só e escala sem borrar. Ficam no fundo, atrás
+  dos painéis, e aparecem pelo vidro deles. Boneco por cima da conversa vira
+  ruído; embaixo, é cenário.
+*/
+body {
+  background-color: #070d0a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%20160%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%2356402e%27%20stroke-width%3D%273%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M38%2068%20L14%2052%20M20%2052%20L14%2052%20L15%2045%27%2F%3E%3Cpath%20d%3D%27M82%2068%20L106%2054%20M100%2054%20L106%2054%20L105%2047%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27124%27%20r%3D%2730%27%20fill%3D%27%239fb6c0%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2778%27%20r%3D%2723%27%20fill%3D%27%23a8bfc9%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2742%27%20r%3D%2717%27%20fill%3D%27%23b2c8d1%27%2F%3E%3Cpath%20d%3D%27M43%2030%20h34%20v-4%20h-34%20z%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M49%2026%20h22%20v-19%20h-22%20z%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M49%2020%20h22%20v5%20h-22%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Ccircle%20cx%3D%2754%27%20cy%3D%2740%27%20r%3D%272.4%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2766%27%20cy%3D%2740%27%20r%3D%272.4%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M60%2044%20L74%2048%20L60%2051%20z%27%20fill%3D%27%23b06a2c%27%2F%3E%3Cpath%20d%3D%27M44%2057%20q16%207%2032%200%20l2%207%20q-18%208%20-36%200%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Cpath%20d%3D%27M74%2062%20l6%2016%20-7%202%20-5%20-16%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2772%27%20r%3D%272.6%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2784%27%20r%3D%272.6%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27114%27%20r%3D%273%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27128%27%20r%3D%273%27%20fill%3D%27%231a2622%27%2F%3E%3C%2Fsvg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%20160%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%2356402e%27%20stroke-width%3D%273%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M38%2068%20L14%2052%20M20%2052%20L14%2052%20L15%2045%27%2F%3E%3Cpath%20d%3D%27M82%2068%20L106%2054%20M100%2054%20L106%2054%20L105%2047%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27124%27%20r%3D%2730%27%20fill%3D%27%239fb6c0%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2778%27%20r%3D%2723%27%20fill%3D%27%23a8bfc9%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2742%27%20r%3D%2717%27%20fill%3D%27%23b2c8d1%27%2F%3E%3Cpath%20d%3D%27M43%2030%20h34%20v-4%20h-34%20z%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M49%2026%20h22%20v-19%20h-22%20z%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M49%2020%20h22%20v5%20h-22%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Ccircle%20cx%3D%2754%27%20cy%3D%2740%27%20r%3D%272.4%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2766%27%20cy%3D%2740%27%20r%3D%272.4%27%20fill%3D%27%231a2622%27%2F%3E%3Cpath%20d%3D%27M60%2044%20L74%2048%20L60%2051%20z%27%20fill%3D%27%23b06a2c%27%2F%3E%3Cpath%20d%3D%27M44%2057%20q16%207%2032%200%20l2%207%20q-18%208%20-36%200%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Cpath%20d%3D%27M74%2062%20l6%2016%20-7%202%20-5%20-16%20z%27%20fill%3D%27%236f2626%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2772%27%20r%3D%272.6%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2784%27%20r%3D%272.6%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27114%27%20r%3D%273%27%20fill%3D%27%231a2622%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27128%27%20r%3D%273%27%20fill%3D%27%231a2622%27%2F%3E%3C%2Fsvg%3E"),
+    radial-gradient(ellipse 45% 40% at 88% 88%, rgb(232 179 60 / 0.16), transparent 72%),
+    radial-gradient(ellipse 60% 45% at 12% 8%, rgb(90 180 220 / 0.12), transparent 74%),
+    linear-gradient(165deg, #070d0a, #0d1a14 55%, #060b09);
+  background-position: left 5% bottom 8px, right 8% bottom 0, center, center, center;
+  background-size: 132px auto, 96px auto, cover, cover, cover;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
+}
+
+/*
+  O pisca-pisca da guirlanda, respirando devagar no alto. Um só, e discreto:
+  luz que pisca rápido em app de conversa cansa em dez minutos.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: -25% -10% auto -10%;
+  height: 55%;
+  z-index: 9989;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.4;
+  background-image:
+    radial-gradient(ellipse 28% 60% at 18% 50%, rgb(217 43 58 / 0.5), transparent 70%),
+    radial-gradient(ellipse 26% 55% at 52% 40%, rgb(232 179 60 / 0.45), transparent 70%),
+    radial-gradient(ellipse 30% 58% at 84% 52%, rgb(63 191 111 / 0.42), transparent 70%);
+  filter: blur(38px);
+  animation: natal-guirlanda 9s ease-in-out infinite alternate;
+}
+
+@keyframes natal-guirlanda {
+  from {
+    opacity: 0.28;
+    transform: translate3d(-1.5%, 0, 0);
+  }
+  to {
+    opacity: 0.5;
+    transform: translate3d(1.5%, 1%, 0);
+  }
+}
+
+/* Vidro nos painéis: a neve passa por trás, e o texto continua legível. */
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+/*
+  Quem pediu menos movimento recebe a mesma noite, parada. A neve continua na
+  tela; o que some é a queda.
+*/
+/*
+  Quem pediu menos movimento fica com a cena parada. A neve some sozinha: o
+  motor não desenha nada nesse caso.
+*/
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+

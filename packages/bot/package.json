@@ -1,0 +1,21 @@
+{
+  "name": "@gravae/bot",
+  "version": "0.1.0",
+  "description": "Cliente de bot do Gravaê: REST e tempo real, com os tipos do próprio servidor.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gravae/shared": "*",
+    "socket.io-client": "4.8.3"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

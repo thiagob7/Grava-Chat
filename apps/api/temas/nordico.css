@@ -1,0 +1,86 @@
+/**
+ * @name Nórdico
+ * @description Azul de gelo e neve caindo em três profundidades. Paleta na linha do Nord, que nasceu em editor de código.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, frio, azul, neve, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(46 52 64 / 0.44);
+  --background-secondary: rgb(41 47 58 / 0.56);
+  --background-secondary-lighter: rgb(59 66 82 / 0.56);
+  --guild-list-foreground: rgb(67 76 94 / 0.62);
+  --form-surface-background: rgb(67 76 94 / 0.95);
+  --scrollbar-thumb-bg-hover: #8b96a8;
+  --border-color: rgb(97 110 136 / 0.16);
+  --background-textarea: rgb(59 66 82 / 0.8);
+  --background-modifier-accent-focus: #434c5e;
+  --composer-surface-color: rgb(59 66 82 / 0.7);
+  --background-channel-header: rgb(46 52 64 / 0.44);
+  --background-secondary-alt: rgb(41 47 58 / 0.62);
+  --background-modifier-selected: rgb(136 192 208 / 0.16);
+  --text-chat: #eceff4;
+  --text-chat-muted: #d8dee9;
+  --text-tertiary-muted: #8b96a8;
+  --accent-primary: #88c0d0;
+  --brand-primary-light: #8fbcbb;
+  --status-online: #a3be8c;
+  --status-idle: #ebcb8b;
+  --status-dnd: #bf616a;
+  --status-danger: #bf616a;
+  --text-link: #81a1c1;
+  --markup-mention-text: #ebcb8b;
+  --alert-important-color: #b48ead;
+  --message-mention-color: #ebcb8b;
+  --message-mention-bg: rgb(235 203 139 / 0.16);
+  --code-inline-bg: rgb(59 66 82 / 0.7);
+  --code-block-bg: rgb(36 41 51 / 0.72);
+  --accent-warning: #ebcb8b;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(136 192 208 / 0.07);
+  --text-on-brand-primary: #2e3440;
+  --control-button-danger-hover-bg: rgb(191 97 106 / 0.16);
+  --focus-primary: rgb(136 192 208 / 0.5);
+
+  /*
+    O motor de fundo que este tema pede. Quem desenha é o app: tema é `.css`
+    e não traz código junto.
+  */
+  --gc-fundo: neve;
+}
+
+/*
+  A noite lá fora: azul de neve com a luz de uma janela ao longe. Fica preso
+  na tela para não rolar junto com a conversa.
+*/
+body {
+  background-color: #232831;
+  background-image:
+    radial-gradient(ellipse 55% 40% at 84% 88%, rgb(235 203 139 / 0.1), transparent 72%),
+    radial-gradient(ellipse 65% 50% at 14% 6%, rgb(136 192 208 / 0.14), transparent 74%),
+    linear-gradient(168deg, #232831, #2e3440 56%, #1f242c);
+  background-attachment: fixed;
+}
+
+/*
+  Vidro nos painéis. É o par obrigatório de um fundo animado: as superfícies
+  já nascem translúcidas lá em cima, e o desfoque é o que separa o texto do
+  que passa atrás sem fechar a janela.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(126%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(136%);
+}

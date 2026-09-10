@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Poziom powiększenia aplikacji",
     escalaDaFonte: "Rozmiar czcionki czatu",
     modoStreamer: "Prywatność podczas transmisji",
+    cursores: "Kursory",
     movimento: "Ruch",
     textoEmVoz: "Zamiana tekstu na mowę",
     teclado: "Klawiatura",

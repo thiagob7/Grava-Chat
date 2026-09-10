@@ -96,6 +96,8 @@ export const meService = {
         mostraAtividade: usuario.mostraAtividade,
         mostraServidoresEmComum: usuario.mostraServidoresEmComum,
         mostraAmigosEmComum: usuario.mostraAmigosEmComum,
+        permitirDmDeMembros: usuario.permitirDmDeMembros,
+        filtroDeSpam: usuario.filtroDeSpam,
       },
       servidores: membros.map((m) => ({
         id: m.guild.id,
@@ -147,6 +149,10 @@ export const meService = {
       ...(input.mostraAmigosEmComum !== undefined
         ? { mostraAmigosEmComum: input.mostraAmigosEmComum }
         : {}),
+      ...(input.permitirDmDeMembros !== undefined
+        ? { permitirDmDeMembros: input.permitirDmDeMembros }
+        : {}),
+      ...(input.filtroDeSpam !== undefined ? { filtroDeSpam: input.filtroDeSpam } : {}),
       ...(input.displayName !== undefined
         ? { displayName: input.displayName }
         : {}),

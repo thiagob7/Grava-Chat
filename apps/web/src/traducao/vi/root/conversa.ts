@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Chưa gửi được — bạn gửi quá nhanh",
     automod: "Chưa gửi được — AutoMod đã chặn",
     recusada: "Chưa gửi được — cuộc trò chuyện này không nhận trả lời",
+    naoEntregue: "Không gửi được — người này không nhận tin nhắn từ bạn",
   },
   mencao: {
     cargo: "Nhắc đến vai trò",

@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Uygulama yakınlaştırma düzeyi",
     escalaDaFonte: "Sohbet yazı tipi ölçeği",
     modoStreamer: "Yayın gizliliği",
+    cursores: "İmleçler",
     movimento: "Hareket",
     textoEmVoz: "Metinden konuşmaya",
     teclado: "Klavye",

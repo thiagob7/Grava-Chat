@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "مستوى تكبير التطبيق",
     escalaDaFonte: "حجم خط الدردشة",
     modoStreamer: "خصوصية البث",
+    cursores: "المؤشرات",
     movimento: "الحركة",
     textoEmVoz: "تحويل النص إلى كلام",
     teclado: "لوحة المفاتيح",

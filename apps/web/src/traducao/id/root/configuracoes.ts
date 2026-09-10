@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Tingkat zoom aplikasi",
     escalaDaFonte: "Ukuran font obrolan",
     modoStreamer: "Privasi saat siaran",
+    cursores: "Kursor",
     movimento: "Gerakan",
     textoEmVoz: "Teks ke ucapan",
     teclado: "Papan ketik",

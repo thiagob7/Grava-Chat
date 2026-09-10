@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Ikke levert — du sender for raskt",
     automod: "Ikke levert — AutoMod blokkerte den",
     recusada: "Ikke levert — denne samtalen tar ikke imot svar",
+    naoEntregue: "Ikke levert — denne personen tar ikke imot meldinger fra deg",
   },
   mencao: {
     cargo: "Rolleomtale",

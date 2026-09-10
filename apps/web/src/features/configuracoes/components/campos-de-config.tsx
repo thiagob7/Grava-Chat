@@ -26,3 +26,36 @@ export const Linha: React.FC<{ titulo: string; children: React.ReactNode }> = ({
     <div data-gc="configuracoes.campos-de-config.div--4" className="w-52">{children}</div>
   </div>
 );
+
+export const Escolha = <T extends string>({
+  titulo,
+  detalhe,
+  valor,
+  opcoes,
+  onMudar,
+}: {
+  titulo: string;
+  detalhe: string;
+  valor: T;
+  opcoes: { valor: T; rotulo: string }[];
+  onMudar: (valor: T) => void;
+}) => (
+  <div data-gc="configuracoes.campos-de-config.div--5" className="mt-4 first:mt-0">
+    <p data-gc="configuracoes.campos-de-config.p--4" className="text-sm font-medium">{titulo}</p>
+    <p data-gc="configuracoes.campos-de-config.p--5" className="mt-0.5 text-xs text-ink-faint">{detalhe}</p>
+
+    <div data-gc="configuracoes.campos-de-config.div--6" className="mt-3 space-y-2">
+      {opcoes.map((opcao) => (
+        <label data-gc="configuracoes.campos-de-config.label" key={opcao.valor} className="flex items-center gap-2.5 text-sm text-ink-muted">
+          <input data-gc="configuracoes.campos-de-config.input"
+            type="radio"
+            checked={valor === opcao.valor}
+            onChange={() => onMudar(opcao.valor)}
+            className="size-4 shrink-0 accent-brand"
+          />
+          {opcao.rotulo}
+        </label>
+      ))}
+    </div>
+  </div>
+);

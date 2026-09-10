@@ -1,9 +1,4 @@
-import type {
-  DesiredStatus,
-  EstiloDePerfil,
-  PresenceStatus,
-  StatusPersonalizado,
-} from "@gravae/shared";
+import type { DesiredStatus, EstiloDePerfil, FiltroDeSpam, PresenceStatus, StatusPersonalizado } from "@gravae/shared";
 
 export interface PublicUserModel {
   id: string;
@@ -30,6 +25,8 @@ export interface SelfUserModel extends PublicUserModel {
   mostraAtividade: boolean;
   mostraServidoresEmComum: boolean;
   mostraAmigosEmComum: boolean;
+  permitirDmDeMembros: boolean;
+  filtroDeSpam: FiltroDeSpam;
 
   excluirEm: string | null;
 }

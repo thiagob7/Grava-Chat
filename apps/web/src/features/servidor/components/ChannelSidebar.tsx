@@ -53,7 +53,6 @@ import { Input, Label } from "~/components/ui/input";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { useAparencia } from "~/features/configuracoes/stores/aparencia";
 import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
 import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
@@ -76,6 +75,8 @@ interface ChannelSidebarProps {
   onSelectChannel: (channelId: string) => void;
   onLeaveGuild: () => void;
   onOpenVoiceChat?: (channelId: string) => void;
+  largura: number;
+  fluida?: boolean;
 }
 
 const PILULA =
@@ -90,6 +91,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   onSelectChannel,
   onLeaveGuild,
   onOpenVoiceChat,
+  largura,
+  fluida = false,
 }) => {
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
@@ -178,14 +181,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     })),
   ];
 
-  const { width, dragging, handle, bounds } = useResizableWidth("canais", {
-    initial: 320,
-    token: "--layout-sidebar-width",
-    min: 180,
-    max: 420,
-    edge: "right",
-  });
-
   const comFaixa = Boolean(detail?.guild.bannerUrl) && faixaDoServidor;
 
   const proporcao = useProporcaoDaFaixa(comFaixa ? detail?.guild.bannerUrl : null);
@@ -195,12 +190,13 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
       <aside data-gc="servidor.channel-sidebar.aside"
         {...flxAttr("molduraDaListaDeCanais")}
         className={cn(
-          "canto-do-miolo topo-do-miolo relative flex shrink-0 flex-col bg-surface-1",
+          "group/coluna canto-do-miolo topo-do-miolo relative flex flex-col bg-surface-1",
+          fluida ? "min-w-0 flex-1" : "shrink-0",
           flxCls("molduraDaListaDeCanais"),
         )}
-        style={{ width: width }}
+        style={fluida ? undefined : { width: largura }}
       >
-        <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-divisor")} />
+        <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-transparent")} />
         <div data-gc="servidor.channel-sidebar.div--2" {...flx("listaDeCanais", "lista-de-canais miolo-recortado flex min-h-0 flex-1 flex-col")}>
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
@@ -212,7 +208,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           style={
             comFaixa
               ? {
-                  height: width / proporcao,
+                  height: largura / proporcao,
                   minHeight: "var(--layout-header-height)",
                   maxHeight: "30vh",
                 }
@@ -635,13 +631,6 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </ContextMenuContent>
           </ContextMenu>
 
-          <WidthHandle data-gc="servidor.channel-sidebar.width-handle"
-            edge="right"
-            dragging={dragging}
-            width={width}
-            bounds={bounds}
-            {...handle}
-          />
         </div>
         </div>
 

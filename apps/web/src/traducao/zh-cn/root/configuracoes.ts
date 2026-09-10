@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "应用缩放级别",
     escalaDaFonte: "聊天字体大小",
     modoStreamer: "直播隐私",
+    cursores: "光标",
     movimento: "动效",
     textoEmVoz: "文字转语音",
     teclado: "键盘",

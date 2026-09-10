@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "לא נשלחה — אתה שולח מהר מדי",
     automod: "לא נשלחה — AutoMod חסם אותה",
     recusada: "לא נשלחה — השיחה הזאת לא מקבלת תשובות",
+    naoEntregue: "לא נמסר — האדם הזה לא מקבל ממך הודעות",
   },
   mencao: {
     cargo: "אזכור של תפקיד",

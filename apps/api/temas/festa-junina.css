@@ -1,0 +1,203 @@
+/**
+ * @name Festa junina
+ * @description Bandeirinhas balançando no alto e a fogueira acesa embaixo. O tema mais brasileiro da casa.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags escuro, sazonal, quente, junino, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: #1a1310;
+  --background-secondary: #150f0c;
+  --background-secondary-lighter: #201814;
+  --guild-list-foreground: #291f18;
+  --form-surface-background: #241b15;
+  --background-secondary-alt: #1e1613;
+  --composer-surface-color: #221a15;
+  --background-channel-header: #1a1310;
+  --background-textarea: #261d17;
+  --background-modifier-accent-focus: #38281e;
+
+  --border-color: rgb(255 190 90 / 0.14);
+  --color-line-sutil: rgb(255 215 160 / 0.07);
+  --user-area-divider-color: rgb(0 0 0 / 0.45);
+  --background-modifier-hover: rgb(255 180 80 / 0.055);
+  --background-modifier-selected: rgb(224 74 47 / 0.14);
+  --scrollbar-thumb-bg: rgb(150 115 80 / 0.45);
+  --scrollbar-thumb-bg-hover: #967350;
+
+  --text-chat: #f7ecdc;
+  --text-chat-muted: #cdb99f;
+  --text-tertiary-muted: #8f7d67;
+  --color-pilula: #f7ecdc;
+
+  --accent-primary: #e04a2f;
+  --brand-primary-light: #c43d25;
+  --text-on-brand-primary: #fff3ea;
+  --focus-primary: rgb(224 74 47 / 0.55);
+
+  --status-online: #5fbf4a;
+  --status-idle: #f2c230;
+  --status-dnd: #d93a2b;
+  --status-danger: #d93a2b;
+  --control-button-danger-hover-bg: rgb(217 58 43 / 0.16);
+
+  --text-link: #6ec5d9;
+  --markup-mention-text: #f2c230;
+  --alert-important-color: #7fc25a;
+  --color-here: #ffd968;
+  --message-mention-color: #f2c230;
+  --message-mention-bg: rgb(242 194 48 / 0.16);
+  --code-inline-bg: #2a2018;
+  --code-block-bg: #120d0a;
+  --accent-warning: #f2c230;
+  --text-selection: rgb(242 194 48 / 0.28);
+
+  --color-veu: rgb(10 6 4 / 0.72);
+  --color-palco: #0e0a07;
+  --color-palco-ink: #f7ecdc;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.48);
+  --color-brilho: rgb(255 210 150 / 0.32);
+}
+
+/* O terreiro à noite: escuro quente, com a fogueira acesa no canto de baixo. */
+body {
+  background-color: #0e0a07;
+  background-image:
+    radial-gradient(ellipse 46% 42% at 78% 94%, rgb(224 74 47 / 0.2), transparent 72%),
+    radial-gradient(ellipse 40% 36% at 78% 96%, rgb(242 194 48 / 0.16), transparent 68%),
+    linear-gradient(168deg, #0e0a07, #1a120c 56%, #0c0806);
+  background-attachment: fixed;
+}
+
+/*
+  As bandeirinhas.
+
+  O truque é `conic-gradient` numa faixa fina, repetida: cada cone desenha um
+  triângulo apontando para baixo, e a repetição vira a fileira inteira. Sai
+  mais leve que imagem e acompanha qualquer largura de tela sem esticar.
+
+  Duas fileiras, com tamanhos e velocidades diferentes, porque uma fileira só
+  lê como enfeite colado; duas lêem como varal balançando ao vento.
+*/
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 26px;
+  z-index: 9991;
+  pointer-events: none;
+  opacity: 0.9;
+  background-repeat: repeat-x;
+  background-image:
+    conic-gradient(from -45deg at 50% 0, transparent 0 90deg, #e04a2f 90deg 180deg, transparent 180deg),
+    conic-gradient(from -45deg at 50% 0, transparent 0 90deg, #f2c230 90deg 180deg, transparent 180deg),
+    conic-gradient(from -45deg at 50% 0, transparent 0 90deg, #5fbf4a 90deg 180deg, transparent 180deg),
+    conic-gradient(from -45deg at 50% 0, transparent 0 90deg, #6ec5d9 90deg 180deg, transparent 180deg),
+    linear-gradient(180deg, rgb(255 220 170 / 0.35) 0 1.5px, transparent 1.5px);
+  background-size: 120px 22px, 120px 22px, 120px 22px, 120px 22px, 100% 100%;
+  background-position: 0 2px, 30px 2px, 60px 2px, 90px 2px, 0 0;
+  animation: junina-varal 7s ease-in-out infinite alternate;
+}
+
+@keyframes junina-varal {
+  from {
+    transform: translate3d(-6px, 0, 0) rotate(-0.25deg);
+  }
+  to {
+    transform: translate3d(6px, 2px, 0) rotate(0.25deg);
+  }
+}
+
+/*
+  A fogueira: o brilho que sobe e desce com tempos desiguais, como fogo de
+  verdade. Ritmo certo lê como lâmpada com mau contato.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: auto -10% -12% auto;
+  width: 60%;
+  height: 46%;
+  z-index: 9989;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(ellipse 44% 52% at 72% 100%, rgb(255 130 40 / 0.6), transparent 70%),
+    radial-gradient(ellipse 30% 38% at 74% 100%, rgb(255 200 70 / 0.5), transparent 68%);
+  filter: blur(36px);
+  animation: junina-fogueira 5.5s ease-in-out infinite alternate;
+}
+
+@keyframes junina-fogueira {
+  0% {
+    opacity: 0.32;
+    transform: scaleY(1);
+  }
+  43% {
+    opacity: 0.52;
+  }
+  71% {
+    opacity: 0.38;
+  }
+  100% {
+    opacity: 0.48;
+    transform: scaleY(1.07);
+  }
+}
+
+/*
+  As fagulhas subindo da fogueira. Poucas e pequenas: fagulha demais vira
+  neve laranja, e aí some a leitura de fogo.
+*/
+body::after {
+  content: "";
+  position: fixed;
+  inset: 30% 0 0 0;
+  z-index: 9990;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  background-image:
+    radial-gradient(1.6px 1.6px at 74% 90%, rgb(255 190 90 / 0.9), transparent 60%),
+    radial-gradient(1.2px 1.2px at 82% 70%, rgb(255 150 60 / 0.8), transparent 60%),
+    radial-gradient(1.4px 1.4px at 68% 52%, rgb(255 210 120 / 0.7), transparent 60%);
+  background-size: 300px 340px, 380px 420px, 460px 500px;
+  animation: junina-fagulhas 22s linear infinite;
+}
+
+@keyframes junina-fagulhas {
+  to {
+    background-position: 18px -340px, -14px -420px, 22px -500px;
+  }
+}
+
+/* Vidro nos painéis: a fogueira passa por trás, e o texto continua legível. */
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(12px) saturate(125%);
+}
+
+/*
+  Menos movimento: as bandeirinhas ficam paradas no varal e a fogueira firme.
+  As fagulhas somem — fagulha parada no ar não é fagulha, é sujeira na tela.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html::before,
+  body::before {
+    animation: none;
+  }
+
+  body::after {
+    display: none;
+  }
+}
+

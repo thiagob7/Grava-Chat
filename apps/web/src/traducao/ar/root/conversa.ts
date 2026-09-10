@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "لم تُرسل — أنت ترسل بسرعة كبيرة",
     automod: "لم تُرسل — حظرها AutoMod",
     recusada: "لم تُرسل — هذه المحادثة لا تقبل الردود",
+    naoEntregue: "لم يتم التسليم — هذا الشخص لا يستقبل رسائلك",
   },
   mencao: {
     cargo: "إشارة إلى رتبة",

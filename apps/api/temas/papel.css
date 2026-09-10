@@ -1,0 +1,82 @@
+/**
+ * @name Papel
+ * @description Claro, sobre papel de verdade: a fibra é ruído do próprio SVG, não imagem. O único tema claro da casa.
+ * @author Gravaê
+ * @version 1.0.0
+ * @tags claro, quente, papel, sóbrio
+ */
+:root {
+  color-scheme: light;
+
+  --background-primary: rgb(253 249 240 / 0.72);
+  --background-secondary: rgb(244 238 225 / 0.8);
+  --background-secondary-lighter: rgb(239 232 216 / 0.8);
+  --guild-list-foreground: rgb(230 220 199 / 0.84);
+  --form-surface-background: rgb(230 220 199 / 0.95);
+  --scrollbar-thumb-bg-hover: #8d8471;
+  --border-color: rgb(185 173 148 / 0.16);
+  --background-textarea: rgb(239 232 216 / 0.8);
+  --background-modifier-accent-focus: #e6dcc7;
+  --composer-surface-color: rgb(239 232 216 / 0.88);
+  --background-channel-header: rgb(253 249 240 / 0.72);
+  --background-secondary-alt: rgb(244 238 225 / 0.84);
+  --background-modifier-selected: rgb(138 90 43 / 0.16);
+  --text-chat: #3b3529;
+  --text-chat-muted: #5f5748;
+  --text-tertiary-muted: #8d8471;
+  --accent-primary: #8a5a2b;
+  --brand-primary-light: #6f4720;
+  --status-online: #5c7a3f;
+  --status-idle: #b58a12;
+  --status-dnd: #a6402f;
+  --status-danger: #a6402f;
+  --text-link: #2f6f7a;
+  --markup-mention-text: #9a6b12;
+  --alert-important-color: #6d5aa8;
+  --message-mention-color: #9a6b12;
+  --message-mention-bg: rgb(154 107 18 / 0.16);
+  --code-inline-bg: rgb(239 232 216 / 0.7);
+  --code-block-bg: rgb(239 232 216 / 0.72);
+  --accent-warning: #b58a12;
+  --user-area-divider-color: rgb(0 0 0 / 0.4);
+  --background-modifier-hover: rgb(138 90 43 / 0.07);
+  --text-on-brand-primary: #fdf9f0;
+  --control-button-danger-hover-bg: rgb(166 64 47 / 0.16);
+  --focus-primary: rgb(138 90 43 / 0.5);
+}
+
+/*
+  A folha.
+
+  O grão não é arquivo: é `feTurbulence` desenhado aqui dentro, então o tema
+  continua sendo um `.css` só e a fibra não borra em tela de retina. Fica
+  preso na tela, senão a textura rola junto com a conversa e dá enjoo.
+
+  Este tema não pede motor de fundo de propósito. Grão de papel é textura
+  parada — animar isso seria papel tremendo, que ninguém quer ler em cima.
+*/
+body {
+  background-color: #fdf9f0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27220%27%20height%3D%27220%27%3E%3Cfilter%20id%3D%27f%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.82%27%20numOctaves%3D%274%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27220%27%20height%3D%27220%27%20filter%3D%27url%28%23f%29%27%20opacity%3D%270.5%27%2F%3E%3C%2Fsvg%3E"),
+    radial-gradient(ellipse 70% 50% at 18% 6%, rgb(138 90 43 / 0.05), transparent 72%),
+    radial-gradient(ellipse 60% 44% at 88% 96%, rgb(47 111 122 / 0.05), transparent 72%),
+    linear-gradient(168deg, #fefbf4, #f7f2e6 58%, #f2ecdd);
+  background-size: 220px 220px, cover, cover, cover;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
+}
+
+/*
+  Vidro fino nos painéis. Em tema claro o desfoque pesado suja o texto, então
+  aqui ele é só o suficiente para a fibra atravessar.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(6px) saturate(104%);
+}

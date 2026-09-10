@@ -682,7 +682,7 @@ export const Composer: React.FC<ComposerProps> = ({
               cn("flex shrink-0 items-center gap-[var(--composer-action-gap)]", gravando && "hidden"),
             )}
           >
-            <span data-gc="conversa.composer.span--3" className="hidden @sm:flex">
+            <span data-gc="conversa.composer.span--3" className="hidden @md:flex">
             <SeletorDeFonte data-gc="conversa.composer.seletor-de-fonte"
               fonte={fonte}
               disabled={!podeEscrever}
@@ -737,6 +737,7 @@ export const Composer: React.FC<ComposerProps> = ({
                     flxCls("botaoDaCaixa"),
                     boxButtonClass,
                     "text-ink-muted hover:bg-hover hover:text-brand",
+                    podeEnviar ? "flex" : "hidden @md:flex",
                   )}
                 >
                   <Send data-gc="conversa.composer.send" size={20} />

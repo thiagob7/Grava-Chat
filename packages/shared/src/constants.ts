@@ -7,6 +7,9 @@ export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
 export const DESIRED_STATUSES = ["ONLINE", "IDLE", "DND", "INVISIBLE"] as const;
 export type DesiredStatus = (typeof DESIRED_STATUSES)[number];
 
+export const FILTROS_DE_SPAM = ["TODOS", "DESCONHECIDOS", "NENHUM"] as const;
+export type FiltroDeSpam = (typeof FILTROS_DE_SPAM)[number];
+
 export const LIMITS = {
   messageLength: 4000,
   guildName: 64,

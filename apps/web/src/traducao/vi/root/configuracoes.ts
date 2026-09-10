@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Mức thu phóng của ứng dụng",
     escalaDaFonte: "Cỡ chữ trong trò chuyện",
     modoStreamer: "Quyền riêng tư khi phát trực tiếp",
+    cursores: "Con trỏ",
     movimento: "Chuyển động",
     textoEmVoz: "Chuyển văn bản thành giọng nói",
     teclado: "Bàn phím",

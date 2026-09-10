@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "İletilmedi — çok hızlı gönderiyorsun",
     automod: "İletilmedi — AutoMod engelledi",
     recusada: "İletilmedi — bu sohbet yanıt kabul etmiyor",
+    naoEntregue: "İletilmedi — bu kişi senden mesaj almıyor",
   },
   mencao: {
     cargo: "Rol bahsi",

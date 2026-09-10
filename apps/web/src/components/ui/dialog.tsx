@@ -24,7 +24,7 @@ export const DialogContent = ({
     />
     <DialogPrimitive.Content data-gc="ui.dialog.dialog-primitivecontent"
       className={cn(
-        "janela regiao-sem-arrasto fixed inset-0 z-50 m-auto h-fit max-h-[92vh] w-full max-w-md outline-none",
+        "janela regiao-sem-arrasto fixed inset-0 z-50 m-auto h-fit max-h-[92vh] w-[calc(100%-1.5rem)] max-w-md outline-none sm:w-full",
         flxCls("janela"),
         "rounded-xl border border-line bg-surface-1",
         "shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_0.25rem_0.75rem_-0.25rem_rgba(0,0,0,0.14),0_0.75rem_2rem_-0.75rem_rgba(0,0,0,0.12)]",

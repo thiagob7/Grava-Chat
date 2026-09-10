@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "ระดับการซูมของแอป",
     escalaDaFonte: "ขนาดตัวอักษรในแชท",
     modoStreamer: "ความเป็นส่วนตัวขณะสตรีม",
+    cursores: "เคอร์เซอร์",
     movimento: "การเคลื่อนไหว",
     textoEmVoz: "ข้อความเป็นเสียง",
     teclado: "แป้นพิมพ์",

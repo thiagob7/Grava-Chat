@@ -9,6 +9,7 @@ import {
   friendshipParams,
   respondFriendInput,
   openDmInput,
+  responderPedidoDeDmInput,
 } from "~/validations/friendship.js";
 
 const notificar = (...userIds: string[]) => {
@@ -66,9 +67,26 @@ export async function friendRoutes(app: FastifyInstance) {
 
   app.post("/dms", async (req) => {
     const { userId } = openDmInput.parse(req.body);
-    const channel = await friendshipService.openDm(req.userId, userId);
+    const { canal, pedido } = await friendshipService.openDm(req.userId, userId);
 
-    io().to(rooms.user(userId)).emit("dm:created", { channelId: channel.id });
-    return channel;
+    io()
+      .to(rooms.user(userId))
+      .emit(pedido ? "dm:pedido" : "dm:created", { channelId: canal.id });
+
+    return { ...canal, pedido };
+  });
+
+  app.get("/dms/pedidos", (req) => friendshipService.listPedidos(req.userId));
+
+  app.post("/dms/pedidos/:channelId", async (req) => {
+    const { channelId } = z.object({ channelId: objectId }).parse(req.params);
+    const { acao } = responderPedidoDeDmInput.parse(req.body);
+
+    const resultado = await friendshipService.responderPedido(req.userId, channelId, acao);
+
+    io().to(rooms.user(req.userId)).emit("dm:pedido", { channelId });
+    if (resultado.aceito) io().to(rooms.user(req.userId)).emit("dm:created", { channelId });
+
+    return resultado;
   });
 }

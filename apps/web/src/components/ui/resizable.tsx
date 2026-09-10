@@ -146,7 +146,7 @@ export const WidthHandle: React.FC<
     aria-valuemax={bounds.max}
     tabIndex={0}
     className={cn(
-      "group/alca absolute inset-y-0 z-20 w-2 cursor-col-resize",
+      "group/alca absolute inset-y-0 z-40 w-2 cursor-col-resize",
       edge === "right" ? "-right-1" : "-left-1",
       className,
     )}
@@ -157,8 +157,8 @@ export const WidthHandle: React.FC<
       className={cn(
         "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
         dragging
-          ? "w-0.5 bg-brand"
-          : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-brand",
+          ? "w-0.5 bg-ink-faint/45"
+          : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint/30 group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-ink-faint/45",
       )}
     />
   </div>

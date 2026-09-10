@@ -18,7 +18,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-member";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
-import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
+import { Sheet, SheetCloseButton, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useTelaEstreita } from "~/hooks/use-tela-estreita";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
 import {
@@ -44,6 +44,7 @@ import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
 import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
 import { VoiceChatPanel } from "~/features/voz/components/VoiceChatPanel";
 import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { MemberList } from "~/features/servidor/components/MemberList";
@@ -168,15 +169,34 @@ export const Chat: React.FC = () => {
 
   if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
 
+  const lateral = useResizableWidth("canais", {
+    initial: 320,
+    token: "--layout-sidebar-width",
+    min: 180,
+    max: 420,
+    edge: "right",
+  });
+
   const navegacao = (
-    <ColunaDaEsquerda data-gc="chat.chat.coluna-da-esquerda" rodape={
+    <ColunaDaEsquerda data-gc="chat.chat.coluna-da-esquerda"
+      rodape={
         <RodapeDaBarra data-gc="chat.chat.rodape-da-barra"
           user={user}
           guildId={routeGuildId}
           onLogout={() => void handleLogout()}
           accountChannelId={inCallElsewhere ? accountVoiceChannelId : null}
         />
-      }>
+      }
+      alca={
+        <WidthHandle data-gc="chat.chat.width-handle"
+          edge="right"
+          dragging={lateral.dragging}
+          width={lateral.width}
+          bounds={lateral.bounds}
+          {...lateral.handle}
+        />
+      }
+    >
         <GuildRail data-gc="chat.chat.guild-rail"
           activeGuildId={routeGuildId ?? null}
           onSelect={(id) => navigate(`/channels/${id}`)}
@@ -188,6 +208,8 @@ export const Chat: React.FC = () => {
           detail={detail}
           summary={summary}
           activeChannelId={routeChannelId}
+          largura={lateral.width}
+          fluida={telaEstreita}
           readStates={readStates}
           user={user}
           onSelectChannel={(id) => {
@@ -213,8 +235,9 @@ export const Chat: React.FC = () => {
     <div data-gc="chat.chat.div" {...flx("linhaDoApp", "flex h-full")}>
       {telaEstreita ? (
         <Sheet data-gc="chat.chat.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
-          <SheetContent data-gc="chat.chat.sheet-content" className="inset-y-0 left-0 right-auto w-[19rem] max-w-[85vw] flex-row p-0">
+          <SheetContent data-gc="chat.chat.sheet-content" className="inset-y-0 left-0 right-auto w-full max-w-none flex-row p-0 sm:w-[min(24rem,93vw)]">
             <SheetTitle data-gc="chat.chat.sheet-title" className="sr-only">Servidores e canais</SheetTitle>
+            <SheetCloseButton data-gc="chat.chat.sheet-close-button" className="absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
             {navegacao}
           </SheetContent>
         </Sheet>
@@ -224,7 +247,7 @@ export const Chat: React.FC = () => {
 
       <div data-gc="chat.chat.div--2" {...flx("colunaDoMiolo", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
         {!semCabecalho && (
-        <header data-gc="chat.chat.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
+        <header data-gc="chat.chat.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-line bg-cabecalho shadow-sm")}>
           <div data-gc="chat.chat.div--3"
             {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-2 px-4")}
           >

@@ -12,6 +12,16 @@ function aCascaAbreJanela(): boolean {
   return Boolean(window.gravae?.janela?.fixarPorCima);
 }
 
+/*
+  O estúdio abre numa janela DE FORA do app, que dá para fixar por cima, soltar
+  e arrastar para outro monitor. É o ponto dele: mexer no tema olhando o app
+  ao lado, e não por cima.
+
+  No navegador isso é um pedido, não uma ordem: se o Chrome resolver abrir
+  como aba, ou se já existir uma aba com este nome — nesse caso ele reaproveita
+  e ignora as medidas —, o resultado sai diferente do pedido. Quando o pedido
+  falha de vez, cai na janela flutuante de dentro do app, logo abaixo.
+*/
 function abrirNoSistema(): boolean {
   if (ehDesktop() && !aCascaAbreJanela()) return false;
 

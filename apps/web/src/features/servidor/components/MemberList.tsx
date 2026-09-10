@@ -76,7 +76,7 @@ export const MemberList: React.FC<MemberListProps> = ({
         aria-label={t("comum.carregando")}
         {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}
       >
-        <div data-gc="servidor.member-list.div" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-divisor")} />
+        <div data-gc="servidor.member-list.div" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-line")} />
         <div data-gc="servidor.member-list.div--2" className="h-full overflow-hidden px-2 py-4">
           <Skeleton data-gc="servidor.member-list.skeleton" className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
 
@@ -93,7 +93,7 @@ export const MemberList: React.FC<MemberListProps> = ({
 
   return (
     <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}>
-      <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-divisor")} />
+      <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-line")} />
       <div data-gc="servidor.member-list.div--5" {...flx("roladorDeMembros", cn("h-full overflow-y-auto px-2 py-4", flxCls("conteudoDaListaDeMembros")))}>
         {grupos.map((grupo) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
@@ -152,6 +152,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
             podeModerar={podeModerar}
           >
             <button data-gc="servidor.member-list.button"
+              data-gc-usuario={member.user.id}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded px-2 py-1 text-left transition hover:bg-surface-3",
                 flxCls("linhaDeMembro"),

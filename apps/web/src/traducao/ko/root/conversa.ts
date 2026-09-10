@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "전송되지 않음: 너무 빠르게 보내고 있습니다",
     automod: "전송되지 않음: AutoMod가 차단했습니다",
     recusada: "전송되지 않음: 이 대화는 답장을 받지 않습니다",
+    naoEntregue: "전달되지 않음 — 이 사람은 당신의 메시지를 받지 않습니다",
   },
   mencao: {
     cargo: "역할 멘션",

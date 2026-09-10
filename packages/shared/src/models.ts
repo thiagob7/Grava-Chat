@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { CHANNEL_TYPES, DESIRED_STATUSES, PRESENCE_STATUSES, LIMITS } from "./constants.js";
+import {
+  CHANNEL_TYPES,
+  DESIRED_STATUSES,
+  FILTROS_DE_SPAM,
+  PRESENCE_STATUSES,
+  LIMITS,
+} from "./constants.js";
 import {
   corHex,
   ESTILOS_DE_CARGO,
@@ -36,10 +42,22 @@ export const selfUserSchema = publicUserSchema.extend({
   mostraAtividade: z.boolean(),
   mostraServidoresEmComum: z.boolean(),
   mostraAmigosEmComum: z.boolean(),
+  permitirDmDeMembros: z.boolean(),
+  filtroDeSpam: z.enum(FILTROS_DE_SPAM),
 
   excluirEm: z.iso.datetime().nullable(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
+
+export const pedidoDeDmSchema = z.object({
+  channelId: objectId,
+  de: publicUserSchema,
+  spam: z.boolean(),
+  servidoresEmComum: z.number().int(),
+  criadoEm: z.iso.datetime(),
+  previa: z.string().nullable(),
+});
+export type PedidoDeDm = z.infer<typeof pedidoDeDmSchema>;
 
 export const guildSchema = z.object({
   id: objectId,

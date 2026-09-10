@@ -111,6 +111,7 @@ export const queryKeys = {
     ativos: "find-friends-ativos",
     find_many: "find-many-friends",
     dms: "find-many-dms",
+    pedidos: "find-pedidos-de-dm",
   },
 
   invite: {

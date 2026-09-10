@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nem kézbesítve — túl gyorsan küldesz",
     automod: "Nem kézbesítve — az AutoMod blokkolta",
     recusada: "Nem kézbesítve — ez a beszélgetés nem fogad válaszokat",
+    naoEntregue: "Nem kézbesítve — ez a személy nem fogad tőled üzenetet",
   },
   mencao: {
     cargo: "Rang említése",

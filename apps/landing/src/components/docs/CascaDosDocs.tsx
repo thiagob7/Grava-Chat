@@ -11,6 +11,10 @@ import { APP, GRUPOS } from "~/dados/docs";
 
 const GUIAS = [
   "/desenvolvedores/primeiro-bot",
+  "/desenvolvedores/biblioteca",
+  "/desenvolvedores/servidores-e-canais",
+  "/desenvolvedores/webhooks",
+  "/desenvolvedores/comunidade",
   "/desenvolvedores/tempo-real",
   "/desenvolvedores/comandos",
   "/desenvolvedores/moderacao",
@@ -18,8 +22,23 @@ const GUIAS = [
 
 const REFERENCIA = [
   "/desenvolvedores/referencia",
+  "/desenvolvedores/referencia/mensagem",
+  "/desenvolvedores/referencia/canal",
+  "/desenvolvedores/referencia/servidor",
+  "/desenvolvedores/referencia/membro",
+  "/desenvolvedores/referencia/cargo",
+  "/desenvolvedores/referencia/moderacao",
+  "/desenvolvedores/referencia/expressao",
+  "/desenvolvedores/referencia/voz",
+  "/desenvolvedores/referencia/aplicativo",
+  "/desenvolvedores/referencia/webhook",
+  "/desenvolvedores/referencia/convite",
+  "/desenvolvedores/referencia/auditoria",
   "/desenvolvedores/eventos",
+  "/desenvolvedores/erros",
   "/desenvolvedores/limites",
+  "/desenvolvedores/mudancas",
+  "/desenvolvedores/politicas",
   "/desenvolvedores/temas",
 ];
 

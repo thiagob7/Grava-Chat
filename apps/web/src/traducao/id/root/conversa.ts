@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Tidak terkirim — kamu mengirim terlalu cepat",
     automod: "Tidak terkirim — AutoMod memblokirnya",
     recusada: "Tidak terkirim — percakapan ini tidak menerima balasan",
+    naoEntregue: "Tidak terkirim — orang ini tidak menerima pesan darimu",
   },
   mencao: {
     cargo: "Sebutan peran",

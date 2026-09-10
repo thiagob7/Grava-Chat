@@ -1,0 +1,175 @@
+/**
+ * @name Ano-novo
+ * @description Meia-noite azul atrás do app inteiro, com fumaça no ar e fogos de verdade subindo e abrindo com física.
+ * @author Gravaê
+ * @version 5.0.0
+ * @tags escuro, sazonal, dourado, ano-novo, animado
+ */
+:root {
+  color-scheme: dark;
+
+  --background-primary: rgb(9 13 28 / 0.42);
+  --background-secondary: rgb(6 10 22 / 0.58);
+  --background-secondary-lighter: rgb(14 19 40 / 0.55);
+  --guild-list-foreground: rgb(20 26 52 / 0.62);
+  --form-surface-background: rgb(17 22 46 / 0.94);
+  --background-secondary-alt: rgb(12 17 36 / 0.66);
+  --background-channel-header: rgb(9 13 28 / 0.44);
+  --composer-surface-color: rgb(15 21 46 / 0.7);
+  --background-textarea: rgb(18 24 50 / 0.8);
+  --background-modifier-accent-focus: #1d2545;
+
+  --border-color: rgb(212 175 55 / 0.16);
+  --color-line-sutil: rgb(220 230 255 / 0.07);
+  --user-area-divider-color: rgb(0 0 0 / 0.45);
+  --background-modifier-hover: rgb(212 175 55 / 0.06);
+  --background-modifier-selected: rgb(212 175 55 / 0.14);
+  --scrollbar-thumb-bg: rgb(120 130 170 / 0.45);
+  --scrollbar-thumb-bg-hover: #7882aa;
+
+  --text-chat: #eef1fa;
+  --text-chat-muted: #b6bdd4;
+  --text-tertiary-muted: #7d849e;
+  --color-pilula: #eef1fa;
+
+  --accent-primary: #d4af37;
+  --brand-primary-light: #bb992c;
+  --text-on-brand-primary: #0b1020;
+  --focus-primary: rgb(212 175 55 / 0.55);
+
+  --status-online: #43c08a;
+  --status-idle: #e8c23f;
+  --status-dnd: #e0554a;
+  --status-danger: #e0554a;
+  --control-button-danger-hover-bg: rgb(224 85 74 / 0.16);
+
+  --text-link: #8fb6f5;
+  --markup-mention-text: #e8cd6a;
+  --alert-important-color: #b9a3f0;
+  --color-here: #f0dc93;
+  --message-mention-color: #e8cd6a;
+  --message-mention-bg: rgb(212 175 55 / 0.16);
+  --code-inline-bg: #161d36;
+  --code-block-bg: #070b17;
+  --accent-warning: #e8c23f;
+  --text-selection: rgb(212 175 55 / 0.28);
+
+  --color-veu: rgb(3 5 12 / 0.72);
+  --color-palco: #060915;
+  --color-palco-ink: #eef1fa;
+  --color-sobre-midia: rgb(0 0 0 / 0.62);
+  --color-sombra: rgb(0 0 0 / 0.48);
+  --color-brilho: rgb(230 220 180 / 0.32);
+
+  /*
+    Pede o motor de fogos do app. As três versões anteriores deste tema
+    tentaram estourar fogo com `box-shadow`, e o teto ficou claro: sombra não
+    cai, não tem atrito e não some uma antes da outra. Agora o desenho é em
+    canvas, com física, e o tema só escolhe pelo nome.
+
+    Nome que o app não conhece simplesmente não liga nada.
+  */
+  --gc-fundo: fogos;
+}
+
+/*
+  O fundo da noite: azul profundo, com a cidade acesa lá embaixo e o frio
+  vindo do alto. Preso na tela, senão o céu rola junto com a conversa.
+*/
+body {
+  background-color: #04060f;
+  background-image:
+    radial-gradient(ellipse 80% 34% at 50% 104%, rgb(232 168 60 / 0.22), transparent 72%),
+    radial-gradient(ellipse 46% 40% at 90% 6%, rgb(70 110 220 / 0.18), transparent 74%),
+    linear-gradient(170deg, #04060f, #0a1024 56%, #04060f);
+  background-attachment: fixed;
+}
+
+/*
+  A fumaça da queima, que é o que dá corpo ao céu entre um foguete e outro.
+
+  Tudo daqui para baixo vive em `z-index: -1`, ATRÁS do app. A versão anterior
+  jogava os fogos por cima da tela em `mix-blend-mode: screen` e o resultado
+  era faísca passando na frente da conversa, que cansa em dois minutos. Céu é
+  cenário: fica no fundo, e aparece porque as superfícies lá em cima nasceram
+  translúcidas.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.75;
+  background-image:
+    radial-gradient(ellipse 32% 22% at 18% 68%, rgb(255 186 70 / 0.45), transparent 70%),
+    radial-gradient(ellipse 28% 20% at 74% 56%, rgb(96 150 255 / 0.34), transparent 70%),
+    radial-gradient(ellipse 24% 18% at 52% 84%, rgb(255 96 160 / 0.24), transparent 70%);
+  filter: blur(34px);
+  animation: ano-novo-fumaca 70s ease-in-out infinite alternate;
+}
+
+@keyframes ano-novo-fumaca {
+  from {
+    transform: translate3d(-2%, 1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3%, -2%, 0) scale(1.12);
+  }
+}
+
+/* As brasas que ficam no ar depois de cada estouro, subindo devagar. */
+html::before {
+  content: "";
+  position: fixed;
+  inset: -10% 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(1.5px 1.5px at 18% 26%, rgb(255 228 156 / 0.95), transparent 60%),
+    radial-gradient(1.2px 1.2px at 68% 61%, rgb(255 246 214 / 0.85), transparent 60%),
+    radial-gradient(1.7px 1.7px at 41% 78%, rgb(255 206 110 / 0.9), transparent 60%),
+    radial-gradient(1.2px 1.2px at 84% 33%, rgb(206 224 255 / 0.8), transparent 60%),
+    radial-gradient(1.4px 1.4px at 7% 64%, rgb(255 236 180 / 0.85), transparent 60%);
+  background-size: 250px 260px, 320px 330px, 400px 410px, 480px 490px, 560px 570px;
+  animation: ano-novo-brasas 150s linear infinite;
+}
+
+@keyframes ano-novo-brasas {
+  to {
+    background-position: 40px -520px, -60px -660px, 70px -820px, -80px -980px, 90px -1140px;
+  }
+}
+
+/*
+  O vidro é o que torna o céu visível: as superfícies acima já são
+  translúcidas, e o desfoque separa o texto do que passa atrás sem escurecer
+  o painel inteiro.
+*/
+.lista-de-canais,
+.lista-de-conversas,
+.lista-de-comunidades,
+.lista-de-membros,
+.topo-do-canal,
+.caixa-de-escrever,
+.area-do-usuario {
+  backdrop-filter: blur(14px) saturate(128%);
+}
+
+.janela,
+.menu,
+.balao {
+  backdrop-filter: blur(18px) saturate(138%);
+}
+
+/*
+  Quem pediu menos movimento recebe o mesmo céu, parado. Os fogos somem
+  sozinhos: o motor não desenha nada quando o sistema pede menos movimento.
+*/
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  html::before {
+    animation: none;
+  }
+}

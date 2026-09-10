@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "רמת הזום של האפליקציה",
     escalaDaFonte: "גודל הגופן בצ'אט",
     modoStreamer: "פרטיות בשידור",
+    cursores: "סמנים",
     movimento: "תנועה",
     textoEmVoz: "טקסט לדיבור",
     teclado: "מקלדת",

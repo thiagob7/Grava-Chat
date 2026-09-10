@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Trash2, X } from "lucide-react";
+import { ArrowLeft, Trash2, X } from "lucide-react";
 import type { GuildMember, Permission } from "@gravae/shared";
 
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
@@ -102,7 +102,15 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     permissoes.has("ADMINISTRATOR") || permissoes.has(p);
   const [secao, setSecao] = useState<Secao>(canManage ? "perfil" : "membros");
 
+  /*
+    Mesma história da janela de configurações do usuário: a lateral tem 240 px
+    fixos e num telefone sobrava menos da metade da tela para o conteúdo. No
+    celular a janela vira mestre-detalhe; de `md` para cima nada muda.
+  */
+  const [conteudoAberto, setConteudoAberto] = useState(false);
+
   useEffect(() => {
+    if (open) setConteudoAberto(false);
     if (open && secaoInicial) setSecao(secaoInicial);
   }, [open, secaoInicial]);
 
@@ -151,7 +159,10 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             Configurações de {detail.guild.name}
           </DialogPrimitive.Title>
 
-          <nav data-gc="servidor.server-settings.server-settings-modal.nav" className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
+          <nav data-gc="servidor.server-settings.server-settings-modal.nav" className={cn(
+            "w-full shrink-0 overflow-y-auto bg-surface-1 px-3 py-12 md:block md:w-60",
+            conteudoAberto ? "hidden" : "block",
+          )}>
             <p data-gc="servidor.server-settings.server-settings-modal.p" className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
               {detail.guild.name}
             </p>
@@ -171,7 +182,10 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                   {itens.map((id) => (
                     <button data-gc="servidor.server-settings.server-settings-modal.button"
                       key={id}
-                      onClick={() => setSecao(id)}
+                      onClick={() => {
+                        setSecao(id);
+                        setConteudoAberto(true);
+                      }}
                       className={cn(
                         "mb-0.5 flex w-full items-center justify-between rounded px-2.5 py-1.5 text-left text-sm transition",
                         secao === id
@@ -188,7 +202,10 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
 
             {visivel.excluir && (
               <button data-gc="servidor.server-settings.server-settings-modal.button--2"
-                onClick={() => setSecao("excluir")}
+                onClick={() => {
+                  setSecao("excluir");
+                  setConteudoAberto(true);
+                }}
                 className="mt-2 flex w-full items-center justify-between rounded border-t border-line px-2.5 py-1.5 pt-3 text-left text-sm text-danger transition hover:bg-danger-fundo"
               >
                 {t(ROTULOS.excluir)}
@@ -197,7 +214,18 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             )}
           </nav>
 
-          <div data-gc="servidor.server-settings.server-settings-modal.div--2" className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
+          <div data-gc="servidor.server-settings.server-settings-modal.div--2" className={cn(
+            "flex-1 overflow-y-auto bg-surface-2 px-4 py-8 md:block md:px-10 md:py-12",
+            conteudoAberto ? "block" : "hidden md:block",
+          )}>
+            <button data-gc="servidor.server-settings.server-settings-modal.button--3"
+              type="button"
+              onClick={() => setConteudoAberto(false)}
+              className="-ml-1 mb-4 flex items-center gap-1.5 rounded p-1 text-sm text-ink-muted transition hover:bg-hover hover:text-ink md:hidden"
+            >
+              <ArrowLeft data-gc="servidor.server-settings.server-settings-modal.arrow-left" size={16} /> Voltar
+            </button>
+
             {secao === "perfil" && (
               <ServerProfileSection data-gc="servidor.server-settings.server-settings-modal.server-profile-section" guild={detail.guild} />
             )}

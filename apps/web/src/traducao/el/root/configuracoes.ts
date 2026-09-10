@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Επίπεδο ζουμ της εφαρμογής",
     escalaDaFonte: "Μέγεθος γραμματοσειράς συνομιλίας",
     modoStreamer: "Απόρρητο κατά τη μετάδοση",
+    cursores: "Δείκτες",
     movimento: "Κίνηση",
     textoEmVoz: "Κείμενο σε ομιλία",
     teclado: "Πληκτρολόγιο",

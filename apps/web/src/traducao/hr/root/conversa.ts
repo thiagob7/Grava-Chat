@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Nije dostavljeno — šalješ prebrzo",
     automod: "Nije dostavljeno — AutoMod ju je blokirao",
     recusada: "Nije dostavljeno — ovaj razgovor ne prima odgovore",
+    naoEntregue: "Nije dostavljeno — ta osoba ne prima tvoje poruke",
   },
   mencao: {
     cargo: "Spominjanje uloge",

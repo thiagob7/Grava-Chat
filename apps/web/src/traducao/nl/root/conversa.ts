@@ -114,6 +114,7 @@ export const conversa = {
     depressa: "Niet bezorgd — je verstuurt te snel",
     automod: "Niet bezorgd — AutoMod heeft het geblokkeerd",
     recusada: "Niet bezorgd — dit gesprek accepteert geen antwoorden",
+    naoEntregue: "Niet bezorgd — deze persoon accepteert geen berichten van jou",
   },
   mencao: {
     cargo: "Rolvermelding",
