@@ -49,6 +49,7 @@ export const configuracoes = {
     zoomDoApp: "Programos mastelis",
     escalaDaFonte: "Pokalbio šrifto dydis",
     modoStreamer: "Privatumas transliuojant",
+    cursores: "Žymekliai",
     movimento: "Judesys",
     textoEmVoz: "Tekstas į kalbą",
     teclado: "Klaviatūra",
