@@ -54,6 +54,7 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
   <>
     <div data-gc="app.rodape-da-barra.div"
       ref={caixa}
+      data-gc-usuario={user?.id}
       {...flx(
         "areaDoUsuario",
         "area-do-usuario relative z-30 w-0 min-w-full bg-surface-1 px-2 pb-2",
@@ -62,6 +63,7 @@ export const RodapeDaBarra: React.FC<RodapeDaBarraProps> = ({
       <CartaoDaTransmissao data-gc="app.rodape-da-barra.cartao-da-transmissao" className="mb-2" />
 
       <div data-gc="app.rodape-da-barra.div--2"
+        data-gc-usuario={user?.id}
         {...flx(
           "cartaoDoUsuario",
           "flex min-h-[var(--user-card-min-height)] w-full flex-col justify-center overflow-hidden rounded-[var(--footer-box-radius)] bg-painel p-2 shadow-lg shadow-sombra [--gc-recorte:var(--color-painel)]",
