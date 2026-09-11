@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { ExternalLink, Link2, Plus, Trash2 } from "lucide-react";
 import {
-  comoSeLe,
-  enderecoDaConexao,
-  NOMES_DOS_SERVICOS,
-  SERVICOS,
-  type Conexao,
-  type Servico,
+  asLe,
+  connectionAddress,
+  SERVICES_NAMES,
+  SERVICES,
+  type Connection,
+  type Service,
 } from "@gravae/shared";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
@@ -14,38 +14,38 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 
-const TETO = 8;
+const CEILING = 8;
 
-export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
+export const ConnectionsSection: React.FC<{ user: SelfUserModel }> = ({
   user,
 }) => {
-  const salvar = useUpdateProfile();
-  const conexoes = user.perfil?.conexoes ?? [];
+  const save = useUpdateProfile();
+  const connections = user.profile?.connections ?? [];
 
-  const [servico, setServico] = useState<Servico>("github");
-  const [valor, setValor] = useState("");
+  const [service, setService] = useState<Service>("github");
+  const [value, setValue] = useState("");
 
-  const gravar = (proximas: Conexao[]) =>
-    salvar.mutate({ perfil: { ...user.perfil, conexoes: proximas } });
+  const record = (next: Connection[]) =>
+    save.mutate({ profile: { ...user.profile, connections: next } });
 
-  const podeAdicionar =
-    conexoes.length < TETO && enderecoDaConexao({ servico, valor }) !== null;
+  const canAdd =
+    connections.length < CEILING && connectionAddress({ service, value }) !== null;
 
-  const adicionar = () => {
-    if (!podeAdicionar) return;
+  const add = () => {
+    if (!canAdd) return;
 
-    gravar([...conexoes, { servico, valor: valor.trim().replace(/^@/, "") }]);
-    setValor("");
+    record([...connections, { service, value: value.trim().replace(/^@/, "") }]);
+    setValue("");
   };
 
   return (
     <div data-gc="configuracoes.conexoes-section.div">
-      <Secao data-gc="configuracoes.conexoes-section.secao"
-        id="conexoes"
-        titulo="Conexões"
-        detalhe="As contas de fora que aparecem no seu perfil, para quem abrir ele."
+      <Section data-gc="configuracoes.conexoes-section.section"
+        id="connections"
+        title="Conexões"
+        detail="As contas de fora que aparecem no seu perfil, para quem abrir ele."
       >
         <p data-gc="configuracoes.conexoes-section.p" className="mb-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Estas contas são{" "}
@@ -54,34 +54,34 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
           escreveu aqui — não uma prova de que a conta é sua.
         </p>
 
-        {conexoes.length ? (
+        {connections.length ? (
           <div data-gc="configuracoes.conexoes-section.div--2" className="mb-4 overflow-hidden rounded-lg border border-line">
-            {conexoes.map((conexao, indice) => {
-              const endereco = enderecoDaConexao(conexao);
+            {connections.map((connection, index) => {
+              const address = connectionAddress(connection);
 
               return (
                 <div data-gc="configuracoes.conexoes-section.div--3"
-                  key={`${conexao.servico}-${conexao.valor}-${indice}`}
+                  key={`${connection.service}-${connection.value}-${index}`}
                   className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0"
                 >
                   <Link2 data-gc="configuracoes.conexoes-section.link2" size={16} className="shrink-0 text-ink-faint" />
 
                   <div data-gc="configuracoes.conexoes-section.div--4" className="min-w-0 flex-1">
                     <p data-gc="configuracoes.conexoes-section.p--2" className="truncate text-sm font-medium">
-                      {NOMES_DOS_SERVICOS[conexao.servico]}
+                      {SERVICES_NAMES[connection.service]}
                     </p>
                     <p data-gc="configuracoes.conexoes-section.p--3" className="truncate text-xs text-ink-faint">
-                      {comoSeLe(conexao)}
+                      {asLe(connection)}
                     </p>
                   </div>
 
-                  {endereco && (
+                  {address && (
                     <a data-gc="configuracoes.conexoes-section.a"
-                      href={endereco}
+                      href={address}
                       target="_blank"
                       rel="noreferrer noopener"
                       title="Abrir"
-                      aria-label={`Abrir ${NOMES_DOS_SERVICOS[conexao.servico]}`}
+                      aria-label={`Abrir ${SERVICES_NAMES[connection.service]}`}
                       className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink"
                     >
                       <ExternalLink data-gc="configuracoes.conexoes-section.external-link" size={14} />
@@ -91,11 +91,11 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
                   <button data-gc="configuracoes.conexoes-section.button"
                     type="button"
                     onClick={() =>
-                      gravar(conexoes.filter((_, i) => i !== indice))
+                      record(connections.filter((_, i) => i !== index))
                     }
-                    disabled={salvar.isPending}
+                    disabled={save.isPending}
                     title="Remover"
-                    aria-label={`Remover ${NOMES_DOS_SERVICOS[conexao.servico]}`}
+                    aria-label={`Remover ${SERVICES_NAMES[connection.service]}`}
                     className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-danger disabled:opacity-40"
                   >
                     <Trash2 data-gc="configuracoes.conexoes-section.trash2" size={14} />
@@ -110,9 +110,9 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
           </p>
         )}
 
-        {conexoes.length >= TETO ? (
+        {connections.length >= CEILING ? (
           <p data-gc="configuracoes.conexoes-section.p--5" className="text-xs text-ink-faint">
-            Você chegou ao limite de {TETO}. Um perfil com vinte links deixa de
+            Você chegou ao limite de {CEILING}. Um perfil com vinte links deixa de
             ser perfil e vira lista de links — remova uma para adicionar outra.
           </p>
         ) : (
@@ -121,48 +121,48 @@ export const ConexoesSection: React.FC<{ user: SelfUserModel }> = ({
               <span data-gc="configuracoes.conexoes-section.span" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 Onde
               </span>
-              <SelectField data-gc="configuracoes.conexoes-section.select-field.set-servico"
-                value={servico}
-                onSelect={setServico}
-                options={SERVICOS.map((s) => ({
+              <SelectField data-gc="configuracoes.conexoes-section.select-field.set-service"
+                value={service}
+                onSelect={setService}
+                options={SERVICES.map((s) => ({
                   value: s,
-                  label: NOMES_DOS_SERVICOS[s],
+                  label: SERVICES_NAMES[s],
                 }))}
               />
             </label>
 
             <label data-gc="configuracoes.conexoes-section.label--2" className="min-w-0 flex-1">
               <span data-gc="configuracoes.conexoes-section.span--2" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                {servico === "site" ? "Endereço" : "Nome de usuário"}
+                {service === "site" ? "Endereço" : "Nome de usuário"}
               </span>
               <Input data-gc="configuracoes.conexoes-section.input"
-                value={valor}
-                onChange={(e) => setValor(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && adicionar()}
-                placeholder={servico === "site" ? "seusite.com" : "@voce"}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && add()}
+                placeholder={service === "site" ? "seusite.com" : "@voce"}
                 aria-label={
-                  servico === "site" ? "Endereço do site" : "Nome de usuário"
+                  service === "site" ? "Endereço do site" : "Nome de usuário"
                 }
               />
             </label>
 
-            <Button data-gc="configuracoes.conexoes-section.button.adicionar"
-              onClick={adicionar}
-              disabled={!podeAdicionar || salvar.isPending}
+            <Button data-gc="configuracoes.conexoes-section.button.add"
+              onClick={add}
+              disabled={!canAdd || save.isPending}
             >
               <Plus data-gc="configuracoes.conexoes-section.plus" size={16} /> Adicionar
             </Button>
           </div>
         )}
 
-        {valor.trim() && !enderecoDaConexao({ servico, valor }) && (
+        {value.trim() && !connectionAddress({ service, value }) && (
           <p data-gc="configuracoes.conexoes-section.p--6" className="mt-2 text-xs text-danger">
-            {servico === "site"
+            {service === "site"
               ? "Isso não parece um endereço de site. Precisa ter um domínio, e só http ou https."
               : "Nome de usuário só com letras, números, ponto, hífen e sublinhado."}
           </p>
         )}
-      </Secao>
+      </Section>
     </div>
   );
 };
