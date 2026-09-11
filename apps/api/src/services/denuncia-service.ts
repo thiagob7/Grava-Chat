@@ -4,18 +4,19 @@ import { AppError, NotFoundError } from "~/lib/http.js";
 import { ADMINS } from "~/lib/serialize.js";
 import { env } from "~/env.js";
 import { prisma } from "~/lib/prisma.js";
-import { enviarMensagem } from "~/realtime/difusao.js";
+import { sendMessage } from "~/realtime/difusao.js";
+import { botRepository } from "~/repositories/bot-repository.js";
 import { dmRepository } from "~/repositories/friendship-repository.js";
 import { guildRepository } from "~/repositories/guild-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
-import { sistemaService } from "~/services/sistema-service.js";
+import { systemService } from "~/services/sistema-service.js";
 
-export const MOTIVOS_DE_DENUNCIA = ["spam", "assedio", "conteudo", "golpe", "outro"] as const;
-export type MotivoDeDenuncia = (typeof MOTIVOS_DE_DENUNCIA)[number];
+export const REPORT_REASONS = ["spam", "assedio", "conteudo", "golpe", "outro"] as const;
+export type ReportReason = (typeof REPORT_REASONS)[number];
 
-const NOME_DO_MOTIVO: Record<MotivoDeDenuncia, string> = {
+const REASON_NAME: Record<ReportReason, string> = {
   spam: "Spam ou propaganda",
   assedio: "Assédio ou ódio",
   conteudo: "Conteúdo impróprio",
@@ -23,209 +24,246 @@ const NOME_DO_MOTIVO: Record<MotivoDeDenuncia, string> = {
   outro: "Outro",
 };
 
-const TRECHO = 300;
+const SNIPPET = 300;
 
 const web = () => env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
 
-async function avisarAdministradores(texto: string, log?: FastifyBaseLogger) {
-  const casa = await sistemaService.usuario();
+async function notifyAdmins(text: string, log?: FastifyBaseLogger) {
+  const house = await systemService.user();
 
   for (const email of ADMINS) {
     try {
       const admin = await userRepository.findByEmail(email);
-      if (!admin || admin.id === casa.id) continue;
+      if (!admin || admin.id === house.id) continue;
 
-      const canal =
-        (await dmRepository.findBetween(casa.id, admin.id)) ?? (await dmRepository.create([casa.id, admin.id]));
+      const channel =
+        (await dmRepository.findBetween(house.id, admin.id)) ?? (await dmRepository.create([house.id, admin.id]));
 
-      await enviarMensagem(casa.id, { channelId: canal.id, content: texto });
+      await sendMessage(house.id, { channelId: channel.id, content: text });
     } catch (err) {
       log?.error({ err }, `denúncia: não deu para avisar ${email}`);
     }
   }
 }
 
-export interface DenunciaNaFila {
+export interface ReportQueue {
   id: string;
-  tipo: "comunidade" | "mensagem";
-  motivo: MotivoDeDenuncia;
-  motivoEscrito: string;
-  detalhes: string | null;
+  kind: "comunidade" | "mensagem";
+  reason: ReportReason;
+  reasonWritten: string;
+  details: string | null;
   createdAt: string;
-  resolvidaEm: string | null;
-  decisao: string | null;
-  autor: { id: string; username: string; displayName: string } | null;
-  comunidade: { id: string; nome: string } | null;
-  mensagem: {
+  resolvedAt: string | null;
+  decision: string | null;
+  author: { id: string; username: string; displayName: string } | null;
+  community: { id: string; name: string } | null;
+  message: {
     id: string;
     channelId: string;
     guildId: string | null;
-    trecho: string;
-    autor: { id: string; username: string; displayName: string } | null;
+    snippet: string;
+    author: { id: string; username: string; displayName: string } | null;
   } | null;
 }
 
-export const denunciaService = {
-  async denunciarServidor(
+export const reportService = {
+  async reportApp(
     userId: string,
-    guildId: string,
-    dados: { motivo: MotivoDeDenuncia; detalhes?: string },
+    botId: string,
+    data: { reason: ReportReason; details?: string },
     log?: FastifyBaseLogger,
   ) {
-    await accessService.requireMember(userId, guildId);
-    const guild = await guildRepository.findByIdOrThrow(guildId);
-    const autor = await userRepository.findByIdOrThrow(userId);
+    const bot = await botRepository.findPublicById(botId);
+    if (!bot) throw new NotFoundError("Aplicativo não encontrado");
 
-    const denuncia = await prisma.denuncia.create({
-      data: { guildId, autorId: userId, motivo: dados.motivo, detalhes: dados.detalhes ?? null },
+    const author = await userRepository.findByIdOrThrow(userId);
+
+    const report = await prisma.report.create({
+      data: {
+        kind: "aplicativo",
+        accusedId: bot.botUserId,
+        authorId: userId,
+        reason: data.reason,
+        details: data.details ?? null,
+      },
     });
 
-    await avisarAdministradores(
+    await notifyAdmins(
       [
-        `Denúncia de comunidade: ${guild.name} (${guild.id})`,
-        `Motivo: ${NOME_DO_MOTIVO[dados.motivo]}`,
-        dados.detalhes ? `Detalhes: ${dados.detalhes}` : null,
-        `Por @${autor.username} (${autor.id})`,
+        `**Denúncia de aplicativo** — ${REASON_NAME[data.reason]}`,
+        `Aplicativo: **${bot.user.displayName}** (\`${bot.id}\`)`,
+        `Quem denunciou: **${author.displayName}** (@${author.username})`,
+        data.details ? `Detalhes: ${data.details}` : null,
+        `${web()}/admin/denuncias`,
       ]
         .filter(Boolean)
         .join("\n"),
       log,
     );
 
-    return { id: denuncia.id };
+    return report;
   },
 
-  async listar(filtro: { pendentes?: boolean; antesDe?: string; limite?: number } = {}) {
-    const limite = Math.min(filtro.limite ?? 50, 100);
+  async reportServer(
+    userId: string,
+    guildId: string,
+    data: { reason: ReportReason; details?: string },
+    log?: FastifyBaseLogger,
+  ) {
+    await accessService.requireMember(userId, guildId);
+    const guild = await guildRepository.findByIdOrThrow(guildId);
+    const author = await userRepository.findByIdOrThrow(userId);
 
-    const denuncias = await prisma.denuncia.findMany({
-      where: {
-        ...(filtro.pendentes ? { resolvidaEm: null } : {}),
-        ...(filtro.antesDe ? { id: { lt: filtro.antesDe } } : {}),
-      },
-      orderBy: { id: "desc" },
-      take: limite + 1,
+    const report = await prisma.report.create({
+      data: { guildId, authorId: userId, reason: data.reason, details: data.details ?? null },
     });
 
-    const temMais = denuncias.length > limite;
-    const pagina = temMais ? denuncias.slice(0, limite) : denuncias;
+    await notifyAdmins(
+      [
+        `Denúncia de comunidade: ${guild.name} (${guild.id})`,
+        `Motivo: ${REASON_NAME[data.reason]}`,
+        data.details ? `Detalhes: ${data.details}` : null,
+        `Por @${author.username} (${author.id})`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      log,
+    );
 
-    const idsDeGente = [
-      ...new Set(pagina.flatMap((d) => [d.autorId, d.acusadoId].filter(Boolean) as string[])),
+    return { id: report.id };
+  },
+
+  async list(filter: { pending?: boolean; before?: string; limit?: number } = {}) {
+    const limit = Math.min(filter.limit ?? 50, 100);
+
+    const reports = await prisma.report.findMany({
+      where: {
+        ...(filter.pending ? { resolvedAt: null } : {}),
+        ...(filter.before ? { id: { lt: filter.before } } : {}),
+      },
+      orderBy: { id: "desc" },
+      take: limit + 1,
+    });
+
+    const hasMore = reports.length > limit;
+    const page = hasMore ? reports.slice(0, limit) : reports;
+
+    const folksIds = [
+      ...new Set(page.flatMap((d) => [d.authorId, d.accusedId].filter(Boolean) as string[])),
     ];
-    const idsDeServidor = [...new Set(pagina.map((d) => d.guildId).filter(Boolean) as string[])];
+    const serverIds = [...new Set(page.map((d) => d.guildId).filter(Boolean) as string[])];
 
-    const [gente, servidores] = await Promise.all([
-      idsDeGente.length ? userRepository.findManyByIds(idsDeGente) : [],
-      idsDeServidor.length ? guildRepository.findManyByIds(idsDeServidor) : [],
+    const [folks, servers] = await Promise.all([
+      folksIds.length ? userRepository.findManyByIds(folksIds) : [],
+      serverIds.length ? guildRepository.findManyByIds(serverIds) : [],
     ]);
 
-    const quem = new Map(gente.map((u) => [u.id, { id: u.id, username: u.username, displayName: u.displayName }]));
-    const onde = new Map(servidores.map((g) => [g.id, g]));
+    const who = new Map(folks.map((u) => [u.id, { id: u.id, username: u.username, displayName: u.displayName }]));
+    const where = new Map(servers.map((g) => [g.id, g]));
 
-    const itens: DenunciaNaFila[] = pagina.map((d) => {
-      const ehDeMensagem = d.tipo === "mensagem";
-      const servidor = d.guildId ? onde.get(d.guildId) : null;
+    const items: ReportQueue[] = page.map((d) => {
+      const isMessage = d.kind === "mensagem";
+      const server = d.guildId ? where.get(d.guildId) : null;
 
       return {
         id: d.id,
-        tipo: ehDeMensagem ? "mensagem" : "comunidade",
-        motivo: d.motivo as MotivoDeDenuncia,
-        motivoEscrito: NOME_DO_MOTIVO[d.motivo as MotivoDeDenuncia] ?? d.motivo,
-        detalhes: d.detalhes,
+        kind: isMessage ? "mensagem" : "comunidade",
+        reason: d.reason as ReportReason,
+        reasonWritten: REASON_NAME[d.reason as ReportReason] ?? d.reason,
+        details: d.details,
         createdAt: d.createdAt.toISOString(),
-        resolvidaEm: d.resolvidaEm?.toISOString() ?? null,
-        decisao: d.decisao,
-        autor: quem.get(d.autorId) ?? null,
-        comunidade: servidor ? { id: servidor.id, nome: servidor.name } : null,
-        mensagem:
-          ehDeMensagem && d.messageId && d.channelId
+        resolvedAt: d.resolvedAt?.toISOString() ?? null,
+        decision: d.decision,
+        author: who.get(d.authorId) ?? null,
+        community: server ? { id: server.id, name: server.name } : null,
+        message:
+          isMessage && d.messageId && d.channelId
             ? {
                 id: d.messageId,
                 channelId: d.channelId,
                 guildId: d.guildId,
-                trecho: d.trecho ?? "",
-                autor: d.acusadoId ? (quem.get(d.acusadoId) ?? null) : null,
+                snippet: d.snippet ?? "",
+                author: d.accusedId ? (who.get(d.accusedId) ?? null) : null,
               }
             : null,
       };
     });
 
-    return { itens, proxima: temMais ? (pagina.at(-1)?.id ?? null) : null };
+    return { items, next: hasMore ? (page.at(-1)?.id ?? null) : null };
   },
 
-  async resolver(adminId: string, denunciaId: string, decisao: "procede" | "arquivada") {
-    const existente = await prisma.denuncia.findUnique({ where: { id: denunciaId } });
-    if (!existente) throw new NotFoundError("Denúncia não encontrada");
+  async resolve(adminId: string, reportId: string, decision: "procede" | "arquivada") {
+    const existing = await prisma.report.findUnique({ where: { id: reportId } });
+    if (!existing) throw new NotFoundError("Denúncia não encontrada");
 
-    await prisma.denuncia.update({
-      where: { id: denunciaId },
-      data: { resolvidaEm: new Date(), resolvidaPor: adminId, decisao },
+    await prisma.report.update({
+      where: { id: reportId },
+      data: { resolvedAt: new Date(), resolvedBy: adminId, decision },
     });
 
-    return { id: denunciaId, decisao };
+    return { id: reportId, decision };
   },
 
-  async reabrir(denunciaId: string) {
-    await prisma.denuncia.update({
-      where: { id: denunciaId },
-      data: { resolvidaEm: null, resolvidaPor: null, decisao: null },
+  async reopen(reportId: string) {
+    await prisma.report.update({
+      where: { id: reportId },
+      data: { resolvedAt: null, resolvedBy: null, decision: null },
     });
 
-    return { id: denunciaId };
+    return { id: reportId };
   },
 
-  async denunciarMensagem(
+  async reportMessage(
     userId: string,
     messageId: string,
-    dados: { motivo: MotivoDeDenuncia; detalhes?: string },
+    data: { reason: ReportReason; details?: string },
     log?: FastifyBaseLogger,
   ) {
-    const mensagem = await messageRepository.findById(messageId);
-    if (!mensagem || mensagem.deletedAt) throw new NotFoundError("Mensagem não encontrada");
+    const message = await messageRepository.findById(messageId);
+    if (!message || message.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const { channel } = await accessService.requireChannelAccess(userId, mensagem.channelId);
+    const { channel } = await accessService.requireChannelAccess(userId, message.channelId);
 
-    if (mensagem.authorId === userId) throw new AppError("Não dá para denunciar a própria mensagem");
+    if (message.authorId === userId) throw new AppError("Não dá para denunciar a própria mensagem");
 
-    const casa = await sistemaService.usuario();
-    if (mensagem.authorId === casa.id) throw new AppError("Não dá para denunciar a conta do sistema");
+    const house = await systemService.user();
+    if (message.authorId === house.id) throw new AppError("Não dá para denunciar a conta do sistema");
 
-    const autor = await userRepository.findByIdOrThrow(userId);
-    const acusado = await userRepository.findByIdOrThrow(mensagem.authorId);
-    const trecho = mensagem.content.slice(0, TRECHO);
+    const author = await userRepository.findByIdOrThrow(userId);
+    const accused = await userRepository.findByIdOrThrow(message.authorId);
+    const snippet = message.content.slice(0, SNIPPET);
 
-    const denuncia = await prisma.denuncia.create({
+    const report = await prisma.report.create({
       data: {
-        tipo: "mensagem",
+        kind: "mensagem",
         guildId: channel.guildId,
         channelId: channel.id,
-        messageId: mensagem.id,
-        acusadoId: acusado.id,
-        trecho,
-        autorId: userId,
-        motivo: dados.motivo,
-        detalhes: dados.detalhes ?? null,
+        messageId: message.id,
+        accusedId: accused.id,
+        snippet,
+        authorId: userId,
+        reason: data.reason,
+        details: data.details ?? null,
       },
     });
 
     const guild = channel.guildId ? await guildRepository.findByIdOrThrow(channel.guildId) : null;
-    const onde = guild ? `${guild.name} › #${channel.name ?? channel.id}` : "conversa privada";
+    const where = guild ? `${guild.name} › #${channel.name ?? channel.id}` : "conversa privada";
 
-    await avisarAdministradores(
+    await notifyAdmins(
       [
-        `Denúncia de mensagem em ${onde}`,
-        `Motivo: ${NOME_DO_MOTIVO[dados.motivo]}`,
-        dados.detalhes ? `Detalhes: ${dados.detalhes}` : null,
-        `De @${acusado.username} (${acusado.id}): ${trecho || "(sem texto)"}`,
-        `Por @${autor.username} (${autor.id})`,
-        `${web()}/channels/${channel.guildId ?? "@me"}/${channel.id}/${mensagem.id}`,
+        `Denúncia de mensagem em ${where}`,
+        `Motivo: ${REASON_NAME[data.reason]}`,
+        data.details ? `Detalhes: ${data.details}` : null,
+        `De @${accused.username} (${accused.id}): ${snippet || "(sem texto)"}`,
+        `Por @${author.username} (${author.id})`,
+        `${web()}/channels/${channel.guildId ?? "@me"}/${channel.id}/${message.id}`,
       ]
         .filter(Boolean)
         .join("\n"),
       log,
     );
 
-    return { id: denuncia.id };
+    return { id: report.id };
   },
 };
