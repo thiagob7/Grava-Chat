@@ -5,19 +5,20 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToastContainer } from "react-toastify";
 
 import { ConfirmProvider } from "~/components/ui/confirm";
-import { AvisoDeAtualizacao } from "~/features/app/components/AvisoDeAtualizacao";
-import { ModalDeImportarTema } from "~/features/tema/components/ModalDeImportarTema";
-import { AvisoDeNovoDispositivo } from "~/features/app/components/AvisoDeNovoDispositivo";
-import { AvisoDePermissoes } from "~/features/app/components/AvisoDePermissoes";
+import { PointerEffects } from "~/features/app/components/EfeitosDoPonteiro";
+import { UpdateNotice } from "~/features/app/components/AvisoDeAtualizacao";
+import { ImportThemeModal } from "~/features/tema/components/ModalDeImportarTema";
+import { NewDeviceNotice } from "~/features/app/components/AvisoDeNovoDispositivo";
+import { PermissionsNotice } from "~/features/app/components/AvisoDePermissoes";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
-import { EstadoDaConexao } from "~/features/app/components/EstadoDaConexao";
-import { ChuvaDeSuperReacao } from "~/features/expressao/components/ChuvaDeSuperReacao";
+import { ConnectionState } from "~/features/app/components/EstadoDaConexao";
+import { SuperReactionRain } from "~/features/expressao/components/ChuvaDeSuperReacao";
 import { SessionProvider } from "~/contexts/session-context";
 import { AppRoutes } from "~/routes";
 import { VoiceAudioSink } from "~/features/voz/components/VoiceAudioSink";
-import { SeletorDeTela } from "~/features/voz/components/SeletorDeTela";
-import { VisualizadorDeImagem } from "~/components/VisualizadorDeImagem";
-import { useAparenciaAplicada } from "~/features/configuracoes/hooks/use-aparencia";
+import { ScreenPicker } from "~/features/voz/components/SeletorDeTela";
+import { ImageViewer } from "~/components/VisualizadorDeImagem";
+import { useAppearanceApplied } from "~/features/configuracoes/hooks/use-aparencia";
 import { usePushToTalk } from "~/features/voz/hooks/use-push-to-talk";
 import { flxCls } from "~/lib/compat-de-tema";
 
@@ -33,26 +34,29 @@ export const queryClient = new QueryClient({
 
 export const App: React.FC = () => {
   usePushToTalk();
-  useAparenciaAplicada();
+  useAppearanceApplied();
 
   return (
-    <ErrorBoundary onde="aplicação">
+    <ErrorBoundary where="aplicação">
       <QueryClientProvider client={queryClient}>
         <SessionProvider>
           <TooltipProvider>
             <ConfirmProvider>
-              <AppRoutes data-gc="app.app-routes" />
-              <EstadoDaConexao data-gc="app.estado-da-conexao" />
-              <AvisoDeAtualizacao data-gc="app.aviso-de-atualizacao" />
-              <AvisoDePermissoes data-gc="app.aviso-de-permissoes" />
-              <AvisoDeNovoDispositivo data-gc="app.aviso-de-novo-dispositivo" />
+              <ErrorBoundary where="telas">
+                <AppRoutes data-gc="app.app-routes" />
+              </ErrorBoundary>
+              <ConnectionState data-gc="app.connection-state" />
+              <UpdateNotice data-gc="app.update-notice" />
+              <PermissionsNotice data-gc="app.permissions-notice" />
+              <NewDeviceNotice data-gc="app.new-device-notice" />
               <VoiceAudioSink data-gc="app.voice-audio-sink" />
-              <SeletorDeTela data-gc="app.seletor-de-tela" />
-              <VisualizadorDeImagem data-gc="app.visualizador-de-imagem" />
-              <ModalDeImportarTema data-gc="app.modal-de-importar-tema" />
-              <ChuvaDeSuperReacao data-gc="app.chuva-de-super-reacao" />
+              <PointerEffects data-gc="app.pointer-effects" />
+              <ScreenPicker data-gc="app.screen-picker" />
+              <ImageViewer data-gc="app.image-viewer" />
+              <ImportThemeModal data-gc="app.import-theme-modal" />
+              <SuperReactionRain data-gc="app.super-reaction-rain" />
               <ToastContainer data-gc="app.toast-container"
-                toastClassName={flxCls("aviso")}
+                toastClassName={flxCls("notice")}
                 position="bottom-center"
                 theme="dark"
                 autoClose={4000}
