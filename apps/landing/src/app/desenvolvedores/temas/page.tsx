@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { Codigo } from "~/components/docs/Codigo";
-import { Adiante, Aviso, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
+import { Code } from "~/components/docs/Codigo";
+import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 import { APP } from "~/dados/docs";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Escrever um tema para o Gravaê: o cabeçalho do arquivo, os tokens de cor, os ganchos que cada elemento carrega e o que muda a forma da tela.",
 };
 
-const CABECALHO = `/**
+const HEADER = `/**
  * @name Papel e tinta
  * @description Um tema claro, de pouco contraste, para quem lê o dia inteiro.
  * @author você
@@ -18,7 +18,7 @@ const CABECALHO = `/**
  * @tags claro, sóbrio
  */`;
 
-const CORES = `:root {
+const COLORS = `:root {
   --color-surface-0: #f6f4ef;
   --color-surface-1: #efece4;
   --color-surface-2: #f6f4ef;
@@ -27,7 +27,7 @@ const CORES = `:root {
   --color-brand: #8a5a2b;
 }`;
 
-const FUNDO = `body {
+const BACKGROUND = `body {
   background-image: gc-ativo("fundo");
   background-size: cover;
   background-attachment: fixed;
@@ -39,7 +39,7 @@ const FUNDO = `body {
   background-color: color-mix(in srgb, var(--color-surface-0) 82%, transparent);
 }`;
 
-const POR_PESSOA = `/* Um fundo só no seu nome, onde quer que ele apareça. */
+const BY_PERSON = `/* Um fundo só no seu nome, onde quer que ele apareça. */
 [data-gc-usuario="65f0c1a2b3d4e5f6a7b8c9d0"] {
   background-image:
     linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.55)),
@@ -54,13 +54,13 @@ const MOTOR = `:root {
   --gc-fundo: fogos;
 }`;
 
-const MOTOR_NA_FRENTE = `:root {
+const MOTOR_FRONT = `:root {
   /* Neve caindo POR CIMA da cena, como no tema Natal. */
   --gc-fundo: neve;
   --gc-fundo-camada: frente;
 }`;
 
-const FUNDOS: [string, string][] = [
+const BACKGROUNDS: [string, string][] = [
   ["dunas", "Cristas de areia, uma atrás da outra, andando devagar."],
   ["estrelas", "Campo de estrelas com paralaxe e umas poucas cintilando."],
   ["facetas", "Cacos de vidro que mudam de forma e atravessam a tela."],
@@ -74,7 +74,7 @@ const FUNDOS: [string, string][] = [
   ["velas", "Velas boiando no ar, cada chama tremendo no seu ritmo."],
 ];
 
-const GANCHO = `/* Toda foto de pessoa vira quadrada. */
+const HOOK = `/* Toda foto de pessoa vira quadrada. */
 .avatar,
 .avatar img {
   border-radius: 4px;
@@ -84,88 +84,88 @@ const GANCHO = `/* Toda foto de pessoa vira quadrada. */
   color: #b4232a;
 }`;
 
-const FORMA = `:root {
+const SHAPE = `:root {
   --layout-sidebar-width: 13rem;
   --layout-member-list-width: 12rem;
   --layout-header-height: 2.5rem;
 }`;
 
-const REGIOES: { classe: string; oQueE: string }[] = [
-  { classe: "trilho-de-servidores", oQueE: "a coluna estreita dos ícones, na ponta esquerda" },
-  { classe: "lista-de-canais", oQueE: "a barra com os canais do servidor" },
-  { classe: "lista-de-conversas", oQueE: "a barra das mensagens diretas" },
-  { classe: "lista-de-comunidades", oQueE: "a barra do Explorar" },
-  { classe: "lista-de-membros", oQueE: "a coluna da direita, com quem está online" },
-  { classe: "topo-do-canal", oQueE: "a faixa com o nome do canal" },
-  { classe: "area-de-conversa", oQueE: "o miolo inteiro, onde as mensagens rolam" },
-  { classe: "lista-de-mensagens", oQueE: "só a parte que rola" },
-  { classe: "barra-da-mensagem", oQueE: "os botões que aparecem ao passar o mouse" },
-  { classe: "caixa-de-escrever", oQueE: "a caixa de escrever" },
-  { classe: "area-do-usuario", oQueE: "a faixa inteira do rodapé, que passa sob o trilho" },
-  { classe: "painel-do-usuario", oQueE: "o seu cartão, dentro dessa faixa" },
-  { classe: "avatar", oQueE: "toda foto de pessoa, em qualquer tamanho" },
-  { classe: "janela", oQueE: "qualquer modal" },
-  { classe: "menu", oQueE: "os menus de clique direito e de três pontos" },
-  { classe: "balao", oQueE: "os popovers" },
-  { classe: "dica", oQueE: "as dicas de passar o mouse" },
+const REGIONS: { cssClass: string; oQueE: string }[] = [
+  { cssClass: "trilho-de-servidores", oQueE: "a coluna estreita dos ícones, na ponta esquerda" },
+  { cssClass: "lista-de-canais", oQueE: "a barra com os canais do servidor" },
+  { cssClass: "lista-de-conversas", oQueE: "a barra das mensagens diretas" },
+  { cssClass: "lista-de-comunidades", oQueE: "a barra do Explorar" },
+  { cssClass: "lista-de-membros", oQueE: "a coluna da direita, com quem está online" },
+  { cssClass: "topo-do-canal", oQueE: "a faixa com o nome do canal" },
+  { cssClass: "area-de-conversa", oQueE: "o miolo inteiro, onde as mensagens rolam" },
+  { cssClass: "lista-de-mensagens", oQueE: "só a parte que rola" },
+  { cssClass: "barra-da-mensagem", oQueE: "os botões que aparecem ao passar o mouse" },
+  { cssClass: "caixa-de-escrever", oQueE: "a caixa de escrever" },
+  { cssClass: "area-do-usuario", oQueE: "a faixa inteira do rodapé, que passa sob o trilho" },
+  { cssClass: "painel-do-usuario", oQueE: "o seu cartão, dentro dessa faixa" },
+  { cssClass: "avatar", oQueE: "toda foto de pessoa, em qualquer tamanho" },
+  { cssClass: "janela", oQueE: "qualquer modal" },
+  { cssClass: "menu", oQueE: "os menus de clique direito e de três pontos" },
+  { cssClass: "balao", oQueE: "os popovers" },
+  { cssClass: "dica", oQueE: "as dicas de passar o mouse" },
 ];
 
-const GRUPOS_DE_COR: { grupo: string; exemplos: string; oQuePinta: string }[] = [
+const COLOR_GROUPS: { group: string; examples: string; paints: string }[] = [
   {
-    grupo: "Superfícies",
-    exemplos: "--color-surface-0 … --color-surface-4",
-    oQuePinta: "os fundos, do mais fundo ao de menu; --color-hover e --color-selecionado moram aqui",
+    group: "Superfícies",
+    examples: "--color-surface-0 … --color-surface-4",
+    paints: "os fundos, do mais fundo ao de menu; --color-hover e --color-selecionado moram aqui",
   },
   {
-    grupo: "Texto",
-    exemplos: "--color-ink, --color-ink-muted, --color-ink-faint",
-    oQuePinta: "as três forças de texto, do título ao carimbo de hora",
+    group: "Texto",
+    examples: "--color-ink, --color-ink-muted, --color-ink-faint",
+    paints: "as três forças de texto, do título ao carimbo de hora",
   },
   {
-    grupo: "Marca e realces",
-    exemplos: "--color-brand, --color-brand-hover",
-    oQuePinta: "botão principal, links, o traço do que está selecionado",
+    group: "Marca e realces",
+    examples: "--color-brand, --color-brand-hover",
+    paints: "botão principal, links, o traço do que está selecionado",
   },
   {
-    grupo: "Status",
-    exemplos: "--color-online, --color-ausente, --color-ocupado",
-    oQuePinta: "a bolinha do avatar e as etiquetas de presença",
+    group: "Status",
+    examples: "--color-online, --color-ausente, --color-ocupado",
+    paints: "a bolinha do avatar e as etiquetas de presença",
   },
   {
-    grupo: "Mensagens",
-    exemplos: "--message-hover-background, --message-mention-background",
-    oQuePinta: "o fundo de cada mensagem, o da que menciona você e o da que responde",
+    group: "Mensagens",
+    examples: "--message-hover-background, --message-mention-background",
+    paints: "o fundo de cada mensagem, o da que menciona você e o da que responde",
   },
   {
-    grupo: "Formulários",
-    exemplos: "--color-campo, --color-campo-foco",
-    oQuePinta: "campos de texto, seletores e o traço do foco",
+    group: "Formulários",
+    examples: "--color-campo, --color-campo-foco",
+    paints: "campos de texto, seletores e o traço do foco",
   },
   {
-    grupo: "Código e terminal",
-    exemplos: "--code-background, --code-keyword, --code-string",
-    oQuePinta: "os blocos de código e o realce de sintaxe dentro deles",
+    group: "Código e terminal",
+    examples: "--code-background, --code-keyword, --code-string",
+    paints: "os blocos de código e o realce de sintaxe dentro deles",
   },
 ];
 
-export default function Temas() {
+export default function Themes() {
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Referência" pagina="Temas" />
-        <Titulo chamada="Um tema do Gravaê é um arquivo CSS. Esta página diz o que existe para mirar: as cores, os ganchos em cada elemento e as medidas que dão a forma da tela.">
+        <Trail group="Referência" page="Temas" />
+        <Title call="Um tema do Gravaê é um arquivo CSS. Esta página diz o que existe para mirar: as cores, os ganchos em cada elemento e as medidas que dão a forma da tela.">
           Temas
-        </Titulo>
+        </Title>
       </header>
 
-      <Secao id="arquivo" titulo="O arquivo">
+      <Section id="arquivo" title="O arquivo">
         <p>
           Um tema é um <code>.css</code> comum. O que o transforma num tema é o bloco no topo,
           que diz quem ele é — o mesmo formato que os temas de outros clientes usam, então um
           arquivo escrito para eles se apresenta certo aqui.
         </p>
 
-        <Codigo legenda="papel-e-tinta.css">{CABECALHO}</Codigo>
+        <Code legenda="papel-e-tinta.css">{HEADER}</Code>
 
         <p>
           Só o <code>@name</code> importa; o resto é opcional. Sem o bloco o CSS continua
@@ -175,9 +175,9 @@ export default function Temas() {
           por vez. O botão <strong className="text-ink">Abrir em janela</strong> tira o estúdio do
           modal e o põe numa janela ao lado, com o app vivo atrás: o que você digita pinta na hora.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="cores" titulo="As cores">
+      <Section id="cores" title="As cores">
         <p>
           São 511 tokens em 21 grupos, e todos são variáveis CSS no <code>:root</code>. Mudar a
           cara do app é redeclarar as que interessam — quase sempre uma dúzia resolve, porque o
@@ -191,7 +191,7 @@ export default function Temas() {
           só os que valem.
         </p>
 
-        <Codigo legenda="as seis que mais mudam a cara">{CORES}</Codigo>
+        <Code legenda="as seis que mais mudam a cara">{COLORS}</Code>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
@@ -204,11 +204,11 @@ export default function Temas() {
             </thead>
 
             <tbody>
-              {GRUPOS_DE_COR.map((linha) => (
-                <tr key={linha.grupo} className="border-b border-line/60 align-top">
-                  <td className="py-2.5 pr-4 font-medium text-ink">{linha.grupo}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-ink-muted">{linha.exemplos}</td>
-                  <td className="py-2.5 text-ink-muted">{linha.oQuePinta}</td>
+              {COLOR_GROUPS.map((line) => (
+                <tr key={line.group} className="border-b border-line/60 align-top">
+                  <td className="py-2.5 pr-4 font-medium text-ink">{line.group}</td>
+                  <td className="py-2.5 pr-4 font-mono text-xs text-ink-muted">{line.examples}</td>
+                  <td className="py-2.5 text-ink-muted">{line.paints}</td>
                 </tr>
               ))}
             </tbody>
@@ -221,9 +221,9 @@ export default function Temas() {
           <strong className="text-ink">Exportar</strong>, que já escreve o arquivo com o
           cabeçalho pronto.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="ganchos" titulo="Os ganchos">
+      <Section id="ganchos" title="Os ganchos">
         <p>
           Cor é metade. Para mexer em forma — arredondamento, densidade, esconder um botão — o
           tema precisa alcançar o elemento, e as classes que o Tailwind gera não servem: mudam a
@@ -236,7 +236,7 @@ export default function Temas() {
           builds. E as regiões grandes têm, além disso, um nome curto de classe.
         </p>
 
-        <Codigo legenda="tema.css">{GANCHO}</Codigo>
+        <Code legenda="tema.css">{HOOK}</Code>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
@@ -248,10 +248,10 @@ export default function Temas() {
             </thead>
 
             <tbody>
-              {REGIOES.map((regiao) => (
-                <tr key={regiao.classe} className="border-b border-line/60 align-top">
-                  <td className="py-2.5 pr-4 font-mono text-xs text-ink">.{regiao.classe}</td>
-                  <td className="py-2.5 text-ink-muted">{regiao.oQueE}</td>
+              {REGIONS.map((region) => (
+                <tr key={region.cssClass} className="border-b border-line/60 align-top">
+                  <td className="py-2.5 pr-4 font-mono text-xs text-ink">.{region.cssClass}</td>
+                  <td className="py-2.5 text-ink-muted">{region.oQueE}</td>
                 </tr>
               ))}
             </tbody>
@@ -263,29 +263,29 @@ export default function Temas() {
           <strong className="text-ink">Em que dá para mexer</strong>, no pé do editor de CSS do
           estúdio, tem busca nos 4764 — e clicar joga o seletor pronto no editor.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="forma" titulo="A forma da tela">
+      <Section id="forma" title="A forma da tela">
         <p>
           Largura das laterais, largura da lista de membros e altura do topo saem de tokens, e
           um tema pode trocá-los.
         </p>
 
-        <Codigo legenda="uma interface mais apertada">{FORMA}</Codigo>
+        <Code legenda="uma interface mais apertada">{SHAPE}</Code>
 
         <p>
           E os raios de canto saem de <code>--radius-sm</code> a <code>--radius-full</code>.
           Zerar os seis tira o arredondamento do app inteiro de uma vez, avatares inclusive.
         </p>
 
-        <Aviso>
+        <Notice>
           As laterais também são arrastáveis. Quem já arrastou fica com a largura que escolheu, e
           o tema não desfaz isso — a pessoa mandou. O valor do token vale para quem nunca mexeu,
           e o arrastar passa a ir até onde o tema pediu.
-        </Aviso>
-      </Secao>
+        </Notice>
+      </Section>
 
-      <Secao id="de-fora" titulo="Trazendo um tema de fora">
+      <Section id="de-fora" title="Trazendo um tema de fora">
         <p>
           Temas escritos para outros clientes funcionam aqui, e por dois caminhos. As variáveis atravessam: o estúdio
           lê o que o arquivo declarou e escreve nos nomes de cá — o{" "}
@@ -311,9 +311,9 @@ export default function Temas() {
           nosso que não tem equivalente, ou o contrário. Para isso é que serve o{" "}
           <code>data-gc</code>.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="exemplo" titulo="Um tema de exemplo">
+      <Section id="exemplo" title="Um tema de exemplo">
         <p>
           O <strong className="text-ink">Reto</strong> é um tema nosso escrito para servir de
           modelo: tira o arredondamento, aperta a interface e troca a paleta, usando um trecho de
@@ -331,9 +331,9 @@ export default function Temas() {
           </a>{" "}
           e arrastar para o estúdio.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="imagens" titulo="Imagens de fundo">
+      <Section id="imagens" title="Imagens de fundo">
         <p>
           A aba <strong className="text-ink">Arquivos</strong> do estúdio sobe imagem e fonte. No
           CSS, chame pelo nome em vez de colar o endereço:{" "}
@@ -341,7 +341,7 @@ export default function Temas() {
           aplicar. Pode escrever com ou sem a extensão.
         </p>
 
-        <Codigo legenda="um fundo atrás do app inteiro">{FUNDO}</Codigo>
+        <Code legenda="um fundo atrás do app inteiro">{BACKGROUND}</Code>
 
         <p>
           Escrever assim é o que faz o tema atravessar. Quando ele é publicado, os arquivos que o
@@ -354,16 +354,16 @@ export default function Temas() {
           A tela do tema mostra as imagens e o peso somado antes de instalar, então dá para ver que
           um tema tem 8 MB de fundo em vez de descobrir depois.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="fundo-animado" titulo="Fundo animado">
+      <Section id="fundo-animado" title="Fundo animado">
         <p>
           Tem coisa que CSS não faz. Faísca que cai, perde velocidade no ar e apaga uma antes da
           outra é simulação, não desenho. Para isso o app traz motores de fundo prontos, e o tema
           escolhe um pelo nome.
         </p>
 
-        <Codigo legenda="pedindo o motor">{MOTOR}</Codigo>
+        <Code legenda="pedindo o motor">{MOTOR}</Code>
 
         <p>
           O motor desenha num canvas atrás de tudo, sem receber clique. Ele para sozinho quando a
@@ -371,18 +371,18 @@ export default function Temas() {
           que não existe simplesmente não liga nada.
         </p>
 
-        <Aviso>
+        <Notice>
           Um tema não traz código, e não vai trazer: CSS de estranho já mexe na tela inteira, e
           deixar um tema rodar JavaScript junto seria entregar a sessão de quem instalou. O tema
           diz o que quer, o app decide se atende — a mesma troca do <code>gc-ativo()</code>.
-        </Aviso>
+        </Notice>
 
         <p>
           Por padrão o motor pinta atrás dos painéis, e só aparece se as superfícies do tema
           forem translúcidas. Para o que cai sobre a cena, como neve, existe a outra camada:
         </p>
 
-        <Codigo legenda="por cima de tudo">{MOTOR_NA_FRENTE}</Codigo>
+        <Code legenda="por cima de tudo">{MOTOR_FRONT}</Code>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
@@ -393,10 +393,10 @@ export default function Temas() {
               </tr>
             </thead>
             <tbody className="text-ink-muted">
-              {FUNDOS.map(([nome, oQueFaz]) => (
-                <tr key={nome} className="border-b border-line/60">
-                  <td className="py-2 pr-4 font-mono text-ink">{nome}</td>
-                  <td className="py-2">{oQueFaz}</td>
+              {BACKGROUNDS.map(([name, does]) => (
+                <tr key={name} className="border-b border-line/60">
+                  <td className="py-2 pr-4 font-mono text-ink">{name}</td>
+                  <td className="py-2">{does}</td>
                 </tr>
               ))}
             </tbody>
@@ -408,16 +408,16 @@ export default function Temas() {
           galeria roda sem script, então ela mostra o céu do tema mas não o motor. O cartão avisa
           quando o tema tem um.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="por-pessoa" titulo="Enfeitar uma pessoa só">
+      <Section id="por-pessoa" title="Enfeitar uma pessoa só">
         <p>
           A linha da lista de membros, a linha de quem está numa sala de voz e a área do
           usuário no rodapé carregam <code>data-gc-usuario</code> com o id de quem está ali. Dá
           para pintar uma pessoa sem tocar nas outras.
         </p>
 
-        <Codigo legenda="fundo no seu próprio nome">{POR_PESSOA}</Codigo>
+        <Code legenda="fundo no seu próprio nome">{BY_PERSON}</Code>
 
         <p>
           O degradê escuro vai na mesma pilha do <code>background-image</code>, por cima da
@@ -429,28 +429,28 @@ export default function Temas() {
           Vale lembrar que tema é local: quem vê o enfeite é você e quem instalar o mesmo tema.
           Não é um enfeite de conta que aparece para o servidor inteiro.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="compartilhar" titulo="Compartilhar">
+      <Section id="compartilhar" title="Compartilhar">
         <p>
           <strong className="text-ink">Exportar</strong> baixa o arquivo. E o botão{" "}
           <strong className="text-ink">Publicar</strong> devolve um link do tipo{" "}
           <code>{APP}/temas/…</code>, que colado em qualquer canal vira um cartão com o nome, a
           descrição e um botão de importar — quem clica recebe o tema no próprio estúdio.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="seguranca" titulo="O que um tema pode fazer">
-        <Aviso>
+      <Section id="seguranca" title="O que um tema pode fazer">
+        <Notice>
           O CSS de um tema roda inteiro, sem caixa de areia: <code>@import</code> e{" "}
           <code>url()</code> de fora funcionam. Isso significa que um tema pode avisar um servidor
           de terceiros toda vez que você abrir o app, e pode desenhar por cima da interface. Só
           importe tema de gente em quem você confia, e leia o arquivo antes se ele veio de um
           link.
-        </Aviso>
-      </Secao>
+        </Notice>
+      </Section>
 
-      <Adiante href="/desenvolvedores/temas" />
+      <Ahead href="/desenvolvedores/temas" />
     </article>
   );
 }
