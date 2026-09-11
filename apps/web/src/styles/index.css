@@ -347,6 +347,25 @@
   }
 
   /*
+    Instalado como app no telefone, a página abre com `viewport-fit=cover` e a
+    barra de status translúcida: o app desenha POR BAIXO do relógio, do sinal e
+    da bateria. Sem isto o cabeçalho e os botões do topo ficam embaixo deles —
+    ilegíveis, e alguns sem como tocar.
+
+    Vale para os quatro lados: o entalhe na horizontal e a barra de gesto
+    embaixo mordem o mesmo tanto.
+
+    Fora do app instalado os quatro `env()` valem zero, então nada muda no
+    navegador nem no aplicativo de desktop.
+  */
+  #app {
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+  }
+
+  /*
     `--text-selection` é o realce do texto selecionado, não um fundo de item.
     Ele já foi lido como cor do canal ativo, e um tema que o declara opaco
     pintava a lateral de branco.
