@@ -7,7 +7,7 @@ import { Input, Label } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-const INSIGNIAS = [
+const BADGES = [
   "🍃",
   "⚔️",
   "💜",
@@ -26,13 +26,13 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
   guild,
 }) => {
   const { t } = useTranslation();
-  const salvar = useUpdateGuild();
+  const save = useUpdateGuild();
   const [tag, setTag] = useState(guild.tag ?? "");
-  const [icone, setIcone] = useState(guild.tagIcon ?? INSIGNIAS[0]!);
+  const [icon, setIcon] = useState(guild.tagIcon ?? BADGES[0]!);
 
-  const mudou =
+  const changed =
     (tag.trim() || null) !== (guild.tag ?? null) ||
-    icone !== (guild.tagIcon ?? INSIGNIAS[0]);
+    icon !== (guild.tagIcon ?? BADGES[0]);
 
   return (
     <div data-gc="servidor.server-settings.server-tag-section.div" className="max-w-2xl pb-10">
@@ -64,13 +64,13 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
           <div data-gc="servidor.server-settings.server-tag-section.div--5">
             <Label data-gc="servidor.server-settings.server-tag-section.label--2">{t("servidor.etiqueta.escolhaInsignia")}</Label>
             <div data-gc="servidor.server-settings.server-tag-section.div--6" className="flex flex-wrap gap-2">
-              {INSIGNIAS.map((item) => (
+              {BADGES.map((item) => (
                 <button data-gc="servidor.server-settings.server-tag-section.button"
                   key={item}
-                  onClick={() => setIcone(item)}
+                  onClick={() => setIcon(item)}
                   className={cn(
                     "flex size-10 items-center justify-center rounded-lg bg-surface-0 text-xl transition",
-                    icone === item ? "ring-2 ring-brand" : "hover:bg-surface-3",
+                    icon === item ? "ring-2 ring-brand" : "hover:bg-surface-3",
                   )}
                 >
                   {item}
@@ -86,30 +86,30 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
           </p>
 
           <div data-gc="servidor.server-settings.server-tag-section.div--8" className="space-y-3">
-            <PreviaDeFala data-gc="servidor.server-settings.server-tag-section.previa-de-fala" nome="Leonardo" texto={t("servidor.etiqueta.fala1")} />
-            <PreviaDeFala data-gc="servidor.server-settings.server-tag-section.previa-de-fala--2"
-              nome={t("servidor.etiqueta.voce")}
-              texto={t("servidor.etiqueta.fala2")}
+            <SpeechPreview data-gc="servidor.server-settings.server-tag-section.speech-preview" name="Leonardo" text={t("servidor.etiqueta.fala1")} />
+            <SpeechPreview data-gc="servidor.server-settings.server-tag-section.speech-preview--2"
+              name={t("servidor.etiqueta.voce")}
+              text={t("servidor.etiqueta.fala2")}
               tag={tag.trim() || undefined}
-              icone={icone}
+              icon={icon}
             />
-            <PreviaDeFala data-gc="servidor.server-settings.server-tag-section.previa-de-fala--3" nome="Max" texto={t("servidor.etiqueta.fala3")} />
+            <SpeechPreview data-gc="servidor.server-settings.server-tag-section.speech-preview--3" name="Max" text={t("servidor.etiqueta.fala3")} />
           </div>
         </div>
       </div>
 
       <UnsavedBar data-gc="servidor.server-settings.server-tag-section.unsaved-bar"
-        visible={mudou}
-        saving={salvar.isPending}
+        visible={changed}
+        saving={save.isPending}
         onDiscard={() => {
           setTag(guild.tag ?? "");
-          setIcone(guild.tagIcon ?? INSIGNIAS[0]!);
+          setIcon(guild.tagIcon ?? BADGES[0]!);
         }}
         onSave={() =>
-          salvar.mutate({
+          save.mutate({
             guildId: guild.id,
             tag: tag.trim() || null,
-            tagIcon: tag.trim() ? icone : null,
+            tagIcon: tag.trim() ? icon : null,
           })
         }
       />
@@ -117,24 +117,24 @@ export const ServerTagSection: React.FC<{ guild: GuildModel }> = ({
   );
 };
 
-const PreviaDeFala: React.FC<{
-  nome: string;
-  texto: string;
+const SpeechPreview: React.FC<{
+  name: string;
+  text: string;
   tag?: string;
-  icone?: string;
-}> = ({ nome, texto, tag, icone }) => (
+  icon?: string;
+}> = ({ name, text, tag, icon }) => (
   <div data-gc="servidor.server-settings.server-tag-section.div--9" className="flex items-start gap-2">
     <span data-gc="servidor.server-settings.server-tag-section.span" className="mt-0.5 size-7 shrink-0 rounded-full bg-surface-4" />
     <div data-gc="servidor.server-settings.server-tag-section.div--10" className="min-w-0">
       <p data-gc="servidor.server-settings.server-tag-section.p--4" className="flex items-center gap-1.5 text-sm font-medium">
-        {nome}
+        {name}
         {tag && (
           <span data-gc="servidor.server-settings.server-tag-section.span--2" className="flex items-center gap-0.5 rounded bg-brand/20 px-1.5 py-0.5 text-10 font-semibold text-brand">
-            {icone} {tag}
+            {icon} {tag}
           </span>
         )}
       </p>
-      <p data-gc="servidor.server-settings.server-tag-section.p--5" className="text-sm text-ink-muted">{texto}</p>
+      <p data-gc="servidor.server-settings.server-tag-section.p--5" className="text-sm text-ink-muted">{text}</p>
     </div>
   </div>
 );
