@@ -5,7 +5,7 @@ import { Home, Link2, Upload } from "lucide-react";
 import { useCreateGuild } from "~/@core/application/queries/guild/use-create-guild";
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
-import { RecorteDeImagem } from "~/components/RecorteDeImagem";
+import { ImageCrop } from "~/components/RecorteDeImagem";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -25,30 +25,30 @@ interface Props {
   onCreated: (guildId: string) => void;
 }
 
-type Passo = "escolher" | "criar" | "entrar";
+type Step = "escolher" | "criar" | "entrar";
 
-export const AdicionarServidorModal: React.FC<Props> = ({ open, onClose, onCreated }) => {
-  const [passo, setPasso] = useState<Passo>("escolher");
+export const AddServerModal: React.FC<Props> = ({ open, onClose, onCreated }) => {
+  const [step, setStep] = useState<Step>("escolher");
 
-  const fechar = () => {
-    setPasso("escolher");
+  const close = () => {
+    setStep("escolher");
     onClose();
   };
 
   return (
-    <Dialog data-gc="servidor.adicionar-servidor-modal.dialog" open={open} onOpenChange={(v) => !v && fechar()}>
+    <Dialog data-gc="servidor.adicionar-servidor-modal.dialog" open={open} onOpenChange={(v) => !v && close()}>
       <DialogContent data-gc="servidor.adicionar-servidor-modal.dialog-content">
-        {passo === "escolher" && <Escolha data-gc="servidor.adicionar-servidor-modal.escolha.set-passo" onEscolher={setPasso} />}
-        {passo === "criar" && (
-          <Criar data-gc="servidor.adicionar-servidor-modal.criar.on-created" onVoltar={() => setPasso("escolher")} onCriado={onCreated} onFechar={fechar} />
+        {step === "escolher" && <Selection data-gc="servidor.adicionar-servidor-modal.selection.set-step" onPick={setStep} />}
+        {step === "criar" && (
+          <Create data-gc="servidor.adicionar-servidor-modal.create.on-created" onBack={() => setStep("escolher")} onCreated={onCreated} onClose={close} />
         )}
-        {passo === "entrar" && <Entrar data-gc="servidor.adicionar-servidor-modal.entrar.fechar" onVoltar={() => setPasso("escolher")} onFechar={fechar} />}
+        {step === "entrar" && <Join data-gc="servidor.adicionar-servidor-modal.join.close" onBack={() => setStep("escolher")} onClose={close} />}
       </DialogContent>
     </Dialog>
   );
 };
 
-const Escolha: React.FC<{ onEscolher: (p: Passo) => void }> = ({ onEscolher }) => (
+const Selection: React.FC<{ onPick: (p: Step) => void }> = ({ onPick }) => (
   <>
     <DialogHeader data-gc="servidor.adicionar-servidor-modal.dialog-header">
       <DialogTitle data-gc="servidor.adicionar-servidor-modal.dialog-title">Adicionar um servidor</DialogTitle>
@@ -59,82 +59,82 @@ const Escolha: React.FC<{ onEscolher: (p: Passo) => void }> = ({ onEscolher }) =
 
     <DialogBody data-gc="servidor.adicionar-servidor-modal.dialog-body">
       <div data-gc="servidor.adicionar-servidor-modal.div" className="grid grid-cols-2 gap-3">
-        <CartaoDeEscolha data-gc="servidor.adicionar-servidor-modal.cartao-de-escolha"
-          icone={<Home data-gc="servidor.adicionar-servidor-modal.home" size={20} />}
-          titulo="Criar servidor"
-          descricao="Do zero, com um canal de texto e um de voz."
-          onClick={() => onEscolher("criar")}
+        <ChoiceCard data-gc="servidor.adicionar-servidor-modal.choice-card"
+          icon={<Home data-gc="servidor.adicionar-servidor-modal.home" size={20} />}
+          title="Criar servidor"
+          description="Do zero, com um canal de texto e um de voz."
+          onClick={() => onPick("criar")}
         />
-        <CartaoDeEscolha data-gc="servidor.adicionar-servidor-modal.cartao-de-escolha--2"
-          icone={<Link2 data-gc="servidor.adicionar-servidor-modal.link2" size={20} />}
-          titulo="Entrar com convite"
-          descricao="Cole o link ou o código que te mandaram."
-          onClick={() => onEscolher("entrar")}
+        <ChoiceCard data-gc="servidor.adicionar-servidor-modal.choice-card--2"
+          icon={<Link2 data-gc="servidor.adicionar-servidor-modal.link2" size={20} />}
+          title="Entrar com convite"
+          description="Cole o link ou o código que te mandaram."
+          onClick={() => onPick("entrar")}
         />
       </div>
     </DialogBody>
   </>
 );
 
-const CartaoDeEscolha: React.FC<{
-  icone: React.ReactNode;
-  titulo: string;
-  descricao: string;
+const ChoiceCard: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  description: string;
   onClick: () => void;
-}> = ({ icone, titulo, descricao, onClick }) => (
+}> = ({ icon, title, description, onClick }) => (
   <button data-gc="servidor.adicionar-servidor-modal.button.on-click"
     onClick={onClick}
     className="flex flex-col items-center gap-2 rounded-lg border border-line bg-surface-1 p-5 text-center transition hover:border-brand hover:bg-surface-3"
   >
     <span data-gc="servidor.adicionar-servidor-modal.span" className="flex size-11 items-center justify-center rounded-full bg-brand text-sobre-marca">
-      {icone}
+      {icon}
     </span>
-    <span data-gc="servidor.adicionar-servidor-modal.span--2" className="text-sm font-semibold">{titulo}</span>
-    <span data-gc="servidor.adicionar-servidor-modal.span--3" className="text-xs leading-relaxed text-ink-muted">{descricao}</span>
+    <span data-gc="servidor.adicionar-servidor-modal.span--2" className="text-sm font-semibold">{title}</span>
+    <span data-gc="servidor.adicionar-servidor-modal.span--3" className="text-xs leading-relaxed text-ink-muted">{description}</span>
   </button>
 );
 
-const Criar: React.FC<{
-  onVoltar: () => void;
-  onCriado: (guildId: string) => void;
-  onFechar: () => void;
-}> = ({ onVoltar, onCriado, onFechar }) => {
+const Create: React.FC<{
+  onBack: () => void;
+  onCreated: (guildId: string) => void;
+  onClose: () => void;
+}> = ({ onBack, onCreated, onClose }) => {
   const createGuild = useCreateGuild();
   const updateGuild = useUpdateGuild();
   const uploadImage = useUploadImage();
 
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [paraRecortar, setParaRecortar] = useState<File | null>(null);
-  const [icone, setIcone] = useState<{ arquivo: File; previa: string } | null>(null);
-  const seletor = useRef<HTMLInputElement>(null);
+  const [forCrop, setForCrop] = useState<File | null>(null);
+  const [icon, setIcon] = useState<{ file: File; preview: string } | null>(null);
+  const picker = useRef<HTMLInputElement>(null);
 
   const submit = async () => {
     if (name.trim().length < 2) return setError("O nome precisa de pelo menos 2 caracteres");
     setError(null);
 
-    const enviado = icone
+    const sent = icon
       ? await uploadImage
-          .mutateAsync({ file: icone.arquivo, maxSize: 256, finalidade: "avatar" })
+          .mutateAsync({ file: icon.file, maxSize: 256, purpose: "avatar" })
           .catch(() => null)
       : null;
 
-    if (icone && !enviado) return;
+    if (icon && !sent) return;
 
     const guild = await createGuild.mutateAsync({ name: name.trim() }).catch(() => null);
     if (!guild) return;
 
-    if (enviado) {
+    if (sent) {
       await updateGuild
-        .mutateAsync({ guildId: guild.id, iconUrl: enviado.attachment.url })
+        .mutateAsync({ guildId: guild.id, iconUrl: sent.attachment.url })
         .catch(() => undefined);
     }
 
-    onFechar();
-    onCriado(guild.id);
+    onClose();
+    onCreated(guild.id);
   };
 
-  const ocupado = createGuild.isPending || uploadImage.isPending;
+  const busy = createGuild.isPending || uploadImage.isPending;
 
   return (
     <>
@@ -148,11 +148,11 @@ const Criar: React.FC<{
       <DialogBody data-gc="servidor.adicionar-servidor-modal.dialog-body--2">
         <div data-gc="servidor.adicionar-servidor-modal.div--2" className="flex items-center gap-4">
           <button data-gc="servidor.adicionar-servidor-modal.button"
-            onClick={() => seletor.current?.click()}
+            onClick={() => picker.current?.click()}
             className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-surface-4 bg-surface-0 text-xl font-bold text-ink-muted transition hover:border-brand hover:text-ink"
           >
-            {icone ? (
-              <img data-gc="servidor.adicionar-servidor-modal.img" src={icone.previa} alt="" className="size-full object-cover" />
+            {icon ? (
+              <img data-gc="servidor.adicionar-servidor-modal.img" src={icon.preview} alt="" className="size-full object-cover" />
             ) : name.trim() ? (
               initials(name)
             ) : (
@@ -161,8 +161,8 @@ const Criar: React.FC<{
           </button>
 
           <div data-gc="servidor.adicionar-servidor-modal.div--3" className="min-w-0">
-            <Button data-gc="servidor.adicionar-servidor-modal.button--2" variant="surface" size="sm" onClick={() => seletor.current?.click()}>
-              {icone ? "Trocar ícone" : "Enviar ícone"}
+            <Button data-gc="servidor.adicionar-servidor-modal.button--2" variant="surface" size="sm" onClick={() => picker.current?.click()}>
+              {icon ? "Trocar ícone" : "Enviar ícone"}
             </Button>
             <p data-gc="servidor.adicionar-servidor-modal.p" className="mt-1.5 text-xs text-ink-faint">
               Opcional. Quadrada fica melhor, e a partir de 256px.
@@ -170,14 +170,14 @@ const Criar: React.FC<{
           </div>
 
           <input data-gc="servidor.adicionar-servidor-modal.input"
-            ref={seletor}
+            ref={picker}
             type="file"
             accept="image/*"
             className="hidden"
             onChange={(e) => {
-              const arquivo = e.target.files?.[0];
+              const file = e.target.files?.[0];
               e.target.value = "";
-              if (arquivo) setParaRecortar(arquivo);
+              if (file) setForCrop(file);
             }}
           />
         </div>
@@ -198,34 +198,34 @@ const Criar: React.FC<{
       </DialogBody>
 
       <DialogFooter data-gc="servidor.adicionar-servidor-modal.dialog-footer">
-        <Button data-gc="servidor.adicionar-servidor-modal.button.on-voltar" variant="ghost" onClick={onVoltar}>
+        <Button data-gc="servidor.adicionar-servidor-modal.button.on-back" variant="ghost" onClick={onBack}>
           Voltar
         </Button>
-        <Button data-gc="servidor.adicionar-servidor-modal.button--3" onClick={() => void submit()} disabled={ocupado}>
-          {ocupado ? "Criando…" : "Criar servidor"}
+        <Button data-gc="servidor.adicionar-servidor-modal.button--3" onClick={() => void submit()} disabled={busy}>
+          {busy ? "Criando…" : "Criar servidor"}
         </Button>
       </DialogFooter>
 
-      <RecorteDeImagem data-gc="servidor.adicionar-servidor-modal.recorte-de-imagem"
-        arquivo={paraRecortar}
-        onCancelar={() => setParaRecortar(null)}
-        onPronto={(recortado) => {
-          setParaRecortar(null);
-          setIcone({ arquivo: recortado, previa: URL.createObjectURL(recortado) });
+      <ImageCrop data-gc="servidor.adicionar-servidor-modal.image-crop"
+        file={forCrop}
+        onCancel={() => setForCrop(null)}
+        onReady={(cropped) => {
+          setForCrop(null);
+          setIcon({ file: cropped, preview: URL.createObjectURL(cropped) });
         }}
       />
     </>
   );
 };
 
-const Entrar: React.FC<{ onVoltar: () => void; onFechar: () => void }> = ({
-  onVoltar,
-  onFechar,
+const Join: React.FC<{ onBack: () => void; onClose: () => void }> = ({
+  onBack,
+  onClose,
 }) => {
   const navigate = useNavigate();
-  const [valor, setValor] = useState("");
+  const [value, setValue] = useState("");
 
-  const codigo = valor.trim().replace(/\/+$/, "").split("/").pop() ?? "";
+  const code = value.trim().replace(/\/+$/, "").split("/").pop() ?? "";
 
   return (
     <>
@@ -241,26 +241,26 @@ const Entrar: React.FC<{ onVoltar: () => void; onFechar: () => void }> = ({
         <Input data-gc="servidor.adicionar-servidor-modal.input--3"
           id="convite"
           autoFocus
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key !== "Enter" || !codigo) return;
-            onFechar();
-            navigate(`/invite/${codigo}`);
+            if (e.key !== "Enter" || !code) return;
+            onClose();
+            navigate(`/invite/${code}`);
           }}
           placeholder="https://gravae-chat.vercel.app/invite/abc123"
         />
       </DialogBody>
 
       <DialogFooter data-gc="servidor.adicionar-servidor-modal.dialog-footer--2">
-        <Button data-gc="servidor.adicionar-servidor-modal.button.on-voltar--2" variant="ghost" onClick={onVoltar}>
+        <Button data-gc="servidor.adicionar-servidor-modal.button.on-back--2" variant="ghost" onClick={onBack}>
           Voltar
         </Button>
         <Button data-gc="servidor.adicionar-servidor-modal.button--4"
-          disabled={!codigo}
+          disabled={!code}
           onClick={() => {
-            onFechar();
-            navigate(`/invite/${codigo}`);
+            onClose();
+            navigate(`/invite/${code}`);
           }}
         >
           Ver convite
