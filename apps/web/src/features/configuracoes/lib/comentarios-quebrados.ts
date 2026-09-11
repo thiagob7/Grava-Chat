@@ -1,27 +1,27 @@
-const QUEBRA = /\*\/\*(?:(?!\*\/)[\s\S])*\*\//g;
+const BREAK = /\*\/\*(?:(?!\*\/)[\s\S])*\*\//g;
 
-export interface Engolida {
-  variavel: string | null;
-  linha: number;
+export interface Swallowed {
+  variable: string | null;
+  line: number;
 }
 
-export function acharComentariosQuebrados(css: string): Engolida[] {
-  const achados: Engolida[] = [];
+export function findCommentsBroken(css: string): Swallowed[] {
+  const matches: Swallowed[] = [];
 
-  for (const quebra of css.matchAll(QUEBRA)) {
-    const inicio = quebra.index ?? 0;
+  for (const lineBreak of css.matchAll(BREAK)) {
+    const start = lineBreak.index ?? 0;
 
-    const seguinte = /\s*(--[A-Za-z0-9_-]+)\s*:/.exec(css.slice(inicio + quebra[0].length));
+    const next = /\s*(--[A-Za-z0-9_-]+)\s*:/.exec(css.slice(start + lineBreak[0].length));
 
-    achados.push({
-      variavel: seguinte?.[1] ?? null,
-      linha: css.slice(0, inicio).split("\n").length,
+    matches.push({
+      variable: next?.[1] ?? null,
+      line: css.slice(0, start).split("\n").length,
     });
   }
 
-  return achados;
+  return matches;
 }
 
-export function consertarComentariosQuebrados(css: string): string {
-  return css.replace(QUEBRA, "*/");
+export function fixCommentsBroken(css: string): string {
+  return css.replace(BREAK, "*/");
 }
