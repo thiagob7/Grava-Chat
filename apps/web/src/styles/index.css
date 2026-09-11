@@ -347,15 +347,6 @@
   }
 
   /*
-    `100%` no `html` mede a janela, e instalado como app a janela pode ser mais
-    curta que a tela: sobra uma faixa do `body` embaixo, de outra cor. `dvh` é
-    a tela de verdade.
-  */
-  html {
-    height: 100dvh;
-  }
-
-  /*
     `--text-selection` é o realce do texto selecionado, não um fundo de item.
     Ele já foi lido como cor do canal ativo, e um tema que o declara opaco
     pintava a lateral de branco.
