@@ -25,6 +25,7 @@ export const PopoverContent = ({
   className,
   align = "start",
   sideOffset = 8,
+  collisionPadding = 8,
   portal = true,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content> & { portal?: boolean }) => {
@@ -32,9 +33,10 @@ export const PopoverContent = ({
     <PopoverPrimitive.Content data-gc="ui.popover.popover-primitivecontent"
       align={align}
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
       className={cn(
         flxCls("balloonFloating"),
-        "balao regiao-sem-arrasto z-50 w-72 rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
+        "balao regiao-sem-arrasto z-50 w-72 max-w-[calc(100vw-1rem)] rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
         flxCls("balloon"),
         className,
       )}
