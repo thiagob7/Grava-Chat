@@ -3,62 +3,64 @@ import { Check, Loader2 } from "lucide-react";
 
 import { Splash } from "~/features/app/components/Splash";
 import { Button } from "~/components/ui/button";
-import { ehDesktop } from "~/lib/desktop";
-import { useConexaoStore } from "~/features/app/stores/conexao-store";
+import { isDesktop } from "~/lib/desktop";
+import { useConnectionStore } from "~/features/app/stores/conexao-store";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
-const SILENCIO_MS = 1_500;
+const SILENCE_MS = 1_500;
 
-const ALIVIO_MS = 2_500;
+const RELIEF_MS = 2_500;
 
-const TENTATIVAS_ATE_OFERECER_RECARGA = 5;
+const ATTEMPTS_UNTIL_OFFER_RELOAD = 5;
 
-type Fase = "oculto" | "caiu" | "voltou";
+type Phase = "oculto" | "caiu" | "voltou";
 
-export const EstadoDaConexao: React.FC = () => {
-  const { conectado, caiuEm, tentativas, jaConectou } = useConexaoStore();
-  const [fase, setFase] = useState<Fase>("oculto");
+export const ConnectionState: React.FC = () => {
+  const { t } = useTranslation();
+  const { connected, droppedAt, attempts, alreadyConnected } = useConnectionStore();
+  const [phase, setPhase] = useState<Phase>("oculto");
 
   useEffect(() => {
-    if (!jaConectou) return;
+    if (!alreadyConnected) return;
 
-    if (conectado) {
-      setFase((atual) => (atual === "caiu" ? "voltou" : "oculto"));
+    if (connected) {
+      setPhase((current) => (current === "caiu" ? "voltou" : "oculto"));
       return;
     }
 
-    if (caiuEm === null) return;
+    if (droppedAt === null) return;
 
-    setFase((atual) => (atual === "voltou" ? "oculto" : atual));
+    setPhase((current) => (current === "voltou" ? "oculto" : current));
 
-    const relogio = setTimeout(
-      () => setFase("caiu"),
-      Math.max(0, SILENCIO_MS - (Date.now() - caiuEm)),
+    const clock = setTimeout(
+      () => setPhase("caiu"),
+      Math.max(0, SILENCE_MS - (Date.now() - droppedAt)),
     );
 
-    return () => clearTimeout(relogio);
-  }, [conectado, caiuEm, jaConectou]);
+    return () => clearTimeout(clock);
+  }, [connected, droppedAt, alreadyConnected]);
 
   useEffect(() => {
-    if (fase !== "voltou") return;
+    if (phase !== "voltou") return;
 
-    const relogio = setTimeout(() => setFase("oculto"), ALIVIO_MS);
-    return () => clearTimeout(relogio);
-  }, [fase]);
+    const clock = setTimeout(() => setPhase("oculto"), RELIEF_MS);
+    return () => clearTimeout(clock);
+  }, [phase]);
 
-  if (fase === "oculto") return null;
+  if (phase === "oculto") return null;
 
-  if (fase === "voltou")
+  if (phase === "voltou")
     return (
       <div data-gc="app.estado-da-conexao.div"
         role="status"
         className={cn(
           "pointer-events-none fixed inset-x-0 z-[110] flex justify-center",
-          ehDesktop() ? "top-10" : "top-3",
+          isDesktop() ? "top-10" : "top-3",
         )}
       >
         <span data-gc="app.estado-da-conexao.span" className="flex items-center gap-2 rounded-full bg-online px-3 py-1.5 text-xs font-medium text-sobre-marca shadow-lg">
-          <Check data-gc="app.estado-da-conexao.check" size={14} /> Conectado de novo
+          <Check data-gc="app.estado-da-conexao.check" size={14} /> {t("comum.conexao.voltou")}
         </span>
       </div>
     );
@@ -68,7 +70,7 @@ export const EstadoDaConexao: React.FC = () => {
       role="status"
       className={cn(
         "fixed inset-x-0 bottom-0 z-[110] bg-surface-2",
-        ehDesktop() ? "top-8" : "top-0",
+        isDesktop() ? "top-8" : "top-0",
       )}
     >
       <Splash data-gc="app.estado-da-conexao.splash"
@@ -76,18 +78,17 @@ export const EstadoDaConexao: React.FC = () => {
           <div data-gc="app.estado-da-conexao.div--3" className="flex flex-col items-center gap-3 text-center">
             <p data-gc="app.estado-da-conexao.p" className="flex items-center gap-2 text-sm text-ink-muted">
               <Loader2 data-gc="app.estado-da-conexao.loader2" size={14} className="animate-spin" />
-              Reconectando
-              {tentativas > 1 && ` · tentativa ${tentativas}`}
+              {t("comum.conexao.reconectando")}
+              {attempts > 1 && t("comum.conexao.tentativaSufixo", { numero: attempts })}
             </p>
 
             <p data-gc="app.estado-da-conexao.p--2" className="max-w-xs text-xs text-ink-faint">
-              A conversa está a salvo no servidor. Isto volta sozinho assim que
-              a conexão voltar.
+              {t("comum.conexao.aSalvo")}
             </p>
 
-            {tentativas >= TENTATIVAS_ATE_OFERECER_RECARGA && (
+            {attempts >= ATTEMPTS_UNTIL_OFFER_RELOAD && (
               <Button data-gc="app.estado-da-conexao.button" variant="surface" size="sm" onClick={() => window.location.reload()}>
-                Recarregar
+                {t("comum.erro.recarregar")}
               </Button>
             )}
           </div>

@@ -2,71 +2,72 @@ import React from "react";
 import { RotateCcw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { copiarTexto } from "~/lib/copiar";
+import { copyText } from "~/lib/copiar";
+import { i18next } from "~/traducao";
 
 interface Props {
   children: React.ReactNode;
-  onde?: string;
-  compacto?: boolean;
+  where?: string;
+  compact?: boolean;
 }
 
 interface State {
-  erro: Error | null;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends React.Component<Props, State> {
-  state: State = { erro: null };
+  state: State = { error: null };
 
-  static getDerivedStateFromError(erro: Error): State {
-    return { erro };
+  static getDerivedStateFromError(error: Error): State {
+    return { error };
   }
 
-  componentDidCatch(erro: Error, info: React.ErrorInfo) {
-    console.error(`[gravae] quebrou em ${this.props.onde ?? "algum lugar"}`, erro, info);
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error(`[gravae] quebrou em ${this.props.where ?? "algum lugar"}`, error, info);
   }
 
-  private detalhes() {
-    const { erro } = this.state;
+  private details() {
+    const { error } = this.state;
 
     return [
-      `Gravaê — ${this.props.onde ?? "aplicação"}`,
+      `Gravaê — ${this.props.where ?? "aplicação"}`,
       new Date().toISOString(),
       navigator.userAgent,
       "",
-      erro?.stack ?? String(erro),
+      error?.stack ?? String(error),
     ].join("\n");
   }
 
   render() {
-    const { erro } = this.state;
-    if (!erro) return this.props.children;
+    const { error } = this.state;
+    if (!error) return this.props.children;
 
-    const acoes = (
+    const actions = (
       <div data-gc="app.error-boundary.div" className="mt-4 flex flex-wrap items-center gap-2">
-        <Button data-gc="app.error-boundary.button" variant="surface" size="sm" onClick={() => this.setState({ erro: null })}>
-          <RotateCcw data-gc="app.error-boundary.rotate-ccw" size={14} /> Tentar de novo
+        <Button data-gc="app.error-boundary.button" variant="surface" size="sm" onClick={() => this.setState({ error: null })}>
+          <RotateCcw data-gc="app.error-boundary.rotate-ccw" size={14} /> {i18next.t("comum.erro.tentarDeNovo")}
         </Button>
 
         <Button data-gc="app.error-boundary.button--2" variant="surface" size="sm" onClick={() => window.location.reload()}>
-          Recarregar
+          {i18next.t("comum.erro.recarregar")}
         </Button>
 
         <button data-gc="app.error-boundary.button--3"
           type="button"
-          onClick={() => void copiarTexto(this.detalhes())}
+          onClick={() => void copyText(this.details())}
           className="text-xs text-ink-muted underline-offset-2 hover:underline"
         >
-          Copiar detalhes
+          {i18next.t("comum.erro.copiarDetalhes")}
         </button>
       </div>
     );
 
-    if (this.props.compacto)
+    if (this.props.compact)
       return (
         <div data-gc="app.error-boundary.div--2" className="rounded-lg border border-danger/30 bg-danger/5 p-4">
-          <p data-gc="app.error-boundary.p" className="text-sm font-medium text-danger">Esta parte da tela quebrou.</p>
-          <p data-gc="app.error-boundary.p--2" className="mt-1 break-words text-xs text-ink-muted">{erro.message}</p>
-          {acoes}
+          <p data-gc="app.error-boundary.p" className="text-sm font-medium text-danger">{i18next.t("comum.erro.parteQuebrou")}</p>
+          <p data-gc="app.error-boundary.p--2" className="mt-1 break-words text-xs text-ink-muted">{error.message}</p>
+          {actions}
         </div>
       );
 
@@ -80,18 +81,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
             draggable={false}
           />
 
-          <h1 data-gc="app.error-boundary.h1" className="mt-4 text-lg font-semibold">O Gravaê tropeçou.</h1>
+          <h1 data-gc="app.error-boundary.h1" className="mt-4 text-lg font-semibold">{i18next.t("comum.erro.titulo")}</h1>
 
           <p data-gc="app.error-boundary.p--3" className="mt-1 text-sm text-ink-muted">
-            Alguma coisa quebrou no meio do caminho e a tela não conseguiu se
-            desenhar. Sua conversa não se perdeu — está tudo no servidor.
+            {i18next.t("comum.erro.detalhe")}
           </p>
 
           <p data-gc="app.error-boundary.p--4" className="mt-3 break-words rounded bg-surface-1 p-3 font-mono text-xs text-ink-muted">
-            {erro.message}
+            {error.message}
           </p>
 
-          {acoes}
+          {actions}
         </div>
       </div>
     );
