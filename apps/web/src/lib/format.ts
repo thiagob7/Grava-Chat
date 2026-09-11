@@ -85,8 +85,8 @@ export const avatarColor = (id: string) => {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length]!;
 };
 
-export const initials = (name: string) =>
-  name
+export const initials = (name: string | null | undefined) =>
+  (name ?? "")
     .split(/\s+/)
     .slice(0, 2)
     .map((w) => w[0] ?? "")
