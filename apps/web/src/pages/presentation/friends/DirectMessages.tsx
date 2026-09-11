@@ -150,6 +150,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
 
   const navigation = (
     <LeftColumn data-gc="friends.direct-messages.left-column"
+      fluid={screenNarrow}
       footer={<BarFooter data-gc="friends.direct-messages.bar-footer" user={user} onLogout={() => void leave()} />}
       alca={
         <WidthHandle data-gc="friends.direct-messages.width-handle"

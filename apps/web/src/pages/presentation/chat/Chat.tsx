@@ -199,6 +199,7 @@ export const Chat: React.FC = () => {
 
   const navigation = (
     <LeftColumn data-gc="chat.chat.left-column"
+      fluid={screenNarrow}
       footer={
         <BarFooter data-gc="chat.chat.bar-footer"
           user={user}
