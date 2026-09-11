@@ -1,27 +1,27 @@
 import { create } from "zustand";
 
-interface ConexaoStore {
-  conectado: boolean;
-  caiuEm: number | null;
-  tentativas: number;
-  jaConectou: boolean;
-  conectou: () => void;
-  caiu: () => void;
-  tentando: (n: number) => void;
+interface ConnectionStore {
+  connected: boolean;
+  droppedAt: number | null;
+  attempts: number;
+  alreadyConnected: boolean;
+  didConnect: () => void;
+  dropped: () => void;
+  trying: (n: number) => void;
 }
 
-export const useConexaoStore = create<ConexaoStore>((set) => ({
-  conectado: false,
-  caiuEm: null,
-  tentativas: 0,
-  jaConectou: false,
+export const useConnectionStore = create<ConnectionStore>((set) => ({
+  connected: false,
+  droppedAt: null,
+  attempts: 0,
+  alreadyConnected: false,
 
-  conectou: () => set({ conectado: true, caiuEm: null, tentativas: 0, jaConectou: true }),
-  caiu: () =>
-    set((estado) =>
-      estado.conectado || estado.caiuEm === null
-        ? { conectado: false, caiuEm: Date.now() }
-        : { conectado: false },
+  didConnect: () => set({ connected: true, droppedAt: null, attempts: 0, alreadyConnected: true }),
+  dropped: () =>
+    set((state) =>
+      state.connected || state.droppedAt === null
+        ? { connected: false, droppedAt: Date.now() }
+        : { connected: false },
     ),
-  tentando: (n) => set({ tentativas: n }),
+  trying: (n) => set({ attempts: n }),
 }));
