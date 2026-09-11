@@ -3,21 +3,21 @@ import { readFile, statfs } from "node:fs/promises";
 import type { FastifyInstance } from "fastify";
 
 import { env } from "~/env.js";
-import { ehAdmin } from "~/lib/serialize.js";
+import { isAdmin } from "~/lib/serialize.js";
 import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { io } from "~/realtime/io.js";
 import { authService } from "~/services/auth-service.js";
 import { voiceService } from "~/services/voice-service.js";
 
-async function medir(nome: string, tarefa: () => Promise<unknown>) {
-  const comeco = performance.now();
+async function measure(name: string, tarefa: () => Promise<unknown>) {
+  const start = performance.now();
 
   try {
     await tarefa();
-    return { nome, estado: "up" as const, ms: Math.round(performance.now() - comeco) };
+    return { name, state: "up" as const, ms: Math.round(performance.now() - start) };
   } catch {
-    return { nome, estado: "down" as const, ms: Math.round(performance.now() - comeco) };
+    return { name, state: "down" as const, ms: Math.round(performance.now() - start) };
   }
 }
 
@@ -27,16 +27,16 @@ async function memoria() {
 
   try {
     const meminfo = await readFile("/proc/meminfo", "utf8");
-    const disponivel = /MemAvailable:\s+(\d+) kB/.exec(meminfo);
+    const available = /MemAvailable:\s+(\d+) kB/.exec(meminfo);
 
-    if (disponivel) return { total, livre, disponivel: Number(disponivel[1]) * 1024 };
+    if (available) return { total, livre, available: Number(available[1]) * 1024 };
   } catch {
   }
 
-  return { total, livre, disponivel: livre };
+  return { total, livre, available: livre };
 }
 
-async function disco() {
+async function disk() {
   try {
     const fs = await statfs("/");
     const total = Number(fs.blocks) * Number(fs.bsize);
@@ -47,46 +47,46 @@ async function disco() {
   }
 }
 
-async function maquinaDeVoz(): Promise<MaquinaDeVoz | { indisponivel: true } | null> {
+async function voiceMachine(): Promise<VoiceMachine | { unavailable: true } | null> {
   if (!env.SFU_STATUS_URL || !env.SFU_STATUS_TOKEN) return null;
 
-  const comeco = performance.now();
+  const start = performance.now();
 
   try {
-    const resposta = await fetch(env.SFU_STATUS_URL, {
+    const reply = await fetch(env.SFU_STATUS_URL, {
       headers: { authorization: `Bearer ${env.SFU_STATUS_TOKEN}` },
       signal: AbortSignal.timeout(2_000),
     });
 
-    if (!resposta.ok) return { indisponivel: true };
+    if (!reply.ok) return { unavailable: true };
 
-    const dados = (await resposta.json()) as Omit<MaquinaDeVoz, "ms">;
-    return { ...dados, ms: Math.round(performance.now() - comeco) };
+    const data = (await reply.json()) as Omit<VoiceMachine, "ms">;
+    return { ...data, ms: Math.round(performance.now() - start) };
   } catch {
-    return { indisponivel: true };
+    return { unavailable: true };
   }
 }
 
-interface MaquinaDeVoz {
+interface VoiceMachine {
   host: string;
-  nucleos: number;
-  carga: { um: number; cinco: number; quinze: number };
-  memoria: { total: number; livre: number; disponivel: number };
-  disco: { total: number; livre: number };
-  uptimeDaMaquina: number;
-  livekit: { noAr: boolean; residente: number };
+  cores: number;
+  carga: { um: number; five: number; quinze: number };
+  memoria: { total: number; livre: number; available: number };
+  disk: { total: number; livre: number };
+  machineUptime: number;
+  livekit: { inAr: boolean; resident: number };
   ms: number;
 }
 
 function gateway() {
   try {
-    const servidor = io();
-    const sockets = [...servidor.sockets.sockets.values()];
+    const server = io();
+    const sockets = [...server.sockets.sockets.values()];
 
     return {
-      conexoes: servidor.engine.clientsCount,
-      pessoas: new Set(sockets.filter((s) => !s.data.ehBot).map((s) => s.data.userId)).size,
-      bots: sockets.filter((s) => s.data.ehBot).length,
+      connections: server.engine.clientsCount,
+      people: new Set(sockets.filter((s) => !s.data.isBot).map((s) => s.data.userId)).size,
+      bots: sockets.filter((s) => s.data.isBot).length,
     };
   } catch {
     return null;
@@ -98,15 +98,15 @@ export async function statusRoutes(app: FastifyInstance) {
 
   app.get("/status", async (req, reply) => {
     const user = await authService.requireUser(req.userId);
-    if (!ehAdmin(user.email)) return reply.notFound();
+    if (!isAdmin(user.email)) return reply.notFound();
 
-    const [db, cache, salas, ram, hd, voz] = await Promise.all([
-      medir("mongo", () => prisma.$runCommandRaw({ ping: 1 })),
-      medir("redis", () => redis.ping()),
-      voiceService.estadoDoSfu().catch(() => null),
+    const [db, cache, rooms, ram, hd, voice] = await Promise.all([
+      measure("mongo", () => prisma.$runCommandRaw({ ping: 1 })),
+      measure("redis", () => redis.ping()),
+      voiceService.sfuState().catch(() => null),
       memoria(),
-      disco(),
-      maquinaDeVoz(),
+      disk(),
+      voiceMachine(),
     ]);
 
     const [c1, c5, c15] = os.loadavg();
@@ -114,26 +114,26 @@ export async function statusRoutes(app: FastifyInstance) {
     return {
       api: {
         host: os.hostname(),
-        ambiente: env.NODE_ENV,
-        carga: { um: c1, cinco: c5, quinze: c15 },
-        nucleos: os.cpus().length,
+        environment: env.NODE_ENV,
+        carga: { um: c1, five: c5, quinze: c15 },
+        cores: os.cpus().length,
         memoria: ram,
-        residente: process.memoryUsage.rss(),
-        disco: hd,
-        uptimeDoProcesso: Math.round(process.uptime()),
-        uptimeDaMaquina: Math.round(os.uptime()),
+        resident: process.memoryUsage.rss(),
+        disk: hd,
+        processUptime: Math.round(process.uptime()),
+        machineUptime: Math.round(os.uptime()),
         node: process.version,
       },
       gateway: gateway(),
-      voz,
+      voice,
       mongo: db,
       redis: cache,
-      sfu: salas ?? {
-        indisponivel: true as const,
-        salas: [],
-        participantes: 0,
-        publicando: 0,
-        fantasmas: [],
+      sfu: rooms ?? {
+        unavailable: true as const,
+        rooms: [],
+        participants: 0,
+        publishing: 0,
+        ghosts: [],
       },
     };
   });

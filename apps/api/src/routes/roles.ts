@@ -14,7 +14,7 @@ import {
 const roleParams = guildParams.extend({ roleId: objectId });
 const overwriteParams = guildChannelParams.extend({ targetId: objectId });
 
-const avisarMudanca = (guildId: string) =>
+const notifyChange = (guildId: string) =>
   io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
 
 export async function roleRoutes(app: FastifyInstance) {
@@ -29,7 +29,7 @@ export async function roleRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     const role = await roleService.create(req.userId, guildId, createRoleInput.parse(req.body));
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return reply.code(201).send(role);
   });
 
@@ -37,7 +37,7 @@ export async function roleRoutes(app: FastifyInstance) {
     const { guildId, roleId } = roleParams.parse(req.params);
     const role = await roleService.update(req.userId, guildId, roleId, updateRoleInput.parse(req.body));
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return role;
   });
 
@@ -45,7 +45,7 @@ export async function roleRoutes(app: FastifyInstance) {
     const { guildId, roleId } = roleParams.parse(req.params);
     await roleService.remove(req.userId, guildId, roleId);
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return reply.code(204).send();
   });
 
@@ -53,7 +53,7 @@ export async function roleRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     const roles = await roleService.reorder(req.userId, guildId, reorderRolesInput.parse(req.body));
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return roles;
   });
 
@@ -87,7 +87,7 @@ export async function roleRoutes(app: FastifyInstance) {
       setOverwriteInput.parse(req.body),
     );
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return overwrite ?? { removed: true };
   });
 
@@ -95,7 +95,7 @@ export async function roleRoutes(app: FastifyInstance) {
     const { guildId, channelId, targetId } = overwriteParams.parse(req.params);
     await roleService.removeOverwrite(req.userId, guildId, channelId, targetId);
 
-    avisarMudanca(guildId);
+    notifyChange(guildId);
     return reply.code(204).send();
   });
 }
