@@ -1,10 +1,11 @@
 import React, { useMemo, useRef, useState } from "react";
-import { ImageSquare, MapPin, SpeakerHigh, X } from "@phosphor-icons/react";
+import { CalendarBlank, Check, Copy, ImageSquare, MapPin, SpeakerHigh, X } from "@phosphor-icons/react";
 import {
   EVENT_FREQUENCIES,
   EVENT_FREQUENCY_LABELS,
   EVENT_LIMITS,
   type EventFrequency,
+  type GuildEvent,
 } from "@gravae/shared";
 
 import { useCreateEvent } from "~/@core/application/queries/guild/use-events";
@@ -363,9 +364,35 @@ export const CreateEventForm: React.FC<{
             </div>
           </>
         )}
+
+        {step === "done" && created && (
+          <div data-gc="servidor.create-event-form.div--16" className="py-2 text-center">
+            <span data-gc="servidor.create-event-form.span--8"
+              className="mx-auto flex size-14 items-center justify-center rounded-full bg-surface-3 text-ink"
+            >
+              <CalendarBlank data-gc="servidor.create-event-form.calendar-blank" size={26} weight="fill" />
+            </span>
+
+            <p data-gc="servidor.create-event-form.p--9" className="mt-4 text-lg font-semibold">
+              Tudo pronto. Agora compartilhe seu evento!
+            </p>
+            <p data-gc="servidor.create-event-form.p--10" className="mx-auto mt-1 max-w-sm text-sm text-ink-muted">
+              Copie o endereço abaixo para chamar gente. Ele abre o servidor já
+              com o evento na frente.
+            </p>
+
+            <EventLink data-gc="servidor.create-event-form.event-link" guildId={guildId} eventId={created.id} />
+          </div>
+        )}
       </DialogBody>
 
       <DialogFooter data-gc="servidor.create-event-form.dialog-footer">
+        {step === "done" ? (
+          <Button data-gc="servidor.create-event-form.button.leave--2" className="ml-auto" onClick={leave}>
+            Concluir
+          </Button>
+        ) : (
+        <>
         {step !== "place" && (
           <Button data-gc="servidor.create-event-form.button--3"
             variant="ghost"
@@ -392,7 +419,11 @@ export const CreateEventForm: React.FC<{
             Próximo
           </Button>
         )}
+        </>
+        )}
     </DialogFooter>
+
+      <Confetti data-gc="servidor.create-event-form.confetti" playing={step === "done"} />
     </>
   );
 };
@@ -430,3 +461,41 @@ const Choice: React.FC<{
     </span>
   </button>
 );
+
+/*
+  O endereço tem o servidor e o evento. Quem já pode ver o servidor cai direto
+  nele, com o evento aberto; quem não pode continua precisando de um convite,
+  como em qualquer outro canto.
+*/
+const EventLink: React.FC<{ guildId: string; eventId: string }> = ({ guildId, eventId }) => {
+  const [copied, setCopied] = useState(false);
+  const clock = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const link = `${window.location.origin}/evento/${guildId}/${eventId}`;
+
+  const copy = async () => {
+    if (!(await copyText(link))) return;
+
+    setCopied(true);
+    clearTimeout(clock.current);
+    clock.current = setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <div data-gc="servidor.create-event-form.div--17" className="mt-5 flex items-center gap-2">
+      <Input data-gc="servidor.create-event-form.input--3" readOnly value={link} className="min-w-0 flex-1" />
+
+      <Button data-gc="servidor.create-event-form.button.copy" onClick={() => void copy()} className="shrink-0">
+        {copied ? (
+          <>
+            <Check data-gc="servidor.create-event-form.check" size={16} /> Copiado
+          </>
+        ) : (
+          <>
+            <Copy data-gc="servidor.create-event-form.copy" size={16} /> Copiar
+          </>
+        )}
+      </Button>
+    </div>
+  );
+};

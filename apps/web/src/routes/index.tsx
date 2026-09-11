@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router";
 
 import { TitleBar } from "~/features/app/components/BarraDeTitulo";
 import { ShellLoading } from "~/features/app/components/CascaCarregando";
@@ -140,6 +140,7 @@ export const AppRoutes: React.FC = () => {
           </Protected>
         }
       />
+      <Route path="/evento/:guildId/:eventId" element={<EventLink data-gc="routes.event-link" />} />
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
@@ -186,6 +187,19 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {children}
     </>
   );
+};
+
+/*
+  O endereço que sai da criação de evento. Ele não é uma tela: leva para o
+  servidor com o evento pendurado na busca, e quem abre o painel é a coluna de
+  canais, que é onde o modal de eventos mora.
+*/
+const EventLink: React.FC = () => {
+  const { guildId, eventId } = useParams();
+
+  if (!guildId || !eventId) return <Navigate data-gc="routes.navigate--2" to="/channels" replace />;
+
+  return <Navigate data-gc="routes.navigate--3" to={`/channels/${guildId}?evento=${eventId}`} replace />;
 };
 
 const LinksDoDesktop: React.FC = () => {
