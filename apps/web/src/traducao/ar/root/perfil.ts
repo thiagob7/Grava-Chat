@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "تعذّر فتح هذا الملف الشخصي.",
   carregando: "جارٍ التحميل…",
   editar: "تعديل الملف الشخصي",
   mensagem: "رسالة",
