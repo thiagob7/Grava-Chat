@@ -6,223 +6,223 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
-import type { EstadoDaAtualizacao } from "@gravae/shared";
+import type { UpdateState } from "@gravae/shared";
 
-import { escreverTroca, prepararNoMac } from "./atualizacao-mac.js";
-import { ehDev } from "./config.js";
-import { ehMaisNova } from "./versao.js";
+import { writeSwap, prepareMac } from "./atualizacao-mac.js";
+import { isDev } from "./config.js";
+import { isMoreNew } from "./versao.js";
 
 const REPO = "thiagob7/Grava-Chat";
-const ARQUIVO = process.platform === "darwin" ? "gravae-chat-mac.dmg" : "gravae-chat-win.exe";
+const FILE = process.platform === "darwin" ? "gravae-chat-mac.dmg" : "gravae-chat-win.exe";
 
-const INTERVALO_MS = 6 * 60 * 60 * 1000;
+const INTERVAL_MS = 6 * 60 * 60 * 1000;
 
-const ATRASO_INICIAL_MS = 10_000;
+const DELAY_INITIAL_MS = 10_000;
 
-const INTERVALO_POR_FOCO_MS = 15 * 60 * 1000;
+const INTERVAL_BY_FOCUS_MS = 15 * 60 * 1000;
 
-function pacoteInstalado(): string | null {
+function packetInstalled(): string | null {
   if (process.platform !== "darwin") return null;
 
-  const executavel = app.getPath("exe");
-  const pacote = path.resolve(executavel, "..", "..", "..");
+  const executable = app.getPath("exe");
+  const packet = path.resolve(executable, "..", "..", "..");
 
-  return pacote.endsWith(".app") ? pacote : null;
+  return packet.endsWith(".app") ? packet : null;
 }
 
-function disparar(programa: string, argumentos: string[]): Promise<void> {
-  return new Promise((resolver, rejeitar) => {
-    const processo = spawn(programa, argumentos, { detached: true, stdio: "ignore" });
+function fire(program: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const doProcess = spawn(program, args, { detached: true, stdio: "ignore" });
 
-    processo.once("spawn", () => {
-      processo.unref();
-      resolver();
+    doProcess.once("spawn", () => {
+      doProcess.unref();
+      resolve();
     });
 
-    processo.once("error", rejeitar);
+    doProcess.once("error", reject);
   });
 }
 
-interface Publicada {
-  versao: string;
+interface Published {
+  version: string;
   url: string;
-  tamanho: number;
+  size: number;
 }
 
-async function ultimaPublicada(): Promise<Publicada> {
-  const resposta = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+async function lastPublished(): Promise<Published> {
+  const reply = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
     headers: { Accept: "application/vnd.github+json" },
   });
 
-  if (!resposta.ok) throw new Error(`GitHub respondeu ${resposta.status}`);
+  if (!reply.ok) throw new Error(`GitHub respondeu ${reply.status}`);
 
-  const dados = (await resposta.json()) as {
+  const data = (await reply.json()) as {
     tag_name?: string;
     assets?: { name: string; browser_download_url: string; size: number }[];
   };
 
-  const arquivo = dados.assets?.find((a) => a.name === ARQUIVO);
-  if (!dados.tag_name || !arquivo) throw new Error("A release não tem o arquivo desta plataforma.");
+  const file = data.assets?.find((a) => a.name === FILE);
+  if (!data.tag_name || !file) throw new Error("A release não tem o arquivo desta plataforma.");
 
   return {
-    versao: dados.tag_name.replace(/^v/, ""),
-    url: arquivo.browser_download_url,
-    tamanho: arquivo.size,
+    version: data.tag_name.replace(/^v/, ""),
+    url: file.browser_download_url,
+    size: file.size,
   };
 }
 
-export function criarAtualizador(aoMudar: (estado: EstadoDaAtualizacao) => void) {
-  let estado: EstadoDaAtualizacao = {
-    atual: app.getVersion(),
-    disponivel: null,
-    fase: "ociosa",
-    progresso: 0,
-    erro: null,
+export function createUpdater(onChange: (state: UpdateState) => void) {
+  let state: UpdateState = {
+    current: app.getVersion(),
+    available: null,
+    phase: "ociosa",
+    progress: 0,
+    error: null,
   };
 
-  let preparado: string | null = null;
-  let trabalhando = false;
+  let prepared: string | null = null;
+  let working = false;
 
-  const mudar = (patch: Partial<EstadoDaAtualizacao>) => {
-    estado = { ...estado, ...patch };
-    aoMudar(estado);
+  const change = (patch: Partial<UpdateState>) => {
+    state = { ...state, ...patch };
+    onChange(state);
   };
 
-  async function procurar(): Promise<EstadoDaAtualizacao> {
-    if (ehDev || !app.isPackaged) return estado;
-    if (trabalhando || estado.fase === "pronta") return estado;
+  async function lookup(): Promise<UpdateState> {
+    if (isDev || !app.isPackaged) return state;
+    if (working || state.phase === "pronta") return state;
 
-    trabalhando = true;
-    mudar({ fase: "procurando", erro: null });
+    working = true;
+    change({ phase: "procurando", error: null });
 
     try {
-      const publicada = await ultimaPublicada();
-      const nova = ehMaisNova(publicada.versao, estado.atual);
+      const published = await lastPublished();
+      const fresh = isMoreNew(published.version, state.current);
 
-      mudar({ fase: "ociosa", disponivel: nova ? publicada.versao : null });
-      return estado;
-    } catch (erro) {
-      mudar({ fase: "erro", erro: erro instanceof Error ? erro.message : String(erro) });
-      return estado;
+      change({ phase: "ociosa", available: fresh ? published.version : null });
+      return state;
+    } catch (error) {
+      change({ phase: "erro", error: error instanceof Error ? error.message : String(error) });
+      return state;
     } finally {
-      trabalhando = false;
+      working = false;
     }
   }
 
-  async function baixar(): Promise<EstadoDaAtualizacao> {
-    if (ehDev || !app.isPackaged || trabalhando || estado.fase === "pronta") return estado;
-    if (!estado.disponivel) return estado;
+  async function download(): Promise<UpdateState> {
+    if (isDev || !app.isPackaged || working || state.phase === "pronta") return state;
+    if (!state.available) return state;
 
-    trabalhando = true;
-    mudar({ fase: "baixando", progresso: 0, erro: null });
+    working = true;
+    change({ phase: "baixando", progress: 0, error: null });
 
-    const pasta = await mkdtemp(path.join(tmpdir(), "gravae-atualizacao-"));
+    const folder = await mkdtemp(path.join(tmpdir(), "gravae-atualizacao-"));
 
     try {
-      const publicada = await ultimaPublicada();
-      const destino = path.join(pasta, ARQUIVO);
+      const published = await lastPublished();
+      const destination = path.join(folder, FILE);
 
-      const resposta = await fetch(publicada.url);
-      if (!resposta.ok || !resposta.body) throw new Error(`Download respondeu ${resposta.status}`);
+      const reply = await fetch(published.url);
+      if (!reply.ok || !reply.body) throw new Error(`Download respondeu ${reply.status}`);
 
-      let baixado = 0;
-      const contando = new TransformStream<Uint8Array, Uint8Array>({
-        transform(pedaco, controle) {
-          baixado += pedaco.byteLength;
-          mudar({ progresso: Math.min(baixado / publicada.tamanho, 1) });
-          controle.enqueue(pedaco);
+      let downloaded = 0;
+      const counting = new TransformStream<Uint8Array, Uint8Array>({
+        transform(piece, control) {
+          downloaded += piece.byteLength;
+          change({ progress: Math.min(downloaded / published.size, 1) });
+          control.enqueue(piece);
         },
       });
 
       await pipeline(
-        Readable.fromWeb(resposta.body.pipeThrough(contando) as never),
-        createWriteStream(destino),
+        Readable.fromWeb(reply.body.pipeThrough(counting) as never),
+        createWriteStream(destination),
       );
 
-      preparado =
-        process.platform === "darwin" ? await prepararNoMac(destino, publicada.versao) : destino;
+      prepared =
+        process.platform === "darwin" ? await prepareMac(destination, published.version) : destination;
 
-      mudar({ fase: "pronta", progresso: 1 });
-      return estado;
-    } catch (erro) {
-      await rm(pasta, { recursive: true, force: true }).catch(() => undefined);
-      mudar({ fase: "erro", erro: erro instanceof Error ? erro.message : String(erro) });
-      return estado;
+      change({ phase: "pronta", progress: 1 });
+      return state;
+    } catch (error) {
+      await rm(folder, { recursive: true, force: true }).catch(() => undefined);
+      change({ phase: "erro", error: error instanceof Error ? error.message : String(error) });
+      return state;
     } finally {
-      trabalhando = false;
+      working = false;
     }
   }
 
-  async function instalar() {
-    if (estado.fase === "instalando") return;
+  async function install() {
+    if (state.phase === "instalando") return;
 
-    if (!preparado || estado.fase !== "pronta") {
-      mudar({ fase: "erro", erro: "Não há versão preparada para instalar. Baixe de novo." });
+    if (!prepared || state.phase !== "pronta") {
+      change({ phase: "erro", error: "Não há versão preparada para instalar. Baixe de novo." });
       return;
     }
 
-    mudar({ fase: "instalando", erro: null });
+    change({ phase: "instalando", error: null });
 
     try {
       if (process.platform === "darwin") {
-        const pacote = pacoteInstalado();
+        const packet = packetInstalled();
 
-        if (!pacote) {
+        if (!packet) {
           throw new Error(
             "Não achei o Gravaê Chat.app no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
           );
         }
 
-        const roteiro = await escreverTroca(pacote, preparado);
-        await disparar("/bin/sh", [roteiro]);
+        const script = await writeSwap(packet, prepared);
+        await fire("/bin/sh", [script]);
       } else {
-        await disparar(preparado, ["/S"]);
+        await fire(prepared, ["/S"]);
       }
-    } catch (erro) {
-      mudar({
-        fase: "pronta",
-        erro: erro instanceof Error ? erro.message : String(erro),
+    } catch (error) {
+      change({
+        phase: "pronta",
+        error: error instanceof Error ? error.message : String(error),
       });
       return;
     }
 
-    for (const janela of BrowserWindow.getAllWindows()) janela.destroy();
+    for (const appWindow of BrowserWindow.getAllWindows()) appWindow.destroy();
     app.quit();
   }
 
   const timers: NodeJS.Timeout[] = [];
 
   return {
-    estado: () => estado,
-    procurar,
-    baixar,
-    instalar,
+    state: () => state,
+    lookup,
+    download,
+    install,
 
-    vigiar() {
-      let ultima = 0;
+    watch() {
+      let last = 0;
 
-      const rodada = () => {
-        ultima = Date.now();
-        void procurar().then((atual) => (atual.disponivel ? baixar() : undefined));
+      const round = () => {
+        last = Date.now();
+        void lookup().then((current) => (current.available ? download() : undefined));
       };
 
-      const primeira = setTimeout(rodada, ATRASO_INICIAL_MS);
-      const relogio = setInterval(rodada, INTERVALO_MS);
+      const first = setTimeout(round, DELAY_INITIAL_MS);
+      const clock = setInterval(round, INTERVAL_MS);
 
-      primeira.unref();
-      relogio.unref();
-      timers.push(primeira, relogio);
+      first.unref();
+      clock.unref();
+      timers.push(first, clock);
 
-      const aoFocar = () => {
-        if (Date.now() - ultima < INTERVALO_POR_FOCO_MS) return;
-        rodada();
+      const onFocus = () => {
+        if (Date.now() - last < INTERVAL_BY_FOCUS_MS) return;
+        round();
       };
 
-      app.on("browser-window-focus", aoFocar);
+      app.on("browser-window-focus", onFocus);
 
       return () => {
         timers.forEach((t) => clearTimeout(t));
-        app.off("browser-window-focus", aoFocar);
+        app.off("browser-window-focus", onFocus);
       };
     },
   };
