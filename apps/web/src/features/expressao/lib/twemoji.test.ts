@@ -25,25 +25,25 @@ describe("codepointDoEmoji", () => {
 });
 
 describe("EMOJI", () => {
-  const achar = (texto: string) => texto.match(EMOJI) ?? [];
+  const find = (text: string) => text.match(EMOJI) ?? [];
 
   it("acha emoji no meio da frase", () => {
-    expect(achar("bom dia 😀 pessoal")).toEqual(["😀"]);
+    expect(find("bom dia 😀 pessoal")).toEqual(["😀"]);
   });
 
   it("não confunde número com emoji", () => {
-    expect(achar("são 3 horas e 15 minutos")).toEqual([]);
+    expect(find("são 3 horas e 15 minutos")).toEqual([]);
   });
 
   it("mas a teclinha é emoji", () => {
-    expect(achar("aperte 3️⃣")).toEqual(["3️⃣"]);
+    expect(find("aperte 3️⃣")).toEqual(["3️⃣"]);
   });
 
   it("sequência com ZWJ vem inteira, não em pedaços", () => {
-    expect(achar("👨‍👩‍👧")).toEqual(["👨‍👩‍👧"]);
+    expect(find("👨‍👩‍👧")).toEqual(["👨‍👩‍👧"]);
   });
 
   it("bandeira vem inteira", () => {
-    expect(achar("🇧🇷🇵🇹")).toEqual(["🇧🇷", "🇵🇹"]);
+    expect(find("🇧🇷🇵🇹")).toEqual(["🇧🇷", "🇵🇹"]);
   });
 });
