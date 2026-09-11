@@ -10,7 +10,7 @@
   um servidor de terceiro só por alguém ter passado o olho na galeria, e
   ninguém pediu isso ainda — quem instala é avisado, quem só navega não.
 */
-const IMPORTACAO = /@import\s+[^;]+;/gi;
+const IMPORT = /@import\s+[^;]+;/gi;
 
 const BASE = `
 :root {
@@ -69,7 +69,7 @@ body {
 .ponto { width: 18px; height: 18px; border-radius: 50%; background: var(--color-surface-3); }
 `;
 
-const CORPO = `
+const BODY = `
 <div class="linha-do-app">
   <div class="lista-de-comunidades"><div class="bolha"></div><div class="bolha"></div><div class="bolha"></div></div>
   <div class="coluna">
@@ -96,9 +96,9 @@ const CORPO = `
   </div>
 </div>`;
 
-export function documentoDaPrevia(css: string, substituicoes: Record<string, string>): string {
-  const tokens = Object.entries(substituicoes)
-    .map(([nome, valor]) => `  ${nome}: ${valor};`)
+export function previewDocument(css: string, overrides: Record<string, string>): string {
+  const tokens = Object.entries(overrides)
+    .map(([name, value]) => `  ${name}: ${value};`)
     .join("\n");
 
   return [
@@ -106,8 +106,8 @@ export function documentoDaPrevia(css: string, substituicoes: Record<string, str
     "<style>",
     BASE,
     tokens ? `:root {\n${tokens}\n}` : "",
-    css.replace(IMPORTACAO, ""),
+    css.replace(IMPORT, ""),
     "</style>",
-    CORPO,
+    BODY,
   ].join("\n");
 }
