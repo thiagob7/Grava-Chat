@@ -4,15 +4,15 @@ import { fileURLToPath } from "node:url";
 
 import ts from "typescript";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const RAIZ = join(AQUI, "..", "src");
-const LISTA = join(AQUI, "..", "src", "features", "configuracoes", "lib", "ganchos.json");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..", "src");
+const LIST = join(HERE, "..", "src", "features", "configuracoes", "lib", "ganchos.json");
 
-const ATRIBUTO = "data-gc";
+const ATTRIBUTE = "data-gc";
 
-const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
+const FOLDERS_OUTSIDE = new Set(["traducao", "assets", "node_modules"]);
 
-const SEM_DOM = new Set([
+const WITHOUT_DOM = new Set([
   "Fragment",
   "React.Fragment",
   "Suspense",
@@ -29,9 +29,9 @@ const SEM_DOM = new Set([
   "Helmet",
 ]);
 
-const FINAIS_SEM_DOM = new Set(["Provider", "Consumer", "Portal", "Trigger", "Close"]);
+const FINAL_WITHOUT_DOM = new Set(["Provider", "Consumer", "Portal", "Trigger", "Close"]);
 
-const SEGMENTOS_GENERICOS = new Set([
+const SEGMENTS_GENERIC = new Set([
   "components",
   "component",
   "hooks",
@@ -42,8 +42,8 @@ const SEGMENTOS_GENERICOS = new Set([
   "src",
 ]);
 
-function kebab(valor) {
-  return valor
+function kebab(value) {
+  return value
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/[_\s]+/g, "-")
     .replace(/[^a-zA-Z0-9-]/g, "")
@@ -52,33 +52,33 @@ function kebab(valor) {
     .toLowerCase();
 }
 
-function escopoDoArquivo(caminho) {
-  const partes = relative(RAIZ, caminho)
+function fileScope(path) {
+  const parts = relative(ROOT, path)
     .split(sep)
     .join("/")
     .replace(/\.[jt]sx$/, "")
     .split("/")
     .filter(Boolean);
 
-  const limpo = [];
+  const clean = [];
 
-  partes.forEach((parte, indice) => {
-    if (indice === 0 && parte === "features") return;
+  parts.forEach((part, index) => {
+    if (index === 0 && part === "features") return;
 
-    const token = kebab(parte);
+    const token = kebab(part);
     if (!token) return;
 
-    if (SEGMENTOS_GENERICOS.has(token) && indice !== partes.length - 1) return;
+    if (SEGMENTS_GENERIC.has(token) && index !== parts.length - 1) return;
 
-    limpo.push(token);
+    clean.push(token);
   });
 
-  if (limpo.at(-1) === "index" && limpo.length > 1) limpo.pop();
+  if (clean.at(-1) === "index" && clean.length > 1) clean.pop();
 
-  return limpo.join(".");
+  return clean.join(".");
 }
 
-function nomeDoElemento(no) {
+function elementName(no) {
   const tag = no.tagName;
 
   if (ts.isIdentifier(tag)) return tag.text;
@@ -87,163 +87,163 @@ function nomeDoElemento(no) {
   return tag.getText();
 }
 
-const ehSemDom = (nome) =>
-  SEM_DOM.has(nome) || FINAIS_SEM_DOM.has(nome.split(".").pop() ?? "");
+const isWithoutDom = (name) =>
+  WITHOUT_DOM.has(name) || FINAL_WITHOUT_DOM.has(name.split(".").pop() ?? "");
 
-function acaoDoElemento(no) {
-  for (const atributo of no.attributes.properties) {
-    if (!ts.isJsxAttribute(atributo) || !atributo.name) continue;
+function elementAction(no) {
+  for (const attribute of no.attributes.properties) {
+    if (!ts.isJsxAttribute(attribute) || !attribute.name) continue;
 
-    const nome = atributo.name.getText();
-    if (!/^on[A-Z]/.test(nome)) continue;
+    const name = attribute.name.getText();
+    if (!/^on[A-Z]/.test(name)) continue;
 
-    const valor = atributo.initializer;
-    if (!valor || !ts.isJsxExpression(valor) || !valor.expression) continue;
+    const value = attribute.initializer;
+    if (!value || !ts.isJsxExpression(value) || !value.expression) continue;
 
-    const alvo = valor.expression;
+    const target = value.expression;
 
-    if (ts.isIdentifier(alvo)) return kebab(alvo.text);
-    if (ts.isPropertyAccessExpression(alvo)) return kebab(alvo.name.text);
+    if (ts.isIdentifier(target)) return kebab(target.text);
+    if (ts.isPropertyAccessExpression(target)) return kebab(target.name.text);
   }
 
   return "";
 }
 
-function jaTemGancho(no) {
+function alreadyHasHook(no) {
   return no.attributes.properties.find(
-    (a) => ts.isJsxAttribute(a) && a.name?.getText() === ATRIBUTO,
+    (a) => ts.isJsxAttribute(a) && a.name?.getText() === ATTRIBUTE,
   );
 }
 
-function processar(caminho, texto) {
-  const fonte = ts.createSourceFile(
-    caminho,
-    texto,
+function doProcess(path, text) {
+  const font = ts.createSourceFile(
+    path,
+    text,
     ts.ScriptTarget.Latest,
     true,
     ts.ScriptKind.TSX,
   );
 
-  const escopo = escopoDoArquivo(caminho);
-  const edicoes = [];
-  const usados = new Map();
-  const ganchos = [];
+  const scope = fileScope(path);
+  const edits = [];
+  const used = new Map();
+  const hooks = [];
 
-  const visitar = (no) => {
+  const visit = (no) => {
     if (ts.isJsxOpeningElement(no) || ts.isJsxSelfClosingElement(no)) {
-      const nome = nomeDoElemento(no);
+      const name = elementName(no);
 
-      if (!ehSemDom(nome)) {
-        const acao = acaoDoElemento(no);
-        const base = [escopo, kebab(nome), acao].filter(Boolean).join(".");
+      if (!isWithoutDom(name)) {
+        const action = elementAction(no);
+        const base = [scope, kebab(name), action].filter(Boolean).join(".");
 
-        const vezes = (usados.get(base) ?? 0) + 1;
-        usados.set(base, vezes);
+        const times = (used.get(base) ?? 0) + 1;
+        used.set(base, times);
 
-        const valor = vezes === 1 ? base : `${base}--${vezes}`;
-        ganchos.push(valor);
+        const value = times === 1 ? base : `${base}--${times}`;
+        hooks.push(value);
 
-        const existente = jaTemGancho(no);
+        const existing = alreadyHasHook(no);
 
-        if (existente) {
-          if (existente.initializer && ts.isStringLiteral(existente.initializer)) {
-            if (existente.initializer.text !== valor) {
-              edicoes.push({
-                inicio: existente.initializer.getStart(fonte),
-                fim: existente.initializer.getEnd(),
-                texto: `"${valor}"`,
+        if (existing) {
+          if (existing.initializer && ts.isStringLiteral(existing.initializer)) {
+            if (existing.initializer.text !== value) {
+              edits.push({
+                start: existing.initializer.getStart(font),
+                end: existing.initializer.getEnd(),
+                text: `"${value}"`,
               });
             }
           }
         } else {
-          const posicao = (no.typeArguments?.end ?? no.tagName.getEnd()) + (no.typeArguments ? 1 : 0);
+          const position = (no.typeArguments?.end ?? no.tagName.getEnd()) + (no.typeArguments ? 1 : 0);
 
-          edicoes.push({ inicio: posicao, fim: posicao, texto: ` ${ATRIBUTO}="${valor}"` });
+          edits.push({ start: position, end: position, text: ` ${ATTRIBUTE}="${value}"` });
         }
       }
     }
 
-    ts.forEachChild(no, visitar);
+    ts.forEachChild(no, visit);
   };
 
-  visitar(fonte);
+  visit(font);
 
-  let saida = texto;
+  let output = text;
 
-  for (const edicao of [...edicoes].sort((a, b) => b.inicio - a.inicio)) {
-    saida = saida.slice(0, edicao.inicio) + edicao.texto + saida.slice(edicao.fim);
+  for (const edit of [...edits].sort((a, b) => b.start - a.start)) {
+    output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
   }
 
-  if (saida !== texto) {
-    const conferencia = ts.createSourceFile(
-      caminho,
-      saida,
+  if (output !== text) {
+    const check = ts.createSourceFile(
+      path,
+      output,
       ts.ScriptTarget.Latest,
       true,
       ts.ScriptKind.TSX,
     );
 
-    if (conferencia.parseDiagnostics?.length) {
-      const erro = conferencia.parseDiagnostics[0];
-      const { line } = conferencia.getLineAndCharacterOfPosition(erro.start ?? 0);
+    if (check.parseDiagnostics?.length) {
+      const error = check.parseDiagnostics[0];
+      const { line } = check.getLineAndCharacterOfPosition(error.start ?? 0);
 
       throw new Error(
-        `${relative(RAIZ, caminho)}:${line + 1} — o gancho quebraria o arquivo: ` +
-          ts.flattenDiagnosticMessageText(erro.messageText, " "),
+        `${relative(ROOT, path)}:${line + 1} — o gancho quebraria o arquivo: ` +
+          ts.flattenDiagnosticMessageText(error.messageText, " "),
       );
     }
   }
 
-  return { saida, mudou: saida !== texto, ganchos };
+  return { output, changed: output !== text, hooks };
 }
 
-function arquivos(pasta, achados = []) {
-  for (const item of readdirSync(pasta)) {
-    if (PASTAS_FORA.has(item)) continue;
+function files(folder, matches = []) {
+  for (const item of readdirSync(folder)) {
+    if (FOLDERS_OUTSIDE.has(item)) continue;
 
-    const caminho = join(pasta, item);
+    const path = join(folder, item);
 
-    if (statSync(caminho).isDirectory()) arquivos(caminho, achados);
-    else if (extname(caminho) === ".tsx") achados.push(caminho);
+    if (statSync(path).isDirectory()) files(path, matches);
+    else if (extname(path) === ".tsx") matches.push(path);
   }
 
-  return achados;
+  return matches;
 }
 
-const modo = process.argv[2] ?? "";
-const conferir = modo === "--check";
-const soLista = modo === "--lista";
+const mode = process.argv[2] ?? "";
+const check = mode === "--check";
+const soList = mode === "--lista";
 
-let mexidos = 0;
-const todosOsGanchos = [];
+let touched = 0;
+const allHooks = [];
 
-for (const caminho of arquivos(RAIZ)) {
-  const texto = readFileSync(caminho, "utf8");
-  const { saida, mudou, ganchos } = processar(caminho, texto);
+for (const path of files(ROOT)) {
+  const text = readFileSync(path, "utf8");
+  const { output, changed, hooks } = doProcess(path, text);
 
-  todosOsGanchos.push(...ganchos);
+  allHooks.push(...hooks);
 
-  if (!mudou) continue;
+  if (!changed) continue;
 
-  mexidos++;
+  touched++;
 
-  if (conferir) {
-    console.error(`  sem gancho: ${relative(RAIZ, caminho)}`);
-  } else if (!soLista) {
-    writeFileSync(caminho, saida);
+  if (check) {
+    console.error(`  sem gancho: ${relative(ROOT, path)}`);
+  } else if (!soList) {
+    writeFileSync(path, output);
   }
 }
 
-if (conferir) {
-  if (mexidos) {
-    console.error(`\n${mexidos} arquivo(s) fora de dia. Rode: yarn ganchos\n`);
+if (check) {
+  if (touched) {
+    console.error(`\n${touched} arquivo(s) fora de dia. Rode: yarn ganchos\n`);
     process.exit(1);
   }
 
-  console.log(`ganchos em dia — ${todosOsGanchos.length} no app`);
+  console.log(`ganchos em dia — ${allHooks.length} no app`);
 } else {
-  if (!soLista) console.log(`${mexidos} arquivo(s) atualizados`);
+  if (!soList) console.log(`${touched} arquivo(s) atualizados`);
 
-  writeFileSync(LISTA, `${JSON.stringify([...new Set(todosOsGanchos)].sort(), null, 2)}\n`);
-  console.log(`${todosOsGanchos.length} ganchos · lista em ${relative(RAIZ, LISTA)}`);
+  writeFileSync(LIST, `${JSON.stringify([...new Set(allHooks)].sort(), null, 2)}\n`);
+  console.log(`${allHooks.length} ganchos · lista em ${relative(ROOT, LIST)}`);
 }

@@ -3,43 +3,43 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const DESTINO = join(AQUI, "..", "public", "emoji");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const DESTINATION = join(HERE, "..", "public", "emoji");
 
-const resolver = createRequire(import.meta.url);
-let ORIGEM = "";
+const resolve = createRequire(import.meta.url);
+let ORIGIN = "";
 try {
-  ORIGEM = dirname(resolver.resolve("@twemoji/svg/1f600.svg"));
+  ORIGIN = dirname(resolve.resolve("@twemoji/svg/1f600.svg"));
 } catch {
 }
 
-async function quantos(pasta) {
+async function count(folder) {
   try {
-    return (await readdir(pasta)).length;
+    return (await readdir(folder)).length;
   } catch {
     return 0;
   }
 }
 
-const naOrigem = ORIGEM ? await quantos(ORIGEM) : 0;
+const inOrigin = ORIGIN ? await count(ORIGIN) : 0;
 
-if (!naOrigem) {
+if (!inOrigin) {
   console.error(
     "\n  Não achei o @twemoji/svg em node_modules. Rode `yarn install` antes.\n",
   );
   process.exit(1);
 }
 
-if ((await quantos(DESTINO)) >= naOrigem) {
-  console.log(`emoji: ${naOrigem} arquivos já em public/emoji`);
+if ((await count(DESTINATION)) >= inOrigin) {
+  console.log(`emoji: ${inOrigin} arquivos já em public/emoji`);
   process.exit(0);
 }
 
-await mkdir(DESTINO, { recursive: true });
-await cp(ORIGEM, DESTINO, { recursive: true });
+await mkdir(DESTINATION, { recursive: true });
+await cp(ORIGIN, DESTINATION, { recursive: true });
 
 await writeFile(
-  join(DESTINO, "NOTICE.md"),
+  join(DESTINATION, "NOTICE.md"),
   [
     "# Emoji — Twemoji",
     "",
@@ -53,4 +53,4 @@ await writeFile(
   ].join("\n"),
 );
 
-console.log(`emoji: ${naOrigem} arquivos copiados para public/emoji`);
+console.log(`emoji: ${inOrigin} arquivos copiados para public/emoji`);
