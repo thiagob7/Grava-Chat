@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import { ImageUp, Trash2 } from "lucide-react";
-import { LIMITS, type Emblema } from "@gravae/shared";
+import { LIMITS, type Badge } from "@gravae/shared";
 
 import {
-  useCriarEmblema,
-  useRemoverEmblema,
+  useCreateBadge,
+  useRemoveBadge,
 } from "~/@core/application/queries/guild/use-emblemas";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import { Button } from "~/components/ui/button";
@@ -12,56 +12,56 @@ import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label } from "~/components/ui/input";
 import { useTranslation } from "~/traducao";
 
-const EMBLEMA_MAX_PX = 64;
+const BADGE_MAX_PX = 64;
 
-interface EmblemasSectionProps {
+interface BadgesSectionProps {
   guildId: string;
-  emblemas: Emblema[];
-  editavel: boolean;
+  badges: Badge[];
+  editable: boolean;
 }
 
-export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
+export const BadgesSection: React.FC<BadgesSectionProps> = ({
   guildId,
-  emblemas,
-  editavel,
+  badges,
+  editable,
 }) => {
   const { t } = useTranslation();
-  const criar = useCriarEmblema(guildId);
-  const remover = useRemoverEmblema(guildId);
+  const create = useCreateBadge(guildId);
+  const remove = useRemoveBadge(guildId);
   const uploadImage = useUploadImage();
   const confirm = useConfirm();
-  const arquivo = useRef<HTMLInputElement>(null);
+  const file = useRef<HTMLInputElement>(null);
 
-  const [nome, setNome] = useState("");
+  const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("");
   const [iconUrl, setIconUrl] = useState<string | null>(null);
 
-  const limpar = () => {
-    setNome("");
+  const clear = () => {
+    setName("");
     setEmoji("");
     setIconUrl(null);
   };
 
-  const enviarImagem = async (evento: React.ChangeEvent<HTMLInputElement>) => {
-    const file = evento.target.files?.[0];
-    evento.target.value = "";
+  const sendImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
 
-    const resultado = await uploadImage
+    const result = await uploadImage
       .mutateAsync({
         file,
-        maxSize: EMBLEMA_MAX_PX,
-        finalidade: "iconeDeCargo",
+        maxSize: BADGE_MAX_PX,
+        purpose: "iconeDeCargo",
       })
       .catch(() => null);
 
-    if (resultado) {
-      setIconUrl(resultado.attachment.url);
+    if (result) {
+      setIconUrl(result.attachment.url);
       setEmoji("");
     }
   };
 
-  const podeCriar = Boolean(nome.trim()) && Boolean(emoji.trim() || iconUrl);
+  const canCreate = Boolean(name.trim()) && Boolean(emoji.trim() || iconUrl);
 
   return (
     <div data-gc="servidor.server-settings.emblemas-section.div" className="max-w-xl">
@@ -72,17 +72,17 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
       </p>
 
       <div data-gc="servidor.server-settings.emblemas-section.div--2" className="mt-6 space-y-2">
-        {emblemas.map((emblema) => (
+        {badges.map((badge) => (
           <div data-gc="servidor.server-settings.emblemas-section.div--3"
-            key={emblema.id}
+            key={badge.id}
             className="flex items-center gap-3 rounded bg-surface-1 px-3 py-2.5"
           >
             <span data-gc="servidor.server-settings.emblemas-section.span" className="flex size-7 items-center justify-center">
-              {emblema.emoji ? (
-                <span data-gc="servidor.server-settings.emblemas-section.span--2" className="text-lg leading-none">{emblema.emoji}</span>
-              ) : emblema.iconUrl ? (
+              {badge.emoji ? (
+                <span data-gc="servidor.server-settings.emblemas-section.span--2" className="text-lg leading-none">{badge.emoji}</span>
+              ) : badge.iconUrl ? (
                 <img data-gc="servidor.server-settings.emblemas-section.img"
-                  src={emblema.iconUrl}
+                  src={badge.iconUrl}
                   alt=""
                   className="size-6 object-contain"
                 />
@@ -90,23 +90,23 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             </span>
 
             <span data-gc="servidor.server-settings.emblemas-section.span--3" className="min-w-0 flex-1 truncate text-sm font-medium">
-              {emblema.nome}
+              {badge.name}
             </span>
 
-            {editavel && (
+            {editable && (
               <button data-gc="servidor.server-settings.emblemas-section.button"
                 onClick={() =>
                   void confirm({
-                    title: `Apagar o emblema ${emblema.nome}?`,
+                    title: `Apagar o emblema ${badge.name}?`,
                     description:
                       t("servidor.emblemas.apagarDescricao"),
                     action: t("comum.apagar"),
                   }).then(
                     ({ confirmed }) =>
-                      confirmed && remover.mutate(emblema.id),
+                      confirmed && remove.mutate(badge.id),
                   )
                 }
-                aria-label={`Apagar ${emblema.nome}`}
+                aria-label={`Apagar ${badge.name}`}
                 className="rounded p-1.5 text-ink-faint transition hover:bg-surface-3 hover:text-danger"
               >
                 <Trash2 data-gc="servidor.server-settings.emblemas-section.trash2" size={15} />
@@ -115,14 +115,14 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
           </div>
         ))}
 
-        {!emblemas.length && (
+        {!badges.length && (
           <p data-gc="servidor.server-settings.emblemas-section.p--2" className="rounded bg-surface-1 px-3 py-6 text-center text-sm text-ink-faint">
             {t("servidor.emblemas.vazio")}
           </p>
         )}
       </div>
 
-      {editavel && emblemas.length < LIMITS.emblemasPorServidor && (
+      {editable && badges.length < LIMITS.badgesByServer && (
         <div data-gc="servidor.server-settings.emblemas-section.div--4" className="mt-6 rounded bg-surface-1 p-4">
           <p data-gc="servidor.server-settings.emblemas-section.p--3" className="mb-3 text-sm font-medium">{t("servidor.emblemas.novo")}</p>
 
@@ -131,9 +131,9 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
               <Label data-gc="servidor.server-settings.emblemas-section.label" htmlFor="emblema-nome">{t("comum.nome")}</Label>
               <Input data-gc="servidor.server-settings.emblemas-section.input"
                 id="emblema-nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                maxLength={LIMITS.emblemaNome}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={LIMITS.badgeName}
                 placeholder="DEV"
               />
             </div>
@@ -157,7 +157,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             <Button data-gc="servidor.server-settings.emblemas-section.button--2"
               variant="surface"
               size="sm"
-              onClick={() => arquivo.current?.click()}
+              onClick={() => file.current?.click()}
               disabled={uploadImage.isPending}
             >
               <ImageUp data-gc="servidor.server-settings.emblemas-section.image-up" size={14} />
@@ -173,21 +173,21 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
             )}
 
             <input data-gc="servidor.server-settings.emblemas-section.input--3"
-              ref={arquivo}
+              ref={file}
               type="file"
               accept="image/png,image/jpeg,image/webp"
-              onChange={(e) => void enviarImagem(e)}
+              onChange={(e) => void sendImage(e)}
               className="hidden"
             />
 
             <Button data-gc="servidor.server-settings.emblemas-section.button--3"
               size="sm"
               className="ml-auto"
-              disabled={!podeCriar || criar.isPending}
+              disabled={!canCreate || create.isPending}
               onClick={() =>
-                criar.mutate(
-                  { nome: nome.trim(), emoji: emoji.trim() || null, iconUrl },
-                  { onSuccess: limpar },
+                create.mutate(
+                  { name: name.trim(), emoji: emoji.trim() || null, iconUrl },
+                  { onSuccess: clear },
                 )
               }
             >
@@ -196,7 +196,7 @@ export const EmblemasSection: React.FC<EmblemasSectionProps> = ({
           </div>
 
           <p data-gc="servidor.server-settings.emblemas-section.p--4" className="mt-2 text-xs text-ink-faint">
-            Emoji ou imagem, não os dois. Até {LIMITS.emblemasPorServidor}{" "}
+            Emoji ou imagem, não os dois. Até {LIMITS.badgesByServer}{" "}
             emblemas por servidor.
           </p>
         </div>
