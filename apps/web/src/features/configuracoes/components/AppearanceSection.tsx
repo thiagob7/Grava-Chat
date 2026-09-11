@@ -146,26 +146,27 @@ export const AppearanceSection: React.FC = () => {
         </div>
 
         <div data-gc="configuracoes.appearance-section.div--3" className="mt-4">
-          <Button data-gc="configuracoes.appearance-section.button--2"
-            variant="surface"
-            onClick={() => {
-              openStudio();
-              closeSettings();
-            }}
-          >
-            <Palette data-gc="configuracoes.appearance-section.palette" size={16} /> Abrir estúdio de temas…
-          </Button>
+          <div data-gc="configuracoes.appearance-section.div--4" className="flex flex-wrap items-center gap-2">
+            <Button data-gc="configuracoes.appearance-section.button--2"
+              variant="surface"
+              onClick={() => {
+                openStudio();
+                closeSettings();
+              }}
+            >
+              <Palette data-gc="configuracoes.appearance-section.palette" size={16} /> Abrir estúdio de temas…
+            </Button>
 
-          <Button data-gc="configuracoes.appearance-section.button--3"
-            className="ml-2"
-            variant="surface"
-            onClick={() => {
-              openCursors();
-              closeSettings();
-            }}
-          >
-            <MousePointer2 data-gc="configuracoes.appearance-section.mouse-pointer2" size={16} /> Abrir cursores…
-          </Button>
+            <Button data-gc="configuracoes.appearance-section.button--3"
+              variant="surface"
+              onClick={() => {
+                openCursors();
+                closeSettings();
+              }}
+            >
+              <MousePointer2 data-gc="configuracoes.appearance-section.mouse-pointer2" size={16} /> Abrir cursores…
+            </Button>
+          </div>
           <p data-gc="configuracoes.appearance-section.p--2" className="mt-1.5 text-xs text-ink-faint">
             Muda cor por cor em cima do tema base, escreve CSS e guarda o
             resultado. Vale só neste aparelho.
