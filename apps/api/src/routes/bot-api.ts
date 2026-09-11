@@ -1,15 +1,15 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { definirComandosInput, editMessageInput, sendMessageInput, rooms } from "@gravae/shared";
+import { setCommandsInput, editMessageInput, sendMessageInput, rooms } from "@gravae/shared";
 
 import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
 import { baseUrlDe } from "~/lib/endereco.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import {
-  apagarMensagem,
-  editarMensagem,
-  enviarMensagem,
-  reagir,
+  deleteMessage,
+  editMessage,
+  sendMessage,
+  react,
 } from "~/realtime/difusao.js";
 import { io } from "~/realtime/io.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
@@ -35,44 +35,44 @@ import {
 import { createWebhookInput } from "~/validations/webhook.js";
 
 const guildParams = z.object({ guildId: objectId });
-const canalParams = z.object({ channelId: objectId });
-const mensagemParams = z.object({ messageId: objectId });
+const channelParams = z.object({ channelId: objectId });
+const messageParams = z.object({ messageId: objectId });
 
-const enviarBody = sendMessageInput.omit({ channelId: true, nonce: true });
+const sendBody = sendMessageInput.omit({ channelId: true, nonce: true });
 
-const editarBody = editMessageInput.omit({ messageId: true });
+const editBody = editMessageInput.omit({ messageId: true });
 
-const reacaoParams = mensagemParams.extend({ emoji: z.string().min(1).max(80) });
-const reacaoBody = z.object({ burst: z.boolean().optional() });
+const reactionParams = messageParams.extend({ emoji: z.string().min(1).max(80) });
+const reactionBody = z.object({ burst: z.boolean().optional() });
 
-const membroParams = guildParams.extend({ userId: objectId });
-const canalDoServidorParams = guildParams.extend({ channelId: objectId });
-const cargoParams = guildParams.extend({ roleId: objectId });
+const memberParams = guildParams.extend({ userId: objectId });
+const serverParamsChannel = guildParams.extend({ channelId: objectId });
+const roleParams = guildParams.extend({ roleId: objectId });
 const emojiParams = guildParams.extend({ emojiId: objectId });
 
-const conviteBody = z.object({
+const inviteBody = z.object({
   maxUses: z.number().int().min(1).max(1000).nullable().optional(),
   expiresInHours: z.number().int().min(1).max(24 * 365).nullable().optional(),
 });
 
-const historicoQuery = z.object({
+const historyQuery = z.object({
   before: objectId.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
 });
 
 async function botDoToken(req: FastifyRequest) {
-  const cabecalho = req.headers.authorization;
-  if (!cabecalho?.startsWith("Bot ")) throw new UnauthorizedError("Falta o token do bot");
+  const header = req.headers.authorization;
+  if (!header?.startsWith("Bot ")) throw new UnauthorizedError("Falta o token do bot");
 
-  const dono = await botService.resolverToken(cabecalho.slice(4).trim());
-  if (!dono) throw new UnauthorizedError("Token de bot inválido");
+  const owner = await botService.resolveToken(header.slice(4).trim());
+  if (!owner) throw new UnauthorizedError("Token de bot inválido");
 
-  return dono;
+  return owner;
 }
 
-async function exigirPresenca(botUserId: string, guildId: string) {
-  const membro = await memberRepository.find(guildId, botUserId);
-  if (!membro) throw new ForbiddenError("Esse bot não está nesse servidor");
+async function requirePresence(botUserId: string, guildId: string) {
+  const member = await memberRepository.find(guildId, botUserId);
+  if (!member) throw new ForbiddenError("Esse bot não está nesse servidor");
 }
 
 export async function botApiRoutes(app: FastifyInstance) {
@@ -83,34 +83,34 @@ export async function botApiRoutes(app: FastifyInstance) {
 
   app.get("/bot/servidores", async (req) => {
     const { botId } = await botDoToken(req);
-    return botService.servidoresDe(botId);
+    return botService.servers(botId);
   });
 
   app.get("/bot/servidores/:guildId/canais", async (req) => {
     const { userId } = await botDoToken(req);
     const { guildId } = guildParams.parse(req.params);
 
-    await exigirPresenca(userId, guildId);
+    await requirePresence(userId, guildId);
 
-    const canais = await channelRepository.findManyByGuild(guildId);
+    const channels = await channelRepository.findManyByGuild(guildId);
 
-    return canais.map((c) => ({ id: c.id, name: c.name, type: c.type }));
+    return channels.map((c) => ({ id: c.id, name: c.name, type: c.type }));
   });
 
   app.get("/bot/servidores/:guildId/membros", async (req) => {
     const { userId } = await botDoToken(req);
     const { guildId } = guildParams.parse(req.params);
 
-    await exigirPresenca(userId, guildId);
+    await requirePresence(userId, guildId);
 
-    const membros = await memberRepository.findManyByGuild(guildId);
+    const members = await memberRepository.findManyByGuild(guildId);
 
-    return membros.map((m) => ({
+    return members.map((m) => ({
       userId: m.userId,
       nickname: m.nickname,
       roleIds: m.roleIds,
       joinedAt: m.joinedAt,
-      usuario: toPublicUser(m.user),
+      user: toPublicUser(m.user),
     }));
   });
 
@@ -123,33 +123,33 @@ export async function botApiRoutes(app: FastifyInstance) {
 
   app.patch("/bot/servidores/:guildId/membros/:userId/apelido", async (req) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
     const { nickname } = nicknameInput.parse(req.body);
 
-    return moderationService.apelidar(botUserId, guildId, alvo, nickname);
+    return moderationService.nickname(botUserId, guildId, target, nickname);
   });
 
   app.put("/bot/servidores/:guildId/membros/:userId/cargos", async (req) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
 
-    return roleService.setMemberRoles(botUserId, guildId, alvo, setMemberRolesInput.parse(req.body));
+    return roleService.setMemberRoles(botUserId, guildId, target, setMemberRolesInput.parse(req.body));
   });
 
   app.delete("/bot/servidores/:guildId/membros/:userId", async (req, reply) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
 
-    await guildService.removeMember(botUserId, guildId, alvo);
+    await guildService.removeMember(botUserId, guildId, target);
 
     return reply.status(204).send();
   });
 
   app.put("/bot/servidores/:guildId/castigos/:userId", async (req) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
 
-    return moderationService.castigar(botUserId, guildId, alvo, timeoutInput.parse(req.body));
+    return moderationService.timeout(botUserId, guildId, target, timeoutInput.parse(req.body));
   });
 
   app.get("/bot/servidores/:guildId/banimentos", async (req) => {
@@ -161,16 +161,16 @@ export async function botApiRoutes(app: FastifyInstance) {
 
   app.put("/bot/servidores/:guildId/banimentos/:userId", async (req) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
 
-    return moderationService.ban(botUserId, guildId, alvo, banInput.parse(req.body ?? {}));
+    return moderationService.ban(botUserId, guildId, target, banInput.parse(req.body ?? {}));
   });
 
   app.delete("/bot/servidores/:guildId/banimentos/:userId", async (req, reply) => {
     const { userId: botUserId } = await botDoToken(req);
-    const { guildId, userId: alvo } = membroParams.parse(req.params);
+    const { guildId, userId: target } = memberParams.parse(req.params);
 
-    await moderationService.unban(botUserId, guildId, alvo);
+    await moderationService.unban(botUserId, guildId, target);
 
     return reply.status(204).send();
   });
@@ -179,21 +179,21 @@ export async function botApiRoutes(app: FastifyInstance) {
     const { userId } = await botDoToken(req);
     const { guildId } = guildParams.parse(req.params);
 
-    const canal = await guildService.createChannel(userId, guildId, createChannelInput.parse(req.body));
+    const channel = await guildService.createChannel(userId, guildId, createChannelInput.parse(req.body));
 
-    return reply.status(201).send(canal);
+    return reply.status(201).send(channel);
   });
 
   app.patch("/bot/servidores/:guildId/canais/:channelId", async (req) => {
     const { userId } = await botDoToken(req);
-    const { guildId, channelId } = canalDoServidorParams.parse(req.params);
+    const { guildId, channelId } = serverParamsChannel.parse(req.params);
 
     return guildService.updateChannel(userId, guildId, channelId, updateChannelInput.parse(req.body));
   });
 
   app.delete("/bot/servidores/:guildId/canais/:channelId", async (req, reply) => {
     const { userId } = await botDoToken(req);
-    const { guildId, channelId } = canalDoServidorParams.parse(req.params);
+    const { guildId, channelId } = serverParamsChannel.parse(req.params);
 
     await guildService.deleteChannel(userId, guildId, channelId);
 
@@ -204,9 +204,9 @@ export async function botApiRoutes(app: FastifyInstance) {
     const { userId } = await botDoToken(req);
     const { guildId } = guildParams.parse(req.params);
 
-    const convite = await guildService.createInvite(userId, guildId, conviteBody.parse(req.body ?? {}));
+    const invite = await guildService.createInvite(userId, guildId, inviteBody.parse(req.body ?? {}));
 
-    return reply.status(201).send(convite);
+    return reply.status(201).send(invite);
   });
 
   app.patch("/bot/servidores/:guildId", async (req) => {
@@ -227,21 +227,21 @@ export async function botApiRoutes(app: FastifyInstance) {
     const { userId } = await botDoToken(req);
     const { guildId } = guildParams.parse(req.params);
 
-    const cargo = await roleService.create(userId, guildId, createRoleInput.parse(req.body));
+    const role = await roleService.create(userId, guildId, createRoleInput.parse(req.body));
 
-    return reply.status(201).send(cargo);
+    return reply.status(201).send(role);
   });
 
   app.patch("/bot/servidores/:guildId/cargos/:roleId", async (req) => {
     const { userId } = await botDoToken(req);
-    const { guildId, roleId } = cargoParams.parse(req.params);
+    const { guildId, roleId } = roleParams.parse(req.params);
 
     return roleService.update(userId, guildId, roleId, updateRoleInput.parse(req.body));
   });
 
   app.delete("/bot/servidores/:guildId/cargos/:roleId", async (req, reply) => {
     const { userId } = await botDoToken(req);
-    const { guildId, roleId } = cargoParams.parse(req.params);
+    const { guildId, roleId } = roleParams.parse(req.params);
 
     await roleService.remove(userId, guildId, roleId);
 
@@ -311,23 +311,23 @@ export async function botApiRoutes(app: FastifyInstance) {
 
   app.put("/bot/comandos", async (req) => {
     const { botId } = await botDoToken(req);
-    const { comandos } = definirComandosInput.parse(req.body);
+    const { commands } = setCommandsInput.parse(req.body);
 
-    const salvos = await botService.definirComandos(botId, comandos);
+    const savedItems = await botService.setCommands(botId, commands);
 
-    for (const servidor of await botService.servidoresDe(botId)) {
-      io().to(rooms.guild(servidor.id)).emit("commands:changed", { guildId: servidor.id });
+    for (const server of await botService.servers(botId)) {
+      io().to(rooms.guild(server.id)).emit("commands:changed", { guildId: server.id });
     }
 
-    return { comandos: salvos };
+    return { commands: savedItems };
   });
 
   app.post("/bot/canais/:channelId/mensagens", async (req, reply) => {
     const { userId } = await botDoToken(req);
-    const { channelId } = canalParams.parse(req.params);
+    const { channelId } = channelParams.parse(req.params);
 
-    const message = await enviarMensagem(userId, {
-      ...enviarBody.parse(req.body),
+    const message = await sendMessage(userId, {
+      ...sendBody.parse(req.body),
       channelId,
     });
 
@@ -336,65 +336,65 @@ export async function botApiRoutes(app: FastifyInstance) {
 
   app.get("/bot/canais/:channelId/mensagens", async (req) => {
     const { userId } = await botDoToken(req);
-    const { channelId } = canalParams.parse(req.params);
-    const { before, limit } = historicoQuery.parse(req.query);
+    const { channelId } = channelParams.parse(req.params);
+    const { before, limit } = historyQuery.parse(req.query);
 
     return messageService.history(userId, channelId, { before, limit });
   });
 
   app.get("/bot/canais/:channelId/fixadas", async (req) => {
     const { userId } = await botDoToken(req);
-    const { channelId } = canalParams.parse(req.params);
+    const { channelId } = channelParams.parse(req.params);
 
     return messageService.pinned(userId, channelId);
   });
 
   app.put("/bot/mensagens/:messageId/fixar", async (req) => {
     const { userId } = await botDoToken(req);
-    const { messageId } = mensagemParams.parse(req.params);
+    const { messageId } = messageParams.parse(req.params);
 
     return messageService.pin(userId, messageId, true);
   });
 
   app.delete("/bot/mensagens/:messageId/fixar", async (req) => {
     const { userId } = await botDoToken(req);
-    const { messageId } = mensagemParams.parse(req.params);
+    const { messageId } = messageParams.parse(req.params);
 
     return messageService.pin(userId, messageId, false);
   });
 
   app.patch("/bot/mensagens/:messageId", async (req) => {
     const { userId } = await botDoToken(req);
-    const { messageId } = mensagemParams.parse(req.params);
-    const { content } = editarBody.parse(req.body);
+    const { messageId } = messageParams.parse(req.params);
+    const { content } = editBody.parse(req.body);
 
-    return editarMensagem(userId, { messageId, content });
+    return editMessage(userId, { messageId, content });
   });
 
   app.delete("/bot/mensagens/:messageId", async (req, reply) => {
     const { userId } = await botDoToken(req);
-    const { messageId } = mensagemParams.parse(req.params);
+    const { messageId } = messageParams.parse(req.params);
 
-    await apagarMensagem(userId, messageId);
+    await deleteMessage(userId, messageId);
 
     return reply.status(204).send();
   });
 
   app.put("/bot/mensagens/:messageId/reacoes/:emoji", async (req) => {
     const { userId } = await botDoToken(req);
-    const { messageId, emoji } = reacaoParams.parse(req.params);
-    const { burst } = reacaoBody.parse(req.body ?? {});
+    const { messageId, emoji } = reactionParams.parse(req.params);
+    const { burst } = reactionBody.parse(req.body ?? {});
 
-    const { reactions } = await reagir(userId, messageId, emoji, true, burst ?? false);
+    const { reactions } = await react(userId, messageId, emoji, true, burst ?? false);
 
     return { reactions };
   });
 
   app.delete("/bot/mensagens/:messageId/reacoes/:emoji", async (req) => {
     const { userId } = await botDoToken(req);
-    const { messageId, emoji } = reacaoParams.parse(req.params);
+    const { messageId, emoji } = reactionParams.parse(req.params);
 
-    const { reactions } = await reagir(userId, messageId, emoji, false);
+    const { reactions } = await react(userId, messageId, emoji, false);
 
     return { reactions };
   });
