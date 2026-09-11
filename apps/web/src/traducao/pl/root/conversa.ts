@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Machająca rączka",
+    botao: "Pomachaj do {{nome}}",
+  },
+  oficial: {
+    titulo: "Ten kanał służy tylko oficjalnym ogłoszeniom.",
+    detalhe: "Nigdy nie prosimy o twoje hasło ani token konta.",
+    saibaMais: "Dowiedz się więcej",
+  },
+  topico: {
+    abrir: "Zobacz opis kanału",
+  },
+  previaDoLink: {
+    carregando: "Sprawdzam, co jest pod odnośnikiem…",
+    destino: "Prowadzi do {{destino}}",
+  },
+  reacao: {
+    carregando: "Sprawdzam, kto zareagował z {{emoji}}…",
+    uma: "{{nome}} zareagował z {{emoji}}",
+    duas: "{{primeiro}} i {{segundo}} zareagowali z {{emoji}}",
+    varias: "{{nomes}} i jeszcze {{quantos}} zareagowało z {{emoji}}",
+    dicaSuper: "Przytrzymaj, aby superzareagować",
+  },
+  recado: {
+    gravar: "Nagraj wiadomość głosową",
+    descartar: "Odrzuć nagranie",
+    mandar: "Wyślij nagranie",
+    semSuporte: "Ta przeglądarka nie nagrywa dźwięku.",
+    semMicrofone: "Brak dostępu do mikrofonu.",
+  },
   lista: {
     carregando: "Wczytywanie wiadomości…",
     carregandoMais: "Wczytywanie…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Zobacz obraz",
   },
   enquete: {
+    criar: "Utwórz ankietę",
+    pergunta: "Pytanie",
+    exemplo: "W co gramy dzisiaj?",
+    respostas: "Odpowiedzi",
+    adicionarOpcao: "Dodaj odpowiedź",
+    removerOpcao: "Usuń odpowiedź",
+    varias: "Pozwól na więcej niż jedną odpowiedź",
+    variasDetalhe: "Bez tego głos na jedną odpowiedź zabiera głos poprzedniej.",
+    duracao: "Czas trwania",
+    umaHora: "1 godzina",
+    quatroHoras: "4 godziny",
+    oitoHoras: "8 godzin",
+    umDia: "1 dzień",
+    tresDias: "3 dni",
+    umaSemana: "1 tydzień",
+    ateEncerrar: "Dopóki sam nie zamknę",
     titulo: "Ankieta",
     encerrada: "Ankieta zakończona",
     variasRespostas: "Ankieta — wiele odpowiedzi",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Wyszukiwanie zagląda tylko do kanałów, które możesz czytać.",
   },
   entrada: {
+    semNome: "rozmowa",
+    anexo: "(załącznik)",
     titulo: "Skrzynka odbiorcza",
     naoLidas: "Nieprzeczytane",
     salvas: "Zapisane",
