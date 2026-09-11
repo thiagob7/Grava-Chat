@@ -4,23 +4,23 @@ import { RotateCcw } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { desktop } from "~/lib/desktop";
-import { AtualizacaoDoApp } from "~/features/configuracoes/components/AtualizacaoDoApp";
-import { Opcao } from "~/features/configuracoes/components/campos-de-config";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { UpdateApp } from "~/features/configuracoes/components/AtualizacaoDoApp";
+import { Choice } from "~/features/configuracoes/components/campos-de-config";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 
 export const DesktopSection: React.FC = () => {
-  const ponte = desktop()?.sistema ?? null;
+  const bridge = desktop()?.system ?? null;
   const confirm = useConfirm();
 
-  const [suportado, setSuportado] = useState(false);
-  const [noLogin, setNoLogin] = useState(false);
+  const [supported, setSupported] = useState(false);
+  const [inLogin, setNoLogin] = useState(false);
 
   useEffect(() => {
-    if (!ponte) return;
+    if (!bridge) return;
 
-    void ponte.podeAbrirNoLogin().then(setSuportado);
-    void ponte.abrirNoLogin().then(setNoLogin);
-  }, [ponte]);
+    void bridge.canOpenLogin().then(setSupported);
+    void bridge.openLogin().then(setNoLogin);
+  }, [bridge]);
 
   return (
     <div data-gc="configuracoes.desktop-section.div">
@@ -29,40 +29,40 @@ export const DesktopSection: React.FC = () => {
         neste computador, não na conta.
       </p>
 
-      <Secao data-gc="configuracoes.desktop-section.secao"
+      <Section data-gc="configuracoes.desktop-section.section"
         id="inicializacao"
-        titulo="Inicialização"
-        detalhe="Como o Gravaê se comporta quando o computador liga."
+        title="Inicialização"
+        detail="Como o Gravaê se comporta quando o computador liga."
       >
-        {!ponte ? (
+        {!bridge ? (
           <p data-gc="configuracoes.desktop-section.p--2" className="text-sm text-ink-faint">
             Esta versão do aplicativo é mais antiga que esta tela. Atualize
             abaixo e a opção aparece.
           </p>
-        ) : !suportado ? (
+        ) : !supported ? (
           <p data-gc="configuracoes.desktop-section.p--3" className="text-sm text-ink-faint">
             O seu sistema não deixa o aplicativo se registrar para abrir no
             login.
           </p>
         ) : (
-          <Opcao data-gc="configuracoes.desktop-section.opcao"
-            titulo="Abrir junto com o computador"
-            detalhe="O Gravaê sobe minimizado quando você entra na sua conta do sistema, já conectado."
-            ligado={noLogin}
-            onMudar={(ligado) => {
-              setNoLogin(ligado);
-              void ponte.definirAbrirNoLogin(ligado).then(setNoLogin);
+          <Choice data-gc="configuracoes.desktop-section.choice"
+            title="Abrir junto com o computador"
+            detail="O Gravaê sobe minimizado quando você entra na sua conta do sistema, já conectado."
+            on={inLogin}
+            onChange={(on) => {
+              setNoLogin(on);
+              void bridge.setOpenLogin(on).then(setNoLogin);
             }}
           />
         )}
-      </Secao>
+      </Section>
 
-      <AtualizacaoDoApp data-gc="configuracoes.desktop-section.atualizacao-do-app" />
+      <UpdateApp data-gc="configuracoes.desktop-section.update-app" />
 
-      <Secao data-gc="configuracoes.desktop-section.secao--2"
+      <Section data-gc="configuracoes.desktop-section.section--2"
         id="reiniciar"
-        titulo="Reiniciar"
-        detalhe="Fecha e abre o aplicativo de novo, na mesma versão."
+        title="Reiniciar"
+        detail="Fecha e abre o aplicativo de novo, na mesma versão."
       >
         <div data-gc="configuracoes.desktop-section.div--2" className="flex items-start gap-4">
           <div data-gc="configuracoes.desktop-section.div--3" className="min-w-0 flex-1">
@@ -75,20 +75,20 @@ export const DesktopSection: React.FC = () => {
 
           <Button data-gc="configuracoes.desktop-section.button"
             variant="surface"
-            disabled={!ponte}
+            disabled={!bridge}
             onClick={() =>
               void confirm({
                 title: "Reiniciar o Gravaê?",
                 description:
                   "O aplicativo fecha e abre de novo na hora. Se você estiver numa chamada, sai dela.",
                 action: "Reiniciar",
-              }).then(({ confirmed }) => confirmed && void ponte?.reiniciar())
+              }).then(({ confirmed }) => confirmed && void bridge?.restart())
             }
           >
             <RotateCcw data-gc="configuracoes.desktop-section.rotate-ccw" size={16} /> Reiniciar
           </Button>
         </div>
-      </Secao>
+      </Section>
     </div>
   );
 };
