@@ -16,52 +16,52 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { codigoDoConvite, MOLDES, type MoldeDeServidor } from "~/features/servidor/lib/moldes-de-servidor";
+import { inviteCode, MOLDS, type ServerMold } from "~/features/servidor/lib/moldes-de-servidor";
 
-export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void }> = ({
-  aberto,
-  onFechar,
+export const FirstServer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
+  isOpen,
+  onClose,
 }) => {
   const navigate = useNavigate();
-  const criarServidor = useCreateGuild();
-  const criarCanal = useCreateChannel();
+  const createServer = useCreateGuild();
+  const createChannel = useCreateChannel();
 
-  const [nome, setNome] = useState("");
-  const [convite, setConvite] = useState("");
-  const [molde, setMolde] = useState<MoldeDeServidor | null>(null);
-  const [criando, setCriando] = useState(false);
+  const [name, setName] = useState("");
+  const [invite, setInvite] = useState("");
+  const [mold, setMold] = useState<ServerMold | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  const criar = async (comMolde: MoldeDeServidor | null, nomeEscolhido: string) => {
-    const limpo = nomeEscolhido.trim();
-    if (!limpo || criando) return;
+  const create = async (withMold: ServerMold | null, namePicked: string) => {
+    const clean = namePicked.trim();
+    if (!clean || creating) return;
 
-    setCriando(true);
+    setCreating(true);
 
     try {
-      const guild = await criarServidor.mutateAsync({ name: limpo });
+      const guild = await createServer.mutateAsync({ name: clean });
 
-      for (const canal of comMolde?.canais ?? []) {
-        await criarCanal
-          .mutateAsync({ guildId: guild.id, name: canal.nome, type: canal.tipo })
+      for (const channel of withMold?.channels ?? []) {
+        await createChannel
+          .mutateAsync({ guildId: guild.id, name: channel.name, type: channel.kind })
           .catch(() => undefined);
       }
 
       navigate(`/channels/${guild.id}`);
-    } catch (erro) {
-      toast.error(apiErrorMessage(erro, "Não consegui criar o servidor."));
-      setCriando(false);
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Não consegui criar o servidor."));
+      setCreating(false);
     }
   };
 
-  const entrar = () => {
-    const codigo = codigoDoConvite(convite);
-    if (!codigo) return;
+  const join = () => {
+    const code = inviteCode(invite);
+    if (!code) return;
 
-    navigate(`/invite/${codigo}`);
+    navigate(`/invite/${code}`);
   };
 
   return (
-    <Dialog data-gc="servidor.primeiro-servidor.dialog" open={aberto} onOpenChange={(v) => !v && onFechar()}>
+    <Dialog data-gc="servidor.primeiro-servidor.dialog" open={isOpen} onOpenChange={(v) => !v && onClose()}>
       <DialogContent data-gc="servidor.primeiro-servidor.dialog-content" className="max-h-[85vh] max-w-md overflow-y-auto">
         <DialogHeader data-gc="servidor.primeiro-servidor.dialog-header">
           <DialogTitle data-gc="servidor.primeiro-servidor.dialog-title">Crie seu primeiro servidor</DialogTitle>
@@ -80,14 +80,14 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
 
           <div data-gc="servidor.primeiro-servidor.div--2" className="flex gap-2">
             <Input data-gc="servidor.primeiro-servidor.input"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void criar(molde, nome)}
-              placeholder={molde ? molde.sugestaoDeNome : "Nome do servidor"}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void create(mold, name)}
+              placeholder={mold ? mold.nameSuggestion : "Nome do servidor"}
               maxLength={64}
             />
-            <Button data-gc="servidor.primeiro-servidor.button" onClick={() => void criar(molde, nome)} disabled={!nome.trim() || criando}>
-              {criando ? <Loader2 data-gc="servidor.primeiro-servidor.loader2" size={16} className="animate-spin" /> : "Criar"}
+            <Button data-gc="servidor.primeiro-servidor.button" onClick={() => void create(mold, name)} disabled={!name.trim() || creating}>
+              {creating ? <Loader2 data-gc="servidor.primeiro-servidor.loader2" size={16} className="animate-spin" /> : "Criar"}
             </Button>
           </div>
         </div>
@@ -98,22 +98,22 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
           </p>
 
           <div data-gc="servidor.primeiro-servidor.div--4" className="space-y-2">
-            {MOLDES.map((m) => (
+            {MOLDS.map((m) => (
               <button data-gc="servidor.primeiro-servidor.button--2"
                 key={m.id}
-                disabled={criando}
+                disabled={creating}
                 onClick={() => {
-                  setMolde(m);
-                  setNome((atual) => atual || m.sugestaoDeNome);
+                  setMold(m);
+                  setName((current) => current || m.nameSuggestion);
                 }}
-                className={cnMolde(molde?.id === m.id)}
+                className={cnMold(mold?.id === m.id)}
               >
                 <span data-gc="servidor.primeiro-servidor.span" className="text-xl">{m.emoji}</span>
 
                 <span data-gc="servidor.primeiro-servidor.span--2" className="min-w-0 flex-1 text-left">
-                  <span data-gc="servidor.primeiro-servidor.span--3" className="block truncate font-medium">{m.nome}</span>
+                  <span data-gc="servidor.primeiro-servidor.span--3" className="block truncate font-medium">{m.name}</span>
                   <span data-gc="servidor.primeiro-servidor.span--4" className="block truncate text-xs text-ink-faint">
-                    {m.canais.map((c) => c.nome).join(" · ")}
+                    {m.channels.map((c) => c.name).join(" · ")}
                   </span>
                 </span>
 
@@ -128,12 +128,12 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
 
           <div data-gc="servidor.primeiro-servidor.div--6" className="flex gap-2">
             <Input data-gc="servidor.primeiro-servidor.input--2"
-              value={convite}
-              onChange={(e) => setConvite(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && entrar()}
+              value={invite}
+              onChange={(e) => setInvite(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && join()}
               placeholder="Cole o link ou o código do convite"
             />
-            <Button data-gc="servidor.primeiro-servidor.button.entrar" variant="surface" onClick={entrar} disabled={!codigoDoConvite(convite)}>
+            <Button data-gc="servidor.primeiro-servidor.button.join" variant="surface" onClick={join} disabled={!inviteCode(invite)}>
               Entrar
             </Button>
           </div>
@@ -144,10 +144,10 @@ export const PrimeiroServidor: React.FC<{ aberto: boolean; onFechar: () => void 
   );
 };
 
-const cnMolde = (escolhido: boolean) =>
+const cnMold = (picked: boolean) =>
   [
     "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition",
-    escolhido
+    picked
       ? "bg-surface-4 ring-1 ring-brand"
       : "bg-surface-1 hover:bg-surface-3 disabled:opacity-60",
   ].join(" ");
