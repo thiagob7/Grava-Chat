@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 
-export function useShiftPressionado() {
+export function useShiftPressed() {
   const [shift, setShift] = useState(false);
 
   useEffect(() => {
-    const aoTeclar = (e: KeyboardEvent) => setShift(e.shiftKey);
-    const soltar = () => setShift(false);
+    const onType = (e: KeyboardEvent) => setShift(e.shiftKey);
+    const drop = () => setShift(false);
 
-    window.addEventListener("keydown", aoTeclar);
-    window.addEventListener("keyup", aoTeclar);
-    window.addEventListener("blur", soltar);
+    window.addEventListener("keydown", onType);
+    window.addEventListener("keyup", onType);
+    window.addEventListener("blur", drop);
 
     return () => {
-      window.removeEventListener("keydown", aoTeclar);
-      window.removeEventListener("keyup", aoTeclar);
-      window.removeEventListener("blur", soltar);
+      window.removeEventListener("keydown", onType);
+      window.removeEventListener("keyup", onType);
+      window.removeEventListener("blur", drop);
     };
   }, []);
 

@@ -1,18 +1,18 @@
 import { useSyncExternalStore } from "react";
 
-const ESTREITA = "(max-width: 767px)";
+const NARROW = "(max-width: 767px)";
 
-const consulta = () => window.matchMedia(ESTREITA);
+const query = () => window.matchMedia(NARROW);
 
-function assinar(avisar: () => void) {
-  const mq = consulta();
-  mq.addEventListener("change", avisar);
-  return () => mq.removeEventListener("change", avisar);
+function sign(notify: () => void) {
+  const mq = query();
+  mq.addEventListener("change", notify);
+  return () => mq.removeEventListener("change", notify);
 }
 
-export const useTelaEstreita = () =>
+export const useScreenNarrow = () =>
   useSyncExternalStore(
-    assinar,
-    () => consulta().matches,
+    sign,
+    () => query().matches,
     () => false,
   );
