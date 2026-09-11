@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "手を振る小さな手",
+    botao: "{{nome}} に手を振る",
+  },
+  oficial: {
+    titulo: "このチャンネルは公式のお知らせ専用です。",
+    detalhe: "パスワードやアカウントのトークンをお尋ねすることはありません。",
+    saibaMais: "くわしく見る",
+  },
+  topico: {
+    abrir: "チャンネルの説明を見る",
+  },
+  previaDoLink: {
+    carregando: "リンクの中身を確認中…",
+    destino: "{{destino}} へ行きます",
+  },
+  reacao: {
+    carregando: "{{emoji}} で反応した人を確認中…",
+    uma: "{{nome}} が {{emoji}} で反応しました",
+    duas: "{{primeiro}} と {{segundo}} が {{emoji}} で反応しました",
+    varias: "{{nomes}} ほか {{quantos}} 人が {{emoji}} で反応しました",
+    dicaSuper: "長押しでスーパーリアクション",
+  },
+  recado: {
+    gravar: "ボイスメモを録音",
+    descartar: "録音を捨てる",
+    mandar: "録音を送る",
+    semSuporte: "このブラウザーは音声を録音できません。",
+    semMicrofone: "マイクを使えません。",
+  },
   lista: {
     carregando: "メッセージを読み込んでいます…",
     carregandoMais: "読み込み中…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "画像を見る",
   },
   enquete: {
+    criar: "アンケートを作る",
+    pergunta: "質問",
+    exemplo: "今日は何をする？",
+    respostas: "選択肢",
+    adicionarOpcao: "選択肢を追加",
+    removerOpcao: "選択肢を削除",
+    varias: "複数の回答を許可する",
+    variasDetalhe: "これがないと、別の選択肢に投票すると前の票が外れます。",
+    duracao: "期間",
+    umaHora: "1 時間",
+    quatroHoras: "4 時間",
+    oitoHoras: "8 時間",
+    umDia: "1 日",
+    tresDias: "3 日",
+    umaSemana: "1 週間",
+    ateEncerrar: "自分で締め切るまで",
     titulo: "アンケート",
     encerrada: "アンケート終了",
     variasRespostas: "アンケート — 複数回答",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "検索は、あなたが読めるチャンネルだけを見ます。",
   },
   entrada: {
+    semNome: "会話",
+    anexo: "（添付ファイル）",
     titulo: "受信箱",
     naoLidas: "未読",
     salvas: "保存済み",
