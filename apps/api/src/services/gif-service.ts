@@ -6,16 +6,16 @@ const CACHE_MS = 5 * 60_000;
 
 export interface Gif {
   id: string;
-  descricao: string;
+  description: string;
   url: string;
   preview: string;
   width: number;
   height: number;
 }
 
-const cache = new Map<string, { em: number; dados: unknown[] }>();
+const cache = new Map<string, { em: number; data: unknown[] }>();
 
-interface RespostaGif {
+interface ReplyGif {
   results?: {
     id: string;
     title?: string;
@@ -24,51 +24,51 @@ interface RespostaGif {
   }[];
 }
 
-function converter(resposta: RespostaGif): Gif[] {
-  return (resposta.results ?? []).flatMap((item) => {
-    const formatos = item.media_formats;
-    const cheio = formatos?.webp ?? formatos?.mediumgif ?? formatos?.gif;
-    const leve = formatos?.tinygif ?? formatos?.nanogif ?? cheio;
-    if (!cheio || !leve) return [];
+function convert(reply: ReplyGif): Gif[] {
+  return (reply.results ?? []).flatMap((item) => {
+    const formats = item.media_formats;
+    const full = formats?.webp ?? formats?.mediumgif ?? formats?.gif;
+    const light = formats?.tinygif ?? formats?.nanogif ?? full;
+    if (!full || !light) return [];
 
     return [
       {
         id: item.id,
-        descricao: item.title || item.content_description || "GIF",
-        url: cheio.url,
-        preview: leve.url,
-        width: cheio.dims?.[0] ?? 0,
-        height: cheio.dims?.[1] ?? 0,
+        description: item.title || item.content_description || "GIF",
+        url: full.url,
+        preview: light.url,
+        width: full.dims?.[0] ?? 0,
+        height: full.dims?.[1] ?? 0,
       },
     ];
   });
 }
 
-export interface CategoriaDeGif {
-  termo: string;
-  nome: string;
+export interface GifCategory {
+  term: string;
+  name: string;
   preview: string;
 }
 
-interface RespostaCategoria {
+interface ReplyCategory {
   tags?: { searchterm?: string; name?: string; image?: string }[];
 }
 
-function converterCategorias(resposta: RespostaCategoria): CategoriaDeGif[] {
-  return (resposta.tags ?? []).flatMap((tag) => {
-    const termo = tag.searchterm?.trim();
-    if (!termo || !tag.image) return [];
+function convertCategories(reply: ReplyCategory): GifCategory[] {
+  return (reply.tags ?? []).flatMap((tag) => {
+    const term = tag.searchterm?.trim();
+    if (!term || !tag.image) return [];
 
-    return [{ termo, nome: (tag.name ?? termo).replace(/^#/, ""), preview: tag.image }];
+    return [{ term, name: (tag.name ?? term).replace(/^#/, ""), preview: tag.image }];
   });
 }
 
-async function pedir(caminho: string, params: Record<string, string>) {
+async function askFor(path: string, params: Record<string, string>) {
   if (!env.KLIPY_API_KEY) {
     throw new AppError("A busca de GIF precisa de uma chave da KLIPY no .env (KLIPY_API_KEY)", 503);
   }
 
-  const url = new URL(`${BASE}/${caminho}`);
+  const url = new URL(`${BASE}/${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
   url.searchParams.set("key", env.KLIPY_API_KEY);
   url.searchParams.set("client_key", "gravae-chat");
@@ -76,36 +76,36 @@ async function pedir(caminho: string, params: Record<string, string>) {
   url.searchParams.set("country", "BR");
   url.searchParams.set("locale", "pt_BR");
 
-  const resposta = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  if (!resposta.ok) throw new AppError("O serviço de GIF não respondeu agora", 502);
+  const reply = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  if (!reply.ok) throw new AppError("O serviço de GIF não respondeu agora", 502);
 
-  return resposta.json();
+  return reply.json();
 }
 
-async function comCache<T>(
-  caminho: string,
+async function withCache<T>(
+  path: string,
   params: Record<string, string>,
-  converter: (bruto: unknown) => T[],
+  convert: (raw: unknown) => T[],
 ): Promise<T[]> {
-  const chave = `${caminho}?${new URLSearchParams(params)}`;
-  const guardado = cache.get(chave);
-  if (guardado && Date.now() - guardado.em < CACHE_MS) return guardado.dados as T[];
+  const key = `${path}?${new URLSearchParams(params)}`;
+  const kept = cache.get(key);
+  if (kept && Date.now() - kept.em < CACHE_MS) return kept.data as T[];
 
-  const dados = converter(await pedir(caminho, params));
-  cache.set(chave, { em: Date.now(), dados });
+  const data = convert(await askFor(path, params));
+  cache.set(key, { em: Date.now(), data });
 
-  return dados;
+  return data;
 }
 
 export const gifService = {
-  disponivel: () => Boolean(env.KLIPY_API_KEY),
+  available: () => Boolean(env.KLIPY_API_KEY),
 
-  buscar: (q: string, limit = 30) =>
-    comCache("search", { q, limit: String(limit) }, (b) => converter(b as RespostaGif)),
+  search: (q: string, limit = 30) =>
+    withCache("search", { q, limit: String(limit) }, (b) => convert(b as ReplyGif)),
 
-  emAlta: (limit = 30) =>
-    comCache("featured", { limit: String(limit) }, (b) => converter(b as RespostaGif)),
+  inHigh: (limit = 30) =>
+    withCache("featured", { limit: String(limit) }, (b) => convert(b as ReplyGif)),
 
-  categorias: () =>
-    comCache("categories", { type: "featured" }, (b) => converterCategorias(b as RespostaCategoria)),
+  categories: () =>
+    withCache("categories", { type: "featured" }, (b) => convertCategories(b as ReplyCategory)),
 };
