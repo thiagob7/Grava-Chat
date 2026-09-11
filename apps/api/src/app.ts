@@ -10,10 +10,10 @@ import { authPlugin } from "~/plugins/auth.js";
 import { rateLimitPlugin } from "~/plugins/rate-limit.js";
 import { swaggerPlugin } from "~/plugins/swagger.js";
 import { AppError } from "~/lib/http.js";
-import { TETO_DE_CABECALHO } from "~/lib/limites-http.js";
+import { HEADER_CEILING } from "~/lib/limites-http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
-import { statusPublicoRoutes } from "~/routes/status-publico.js";
+import { statusPublicRoutes } from "~/routes/status-publico.js";
 import { adminRoutes } from "~/routes/admin.js";
 import { statusRoutes } from "~/routes/status.js";
 import { authRoutes } from "~/routes/auth.js";
@@ -25,9 +25,9 @@ import { expressionRoutes } from "~/routes/expressions.js";
 import { moderationRoutes } from "~/routes/moderation.js";
 import { forumRoutes } from "~/routes/forum.js";
 import { gifRoutes } from "~/routes/gifs.js";
-import { anexoRoutes } from "~/routes/anexos.js";
-import { descobertaRoutes } from "~/routes/descoberta.js";
-import { temaRoutes } from "~/routes/temas.js";
+import { attachmentRoutes } from "~/routes/anexos.js";
+import { discoveryRoutes } from "~/routes/descoberta.js";
+import { themeRoutes } from "~/routes/temas.js";
 import { inviteRoutes } from "~/routes/invites.js";
 import { messageRoutes } from "~/routes/messages.js";
 import { uploadRoutes } from "~/routes/uploads.js";
@@ -41,7 +41,7 @@ import { embedRoutes } from "~/routes/embeds.js";
 
 export async function buildApp() {
   const app = Fastify({
-    serverFactory: (atender) => createServer({ maxHeaderSize: TETO_DE_CABECALHO }, atender),
+    serverFactory: (answer) => createServer({ maxHeaderSize: HEADER_CEILING }, answer),
     logger: isDev
       ? { transport: { target: "pino-pretty", options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" } } }
       : true,
@@ -85,7 +85,7 @@ export async function buildApp() {
   await app.register(
     async (api) => {
       await api.register(healthRoutes);
-      await api.register(statusPublicoRoutes);
+      await api.register(statusPublicRoutes);
       await api.register(statusRoutes);
       await api.register(adminRoutes);
       await api.register(authRoutes);
@@ -96,9 +96,9 @@ export async function buildApp() {
       await api.register(botApiRoutes);
       await api.register(roleRoutes);
       await api.register(inviteRoutes);
-      await api.register(anexoRoutes);
-      await api.register(descobertaRoutes);
-      await api.register(temaRoutes);
+      await api.register(attachmentRoutes);
+      await api.register(discoveryRoutes);
+      await api.register(themeRoutes);
       await api.register(messageRoutes);
       await api.register(uploadRoutes);
       await api.register(voiceRoutes);
