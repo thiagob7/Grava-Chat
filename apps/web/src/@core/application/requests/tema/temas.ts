@@ -1,4 +1,4 @@
-import type { AtivoDoTema, TemaCompartilhado } from "@gravae/shared";
+import type { ThemeActive, ThemeShared } from "@gravae/shared";
 
 import { api } from "~/@core/lib/api";
 
@@ -15,35 +15,35 @@ import { api } from "~/@core/lib/api";
 
   Campo novo entra por aqui com valor de reserva, nunca cru.
 */
-export type TemaQueChegou = Omit<TemaCompartilhado, "ativos"> & { ativos?: AtivoDoTema[] };
+export type ThemeArrived = Omit<ThemeShared, "actives"> & { actives?: ThemeActive[] };
 
-export const normalizarTema = (tema: TemaQueChegou): TemaCompartilhado => ({
-  ...tema,
-  ativos: tema.ativos ?? [],
+export const normalizeTheme = (theme: ThemeArrived): ThemeShared => ({
+  ...theme,
+  actives: theme.actives ?? [],
 });
 
-export interface PublicarTemaDTO {
+export interface PublishThemeDto {
   css: string;
-  substituicoes: Record<string, string>;
-  ativos: AtivoDoTema[];
-  nome?: string;
+  overrides: Record<string, string>;
+  actives: ThemeActive[];
+  name?: string;
 }
 
-export async function publicarTema(dados: PublicarTemaDTO): Promise<TemaCompartilhado> {
-  const response = await api.post<TemaQueChegou>("/temas", dados);
-  return normalizarTema(response.data);
+export async function publishTheme(data: PublishThemeDto): Promise<ThemeShared> {
+  const response = await api.post<ThemeArrived>("/temas", data);
+  return normalizeTheme(response.data);
 }
 
-export async function findTema(temaId: string): Promise<TemaCompartilhado> {
-  const response = await api.get<TemaQueChegou>(`/temas/${temaId}`);
-  return normalizarTema(response.data);
+export async function findTheme(themeId: string): Promise<ThemeShared> {
+  const response = await api.get<ThemeArrived>(`/temas/${themeId}`);
+  return normalizeTheme(response.data);
 }
 
-export async function findMeusTemas(): Promise<TemaCompartilhado[]> {
-  const response = await api.get<TemaQueChegou[]>("/temas");
-  return response.data.map(normalizarTema);
+export async function findMineThemes(): Promise<ThemeShared[]> {
+  const response = await api.get<ThemeArrived[]>("/temas");
+  return response.data.map(normalizeTheme);
 }
 
-export async function apagarTema(temaId: string): Promise<void> {
-  await api.delete(`/temas/${temaId}`);
+export async function deleteTheme(themeId: string): Promise<void> {
+  await api.delete(`/temas/${themeId}`);
 }
