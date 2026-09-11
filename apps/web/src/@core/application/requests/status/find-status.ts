@@ -1,79 +1,79 @@
 import { api } from "~/@core/lib/api";
 
-export interface ParticipanteDaSala {
+export interface RoomParticipant {
   id: string;
-  nome: string;
+  name: string;
   avatarUrl: string | null;
-  microfone: "aberto" | "mudo" | "sem";
+  microphone: "aberto" | "mudo" | "sem";
   camera: boolean;
-  tela: boolean;
-  entrouEm: number;
+  display: boolean;
+  joinedAt: number;
   soNoSfu: boolean;
 }
 
-export interface FantasmaDeVoz {
+export interface VoiceGhost {
   id: string;
-  nome: string;
-  canal: string | null;
-  desde: number;
-  aguardandoVolta: boolean;
+  name: string;
+  channel: string | null;
+  since: number;
+  awaitingBack: boolean;
 }
 
-export interface SalaDeVoz {
-  canalId: string;
-  nome: string | null;
-  servidor: string | null;
-  ehPrivado: boolean;
-  motivo: "canal-apagado" | "outro-ambiente" | null;
-  criadaEm: number;
-  participantes: ParticipanteDaSala[];
+export interface VoiceRoom {
+  channelId: string;
+  name: string | null;
+  server: string | null;
+  isPrivate: boolean;
+  reason: "canal-apagado" | "outro-ambiente" | null;
+  createdAt: number;
+  participants: RoomParticipant[];
 }
 
-export interface ChecagemDeServico {
-  nome: string;
-  estado: "up" | "down";
+export interface CheckService {
+  name: string;
+  state: "up" | "down";
   ms: number;
 }
 
-export interface MaquinaDeVoz {
-  indisponivel?: false;
+export interface VoiceMachine {
+  unavailable?: false;
   host: string;
-  nucleos: number;
-  carga: { um: number; cinco: number; quinze: number };
-  memoria: { total: number; livre: number; disponivel: number };
-  disco: { total: number; livre: number };
-  uptimeDaMaquina: number;
-  livekit: { noAr: boolean; residente: number };
+  cores: number;
+  carga: { um: number; five: number; quinze: number };
+  memoria: { total: number; livre: number; available: number };
+  disk: { total: number; livre: number };
+  machineUptime: number;
+  livekit: { inAr: boolean; resident: number };
   ms: number;
 }
 
-export interface StatusDoServidor {
+export interface ServerStatus {
   api: {
     host: string;
-    ambiente: string;
-    carga: { um: number; cinco: number; quinze: number };
-    nucleos: number;
-    memoria: { total: number; livre: number; disponivel: number };
-    residente: number;
-    disco: { total: number; livre: number } | null;
-    uptimeDoProcesso: number;
-    uptimeDaMaquina: number;
+    environment: string;
+    carga: { um: number; five: number; quinze: number };
+    cores: number;
+    memoria: { total: number; livre: number; available: number };
+    resident: number;
+    disk: { total: number; livre: number } | null;
+    processUptime: number;
+    machineUptime: number;
     node: string;
   };
-  gateway: { conexoes: number; pessoas: number; bots: number } | null;
-  voz: MaquinaDeVoz | { indisponivel: true } | null;
-  mongo: ChecagemDeServico;
-  redis: ChecagemDeServico;
+  gateway: { connections: number; people: number; bots: number } | null;
+  voice: VoiceMachine | { unavailable: true } | null;
+  mongo: CheckService;
+  redis: CheckService;
   sfu: {
-    indisponivel?: true;
-    salas: SalaDeVoz[];
-    participantes: number;
-    publicando: number;
-    fantasmas: FantasmaDeVoz[];
+    unavailable?: true;
+    rooms: VoiceRoom[];
+    participants: number;
+    publishing: number;
+    ghosts: VoiceGhost[];
   };
 }
 
-export async function findStatus(): Promise<StatusDoServidor> {
-  const response = await api.get<StatusDoServidor>("/status");
+export async function findStatus(): Promise<ServerStatus> {
+  const response = await api.get<ServerStatus>("/status");
   return response.data;
 }
