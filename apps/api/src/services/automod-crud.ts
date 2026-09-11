@@ -13,70 +13,70 @@ export const autoModCrud = {
   async create(userId: string, guildId: string, input: AutoModRuleInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const regra = await autoModRepository.create({
+    const rule = await autoModRepository.create({
       guildId,
       name: input.name,
       enabled: input.enabled ?? true,
       trigger: input.trigger,
-      palavras: (input.palavras ?? []).map((p) => p.toLowerCase().trim()).filter(Boolean),
-      limiteMencoes: input.limiteMencoes ?? null,
-      acoes: input.acoes,
+      words: (input.words ?? []).map((p) => p.toLowerCase().trim()).filter(Boolean),
+      limitMentions: input.limitMentions ?? null,
+      actions: input.actions,
       alertChannelId: input.alertChannelId ?? null,
       timeoutSeconds: input.timeoutSeconds ?? null,
-      cargosIsentos: input.cargosIsentos ?? [],
+      rolesExempt: input.rolesExempt ?? [],
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "automod.create",
       targetType: "automod",
-      targetId: regra.id,
-      targetName: regra.name,
+      targetId: rule.id,
+      targetName: rule.name,
     });
 
-    return regra;
+    return rule;
   },
 
   async update(userId: string, guildId: string, ruleId: string, input: Partial<AutoModRuleInput>) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const regra = await autoModRepository.findById(ruleId);
-    if (!regra || regra.guildId !== guildId) throw new NotFoundError("Regra não encontrada");
+    const rule = await autoModRepository.findById(ruleId);
+    if (!rule || rule.guildId !== guildId) throw new NotFoundError("Regra não encontrada");
 
-    const atualizada = await autoModRepository.update(ruleId, {
+    const updated = await autoModRepository.update(ruleId, {
       ...input,
-      ...(input.palavras
-        ? { palavras: input.palavras.map((p) => p.toLowerCase().trim()).filter(Boolean) }
+      ...(input.words
+        ? { words: input.words.map((p) => p.toLowerCase().trim()).filter(Boolean) }
         : {}),
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "automod.update",
       targetType: "automod",
       targetId: ruleId,
-      targetName: atualizada.name,
+      targetName: updated.name,
     });
 
-    return atualizada;
+    return updated;
   },
 
   async remove(userId: string, guildId: string, ruleId: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const regra = await autoModRepository.findById(ruleId);
-    if (!regra || regra.guildId !== guildId) throw new NotFoundError("Regra não encontrada");
+    const rule = await autoModRepository.findById(ruleId);
+    if (!rule || rule.guildId !== guildId) throw new NotFoundError("Regra não encontrada");
 
     await autoModRepository.remove(ruleId);
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "automod.delete",
       targetType: "automod",
       targetId: ruleId,
-      targetName: regra.name,
+      targetName: rule.name,
     });
   },
 };
