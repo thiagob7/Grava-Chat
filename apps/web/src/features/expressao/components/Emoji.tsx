@@ -9,11 +9,11 @@ interface EmojiProps {
 }
 
 export const Emoji: React.FC<EmojiProps> = ({ emoji, className }) => {
-  const [semDesenho, setSemDesenho] = React.useState(false);
+  const [withoutDrawing, setWithoutDrawing] = React.useState(false);
 
-  React.useEffect(() => setSemDesenho(false), [emoji]);
+  React.useEffect(() => setWithoutDrawing(false), [emoji]);
 
-  if (semDesenho) {
+  if (withoutDrawing) {
     return (
       <span data-gc="expressao.emoji.span" className={cn("inline-block text-center leading-none", className)}>{emoji}</span>
     );
@@ -25,7 +25,7 @@ export const Emoji: React.FC<EmojiProps> = ({ emoji, className }) => {
       alt={emoji}
       draggable={false}
       loading="lazy"
-      onError={() => setSemDesenho(true)}
+      onError={() => setWithoutDrawing(true)}
       className={cn("inline-block size-[1.375em] align-text-bottom", className)}
     />
   );
