@@ -1,365 +1,365 @@
-export interface TokenDoTema {
-  nome: string;
-  rotulo: string;
-  dica?: string;
+export interface ThemeToken {
+  name: string;
+  label: string;
+  hint?: string;
 }
 
-export interface GrupoDeTokens {
-  titulo: string;
-  tokens: TokenDoTema[];
+export interface TokensGroup {
+  title: string;
+  tokens: ThemeToken[];
 }
 
-export const GRUPOS_DE_TOKENS: GrupoDeTokens[] = [
+export const TOKENS_GROUPS: TokensGroup[] = [
   {
-    titulo: "Tipografia",
+    title: "Tipografia",
     tokens: [
       {
-        nome: "--text-10",
-        rotulo: "Tamanho 10px",
-        dica: "selo de contagem, o menor da escala",
+        name: "--text-10",
+        label: "Tamanho 10px",
+        hint: "selo de contagem, o menor da escala",
       },
-      { nome: "--text-11", rotulo: "Tamanho 11px", dica: "rótulos e legendas" },
-      { nome: "--text-12", rotulo: "Tamanho 12px", dica: "os passos de um assistente, e o status do canal" },
+      { name: "--text-11", label: "Tamanho 11px", hint: "rótulos e legendas" },
+      { name: "--text-12", label: "Tamanho 12px", hint: "os passos de um assistente, e o status do canal" },
       {
-        nome: "--text-13",
-        rotulo: "Tamanho 13px",
-        dica: "o degrau que faltava — na referência é o terceiro mais usado",
-      },
-      {
-        nome: "--text-xs",
-        rotulo: "Apelido: minúsculo",
-        dica: "aponta para 12px",
+        name: "--text-13",
+        label: "Tamanho 13px",
+        hint: "o degrau que faltava — na referência é o terceiro mais usado",
       },
       {
-        nome: "--text-sm",
-        rotulo: "Apelido: pequeno",
-        dica: "aponta para 14px",
+        name: "--text-xs",
+        label: "Apelido: minúsculo",
+        hint: "aponta para 12px",
       },
       {
-        nome: "--text-base",
-        rotulo: "Apelido: normal",
-        dica: "aponta para 16px",
+        name: "--text-sm",
+        label: "Apelido: pequeno",
+        hint: "aponta para 14px",
       },
       {
-        nome: "--text-lg",
-        rotulo: "Apelido: grande",
-        dica: "aponta para 18px",
+        name: "--text-base",
+        label: "Apelido: normal",
+        hint: "aponta para 16px",
       },
       {
-        nome: "--text-xl",
-        rotulo: "Apelido: extra grande",
-        dica: "aponta para 20px",
+        name: "--text-lg",
+        label: "Apelido: grande",
+        hint: "aponta para 18px",
       },
       {
-        nome: "--text-2xl",
-        rotulo: "Apelido: enorme",
-        dica: "aponta para 24px",
+        name: "--text-xl",
+        label: "Apelido: extra grande",
+        hint: "aponta para 20px",
       },
       {
-        nome: "--text-3xl",
-        rotulo: "Apelido: gigante",
-        dica: "aponta para 30px; vem da escala do Tailwind, a nossa para no 24",
+        name: "--text-2xl",
+        label: "Apelido: enorme",
+        hint: "aponta para 24px",
       },
-      { nome: "--font-weight-normal", rotulo: "Peso normal (400)" },
-      { nome: "--font-weight-medium", rotulo: "Peso médio (500)" },
       {
-        nome: "--font-weight-semibold",
-        rotulo: "Peso forte (600)",
-        dica: "o dominante, aqui e na referência",
+        name: "--text-3xl",
+        label: "Apelido: gigante",
+        hint: "aponta para 30px; vem da escala do Tailwind, a nossa para no 24",
       },
-      { nome: "--font-weight-bold", rotulo: "Peso grosso (700)" },
+      { name: "--font-weight-normal", label: "Peso normal (400)" },
+      { name: "--font-weight-medium", label: "Peso médio (500)" },
       {
-        nome: "--font-sans",
-        rotulo: "Fonte da interface",
-        dica: "IBM Plex Sans — a mesma da referência, com o nome de verdade",
+        name: "--font-weight-semibold",
+        label: "Peso forte (600)",
+        hint: "o dominante, aqui e na referência",
       },
-      { nome: "--font-mono", rotulo: "Fonte do código", dica: "IBM Plex Mono" },
+      { name: "--font-weight-bold", label: "Peso grosso (700)" },
       {
-        nome: "--font-size",
-        rotulo: "Tamanho da fonte da conversa",
-        dica: "acompanha a régua de escala do chat",
+        name: "--font-sans",
+        label: "Fonte da interface",
+        hint: "Radio Canada Big — a mesma da referência, com o nome de verdade",
+      },
+      { name: "--font-mono", label: "Fonte do código", hint: "IBM Plex Mono" },
+      {
+        name: "--font-size",
+        label: "Tamanho da fonte da conversa",
+        hint: "acompanha a régua de escala do chat",
       },
     ],
   },
   {
-    titulo: "Superfícies",
+    title: "Superfícies",
     tokens: [
       {
-        nome: "--color-veu",
-        rotulo: "Véu atrás das janelas",
-        dica: "o escurecido que separa o modal do app",
+        name: "--color-veu",
+        label: "Véu atrás das janelas",
+        hint: "o escurecido que separa o modal do app",
       },
       {
-        nome: "--color-brilho",
-        rotulo: "Brilho de vidro",
-        dica: "o realce claro dos enfeites de vidro e verniz",
+        name: "--color-brilho",
+        label: "Brilho de vidro",
+        hint: "o realce claro dos enfeites de vidro e verniz",
       },
       {
-        nome: "--color-sombra",
-        rotulo: "Cor da sombra",
-        dica: "o tingimento das sombras dos cartões e balões",
+        name: "--color-sombra",
+        label: "Cor da sombra",
+        hint: "o tingimento das sombras dos cartões e balões",
       },
       {
-        nome: "--color-sobre-midia",
-        rotulo: "Escurecido sobre mídia",
-        dica: "os selos e botões que ficam por cima de gif, vídeo e banner",
+        name: "--color-sobre-midia",
+        label: "Escurecido sobre mídia",
+        hint: "os selos e botões que ficam por cima de gif, vídeo e banner",
       },
       {
-        nome: "--color-palco",
-        rotulo: "Fundo do palco de voz",
-        dica: "a área de vídeo e transmissão, que era preta cravada",
+        name: "--color-palco",
+        label: "Fundo do palco de voz",
+        hint: "a área de vídeo e transmissão, que era preta cravada",
       },
       {
-        nome: "--color-surface-0",
-        rotulo: "Fundo mais profundo",
-        dica: "ícones do trilho, faixa de título, campos e poços",
+        name: "--color-surface-0",
+        label: "Fundo mais profundo",
+        hint: "ícones do trilho, faixa de título, campos e poços",
       },
       {
-        nome: "--color-surface-1",
-        rotulo: "Barra lateral",
-        dica: "trilho de servidores, lista de canais e de conversas",
+        name: "--color-surface-1",
+        label: "Barra lateral",
+        hint: "trilho de servidores, lista de canais e de conversas",
       },
-      { nome: "--color-surface-2", rotulo: "Área da conversa" },
+      { name: "--color-surface-2", label: "Área da conversa" },
       {
-        nome: "--color-surface-3",
-        rotulo: "Elevação leve",
-        dica: "cartões, pastilhas",
-      },
-      {
-        nome: "--color-surface-4",
-        rotulo: "Elevação forte",
-        dica: "menus, balões e dicas",
+        name: "--color-surface-3",
+        label: "Elevação leve",
+        hint: "cartões, pastilhas",
       },
       {
-        nome: "--color-cabecalho",
-        rotulo: "Barra do canal",
-        dica: "a faixa com o nome do canal",
-      },
-      { nome: "--color-composer", rotulo: "Caixa de escrever" },
-      { nome: "--color-painel", rotulo: "Cartão da chamada" },
-      {
-        nome: "--color-hover",
-        rotulo: "Realce do mouse",
-        dica: "aceita transparência",
+        name: "--color-surface-4",
+        label: "Elevação forte",
+        hint: "menus, balões e dicas",
       },
       {
-        nome: "--color-selecionado",
-        rotulo: "Item escolhido",
-        dica: "canal aberto; aceita transparência",
+        name: "--color-cabecalho",
+        label: "Barra do canal",
+        hint: "a faixa com o nome do canal",
+      },
+      { name: "--color-composer", label: "Caixa de escrever" },
+      { name: "--color-painel", label: "Cartão da chamada" },
+      {
+        name: "--color-hover",
+        label: "Realce do mouse",
+        hint: "aceita transparência",
+      },
+      {
+        name: "--color-selecionado",
+        label: "Item escolhido",
+        hint: "canal aberto; aceita transparência",
       },
     ],
   },
   {
-    titulo: "Texto",
+    title: "Texto",
     tokens: [
       {
-        nome: "--color-sobre-marca",
-        rotulo: "Texto sobre cor forte",
-        dica: "o que fica em cima de botão colorido, de pílula, de selo",
+        name: "--color-sobre-marca",
+        label: "Texto sobre cor forte",
+        hint: "o que fica em cima de botão colorido, de pílula, de selo",
       },
-      { nome: "--color-palco-ink", rotulo: "Texto sobre o palco de voz" },
-      { nome: "--color-ink", rotulo: "Texto principal" },
-      { nome: "--color-ink-muted", rotulo: "Texto secundário" },
+      { name: "--color-palco-ink", label: "Texto sobre o palco de voz" },
+      { name: "--color-ink", label: "Texto principal" },
+      { name: "--color-ink-muted", label: "Texto secundário" },
       {
-        nome: "--color-ink-faint",
-        rotulo: "Texto apagado",
-        dica: "horários, rótulos, dicas",
+        name: "--color-ink-faint",
+        label: "Texto apagado",
+        hint: "horários, rótulos, dicas",
       },
     ],
   },
   {
-    titulo: "Marca e realces",
+    title: "Marca e realces",
     tokens: [
-      { nome: "--color-brand", rotulo: "Marca" },
-      { nome: "--color-brand-hover", rotulo: "Marca no mouse" },
-      { nome: "--color-pilula", rotulo: "Barrinha do servidor ativo" },
+      { name: "--color-brand", label: "Marca" },
+      { name: "--color-brand-hover", label: "Marca no mouse" },
+      { name: "--color-pilula", label: "Barrinha do servidor ativo" },
     ],
   },
   {
-    titulo: "Status",
+    title: "Status",
     tokens: [
-      { nome: "--color-online", rotulo: "Online" },
-      { nome: "--color-idle", rotulo: "Ausente" },
-      { nome: "--color-dnd", rotulo: "Não perturbe" },
-      { nome: "--color-danger", rotulo: "Perigo", dica: "excluir, sair, erro" },
+      { name: "--color-online", label: "Online" },
+      { name: "--color-idle", label: "Ausente" },
+      { name: "--color-dnd", label: "Não perturbe" },
+      { name: "--color-danger", label: "Perigo", hint: "excluir, sair, erro" },
       {
-        nome: "--color-danger-fundo",
-        rotulo: "Fundo de perigo",
-        dica: "a tarja fraca atrás de um aviso de excluir",
-      },
-    ],
-  },
-  {
-    titulo: "Bordas e foco",
-    tokens: [
-      {
-        nome: "--color-line-sutil",
-        rotulo: "Borda quase invisível",
-        dica: "a divisão de dentro de cartão e de campo",
-      },
-      { nome: "--color-line", rotulo: "Borda", dica: "contorno de cartão" },
-      {
-        nome: "--color-divisor",
-        rotulo: "Divisória",
-        dica: "entre painéis; aceita transparência",
-      },
-      { nome: "--radius-sm", rotulo: "Pequeno (canto)" },
-      { nome: "--radius-md", rotulo: "Médio (canto)" },
-      { nome: "--radius-lg", rotulo: "Grande (canto)" },
-      { nome: "--radius-xl", rotulo: "Extra grande (canto)" },
-      { nome: "--radius-2xl", rotulo: "Enorme (canto)" },
-      {
-        nome: "--radius-3xl",
-        rotulo: "Gigante (canto)",
-        dica: "vem da escala do Tailwind, a nossa para no enorme",
-      },
-      { nome: "--radius-full", rotulo: "Total (canto)" },
-      {
-        nome: "--color-foco-anel",
-        rotulo: "Anel de foco (cor)",
-        dica: "o halo do botão e do campo em foco; aceita transparência",
-      },
-      {
-        nome: "--focus-primary",
-        rotulo: "Anel de foco",
-        dica: "o contorno de quem navega por teclado",
+        name: "--color-danger-fundo",
+        label: "Fundo de perigo",
+        hint: "a tarja fraca atrás de um aviso de excluir",
       },
     ],
   },
   {
-    titulo: "Avisos",
+    title: "Bordas e foco",
     tokens: [
-      { nome: "--color-aviso", rotulo: "Atenção" },
-    ],
-  },
-  {
-    titulo: "Marcação e menções",
-    tokens: [
-      { nome: "--color-link", rotulo: "Link" },
-      { nome: "--color-mencao", rotulo: "Menção a você" },
-      { nome: "--color-everyone", rotulo: "Menção a @everyone" },
-      { nome: "--color-here", rotulo: "Menção a @here" },
-    ],
-  },
-  {
-    titulo: "Código e terminal",
-    tokens: [
-      { nome: "--color-codigo", rotulo: "Código na linha" },
-      { nome: "--color-codigo-bloco", rotulo: "Bloco de código" },
-    ],
-  },
-  {
-    titulo: "Mensagens",
-    tokens: [
-      { nome: "--color-destaque", rotulo: "Fio de quem te menciona" },
       {
-        nome: "--color-destaque-fundo",
-        rotulo: "Fundo de quem te menciona",
-        dica: "a faixa amarelada por trás da mensagem",
+        name: "--color-line-sutil",
+        label: "Borda quase invisível",
+        hint: "a divisão de dentro de cartão e de campo",
       },
-    ],
-  },
-  {
-    titulo: "Formulários",
-    tokens: [
-      { nome: "--color-campo", rotulo: "Campo" },
-      { nome: "--color-campo-foco", rotulo: "Campo em foco" },
+      { name: "--color-line", label: "Borda", hint: "contorno de cartão" },
       {
-        nome: "--color-trilho",
-        rotulo: "Trilho da régua",
-        dica: "o trecho ainda não preenchido",
+        name: "--color-divisor",
+        label: "Divisória",
+        hint: "entre painéis; aceita transparência",
+      },
+      { name: "--radius-sm", label: "Pequeno (canto)" },
+      { name: "--radius-md", label: "Médio (canto)" },
+      { name: "--radius-lg", label: "Grande (canto)" },
+      { name: "--radius-xl", label: "Extra grande (canto)" },
+      { name: "--radius-2xl", label: "Enorme (canto)" },
+      {
+        name: "--radius-3xl",
+        label: "Gigante (canto)",
+        hint: "vem da escala do Tailwind, a nossa para no enorme",
+      },
+      { name: "--radius-full", label: "Total (canto)" },
+      {
+        name: "--color-foco-anel",
+        label: "Anel de foco (cor)",
+        hint: "o halo do botão e do campo em foco; aceita transparência",
+      },
+      {
+        name: "--focus-primary",
+        label: "Anel de foco",
+        hint: "o contorno de quem navega por teclado",
       },
     ],
   },
   {
-    titulo: "Layout",
+    title: "Avisos",
     tokens: [
-      {
-        nome: "--layout-guild-list-width",
-        rotulo: "Largura do trilho de servidores",
-        dica: "a coluna dos ícones, à esquerda de tudo",
-      },
-      {
-        nome: "--layout-header-height",
-        rotulo: "Altura do cabeçalho",
-        dica: "a faixa do topo do canal",
-      },
-      {
-        nome: "--layout-member-list-width",
-        rotulo: "Largura da lista de membros",
-        dica: "a coluna da direita",
-      },
-      {
-        nome: "--layout-sidebar-width",
-        rotulo: "Largura da lateral",
-        dica: "a coluna de canais, de conversas e do explorar",
-      },
-      { nome: "--guild-icon-size", rotulo: "Tamanho do ícone de servidor" },
-      {
-        nome: "--user-card-min-height",
-        rotulo: "Altura do cartão do usuário",
-        dica: "o mínimo; ele cresce sozinho quando você entra numa chamada",
-      },
-      {
-        nome: "--composer-box-height",
-        rotulo: "Altura da caixa de escrever",
-        dica: "a caixa cresce com o texto; isto é a altura de uma linha",
-      },
-      { nome: "--footer-box-radius", rotulo: "Canto do rodapé e da caixa de escrever" },
-      {
-        nome: "--message-gutter",
-        rotulo: "Calha da mensagem",
-        dica: "o espaço entre o avatar e o texto",
-      },
-      {
-        nome: "--message-line-height",
-        rotulo: "Altura de linha da mensagem",
-        dica: "menor deixa a conversa mais densa",
-      },
-      { nome: "--textarea-line-height", rotulo: "Altura de linha da caixa de escrever" },
-      {
-        nome: "--textarea-button-height",
-        rotulo: "Tamanho dos botões da caixa de escrever",
-        dica: "mais, fonte, GIF, imagem, figurinha, emoji e enviar, todos juntos",
-      },
-      { nome: "--textarea-button-icon-size", rotulo: "Ícone dos botões da caixa de escrever" },
-      { nome: "--composer-action-gap", rotulo: "Espaço entre os botões da caixa de escrever" },
+      { name: "--color-aviso", label: "Atenção" },
     ],
   },
   {
-    titulo: "Rolagem",
+    title: "Marcação e menções",
     tokens: [
-      { nome: "--scrollbar-thumb-bg", rotulo: "Punho da barra de rolagem" },
-      { nome: "--scrollbar-thumb-bg-hover", rotulo: "Punho da barra no mouse" },
-      { nome: "--scrollbar-track-bg", rotulo: "Trilho da barra de rolagem" },
+      { name: "--color-link", label: "Link" },
+      { name: "--color-mencao", label: "Menção a você" },
+      { name: "--color-everyone", label: "Menção a @everyone" },
+      { name: "--color-here", label: "Menção a @here" },
     ],
   },
   {
-    titulo: "Outros",
+    title: "Código e terminal",
+    tokens: [
+      { name: "--color-codigo", label: "Código na linha" },
+      { name: "--color-codigo-bloco", label: "Bloco de código" },
+    ],
+  },
+  {
+    title: "Mensagens",
+    tokens: [
+      { name: "--color-destaque", label: "Fio de quem te menciona" },
+      {
+        name: "--color-destaque-fundo",
+        label: "Fundo de quem te menciona",
+        hint: "a faixa amarelada por trás da mensagem",
+      },
+    ],
+  },
+  {
+    title: "Formulários",
+    tokens: [
+      { name: "--color-campo", label: "Campo" },
+      { name: "--color-campo-foco", label: "Campo em foco" },
+      {
+        name: "--color-trilho",
+        label: "Trilho da régua",
+        hint: "o trecho ainda não preenchido",
+      },
+    ],
+  },
+  {
+    title: "Layout",
     tokens: [
       {
-        nome: "--user-select",
-        rotulo: "Seleção de texto com o mouse",
-        dica: "auto seleciona; none faz o app parecer programa, não página",
+        name: "--layout-guild-list-width",
+        label: "Largura do trilho de servidores",
+        hint: "a coluna dos ícones, à esquerda de tudo",
       },
-      { nome: "--text-selection", rotulo: "Realce do texto selecionado" },
+      {
+        name: "--layout-header-height",
+        label: "Altura do cabeçalho",
+        hint: "a faixa do topo do canal",
+      },
+      {
+        name: "--layout-member-list-width",
+        label: "Largura da lista de membros",
+        hint: "a coluna da direita",
+      },
+      {
+        name: "--layout-sidebar-width",
+        label: "Largura da lateral",
+        hint: "a coluna de canais, de conversas e do explorar",
+      },
+      { name: "--guild-icon-size", label: "Tamanho do ícone de servidor" },
+      {
+        name: "--user-card-min-height",
+        label: "Altura do cartão do usuário",
+        hint: "o mínimo; ele cresce sozinho quando você entra numa chamada",
+      },
+      {
+        name: "--composer-box-height",
+        label: "Altura da caixa de escrever",
+        hint: "a caixa cresce com o texto; isto é a altura de uma linha",
+      },
+      { name: "--footer-box-radius", label: "Canto do rodapé e da caixa de escrever" },
+      {
+        name: "--message-gutter",
+        label: "Calha da mensagem",
+        hint: "o espaço entre o avatar e o texto",
+      },
+      {
+        name: "--message-line-height",
+        label: "Altura de linha da mensagem",
+        hint: "menor deixa a conversa mais densa",
+      },
+      { name: "--textarea-line-height", label: "Altura de linha da caixa de escrever" },
+      {
+        name: "--textarea-button-height",
+        label: "Tamanho dos botões da caixa de escrever",
+        hint: "mais, fonte, GIF, imagem, figurinha, emoji e enviar, todos juntos",
+      },
+      { name: "--textarea-button-icon-size", label: "Ícone dos botões da caixa de escrever" },
+      { name: "--composer-action-gap", label: "Espaço entre os botões da caixa de escrever" },
+    ],
+  },
+  {
+    title: "Rolagem",
+    tokens: [
+      { name: "--scrollbar-thumb-bg", label: "Punho da barra de rolagem" },
+      { name: "--scrollbar-thumb-bg-hover", label: "Punho da barra no mouse" },
+      { name: "--scrollbar-track-bg", label: "Trilho da barra de rolagem" },
+    ],
+  },
+  {
+    title: "Outros",
+    tokens: [
+      {
+        name: "--user-select",
+        label: "Seleção de texto com o mouse",
+        hint: "auto seleciona; none faz o app parecer programa, não página",
+      },
+      { name: "--text-selection", label: "Realce do texto selecionado" },
     ],
   },
 ];
 
-export const TODOS_OS_TOKENS = GRUPOS_DE_TOKENS.flatMap(
-  (grupo) => grupo.tokens,
+export const ALL_TOKENS = TOKENS_GROUPS.flatMap(
+  (group) => group.tokens,
 );
 
-export function valorDoTema(nome: string): string {
-  const raiz = document.documentElement;
-  const emLinha = raiz.style.getPropertyValue(nome);
+export function themeValue(name: string): string {
+  const root = document.documentElement;
+  const inLine = root.style.getPropertyValue(name);
 
-  if (!emLinha) return getComputedStyle(raiz).getPropertyValue(nome).trim();
+  if (!inLine) return getComputedStyle(root).getPropertyValue(name).trim();
 
-  raiz.style.removeProperty(nome);
-  const doTema = getComputedStyle(raiz).getPropertyValue(nome).trim();
-  raiz.style.setProperty(nome, emLinha);
+  root.style.removeProperty(name);
+  const fromTheme = getComputedStyle(root).getPropertyValue(name).trim();
+  root.style.setProperty(name, inLine);
 
-  return doTema;
+  return fromTheme;
 }
