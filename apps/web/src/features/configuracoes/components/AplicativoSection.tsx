@@ -3,28 +3,28 @@ import { Apple, Download, Monitor } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 
 const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";
 
 const MAC = `${BASE}/gravae-chat-mac.dmg`;
 const WINDOWS = `${BASE}/gravae-chat-win.exe`;
 
-function ehWindows(): boolean {
+function isWindows(): boolean {
   if (typeof navigator === "undefined") return false;
 
   return /win/i.test(navigator.userAgent);
 }
 
-export const AplicativoSection: React.FC = () => (
+export const AppSection: React.FC = () => (
   <div data-gc="configuracoes.aplicativo-section.div">
-    <Secao data-gc="configuracoes.aplicativo-section.secao"
+    <Section data-gc="configuracoes.aplicativo-section.section"
       id="baixar"
-      titulo="Aplicativo de desktop"
-      detalhe="A mesma conta e as mesmas conversas, numa janela só. Push-to-talk global e compartilhamento de tela funcionam melhor por aqui do que no navegador."
+      title="Aplicativo de desktop"
+      detail="A mesma conta e as mesmas conversas, numa janela só. Push-to-talk global e compartilhamento de tela funcionam melhor por aqui do que no navegador."
     >
       <div data-gc="configuracoes.aplicativo-section.div--2"
-        className={cn("flex flex-col gap-3", ehWindows() && "flex-col-reverse")}
+        className={cn("flex flex-col gap-3", isWindows() && "flex-col-reverse")}
       >
         <div data-gc="configuracoes.aplicativo-section.div--3" className="rounded-lg border border-line bg-surface-2 p-4">
           <p data-gc="configuracoes.aplicativo-section.p" className="flex items-center gap-2 text-sm font-medium">
@@ -63,6 +63,6 @@ export const AplicativoSection: React.FC = () => (
           </p>
         </div>
       </div>
-    </Secao>
+    </Section>
   </div>
 );
