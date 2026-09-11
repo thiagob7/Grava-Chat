@@ -14,15 +14,15 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import { copiarTexto } from "~/lib/copiar";
-import { baixarImagem, copiarImagem } from "~/lib/imagem";
+import { copyText } from "~/lib/copiar";
+import { downloadImage, copyImage } from "~/lib/imagem";
 
-export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNode }> = ({
-  anexo,
+export const ImageMenu: React.FC<{ attachment: Attachment; children: React.ReactNode }> = ({
+  attachment,
   children,
 }) => {
   const { t } = useTranslation();
-  const nome = anexo.filename || "imagem";
+  const name = attachment.filename || "imagem";
 
   return (
     <ContextMenu data-gc="conversa.menu-da-imagem.context-menu">
@@ -31,8 +31,8 @@ export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNo
       <ContextMenuContent data-gc="conversa.menu-da-imagem.context-menu-content">
         <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item"
           onSelect={() =>
-            void copiarImagem(anexo.url).then((deu) =>
-              deu
+            void copyImage(attachment.url).then((gave) =>
+              gave
                 ? toast.success(t("conversa.imagem.imagemCopiada"))
                 : toast.error(t("conversa.imagem.naoDeuParaCopiar")),
             )
@@ -41,19 +41,19 @@ export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNo
           {t("conversa.imagem.copiarImagem")} <Copy data-gc="conversa.menu-da-imagem.copy" size={14} />
         </ContextMenuItem>
 
-        <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--2" onSelect={() => void baixarImagem(anexo.url, nome)}>
+        <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--2" onSelect={() => void downloadImage(attachment.url, name)}>
           {t("conversa.imagem.baixarImagem")} <Download data-gc="conversa.menu-da-imagem.download" size={14} />
         </ContextMenuItem>
 
         <ContextMenuSeparator data-gc="conversa.menu-da-imagem.context-menu-separator" />
 
         <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--3"
-          onSelect={() => void copiarTexto(anexo.url).then(() => toast.success(t("conversa.imagem.linkCopiado")))}
+          onSelect={() => void copyText(attachment.url).then(() => toast.success(t("conversa.imagem.linkCopiado")))}
         >
           {t("conversa.imagem.copiarLinkDaImagem")} <Link2 data-gc="conversa.menu-da-imagem.link2" size={14} />
         </ContextMenuItem>
 
-        <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--4" onSelect={() => window.open(anexo.url, "_blank", "noopener,noreferrer")}>
+        <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--4" onSelect={() => window.open(attachment.url, "_blank", "noopener,noreferrer")}>
           {t("conversa.imagem.abrirLinkDaImagem")} <ExternalLink data-gc="conversa.menu-da-imagem.external-link" size={14} />
         </ContextMenuItem>
 
@@ -68,7 +68,7 @@ export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNo
             <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--5"
               onSelect={() =>
                 window.open(
-                  `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(anexo.url)}`,
+                  `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(attachment.url)}`,
                   "_blank",
                   "noopener,noreferrer",
                 )
@@ -78,7 +78,7 @@ export const MenuDaImagem: React.FC<{ anexo: Attachment; children: React.ReactNo
             </ContextMenuItem>
 
             <ContextMenuItem data-gc="conversa.menu-da-imagem.context-menu-item--6"
-              onSelect={() => void copiarTexto(anexo.id).then(() => toast.success(t("conversa.imagem.idCopiado")))}
+              onSelect={() => void copyText(attachment.id).then(() => toast.success(t("conversa.imagem.idCopiado")))}
             >
               {t("conversa.imagem.copiarIdDoAnexo")} <Hash data-gc="conversa.menu-da-imagem.hash" size={14} />
             </ContextMenuItem>
