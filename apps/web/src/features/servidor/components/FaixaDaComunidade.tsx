@@ -4,28 +4,28 @@ import { X } from "lucide-react";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 
-const CONVITE = import.meta.env.VITE_CONVITE_OFICIAL as string | undefined;
+const INVITE = import.meta.env.OFFICIAL_VITE_INVITE as string | undefined;
 
-const CHAVE = "gravae:faixa-da-comunidade";
+const KEY = "gravae:faixa-da-comunidade";
 
-export const FaixaDaComunidade: React.FC = () => {
+export const CommunityTrack: React.FC = () => {
   const navigate = useNavigate();
-  const [fechada, setFechada] = useState(() => {
+  const [closed, setClosed] = useState(() => {
     try {
-      return localStorage.getItem(CHAVE) === "1";
+      return localStorage.getItem(KEY) === "1";
     } catch {
       return false;
     }
   });
 
-  const { data: convite } = useFindInvite(fechada ? undefined : CONVITE);
+  const { data: invite } = useFindInvite(closed ? undefined : INVITE);
 
-  if (!CONVITE || fechada || !convite || convite.alreadyMember) return null;
+  if (!INVITE || closed || !invite || invite.alreadyMember) return null;
 
-  const fechar = () => {
-    setFechada(true);
+  const close = () => {
+    setClosed(true);
     try {
-      localStorage.setItem(CHAVE, "1");
+      localStorage.setItem(KEY, "1");
     } catch {
     }
   };
@@ -33,18 +33,18 @@ export const FaixaDaComunidade: React.FC = () => {
   return (
     <div data-gc="servidor.faixa-da-comunidade.div" className="flex shrink-0 items-center justify-center gap-3 bg-brand px-10 py-2 text-sm font-medium text-palco-ink">
       <span data-gc="servidor.faixa-da-comunidade.span" className="min-w-0 truncate">
-        Entre no {convite.guild.name} para conversar com a gente e ficar por dentro.
+        Entre no {invite.guild.name} para conversar com a gente e ficar por dentro.
       </span>
 
       <button data-gc="servidor.faixa-da-comunidade.button"
-        onClick={() => navigate(`/invite/${CONVITE}`)}
+        onClick={() => navigate(`/invite/${INVITE}`)}
         className="shrink-0 rounded bg-palco-ink px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-palco-ink/90"
       >
         Entrar
       </button>
 
-      <button data-gc="servidor.faixa-da-comunidade.button.fechar"
-        onClick={fechar}
+      <button data-gc="servidor.faixa-da-comunidade.button.close"
+        onClick={close}
         aria-label="Fechar"
         className="absolute right-3 rounded p-1 text-palco-ink/80 transition hover:bg-palco-ink/15 hover:text-palco-ink"
       >
