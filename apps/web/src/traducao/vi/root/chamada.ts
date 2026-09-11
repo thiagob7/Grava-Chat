@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Đưa khung trò chuyện xuống dưới",
+    paraOLado: "Đưa khung trò chuyện sang bên",
+  },
+  aparelhoNovo: {
+    microfone: "Có micro mới xuất hiện",
+    saida: "Có ngõ ra âm thanh mới xuất hiện",
+    apareceu: "{{nome}} vừa xuất hiện.",
+    falarPorEle: "Bạn muốn nói qua nó chứ?",
+    ouvirPorEle: "Bạn muốn nghe qua nó chứ?",
+    trocaNaHora: "Việc đổi có hiệu lực ngay, không cần rời cuộc gọi.",
+    naoSugerir: "Đừng gợi ý thiết bị này nữa",
+    trocar: "Chuyển sang nó",
+  },
   conectando: "Đang kết nối cuộc gọi…",
   naoEntrou: "Không vào được cuộc gọi",
   sair: "Rời cuộc gọi",
