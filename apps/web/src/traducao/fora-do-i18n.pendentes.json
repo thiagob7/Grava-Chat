@@ -1340,6 +1340,7 @@
   "pages/presentation/chat/Chat.tsx :: avisa quando falarem com você",
   "pages/presentation/chat/Chat.tsx :: Avisos deste canal",
   "pages/presentation/chat/Chat.tsx :: Entrar na chamada",
+  "pages/presentation/chat/Chat.tsx :: Membros",
   "pages/presentation/chat/Chat.tsx :: o que estiver em Notificações",
   "pages/presentation/chat/Chat.tsx :: Seguir o padrão",
   "pages/presentation/chat/Chat.tsx :: Servidores e canais",

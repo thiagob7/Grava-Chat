@@ -178,6 +178,7 @@ export const Chat: React.FC = () => {
 
   const screenNarrow = useScreenNarrow();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [membersIsOpen, setMembersIsOpen] = useState(false);
 
   const withoutHeader = channel?.type === "VOICE" && !screenNarrow;
   const [confirmingVoice, setConfirmingVoice] = useState<string | null>(null);
@@ -266,6 +267,30 @@ export const Chat: React.FC = () => {
         navigation
       )}
 
+      {screenNarrow && (
+        <Sheet data-gc="chat.chat.sheet.set-members-is-open" open={membersIsOpen} onOpenChange={setMembersIsOpen}>
+          <SheetContent data-gc="chat.chat.sheet-content--2" className="w-full max-w-none p-0">
+            <header data-gc="chat.chat.header--2"
+              className="flex h-[var(--layout-header-height)] shrink-0 items-center justify-between border-b border-divisor bg-cabecalho px-4 shadow-sm"
+            >
+              <SheetTitle data-gc="chat.chat.sheet-title--2" className="text-sm font-semibold text-ink">Membros</SheetTitle>
+              <SheetCloseButton data-gc="chat.chat.sheet-close-button--2" className="-mr-1" />
+            </header>
+
+            <MemberList data-gc="chat.chat.member-list--2"
+              fluid
+              members={detail?.members ?? []}
+              loading={!detail}
+              roles={detail?.roles ?? []}
+              ownerId={detail?.guild.ownerId}
+              guildId={detail?.guild.id}
+              canModerate={can("MODERATE_MEMBERS")}
+              inVoice={whoThisVoice}
+            />
+          </SheetContent>
+        </Sheet>
+      )}
+
       <div data-gc="chat.chat.div--2" {...flx("coreColumn", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
         {!withoutHeader && (
         <header data-gc="chat.chat.header" {...flx("channelTop", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
@@ -328,8 +353,10 @@ export const Chat: React.FC = () => {
 
               <Tooltip data-gc="chat.chat.tooltip--2" label="Membros">
                 <button data-gc="chat.chat.button--3"
-                  onClick={() => setShowMembers((v) => !v)}
-                  className={cn("transition hover:text-ink", flxCls("topChannelButton"), showMembers ? "text-ink" : "text-ink-muted")}
+                  onClick={() =>
+                    screenNarrow ? setMembersIsOpen(true) : setShowMembers((v) => !v)
+                  }
+                  className={cn("transition hover:text-ink", flxCls("topChannelButton"), showMembers || membersIsOpen ? "text-ink" : "text-ink-muted")}
                 >
                   <Users data-gc="chat.chat.users" size={20} weight="fill" />
                 </button>
