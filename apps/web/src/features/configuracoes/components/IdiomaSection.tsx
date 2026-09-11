@@ -7,24 +7,24 @@ import {
 
 import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
-import { IDIOMAS, idiomaAtual, trocarIdioma, useTranslation } from "~/traducao";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { LANGUAGES, currentLanguage, swapLanguage, useTranslation } from "~/traducao";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 
-export const IdiomaSection: React.FC = () => {
-  const prefs = useAparencia();
+export const LanguageSection: React.FC = () => {
+  const prefs = useAppearance();
   const { t } = useTranslation();
 
-  const exemplos = useMemo(() => {
-    const agora = new Date();
+  const examples = useMemo(() => {
+    const now = new Date();
 
     return {
-      "idioma.formatoDaHora.vinteQuatro": agora.toLocaleTimeString("pt-BR", {
+      "idioma.formatoDaHora.vinteQuatro": now.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
       }),
-      "idioma.formatoDaHora.dozeHoras": agora.toLocaleTimeString("en-US", {
+      "idioma.formatoDaHora.dozeHoras": now.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
@@ -32,9 +32,9 @@ export const IdiomaSection: React.FC = () => {
     } as Record<string, string>;
   }, []);
 
-  const FORMATOS = FORMATOS_BASE.map((formato) => ({
-    ...formato,
-    exemplo: exemplos[formato.chave] ?? "",
+  const FORMATS = FORMATS_BASE.map((format) => ({
+    ...format,
+    example: examples[format.key] ?? "",
   }));
 
   return (
@@ -43,72 +43,72 @@ export const IdiomaSection: React.FC = () => {
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao data-gc="configuracoes.idioma-section.secao"
+      <Section data-gc="configuracoes.idioma-section.section"
         id="idioma-da-interface"
-        titulo={t("idioma.titulo")}
-        detalhe={t("idioma.detalhe")}
+        title={t("idioma.titulo")}
+        detail={t("idioma.detalhe")}
       >
-        <EscolherIdioma data-gc="configuracoes.idioma-section.escolher-idioma" />
-      </Secao>
+        <PickLanguage data-gc="configuracoes.idioma-section.pick-language" />
+      </Section>
 
-      <Secao data-gc="configuracoes.idioma-section.secao--2"
+      <Section data-gc="configuracoes.idioma-section.section--2"
         id="formato-da-hora"
-        titulo={t("idioma.formatoDaHora.titulo")}
-        detalhe={t("idioma.formatoDaHora.detalhe")}
+        title={t("idioma.formatoDaHora.titulo")}
+        detail={t("idioma.formatoDaHora.detalhe")}
       >
         <div data-gc="configuracoes.idioma-section.div--2"
           role="radiogroup"
           aria-label={t("idioma.formatoDaHora.titulo")}
           className={cn(radioGroupClass(), "space-y-2")}
         >
-          {FORMATOS.map((formato) => {
-            const escolhido = prefs.horaEm24h === formato.vinteQuatro;
+          {FORMATS.map((format) => {
+            const picked = prefs.hourIn24h === format.twentyFour;
 
             return (
               <button data-gc="configuracoes.idioma-section.button"
-                key={formato.chave}
+                key={format.key}
                 type="button"
                 role="radio"
-                data-state={escolhido ? "checked" : "unchecked"}
-                aria-checked={escolhido}
+                data-state={picked ? "checked" : "unchecked"}
+                aria-checked={picked}
                 onClick={() =>
-                  prefs.definir({ horaEm24h: formato.vinteQuatro })
+                  prefs.set({ hourIn24h: format.twentyFour })
                 }
                 className={cn(
                   radioOptionClass(),
                   "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition",
-                  escolhido
+                  picked
                     ? "border-brand bg-brand/5"
                     : "border-line hover:bg-surface-3",
                 )}
               >
-                <RadioIndicator data-gc="configuracoes.idioma-section.radio-indicator" selected={escolhido} className="mt-0.5" />
+                <RadioIndicator data-gc="configuracoes.idioma-section.radio-indicator" selected={picked} className="mt-0.5" />
 
                 <span data-gc="configuracoes.idioma-section.span" className="min-w-0 flex-1">
                   <span data-gc="configuracoes.idioma-section.span--2" className="block text-sm font-medium">
-                    {t(formato.chave)}
+                    {t(format.key)}
                   </span>
                   <span data-gc="configuracoes.idioma-section.span--3" className="mt-0.5 block font-mono text-xs text-ink-faint">
-                    {formato.exemplo}
+                    {format.example}
                   </span>
                 </span>
               </button>
             );
           })}
         </div>
-      </Secao>
+      </Section>
     </div>
   );
 };
 
-const FORMATOS_BASE = [
-  { chave: "idioma.formatoDaHora.vinteQuatro", vinteQuatro: true },
-  { chave: "idioma.formatoDaHora.dozeHoras", vinteQuatro: false },
+const FORMATS_BASE = [
+  { key: "idioma.formatoDaHora.vinteQuatro", twentyFour: true },
+  { key: "idioma.formatoDaHora.dozeHoras", twentyFour: false },
 ] as const;
 
-const EscolherIdioma: React.FC = () => {
+const PickLanguage: React.FC = () => {
   const { t } = useTranslation();
-  const [atual, setAtual] = useState(idiomaAtual);
+  const [current, setCurrent] = useState(currentLanguage);
 
   return (
     <div data-gc="configuracoes.idioma-section.div--3">
@@ -117,19 +117,19 @@ const EscolherIdioma: React.FC = () => {
       </p>
 
       <SelectField data-gc="configuracoes.idioma-section.select-field"
-        value={atual}
+        value={current}
         onSelect={(lng) => {
-          setAtual(lng);
-          void trocarIdioma(lng);
+          setCurrent(lng);
+          void swapLanguage(lng);
         }}
-        options={IDIOMAS.map((idioma) => ({
-          value: idioma.lng,
+        options={LANGUAGES.map((language) => ({
+          value: language.lng,
           label: (
             <span data-gc="configuracoes.idioma-section.span--4" className="flex w-full min-w-0 items-center gap-3">
-              <span data-gc="configuracoes.idioma-section.span--5" className="min-w-0 flex-1 truncate">{idioma.nativo}</span>
-              <span data-gc="configuracoes.idioma-section.span--6" className="shrink-0 text-ink-faint">{idioma.nome}</span>
+              <span data-gc="configuracoes.idioma-section.span--5" className="min-w-0 flex-1 truncate">{language.native}</span>
+              <span data-gc="configuracoes.idioma-section.span--6" className="shrink-0 text-ink-faint">{language.name}</span>
               <span data-gc="configuracoes.idioma-section.span--7" aria-hidden className="shrink-0 text-base leading-none">
-                {idioma.bandeira}
+                {language.flag}
               </span>
             </span>
           ),

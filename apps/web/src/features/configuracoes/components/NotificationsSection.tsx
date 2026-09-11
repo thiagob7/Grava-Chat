@@ -4,29 +4,29 @@ import { Bell, BellOff } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import {
-  pedirPermissaoDeAviso,
-  permissaoDeAviso,
-  type PermissaoDeAviso,
+  noticeRequestPermission,
+  noticePermission,
+  type NoticePermission,
 } from "~/lib/notificacoes";
-import { useAvisos } from "~/stores/notificacoes";
-import { GRUPOS_DE_SONS, tocarSom } from "~/lib/ui-sounds";
+import { useNotices } from "~/stores/notificacoes";
+import { SOUNDS_GROUPS, playSound } from "~/lib/ui-sounds";
 import { Play } from "lucide-react";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 import { desktop } from "~/lib/desktop";
 
 export const NotificationsSection: React.FC = () => {
-  const prefs = useAvisos();
-  const [permissao, setPermissao] = useState<PermissaoDeAviso>(() =>
-    permissaoDeAviso(),
+  const prefs = useNotices();
+  const [permission, setPermission] = useState<NoticePermission>(() =>
+    noticePermission(),
   );
 
   useEffect(() => {
-    const reler = () => setPermissao(permissaoDeAviso());
-    document.addEventListener("visibilitychange", reler);
-    return () => document.removeEventListener("visibilitychange", reler);
+    const reread = () => setPermission(noticePermission());
+    document.addEventListener("visibilitychange", reread);
+    return () => document.removeEventListener("visibilitychange", reread);
   }, []);
 
-  const ponte = desktop();
+  const bridge = desktop();
 
   return (
     <div data-gc="configuracoes.notifications-section.div" className="max-w-xl">
@@ -35,20 +35,20 @@ export const NotificationsSection: React.FC = () => {
         quieta enquanto a de casa apita.
       </p>
 
-      {permissao === "perguntar" && (
+      {permission === "perguntar" && (
         <div data-gc="configuracoes.notifications-section.div--2" className="mt-5 flex items-start gap-3 rounded bg-brand/10 p-3">
           <Bell data-gc="configuracoes.notifications-section.bell" size={18} className="mt-0.5 shrink-0 text-brand" />
           <div data-gc="configuracoes.notifications-section.div--3" className="min-w-0 flex-1">
             <p data-gc="configuracoes.notifications-section.p--2" className="text-sm font-medium">Falta o sistema deixar</p>
             <p data-gc="configuracoes.notifications-section.p--3" className="mt-0.5 text-xs text-ink-muted">
               O aviso na tela precisa de uma autorização do{" "}
-              {ponte ? "sistema" : "navegador"}. Sem ela, o som e o contador no
+              {bridge ? "sistema" : "navegador"}. Sem ela, o som e o contador no
               título continuam funcionando.
             </p>
             <Button data-gc="configuracoes.notifications-section.button"
               size="sm"
               className="mt-2"
-              onClick={() => void pedirPermissaoDeAviso().then(setPermissao)}
+              onClick={() => void noticeRequestPermission().then(setPermission)}
             >
               Permitir avisos
             </Button>
@@ -56,13 +56,13 @@ export const NotificationsSection: React.FC = () => {
         </div>
       )}
 
-      {permissao === "negada" && (
+      {permission === "negada" && (
         <div data-gc="configuracoes.notifications-section.div--4" className="mt-5 flex items-start gap-3 rounded bg-idle/10 p-3">
           <BellOff data-gc="configuracoes.notifications-section.bell-off" size={18} className="mt-0.5 shrink-0 text-idle" />
           <div data-gc="configuracoes.notifications-section.div--5" className="min-w-0 flex-1">
             <p data-gc="configuracoes.notifications-section.p--4" className="text-sm font-medium">Os avisos estão bloqueados</p>
             <p data-gc="configuracoes.notifications-section.p--5" className="mt-0.5 text-xs text-ink-muted">
-              {ponte
+              {bridge
                 ? "Libere o Gravaê em Ajustes do Sistema → Notificações."
                 : "O navegador guardou um “bloquear” para este endereço — o botão de pedir não aparece mais. Libere no cadeado ao lado da barra de endereço."}{" "}
               O som e o contador no título não dependem disso.
@@ -71,120 +71,120 @@ export const NotificationsSection: React.FC = () => {
         </div>
       )}
 
-      <Secao data-gc="configuracoes.notifications-section.secao"
+      <Section data-gc="configuracoes.notifications-section.section"
         id="geral"
-        titulo="Geral"
-        detalhe="O que te interrompe enquanto o Gravaê está atrás de outra coisa."
+        title="Geral"
+        detail="O que te interrompe enquanto o Gravaê está atrás de outra coisa."
       >
-        <Opcao data-gc="configuracoes.notifications-section.opcao"
-          titulo="Aviso na tela"
-          detalhe="A janelinha do sistema quando chega mensagem com o Gravaê atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
-          ligado={prefs.aviso}
-          onMudar={(v) => prefs.definir({ aviso: v })}
+        <Choice data-gc="configuracoes.notifications-section.choice"
+          title="Aviso na tela"
+          detail="A janelinha do sistema quando chega mensagem com o Gravaê atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
+          on={prefs.notice}
+          onChange={(v) => prefs.set({ notice: v })}
         />
 
-        <Opcao data-gc="configuracoes.notifications-section.opcao--2"
-          titulo="Contador no título"
-          detalhe={
-            ponte
+        <Choice data-gc="configuracoes.notifications-section.choice--2"
+          title="Contador no título"
+          detail={
+            bridge
               ? "O número de menções na aba e no ícone do app — o balãozinho do Dock."
               : "O número de menções no título da aba, para achar o Gravaê no meio de vinte abas."
           }
-          ligado={prefs.contador}
-          onMudar={(v) => prefs.definir({ contador: v })}
+          on={prefs.counter}
+          onChange={(v) => prefs.set({ counter: v })}
         />
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.notifications-section.secao--2"
+      <Section data-gc="configuracoes.notifications-section.section--2"
         id="preferencia-de-mencao"
-        titulo="Preferência de menção"
-        detalhe="O que conta como te chamar — e o que passa em silêncio."
+        title="Preferência de menção"
+        detail="O que conta como te chamar — e o que passa em silêncio."
       >
-        <Opcao data-gc="configuracoes.notifications-section.opcao--3"
-          titulo="Só quando me chamarem"
-          detalhe="Menção direta, cargo seu, @everyone e conversas privadas. O resto passa em silêncio."
-          ligado={prefs.soMencoes}
-          onMudar={(v) => prefs.definir({ soMencoes: v })}
+        <Choice data-gc="configuracoes.notifications-section.choice--3"
+          title="Só quando me chamarem"
+          detail="Menção direta, cargo seu, @everyone e conversas privadas. O resto passa em silêncio."
+          on={prefs.soMentions}
+          onChange={(v) => prefs.set({ soMentions: v })}
         />
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.notifications-section.secao--3"
-        id="sons"
-        titulo="Sons"
-        detalhe="O interruptor de cima cala todos. Abaixo dele, cada um por vez — clique no nome para ouvir."
+      <Section data-gc="configuracoes.notifications-section.section--3"
+        id="sounds"
+        title="Sons"
+        detail="O interruptor de cima cala todos. Abaixo dele, cada um por vez — clique no nome para ouvir."
       >
-        <Opcao data-gc="configuracoes.notifications-section.opcao--4"
-          titulo="Som"
-          detalhe="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
-          ligado={prefs.som}
-          onMudar={(v) => {
-            prefs.definir({ som: v });
-            if (v) tocarSom("mensagem");
+        <Choice data-gc="configuracoes.notifications-section.choice--4"
+          title="Som"
+          detail="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
+          on={prefs.sound}
+          onChange={(v) => {
+            prefs.set({ sound: v });
+            if (v) playSound("message");
           }}
         />
-        <ListaDeSons data-gc="configuracoes.notifications-section.lista-de-sons" />
-      </Secao>
+        <ListSounds data-gc="configuracoes.notifications-section.list-sounds" />
+      </Section>
     </div>
   );
 };
 
-const Opcao: React.FC<{
-  titulo: string;
-  detalhe: string;
-  ligado: boolean;
-  onMudar: (valor: boolean) => void;
-}> = ({ titulo, detalhe, ligado, onMudar }) => (
+const Choice: React.FC<{
+  title: string;
+  detail: string;
+  on: boolean;
+  onChange: (value: boolean) => void;
+}> = ({ title, detail, on, onChange }) => (
   <div data-gc="configuracoes.notifications-section.div--6" className="mt-4 flex items-start gap-4">
     <div data-gc="configuracoes.notifications-section.div--7" className="min-w-0 flex-1">
-      <p data-gc="configuracoes.notifications-section.p--6" className="text-sm font-medium">{titulo}</p>
-      <p data-gc="configuracoes.notifications-section.p--7" className="mt-0.5 text-xs text-ink-faint">{detalhe}</p>
+      <p data-gc="configuracoes.notifications-section.p--6" className="text-sm font-medium">{title}</p>
+      <p data-gc="configuracoes.notifications-section.p--7" className="mt-0.5 text-xs text-ink-faint">{detail}</p>
     </div>
-    <Switch data-gc="configuracoes.notifications-section.switch.on-mudar" checked={ligado} onCheckedChange={onMudar} />
+    <Switch data-gc="configuracoes.notifications-section.switch.on-change" checked={on} onCheckedChange={onChange} />
   </div>
 );
 
-const ListaDeSons: React.FC = () => {
-  const sonsDesligados = useAvisos((s) => s.sonsDesligados);
-  const definirSom = useAvisos((s) => s.definirSom);
-  const somGeral = useAvisos((s) => s.som);
+const ListSounds: React.FC = () => {
+  const soundsOff = useNotices((s) => s.soundsOff);
+  const setSound = useNotices((s) => s.setSound);
+  const soundGeneral = useNotices((s) => s.sound);
 
   return (
-    <div data-gc="configuracoes.notifications-section.div--8" className={somGeral ? "" : "pointer-events-none opacity-50"}>
-      {GRUPOS_DE_SONS.map((grupo) => (
-        <div data-gc="configuracoes.notifications-section.div--9" key={grupo.titulo} className="mt-6 first:mt-4">
+    <div data-gc="configuracoes.notifications-section.div--8" className={soundGeneral ? "" : "pointer-events-none opacity-50"}>
+      {SOUNDS_GROUPS.map((group) => (
+        <div data-gc="configuracoes.notifications-section.div--9" key={group.title} className="mt-6 first:mt-4">
           <p data-gc="configuracoes.notifications-section.p--8" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-            {grupo.titulo}
+            {group.title}
           </p>
 
           <div data-gc="configuracoes.notifications-section.div--10" className="mt-2 overflow-hidden rounded-lg border border-line">
-            {grupo.sons.map((som) => {
-              const ligado = !sonsDesligados[som.nome];
+            {group.sounds.map((sound) => {
+              const on = !soundsOff[sound.name];
 
               return (
                 <div data-gc="configuracoes.notifications-section.div--11"
-                  key={som.nome}
+                  key={sound.name}
                   className="flex items-center gap-3 px-3 py-2.5"
                 >
                   <button data-gc="configuracoes.notifications-section.button--2"
                     type="button"
-                    onClick={() => tocarSom(som.nome)}
-                    aria-label={`Ouvir ${som.rotulo}`}
+                    onClick={() => playSound(sound.name)}
+                    aria-label={`Ouvir ${sound.label}`}
                     className="flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-ink-faint transition hover:border-ink-faint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
                   >
                     <Play data-gc="configuracoes.notifications-section.play" size={12} />
                   </button>
 
                   <div data-gc="configuracoes.notifications-section.div--12" className="min-w-0 flex-1">
-                    <p data-gc="configuracoes.notifications-section.p--9" className="text-sm font-medium">{som.rotulo}</p>
+                    <p data-gc="configuracoes.notifications-section.p--9" className="text-sm font-medium">{sound.label}</p>
                     <p data-gc="configuracoes.notifications-section.p--10" className="mt-0.5 text-xs text-ink-faint">
-                      {som.quando}
+                      {sound.when}
                     </p>
                   </div>
 
                   <Switch data-gc="configuracoes.notifications-section.switch"
-                    checked={ligado}
-                    onCheckedChange={(v) => definirSom(som.nome, v)}
-                    aria-label={`Tocar ${som.rotulo}`}
+                    checked={on}
+                    onCheckedChange={(v) => setSound(sound.name, v)}
+                    aria-label={`Tocar ${sound.label}`}
                   />
                 </div>
               );
