@@ -1,18 +1,18 @@
 import { writeFileSync } from "node:fs";
-import { C, R, em, emVolta, gira, n, pulsa, svg } from "./_comum.mjs";
+import { C, R, em, inBack, spins, n, pulses, svg } from "./_comum.mjs";
 
-const GLIFOS = [
+const GLYPHS = [
   "M-4-5 L-4 5 M-4 0 L4-4", "M0-5 L0 5 M-4-2 L0 1 L4-2", "M-4-5 L4-5 M0-5 L0 5",
   "M-4 5 L0-5 L4 5 M-2 1 L2 1", "M-4-5 L-4 5 L4 5", "M-4-4 L4-4 M-4 0 L2 0 M-4 4 L4 4",
 ];
 
-const runas = emVolta(12)
+const runes = inBack(12)
   .map((g, i) => {
     const [x, y] = em(g, R);
     return `<g transform="translate(${x} ${y}) rotate(${n(g + 90)})" stroke="url(#runa)"
                stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".85">
-      ${pulsa("opacity", ".28;1;.28", 3.4, (i % 6) * 0.55)}
-      <path d="${GLIFOS[i % GLIFOS.length]}"/>
+      ${pulses("opacity", ".28;1;.28", 3.4, (i % 6) * 0.55)}
+      <path d="${GLYPHS[i % GLYPHS.length]}"/>
     </g>`;
   })
   .join("");
@@ -31,6 +31,6 @@ writeFileSync(
   <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="url(#pedra)" stroke-width="15"/>
   <circle cx="${C}" cy="${C}" r="${R - 8}" fill="none" stroke="#6fe4ff" stroke-width="1" opacity=".35"/>
   <circle cx="${C}" cy="${C}" r="${R + 8}" fill="none" stroke="#6fe4ff" stroke-width="1" opacity=".35"/>
-  <g>${gira(26)}${runas}</g>`),
+  <g>${spins(26)}${runes}</g>`),
 );
 console.log("escrito:", process.argv[2]);
