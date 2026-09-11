@@ -27,10 +27,10 @@ export const presenceService = {
     if (count !== 1) return null;
 
     const desired = (await redis.get(keys.presence(userId))) as DesiredStatus | null;
-    const projetado = visible(desired, true, false);
+    const projected = visible(desired, true, false);
 
-    await presenceService.cache(userId, projetado);
-    return projetado;
+    await presenceService.cache(userId, projected);
+    return projected;
   },
 
   async onDisconnect(userId: string) {
@@ -44,6 +44,11 @@ export const presenceService = {
 
   async setDesired(userId: string, desired: DesiredStatus) {
     await redis.set(keys.presence(userId), desired);
+
+    const projected = (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
+    await presenceService.cache(userId, projected);
+
+    return projected;
   },
 
   async cache(userId: string, status: PresenceStatus) {

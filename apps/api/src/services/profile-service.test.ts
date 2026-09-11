@@ -34,15 +34,15 @@ vi.mock("~/services/presence-service.js", () => ({
 
 const { profileService } = await import("~/services/profile-service.js");
 
-const dono = (mostraServidores: boolean, mostraAmigos: boolean) => ({
+const owner = (showsServers: boolean, showsFriends: boolean) => ({
   id: "dono",
   username: "dono",
   displayName: "Dono",
   avatarUrl: null,
   status: "ONLINE",
   isBot: false,
-  mostraServidoresEmComum: mostraServidores,
-  mostraAmigosEmComum: mostraAmigos,
+  showsServersCommon: showsServers,
+  showsFriendsCommon: showsFriends,
 });
 
 beforeEach(() => {
@@ -56,36 +56,36 @@ beforeEach(() => {
 
 describe("abas de em comum", () => {
   it("entrega as duas listas quando o dono do perfil deixa", async () => {
-    findById.mockResolvedValue(dono(true, true));
+    findById.mockResolvedValue(owner(true, true));
 
-    await profileService.emComum("quem-olha", "dono");
+    await profileService.inCommon("quem-olha", "dono");
 
     expect(friendIdsInCommon).toHaveBeenCalled();
     expect(guildsByIds).toHaveBeenCalledWith(["g1"]);
   });
 
   it("nem busca os amigos em comum quando o dono escondeu", async () => {
-    findById.mockResolvedValue(dono(true, false));
+    findById.mockResolvedValue(owner(true, false));
 
-    const saida = await profileService.emComum("quem-olha", "dono");
+    const output = await profileService.inCommon("quem-olha", "dono");
 
     expect(friendIdsInCommon).not.toHaveBeenCalled();
-    expect(saida.amigos).toEqual([]);
+    expect(output.friends).toEqual([]);
   });
 
   it("nem busca os servidores em comum quando o dono escondeu", async () => {
-    findById.mockResolvedValue(dono(false, true));
+    findById.mockResolvedValue(owner(false, true));
 
-    const saida = await profileService.emComum("quem-olha", "dono");
+    const output = await profileService.inCommon("quem-olha", "dono");
 
     expect(guildsByIds).toHaveBeenCalledWith([]);
-    expect(saida.servidores).toEqual([]);
+    expect(output.servers).toEqual([]);
   });
 
   it("fecha uma sem fechar a outra", async () => {
-    findById.mockResolvedValue(dono(false, true));
+    findById.mockResolvedValue(owner(false, true));
 
-    await profileService.emComum("quem-olha", "dono");
+    await profileService.inCommon("quem-olha", "dono");
 
     expect(friendIdsInCommon).toHaveBeenCalled();
     expect(guildsByIds).toHaveBeenCalledWith([]);
