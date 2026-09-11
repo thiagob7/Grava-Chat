@@ -1,98 +1,98 @@
-import type { Emblema } from "@gravae/shared";
+import type { Badge } from "@gravae/shared";
 import { LIMITS } from "@gravae/shared";
 import { AppError, NotFoundError } from "~/lib/http.js";
-import { emblemaRepository, memberRepository } from "~/repositories/guild-repository.js";
+import { badgeRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "./access-service.js";
 import { auditService } from "./audit-service.js";
 
-export const emblemaService = {
-  async listar(userId: string, guildId: string): Promise<Emblema[]> {
+export const badgeService = {
+  async list(userId: string, guildId: string): Promise<Badge[]> {
     await accessService.requireMember(userId, guildId);
-    return (await emblemaRepository.findManyByGuild(guildId)).map(paraDto);
+    return (await badgeRepository.findManyByGuild(guildId)).map(forDto);
   },
 
-  async criar(
+  async create(
     userId: string,
     guildId: string,
-    input: { nome: string; emoji?: string | null; iconUrl?: string | null },
-  ): Promise<Emblema> {
+    input: { name: string; emoji?: string | null; iconUrl?: string | null },
+  ): Promise<Badge> {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const quantos = await emblemaRepository.countByGuild(guildId);
-    if (quantos >= LIMITS.emblemasPorServidor) {
-      throw new AppError(`Este servidor ja tem ${LIMITS.emblemasPorServidor} emblemas`);
+    const count = await badgeRepository.countByGuild(guildId);
+    if (count >= LIMITS.badgesByServer) {
+      throw new AppError(`Este servidor ja tem ${LIMITS.badgesByServer} emblemas`);
     }
 
     const emoji = input.emoji?.trim() || null;
     const iconUrl = emoji ? null : (input.iconUrl ?? null);
     if (!emoji && !iconUrl) throw new AppError("O emblema precisa de um emoji ou de uma imagem");
 
-    const criado = await emblemaRepository.create({
+    const created = await badgeRepository.create({
       guildId,
-      nome: input.nome.trim(),
+      name: input.name.trim(),
       emoji,
       iconUrl,
       createdById: userId,
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "emblema.create",
       targetType: "emblema",
-      targetId: criado.id,
-      targetName: criado.nome,
+      targetId: created.id,
+      targetName: created.name,
     });
 
-    return paraDto(criado);
+    return forDto(created);
   },
 
-  async remover(userId: string, guildId: string, emblemaId: string) {
+  async remove(userId: string, guildId: string, badgeId: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const emblema = await emblemaRepository.findById(emblemaId);
-    if (!emblema || emblema.guildId !== guildId) throw new NotFoundError("Emblema nao encontrado");
+    const badge = await badgeRepository.findById(badgeId);
+    if (!badge || badge.guildId !== guildId) throw new NotFoundError("Emblema nao encontrado");
 
-    await emblemaRepository.remove(emblemaId);
-    await memberRepository.removerEmblemaDeTodos(guildId, emblemaId);
+    await badgeRepository.remove(badgeId);
+    await memberRepository.removeAllBadge(guildId, badgeId);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "emblema.delete",
       targetType: "emblema",
-      targetId: emblemaId,
-      targetName: emblema.nome,
+      targetId: badgeId,
+      targetName: badge.name,
     });
 
-    return { id: emblemaId };
+    return { id: badgeId };
   },
 
-  async vestir(userId: string, guildId: string, emblemIds: string[]) {
-    const membro = await accessService.requireMember(userId, guildId);
+  async wear(userId: string, guildId: string, emblemIds: string[]) {
+    const member = await accessService.requireMember(userId, guildId);
 
-    if (emblemIds.length > LIMITS.emblemasPorMembro) {
-      throw new AppError(`No maximo ${LIMITS.emblemasPorMembro} emblemas de uma vez`);
+    if (emblemIds.length > LIMITS.badgesByMember) {
+      throw new AppError(`No maximo ${LIMITS.badgesByMember} emblemas de uma vez`);
     }
 
-    const doServidor = new Set((await emblemaRepository.findManyByGuild(guildId)).map((e) => e.id));
-    const escolhidos = [...new Set(emblemIds)].filter((id) => doServidor.has(id));
+    const fromServer = new Set((await badgeRepository.findManyByGuild(guildId)).map((e) => e.id));
+    const picked = [...new Set(emblemIds)].filter((id) => fromServer.has(id));
 
-    await memberRepository.definirEmblemas(membro.id, escolhidos);
-    return { emblemIds: escolhidos };
+    await memberRepository.setBadges(member.id, picked);
+    return { emblemIds: picked };
   },
 };
 
-const paraDto = (e: {
+const forDto = (e: {
   id: string;
   guildId: string;
-  nome: string;
+  name: string;
   emoji: string | null;
   iconUrl: string | null;
-}): Emblema => ({
+}): Badge => ({
   id: e.id,
   guildId: e.guildId,
-  nome: e.nome,
+  name: e.name,
   emoji: e.emoji,
   iconUrl: e.iconUrl,
 });
