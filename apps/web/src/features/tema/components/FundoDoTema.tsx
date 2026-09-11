@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { TEMA_APLICADO } from "~/features/configuracoes/lib/evento-de-tema";
+import { THEME_APPLIED } from "~/features/configuracoes/lib/evento-de-tema";
 import {
-  MOTORES,
-  camadaPedidaPeloTema,
-  motorPedidoPeloTema,
-  type Palco,
+  ENGINES,
+  layerRequestedByTheme,
+  motorRequestByTheme,
+  type Stage,
 } from "~/features/tema/lib/fundos";
 
-const PASSO_MAXIMO = 1 / 20;
+const STEP_MAX = 1 / 20;
 
 /*
   A tela onde os motores de fundo desenham. Fica atrás do app inteiro e só
@@ -18,63 +18,63 @@ const PASSO_MAXIMO = 1 / 20;
   cima da tela toda comeria o clique do app. Quem quiser clicar para soltar
   um foguete perde o app inteiro, e não vale a troca.
 */
-export const FundoDoTema: React.FC = () => {
-  const [nome, setNome] = useState<string | null>(null);
-  const [camada, setCamada] = useState<"frente" | "fundo">("fundo");
-  const tela = useRef<HTMLCanvasElement>(null);
+export const ThemeBackground: React.FC = () => {
+  const [name, setName] = useState<string | null>(null);
+  const [layer, setLayer] = useState<"frente" | "fundo">("fundo");
+  const display = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const ler = () => {
-      setNome(motorPedidoPeloTema());
-      setCamada(camadaPedidaPeloTema());
+    const read = () => {
+      setName(motorRequestByTheme());
+      setLayer(layerRequestedByTheme());
     };
 
-    ler();
-    window.addEventListener(TEMA_APLICADO, ler);
-    return () => window.removeEventListener(TEMA_APLICADO, ler);
+    read();
+    window.addEventListener(THEME_APPLIED, read);
+    return () => window.removeEventListener(THEME_APPLIED, read);
   }, []);
 
   useEffect(() => {
-    const canvas = tela.current;
-    if (!nome || !canvas) return;
+    const canvas = display.current;
+    if (!name || !canvas) return;
 
-    const menos = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (menos.matches) return;
+    const less = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (less.matches) return;
 
-    const contexto = canvas.getContext("2d");
-    if (!contexto) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-    const palco: Palco = { tela: canvas, contexto, largura: 0, altura: 0 };
-    const motor = MOTORES[nome]!();
+    const stage: Stage = { display: canvas, context, width: 0, height: 0 };
+    const motor = ENGINES[name]!();
 
-    const medir = () => {
+    const measure = () => {
       /*
         A escala é limitada em 2. Num monitor de retina alto o canvas de
         tela cheia passaria de dez milhões de pixels por quadro, e o ganho
         visual de faísca de 1,6px não paga esse preço.
       */
-      const escala = Math.min(window.devicePixelRatio || 1, 2);
+      const scale = Math.min(window.devicePixelRatio || 1, 2);
 
-      palco.largura = window.innerWidth;
-      palco.altura = window.innerHeight;
-      canvas.width = Math.round(palco.largura * escala);
-      canvas.height = Math.round(palco.altura * escala);
-      contexto.setTransform(escala, 0, 0, escala, 0, 0);
-      motor.redimensionou?.(palco);
+      stage.width = window.innerWidth;
+      stage.height = window.innerHeight;
+      canvas.width = Math.round(stage.width * scale);
+      canvas.height = Math.round(stage.height * scale);
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+      motor.resized?.(stage);
     };
 
-    medir();
-    window.addEventListener("resize", medir);
+    measure();
+    window.addEventListener("resize", measure);
 
-    let pedido = 0;
+    let request = 0;
     let anterior = performance.now();
 
-    const rodar = (agora: number) => {
-      const passo = Math.min((agora - anterior) / 1000, PASSO_MAXIMO);
-      anterior = agora;
+    const run = (now: number) => {
+      const step = Math.min((now - anterior) / 1000, STEP_MAX);
+      anterior = now;
 
-      motor.quadro(palco, passo);
-      pedido = requestAnimationFrame(rodar);
+      motor.frame(stage, step);
+      request = requestAnimationFrame(run);
     };
 
     /*
@@ -82,34 +82,34 @@ export const FundoDoTema: React.FC = () => {
       o relógio continua, e ao voltar o primeiro passo seria enorme — as
       faíscas dariam um salto na tela.
     */
-    const visibilidade = () => {
-      cancelAnimationFrame(pedido);
+    const visibility = () => {
+      cancelAnimationFrame(request);
 
       if (document.hidden) return;
 
       anterior = performance.now();
-      pedido = requestAnimationFrame(rodar);
+      request = requestAnimationFrame(run);
     };
 
-    document.addEventListener("visibilitychange", visibilidade);
-    pedido = requestAnimationFrame(rodar);
+    document.addEventListener("visibilitychange", visibility);
+    request = requestAnimationFrame(run);
 
     return () => {
-      cancelAnimationFrame(pedido);
-      window.removeEventListener("resize", medir);
-      document.removeEventListener("visibilitychange", visibilidade);
+      cancelAnimationFrame(request);
+      window.removeEventListener("resize", measure);
+      document.removeEventListener("visibilitychange", visibility);
     };
-  }, [nome]);
+  }, [name]);
 
-  if (!nome) return null;
+  if (!name) return null;
 
   return (
     <canvas
       data-gc="tema.fundo-do-tema.canvas"
-      ref={tela}
+      ref={display}
       aria-hidden
       className={
-        camada === "frente"
+        layer === "frente"
           ? "pointer-events-none fixed inset-0 z-[9990] size-full"
           : "pointer-events-none fixed inset-0 -z-10 size-full"
       }
