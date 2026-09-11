@@ -1,72 +1,72 @@
-import type { Attachment, FinalidadeDeUpload } from "@gravae/shared";
+import type { Attachment, UploadPurpose } from "@gravae/shared";
 
 import { findUploadConfig } from "~/@core/application/requests/upload/find-upload-config";
 import { presignUpload } from "~/@core/application/requests/upload/presign-upload";
 import { uploadFile } from "~/@core/application/requests/upload/upload-file";
 import { resizeImage, type PreparedImage } from "~/lib/image";
 
-let configuracao: Promise<{ direct: boolean }> | null = null;
-const obterConfiguracao = () => (configuracao ??= findUploadConfig().catch(() => ({ direct: false })));
+let setting: Promise<{ direct: boolean }> | null = null;
+const getSetting = () => (setting ??= findUploadConfig().catch(() => ({ direct: false })));
 
 export async function uploadImage(
   file: File,
-  { maxSize, finalidade = "anexo" }: { maxSize: number; finalidade?: FinalidadeDeUpload },
+  { maxSize, purpose = "anexo" }: { maxSize: number; purpose?: UploadPurpose },
 ): Promise<{ attachment: Attachment; originalSize: number; uploadedSize: number }> {
-  const preparada: PreparedImage = await resizeImage(file, { maxSize });
-  const tipo = preparada.file.type || "application/octet-stream";
+  const prepared: PreparedImage = await resizeImage(file, { maxSize });
+  const kind = prepared.file.type || "application/octet-stream";
 
-  const { direct } = await obterConfiguracao();
+  const { direct } = await getSetting();
 
   const attachment = direct
-    ? await enviarDireto(preparada, tipo, finalidade)
-    : await uploadFile(preparada.file, finalidade);
+    ? await sendDirect(prepared, kind, purpose)
+    : await uploadFile(prepared.file, purpose);
 
   return {
-    attachment: { ...attachment, width: preparada.width, height: preparada.height },
+    attachment: { ...attachment, width: prepared.width, height: prepared.height },
     originalSize: file.size,
-    uploadedSize: preparada.file.size,
+    uploadedSize: prepared.file.size,
   };
 }
 
-async function enviarDireto(
-  preparada: PreparedImage,
-  tipo: string,
-  finalidade: FinalidadeDeUpload,
+async function sendDirect(
+  prepared: PreparedImage,
+  kind: string,
+  purpose: UploadPurpose,
 ): Promise<Attachment> {
   const { uploadUrl, attachment } = await presignUpload({
-    filename: preparada.file.name,
-    contentType: tipo,
-    size: preparada.file.size,
-    purpose: finalidade,
+    filename: prepared.file.name,
+    contentType: kind,
+    size: prepared.file.size,
+    purpose: purpose,
   });
 
-  const resposta = await fetch(uploadUrl, {
+  const reply = await fetch(uploadUrl, {
     method: "PUT",
-    body: preparada.file,
-    headers: { "Content-Type": tipo },
+    body: prepared.file,
+    headers: { "Content-Type": kind },
   });
 
-  if (!resposta.ok) throw new Error(`storage respondeu ${resposta.status}`);
+  if (!reply.ok) throw new Error(`storage respondeu ${reply.status}`);
   return attachment;
 }
 
-export async function uploadArquivo(file: File): Promise<Attachment> {
-  const { direct } = await obterConfiguracao();
-  if (!direct) return uploadFile(file);
+export async function sendFile(file: File): Promise<Attachment> {
+  const { direct } = await getSetting();
+  if (!direct) return sendFile(file);
 
-  const tipo = file.type || "application/octet-stream";
+  const kind = file.type || "application/octet-stream";
   const { uploadUrl, attachment } = await presignUpload({
     filename: file.name,
-    contentType: tipo,
+    contentType: kind,
     size: file.size,
   });
 
-  const resposta = await fetch(uploadUrl, {
+  const reply = await fetch(uploadUrl, {
     method: "PUT",
     body: file,
-    headers: { "Content-Type": tipo },
+    headers: { "Content-Type": kind },
   });
 
-  if (!resposta.ok) throw new Error(`storage respondeu ${resposta.status}`);
+  if (!reply.ok) throw new Error(`storage respondeu ${reply.status}`);
   return attachment;
 }

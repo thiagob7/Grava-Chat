@@ -1,11 +1,11 @@
-import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
-import { useAvisos } from "~/stores/notificacoes";
+import { appearancePrefs } from "~/features/configuracoes/stores/aparencia";
+import { useNotices } from "~/stores/notificacoes";
 
-import notificacaoUrl from "~/assets/sons/notificacao.mp3?url";
+import notificationUrl from "~/assets/sons/notificacao.mp3?url";
 
 let ctx: AudioContext | null = null;
 
-function contexto(): AudioContext | null {
+function context(): AudioContext | null {
   try {
     ctx ??= new AudioContext();
 
@@ -17,7 +17,7 @@ function contexto(): AudioContext | null {
   }
 }
 
-interface Nota {
+interface Note {
   hz: number;
   em: number;
   dura: number;
@@ -25,59 +25,59 @@ interface Nota {
 
 const VOLUME = 0.16;
 
-function tocar(notas: Nota[], volume: number) {
-  const audio = contexto();
+function play(notes: Note[], volume: number) {
+  const audio = context();
   if (!audio || volume <= 0) return;
 
-  const agora = audio.currentTime;
+  const now = audio.currentTime;
 
-  for (const nota of notas) {
+  for (const note of notes) {
     const osc = audio.createOscillator();
-    const ganho = audio.createGain();
+    const gain = audio.createGain();
 
     osc.type = "sine";
-    osc.frequency.value = nota.hz;
+    osc.frequency.value = note.hz;
 
-    const inicio = agora + nota.em;
-    const fim = inicio + nota.dura;
+    const start = now + note.em;
+    const end = start + note.dura;
 
-    ganho.gain.setValueAtTime(0.0001, inicio);
-    ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.008);
-    ganho.gain.exponentialRampToValueAtTime(0.0001, fim);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, end);
 
-    osc.connect(ganho);
-    ganho.connect(audio.destination);
+    osc.connect(gain);
+    gain.connect(audio.destination);
 
-    osc.start(inicio);
-    osc.stop(fim + 0.02);
+    osc.start(start);
+    osc.stop(end + 0.02);
   }
 }
 
-const SONS = {
-  entrarNaChamada: [
+const SOUNDS = {
+  joinCall: [
     { hz: 523.25, em: 0, dura: 0.09 },
     { hz: 783.99, em: 0.08, dura: 0.13 },
   ],
-  sairDaChamada: [
+  leaveCall: [
     { hz: 659.25, em: 0, dura: 0.09 },
     { hz: 415.3, em: 0.08, dura: 0.16 },
   ],
-  alguemEntrou: [{ hz: 880, em: 0, dura: 0.07 }],
-  alguemSaiu: [{ hz: 523.25, em: 0, dura: 0.09 }],
+  someoneJoined: [{ hz: 880, em: 0, dura: 0.07 }],
+  someoneLeft: [{ hz: 523.25, em: 0, dura: 0.09 }],
 
-  mutar: [{ hz: 440, em: 0, dura: 0.06 }],
-  desmutar: [{ hz: 660, em: 0, dura: 0.06 }],
-  ensurdecer: [
+  mute: [{ hz: 440, em: 0, dura: 0.06 }],
+  unmute: [{ hz: 660, em: 0, dura: 0.06 }],
+  deafen: [
     { hz: 440, em: 0, dura: 0.06 },
     { hz: 330, em: 0.05, dura: 0.09 },
   ],
-  desensurdecer: [
+  undeafen: [
     { hz: 550, em: 0, dura: 0.06 },
     { hz: 740, em: 0.05, dura: 0.09 },
   ],
 
-  mensagem: [{ hz: 587.33, em: 0, dura: 0.07 }],
-  mencao: [
+  message: [{ hz: 587.33, em: 0, dura: 0.07 }],
+  mention: [
     { hz: 659.25, em: 0, dura: 0.07 },
     { hz: 987.77, em: 0.07, dura: 0.12 },
   ],
@@ -87,148 +87,148 @@ const SONS = {
     { hz: 659.25, em: 0.06, dura: 0.07 },
     { hz: 987.77, em: 0.12, dura: 0.14 },
   ],
-  liveEncerrada: [
+  liveEnded: [
     { hz: 659.25, em: 0, dura: 0.07 },
     { hz: 392, em: 0.06, dura: 0.14 },
   ],
 
-  chamando: [
+  calling: [
     { hz: 440, em: 0, dura: 0.18 },
     { hz: 440, em: 0.28, dura: 0.18 },
   ],
-  tocando: [
+  playing: [
     { hz: 587.33, em: 0, dura: 0.12 },
     { hz: 783.99, em: 0.13, dura: 0.12 },
     { hz: 587.33, em: 0.4, dura: 0.12 },
     { hz: 783.99, em: 0.53, dura: 0.12 },
   ],
-  recusada: [
+  refused: [
     { hz: 415.3, em: 0, dura: 0.1 },
     { hz: 311.13, em: 0.09, dura: 0.2 },
   ],
-} satisfies Record<string, Nota[]>;
+} satisfies Record<string, Note[]>;
 
-export type SomDaInterface = keyof typeof SONS;
+export type InterfaceSound = keyof typeof SOUNDS;
 
-export const NOMES_DOS_SONS = Object.keys(SONS) as SomDaInterface[];
+export const SOUNDS_NAMES = Object.keys(SOUNDS) as InterfaceSound[];
 
-const GRAVADOS: Partial<Record<SomDaInterface, string>> = {
-  mensagem: notificacaoUrl,
+const RECORDED: Partial<Record<InterfaceSound, string>> = {
+  message: notificationUrl,
 };
 
-const VOLUME_GRAVADO = 0.45;
+const VOLUME_RECORDED = 0.45;
 
 const bytes = new Map<string, Promise<ArrayBuffer | null>>();
-const decodificados = new Map<string, AudioBuffer>();
+const decoded = new Map<string, AudioBuffer>();
 
-function baixar(url: string): Promise<ArrayBuffer | null> {
-  let pendente = bytes.get(url);
+function download(url: string): Promise<ArrayBuffer | null> {
+  let pending = bytes.get(url);
 
-  if (!pendente) {
-    pendente = fetch(url)
+  if (!pending) {
+    pending = fetch(url)
       .then((r) => (r.ok ? r.arrayBuffer() : null))
       .catch(() => null);
 
-    bytes.set(url, pendente);
+    bytes.set(url, pending);
   }
 
-  return pendente;
+  return pending;
 }
 
-for (const url of Object.values(GRAVADOS)) void baixar(url);
+for (const url of Object.values(RECORDED)) void download(url);
 
-function emitir(audio: AudioContext, buffer: AudioBuffer, volume: number) {
-  const fonte = audio.createBufferSource();
-  const ganho = audio.createGain();
+function emit(audio: AudioContext, buffer: AudioBuffer, volume: number) {
+  const font = audio.createBufferSource();
+  const gain = audio.createGain();
 
-  fonte.buffer = buffer;
-  ganho.gain.value = volume;
+  font.buffer = buffer;
+  gain.gain.value = volume;
 
-  fonte.connect(ganho);
-  ganho.connect(audio.destination);
+  font.connect(gain);
+  gain.connect(audio.destination);
 
-  fonte.start();
+  font.start();
 }
 
-function tocarGravado(url: string, volume: number) {
-  const audio = contexto();
+function playRecorded(url: string, volume: number) {
+  const audio = context();
   if (!audio || volume <= 0) return;
 
-  const pronto = decodificados.get(url);
-  if (pronto) return emitir(audio, pronto, volume);
+  const ready = decoded.get(url);
+  if (ready) return emit(audio, ready, volume);
 
-  void baixar(url).then(async (dados) => {
-    if (!dados) return;
+  void download(url).then(async (data) => {
+    if (!data) return;
 
-    const buffer = await audio.decodeAudioData(dados.slice(0)).catch(() => null);
+    const buffer = await audio.decodeAudioData(data.slice(0)).catch(() => null);
     if (!buffer) return;
 
-    decodificados.set(url, buffer);
-    emitir(audio, buffer, volume);
+    decoded.set(url, buffer);
+    emit(audio, buffer, volume);
   });
 }
 
-export function tocarSom(nome: SomDaInterface, opcoes: { volume?: number; mudo?: boolean } = {}) {
-  if (opcoes.mudo) return;
+export function playSound(name: InterfaceSound, options: { volume?: number; isMuted?: boolean } = {}) {
+  if (options.isMuted) return;
 
-  const { modoStreamer, streamerSemSom } = prefsDeAparencia();
-  if (modoStreamer && streamerSemSom) return;
+  const { modeStreamer, streamerWithoutSound } = appearancePrefs();
+  if (modeStreamer && streamerWithoutSound) return;
 
-  if (useAvisos.getState().sonsDesligados[nome]) return;
+  if (useNotices.getState().soundsOff[name]) return;
 
-  const gravado = GRAVADOS[nome];
-  if (gravado) return tocarGravado(gravado, VOLUME_GRAVADO * (opcoes.volume ?? 1));
+  const recorded = RECORDED[name];
+  if (recorded) return playRecorded(recorded, VOLUME_RECORDED * (options.volume ?? 1));
 
-  tocar(SONS[nome], VOLUME * (opcoes.volume ?? 1));
+  play(SOUNDS[name], VOLUME * (options.volume ?? 1));
 }
 
-export interface SomDoCatalogo {
-  nome: SomDaInterface;
-  rotulo: string;
-  quando: string;
+export interface CatalogSound {
+  name: InterfaceSound;
+  label: string;
+  when: string;
 }
 
-export interface GrupoDeSons {
-  titulo: string;
-  sons: SomDoCatalogo[];
+export interface SoundsGroup {
+  title: string;
+  sounds: CatalogSound[];
 }
 
-export const GRUPOS_DE_SONS: GrupoDeSons[] = [
+export const SOUNDS_GROUPS: SoundsGroup[] = [
   {
-    titulo: "Conversa",
-    sons: [
-      { nome: "mensagem", rotulo: "Mensagem nova", quando: "Chegou mensagem num canal que te avisa." },
-      { nome: "mencao", rotulo: "Menção a você", quando: "Alguém escreveu o seu nome." },
+    title: "Conversa",
+    sounds: [
+      { name: "message", label: "Mensagem nova", when: "Chegou mensagem num canal que te avisa." },
+      { name: "mention", label: "Menção a você", when: "Alguém escreveu o seu nome." },
     ],
   },
   {
-    titulo: "Chamada",
-    sons: [
-      { nome: "chamando", rotulo: "Chamando", quando: "Você ligou e está esperando atender." },
-      { nome: "tocando", rotulo: "Tocando", quando: "Estão te ligando." },
-      { nome: "recusada", rotulo: "Recusada", quando: "A pessoa não atendeu ou desligou." },
-      { nome: "entrarNaChamada", rotulo: "Você entrou", quando: "Ao conectar no canal de voz." },
-      { nome: "sairDaChamada", rotulo: "Você saiu", quando: "Ao desconectar." },
-      { nome: "alguemEntrou", rotulo: "Alguém entrou", quando: "Outra pessoa chegou na chamada." },
-      { nome: "alguemSaiu", rotulo: "Alguém saiu", quando: "Outra pessoa deixou a chamada." },
+    title: "Chamada",
+    sounds: [
+      { name: "calling", label: "Calling", when: "Você ligou e está esperando atender." },
+      { name: "playing", label: "Tocando", when: "Estão te ligando." },
+      { name: "refused", label: "Recusada", when: "A pessoa não atendeu ou desligou." },
+      { name: "joinCall", label: "Você entrou", when: "Ao conectar no canal de voz." },
+      { name: "leaveCall", label: "Você saiu", when: "Ao desconectar." },
+      { name: "someoneJoined", label: "Alguém entrou", when: "Outra pessoa chegou na chamada." },
+      { name: "someoneLeft", label: "Alguém saiu", when: "Outra pessoa deixou a chamada." },
     ],
   },
   {
-    titulo: "Microfone e som",
-    sons: [
-      { nome: "mutar", rotulo: "Microfone desligado", quando: "Ao se calar." },
-      { nome: "desmutar", rotulo: "Microfone ligado", quando: "Ao voltar a falar." },
-      { nome: "ensurdecer", rotulo: "Som desligado", quando: "Ao parar de ouvir todo mundo." },
-      { nome: "desensurdecer", rotulo: "Som ligado", quando: "Ao voltar a ouvir." },
+    title: "Microfone e som",
+    sounds: [
+      { name: "mute", label: "Microfone desligado", when: "Ao se calar." },
+      { name: "unmute", label: "Microfone ligado", when: "Ao voltar a falar." },
+      { name: "deafen", label: "Som desligado", when: "Ao parar de ouvir todo mundo." },
+      { name: "undeafen", label: "Som ligado", when: "Ao voltar a ouvir." },
     ],
   },
   {
-    titulo: "Transmissão",
-    sons: [
-      { nome: "liveNoAr", rotulo: "Live começou", quando: "Alguém do canal abriu uma transmissão." },
-      { nome: "liveEncerrada", rotulo: "Live acabou", quando: "A transmissão terminou." },
+    title: "Transmissão",
+    sounds: [
+      { name: "liveNoAr", label: "Live começou", when: "Alguém do canal abriu uma transmissão." },
+      { name: "liveEnded", label: "Live acabou", when: "A transmissão terminou." },
     ],
   },
 ];
 
-export const TODOS_OS_SONS = GRUPOS_DE_SONS.flatMap((g) => g.sons);
+export const ALL_SOUNDS = SOUNDS_GROUPS.flatMap((g) => g.sounds);
