@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Ručica koja maše",
+    botao: "Mahni prijatelju {{nome}}",
+  },
+  oficial: {
+    titulo: "Ovaj kanal služi samo za službene obavijesti.",
+    detalhe: "Nikad ne tražimo tvoju lozinku ni token računa.",
+    saibaMais: "Saznaj više",
+  },
+  topico: {
+    abrir: "Prikaži opis kanala",
+  },
+  previaDoLink: {
+    carregando: "Gledam što je na poveznici…",
+    destino: "Vodi na {{destino}}",
+  },
+  reacao: {
+    carregando: "Gledam tko je reagirao s {{emoji}}…",
+    uma: "{{nome}} je reagirao s {{emoji}}",
+    duas: "{{primeiro}} i {{segundo}} reagirali su s {{emoji}}",
+    varias: "{{nomes}} i još {{quantos}} reagiralo je s {{emoji}}",
+    dicaSuper: "Drži za super reakciju",
+  },
+  recado: {
+    gravar: "Snimi glasovnu poruku",
+    descartar: "Odbaci snimku",
+    mandar: "Pošalji snimku",
+    semSuporte: "Ovaj preglednik ne snima zvuk.",
+    semMicrofone: "Nema pristupa mikrofonu.",
+  },
   lista: {
     carregando: "Učitavanje poruka…",
     carregandoMais: "Učitavanje…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Pogledaj sliku",
   },
   enquete: {
+    criar: "Napravi anketu",
+    pergunta: "Pitanje",
+    exemplo: "Što igramo danas?",
+    respostas: "Odgovori",
+    adicionarOpcao: "Dodaj odgovor",
+    removerOpcao: "Ukloni odgovor",
+    varias: "Dopusti više odgovora",
+    variasDetalhe: "Bez toga glas za jedan odgovor miče glas s prethodnog.",
+    duracao: "Trajanje",
+    umaHora: "1 sat",
+    quatroHoras: "4 sata",
+    oitoHoras: "8 sati",
+    umDia: "1 dan",
+    tresDias: "3 dana",
+    umaSemana: "1 tjedan",
+    ateEncerrar: "Dok je sam ne zatvorim",
     titulo: "Anketa",
     encerrada: "Anketa je zatvorena",
     variasRespostas: "Anketa — više odgovora",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Pretraga gleda samo kanale koje smiješ čitati.",
   },
   entrada: {
+    semNome: "razgovor",
+    anexo: "(privitak)",
     titulo: "Pristigla pošta",
     naoLidas: "Nepročitano",
     salvas: "Spremljeno",

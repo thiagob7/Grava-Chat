@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Ovaj profil nije bilo moguće otvoriti.",
   carregando: "Učitavanje…",
   editar: "Uredi profil",
   mensagem: "Poruka",
