@@ -1,26 +1,26 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { temaService } from "~/services/tema-service.js";
+import { themeService } from "~/services/tema-service.js";
 import { objectId } from "~/validations/common.js";
-import { publicarTemaInput } from "~/validations/tema.js";
+import { publishThemeInput } from "~/validations/tema.js";
 
-const params = z.object({ temaId: objectId });
+const params = z.object({ themeId: objectId });
 
-export async function temaRoutes(app: FastifyInstance) {
+export async function themeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
-  app.get("/temas", (req) => temaService.meus(req.userId));
+  app.get("/temas", (req) => themeService.mine(req.userId));
 
   app.post("/temas", async (req, reply) => {
-    const tema = await temaService.publicar(req.userId, publicarTemaInput.parse(req.body));
-    return reply.status(201).send(tema);
+    const theme = await themeService.publish(req.userId, publishThemeInput.parse(req.body));
+    return reply.status(201).send(theme);
   });
 
-  app.get("/temas/:temaId", (req) => temaService.buscar(params.parse(req.params).temaId));
+  app.get("/temas/:themeId", (req) => themeService.search(params.parse(req.params).themeId));
 
-  app.delete("/temas/:temaId", async (req, reply) => {
-    await temaService.apagar(req.userId, params.parse(req.params).temaId);
+  app.delete("/temas/:themeId", async (req, reply) => {
+    await themeService.doDelete(req.userId, params.parse(req.params).themeId);
     return reply.status(204).send();
   });
 }

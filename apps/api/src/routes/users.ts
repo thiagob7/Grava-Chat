@@ -13,13 +13,13 @@ export async function userRoutes(app: FastifyInstance) {
 
   app.get("/users/:userId/em-comum", (req) => {
     const { userId } = z.object({ userId: objectId }).parse(req.params);
-    return profileService.emComum(req.userId, userId);
+    return profileService.inCommon(req.userId, userId);
   });
 
   app.put("/users/:userId/nota", (req) => {
     const { userId } = z.object({ userId: objectId }).parse(req.params);
-    const { texto } = z.object({ texto: z.string().max(256) }).parse(req.body);
+    const { text } = z.object({ text: z.string().max(256) }).parse(req.body);
 
-    return profileService.anotar(req.userId, userId, texto);
+    return profileService.note(req.userId, userId, text);
   });
 }
