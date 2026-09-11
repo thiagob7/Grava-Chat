@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { Adiante, Aviso, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
-import { TabelaDeLimites } from "~/components/docs/TabelaDeLimites";
+import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
+import { LimitsTable } from "~/components/docs/TabelaDeLimites";
 import { REPO } from "~/dados/docs";
 
 export const metadata: Metadata = {
@@ -9,35 +9,35 @@ export const metadata: Metadata = {
   description: "Vazão, tamanhos e tetos que o servidor do Gravaê aplica.",
 };
 
-export default function Limites() {
+export default function Limits() {
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Referência" pagina="Limites" />
-        <Titulo chamada="Os números que o servidor aplica de verdade, lidos das constantes que o aplicativo usa.">
+        <Trail group="Referência" page="Limites" />
+        <Title call="Os números que o servidor aplica de verdade, lidos das constantes que o aplicativo usa.">
           Limites
-        </Titulo>
+        </Title>
       </header>
 
-      <Secao id="vazao" titulo="Vazão">
+      <Section id="vazao" title="Vazão">
         <p>
           São <strong className="text-ink">300 requisições por minuto</strong> por endereço de IP,
           contando REST. Estourou, a API responde <code>429</code> com um{" "}
           <code>message</code> dizendo em quantos segundos você pode voltar.
         </p>
 
-        <Aviso>
+        <Notice>
           Respeite o número que vem na resposta em vez de tentar de novo na hora. Um bot que insiste
           num <code>429</code> só empurra a própria espera para frente — e, como a conta é por IP,
           leva junto todo mundo que sai da mesma máquina.
-        </Aviso>
-      </Secao>
+        </Notice>
+      </Section>
 
-      <Secao id="tamanhos" titulo="Tamanhos e tetos">
-        <TabelaDeLimites />
-      </Secao>
+      <Section id="tamanhos" title="Tamanhos e tetos">
+        <LimitsTable />
+      </Section>
 
-      <Secao id="mais" titulo="Se você precisa de mais">
+      <Section id="mais" title="Se você precisa de mais">
         <p>
           O Gravaê roda em duas máquinas pequenas e o código é aberto. Se o seu bot precisa de mais
           fôlego do que isso,{" "}
@@ -51,9 +51,9 @@ export default function Limites() {
           </a>{" "}
           antes de ligar — dá pra combinar.
         </p>
-      </Secao>
+      </Section>
 
-      <Adiante href="/desenvolvedores/limites" />
+      <Ahead href="/desenvolvedores/limites" />
     </article>
   );
 }
