@@ -16,16 +16,16 @@ import { useTranslation } from "~/traducao";
 interface RolesSectionProps {
   guildId: string;
   members: GuildMember[];
-  minhasPermissoes: Permission[];
-  minhaPosicao: number;
+  minePermissions: Permission[];
+  myPosition: number;
   isOwner: boolean;
 }
 
 export const RolesSection: React.FC<RolesSectionProps> = ({
   guildId,
   members,
-  minhasPermissoes,
-  minhaPosicao,
+  minePermissions,
+  myPosition,
   isOwner,
 }) => {
   const { t } = useTranslation();
@@ -33,44 +33,44 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
   const createRole = useCreateRole(guildId);
   const reorderRoles = useReorderRoles(guildId);
 
-  const [selecionado, setSelecionado] = useState<string | null>(null);
-  const [dragging, setArrastando] = useState<string | null>(null);
-  const [ordem, setOrdem] = useState<RoleModel[] | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [order, setOrder] = useState<RoleModel[] | null>(null);
 
-  const ordenados = useMemo(() => {
-    const lista = [...roles].sort((a, b) => b.position - a.position);
-    return lista.filter((r) => !r.isEveryone);
+  const ordered = useMemo(() => {
+    const list = [...roles].sort((a, b) => b.position - a.position);
+    return list.filter((r) => !r.isEveryone);
   }, [roles]);
 
   const everyone = roles.find((r) => r.isEveryone);
-  const lista = ordem ?? ordenados;
-  const atual = roles.find((r) => r.id === selecionado) ?? everyone ?? roles[0];
+  const list = order ?? ordered;
+  const current = roles.find((r) => r.id === selected) ?? everyone ?? roles[0];
 
-  const podeEditar = (role: RoleModel) =>
-    isOwner || role.position < minhaPosicao;
+  const canEdit = (role: RoleModel) =>
+    isOwner || role.position < myPosition;
 
-  const soltar = (alvoId: string) => {
-    if (!dragging || dragging === alvoId) return setArrastando(null);
+  const drop = (targetId: string) => {
+    if (!dragging || dragging === targetId) return setDragging(null);
 
-    const base = [...lista];
+    const base = [...list];
     const de = base.findIndex((r) => r.id === dragging);
-    const para = base.findIndex((r) => r.id === alvoId);
-    if (de < 0 || para < 0) return setArrastando(null);
+    const toward = base.findIndex((r) => r.id === targetId);
+    if (de < 0 || toward < 0) return setDragging(null);
 
-    const [movido] = base.splice(de, 1);
-    base.splice(para, 0, movido!);
+    const [moved] = base.splice(de, 1);
+    base.splice(toward, 0, moved!);
 
-    setOrdem(base);
-    setArrastando(null);
+    setOrder(base);
+    setDragging(null);
 
-    const posicoes = base.map((role, indice) => ({
+    const positions = base.map((role, index) => ({
       id: role.id,
-      position: base.length - indice,
+      position: base.length - index,
     }));
 
     reorderRoles.mutate(
-      { guildId, roles: posicoes },
-      { onSettled: () => setOrdem(null) },
+      { guildId, roles: positions },
+      { onSettled: () => setOrder(null) },
     );
   };
 
@@ -90,7 +90,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
           onClick={() =>
             createRole.mutate(
               { guildId, name: "novo cargo" },
-              { onSuccess: (role) => setSelecionado(role.id) },
+              { onSuccess: (role) => setSelected(role.id) },
             )
           }
         >
@@ -102,18 +102,18 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
         <aside data-gc="servidor.server-settings.roles-section.aside" className="w-56 shrink-0 overflow-y-auto">
           {isLoading && <p data-gc="servidor.server-settings.roles-section.p--2" className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
-          {lista.map((role) => (
+          {list.map((role) => (
             <button data-gc="servidor.server-settings.roles-section.button--2"
               key={role.id}
-              draggable={podeEditar(role)}
-              onDragStart={() => setArrastando(role.id)}
+              draggable={canEdit(role)}
+              onDragStart={() => setDragging(role.id)}
               onDragOver={(e) => e.preventDefault()}
-              onDrop={() => soltar(role.id)}
-              onDragEnd={() => setArrastando(null)}
-              onClick={() => setSelecionado(role.id)}
+              onDrop={() => drop(role.id)}
+              onDragEnd={() => setDragging(null)}
+              onClick={() => setSelected(role.id)}
               className={cn(
                 "group mb-0.5 flex w-full items-center gap-2 rounded px-2 py-2 text-left text-sm transition",
-                atual?.id === role.id
+                current?.id === role.id
                   ? "bg-surface-4 text-ink"
                   : "text-ink-muted hover:bg-surface-3",
                 dragging === role.id && "opacity-40",
@@ -123,7 +123,7 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
                 size={14}
                 className={cn(
                   "shrink-0 text-ink-faint transition",
-                  podeEditar(role)
+                  canEdit(role)
                     ? "opacity-0 group-hover:opacity-100"
                     : "opacity-0",
                 )}
@@ -141,10 +141,10 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
 
           {everyone && (
             <button data-gc="servidor.server-settings.roles-section.button--3"
-              onClick={() => setSelecionado(everyone.id)}
+              onClick={() => setSelected(everyone.id)}
               className={cn(
                 "mt-2 flex w-full items-center gap-2 rounded border-t border-line px-2 py-2 pt-3 text-left text-sm transition",
-                atual?.id === everyone.id
+                current?.id === everyone.id
                   ? "bg-surface-4 text-ink"
                   : "text-ink-muted hover:bg-surface-3",
               )}
@@ -155,14 +155,14 @@ export const RolesSection: React.FC<RolesSectionProps> = ({
           )}
         </aside>
 
-        {atual ? (
+        {current ? (
           <RoleEditor data-gc="servidor.server-settings.roles-section.role-editor"
             guildId={guildId}
-            role={atual}
+            role={current}
             members={members}
-            minhasPermissoes={minhasPermissoes}
-            editavel={podeEditar(atual)}
-            onDeleted={() => setSelecionado(null)}
+            minePermissions={minePermissions}
+            editable={canEdit(current)}
+            onDeleted={() => setSelected(null)}
           />
         ) : (
           <p data-gc="servidor.server-settings.roles-section.p--3" className="text-sm text-ink-faint">{t("servidor.cargos.vazio")}</p>
