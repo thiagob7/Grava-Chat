@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "채팅을 아래로 옮기기",
+    paraOLado: "채팅을 옆으로 옮기기",
+  },
+  aparelhoNovo: {
+    microfone: "새 마이크가 나타났습니다",
+    saida: "새 오디오 출력이 나타났습니다",
+    apareceu: "{{nome}}이(가) 나타났습니다.",
+    falarPorEle: "이걸로 말할까요?",
+    ouvirPorEle: "이걸로 들을까요?",
+    trocaNaHora: "바꾸면 바로 적용되며, 통화에서 나가지 않아도 됩니다.",
+    naoSugerir: "이 기기를 다시 권하지 않기",
+    trocar: "이걸로 바꾸기",
+  },
   conectando: "통화에 연결하는 중…",
   naoEntrou: "통화에 참여하지 못했습니다",
   sair: "통화 나가기",

@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "이 프로필을 열지 못했습니다.",
   carregando: "불러오는 중…",
   editar: "프로필 수정",
   mensagem: "메시지",
