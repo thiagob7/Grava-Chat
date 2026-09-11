@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Maximize2, Minus, X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 import {
   fitOnScreen,
   storedGeometry,
@@ -26,6 +27,8 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
   onClose,
   children,
 }) => {
+  const { t } = useTranslation();
+
   const [geometry, setGeometry] = useState<WindowGeometry>(() => storedGeometry(id));
   const [collapsed, setCollapsed] = useState(false);
   const [maximized, setMaximized] = useState(false);
@@ -121,14 +124,14 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
           {title}
         </span>
 
-        <BotaoDaBarra data-gc="ui.floating-window.botao-da-barra"
+        <BarButton data-gc="ui.floating-window.bar-button"
           label={collapsed ? "Voltar ao tamanho" : "Minimizar"}
           onClick={() => setCollapsed((v) => !v)}
         >
           <Minus data-gc="ui.floating-window.minus" size={14} />
-        </BotaoDaBarra>
+        </BarButton>
 
-        <BotaoDaBarra data-gc="ui.floating-window.botao-da-barra--2"
+        <BarButton data-gc="ui.floating-window.bar-button--2"
           label={maximized ? "Restaurar" : "Maximizar"}
           onClick={() => {
             setMaximized((v) => !v);
@@ -136,11 +139,11 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
           }}
         >
           <Maximize2 data-gc="ui.floating-window.maximize2" size={13} />
-        </BotaoDaBarra>
+        </BarButton>
 
-        <BotaoDaBarra data-gc="ui.floating-window.botao-da-barra.on-close" label="Fechar" danger onClick={onClose}>
+        <BarButton data-gc="ui.floating-window.bar-button.on-close" label="Fechar" danger onClick={onClose}>
           <X data-gc="ui.floating-window.x" size={14} />
-        </BotaoDaBarra>
+        </BarButton>
       </header>
 
       {!collapsed && <div data-gc="ui.floating-window.div" className="flex min-h-0 flex-1">{children}</div>}
@@ -148,7 +151,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
       {!collapsed && !maximized && (
         <span data-gc="ui.floating-window.span.begin"
           role="separator"
-          aria-label="Redimensionar a janela"
+          aria-label={t("comum.janela.redimensionar")}
           onPointerDown={begin}
           onPointerMove={resize}
           onPointerUp={finish}
@@ -161,7 +164,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
   );
 };
 
-const BotaoDaBarra: React.FC<{
+const BarButton: React.FC<{
   label: string;
   danger?: boolean;
   onClick: () => void;
