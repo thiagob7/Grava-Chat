@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "This profile could not be opened.",
   carregando: "Loading…",
   editar: "Edit profile",
   mensagem: "Message",
