@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Den här profilen gick inte att öppna.",
   carregando: "Läser in…",
   editar: "Redigera profilen",
   mensagem: "Meddelande",

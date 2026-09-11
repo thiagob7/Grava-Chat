@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "En liten hand som vinkar",
+    botao: "Vinka till {{nome}}",
+  },
+  oficial: {
+    titulo: "Den här kanalen är bara för officiella meddelanden.",
+    detalhe: "Vi frågar aldrig efter ditt lösenord eller kontots token.",
+    saibaMais: "Läs mer",
+  },
+  topico: {
+    abrir: "Se kanalens beskrivning",
+  },
+  previaDoLink: {
+    carregando: "Kollar vad som finns bakom länken…",
+    destino: "Går till {{destino}}",
+  },
+  reacao: {
+    carregando: "Kollar vilka som reagerade med {{emoji}}…",
+    uma: "{{nome}} reagerade med {{emoji}}",
+    duas: "{{primeiro}} och {{segundo}} reagerade med {{emoji}}",
+    varias: "{{nomes}} och {{quantos}} till reagerade med {{emoji}}",
+    dicaSuper: "Håll in för superreaktion",
+  },
+  recado: {
+    gravar: "Spela in ett röstmeddelande",
+    descartar: "Släng inspelningen",
+    mandar: "Skicka inspelningen",
+    semSuporte: "Den här webbläsaren spelar inte in ljud.",
+    semMicrofone: "Ingen åtkomst till mikrofonen.",
+  },
   lista: {
     carregando: "Läser in meddelanden…",
     carregandoMais: "Läser in…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Visa bilden",
   },
   enquete: {
+    criar: "Skapa en omröstning",
+    pergunta: "Fråga",
+    exemplo: "Vad spelar vi idag?",
+    respostas: "Svar",
+    adicionarOpcao: "Lägg till svar",
+    removerOpcao: "Ta bort svar",
+    varias: "Tillåt fler än ett svar",
+    variasDetalhe: "Utan det tar en röst på ett svar bort rösten från det förra.",
+    duracao: "Längd",
+    umaHora: "1 timme",
+    quatroHoras: "4 timmar",
+    oitoHoras: "8 timmar",
+    umDia: "1 dag",
+    tresDias: "3 dagar",
+    umaSemana: "1 vecka",
+    ateEncerrar: "Tills jag stänger den",
     titulo: "Omröstning",
     encerrada: "Omröstningen är stängd",
     variasRespostas: "Omröstning — flera svar",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Sökningen tittar bara i kanaler du får läsa.",
   },
   entrada: {
+    semNome: "konversation",
+    anexo: "(bilaga)",
     titulo: "Inkorg",
     naoLidas: "Olästa",
     salvas: "Sparade",
