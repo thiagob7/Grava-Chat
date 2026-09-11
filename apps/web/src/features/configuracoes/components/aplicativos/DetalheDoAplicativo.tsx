@@ -22,95 +22,116 @@ import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Opcao } from "~/features/configuracoes/components/campos-de-config";
+import { Choice } from "~/features/configuracoes/components/campos-de-config";
 import {
-  ContextoDaSecao,
-  SecaoDeConfig as Secao,
+  SectionContext,
+  ConfigSection as Section,
 } from "~/features/configuracoes/components/SecaoDeConfig";
-import { CampoDeSegredo } from "~/features/configuracoes/components/aplicativos/comum";
-import { ConstrutorDeConvite } from "~/features/configuracoes/components/aplicativos/ConstrutorDeConvite";
-import { SecaoDeServidores } from "~/features/configuracoes/components/aplicativos/SecaoDeServidores";
+import { SecretField } from "~/features/configuracoes/components/aplicativos/comum";
+import { InviteBuilder } from "~/features/configuracoes/components/aplicativos/ConstrutorDeConvite";
+import { ServersSection } from "~/features/configuracoes/components/aplicativos/SecaoDeServidores";
+import { StoreSection } from "~/features/configuracoes/components/aplicativos/SecaoDaLoja";
+import { useTranslation } from "~/traducao";
 
 const AVATAR_MAX_PX = 256;
 
-interface DetalheDoAplicativoProps {
+interface AppPropsDetail {
   bot: BotModel;
-  onVoltar: () => void;
-  onTokenNovo: (token: string) => void;
+  onBack: () => void;
+  onTokenNew: (token: string) => void;
 }
 
-export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
+export const AppDetail: React.FC<AppPropsDetail> = ({
   bot,
-  onVoltar,
-  onTokenNovo,
+  onBack,
+  onTokenNew,
 }) => {
-  const salvar = useUpdateBot();
-  const regenerar = useRegenerateBotToken();
-  const apagar = useDeleteBot();
+  const { t } = useTranslation();
+  const save = useUpdateBot();
+  const regenerate = useRegenerateBotToken();
+  const doDelete = useDeleteBot();
   const confirm = useConfirm();
-  const enviarImagem = useUploadImage();
-  const escolherFoto = useRef<HTMLInputElement>(null);
+  const sendImage = useUploadImage();
+  const pickPhoto = useRef<HTMLInputElement>(null);
 
-  const [nome, setNome] = useState(bot.usuario.displayName);
-  const [descricao, setDescricao] = useState(bot.descricao ?? "");
-  const [pedidas, setPedidas] = useState<Permission[]>(bot.permissoesPedidas);
+  const [name, setName] = useState(bot.user.displayName);
+  const [description, setDescription] = useState(bot.description ?? "");
+  const [requested, setRequested] = useState<Permission[]>(bot.permissionsRequested);
   const [uris, setUris] = useState(bot.redirectUris.join("\n"));
+  const [coverUrl, setCoverUrl] = useState(bot.coverUrl ?? null);
+  const [categories, setCategories] = useState<string[]>(bot.categories ?? []);
+  const [languages, setLanguages] = useState<string[]>(bot.languages ?? []);
+  const [terms, setTerms] = useState(bot.termsUrl ?? "");
+  const [policy, setPolicy] = useState(bot.policyUrl ?? "");
+  const [support, setSupport] = useState(bot.supportServerId ?? null);
 
   const link = `${window.location.origin}/bots/${bot.id}/adicionar`;
 
-  const listaDeUris = uris
+  const listUris = uris
     .split("\n")
     .map((u) => u.trim())
     .filter(Boolean);
 
-  const mudou =
-    nome.trim() !== bot.usuario.displayName ||
-    descricao !== (bot.descricao ?? "") ||
-    pedidas.length !== bot.permissoesPedidas.length ||
-    pedidas.some((p) => !bot.permissoesPedidas.includes(p)) ||
-    listaDeUris.length !== bot.redirectUris.length ||
-    listaDeUris.some((u, i) => u !== bot.redirectUris[i]);
+  const changed =
+    name.trim() !== bot.user.displayName ||
+    description !== (bot.description ?? "") ||
+    requested.length !== bot.permissionsRequested.length ||
+    requested.some((p) => !bot.permissionsRequested.includes(p)) ||
+    listUris.length !== bot.redirectUris.length ||
+    listUris.some((u, i) => u !== bot.redirectUris[i]) ||
+    coverUrl !== (bot.coverUrl ?? null) ||
+    categories.join(",") !== (bot.categories ?? []).join(",") ||
+    languages.join(",") !== (bot.languages ?? []).join(",") ||
+    terms !== (bot.termsUrl ?? "") ||
+    policy !== (bot.policyUrl ?? "") ||
+    support !== (bot.supportServerId ?? null);
 
-  const descartar = () => {
-    setNome(bot.usuario.displayName);
-    setDescricao(bot.descricao ?? "");
-    setPedidas(bot.permissoesPedidas);
+  const discard = () => {
+    setName(bot.user.displayName);
+    setDescription(bot.description ?? "");
+    setRequested(bot.permissionsRequested);
     setUris(bot.redirectUris.join("\n"));
+    setCoverUrl(bot.coverUrl ?? null);
+    setCategories(bot.categories ?? []);
+    setLanguages(bot.languages ?? []);
+    setTerms(bot.termsUrl ?? "");
+    setPolicy(bot.policyUrl ?? "");
+    setSupport(bot.supportServerId ?? null);
   };
 
-  const trocarFoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const swapPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
 
-    const enviado = await enviarImagem
-      .mutateAsync({ file, maxSize: AVATAR_MAX_PX, finalidade: "avatar" })
+    const sent = await sendImage
+      .mutateAsync({ file, maxSize: AVATAR_MAX_PX, purpose: "avatar" })
       .catch(() => null);
 
-    if (enviado)
-      salvar.mutate({ botId: bot.id, dados: { avatarUrl: enviado.attachment.url } });
+    if (sent)
+      save.mutate({ botId: bot.id, data: { avatarUrl: sent.attachment.url } });
   };
 
-  const linkDeLogin = (comBot = false) => {
-    const endereco = new URL(`${window.location.origin}/oauth2/autorizar`);
-    endereco.searchParams.set("client_id", bot.id);
-    endereco.searchParams.set(
+  const linkDeLogin = (withBot = false) => {
+    const address = new URL(`${window.location.origin}/oauth2/autorizar`);
+    address.searchParams.set("client_id", bot.id);
+    address.searchParams.set(
       "redirect_uri",
-      listaDeUris[0] ?? "https://seu-painel.com/callback",
+      listUris[0] ?? "https://seu-painel.com/callback",
     );
-    endereco.searchParams.set("scope", comBot ? "identify email guilds connections bot" : "identify guilds");
-    endereco.searchParams.set("state", "algo-aleatorio");
-    return endereco.toString();
+    address.searchParams.set("scope", withBot ? "identify email guilds connections bot" : "identify guilds");
+    address.searchParams.set("state", "algo-aleatorio");
+    return address.toString();
   };
 
   return (
-    <ContextoDaSecao.Provider value={null}>
+    <SectionContext.Provider value={null}>
       <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div" className="max-w-2xl pb-10">
         <Breadcrumb data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb">
           <BreadcrumbList data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-list">
             <BreadcrumbItem data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-item">
               <BreadcrumbLink data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-link" asChild>
-                <button data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.button.on-voltar" type="button" onClick={onVoltar}>
+                <button data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.button.on-back" type="button" onClick={onBack}>
                   Aplicativos
                 </button>
               </BreadcrumbLink>
@@ -119,7 +140,7 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
             <BreadcrumbSeparator data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-separator" />
 
             <BreadcrumbItem data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-item--2">
-              <BreadcrumbPage data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-page">{bot.usuario.displayName}</BreadcrumbPage>
+              <BreadcrumbPage data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.breadcrumb-page">{bot.user.displayName}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -127,15 +148,15 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
         <header data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.header" className="mt-5 flex items-center gap-3">
           <button data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.button"
             type="button"
-            onClick={() => escolherFoto.current?.click()}
-            disabled={enviarImagem.isPending}
+            onClick={() => pickPhoto.current?.click()}
+            disabled={sendImage.isPending}
             title="Trocar a foto do bot"
             className="group relative shrink-0 rounded-full"
           >
             <Avatar data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.avatar"
-              id={bot.usuario.id}
-              name={bot.usuario.displayName}
-              url={bot.usuario.avatarUrl}
+              id={bot.user.id}
+              name={bot.user.displayName}
+              url={bot.user.avatarUrl}
               size={56}
             />
 
@@ -145,48 +166,48 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
           </button>
 
           <input data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.input"
-            ref={escolherFoto}
+            ref={pickPhoto}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void trocarFoto(e)}
+            onChange={(e) => void swapPhoto(e)}
             className="hidden"
           />
 
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--2" className="min-w-0 flex-1">
             <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p" className="flex items-center gap-2">
               <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span--2" className="truncate text-lg font-semibold">
-                {bot.usuario.displayName}
+                {bot.user.displayName}
               </span>
               <span data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.span--3" className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-sobre-marca">
                 app
               </span>
             </p>
 
-            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--2" className="truncate text-xs text-ink-faint">@{bot.usuario.username}</p>
+            <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--2" className="truncate text-xs text-ink-faint">@{bot.user.username}</p>
           </div>
         </header>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao"
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section"
           id="credenciais"
-          titulo="Credenciais"
-          detalhe="Quem tem isso é o bot. Não ponha num repositório público."
+          title="Credenciais"
+          detail="Quem tem isso é o bot. Não ponha num repositório público."
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--3">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label">Client ID</Label>
-            <CampoDeSegredo data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.campo-de-segredo"
-              valor={bot.id}
-              rotuloCopiar="Copiar o Client ID"
-              avisoCopiado="Client ID copiado."
+            <SecretField data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secret-field"
+              value={bot.id}
+              labelCopy="Copiar o Client ID"
+              noticeCopied="Client ID copiado."
             />
           </div>
 
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--4" className="mt-4">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--2">Client Secret</Label>
-            <CampoDeSegredo data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.campo-de-segredo--2"
-              valor={bot.clientSecret}
-              rotuloCopiar="Copiar o segredo"
-              avisoCopiado="Segredo copiado."
-              escondivel
+            <SecretField data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secret-field--2"
+              value={bot.clientSecret}
+              labelCopy="Copiar o segredo"
+              noticeCopied="Segredo copiado."
+              hideable
             />
           </div>
 
@@ -201,7 +222,7 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
 
             <Button data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.button--2"
               variant="surface"
-              disabled={regenerar.isPending}
+              disabled={regenerate.isPending}
               onClick={() =>
                 void confirm({
                   title: "Gerar outro token?",
@@ -211,8 +232,8 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
                 }).then(
                   ({ confirmed }) =>
                     confirmed &&
-                    regenerar.mutate(bot.id, {
-                      onSuccess: (novo) => novo.token && onTokenNovo(novo.token),
+                    regenerate.mutate(bot.id, {
+                      onSuccess: (fresh) => fresh.token && onTokenNew(fresh.token),
                     }),
                 )
               }
@@ -220,19 +241,19 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               <KeyRound data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.key-round" size={16} /> Gerar outro
             </Button>
           </div>
-        </Secao>
+        </Section>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao--2"
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--2"
           id="informacoes"
-          titulo="Informações"
-          detalhe="É o que aparece pra quem for adicionar o bot."
+          title="Informações"
+          detail="É o que aparece pra quem for adicionar o bot."
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--7">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--3" htmlFor={`nome-${bot.id}`}>Nome</Label>
             <Input data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.input--2"
               id={`nome-${bot.id}`}
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               maxLength={32}
             />
           </div>
@@ -241,34 +262,59 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--4" htmlFor={`desc-${bot.id}`}>Descrição</Label>
             <Textarea data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.textarea"
               id={`desc-${bot.id}`}
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               maxLength={300}
               rows={2}
               placeholder="O que ele faz? Aparece na tela de convite."
             />
           </div>
 
-          <Opcao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.opcao"
-            titulo="Qualquer um pode adicionar"
-            detalhe="Desligado, só você consegue pôr esse bot num servidor."
-            ligado={bot.publico}
-            onMudar={(publico) => salvar.mutate({ botId: bot.id, dados: { publico } })}
+          <Choice data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.choice"
+            title="Qualquer um pode adicionar"
+            detail="Desligado, só você consegue pôr esse bot num servidor."
+            on={bot.isPublic}
+            onChange={(isPublic) => save.mutate({ botId: bot.id, data: { isPublic } })}
           />
-        </Secao>
+        </Section>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao--3"
-          id="convite"
-          titulo="Convite"
-          detalhe="O link já leva as permissões marcadas aqui."
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--3"
+          id="loja"
+          title={t("servidor.descoberta.lojaTitulo")}
+          detail={t("servidor.descoberta.lojaDetalhe")}
         >
-          <ConstrutorDeConvite data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.construtor-de-convite.set-pedidas" link={link} escolhidas={pedidas} onMudar={setPedidas} />
-        </Secao>
+          <StoreSection data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.store-section.set-cover-url"
+            botId={bot.id}
+            name={name.trim() || bot.user.displayName}
+            avatarUrl={bot.user.avatarUrl}
+            onIcon={(url) => save.mutate({ botId: bot.id, data: { avatarUrl: url } })}
+            coverUrl={coverUrl}
+            categories={categories}
+            languages={languages}
+            termsUrl={terms}
+            policyUrl={policy}
+            supportServerId={support}
+            onCover={setCoverUrl}
+            onCategories={setCategories}
+            onLanguages={setLanguages}
+            onTerms={setTerms}
+            onPolicy={setPolicy}
+            onSupportServer={setSupport}
+          />
+        </Section>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao--4"
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--4"
+          id="convite"
+          title="Convite"
+          detail="O link já leva as permissões marcadas aqui."
+        >
+          <InviteBuilder data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.invite-builder.set-requested" link={link} picked={requested} onChange={setRequested} />
+        </Section>
+
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--5"
           id="oauth2"
-          titulo="OAuth2"
-          detalhe="Pra montar um painel externo que entra com a conta do Gravaê."
+          title="OAuth2"
+          detail="Pra montar um painel externo que entra com a conta do Gravaê."
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--9">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--5" htmlFor={`uris-${bot.id}`}>Endereços de retorno</Label>
@@ -288,17 +334,17 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
 
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--10" className="mt-4">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--6">Link de login</Label>
-            <CampoDeSegredo data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.campo-de-segredo--3"
-              valor={linkDeLogin()}
-              rotuloCopiar="Copiar o link de login"
-              avisoCopiado="Link copiado."
+            <SecretField data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secret-field--3"
+              value={linkDeLogin()}
+              labelCopy="Copiar o link de login"
+              noticeCopied="Link copiado."
               mono={false}
             />
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--7" className="mt-4">Link de login com o bot</Label>
-            <CampoDeSegredo data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.campo-de-segredo--4"
-              valor={linkDeLogin(true)}
-              rotuloCopiar="Copiar o link com o bot"
-              avisoCopiado="Link copiado."
+            <SecretField data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secret-field--4"
+              value={linkDeLogin(true)}
+              labelCopy="Copiar o link com o bot"
+              noticeCopied="Link copiado."
               mono={false}
             />
             <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--6" className="mt-1.5 text-xs text-ink-faint">
@@ -323,20 +369,20 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               Exemplo de painel completo em <code data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.code--3">exemplos/painel/</code>.
             </p>
           </div>
-        </Secao>
+        </Section>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao--5" id="servidores" titulo="Servidores" detalhe="Onde esse bot está agora.">
-          <SecaoDeServidores data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao-de-servidores" botId={bot.id} link={link} />
-        </Secao>
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--6" id="servidores" title="Servidores" detail="Onde esse bot está agora.">
+          <ServersSection data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.servers-section" botId={bot.id} link={link} />
+        </Section>
 
-        <Secao data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.secao--6"
+        <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--7"
           id="apagar-aplicativo"
-          titulo="Apagar o aplicativo"
-          detalhe="Não dá pra desfazer."
+          title="Apagar o aplicativo"
+          detail="Não dá pra desfazer."
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--12" className="flex items-start gap-4">
             <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--13" className="min-w-0 flex-1">
-              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--10" className="text-sm font-medium">Apagar {bot.usuario.displayName}</p>
+              <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--10" className="text-sm font-medium">Apagar {bot.user.displayName}</p>
               <p data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.p--11" className="mt-0.5 text-xs text-ink-faint">
                 O bot sai de todos os servidores, o token para de valer e as
                 mensagens que ele mandou somem.
@@ -347,38 +393,44 @@ export const DetalheDoAplicativo: React.FC<DetalheDoAplicativoProps> = ({
               variant="danger"
               onClick={() =>
                 void confirm({
-                  title: `Apagar ${bot.usuario.displayName}?`,
+                  title: `Apagar ${bot.user.displayName}?`,
                   description:
                     "O bot sai de todos os servidores e o token para de valer. As mensagens que ele mandou também somem.",
                   action: "Apagar",
                 }).then(({ confirmed }) => {
                   if (!confirmed) return;
-                  apagar.mutate(bot.id, { onSuccess: onVoltar });
+                  doDelete.mutate(bot.id, { onSuccess: onBack });
                 })
               }
             >
               <Trash2 data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.trash2" size={16} /> Apagar
             </Button>
           </div>
-        </Secao>
+        </Section>
 
-        <UnsavedBar data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.unsaved-bar.descartar"
-          visible={mudou}
-          saving={salvar.isPending}
-          onDiscard={descartar}
+        <UnsavedBar data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.unsaved-bar.discard"
+          visible={changed}
+          saving={save.isPending}
+          onDiscard={discard}
           onSave={() =>
-            salvar.mutate({
+            save.mutate({
               botId: bot.id,
-              dados: {
-                nome: nome.trim(),
-                descricao: descricao.trim() || null,
-                permissoesPedidas: pedidas,
-                redirectUris: listaDeUris,
+              data: {
+                name: name.trim(),
+                description: description.trim() || null,
+                permissionsRequested: requested,
+                redirectUris: listUris,
+                coverUrl,
+                categories,
+                languages,
+                termsUrl: terms.trim() || null,
+                policyUrl: policy.trim() || null,
+                supportServerId: support,
               },
             })
           }
         />
       </div>
-    </ContextoDaSecao.Provider>
+    </SectionContext.Provider>
   );
 };
