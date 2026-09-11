@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "יד קטנה מנופפת",
+    botao: "לנפנף ל{{nome}}",
+  },
+  oficial: {
+    titulo: "הערוץ הזה מיועד רק להודעות רשמיות.",
+    detalhe: "אנחנו לעולם לא מבקשים את הסיסמה או את האסימון של החשבון.",
+    saibaMais: "מידע נוסף",
+  },
+  topico: {
+    abrir: "הצגת תיאור הערוץ",
+  },
+  previaDoLink: {
+    carregando: "בודק מה יש בקישור…",
+    destino: "מוביל אל {{destino}}",
+  },
+  reacao: {
+    carregando: "בודק מי הגיב עם {{emoji}}…",
+    uma: "{{nome}} הגיב עם {{emoji}}",
+    duas: "{{primeiro}} ו{{segundo}} הגיבו עם {{emoji}}",
+    varias: "{{nomes}} ועוד {{quantos}} הגיבו עם {{emoji}}",
+    dicaSuper: "החזיקו לתגובת על",
+  },
+  recado: {
+    gravar: "הקלטת הודעה קולית",
+    descartar: "למחוק את ההקלטה",
+    mandar: "לשלוח את ההקלטה",
+    semSuporte: "הדפדפן הזה לא מקליט שמע.",
+    semMicrofone: "אין גישה למיקרופון.",
+  },
   lista: {
     carregando: "טוען הודעות…",
     carregandoMais: "טוען…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "הצג את התמונה",
   },
   enquete: {
+    criar: "יצירת סקר",
+    pergunta: "שאלה",
+    exemplo: "במה משחקים היום?",
+    respostas: "תשובות",
+    adicionarOpcao: "הוספת אפשרות",
+    removerOpcao: "הסרת האפשרות",
+    varias: "לאפשר יותר מתשובה אחת",
+    variasDetalhe: "בלי זה, הצבעה לאפשרות אחת מבטלת את ההצבעה הקודמת.",
+    duracao: "משך",
+    umaHora: "שעה אחת",
+    quatroHoras: "4 שעות",
+    oitoHoras: "8 שעות",
+    umDia: "יום אחד",
+    tresDias: "3 ימים",
+    umaSemana: "שבוע אחד",
+    ateEncerrar: "עד שאסגור אותו",
     titulo: "סקר",
     encerrada: "הסקר נסגר",
     variasRespostas: "סקר — כמה תשובות",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "החיפוש מסתכל רק בערוצים שמותר לך לקרוא.",
   },
   entrada: {
+    semNome: "שיחה",
+    anexo: "(קובץ מצורף)",
     titulo: "תיבת דואר נכנס",
     naoLidas: "לא נקראו",
     salvas: "שמורות",
