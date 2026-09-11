@@ -27,14 +27,18 @@ export const CallInviteCard: React.FC<{ channelName: string; onInvite: () => voi
         className="arte-do-convite shrink-0"
       />
 
-      <p data-gc="voz.call-invite-card.p" className="texto-do-convite max-w-[22rem] text-sm text-ink-muted">
-        Você está sozinho em {channelName}. Chame alguém para a conversa.
-      </p>
+      <div data-gc="voz.call-invite-card.div--3"
+        className="dizeres-do-convite flex min-w-0 flex-col items-center gap-2"
+      >
+        <p data-gc="voz.call-invite-card.p" className="texto-do-convite max-w-[22rem] text-sm text-ink-muted">
+          Você está sozinho em {channelName}. Chame alguém para a conversa.
+        </p>
 
-      <Button data-gc="voz.call-invite-card.button.on-invite" size="sm" variant="surface" className="shrink-0" onClick={onInvite}>
-        <UserPlus data-gc="voz.call-invite-card.user-plus" size={16} weight="fill" />
-        Convidar para voz
-      </Button>
+        <Button data-gc="voz.call-invite-card.button.on-invite" size="sm" variant="surface" className="shrink-0" onClick={onInvite}>
+          <UserPlus data-gc="voz.call-invite-card.user-plus" size={16} weight="fill" />
+          Convidar para voz
+        </Button>
+      </div>
     </div>
   </div>
 );
