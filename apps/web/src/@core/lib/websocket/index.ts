@@ -2,6 +2,7 @@ import { io, type Socket } from "socket.io-client";
 import type { ClientToServerEvents, FailureReason, ServerToClientEvents } from "@gravae/shared";
 
 import { getAccessToken } from "~/@core/lib/api";
+import { comNomesNovos } from "~/@core/lib/api-mais-velha";
 
 const withReason = (message: string, reason: FailureReason) =>
   Object.assign(new Error(message), { reason });
@@ -19,6 +20,27 @@ export function connectSocket(): GravaeSocket {
     reconnectionDelay: 500,
     reconnectionDelayMax: 5000,
   });
+
+  /*
+    O mesmo acerto do corpo HTTP vale aqui: o evento chega da API, e ela pode
+    estar uma publicação atrás do web. Renomear na porta de entrada é mais
+    barato do que espalhar checagem por cada `on`.
+
+    `onevent` é o ponto por onde o pacote entra antes de virar chamada de
+    ouvinte. `onAny` não serve: ele recebe uma cópia dos argumentos, e mexer
+    nela não muda o que o `on` vê.
+  */
+  const entrada = instance as unknown as {
+    onevent: (pacote: { data?: unknown[] }) => void;
+  };
+  const original = entrada.onevent.bind(entrada);
+
+  entrada.onevent = (pacote) => {
+    if (Array.isArray(pacote.data)) {
+      pacote.data = [pacote.data[0], ...pacote.data.slice(1).map(comNomesNovos)];
+    }
+    original(pacote);
+  };
 
   return instance;
 }
