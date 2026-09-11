@@ -1,4 +1,4 @@
-import type { EstiloDeCargo, Permission } from "@gravae/shared";
+import type { RoleStyle, Permission } from "@gravae/shared";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { api } from "~/@core/lib/api";
 
@@ -8,7 +8,7 @@ export interface UpdateRoleDTO {
   name?: string;
   color?: string | null;
   colorSecondary?: string | null;
-  estilo?: EstiloDeCargo;
+  style?: RoleStyle;
   iconEmoji?: string | null;
   iconUrl?: string | null;
   permissions?: Permission[];
