@@ -4,46 +4,46 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Check, X } from "lucide-react";
 
 import {
-  buscarStatus,
-  NOMES,
-  PECAS,
-  type DiaDaJanela,
-  type Peca,
+  searchStatus,
+  NAMES,
+  PIECES,
+  type WindowDay,
+  type Piece,
   type Status,
 } from "~/lib/status";
 
-const cor = (uptime: number | null) => {
+const color = (uptime: number | null) => {
   if (uptime === null) return "bg-white/10";
   if (uptime >= 99.5) return "bg-emerald-500";
   if (uptime >= 95) return "bg-amber-500";
   return "bg-red-500";
 };
 
-const Barra = ({ dias }: { dias: DiaDaJanela[] }) => (
+const Bar = ({ days }: { days: WindowDay[] }) => (
   <div className="flex h-8 items-stretch gap-px overflow-hidden rounded">
-    {dias.map((d) => (
+    {days.map((d) => (
       <span
-        key={d.dia}
+        key={d.day}
         title={
           d.uptime === null
-            ? `${d.dia} — sem medição`
-            : `${d.dia} — ${d.uptime.toFixed(2)}% no ar`
+            ? `${d.day} — sem medição`
+            : `${d.day} — ${d.uptime.toFixed(2)}% no ar`
         }
-        className={`min-w-0 flex-1 rounded-[1px] ${cor(d.uptime)}`}
+        className={`min-w-0 flex-1 rounded-[1px] ${color(d.uptime)}`}
       />
     ))}
   </div>
 );
 
-const mediaDaJanela = (dias: DiaDaJanela[]) => {
-  const medidos = dias.filter((d) => d.uptime !== null);
-  if (!medidos.length) return null;
+const windowMedia = (days: WindowDay[]) => {
+  const measured = days.filter((d) => d.uptime !== null);
+  if (!measured.length) return null;
 
-  return medidos.reduce((soma, d) => soma + d.uptime!, 0) / medidos.length;
+  return measured.reduce((soma, d) => soma + d.uptime!, 0) / measured.length;
 };
 
-const Faixa = ({ status }: { status: Status | null }) => {
-  const fora = status?.agora.filter((m) => m.estado === "down") ?? [];
+const Track = ({ status }: { status: Status | null }) => {
+  const outside = status?.now.filter((m) => m.state === "down") ?? [];
 
   if (!status) {
     return (
@@ -56,14 +56,14 @@ const Faixa = ({ status }: { status: Status | null }) => {
     );
   }
 
-  if (fora.length) {
+  if (outside.length) {
     return (
       <p className="flex items-center gap-3 rounded-xl bg-amber-500/15 px-5 py-4 text-amber-200">
         <AlertTriangle size={20} className="shrink-0" />
         <span className="font-semibold">
-          {fora.length === 1
-            ? `${NOMES[fora[0]!.peca]} está fora do ar`
-            : `${fora.length} peças estão fora do ar`}
+          {outside.length === 1
+            ? `${NAMES[outside[0]!.piece]} está fora do ar`
+            : `${outside.length} peças estão fora do ar`}
         </span>
       </p>
     );
@@ -77,10 +77,10 @@ const Faixa = ({ status }: { status: Status | null }) => {
   );
 };
 
-export const PainelDeStatus = () => {
+export const StatusPanel = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["status"],
-    queryFn: buscarStatus,
+    queryFn: searchStatus,
     refetchInterval: 30_000,
     retry: false,
   });
@@ -92,8 +92,8 @@ export const PainelDeStatus = () => {
       <div className="space-y-8">
         <div className="h-14 animate-pulse rounded-xl bg-white/5" />
         <div className="space-y-6">
-          {PECAS.map((peca) => (
-            <div key={peca} className="space-y-2">
+          {PIECES.map((piece) => (
+            <div key={piece} className="space-y-2">
               <div className="h-4 w-32 animate-pulse rounded bg-white/5" />
               <div className="h-8 animate-pulse rounded bg-white/5" />
             </div>
@@ -105,24 +105,24 @@ export const PainelDeStatus = () => {
 
   return (
     <div className="space-y-8">
-      <Faixa status={status} />
+      <Track status={status} />
 
       <div className="space-y-6">
-        {(status?.pecas ?? PECAS).map((peca) => {
-          const dias = status?.janela[peca as Peca] ?? [];
-          const media = mediaDaJanela(dias);
-          const agora = status?.agora.find((m) => m.peca === peca);
+        {(status?.pieces ?? PIECES).map((piece) => {
+          const days = status?.appWindow[piece as Piece] ?? [];
+          const media = windowMedia(days);
+          const now = status?.now.find((m) => m.piece === piece);
 
           return (
-            <section key={peca}>
+            <section key={piece}>
               <header className="mb-2 flex items-baseline justify-between gap-4">
                 <h2 className="flex items-center gap-2 text-sm font-semibold">
                   <span
                     className={`size-2 shrink-0 rounded-full ${
-                      !status ? "bg-white/20" : agora?.estado === "up" ? "bg-emerald-500" : "bg-red-500"
+                      !status ? "bg-white/20" : now?.state === "up" ? "bg-emerald-500" : "bg-red-500"
                     }`}
                   />
-                  {NOMES[peca as Peca]}
+                  {NAMES[piece as Piece]}
                 </h2>
 
                 <span className="shrink-0 text-xs tabular-nums text-ink-faint">
@@ -130,7 +130,7 @@ export const PainelDeStatus = () => {
                 </span>
               </header>
 
-              {dias.length ? <Barra dias={dias} /> : <div className="h-8 rounded bg-white/5" />}
+              {days.length ? <Bar days={days} /> : <div className="h-8 rounded bg-white/5" />}
 
               <p className="mt-1 flex justify-between text-[11px] uppercase tracking-wide text-ink-faint">
                 <span>90 dias atrás</span>
