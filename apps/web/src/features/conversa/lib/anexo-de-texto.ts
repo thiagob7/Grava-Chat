@@ -1,8 +1,8 @@
 import type { Attachment } from "@gravae/shared";
 
-export const MAIOR_PREVIA_BYTES = 512 * 1024;
+export const LARGER_PREVIEW_BYTES = 512 * 1024;
 
-const TIPOS = [
+const KINDS = [
   "text/",
   "application/json",
   "application/xml",
@@ -12,7 +12,7 @@ const TIPOS = [
   "application/x-yaml",
 ];
 
-const EXTENSOES = new Set([
+const EXTENSIONS = new Set([
   "c",
   "cfg",
   "conf",
@@ -60,17 +60,17 @@ const EXTENSOES = new Set([
   "zsh",
 ]);
 
-export function extensaoDe(nome: string): string {
-  const ponto = nome.lastIndexOf(".");
+export function extension(name: string): string {
+  const dot = name.lastIndexOf(".");
 
-  return ponto <= 0 ? "" : nome.slice(ponto + 1).toLowerCase();
+  return dot <= 0 ? "" : name.slice(dot + 1).toLowerCase();
 }
 
-export function ehAnexoDeTexto(anexo: Attachment): boolean {
-  if (anexo.size > MAIOR_PREVIA_BYTES) return false;
+export function isTextAttachment(attachment: Attachment): boolean {
+  if (attachment.size > LARGER_PREVIEW_BYTES) return false;
 
-  const tipo = anexo.contentType.toLowerCase();
-  if (TIPOS.some((t) => tipo.startsWith(t))) return true;
+  const kind = attachment.contentType.toLowerCase();
+  if (KINDS.some((t) => kind.startsWith(t))) return true;
 
-  return EXTENSOES.has(extensaoDe(anexo.filename));
+  return EXTENSIONS.has(extension(attachment.filename));
 }

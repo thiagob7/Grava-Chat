@@ -1,69 +1,69 @@
-export type TipoDeAviso = "note" | "tip" | "important" | "warning" | "caution";
+export type NoticeKind = "note" | "tip" | "important" | "warning" | "caution";
 
-export type PedacoDeTexto =
-  | { tipo: "texto"; texto: string }
-  | { tipo: "citacao"; texto: string }
-  | { tipo: "aviso"; aviso: TipoDeAviso; texto: string };
+export type TextPiece =
+  | { kind: "texto"; text: string }
+  | { kind: "quote"; text: string }
+  | { kind: "notice"; notice: NoticeKind; text: string };
 
-const TIPOS = new Set<string>(["note", "tip", "important", "warning", "caution"]);
+const KINDS = new Set<string>(["note", "tip", "important", "warning", "caution"]);
 
-const CITACAO = /^\s{0,3}>\s?(.*)$/;
-const CABECALHO = /^\[!([a-zA-Z]+)\]\s*$/;
+const QUOTE = /^\s{0,3}>\s?(.*)$/;
+const HEADER = /^\[!([a-zA-Z]+)\]\s*$/;
 
-function ehTipo(nome: string): nome is TipoDeAviso {
-  return TIPOS.has(nome);
+function isKind(name: string): name is NoticeKind {
+  return KINDS.has(name);
 }
 
-export function partirEmAvisos(conteudo: string): PedacoDeTexto[] {
-  const linhas = conteudo.split("\n");
-  const pedacos: PedacoDeTexto[] = [];
+export function fromNotices(content: string): TextPiece[] {
+  const lines = content.split("\n");
+  const pieces: TextPiece[] = [];
 
-  let soltas: string[] = [];
-  let bloco: string[] | null = null;
+  let loose: string[] = [];
+  let block: string[] | null = null;
 
-  const fecharTexto = () => {
-    if (!soltas.length) return;
-    pedacos.push({ tipo: "texto", texto: soltas.join("\n") });
-    soltas = [];
+  const closeText = () => {
+    if (!loose.length) return;
+    pieces.push({ kind: "texto", text: loose.join("\n") });
+    loose = [];
   };
 
-  const fecharBloco = () => {
-    if (!bloco) return;
+  const closeBlock = () => {
+    if (!block) return;
 
-    const [primeira, ...resto] = bloco;
-    const cabecalho = CABECALHO.exec(primeira ?? "");
-    const tipo = cabecalho?.[1]?.toLowerCase() ?? "";
+    const [first, ...rest] = block;
+    const header = HEADER.exec(first ?? "");
+    const kind = header?.[1]?.toLowerCase() ?? "";
 
-    if (cabecalho && ehTipo(tipo)) {
-      pedacos.push({ tipo: "aviso", aviso: tipo, texto: resto.join("\n").trim() });
+    if (header && isKind(kind)) {
+      pieces.push({ kind: "notice", notice: kind, text: rest.join("\n").trim() });
     } else {
-      pedacos.push({ tipo: "citacao", texto: bloco.join("\n").trim() });
+      pieces.push({ kind: "quote", text: block.join("\n").trim() });
     }
 
-    bloco = null;
+    block = null;
   };
 
-  for (const linha of linhas) {
-    const citada = CITACAO.exec(linha);
+  for (const line of lines) {
+    const quoted = QUOTE.exec(line);
 
-    if (citada) {
-      fecharTexto();
-      bloco ??= [];
-      bloco.push(citada[1] ?? "");
+    if (quoted) {
+      closeText();
+      block ??= [];
+      block.push(quoted[1] ?? "");
       continue;
     }
 
-    fecharBloco();
-    soltas.push(linha);
+    closeBlock();
+    loose.push(line);
   }
 
-  fecharBloco();
-  fecharTexto();
+  closeBlock();
+  closeText();
 
-  return pedacos.filter((p) => p.tipo !== "texto" || p.texto.trim() !== "");
+  return pieces.filter((p) => p.kind !== "texto" || p.text.trim() !== "");
 }
 
-export const ROTULO_DO_AVISO: Record<TipoDeAviso, string> = {
+export const NOTICE_LABEL: Record<NoticeKind, string> = {
   note: "Nota",
   tip: "Dica",
   important: "Importante",
