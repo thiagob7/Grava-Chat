@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
-import { ehDesktop } from "~/lib/desktop";
+import { isDesktop } from "~/lib/desktop";
 
-interface JanelaDoEstudio {
-  aberto: boolean;
-  abrir: () => void;
-  fechar: () => void;
+interface StudioWindow {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
 }
 
-function aCascaAbreJanela(): boolean {
-  return Boolean(window.gravae?.janela?.fixarPorCima);
+function shellOpensWindow(): boolean {
+  return Boolean(window.gravae?.appWindow?.pinByUp);
 }
 
 /*
@@ -22,32 +22,32 @@ function aCascaAbreJanela(): boolean {
   e ignora as medidas —, o resultado sai diferente do pedido. Quando o pedido
   falha de vez, cai na janela flutuante de dentro do app, logo abaixo.
 */
-function abrirNoSistema(): boolean {
-  if (ehDesktop() && !aCascaAbreJanela()) return false;
+function openSystem(): boolean {
+  if (isDesktop() && !shellOpensWindow()) return false;
 
-  const largura = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
-  const altura = Math.min(900, Math.round(window.screen.availHeight * 0.85));
+  const width = Math.min(1320, Math.round(window.screen.availWidth * 0.8));
+  const height = Math.min(900, Math.round(window.screen.availHeight * 0.85));
 
-  const janela = window.open(
+  const appWindow = window.open(
     "/estudio",
     "gc-estudio",
-    `popup=yes,width=${largura},height=${altura},left=${Math.round(
-      (window.screen.availWidth - largura) / 2,
-    )},top=${Math.round((window.screen.availHeight - altura) / 2)}`,
+    `popup=yes,width=${width},height=${height},left=${Math.round(
+      (window.screen.availWidth - width) / 2,
+    )},top=${Math.round((window.screen.availHeight - height) / 2)}`,
   );
 
-  if (!janela) return false;
+  if (!appWindow) return false;
 
-  janela.focus();
+  appWindow.focus();
   return true;
 }
 
-export const useJanelaDoEstudio = create<JanelaDoEstudio>((set) => ({
-  aberto: false,
-  abrir: () => {
-    if (abrirNoSistema()) return;
+export const useStudioWindow = create<StudioWindow>((set) => ({
+  isOpen: false,
+  open: () => {
+    if (openSystem()) return;
 
-    set({ aberto: true });
+    set({ isOpen: true });
   },
-  fechar: () => set({ aberto: false }),
+  close: () => set({ isOpen: false }),
 }));
