@@ -17,8 +17,8 @@ interface SessionContextValue {
   isBooting: boolean;
   devLoginEnabled: boolean;
   googleEnabled: boolean;
-  senhaEnabled: boolean;
-  esqueciSenhaEnabled: boolean;
+  passwordEnabled: boolean;
+  forgotPasswordEnabled: boolean;
   voiceReachable: boolean;
   apiUnreachable: boolean;
   retry: () => void;
@@ -28,28 +28,28 @@ interface SessionContextValue {
 
 const SessionContext = createContext<SessionContextValue | null>(null);
 
-function alcancaOServidorDeVoz(voiceUrl: string | undefined): boolean {
+function voiceReachesServer(voiceUrl: string | undefined): boolean {
   if (!voiceUrl) return true;
 
-  const ehLocal = /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(voiceUrl);
-  const estouLocal = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+  const isLocal = /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(voiceUrl);
+  const amLocal = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
 
-  return !ehLocal || estouLocal;
+  return !isLocal || amLocal;
 }
 
-const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const TETO_DA_ABERTURA_MS = 20_000;
+const OPENING_MS_CEILING = 20_000;
 
-async function restaurarSessao<U>(tentativas = 4): Promise<U | null> {
-  for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+async function restoreSession<U>(attempts = 4): Promise<U | null> {
+  for (let attempt = 0; attempt < attempts; attempt++) {
     try {
       return (await refreshSession<U>()).user;
-    } catch (erro) {
-      const definitivo = axios.isAxiosError(erro) && erro.response?.status === 401;
-      if (definitivo || tentativa === tentativas - 1) return null;
+    } catch (error) {
+      const final = axios.isAxiosError(error) && error.response?.status === 401;
+      if (final || attempt === attempts - 1) return null;
 
-      await esperar(400 * 2 ** tentativa);
+      await wait(400 * 2 ** attempt);
     }
   }
 
@@ -64,15 +64,15 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const config = useAuthConfig();
   const me = useMe(hasSession);
 
-  const [demorouDemais, setDemorouDemais] = useState(false);
+  const [tookToo, setTookToo] = useState(false);
 
   useEffect(() => {
-    const relogio = setTimeout(() => setDemorouDemais(true), TETO_DA_ABERTURA_MS);
-    return () => clearTimeout(relogio);
+    const clock = setTimeout(() => setTookToo(true), OPENING_MS_CEILING);
+    return () => clearTimeout(clock);
   }, []);
 
   useEffect(() => {
-    void restaurarSessao<SelfUserModel>()
+    void restoreSession<SelfUserModel>()
       .then((user) => {
         if (!user) {
           setAccessToken(null);
@@ -87,17 +87,17 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   }, [queryClient]);
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte) return;
+    const bridge = desktop();
+    if (!bridge) return;
 
-    return ponte.login.aoReceber((dados) => {
-      void desktopLogin(dados)
+    return bridge.login.onReceive((data) => {
+      void desktopLogin(data)
         .then((session) => {
           queryClient.setQueryData([queryKeys.auth.me], session.user);
           setHasSession(true);
         })
-        .catch((erro) => {
-          toast.error(apiErrorMessage(erro, "O login com Google não pôde ser concluído."));
+        .catch((error) => {
+          toast.error(apiErrorMessage(error, "O login com Google não pôde ser concluído."));
         });
     });
   }, [queryClient]);
@@ -112,12 +112,12 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const value: SessionContextValue = {
     user: (me.data as SelfUserModel | undefined) ?? null,
-    isBooting: !demorouDemais && (isBooting || (hasSession && me.isLoading)),
+    isBooting: !tookToo && (isBooting || (hasSession && me.isLoading)),
     devLoginEnabled: config.data?.devLogin ?? false,
     googleEnabled: config.data?.google ?? false,
-    senhaEnabled: config.data?.senha ?? false,
-    esqueciSenhaEnabled: config.data?.esqueciSenha ?? false,
-    voiceReachable: alcancaOServidorDeVoz(config.data?.voiceUrl),
+    passwordEnabled: config.data?.password ?? false,
+    forgotPasswordEnabled: config.data?.forgotPassword ?? false,
+    voiceReachable: voiceReachesServer(config.data?.voiceUrl),
     apiUnreachable: config.isError,
     retry: () => {
       void config.refetch();
