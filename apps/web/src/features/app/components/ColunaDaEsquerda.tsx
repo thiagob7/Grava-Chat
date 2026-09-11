@@ -9,14 +9,14 @@ import React from "react";
   vai do topo até embaixo, passando pelo cartão do usuário — que é onde a borda
   realmente termina.
 */
-export const ColunaDaEsquerda: React.FC<{
-  rodape: React.ReactNode;
+export const LeftColumn: React.FC<{
+  footer: React.ReactNode;
   alca?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ rodape, alca, children }) => (
-  <div data-gc="app.coluna-da-esquerda.div" className="relative flex min-h-0 shrink-0 flex-col">
+}> = ({ footer, alca, children }) => (
+  <div data-gc="app.coluna-da-esquerda.div" className="relative flex min-h-0 shrink-0 flex-col border-r border-line">
     <div data-gc="app.coluna-da-esquerda.div--2" className="flex min-h-0 flex-1 bg-surface-1">{children}</div>
-    {rodape}
+    {footer}
     {alca}
   </div>
 );
