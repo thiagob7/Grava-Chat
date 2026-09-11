@@ -690,12 +690,15 @@ body[data-scroll-locked] .regiao-de-arrasto {
 
 /*
   Gaveta e tela cheia são portais no `body`: o `#app` não os alcança, e eles
-  cobrem a tela toda, então recuam nos quatro lados.
+  cobrem a tela toda.
+
+  Só o topo e os lados recuam. A barra de status fica POR CIMA do app, então lá
+  o recuo é necessário; a barra de baixo o sistema já reserva, e reservar de
+  novo abria uma folga embaixo do cartão do usuário.
 */
 .gaveta-segura {
   padding-top: var(--recuo-topo);
   padding-right: var(--recuo-direita);
-  padding-bottom: var(--recuo-baixo);
   padding-left: var(--recuo-esquerda);
 }
 
