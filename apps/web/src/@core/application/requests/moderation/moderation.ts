@@ -15,7 +15,7 @@ export interface AuditEntryModel {
   targetType: string;
   targetId: string | null;
   targetName: string | null;
-  changes: Record<string, { de: unknown; para: unknown }> | null;
+  changes: Record<string, { de: unknown; toward: unknown }> | null;
   reason: string | null;
   createdAt: string;
 }
@@ -26,12 +26,12 @@ export interface AutoModRuleModel {
   name: string;
   enabled: boolean;
   trigger: "WORDS" | "MENTION_SPAM" | "LINKS";
-  palavras: string[];
-  limiteMencoes: number | null;
-  acoes: ("BLOCK" | "ALERT" | "TIMEOUT")[];
+  words: string[];
+  limitMentions: number | null;
+  actions: ("BLOCK" | "ALERT" | "TIMEOUT")[];
   alertChannelId: string | null;
   timeoutSeconds: number | null;
-  cargosIsentos: string[];
+  rolesExempt: string[];
 }
 
 export async function findBans(guildId: string): Promise<BanModel[]> {
@@ -47,7 +47,7 @@ export async function banMember({
   guildId: string;
   userId: string;
   reason?: string | null;
-  apagarHoras?: number;
+  deleteHours?: number;
 }) {
   await api.put(`/guilds/${guildId}/bans/${userId}`, body);
 }
@@ -63,7 +63,7 @@ export async function timeoutMember({
 }: {
   guildId: string;
   userId: string;
-  minutos: number;
+  minutes: number;
   reason?: string | null;
 }): Promise<GuildMember> {
   const response = await api.put<GuildMember>(`/guilds/${guildId}/members/${userId}/timeout`, body);
