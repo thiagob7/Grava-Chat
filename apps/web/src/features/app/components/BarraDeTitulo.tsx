@@ -109,7 +109,7 @@ export const TitleBar: React.FC = () => {
   const place = current ? null : PLACES.find((l) => l.test(pathname));
 
   return (
-    <header data-gc="app.barra-de-titulo.header" {...flx("titleBar", "regiao-de-arrasto relative flex h-8 shrink-0 items-center justify-center bg-surface-1 px-2")}>
+    <header data-gc="app.barra-de-titulo.header" {...flx("titleBar", "barra-de-titulo regiao-de-arrasto relative flex h-8 shrink-0 items-center justify-center bg-surface-1 px-2")}>
       <span data-gc="app.barra-de-titulo.span" className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
         {current ? (
           <>
