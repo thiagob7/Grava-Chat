@@ -659,9 +659,14 @@ body[data-scroll-locked] .regiao-de-arrasto {
   --recuo-direita: env(safe-area-inset-right);
 }
 
-/* O cabeçalho do canal cresce para dentro da barra de status. */
-.topo-do-canal {
-  height: calc(var(--layout-header-height) + var(--recuo-topo));
+/*
+  Quem encosta no topo é a BARRA DE TÍTULO, não o cabeçalho do canal: ela vem
+  antes na casca e mede 2rem. Foi por isso que a primeira tentativa não
+  resolveu — o cabeçalho ganhou o recuo, mas quem estava embaixo do relógio
+  era a barra. Ela cresce para dentro da barra de status, com o fundo dela.
+*/
+.barra-de-titulo {
+  height: calc(2rem + var(--recuo-topo));
   padding-top: var(--recuo-topo);
 }
 
