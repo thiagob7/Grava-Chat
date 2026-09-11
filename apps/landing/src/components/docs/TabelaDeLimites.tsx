@@ -1,30 +1,30 @@
-import referencia from "~/dados/referencia.json";
+import reference from "~/dados/referencia.json";
 
-const formatar = (valor: number, formato: string) => {
-  if (formato === "bytes") {
-    const mb = valor / 1024 / 1024;
-    return mb >= 1 ? `${mb} MB` : `${valor / 1024} KB`;
+const format = (value: number, format: string) => {
+  if (format === "bytes") {
+    const mb = value / 1024 / 1024;
+    return mb >= 1 ? `${mb} MB` : `${value / 1024} KB`;
   }
 
-  if (formato === "segundos") {
-    const horas = valor / 3600;
-    return horas >= 1 ? `${horas} h` : `${valor / 60} min`;
+  if (format === "segundos") {
+    const hours = value / 3600;
+    return hours >= 1 ? `${hours} h` : `${value / 60} min`;
   }
 
-  const numero = valor.toLocaleString("pt-BR");
-  return formato === "caracteres" ? `${numero} caracteres` : numero;
+  const number = value.toLocaleString("pt-BR");
+  return format === "caracteres" ? `${number} caracteres` : number;
 };
 
-export const TabelaDeLimites = () => (
+export const LimitsTable = () => (
   <div className="divide-y divide-line/70 overflow-hidden rounded-xl border border-line">
-    {referencia.limites.map((limite) => (
+    {reference.limits.map((limit) => (
       <div
-        key={limite.rotulo}
+        key={limit.label}
         className="flex items-baseline justify-between gap-4 bg-surface-1 px-4 py-2.5"
       >
-        <span className="text-sm text-ink-muted">{limite.rotulo}</span>
+        <span className="text-sm text-ink-muted">{limit.label}</span>
         <span className="shrink-0 text-sm font-medium text-ink">
-          {formatar(limite.valor, limite.formato)}
+          {format(limit.value, limit.format)}
         </span>
       </div>
     ))}
