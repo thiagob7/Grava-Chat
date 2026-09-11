@@ -1,59 +1,59 @@
-import type { Decoracao } from "@gravae/shared";
+import type { Decoration } from "@gravae/shared";
 
 import coroaUrl from "~/assets/decoracoes/coroa.svg?url";
-import runasUrl from "~/assets/decoracoes/runas.svg?url";
-import loureiroUrl from "~/assets/decoracoes/loureiro.svg?url";
+import runesUrl from "~/assets/decoracoes/runas.svg?url";
+import laurelUrl from "~/assets/decoracoes/loureiro.svg?url";
 
 interface Lottie {
-  arquivo: () => Promise<{ default: unknown }>;
-  folga: string;
-  segmento?: [number, number];
+  file: () => Promise<{ default: unknown }>;
+  slack: string;
+  segment?: [number, number];
 }
 
-interface Imagem {
+interface Picture {
   url: string;
-  folga: string;
+  slack: string;
 }
 
-const LOTTIES: Partial<Record<Decoracao, Lottie>> = {
-  aro: { arquivo: () => import("~/assets/decoracoes/aro.json"), folga: "-16%" },
+const LOTTIES: Partial<Record<Decoration, Lottie>> = {
+  aro: { file: () => import("~/assets/decoracoes/aro.json"), slack: "-16%" },
   alada: {
-    arquivo: () => import("~/assets/decoracoes/alada.json"),
-    folga: "-24%",
+    file: () => import("~/assets/decoracoes/alada.json"),
+    slack: "-24%",
   },
-  gelo: { arquivo: () => import("~/assets/decoracoes/gelo.json"), folga: "-16%" },
+  gelo: { file: () => import("~/assets/decoracoes/gelo.json"), slack: "-16%" },
 };
 
-const IMAGENS: Partial<Record<Decoracao, Imagem>> = {
-  coroa: { url: coroaUrl, folga: "-16%" },
-  runas: { url: runasUrl, folga: "-16%" },
-  loureiro: { url: loureiroUrl, folga: "-22%" },
+const IMAGES: Partial<Record<Decoration, Picture>> = {
+  coroa: { url: coroaUrl, slack: "-16%" },
+  runas: { url: runesUrl, slack: "-16%" },
+  loureiro: { url: laurelUrl, slack: "-22%" },
 };
 
-export const ehLottie = (decoracao: Decoracao | null | undefined): boolean =>
-  Boolean(decoracao && decoracao in LOTTIES);
+export const isLottie = (decoration: Decoration | null | undefined): boolean =>
+  Boolean(decoration && decoration in LOTTIES);
 
-export const ehImagem = (decoracao: Decoracao | null | undefined): boolean =>
-  Boolean(decoracao && decoracao in IMAGENS);
+export const isImage = (decoration: Decoration | null | undefined): boolean =>
+  Boolean(decoration && decoration in IMAGES);
 
-export const ehDeArquivo = (decoracao: Decoracao | null | undefined): boolean =>
-  ehLottie(decoracao) || ehImagem(decoracao);
+export const isFile = (decoration: Decoration | null | undefined): boolean =>
+  isLottie(decoration) || isImage(decoration);
 
-export async function carregarDecoracao(
-  decoracao: Decoracao,
+export async function loadDecoration(
+  decoration: Decoration,
 ): Promise<unknown | null> {
-  const lottie = LOTTIES[decoracao];
+  const lottie = LOTTIES[decoration];
   if (!lottie) return null;
 
-  return (await lottie.arquivo()).default;
+  return (await lottie.file()).default;
 }
 
-export const imagemDaDecoracao = (decoracao: Decoracao): string | null =>
-  IMAGENS[decoracao]?.url ?? null;
+export const decorationImage = (decoration: Decoration): string | null =>
+  IMAGES[decoration]?.url ?? null;
 
-export const folgaDaDecoracao = (decoracao: Decoracao): string =>
-  LOTTIES[decoracao]?.folga ?? IMAGENS[decoracao]?.folga ?? "-16%";
+export const decorationSlack = (decoration: Decoration): string =>
+  LOTTIES[decoration]?.slack ?? IMAGES[decoration]?.slack ?? "-16%";
 
-export const segmentoDaDecoracao = (
-  decoracao: Decoracao,
-): [number, number] | undefined => LOTTIES[decoracao]?.segmento;
+export const decorationSegment = (
+  decoration: Decoration,
+): [number, number] | undefined => LOTTIES[decoration]?.segment;
