@@ -1,7 +1,7 @@
-export const TEMA_APLICADO = "gc:tema-aplicado";
+export const THEME_APPLIED = "gc:tema-aplicado";
 
-export function avisarTemaAplicado() {
+export function notifyThemeApplied() {
   if (typeof window === "undefined") return;
 
-  window.dispatchEvent(new Event(TEMA_APLICADO));
+  window.dispatchEvent(new Event(THEME_APPLIED));
 }
