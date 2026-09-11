@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Eine kleine winkende Hand",
+    botao: "{{nome}} zuwinken",
+  },
+  oficial: {
+    titulo: "Dieser Kanal ist nur für offizielle Ansagen.",
+    detalhe: "Wir fragen nie nach deinem Passwort oder dem Token deines Kontos.",
+    saibaMais: "Mehr erfahren",
+  },
+  topico: {
+    abrir: "Kanalbeschreibung ansehen",
+  },
+  previaDoLink: {
+    carregando: "Schaue, was hinter dem Link steckt…",
+    destino: "Führt zu {{destino}}",
+  },
+  reacao: {
+    carregando: "Schaue nach, wer mit {{emoji}} reagiert hat…",
+    uma: "{{nome}} hat mit {{emoji}} reagiert",
+    duas: "{{primeiro}} und {{segundo}} haben mit {{emoji}} reagiert",
+    varias: "{{nomes}} und {{quantos}} weitere haben mit {{emoji}} reagiert",
+    dicaSuper: "Gedrückt halten für Superreaktion",
+  },
+  recado: {
+    gravar: "Sprachnachricht aufnehmen",
+    descartar: "Aufnahme verwerfen",
+    mandar: "Aufnahme senden",
+    semSuporte: "Dieser Browser nimmt keinen Ton auf.",
+    semMicrofone: "Kein Zugriff auf das Mikrofon.",
+  },
   lista: {
     carregando: "Nachrichten werden geladen…",
     carregandoMais: "Wird geladen…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Bild ansehen",
   },
   enquete: {
+    criar: "Umfrage erstellen",
+    pergunta: "Frage",
+    exemplo: "Was zocken wir heute?",
+    respostas: "Antworten",
+    adicionarOpcao: "Antwort hinzufügen",
+    removerOpcao: "Antwort entfernen",
+    varias: "Mehrere Antworten zulassen",
+    variasDetalhe: "Ohne das nimmt eine Stimme für eine Antwort die Stimme von der vorigen weg.",
+    duracao: "Dauer",
+    umaHora: "1 Stunde",
+    quatroHoras: "4 Stunden",
+    oitoHoras: "8 Stunden",
+    umDia: "1 Tag",
+    tresDias: "3 Tage",
+    umaSemana: "1 Woche",
+    ateEncerrar: "Bis ich sie schließe",
     titulo: "Umfrage",
     encerrada: "Umfrage beendet",
     variasRespostas: "Umfrage — mehrere Antworten",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Die Suche schaut nur in Kanäle, die du lesen darfst.",
   },
   entrada: {
+    semNome: "Unterhaltung",
+    anexo: "(Anhang)",
     titulo: "Posteingang",
     naoLidas: "Ungelesen",
     salvas: "Gespeichert",
