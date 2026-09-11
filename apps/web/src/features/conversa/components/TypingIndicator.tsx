@@ -35,7 +35,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         : t("conversa.digitando.varios", { quantidade: names.length });
 
   return (
-    <div data-gc="conversa.typing-indicator.div" {...flx("balaoDeDigitando", "pointer-events-none absolute -top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full border border-line bg-surface-2/80 px-2.5 py-1 text-xs text-ink-muted shadow-lg backdrop-blur-md")}>
+    <div data-gc="conversa.typing-indicator.div" {...flx("typingBalloon", "pointer-events-none absolute -top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full border border-line bg-surface-2/80 px-2.5 py-1 text-xs text-ink-muted shadow-lg backdrop-blur-md")}>
       <span data-gc="conversa.typing-indicator.span" className="flex shrink-0 -space-x-1.5">
         {users.slice(0, 3).map((entry) => (
           <Avatar data-gc="conversa.typing-indicator.avatar"
@@ -59,7 +59,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ channelId, cur
         ))}
       </span>
 
-      <span data-gc="conversa.typing-indicator.span--4" {...flx("textoDeDigitando", "min-w-0 truncate font-medium")}>{text}</span>
+      <span data-gc="conversa.typing-indicator.span--4" {...flx("typingText", "min-w-0 truncate font-medium")}>{text}</span>
     </div>
   );
 };
