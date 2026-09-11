@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Šio profilio atverti nepavyko.",
   carregando: "Įkeliama…",
   editar: "Redaguoti profilį",
   mensagem: "Žinutė",
