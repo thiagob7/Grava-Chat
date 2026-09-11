@@ -1,9 +1,9 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 
-const ESQUEMA = "gravae";
+const SCHEMA = "gravae";
 
-export function rotaDoLink(url: string): string | null {
-  if (!url.startsWith(`${ESQUEMA}://`)) return null;
+export function linkRoute(url: string): string | null {
+  if (!url.startsWith(`${SCHEMA}://`)) return null;
 
   const { host, pathname, search } = new URL(url);
   if (!host || host === "auth") return null;
@@ -11,37 +11,37 @@ export function rotaDoLink(url: string): string | null {
   return `/${host}${pathname}${search}`;
 }
 
-export function registrarLinks() {
-  let pendente: string | null = null;
+export function registerLinks() {
+  let pending: string | null = null;
 
-  const abrir = (url: string) => {
-    const rota = rotaDoLink(url);
-    if (!rota) return;
+  const open = (url: string) => {
+    const route = linkRoute(url);
+    if (!route) return;
 
-    const janela = BrowserWindow.getAllWindows()[0];
+    const appWindow = BrowserWindow.getAllWindows()[0];
 
-    if (!janela || janela.webContents.isLoading()) {
-      pendente = rota;
+    if (!appWindow || appWindow.webContents.isLoading()) {
+      pending = route;
       return;
     }
 
-    if (janela.isMinimized()) janela.restore();
-    janela.show();
-    janela.focus();
+    if (appWindow.isMinimized()) appWindow.restore();
+    appWindow.show();
+    appWindow.focus();
 
-    janela.webContents.send("link:abrir", rota);
+    appWindow.webContents.send("link:abrir", route);
   };
 
-  app.on("open-url", (evento, url) => {
-    evento.preventDefault();
-    abrir(url);
+  app.on("open-url", (event, url) => {
+    event.preventDefault();
+    open(url);
   });
 
   ipcMain.handle("link:pendente", () => {
-    const rota = pendente;
-    pendente = null;
-    return rota;
+    const route = pending;
+    pending = null;
+    return route;
   });
 
-  return { abrir };
+  return { open };
 }

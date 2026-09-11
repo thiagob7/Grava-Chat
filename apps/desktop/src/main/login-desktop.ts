@@ -1,64 +1,64 @@
 import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
 import { app, BrowserWindow, ipcMain, shell } from "electron";
-import type { CodigoDeLogin } from "@gravae/shared";
+import type { LoginCode } from "@gravae/shared";
 
 import { APP_URL } from "./config.js";
 
-const ESQUEMA = "gravae";
+const SCHEMA = "gravae";
 
-export function registrarLoginDesktop() {
-  let verificador: string | null = null;
-  let pendente: CodigoDeLogin | null = null;
+export function registerLoginDesktop() {
+  let verifier: string | null = null;
+  let pending: LoginCode | null = null;
 
   if (process.defaultApp && process.argv[1]) {
-    app.setAsDefaultProtocolClient(ESQUEMA, process.execPath, [path.resolve(process.argv[1])]);
+    app.setAsDefaultProtocolClient(SCHEMA, process.execPath, [path.resolve(process.argv[1])]);
   } else {
-    app.setAsDefaultProtocolClient(ESQUEMA);
+    app.setAsDefaultProtocolClient(SCHEMA);
   }
 
-  const entregar = (dados: CodigoDeLogin) => {
-    const janela = BrowserWindow.getAllWindows()[0];
+  const deliver = (data: LoginCode) => {
+    const appWindow = BrowserWindow.getAllWindows()[0];
 
-    if (!janela || janela.webContents.isLoading()) {
-      pendente = dados;
+    if (!appWindow || appWindow.webContents.isLoading()) {
+      pending = data;
       return;
     }
 
-    janela.show();
-    janela.focus();
-    janela.webContents.send("login:codigo", dados);
+    appWindow.show();
+    appWindow.focus();
+    appWindow.webContents.send("login:codigo", data);
   };
 
-  const receberUrl = (url: string) => {
-    if (!url.startsWith(`${ESQUEMA}://`)) return;
+  const receiveUrl = (url: string) => {
+    if (!url.startsWith(`${SCHEMA}://`)) return;
 
-    const codigo = new URL(url).searchParams.get("codigo");
-    if (!codigo || !verificador) return;
+    const code = new URL(url).searchParams.get("codigo");
+    if (!code || !verifier) return;
 
-    entregar({ codigo, verificador });
-    verificador = null;
+    deliver({ code, verifier });
+    verifier = null;
   };
 
-  app.on("open-url", (evento, url) => {
-    evento.preventDefault();
-    receberUrl(url);
+  app.on("open-url", (event, url) => {
+    event.preventDefault();
+    receiveUrl(url);
   });
 
   ipcMain.handle("login:iniciar", () => {
-    verificador = randomBytes(32).toString("base64url");
-    const desafio = createHash("sha256").update(verificador).digest("base64url");
+    verifier = randomBytes(32).toString("base64url");
+    const challenge = createHash("sha256").update(verifier).digest("base64url");
 
     void shell.openExternal(
-      `${APP_URL}/api/auth/desktop/start?desafio=${encodeURIComponent(desafio)}`,
+      `${APP_URL}/api/auth/desktop/start?desafio=${encodeURIComponent(challenge)}`,
     );
   });
 
   ipcMain.handle("login:pendente", () => {
-    const dados = pendente;
-    pendente = null;
-    return dados;
+    const data = pending;
+    pending = null;
+    return data;
   });
 
-  return { receberUrl };
+  return { receiveUrl };
 }

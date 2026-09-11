@@ -1,11 +1,11 @@
 import { BrowserWindow, ipcMain, shell, systemPreferences } from "electron";
-import type { EstadoPtt, OpcoesPtt } from "@gravae/shared";
+import type { StatePtt, OptionsPtt } from "@gravae/shared";
 
-function nomeUiohook(code: string): string {
+function nameUiohook(code: string): string {
   if (/^Key[A-Z]$/.test(code)) return code.slice(3);
   if (/^Digit[0-9]$/.test(code)) return code.slice(5);
 
-  const modificadores: Record<string, string> = {
+  const modifiers: Record<string, string> = {
     ControlLeft: "Ctrl",
     ControlRight: "CtrlRight",
     AltLeft: "Alt",
@@ -16,116 +16,116 @@ function nomeUiohook(code: string): string {
     MetaRight: "MetaRight",
   };
 
-  return modificadores[code] ?? code;
+  return modifiers[code] ?? code;
 }
 
 type Uiohook = typeof import("uiohook-napi");
 
-let nativo: Uiohook | null = null;
-let carregou = false;
+let native: Uiohook | null = null;
+let loaded = false;
 
-function carregar(): Uiohook | null {
-  if (carregou) return nativo;
-  carregou = true;
+function load(): Uiohook | null {
+  if (loaded) return native;
+  loaded = true;
 
   try {
-    nativo = require("uiohook-napi") as Uiohook;
-  } catch (erro) {
-    console.error("[desktop] uiohook indisponível, push-to-talk global desligado:", erro);
-    nativo = null;
+    native = require("uiohook-napi") as Uiohook;
+  } catch (error) {
+    console.error("[desktop] uiohook indisponível, push-to-talk global desligado:", error);
+    native = null;
   }
 
-  return nativo;
+  return native;
 }
 
-function temPermissao(perguntar = false) {
+function hasPermission(ask = false) {
   if (process.platform !== "darwin") return true;
-  return systemPreferences.isTrustedAccessibilityClient(perguntar);
+  return systemPreferences.isTrustedAccessibilityClient(ask);
 }
 
-export function registrarPushToTalk() {
-  let escutando = false;
-  let keycodeAlvo: number | null = null;
-  let pressionada = false;
+export function registerPushToTalk() {
+  let listening = false;
+  let keycodeTarget: number | null = null;
+  let pressed = false;
 
-  const avisar = (valor: boolean) => {
-    if (valor === pressionada) return;
-    pressionada = valor;
+  const notify = (value: boolean) => {
+    if (value === pressed) return;
+    pressed = value;
 
-    for (const janela of BrowserWindow.getAllWindows()) {
-      if (janela.isFocused()) continue;
-      janela.webContents.send("ptt:mudou", valor);
+    for (const appWindow of BrowserWindow.getAllWindows()) {
+      if (appWindow.isFocused()) continue;
+      appWindow.webContents.send("ptt:mudou", value);
     }
   };
 
-  const iniciar = (hook: Uiohook) => {
-    if (escutando) return;
+  const start = (hook: Uiohook) => {
+    if (listening) return;
 
     hook.uIOhook.on("keydown", (e) => {
-      if (e.keycode === keycodeAlvo) avisar(true);
+      if (e.keycode === keycodeTarget) notify(true);
     });
     hook.uIOhook.on("keyup", (e) => {
-      if (e.keycode === keycodeAlvo) avisar(false);
+      if (e.keycode === keycodeTarget) notify(false);
     });
 
     hook.uIOhook.start();
-    escutando = true;
+    listening = true;
   };
 
-  const parar = (hook: Uiohook) => {
-    if (!escutando) return;
+  const stop = (hook: Uiohook) => {
+    if (!listening) return;
     hook.uIOhook.removeAllListeners();
     hook.uIOhook.stop();
-    escutando = false;
-    avisar(false);
+    listening = false;
+    notify(false);
   };
 
-  const aplicar = (ativo: boolean, tecla: string, perguntarPermissao = false): EstadoPtt => {
-    const hook = carregar();
-    if (!hook) return { ativo: false, indisponivel: true, precisaPermissao: false };
+  const apply = (active: boolean, key: string, askPermission = false): StatePtt => {
+    const hook = load();
+    if (!hook) return { active: false, unavailable: true, needsPermission: false };
 
-    if (!ativo) {
-      parar(hook);
-      return { ativo: false, indisponivel: false, precisaPermissao: !temPermissao() };
+    if (!active) {
+      stop(hook);
+      return { active: false, unavailable: false, needsPermission: !hasPermission() };
     }
 
-    if (!temPermissao(perguntarPermissao)) {
-      parar(hook);
-      return { ativo: false, indisponivel: false, precisaPermissao: true };
+    if (!hasPermission(askPermission)) {
+      stop(hook);
+      return { active: false, unavailable: false, needsPermission: true };
     }
 
-    const nome = nomeUiohook(tecla) as keyof Uiohook["UiohookKey"];
-    keycodeAlvo = hook.UiohookKey[nome] ?? null;
-    if (keycodeAlvo === null) {
-      console.warn(`[desktop] tecla sem equivalente global: ${tecla}`);
-      parar(hook);
-      return { ativo: false, indisponivel: true, precisaPermissao: false };
+    const name = nameUiohook(key) as keyof Uiohook["UiohookKey"];
+    keycodeTarget = hook.UiohookKey[name] ?? null;
+    if (keycodeTarget === null) {
+      console.warn(`[desktop] tecla sem equivalente global: ${key}`);
+      stop(hook);
+      return { active: false, unavailable: true, needsPermission: false };
     }
 
-    iniciar(hook);
-    return { ativo: true, indisponivel: false, precisaPermissao: false };
+    start(hook);
+    return { active: true, unavailable: false, needsPermission: false };
   };
 
-  ipcMain.handle("ptt:configurar", (_e, opcoes: OpcoesPtt) =>
-    aplicar(opcoes.ativo, opcoes.tecla),
+  ipcMain.handle("ptt:configurar", (_e, options: OptionsPtt) =>
+    apply(options.active, options.key),
   );
 
-  ipcMain.handle("ptt:pedir-permissao", (_e, opcoes: OpcoesPtt) => {
-    const estado = aplicar(opcoes.ativo, opcoes.tecla, true);
+  ipcMain.handle("ptt:pedir-permissao", (_e, options: OptionsPtt) => {
+    const state = apply(options.active, options.key, true);
 
-    if (estado.precisaPermissao && process.platform === "darwin") {
+    if (state.needsPermission && process.platform === "darwin") {
       void shell.openExternal(
         "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
       );
     }
 
-    return estado;
+    return state;
   });
 
   return {
-    encerrar: () => {
-      const hook = carregar();
-      if (hook) parar(hook);
+    end: () => {
+      const hook = load();
+      if (hook) stop(hook);
     },
   };
 }
