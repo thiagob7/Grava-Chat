@@ -1,61 +1,61 @@
 import path from "node:path";
 import { app, BrowserWindow, nativeImage } from "electron";
 
-import { registrarAtualizacao } from "./atualizacao-ipc.js";
-import { registrarAvisos } from "./avisos.js";
-import { registrarCapturaDeTela } from "./captura-de-tela.js";
-import { criarJanela } from "./janela.js";
-import { registrarLinks } from "./links.js";
-import { registrarLoginDesktop } from "./login-desktop.js";
-import { registrarPermissoesDeMidia } from "./permissoes.js";
-import { registrarPushToTalk } from "./push-to-talk.js";
-import { registrarSistema } from "./sistema.js";
-import { registrarVersoes } from "./versoes-ipc.js";
+import { registerUpdate } from "./atualizacao-ipc.js";
+import { registerNotices } from "./avisos.js";
+import { screenRegisterCapture } from "./captura-de-tela.js";
+import { createWindow } from "./janela.js";
+import { registerLinks } from "./links.js";
+import { registerLoginDesktop } from "./login-desktop.js";
+import { mediaRegisterPermissions } from "./permissoes.js";
+import { registerPushToTalk } from "./push-to-talk.js";
+import { registerSystem } from "./sistema.js";
+import { registerVersions } from "./versoes-ipc.js";
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  let janela: BrowserWindow | null = null;
-  const loginDesktop = registrarLoginDesktop();
-  const links = registrarLinks();
+  let appWindow: BrowserWindow | null = null;
+  const loginDesktop = registerLoginDesktop();
+  const links = registerLinks();
 
-  app.on("second-instance", (_evento, argv) => {
+  app.on("second-instance", (_event, argv) => {
     const link = argv.find((arg) => arg.startsWith("gravae://"));
 
     if (link) {
-      loginDesktop.receberUrl(link);
-      links.abrir(link);
+      loginDesktop.receiveUrl(link);
+      links.open(link);
     }
 
-    if (!janela) return;
-    if (janela.isMinimized()) janela.restore();
-    janela.focus();
+    if (!appWindow) return;
+    if (appWindow.isMinimized()) appWindow.restore();
+    appWindow.focus();
   });
 
-  const pushToTalk = registrarPushToTalk();
-  registrarVersoes();
-  registrarSistema();
+  const pushToTalk = registerPushToTalk();
+  registerVersions();
+  registerSystem();
 
-  app.on("will-quit", () => pushToTalk.encerrar());
+  app.on("will-quit", () => pushToTalk.end());
 
   void app.whenReady().then(() => {
     if (process.platform === "darwin") {
-      const icone = nativeImage.createFromPath(path.join(__dirname, "..", "build", "icon.png"));
-      if (!icone.isEmpty()) app.dock?.setIcon(icone);
+      const icon = nativeImage.createFromPath(path.join(__dirname, "..", "build", "icon.png"));
+      if (!icon.isEmpty()) app.dock?.setIcon(icon);
     }
 
-    registrarPermissoesDeMidia();
-    registrarCapturaDeTela();
-    registrarAvisos();
-    janela = criarJanela();
+    mediaRegisterPermissions();
+    screenRegisterCapture();
+    registerNotices();
+    appWindow = createWindow();
 
-    registrarAtualizacao(() => janela);
+    registerUpdate(() => appWindow);
 
-    const linkDeAbertura = process.argv.find((arg) => arg.startsWith("gravae://"));
-    if (linkDeAbertura) links.abrir(linkDeAbertura);
+    const openingLink = process.argv.find((arg) => arg.startsWith("gravae://"));
+    if (openingLink) links.open(openingLink);
 
     app.on("activate", () => {
-      if (BrowserWindow.getAllWindows().length === 0) janela = criarJanela();
+      if (BrowserWindow.getAllWindows().length === 0) appWindow = createWindow();
     });
   });
 
