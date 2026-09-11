@@ -1,38 +1,38 @@
 import { create } from "zustand";
 
-interface StoreDeFavoritos {
-  canais: string[];
-  alternar: (channelId: string) => void;
-  ehFavorito: (channelId: string) => boolean;
+interface FavoritesStore {
+  channels: string[];
+  toggle: (channelId: string) => void;
+  isFavorite: (channelId: string) => boolean;
 }
 
-const CHAVE = "gravae:canais-favoritos";
+const KEY = "gravae:canais-favoritos";
 
-function ler(): string[] {
+function read(): string[] {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    return salvo ? (JSON.parse(salvo) as string[]) : [];
+    const saved = localStorage.getItem(KEY);
+    return saved ? (JSON.parse(saved) as string[]) : [];
   } catch {
     return [];
   }
 }
 
-export const useFavoritos = create<StoreDeFavoritos>((set, store) => ({
-  canais: ler(),
+export const useFavorites = create<FavoritesStore>((set, store) => ({
+  channels: read(),
 
-  alternar: (channelId) => {
-    const atuais = store().canais;
-    const canais = atuais.includes(channelId)
-      ? atuais.filter((id) => id !== channelId)
-      : [...atuais, channelId];
+  toggle: (channelId) => {
+    const current = store().channels;
+    const channels = current.includes(channelId)
+      ? current.filter((id) => id !== channelId)
+      : [...current, channelId];
 
-    set({ canais });
+    set({ channels });
 
     try {
-      localStorage.setItem(CHAVE, JSON.stringify(canais));
+      localStorage.setItem(KEY, JSON.stringify(channels));
     } catch {
     }
   },
 
-  ehFavorito: (channelId) => store().canais.includes(channelId),
+  isFavorite: (channelId) => store().channels.includes(channelId),
 }));

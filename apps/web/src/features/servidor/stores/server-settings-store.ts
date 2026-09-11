@@ -1,19 +1,19 @@
 import { create } from "zustand";
 
-import type { Secao } from "~/features/servidor/components/server-settings/ServerSettingsModal";
+import type { Section } from "~/features/servidor/components/server-settings/ServerSettingsModal";
 
 interface ServerSettingsState {
   guildId: string | null;
-  aberto: boolean;
-  secao: Secao | null;
-  abrir: (guildId: string, secao?: Secao) => void;
-  fechar: () => void;
+  isOpen: boolean;
+  section: Section | null;
+  open: (guildId: string, section?: Section) => void;
+  close: () => void;
 }
 
 export const useServerSettingsStore = create<ServerSettingsState>((set) => ({
   guildId: null,
-  aberto: false,
-  secao: null,
-  abrir: (guildId, secao) => set({ guildId, aberto: true, secao: secao ?? null }),
-  fechar: () => set({ aberto: false }),
+  isOpen: false,
+  section: null,
+  open: (guildId, section) => set({ guildId, isOpen: true, section: section ?? null }),
+  close: () => set({ isOpen: false }),
 }));
