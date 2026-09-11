@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Tento profil se nepodařilo otevřít.",
   carregando: "Načítání…",
   editar: "Upravit profil",
   mensagem: "Zpráva",
