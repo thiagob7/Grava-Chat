@@ -832,6 +832,22 @@ body[data-scroll-locked] .regiao-de-arrasto {
   );
 }
 
+@keyframes confete-cai {
+  from {
+    opacity: 1;
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(var(--deriva, 0), 112vh, 0) rotate(var(--giro, 360deg));
+  }
+}
+
+.confete {
+  animation: confete-cai linear forwards;
+}
+
 @keyframes bloco-desce {
   from {
     opacity: 0;

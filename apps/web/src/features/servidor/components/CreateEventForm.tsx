@@ -1,10 +1,11 @@
 import React, { useMemo, useRef, useState } from "react";
-import { ImageSquare, MapPin, SpeakerHigh, X } from "@phosphor-icons/react";
+import { CalendarBlank, Check, Copy, ImageSquare, MapPin, SpeakerHigh, X } from "@phosphor-icons/react";
 import {
   EVENT_FREQUENCIES,
   EVENT_FREQUENCY_LABELS,
   EVENT_LIMITS,
   type EventFrequency,
+  type GuildEvent,
 } from "@gravae/shared";
 
 import { useCreateEvent } from "~/@core/application/queries/guild/use-events";
@@ -15,11 +16,15 @@ import { DialogBody, DialogFooter } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import { formatEventDate } from "~/features/servidor/lib/event-timing";
+import { ImageEditor } from "~/components/EditorDeImagem";
+import { Confetti } from "~/components/Confete";
+import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 
 const COVER_MAX_PX = 1024;
+const COVER_ASPECT = 16 / 9;
 
-type Step = "place" | "details" | "review";
+type Step = "place" | "details" | "review" | "done";
 type Place = "channel" | "outside";
 
 const STEPS: { id: Step; label: string }[] = [
@@ -56,16 +61,26 @@ export const CreateEventForm: React.FC<{
   const [startsAt, setStartsAt] = useState(() => toInputValue(nextFullHour()));
   const [frequency, setFrequency] = useState<EventFrequency>("once");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [editing, setEditing] = useState<File | null>(null);
+  const [created, setCreated] = useState<GuildEvent | null>(null);
   const imageInput = useRef<HTMLInputElement>(null);
   const uploadImage = useUploadImage();
 
-  const pickImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  /*
+    A imagem escolhida não sobe direto: primeiro a pessoa enquadra. Só o
+    recorte vai para o servidor, então a capa sai do jeito que ela viu.
+  */
+  const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (!file) return;
+    if (file) setEditing(file);
+  };
+
+  const sendCut = async (cut: File) => {
+    setEditing(null);
 
     const uploaded = await uploadImage
-      .mutateAsync({ file, maxSize: COVER_MAX_PX })
+      .mutateAsync({ file: cut, maxSize: COVER_MAX_PX })
       .catch(() => null);
 
     if (uploaded) setImageUrl(uploaded.attachment.url);
@@ -107,15 +122,28 @@ export const CreateEventForm: React.FC<{
         channelId: place === "channel" ? channelId : null,
         externalLocation: place === "outside" ? externalLocation.trim() : null,
       },
-      { onSuccess: leave },
+      {
+        onSuccess: (event) => {
+          setCreated(event);
+          setStep("done");
+        },
+      },
     );
 
   return (
     <>
+      <ImageEditor data-gc="servidor.create-event-form.image-editor"
+        file={editing}
+        aspect={COVER_ASPECT}
+        exportWidth={COVER_MAX_PX}
+        onCancel={() => setEditing(null)}
+        onApply={(cut) => void sendCut(cut)}
+      />
+
       <div data-gc="servidor.create-event-form.div" className="flex gap-2 px-5 pt-4">
         {STEPS.map((entry) => {
           const index = STEPS.findIndex((item) => item.id === entry.id);
-          const current = STEPS.findIndex((item) => item.id === step);
+          const current = step === "done" ? STEPS.length : STEPS.findIndex((item) => item.id === step);
 
           return (
             <div data-gc="servidor.create-event-form.div--2" key={entry.id} className="flex-1">
@@ -336,9 +364,35 @@ export const CreateEventForm: React.FC<{
             </div>
           </>
         )}
+
+        {step === "done" && created && (
+          <div data-gc="servidor.create-event-form.div--16" className="py-2 text-center">
+            <span data-gc="servidor.create-event-form.span--8"
+              className="mx-auto flex size-14 items-center justify-center rounded-full bg-surface-3 text-ink"
+            >
+              <CalendarBlank data-gc="servidor.create-event-form.calendar-blank" size={26} weight="fill" />
+            </span>
+
+            <p data-gc="servidor.create-event-form.p--9" className="mt-4 text-lg font-semibold">
+              Tudo pronto. Agora compartilhe seu evento!
+            </p>
+            <p data-gc="servidor.create-event-form.p--10" className="mx-auto mt-1 max-w-sm text-sm text-ink-muted">
+              Copie o endereço abaixo para chamar gente. Ele abre o servidor já
+              com o evento na frente.
+            </p>
+
+            <EventLink data-gc="servidor.create-event-form.event-link" guildId={guildId} eventId={created.id} />
+          </div>
+        )}
       </DialogBody>
 
       <DialogFooter data-gc="servidor.create-event-form.dialog-footer">
+        {step === "done" ? (
+          <Button data-gc="servidor.create-event-form.button.leave--2" className="ml-auto" onClick={leave}>
+            Concluir
+          </Button>
+        ) : (
+        <>
         {step !== "place" && (
           <Button data-gc="servidor.create-event-form.button--3"
             variant="ghost"
@@ -365,7 +419,11 @@ export const CreateEventForm: React.FC<{
             Próximo
           </Button>
         )}
+        </>
+        )}
     </DialogFooter>
+
+      <Confetti data-gc="servidor.create-event-form.confetti" playing={step === "done"} />
     </>
   );
 };
@@ -403,3 +461,41 @@ const Choice: React.FC<{
     </span>
   </button>
 );
+
+/*
+  O endereço tem o servidor e o evento. Quem já pode ver o servidor cai direto
+  nele, com o evento aberto; quem não pode continua precisando de um convite,
+  como em qualquer outro canto.
+*/
+const EventLink: React.FC<{ guildId: string; eventId: string }> = ({ guildId, eventId }) => {
+  const [copied, setCopied] = useState(false);
+  const clock = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const link = `${window.location.origin}/evento/${guildId}/${eventId}`;
+
+  const copy = async () => {
+    if (!(await copyText(link))) return;
+
+    setCopied(true);
+    clearTimeout(clock.current);
+    clock.current = setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <div data-gc="servidor.create-event-form.div--17" className="mt-5 flex items-center gap-2">
+      <Input data-gc="servidor.create-event-form.input--3" readOnly value={link} className="min-w-0 flex-1" />
+
+      <Button data-gc="servidor.create-event-form.button.copy" onClick={() => void copy()} className="shrink-0">
+        {copied ? (
+          <>
+            <Check data-gc="servidor.create-event-form.check" size={16} /> Copiado
+          </>
+        ) : (
+          <>
+            <Copy data-gc="servidor.create-event-form.copy" size={16} /> Copiar
+          </>
+        )}
+      </Button>
+    </div>
+  );
+};
