@@ -15,11 +15,15 @@ import { DialogBody, DialogFooter } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import { formatEventDate } from "~/features/servidor/lib/event-timing";
+import { ImageEditor } from "~/components/EditorDeImagem";
+import { Confetti } from "~/components/Confete";
+import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 
 const COVER_MAX_PX = 1024;
+const COVER_ASPECT = 16 / 9;
 
-type Step = "place" | "details" | "review";
+type Step = "place" | "details" | "review" | "done";
 type Place = "channel" | "outside";
 
 const STEPS: { id: Step; label: string }[] = [
@@ -56,16 +60,26 @@ export const CreateEventForm: React.FC<{
   const [startsAt, setStartsAt] = useState(() => toInputValue(nextFullHour()));
   const [frequency, setFrequency] = useState<EventFrequency>("once");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [editing, setEditing] = useState<File | null>(null);
+  const [created, setCreated] = useState<GuildEvent | null>(null);
   const imageInput = useRef<HTMLInputElement>(null);
   const uploadImage = useUploadImage();
 
-  const pickImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  /*
+    A imagem escolhida não sobe direto: primeiro a pessoa enquadra. Só o
+    recorte vai para o servidor, então a capa sai do jeito que ela viu.
+  */
+  const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (!file) return;
+    if (file) setEditing(file);
+  };
+
+  const sendCut = async (cut: File) => {
+    setEditing(null);
 
     const uploaded = await uploadImage
-      .mutateAsync({ file, maxSize: COVER_MAX_PX })
+      .mutateAsync({ file: cut, maxSize: COVER_MAX_PX })
       .catch(() => null);
 
     if (uploaded) setImageUrl(uploaded.attachment.url);
@@ -107,15 +121,28 @@ export const CreateEventForm: React.FC<{
         channelId: place === "channel" ? channelId : null,
         externalLocation: place === "outside" ? externalLocation.trim() : null,
       },
-      { onSuccess: leave },
+      {
+        onSuccess: (event) => {
+          setCreated(event);
+          setStep("done");
+        },
+      },
     );
 
   return (
     <>
+      <ImageEditor data-gc="servidor.create-event-form.image-editor"
+        file={editing}
+        aspect={COVER_ASPECT}
+        exportWidth={COVER_MAX_PX}
+        onCancel={() => setEditing(null)}
+        onApply={(cut) => void sendCut(cut)}
+      />
+
       <div data-gc="servidor.create-event-form.div" className="flex gap-2 px-5 pt-4">
         {STEPS.map((entry) => {
           const index = STEPS.findIndex((item) => item.id === entry.id);
-          const current = STEPS.findIndex((item) => item.id === step);
+          const current = step === "done" ? STEPS.length : STEPS.findIndex((item) => item.id === step);
 
           return (
             <div data-gc="servidor.create-event-form.div--2" key={entry.id} className="flex-1">
