@@ -1,35 +1,35 @@
 import { api } from "~/@core/lib/api";
 
-export interface QuemDenunciou {
+export interface WhoReported {
   id: string;
   username: string;
   displayName: string;
 }
 
-export interface DenunciaNaFila {
+export interface ReportQueue {
   id: string;
-  tipo: "comunidade" | "mensagem";
-  motivo: string;
-  motivoEscrito: string;
-  detalhes: string | null;
+  kind: "comunidade" | "mensagem";
+  reason: string;
+  reasonWritten: string;
+  details: string | null;
   createdAt: string;
-  resolvidaEm: string | null;
-  decisao: string | null;
-  autor: QuemDenunciou | null;
-  comunidade: { id: string; nome: string } | null;
-  mensagem: {
+  resolvedAt: string | null;
+  decision: string | null;
+  author: WhoReported | null;
+  community: { id: string; name: string } | null;
+  message: {
     id: string;
     channelId: string;
     guildId: string | null;
-    trecho: string;
-    autor: QuemDenunciou | null;
+    snippet: string;
+    author: WhoReported | null;
   } | null;
 }
 
-export type Desfecho = "procede" | "arquivada" | "reabrir";
+export type Outcome = "procede" | "arquivada" | "reabrir";
 
-export async function findDenuncias(params: { pendentes?: boolean; antesDe?: string }) {
-  const response = await api.get<{ itens: DenunciaNaFila[]; proxima: string | null }>(
+export async function findReports(params: { pending?: boolean; before?: string }) {
+  const response = await api.get<{ items: ReportQueue[]; next: string | null }>(
     "/admin/denuncias",
     { params },
   );
@@ -37,7 +37,7 @@ export async function findDenuncias(params: { pendentes?: boolean; antesDe?: str
   return response.data;
 }
 
-export async function darDesfecho(denunciaId: string, decisao: Desfecho) {
-  const response = await api.patch<{ id: string }>(`/admin/denuncias/${denunciaId}`, { decisao });
+export async function giveOutcome(reportId: string, decision: Outcome) {
+  const response = await api.patch<{ id: string }>(`/admin/denuncias/${reportId}`, { decision });
   return response.data;
 }
