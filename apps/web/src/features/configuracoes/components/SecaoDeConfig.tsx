@@ -1,40 +1,40 @@
 import React from "react";
 
-import { ancora, type Secao } from "~/features/configuracoes/components/secoes";
-import { BotaoDeLink } from "~/features/configuracoes/components/BotaoDeLink";
+import { anchor, type Section } from "~/features/configuracoes/components/secoes";
+import { LinkButton } from "~/features/configuracoes/components/BotaoDeLink";
 import { cn } from "~/lib/utils";
 
-export const ContextoDaSecao = React.createContext<Secao | null>(null);
+export const SectionContext = React.createContext<Section | null>(null);
 
-interface SecaoDeConfigProps {
+interface ConfigPropsSection {
   id: string;
-  titulo: string;
-  detalhe?: string;
+  title: string;
+  detail?: string;
   className?: string;
   children: React.ReactNode;
 }
 
-export const SecaoDeConfig: React.FC<SecaoDeConfigProps> = ({
+export const ConfigSection: React.FC<ConfigPropsSection> = ({
   id,
-  titulo,
-  detalhe,
+  title,
+  detail,
   className,
   children,
 }) => {
-  const secaoAtual = React.useContext(ContextoDaSecao);
+  const currentSection = React.useContext(SectionContext);
 
   return (
     <section data-gc="configuracoes.secao-de-config.section"
-      id={ancora(id)}
+      id={anchor(id)}
       className={cn("scroll-mt-5 mt-10 first:mt-0", className)}
     >
       <h3 data-gc="configuracoes.secao-de-config.h3" className="group/titulo flex items-center gap-1.5 text-lg font-semibold">
-        {titulo}
-        {secaoAtual && (
-          <BotaoDeLink data-gc="configuracoes.secao-de-config.botao-de-link" secao={secaoAtual} sub={id} oQue="esta seção" />
+        {title}
+        {currentSection && (
+          <LinkButton data-gc="configuracoes.secao-de-config.link-button" section={currentSection} sub={id} oQue="esta seção" />
         )}
       </h3>
-      {detalhe && <p data-gc="configuracoes.secao-de-config.p" className="mt-1 text-sm text-ink-muted">{detalhe}</p>}
+      {detail && <p data-gc="configuracoes.secao-de-config.p" className="mt-1 text-sm text-ink-muted">{detail}</p>}
 
       <div data-gc="configuracoes.secao-de-config.div" className="mt-3 border-t border-line pt-5">{children}</div>
     </section>
