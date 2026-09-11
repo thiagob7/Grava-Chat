@@ -8,7 +8,7 @@ import { reorderRoles, type ReorderRolesDTO } from "~/@core/application/requests
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-function useInvalidarCargos(guildId: string | undefined) {
+function useInvalidateRoles(guildId: string | undefined) {
   const queryClient = useQueryClient();
 
   return () => {
@@ -20,12 +20,12 @@ function useInvalidarCargos(guildId: string | undefined) {
 }
 
 export const useCreateRole = (guildId: string | undefined) => {
-  const invalidar = useInvalidarCargos(guildId);
+  const invalidate = useInvalidateRoles(guildId);
 
   return useMutation({
     mutationFn: (data: CreateRoleDTO) => createRole(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Cargo criado.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao criar o cargo.")),
@@ -33,12 +33,12 @@ export const useCreateRole = (guildId: string | undefined) => {
 };
 
 export const useUpdateRole = (guildId: string | undefined) => {
-  const invalidar = useInvalidarCargos(guildId);
+  const invalidate = useInvalidateRoles(guildId);
 
   return useMutation({
     mutationFn: (data: UpdateRoleDTO) => updateRole(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Cargo salvo.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao salvar o cargo.")),
@@ -46,12 +46,12 @@ export const useUpdateRole = (guildId: string | undefined) => {
 };
 
 export const useDeleteRole = (guildId: string | undefined) => {
-  const invalidar = useInvalidarCargos(guildId);
+  const invalidate = useInvalidateRoles(guildId);
 
   return useMutation({
     mutationFn: (data: DeleteRoleDTO) => deleteRole(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Cargo apagado.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao apagar o cargo.")),
@@ -59,11 +59,11 @@ export const useDeleteRole = (guildId: string | undefined) => {
 };
 
 export const useReorderRoles = (guildId: string | undefined) => {
-  const invalidar = useInvalidarCargos(guildId);
+  const invalidate = useInvalidateRoles(guildId);
 
   return useMutation({
     mutationFn: (data: ReorderRolesDTO) => reorderRoles(data),
-    onSuccess: invalidar,
+    onSuccess: invalidate,
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao reordenar os cargos.")),
   });
 };
