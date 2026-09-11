@@ -2,49 +2,51 @@ import React, { useState } from "react";
 import { ArrowLeft, ImagePlus, Search, Sparkles } from "lucide-react";
 
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
-import { GradeDeGifs } from "~/features/expressao/components/GradeDeGifs";
+import { GifsGrid } from "~/features/expressao/components/GradeDeGifs";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
-interface SeletorDeImagemProps {
+interface ImagePropsPicker {
   open: boolean;
   onClose: () => void;
-  onArquivo: () => void;
+  onFile: () => void;
   onGif: (gif: GifModel) => void;
-  titulo?: string;
-  rodape?: React.ReactNode;
+  title?: string;
+  footer?: React.ReactNode;
 }
 
-export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
+export const ImagePicker: React.FC<ImagePropsPicker> = ({
   open,
   onClose,
-  onArquivo,
+  onFile,
   onGif,
-  titulo = "Selecione uma imagem",
-  rodape,
+  title,
+  footer,
 }) => {
-  const [aba, setAba] = useState<"escolha" | "gif">("escolha");
-  const [busca, setBusca] = useState("");
+  const { t } = useTranslation();
+  const [tab, setTab] = useState<"escolha" | "gif">("escolha");
+  const [search, setSearch] = useState("");
 
-  const fechar = () => {
-    setAba("escolha");
-    setBusca("");
+  const close = () => {
+    setTab("escolha");
+    setSearch("");
     onClose();
   };
 
   return (
-    <Dialog data-gc="seletor-de-imagem.dialog" open={open} onOpenChange={(aberto) => !aberto && fechar()}>
+    <Dialog data-gc="seletor-de-imagem.dialog" open={open} onOpenChange={(isOpen) => !isOpen && close()}>
       <DialogContent data-gc="seletor-de-imagem.dialog-content"
         className={cn(
           "flex max-h-[85vh] flex-col",
-          aba === "gif" ? "max-w-2xl" : "max-w-lg",
+          tab === "gif" ? "max-w-2xl" : "max-w-lg",
         )}
       >
         <div data-gc="seletor-de-imagem.div" className="flex items-center gap-2 px-5 pt-5">
-          {aba === "gif" && (
+          {tab === "gif" && (
             <button data-gc="seletor-de-imagem.button"
-              onClick={() => setAba("escolha")}
+              onClick={() => setTab("escolha")}
               aria-label="Voltar"
               className="rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
             >
@@ -52,22 +54,22 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
             </button>
           )}
           <DialogTitle data-gc="seletor-de-imagem.dialog-title" className="text-lg font-semibold">
-            {aba === "gif" ? "Escolher GIF" : titulo}
+            {tab === "gif" ? t("comum.imagem.escolherGif") : (title ?? t("comum.imagem.titulo"))}
           </DialogTitle>
         </div>
 
-        {aba === "escolha" ? (
+        {tab === "escolha" ? (
           <div data-gc="seletor-de-imagem.div--2" className="p-5">
             <div data-gc="seletor-de-imagem.div--3" className="grid grid-cols-2 gap-3">
-              <Opcao data-gc="seletor-de-imagem.opcao.on-arquivo" icone={<ImagePlus data-gc="seletor-de-imagem.image-plus" size={26} />} rotulo="Enviar imagem" onClick={onArquivo} />
-              <Opcao data-gc="seletor-de-imagem.opcao"
-                icone={<Sparkles data-gc="seletor-de-imagem.sparkles" size={26} />}
-                rotulo="Escolher GIF"
-                onClick={() => setAba("gif")}
+              <Choice data-gc="seletor-de-imagem.choice.on-file" icon={<ImagePlus data-gc="seletor-de-imagem.image-plus" size={26} />} label={t("comum.imagem.enviar")} onClick={onFile} />
+              <Choice data-gc="seletor-de-imagem.choice"
+                icon={<Sparkles data-gc="seletor-de-imagem.sparkles" size={26} />}
+                label={t("comum.imagem.escolherGif")}
+                onClick={() => setTab("gif")}
               />
             </div>
 
-            {rodape && <div data-gc="seletor-de-imagem.div--4" className="mt-4 text-xs text-ink-faint">{rodape}</div>}
+            {footer && <div data-gc="seletor-de-imagem.div--4" className="mt-4 text-xs text-ink-faint">{footer}</div>}
           </div>
         ) : (
           <div data-gc="seletor-de-imagem.div--5" className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-3">
@@ -75,19 +77,19 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
               <Search data-gc="seletor-de-imagem.search" size={15} className="shrink-0 text-ink-faint" />
               <Input data-gc="seletor-de-imagem.input"
                 autoFocus
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar GIF"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("comum.imagem.buscarGif")}
                 className="bg-transparent px-0 focus:ring-0"
               />
             </div>
 
             <div data-gc="seletor-de-imagem.div--7" className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
-              <GradeDeGifs data-gc="seletor-de-imagem.grade-de-gifs"
-                busca={busca}
+              <GifsGrid data-gc="seletor-de-imagem.gifs-grid"
+                search={search}
                 onGif={(gif) => {
                   onGif(gif);
-                  fechar();
+                  close();
                 }}
               />
             </div>
@@ -98,9 +100,9 @@ export const SeletorDeImagem: React.FC<SeletorDeImagemProps> = ({
   );
 };
 
-const Opcao: React.FC<{ icone: React.ReactNode; rotulo: string; onClick: () => void }> = ({
-  icone,
-  rotulo,
+const Choice: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void }> = ({
+  icon,
+  label,
   onClick,
 }) => (
   <button data-gc="seletor-de-imagem.button.on-click"
@@ -110,7 +112,7 @@ const Opcao: React.FC<{ icone: React.ReactNode; rotulo: string; onClick: () => v
       "text-ink-muted transition hover:bg-surface-4 hover:text-ink",
     )}
   >
-    {icone}
-    {rotulo}
+    {icon}
+    {label}
   </button>
 );

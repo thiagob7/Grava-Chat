@@ -12,105 +12,106 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Slider } from "~/components/ui/slider";
+import { useTranslation } from "~/traducao";
 
-const LADO = 256;
+const SIDE = 256;
 
 interface Props {
-  arquivo: File | null;
-  onCancelar: () => void;
-  onPronto: (recortado: File) => void;
+  file: File | null;
+  onCancel: () => void;
+  onReady: (cropped: File) => void;
 }
 
-export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto }) => {
-  const [imagem, setImagem] = useState<HTMLImageElement | null>(null);
+export const ImageCrop: React.FC<Props> = ({ file, onCancel, onReady }) => {
+  const { t } = useTranslation();
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
-  const arrasto = useRef<{ x: number; y: number } | null>(null);
+  const drag = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
-    if (!arquivo) return setImagem(null);
+    if (!file) return setImage(null);
 
-    const url = URL.createObjectURL(arquivo);
+    const url = URL.createObjectURL(file);
     const img = new Image();
 
     img.onload = () => {
-      setImagem(img);
+      setImage(img);
       setZoom(1);
       setPos({ x: 0, y: 0 });
     };
     img.src = url;
 
     return () => URL.revokeObjectURL(url);
-  }, [arquivo]);
+  }, [file]);
 
-  if (!arquivo) return null;
+  if (!file) return null;
 
-  const base = imagem ? LADO / Math.min(imagem.width, imagem.height) : 1;
-  const escala = base * zoom;
-  const largura = (imagem?.width ?? 0) * escala;
-  const altura = (imagem?.height ?? 0) * escala;
+  const base = image ? SIDE / Math.min(image.width, image.height) : 1;
+  const scale = base * zoom;
+  const width = (image?.width ?? 0) * scale;
+  const height = (image?.height ?? 0) * scale;
 
-  const limitar = (x: number, y: number) => ({
-    x: Math.min(0, Math.max(LADO - largura, x)),
-    y: Math.min(0, Math.max(LADO - altura, y)),
+  const limit = (x: number, y: number) => ({
+    x: Math.min(0, Math.max(SIDE - width, x)),
+    y: Math.min(0, Math.max(SIDE - height, y)),
   });
 
-  const centro = { x: (LADO - largura) / 2, y: (LADO - altura) / 2 };
-  const atual = imagem ? limitar(pos.x || centro.x, pos.y || centro.y) : { x: 0, y: 0 };
+  const center = { x: (SIDE - width) / 2, y: (SIDE - height) / 2 };
+  const current = image ? limit(pos.x || center.x, pos.y || center.y) : { x: 0, y: 0 };
 
-  const salvar = async () => {
-    if (!imagem) return;
+  const save = async () => {
+    if (!image) return;
 
     const canvas = document.createElement("canvas");
-    canvas.width = LADO;
-    canvas.height = LADO;
+    canvas.width = SIDE;
+    canvas.height = SIDE;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.drawImage(imagem, atual.x, atual.y, largura, altura);
+    ctx.drawImage(image, current.x, current.y, width, height);
 
     const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/webp", 0.9));
     if (!blob) return;
 
-    onPronto(new File([blob], "icone.webp", { type: "image/webp" }));
+    onReady(new File([blob], "icone.webp", { type: "image/webp" }));
   };
 
   return (
-    <Dialog data-gc="recorte-de-imagem.dialog" open onOpenChange={(v) => !v && onCancelar()}>
+    <Dialog data-gc="recorte-de-imagem.dialog" open onOpenChange={(v) => !v && onCancel()}>
       <DialogContent data-gc="recorte-de-imagem.dialog-content">
         <DialogHeader data-gc="recorte-de-imagem.dialog-header">
-          <DialogTitle data-gc="recorte-de-imagem.dialog-title">Recortar o ícone</DialogTitle>
+          <DialogTitle data-gc="recorte-de-imagem.dialog-title">{t("comum.recorte.titulo")}</DialogTitle>
           <DialogDescription data-gc="recorte-de-imagem.dialog-description">
-            Arraste para escolher o pedaço e use a barra para aproximar. O ícone
-            fica redondo em todo lugar do app.
+            {t("comum.recorte.detalhe")}
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody data-gc="recorte-de-imagem.dialog-body">
           <div data-gc="recorte-de-imagem.div"
             className="relative mx-auto cursor-grab overflow-hidden rounded-full bg-surface-0 active:cursor-grabbing"
-            style={{ width: LADO, height: LADO, touchAction: "none" }}
+            style={{ width: SIDE, height: SIDE, touchAction: "none" }}
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId);
-              arrasto.current = { x: e.clientX - atual.x, y: e.clientY - atual.y };
+              drag.current = { x: e.clientX - current.x, y: e.clientY - current.y };
             }}
             onPointerMove={(e) => {
-              if (!arrasto.current) return;
-              setPos(limitar(e.clientX - arrasto.current.x, e.clientY - arrasto.current.y));
+              if (!drag.current) return;
+              setPos(limit(e.clientX - drag.current.x, e.clientY - drag.current.y));
             }}
-            onPointerUp={() => (arrasto.current = null)}
+            onPointerUp={() => (drag.current = null)}
           >
-            {imagem && (
+            {image && (
               <img data-gc="recorte-de-imagem.img"
-                src={imagem.src}
+                src={image.src}
                 alt=""
                 draggable={false}
                 className="max-w-none select-none"
                 style={{
-                  width: largura,
-                  height: altura,
-                  transform: `translate(${atual.x}px, ${atual.y}px)`,
+                  width: width,
+                  height: height,
+                  transform: `translate(${current.x}px, ${current.y}px)`,
                 }}
               />
             )}
@@ -125,9 +126,9 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
               value={zoom}
               filled={(zoom - 1) / 2}
               onChange={(e) => {
-                const proximo = Number(e.target.value);
-                setZoom(proximo);
-                setPos((p) => limitar(p.x, p.y));
+                const next = Number(e.target.value);
+                setZoom(next);
+                setPos((p) => limit(p.x, p.y));
               }}
             />
             <ImageIcon data-gc="recorte-de-imagem.image-icon--2" size={20} className="shrink-0 text-ink-faint" />
@@ -137,7 +138,7 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
                 setZoom(1);
                 setPos({ x: 0, y: 0 });
               }}
-              title="Voltar ao começo"
+              title={t("comum.recorte.voltarAoComeco")}
               className="shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
             >
               <RotateCcw data-gc="recorte-de-imagem.rotate-ccw" size={14} />
@@ -146,11 +147,11 @@ export const RecorteDeImagem: React.FC<Props> = ({ arquivo, onCancelar, onPronto
         </DialogBody>
 
         <DialogFooter data-gc="recorte-de-imagem.dialog-footer">
-          <Button data-gc="recorte-de-imagem.button.on-cancelar" variant="ghost" onClick={onCancelar}>
-            Cancelar
+          <Button data-gc="recorte-de-imagem.button.on-cancel" variant="ghost" onClick={onCancel}>
+            {t("comum.cancelar")}
           </Button>
-          <Button data-gc="recorte-de-imagem.button--2" onClick={() => void salvar()} disabled={!imagem}>
-            Usar este recorte
+          <Button data-gc="recorte-de-imagem.button--2" onClick={() => void save()} disabled={!image}>
+            {t("comum.recorte.usar")}
           </Button>
         </DialogFooter>
       </DialogContent>
