@@ -3,14 +3,14 @@ import { z } from "zod";
 import { gifFavoriteService } from "~/services/gif-favorite-service.js";
 import { gifService } from "~/services/gif-service.js";
 
-const buscaQuery = z.object({
+const searchQuery = z.object({
   q: z.string().min(1).max(64),
   limit: z.coerce.number().int().min(1).max(50).default(30),
 });
 
-const favoritoBody = z.object({
+const favoriteBody = z.object({
   id: z.string().min(1).max(64),
-  descricao: z.string().max(300).default("GIF"),
+  description: z.string().max(300).default("GIF"),
   url: z.string().url(),
   preview: z.string().url(),
   width: z.coerce.number().int().min(0).default(0),
@@ -20,25 +20,25 @@ const favoritoBody = z.object({
 export async function gifRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
-  app.get("/gifs/config", () => ({ disponivel: gifService.disponivel() }));
+  app.get("/gifs/config", () => ({ available: gifService.available() }));
 
-  app.get("/gifs/alta", () => gifService.emAlta());
+  app.get("/gifs/alta", () => gifService.inHigh());
 
-  app.get("/gifs/categorias", () => gifService.categorias());
+  app.get("/gifs/categorias", () => gifService.categories());
 
   app.get("/gifs/busca", (req) => {
-    const { q, limit } = buscaQuery.parse(req.query);
-    return gifService.buscar(q, limit);
+    const { q, limit } = searchQuery.parse(req.query);
+    return gifService.search(q, limit);
   });
 
-  app.get("/gifs/favoritos", (req) => gifFavoriteService.listar(req.userId));
+  app.get("/gifs/favoritos", (req) => gifFavoriteService.list(req.userId));
 
   app.post("/gifs/favoritos", (req) =>
-    gifFavoriteService.salvar(req.userId, favoritoBody.parse(req.body)),
+    gifFavoriteService.save(req.userId, favoriteBody.parse(req.body)),
   );
 
   app.delete("/gifs/favoritos/:gifId", (req) => {
     const { gifId } = z.object({ gifId: z.string().min(1).max(64) }).parse(req.params);
-    return gifFavoriteService.remover(req.userId, gifId);
+    return gifFavoriteService.remove(req.userId, gifId);
   });
 }
