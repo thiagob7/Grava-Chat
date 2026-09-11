@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "O mânuță care face cu mâna",
+    botao: "Salută-l pe {{nome}}",
+  },
+  oficial: {
+    titulo: "Acest canal e doar pentru anunțuri oficiale.",
+    detalhe: "Nu îți cerem niciodată parola și nici tokenul contului.",
+    saibaMais: "Află mai multe",
+  },
+  topico: {
+    abrir: "Vezi descrierea canalului",
+  },
+  previaDoLink: {
+    carregando: "Văd ce e la capătul linkului…",
+    destino: "Duce la {{destino}}",
+  },
+  reacao: {
+    carregando: "Văd cine a reacționat cu {{emoji}}…",
+    uma: "{{nome}} a reacționat cu {{emoji}}",
+    duas: "{{primeiro}} și {{segundo}} au reacționat cu {{emoji}}",
+    varias: "{{nomes}} și încă {{quantos}} au reacționat cu {{emoji}}",
+    dicaSuper: "Ține apăsat pentru super reacție",
+  },
+  recado: {
+    gravar: "Înregistrează un mesaj vocal",
+    descartar: "Renunță la înregistrare",
+    mandar: "Trimite înregistrarea",
+    semSuporte: "Browserul acesta nu înregistrează sunet.",
+    semMicrofone: "Fără acces la microfon.",
+  },
   lista: {
     carregando: "Se încarcă mesajele…",
     carregandoMais: "Se încarcă…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Vezi imaginea",
   },
   enquete: {
+    criar: "Creează un sondaj",
+    pergunta: "Întrebare",
+    exemplo: "Ce jucăm azi?",
+    respostas: "Răspunsuri",
+    adicionarOpcao: "Adaugă o variantă",
+    removerOpcao: "Scoate varianta",
+    varias: "Permite mai multe răspunsuri",
+    variasDetalhe: "Fără asta, votul pentru o variantă îți ia votul de pe cea dinainte.",
+    duracao: "Durată",
+    umaHora: "1 oră",
+    quatroHoras: "4 ore",
+    oitoHoras: "8 ore",
+    umDia: "1 zi",
+    tresDias: "3 zile",
+    umaSemana: "1 săptămână",
+    ateEncerrar: "Până îl închid eu",
     titulo: "Sondaj",
     encerrada: "Sondaj închis",
     variasRespostas: "Sondaj — mai multe răspunsuri",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Căutarea se uită doar în canalele pe care le poți citi.",
   },
   entrada: {
+    semNome: "conversație",
+    anexo: "(atașament)",
     titulo: "Mesaje primite",
     naoLidas: "Necitite",
     salvas: "Salvate",

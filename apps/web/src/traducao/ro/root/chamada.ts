@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Mută conversația jos",
+    paraOLado: "Mută conversația în lateral",
+  },
+  aparelhoNovo: {
+    microfone: "A apărut un microfon nou",
+    saida: "A apărut o ieșire audio nouă",
+    apareceu: "A apărut {{nome}}.",
+    falarPorEle: "Vrei să vorbești prin el?",
+    ouvirPorEle: "Vrei să asculți prin el?",
+    trocaNaHora: "Schimbarea are efect imediat, fără să ieși din apel.",
+    naoSugerir: "Nu mai sugera aparatul acesta",
+    trocar: "Comută pe el",
+  },
   conectando: "Se conectează la apel…",
   naoEntrou: "Nu s-a putut intra în apel",
   sair: "Ieși din apel",
