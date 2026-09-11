@@ -2,25 +2,25 @@ import React from "react";
 import { Star } from "@phosphor-icons/react";
 
 import { Tooltip } from "~/components/ui/tooltip";
-import { useFavoritos } from "~/features/servidor/stores/favoritos";
+import { useFavorites } from "~/features/servidor/stores/favoritos";
 import { cn } from "~/lib/utils";
 
-export const EstrelaDoCanal: React.FC<{ channelId: string }> = ({ channelId }) => {
-  const favorito = useFavoritos((s) => s.canais.includes(channelId));
-  const alternar = useFavoritos((s) => s.alternar);
+export const ChannelStar: React.FC<{ channelId: string }> = ({ channelId }) => {
+  const favorite = useFavorites((s) => s.channels.includes(channelId));
+  const toggle = useFavorites((s) => s.toggle);
 
   return (
-    <Tooltip data-gc="conversa.estrela-do-canal.tooltip" label={favorito ? "Tirar dos favoritos" : "Favoritar"}>
+    <Tooltip data-gc="conversa.estrela-do-canal.tooltip" label={favorite ? "Tirar dos favoritos" : "Favoritar"}>
       <button data-gc="conversa.estrela-do-canal.button"
-        onClick={() => alternar(channelId)}
-        aria-label={favorito ? "Tirar dos favoritos" : "Favoritar"}
-        aria-pressed={favorito}
+        onClick={() => toggle(channelId)}
+        aria-label={favorite ? "Tirar dos favoritos" : "Favoritar"}
+        aria-pressed={favorite}
         className={cn(
           "flex size-8 shrink-0 items-center justify-center rounded-md transition hover:bg-hover",
-          favorito ? "text-idle" : "text-ink-muted hover:text-ink",
+          favorite ? "text-idle" : "text-ink-muted hover:text-ink",
         )}
       >
-        <Star data-gc="conversa.estrela-do-canal.star" size={18} weight={favorito ? "fill" : "regular"} />
+        <Star data-gc="conversa.estrela-do-canal.star" size={20} weight={favorite ? "fill" : "regular"} />
       </button>
     </Tooltip>
   );

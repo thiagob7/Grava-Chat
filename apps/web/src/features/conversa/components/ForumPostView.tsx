@@ -4,9 +4,9 @@ import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 import { useClosePost } from "~/@core/application/queries/forum/use-forum";
 import type { ForumPostModel } from "~/@core/application/requests/forum/forum";
 import {
-  AreaDeConversa,
-  PainelDaConversa,
-  RodapeDaConversa,
+  ChatArea,
+  ChatPanel,
+  ChatFooter,
 } from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
 import { MessageList } from "~/features/conversa/components/MessageList";
@@ -18,8 +18,8 @@ interface ForumPostViewProps {
   guildId: string;
   currentUserId: string | undefined;
   isModerator: boolean;
-  podeEscrever: boolean;
-  onVoltar: () => void;
+  canWrite: boolean;
+  onBack: () => void;
 }
 
 export const ForumPostView: React.FC<ForumPostViewProps> = ({
@@ -27,17 +27,17 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
   guildId,
   currentUserId,
   isModerator,
-  podeEscrever,
-  onVoltar,
+  canWrite,
+  onBack,
 }) => {
-  const fechar = useClosePost(post.channelId);
-  const podeFechar = isModerator || post.author.id === currentUserId;
+  const close = useClosePost(post.channelId);
+  const canClose = isModerator || post.author.id === currentUserId;
 
   return (
     <>
       <header data-gc="conversa.forum-post-view.header" className="flex h-12 shrink-0 items-center gap-3 border-b border-divisor px-4 shadow-sm">
-        <button data-gc="conversa.forum-post-view.button.on-voltar"
-          onClick={onVoltar}
+        <button data-gc="conversa.forum-post-view.button.on-back"
+          onClick={onBack}
           className="flex items-center gap-1.5 text-sm text-ink-muted transition hover:text-ink"
         >
           <ArrowLeft data-gc="conversa.forum-post-view.arrow-left" size={16} /> Assuntos
@@ -53,11 +53,11 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
           </span>
         )}
 
-        {podeFechar && (
+        {canClose && (
           <Button data-gc="conversa.forum-post-view.button"
             variant="ghost"
             size="sm"
-            onClick={() => fechar.mutate({ postId: post.id, closed: !post.closedAt })}
+            onClick={() => close.mutate({ postId: post.id, closed: !post.closedAt })}
           >
             {post.closedAt ? <LockOpen data-gc="conversa.forum-post-view.lock-open" size={14} /> : <Lock data-gc="conversa.forum-post-view.lock--2" size={14} />}
             {post.closedAt ? "Reabrir" : "Fechar"}
@@ -65,8 +65,8 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
         )}
       </header>
 
-      <AreaDeConversa data-gc="conversa.forum-post-view.area-de-conversa">
-        <PainelDaConversa data-gc="conversa.forum-post-view.painel-da-conversa">
+      <ChatArea data-gc="conversa.forum-post-view.chat-area">
+        <ChatPanel data-gc="conversa.forum-post-view.chat-panel">
         <MessageList data-gc="conversa.forum-post-view.message-list"
           channelId={post.channelId}
           channelName={post.title}
@@ -84,9 +84,9 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
           }
         />
 
-        </PainelDaConversa>
+        </ChatPanel>
 
-      <RodapeDaConversa data-gc="conversa.forum-post-view.rodape-da-conversa">
+      <ChatFooter data-gc="conversa.forum-post-view.chat-footer">
         {post.closedAt ? (
           <p data-gc="conversa.forum-post-view.p--2" className="px-4 pb-6 text-center text-sm text-ink-faint">
             Este assunto está fechado. Reabra para continuar a conversa.
@@ -97,11 +97,11 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
             channelName={post.title}
             guildId={guildId}
             postId={post.id}
-            podeEscrever={podeEscrever}
+            canWrite={canWrite}
           />
         )}
-      </RodapeDaConversa>
-      </AreaDeConversa>
+      </ChatFooter>
+      </ChatArea>
     </>
   );
 };
