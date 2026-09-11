@@ -1,52 +1,52 @@
 import { useCallback, useState } from "react";
 
-export function useColapso(aba: string) {
-  const chave = `gravae:secoes-fechadas:${aba}`;
+export function useCollapse(tab: string) {
+  const key = `gravae:secoes-fechadas:${tab}`;
 
-  const [fechadas, setFechadas] = useState<Set<string>>(() => {
+  const [closed, setClosed] = useState<Set<string>>(() => {
     try {
-      const salvo = JSON.parse(localStorage.getItem(chave) ?? "[]") as unknown;
-      return new Set(Array.isArray(salvo) ? salvo.filter((id) => typeof id === "string") : []);
+      const saved = JSON.parse(localStorage.getItem(key) ?? "[]") as unknown;
+      return new Set(Array.isArray(saved) ? saved.filter((id) => typeof id === "string") : []);
     } catch {
       return new Set();
     }
   });
 
-  const alternar = useCallback(
+  const toggle = useCallback(
     (id: string) => {
-      setFechadas((atuais) => {
-        const proximas = new Set(atuais);
-        if (!proximas.delete(id)) proximas.add(id);
+      setClosed((current) => {
+        const next = new Set(current);
+        if (!next.delete(id)) next.add(id);
 
         try {
-          localStorage.setItem(chave, JSON.stringify([...proximas]));
+          localStorage.setItem(key, JSON.stringify([...next]));
         } catch {
         }
 
-        return proximas;
+        return next;
       });
     },
-    [chave],
+    [key],
   );
 
-  const abrir = useCallback(
+  const open = useCallback(
     (id: string) => {
-      setFechadas((atuais) => {
-        if (!atuais.has(id)) return atuais;
+      setClosed((current) => {
+        if (!current.has(id)) return current;
 
-        const proximas = new Set(atuais);
-        proximas.delete(id);
+        const next = new Set(current);
+        next.delete(id);
 
         try {
-          localStorage.setItem(chave, JSON.stringify([...proximas]));
+          localStorage.setItem(key, JSON.stringify([...next]));
         } catch {
         }
 
-        return proximas;
+        return next;
       });
     },
-    [chave],
+    [key],
   );
 
-  return { fechadas, alternar, abrir };
+  return { closed, toggle, open };
 }
