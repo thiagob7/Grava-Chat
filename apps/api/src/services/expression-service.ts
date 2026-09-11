@@ -21,23 +21,23 @@ export const expressionService = {
       expressionRepository.findSoundsByGuild(guildId),
     ]);
 
-    const autores = await userRepository.findManyByIds([
+    const authors = await userRepository.findManyByIds([
       ...new Set([...emojis, ...stickers, ...sounds].map((e) => e.createdById)),
     ]);
-    const porId = new Map(autores.map((u) => [u.id, toPublicUser(u)]));
+    const byId = new Map(authors.map((u) => [u.id, toPublicUser(u)]));
 
     return {
-      emojis: emojis.map((e) => ({ ...toGuildEmoji(e), createdBy: porId.get(e.createdById) ?? null })),
-      stickers: stickers.map((s) => ({ ...toSticker(s), createdBy: porId.get(s.createdById) ?? null })),
-      sounds: sounds.map((s) => ({ ...toGuildSound(s), createdBy: porId.get(s.createdById) ?? null })),
+      emojis: emojis.map((e) => ({ ...toGuildEmoji(e), createdBy: byId.get(e.createdById) ?? null })),
+      stickers: stickers.map((s) => ({ ...toSticker(s), createdBy: byId.get(s.createdById) ?? null })),
+      sounds: sounds.map((s) => ({ ...toGuildSound(s), createdBy: byId.get(s.createdById) ?? null })),
     };
   },
 
   async createEmoji(userId: string, guildId: string, input: CreateEmojiInput) {
-    await requirePodeCriarExpressao(userId, guildId);
+    await requireCanCreateExpression(userId, guildId);
 
-    if ((await expressionRepository.countEmojis(guildId)) >= LIMITS.emojisPorServidor) {
-      throw new AppError(`O servidor já tem ${LIMITS.emojisPorServidor} emojis`);
+    if ((await expressionRepository.countEmojis(guildId)) >= LIMITS.emojisByServer) {
+      throw new AppError(`O servidor já tem ${LIMITS.emojisByServer} emojis`);
     }
 
     if (await expressionRepository.findEmojiByName(guildId, input.name)) {
@@ -52,7 +52,7 @@ export const expressionService = {
       createdById: userId,
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "emoji.create",
@@ -70,19 +70,19 @@ export const expressionService = {
     const emoji = await expressionRepository.findEmojiById(emojiId);
     if (!emoji || emoji.guildId !== guildId) throw new NotFoundError("Emoji não encontrado");
 
-    const atualizado = await expressionRepository.updateEmoji(emojiId, { name });
+    const updated = await expressionRepository.updateEmoji(emojiId, { name });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "emoji.update",
       targetType: "emoji",
       targetId: emojiId,
       targetName: name,
-      changes: { name: { de: emoji.name, para: name } },
+      changes: { name: { de: emoji.name, toward: name } },
     });
 
-    return toGuildEmoji(atualizado);
+    return toGuildEmoji(updated);
   },
 
   async removeEmoji(userId: string, guildId: string, emojiId: string) {
@@ -92,7 +92,7 @@ export const expressionService = {
     if (!emoji || emoji.guildId !== guildId) throw new NotFoundError("Emoji não encontrado");
 
     await expressionRepository.removeEmoji(emojiId);
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "emoji.delete",
@@ -103,10 +103,10 @@ export const expressionService = {
   },
 
   async createSticker(userId: string, guildId: string, input: CreateStickerInput) {
-    await requirePodeCriarExpressao(userId, guildId);
+    await requireCanCreateExpression(userId, guildId);
 
-    if ((await expressionRepository.countStickers(guildId)) >= LIMITS.figurinhasPorServidor) {
-      throw new AppError(`O servidor já tem ${LIMITS.figurinhasPorServidor} figurinhas`);
+    if ((await expressionRepository.countStickers(guildId)) >= LIMITS.stickersByServer) {
+      throw new AppError(`O servidor já tem ${LIMITS.stickersByServer} figurinhas`);
     }
 
     const sticker = await expressionRepository.createSticker({
@@ -118,7 +118,7 @@ export const expressionService = {
       createdById: userId,
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "sticker.create",
@@ -137,7 +137,7 @@ export const expressionService = {
     if (!sticker || sticker.guildId !== guildId) throw new NotFoundError("Figurinha não encontrada");
 
     await expressionRepository.removeSticker(stickerId);
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "sticker.delete",
@@ -148,10 +148,10 @@ export const expressionService = {
   },
 
   async createSound(userId: string, guildId: string, input: CreateSoundInput) {
-    await requirePodeCriarExpressao(userId, guildId);
+    await requireCanCreateExpression(userId, guildId);
 
-    if ((await expressionRepository.countSounds(guildId)) >= LIMITS.sonsPorServidor) {
-      throw new AppError(`O servidor já tem ${LIMITS.sonsPorServidor} sons`);
+    if ((await expressionRepository.countSounds(guildId)) >= LIMITS.soundsByServer) {
+      throw new AppError(`O servidor já tem ${LIMITS.soundsByServer} sons`);
     }
 
     const sound = await expressionRepository.createSound({
@@ -163,7 +163,7 @@ export const expressionService = {
       createdById: userId,
     });
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "sound.create",
@@ -196,7 +196,7 @@ export const expressionService = {
     if (!sound || sound.guildId !== guildId) throw new NotFoundError("Som não encontrado");
 
     await expressionRepository.removeSound(soundId);
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "sound.delete",
@@ -207,15 +207,15 @@ export const expressionService = {
   },
 };
 
-async function requirePodeCriarExpressao(userId: string, guildId: string) {
-  const contexto = await accessService.contextOf(userId, guildId);
+async function requireCanCreateExpression(userId: string, guildId: string) {
+  const context = await accessService.contextOf(userId, guildId);
 
   if (
-    !has(contexto.permissions, "CREATE_EXPRESSIONS") &&
-    !has(contexto.permissions, "MANAGE_EXPRESSIONS")
+    !has(context.permissions, "CREATE_EXPRESSIONS") &&
+    !has(context.permissions, "MANAGE_EXPRESSIONS")
   ) {
     throw new ForbiddenError("Você não pode criar expressões neste servidor");
   }
 
-  return contexto;
+  return context;
 }
