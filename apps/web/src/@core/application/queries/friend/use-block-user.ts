@@ -15,7 +15,7 @@ export const useBlockUser = () => {
       void queryClient.invalidateQueries({ queryKey: ["find-profile"] });
       toast.success("Usuário bloqueado.");
     },
-    onError: (erro) => toast.error(apiErrorMessage(erro, "Não deu pra bloquear")),
+    onError: (error) => toast.error(apiErrorMessage(error, "Não deu pra bloquear")),
   });
 };
 
@@ -29,6 +29,6 @@ export const useUnblockUser = () => {
       void queryClient.invalidateQueries({ queryKey: ["find-profile"] });
       toast.success("Usuário desbloqueado.");
     },
-    onError: (erro) => toast.error(apiErrorMessage(erro, "Não deu pra desbloquear")),
+    onError: (error) => toast.error(apiErrorMessage(error, "Não deu pra desbloquear")),
   });
 };
