@@ -374,6 +374,15 @@
   }
 
   /*
+    O que fica FORA do documento — a sobra de rolagem e a tira que o sistema
+    deixa nas bordas — pega o fundo do `html`. Sem isto ele era o branco padrão
+    por baixo de tudo, e qualquer folga aparecia clara num app escuro.
+  */
+  html {
+    background: var(--color-surface-0);
+  }
+
+  /*
     O anel de 1px em volta do app é a nossa moldura de fora — o que na referência
     é o `OutlineFrame`. Vivia no `#app`, sem nome, e por isso nenhum tema
     conseguia apagá-lo: ficava por baixo do contorno que o tema desenha.
