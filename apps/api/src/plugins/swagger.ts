@@ -4,35 +4,35 @@ import swaggerUi from "@fastify/swagger-ui";
 
 import { env, isDev } from "~/env.js";
 
-const GRUPOS: Record<string, { nome: string; descricao: string }> = {
-  auth: { nome: "Autenticação", descricao: "Entrar, sair e renovar a sessão." },
-  me: { nome: "Minha conta", descricao: "Perfil, preferências e dados de quem está logado." },
-  users: { nome: "Pessoas", descricao: "Perfis públicos e notas." },
-  friends: { nome: "Amizades", descricao: "Pedidos, bloqueios e conversas privadas." },
-  guilds: { nome: "Servidores", descricao: "Servidores, canais, categorias e cargos." },
-  invites: { nome: "Convites", descricao: "Criar, ver e aceitar convite." },
-  descobrir: { nome: "Explorar", descricao: "Comunidades abertas a partir de cem membros." },
-  temas: { nome: "Temas", descricao: "Publicar e buscar tema do estúdio." },
-  messages: { nome: "Mensagens", descricao: "Enviar, editar, apagar, fixar e reagir." },
-  channels: { nome: "Canais", descricao: "Histórico, fixadas e leitura." },
-  forum: { nome: "Fórum", descricao: "Posts e respostas." },
-  voice: { nome: "Voz", descricao: "Entrar na chamada, estado e token do LiveKit." },
-  uploads: { nome: "Envios", descricao: "Anexos e imagens." },
-  gifs: { nome: "GIFs", descricao: "Busca e favoritos." },
-  embeds: { nome: "Prévias", descricao: "A leitura de um link para virar cartão." },
-  bots: { nome: "Bots (dono)", descricao: "Criar e configurar aplicativo. Pede sessão." },
-  bot: { nome: "Bots (API)", descricao: "O que um bot chama com o próprio token." },
-  oauth2: { nome: "OAuth2", descricao: "Autorizar e trocar código por token." },
-  webhooks: { nome: "Webhooks", descricao: "Criar, listar e disparar." },
-  dms: { nome: "Amizades", descricao: "Pedidos, bloqueios e conversas privadas." },
-  posts: { nome: "Fórum", descricao: "Posts e respostas." },
-  moderation: { nome: "Moderação", descricao: "Castigo, expulsão, banimento e auditoria." },
-  status: { nome: "Status", descricao: "Saúde do serviço e das máquinas." },
-  publico: { nome: "Status público", descricao: "O que responde sem sessão nenhuma." },
-  health: { nome: "Status", descricao: "Saúde do serviço e das máquinas." },
+const GROUPS: Record<string, { name: string; description: string }> = {
+  auth: { name: "Autenticação", description: "Entrar, sair e renovar a sessão." },
+  me: { name: "Minha conta", description: "Perfil, preferências e dados de quem está logado." },
+  users: { name: "Pessoas", description: "Perfis públicos e notas." },
+  friends: { name: "Amizades", description: "Pedidos, bloqueios e conversas privadas." },
+  guilds: { name: "Servidores", description: "Servidores, canais, categorias e cargos." },
+  invites: { name: "Convites", description: "Criar, ver e aceitar convite." },
+  discover: { name: "Explorar", description: "Comunidades abertas a partir de cem membros." },
+  themes: { name: "Temas", description: "Publicar e buscar tema do estúdio." },
+  messages: { name: "Mensagens", description: "Enviar, editar, apagar, fixar e reagir." },
+  channels: { name: "Canais", description: "Histórico, fixadas e leitura." },
+  forum: { name: "Fórum", description: "Posts e respostas." },
+  voice: { name: "Voz", description: "Entrar na chamada, estado e token do LiveKit." },
+  uploads: { name: "Envios", description: "Anexos e imagens." },
+  gifs: { name: "GIFs", description: "Busca e favoritos." },
+  embeds: { name: "Prévias", description: "A leitura de um link para virar cartão." },
+  bots: { name: "Bots (dono)", description: "Criar e configurar aplicativo. Pede sessão." },
+  bot: { name: "Bots (API)", description: "O que um bot chama com o próprio token." },
+  oauth2: { name: "OAuth2", description: "Autorizar e trocar código por token." },
+  webhooks: { name: "Webhooks", description: "Criar, listar e disparar." },
+  dms: { name: "Amizades", description: "Pedidos, bloqueios e conversas privadas." },
+  posts: { name: "Fórum", description: "Posts e respostas." },
+  moderation: { name: "Moderação", description: "Castigo, expulsão, banimento e auditoria." },
+  status: { name: "Status", description: "Saúde do serviço e das máquinas." },
+  isPublic: { name: "Status público", description: "O que responde sem sessão nenhuma." },
+  health: { name: "Status", description: "Saúde do serviço e das máquinas." },
 };
 
-const VERBOS: Record<string, string> = {
+const VERBS: Record<string, string> = {
   GET: "Lê",
   POST: "Cria",
   PUT: "Define",
@@ -40,39 +40,39 @@ const VERBOS: Record<string, string> = {
   DELETE: "Remove",
 };
 
-const semPrefixo = (url: string) => url.replace(/^\/api(?=\/|$)/, "");
+const withoutPrefix = (url: string) => url.replace(/^\/api(?=\/|$)/, "");
 
-function grupoDe(url: string): string {
-  const pedaco = semPrefixo(url).replace(/^\//, "").split("/")[0] ?? "";
+function group(url: string): string {
+  const piece = withoutPrefix(url).replace(/^\//, "").split("/")[0] ?? "";
 
-  return GRUPOS[pedaco]?.nome ?? "Outras";
+  return GROUPS[piece]?.name ?? "Outras";
 }
 
-function resumoDe(metodo: string, url: string): string {
-  const alvo = semPrefixo(url)
+function summary(method: string, url: string): string {
+  const target = withoutPrefix(url)
     .replace(/^\//, "")
     .split("/")
-    .filter((pedaco) => !pedaco.startsWith(":"))
+    .filter((piece) => !piece.startsWith(":"))
     .pop();
 
-  return `${VERBOS[metodo] ?? metodo} ${alvo ?? url}`;
+  return `${VERBS[method] ?? method} ${target ?? url}`;
 }
 
 export const swaggerPlugin = fp(async (app) => {
   await app.register(swagger, {
     transform: ({ schema, url, route }) => {
-      const metodos = Array.isArray(route?.method) ? route.method : [route?.method];
-      const metodo = String(metodos[0] ?? "GET");
+      const methods = Array.isArray(route?.method) ? route.method : [route?.method];
+      const method = String(methods[0] ?? "GET");
 
       return {
         url,
         schema: {
           ...schema,
-          tags: schema?.tags?.length ? schema.tags : [grupoDe(url)],
-          summary: schema?.summary ?? resumoDe(metodo, url),
+          tags: schema?.tags?.length ? schema.tags : [group(url)],
+          summary: schema?.summary ?? summary(method, url),
           security:
             schema?.security ??
-            (semPrefixo(url).startsWith("/bot/") ? [{ bot: [] }] : [{ sessao: [] }]),
+            (withoutPrefix(url).startsWith("/bot/") ? [{ bot: [] }] : [{ session: [] }]),
         },
       };
     },
@@ -87,7 +87,7 @@ export const swaggerPlugin = fp(async (app) => {
       servers: [{ url: env.API_PUBLIC_URL }],
       components: {
         securitySchemes: {
-          sessao: {
+          session: {
             type: "apiKey",
             in: "cookie",
             name: "gravae_session",
@@ -100,15 +100,15 @@ export const swaggerPlugin = fp(async (app) => {
           },
         },
       },
-      tags: Object.values(GRUPOS)
+      tags: Object.values(GROUPS)
         .filter(
-          (grupo, indice, todos) => todos.findIndex((o) => o.nome === grupo.nome) === indice,
+          (group, index, all) => all.findIndex((o) => o.name === group.name) === index,
         )
-        .map((grupo) => ({ name: grupo.nome, description: grupo.descricao })),
+        .map((group) => ({ name: group.name, description: group.description })),
     },
   });
 
-  if (!isDev && !env.DOCS_ABERTAS) return;
+  if (!isDev && !env.DOCS_ISOPEN) return;
 
   await app.register(swaggerUi, {
     routePrefix: "/api/docs",
