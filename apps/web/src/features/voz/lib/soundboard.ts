@@ -1,35 +1,35 @@
 import { create } from "zustand";
 
-let atual: HTMLAudioElement | null = null;
+let current: HTMLAudioElement | null = null;
 
-export const useSomDoPainel = create<{ quem: string | null }>(() => ({ quem: null }));
+export const usePanelSound = create<{ who: string | null }>(() => ({ who: null }));
 
-export function tocarSomDoPainel(url: string, volume: number, userId: string) {
-  pararSomDoPainel();
+export function playPanelSound(url: string, volume: number, userId: string) {
+  stopPanelSound();
 
   const audio = new Audio(url);
   audio.volume = Math.min(1, Math.max(0, volume));
 
-  const soltar = () => {
-    if (atual !== audio) return;
+  const drop = () => {
+    if (current !== audio) return;
 
-    atual = null;
-    useSomDoPainel.setState({ quem: null });
+    current = null;
+    usePanelSound.setState({ who: null });
   };
 
-  audio.addEventListener("ended", soltar);
+  audio.addEventListener("ended", drop);
 
-  atual = audio;
-  useSomDoPainel.setState({ quem: userId });
+  current = audio;
+  usePanelSound.setState({ who: userId });
 
-  void audio.play().catch(soltar);
+  void audio.play().catch(drop);
 }
 
-export function pararSomDoPainel() {
-  if (!atual) return;
+export function stopPanelSound() {
+  if (!current) return;
 
-  atual.pause();
-  atual.currentTime = 0;
-  atual = null;
-  useSomDoPainel.setState({ quem: null });
+  current.pause();
+  current.currentTime = 0;
+  current = null;
+  usePanelSound.setState({ who: null });
 }
