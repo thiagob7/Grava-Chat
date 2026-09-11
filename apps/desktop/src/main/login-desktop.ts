@@ -50,7 +50,7 @@ export function registerLoginDesktop() {
     const challenge = createHash("sha256").update(verifier).digest("base64url");
 
     void shell.openExternal(
-      `${APP_URL}/api/auth/desktop/start?desafio=${encodeURIComponent(challenge)}`,
+      `${APP_URL}/api/auth/desktop/start?challenge=${encodeURIComponent(challenge)}`,
     );
   });
 

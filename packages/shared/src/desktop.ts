@@ -110,8 +110,8 @@ export interface BridgeDesktop {
   login: BridgeLogin;
   media: BridgeMedia;
   appWindow: BridgeWindow;
-  links: BridgeLinks;
-  update: BridgeUpdate;
+  links?: BridgeLinks;
+  update?: BridgeUpdate;
   system?: BridgeSystem;
 }
 

@@ -1,6 +1,16 @@
 import type { BridgeDesktop } from "@gravae/shared";
 
-export const desktop = (): BridgeDesktop | null => window.gravae ?? null;
+import { comNomesNovos } from "~/lib/ponte-mais-velha";
+
+let translated: BridgeDesktop | null = null;
+
+export const desktop = (): BridgeDesktop | null => {
+  const raw = window.gravae ?? null;
+  if (!raw) return null;
+
+  translated ??= comNomesNovos(raw);
+  return translated;
+};
 
 export const isDesktop = () => desktop() !== null;
 

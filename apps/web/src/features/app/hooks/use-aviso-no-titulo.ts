@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { useReadStates } from "~/@core/application/queries/message/use-read-states";
 import { useNotices } from "~/stores/notificacoes";
+import { desktop } from "~/lib/desktop";
 
 const BASE = "Gravaê";
 
@@ -12,7 +13,7 @@ export function useNoticeTitle(active: boolean) {
   useEffect(() => {
     if (!active || !counter) {
       document.title = BASE;
-      void window.gravae?.appWindow?.counter(0);
+      void desktop()?.appWindow.counter(0);
       return;
     }
 
@@ -21,13 +22,13 @@ export function useNoticeTitle(active: boolean) {
     const notRead = states.reduce((total, e) => total + e.notRead, 0);
 
     document.title = mentions ? `(${mentions}) ${BASE}` : notRead ? `• ${BASE}` : BASE;
-    void window.gravae?.appWindow?.counter(mentions);
+    void desktop()?.appWindow.counter(mentions);
   }, [active, counter, readStates]);
 
   useEffect(
     () => () => {
       document.title = BASE;
-      void window.gravae?.appWindow?.counter(0);
+      void desktop()?.appWindow.counter(0);
     },
     [],
   );
