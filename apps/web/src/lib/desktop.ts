@@ -1,13 +1,13 @@
-import type { PonteDesktop } from "@gravae/shared";
+import type { BridgeDesktop } from "@gravae/shared";
 
-export const desktop = (): PonteDesktop | null => window.gravae ?? null;
+export const desktop = (): BridgeDesktop | null => window.gravae ?? null;
 
-export const ehDesktop = () => desktop() !== null;
+export const isDesktop = () => desktop() !== null;
 
-export function marcarAmbienteDesktop() {
-  const ponte = desktop();
-  if (!ponte) return;
+export function markEnvironmentDesktop() {
+  const bridge = desktop();
+  if (!bridge) return;
 
   document.documentElement.classList.add("no-aplicativo");
-  document.documentElement.classList.toggle("desktop-mac", ponte.plataforma === "darwin");
+  document.documentElement.classList.toggle("desktop-mac", bridge.platform === "darwin");
 }
