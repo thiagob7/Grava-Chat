@@ -8,13 +8,13 @@ const updateMessage = vi.fn();
 const createMessage = vi.fn();
 const markRead = vi.fn();
 const requireChannelAccess = vi.fn();
-const estadosDeLeitura = vi.fn();
-const mencoesDesde = vi.fn();
-const canaisQueEscuta = vi.fn();
-const canaisPorId = vi.fn();
-const participacoes = vi.fn();
-const comRelacoes = vi.fn();
-const removerArquivos = vi.fn();
+const readingStates = vi.fn();
+const mentionsSince = vi.fn();
+const channelsListen = vi.fn();
+const channelsById = vi.fn();
+const participations = vi.fn();
+const withRelations = vi.fn();
+const removeFiles = vi.fn();
 
 vi.mock("~/repositories/message-repository.js", () => ({
   messageRepository: {
@@ -22,43 +22,49 @@ vi.mock("~/repositories/message-repository.js", () => ({
     softDelete: (...a: unknown[]) => softDelete(...a),
     update: (...a: unknown[]) => updateMessage(...a),
     create: (...a: unknown[]) => createMessage(...a),
-    findByIdWithRelations: (...a: unknown[]) => comRelacoes(...a),
+    findByIdWithRelations: (...a: unknown[]) => withRelations(...a),
   },
   reactionRepository: { findManyByMessage: vi.fn(), add: vi.fn(), remove: vi.fn() },
   readStateRepository: {
     markRead: (...a: unknown[]) => markRead(...a),
-    findManyByUser: (...a: unknown[]) => estadosDeLeitura(...a),
+    findManyByUser: (...a: unknown[]) => readingStates(...a),
     countUnread: vi.fn(),
     countMentions: vi.fn(),
-    mentionsSince: (...a: unknown[]) => mencoesDesde(...a),
+    mentionsSince: (...a: unknown[]) => mentionsSince(...a),
   },
 }));
 
 vi.mock("~/services/access-service.js", () => ({
   accessService: {
     requireChannelAccess: (...a: unknown[]) => requireChannelAccess(...a),
-    listenableChannels: (...a: unknown[]) => canaisQueEscuta(...a),
+    listenableChannels: (...a: unknown[]) => channelsListen(...a),
   },
 }));
 
 vi.mock("~/repositories/guild-repository.js", () => ({
   channelRepository: {
     findById: vi.fn(),
-    guildIdsOf: (...a: unknown[]) => canaisPorId(...a),
+    guildIdsOf: (...a: unknown[]) => channelsById(...a),
   },
   memberRepository: {
     find: vi.fn(),
-    membershipsOf: (...a: unknown[]) => participacoes(...a),
+    membershipsOf: (...a: unknown[]) => participations(...a),
   },
   guildRepository: { findById: vi.fn() },
   categoryRepository: {},
 }));
 
-const cargosDoServidor = vi.fn();
+const serverRoles = vi.fn();
 
 vi.mock("~/repositories/role-repository.js", () => ({
-  roleRepository: { findManyByGuild: (...a: unknown[]) => cargosDoServidor(...a) },
+  roleRepository: { findManyByGuild: (...a: unknown[]) => serverRoles(...a) },
   overwriteRepository: {},
+}));
+
+const userById = vi.fn();
+
+vi.mock("~/repositories/user-repository.js", () => ({
+  userRepository: { findById: (...a: unknown[]) => userById(...a) },
 }));
 
 vi.mock("~/repositories/expression-repository.js", () => ({
@@ -66,25 +72,25 @@ vi.mock("~/repositories/expression-repository.js", () => ({
 }));
 
 vi.mock("~/services/automod-service.js", () => ({
-  autoModService: { avaliar: vi.fn() },
+  autoModService: { evaluate: vi.fn() },
 }));
 
 vi.mock("~/services/forum-service.js", () => ({
-  forumService: { requirePostAberto: vi.fn(), registrarResposta: vi.fn() },
+  forumService: { requirePostIsOpen: vi.fn(), registerReply: vi.fn() },
 }));
 
 vi.mock("~/lib/redis.js", () => ({
   redis: { set: vi.fn(), ttl: vi.fn(), incr: vi.fn(async () => 1), expire: vi.fn() },
-  keys: { slowmode: () => "slow:teste", fluxoDeMensagens: () => "fluxo:teste" },
+  keys: { slowmode: () => "slow:teste", messagesFlow: () => "fluxo:teste" },
 }));
 
 const { messageService } = await import("~/services/message-service.js");
 
 const AUTHOR = "6a8781da7415b08f427be1a4";
-const OUTRO = "6a8781f57415b08f427be1ad";
+const OTHER = "6a8781f57415b08f427be1ad";
 const CHANNEL = "6a8781db7415b08f427be1aa";
 
-const contextoComum = {
+const contextCommon = {
   permissions: new Set(["VIEW_CHANNEL", "SEND_MESSAGES", "ATTACH_FILES", "ADD_REACTIONS"]),
   member: { timeoutUntil: null },
   roles: [],
@@ -93,7 +99,7 @@ const contextoComum = {
 
 const textChannel = {
   channel: { id: CHANNEL, type: "TEXT", guildId: "g1", slowmodeSeconds: 0 },
-  contexto: contextoComum,
+  context: contextCommon,
 };
 
 const messageRow = {
@@ -116,49 +122,49 @@ const messageRow = {
   },
 };
 
-const CARGO_MENCIONAVEL = "6a8781db7415b08f427be1ab";
-const CARGO_FECHADO = "6a8781db7415b08f427be1ac";
+const ROLE_MENTIONABLE = "6a8781db7415b08f427be1ab";
+const ROLE_CLOSED = "6a8781db7415b08f427be1ac";
 
 beforeEach(() => {
   vi.clearAllMocks();
   requireChannelAccess.mockResolvedValue(textChannel);
   createMessage.mockResolvedValue(messageRow);
-  cargosDoServidor.mockResolvedValue([
-    { id: CARGO_MENCIONAVEL, mentionable: true },
-    { id: CARGO_FECHADO, mentionable: false },
+  serverRoles.mockResolvedValue([
+    { id: ROLE_MENTIONABLE, mentionable: true },
+    { id: ROLE_CLOSED, mentionable: false },
   ]);
 });
 
-const gravado = () => createMessage.mock.calls.at(-1)?.[0];
+const recorded = () => createMessage.mock.calls.at(-1)?.[0];
 
-const comPermissao = (...extras: string[]) => ({
+const withPermission = (...extras: string[]) => ({
   ...textChannel,
-  contexto: { ...contextoComum, permissions: new Set([...contextoComum.permissions, ...extras]) },
+  context: { ...contextCommon, permissions: new Set([...contextCommon.permissions, ...extras]) },
 });
 
 describe("menções", () => {
   it("guarda o id de quem foi mencionado", async () => {
-    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `oi <@${OUTRO}>` });
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `oi <@${OTHER}>` });
 
-    expect(gravado().mentions).toEqual([OUTRO]);
+    expect(recorded().mentions).toEqual([OTHER]);
   });
 
   it("responder com aviso menciona o autor citado, sem mexer no texto", async () => {
-    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OTHER });
 
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
       content: "eae joão",
       replyToId: "m9",
-      mencionarAutor: true,
+      mentionAuthor: true,
     });
 
-    expect(gravado().mentions).toEqual([OUTRO]);
-    expect(gravado().content).toBe("eae joão");
+    expect(recorded().mentions).toEqual([OTHER]);
+    expect(recorded().content).toBe("eae joão");
   });
 
   it("responder sem o aviso não menciona ninguém", async () => {
-    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OTHER });
 
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
@@ -166,7 +172,7 @@ describe("menções", () => {
       replyToId: "m9",
     });
 
-    expect(gravado().mentions).toEqual([]);
+    expect(recorded().mentions).toEqual([]);
   });
 
   it("responder a si mesmo não se menciona", async () => {
@@ -176,78 +182,78 @@ describe("menções", () => {
       channelId: CHANNEL,
       content: "complementando",
       replyToId: "m9",
-      mencionarAutor: true,
+      mentionAuthor: true,
     });
 
-    expect(gravado().mentions).toEqual([]);
+    expect(recorded().mentions).toEqual([]);
   });
 
   it("não repete o autor citado quando ele já está no texto", async () => {
-    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OUTRO });
+    findMessageById.mockResolvedValue({ ...messageRow, id: "m9", authorId: OTHER });
 
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
-      content: `<@${OUTRO}> olha isso`,
+      content: `<@${OTHER}> olha isso`,
       replyToId: "m9",
-      mencionarAutor: true,
+      mentionAuthor: true,
     });
 
-    expect(gravado().mentions).toEqual([OUTRO]);
+    expect(recorded().mentions).toEqual([OTHER]);
   });
 
   it("não confunde menção de cargo com menção de pessoa", async () => {
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
-      content: `<@&${CARGO_MENCIONAVEL}>`,
+      content: `<@&${ROLE_MENTIONABLE}>`,
     });
 
-    expect(gravado().mentions).toEqual([]);
-    expect(gravado().mentionRoleIds).toEqual([CARGO_MENCIONAVEL]);
+    expect(recorded().mentions).toEqual([]);
+    expect(recorded().mentionRoleIds).toEqual([ROLE_MENTIONABLE]);
   });
 
   it("cargo que não é mencionável não pinga", async () => {
-    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${CARGO_FECHADO}>` });
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${ROLE_CLOSED}>` });
 
-    expect(gravado().mentionRoleIds).toEqual([]);
+    expect(recorded().mentionRoleIds).toEqual([]);
   });
 
   it("quem tem MENTION_EVERYONE menciona cargo fechado também", async () => {
-    requireChannelAccess.mockResolvedValue(comPermissao("MENTION_EVERYONE"));
+    requireChannelAccess.mockResolvedValue(withPermission("MENTION_EVERYONE"));
 
-    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${CARGO_FECHADO}>` });
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `<@&${ROLE_CLOSED}>` });
 
-    expect(gravado().mentionRoleIds).toEqual([CARGO_FECHADO]);
+    expect(recorded().mentionRoleIds).toEqual([ROLE_CLOSED]);
   });
 
   it("sem permissão, @everyone é APAGADO e a mensagem passa", async () => {
     await messageService.send(AUTHOR, { channelId: CHANNEL, content: "bom dia @everyone" });
 
-    expect(gravado().mentionEveryone).toBe(false);
-    expect(gravado().content).toBe("bom dia @everyone");
+    expect(recorded().mentionEveryone).toBe(false);
+    expect(recorded().content).toBe("bom dia @everyone");
   });
 
   it("com permissão, @everyone vale", async () => {
-    requireChannelAccess.mockResolvedValue(comPermissao("MENTION_EVERYONE"));
+    requireChannelAccess.mockResolvedValue(withPermission("MENTION_EVERYONE"));
 
     await messageService.send(AUTHOR, { channelId: CHANNEL, content: "@here alguém aí?" });
 
-    expect(gravado().mentionEveryone).toBe(true);
+    expect(recorded().mentionEveryone).toBe(true);
   });
 
   it("na DM não há cargo nem @everyone", async () => {
     requireChannelAccess.mockResolvedValue({
       channel: { id: CHANNEL, type: "TEXT", guildId: null, slowmodeSeconds: 0 },
-      contexto: null,
+      context: null,
     });
 
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
-      content: `@everyone <@&${CARGO_MENCIONAVEL}>`,
+      content: `@everyone <@&${ROLE_MENTIONABLE}>`,
     });
 
-    expect(gravado().mentionEveryone).toBe(false);
-    expect(gravado().mentionRoleIds).toEqual([]);
-    expect(cargosDoServidor).not.toHaveBeenCalled();
+    expect(recorded().mentionEveryone).toBe(false);
+    expect(recorded().mentionRoleIds).toEqual([]);
+    expect(serverRoles).not.toHaveBeenCalled();
   });
 });
 
@@ -263,7 +269,7 @@ describe("enviar", () => {
   it("aceita mensagem em canal de voz — é o chat que fica ao lado da chamada", async () => {
     requireChannelAccess.mockResolvedValue({
       channel: { id: CHANNEL, type: "VOICE", guildId: "g1", slowmodeSeconds: 0 },
-      contexto: contextoComum,
+      context: contextCommon,
     });
     createMessage.mockResolvedValue(messageRow);
 
@@ -274,7 +280,7 @@ describe("enviar", () => {
   it("no fórum, recusa mensagem que não está dentro de um assunto", async () => {
     requireChannelAccess.mockResolvedValue({
       channel: { id: CHANNEL, type: "FORUM", guildId: "g1", slowmodeSeconds: 0 },
-      contexto: contextoComum,
+      context: contextCommon,
     });
 
     await expect(
@@ -283,12 +289,70 @@ describe("enviar", () => {
     expect(createMessage).not.toHaveBeenCalled();
   });
 
+  it("na comunidade que exige e-mail confirmado, quem não confirmou não fala", async () => {
+    const { guildRepository } = await import("~/repositories/guild-repository.js");
+    vi.mocked(guildRepository.findById).mockResolvedValue({
+      verifiedRequiresEmail: true,
+    } as never);
+    userById.mockResolvedValue({ isBot: false, emailVerifiedAt: null });
+
+    await expect(
+      messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi" }),
+    ).rejects.toThrow("confirmou o e-mail");
+
+    expect(createMessage).not.toHaveBeenCalled();
+    vi.mocked(guildRepository.findById).mockReset();
+  });
+
+  it("quem já confirmou o e-mail fala normalmente", async () => {
+    const { guildRepository } = await import("~/repositories/guild-repository.js");
+    vi.mocked(guildRepository.findById).mockResolvedValue({
+      verifiedRequiresEmail: true,
+    } as never);
+    userById.mockResolvedValue({ isBot: false, emailVerifiedAt: new Date() });
+    createMessage.mockResolvedValue(messageRow);
+
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi" });
+
+    expect(createMessage).toHaveBeenCalled();
+    vi.mocked(guildRepository.findById).mockReset();
+  });
+
+  it("com o filtro de mídia ligado, a imagem chega escondida", async () => {
+    const { guildRepository } = await import("~/repositories/guild-repository.js");
+    vi.mocked(guildRepository.findById).mockResolvedValue({
+      filtersMediaExplicit: true,
+    } as never);
+    createMessage.mockResolvedValue(messageRow);
+
+    await messageService.send(AUTHOR, {
+      channelId: CHANNEL,
+      content: "",
+      attachments: [
+        {
+          id: "a1",
+          url: "https://exemplo/foto.png",
+          filename: "foto.png",
+          contentType: "image/png",
+          size: 10,
+        },
+      ],
+    });
+
+    expect(createMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attachments: [expect.objectContaining({ spoiler: true })],
+      }),
+    );
+    vi.mocked(guildRepository.findById).mockReset();
+  });
+
   it("extrai menções do conteúdo e marca o canal como lido", async () => {
-    createMessage.mockResolvedValue({ ...messageRow, content: `oi <@${OUTRO}>` });
+    createMessage.mockResolvedValue({ ...messageRow, content: `oi <@${OTHER}>` });
 
-    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `oi <@${OUTRO}>` });
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: `oi <@${OTHER}>` });
 
-    expect(createMessage).toHaveBeenCalledWith(expect.objectContaining({ mentions: [OUTRO] }));
+    expect(createMessage).toHaveBeenCalledWith(expect.objectContaining({ mentions: [OTHER] }));
     expect(markRead).toHaveBeenCalledWith(AUTHOR, CHANNEL, "m1");
   });
 });
@@ -298,7 +362,7 @@ describe("editar", () => {
     findMessageById.mockResolvedValue(messageRow);
 
     await expect(
-      messageService.edit(OUTRO, { messageId: "m1", content: "hackeado" }),
+      messageService.edit(OTHER, { messageId: "m1", content: "hackeado" }),
     ).rejects.toBeInstanceOf(ForbiddenError);
 
     expect(updateMessage).not.toHaveBeenCalled();
@@ -324,7 +388,7 @@ describe("apagar", () => {
   it("membro comum não apaga mensagem alheia", async () => {
     findMessageById.mockResolvedValue(messageRow);
 
-    await expect(messageService.remove(OUTRO, "m1")).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(messageService.remove(OTHER, "m1")).rejects.toBeInstanceOf(ForbiddenError);
     expect(softDelete).not.toHaveBeenCalled();
   });
 
@@ -332,39 +396,39 @@ describe("apagar", () => {
     findMessageById.mockResolvedValue(messageRow);
     requireChannelAccess.mockResolvedValue({
       ...textChannel,
-      contexto: { permissions: new Set(["VIEW_CHANNEL", "MANAGE_MESSAGES"]) },
+      context: { permissions: new Set(["VIEW_CHANNEL", "MANAGE_MESSAGES"]) },
     });
 
-    await messageService.remove(OUTRO, "m1");
+    await messageService.remove(OTHER, "m1");
     expect(softDelete).toHaveBeenCalledWith("m1");
   });
 });
 
 describe("o selo de menção nos canais que ninguém abriu", () => {
-  const SERVIDOR = "6a8781db7415b08f427be100";
-  const NUNCA_ABERTO = "6a8781db7415b08f427be101";
-  const JA_LIDO = "6a8781db7415b08f427be102";
-  const ENTROU_EM = new Date("2026-08-01T12:00:00Z");
+  const SERVER = "6a8781db7415b08f427be100";
+  const NEVER_ISOPEN = "6a8781db7415b08f427be101";
+  const ALREADY_READ = "6a8781db7415b08f427be102";
+  const JOINED_AT = new Date("2026-08-01T12:00:00Z");
 
   beforeEach(() => {
-    estadosDeLeitura.mockResolvedValue([]);
-    participacoes.mockResolvedValue([
-      { guildId: SERVIDOR, roleIds: [CARGO_MENCIONAVEL], joinedAt: ENTROU_EM },
+    readingStates.mockResolvedValue([]);
+    participations.mockResolvedValue([
+      { guildId: SERVER, roleIds: [ROLE_MENTIONABLE], joinedAt: JOINED_AT },
     ]);
-    canaisQueEscuta.mockResolvedValue([NUNCA_ABERTO]);
-    canaisPorId.mockResolvedValue([
-      { id: NUNCA_ABERTO, guildId: SERVIDOR, name: "geral" },
+    channelsListen.mockResolvedValue([NEVER_ISOPEN]);
+    channelsById.mockResolvedValue([
+      { id: NEVER_ISOPEN, guildId: SERVER, name: "geral" },
     ]);
-    mencoesDesde.mockResolvedValue(new Map([[NUNCA_ABERTO, 2]]));
+    mentionsSince.mockResolvedValue(new Map([[NEVER_ISOPEN, 2]]));
   });
 
   it("conta menção em canal sem estado de leitura nenhum", async () => {
-    const estados = await messageService.readStates(AUTHOR);
+    const states = await messageService.readStates(AUTHOR);
 
-    expect(estados).toEqual([
+    expect(states).toEqual([
       {
-        channelId: NUNCA_ABERTO,
-        guildId: SERVIDOR,
+        channelId: NEVER_ISOPEN,
+        guildId: SERVER,
         channelName: "geral",
         lastReadMessageId: null,
         unreadCount: 0,
@@ -376,45 +440,45 @@ describe("o selo de menção nos canais que ninguém abriu", () => {
   it("procura a partir da data de entrada no servidor, e com os cargos de quem pergunta", async () => {
     await messageService.readStates(AUTHOR);
 
-    expect(mencoesDesde).toHaveBeenCalledWith(
-      [NUNCA_ABERTO],
-      ENTROU_EM,
+    expect(mentionsSince).toHaveBeenCalledWith(
+      [NEVER_ISOPEN],
+      JOINED_AT,
       AUTHOR,
-      [CARGO_MENCIONAVEL],
+      [ROLE_MENTIONABLE],
     );
   });
 
   it("não conta duas vezes o canal que já tem estado", async () => {
-    estadosDeLeitura.mockResolvedValue([
-      { channelId: JA_LIDO, lastReadMessageId: null },
+    readingStates.mockResolvedValue([
+      { channelId: ALREADY_READ, lastReadMessageId: null },
     ]);
-    canaisQueEscuta.mockResolvedValue([JA_LIDO, NUNCA_ABERTO]);
-    canaisPorId.mockResolvedValue([{ id: NUNCA_ABERTO, guildId: SERVIDOR, name: "geral" }]);
+    channelsListen.mockResolvedValue([ALREADY_READ, NEVER_ISOPEN]);
+    channelsById.mockResolvedValue([{ id: NEVER_ISOPEN, guildId: SERVER, name: "geral" }]);
 
     await messageService.readStates(AUTHOR);
 
-    expect(mencoesDesde).toHaveBeenCalledWith([NUNCA_ABERTO], ENTROU_EM, AUTHOR, [
-      CARGO_MENCIONAVEL,
+    expect(mentionsSince).toHaveBeenCalledWith([NEVER_ISOPEN], JOINED_AT, AUTHOR, [
+      ROLE_MENTIONABLE,
     ]);
   });
 
   it("não olha canal que a pessoa não pode ver", async () => {
-    canaisQueEscuta.mockResolvedValue([]);
+    channelsListen.mockResolvedValue([]);
 
     expect(await messageService.readStates(AUTHOR)).toEqual([]);
-    expect(mencoesDesde).not.toHaveBeenCalled();
+    expect(mentionsSince).not.toHaveBeenCalled();
   });
 
   it("não vai ao banco quando a pessoa não está em servidor nenhum", async () => {
-    participacoes.mockResolvedValue([]);
+    participations.mockResolvedValue([]);
 
     expect(await messageService.readStates(AUTHOR)).toEqual([]);
-    expect(canaisQueEscuta).not.toHaveBeenCalled();
+    expect(channelsListen).not.toHaveBeenCalled();
   });
 });
 
 describe("remover um anexo", () => {
-  const comAnexos = {
+  const withAttachments = {
     ...messageRow,
     content: "olha o arquivo",
     attachments: [
@@ -424,57 +488,57 @@ describe("remover um anexo", () => {
   };
 
   it("tira so o anexo pedido e mantem os outros", async () => {
-    findMessageById.mockResolvedValue(comAnexos);
-    comRelacoes.mockResolvedValue({ ...comAnexos, attachments: [comAnexos.attachments[1]] });
+    findMessageById.mockResolvedValue(withAttachments);
+    withRelations.mockResolvedValue({ ...withAttachments, attachments: [withAttachments.attachments[1]] });
 
-    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+    const r = await messageService.removeAttachment(AUTHOR, "m1", "a1");
 
-    expect(r.apagouAMensagem).toBe(false);
+    expect(r.deletedMessage).toBe(false);
     expect(updateMessage).toHaveBeenCalledWith("m1", {
-      attachments: { set: [comAnexos.attachments[1]] },
+      attachments: { set: [withAttachments.attachments[1]] },
     });
     expect(softDelete).not.toHaveBeenCalled();
   });
 
   it("apaga a mensagem quando o anexo era a unica coisa nela", async () => {
     findMessageById.mockResolvedValue({
-      ...comAnexos,
+      ...withAttachments,
       content: "",
-      attachments: [comAnexos.attachments[0]],
+      attachments: [withAttachments.attachments[0]],
     });
 
-    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+    const r = await messageService.removeAttachment(AUTHOR, "m1", "a1");
 
-    expect(r.apagouAMensagem).toBe(true);
+    expect(r.deletedMessage).toBe(true);
     expect(softDelete).toHaveBeenCalledWith("m1");
   });
 
   it("nao apaga a mensagem se ainda sobra texto", async () => {
     findMessageById.mockResolvedValue({
-      ...comAnexos,
-      attachments: [comAnexos.attachments[0]],
+      ...withAttachments,
+      attachments: [withAttachments.attachments[0]],
     });
-    comRelacoes.mockResolvedValue({ ...comAnexos, attachments: [] });
+    withRelations.mockResolvedValue({ ...withAttachments, attachments: [] });
 
-    const r = await messageService.removerAnexo(AUTHOR, "m1", "a1");
+    const r = await messageService.removeAttachment(AUTHOR, "m1", "a1");
 
-    expect(r.apagouAMensagem).toBe(false);
+    expect(r.deletedMessage).toBe(false);
     expect(softDelete).not.toHaveBeenCalled();
   });
 
   it("membro comum nao mexe no anexo dos outros", async () => {
-    findMessageById.mockResolvedValue(comAnexos);
+    findMessageById.mockResolvedValue(withAttachments);
 
-    await expect(messageService.removerAnexo(OUTRO, "m1", "a1")).rejects.toBeInstanceOf(
+    await expect(messageService.removeAttachment(OTHER, "m1", "a1")).rejects.toBeInstanceOf(
       ForbiddenError,
     );
     expect(updateMessage).not.toHaveBeenCalled();
   });
 
   it("anexo que nao existe na mensagem da NotFound", async () => {
-    findMessageById.mockResolvedValue(comAnexos);
+    findMessageById.mockResolvedValue(withAttachments);
 
-    await expect(messageService.removerAnexo(AUTHOR, "m1", "a9")).rejects.toBeInstanceOf(
+    await expect(messageService.removeAttachment(AUTHOR, "m1", "a9")).rejects.toBeInstanceOf(
       NotFoundError,
     );
   });
