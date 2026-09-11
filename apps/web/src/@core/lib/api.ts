@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { comNomesNovos } from "~/@core/lib/api-mais-velha";
+
 export const BASE_DA_API = `${import.meta.env.VITE_API_URL ?? ""}/api`;
 
 export const api = axios.create({
@@ -49,7 +51,10 @@ export function refreshSession<U>(): Promise<{ accessToken: string; user: U }> {
 }
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    response.data = comNomesNovos(response.data);
+    return response;
+  },
   async (error) => {
     const original = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
     const status = error.response?.status;
