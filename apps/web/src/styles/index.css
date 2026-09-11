@@ -679,11 +679,6 @@ body[data-scroll-locked] .regiao-de-arrasto {
   padding-top: var(--recuo-topo);
 }
 
-/* A caixa de escrever cresce para dentro da barra de gesto. O 0.75rem é o `pb-3` dela. */
-.caixa-de-escrever {
-  padding-bottom: calc(0.75rem + var(--recuo-baixo));
-}
-
 /*
   Filho posicionado por `absolute` mede a partir da BORDA do pai, não do
   recuo dele: o botão de fechar da gaveta ficava embaixo do relógio mesmo com
