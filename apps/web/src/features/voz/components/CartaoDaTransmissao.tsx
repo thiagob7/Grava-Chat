@@ -6,13 +6,13 @@ import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ className }) => {
+export const BroadcastCard: React.FC<{ className?: string }> = ({ className }) => {
   const { t } = useTranslation();
-  const fonte = useVoiceStore((s) => s.fonteDaTela);
-  const transmitindo = useVoiceStore((s) => s.screenEnabled);
-  const encerrar = useVoiceStore((s) => s.toggleScreen);
+  const font = useVoiceStore((s) => s.screenFont);
+  const broadcasting = useVoiceStore((s) => s.screenEnabled);
+  const end = useVoiceStore((s) => s.toggleScreen);
 
-  if (!transmitindo || !fonte) return null;
+  if (!broadcasting || !font) return null;
 
   return (
     <div data-gc="voz.cartao-da-transmissao.div"
@@ -23,8 +23,8 @@ export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ classNam
       )}
     >
       <span data-gc="voz.cartao-da-transmissao.span" className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded bg-surface-4">
-        {fonte.icone ? (
-          <img data-gc="voz.cartao-da-transmissao.img" src={fonte.icone} alt="" className="size-full object-contain" />
+        {font.icon ? (
+          <img data-gc="voz.cartao-da-transmissao.img" src={font.icon} alt="" className="size-full object-contain" />
         ) : (
           <Monitor data-gc="voz.cartao-da-transmissao.monitor" size={15} className="text-ink-muted" />
         )}
@@ -34,13 +34,13 @@ export const CartaoDaTransmissao: React.FC<{ className?: string }> = ({ classNam
         </span>
       </span>
 
-      <span data-gc="voz.cartao-da-transmissao.span--3" className="min-w-0 flex-1 truncate text-xs font-semibold" title={fonte.nome}>
-        {fonte.nome}
+      <span data-gc="voz.cartao-da-transmissao.span--3" className="min-w-0 flex-1 truncate text-xs font-semibold" title={font.name}>
+        {font.name}
       </span>
 
       <Tooltip data-gc="voz.cartao-da-transmissao.tooltip" label={t("chamada.tela.pararDeCompartilhar")}>
         <button data-gc="voz.cartao-da-transmissao.button"
-          onClick={() => void encerrar()}
+          onClick={() => void end()}
           aria-label={t("chamada.tela.pararDeCompartilhar")}
           className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-danger"
         >
