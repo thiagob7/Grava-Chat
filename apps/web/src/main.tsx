@@ -19,8 +19,10 @@ import "~/styles/index.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import { markEnvironmentDesktop } from "~/lib/desktop";
+import { followBarColor } from "~/lib/cor-das-barras";
 
 markEnvironmentDesktop();
+followBarColor();
 
 if (import.meta.env.DEV) {
   Object.assign(window, {
