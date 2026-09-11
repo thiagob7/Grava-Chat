@@ -1,26 +1,26 @@
 import { useCallback } from "react";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
+import { useCharms } from "~/features/perfil/hooks/use-enfeites";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
-export function useParticipante() {
+export function useParticipant() {
   const guildId = useVoiceStore((v) => v.guildId);
   const { data: detail } = useFindGuild(guildId ?? undefined);
-  const enfeitesDe = useEnfeites(guildId ?? undefined);
+  const charms = useCharms(guildId ?? undefined);
 
   return useCallback(
-    (identity: string, queda: { name: string; avatarUrl: string | null }) => {
-      const membro = detail?.members.find((m) => m.user.id === identity);
-      const { perfil, corDoCargo } = enfeitesDe(identity);
+    (identity: string, fall: { name: string; avatarUrl: string | null }) => {
+      const member = detail?.members.find((m) => m.user.id === identity);
+      const { profile, roleColor } = charms(identity);
 
       return {
-        nome: membro?.nickname ?? membro?.user.displayName ?? queda.name,
-        avatarUrl: membro?.user.avatarUrl ?? queda.avatarUrl,
-        perfil,
-        corDoCargo,
+        name: member?.nickname ?? member?.user.displayName ?? fall.name,
+        avatarUrl: member?.user.avatarUrl ?? fall.avatarUrl,
+        profile,
+        roleColor,
       };
     },
-    [detail, enfeitesDe],
+    [detail, charms],
   );
 }
