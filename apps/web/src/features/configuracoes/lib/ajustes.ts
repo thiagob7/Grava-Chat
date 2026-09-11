@@ -1,417 +1,417 @@
-import type { Secao } from "~/features/configuracoes/components/secoes";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { useAtalhos } from "~/features/configuracoes/stores/atalhos";
-import { ATALHOS, escreverCombo } from "~/features/configuracoes/lib/atalhos";
-import { useAvisos } from "~/stores/notificacoes";
+import type { Section } from "~/features/configuracoes/components/secoes";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
+import { useShortcuts } from "~/features/configuracoes/stores/atalhos";
+import { SHORTCUTS, writeCombo } from "~/features/configuracoes/lib/atalhos";
+import { useNotices } from "~/stores/notificacoes";
 
-export type CategoriaDeAjuste =
-  | "aparencia"
-  | "acessibilidade"
-  | "bate-papo"
-  | "midia"
-  | "avisos"
-  | "idioma"
-  | "atalhos";
+export type SettingCategory =
+  | "appearance"
+  | "accessibility"
+  | "chat"
+  | "media"
+  | "notices"
+  | "language"
+  | "shortcuts";
 
-export const CATEGORIAS: { id: CategoriaDeAjuste; nome: string }[] = [
-  { id: "aparencia", nome: "Aparência" },
-  { id: "bate-papo", nome: "Bate-papo" },
-  { id: "midia", nome: "Mídia" },
-  { id: "avisos", nome: "Notificações" },
-  { id: "acessibilidade", nome: "Acessibilidade" },
-  { id: "idioma", nome: "Idioma" },
-  { id: "atalhos", nome: "Atalhos" },
+export const CATEGORIES: { id: SettingCategory; name: string }[] = [
+  { id: "appearance", name: "Aparência" },
+  { id: "chat", name: "Bate-papo" },
+  { id: "media", name: "Mídia" },
+  { id: "notices", name: "Notificações" },
+  { id: "accessibility", name: "Acessibilidade" },
+  { id: "language", name: "Language" },
+  { id: "shortcuts", name: "Atalhos" },
 ];
 
 interface Base {
   id: string;
-  categoria: CategoriaDeAjuste;
-  rotulo: string;
-  detalhe: string;
-  tela: Secao;
+  category: SettingCategory;
+  label: string;
+  detail: string;
+  display: Section;
   sub?: string;
 }
 
-export type Ajuste =
-  | (Base & { tipo: "interruptor"; ler: () => boolean; escrever: (v: boolean) => void })
-  | (Base & { tipo: "valor"; ler: () => string });
+export type Setting =
+  | (Base & { kind: "interruptor"; read: () => boolean; write: (v: boolean) => void })
+  | (Base & { kind: "value"; read: () => string });
 
-const aparencia = () => useAparencia.getState();
-const avisos = () => useAvisos.getState();
+const appearance = () => useAppearance.getState();
+const notices = () => useNotices.getState();
 
-const daAparencia = (
-  campo:
-    | "cantosArredondados"
-    | "listaDeMembros"
-    | "faixaDoServidor"
-    | "lembrarCategoriasFechadas"
-    | "reduzirAnimacao"
-    | "focoSempreVisivel"
-    | "horaEm24h"
-    | "imagensDeLinks"
-    | "imagensEnviadas"
-    | "previaDeLinks"
-    | "reacoes"
-    | "avatares"
-    | "sugestoes"
+const fromAppearance = (
+  field:
+    | "cornersRounded"
+    | "listMembers"
+    | "serverTrack"
+    | "rememberCategoriesClosed"
+    | "reduceAnimation"
+    | "visibleFocusAlways"
+    | "hourIn24h"
+    | "linksImages"
+    | "imagesSent"
+    | "linksPreview"
+    | "reactions"
+    | "avatars"
+    | "suggestions"
     | "emoticons"
-    | "botaoDeEnviar"
-    | "modoStreamer"
-    | "streamerEscondeDados"
-    | "streamerEscondeConvites"
-    | "streamerSemSom"
-    | "streamerSemAvisos",
+    | "sendButton"
+    | "modeStreamer"
+    | "streamerHidesData"
+    | "streamerHidesInvites"
+    | "streamerWithoutSound"
+    | "streamerWithoutNotices",
 ) => ({
-  ler: () => aparencia()[campo],
-  escrever: (valor: boolean) => aparencia().definir({ [campo]: valor }),
+  read: () => appearance()[field],
+  write: (value: boolean) => appearance().set({ [field]: value }),
 });
 
-const doAviso = (campo: "aviso" | "soMencoes" | "som" | "contador") => ({
-  ler: () => avisos()[campo],
-  escrever: (valor: boolean) => avisos().definir({ [campo]: valor }),
+const fromNotice = (field: "notice" | "soMentions" | "sound" | "counter") => ({
+  read: () => notices()[field],
+  write: (value: boolean) => notices().set({ [field]: value }),
 });
 
-const TEMAS: Record<string, string> = {
-  escuro: "Escuro",
+const THEMES: Record<string, string> = {
+  dark: "Escuro",
   "mais-escuro": "Mais escuro",
-  claro: "Claro",
-  sistema: "Do sistema",
+  light: "Claro",
+  system: "Do sistema",
   gravae: "Gravaê",
 };
 
-const LEITURA: Record<string, string> = {
-  nunca: "Nunca",
-  sempre: "Sempre",
+const READING: Record<string, string> = {
+  never: "Nunca",
+  always: "Sempre",
   "so-mencoes": "Só menções",
 };
 
-export const AJUSTES: Ajuste[] = [
+export const SETTINGS: Setting[] = [
   {
-    id: "tema",
-    categoria: "aparencia",
-    rotulo: "Tema",
-    detalhe: "A base clara ou escura de tudo.",
-    tela: "aparencia",
-    sub: "tema",
-    tipo: "valor",
-    ler: () => TEMAS[aparencia().tema] ?? aparencia().tema,
+    id: "theme",
+    category: "appearance",
+    label: "Theme",
+    detail: "A base clara ou escura de tudo.",
+    display: "appearance",
+    sub: "theme",
+    kind: "value",
+    read: () => THEMES[appearance().theme] ?? appearance().theme,
   },
   {
-    id: "destaque",
-    categoria: "aparencia",
-    rotulo: "Cor de destaque",
-    detalhe: "A cor dos botões e do que está selecionado.",
-    tela: "aparencia",
+    id: "highlight",
+    category: "appearance",
+    label: "Cor de destaque",
+    detail: "A cor dos botões e do que está selecionado.",
+    display: "appearance",
     sub: "cor-de-destaque",
-    tipo: "valor",
-    ler: () => aparencia().destaque ?? "Padrão",
+    kind: "value",
+    read: () => appearance().highlight ?? "Padrão",
   },
   {
-    id: "densidade",
-    categoria: "aparencia",
-    rotulo: "Espaçamento das mensagens",
-    detalhe: "Confortável dá ar entre as mensagens; compacta cabe mais na tela.",
-    tela: "bate-papo",
+    id: "density",
+    category: "appearance",
+    label: "Espaçamento das mensagens",
+    detail: "Confortável dá ar entre as mensagens; compacta cabe mais na tela.",
+    display: "chat",
     sub: "exibicao",
-    tipo: "valor",
-    ler: () => (aparencia().densidade === "compacta" ? "Compacta" : "Confortável"),
+    kind: "value",
+    read: () => (appearance().density === "compacta" ? "Compacta" : "Confortável"),
   },
   {
     id: "zoom-do-app",
-    categoria: "aparencia",
-    rotulo: "Zoom do app",
-    detalhe: "Aumenta tudo junto, como o zoom do navegador.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Zoom do app",
+    detail: "Aumenta tudo junto, como o zoom do navegador.",
+    display: "appearance",
     sub: "zoom-do-app",
-    tipo: "valor",
-    ler: () => `${aparencia().zoomDoApp}%`,
+    kind: "value",
+    read: () => `${appearance().zoomDoApp}%`,
   },
   {
     id: "escala-do-chat",
-    categoria: "aparencia",
-    rotulo: "Escala da fonte do chat",
-    detalhe: "Mexe só no tamanho do texto das mensagens.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Escala da fonte do chat",
+    detail: "Mexe só no tamanho do texto das mensagens.",
+    display: "appearance",
     sub: "escala-da-fonte",
-    tipo: "valor",
-    ler: () => `${aparencia().escalaDoChat}%`,
+    kind: "value",
+    read: () => `${appearance().chatScale}%`,
   },
   {
     id: "cantos-arredondados",
-    categoria: "aparencia",
-    rotulo: "Cantos arredondados",
-    detalhe: "Arredonda os painéis e os cartões.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Cantos arredondados",
+    detail: "Arredonda os painéis e os cartões.",
+    display: "appearance",
     sub: "interface",
-    tipo: "interruptor",
-    ...daAparencia("cantosArredondados"),
+    kind: "interruptor",
+    ...fromAppearance("cornersRounded"),
   },
   {
     id: "lista-de-membros",
-    categoria: "aparencia",
-    rotulo: "Lista de membros",
-    detalhe: "A coluna da direita, com quem está no servidor.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Lista de membros",
+    detail: "A coluna da direita, com quem está no servidor.",
+    display: "appearance",
     sub: "interface",
-    tipo: "interruptor",
-    ...daAparencia("listaDeMembros"),
+    kind: "interruptor",
+    ...fromAppearance("listMembers"),
   },
   {
     id: "faixa-do-servidor",
-    categoria: "aparencia",
-    rotulo: "Faixa do servidor",
-    detalhe: "A imagem no topo da lista de canais.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Faixa do servidor",
+    detail: "A imagem no topo da lista de canais.",
+    display: "appearance",
     sub: "interface",
-    tipo: "interruptor",
-    ...daAparencia("faixaDoServidor"),
+    kind: "interruptor",
+    ...fromAppearance("serverTrack"),
   },
   {
     id: "lembrar-categorias",
-    categoria: "aparencia",
-    rotulo: "Lembrar categorias fechadas",
-    detalhe: "As categorias que você fecha continuam fechadas na volta.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Lembrar categorias fechadas",
+    detail: "As categorias que você fecha continuam fechadas na volta.",
+    display: "appearance",
     sub: "lista-de-canais",
-    tipo: "interruptor",
-    ...daAparencia("lembrarCategoriasFechadas"),
+    kind: "interruptor",
+    ...fromAppearance("rememberCategoriesClosed"),
   },
   {
     id: "modo-streamer",
-    categoria: "aparencia",
-    rotulo: "Modo streamer",
-    detalhe: "Esconde o que não pode aparecer numa transmissão.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Modo streamer",
+    detail: "Esconde o que não pode aparecer numa transmissão.",
+    display: "appearance",
     sub: "modo-streamer",
-    tipo: "interruptor",
-    ...daAparencia("modoStreamer"),
+    kind: "interruptor",
+    ...fromAppearance("modeStreamer"),
   },
   {
     id: "streamer-esconde-dados",
-    categoria: "aparencia",
-    rotulo: "Esconder meus dados na transmissão",
-    detalhe: "Some com e-mail, telefone e código de convite pessoal.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Esconder meus dados na transmissão",
+    detail: "Some com e-mail, telefone e código de convite pessoal.",
+    display: "appearance",
     sub: "modo-streamer",
-    tipo: "interruptor",
-    ...daAparencia("streamerEscondeDados"),
+    kind: "interruptor",
+    ...fromAppearance("streamerHidesData"),
   },
   {
     id: "streamer-esconde-convites",
-    categoria: "aparencia",
-    rotulo: "Esconder links de convite",
-    detalhe: "Some com convite de servidor enquanto o modo streamer está ligado.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Esconder links de convite",
+    detail: "Some com convite de servidor enquanto o modo streamer está ligado.",
+    display: "appearance",
     sub: "modo-streamer",
-    tipo: "interruptor",
-    ...daAparencia("streamerEscondeConvites"),
+    kind: "interruptor",
+    ...fromAppearance("streamerHidesInvites"),
   },
   {
     id: "streamer-sem-som",
-    categoria: "aparencia",
-    rotulo: "Silenciar os sons na transmissão",
-    detalhe: "Cala os avisos sonoros enquanto o modo streamer está ligado.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Silenciar os sons na transmissão",
+    detail: "Cala os avisos sonoros enquanto o modo streamer está ligado.",
+    display: "appearance",
     sub: "modo-streamer",
-    tipo: "interruptor",
-    ...daAparencia("streamerSemSom"),
+    kind: "interruptor",
+    ...fromAppearance("streamerWithoutSound"),
   },
   {
     id: "streamer-sem-avisos",
-    categoria: "aparencia",
-    rotulo: "Não mostrar avisos na tela",
-    detalhe: "Segura as notificações do sistema durante a transmissão.",
-    tela: "aparencia",
+    category: "appearance",
+    label: "Não mostrar avisos na tela",
+    detail: "Segura as notificações do sistema durante a transmissão.",
+    display: "appearance",
     sub: "modo-streamer",
-    tipo: "interruptor",
-    ...daAparencia("streamerSemAvisos"),
+    kind: "interruptor",
+    ...fromAppearance("streamerWithoutNotices"),
   },
   {
-    id: "reacoes",
-    categoria: "bate-papo",
-    rotulo: "Reações",
-    detalhe: "Mostrar as reações embaixo das mensagens.",
-    tela: "bate-papo",
+    id: "reactions",
+    category: "chat",
+    label: "Reações",
+    detail: "Mostrar as reações embaixo das mensagens.",
+    display: "chat",
     sub: "exibicao",
-    tipo: "interruptor",
-    ...daAparencia("reacoes"),
+    kind: "interruptor",
+    ...fromAppearance("reactions"),
   },
   {
-    id: "avatares",
-    categoria: "bate-papo",
-    rotulo: "Avatares",
-    detalhe: "A foto de quem escreveu, ao lado da mensagem.",
-    tela: "bate-papo",
+    id: "avatars",
+    category: "chat",
+    label: "Avatares",
+    detail: "A foto de quem escreveu, ao lado da mensagem.",
+    display: "chat",
     sub: "exibicao",
-    tipo: "interruptor",
-    ...daAparencia("avatares"),
+    kind: "interruptor",
+    ...fromAppearance("avatars"),
   },
   {
     id: "spoilers",
-    categoria: "bate-papo",
-    rotulo: "Mostrar spoilers",
-    detalhe: "Quando o conteúdo escondido se revela.",
-    tela: "bate-papo",
+    category: "chat",
+    label: "Mostrar spoilers",
+    detail: "Quando o conteúdo escondido se revela.",
+    display: "chat",
     sub: "exibicao",
-    tipo: "valor",
-    ler: () => (aparencia().spoilers === "sempre" ? "Sempre" : "Ao clicar"),
+    kind: "value",
+    read: () => (appearance().spoilers === "sempre" ? "Sempre" : "Ao clicar"),
   },
   {
-    id: "sugestoes",
-    categoria: "bate-papo",
-    rotulo: "Sugestões enquanto digita",
-    detalhe: "Completa emoji, pessoas e canais conforme você escreve.",
-    tela: "bate-papo",
-    sub: "entrada",
-    tipo: "interruptor",
-    ...daAparencia("sugestoes"),
+    id: "suggestions",
+    category: "chat",
+    label: "Sugestões enquanto digita",
+    detail: "Completa emoji, pessoas e canais conforme você escreve.",
+    display: "chat",
+    sub: "entry",
+    kind: "interruptor",
+    ...fromAppearance("suggestions"),
   },
   {
     id: "emoticons",
-    categoria: "bate-papo",
-    rotulo: "Converter emoticons em emoji",
-    detalhe: "Troca :) por 🙂 na hora de enviar.",
-    tela: "bate-papo",
-    sub: "entrada",
-    tipo: "interruptor",
-    ...daAparencia("emoticons"),
+    category: "chat",
+    label: "Converter emoticons em emoji",
+    detail: "Troca :) por 🙂 na hora de enviar.",
+    display: "chat",
+    sub: "entry",
+    kind: "interruptor",
+    ...fromAppearance("emoticons"),
   },
   {
     id: "botao-de-enviar",
-    categoria: "bate-papo",
-    rotulo: "Botão de enviar",
-    detalhe: "Mostra um botão ao lado da caixa, além do Enter.",
-    tela: "bate-papo",
-    sub: "entrada",
-    tipo: "interruptor",
-    ...daAparencia("botaoDeEnviar"),
+    category: "chat",
+    label: "Botão de enviar",
+    detail: "Mostra um botão ao lado da caixa, além do Enter.",
+    display: "chat",
+    sub: "entry",
+    kind: "interruptor",
+    ...fromAppearance("sendButton"),
   },
   {
     id: "imagens-de-links",
-    categoria: "midia",
-    rotulo: "Imagens e vídeos de links",
-    detalhe: "Abrir a mídia que vem de um link colado.",
-    tela: "bate-papo",
-    sub: "midia",
-    tipo: "interruptor",
-    ...daAparencia("imagensDeLinks"),
+    category: "media",
+    label: "Imagens e vídeos de links",
+    detail: "Abrir a mídia que vem de um link colado.",
+    display: "chat",
+    sub: "media",
+    kind: "interruptor",
+    ...fromAppearance("linksImages"),
   },
   {
     id: "imagens-enviadas",
-    categoria: "midia",
-    rotulo: "Imagens enviadas aqui",
-    detalhe: "Abrir os anexos direto na conversa.",
-    tela: "bate-papo",
-    sub: "midia",
-    tipo: "interruptor",
-    ...daAparencia("imagensEnviadas"),
+    category: "media",
+    label: "Imagens enviadas aqui",
+    detail: "Abrir os anexos direto na conversa.",
+    display: "chat",
+    sub: "media",
+    kind: "interruptor",
+    ...fromAppearance("imagesSent"),
   },
   {
     id: "previa-de-links",
-    categoria: "midia",
-    rotulo: "Prévia de links",
-    detalhe: "O cartão com título e descrição do site.",
-    tela: "bate-papo",
-    sub: "midia",
-    tipo: "interruptor",
-    ...daAparencia("previaDeLinks"),
+    category: "media",
+    label: "Prévia de links",
+    detail: "O cartão com título e descrição do site.",
+    display: "chat",
+    sub: "media",
+    kind: "interruptor",
+    ...fromAppearance("linksPreview"),
   },
   {
-    id: "aviso",
-    categoria: "avisos",
-    rotulo: "Aviso na tela",
-    detalhe: "A janelinha do sistema quando chega mensagem.",
-    tela: "avisos",
-    sub: "geral",
-    tipo: "interruptor",
-    ...doAviso("aviso"),
+    id: "notice",
+    category: "notices",
+    label: "Aviso na tela",
+    detail: "A janelinha do sistema quando chega mensagem.",
+    display: "notices",
+    sub: "general",
+    kind: "interruptor",
+    ...fromNotice("notice"),
   },
   {
-    id: "contador",
-    categoria: "avisos",
-    rotulo: "Contador no título",
-    detalhe: "O número de não lidas na aba e no ícone do app.",
-    tela: "avisos",
-    sub: "geral",
-    tipo: "interruptor",
-    ...doAviso("contador"),
+    id: "counter",
+    category: "notices",
+    label: "Contador no título",
+    detail: "O número de não lidas na aba e no ícone do app.",
+    display: "notices",
+    sub: "general",
+    kind: "interruptor",
+    ...fromNotice("counter"),
   },
   {
     id: "so-mencoes",
-    categoria: "avisos",
-    rotulo: "Só quando me chamarem",
-    detalhe: "Menção direta, cargo seu, @everyone e conversa privada.",
-    tela: "avisos",
+    category: "notices",
+    label: "Só quando me chamarem",
+    detail: "Menção direta, cargo seu, @everyone e conversa privada.",
+    display: "notices",
     sub: "preferencia-de-mencao",
-    tipo: "interruptor",
-    ...doAviso("soMencoes"),
+    kind: "interruptor",
+    ...fromNotice("soMentions"),
   },
   {
-    id: "som",
-    categoria: "avisos",
-    rotulo: "Sons",
-    detalhe: "O interruptor de cima, que cala todos os sons de uma vez.",
-    tela: "avisos",
-    sub: "sons",
-    tipo: "interruptor",
-    ...doAviso("som"),
+    id: "sound",
+    category: "notices",
+    label: "Sons",
+    detail: "O interruptor de cima, que cala todos os sons de uma vez.",
+    display: "notices",
+    sub: "sounds",
+    kind: "interruptor",
+    ...fromNotice("sound"),
   },
   {
     id: "reduzir-animacao",
-    categoria: "acessibilidade",
-    rotulo: "Reduzir movimento",
-    detalhe: "Corta aberturas, deslizes e transições.",
-    tela: "acessibilidade",
+    category: "accessibility",
+    label: "Reduzir movimento",
+    detail: "Corta aberturas, deslizes e transições.",
+    display: "accessibility",
     sub: "movimento",
-    tipo: "interruptor",
-    ...daAparencia("reduzirAnimacao"),
+    kind: "interruptor",
+    ...fromAppearance("reduceAnimation"),
   },
   {
     id: "foco-sempre-visivel",
-    categoria: "acessibilidade",
-    rotulo: "Anel de foco sempre visível",
-    detalhe: "Mostra onde está o foco mesmo usando o mouse.",
-    tela: "acessibilidade",
+    category: "accessibility",
+    label: "Anel de foco sempre visível",
+    detail: "Mostra onde está o foco mesmo usando o mouse.",
+    display: "accessibility",
     sub: "teclado",
-    tipo: "interruptor",
-    ...daAparencia("focoSempreVisivel"),
+    kind: "interruptor",
+    ...fromAppearance("visibleFocusAlways"),
   },
   {
     id: "ler-em-voz-alta",
-    categoria: "acessibilidade",
-    rotulo: "Ler mensagens em voz alta",
-    detalhe: "A mensagem que chega, lida pelo sintetizador do sistema.",
-    tela: "acessibilidade",
+    category: "accessibility",
+    label: "Ler mensagens em voz alta",
+    detail: "A mensagem que chega, lida pelo sintetizador do sistema.",
+    display: "accessibility",
     sub: "texto-em-voz",
-    tipo: "valor",
-    ler: () => LEITURA[aparencia().lerEmVozAlta] ?? aparencia().lerEmVozAlta,
+    kind: "value",
+    read: () => READING[appearance().readVoiceHigh] ?? appearance().readVoiceHigh,
   },
   {
     id: "hora-em-24h",
-    categoria: "idioma",
-    rotulo: "Hora em 24 horas",
-    detalhe: "Desligado, mostra AM e PM.",
-    tela: "idioma",
+    category: "language",
+    label: "Hora em 24 horas",
+    detail: "Desligado, mostra AM e PM.",
+    display: "language",
     sub: "formato-da-hora",
-    tipo: "interruptor",
-    ...daAparencia("horaEm24h"),
+    kind: "interruptor",
+    ...fromAppearance("hourIn24h"),
   },
 ];
 
-const atalhos = () => useAtalhos.getState();
+const shortcuts = () => useShortcuts.getState();
 
-export function ajustesDosAtalhos(): Ajuste[] {
-  return ATALHOS.filter((atalho) => !atalho.fixo).map((atalho) => ({
-    id: `atalho-${atalho.id}`,
-    categoria: "atalhos" as const,
-    rotulo: atalho.nome,
-    detalhe: `${atalho.detalhe} Hoje em ${escreverCombo(
-      atalhos().trocados[atalho.id] ?? atalho.padrao,
+export function shortcutsSettings(): Setting[] {
+  return SHORTCUTS.filter((shortcut) => !shortcut.fixed).map((shortcut) => ({
+    id: `atalho-${shortcut.id}`,
+    category: "shortcuts" as const,
+    label: shortcut.name,
+    detail: `${shortcut.detail} Hoje em ${writeCombo(
+      shortcuts().swapped[shortcut.id] ?? shortcut.fallback,
     )}.`,
-    tela: "atalhos" as Secao,
-    sub: `atalhos-${atalho.area}`,
-    tipo: "interruptor" as const,
-    ler: () => !atalhos().desligados.includes(atalho.id),
-    escrever: (valor: boolean) => atalhos().alternar(atalho.id, valor),
+    display: "shortcuts" as Section,
+    sub: `atalhos-${shortcut.area}`,
+    kind: "interruptor" as const,
+    read: () => !shortcuts().off.includes(shortcut.id),
+    write: (value: boolean) => shortcuts().toggle(shortcut.id, value),
   }));
 }

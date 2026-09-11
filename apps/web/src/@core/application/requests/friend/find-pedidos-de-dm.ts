@@ -1,12 +1,12 @@
-import type { PedidoDeDm } from "@gravae/shared";
+import type { DmRequest } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
-export interface CaixaDePedidos {
-  pedidos: PedidoDeDm[];
-  spam: PedidoDeDm[];
+export interface RequestsBox {
+  requests: DmRequest[];
+  spam: DmRequest[];
 }
 
-export async function findPedidosDeDm(): Promise<CaixaDePedidos> {
-  const response = await api.get<CaixaDePedidos>("/dms/pedidos");
+export async function findDmRequests(): Promise<RequestsBox> {
+  const response = await api.get<RequestsBox>("/dms/pedidos");
   return response.data;
 }

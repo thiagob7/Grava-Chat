@@ -1,62 +1,62 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  contarSeletoresDatados,
-  deveTraduzir,
-  traduzirSeletoresTravados,
+  countPickersDated,
+  mustTranslate,
+  translatePickersLocked,
 } from "~/features/configuracoes/lib/normalizar-tema";
 
 describe("seletor preso ao hash de um build", () => {
   it("vira o nome do lugar, que é o que a ponte carimba", () => {
-    const saida = traduzirSeletoresTravados(
+    const output = translatePickersLocked(
       ".ChannelChatLayout\\.module__textareaArea___YjY1N2 { color: red }",
     );
 
-    expect(saida).toBe('[class*="ChannelChatLayout.module__textareaArea_"] { color: red }');
+    expect(output).toBe('[class*="ChannelChatLayout.module__textareaArea_"] { color: red }');
   });
 
   it("traduz cada lado de um seletor aninhado", () => {
-    const saida = traduzirSeletoresTravados(
+    const output = translatePickersLocked(
       ".Menu\\.module__menu___AAA .Item\\.module__item___BBB { color: red }",
     );
 
-    expect(saida).toBe(
+    expect(output).toBe(
       '[class*="Menu.module__menu_"] [class*="Item.module__item_"] { color: red }',
     );
   });
 
   it("solta o div da frente do seletor por pedaço", () => {
-    const saida = traduzirSeletoresTravados(
+    const output = translatePickersLocked(
       'div[class*="MemberListContainer"][class*="memberListContainer"] { color: red }',
     );
 
-    expect(saida).toBe(
+    expect(output).toBe(
       '[class*="MemberListContainer"][class*="memberListContainer"] { color: red }',
     );
   });
 
   it("deixa as outras tags em paz", () => {
-    const pronto = 'button[class*="Button"] { color: red }';
+    const ready = 'button[class*="Button"] { color: red }';
 
-    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
+    expect(translatePickersLocked(ready)).toBe(ready);
   });
 
   it("não confunde div dentro de nome com a tag", () => {
-    const pronto = '[class*="Divider.module__divider_"] { color: red }';
+    const ready = '[class*="Divider.module__divider_"] { color: red }';
 
-    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
+    expect(translatePickersLocked(ready)).toBe(ready);
   });
 
   it("não mexe no que já mira por pedaço", () => {
-    const pronto = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
+    const ready = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
 
-    expect(traduzirSeletoresTravados(pronto)).toBe(pronto);
+    expect(translatePickersLocked(ready)).toBe(ready);
   });
 
   it("não mexe em classe nossa", () => {
-    const nosso = '.area-do-usuario { color: red }\n[data-gc="conversa.message-item.div"] { }';
+    const our = '.area-do-usuario { color: red }\n[data-gc="conversa.message-item.div"] { }';
 
-    expect(traduzirSeletoresTravados(nosso)).toBe(nosso);
+    expect(translatePickersLocked(our)).toBe(our);
   });
 
   it("conta quantos presos ao hash o arquivo tem, sem repetir", () => {
@@ -66,7 +66,7 @@ describe("seletor preso ao hash de um build", () => {
       ".B\\.module__b___YY { color: red }",
     ].join("\n");
 
-    expect(contarSeletoresDatados(css).presos).toBe(2);
+    expect(countPickersDated(css).stuck).toBe(2);
   });
 
   it("conta os dois tipos de datado em separado", () => {
@@ -76,40 +76,40 @@ describe("seletor preso ao hash de um build", () => {
       'div[class*="C.module__c_"] { color: blue }',
     ].join("\n");
 
-    expect(contarSeletoresDatados(css)).toEqual({ presos: 1, comDiv: 2, soltos: 2 });
+    expect(countPickersDated(css)).toEqual({ stuck: 1, withDiv: 2, loose: 2 });
   });
 
   it("não conta quem já mira por pedaço", () => {
     const css = '[class*="GuildNavbar.module__guildNavbarContainer_"] { color: red }';
 
-    expect(contarSeletoresDatados(css)).toEqual({ presos: 0, comDiv: 0, soltos: 1 });
+    expect(countPickersDated(css)).toEqual({ stuck: 0, withDiv: 0, loose: 1 });
   });
 
   it("conta zero num tema escrito para o Gravaê", () => {
-    expect(contarSeletoresDatados(":root { --color-brand: #123 }")).toEqual({
-      presos: 0,
-      comDiv: 0,
-      soltos: 0,
+    expect(countPickersDated(":root { --color-brand: #123 }")).toEqual({
+      stuck: 0,
+      withDiv: 0,
+      loose: 0,
     });
   });
 });
 
 describe("quando traduzir sem perguntar", () => {
-  const preso = (n: number) =>
+  const stuck = (n: number) =>
     Array.from({ length: n }, (_, i) => `.A\\.module__c${i}___XX${i} { color: red }`).join("\n");
 
-  const solto = (n: number) =>
+  const loose = (n: number) =>
     Array.from({ length: n }, (_, i) => `[class*="A.module__c${i}_"] { color: red }`).join("\n");
 
   it("deixa como está o tema com seletor solto de sobra", () => {
-    expect(deveTraduzir(`${preso(5)}\n${solto(26)}`)).toBe(false);
+    expect(mustTranslate(`${stuck(5)}\n${loose(26)}`)).toBe(false);
   });
 
   it("traduz o tema que é quase só nome preso a build", () => {
-    expect(deveTraduzir(`${preso(158)}\n${solto(20)}`)).toBe(true);
+    expect(mustTranslate(`${stuck(158)}\n${loose(20)}`)).toBe(true);
   });
 
   it("deixa como está um tema que não mira classe", () => {
-    expect(deveTraduzir(":root { --color-brand: #123 }")).toBe(false);
+    expect(mustTranslate(":root { --color-brand: #123 }")).toBe(false);
   });
 });

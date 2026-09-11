@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 
-async function limpar(guildIds, token) {
+async function clear(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
       method: "DELETE",
@@ -121,22 +121,22 @@ if (detail.voiceStates[other.id]?.length !== 0) throw new Error("fantasma apos q
 ok("passada a tolerancia, quem caiu sai do canal (sem fantasma)");
 
 console.log("\n== varias abas ==");
-const abaCall = await connect(b.accessToken);
-const abaParada = await connect(b.accessToken);
+const tabCall = await connect(b.accessToken);
+const tabStop = await connect(b.accessToken);
 
-const estadoCall = await emit(abaCall, "voice:join", { channelId: voice.id });
-if (!estadoCall.socketId) throw new Error("estado de voz nao registra qual conexao esta na call");
-ok(`a call ficou registrada na conexao ${estadoCall.socketId.slice(0, 6)}…`);
+const stateCall = await emit(tabCall, "voice:join", { channelId: voice.id });
+if (!stateCall.socketId) throw new Error("estado de voz nao registra qual conexao esta na call");
+ok(`a call ficou registrada na conexao ${stateCall.socketId.slice(0, 6)}…`);
 
-abaParada.close();
+tabStop.close();
 await new Promise((r) => setTimeout(r, 800));
 
 detail = await api(`/guilds/${guild.id}`, { token: a.accessToken, method: "GET" });
-const aindaNaCall = detail.voiceStates[voice.id]?.some((v) => v.userId === estadoCall.userId);
-if (!aindaNaCall) throw new Error("fechar uma aba parada tirou o usuario da chamada");
+const stillCall = detail.voiceStates[voice.id]?.some((v) => v.userId === stateCall.userId);
+if (!stillCall) throw new Error("fechar uma aba parada tirou o usuario da chamada");
 ok("fechar uma aba que NAO estava na call nao derruba a chamada");
 
-abaCall.close();
+tabCall.close();
 console.log("     esperando a janela de tolerancia...");
 await new Promise((r) => setTimeout(r, 8_000));
 
@@ -145,34 +145,34 @@ if (detail.voiceStates[voice.id]?.length) throw new Error("fechar a aba da call 
 ok("fechar a aba que ESTAVA na call encerra (apos a tolerancia)");
 
 console.log("\n== reload ==");
-const antes = await connect(b.accessToken);
-await emit(antes, "voice:join", { channelId: voice.id });
-antes.close();
+const before = await connect(b.accessToken);
+await emit(before, "voice:join", { channelId: voice.id });
+before.close();
 await new Promise((r) => setTimeout(r, 1500));
 
 detail = await api(`/guilds/${guild.id}`, { token: a.accessToken, method: "GET" });
-const orfao = detail.voiceStates[voice.id]?.[0];
-if (!orfao) throw new Error("a chamada foi encerrada na hora — reload derruba da call");
-if (!orfao.orphanedAt) throw new Error("o estado nao foi marcado como orfao");
+const orphan = detail.voiceStates[voice.id]?.[0];
+if (!orphan) throw new Error("a chamada foi encerrada na hora — reload derruba da call");
+if (!orphan.orphanedAt) throw new Error("o estado nao foi marcado como orfao");
 ok("logo apos a queda, a chamada continua de pe (marcada como orfa)");
 
-const depois = await connect(b.accessToken);
-const reassumido = await emit(depois, "voice:join", { channelId: voice.id, resume: true });
-if (reassumido.orphanedAt !== null) throw new Error("reassumir nao limpou o estado de orfao");
-if (reassumido.socketId === orfao.socketId) throw new Error("nao trocou de conexao dona");
+const after = await connect(b.accessToken);
+const resumed = await emit(after, "voice:join", { channelId: voice.id, resume: true });
+if (resumed.orphanedAt !== null) throw new Error("reassumir nao limpou o estado de orfao");
+if (resumed.socketId === orphan.socketId) throw new Error("nao trocou de conexao dona");
 ok("a aba que voltou reassumiu a chamada, sem sair dela");
 
-const intrusa = await connect(b.accessToken);
+const intruder = await connect(b.accessToken);
 try {
-  await emit(intrusa, "voice:join", { channelId: voice.id, resume: true });
+  await emit(intruder, "voice:join", { channelId: voice.id, resume: true });
   throw new Error("FALHOU: retomada roubou a chamada de uma aba ao vivo");
 } catch (e) {
   if (!/Outra aba/.test(e.message)) throw e;
   ok("retomada e recusada quando outra aba esta ao vivo na chamada");
 }
-intrusa.close();
+intruder.close();
 
-depois.close();
+after.close();
 await new Promise((r) => setTimeout(r, 1500));
 detail = await api(`/guilds/${guild.id}`, { token: a.accessToken, method: "GET" });
 if (!detail.voiceStates[voice.id]?.length) throw new Error("encerrou antes da janela de tolerancia");
@@ -199,6 +199,6 @@ if (!stillAlive.ok) throw new Error("a API caiu ao desconectar tudo de uma vez")
 ok("6 desconexoes simultaneas: API de pe");
 
 sb.close();
-await limpar([guild.id], a.accessToken);
+await clear([guild.id], a.accessToken);
 console.log("\nVoz ok.\n");
 process.exit(0);

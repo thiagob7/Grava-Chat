@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Mettre le chat en bas",
+    paraOLado: "Mettre le chat sur le côté",
+  },
+  aparelhoNovo: {
+    microfone: "Un nouveau micro est apparu",
+    saida: "Une nouvelle sortie audio est apparue",
+    apareceu: "{{nome}} est apparu.",
+    falarPorEle: "Voulez-vous parler avec ?",
+    ouvirPorEle: "Voulez-vous écouter avec ?",
+    trocaNaHora: "Le changement prend effet tout de suite, sans quitter l'appel.",
+    naoSugerir: "Ne plus proposer cet appareil",
+    trocar: "Basculer dessus",
+  },
   conectando: "Connexion à l'appel…",
   naoEntrou: "Impossible de rejoindre l'appel",
   sair: "Quitter l'appel",

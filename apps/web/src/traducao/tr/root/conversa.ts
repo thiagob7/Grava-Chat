@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "El sallayan minik bir el",
+    botao: "{{nome}} kişisine el salla",
+  },
+  oficial: {
+    titulo: "Bu kanal yalnızca resmî duyurular için.",
+    detalhe: "Şifreni ya da hesabının anahtarını asla istemeyiz.",
+    saibaMais: "Daha fazla bilgi",
+  },
+  topico: {
+    abrir: "Kanal açıklamasını gör",
+  },
+  previaDoLink: {
+    carregando: "Bağlantının ardında ne var bakıyorum…",
+    destino: "{{destino}} adresine gider",
+  },
+  reacao: {
+    carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",
+    uma: "{{nome}} {{emoji}} ile tepki verdi",
+    duas: "{{primeiro}} ve {{segundo}} {{emoji}} ile tepki verdi",
+    varias: "{{nomes}} ve {{quantos}} kişi daha {{emoji}} ile tepki verdi",
+    dicaSuper: "Süper tepki için basılı tut",
+  },
+  recado: {
+    gravar: "Sesli not kaydet",
+    descartar: "Kaydı at",
+    mandar: "Kaydı gönder",
+    semSuporte: "Bu tarayıcı ses kaydetmiyor.",
+    semMicrofone: "Mikrofona erişim yok.",
+  },
   lista: {
     carregando: "Mesajlar yükleniyor…",
     carregandoMais: "Yükleniyor…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Görseli görüntüle",
   },
   enquete: {
+    criar: "Anket oluştur",
+    pergunta: "Soru",
+    exemplo: "Bugün ne oynuyoruz?",
+    respostas: "Yanıtlar",
+    adicionarOpcao: "Seçenek ekle",
+    removerOpcao: "Seçeneği kaldır",
+    varias: "Birden fazla yanıta izin ver",
+    variasDetalhe: "Bu olmadan bir seçeneğe oy vermek öncekinden oyunu geri alır.",
+    duracao: "Süre",
+    umaHora: "1 saat",
+    quatroHoras: "4 saat",
+    oitoHoras: "8 saat",
+    umDia: "1 gün",
+    tresDias: "3 gün",
+    umaSemana: "1 hafta",
+    ateEncerrar: "Ben kapatana kadar",
     titulo: "Anket",
     encerrada: "Anket kapandı",
     variasRespostas: "Anket — birden çok yanıt",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Arama yalnızca okuyabildiğin kanallara bakar.",
   },
   entrada: {
+    semNome: "sohbet",
+    anexo: "(ek)",
     titulo: "Gelen kutusu",
     naoLidas: "Okunmamış",
     salvas: "Kaydedilen",

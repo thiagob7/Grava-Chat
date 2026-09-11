@@ -1,57 +1,57 @@
 import { createServer, type Server } from "node:http";
 import { describe, expect, it } from "vitest";
 
-import { TETO_DE_CABECALHO } from "~/lib/limites-http.js";
+import { HEADER_CEILING } from "~/lib/limites-http.js";
 
-async function servir(maxHeaderSize?: number): Promise<{ porta: number; parar: () => void }> {
-  const servidor: Server = createServer(
+async function serve(maxHeaderSize?: number): Promise<{ porta: number; stop: () => void }> {
+  const server: Server = createServer(
     maxHeaderSize ? { maxHeaderSize } : {},
-    (_pedido, resposta) => {
-      resposta.writeHead(200).end("ok");
+    (_request, reply) => {
+      reply.writeHead(200).end("ok");
     },
   );
 
-  await new Promise<void>((pronto) => servidor.listen(0, "127.0.0.1", pronto));
+  await new Promise<void>((ready) => server.listen(0, "127.0.0.1", ready));
 
-  const endereco = servidor.address();
-  if (typeof endereco === "string" || !endereco) throw new Error("sem porta");
+  const address = server.address();
+  if (typeof address === "string" || !address) throw new Error("sem porta");
 
-  return { porta: endereco.port, parar: () => servidor.close() };
+  return { porta: address.port, stop: () => server.close() };
 }
 
-const cookieDe = (tamanho: number) => `lixo=${"x".repeat(tamanho)}`;
+const cookieDe = (size: number) => `lixo=${"x".repeat(size)}`;
 
-async function pedir(porta: number, cookie: string) {
-  const resposta = await fetch(`http://127.0.0.1:${porta}/`, { headers: { cookie } });
-  return resposta.status;
+async function askFor(porta: number, cookie: string) {
+  const reply = await fetch(`http://127.0.0.1:${porta}/`, { headers: { cookie } });
+  return reply.status;
 }
 
 describe("teto de cabeçalho", () => {
   it("é maior que o padrão do Node, senão não adiantaria mexer", () => {
-    expect(TETO_DE_CABECALHO).toBeGreaterThan(16 * 1024);
+    expect(HEADER_CEILING).toBeGreaterThan(16 * 1024);
   });
 
   it("no padrão do Node, cookie de 20 KB volta 431", async () => {
-    const { porta, parar } = await servir();
+    const { porta, stop } = await serve();
 
-    await expect(pedir(porta, cookieDe(20_000))).resolves.toBe(431);
+    await expect(askFor(porta, cookieDe(20_000))).resolves.toBe(431);
 
-    parar();
+    stop();
   });
 
   it("com o nosso teto, o mesmo cookie passa", async () => {
-    const { porta, parar } = await servir(TETO_DE_CABECALHO);
+    const { porta, stop } = await serve(HEADER_CEILING);
 
-    await expect(pedir(porta, cookieDe(20_000))).resolves.toBe(200);
+    await expect(askFor(porta, cookieDe(20_000))).resolves.toBe(200);
 
-    parar();
+    stop();
   });
 
   it("acima do nosso teto ainda corta, que é o ponto de haver teto", async () => {
-    const { porta, parar } = await servir(TETO_DE_CABECALHO);
+    const { porta, stop } = await serve(HEADER_CEILING);
 
-    await expect(pedir(porta, cookieDe(TETO_DE_CABECALHO + 5_000))).resolves.toBe(431);
+    await expect(askFor(porta, cookieDe(HEADER_CEILING + 5_000))).resolves.toBe(431);
 
-    parar();
+    stop();
   });
 });

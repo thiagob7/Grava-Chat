@@ -13,7 +13,7 @@ const listQuery = z.object({
 });
 
 const createPostInput = z.object({
-  title: z.string().min(1).max(LIMITS.postTitulo),
+  title: z.string().min(1).max(LIMITS.postTitle),
   content: z.string().min(1).max(LIMITS.messageLength),
   tags: z.array(z.string().min(1).max(24)).max(5).optional(),
 });
@@ -28,12 +28,12 @@ export async function forumRoutes(app: FastifyInstance) {
 
   app.post("/channels/:channelId/posts", async (req, reply) => {
     const { channelId } = channelParams.parse(req.params);
-    const criado = await forumService.create(req.userId, channelId, createPostInput.parse(req.body));
+    const created = await forumService.create(req.userId, channelId, createPostInput.parse(req.body));
 
-    io().to(rooms.channel(channelId)).emit("post:created", criado.post);
-    io().to(rooms.channel(channelId)).emit("message:created", criado.message);
+    io().to(rooms.channel(channelId)).emit("post:created", created.post);
+    io().to(rooms.channel(channelId)).emit("message:created", created.message);
 
-    return reply.code(201).send(criado);
+    return reply.code(201).send(created);
   });
 
   app.get("/posts/:postId", (req) => {
@@ -44,7 +44,7 @@ export async function forumRoutes(app: FastifyInstance) {
   app.patch("/posts/:postId", async (req) => {
     const { postId } = postParams.parse(req.params);
     const { closed } = z.object({ closed: z.boolean() }).parse(req.body);
-    const post = await forumService.fechar(req.userId, postId, closed);
+    const post = await forumService.close(req.userId, postId, closed);
 
     io().to(rooms.channel(post.channelId)).emit("post:updated", post);
     return post;

@@ -1,27 +1,27 @@
 import { z } from "zod";
 import { LIMITS } from "@gravae/shared";
 
-const nomeDeEmoji = z
+const emojiName = z
   .string()
   .min(2)
   .max(32)
   .regex(/^[a-zA-Z0-9_]+$/, "Use só letras, números e _");
 
 export const createEmojiInput = z.object({
-  name: nomeDeEmoji,
+  name: emojiName,
   url: z.string().url(),
   animated: z.boolean().optional(),
 });
 export type CreateEmojiInput = z.infer<typeof createEmojiInput>;
 
-export const updateEmojiInput = z.object({ name: nomeDeEmoji });
+export const updateEmojiInput = z.object({ name: emojiName });
 
 export const createStickerInput = z.object({
   name: z.string().min(2).max(30),
   description: z.string().max(100).nullable().optional(),
   relatedEmoji: z.string().min(1).max(16),
   url: z.string().url(),
-  size: z.number().int().positive().max(LIMITS.figurinhaBytes),
+  size: z.number().int().positive().max(LIMITS.stickerBytes),
 });
 export type CreateStickerInput = z.infer<typeof createStickerInput>;
 
@@ -36,7 +36,7 @@ export const createSoundInput = z.object({
   emoji: z.string().max(16).nullable().optional(),
   url: z.string().url(),
   volume: z.number().min(0).max(1).optional(),
-  size: z.number().int().positive().max(LIMITS.somBytes),
+  size: z.number().int().positive().max(LIMITS.soundBytes),
 });
 export type CreateSoundInput = z.infer<typeof createSoundInput>;
 

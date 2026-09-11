@@ -3,25 +3,25 @@ import type { Permission } from "@gravae/shared";
 
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 
-export interface Permissoes {
-  can: (permissao: Permission) => boolean;
-  canInChannel: (channelId: string | undefined, permissao: Permission) => boolean;
+export interface Permissions {
+  can: (permission: Permission) => boolean;
+  canInChannel: (channelId: string | undefined, permission: Permission) => boolean;
 }
 
-export function usePermissions(detail: GuildDetailModel | undefined): Permissoes {
+export function usePermissions(detail: GuildDetailModel | undefined): Permissions {
   return useMemo(() => {
-    const noServidor = new Set<string>(detail?.permissions ?? []);
-    const admin = noServidor.has("ADMINISTRATOR");
+    const inServer = new Set<string>(detail?.permissions ?? []);
+    const admin = inServer.has("ADMINISTRATOR");
 
-    const can = (permissao: Permission) => admin || noServidor.has(permissao);
+    const can = (permission: Permission) => admin || inServer.has(permission);
 
-    const canInChannel = (channelId: string | undefined, permissao: Permission) => {
-      if (!channelId) return can(permissao);
+    const canInChannel = (channelId: string | undefined, permission: Permission) => {
+      if (!channelId) return can(permission);
 
-      const doCanal = detail?.channelPermissions?.[channelId];
-      if (!doCanal) return can(permissao);
+      const fromChannel = detail?.channelPermissions?.[channelId];
+      if (!fromChannel) return can(permission);
 
-      return doCanal.includes("ADMINISTRATOR") || doCanal.includes(permissao);
+      return fromChannel.includes("ADMINISTRATOR") || fromChannel.includes(permission);
     };
 
     return { can, canInChannel };

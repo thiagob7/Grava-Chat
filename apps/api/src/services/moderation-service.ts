@@ -4,7 +4,7 @@ import { banRepository } from "~/repositories/ban-repository.js";
 import { guildRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { accessService, type Contexto } from "./access-service.js";
+import { accessService, type Context } from "./access-service.js";
 import { auditService } from "./audit-service.js";
 import { uploadService } from "./upload-service.js";
 import type { BanInput, TimeoutInput } from "~/validations/moderation.js";
@@ -14,24 +14,24 @@ export const moderationService = {
     await accessService.requirePermission(userId, guildId, "BAN_MEMBERS");
 
     const bans = await banRepository.findManyByGuild(guildId);
-    const moderadores = await userRepository.findManyByIds([...new Set(bans.map((b) => b.moderatorId))]);
-    const porId = new Map(moderadores.map((u) => [u.id, toPublicUser(u)]));
+    const moderators = await userRepository.findManyByIds([...new Set(bans.map((b) => b.moderatorId))]);
+    const byId = new Map(moderators.map((u) => [u.id, toPublicUser(u)]));
 
     return bans.map((b) => ({
       user: toPublicUser(b.user),
-      moderator: porId.get(b.moderatorId) ?? null,
+      moderator: byId.get(b.moderatorId) ?? null,
       reason: b.reason,
       createdAt: b.createdAt.toISOString(),
     }));
   },
 
   async ban(actorId: string, guildId: string, targetId: string, input: BanInput) {
-    const contexto = await accessService.requirePermission(actorId, guildId, "BAN_MEMBERS");
-    await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
+    const context = await accessService.requirePermission(actorId, guildId, "BAN_MEMBERS");
+    await accessService.targetRequireAbove(context, guildId, targetId);
 
     if (await banRepository.find(guildId, targetId)) throw new AppError("Esta pessoa já está banida");
 
-    const alvo = await userRepository.findByIdOrThrow(targetId);
+    const target = await userRepository.findByIdOrThrow(targetId);
     const ban = await banRepository.create({
       guildId,
       userId: targetId,
@@ -41,23 +41,23 @@ export const moderationService = {
 
     await memberRepository.remove(guildId, targetId).catch(() => undefined);
 
-    if (input.apagarHoras) {
-      const orfaos = await messageRepository.softDeleteRecentByAuthor(
+    if (input.deleteHours) {
+      const orphans = await messageRepository.softDeleteRecentByAuthor(
         guildId,
         targetId,
-        new Date(Date.now() - input.apagarHoras * 3600_000),
+        new Date(Date.now() - input.deleteHours * 3600_000),
       );
 
-      void uploadService.remover(orfaos);
+      void uploadService.remove(orphans);
     }
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId,
       action: "member.ban",
       targetType: "member",
       targetId,
-      targetName: alvo.displayName,
+      targetName: target.displayName,
       reason: input.reason ?? undefined,
     });
 
@@ -71,57 +71,57 @@ export const moderationService = {
     if (!ban) throw new NotFoundError("Esta pessoa não está banida");
 
     await banRepository.remove(guildId, targetId);
-    const alvo = await userRepository.findById(targetId);
+    const target = await userRepository.findById(targetId);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId,
       action: "member.unban",
       targetType: "member",
       targetId,
-      targetName: alvo?.displayName,
+      targetName: target?.displayName,
     });
   },
 
-  async castigar(actorId: string, guildId: string, targetId: string, input: TimeoutInput) {
-    const contexto = await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
-    await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
+  async timeout(actorId: string, guildId: string, targetId: string, input: TimeoutInput) {
+    const context = await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
+    await accessService.targetRequireAbove(context, guildId, targetId);
 
-    const ate = input.minutos ? new Date(Date.now() + input.minutos * 60_000) : null;
-    const member = await memberRepository.setTimeout(guildId, targetId, ate);
+    const until = input.minutes ? new Date(Date.now() + input.minutes * 60_000) : null;
+    const member = await memberRepository.setTimeout(guildId, targetId, until);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId,
-      action: ate ? "member.timeout" : "member.timeout_remove",
+      action: until ? "member.timeout" : "member.timeout_remove",
       targetType: "member",
       targetId,
       targetName: member.user.displayName,
       reason: input.reason ?? undefined,
-      changes: ate ? { timeoutUntil: { de: null, para: ate.toISOString() } } : undefined,
+      changes: until ? { timeoutUntil: { de: null, toward: until.toISOString() } } : undefined,
     });
 
     return toMember(member);
   },
 
-  async apelidar(actorId: string, guildId: string, targetId: string, nickname: string | null) {
+  async nickname(actorId: string, guildId: string, targetId: string, nickname: string | null) {
     if (actorId === targetId) {
       await accessService.requirePermission(actorId, guildId, "CHANGE_NICKNAME");
     } else {
-      const contexto = await accessService.requirePermission(actorId, guildId, "MANAGE_NICKNAMES");
-      await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
+      const context = await accessService.requirePermission(actorId, guildId, "MANAGE_NICKNAMES");
+      await accessService.targetRequireAbove(context, guildId, targetId);
     }
 
     const member = await memberRepository.setNickname(guildId, targetId, nickname);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId,
       action: "member.nickname",
       targetType: "member",
       targetId,
       targetName: member.user.displayName,
-      changes: { nickname: { de: null, para: nickname } },
+      changes: { nickname: { de: null, toward: nickname } },
     });
 
     return toMember(member);

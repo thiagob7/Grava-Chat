@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Pindahkan obrolan ke bawah",
+    paraOLado: "Pindahkan obrolan ke samping",
+  },
+  aparelhoNovo: {
+    microfone: "Ada mikrofon baru di sini",
+    saida: "Ada keluaran audio baru di sini",
+    apareceu: "{{nome}} muncul.",
+    falarPorEle: "Mau bicara lewat itu?",
+    ouvirPorEle: "Mau mendengar lewat itu?",
+    trocaNaHora: "Pergantian berlaku seketika, tanpa keluar dari panggilan.",
+    naoSugerir: "Jangan sarankan perangkat ini lagi",
+    trocar: "Pindah ke situ",
+  },
   conectando: "Menyambung ke panggilan…",
   naoEntrou: "Tidak bisa bergabung ke panggilan",
   sair: "Keluar dari panggilan",

@@ -1,36 +1,36 @@
 import { useEffect, useState } from "react";
 
-export const PROPORCAO_PADRAO = 16 / 9;
-export const PROPORCAO_MAIS_ESTREITA = 32 / 9;
+export const DEFAULT_RATIO = 16 / 9;
+export const RATIO_MORE_NARROW = 32 / 9;
 
-export const apertarProporcao = (largura: number, altura: number) => {
-  if (!Number.isFinite(largura) || !Number.isFinite(altura) || largura <= 0 || altura <= 0) {
-    return PROPORCAO_PADRAO;
+export const pressRatio = (width: number, height: number) => {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    return DEFAULT_RATIO;
   }
 
-  return Math.min(Math.max(largura / altura, PROPORCAO_PADRAO), PROPORCAO_MAIS_ESTREITA);
+  return Math.min(Math.max(width / height, DEFAULT_RATIO), RATIO_MORE_NARROW);
 };
 
-export const useProporcaoDaFaixa = (url: string | null | undefined) => {
-  const [proporcao, setProporcao] = useState(PROPORCAO_PADRAO);
+export const useTrackRatio = (url: string | null | undefined) => {
+  const [ratio, setRatio] = useState(DEFAULT_RATIO);
 
   useEffect(() => {
-    setProporcao(PROPORCAO_PADRAO);
+    setRatio(DEFAULT_RATIO);
     if (!url) return;
 
-    let vivo = true;
-    const imagem = new Image();
+    let live = true;
+    const image = new Image();
 
-    imagem.onload = () => {
-      if (vivo) setProporcao(apertarProporcao(imagem.naturalWidth, imagem.naturalHeight));
+    image.onload = () => {
+      if (live) setRatio(pressRatio(image.naturalWidth, image.naturalHeight));
     };
 
-    imagem.src = url;
+    image.src = url;
 
     return () => {
-      vivo = false;
+      live = false;
     };
   }, [url]);
 
-  return proporcao;
+  return ratio;
 };

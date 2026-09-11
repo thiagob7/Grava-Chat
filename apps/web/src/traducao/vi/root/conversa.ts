@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Một bàn tay nhỏ đang vẫy",
+    botao: "Vẫy chào {{nome}}",
+  },
+  oficial: {
+    titulo: "Kênh này chỉ dành cho thông báo chính thức.",
+    detalhe: "Chúng tôi không bao giờ hỏi mật khẩu hay mã tài khoản của bạn.",
+    saibaMais: "Tìm hiểu thêm",
+  },
+  topico: {
+    abrir: "Xem mô tả kênh",
+  },
+  previaDoLink: {
+    carregando: "Đang xem trong liên kết có gì…",
+    destino: "Dẫn tới {{destino}}",
+  },
+  reacao: {
+    carregando: "Đang xem ai đã thả {{emoji}}…",
+    uma: "{{nome}} đã thả {{emoji}}",
+    duas: "{{primeiro}} và {{segundo}} đã thả {{emoji}}",
+    varias: "{{nomes}} và {{quantos}} người nữa đã thả {{emoji}}",
+    dicaSuper: "Giữ để thả siêu cảm xúc",
+  },
+  recado: {
+    gravar: "Ghi âm một lời nhắn",
+    descartar: "Bỏ bản ghi",
+    mandar: "Gửi bản ghi",
+    semSuporte: "Trình duyệt này không ghi âm được.",
+    semMicrofone: "Không truy cập được micro.",
+  },
   lista: {
     carregando: "Đang tải tin nhắn…",
     carregandoMais: "Đang tải…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Xem ảnh",
   },
   enquete: {
+    criar: "Tạo bình chọn",
+    pergunta: "Câu hỏi",
+    exemplo: "Hôm nay chơi gì đây?",
+    respostas: "Câu trả lời",
+    adicionarOpcao: "Thêm lựa chọn",
+    removerOpcao: "Bỏ lựa chọn",
+    varias: "Cho phép chọn nhiều đáp án",
+    variasDetalhe: "Không bật thì bỏ phiếu cho một lựa chọn sẽ rút phiếu khỏi lựa chọn trước.",
+    duracao: "Thời hạn",
+    umaHora: "1 giờ",
+    quatroHoras: "4 giờ",
+    oitoHoras: "8 giờ",
+    umDia: "1 ngày",
+    tresDias: "3 ngày",
+    umaSemana: "1 tuần",
+    ateEncerrar: "Đến khi tôi tự đóng",
     titulo: "Bình chọn",
     encerrada: "Bình chọn đã đóng",
     variasRespostas: "Bình chọn — nhiều câu trả lời",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Tìm kiếm chỉ nhìn vào những kênh bạn được đọc.",
   },
   entrada: {
+    semNome: "cuộc trò chuyện",
+    anexo: "(tệp đính kèm)",
     titulo: "Hộp thư đến",
     naoLidas: "Chưa đọc",
     salvas: "Đã lưu",

@@ -12,7 +12,7 @@ import {
   regenerateBotToken,
   removeBotFromGuild,
   updateBot,
-  type EditarBotInput,
+  type EditBotInput,
 } from "~/@core/application/requests/bot/bots";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
@@ -42,60 +42,60 @@ export const useBotGuilds = (botId: string | undefined) =>
     enabled: Boolean(botId),
   });
 
-function useInvalidar() {
+function useInvalidate() {
   const queryClient = useQueryClient();
   return () => void queryClient.invalidateQueries({ queryKey: [queryKeys.bot.find_many] });
 }
 
-const erro = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
+const error = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
 
 export const useCreateBot = () => {
-  const invalidar = useInvalidar();
+  const invalidate = useInvalidate();
 
   return useMutation({
     mutationFn: createBot,
-    onSuccess: invalidar,
-    onError: erro("Não deu pra criar o bot."),
+    onSuccess: invalidate,
+    onError: error("Não deu pra criar o bot."),
   });
 };
 
 export const useUpdateBot = () => {
-  const invalidar = useInvalidar();
+  const invalidate = useInvalidate();
 
   return useMutation({
-    mutationFn: ({ botId, dados }: { botId: string; dados: EditarBotInput }) =>
-      updateBot(botId, dados),
+    mutationFn: ({ botId, data }: { botId: string; data: EditBotInput }) =>
+      updateBot(botId, data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Bot atualizado.");
     },
-    onError: erro("Não deu pra salvar."),
+    onError: error("Não deu pra salvar."),
   });
 };
 
 export const useRegenerateBotToken = () => {
-  const invalidar = useInvalidar();
+  const invalidate = useInvalidate();
 
   return useMutation({
     mutationFn: regenerateBotToken,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Token novo gerado. O antigo parou de valer agora.");
     },
-    onError: erro("Não deu pra gerar outro token."),
+    onError: error("Não deu pra gerar outro token."),
   });
 };
 
 export const useDeleteBot = () => {
-  const invalidar = useInvalidar();
+  const invalidate = useInvalidate();
 
   return useMutation({
     mutationFn: deleteBot,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Bot apagado.");
     },
-    onError: erro("Não deu pra apagar o bot."),
+    onError: error("Não deu pra apagar o bot."),
   });
 };
 
@@ -112,7 +112,7 @@ export const useAddBotToGuild = () => {
       void queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
     },
 
-    onError: erro("Não deu pra adicionar o bot."),
+    onError: error("Não deu pra adicionar o bot."),
   });
 };
 
@@ -128,6 +128,6 @@ export const useRemoveBotFromGuild = () => {
       toast.success("Bot removido do servidor.");
     },
 
-    onError: erro("Não deu pra remover o bot."),
+    onError: error("Não deu pra remover o bot."),
   });
 };

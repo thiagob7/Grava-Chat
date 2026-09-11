@@ -1,19 +1,19 @@
-import type { MotivoDeFalha } from "@gravae/shared";
+import type { FailureReason } from "@gravae/shared";
 
 export class AppError extends Error {
-  motivo?: MotivoDeFalha;
+  reason?: FailureReason;
 
   constructor(
     message: string,
     readonly statusCode: number = 400,
-    readonly avisar: boolean = true,
+    readonly notify: boolean = true,
   ) {
     super(message);
     this.name = new.target.name;
   }
 
-  com(motivo: MotivoDeFalha) {
-    this.motivo = motivo;
+  having(reason: FailureReason) {
+    this.reason = reason;
     return this;
   }
 }

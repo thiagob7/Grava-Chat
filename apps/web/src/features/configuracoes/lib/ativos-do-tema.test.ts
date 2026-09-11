@@ -1,53 +1,53 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  contarPedidosDeAtivo,
-  resolverAtivos,
+  countActiveRequests,
+  resolveActive,
 } from "~/features/configuracoes/lib/ativos-do-tema";
 
-const ATIVOS = [
-  { nome: "fundo.png", url: "https://cdn/1.png" },
-  { nome: "Papel De Parede.JPG", url: "https://cdn/2.jpg" },
+const ACTIVE = [
+  { name: "fundo.png", url: "https://cdn/1.png" },
+  { name: "Papel De Parede.JPG", url: "https://cdn/2.jpg" },
 ];
 
 describe("ativos do tema", () => {
   it("troca o nome pelo endereço do arquivo", () => {
-    const { css } = resolverAtivos(
+    const { css } = resolveActive(
       `body { background: gc-ativo("fundo"); }`,
-      ATIVOS,
+      ACTIVE,
     );
 
     expect(css).toBe(`body { background: url("https://cdn/1.png"); }`);
   });
 
   it("aceita o nome com extensão, e não liga para maiúscula", () => {
-    const { css } = resolverAtivos(
+    const { css } = resolveActive(
       `a { background: gc-ativo("PAPEL DE PAREDE.jpg"); }`,
-      ATIVOS,
+      ACTIVE,
     );
 
     expect(css).toContain(`url("https://cdn/2.jpg")`);
   });
 
   it("deixa quieto o que não existe, e diz o que faltou", () => {
-    const { css, faltando } = resolverAtivos(
+    const { css, missing } = resolveActive(
       `a { background: gc-ativo("sumido"); }`,
-      ATIVOS,
+      ACTIVE,
     );
 
     expect(css).toContain(`gc-ativo("sumido")`);
-    expect(faltando).toEqual(["sumido"]);
+    expect(missing).toEqual(["sumido"]);
   });
 
   it("conta quantos arquivos o tema pede", () => {
     expect(
-      contarPedidosDeAtivo(`a{background:gc-ativo("a")}b{border-image:gc-ativo('b')}`),
+      countActiveRequests(`a{background:gc-ativo("a")}b{border-image:gc-ativo('b')}`),
     ).toBe(2);
   });
 
   it("não mexe em CSS que não pede arquivo nenhum", () => {
     const css = `a { background: url("https://ja/pronto.png"); }`;
 
-    expect(resolverAtivos(css, ATIVOS).css).toBe(css);
+    expect(resolveActive(css, ACTIVE).css).toBe(css);
   });
 });

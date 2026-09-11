@@ -15,12 +15,12 @@ export const DeleteGuildSection: React.FC<{
   const { t } = useTranslation();
   const deleteGuild = useDeleteGuild();
   const navigate = useNavigate();
-  const [confirmacao, setConfirmacao] = useState("");
+  const [confirmation, setConfirmation] = useState("");
 
-  const confere = confirmacao.trim() === guild.name;
+  const checks = confirmation.trim() === guild.name;
 
-  const excluir = async () => {
-    if (!confere) return;
+  const doDelete = async () => {
+    if (!checks) return;
 
     await deleteGuild.mutateAsync(guild.id).catch(() => null);
     onClose();
@@ -50,8 +50,8 @@ export const DeleteGuildSection: React.FC<{
         </Label>
         <Input data-gc="servidor.server-settings.delete-guild-section.input"
           id="confirmar"
-          value={confirmacao}
-          onChange={(e) => setConfirmacao(e.target.value)}
+          value={confirmation}
+          onChange={(e) => setConfirmation(e.target.value)}
           placeholder={guild.name}
           autoComplete="off"
         />
@@ -59,8 +59,8 @@ export const DeleteGuildSection: React.FC<{
 
       <Button data-gc="servidor.server-settings.delete-guild-section.button"
         variant="danger"
-        onClick={() => void excluir()}
-        disabled={!confere || deleteGuild.isPending}
+        onClick={() => void doDelete()}
+        disabled={!checks || deleteGuild.isPending}
         className="mt-4"
       >
         {deleteGuild.isPending

@@ -1,7 +1,7 @@
 :root {
 
   --font-sans:
-    "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
+    "Radio Canada Big Variable", "Radio Canada Big", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", var(--font-fallback-sans);
   --font-mono:
     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
@@ -311,6 +311,7 @@
   --message-preview-card-divider: rgba(255, 255, 255, 0.05);
   --scrollbar-track-bg: transparent;
   --background-header-primary: #2f2c36;
+  --background-channel-header: var(--background-secondary-lighter);
   --text-tertiary-secondary: #958fa3;
   --panel-control-highlight: rgba(255, 255, 255, 0.04);
   --control-button-normal-bg: transparent;

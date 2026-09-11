@@ -4,10 +4,10 @@ import { fileURLToPath } from "node:url";
 
 import Color from "color";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const CSS = join(AQUI, "..", "src", "styles", "index.css");
-const LISTA = join(
-  AQUI,
+const HERE = dirname(fileURLToPath(import.meta.url));
+const CSS = join(HERE, "..", "src", "styles", "index.css");
+const LIST = join(
+  HERE,
   "..",
   "src",
   "features",
@@ -16,8 +16,8 @@ const LISTA = join(
   "cores-mae.json",
 );
 
-function corDaReserva(valor) {
-  let v = valor.trim();
+function reserveColor(value) {
+  let v = value.trim();
 
   while (v.startsWith("var(")) {
     const virgula = v.indexOf(",");
@@ -28,13 +28,13 @@ function corDaReserva(valor) {
   return v;
 }
 
-const FAMILIAS = {
-  fundo: {
-    rotulo: "Fundo",
-    dica: "as superfícies, as bordas, o hover e o palco de voz",
-    mae: "--color-surface-0",
-    espelha: true,
-    filhas: [
+const FAMILIES = {
+  background: {
+    label: "Fundo",
+    hint: "as superfícies, as bordas, o hover e o palco de voz",
+    base: "--color-surface-0",
+    mirrors: true,
+    children: [
       "--color-surface-1",
       "--color-surface-2",
       "--color-surface-3",
@@ -53,40 +53,40 @@ const FAMILIAS = {
       "--color-line-sutil",
       "--color-palco",
       "--color-trilho",
-      { nome: "--color-veu", ancora: true },
-      { nome: "--color-sombra", ancora: true },
-      { nome: "--color-brilho", ancora: true },
-      { nome: "--color-sobre-midia", ancora: true },
+      { name: "--color-veu", anchor: true },
+      { name: "--color-sombra", anchor: true },
+      { name: "--color-brilho", anchor: true },
+      { name: "--color-sobre-midia", anchor: true },
     ],
   },
-  texto: {
-    rotulo: "Texto",
-    dica: "o texto forte, o apagado e o do palco",
-    mae: "--color-ink",
-    espelha: true,
-    filhas: ["--color-ink-muted", "--color-ink-faint", "--color-pilula", "--color-palco-ink"],
+  text: {
+    label: "Texto",
+    hint: "o texto forte, o apagado e o do palco",
+    base: "--color-ink",
+    mirrors: true,
+    children: ["--color-ink-muted", "--color-ink-faint", "--color-pilula", "--color-palco-ink"],
   },
-  marca: {
-    rotulo: "Marca",
-    dica: "botão, link, menção, resposta e o anel de foco",
-    mae: "--color-brand",
-    espelha: false,
-    filhas: [
+  brand: {
+    label: "Marca",
+    hint: "botão, link, menção, resposta e o anel de foco",
+    base: "--color-brand",
+    mirrors: false,
+    children: [
       "--color-brand-hover",
       "--color-foco-anel",
       "--color-link",
       "--color-mencao",
       "--color-resposta",
       "--color-everyone",
-      { nome: "--color-sobre-marca", contraste: true },
+      { name: "--color-sobre-marca", contrast: true },
     ],
   },
-  perigo: {
-    rotulo: "Perigo e aviso",
-    dica: "apagar, não perturbe, aviso e destaque",
-    mae: "--color-danger",
-    espelha: false,
-    filhas: [
+  danger: {
+    label: "Perigo e aviso",
+    hint: "apagar, não perturbe, aviso e destaque",
+    base: "--color-danger",
+    mirrors: false,
+    children: [
       "--color-danger-fundo",
       "--color-dnd",
       "--color-aviso",
@@ -97,83 +97,83 @@ const FAMILIAS = {
   },
 };
 
-function coresDoTema(css) {
-  const inicio = css.indexOf("@theme {");
-  if (inicio < 0) throw new Error("não achei o bloco @theme");
+function themeColors(css) {
+  const start = css.indexOf("@theme {");
+  if (start < 0) throw new Error("não achei o bloco @theme");
 
-  const corpo = css.slice(inicio, css.indexOf("\n}", inicio));
-  const cores = {};
+  const body = css.slice(start, css.indexOf("\n}", start));
+  const colors = {};
 
-  for (const [, nome, valor] of corpo.matchAll(
+  for (const [, name, value] of body.matchAll(
     /^\s+(--color-[\w-]+):\s*([^;]+);/gm,
   )) {
-    cores[nome] = corDaReserva(valor);
+    colors[name] = reserveColor(value);
   }
 
-  return cores;
+  return colors;
 }
 
-const arredonda = (n) => Number(n.toFixed(4));
+const rounds = (n) => Number(n.toFixed(4));
 
-export function extrairCoresMae(css) {
-  const cores = coresDoTema(css);
-  const saida = {};
+export function extractColorsBase(css) {
+  const colors = themeColors(css);
+  const output = {};
 
-  for (const [id, familia] of Object.entries(FAMILIAS)) {
-    const bruta = cores[familia.mae];
-    if (!bruta) throw new Error(`o @theme não declara ${familia.mae}`);
+  for (const [id, family] of Object.entries(FAMILIES)) {
+    const bruta = colors[family.base];
+    if (!bruta) throw new Error(`o @theme não declara ${family.base}`);
 
-    const mae = Color(bruta);
-    const [maeL = 0, maeC = 0, maeH = 0] = mae.lch().array();
+    const base = Color(bruta);
+    const [baseL = 0, baseC = 0, baseH = 0] = base.lch().array();
 
-    const filhas = (familia.filhas ?? []).map((entrada) => {
-      const { nome, ...extras } =
-        typeof entrada === "string" ? { nome: entrada } : entrada;
+    const children = (family.children ?? []).map((entry) => {
+      const { name, ...extras } =
+        typeof entry === "string" ? { name: entry } : entry;
 
-      const valor = cores[nome];
-      if (!valor) throw new Error(`o @theme não declara ${nome}`);
+      const value = colors[name];
+      if (!value) throw new Error(`o @theme não declara ${name}`);
 
-      const filha = Color(valor);
-      const [L = 0, C = 0, H = 0] = filha.lch().array();
+      const child = Color(value);
+      const [L = 0, C = 0, H = 0] = child.lch().array();
 
       return {
-        nome,
-        dL: arredonda(L - maeL),
-        razaoC: arredonda(C / Math.max(maeC, 3)),
-        dH: arredonda(((H - maeH) % 360 + 540) % 360 - 180),
-        alfa: filha.alpha() < 1 ? arredonda(filha.alpha()) : null,
-        ...(extras.contraste || extras.ancora ? { L: arredonda(L) } : {}),
-        espelha: familia.espelha,
+        name,
+        dL: rounds(L - baseL),
+        reasonC: rounds(C / Math.max(baseC, 3)),
+        dH: rounds(((H - baseH) % 360 + 540) % 360 - 180),
+        alfa: child.alpha() < 1 ? rounds(child.alpha()) : null,
+        ...(extras.contrast || extras.anchor ? { L: rounds(L) } : {}),
+        mirrors: family.mirrors,
         ...extras,
       };
     });
 
-    saida[id] = {
-      rotulo: familia.rotulo,
-      dica: familia.dica,
-      mae: familia.mae,
-      padrao: mae.alpha() < 1 ? bruta : mae.hex().toLowerCase(),
-      filhas,
+    output[id] = {
+      label: family.label,
+      hint: family.hint,
+      base: family.base,
+      fallback: base.alpha() < 1 ? bruta : base.hex().toLowerCase(),
+      children,
     };
   }
 
-  return saida;
+  return output;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const saida = `${JSON.stringify(extrairCoresMae(readFileSync(CSS, "utf8")), null, 2)}\n`;
+  const output = `${JSON.stringify(extractColorsBase(readFileSync(CSS, "utf8")), null, 2)}\n`;
 
   if (process.argv[2] === "--check") {
-    const atual = existsSync(LISTA) ? readFileSync(LISTA, "utf8") : "";
+    const current = existsSync(LIST) ? readFileSync(LIST, "utf8") : "";
 
-    if (atual !== saida) {
+    if (current !== output) {
       console.error("\ncores-mae.json está fora de dia. Rode: yarn tokens\n");
       process.exit(1);
     }
 
     console.log("cores-mãe em dia");
   } else {
-    writeFileSync(LISTA, saida);
-    console.log(`cores-mãe em ${relative(AQUI, LISTA)}`);
+    writeFileSync(LIST, output);
+    console.log(`cores-mãe em ${relative(HERE, LIST)}`);
   }
 }

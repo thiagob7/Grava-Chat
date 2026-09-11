@@ -14,10 +14,10 @@ import type {
   UpdateWebhookInput,
 } from "~/validations/webhook.js";
 
-const LIMITE_POR_JANELA = 5;
-const JANELA_S = 5;
+const LIMIT_BY_WINDOW = 5;
+const WINDOW_S = 5;
 
-const publico = (w: Awaited<ReturnType<typeof webhookRepository.findById>>, baseUrl: string) => {
+const isPublic = (w: Awaited<ReturnType<typeof webhookRepository.findById>>, baseUrl: string) => {
   if (!w) throw new NotFoundError("Webhook não encontrado");
 
   return {
@@ -38,7 +38,7 @@ export const webhookService = {
     await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS");
 
     const webhooks = await webhookRepository.findManyByGuild(guildId);
-    return webhooks.map((w) => publico(w, baseUrl));
+    return webhooks.map((w) => isPublic(w, baseUrl));
   },
 
   async create(userId: string, guildId: string, input: CreateWebhookInput, baseUrl: string) {
@@ -66,7 +66,7 @@ export const webhookService = {
       createdById: userId,
     });
 
-    return publico(webhook, baseUrl);
+    return isPublic(webhook, baseUrl);
   },
 
   async update(
@@ -78,8 +78,8 @@ export const webhookService = {
   ) {
     await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS");
 
-    const atual = await webhookRepository.findById(webhookId);
-    if (!atual || atual.guildId !== guildId) throw new NotFoundError("Webhook não encontrado");
+    const current = await webhookRepository.findById(webhookId);
+    if (!current || current.guildId !== guildId) throw new NotFoundError("Webhook não encontrado");
 
     if (input.channelId) {
       const channel = await channelRepository.findById(input.channelId);
@@ -90,13 +90,13 @@ export const webhookService = {
     }
 
     if (input.name !== undefined || input.avatarUrl !== undefined) {
-      await userRepository.update(atual.botUserId, {
+      await userRepository.update(current.botUserId, {
         ...(input.name !== undefined ? { displayName: input.name } : {}),
         ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
       });
     }
 
-    return publico(await webhookRepository.update(webhookId, input), baseUrl);
+    return isPublic(await webhookRepository.update(webhookId, input), baseUrl);
   },
 
   async remove(userId: string, guildId: string, webhookId: string) {
@@ -121,9 +121,9 @@ export const webhookService = {
     const content = (input.content ?? "").trim();
     if (!content) throw new AppError("Mensagem vazia");
 
-    const usos = await redis.incr(keys.webhookRate(webhookId));
-    if (usos === 1) await redis.expire(keys.webhookRate(webhookId), JANELA_S);
-    if (usos > LIMITE_POR_JANELA) throw new AppError("Muitas mensagens seguidas", 429);
+    const uses = await redis.incr(keys.webhookRate(webhookId));
+    if (uses === 1) await redis.expire(keys.webhookRate(webhookId), WINDOW_S);
+    if (uses > LIMIT_BY_WINDOW) throw new AppError("Muitas mensagens seguidas", 429);
 
     if (input.username || input.avatar_url !== undefined) {
       await userRepository.update(webhook.botUserId, {

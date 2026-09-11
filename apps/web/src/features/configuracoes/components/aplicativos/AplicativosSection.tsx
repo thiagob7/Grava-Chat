@@ -3,45 +3,45 @@ import { BookOpen, Plus } from "lucide-react";
 
 import { useCreateBot, useFindBots } from "~/@core/application/queries/bot/use-bots";
 import { Button } from "~/components/ui/button";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
-import { DetalheDoAplicativo } from "~/features/configuracoes/components/aplicativos/DetalheDoAplicativo";
-import { ListaDeAplicativos } from "~/features/configuracoes/components/aplicativos/ListaDeAplicativos";
-import { ModalDeCriacao } from "~/features/configuracoes/components/aplicativos/ModalDeCriacao";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { AppDetail } from "~/features/configuracoes/components/aplicativos/DetalheDoAplicativo";
+import { ListApps } from "~/features/configuracoes/components/aplicativos/ListaDeAplicativos";
+import { CreationModal } from "~/features/configuracoes/components/aplicativos/ModalDeCriacao";
 import { ModalDeToken } from "~/features/configuracoes/components/aplicativos/ModalDeToken";
 
 const DOCS =
   (import.meta.env.VITE_DOCS_URL as string | undefined) ??
   (import.meta.env.DEV ? "http://localhost:4321/desenvolvedores" : undefined);
 
-export const AplicativosSection: React.FC = () => {
+export const AppsSection: React.FC = () => {
   const { data: bots = [], isLoading, isError, refetch } = useFindBots(true);
-  const criar = useCreateBot();
+  const create = useCreateBot();
 
-  const [abertoId, setAbertoId] = useState<string | null>(null);
-  const [criando, setCriando] = useState(false);
-  const [tokenNovo, setTokenNovo] = useState<string | null>(null);
+  const [isOpenId, setIsOpenId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [tokenNew, setTokenNew] = useState<string | null>(null);
 
-  const aberto = bots.find((bot) => bot.id === abertoId) ?? null;
+  const isOpen = bots.find((bot) => bot.id === isOpenId) ?? null;
 
-  const criarBot = (nome: string) =>
-    criar.mutate(nome, {
+  const createBot = (name: string) =>
+    create.mutate(name, {
       onSuccess: (bot) => {
-        setCriando(false);
-        setAbertoId(bot.id);
-        if (bot.token) setTokenNovo(bot.token);
+        setCreating(false);
+        setIsOpenId(bot.id);
+        if (bot.token) setTokenNew(bot.token);
       },
     });
 
-  if (aberto)
+  if (isOpen)
     return (
       <>
-        <DetalheDoAplicativo data-gc="configuracoes.aplicativos.aplicativos-section.detalhe-do-aplicativo.set-token-novo"
-          bot={aberto}
-          onVoltar={() => setAbertoId(null)}
-          onTokenNovo={setTokenNovo}
+        <AppDetail data-gc="configuracoes.aplicativos.aplicativos-section.app-detail.set-token-new"
+          bot={isOpen}
+          onBack={() => setIsOpenId(null)}
+          onTokenNew={setTokenNew}
         />
 
-        <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token" token={tokenNovo} onFechar={() => setTokenNovo(null)} />
+        <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token" token={tokenNew} onClose={() => setTokenNew(null)} />
       </>
     );
 
@@ -53,13 +53,13 @@ export const AplicativosSection: React.FC = () => {
         <code data-gc="configuracoes.aplicativos.aplicativos-section.code" className="rounded bg-surface-0 px-1 text-xs">exemplos/</code>.
       </p>
 
-      <Secao data-gc="configuracoes.aplicativos.aplicativos-section.secao"
+      <Section data-gc="configuracoes.aplicativos.aplicativos-section.section"
         id="seus-aplicativos"
-        titulo="Seus aplicativos"
-        detalhe="Cada um vem com um bot e um token próprios."
+        title="Seus aplicativos"
+        detail="Cada um vem com um bot e um token próprios."
       >
         <div data-gc="configuracoes.aplicativos.aplicativos-section.div--2" className="flex flex-wrap items-center gap-4">
-          <Button data-gc="configuracoes.aplicativos.aplicativos-section.button" onClick={() => setCriando(true)}>
+          <Button data-gc="configuracoes.aplicativos.aplicativos-section.button" onClick={() => setCreating(true)}>
             <Plus data-gc="configuracoes.aplicativos.aplicativos-section.plus" size={16} /> Criar aplicativo
           </Button>
 
@@ -98,19 +98,19 @@ export const AplicativosSection: React.FC = () => {
           )}
 
           {!isLoading && !isError && bots.length > 0 && (
-            <ListaDeAplicativos data-gc="configuracoes.aplicativos.aplicativos-section.lista-de-aplicativos.set-aberto-id" bots={bots} onAbrir={setAbertoId} />
+            <ListApps data-gc="configuracoes.aplicativos.aplicativos-section.list-apps.set-is-open-id" bots={bots} onOpen={setIsOpenId} />
           )}
         </div>
-      </Secao>
+      </Section>
 
-      <ModalDeCriacao data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-criacao.criar-bot"
-        aberto={criando}
-        criando={criar.isPending}
-        onFechar={() => setCriando(false)}
-        onCriar={criarBot}
+      <CreationModal data-gc="configuracoes.aplicativos.aplicativos-section.creation-modal.create-bot"
+        isOpen={creating}
+        creating={create.isPending}
+        onClose={() => setCreating(false)}
+        onCreate={createBot}
       />
 
-      <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token--2" token={tokenNovo} onFechar={() => setTokenNovo(null)} />
+      <ModalDeToken data-gc="configuracoes.aplicativos.aplicativos-section.modal-de-token--2" token={tokenNew} onClose={() => setTokenNew(null)} />
     </div>
   );
 };

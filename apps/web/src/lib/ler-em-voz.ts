@@ -1,36 +1,36 @@
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { useIgnoreStore } from "~/stores/ignore-store";
-import { comoSeFala, falar } from "~/lib/voz";
+import { asSpeech, speak } from "~/lib/voz";
 
-export function lerEmVoz(
+export function readVoice(
   message: PendingMessageModel,
-  meuId: string | undefined,
-  canalAberto: string | null | undefined,
+  myId: string | undefined,
+  channelIsOpen: string | null | undefined,
 ): void {
-  const prefs = useAparencia.getState();
+  const prefs = useAppearance.getState();
 
-  if (prefs.lerEmVozAlta === "nunca") return;
+  if (prefs.readVoiceHigh === "nunca") return;
   if (
-    prefs.lerEmVozAlta === "canal-aberto" &&
-    message.channelId !== canalAberto
+    prefs.readVoiceHigh === "canal-aberto" &&
+    message.channelId !== channelIsOpen
   )
     return;
 
-  if (meuId && message.author.id === meuId) return;
+  if (myId && message.author.id === myId) return;
 
-  if (useIgnoreStore.getState().estaIgnorado(message.author.id)) return;
+  if (useIgnoreStore.getState().thisIgnored(message.author.id)) return;
 
-  if (prefs.modoStreamer && prefs.streamerSemSom) return;
+  if (prefs.modeStreamer && prefs.streamerWithoutSound) return;
 
-  falar(
-    comoSeFala({
-      autor: message.author.displayName,
-      texto: message.content ?? "",
+  speak(
+    asSpeech({
+      author: message.author.displayName,
+      text: message.content ?? "",
     }),
     {
-      voz: prefs.vozDaLeitura,
-      velocidade: prefs.velocidadeDaLeitura,
+      voice: prefs.readingVoice,
+      speed: prefs.readingSpeed,
     },
   );
 }

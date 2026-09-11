@@ -1,11 +1,11 @@
 import { api } from "~/@core/lib/api";
 
-export interface VerificarGuildDTO {
+export interface VerifyGuildDto {
   guildId: string;
-  verificada: boolean;
+  verified: boolean;
 }
 
-export async function verificarGuild({ guildId, verificada }: VerificarGuildDTO) {
-  const response = await api.put<{ id: string; verificada: boolean }>(`/guilds/${guildId}/verificacao`, { verificada });
+export async function verifyGuild({ guildId, verified }: VerifyGuildDto) {
+  const response = await api.put<{ id: string; verified: boolean }>(`/guilds/${guildId}/verificacao`, { verified });
   return response.data;
 }

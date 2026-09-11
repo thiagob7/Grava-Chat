@@ -1,1 +1,1 @@
-export const TETO_DE_CABECALHO = 32 * 1024;
+export const HEADER_CEILING = 32 * 1024;

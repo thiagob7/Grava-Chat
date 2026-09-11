@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Không mở được hồ sơ này.",
   carregando: "Đang tải…",
   editar: "Sửa hồ sơ",
   mensagem: "Nhắn tin",

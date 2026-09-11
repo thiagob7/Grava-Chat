@@ -1,6 +1,6 @@
 const BASE = "http://localhost:3333";
 
-async function limpar(guildIds, token) {
+async function clear(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
       method: "DELETE",
@@ -52,36 +52,36 @@ ok(`arquivo lido de volta idêntico (${bytes.length} bytes, ${get.headers.get("c
 console.log("\n== anexo numa mensagem ==");
 const { io } = await import("socket.io-client");
 const guild = await api("/guilds", { token: accessToken, body: { name: "Teste Anexo" } });
-const detalhe = await api(`/guilds/${guild.id}`, { token: accessToken, method: "GET" });
-const canal = detalhe.channels.find((c) => c.type === "TEXT");
+const detail = await api(`/guilds/${guild.id}`, { token: accessToken, method: "GET" });
+const channel = detail.channels.find((c) => c.type === "TEXT");
 
 const socket = io(BASE, { auth: { token: accessToken }, transports: ["websocket"] });
 await new Promise((r) => socket.on("connect", r));
 const emit = (ev, p) => new Promise((res, rej) => socket.emit(ev, p, (r) => (r.ok ? res(r.data) : rej(new Error(r.error)))));
 
-await emit("channel:subscribe", { channelId: canal.id });
+await emit("channel:subscribe", { channelId: channel.id });
 await emit("message:send", {
-  channelId: canal.id,
+  channelId: channel.id,
   content: "olha esse print",
   attachments: [{ ...attachment, width: 1, height: 1 }],
 });
 
-const historico = await api(`/channels/${canal.id}/messages`, { token: accessToken, method: "GET" });
-const comAnexo = historico.messages.find((m) => m.attachments.length > 0);
-if (!comAnexo) throw new Error("mensagem voltou sem o anexo");
-if (comAnexo.attachments[0].url !== attachment.url) throw new Error("url do anexo mudou");
-if (comAnexo.attachments[0].width !== 1) throw new Error("dimensoes do anexo se perderam");
+const past = await api(`/channels/${channel.id}/messages`, { token: accessToken, method: "GET" });
+const withAttachment = past.messages.find((m) => m.attachments.length > 0);
+if (!withAttachment) throw new Error("mensagem voltou sem o anexo");
+if (withAttachment.attachments[0].url !== attachment.url) throw new Error("url do anexo mudou");
+if (withAttachment.attachments[0].width !== 1) throw new Error("dimensoes do anexo se perderam");
 ok("mensagem com anexo persiste (url e dimensoes preservadas)");
 
-await emit("message:send", { channelId: canal.id, content: "", attachments: [attachment] });
-const depois = await api(`/channels/${canal.id}/messages`, { token: accessToken, method: "GET" });
-if (depois.messages.filter((m) => m.attachments.length > 0).length !== 2) {
+await emit("message:send", { channelId: channel.id, content: "", attachments: [attachment] });
+const after = await api(`/channels/${channel.id}/messages`, { token: accessToken, method: "GET" });
+if (after.messages.filter((m) => m.attachments.length > 0).length !== 2) {
   throw new Error("mensagem so com anexo foi recusada");
 }
 ok("mensagem so com anexo (sem texto) e aceita");
 
 try {
-  await emit("message:send", { channelId: canal.id, content: "", attachments: [] });
+  await emit("message:send", { channelId: channel.id, content: "", attachments: [] });
   throw new Error("FALHOU: aceitou mensagem totalmente vazia");
 } catch (e) {
   if (!/vazia/.test(e.message)) throw e;
@@ -98,5 +98,5 @@ try {
   ok("arquivo acima do limite é recusado antes de assinar");
 }
 
-await limpar([guild.id], accessToken);
+await clear([guild.id], accessToken);
 console.log("\nUpload ok.\n");

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Fundo: React.FC = () => (
+const Background: React.FC = () => (
   <>
     <defs data-gc="conversa.artes.arte-de-limite.defs">
       <linearGradient data-gc="conversa.artes.arte-de-limite.linear-gradient" id="arte-limite-brilho" x1="0" y1="0" x2="1" y2="1">
@@ -17,14 +17,14 @@ const Fundo: React.FC = () => (
   </>
 );
 
-export const ArteDeTextoLongo: React.FC = () => (
+export const TextLongArt: React.FC = () => (
   <svg data-gc="conversa.artes.arte-de-limite.svg"
     viewBox="0 0 120 120"
     className="size-28 motion-safe:animate-[flutuar_4s_ease-in-out_infinite]"
     role="img"
     aria-hidden="true"
   >
-    <Fundo data-gc="conversa.artes.arte-de-limite.fundo" />
+    <Background data-gc="conversa.artes.arte-de-limite.background" />
 
     <rect data-gc="conversa.artes.arte-de-limite.rect"
       x="32"
@@ -72,14 +72,14 @@ export const ArteDeTextoLongo: React.FC = () => (
   </svg>
 );
 
-export const ArteDeArquivoGrande: React.FC = () => (
+export const FileLargeArt: React.FC = () => (
   <svg data-gc="conversa.artes.arte-de-limite.svg--2"
     viewBox="0 0 120 120"
     className="size-28 motion-safe:animate-[flutuar_4s_ease-in-out_infinite]"
     role="img"
     aria-hidden="true"
   >
-    <Fundo data-gc="conversa.artes.arte-de-limite.fundo--2" />
+    <Background data-gc="conversa.artes.arte-de-limite.background--2" />
 
     <path data-gc="conversa.artes.arte-de-limite.path--2"
       d="M40 26h26l16 16v48a6 6 0 0 1-6 6H40a6 6 0 0 1-6-6V32a6 6 0 0 1 6-6Z"

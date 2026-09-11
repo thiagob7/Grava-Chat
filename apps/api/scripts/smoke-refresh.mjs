@@ -27,18 +27,18 @@ ok("os dois cookies da corrida continuam validos");
 
 cookie = rotated[0].split(";")[0];
 
-const perdido = cookie;
-const respostaPerdida = await refresh();
-if (respostaPerdida.status !== 200) throw new Error("refresh normal falhou");
+const lost = cookie;
+const replyLost = await refresh();
+if (replyLost.status !== 200) throw new Error("refresh normal falhou");
 
-const recuperacao = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", headers: { cookie: perdido } });
-if (recuperacao.status !== 200) throw new Error("cookie antigo apos resposta perdida devolveu 401");
+const recovery = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", headers: { cookie: lost } });
+if (recovery.status !== 200) throw new Error("cookie antigo apos resposta perdida devolveu 401");
 
-const novo = recuperacao.headers.getSetCookie().find((c) => c.startsWith("gravae_rt="));
-if (!novo) throw new Error("a recuperacao nao devolveu cookie novo — a sessao ficaria presa no antigo");
+const fresh = recovery.headers.getSetCookie().find((c) => c.startsWith("gravae_rt="));
+if (!fresh) throw new Error("a recuperacao nao devolveu cookie novo — a sessao ficaria presa no antigo");
 ok("resposta de refresh perdida no meio do caminho: a sessao se recupera sozinha");
 
-cookie = novo.split(";")[0];
+cookie = fresh.split(";")[0];
 if ((await refresh()).status !== 200) throw new Error("o cookie rotacionado nao funciona");
 ok("o cookie novo continua valido");
 

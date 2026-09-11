@@ -1,4 +1,4 @@
-import type { DesiredStatus, EstiloDePerfil, FiltroDeSpam, PresenceStatus, StatusPersonalizado } from "@gravae/shared";
+import type { DesiredStatus, ProfileStyle, SpamFilter, PresenceStatus, CustomStatus } from "@gravae/shared";
 
 export interface PublicUserModel {
   id: string;
@@ -7,28 +7,29 @@ export interface PublicUserModel {
   avatarUrl: string | null;
   status: PresenceStatus;
   isBot: boolean;
-  sistema?: boolean;
+  system?: boolean;
 }
 
 export interface SelfUserModel extends PublicUserModel {
   email: string;
   bio: string | null;
-  pronomes: string | null;
+  pronouns: string | null;
   providers: string[];
   createdAt: string;
-  perfil: EstiloDePerfil | null;
-  statusPersonalizado: StatusPersonalizado | null;
+  profile: ProfileStyle | null;
+  customStatus: CustomStatus | null;
   desiredStatus: DesiredStatus;
   admin: boolean;
 
-  aceitaPedidos: boolean;
-  mostraAtividade: boolean;
-  mostraServidoresEmComum: boolean;
-  mostraAmigosEmComum: boolean;
-  permitirDmDeMembros: boolean;
-  filtroDeSpam: FiltroDeSpam;
+  acceptedRequests: boolean;
+  showsActivity: boolean;
+  showsServersCommon: boolean;
+  showsFriendsCommon: boolean;
+  membersAllowDm: boolean;
+  spamFilter: SpamFilter;
 
-  excluirEm: string | null;
+  deleteAt: string | null;
+  verifiedEmail: boolean;
 }
 
 export interface SessionModel {
@@ -39,7 +40,7 @@ export interface SessionModel {
 export interface AuthConfigModel {
   devLogin: boolean;
   google: boolean;
-  senha?: boolean;
-  esqueciSenha?: boolean;
+  password?: boolean;
+  forgotPassword?: boolean;
   voiceUrl: string;
 }

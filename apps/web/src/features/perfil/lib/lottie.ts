@@ -3,76 +3,76 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 interface Player {
   destroy: () => void;
   goToAndStop: (v: number, f?: boolean) => void;
-  playSegments: (s: [number, number], forcar?: boolean) => void;
-  resetSegments: (forcar?: boolean) => void;
+  playSegments: (s: [number, number], force?: boolean) => void;
+  resetSegments: (force?: boolean) => void;
   totalFrames: number;
 }
 
-interface Opcoes {
-  chave: string;
-  carregar: () => Promise<unknown | null>;
-  animar: boolean;
-  repetir: boolean;
-  segmento?: [number, number];
+interface Options {
+  key: string;
+  load: () => Promise<unknown | null>;
+  animate: boolean;
+  repeat: boolean;
+  segment?: [number, number];
 }
 
-export function usarLottie(
-  caixa: RefObject<HTMLElement | null>,
-  { chave, carregar, animar, repetir, segmento }: Opcoes,
+export function useLottie(
+  box: RefObject<HTMLElement | null>,
+  { key, load, animate, repeat, segment }: Options,
 ) {
-  const [de, ate] = segmento ?? [];
+  const [de, until] = segment ?? [];
 
   const player = useRef<Player | null>(null);
-  const comprimento = useRef(0);
+  const length = useRef(0);
 
-  const desejo = useRef({ animar, de, ate });
-  desejo.current = { animar, de, ate };
+  const wish = useRef({ animate, de, until });
+  wish.current = { animate, de, until };
 
-  const aplicar = useCallback(() => {
+  const apply = useCallback(() => {
     const p = player.current;
     if (!p) return;
 
-    const alvo = desejo.current;
+    const target = wish.current;
 
-    if (!alvo.animar) {
+    if (!target.animate) {
       p.resetSegments(true);
-      p.goToAndStop(Math.max(0, comprimento.current - 1), true);
+      p.goToAndStop(Math.max(0, length.current - 1), true);
       return;
     }
 
-    p.playSegments([alvo.de ?? 0, alvo.ate ?? comprimento.current], true);
+    p.playSegments([target.de ?? 0, target.until ?? length.current], true);
   }, []);
 
   useEffect(() => {
-    let vivo = true;
+    let live = true;
 
     void (async () => {
-      const [lottie, dados] = await Promise.all([
+      const [lottie, data] = await Promise.all([
         import("lottie-web/build/player/lottie_light"),
-        carregar(),
+        load(),
       ]);
 
-      if (!vivo || !caixa.current || !dados) return;
+      if (!live || !box.current || !data) return;
 
-      const novo = lottie.default.loadAnimation({
-        container: caixa.current,
+      const fresh = lottie.default.loadAnimation({
+        container: box.current,
         renderer: "svg",
-        loop: repetir,
+        loop: repeat,
         autoplay: false,
-        animationData: structuredClone(dados),
+        animationData: structuredClone(data),
       }) as Player;
 
-      player.current = novo;
-      comprimento.current = novo.totalFrames;
-      aplicar();
+      player.current = fresh;
+      length.current = fresh.totalFrames;
+      apply();
     })();
 
     return () => {
-      vivo = false;
+      live = false;
       player.current?.destroy();
       player.current = null;
     };
-  }, [caixa, chave, repetir, aplicar]); 
+  }, [box, key, repeat, apply]); 
 
-  useEffect(() => aplicar(), [animar, de, ate, aplicar]);
+  useEffect(() => apply(), [animate, de, until, apply]);
 }

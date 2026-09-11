@@ -23,7 +23,7 @@ export const forumRepository = {
     return prisma.forumPost.update({ where: { id }, data, include: { author: true } });
   },
 
-  registrarResposta(id: string) {
+  registerReply(id: string) {
     return prisma.forumPost.update({
       where: { id },
       data: { messageCount: { increment: 1 }, lastMessageAt: new Date() },

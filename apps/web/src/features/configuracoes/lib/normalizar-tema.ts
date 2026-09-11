@@ -1,128 +1,128 @@
-const TRAVADO = /\.([A-Za-z][A-Za-z0-9]*)\\\.module__([A-Za-z0-9]+)___[A-Za-z0-9]+/g;
+const LOCKED = /\.([A-Za-z][A-Za-z0-9]*)\\\.module__([A-Za-z0-9]+)___[A-Za-z0-9]+/g;
 
-const DIV_NA_FRENTE = /\bdiv(?=\[class\*=)/g;
+const DIV_FRONT = /\bdiv(?=\[class\*=)/g;
 
-export function traduzirSeletoresTravados(css: string): string {
+export function translatePickersLocked(css: string): string {
   return css
     .replace(
-      TRAVADO,
-      (_, arquivo: string, parte: string) => `[class*="${arquivo}.module__${parte}_"]`,
+      LOCKED,
+      (_, file: string, part: string) => `[class*="${file}.module__${part}_"]`,
     )
-    .replace(DIV_NA_FRENTE, "");
+    .replace(DIV_FRONT, "");
 }
 
-const QUASE_SO_HASH = 0.7;
+const ALMOST_SO_HASH = 0.7;
 
-export function deveTraduzir(css: string): boolean {
-  const { presos, soltos } = contarSeletoresDatados(css);
-  const total = presos + soltos;
+export function mustTranslate(css: string): boolean {
+  const { stuck, loose } = countPickersDated(css);
+  const total = stuck + loose;
 
-  return total > 0 && presos / total >= QUASE_SO_HASH;
+  return total > 0 && stuck / total >= ALMOST_SO_HASH;
 }
 
-export function contarSeletoresDatados(css: string): {
-  presos: number;
-  comDiv: number;
-  soltos: number;
+export function countPickersDated(css: string): {
+  stuck: number;
+  withDiv: number;
+  loose: number;
 } {
   return {
-    presos: new Set(css.match(TRAVADO) ?? []).size,
-    comDiv: new Set(css.match(/\bdiv\[class\*="[^"]+"\]/g) ?? []).size,
-    soltos: new Set(css.match(/\[class\*="[^"]+"\]/g) ?? []).size,
+    stuck: new Set(css.match(LOCKED) ?? []).size,
+    withDiv: new Set(css.match(/\bdiv\[class\*="[^"]+"\]/g) ?? []).size,
+    loose: new Set(css.match(/\[class\*="[^"]+"\]/g) ?? []).size,
   };
 }
 
-export const CLASSE_DO_TEMA: Record<string, string> = {
-  escuro: "theme-dark",
+export const THEME_CLASS: Record<string, string> = {
+  dark: "theme-dark",
   "mais-escuro": "theme-coal",
-  claro: "theme-light",
+  light: "theme-light",
   gravae: "theme-dark",
 };
 
-export function marcarTemaDaRaiz(tema: string | undefined) {
-  const raiz = document.documentElement;
+export function markRootTheme(theme: string | undefined) {
+  const root = document.documentElement;
 
-  for (const classe of Object.values(CLASSE_DO_TEMA)) raiz.classList.remove(classe);
+  for (const cssClass of Object.values(THEME_CLASS)) root.classList.remove(cssClass);
 
-  const escolhida = CLASSE_DO_TEMA[tema ?? ""] ?? CLASSE_DO_TEMA.escuro;
-  if (escolhida) raiz.classList.add(escolhida);
+  const picked = THEME_CLASS[theme ?? ""] ?? THEME_CLASS.dark;
+  if (picked) root.classList.add(picked);
 }
 
-export interface ExisteNaReferencia {
-  modulos: string[];
+export interface ExistsReference {
+  modules: string[];
   areas: string[];
 }
 
-export function filtrarRegrasMortas(css: string, existe: ExisteNaReferencia): string {
-  const modulos = new Set(existe.modulos);
-  const areas = new Set(existe.areas);
+export function filterRulesDead(css: string, exists: ExistsReference): string {
+  const modules = new Set(exists.modules);
+  const areas = new Set(exists.areas);
 
-  const viva = (seletor: string) => {
-    const limpo = seletor.replace(/\\/g, "");
-    const nomes: string[] = [];
+  const viva = (picker: string) => {
+    const clean = picker.replace(/\\/g, "");
+    const names: string[] = [];
 
-    for (const [, modulo] of limpo.matchAll(/([A-Za-z][A-Za-z0-9]*)\.module__/g)) nomes.push(`m:${modulo}`);
-    for (const [, modulo] of limpo.matchAll(/\[class\*="([A-Za-z][A-Za-z0-9]*)"\]\s*\[class\*="[A-Za-z][A-Za-z0-9]*"\]/g)) nomes.push(`m:${modulo}`);
-    for (const [, caminho] of limpo.matchAll(/data-flx\s*=\s*["']([^"']+)["']/g)) nomes.push(`a:${(caminho ?? "").split(".").slice(0, 2).join(".")}`);
+    for (const [, modulo] of clean.matchAll(/([A-Za-z][A-Za-z0-9]*)\.module__/g)) names.push(`m:${modulo}`);
+    for (const [, modulo] of clean.matchAll(/\[class\*="([A-Za-z][A-Za-z0-9]*)"\]\s*\[class\*="[A-Za-z][A-Za-z0-9]*"\]/g)) names.push(`m:${modulo}`);
+    for (const [, path] of clean.matchAll(/data-flx\s*=\s*["']([^"']+)["']/g)) names.push(`a:${(path ?? "").split(".").slice(0, 2).join(".")}`);
 
-    if (!nomes.length) return true;
-    return nomes.some((n) => (n.startsWith("m:") ? modulos.has(n.slice(2)) : areas.has(n.slice(2))));
+    if (!names.length) return true;
+    return names.some((n) => (n.startsWith("m:") ? modules.has(n.slice(2)) : areas.has(n.slice(2))));
   };
 
-  let saida = "";
+  let output = "";
   let i = 0;
 
   while (i < css.length) {
-    const abre = css.indexOf("{", i);
-    if (abre === -1) {
-      saida += css.slice(i);
+    const opens = css.indexOf("{", i);
+    if (opens === -1) {
+      output += css.slice(i);
       break;
     }
 
-    const seletor = css.slice(i, abre);
+    const picker = css.slice(i, opens);
 
-    const cabecalho = /@([a-z-]+)[^{}]*$/.exec(seletor);
-    if (cabecalho) {
-      if (cabecalho[1] === "keyframes" || cabecalho[1] === "font-face" || cabecalho[1] === "property") {
-        let fundo = 0;
-        let fim = abre;
-        for (; fim < css.length; fim++) {
-          if (css[fim] === "{") fundo++;
-          else if (css[fim] === "}" && --fundo === 0) break;
+    const header = /@([a-z-]+)[^{}]*$/.exec(picker);
+    if (header) {
+      if (header[1] === "keyframes" || header[1] === "font-face" || header[1] === "property") {
+        let background = 0;
+        let end = opens;
+        for (; end < css.length; end++) {
+          if (css[end] === "{") background++;
+          else if (css[end] === "}" && --background === 0) break;
         }
-        saida += css.slice(i, fim + 1);
-        i = fim + 1;
+        output += css.slice(i, end + 1);
+        i = end + 1;
         continue;
       }
 
-      saida += css.slice(i, abre + 1);
-      i = abre + 1;
+      output += css.slice(i, opens + 1);
+      i = opens + 1;
       continue;
     }
 
-    if (seletor.includes("}")) {
-      const k = seletor.lastIndexOf("}");
-      saida += seletor.slice(0, k + 1);
+    if (picker.includes("}")) {
+      const k = picker.lastIndexOf("}");
+      output += picker.slice(0, k + 1);
       i += k + 1;
       continue;
     }
 
-    let fundo = 0;
-    let fim = abre;
-    for (; fim < css.length; fim++) {
-      if (css[fim] === "{") fundo++;
-      else if (css[fim] === "}" && --fundo === 0) break;
+    let background = 0;
+    let end = opens;
+    for (; end < css.length; end++) {
+      if (css[end] === "{") background++;
+      else if (css[end] === "}" && --background === 0) break;
     }
 
-    const corpo = css.slice(abre, fim + 1);
-    saida += viva(seletor) ? seletor + corpo : seletor.replace(/[^\n]/g, "");
-    i = fim + 1;
+    const body = css.slice(opens, end + 1);
+    output += viva(picker) ? picker + body : picker.replace(/[^\n]/g, "");
+    i = end + 1;
   }
 
-  return saida;
+  return output;
 }
 
-export function contarRegrasMortas(css: string, existe: ExisteNaReferencia): number {
-  const conta = (texto: string) => (texto.match(/\{[^{}]*:[^{}]*\}/g) ?? []).length;
-  return Math.max(0, conta(css) - conta(filtrarRegrasMortas(css, existe)));
+export function countRulesDead(css: string, exists: ExistsReference): number {
+  const account = (text: string) => (text.match(/\{[^{}]*:[^{}]*\}/g) ?? []).length;
+  return Math.max(0, account(css) - account(filterRulesDead(css, exists)));
 }

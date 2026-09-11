@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
-import { ehDesktop } from "~/lib/desktop";
+import { isDesktop } from "~/lib/desktop";
 
-interface JanelaDeCursores {
-  aberto: boolean;
-  abrir: () => void;
-  fechar: () => void;
+interface CursorsWindow {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
 }
 
-function aCascaAbreJanela(): boolean {
-  return Boolean(window.gravae?.janela?.fixarPorCima);
+function shellOpensWindow(): boolean {
+  return Boolean(window.gravae?.appWindow?.pinByUp);
 }
 
 /*
@@ -20,32 +20,32 @@ function aCascaAbreJanela(): boolean {
   do painel de um lado e do app do outro, passando o ponteiro por botão, campo
   de texto e coisa arrastável para ver se a escolha presta.
 */
-function abrirNoSistema(): boolean {
-  if (ehDesktop() && !aCascaAbreJanela()) return false;
+function openSystem(): boolean {
+  if (isDesktop() && !shellOpensWindow()) return false;
 
-  const largura = Math.min(880, Math.round(window.screen.availWidth * 0.6));
-  const altura = Math.min(820, Math.round(window.screen.availHeight * 0.8));
+  const width = Math.min(880, Math.round(window.screen.availWidth * 0.6));
+  const height = Math.min(820, Math.round(window.screen.availHeight * 0.8));
 
-  const janela = window.open(
+  const appWindow = window.open(
     "/cursores",
     "gc-cursores",
-    `popup=yes,width=${largura},height=${altura},left=${Math.round(
-      (window.screen.availWidth - largura) / 2,
-    )},top=${Math.round((window.screen.availHeight - altura) / 2)}`,
+    `popup=yes,width=${width},height=${height},left=${Math.round(
+      (window.screen.availWidth - width) / 2,
+    )},top=${Math.round((window.screen.availHeight - height) / 2)}`,
   );
 
-  if (!janela) return false;
+  if (!appWindow) return false;
 
-  janela.focus();
+  appWindow.focus();
   return true;
 }
 
-export const useJanelaDeCursores = create<JanelaDeCursores>((set) => ({
-  aberto: false,
-  abrir: () => {
-    if (abrirNoSistema()) return;
+export const useCursorsWindow = create<CursorsWindow>((set) => ({
+  isOpen: false,
+  open: () => {
+    if (openSystem()) return;
 
-    set({ aberto: true });
+    set({ isOpen: true });
   },
-  fechar: () => set({ aberto: false }),
+  close: () => set({ isOpen: false }),
 }));

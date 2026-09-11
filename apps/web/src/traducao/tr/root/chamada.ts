@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Sohbeti aşağı al",
+    paraOLado: "Sohbeti yana al",
+  },
+  aparelhoNovo: {
+    microfone: "Yeni bir mikrofon çıktı",
+    saida: "Yeni bir ses çıkışı çıktı",
+    apareceu: "{{nome}} göründü.",
+    falarPorEle: "Bunun üzerinden konuşmak ister misin?",
+    ouvirPorEle: "Bunun üzerinden dinlemek ister misin?",
+    trocaNaHora: "Değişiklik anında geçerli olur, görüşmeden çıkmadan.",
+    naoSugerir: "Bu aygıtı bir daha önerme",
+    trocar: "Buna geç",
+  },
   conectando: "Aramaya bağlanılıyor…",
   naoEntrou: "Aramaya katılınamadı",
   sair: "Aramadan çık",

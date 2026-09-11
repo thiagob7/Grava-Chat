@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
-import { extensaoDe } from "~/features/conversa/lib/anexo-de-texto";
+import { extension } from "~/features/conversa/lib/anexo-de-texto";
 import { useLightbox } from "~/stores/lightbox";
 import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
@@ -22,7 +22,7 @@ import { flx } from "~/lib/compat-de-tema";
 
 const TINTA_SUAVE = "text-[color-mix(in_srgb,var(--color-brand)_55%,white)]";
 
-const ARTE_DO_ARQUIVO = cn(
+const FILE_ART = cn(
   TINTA_SUAVE,
   "fill-[color-mix(in_srgb,var(--color-brand)_18%,transparent)]",
 );
@@ -32,22 +32,22 @@ interface AttachmentTrayProps {
   onRemove: (id: string) => void;
   onPatch: (
     id: string,
-    dados: { filename?: string; description?: string | null; spoiler?: boolean },
+    data: { filename?: string; description?: string | null; spoiler?: boolean },
   ) => void;
 }
 
 export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove, onPatch }) => {
   const { t } = useTranslation();
-  const [editando, setEditando] = useState<PendingAttachment | null>(null);
-  const abrirLightbox = useLightbox((s) => s.abrir);
+  const [editing, setEditing] = useState<PendingAttachment | null>(null);
+  const openLightbox = useLightbox((s) => s.open);
 
   if (!items.length) return null;
 
   return (
-    <div data-gc="conversa.attachment-tray.div" {...flx("anexoSubindo", "flex flex-wrap gap-2 border-b border-line px-4 py-3")}>
+    <div data-gc="conversa.attachment-tray.div" {...flx("attachmentUploading", "flex flex-wrap gap-2 border-b border-line px-4 py-3")}>
       {items.map((item) => {
-        const subindo = !item.attachment && !item.error;
-        const economizou =
+        const uploading = !item.attachment && !item.error;
+        const saved =
           item.uploadedSize !== null && item.uploadedSize < item.originalSize
             ? `${formatBytes(item.originalSize)} → ${formatBytes(item.uploadedSize)}`
             : formatBytes(item.originalSize);
@@ -63,7 +63,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
             <div data-gc="conversa.attachment-tray.div--3" className="absolute right-1.5 top-1.5 z-10 flex items-center gap-0.5 rounded-lg bg-surface-3 p-0.5 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100">
               {item.previewUrl && (
                 <button data-gc="conversa.attachment-tray.button"
-                  onClick={() => abrirLightbox(item.previewUrl!, item.filename)}
+                  onClick={() => openLightbox(item.previewUrl!, item.filename)}
                   aria-label={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
                   title={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
                   className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
@@ -74,7 +74,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
 
               {item.attachment && (
                 <button data-gc="conversa.attachment-tray.button--2"
-                  onClick={() => setEditando(item)}
+                  onClick={() => setEditing(item)}
                   aria-label={t("conversa.anexos.modificar", { arquivo: item.filename })}
                   title={t("conversa.anexos.modificar", { arquivo: item.filename })}
                   className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
@@ -104,13 +104,13 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                 <img data-gc="conversa.attachment-tray.img"
                   src={item.previewUrl}
                   alt=""
-                  className={cn("size-full object-cover transition", subindo && "opacity-40")}
+                  className={cn("size-full object-cover transition", uploading && "opacity-40")}
                 />
               ) : (
-                <FileText data-gc="conversa.attachment-tray.file-text" size={56} strokeWidth={1.5} className={ARTE_DO_ARQUIVO} />
+                <FileText data-gc="conversa.attachment-tray.file-text" size={56} strokeWidth={1.5} className={FILE_ART} />
               )}
 
-              {subindo && <Loader2 data-gc="conversa.attachment-tray.loader2" size={20} className="absolute animate-spin text-ink" />}
+              {uploading && <Loader2 data-gc="conversa.attachment-tray.loader2" size={20} className="absolute animate-spin text-ink" />}
             </div>
 
             <div data-gc="conversa.attachment-tray.div--5" className="flex items-end gap-2">
@@ -129,22 +129,22 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
                     <span data-gc="conversa.attachment-tray.span--2" className="flex items-center gap-1">
                       <AlertCircle data-gc="conversa.attachment-tray.alert-circle" size={11} /> {item.error}
                     </span>
-                  ) : subindo ? (
+                  ) : uploading ? (
                     t("conversa.anexos.enviando")
                   ) : (
-                    economizou
+                    saved
                   )}
                 </p>
               </div>
 
-              {!item.previewUrl && extensaoDe(item.filename) && (
+              {!item.previewUrl && extension(item.filename) && (
                 <span data-gc="conversa.attachment-tray.span--3"
                   className={cn(
                     "shrink-0 text-11 font-bold uppercase tracking-wide",
                     TINTA_SUAVE,
                   )}
                 >
-                  {extensaoDe(item.filename)}
+                  {extension(item.filename)}
                 </span>
               )}
             </div>
@@ -152,13 +152,13 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
         );
       })}
 
-      {editando && (
-        <ModificarAnexo data-gc="conversa.attachment-tray.modificar-anexo"
-          item={editando}
-          onClose={() => setEditando(null)}
-          onSalvar={(dados) => {
-            onPatch(editando.id, dados);
-            setEditando(null);
+      {editing && (
+        <ModifyAttachment data-gc="conversa.attachment-tray.modify-attachment"
+          item={editing}
+          onClose={() => setEditing(null)}
+          onSave={(data) => {
+            onPatch(editing.id, data);
+            setEditing(null);
           }}
         />
       )}
@@ -166,16 +166,16 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
   );
 };
 
-interface ModificarAnexoProps {
+interface ModifyAttachmentProps {
   item: PendingAttachment;
   onClose: () => void;
-  onSalvar: (dados: { filename: string; description: string | null; spoiler: boolean }) => void;
+  onSave: (data: { filename: string; description: string | null; spoiler: boolean }) => void;
 }
 
-const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar }) => {
+const ModifyAttachment: React.FC<ModifyAttachmentProps> = ({ item, onClose, onSave }) => {
   const { t } = useTranslation();
   const [filename, setFilename] = useState(item.filename);
-  const [descricao, setDescricao] = useState(item.attachment?.description ?? "");
+  const [description, setDescription] = useState(item.attachment?.description ?? "");
   const [spoiler, setSpoiler] = useState(Boolean(item.attachment?.spoiler));
 
   return (
@@ -209,16 +209,16 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
             <div data-gc="conversa.attachment-tray.div--9" className="flex items-baseline justify-between gap-3">
               <Label data-gc="conversa.attachment-tray.label--2" htmlFor="anexo-descricao">{t("conversa.anexos.descricao")}</Label>
               <span data-gc="conversa.attachment-tray.span--4" className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">
-                {descricao.length}/1024
+                {description.length}/1024
               </span>
             </div>
             <Textarea data-gc="conversa.attachment-tray.textarea"
               id="anexo-descricao"
-              value={descricao}
+              value={description}
               maxLength={1024}
               rows={3}
               placeholder={t("conversa.anexos.descricaoDica")}
-              onChange={(e) => setDescricao(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -234,9 +234,9 @@ const ModificarAnexo: React.FC<ModificarAnexoProps> = ({ item, onClose, onSalvar
           </Button>
           <Button data-gc="conversa.attachment-tray.button--4"
             onClick={() =>
-              onSalvar({
+              onSave({
                 filename: filename.trim() || item.filename,
-                description: descricao.trim() || null,
+                description: description.trim() || null,
                 spoiler,
               })
             }

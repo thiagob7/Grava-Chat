@@ -1,4 +1,4 @@
-import { corDoTema, tinta } from "~/features/tema/lib/fundos/comum";
+import { themeColor, tinta } from "~/features/tema/lib/fundos/comum";
 import type { Motor } from "~/features/tema/lib/fundos/tipos";
 
 /*
@@ -8,45 +8,45 @@ import type { Motor } from "~/features/tema/lib/fundos/tipos";
   que impede o desenho de voltar ao mesmo lugar e virar padrão. A opacidade
   cai nas pontas, então a faixa entra e sai da tela sem borda reta.
 */
-const FAIXAS = 7;
+const TRACKS = 7;
 
-export function ondas(): Motor {
-  let relogio = 0;
-  const cor = corDoTema("--color-brand", [110, 150, 255]);
-  const segunda = corDoTema("--color-link", [90, 220, 220]);
+export function waves(): Motor {
+  let clock = 0;
+  const color = themeColor("--color-brand", [110, 150, 255]);
+  const second = themeColor("--color-link", [90, 220, 220]);
 
   return {
-    quadro: ({ contexto: ctx, largura, altura }, passo) => {
-      ctx.clearRect(0, 0, largura, altura);
-      relogio += passo;
+    frame: ({ context: ctx, width, height }, step) => {
+      ctx.clearRect(0, 0, width, height);
+      clock += step;
 
       ctx.globalCompositeOperation = "lighter";
       ctx.lineCap = "round";
 
-      for (let i = 0; i < FAIXAS; i++) {
-        const t = i / (FAIXAS - 1);
-        const base = altura * (0.18 + t * 0.66);
-        const amplitude = altura * (0.05 + 0.05 * (1 - t));
-        const deslize = relogio * (0.16 + t * 0.13);
-        const escolhida = i % 2 ? segunda : cor;
+      for (let i = 0; i < TRACKS; i++) {
+        const t = i / (TRACKS - 1);
+        const base = height * (0.18 + t * 0.66);
+        const amplitude = height * (0.05 + 0.05 * (1 - t));
+        const swipe = clock * (0.16 + t * 0.13);
+        const picked = i % 2 ? second : color;
 
-        const pincel = ctx.createLinearGradient(0, 0, largura, 0);
-        pincel.addColorStop(0, tinta(escolhida, 0));
-        pincel.addColorStop(0.28, tinta(escolhida, 0.16 - t * 0.06));
-        pincel.addColorStop(0.72, tinta(escolhida, 0.16 - t * 0.06));
-        pincel.addColorStop(1, tinta(escolhida, 0));
+        const brush = ctx.createLinearGradient(0, 0, width, 0);
+        brush.addColorStop(0, tinta(picked, 0));
+        brush.addColorStop(0.28, tinta(picked, 0.16 - t * 0.06));
+        brush.addColorStop(0.72, tinta(picked, 0.16 - t * 0.06));
+        brush.addColorStop(1, tinta(picked, 0));
 
-        ctx.strokeStyle = pincel;
+        ctx.strokeStyle = brush;
         ctx.lineWidth = 26 + t * 40;
         ctx.beginPath();
 
-        for (let x = -20; x <= largura + 20; x += 12) {
-          const u = x / largura;
+        for (let x = -20; x <= width + 20; x += 12) {
+          const u = x / width;
           const y =
             base +
-            Math.sin(u * 3.1 + deslize) * amplitude +
-            Math.sin(u * 7.3 - deslize * 1.4) * amplitude * 0.38 +
-            Math.sin(u * 1.7 + deslize * 0.6) * amplitude * 0.5;
+            Math.sin(u * 3.1 + swipe) * amplitude +
+            Math.sin(u * 7.3 - swipe * 1.4) * amplitude * 0.38 +
+            Math.sin(u * 1.7 + swipe * 0.6) * amplitude * 0.5;
 
           if (x === -20) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);

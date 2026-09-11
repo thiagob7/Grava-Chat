@@ -28,16 +28,16 @@
   --color-surface-3: var(--guild-list-foreground, var(--background-tertiary, var(--panel-control-bg, var(--bg-table-header, var(--bg-tertiary, #232028)))));
   --color-surface-4: var(--form-surface-background, var(--background-floating, #2a2730));
   --color-trilho: var(--scrollbar-thumb-bg-hover, var(--scrollbar-thumb-bg, #bcbcbf));
-  --color-line: var(--border-color, var(--background-header-secondary, var(--panel-control-border, var(--settings-border-color, rgb(201 197 211 / 0.15)))));
+  --color-line: var(--border-color, var(--panel-control-border, var(--settings-border-color, var(--background-modifier-accent, rgb(201 197 211 / 0.15)))));
   --color-campo: var(--background-textarea, var(--deprecated-quickswitcher-input-background, var(--channeltextarea-background, #242229)));
   --color-campo-foco: var(--background-modifier-accent-focus, var(--border-color-focus, #2f2c36));
   --color-composer: var(--composer-surface-color, var(--background-secondary-lighter, #1e1d23));
-  --color-cabecalho: var(--background-channel-header, #1e1d23);
+  --color-cabecalho: var(--background-channel-header, var(--background-secondary-lighter, var(--settings-surface-background, #1e1d23)));
   --color-painel: var(--background-secondary-alt, var(--deprecated-panel-background, #232028));
   --color-selecionado: var(--background-modifier-selected, var(--surface-interactive-selected-bg, var(--bg-active, var(--control-button-active-bg, var(--background-modifier-active, rgb(255 255 255 / 0.1))))));
   --color-ink: var(--text-chat, var(--text-primary, var(--button-secondary-text, var(--interactive-active, var(--control-button-active-text, var(--control-button-hover-text, var(--surface-interactive-selected-color, var(--voice-text-strong, var(--interactive-hover, var(--header-primary, #f4f4f6))))))))));
-  --color-ink-muted: var(--text-chat-muted, var(--text-primary-muted, var(--text-secondary, var(--button-ghost-text, var(--control-button-normal-text, var(--interactive-normal, var(--channels-default, var(--text-normal, var(--header-secondary, #cecbd4)))))))));
-  --color-ink-faint: var(--text-tertiary-muted, var(--text-tertiary, var(--interactive-muted, var(--text-muted, #b1acbb))));
+  --color-ink-muted: var(--text-chat-muted, var(--text-primary-muted, var(--text-secondary, var(--button-ghost-text, var(--control-button-normal-text, var(--interactive-normal, var(--channels-default, var(--text-normal, var(--header-secondary, #c4c4d2)))))))));
+  --color-ink-faint: var(--text-tertiary-muted, var(--text-tertiary, var(--interactive-muted, var(--text-muted, #8b8b9d))));
   --color-brand: var(--accent-primary, var(--brand-primary, var(--button-primary-fill, var(--brand-500, var(--brand-experiment, var(--background-accent, #413cdd))))));
   --color-brand-hover: var(--brand-primary-light, var(--brand-secondary, var(--button-primary-active-fill, var(--brand-560, #3732c8))));
   --color-online: var(--status-online, var(--accent-success, var(--alert-tip-color, var(--info-positive-foreground, var(--status-positive, #1daf6b)))));
@@ -148,8 +148,8 @@
     --background-secondary-alt: #0f0e12;
     --background-modifier-selected: rgb(255 255 255 / 0.08);
     --text-chat: #f4f4f6;
-    --text-chat-muted: #cecbd4;
-    --text-tertiary-muted: #b1acbb;
+    --text-chat-muted: #c4c4d2;
+    --text-tertiary-muted: #8b8b9d;
     --accent-primary: #413cdd;
     --brand-primary-light: #3732c8;
     --status-online: #1daf6b;
@@ -287,51 +287,55 @@
 
 
 
-@media (prefers-color-scheme: dark) {
-  :root[data-tema="sistema"] {
-    --color-sobre-marca: #ffffff;
-    --color-veu: rgb(0 0 0 / 0.6);
-    --color-line-sutil: rgb(255 255 255 / 0.08);
-    --color-danger-fundo: rgb(229 55 52 / 0.12);
-    --color-foco-anel: rgb(65 60 221 / 0.6);
-    --color-palco: #0a0a0c;
-    --color-sobre-midia: rgb(0 0 0 / 0.6);
-    --color-sombra: rgb(0 0 0 / 0.32);
-    --color-brilho: rgb(255 255 255 / 0.35);
-    --color-palco-ink: #f4f4f6;
-    color-scheme: dark;
-    --color-surface-0: #1a181e;
-    --color-surface-1: #1a181e;
-    --color-surface-2: #1e1d23;
-    --color-surface-3: #232028;
-    --color-surface-4: #2a2730;
-    --color-trilho: #bcbcbf;
-    --color-line: rgb(201 197 211 / 0.15);
-    --color-campo: #242229;
-    --color-campo-foco: #2f2c36;
-    --color-composer: #1e1d23;
-    --color-cabecalho: #1e1d23;
-    --color-painel: #232028;
-    --color-selecionado: rgb(255 255 255 / 0.1);
-    --color-ink: #f4f4f6;
-    --color-ink-muted: #cecbd4;
-    --color-ink-faint: #b1acbb;
-    --color-brand: #413cdd;
-    --color-brand-hover: #3732c8;
-    --color-online: #1daf6b;
-    --color-idle: #f6bb09;
-    --color-dnd: #ef4343;
-    --color-danger: #e53734;
-    --color-link: #6ccff9;
-    --color-mencao: #6ccff9;
-    --color-everyone: #9d8cf2;
-    --color-here: #f7d56e;
-    --color-codigo: #242129;
-    --color-codigo-bloco: #211e26;
-    --color-aviso: #f7c222;
-    --color-divisor: rgb(255 255 255 / 0.05);
-    --color-hover: rgb(255 255 255 / 0.05);
-    --color-pilula: #f4f4f6;
+@layer variantes-do-app {
+  @media (prefers-color-scheme: dark) {
+    :root[data-tema="sistema"] {
+
+      --brand-primary-fill: #ffffff;
+      --color-veu: rgb(0 0 0 / 0.6);
+      --color-line-sutil: rgb(255 255 255 / 0.08);
+      --control-button-danger-hover-bg: hsl(1, calc(77% * var(--saturation-factor)), 20%);
+      --focus-primary: #00b0f4;
+      --color-palco: #0a0a0c;
+      --color-sobre-midia: rgb(0 0 0 / 0.6);
+      --color-sombra: rgb(0 0 0 / 0.32);
+      --color-brilho: rgb(255 255 255 / 0.35);
+      --color-palco-ink: #f4f4f6;
+      --background-primary: hsl(258, calc(10% * var(--saturation-factor)), 5%);
+      --background-secondary: hsl(258, calc(10% * var(--saturation-factor)), 10.59%);
+      --background-secondary-lighter: hsl(258, calc(10% * var(--saturation-factor)), 12.44%);
+      --guild-list-foreground: hsl(258, calc(10% * var(--saturation-factor)), 16.7%);
+      --form-surface-background: var(--background-tertiary);
+      --scrollbar-thumb-bg-hover: color-mix(in srgb, var(--background-textarea) 25%, var(--text-secondary) 75%);
+      --scrollbar-thumb-bg: color-mix(in srgb, var(--background-textarea) 35%, var(--text-tertiary) 65%);
+      --border-color: hsla(258, calc(10% * var(--saturation-factor)), 50%, 0.2);
+      --background-textarea: hsl(258, calc(10% * var(--saturation-factor)), 14.69%);
+      --background-modifier-accent-focus: hsla(258, calc(13% * var(--saturation-factor)), 80%, 0.22);
+      --composer-surface-color: var(--background-secondary-lighter);
+      --background-channel-header: var(--background-secondary-lighter);
+      --background-secondary-alt: hsl(258, calc(10% * var(--saturation-factor)), 14.15%);
+      --background-modifier-selected: hsla(258, calc(10% * var(--saturation-factor)), 100%, 0.1);
+      --text-chat: hsl(258, calc(10% * var(--saturation-factor)), 93.67%);
+      --text-chat-muted: hsl(258, calc(10% * var(--saturation-factor)), 81.42%);
+      --text-tertiary-muted: hsl(258, calc(10% * var(--saturation-factor)), 62.88%);
+      --accent-primary: var(--brand-primary);
+      --brand-primary-light: hsl(242, calc(100% * var(--saturation-factor)), 84%);
+      --status-online: hsl(152, calc(72% * var(--saturation-factor)), 40%);
+      --status-idle: hsl(45, calc(93% * var(--saturation-factor)), 50%);
+      --status-dnd: hsl(0, calc(84% * var(--saturation-factor)), 60%);
+      --status-danger: hsl(1, calc(77% * var(--saturation-factor)), 55%);
+      --text-link: hsl(198, calc(92% * var(--saturation-factor)), 70%);
+      --markup-mention-text: var(--text-link);
+      --alert-important-color: hsl(278, calc(85% * var(--saturation-factor)), 65%);
+      --color-here: #f7d56e;
+      --code-inline-bg: color-mix(in srgb, var(--background-secondary-alt) 88%, var(--background-tertiary) 12%);
+      --code-block-bg: color-mix(in srgb, var(--background-secondary-alt) 92%, var(--background-primary) 8%);
+      --accent-warning: var(--status-idle);
+      --user-area-divider-color: color-mix(in srgb, var(--background-modifier-hover) 70%, transparent);
+      --background-modifier-hover: hsla(258, calc(10% * var(--saturation-factor)), 100%, 0.05);
+      --color-pilula: #f4f4f6;
+      color-scheme: dark;
+    }
   }
 }
 
@@ -400,79 +404,12 @@
   }
 
   /*
-    O cursor de cada papel sai de uma variável. Sem cursor importado a variável
-    não existe e vale a reserva, que é o cursor do sistema de sempre — então
-    isto não muda nada para quem nunca abrir a tela de cursores.
-
-    As variáveis são escritas em `:root` pelo store; aqui só se consome.
-  */
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]),
-  summary,
-  label:has(> input[type="checkbox"]),
-  select:not(:disabled) {
-    cursor: var(--cursor-clicavel, pointer);
-  }
-
-  button:disabled,
-  [role="button"][aria-disabled="true"],
-  select:disabled,
-  [data-desabilitado="sim"] {
-    cursor: var(--cursor-bloqueado, not-allowed);
-  }
-
-  input:not([type="checkbox"]):not([type="radio"]):not(:disabled),
-  textarea:not(:disabled),
-  [contenteditable="true"] {
-    cursor: var(--cursor-texto, text);
-  }
-
-  /*
     O padrão fica no `body` e não no `*`: posto em tudo, ele venceria os
     cursores de papel por especificidade e chegada, e a tela inteira ficaria
     com um cursor só.
   */
   body {
     cursor: var(--cursor-padrao, auto);
-  }
-
-  /*
-    As duas classes de arraste do Tailwind viram papéis também. É o único lugar
-    onde reescrevo classe utilitária, e vale a pena: sem isto o cursor
-    importado sumiria justamente no gesto mais visível do app.
-  */
-  /*
-    As classes de cursor do Tailwind passam a obedecer o papel escolhido.
-
-    Sem isto, tudo que escreve `cursor-pointer` na mão — menu suspenso, menu de
-    contexto, item de lista — furava o cursor importado e voltava ao do
-    sistema. Era o caso da maioria dos cliques do app, e o cursor parecia
-    "não pegar em uns cantos".
-  */
-  .cursor-pointer {
-    cursor: var(--cursor-clicavel, pointer);
-  }
-
-  .cursor-default {
-    cursor: var(--cursor-padrao, default);
-  }
-
-  .cursor-text {
-    cursor: var(--cursor-texto, text);
-  }
-
-  .cursor-not-allowed,
-  .disabled\:cursor-not-allowed:disabled {
-    cursor: var(--cursor-bloqueado, not-allowed);
-  }
-
-  .cursor-grab {
-    cursor: var(--cursor-arrastar, grab);
-  }
-
-  .cursor-grabbing,
-  .active\:cursor-grabbing:active {
-    cursor: var(--cursor-arrastando, grabbing);
   }
 
   ::-webkit-scrollbar {
@@ -558,12 +495,32 @@ body {
   Os dois têm que usar a MESMA cor: cores diferentes deixam o arco do canto com
   uma emenda visível no meio da curva.
 */
+/*
+  A área de conversa é o lugar onde tema põe papel de parede. Para isso valer,
+  duas coisas precisam estar de pé aqui e não no CSS de quem escreve o tema:
+
+  - a área abre um contexto próprio de empilhamento, para a camada de escurecer
+    (`::before`) não escapar para o resto do app;
+  - a lista que rola fica acima dessa camada, senão a camada cobriria as
+    mensagens e o tema teria que levantar cada mensagem na mão.
+
+  Assim um tema faz só o que interessa: a imagem na área e o véu no `::before`.
+*/
+.area-de-conversa {
+  isolation: isolate;
+}
+
+.area-de-conversa .lista-de-mensagens {
+  position: relative;
+  z-index: 1;
+}
+
 .topo-do-miolo {
-  border-top: 1px solid var(--color-line);
+  border-top: 1px solid var(--color-divisor);
 }
 
 .canto-do-miolo {
-  border-left: 1px solid var(--color-line);
+  border-left: 1px solid var(--color-divisor);
 
   border-top-left-radius: var(--radius-xl, 0.75rem);
 }
@@ -851,4 +808,75 @@ body[data-scroll-locked] .regiao-de-arrasto {
   50% {
     transform: translateY(-5px);
   }
+}
+
+/*
+  Estas ficam fora de camada de propósito.
+
+  As classes utilitárias do Tailwind moram na camada `utilities`, que vem
+  depois de `base` e vence qualquer regra escrita lá. Era por isso que o cursor
+  importado não pegava justamente onde o app escreve `cursor-pointer` na mão:
+  item de menu suspenso, item de select, item de menu de contexto. Regra sem
+  camada ganha de qualquer regra em camada, então nestes cantos o papel
+  escolhido volta a valer.
+*/
+.cursor-pointer {
+  cursor: var(--cursor-clicavel, pointer);
+}
+
+.cursor-default {
+  cursor: var(--cursor-padrao, default);
+}
+
+.cursor-text {
+  cursor: var(--cursor-texto, text);
+}
+
+.cursor-grab {
+  cursor: var(--cursor-arrastar, grab);
+}
+
+.cursor-grabbing,
+.active\:cursor-grabbing:active {
+  cursor: var(--cursor-arrastando, grabbing);
+}
+
+.cursor-not-allowed,
+.disabled\:cursor-not-allowed:disabled,
+[data-disabled] {
+  cursor: var(--cursor-bloqueado, not-allowed);
+}
+
+/*
+  Estes seletores moravam em `@layer base`, e camada perde para CSS sem camada.
+  O tema importado escreve sem camada, então nas peças que carregam classe de
+  tema — o rodapé do usuário, por exemplo — o cursor do tema vencia o cursor
+  que a pessoa escolheu. Fora de camada, quem manda é o escolhido.
+*/
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="menuitem"],
+[role="menuitemcheckbox"],
+[role="menuitemradio"],
+[role="option"],
+[role="tab"],
+[role="switch"],
+a[href],
+summary,
+label:has(> input[type="checkbox"]),
+select:not(:disabled) {
+  cursor: var(--cursor-clicavel, pointer);
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+select:disabled,
+[data-desabilitado="sim"] {
+  cursor: var(--cursor-bloqueado, not-allowed);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not(:disabled),
+textarea:not(:disabled),
+[contenteditable="true"] {
+  cursor: var(--cursor-texto, text);
 }

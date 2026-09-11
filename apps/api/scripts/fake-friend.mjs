@@ -42,15 +42,15 @@ socket.on("connect", () => {
 
 socket.on("message:created", (m) => console.log(`  <- ${m.author.displayName}: ${m.content}`));
 
-for (const texto of [
+for (const text of [
   "opa, cheguei!",
   "esse Discord aqui é nosso mesmo? 😄",
   "testando o tempo real",
 ]) {
   await emit("typing:start", { channelId: channel.id });
   await wait(1200);
-  await emit("message:send", { channelId: channel.id, content: texto });
-  console.log(`  -> Leonardo: ${texto}`);
+  await emit("message:send", { channelId: channel.id, content: text });
+  console.log(`  -> Leonardo: ${text}`);
   await wait(1500);
 }
 

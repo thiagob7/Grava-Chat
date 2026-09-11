@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const APP = "https://gravae-chat.vercel.app";
 
-export const Cabecalho = () => (
+export const Header = () => (
   <header className="sticky top-0 z-50 border-b border-line/70 bg-surface-0/80 backdrop-blur">
     <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
       <Link href="/" className="flex shrink-0 items-center gap-2">

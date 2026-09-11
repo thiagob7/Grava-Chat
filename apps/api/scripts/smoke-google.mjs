@@ -17,30 +17,30 @@ const paramsDe = async (headers = {}) => {
 };
 
 console.log("\n== redirect direto (URI 1 do console) ==");
-const direto = await paramsDe();
-if (direto.url.origin !== "https://accounts.google.com") throw new Error("nao vai pro Google");
-const redirectDireto = direto.url.searchParams.get("redirect_uri");
-if (redirectDireto !== `${BASE}/api/auth/google/callback`) throw new Error(`redirect_uri errada: ${redirectDireto}`);
-ok(`redirect_uri = ${redirectDireto}`);
+const direct = await paramsDe();
+if (direct.url.origin !== "https://accounts.google.com") throw new Error("nao vai pro Google");
+const redirectDirect = direct.url.searchParams.get("redirect_uri");
+if (redirectDirect !== `${BASE}/api/auth/google/callback`) throw new Error(`redirect_uri errada: ${redirectDirect}`);
+ok(`redirect_uri = ${redirectDirect}`);
 
-const scope = direto.url.searchParams.get("scope");
+const scope = direct.url.searchParams.get("scope");
 if (!scope?.includes("email") || !scope.includes("openid")) throw new Error(`scope insuficiente: ${scope}`);
 ok(`scope = ${scope}`);
 
-if (!direto.url.searchParams.get("state")) throw new Error("sem state — vulneravel a CSRF");
-if (!direto.cookies.some((c) => c.includes("HttpOnly"))) throw new Error("state nao foi guardado em cookie httpOnly");
+if (!direct.url.searchParams.get("state")) throw new Error("sem state — vulneravel a CSRF");
+if (!direct.cookies.some((c) => c.includes("HttpOnly"))) throw new Error("state nao foi guardado em cookie httpOnly");
 ok("state presente e guardado em cookie httpOnly (protege contra CSRF)");
 
 console.log("\n== redirect atras do tunel (URI 2 do console) ==");
-const tunel = await paramsDe({ "x-forwarded-host": NGROK, "x-forwarded-proto": "https" });
-const redirectTunel = tunel.url.searchParams.get("redirect_uri");
-if (redirectTunel !== `https://${NGROK}/api/auth/google/callback`) throw new Error(`redirect_uri errada: ${redirectTunel}`);
-ok(`redirect_uri = ${redirectTunel}`);
+const tunnel = await paramsDe({ "x-forwarded-host": NGROK, "x-forwarded-proto": "https" });
+const redirectTunnel = tunnel.url.searchParams.get("redirect_uri");
+if (redirectTunnel !== `https://${NGROK}/api/auth/google/callback`) throw new Error(`redirect_uri errada: ${redirectTunnel}`);
+ok(`redirect_uri = ${redirectTunnel}`);
 
 console.log("\n== callback protegido ==");
-const semState = await fetch(`${BASE}/api/auth/google/callback?code=inventado`, { redirect: "manual" });
-const destino = semState.headers.get("location") ?? "";
-if (!destino.includes("erro=google")) throw new Error("callback sem state valido nao foi recusado");
+const withoutState = await fetch(`${BASE}/api/auth/google/callback?code=inventado`, { redirect: "manual" });
+const destination = withoutState.headers.get("location") ?? "";
+if (!destination.includes("erro=google")) throw new Error("callback sem state valido nao foi recusado");
 ok("callback com state invalido e recusado (volta pro login com erro)");
 
 console.log("\nGoogle ok.\n");

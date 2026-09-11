@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { VersaoPublicada } from "~/components/VersaoPublicada";
+import { VersionPublished } from "~/components/VersaoPublicada";
 
 const REPO = "https://github.com/thiagob7/Grava-Chat";
 
-export const Rodape = () => (
+export const Footer = () => (
   <footer className="border-t border-line bg-surface-1">
     <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 sm:grid-cols-[2fr_1fr_1fr]">
       <div>
@@ -15,7 +15,7 @@ export const Rodape = () => (
           o que você fala.
         </p>
         <p className="mt-4 text-xs text-ink-faint">
-          <VersaoPublicada prefixo="Versão do aplicativo:" />
+          <VersionPublished prefix="Versão do aplicativo:" />
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export const Rodape = () => (
         <ul className="mt-3 space-y-2 text-sm text-ink-muted">
           <li>
             <Link href="/ajuda" className="transition hover:text-ink">
-              Perguntas frequentes
+              Central de ajuda
             </Link>
           </li>
           <li>

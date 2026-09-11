@@ -2,15 +2,15 @@ import { api } from "~/@core/lib/api";
 
 export interface GifModel {
   id: string;
-  descricao: string;
+  description: string;
   url: string;
   preview: string;
   width: number;
   height: number;
 }
 
-export async function findGifConfig(): Promise<{ disponivel: boolean }> {
-  const response = await api.get<{ disponivel: boolean }>("/gifs/config");
+export async function findGifConfig(): Promise<{ available: boolean }> {
+  const response = await api.get<{ available: boolean }>("/gifs/config");
   return response.data;
 }
 
@@ -24,14 +24,14 @@ export async function searchGifs(q: string): Promise<GifModel[]> {
   return response.data;
 }
 
-export interface CategoriaDeGifModel {
-  termo: string;
-  nome: string;
+export interface GifModelCategory {
+  term: string;
+  name: string;
   preview: string;
 }
 
-export async function findGifCategories(): Promise<CategoriaDeGifModel[]> {
-  const response = await api.get<CategoriaDeGifModel[]>("/gifs/categorias");
+export async function findGifCategories(): Promise<GifModelCategory[]> {
+  const response = await api.get<GifModelCategory[]>("/gifs/categorias");
   return response.data;
 }
 

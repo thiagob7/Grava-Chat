@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Ručička, která mává",
+    botao: "Zamávat na {{nome}}",
+  },
+  oficial: {
+    titulo: "Tenhle kanál je jen pro oficiální oznámení.",
+    detalhe: "Nikdy nechceme vaše heslo ani token účtu.",
+    saibaMais: "Zjistit víc",
+  },
+  topico: {
+    abrir: "Zobrazit popis kanálu",
+  },
+  previaDoLink: {
+    carregando: "Dívám se, co je na odkazu…",
+    destino: "Vede na {{destino}}",
+  },
+  reacao: {
+    carregando: "Zjišťuji, kdo reagoval s {{emoji}}…",
+    uma: "{{nome}} reagoval s {{emoji}}",
+    duas: "{{primeiro}} a {{segundo}} reagovali s {{emoji}}",
+    varias: "{{nomes}} a dalších {{quantos}} reagovalo s {{emoji}}",
+    dicaSuper: "Podržte pro super reakci",
+  },
+  recado: {
+    gravar: "Nahrát vzkaz",
+    descartar: "Zahodit vzkaz",
+    mandar: "Poslat vzkaz",
+    semSuporte: "Tenhle prohlížeč zvuk nenahrává.",
+    semMicrofone: "Bez přístupu k mikrofonu.",
+  },
   lista: {
     carregando: "Načítání zpráv…",
     carregandoMais: "Načítání…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Zobrazit obrázek",
   },
   enquete: {
+    criar: "Vytvořit anketu",
+    pergunta: "Otázka",
+    exemplo: "Co si dneska zahrajeme?",
+    respostas: "Odpovědi",
+    adicionarOpcao: "Přidat možnost",
+    removerOpcao: "Odebrat možnost",
+    varias: "Povolit více odpovědí",
+    variasDetalhe: "Bez toho hlas pro jednu možnost zruší hlas pro předchozí.",
+    duracao: "Doba trvání",
+    umaHora: "1 hodina",
+    quatroHoras: "4 hodiny",
+    oitoHoras: "8 hodin",
+    umDia: "1 den",
+    tresDias: "3 dny",
+    umaSemana: "1 týden",
+    ateEncerrar: "Dokud ji sám neukončím",
     titulo: "Anketa",
     encerrada: "Anketa uzavřena",
     variasRespostas: "Anketa — více odpovědí",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Hledání se dívá jen do kanálů, které můžeš číst.",
   },
   entrada: {
+    semNome: "konverzace",
+    anexo: "(příloha)",
     titulo: "Doručená pošta",
     naoLidas: "Nepřečtené",
     salvas: "Uložené",

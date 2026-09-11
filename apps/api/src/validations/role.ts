@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { ESTILOS_DE_CARGO, objectId, PERMISSIONS } from "@gravae/shared";
+import { ROLE_STYLES, objectId, PERMISSIONS } from "@gravae/shared";
 import { r2Url } from "./auth.js";
 
 const permissionList = z.array(z.enum(PERMISSIONS));
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida");
 
-const enfeitesDoCargo = {
+const roleCharms = {
   color: hexColor.nullable().optional(),
   colorSecondary: hexColor.nullable().optional(),
-  estilo: z.enum(ESTILOS_DE_CARGO).optional(),
+  style: z.enum(ROLE_STYLES).optional(),
   iconEmoji: z.string().max(64).nullable().optional(),
   iconUrl: r2Url.nullable().optional(),
 };
@@ -18,7 +18,7 @@ export const createRoleInput = z.object({
   permissions: permissionList.optional(),
   hoist: z.boolean().optional(),
   mentionable: z.boolean().optional(),
-  ...enfeitesDoCargo,
+  ...roleCharms,
 });
 export type CreateRoleInput = z.infer<typeof createRoleInput>;
 
@@ -27,7 +27,7 @@ export const updateRoleInput = z.object({
   permissions: permissionList.optional(),
   hoist: z.boolean().optional(),
   mentionable: z.boolean().optional(),
-  ...enfeitesDoCargo,
+  ...roleCharms,
 });
 export type UpdateRoleInput = z.infer<typeof updateRoleInput>;
 

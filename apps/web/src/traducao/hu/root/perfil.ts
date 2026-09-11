@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Ezt a profilt nem sikerült megnyitni.",
   carregando: "Betöltés…",
   editar: "Profil szerkesztése",
   mensagem: "Üzenet",

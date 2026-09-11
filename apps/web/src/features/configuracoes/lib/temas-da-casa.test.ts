@@ -2,73 +2,73 @@ import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
-import { lerCabecalhoDoTema } from "@gravae/shared";
+import { readThemeHeader } from "@gravae/shared";
 
-import { CLASSES_DE_TEMA } from "~/features/configuracoes/lib/ganchos-de-tema";
-import { MOTORES, NOME_DA_CAMADA, NOME_DA_VARIAVEL } from "~/features/tema/lib/fundos";
-import macanetas from "~/features/configuracoes/lib/macanetas.json";
-import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
+import { THEME_CLASSES } from "~/features/configuracoes/lib/ganchos-de-tema";
+import { ENGINES, LAYER_NAME, VARIABLE_NAME } from "~/features/tema/lib/fundos";
+import knobs from "~/features/configuracoes/lib/macanetas.json";
+import tokensLive from "~/features/configuracoes/lib/tokens-vivos.json";
 
-const PASTA = fileURLToPath(new URL("../../../../../api/temas/", import.meta.url));
-const AUTOR_DA_CASA = "Gravaê";
+const FOLDER = fileURLToPath(new URL("../../../../../api/temas/", import.meta.url));
+const HOUSE_AUTHOR = "Gravaê";
 
-const TEMAS_DA_CASA = readdirSync(PASTA)
+const HOUSE_THEMES = readdirSync(FOLDER)
   .filter((a) => a.endsWith(".css"))
   .sort()
-  .map((arquivo) => {
-    const css = readFileSync(PASTA + arquivo, "utf8");
-    const cabecalho = lerCabecalhoDoTema(css);
+  .map((file) => {
+    const css = readFileSync(FOLDER + file, "utf8");
+    const header = readThemeHeader(css);
 
     return {
-      chave: arquivo.replace(/\.css$/, ""),
-      nome: cabecalho.nome ?? "",
-      descricao: cabecalho.descricao ?? "",
-      autor: cabecalho.autor ?? "",
+      key: file.replace(/\.css$/, ""),
+      name: header.name ?? "",
+      description: header.description ?? "",
+      author: header.author ?? "",
       css,
     };
   });
 
-interface Regra {
-  seletor: string;
-  declaracoes: string[];
+interface Rule {
+  picker: string;
+  declarations: string[];
 }
 
-function regras(css: string): Regra[] {
-  const semCabecalho = css.replace(/\/\*[\s\S]*?\*\//g, "");
-  const achadas: Regra[] = [];
+function rules(css: string): Rule[] {
+  const withoutHeader = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const matches: Rule[] = [];
 
-  const andar = (trecho: string) => {
-    let inicio = 0;
-    let profundidade = 0;
-    let abertura = -1;
+  const walk = (snippet: string) => {
+    let start = 0;
+    let depth = 0;
+    let opening = -1;
 
-    for (let i = 0; i < trecho.length; i++) {
-      const letra = trecho[i];
+    for (let i = 0; i < snippet.length; i++) {
+      const letter = snippet[i];
 
-      if (letra === "{") {
-        if (profundidade === 0) abertura = i;
-        profundidade++;
+      if (letter === "{") {
+        if (depth === 0) opening = i;
+        depth++;
         continue;
       }
 
-      if (letra !== "}") continue;
+      if (letter !== "}") continue;
 
-      profundidade--;
-      if (profundidade > 0) continue;
+      depth--;
+      if (depth > 0) continue;
 
-      const prelúdio = trecho.slice(inicio, abertura).trim();
-      const corpo = trecho.slice(abertura + 1, i);
-      inicio = i + 1;
+      const prelude = snippet.slice(start, opening).trim();
+      const body = snippet.slice(opening + 1, i);
+      start = i + 1;
 
-      if (prelúdio.startsWith("@")) {
-        const nome = /^@([a-z-]+)/i.exec(prelúdio)?.[1]?.toLowerCase();
-        if (nome === "media" || nome === "supports" || nome === "layer") andar(corpo);
+      if (prelude.startsWith("@")) {
+        const name = /^@([a-z-]+)/i.exec(prelude)?.[1]?.toLowerCase();
+        if (name === "media" || name === "supports" || name === "layer") walk(body);
         continue;
       }
 
-      achadas.push({
-        seletor: prelúdio,
-        declaracoes: corpo
+      matches.push({
+        picker: prelude,
+        declarations: body
           .split(";")
           .map((d) => d.trim())
           .filter(Boolean)
@@ -78,8 +78,8 @@ function regras(css: string): Regra[] {
     }
   };
 
-  andar(semCabecalho);
-  return achadas;
+  walk(withoutHeader);
+  return matches;
 }
 
 /*
@@ -88,84 +88,84 @@ function regras(css: string): Regra[] {
   lê as duas em `features/tema/lib/fundos`, então contam como lidas mesmo
   não estando na lista de tokens de tema.
 */
-const LIDAS = new Set<string>([
-  ...Object.values(macanetas as Record<string, string[]>).flat(),
-  ...(tokensVivos as string[]),
-  NOME_DA_VARIAVEL,
-  NOME_DA_CAMADA,
+const READ = new Set<string>([
+  ...Object.values(knobs as Record<string, string[]>).flat(),
+  ...(tokensLive as string[]),
+  VARIABLE_NAME,
+  LAYER_NAME,
 ]);
 
-const PALETA = Object.values(macanetas as Record<string, string[]>).map((nomes) => nomes[0]!);
+const PALETTE = Object.values(knobs as Record<string, string[]>).map((names) => names[0]!);
 
-const RAIZES = new Set(["html", "body", "#app", ":root"]);
+const ROOTS = new Set(["html", "body", "#app", ":root"]);
 
-function peçasDeFora(seletor: string): string[] {
-  return seletor
+function outsidePieces(picker: string): string[] {
+  return picker
     .split(",")
-    .map((parte) => parte.trim())
-    .flatMap((parte) =>
-      parte
+    .map((part) => part.trim())
+    .flatMap((part) =>
+      part
         .replace(/::?[a-z-]+(\([^)]*\))?/gi, "")
         .split(/[\s>+~]+/)
-        .map((peça) => peça.trim())
+        .map((piece) => piece.trim())
         .filter(Boolean),
     )
-    .filter((peça) => !RAIZES.has(peça) && !CLASSES_DE_TEMA.includes(peça.replace(/^\./, "")));
+    .filter((piece) => !ROOTS.has(piece) && !THEME_CLASSES.includes(piece.replace(/^\./, "")));
 }
 
 describe("temas da casa", () => {
   it("todos têm nome, descrição e a autoria da casa", () => {
-    expect(TEMAS_DA_CASA.length).toBeGreaterThanOrEqual(4);
+    expect(HOUSE_THEMES.length).toBeGreaterThanOrEqual(4);
 
-    for (const tema of TEMAS_DA_CASA) {
-      expect(tema.nome, tema.chave).not.toBe("");
-      expect(tema.descricao, tema.chave).not.toBe("");
-      expect(tema.autor, tema.chave).toBe(AUTOR_DA_CASA);
+    for (const theme of HOUSE_THEMES) {
+      expect(theme.name, theme.key).not.toBe("");
+      expect(theme.description, theme.key).not.toBe("");
+      expect(theme.author, theme.key).toBe(HOUSE_AUTHOR);
     }
   });
 
   it("só pede motor de fundo que existe", () => {
-    for (const tema of TEMAS_DA_CASA) {
-      const pedido = new RegExp(`${NOME_DA_VARIAVEL}\\s*:\\s*["']?([a-z0-9-]+)`, "i")
-        .exec(tema.css)?.[1];
+    for (const theme of HOUSE_THEMES) {
+      const request = new RegExp(`${VARIABLE_NAME}\\s*:\\s*["']?([a-z0-9-]+)`, "i")
+        .exec(theme.css)?.[1];
 
-      if (pedido) expect(Object.keys(MOTORES), tema.chave).toContain(pedido);
+      if (request) expect(Object.keys(ENGINES), theme.key).toContain(request);
     }
   });
 
   it("declara a paleta inteira, e nada que o app não leia", () => {
-    for (const tema of TEMAS_DA_CASA) {
-      const naRaiz = regras(tema.css).filter((r) => r.seletor === ":root");
-      const declaradas = naRaiz.flatMap((r) => r.declaracoes);
-      const surdas = declaradas.filter((d) => d.startsWith("--") && !LIDAS.has(d));
+    for (const theme of HOUSE_THEMES) {
+      const inRoot = rules(theme.css).filter((r) => r.picker === ":root");
+      const declared = inRoot.flatMap((r) => r.declarations);
+      const deafened = declared.filter((d) => d.startsWith("--") && !READ.has(d));
 
-      expect(surdas, tema.chave).toEqual([]);
-      expect(new Set(declaradas).size, tema.chave).toBe(declaradas.length);
+      expect(deafened, theme.key).toEqual([]);
+      expect(new Set(declared).size, theme.key).toBe(declared.length);
 
-      const faltam = PALETA.filter((nome) => !declaradas.includes(nome));
-      expect(faltam, tema.chave).toEqual([]);
+      const missing = PALETTE.filter((name) => !declared.includes(name));
+      expect(missing, theme.key).toEqual([]);
     }
   });
 
   it("só mira raízes da página e ganchos que a gente publica", () => {
-    for (const tema of TEMAS_DA_CASA) {
-      const forasteiros = regras(tema.css).flatMap((r) => peçasDeFora(r.seletor));
+    for (const theme of HOUSE_THEMES) {
+      const outsiders = rules(theme.css).flatMap((r) => outsidePieces(r.picker));
 
-      expect([...new Set(forasteiros)], tema.chave).toEqual([]);
+      expect([...new Set(outsiders)], theme.key).toEqual([]);
     }
   });
 
   it("não usa !important", () => {
-    for (const tema of TEMAS_DA_CASA) {
-      expect(tema.css.includes("!important"), tema.chave).toBe(false);
+    for (const theme of HOUSE_THEMES) {
+      expect(theme.css.includes("!important"), theme.key).toBe(false);
     }
   });
 
   it("tema que se mexe respeita quem pediu menos movimento", () => {
-    for (const tema of TEMAS_DA_CASA) {
-      if (!/\banimation:/.test(tema.css)) continue;
+    for (const theme of HOUSE_THEMES) {
+      if (!/\banimation:/.test(theme.css)) continue;
 
-      expect(tema.css, tema.chave).toContain("prefers-reduced-motion");
+      expect(theme.css, theme.key).toContain("prefers-reduced-motion");
     }
   });
 });

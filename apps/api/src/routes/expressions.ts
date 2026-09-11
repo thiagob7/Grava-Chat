@@ -15,7 +15,7 @@ const emojiParams = guildParams.extend({ emojiId: objectId });
 const stickerParams = guildParams.extend({ stickerId: objectId });
 const soundParams = guildParams.extend({ soundId: objectId });
 
-const avisar = (guildId: string) =>
+const notify = (guildId: string) =>
   io().to(rooms.guild(guildId)).emit("expressions:changed", { guildId });
 
 export async function expressionRoutes(app: FastifyInstance) {
@@ -34,7 +34,7 @@ export async function expressionRoutes(app: FastifyInstance) {
       createEmojiInput.parse(req.body),
     );
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(201).send(emoji);
   });
 
@@ -43,7 +43,7 @@ export async function expressionRoutes(app: FastifyInstance) {
     const { name } = updateEmojiInput.parse(req.body);
     const emoji = await expressionService.renameEmoji(req.userId, guildId, emojiId, name);
 
-    avisar(guildId);
+    notify(guildId);
     return emoji;
   });
 
@@ -51,7 +51,7 @@ export async function expressionRoutes(app: FastifyInstance) {
     const { guildId, emojiId } = emojiParams.parse(req.params);
     await expressionService.removeEmoji(req.userId, guildId, emojiId);
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(204).send();
   });
 
@@ -63,7 +63,7 @@ export async function expressionRoutes(app: FastifyInstance) {
       createStickerInput.parse(req.body),
     );
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(201).send(sticker);
   });
 
@@ -71,7 +71,7 @@ export async function expressionRoutes(app: FastifyInstance) {
     const { guildId, stickerId } = stickerParams.parse(req.params);
     await expressionService.removeSticker(req.userId, guildId, stickerId);
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(204).send();
   });
 
@@ -83,7 +83,7 @@ export async function expressionRoutes(app: FastifyInstance) {
       createSoundInput.parse(req.body),
     );
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(201).send(sound);
   });
 
@@ -96,7 +96,7 @@ export async function expressionRoutes(app: FastifyInstance) {
       updateSoundInput.parse(req.body),
     );
 
-    avisar(guildId);
+    notify(guildId);
     return sound;
   });
 
@@ -104,7 +104,7 @@ export async function expressionRoutes(app: FastifyInstance) {
     const { guildId, soundId } = soundParams.parse(req.params);
     await expressionService.removeSound(req.userId, guildId, soundId);
 
-    avisar(guildId);
+    notify(guildId);
     return reply.code(204).send();
   });
 }

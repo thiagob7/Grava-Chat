@@ -18,7 +18,7 @@ export const DropdownMenuContent = ({
     <DropdownPrimitive.Content data-gc="ui.dropdown-menu.dropdown-primitivecontent"
       sideOffset={sideOffset}
       className={cn(
-        "menu regiao-sem-arrasto z-50 min-w-56 rounded-lg bg-surface-4 p-1.5 shadow-2xl outline-none",
+        "menu regiao-sem-arrasto z-50 min-w-56 rounded-lg border border-line bg-surface-4 p-1.5 shadow-2xl outline-none",
         flxCls("menu"),
         className,
       )}
@@ -39,7 +39,7 @@ export const DropdownMenuItem = ({ className, danger, ...props }: ItemProps) => 
       danger
         ? "text-danger data-[highlighted]:bg-danger data-[highlighted]:text-sobre-marca"
         : "text-ink-muted data-[highlighted]:bg-brand data-[highlighted]:text-sobre-marca",
-      props.disabled && flxCls("itemDoMenuDesligado"),
+      props.disabled && flxCls("menuOffItem"),
       className,
     )}
     {...props}
@@ -74,7 +74,7 @@ export const DropdownMenuRadioItem = ({
     <span data-gc="ui.dropdown-menu.span" className="min-w-0 flex-1 truncate">{children}</span>
 
     <span data-gc="ui.dropdown-menu.span--2" className={cn("flex size-4 shrink-0 items-center justify-center rounded-full border border-ink-faint", flxCls("itemDeRadioDoMenu"))}>
-      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator" className={flxCls("itemDeRadioDoMenuEscolhido")}>
+      <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator" className={flxCls("radioMenuPickedItem")}>
         <span data-gc="ui.dropdown-menu.span--3" className="block size-2 rounded-full bg-brand" />
       </DropdownPrimitive.ItemIndicator>
     </span>
@@ -96,7 +96,7 @@ export const DropdownMenuCheckboxItem = ({
   >
     <span data-gc="ui.dropdown-menu.span--4" className="min-w-0 flex-1 truncate">{children}</span>
 
-    <span data-gc="ui.dropdown-menu.span--5" className={cn("grid size-4 shrink-0 place-content-center rounded border border-ink-faint", flxCls("caixaDeMarcar"), props.checked && flxCls("caixaDeMarcarLigada"))}>
+    <span data-gc="ui.dropdown-menu.span--5" className={cn("grid size-4 shrink-0 place-content-center rounded border border-ink-faint", flxCls("markBox"), props.checked && flxCls("markOnBox"))}>
       <DropdownPrimitive.ItemIndicator data-gc="ui.dropdown-menu.dropdown-primitiveitem-indicator--2">
         <Check data-gc="ui.dropdown-menu.check" size={12} />
       </DropdownPrimitive.ItemIndicator>

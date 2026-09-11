@@ -1,7 +1,7 @@
 /*
   GERADO por scripts/base-de-tema.mjs — não edite à mão.
 
-  Os 89 nós do grafo de cores da referência que o tokens.css não declara.
+  Os 88 nós do grafo de cores da referência que o tokens.css não declara.
   O porquê da camada, e por que isto não sombreia a cadeia do @theme, está no
   cabeçalho do gerador.
 */
@@ -18,7 +18,6 @@
     --alert-note-color: hsl(198,calc(92%*var(--saturation-factor)),70%);
     --alert-tip-color: hsl(152,calc(72%*var(--saturation-factor)),45%);
     --alert-warning-color: hsl(45,calc(93%*var(--saturation-factor)),55%);
-    --background-channel-header: hsl(258,calc(10%*var(--saturation-factor)),15.72%);
     --background-header-primary-hover: hsl(258,calc(10%*var(--saturation-factor)),23.57%);
     --background-header-secondary: hsl(258,calc(10%*var(--saturation-factor)),19.25%);
     --background-modifier-accent: hsla(258,calc(13%*var(--saturation-factor)),80%,.15);

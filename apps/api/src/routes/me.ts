@@ -5,7 +5,7 @@ import { meService } from "~/services/me-service.js";
 import { presenceService } from "~/services/presence-service.js";
 import { io } from "~/realtime/io.js";
 import { rooms } from "@gravae/shared";
-import { toPerfilPublico, toPublicUser } from "~/lib/serialize.js";
+import { toProfilePublic, toPublicUser } from "~/lib/serialize.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
 import { messageService } from "~/services/message-service.js";
 import { voiceService } from "~/services/voice-service.js";
@@ -38,7 +38,7 @@ export async function meRoutes(app: FastifyInstance) {
     ]);
 
     const guilds = await memberRepository.guildIdsOf(req.userId);
-    const payload = { user: toPublicUser(user), perfil: toPerfilPublico(user) };
+    const payload = { user: toPublicUser(user), profile: toProfilePublic(user) };
 
     io()
       .to([rooms.user(req.userId), ...guilds.map((g) => rooms.guild(g.guildId))])
@@ -52,39 +52,39 @@ export async function meRoutes(app: FastifyInstance) {
   app.get("/me/voice-states", (req) => voiceService.statesForUser(req.userId));
 
   app.get("/me/sessoes", (req) =>
-    authService.listarSessoes(req.userId, req.cookies[REFRESH_COOKIE]),
+    authService.listSessions(req.userId, req.cookies[REFRESH_COOKIE]),
   );
 
   app.delete("/me/sessoes/:id", async (req) => {
     const { id } = req.params as { id: string };
 
-    await authService.revogarSessao(req.userId, id, req.cookies[REFRESH_COOKIE]);
+    await authService.revokeSession(req.userId, id, req.cookies[REFRESH_COOKIE]);
     return { ok: true };
   });
 
-  app.get("/me/aplicativos", (req) => oauthService.listarAutorizadas(req.userId));
+  app.get("/me/aplicativos", (req) => oauthService.listAuthorized(req.userId));
 
   app.delete("/me/aplicativos/:botId", async (req) => {
     const { botId } = z.object({ botId: objectId }).parse(req.params);
 
-    await oauthService.revogarAplicacao(req.userId, botId);
+    await oauthService.revokeApplication(req.userId, botId);
     return { ok: true };
   });
 
-  app.post("/me/exclusao", (req) => meService.pedirExclusao(req.userId));
+  app.post("/me/exclusao", (req) => meService.requestDeletion(req.userId));
   app.delete("/me/exclusao", async (req) => {
-    await meService.cancelarExclusao(req.userId);
+    await meService.cancelDeletion(req.userId);
     return { ok: true };
   });
 
   app.get("/me/exportar", async (req, reply) => {
-    const dados = await meService.exportar(req.userId);
-    const dia = new Date().toISOString().slice(0, 10);
+    const data = await meService.doExport(req.userId);
+    const day = new Date().toISOString().slice(0, 10);
 
     return reply
-      .header("content-disposition", `attachment; filename="gravae-${dia}.json"`)
+      .header("content-disposition", `attachment; filename="gravae-${day}.json"`)
       .type("application/json")
-      .send(dados);
+      .send(data);
   });
 
   app.get("/me/mentions", (req) => messageService.mentions(req.userId));

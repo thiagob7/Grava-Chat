@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Не вдалося відкрити цей профіль.",
   carregando: "Завантаження…",
   editar: "Змінити профіль",
   mensagem: "Повідомлення",

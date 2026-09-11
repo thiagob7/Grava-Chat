@@ -2,20 +2,20 @@ import { api } from "~/@core/lib/api";
 
 import type { PublicUserModel } from "~/@core/domain/models/user-model";
 
-export interface AplicativoAutorizadoModel {
+export interface AppAuthorizedModel {
   id: string;
-  usuario: PublicUserModel;
-  descricao: string | null;
-  escopos: string[];
-  autorizadoEm: string | null;
-  expiraEm: string | null;
+  user: PublicUserModel;
+  description: string | null;
+  scopes: string[];
+  authorizedAt: string | null;
+  expiresAt: string | null;
 }
 
-export async function findAplicativosAutorizados(): Promise<AplicativoAutorizadoModel[]> {
-  const response = await api.get<AplicativoAutorizadoModel[]>("/me/aplicativos");
+export async function findAppsAuthorized(): Promise<AppAuthorizedModel[]> {
+  const response = await api.get<AppAuthorizedModel[]>("/me/aplicativos");
   return response.data;
 }
 
-export async function revogarAplicativo(botId: string): Promise<void> {
+export async function revokeApp(botId: string): Promise<void> {
   await api.delete(`/me/aplicativos/${botId}`);
 }

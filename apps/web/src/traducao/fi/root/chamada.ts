@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Siirrä keskustelu alas",
+    paraOLado: "Siirrä keskustelu sivuun",
+  },
+  aparelhoNovo: {
+    microfone: "Täällä ilmestyi uusi mikrofoni",
+    saida: "Täällä ilmestyi uusi äänen ulostulo",
+    apareceu: "{{nome}} ilmestyi.",
+    falarPorEle: "Haluatko puhua sen kautta?",
+    ouvirPorEle: "Haluatko kuunnella sen kautta?",
+    trocaNaHora: "Vaihto astuu voimaan heti, ilman että poistut puhelusta.",
+    naoSugerir: "Älä ehdota tätä laitetta uudelleen",
+    trocar: "Vaihda siihen",
+  },
   conectando: "Yhdistetään puheluun…",
   naoEntrou: "Puheluun ei päästy",
   sair: "Poistu puhelusta",

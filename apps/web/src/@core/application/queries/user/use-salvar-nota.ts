@@ -1,19 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import { salvarNota } from "~/@core/application/requests/user/salvar-nota";
+import { saveNote } from "~/@core/application/requests/user/salvar-nota";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-export const useSalvarNota = (userId: string) => {
+export const useSaveNote = (userId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (texto: string) => salvarNota(userId, texto),
-    onSuccess: ({ nota }) => {
-      queryClient.setQueryData(queryKeys.user.profile(userId), (antigo?: ProfileModel) =>
-        antigo ? { ...antigo, nota } : antigo,
+    mutationFn: (text: string) => saveNote(userId, text),
+    onSuccess: ({ note }) => {
+      queryClient.setQueryData(queryKeys.user.profile(userId), (old?: ProfileModel) =>
+        old ? { ...old, note } : old,
       );
     },
     onError: (error) => {

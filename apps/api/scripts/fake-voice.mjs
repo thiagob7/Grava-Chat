@@ -26,9 +26,9 @@ const emit = (ev, p) => new Promise((res, rej) => s.emit(ev, p, (r) => (r.ok ? r
 await emit("voice:join", { channelId: voice.id });
 console.log(`${user.displayName} entrou em ${voice.name}`);
 
-const segundos = Number(process.argv[4] ?? 45);
-console.log(`ficando na call por ${segundos}s (Ctrl+C para sair antes)`);
-await new Promise((r) => setTimeout(r, segundos * 1000));
+const seconds = Number(process.argv[4] ?? 45);
+console.log(`ficando na call por ${seconds}s (Ctrl+C para sair antes)`);
+await new Promise((r) => setTimeout(r, seconds * 1000));
 await emit("voice:leave", {});
 console.log(`${user.displayName} saiu`);
 process.exit(0);

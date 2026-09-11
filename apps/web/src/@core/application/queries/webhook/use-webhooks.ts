@@ -24,7 +24,7 @@ export const useFindWebhooks = (guildId: string | undefined) =>
     enabled: Boolean(guildId),
   });
 
-function useInvalidar(guildId: string | undefined) {
+function useInvalidate(guildId: string | undefined) {
   const queryClient = useQueryClient();
 
   return () => {
@@ -33,12 +33,12 @@ function useInvalidar(guildId: string | undefined) {
 }
 
 export const useCreateWebhook = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: (data: CreateWebhookDTO) => createWebhook(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Webhook criado.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao criar o webhook.")),
@@ -46,12 +46,12 @@ export const useCreateWebhook = (guildId: string | undefined) => {
 };
 
 export const useUpdateWebhook = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: (data: UpdateWebhookDTO) => updateWebhook(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Webhook salvo.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao salvar o webhook.")),
@@ -59,12 +59,12 @@ export const useUpdateWebhook = (guildId: string | undefined) => {
 };
 
 export const useDeleteWebhook = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: (data: DeleteWebhookDTO) => deleteWebhook(data),
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Webhook apagado.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao apagar o webhook.")),

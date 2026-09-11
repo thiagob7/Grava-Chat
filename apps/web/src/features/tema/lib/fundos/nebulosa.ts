@@ -1,4 +1,4 @@
-import { corDoTema, entre, tinta } from "~/features/tema/lib/fundos/comum";
+import { themeColor, between, tinta } from "~/features/tema/lib/fundos/comum";
 import type { Motor } from "~/features/tema/lib/fundos/tipos";
 
 /*
@@ -12,31 +12,31 @@ import type { Motor } from "~/features/tema/lib/fundos/tipos";
   As cores saem do próprio tema, então o mesmo motor serve a uma nebulosa
   roxa e a uma verde sem virar efeito genérico.
 */
-interface Nuvem {
-  raio: number;
-  cor: number[];
+interface Cloud {
+  radius: number;
+  color: number[];
   cx: number;
   cy: number;
   rx: number;
   ry: number;
-  volta: number;
-  fase: number;
-  pulso: number;
-  forca: number;
+  back: number;
+  phase: number;
+  pulse: number;
+  force: number;
 }
 
-export function nebulosa(): Motor {
-  let nuvens: Nuvem[] = [];
-  let relogio = 0;
+export function nebula(): Motor {
+  let clouds: Cloud[] = [];
+  let clock = 0;
 
-  const paleta = [
-    corDoTema("--color-brand", [126, 63, 255]),
-    corDoTema("--color-link", [0, 174, 255]),
-    corDoTema("--color-everyone", [255, 60, 170]),
+  const palette = [
+    themeColor("--color-brand", [126, 63, 255]),
+    themeColor("--color-link", [0, 174, 255]),
+    themeColor("--color-everyone", [255, 60, 170]),
   ];
 
-  const semear = (largura: number, altura: number) => {
-    const medida = Math.max(largura, altura);
+  const seed = (width: number, height: number) => {
+    const measure = Math.max(width, height);
 
     /*
       Tamanhos bem diferentes, de propósito. Seis nuvens da mesma medida no
@@ -44,47 +44,47 @@ export function nebulosa(): Motor {
       na primeira tentativa. As grandes dão o clima, as pequenas dão o
       desenho — e são elas que fazem o olho achar profundidade.
     */
-    const medidas = [0.46, 0.38, 0.3, 0.22, 0.17, 0.13, 0.1, 0.08];
+    const measures = [0.46, 0.38, 0.3, 0.22, 0.17, 0.13, 0.1, 0.08];
 
-    nuvens = medidas.map((m, i) => ({
-      raio: medida * m * entre(0.85, 1.15),
-      cor: paleta[i % paleta.length]!,
-      cx: entre(0.05, 0.95),
-      cy: entre(0.08, 0.92),
-      rx: entre(0.05, 0.2),
-      ry: entre(0.04, 0.16),
-      volta: entre(20, 68) * (Math.random() < 0.5 ? -1 : 1),
-      fase: entre(0, Math.PI * 2),
-      pulso: entre(0.05, 0.15),
+    clouds = measures.map((m, i) => ({
+      radius: measure * m * between(0.85, 1.15),
+      color: palette[i % palette.length]!,
+      cx: between(0.05, 0.95),
+      cy: between(0.08, 0.92),
+      rx: between(0.05, 0.2),
+      ry: between(0.04, 0.16),
+      back: between(20, 68) * (Math.random() < 0.5 ? -1 : 1),
+      phase: between(0, Math.PI * 2),
+      pulse: between(0.05, 0.15),
       /* A pequena é mais densa: nuvem que some de perto não é nuvem. */
-      forca: 0.1 + (1 - m) * 0.24,
+      force: 0.1 + (1 - m) * 0.24,
     }));
   };
 
   return {
-    redimensionou: (palco) => semear(palco.largura, palco.altura),
+    resized: (stage) => seed(stage.width, stage.height),
 
-    quadro: ({ contexto: ctx, largura, altura }, passo) => {
-      if (!nuvens.length) semear(largura, altura);
+    frame: ({ context: ctx, width, height }, step) => {
+      if (!clouds.length) seed(width, height);
 
-      ctx.clearRect(0, 0, largura, altura);
-      relogio += passo;
+      ctx.clearRect(0, 0, width, height);
+      clock += step;
       ctx.globalCompositeOperation = "lighter";
 
-      for (const n of nuvens) {
-        const angulo = (relogio / n.volta) * Math.PI * 2 + n.fase;
-        const x = (n.cx + Math.cos(angulo) * n.rx) * largura;
-        const y = (n.cy + Math.sin(angulo) * n.ry) * altura;
-        const forca = n.forca * (0.78 + 0.22 * Math.sin(relogio * n.pulso + n.fase));
+      for (const n of clouds) {
+        const angle = (clock / n.back) * Math.PI * 2 + n.phase;
+        const x = (n.cx + Math.cos(angle) * n.rx) * width;
+        const y = (n.cy + Math.sin(angle) * n.ry) * height;
+        const force = n.force * (0.78 + 0.22 * Math.sin(clock * n.pulse + n.phase));
 
-        const pincel = ctx.createRadialGradient(x, y, 0, x, y, n.raio);
-        pincel.addColorStop(0, tinta(n.cor, forca));
-        pincel.addColorStop(0.55, tinta(n.cor, forca * 0.32));
-        pincel.addColorStop(1, tinta(n.cor, 0));
+        const brush = ctx.createRadialGradient(x, y, 0, x, y, n.radius);
+        brush.addColorStop(0, tinta(n.color, force));
+        brush.addColorStop(0.55, tinta(n.color, force * 0.32));
+        brush.addColorStop(1, tinta(n.color, 0));
 
-        ctx.fillStyle = pincel;
+        ctx.fillStyle = brush;
         ctx.beginPath();
-        ctx.arc(x, y, n.raio, 0, Math.PI * 2);
+        ctx.arc(x, y, n.radius, 0, Math.PI * 2);
         ctx.fill();
       }
 

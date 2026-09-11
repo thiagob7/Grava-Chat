@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "להעביר את הצ'אט למטה",
+    paraOLado: "להעביר את הצ'אט לצד",
+  },
+  aparelhoNovo: {
+    microfone: "הופיע כאן מיקרופון חדש",
+    saida: "הופיע כאן פלט שמע חדש",
+    apareceu: "הופיע {{nome}}.",
+    falarPorEle: "לדבר דרכו?",
+    ouvirPorEle: "להאזין דרכו?",
+    trocaNaHora: "ההחלפה נכנסת לתוקף מיד, בלי לצאת מהשיחה.",
+    naoSugerir: "לא להציע את המכשיר הזה שוב",
+    trocar: "לעבור אליו",
+  },
   conectando: "מתחבר לשיחה…",
   naoEntrou: "לא הצלחנו להצטרף לשיחה",
   sair: "יציאה מהשיחה",

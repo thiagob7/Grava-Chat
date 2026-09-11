@@ -1,10 +1,10 @@
 import type {
-  CategoriaDeComunidade,
+  CommunityCategory,
   Category,
   Channel,
-  Emblema,
+  Badge,
   GuildMember,
-  PerfilPublico,
+  ProfilePublic,
   Permission,
   PublicUser,
   Role,
@@ -22,12 +22,12 @@ export interface GuildModel {
   systemChannelId?: string | null;
   welcomeEnabled?: boolean;
   welcomeMessage?: string | null;
-  categoria?: CategoriaDeComunidade | null;
-  descobrivel?: boolean | null;
+  category?: CommunityCategory | null;
+  discoverable?: boolean | null;
   ownerId: string;
   memberCount: number;
-  verificada?: boolean;
-  detectavel?: boolean;
+  verified?: boolean;
+  detectable?: boolean;
 }
 
 export interface GuildInviteModel {
@@ -80,8 +80,8 @@ export interface GuildDetailModel {
   categories: Category[];
   channels: ChannelWithLastMessageModel[];
   members: GuildMember[];
-  profiles: Record<string, PerfilPublico>;
-  emblemas: Emblema[];
+  profiles: Record<string, ProfilePublic>;
+  badges: Badge[];
   voiceStates: Record<string, VoiceState[]>;
 }
 
@@ -93,7 +93,7 @@ export interface InviteModel {
 
 export interface InvitePreviewModel {
   code: string;
-  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "bannerUrl" | "description" | "verificada" | "detectavel"> & {
+  guild: Pick<GuildModel, "id" | "name" | "iconUrl" | "bannerUrl" | "description" | "verified" | "detectable"> & {
     memberCount: number;
     onlineCount: number;
   };

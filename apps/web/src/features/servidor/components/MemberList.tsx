@@ -5,78 +5,78 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import { ServerTag } from "~/features/perfil/components/ServerTag";
 import { UserName } from "~/features/perfil/components/UserName";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
-import { useEnfeites, type ResolverEnfeites } from "~/features/perfil/hooks/use-enfeites";
+import { useCharms, type ResolveCharms } from "~/features/perfil/hooks/use-enfeites";
 import { cn } from "~/lib/utils";
 import { lineWidth, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface MemberListProps {
   members: GuildMember[];
-  carregando?: boolean;
+  loading?: boolean;
   roles?: Role[];
   ownerId: string | undefined;
   guildId?: string;
-  podeModerar?: boolean;
-  emVoz?: Set<string>;
+  canModerate?: boolean;
+  inVoice?: Set<string>;
 }
 
 export const MemberList: React.FC<MemberListProps> = ({
   members,
-  carregando = false,
+  loading = false,
   roles = [],
-  emVoz,
+  inVoice,
   ownerId,
   guildId,
-  podeModerar = false,
+  canModerate = false,
 }) => {
   const { t } = useTranslation();
-  const enfeitesDe = useEnfeites(guildId);
+  const charms = useCharms(guildId);
 
-  const mostrar = useAparencia((s) => s.listaDeMembros);
+  const show = useAppearance((s) => s.listMembers);
 
-  const grupos = useMemo(() => {
+  const groups = useMemo(() => {
     const hoisted = roles
       .filter((r) => r.hoist && !r.isEveryone)
       .sort((a, b) => b.position - a.position);
 
     const online = members.filter((m) => m.user.status !== "OFFLINE");
     const offline = members.filter((m) => m.user.status === "OFFLINE");
-    const jaListados = new Set<string>();
+    const alreadyListed = new Set<string>();
 
-    const seccoes = hoisted.map((role) => {
-      const doCargo = online.filter(
-        (m) => !jaListados.has(m.id) && m.roleIds.includes(role.id),
+    const sections = hoisted.map((role) => {
+      const fromRole = online.filter(
+        (m) => !alreadyListed.has(m.id) && m.roleIds.includes(role.id),
       );
-      doCargo.forEach((m) => jaListados.add(m.id));
+      fromRole.forEach((m) => alreadyListed.add(m.id));
 
       return {
-        titulo: `${role.name} — ${doCargo.length}`,
-        membros: doCargo,
+        title: `${role.name} — ${fromRole.length}`,
+        members: fromRole,
         dim: false,
       };
     });
 
-    const restante = online.filter((m) => !jaListados.has(m.id));
+    const remaining = online.filter((m) => !alreadyListed.has(m.id));
 
     return [
-      ...seccoes.filter((s) => s.membros.length),
-      { titulo: `Online — ${restante.length}`, membros: restante, dim: false },
-      { titulo: `Offline — ${offline.length}`, membros: offline, dim: true },
+      ...sections.filter((s) => s.members.length),
+      { title: `Online — ${remaining.length}`, members: remaining, dim: false },
+      { title: `Offline — ${offline.length}`, members: offline, dim: true },
     ];
   }, [members, roles]);
 
-  if (!mostrar) return null;
+  if (!show) return null;
 
-  if (carregando) {
+  if (loading) {
     return (
       <aside data-gc="servidor.member-list.aside"
         aria-busy
         aria-label={t("comum.carregando")}
-        {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}
+        {...flx("listMembers", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}
       >
-        <div data-gc="servidor.member-list.div" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-line")} />
+        <div data-gc="servidor.member-list.div" aria-hidden {...flx("membersDivider", "absolute inset-y-0 left-0 w-px bg-line")} />
         <div data-gc="servidor.member-list.div--2" className="h-full overflow-hidden px-2 py-4">
           <Skeleton data-gc="servidor.member-list.skeleton" className="mb-3 ml-2 h-2.5 w-24 rounded-sm" />
 
@@ -92,21 +92,21 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside data-gc="servidor.member-list.aside--2" {...flx("listaDeMembros", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}>
-      <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("divisorDosMembros", "absolute inset-y-0 left-0 w-px bg-line")} />
-      <div data-gc="servidor.member-list.div--5" {...flx("roladorDeMembros", cn("h-full overflow-y-auto px-2 py-4", flxCls("conteudoDaListaDeMembros")))}>
-        {grupos.map((grupo) => (
+    <aside data-gc="servidor.member-list.aside--2" {...flx("listMembers", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}>
+      <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("membersDivider", "absolute inset-y-0 left-0 w-px bg-line")} />
+      <div data-gc="servidor.member-list.div--5" {...flx("membersScroller", cn("h-full overflow-y-auto px-2 py-4", flxCls("listMembersContent")))}>
+        {groups.map((group) => (
           <MemberGroup data-gc="servidor.member-list.member-group"
-            key={grupo.titulo}
-            title={grupo.titulo}
-            members={grupo.membros}
+            key={group.title}
+            title={group.title}
+            members={group.members}
             roles={roles}
             ownerId={ownerId}
-            dim={grupo.dim}
+            dim={group.dim}
             guildId={guildId}
-            podeModerar={podeModerar}
-            emVoz={emVoz}
-            enfeitesDe={enfeitesDe}
+            canModerate={canModerate}
+            inVoice={inVoice}
+            charms={charms}
           />
         ))}
       </div>
@@ -117,7 +117,7 @@ export const MemberList: React.FC<MemberListProps> = ({
 interface MemberGroupProps extends MemberListProps {
   title: string;
   dim?: boolean;
-  enfeitesDe: ResolverEnfeites;
+  charms: ResolveCharms;
 }
 
 const MemberGroup: React.FC<MemberGroupProps> = ({
@@ -127,9 +127,9 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
   ownerId,
   dim,
   guildId,
-  podeModerar = false,
-  emVoz,
-  enfeitesDe,
+  canModerate = false,
+  inVoice,
+  charms,
 }) => {
   if (!members.length) return null;
 
@@ -139,7 +139,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
         {title}
       </h3>
       {members.map((member) => {
-        const { perfil, corDoCargo } = enfeitesDe(member.user.id);
+        const { profile, roleColor } = charms(member.user.id);
 
         return (
           <UserProfilePopover data-gc="servidor.member-list.user-profile-popover"
@@ -149,16 +149,16 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
             guildId={guildId}
             roles={roles}
             roleIds={member.roleIds}
-            podeModerar={podeModerar}
+            canModerate={canModerate}
           >
             <button data-gc="servidor.member-list.button"
               data-gc-usuario={member.user.id}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded px-2 py-1 text-left transition hover:bg-surface-3",
-                flxCls("linhaDeMembro"),
-                flxCls("itemDeMembro"),
-                flxCls("botaoDoMembro"),
-                dim && cn("opacity-40", flxCls("botaoDoMembroOffline")),
+                flxCls("memberLine"),
+                flxCls("memberItem"),
+                flxCls("memberButton"),
+                dim && cn("opacity-40", flxCls("memberOfflineButton")),
               )}
             >
               <Avatar data-gc="servidor.member-list.avatar"
@@ -167,26 +167,26 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 url={member.user.avatarUrl}
                 size={32}
                 status={member.user.status}
-                emVoz={emVoz?.has(member.user.id)}
-                enfeites={perfil}
-                className={flxCls("avatarDoMembro")}
+                inVoice={inVoice?.has(member.user.id)}
+                charms={profile}
+                className={flxCls("memberAvatar")}
               />
               <UserName data-gc="servidor.member-list.user-name"
-                nome={member.nickname ?? member.user.displayName}
-                perfil={perfil}
-                corDoCargo={corDoCargo}
-                ehBot={member.user.isBot}
-                ehSistema={member.user.sistema}
-                selo="sm"
+                name={member.nickname ?? member.user.displayName}
+                profile={profile}
+                roleColor={roleColor}
+                isBot={member.user.isBot}
+                isSystem={member.user.system}
+                seal="sm"
                 className={cn(
                   "min-w-0 truncate text-sm font-medium",
-                  flxCls("nomeDoMembro"),
-                  corDoCargo || perfil?.nome ? "" : "text-ink-muted",
+                  flxCls("memberName"),
+                  roleColor || profile?.name ? "" : "text-ink-muted",
                 )}
               />
               <ServerTag data-gc="servidor.member-list.server-tag"
-                etiqueta={perfil?.etiquetaDoServidor}
-                interativo={false}
+                tag={profile?.serverTag}
+                interactive={false}
               />
               {member.user.id === ownerId && (
                 <span data-gc="servidor.member-list.span" title="Dono do servidor">👑</span>

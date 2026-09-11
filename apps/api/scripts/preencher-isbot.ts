@@ -2,21 +2,21 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const resultado = (await prisma.$runCommandRaw({
+const result = (await prisma.$runCommandRaw({
   update: "User",
   updates: [{ q: { isBot: { $exists: false } }, u: { $set: { isBot: false } }, multi: true }],
 })) as unknown as { n?: number; nModified?: number };
 
-const encontrados = resultado.n ?? 0;
-const alterados = resultado.nModified ?? 0;
+const found = result.n ?? 0;
+const changed = result.nModified ?? 0;
 
-console.log(`${encontrados} usuário(s) sem o campo; ${alterados} preenchido(s).`);
+console.log(`${found} usuário(s) sem o campo; ${changed} preenchido(s).`);
 
-const restantes = (await prisma.user.aggregateRaw({
+const remaining = (await prisma.user.aggregateRaw({
   pipeline: [{ $match: { isBot: { $exists: false } } }, { $count: "total" }],
 })) as unknown as { total: number }[];
 
-const sobraram = restantes[0]?.total ?? 0;
-console.log(sobraram === 0 ? "Nenhum documento sem o campo." : `AINDA sobraram ${sobraram}.`);
+const leftover = remaining[0]?.total ?? 0;
+console.log(leftover === 0 ? "Nenhum documento sem o campo." : `AINDA sobraram ${leftover}.`);
 
 await prisma.$disconnect();

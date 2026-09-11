@@ -1,6 +1,6 @@
-import { adiantaInsistir, ehMotivoDeFalha, type MotivoDeFalha } from "@gravae/shared";
+import { helpsInsist, isFailureReason, type FailureReason } from "@gravae/shared";
 
-export class ErroDaApi extends Error {
+export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
@@ -15,84 +15,84 @@ export class ErroDaApi extends Error {
     403 não muda nada até alguém mexer no cargo do bot; insistir em 429 e 5xx
     resolve sozinho.
   */
-  get adiantaInsistir() {
+  get helpsInsist() {
     return this.status === 429 || this.status >= 500;
   }
 }
 
-export interface OpcoesDoCliente {
+export interface ClientOptions {
   token: string;
   base?: string;
   /** Quantas vezes repetir quando a falha for passageira. Zero desliga. */
-  tentativas?: number;
+  attempts?: number;
 }
 
-const BASE_PADRAO = "https://gravaechat-api.duckdns.org/api";
+const DEFAULT_BASE = "https://gravaechat-api.duckdns.org/api";
 
-const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export class Rest {
   private readonly base: string;
-  private readonly tentativas: number;
+  private readonly attempts: number;
 
-  constructor(private readonly opcoes: OpcoesDoCliente) {
-    this.base = (opcoes.base ?? BASE_PADRAO).replace(/\/$/, "");
-    this.tentativas = opcoes.tentativas ?? 3;
+  constructor(private readonly options: ClientOptions) {
+    this.base = (options.base ?? DEFAULT_BASE).replace(/\/$/, "");
+    this.attempts = options.attempts ?? 3;
   }
 
-  async pedir<T>(metodo: string, caminho: string, corpo?: unknown): Promise<T> {
-    let ultima: ErroDaApi | null = null;
+  async askFor<T>(method: string, path: string, body?: unknown): Promise<T> {
+    let last: ApiError | null = null;
 
-    for (let tentativa = 0; tentativa <= this.tentativas; tentativa++) {
+    for (let attempt = 0; attempt <= this.attempts; attempt++) {
       try {
-        return await this.uma<T>(metodo, caminho, corpo);
-      } catch (erro) {
-        if (!(erro instanceof ErroDaApi) || !erro.adiantaInsistir) throw erro;
+        return await this.uma<T>(method, path, body);
+      } catch (error) {
+        if (!(error instanceof ApiError) || !error.helpsInsist) throw error;
 
-        ultima = erro;
+        last = error;
 
         /*
           Espera crescente, com um teto. Sem o teto, uma API fora do ar por
           meia hora vira um bot que dorme meia hora depois que ela volta.
         */
-        await esperar(Math.min(2 ** tentativa * 500, 8000));
+        await wait(Math.min(2 ** attempt * 500, 8000));
       }
     }
 
-    throw ultima;
+    throw last;
   }
 
-  private async uma<T>(metodo: string, caminho: string, corpo?: unknown): Promise<T> {
-    const resposta = await fetch(`${this.base}${caminho}`, {
-      method: metodo,
+  private async uma<T>(method: string, path: string, body?: unknown): Promise<T> {
+    const reply = await fetch(`${this.base}${path}`, {
+      method: method,
       headers: {
-        Authorization: `Bot ${this.opcoes.token}`,
-        ...(corpo === undefined ? {} : { "Content-Type": "application/json" }),
+        Authorization: `Bot ${this.options.token}`,
+        ...(body === undefined ? {} : { "Content-Type": "application/json" }),
       },
-      body: corpo === undefined ? undefined : JSON.stringify(corpo),
+      body: body === undefined ? undefined : JSON.stringify(body),
     });
 
-    if (resposta.status === 204) return undefined as T;
+    if (reply.status === 204) return undefined as T;
 
-    const texto = await resposta.text();
-    const dados = texto ? (JSON.parse(texto) as unknown) : null;
+    const text = await reply.text();
+    const data = text ? (JSON.parse(text) as unknown) : null;
 
-    if (!resposta.ok) {
-      const { message, issues } = (dados ?? {}) as {
+    if (!reply.ok) {
+      const { message, issues } = (data ?? {}) as {
         message?: string;
         issues?: { path: string; message: string }[];
       };
 
-      throw new ErroDaApi(resposta.status, message ?? "Erro sem mensagem", issues);
+      throw new ApiError(reply.status, message ?? "Erro sem mensagem", issues);
     }
 
-    return dados as T;
+    return data as T;
   }
 }
 
-export const motivoDoErro = (erro: unknown): MotivoDeFalha | null => {
-  const motivo = (erro as { motivo?: unknown } | null)?.motivo;
-  return ehMotivoDeFalha(motivo) ? motivo : null;
+export const errorReason = (error: unknown): FailureReason | null => {
+  const reason = (error as { reason?: unknown } | null)?.reason;
+  return isFailureReason(reason) ? reason : null;
 };
 
-export { adiantaInsistir };
+export { helpsInsist };

@@ -17,12 +17,12 @@ interface PinnedMessagesPanelProps {
 
 export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channelId, canManage }) => {
   const { t } = useTranslation();
-  const [aberto, setAberto] = React.useState(false);
-  const { data: fixadas = [] } = useFindPins(channelId, aberto);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { data: pinned = [] } = useFindPins(channelId, isOpen);
   const pinMessage = usePinMessage(channelId);
 
   return (
-    <Popover data-gc="conversa.pinned-messages-panel.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+    <Popover data-gc="conversa.pinned-messages-panel.popover.set-is-open" open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger data-gc="conversa.pinned-messages-panel.popover-trigger" asChild>
         <button data-gc="conversa.pinned-messages-panel.button"
           aria-label={t("conversa.fixadas.titulo")}
@@ -36,7 +36,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
 
       <PopoverContent data-gc="conversa.pinned-messages-panel.popover-content"
         align="end"
-        className={cn("w-96 p-0", flxCls("fixadas"))}
+        className={cn("w-96 p-0", flxCls("pinned"))}
       >
         <header data-gc="conversa.pinned-messages-panel.header" className="flex items-center gap-2 border-b border-line px-4 py-3">
           <PushPin data-gc="conversa.pinned-messages-panel.push-pin--2" size={16} weight="fill" />
@@ -44,33 +44,33 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
         </header>
 
         <div data-gc="conversa.pinned-messages-panel.div" className="max-h-96 overflow-y-auto">
-          {!fixadas.length && (
+          {!pinned.length && (
             <div data-gc="conversa.pinned-messages-panel.div--2" className="px-6 py-10 text-center">
               <PushPin data-gc="conversa.pinned-messages-panel.push-pin--3" size={32} weight="fill" className="mx-auto text-ink-faint" />
               <p data-gc="conversa.pinned-messages-panel.p" className="mt-3 text-sm text-ink-muted">{t("conversa.fixadas.vazio")}</p>
             </div>
           )}
 
-          {fixadas.map((mensagem) => (
-            <article data-gc="conversa.pinned-messages-panel.article" key={mensagem.id} className="group flex gap-3 border-b border-line px-4 py-3">
+          {pinned.map((message) => (
+            <article data-gc="conversa.pinned-messages-panel.article" key={message.id} className="group flex gap-3 border-b border-line px-4 py-3">
               <Avatar data-gc="conversa.pinned-messages-panel.avatar"
-                id={mensagem.author.id}
-                name={mensagem.author.displayName}
-                url={mensagem.author.avatarUrl}
+                id={message.author.id}
+                name={message.author.displayName}
+                url={message.author.avatarUrl}
                 size={32}
               />
 
               <div data-gc="conversa.pinned-messages-panel.div--3" className="min-w-0 flex-1">
                 <p data-gc="conversa.pinned-messages-panel.p--2" className="flex items-baseline gap-2">
-                  <span data-gc="conversa.pinned-messages-panel.span" className="truncate text-sm font-medium">{mensagem.author.displayName}</span>
+                  <span data-gc="conversa.pinned-messages-panel.span" className="truncate text-sm font-medium">{message.author.displayName}</span>
                   <span data-gc="conversa.pinned-messages-panel.span--2" className="shrink-0 text-11 text-ink-faint">
-                    {formatTimestamp(mensagem.createdAt)}
+                    {formatTimestamp(message.createdAt)}
                   </span>
                 </p>
                 <p data-gc="conversa.pinned-messages-panel.p--3" className="mt-0.5 line-clamp-3 whitespace-pre-wrap break-words text-sm text-ink-muted">
-                  {mensagem.content ||
+                  {message.content ||
                     t(
-                      mensagem.attachments.length
+                      message.attachments.length
                         ? "conversa.fixadas.anexo"
                         : "conversa.fixadas.enquete",
                     )}
@@ -79,7 +79,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
 
               {canManage && (
                 <button data-gc="conversa.pinned-messages-panel.button--2"
-                  onClick={() => pinMessage.mutate({ messageId: mensagem.id, pin: false })}
+                  onClick={() => pinMessage.mutate({ messageId: message.id, pin: false })}
                   title={t("conversa.fixadas.desafixar")}
                   className="self-start rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
                 >

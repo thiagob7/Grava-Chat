@@ -1,8 +1,12 @@
-export interface CabecalhoDoTema {
-  nome: string | null;
-  descricao: string | null;
-  autor: string | null;
-  versao: string | null;
+import { houseAddress } from "./origens.js";
+
+export interface ThemeHeader {
+  name: string | null;
+  description: string | null;
+  author: string | null;
+  version: string | null;
+  font: string | null;
+  invite: string | null;
   tags: string[];
 }
 
@@ -13,130 +17,143 @@ export interface CabecalhoDoTema {
   lado: o CSS pede o fundo, não acha nada para resolver, e a pessoa instala um
   tema sem a imagem que era o motivo dele existir.
 */
-export interface AtivoDoTema {
-  nome: string;
+export interface ThemeActive {
+  name: string;
   url: string;
-  tipo?: string;
+  kind?: string;
   bytes?: number;
 }
 
-export const LIMITE_DE_ATIVOS = 12;
+export const ACTIVE_LIMIT = 12;
 
 /*
   O peso que a pessoa vê antes de instalar: o CSS mais o que cada imagem pesa.
   Ativo sem tamanho conhecido não some do total, só não soma nada.
 */
-export function pesoDoTema(css: string, ativos: AtivoDoTema[] = []): number {
-  const doCss = new TextEncoder().encode(css).length;
-  return ativos.reduce((total, ativo) => total + (ativo.bytes ?? 0), doCss);
+export function themeWeight(css: string, actives: ThemeActive[] = []): number {
+  const fromCss = new TextEncoder().encode(css).length;
+  return actives.reduce((total, active) => total + (active.bytes ?? 0), fromCss);
 }
 
-export function pesoLegivel(bytes: number): string {
+export function weightReadable(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export interface TemaCompartilhado {
+export interface ThemeShared {
   id: string;
-  nome: string;
-  descricao: string | null;
-  autor: string | null;
-  versao: string | null;
+  name: string;
+  description: string | null;
+  author: string | null;
+  version: string | null;
   tags: string[];
   css: string;
-  substituicoes: Record<string, string>;
-  ativos: AtivoDoTema[];
-  publicadoPor: { id: string; displayName: string; avatarUrl: string | null };
+  overrides: Record<string, string>;
+  actives: ThemeActive[];
+  publishedBy: { id: string; displayName: string; avatarUrl: string | null };
   createdAt: string;
 }
 
-export const LIMITES_DO_TEMA = {
-  nome: 60,
-  descricao: 300,
-  autor: 60,
-  versao: 20,
+export const THEME_LIMITS = {
+  name: 60,
+  description: 300,
+  author: 60,
+  version: 20,
+  address: 300,
   tags: 8,
   tag: 24,
   css: 512 * 1024,
-  substituicoes: 600,
+  overrides: 600,
 };
 
-const VAZIO: CabecalhoDoTema = {
-  nome: null,
-  descricao: null,
-  autor: null,
-  versao: null,
+const EMPTY: ThemeHeader = {
+  name: null,
+  description: null,
+  author: null,
+  version: null,
+  font: null,
+  invite: null,
   tags: [],
 };
 
-const cortar = (valor: string, tamanho: number) => valor.trim().slice(0, tamanho) || null;
+const soHttps = (value: string | undefined, size: number) => {
+  const clean = (value ?? "").trim();
+  if (!clean.startsWith("https://")) return null;
 
-export function lerCabecalhoDoTema(css: string): CabecalhoDoTema {
-  const bloco = /^\s*\/\*\*([\s\S]*?)\*\//.exec(css);
-  if (!bloco?.[1]) return VAZIO;
+  return clean.slice(0, size) || null;
+};
 
-  const linhas = bloco[1]
+const cut = (value: string, size: number) => value.trim().slice(0, size) || null;
+
+export function readThemeHeader(css: string): ThemeHeader {
+  const block = /^\s*\/\*\*([\s\S]*?)\*\//.exec(css);
+  if (!block?.[1]) return EMPTY;
+
+  const lines = block[1]
     .split("\n")
-    .map((linha) => linha.replace(/^\s*\*?\s?/, "").trimEnd())
+    .map((line) => line.replace(/^\s*\*?\s?/, "").trimEnd())
     .filter(Boolean);
 
-  const campos = new Map<string, string>();
+  const fields = new Map<string, string>();
 
-  for (const linha of linhas) {
-    const campo = /^@([a-zA-Z]+)\s+(.*)$/.exec(linha);
-    if (campo?.[1] && campo[2]) campos.set(campo[1].toLowerCase(), campo[2]);
+  for (const line of lines) {
+    const field = /^@([a-zA-Z]+)\s+(.*)$/.exec(line);
+    if (field?.[1] && field[2]) fields.set(field[1].toLowerCase(), field[2]);
   }
 
-  const tags = (campos.get("tags") ?? "")
+  const tags = (fields.get("tags") ?? "")
     .split(",")
-    .map((tag) => tag.trim().slice(0, LIMITES_DO_TEMA.tag))
+    .map((tag) => tag.trim().slice(0, THEME_LIMITS.tag))
     .filter(Boolean)
-    .slice(0, LIMITES_DO_TEMA.tags);
+    .slice(0, THEME_LIMITS.tags);
 
   return {
-    nome: cortar(campos.get("name") ?? "", LIMITES_DO_TEMA.nome),
-    descricao: cortar(campos.get("description") ?? "", LIMITES_DO_TEMA.descricao),
-    autor: cortar(campos.get("author") ?? "", LIMITES_DO_TEMA.autor),
-    versao: cortar(campos.get("version") ?? "", LIMITES_DO_TEMA.versao),
+    name: cut(fields.get("name") ?? "", THEME_LIMITS.name),
+    description: cut(fields.get("description") ?? "", THEME_LIMITS.description),
+    author: cut(fields.get("author") ?? "", THEME_LIMITS.author),
+    version: cut(fields.get("version") ?? "", THEME_LIMITS.version),
+    font: soHttps(fields.get("updateurl"), THEME_LIMITS.address),
+    invite: soHttps(fields.get("invite"), THEME_LIMITS.address),
     tags,
   };
 }
 
-export function escreverCabecalhoDoTema(cabecalho: CabecalhoDoTema): string {
-  const linhas = [
-    cabecalho.nome && ` * @name ${cabecalho.nome}`,
-    cabecalho.descricao && ` * @description ${cabecalho.descricao}`,
-    cabecalho.autor && ` * @author ${cabecalho.autor}`,
-    cabecalho.versao && ` * @version ${cabecalho.versao}`,
-    cabecalho.tags.length > 0 && ` * @tags ${cabecalho.tags.join(", ")}`,
+export function writeThemeHeader(header: ThemeHeader): string {
+  const lines = [
+    header.name && ` * @name ${header.name}`,
+    header.description && ` * @description ${header.description}`,
+    header.author && ` * @author ${header.author}`,
+    header.version && ` * @version ${header.version}`,
+    header.font && ` * @updateUrl ${header.font}`,
+    header.invite && ` * @invite ${header.invite}`,
+    header.tags.length > 0 && ` * @tags ${header.tags.join(", ")}`,
   ].filter(Boolean);
 
-  if (!linhas.length) return "";
+  if (!lines.length) return "";
 
-  return ["/**", ...linhas, " */"].join("\n");
+  return ["/**", ...lines, " */"].join("\n");
 }
 
-export function comCabecalho(css: string, cabecalho: CabecalhoDoTema): string {
-  const corpo = css.replace(/^\s*\/\*\*[\s\S]*?\*\/\s*/, "");
-  const bloco = escreverCabecalhoDoTema(cabecalho);
+export function withHeader(css: string, header: ThemeHeader): string {
+  const body = css.replace(/^\s*\/\*\*[\s\S]*?\*\/\s*/, "");
+  const block = writeThemeHeader(header);
 
-  return bloco ? `${bloco}\n\n${corpo}` : corpo;
+  return block ? `${block}\n\n${body}` : body;
 }
 
-export const CAMINHO_DO_TEMA = "/tema/";
+export const THEME_PATH = "/tema/";
 
-export function idDoTemaNoLink(url: string, origem: string): string | null {
-  try {
-    const endereco = new URL(url, origem);
-    if (endereco.origin !== new URL(origem).origin) return null;
+export function themeLinkId(
+  url: string,
+  origin: string | readonly string[],
+): string | null {
+  const address = houseAddress(url, origin);
+  if (!address) return null;
 
-    const encontrado = new RegExp(`^${CAMINHO_DO_TEMA}([a-f\\d]{24})$`, "i").exec(
-      endereco.pathname,
-    );
+  const found = new RegExp(`^${THEME_PATH}([a-f\\d]{24})$`, "i").exec(
+    address.pathname,
+  );
 
-    return encontrado?.[1] ?? null;
-  } catch {
-    return null;
-  }
+  return found?.[1] ?? null;
 }

@@ -1,31 +1,31 @@
 import { ipcMain, shell, systemPreferences } from "electron";
-import type { TipoDeMidia } from "@gravae/shared";
+import type { MediaKind } from "@gravae/shared";
 
-const PAINEL: Record<TipoDeMidia, string> = {
+const PANEL: Record<MediaKind, string> = {
   microphone: "Privacy_Microphone",
   camera: "Privacy_Camera",
   screen: "Privacy_ScreenCapture",
 };
 
-export function registrarPermissoesDeMidia() {
-  const status = (tipo: TipoDeMidia) =>
-    process.platform === "darwin" ? systemPreferences.getMediaAccessStatus(tipo) : "granted";
+export function mediaRegisterPermissions() {
+  const status = (kind: MediaKind) =>
+    process.platform === "darwin" ? systemPreferences.getMediaAccessStatus(kind) : "granted";
 
-  ipcMain.handle("midia:status", (_e, tipo: TipoDeMidia) => status(tipo));
+  ipcMain.handle("midia:status", (_e, kind: MediaKind) => status(kind));
 
-  ipcMain.handle("midia:garantir", async (_e, tipo: TipoDeMidia) => {
+  ipcMain.handle("midia:garantir", async (_e, kind: MediaKind) => {
     if (process.platform !== "darwin") return true;
-    if (status(tipo) === "granted") return true;
-    if (tipo === "screen") return false;
+    if (status(kind) === "granted") return true;
+    if (kind === "screen") return false;
 
-    return systemPreferences.askForMediaAccess(tipo);
+    return systemPreferences.askForMediaAccess(kind);
   });
 
-  ipcMain.handle("midia:abrir-ajustes", (_e, tipo: TipoDeMidia) => {
+  ipcMain.handle("midia:abrir-ajustes", (_e, kind: MediaKind) => {
     if (process.platform !== "darwin") return;
 
     void shell.openExternal(
-      `x-apple.systempreferences:com.apple.preference.security?${PAINEL[tipo]}`,
+      `x-apple.systempreferences:com.apple.preference.security?${PANEL[kind]}`,
     );
   });
 }

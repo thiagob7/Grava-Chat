@@ -2,17 +2,17 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { buscarUltimaVersao } from "~/lib/release";
+import { searchLastVersion } from "~/lib/release";
 
-export const VersaoPublicada = ({ prefixo = "Versão" }: { prefixo?: string }) => {
-  const { data } = useQuery({ queryKey: ["ultima-versao"], queryFn: buscarUltimaVersao });
+export const VersionPublished = ({ prefix = "Versão" }: { prefix?: string }) => {
+  const { data } = useQuery({ queryKey: ["ultima-versao"], queryFn: searchLastVersion });
 
   if (!data) return null;
 
   return (
     <>
-      {prefixo} {data.versao} ·{" "}
-      {new Date(data.publicadaEm).toLocaleDateString("pt-BR", {
+      {prefix} {data.version} ·{" "}
+      {new Date(data.publishedAt).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "long",
         year: "numeric",

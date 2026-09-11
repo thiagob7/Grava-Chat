@@ -13,43 +13,43 @@ import {
 
 import {
   useBranchDoGit,
-  useHistoricoDePublicacoes,
-  usePublicacoes,
+  usePostsHistory,
+  usePosts,
 } from "~/@core/application/queries/admin/use-publicacoes";
 import {
-  atraso,
-  escreverDesde,
-  ESPERANDO_APROVACAO,
-  FLUXO_DA_API,
-  REPOSITORIO,
-  type Publicacao,
+  delay,
+  writeSince,
+  WAITING_APPROVAL,
+  API_FLOW,
+  REPOSITORY,
+  type Post,
 } from "~/features/configuracoes/lib/publicacoes";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
-const quando = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" });
+const when = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" });
 
-export const PublicacoesSection: React.FC = () => {
-  const linhas = usePublicacoes(true);
+export const PostsSection: React.FC = () => {
+  const lines = usePosts(true);
   const dev = useBranchDoGit("dev", true);
-  const historico = useHistoricoDePublicacoes(true);
+  const past = usePostsHistory(true);
 
-  const esperando = (historico.data ?? []).filter(ESPERANDO_APROVACAO);
+  const waiting = (past.data ?? []).filter(WAITING_APPROVAL);
 
   return (
     <div data-gc="configuracoes.publicacoes-section.div" className="max-w-2xl pb-10">
-      <Secao data-gc="configuracoes.publicacoes-section.secao" id="publicacoes" titulo="Publicações">
+      <Section data-gc="configuracoes.publicacoes-section.section" id="publicacoes" title="Publicações">
         <p data-gc="configuracoes.publicacoes-section.p" className="mb-4 text-sm text-ink-muted">
           O que está rodando em cada máquina agora, e se bate com o que está no repositório.
         </p>
 
         <div data-gc="configuracoes.publicacoes-section.div--2" className="space-y-3">
-          {linhas.map(({ ambiente, api, branch }) => {
-            const situacao = atraso(api.data?.commit ?? null, branch.data?.sha ?? null);
+          {lines.map(({ environment, api, branch }) => {
+            const situation = delay(api.data?.commit ?? null, branch.data?.sha ?? null);
 
             return (
-              <article data-gc="configuracoes.publicacoes-section.article" key={ambiente.id} className="rounded-lg bg-surface-2 p-4">
+              <article data-gc="configuracoes.publicacoes-section.article" key={environment.id} className="rounded-lg bg-surface-2 p-4">
                 <header data-gc="configuracoes.publicacoes-section.header" className="flex items-center gap-2">
                   <span data-gc="configuracoes.publicacoes-section.span"
                     className={cn(
@@ -57,10 +57,10 @@ export const PublicacoesSection: React.FC = () => {
                       api.isError ? "bg-danger" : api.isPending ? "bg-idle" : "bg-online",
                     )}
                   />
-                  <h3 data-gc="configuracoes.publicacoes-section.h3" className="text-sm font-semibold">{ambiente.nome}</h3>
+                  <h3 data-gc="configuracoes.publicacoes-section.h3" className="text-sm font-semibold">{environment.name}</h3>
 
                   <a data-gc="configuracoes.publicacoes-section.a"
-                    href={ambiente.front}
+                    href={environment.front}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-1 text-xs text-link hover:underline"
@@ -69,7 +69,7 @@ export const PublicacoesSection: React.FC = () => {
                   </a>
 
                   <span data-gc="configuracoes.publicacoes-section.span--2" className="ml-auto flex items-center gap-1 text-xs text-ink-faint">
-                    <GitBranch data-gc="configuracoes.publicacoes-section.git-branch" size={12} /> {ambiente.branch}
+                    <GitBranch data-gc="configuracoes.publicacoes-section.git-branch" size={12} /> {environment.branch}
                   </span>
                 </header>
 
@@ -93,9 +93,9 @@ export const PublicacoesSection: React.FC = () => {
 
                     <dt data-gc="configuracoes.publicacoes-section.dt--2" className="text-ink-faint">Publicado</dt>
                     <dd data-gc="configuracoes.publicacoes-section.dd--2" className="text-ink-muted">
-                      {api.data?.construidoEm ? quando.format(new Date(api.data.construidoEm)) : "—"}
+                      {api.data?.builtAt ? when.format(new Date(api.data.builtAt)) : "—"}
                       <span data-gc="configuracoes.publicacoes-section.span--4" className="ml-2 text-xs text-ink-faint">
-                        de pé há {escreverDesde(api.data?.desdeSegundos ?? null)}
+                        de pé há {writeSince(api.data?.sinceSeconds ?? null)}
                       </span>
                     </dd>
 
@@ -108,21 +108,21 @@ export const PublicacoesSection: React.FC = () => {
                       ) : (
                         <>
                           <span data-gc="configuracoes.publicacoes-section.span--7" className="font-mono">{branch.data?.sha.slice(0, 7)}</span>
-                          <span data-gc="configuracoes.publicacoes-section.span--8" className="ml-2 text-xs text-ink-muted">{branch.data?.mensagem}</span>
+                          <span data-gc="configuracoes.publicacoes-section.span--8" className="ml-2 text-xs text-ink-muted">{branch.data?.message}</span>
                         </>
                       )}
                     </dd>
                   </dl>
                 )}
 
-                {situacao !== "desconhecido" && (
+                {situation !== "desconhecido" && (
                   <p data-gc="configuracoes.publicacoes-section.p--3"
                     className={cn(
                       "mt-3 flex items-center gap-1.5 text-xs",
-                      situacao === "igual" ? "text-online" : "text-idle",
+                      situation === "igual" ? "text-online" : "text-idle",
                     )}
                   >
-                    {situacao === "igual" ? (
+                    {situation === "igual" ? (
                       <>
                         <Check data-gc="configuracoes.publicacoes-section.check" size={13} /> A máquina está com o mesmo commit da branch.
                       </>
@@ -152,13 +152,13 @@ export const PublicacoesSection: React.FC = () => {
             ) : (
               <>
                 <span data-gc="configuracoes.publicacoes-section.span--9" className="font-mono text-ink">{dev.data?.sha.slice(0, 7)}</span>{" "}
-                {dev.data?.mensagem}
+                {dev.data?.message}
               </>
             )}
           </p>
 
           <a data-gc="configuracoes.publicacoes-section.a--2"
-            href={`https://github.com/${REPOSITORIO}/compare/master...dev`}
+            href={`https://github.com/${REPOSITORY}/compare/master...dev`}
             target="_blank"
             rel="noreferrer"
             className="mt-2 inline-flex items-center gap-1 text-xs text-link hover:underline"
@@ -170,16 +170,16 @@ export const PublicacoesSection: React.FC = () => {
         <p data-gc="configuracoes.publicacoes-section.p--5" className="mt-4 flex items-center gap-1.5 text-xs text-ink-faint">
           <RefreshCw data-gc="configuracoes.publicacoes-section.refresh-cw" size={11} /> As máquinas são consultadas a cada 30 segundos.
         </p>
-      </Secao>
+      </Section>
     </div>
   );
 };
 
-const Marca: React.FC<{ situacao: Publicacao["situacao"] }> = ({ situacao }) => {
-  if (situacao === "boa") return <Check data-gc="configuracoes.publicacoes-section.check--2" size={14} className="shrink-0 text-online" />;
-  if (situacao === "falhou") return <X data-gc="configuracoes.publicacoes-section.x" size={14} className="shrink-0 text-danger" />;
-  if (situacao === "esperando") return <Hourglass data-gc="configuracoes.publicacoes-section.hourglass" size={14} className="shrink-0 text-idle" />;
-  if (situacao === "cancelada")
+const Brand: React.FC<{ situation: Post["situation"] }> = ({ situation }) => {
+  if (situation === "boa") return <Check data-gc="configuracoes.publicacoes-section.check--2" size={14} className="shrink-0 text-online" />;
+  if (situation === "falhou") return <X data-gc="configuracoes.publicacoes-section.x" size={14} className="shrink-0 text-danger" />;
+  if (situation === "esperando") return <Hourglass data-gc="configuracoes.publicacoes-section.hourglass" size={14} className="shrink-0 text-idle" />;
+  if (situation === "cancelada")
     return <CircleDashed data-gc="configuracoes.publicacoes-section.circle-dashed" size={14} className="shrink-0 text-ink-faint" />;
 
   return <Loader2 data-gc="configuracoes.publicacoes-section.loader2" size={14} className="shrink-0 animate-spin text-ink-muted" />;

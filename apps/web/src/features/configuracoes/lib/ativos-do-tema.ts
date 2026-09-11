@@ -1,70 +1,70 @@
-const CHAMADA = /gc-ativo\(\s*(["']?)([^"')]+)\1\s*\)/g;
+const CALL = /gc-ativo\(\s*(["']?)([^"')]+)\1\s*\)/g;
 
-export interface AtivoNomeado {
-  nome: string;
+export interface ActiveNamed {
+  name: string;
   url: string;
 }
 
-const achatar = (nome: string) =>
-  nome
+const flatten = (name: string) =>
+  name
     .trim()
     .toLowerCase()
     .replace(/\.[a-z0-9]+$/, "");
 
-export interface TemaComAtivos {
+export interface ActiveThemeWith {
   css: string;
-  faltando: string[];
+  missing: string[];
 }
 
-export function resolverAtivos(
+export function resolveActive(
   css: string,
-  ativos: AtivoNomeado[],
-): TemaComAtivos {
-  const porNome = new Map<string, string>();
+  actives: ActiveNamed[],
+): ActiveThemeWith {
+  const byName = new Map<string, string>();
 
-  for (const ativo of ativos) {
-    porNome.set(achatar(ativo.nome), ativo.url);
-    porNome.set(ativo.nome.trim().toLowerCase(), ativo.url);
+  for (const active of actives) {
+    byName.set(flatten(active.name), active.url);
+    byName.set(active.name.trim().toLowerCase(), active.url);
   }
 
-  const faltando = new Set<string>();
+  const missing = new Set<string>();
 
-  const resolvido = css.replace(CHAMADA, (inteiro, _aspas, pedido: string) => {
+  const resolved = css.replace(CALL, (whole, _quotes, request: string) => {
     const url =
-      porNome.get(pedido.trim().toLowerCase()) ?? porNome.get(achatar(pedido));
+      byName.get(request.trim().toLowerCase()) ?? byName.get(flatten(request));
 
     if (!url) {
-      faltando.add(pedido.trim());
-      return inteiro;
+      missing.add(request.trim());
+      return whole;
     }
 
     return `url("${url}")`;
   });
 
-  return { css: resolvido, faltando: [...faltando] };
+  return { css: resolved, missing: [...missing] };
 }
 
-export function contarPedidosDeAtivo(css: string): number {
-  return (css.match(CHAMADA) ?? []).length;
+export function countActiveRequests(css: string): number {
+  return (css.match(CALL) ?? []).length;
 }
 
 /*
   Os nomes que o CSS chama, do jeito que estão escritos. É por essa lista que
   o estúdio decide o que mandar junto quando o tema é publicado.
 */
-export function nomesDeAtivosPedidos(css: string): string[] {
-  const nomes = new Set<string>();
+export function activeRequestsNames(css: string): string[] {
+  const names = new Set<string>();
 
-  for (const [, , pedido] of css.matchAll(CHAMADA)) {
-    if (pedido) nomes.add(pedido.trim());
+  for (const [, , request] of css.matchAll(CALL)) {
+    if (request) names.add(request.trim());
   }
 
-  return [...nomes];
+  return [...names];
 }
 
-export function combinaComPedido(nomeDoArquivo: string, pedido: string): boolean {
-  const arquivo = nomeDoArquivo.trim().toLowerCase();
-  const pedida = pedido.trim().toLowerCase();
+export function matchesWithRequest(fileName: string, request: string): boolean {
+  const file = fileName.trim().toLowerCase();
+  const requested = request.trim().toLowerCase();
 
-  return arquivo === pedida || achatar(nomeDoArquivo) === achatar(pedido);
+  return file === requested || flatten(fileName) === flatten(request);
 }

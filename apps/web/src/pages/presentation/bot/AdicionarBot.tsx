@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Bot, Check, ShieldAlert } from "lucide-react";
 
-import type { DestinosDoBotModel } from "~/@core/application/requests/bot/bots";
+import type { BotModelDestinations } from "~/@core/application/requests/bot/bots";
 
 import {
   useAddBotToGuild,
@@ -11,30 +11,30 @@ import {
 } from "~/@core/application/queries/bot/use-bots";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
+import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 import { SelectField } from "~/components/ui/select";
 import { Label } from "~/components/ui/input";
 import { PERMISSION_LABELS } from "@gravae/shared";
 
-export const AdicionarBot: React.FC = () => {
+export const AddBot: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
 
-  const convite = useBotInvite(botId);
-  const onde = useBotDestinations(botId);
-  const adicionar = useAddBotToGuild();
+  const invite = useBotInvite(botId);
+  const where = useBotDestinations(botId);
+  const add = useAddBotToGuild();
 
-  const [escolhido, setEscolhido] = useState("");
+  const [picked, setPicked] = useState("");
 
-  const disponiveis = onde.data?.destinos ?? [];
+  const available = where.data?.destinations ?? [];
 
-  if (convite.isLoading) {
-    return <Moldura data-gc="bot.adicionar-bot.moldura"><p data-gc="bot.adicionar-bot.p" className="text-sm text-ink-faint">Carregando…</p></Moldura>;
+  if (invite.isLoading) {
+    return <Frame data-gc="bot.adicionar-bot.frame"><p data-gc="bot.adicionar-bot.p" className="text-sm text-ink-faint">Carregando…</p></Frame>;
   }
 
-  if (convite.isError || !convite.data) {
+  if (invite.isError || !invite.data) {
     return (
-      <Moldura data-gc="bot.adicionar-bot.moldura--2">
+      <Frame data-gc="bot.adicionar-bot.frame--2">
         <ShieldAlert data-gc="bot.adicionar-bot.shield-alert" size={40} className="mx-auto text-ink-faint" />
         <h1 data-gc="bot.adicionar-bot.h1" className="mt-4 text-xl font-semibold">Esse convite não vale</h1>
         <p data-gc="bot.adicionar-bot.p--2" className="mt-2 text-sm text-ink-muted">
@@ -43,45 +43,45 @@ export const AdicionarBot: React.FC = () => {
         <Button data-gc="bot.adicionar-bot.button" className="mt-6 w-full" onClick={() => navigate("/channels")}>
           Voltar
         </Button>
-      </Moldura>
+      </Frame>
     );
   }
 
-  const bot = convite.data;
+  const bot = invite.data;
 
   return (
-    <Moldura data-gc="bot.adicionar-bot.moldura--3">
+    <Frame data-gc="bot.adicionar-bot.frame--3">
       <div data-gc="bot.adicionar-bot.div" className="flex flex-col items-center">
-        <Avatar data-gc="bot.adicionar-bot.avatar" id={bot.usuario.id} name={bot.usuario.displayName} url={bot.usuario.avatarUrl} size={80} />
+        <Avatar data-gc="bot.adicionar-bot.avatar" id={bot.user.id} name={bot.user.displayName} url={bot.user.avatarUrl} size={80} />
 
         <h1 data-gc="bot.adicionar-bot.h1--2" className="mt-4 flex items-center gap-2 text-xl font-semibold">
-          {bot.usuario.displayName}
+          {bot.user.displayName}
           <span data-gc="bot.adicionar-bot.span" className="rounded bg-brand px-1.5 py-0.5 text-10 font-bold uppercase text-sobre-marca">
             app
           </span>
         </h1>
 
-        <p data-gc="bot.adicionar-bot.p--3" className="text-sm text-ink-faint">@{bot.usuario.username}</p>
+        <p data-gc="bot.adicionar-bot.p--3" className="text-sm text-ink-faint">@{bot.user.username}</p>
 
-        {bot.descricao && (
-          <p data-gc="bot.adicionar-bot.p--4" className="mt-3 text-center text-sm text-ink-muted">{bot.descricao}</p>
+        {bot.description && (
+          <p data-gc="bot.adicionar-bot.p--4" className="mt-3 text-center text-sm text-ink-muted">{bot.description}</p>
         )}
       </div>
 
       <div data-gc="bot.adicionar-bot.div--2" className="mt-6">
         <Label data-gc="bot.adicionar-bot.label" htmlFor="servidor">Adicionar em</Label>
 
-        {disponiveis.length ? (
-          <SelectField data-gc="bot.adicionar-bot.select-field.set-escolhido"
+        {available.length ? (
+          <SelectField data-gc="bot.adicionar-bot.select-field.set-picked"
             id="servidor"
-            value={escolhido}
-            onSelect={setEscolhido}
+            value={picked}
+            onSelect={setPicked}
             placeholder="Escolha o servidor"
-            options={disponiveis.map((g) => ({ value: g.id, label: g.name }))}
+            options={available.map((g) => ({ value: g.id, label: g.name }))}
           />
         ) : (
           <p data-gc="bot.adicionar-bot.p--5" className="rounded bg-surface-0 px-3 py-2 text-sm text-ink-faint">
-            <SemDestino data-gc="bot.adicionar-bot.sem-destino" onde={onde.data} />
+            <WithoutDestination data-gc="bot.adicionar-bot.without-destination" where={where.data} />
           </p>
         )}
 
@@ -95,12 +95,12 @@ export const AdicionarBot: React.FC = () => {
           Esse bot está pedindo
         </p>
 
-        {bot.permissoesPedidas.length ? (
+        {bot.permissionsRequested.length ? (
           <ul data-gc="bot.adicionar-bot.ul" className="space-y-1.5 rounded bg-surface-0 p-3">
-            {bot.permissoesPedidas.map((p) => (
+            {bot.permissionsRequested.map((p) => (
               <li data-gc="bot.adicionar-bot.li" key={p} className="flex items-center gap-2 text-sm text-ink-muted">
                 <Check data-gc="bot.adicionar-bot.check" size={14} className="shrink-0 text-online" />
-                {PERMISSION_LABELS[p]?.nome ?? p}
+                {PERMISSION_LABELS[p]?.name ?? p}
               </li>
             ))}
           </ul>
@@ -123,27 +123,27 @@ export const AdicionarBot: React.FC = () => {
 
         <Button data-gc="bot.adicionar-bot.button--3"
           className="flex-1"
-          disabled={!escolhido || adicionar.isPending}
+          disabled={!picked || add.isPending}
           onClick={() =>
-            adicionar.mutate(
-              { botId: bot.id, guildId: escolhido },
-              { onSuccess: () => navigate(`/channels/${escolhido}`) },
+            add.mutate(
+              { botId: bot.id, guildId: picked },
+              { onSuccess: () => navigate(`/channels/${picked}`) },
             )
           }
         >
           <Bot data-gc="bot.adicionar-bot.bot" size={16} /> Autorizar
         </Button>
       </div>
-    </Moldura>
+    </Frame>
   );
 };
 
-const SemDestino: React.FC<{ onde?: DestinosDoBotModel }> = ({ onde }) => {
-  if (!onde) return <>Carregando…</>;
+const WithoutDestination: React.FC<{ where?: BotModelDestinations }> = ({ where }) => {
+  if (!where) return <>Carregando…</>;
 
-  if (!onde.totalDeServidores) return <>Você ainda não está em nenhum servidor.</>;
+  if (!where.serversTotal) return <>Você ainda não está em nenhum servidor.</>;
 
-  if (onde.jaEstaEm >= onde.totalDeServidores) {
+  if (where.alreadyThisAt >= where.serversTotal) {
     return <>Esse bot já está em todos os servidores que você gerencia.</>;
   }
 
@@ -155,9 +155,9 @@ const SemDestino: React.FC<{ onde?: DestinosDoBotModel }> = ({ onde }) => {
   );
 };
 
-const Moldura: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Frame: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <main data-gc="bot.adicionar-bot.main" className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-surface-0 p-4">
-    <FundoDaMarca data-gc="bot.adicionar-bot.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+    <BrandBackground data-gc="bot.adicionar-bot.brand-background" className="pointer-events-none absolute inset-0" />
     <div data-gc="bot.adicionar-bot.div--5" className="relative w-full max-w-md rounded-xl bg-surface-1 p-6 shadow-2xl ring-1 ring-line-sutil">{children}</div>
   </main>
 );

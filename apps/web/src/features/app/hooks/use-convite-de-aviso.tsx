@@ -1,54 +1,55 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-import { pedirPermissaoDeAviso, permissaoDeAviso } from "~/lib/notificacoes";
+import { noticeRequestPermission, noticePermission } from "~/lib/notificacoes";
+import { i18next } from "~/traducao";
 
-const CHAVE = "gravae:aviso-perguntado";
+const KEY = "gravae:aviso-perguntado";
 
-export function useConviteDeAviso(ativo: boolean) {
+export function useInviteNotice(active: boolean) {
   useEffect(() => {
-    if (!ativo || permissaoDeAviso() !== "perguntar") return;
+    if (!active || noticePermission() !== "perguntar") return;
 
     try {
-      if (localStorage.getItem(CHAVE)) return;
+      if (localStorage.getItem(KEY)) return;
     } catch {
       return;
     }
 
-    const marcar = () => {
+    const mark = () => {
       try {
-        localStorage.setItem(CHAVE, "1");
+        localStorage.setItem(KEY, "1");
       } catch {
       }
     };
 
-    const relogio = setTimeout(() => {
+    const clock = setTimeout(() => {
       toast.info(
         ({ closeToast }) => (
           <div data-gc="app.use-convite-de-aviso.div">
-            <p data-gc="app.use-convite-de-aviso.p" className="text-sm font-medium">Quer ser avisado das mensagens?</p>
+            <p data-gc="app.use-convite-de-aviso.p" className="text-sm font-medium">{i18next.t("comum.avisoDoNavegador.titulo")}</p>
             <p data-gc="app.use-convite-de-aviso.p--2" className="mt-0.5 text-xs opacity-80">
-              Com o Gravaê atrás de outra janela, ele te chama.
+              {i18next.t("comum.avisoDoNavegador.detalhe")}
             </p>
             <div data-gc="app.use-convite-de-aviso.div--2" className="mt-2 flex gap-2">
               <button data-gc="app.use-convite-de-aviso.button"
                 onClick={() => {
-                  marcar();
-                  void pedirPermissaoDeAviso();
+                  mark();
+                  void noticeRequestPermission();
                   closeToast?.();
                 }}
                 className="rounded bg-brand px-2.5 py-1 text-xs font-semibold text-sobre-marca"
               >
-                Permitir
+                {i18next.t("chamada.permissoes.permitir")}
               </button>
               <button data-gc="app.use-convite-de-aviso.button--2"
                 onClick={() => {
-                  marcar();
+                  mark();
                   closeToast?.();
                 }}
                 className="rounded px-2.5 py-1 text-xs text-ink-muted hover:text-ink"
               >
-                Agora não
+                {i18next.t("comum.agoraNao")}
               </button>
             </div>
           </div>
@@ -57,6 +58,6 @@ export function useConviteDeAviso(ativo: boolean) {
       );
     }, 4_000);
 
-    return () => clearTimeout(relogio);
-  }, [ativo]);
+    return () => clearTimeout(clock);
+  }, [active]);
 }

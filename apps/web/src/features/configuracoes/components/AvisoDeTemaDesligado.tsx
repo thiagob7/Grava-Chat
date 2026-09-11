@@ -2,17 +2,17 @@ import React from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "~/components/ui/button";
-import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { themeOffByUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
+import { useStudio } from "~/features/configuracoes/stores/estudio";
 
-export const AvisoDeTemaDesligado: React.FC = () => {
-  const ativoId = useEstudio((s) => s.ativoId);
-  const alternarTema = useEstudio((s) => s.alternarTema);
+export const ThemeOffNotice: React.FC = () => {
+  const activeId = useStudio((s) => s.activeId);
+  const toggleTheme = useStudio((s) => s.toggleTheme);
 
-  if (!temaDesligadoPelaUrl()) return null;
+  if (!themeOffByUrl()) return null;
 
-  const desligar = () => {
-    if (ativoId) alternarTema(ativoId);
+  const turnoff = () => {
+    if (activeId) toggleTheme(activeId);
 
     toast.success("Tema desligado. Pode tirar o ?sem-tema do endereço.");
   };
@@ -39,8 +39,8 @@ export const AvisoDeTemaDesligado: React.FC = () => {
         O tema está desligado só nesta aba. Se o app tinha sumido, foi ele.
       </span>
 
-      {ativoId && (
-        <Button data-gc="configuracoes.aviso-de-tema-desligado.button.desligar" size="sm" variant="surface" onClick={desligar}>
+      {activeId && (
+        <Button data-gc="configuracoes.aviso-de-tema-desligado.button.turnoff" size="sm" variant="surface" onClick={turnoff}>
           Desligar de vez
         </Button>
       )}

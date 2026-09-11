@@ -1,37 +1,37 @@
 import React from "react";
-import { LIMITS, type Emblema } from "@gravae/shared";
+import { LIMITS, type Badge } from "@gravae/shared";
 import { toast } from "react-toastify";
 
-import { useVestirEmblemas } from "~/@core/application/queries/guild/use-emblemas";
+import { useWearBadges } from "~/@core/application/queries/guild/use-emblemas";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-interface EscolherEmblemasProps {
+interface PickBadgesProps {
   guildId: string;
-  disponiveis: Emblema[];
-  vestidos: Emblema[];
+  available: Badge[];
+  worn: Badge[];
 }
 
-export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
+export const PickBadges: React.FC<PickBadgesProps> = ({
   guildId,
-  disponiveis,
-  vestidos,
+  available,
+  worn,
 }) => {
   const { t } = useTranslation();
-  const vestir = useVestirEmblemas(guildId);
-  if (!disponiveis.length) return null;
+  const wear = useWearBadges(guildId);
+  if (!available.length) return null;
 
-  const atuais = new Set(vestidos.map((e) => e.id));
+  const current = new Set(worn.map((e) => e.id));
 
-  const alternar = (id: string) => {
-    const proximos = new Set(atuais);
+  const toggle = (id: string) => {
+    const next = new Set(current);
 
-    if (proximos.has(id)) proximos.delete(id);
-    else if (proximos.size >= LIMITS.emblemasPorMembro) {
-      return toast.info(t("perfil.emblemas.limite", { quantidade: LIMITS.emblemasPorMembro }));
-    } else proximos.add(id);
+    if (next.has(id)) next.delete(id);
+    else if (next.size >= LIMITS.badgesByMember) {
+      return toast.info(t("perfil.emblemas.limite", { quantidade: LIMITS.badgesByMember }));
+    } else next.add(id);
 
-    vestir.mutate([...proximos]);
+    wear.mutate([...next]);
   };
 
   return (
@@ -41,25 +41,25 @@ export const EscolherEmblemas: React.FC<EscolherEmblemasProps> = ({
       </p>
 
       <div data-gc="perfil.cartao.escolher-emblemas.div--2" className="flex flex-wrap gap-1.5">
-        {disponiveis.map((emblema) => (
+        {available.map((badge) => (
           <button data-gc="perfil.cartao.escolher-emblemas.button"
-            key={emblema.id}
-            onClick={() => alternar(emblema.id)}
-            title={emblema.nome}
-            disabled={vestir.isPending}
+            key={badge.id}
+            onClick={() => toggle(badge.id)}
+            title={badge.name}
+            disabled={wear.isPending}
             className={cn(
               "flex items-center gap-1.5 rounded border px-2 py-1 text-xs transition",
-              atuais.has(emblema.id)
+              current.has(badge.id)
                 ? "border-brand bg-surface-3 text-ink"
                 : "border-line bg-surface-0 text-ink-muted hover:bg-surface-3 hover:text-ink",
             )}
           >
-            {emblema.emoji ? (
-              <span data-gc="perfil.cartao.escolher-emblemas.span" className="leading-none">{emblema.emoji}</span>
-            ) : emblema.iconUrl ? (
-              <img data-gc="perfil.cartao.escolher-emblemas.img" src={emblema.iconUrl} alt="" className="size-4 object-contain" />
+            {badge.emoji ? (
+              <span data-gc="perfil.cartao.escolher-emblemas.span" className="leading-none">{badge.emoji}</span>
+            ) : badge.iconUrl ? (
+              <img data-gc="perfil.cartao.escolher-emblemas.img" src={badge.iconUrl} alt="" className="size-4 object-contain" />
             ) : null}
-            {emblema.nome}
+            {badge.name}
           </button>
         ))}
       </div>

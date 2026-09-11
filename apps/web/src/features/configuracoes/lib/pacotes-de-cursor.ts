@@ -1,7 +1,7 @@
 import {
-  PAPEIS_DE_CURSOR,
-  type CursorImportado,
-  type PapelDeCursor,
+  CURSOR_ROLES,
+  type CursorImported,
+  type CursorRole,
 } from "~/features/configuracoes/lib/cursor-importado";
 
 /*
@@ -13,17 +13,17 @@ import {
   carregar sob demanda só adiaria a mesma busca para o instante em que a tela
   abre.
 */
-const ARQUIVOS = import.meta.glob<string>("../../../assets/cursores/*/*.png", {
+const FILES = import.meta.glob<string>("../../../assets/cursores/*/*.png", {
   eager: true,
   query: "?url",
   import: "default",
 });
 
-const imagem = (pacote: string, papel: PapelDeCursor) => {
-  const caminho = `../../../assets/cursores/${pacote}/${papel}.png`;
-  const url = ARQUIVOS[caminho];
+const image = (packet: string, role: CursorRole) => {
+  const path = `../../../assets/cursores/${packet}/${role}.png`;
+  const url = FILES[path];
 
-  if (!url) throw new Error(`cursor ausente: ${pacote}/${papel}`);
+  if (!url) throw new Error(`cursor ausente: ${packet}/${role}`);
 
   return url;
 };
@@ -38,51 +38,51 @@ const imagem = (pacote: string, papel: PapelDeCursor) => {
   também: elas se revezam no mesmo gesto, e pontos diferentes fariam o ponteiro
   pular no instante em que a mão fecha.
 */
-type Ponto = readonly [number, number];
-type Pontos = Record<PapelDeCursor, Ponto>;
+type Dot = readonly [number, number];
+type Points = Record<CursorRole, Dot>;
 
-const COMUNS = {
+const COMMON = {
   texto: [31, 32],
   bloqueado: [7, 2],
   arrastar: [32, 32],
   arrastando: [32, 32],
 } as const;
 
-const PONTOS: Record<string, Pontos> = {
-  contorno: { padrao: [21, 12], clicavel: [19, 4], ...COMUNS },
-  solido: { padrao: [21, 12], clicavel: [19, 8], ...COMUNS },
-  fino: { padrao: [10, 4], clicavel: [18, 8], ...COMUNS },
-  "solido-fino": { padrao: [10, 8], clicavel: [18, 12], ...COMUNS },
-  pequeno: { padrao: [19, 12], clicavel: [22, 10], ...COMUNS },
-  ficcao: { padrao: [11, 6], clicavel: [18, 8], ...COMUNS },
-  desenho: { padrao: [13, 4], clicavel: [19, 4], ...COMUNS },
-  manopla: { padrao: [8, 2], clicavel: [8, 2], ...COMUNS },
+const POINTS: Record<string, Points> = {
+  outline: { padrao: [21, 12], clicavel: [19, 4], ...COMMON },
+  solid: { padrao: [21, 12], clicavel: [19, 8], ...COMMON },
+  thin: { padrao: [10, 4], clicavel: [18, 8], ...COMMON },
+  "solido-fino": { padrao: [10, 8], clicavel: [18, 12], ...COMMON },
+  small: { padrao: [19, 12], clicavel: [22, 10], ...COMMON },
+  fiction: { padrao: [11, 6], clicavel: [18, 8], ...COMMON },
+  drawing: { padrao: [13, 4], clicavel: [19, 4], ...COMMON },
+  gauntlet: { padrao: [8, 2], clicavel: [8, 2], ...COMMON },
 };
 
-const LADO = 64;
+const SIDE = 64;
 
-export interface PacoteDeCursor {
+export interface CursorPacket {
   id: string;
-  nome: string;
-  detalhe: string;
-  cursores: Record<PapelDeCursor, CursorImportado>;
+  name: string;
+  detail: string;
+  cursors: Record<CursorRole, CursorImported>;
 }
 
-const montar = (id: string): Record<PapelDeCursor, CursorImportado> =>
+const build = (id: string): Record<CursorRole, CursorImported> =>
   Object.fromEntries(
-    PAPEIS_DE_CURSOR.map((papel) => [
-      papel,
+    CURSOR_ROLES.map((role) => [
+      role,
       {
-        imagem: imagem(id, papel),
-        largura: LADO,
-        altura: LADO,
-        pontoX: PONTOS[id]![papel][0],
-        pontoY: PONTOS[id]![papel][1],
-      } satisfies CursorImportado,
+        image: image(id, role),
+        width: SIDE,
+        height: SIDE,
+        dotX: POINTS[id]![role][0],
+        dotY: POINTS[id]![role][1],
+      } satisfies CursorImported,
     ]),
-  ) as Record<PapelDeCursor, CursorImportado>;
+  ) as Record<CursorRole, CursorImported>;
 
-const DESCRICOES: [string, string, string][] = [
+const DESCRIPTIONS: [string, string, string][] = [
   ["contorno", "Contorno", "Traço marcado. Some menos sobre imagem e vídeo."],
   ["solido", "Sólido", "Sem contorno, mais perto do cursor do sistema."],
   ["fino", "Fino", "Traço leve e ponta pequena."],
@@ -93,6 +93,6 @@ const DESCRICOES: [string, string, string][] = [
   ["manopla", "Manopla", "Mão fechada de armadura. Para servidor de jogo."],
 ];
 
-export const PACOTES_DE_CURSOR: PacoteDeCursor[] = DESCRICOES.map(
-  ([id, nome, detalhe]) => ({ id, nome, detalhe, cursores: montar(id) }),
+export const CURSOR_PACKETS: CursorPacket[] = DESCRIPTIONS.map(
+  ([id, name, detail]) => ({ id, name, detail, cursors: build(id) }),
 );

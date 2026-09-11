@@ -3,119 +3,119 @@ import { ConnectionQuality, Track, type LocalTrack } from "livekit-client";
 
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
-const INTERVALO_MS = 3000;
+const INTERVAL_MS = 3000;
 
-const AMOSTRAS = 80;
+const SAMPLES = 80;
 
-export interface PingDaChamada {
+export interface CallPing {
   ms: number | null;
   media: number | null;
-  perda: number | null;
-  qualidade: ConnectionQuality;
-  historico: (number | null)[];
+  loss: number | null;
+  quality: ConnectionQuality;
+  past: (number | null)[];
 }
 
-const VAZIO: PingDaChamada = {
+const EMPTY: CallPing = {
   ms: null,
   media: null,
-  perda: null,
-  qualidade: ConnectionQuality.Unknown,
-  historico: [],
+  loss: null,
+  quality: ConnectionQuality.Unknown,
+  past: [],
 };
 
-export function useVoicePing(): PingDaChamada {
+export function useVoicePing(): CallPing {
   const room = useVoiceStore((s) => s.room);
-  const [ping, setPing] = useState<PingDaChamada>(VAZIO);
+  const [ping, setPing] = useState<CallPing>(EMPTY);
 
-  const anterior = useRef<{ perdidos: number; enviados: number } | null>(null);
+  const anterior = useRef<{ lost: number; sent: number } | null>(null);
 
   useEffect(() => {
     if (!room) {
-      setPing(VAZIO);
+      setPing(EMPTY);
       anterior.current = null;
       return;
     }
 
-    let vivo = true;
+    let live = true;
 
-    const medir = async () => {
-      const publicacao = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-      const track = publicacao?.track as LocalTrack | undefined;
-      const qualidade = room.localParticipant.connectionQuality;
+    const measure = async () => {
+      const post = room.localParticipant.getTrackPublication(Track.Source.Microphone);
+      const track = post?.track as LocalTrack | undefined;
+      const quality = room.localParticipant.connectionQuality;
 
       let rtt: number | null = null;
-      let perda: number | null = null;
+      let loss: number | null = null;
 
       try {
-        const relatorio = await track?.getRTCStatsReport();
+        const report = await track?.getRTCStatsReport();
 
-        relatorio?.forEach((entrada) => {
-          if (entrada.type === "candidate-pair" && entrada.state === "succeeded") {
-            const valor = (entrada as { currentRoundTripTime?: number }).currentRoundTripTime;
-            if (typeof valor === "number") rtt = Math.round(valor * 1000);
+        report?.forEach((entry) => {
+          if (entry.type === "candidate-pair" && entry.state === "succeeded") {
+            const value = (entry as { currentRoundTripTime?: number }).currentRoundTripTime;
+            if (typeof value === "number") rtt = Math.round(value * 1000);
           }
 
-          if (entrada.type === "outbound-rtp") {
-            const e = entrada as { packetsSent?: number };
-            const enviados = e.packetsSent ?? 0;
-            const perdidos =
-              (entrada as unknown as { retransmittedPacketsSent?: number }).retransmittedPacketsSent ?? 0;
+          if (entry.type === "outbound-rtp") {
+            const e = entry as { packetsSent?: number };
+            const sent = e.packetsSent ?? 0;
+            const lost =
+              (entry as unknown as { retransmittedPacketsSent?: number }).retransmittedPacketsSent ?? 0;
 
-            const antes = anterior.current;
-            if (antes && enviados > antes.enviados) {
-              const dEnviados = enviados - antes.enviados;
-              const dPerdidos = Math.max(0, perdidos - antes.perdidos);
-              perda = Math.min(100, (dPerdidos / dEnviados) * 100);
+            const before = anterior.current;
+            if (before && sent > before.sent) {
+              const dSent = sent - before.sent;
+              const dLost = Math.max(0, lost - before.lost);
+              loss = Math.min(100, (dLost / dSent) * 100);
             }
 
-            anterior.current = { perdidos, enviados };
+            anterior.current = { lost, sent };
           }
         });
       } catch {
       }
 
-      if (!vivo) return;
+      if (!live) return;
 
-      setPing((atual) => {
-        const historico = [...atual.historico, rtt].slice(-AMOSTRAS);
-        const validos = historico.filter((v): v is number => v !== null);
+      setPing((current) => {
+        const past = [...current.past, rtt].slice(-SAMPLES);
+        const valid = past.filter((v): v is number => v !== null);
 
         return {
           ms: rtt,
-          media: validos.length
-            ? Math.round(validos.reduce((a, b) => a + b, 0) / validos.length)
+          media: valid.length
+            ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length)
             : null,
-          perda: perda ?? atual.perda,
-          qualidade,
-          historico,
+          loss: loss ?? current.loss,
+          quality,
+          past,
         };
       });
     };
 
-    void medir();
-    const relogio = setInterval(() => void medir(), INTERVALO_MS);
+    void measure();
+    const clock = setInterval(() => void measure(), INTERVAL_MS);
 
     return () => {
-      vivo = false;
-      clearInterval(relogio);
+      live = false;
+      clearInterval(clock);
     };
   }, [room]);
 
   return ping;
 }
 
-export function corDoPing({ ms, qualidade }: Pick<PingDaChamada, "ms" | "qualidade">): string {
+export function pingColor({ ms, quality }: Pick<CallPing, "ms" | "quality">): string {
   if (ms !== null) {
     if (ms <= 100) return "text-online";
     if (ms <= 200) return "text-idle";
     return "text-danger";
   }
 
-  if (qualidade === ConnectionQuality.Excellent || qualidade === ConnectionQuality.Good) {
+  if (quality === ConnectionQuality.Excellent || quality === ConnectionQuality.Good) {
     return "text-online";
   }
-  if (qualidade === ConnectionQuality.Poor) return "text-idle";
-  if (qualidade === ConnectionQuality.Lost) return "text-danger";
+  if (quality === ConnectionQuality.Poor) return "text-idle";
+  if (quality === ConnectionQuality.Lost) return "text-danger";
 
   return "text-ink-faint";
 }

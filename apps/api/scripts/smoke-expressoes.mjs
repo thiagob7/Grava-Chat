@@ -14,45 +14,45 @@ const api = async (path, { token, body, method = "POST" } = {}) => {
   return res.status === 204 ? null : res.json();
 };
 
-const recusa = async (esperado, descricao, fn) => {
+const refusal = async (expected, description, fn) => {
   try {
     await fn();
-    throw new Error(`FALHOU: ${descricao}`);
+    throw new Error(`FALHOU: ${description}`);
   } catch (e) {
-    if (!new RegExp(`-> ${esperado}`).test(e.message)) throw e;
-    ok(`${descricao} -> ${esperado}`);
+    if (!new RegExp(`-> ${expected}`).test(e.message)) throw e;
+    ok(`${description} -> ${expected}`);
   }
 };
 
-const dono = await api("/auth/dev-login", { body: { email: "dono-exp@gravae.io", displayName: "Dono" } });
+const owner = await api("/auth/dev-login", { body: { email: "dono-exp@gravae.io", displayName: "Dono" } });
 const ze = await api("/auth/dev-login", { body: { email: "ze-exp@gravae.io", displayName: "Ze" } });
 
-const guild = await api("/guilds", { token: dono.accessToken, body: { name: "Teste Expressoes" } });
-const convite = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
-await api(`/invites/${convite.code}/join`, { token: ze.accessToken });
+const guild = await api("/guilds", { token: owner.accessToken, body: { name: "Teste Expressoes" } });
+const invite = await api(`/guilds/${guild.id}/invites`, { token: owner.accessToken, body: {} });
+await api(`/invites/${invite.code}/join`, { token: ze.accessToken });
 
 console.log("\n== emoji ==");
 const emoji = await api(`/guilds/${guild.id}/emojis`, {
-  token: dono.accessToken,
+  token: owner.accessToken,
   body: { name: "gravae", url: "https://exemplo/emoji.png" },
 });
 ok(`emoji :${emoji.name}: criado`);
 
-await recusa(400, "nome de emoji com espaco e recusado", () =>
+await refusal(400, "nome de emoji com espaco e recusado", () =>
   api(`/guilds/${guild.id}/emojis`, {
-    token: dono.accessToken,
+    token: owner.accessToken,
     body: { name: "nome com espaco", url: "https://exemplo/e.png" },
   }),
 );
 
-await recusa(400, "dois emojis com o mesmo nome nao", () =>
+await refusal(400, "dois emojis com o mesmo nome nao", () =>
   api(`/guilds/${guild.id}/emojis`, {
-    token: dono.accessToken,
+    token: owner.accessToken,
     body: { name: "gravae", url: "https://exemplo/outro.png" },
   }),
 );
 
-await recusa(403, "quem nao tem MANAGE_EXPRESSIONS nao sobe emoji", () =>
+await refusal(403, "quem nao tem MANAGE_EXPRESSIONS nao sobe emoji", () =>
   api(`/guilds/${guild.id}/emojis`, {
     token: ze.accessToken,
     body: { name: "hacker", url: "https://exemplo/h.png" },
@@ -60,8 +60,8 @@ await recusa(403, "quem nao tem MANAGE_EXPRESSIONS nao sobe emoji", () =>
 );
 
 console.log("\n== figurinha ==");
-const figurinha = await api(`/guilds/${guild.id}/stickers`, {
-  token: dono.accessToken,
+const sticker = await api(`/guilds/${guild.id}/stickers`, {
+  token: owner.accessToken,
   body: {
     name: "abraco",
     relatedEmoji: "🤗",
@@ -69,42 +69,42 @@ const figurinha = await api(`/guilds/${guild.id}/stickers`, {
     size: 400 * 1024,
   },
 });
-ok(`figurinha "${figurinha.name}" criada`);
+ok(`figurinha "${sticker.name}" criada`);
 
-await recusa(400, "figurinha acima de 512 KB e recusada", () =>
+await refusal(400, "figurinha acima de 512 KB e recusada", () =>
   api(`/guilds/${guild.id}/stickers`, {
-    token: dono.accessToken,
+    token: owner.accessToken,
     body: { name: "gorda", relatedEmoji: "😅", url: "https://exemplo/g.png", size: 900 * 1024 },
   }),
 );
 
 console.log("\n== som ==");
-const som = await api(`/guilds/${guild.id}/sounds`, {
-  token: dono.accessToken,
+const sound = await api(`/guilds/${guild.id}/sounds`, {
+  token: owner.accessToken,
   body: { name: "risada", emoji: "😂", url: "https://exemplo/som.mp3", volume: 0.8, size: 100 * 1024 },
 });
-ok(`som "${som.name}" criado com volume ${som.volume}`);
+ok(`som "${sound.name}" criado com volume ${sound.volume}`);
 
 console.log("\n== lista para o seletor ==");
-const tudo = await api(`/guilds/${guild.id}/expressions`, { token: ze.accessToken, method: "GET" });
-if (tudo.emojis.length !== 1 || tudo.stickers.length !== 1 || tudo.sounds.length !== 1) {
+const everything = await api(`/guilds/${guild.id}/expressions`, { token: ze.accessToken, method: "GET" });
+if (everything.emojis.length !== 1 || everything.stickers.length !== 1 || everything.sounds.length !== 1) {
   throw new Error("a lista de expressoes nao veio completa");
 }
-if (!tudo.emojis[0].createdBy) throw new Error("faltou quem enviou");
-ok(`membro comum ve as tres listas, com quem enviou (${tudo.emojis[0].createdBy.displayName})`);
+if (!everything.emojis[0].createdBy) throw new Error("faltou quem enviou");
+ok(`membro comum ve as tres listas, com quem enviou (${everything.emojis[0].createdBy.displayName})`);
 
 console.log("\n== apagar ==");
-await api(`/guilds/${guild.id}/emojis/${emoji.id}`, { token: dono.accessToken, method: "DELETE" });
-const depois = await api(`/guilds/${guild.id}/expressions`, { token: dono.accessToken, method: "GET" });
-if (depois.emojis.length !== 0) throw new Error("o emoji apagado continua na lista");
+await api(`/guilds/${guild.id}/emojis/${emoji.id}`, { token: owner.accessToken, method: "DELETE" });
+const after = await api(`/guilds/${guild.id}/expressions`, { token: owner.accessToken, method: "GET" });
+if (after.emojis.length !== 0) throw new Error("o emoji apagado continua na lista");
 ok("apagar tira da lista");
 
-const registro = await api(`/guilds/${guild.id}/audit-log`, { token: dono.accessToken, method: "GET" });
-const acoes = registro.entries.map((e) => e.action);
-for (const esperada of ["emoji.create", "emoji.delete", "sticker.create", "sound.create"]) {
-  if (!acoes.includes(esperada)) throw new Error(`a auditoria nao registrou ${esperada}`);
+const record = await api(`/guilds/${guild.id}/audit-log`, { token: owner.accessToken, method: "GET" });
+const actions = record.entries.map((e) => e.action);
+for (const expected of ["emoji.create", "emoji.delete", "sticker.create", "sound.create"]) {
+  if (!actions.includes(expected)) throw new Error(`a auditoria nao registrou ${expected}`);
 }
 ok("cada expressao criada e apagada aparece no registro de auditoria");
 
-await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "DELETE" });
+await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "DELETE" });
 console.log("\ntudo certo.");

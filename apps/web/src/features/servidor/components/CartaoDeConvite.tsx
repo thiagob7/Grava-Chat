@@ -1,41 +1,43 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { ConviteModal } from "~/features/servidor/components/ConviteModal";
-import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
+import { InviteModal } from "~/features/servidor/components/ConviteModal";
+import { CommunitySeal } from "~/features/servidor/components/SeloDaComunidade";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { Button } from "~/components/ui/button";
 import { avatarColor, initials } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
-export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
+export const InviteCard: React.FC<{ code: string }> = ({ code }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: convite, isLoading, isError } = useFindInvite(codigo);
-  const [perguntando, setPerguntando] = useState(false);
+  const { data: invite, isLoading, isError } = useFindInvite(code);
+  const [asking, setAsking] = useState(false);
 
   if (isLoading)
     return (
       <div data-gc="servidor.cartao-de-convite.div" className="mt-1 h-64 w-80 animate-pulse rounded-lg border border-line bg-surface-1" />
     );
 
-  if (isError || !convite)
+  if (isError || !invite)
     return (
       <div data-gc="servidor.cartao-de-convite.div--2" className="mt-1 w-80 rounded-lg border border-line bg-surface-1 p-3">
-        <p data-gc="servidor.cartao-de-convite.p" className="text-sm font-medium text-ink-muted">Convite indisponível</p>
+        <p data-gc="servidor.cartao-de-convite.p" className="text-sm font-medium text-ink-muted">{t("servidor.convite.indisponivel")}</p>
         <p data-gc="servidor.cartao-de-convite.p--2" className="mt-0.5 text-xs text-ink-faint">
-          Ele expirou, esgotou, ou quem criou apagou.
+          {t("servidor.convite.indisponivelDetalhe")}
         </p>
       </div>
     );
 
-  const { guild } = convite;
+  const { guild } = invite;
 
   const ir = () => {
-    if (convite.alreadyMember) {
+    if (invite.alreadyMember) {
       navigate(`/channels/${guild.id}`);
       return;
     }
 
-    setPerguntando(true);
+    setAsking(true);
   };
 
   return (
@@ -72,17 +74,19 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
         <div data-gc="servidor.cartao-de-convite.div--5" className="min-w-0 flex-1">
           <p data-gc="servidor.cartao-de-convite.p--3" className="flex items-center gap-1.5 font-semibold">
             <span data-gc="servidor.cartao-de-convite.span--2" className="truncate">{guild.name}</span>
-            <SeloDaComunidade data-gc="servidor.cartao-de-convite.selo-da-comunidade" verificada={guild.verificada} detectavel={guild.detectavel} tamanho={15} />
+            <CommunitySeal data-gc="servidor.cartao-de-convite.community-seal" verified={guild.verified} detectable={guild.detectable} size={15} />
           </p>
 
           <p data-gc="servidor.cartao-de-convite.p--4" className="mt-0.5 flex items-center gap-3 text-xs text-ink-muted">
             <span data-gc="servidor.cartao-de-convite.span--3" className="flex items-center gap-1.5">
               <span data-gc="servidor.cartao-de-convite.span--4" className="size-2 rounded-full bg-online" />
-              {guild.onlineCount} online
+              {t("servidor.descoberta.online", { quantos: guild.onlineCount })}
             </span>
             <span data-gc="servidor.cartao-de-convite.span--5" className="flex items-center gap-1.5">
               <span data-gc="servidor.cartao-de-convite.span--6" className="size-2 rounded-full bg-ink-faint" />
-              {guild.memberCount} {guild.memberCount === 1 ? "membro" : "membros"}
+              {guild.memberCount === 1
+                ? t("servidor.descoberta.umMembro")
+                : t("servidor.descoberta.membros", { quantos: guild.memberCount })}
             </span>
           </p>
         </div>
@@ -98,12 +102,14 @@ export const CartaoDeConvite: React.FC<{ codigo: string }> = ({ codigo }) => {
           className="w-full"
           onClick={ir}
         >
-          {convite.alreadyMember ? "Ir para a comunidade" : "Entrar na comunidade"}
+          {invite.alreadyMember
+            ? t("servidor.convite.abrir")
+            : t("servidor.convite.entrar")}
         </Button>
       </div>
     </article>
 
-      <ConviteModal data-gc="servidor.cartao-de-convite.convite-modal" codigo={perguntando ? codigo : null} onFechar={() => setPerguntando(false)} />
+      <InviteModal data-gc="servidor.cartao-de-convite.invite-modal" code={asking ? code : null} onClose={() => setAsking(false)} />
     </>
   );
 };

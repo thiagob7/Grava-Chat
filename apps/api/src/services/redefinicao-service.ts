@@ -1,27 +1,28 @@
 import { createHash, randomBytes } from "node:crypto";
 
 import { env } from "~/env.js";
-import { correio } from "~/lib/correio.js";
+import { officialService } from "~/services/oficial-service.js";
+import { mail } from "~/lib/correio.js";
 import { AppError } from "~/lib/http.js";
-import { gerarHash } from "~/lib/senha.js";
+import { generateHash } from "~/lib/senha.js";
 import { keys, redis } from "~/lib/redis.js";
 import { accountRepository } from "~/repositories/account-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 
-const VALIDADE_S = 30 * 60;
+const VALIDITY_S = 30 * 60;
 
-const ESPERA_S = 60;
+const WAIT_S = 60;
 
-const digerir = (token: string) => createHash("sha256").update(token).digest("base64url");
+const digest = (token: string) => createHash("sha256").update(token).digest("base64url");
 
 const web = () => env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
 
-export const CAMINHO_DA_REDEFINICAO = "/redefinir";
+export const RESET_PATH = "/redefinir";
 
-export function textoDoEmail(nome: string, link: string) {
+export function emailText(name: string, link: string) {
   return [
-    `Oi, ${nome}.`,
+    `Oi, ${name}.`,
     "",
     "Alguém pediu uma senha nova para a sua conta do Gravaê. Se foi você, o link abaixo abre a tela de escolher:",
     "",
@@ -31,50 +32,52 @@ export function textoDoEmail(nome: string, link: string) {
   ].join("\n");
 }
 
-export const redefinicaoService = {
-  async pedir(email: string) {
-    if (!correio.ligado()) {
+export const resetService = {
+  async askFor(email: string) {
+    if (!mail.on()) {
       throw new AppError("O envio de e-mail não está configurado neste servidor", 503);
     }
 
-    const usuario = await userRepository.findByEmail(email.trim().toLowerCase());
-    if (!usuario || usuario.isBot || usuario.sistema) return;
+    const user = await userRepository.findByEmail(email.trim().toLowerCase());
+    if (!user || user.isBot || user.system) return;
 
-    const primeiro = await redis.set(keys.pedidoDeRedefinicao(usuario.id), "1", "EX", ESPERA_S, "NX");
-    if (!primeiro) return;
+    const first = await redis.set(keys.resetRequest(user.id), "1", "EX", WAIT_S, "NX");
+    if (!first) return;
 
     const token = randomBytes(32).toString("base64url");
 
-    await redis.set(keys.redefinicaoDeSenha(digerir(token)), usuario.id, "EX", VALIDADE_S);
+    await redis.set(keys.passwordReset(digest(token)), user.id, "EX", VALIDITY_S);
 
-    const link = `${web()}${CAMINHO_DA_REDEFINICAO}?token=${token}`;
+    const link = `${web()}${RESET_PATH}?token=${token}`;
 
-    await correio.enviar(
-      usuario.email,
+    await mail.send(
+      user.email,
       "Sua senha nova do Gravaê",
-      textoDoEmail(usuario.displayName, link),
+      emailText(user.displayName, link),
     );
   },
 
-  async redefinir(token: string, nova: string) {
-    const userId = await redis.getdel(keys.redefinicaoDeSenha(digerir(token)));
+  async reset(token: string, fresh: string) {
+    const userId = await redis.getdel(keys.passwordReset(digest(token)));
     if (!userId) throw new AppError("Este link já foi usado ou passou da validade", 400);
 
-    const usuario = await userRepository.findById(userId);
-    if (!usuario) throw new AppError("Este link já foi usado ou passou da validade", 400);
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("Este link já foi usado ou passou da validade", 400);
 
-    await userRepository.update(usuario.id, { senhaHash: await gerarHash(nova) });
+    await userRepository.update(user.id, { passwordHash: await generateHash(fresh) });
 
-    const contas = await accountRepository.findManyByUser(usuario.id);
-    if (!contas.some((c) => c.provider === "senha")) {
+    const accounts = await accountRepository.findManyByUser(user.id);
+    if (!accounts.some((c) => c.provider === "senha")) {
       await accountRepository.create({
-        userId: usuario.id,
+        userId: user.id,
         provider: "senha",
-        providerAccountId: usuario.email,
+        providerAccountId: user.email,
       });
     }
 
-    await sessionRepository.revokeAllForUser(usuario.id);
-    await redis.del(keys.pedidoDeRedefinicao(usuario.id));
+    await sessionRepository.revokeAllForUser(user.id);
+    await redis.del(keys.resetRequest(user.id));
+
+    void officialService.notify(user.id, "passwordSwapped", undefined);
   },
 };

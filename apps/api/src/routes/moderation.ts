@@ -47,7 +47,7 @@ export async function moderationRoutes(app: FastifyInstance) {
 
   app.put("/guilds/:guildId/members/:userId/timeout", async (req) => {
     const { guildId, userId } = guildMemberParams.parse(req.params);
-    const member = await moderationService.castigar(
+    const member = await moderationService.timeout(
       req.userId,
       guildId,
       userId,
@@ -61,7 +61,7 @@ export async function moderationRoutes(app: FastifyInstance) {
   app.patch("/guilds/:guildId/members/:userId/nickname", async (req) => {
     const { guildId, userId } = guildMemberParams.parse(req.params);
     const { nickname } = nicknameInput.parse(req.body);
-    const member = await moderationService.apelidar(req.userId, guildId, userId, nickname);
+    const member = await moderationService.nickname(req.userId, guildId, userId, nickname);
 
     io().to(rooms.guild(guildId)).emit("member:updated", member);
     return member;
@@ -74,9 +74,9 @@ export async function moderationRoutes(app: FastifyInstance) {
 
   app.post("/guilds/:guildId/automod", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
-    const regra = await autoModCrud.create(req.userId, guildId, autoModRuleInput.parse(req.body));
+    const rule = await autoModCrud.create(req.userId, guildId, autoModRuleInput.parse(req.body));
 
-    return reply.code(201).send(regra);
+    return reply.code(201).send(rule);
   });
 
   app.patch("/guilds/:guildId/automod/:ruleId", (req) => {

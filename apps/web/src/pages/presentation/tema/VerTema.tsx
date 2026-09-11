@@ -3,27 +3,27 @@ import { useNavigate, useParams } from "react-router";
 import { Palette } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { pesoDoTema, pesoLegivel } from "@gravae/shared";
+import { themeWeight, weightReadable } from "@gravae/shared";
 
-import { useTema } from "~/@core/application/queries/tema/use-temas";
+import { useTheme } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
-import { PreviaDosAtivos } from "~/features/tema/components/PreviaDosAtivos";
-import { PreviaDoTema } from "~/features/tema/components/PreviaDoTema";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
+import { useStudio } from "~/features/configuracoes/stores/estudio";
+import { ActivePreview } from "~/features/tema/components/PreviaDosAtivos";
+import { ThemePreview } from "~/features/tema/components/PreviaDoTema";
 
-export const VerTema: React.FC = () => {
-  const { temaId } = useParams();
+export const SeeTheme: React.FC = () => {
+  const { themeId } = useParams();
   const navigate = useNavigate();
   const confirm = useConfirm();
 
-  const { data: tema, isLoading, isError } = useTema(temaId);
-  const importar = useEstudio((s) => s.importar);
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+  const { data: theme, isLoading, isError } = useTheme(themeId);
+  const doImport = useStudio((s) => s.doImport);
+  const openSettings = useSettings((s) => s.open);
 
-  const voltar = () => navigate("/channels", { replace: true });
+  const back = () => navigate("/channels", { replace: true });
 
   if (isLoading)
     return (
@@ -32,7 +32,7 @@ export const VerTema: React.FC = () => {
       </div>
     );
 
-  if (isError || !tema)
+  if (isError || !theme)
     return (
       <div data-gc="tema.ver-tema.div--2" className="flex h-full flex-col items-center justify-center gap-4 bg-surface-0 p-6 text-center">
         <Palette data-gc="tema.ver-tema.palette" size={40} className="text-ink-faint" />
@@ -43,15 +43,15 @@ export const VerTema: React.FC = () => {
           </p>
         </div>
 
-        <Button data-gc="tema.ver-tema.button.voltar" variant="surface" onClick={voltar}>
+        <Button data-gc="tema.ver-tema.button.back" variant="surface" onClick={back}>
           Voltar para o Gravaê
         </Button>
       </div>
     );
 
-  const temCss = tema.css.trim().length > 0;
-  const quantosTokens = Object.keys(tema.substituicoes).length;
-  const peso = pesoDoTema(tema.css, tema.ativos);
+  const hasCss = theme.css.trim().length > 0;
+  const countTokens = Object.keys(theme.overrides).length;
+  const weight = themeWeight(theme.css, theme.actives);
 
   return (
     <div data-gc="tema.ver-tema.div--4" className="flex h-full items-center justify-center overflow-y-auto bg-surface-0 p-6">
@@ -62,22 +62,22 @@ export const VerTema: React.FC = () => {
           </span>
 
           <div data-gc="tema.ver-tema.div--6" className="min-w-0 flex-1">
-            <h1 data-gc="tema.ver-tema.h1" className="truncate text-lg font-semibold">{tema.nome}</h1>
+            <h1 data-gc="tema.ver-tema.h1" className="truncate text-lg font-semibold">{theme.name}</h1>
             <p data-gc="tema.ver-tema.p--3" className="truncate text-xs text-ink-faint">
-              Compartilhado por {tema.publicadoPor.displayName}
-              {tema.autor && tema.autor !== tema.publicadoPor.displayName
-                ? ` · escrito por ${tema.autor}`
+              Compartilhado por {theme.publishedBy.displayName}
+              {theme.author && theme.author !== theme.publishedBy.displayName
+                ? ` · escrito por ${theme.author}`
                 : ""}
-              {tema.versao ? ` · v${tema.versao}` : ""}
+              {theme.version ? ` · v${theme.version}` : ""}
             </p>
           </div>
         </div>
 
-        {tema.descricao && <p data-gc="tema.ver-tema.p--4" className="mt-4 text-sm text-ink-muted">{tema.descricao}</p>}
+        {theme.description && <p data-gc="tema.ver-tema.p--4" className="mt-4 text-sm text-ink-muted">{theme.description}</p>}
 
-        {tema.tags.length > 0 && (
+        {theme.tags.length > 0 && (
           <div data-gc="tema.ver-tema.div--7" className="mt-4 flex flex-wrap gap-1.5">
-            {tema.tags.map((tag) => (
+            {theme.tags.map((tag) => (
               <span data-gc="tema.ver-tema.span--2"
                 key={tag}
                 className="rounded-full bg-surface-3 px-2.5 py-0.5 text-xs text-ink-muted"
@@ -88,31 +88,31 @@ export const VerTema: React.FC = () => {
           </div>
         )}
 
-        <PreviaDoTema data-gc="tema.ver-tema.previa-do-tema"
-          temaId={tema.id}
+        <ThemePreview data-gc="tema.ver-tema.theme-preview"
+          themeId={theme.id}
           className="mt-5 aspect-video w-full overflow-hidden rounded-lg border border-line"
         />
 
         <dl data-gc="tema.ver-tema.dl" className="mt-5 flex gap-6 border-t border-line pt-4 text-xs">
           <div data-gc="tema.ver-tema.div--8">
             <dt data-gc="tema.ver-tema.dt" className="text-ink-faint">Cores trocadas</dt>
-            <dd data-gc="tema.ver-tema.dd" className="mt-0.5 text-sm font-medium">{quantosTokens}</dd>
+            <dd data-gc="tema.ver-tema.dd" className="mt-0.5 text-sm font-medium">{countTokens}</dd>
           </div>
           <div data-gc="tema.ver-tema.div--9">
             <dt data-gc="tema.ver-tema.dt--2" className="text-ink-faint">CSS</dt>
             <dd data-gc="tema.ver-tema.dd--2" className="mt-0.5 text-sm font-medium">
-              {temCss ? `${Math.ceil(tema.css.length / 1024)} KB` : "nenhum"}
+              {hasCss ? `${Math.ceil(theme.css.length / 1024)} KB` : "nenhum"}
             </dd>
           </div>
           <div data-gc="tema.ver-tema.div--10">
             <dt data-gc="tema.ver-tema.dt--3" className="text-ink-faint">Tudo junto</dt>
-            <dd data-gc="tema.ver-tema.dd--3" className="mt-0.5 text-sm font-medium">{pesoLegivel(peso)}</dd>
+            <dd data-gc="tema.ver-tema.dd--3" className="mt-0.5 text-sm font-medium">{weightReadable(weight)}</dd>
           </div>
         </dl>
 
-        <PreviaDosAtivos data-gc="tema.ver-tema.previa-dos-ativos" ativos={tema.ativos} peso={peso} />
+        <ActivePreview data-gc="tema.ver-tema.active-preview" actives={theme.actives} weight={weight} />
 
-        {temCss && (
+        {hasCss && (
           <p data-gc="tema.ver-tema.p--5" className="mt-4 rounded-lg border border-aviso/40 bg-aviso/10 px-3 py-2 text-xs text-ink-muted">
             Este tema traz CSS de quem escreveu, e CSS mexe em qualquer canto da
             tela. Só importe de gente em quem você confia.
@@ -120,7 +120,7 @@ export const VerTema: React.FC = () => {
         )}
 
         <div data-gc="tema.ver-tema.div--11" className="mt-5 flex gap-2">
-          <Button data-gc="tema.ver-tema.button.voltar--2" variant="ghost" className="flex-1" onClick={voltar}>
+          <Button data-gc="tema.ver-tema.button.back--2" variant="ghost" className="flex-1" onClick={back}>
             Agora não
           </Button>
 
@@ -128,23 +128,23 @@ export const VerTema: React.FC = () => {
             className="flex-1"
             onClick={() =>
               void confirm({
-                title: `Importar ${tema.nome}?`,
+                title: `Importar ${theme.name}?`,
                 description:
                   "O tema que você tem hoje no estúdio é substituído por este. Dá para voltar atrás pelo próprio estúdio.",
                 action: "Importar",
               }).then(({ confirmed }) => {
                 if (!confirmed) return;
 
-                importar({
-                  css: tema.css,
-                  substituicoes: tema.substituicoes,
-                  ativos: tema.ativos,
-                  nome: tema.nome,
-                  origemId: tema.id,
+                doImport({
+                  css: theme.css,
+                  overrides: theme.overrides,
+                  actives: theme.actives,
+                  name: theme.name,
+                  originId: theme.id,
                 });
-                toast.success(`${tema.nome} aplicado.`);
+                toast.success(`${theme.name} aplicado.`);
                 navigate("/channels", { replace: true });
-                abrirConfiguracoes("aparencia", "tema");
+                openSettings("appearance", "tema");
               })
             }
           >

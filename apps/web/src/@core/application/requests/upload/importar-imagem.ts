@@ -1,10 +1,10 @@
-import type { Attachment, FinalidadeDeUpload } from "@gravae/shared";
+import type { Attachment, UploadPurpose } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
-export async function importarImagem(
+export async function importImage(
   url: string,
-  purpose: FinalidadeDeUpload,
+  purpose: UploadPurpose,
 ): Promise<Attachment> {
-  const resposta = await api.post<Attachment>("/uploads/importar", { url, purpose });
-  return resposta.data;
+  const reply = await api.post<Attachment>("/uploads/importar", { url, purpose });
+  return reply.data;
 }

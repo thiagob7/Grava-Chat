@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Premjesti razgovor dolje",
+    paraOLado: "Premjesti razgovor sa strane",
+  },
+  aparelhoNovo: {
+    microfone: "Pojavio se novi mikrofon",
+    saida: "Pojavio se novi zvučni izlaz",
+    apareceu: "Pojavio se {{nome}}.",
+    falarPorEle: "Želiš govoriti preko njega?",
+    ouvirPorEle: "Želiš slušati preko njega?",
+    trocaNaHora: "Promjena vrijedi odmah, bez izlaska iz poziva.",
+    naoSugerir: "Ne predlaži više ovaj uređaj",
+    trocar: "Prebaci se na njega",
+  },
   conectando: "Povezivanje s pozivom…",
   naoEntrou: "Nije uspjelo pridruživanje pozivu",
   sair: "Napusti poziv",

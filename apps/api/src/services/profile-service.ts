@@ -5,10 +5,11 @@ import { AppError, NotFoundError } from "~/lib/http.js";
 import { guildRepository, tagRepository } from "~/repositories/guild-repository.js";
 import { noteRepository, userRepository } from "~/repositories/user-repository.js";
 import {
+  dmRepository,
   friendshipRepository,
   mutualRepository,
 } from "~/repositories/friendship-repository.js";
-import { statusVigente, toPublicUser } from "~/lib/serialize.js";
+import { currentStatus, toPublicUser } from "~/lib/serialize.js";
 import { presenceService } from "./presence-service.js";
 
 export type ProfileFriendship = "SELF" | "NONE" | "ACCEPTED" | "PENDING_IN" | "PENDING_OUT" | "BLOCKED";
@@ -18,87 +19,98 @@ export const profileService = {
     const user = await userRepository.findById(userId);
     if (!user) throw new NotFoundError("Usuário não encontrado");
 
-    const relacao =
+    const relation =
       viewerId === userId ? null : await friendshipRepository.findBetween(viewerId, userId);
 
-    const guildsEmComum =
+    const guildsCommon =
       viewerId === userId ? [] : await mutualRepository.guildIdsInCommon(viewerId, userId);
 
-    const podeVer = viewerId === userId || relacao !== null || guildsEmComum.length > 0;
-    if (!podeVer) throw new NotFoundError("Usuário não encontrado");
+    const hasDm =
+      viewerId === userId || relation !== null || guildsCommon.length > 0
+        ? true
+        : Boolean(await dmRepository.findBetween(viewerId, userId));
 
-    const escolhida = (user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId ?? null;
+    const canSee =
+      viewerId === userId ||
+      user.system === true ||
+      relation !== null ||
+      guildsCommon.length > 0 ||
+      hasDm;
 
-    const [presenca, amigosEmComum, nota, etiquetas] = await Promise.all([
+    if (!canSee) throw new NotFoundError("Usuário não encontrado");
+
+    const picked = (user.profile as { tagGuildId?: string | null } | null)?.tagGuildId ?? null;
+
+    const [presence, friendsCommon, note, tags] = await Promise.all([
       presenceService.mapFor([userId]),
       viewerId === userId
         ? Promise.resolve([] as string[])
         : mutualRepository.friendIdsInCommon(viewerId, userId),
       viewerId === userId ? Promise.resolve(null) : noteRepository.find(viewerId, userId),
-      tagRepository.resolverMuitas(escolhida ? [escolhida] : []),
+      tagRepository.resolveMany(picked ? [picked] : []),
     ]);
 
-    const etiquetaDoServidor = escolhida && etiquetas.get(escolhida);
+    const serverTag = picked && tags.get(picked);
 
     let friendship: ProfileFriendship = "NONE";
     if (viewerId === userId) friendship = "SELF";
-    else if (relacao?.status === "ACCEPTED") friendship = "ACCEPTED";
-    else if (relacao?.status === "BLOCKED") friendship = "BLOCKED";
-    else if (relacao) friendship = relacao.requesterId === viewerId ? "PENDING_OUT" : "PENDING_IN";
+    else if (relation?.status === "ACCEPTED") friendship = "ACCEPTED";
+    else if (relation?.status === "BLOCKED") friendship = "BLOCKED";
+    else if (relation) friendship = relation.requesterId === viewerId ? "PENDING_OUT" : "PENDING_IN";
 
-    const [bot] = user.isBot && !user.sistema ? await botRepository.findManyByUserIds([userId]) : [];
-    const botId = bot && (bot.publico || bot.ownerId === viewerId) ? bot.id : null;
+    const [bot] = user.isBot && !user.system ? await botRepository.findManyByUserIds([userId]) : [];
+    const botId = bot && (bot.isPublic || bot.ownerId === viewerId) ? bot.id : null;
 
     return {
       ...toPublicUser(user),
       botId,
-      status: presenca[userId] ?? "OFFLINE",
+      status: presence[userId] ?? "OFFLINE",
       bio: user.bio,
-      pronomes: user.pronomes,
-      perfil: (user.perfil as SelfUser["perfil"]) ?? null,
-      etiquetaDoServidor: etiquetaDoServidor
-        ? { guildId: escolhida, ...etiquetaDoServidor }
+      pronouns: user.pronouns,
+      profile: (user.profile as SelfUser["profile"]) ?? null,
+      serverTag: serverTag
+        ? { guildId: picked, ...serverTag }
         : null,
-      statusPersonalizado: statusVigente(user),
+      customStatus: currentStatus(user),
       createdAt: user.createdAt.toISOString(),
       friendship,
-      friendshipId: relacao?.id ?? null,
-      mutualGuilds: guildsEmComum.length,
-      mutualFriends: amigosEmComum.length,
-      nota: nota?.texto ?? null,
+      friendshipId: relation?.id ?? null,
+      mutualGuilds: guildsCommon.length,
+      mutualFriends: friendsCommon.length,
+      note: note?.text ?? null,
     };
   },
 
-  async emComum(viewerId: string, userId: string) {
-    if (viewerId === userId) return { amigos: [], servidores: [] };
+  async inCommon(viewerId: string, userId: string) {
+    if (viewerId === userId) return { friends: [], servers: [] };
 
-    const [relacao, guildIds] = await Promise.all([
+    const [relation, guildIds] = await Promise.all([
       friendshipRepository.findBetween(viewerId, userId),
       mutualRepository.guildIdsInCommon(viewerId, userId),
     ]);
 
-    if (relacao === null && guildIds.length === 0) throw new NotFoundError("Usuário não encontrado");
+    if (relation === null && guildIds.length === 0) throw new NotFoundError("Usuário não encontrado");
 
-    const dono = await userRepository.findById(userId);
+    const owner = await userRepository.findById(userId);
 
-    const amigoIds = dono?.mostraAmigosEmComum
+    const friendIds = owner?.showsFriendsCommon
       ? await mutualRepository.friendIdsInCommon(viewerId, userId)
       : [];
 
-    const idsDeServidores = dono?.mostraServidoresEmComum ? guildIds : [];
+    const serversIds = owner?.showsServersCommon ? guildIds : [];
 
-    const [amigos, servidores, presenca] = await Promise.all([
-      userRepository.findManyByIds(amigoIds),
-      guildRepository.findManyByIds(idsDeServidores),
-      presenceService.mapFor(amigoIds),
+    const [friends, servers, presence] = await Promise.all([
+      userRepository.findManyByIds(friendIds),
+      guildRepository.findManyByIds(serversIds),
+      presenceService.mapFor(friendIds),
     ]);
 
     return {
-      amigos: amigos.map((amigo) => ({
-        ...toPublicUser(amigo),
-        status: presenca[amigo.id] ?? "OFFLINE",
+      friends: friends.map((friend) => ({
+        ...toPublicUser(friend),
+        status: presence[friend.id] ?? "OFFLINE",
       })),
-      servidores: servidores.map((guild) => ({
+      servers: servers.map((guild) => ({
         id: guild.id,
         name: guild.name,
         iconUrl: guild.iconUrl,
@@ -106,13 +118,13 @@ export const profileService = {
     };
   },
 
-  async anotar(viewerId: string, userId: string, texto: string) {
+  async note(viewerId: string, userId: string, text: string) {
     if (viewerId === userId) throw new AppError("Anotacao e sobre outra pessoa");
 
-    const alvo = await userRepository.findById(userId);
-    if (!alvo) throw new NotFoundError("Usuario nao encontrado");
+    const target = await userRepository.findById(userId);
+    if (!target) throw new NotFoundError("Usuario nao encontrado");
 
-    const nota = await noteRepository.upsert(viewerId, userId, texto);
-    return { nota: nota?.texto ?? null };
+    const note = await noteRepository.upsert(viewerId, userId, text);
+    return { note: note?.text ?? null };
   },
 };

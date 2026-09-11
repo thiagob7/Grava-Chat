@@ -2,9 +2,9 @@ import React from "react";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 
-import { useTema } from "~/@core/application/queries/tema/use-temas";
+import { useTheme } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
+import { useStudio } from "~/features/configuracoes/stores/estudio";
 
 /*
   Tema importado é cópia: entra no estúdio e para no tempo. Quem publicou
@@ -15,14 +15,14 @@ import { useEstudio } from "~/features/configuracoes/stores/estudio";
   A comparação é do CSS inteiro, não da versão declarada, porque quase ninguém
   lembra de subir o `@version` a cada ajuste.
 */
-export const AvisoDeVersaoNova: React.FC = () => {
-  const origemId = useEstudio((s) => s.origemId);
-  const css = useEstudio((s) => s.css);
-  const importar = useEstudio((s) => s.importar);
+export const VersionNewNotice: React.FC = () => {
+  const originId = useStudio((s) => s.originId);
+  const css = useStudio((s) => s.css);
+  const doImport = useStudio((s) => s.doImport);
 
-  const { data: publicado } = useTema(origemId ?? undefined);
+  const { data: published } = useTheme(originId ?? undefined);
 
-  if (!publicado || publicado.css === css) return null;
+  if (!published || published.css === css) return null;
 
   return (
     <div
@@ -37,10 +37,10 @@ export const AvisoDeVersaoNova: React.FC = () => {
 
       <p data-gc="configuracoes.estudio.aviso-de-versao-nova.p" className="min-w-0 flex-1 text-xs">
         <span data-gc="configuracoes.estudio.aviso-de-versao-nova.span" className="font-medium">
-          {publicado.nome}
+          {published.name}
         </span>{" "}
         mudou desde que você importou
-        {publicado.versao ? ` — agora é a v${publicado.versao}` : ""}. Atualizar troca o CSS que
+        {published.version ? ` — agora é a v${published.version}` : ""}. Atualizar troca o CSS que
         está aqui pelo de lá.
       </p>
 
@@ -49,14 +49,14 @@ export const AvisoDeVersaoNova: React.FC = () => {
         size="sm"
         variant="surface"
         onClick={() => {
-          importar({
-            css: publicado.css,
-            substituicoes: publicado.substituicoes,
-            ativos: publicado.ativos,
-            nome: publicado.nome,
-            origemId: publicado.id,
+          doImport({
+            css: published.css,
+            overrides: published.overrides,
+            actives: published.actives,
+            name: published.name,
+            originId: published.id,
           });
-          toast.success(`${publicado.nome} atualizado.`);
+          toast.success(`${published.name} atualizado.`);
         }}
       >
         Atualizar

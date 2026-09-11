@@ -14,7 +14,7 @@
   que ninguém escuta. Teste que tentar falar com eles falha de verdade, em vez
   de encostar por acidente num serviço que esteja rodando na máquina.
 */
-const FALSAS: Record<string, string> = {
+const FALSE: Record<string, string> = {
   NODE_ENV: "test",
   DATABASE_URL: "mongodb://127.0.0.1:1/gravae-test",
   REDIS_URL: "redis://127.0.0.1:1",
@@ -27,6 +27,6 @@ const FALSAS: Record<string, string> = {
   R2_PUBLIC_URL: "http://127.0.0.1:1",
 };
 
-for (const [chave, valor] of Object.entries(FALSAS)) {
-  process.env[chave] ??= valor;
+for (const [key, value] of Object.entries(FALSE)) {
+  process.env[key] ??= value;
 }

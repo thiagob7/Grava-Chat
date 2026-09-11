@@ -20,19 +20,19 @@ import { useTranslation } from "~/traducao";
 interface ForumChannelProps {
   channelId: string;
   channelName: string;
-  podeEscrever: boolean;
-  onAbrirPost: (post: ForumPostModel) => void;
+  canWrite: boolean;
+  onOpenPost: (post: ForumPostModel) => void;
 }
 
 export const ForumChannel: React.FC<ForumChannelProps> = ({
   channelId,
   channelName,
-  podeEscrever,
-  onAbrirPost,
+  canWrite,
+  onOpenPost,
 }) => {
   const { t } = useTranslation();
   const { data, isLoading } = useFindPosts(channelId);
-  const [criando, setCriando] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   return (
     <div data-gc="conversa.forum-channel.div" className="flex-1 overflow-y-auto p-6">
@@ -46,8 +46,8 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
           </p>
         </div>
 
-        {podeEscrever && (
-          <Button data-gc="conversa.forum-channel.button" size="sm" onClick={() => setCriando(true)}>
+        {canWrite && (
+          <Button data-gc="conversa.forum-channel.button" size="sm" onClick={() => setCreating(true)}>
             <Plus data-gc="conversa.forum-channel.plus" size={16} /> {t("conversa.forum.novoAssunto")}
           </Button>
         )}
@@ -68,7 +68,7 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
         {(data?.posts ?? []).map((post) => (
           <button data-gc="conversa.forum-channel.button--2"
             key={post.id}
-            onClick={() => onAbrirPost(post)}
+            onClick={() => onOpenPost(post)}
             className="flex w-full items-start gap-3 rounded-lg bg-surface-1 p-4 text-left transition hover:bg-surface-3"
           >
             <Avatar data-gc="conversa.forum-channel.avatar"
@@ -100,35 +100,35 @@ export const ForumChannel: React.FC<ForumChannelProps> = ({
         ))}
       </div>
 
-      <CriarAssunto data-gc="conversa.forum-channel.criar-assunto.on-abrir-post" open={criando} channelId={channelId} onClose={() => setCriando(false)} onCriado={onAbrirPost} />
+      <CreateSubject data-gc="conversa.forum-channel.create-subject.on-open-post" open={creating} channelId={channelId} onClose={() => setCreating(false)} onCreated={onOpenPost} />
     </div>
   );
 };
 
-interface CriarAssuntoProps {
+interface CreateSubjectProps {
   open: boolean;
   channelId: string;
   onClose: () => void;
-  onCriado: (post: ForumPostModel) => void;
+  onCreated: (post: ForumPostModel) => void;
 }
 
-const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, onCriado }) => {
+const CreateSubject: React.FC<CreateSubjectProps> = ({ open, channelId, onClose, onCreated }) => {
   const { t } = useTranslation();
-  const criar = useCreatePost(channelId);
-  const [titulo, setTitulo] = useState("");
-  const [conteudo, setConteudo] = useState("");
+  const create = useCreatePost(channelId);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
-  const enviar = async () => {
-    const criado = await criar
-      .mutateAsync({ channelId, title: titulo.trim(), content: conteudo.trim() })
+  const send = async () => {
+    const created = await create
+      .mutateAsync({ channelId, title: title.trim(), content: content.trim() })
       .catch(() => null);
 
-    if (!criado) return;
+    if (!created) return;
 
-    setTitulo("");
-    setConteudo("");
+    setTitle("");
+    setContent("");
     onClose();
-    onCriado(criado.post);
+    onCreated(created.post);
   };
 
   return (
@@ -144,10 +144,10 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
             <Input data-gc="conversa.forum-channel.input"
               id="post-titulo"
               autoFocus
-              value={titulo}
+              value={title}
               maxLength={100}
               placeholder={t("conversa.forum.doQueSeTrata")}
-              onChange={(e) => setTitulo(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
@@ -155,11 +155,11 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
             <Label data-gc="conversa.forum-channel.label--2" htmlFor="post-conteudo">{t("conversa.forum.primeiraMensagem")}</Label>
             <Textarea data-gc="conversa.forum-channel.textarea"
               id="post-conteudo"
-              value={conteudo}
+              value={content}
               rows={5}
               maxLength={4000}
               placeholder={t("conversa.forum.conteDoCaso")}
-              onChange={(e) => setConteudo(e.target.value)}
+              onChange={(e) => setContent(e.target.value)}
             />
           </div>
         </DialogBody>
@@ -169,10 +169,10 @@ const CriarAssunto: React.FC<CriarAssuntoProps> = ({ open, channelId, onClose, o
             {t("comum.cancelar")}
           </Button>
           <Button data-gc="conversa.forum-channel.button--3"
-            disabled={!titulo.trim() || !conteudo.trim() || criar.isPending}
-            onClick={() => void enviar()}
+            disabled={!title.trim() || !content.trim() || create.isPending}
+            onClick={() => void send()}
           >
-            {criar.isPending ? "Criando…" : "Criar assunto"}
+            {create.isPending ? "Criando…" : "Criar assunto"}
           </Button>
         </DialogFooter>
       </DialogContent>

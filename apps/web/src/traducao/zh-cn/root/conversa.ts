@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "一只挥手的小手",
+    botao: "向 {{nome}} 挥手",
+  },
+  oficial: {
+    titulo: "这个频道只发官方通知。",
+    detalhe: "我们从不索取你的密码或账号令牌。",
+    saibaMais: "了解更多",
+  },
+  topico: {
+    abrir: "查看频道简介",
+  },
+  previaDoLink: {
+    carregando: "正在看链接里有什么…",
+    destino: "通向 {{destino}}",
+  },
+  reacao: {
+    carregando: "正在看谁用 {{emoji}} 回应…",
+    uma: "{{nome}} 用 {{emoji}} 回应了",
+    duas: "{{primeiro}} 和 {{segundo}} 用 {{emoji}} 回应了",
+    varias: "{{nomes}} 和另外 {{quantos}} 人用 {{emoji}} 回应了",
+    dicaSuper: "长按可超级回应",
+  },
+  recado: {
+    gravar: "录一条语音",
+    descartar: "丢弃录音",
+    mandar: "发送录音",
+    semSuporte: "这个浏览器不能录音。",
+    semMicrofone: "用不了麦克风。",
+  },
   lista: {
     carregando: "正在加载消息…",
     carregandoMais: "加载中…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "查看图片",
   },
   enquete: {
+    criar: "创建投票",
+    pergunta: "问题",
+    exemplo: "今天玩点什么？",
+    respostas: "选项",
+    adicionarOpcao: "添加选项",
+    removerOpcao: "删除选项",
+    varias: "允许多选",
+    variasDetalhe: "不开这个的话，投给一个选项会把上一个的票收回。",
+    duracao: "时长",
+    umaHora: "1 小时",
+    quatroHoras: "4 小时",
+    oitoHoras: "8 小时",
+    umDia: "1 天",
+    tresDias: "3 天",
+    umaSemana: "1 周",
+    ateEncerrar: "直到我自己结束",
     titulo: "投票",
     encerrada: "投票已结束",
     variasRespostas: "投票 — 可多选",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "搜索只查看你能读取的频道。",
   },
   entrada: {
+    semNome: "会话",
+    anexo: "（附件）",
     titulo: "收件箱",
     naoLidas: "未读",
     salvas: "已保存",

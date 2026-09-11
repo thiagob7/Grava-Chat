@@ -1,18 +1,18 @@
 import { buildApp } from "~/app.js";
 import { env } from "~/env.js";
 import { prisma } from "~/lib/prisma.js";
-import { fecharIo } from "~/realtime/io.js";
+import { closeIo } from "~/realtime/io.js";
 import { redis } from "~/lib/redis.js";
 import { createGateway } from "~/realtime/gateway.js";
 import { guildEventService } from "~/services/guild-event-service.js";
-import { exclusaoService } from "~/services/exclusao-service.js";
-import { sistemaService } from "~/services/sistema-service.js";
+import { deletionService } from "~/services/exclusao-service.js";
+import { systemService } from "~/services/sistema-service.js";
 import { statusService } from "~/services/status-service.js";
 
 const app = await buildApp();
 
-let pararDeVigiarExclusoes: (() => void) | null = null;
-let pararDeVigiarStatus: (() => void) | null = null;
+let stopWatchDeletions: (() => void) | null = null;
+let stopWatchStatus: (() => void) | null = null;
 let stopWatchingEvents: (() => void) | null = null;
 
 try {
@@ -20,41 +20,46 @@ try {
   await app.listen({ port: env.API_PORT, host: env.API_HOST });
   app.log.info("gateway de tempo real pronto");
 
-  pararDeVigiarExclusoes = exclusaoService.vigiar(app.log);
-  pararDeVigiarStatus = statusService.vigiar(app.log);
+  stopWatchDeletions = deletionService.watch(app.log);
+  stopWatchStatus = statusService.watch(app.log);
   stopWatchingEvents = guildEventService.watch(app.log);
 
-  void sistemaService.semearServidorDeTemas(app.log).catch((err) => app.log.error(err));
+  void systemService.removeServers(app.log).catch((err) => app.log.error(err));
+  void systemService.seedThemesServer(app.log).catch((err) => app.log.error(err));
+  void systemService
+    .seedDevelopersServer(app.log)
+    .catch((err) => app.log.error(err));
+  void systemService.seedHouse(app.log).catch((err) => app.log.error(err));
 } catch (err) {
   app.log.error(err);
   process.exit(1);
 }
 
-const PRAZO_DE_SAIDA_MS = 5000;
+const OUTPUT_MS_DEADLINE = 5000;
 
-let saindo = false;
+let leaving = false;
 
 const shutdown = async (signal: string) => {
-  if (saindo) return;
-  saindo = true;
+  if (leaving) return;
+  leaving = true;
 
   app.log.info({ signal }, "encerrando");
 
-  const forca = setTimeout(() => {
+  const force = setTimeout(() => {
     app.log.warn("encerramento demorou demais; saindo à força");
     process.exit(0);
-  }, PRAZO_DE_SAIDA_MS);
-  forca.unref();
+  }, OUTPUT_MS_DEADLINE);
+  force.unref();
 
-  pararDeVigiarExclusoes?.();
-  pararDeVigiarStatus?.();
+  stopWatchDeletions?.();
+  stopWatchStatus?.();
   stopWatchingEvents?.();
 
-  await fecharIo().catch(() => undefined);
+  await closeIo().catch(() => undefined);
   await app.close().catch(() => undefined);
   await Promise.allSettled([prisma.$disconnect(), redis.quit()]);
 
-  clearTimeout(forca);
+  clearTimeout(force);
   process.exit(0);
 };
 

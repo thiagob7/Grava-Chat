@@ -8,18 +8,18 @@
 
   É a mesma troca do `gc-ativo()`: o tema diz o que quer, o app resolve.
 */
-export interface Palco {
-  tela: HTMLCanvasElement;
-  contexto: CanvasRenderingContext2D;
-  largura: number;
-  altura: number;
+export interface Stage {
+  display: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+  width: number;
+  height: number;
 }
 
 export interface Motor {
   /* Roda uma vez por quadro. `passo` vem em segundos, já limitado. */
-  quadro: (palco: Palco, passo: number) => void;
+  frame: (stage: Stage, step: number) => void;
   /* Chamado quando a janela muda de tamanho, antes do próximo quadro. */
-  redimensionou?: (palco: Palco) => void;
+  resized?: (stage: Stage) => void;
   /* O que fazer com um clique. Sem isso, o fundo ignora o mouse. */
-  clicou?: (palco: Palco, x: number, y: number) => void;
+  clicked?: (stage: Stage, x: number, y: number) => void;
 }

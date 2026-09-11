@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Una manito saludando",
+    botao: "Saludar a {{nome}}",
+  },
+  oficial: {
+    titulo: "Este canal es solo para avisos oficiales.",
+    detalhe: "Nunca pedimos tu contraseña ni el token de tu cuenta.",
+    saibaMais: "Saber más",
+  },
+  topico: {
+    abrir: "Ver la descripción del canal",
+  },
+  previaDoLink: {
+    carregando: "Viendo qué hay en el enlace…",
+    destino: "Va a {{destino}}",
+  },
+  reacao: {
+    carregando: "Viendo quién reaccionó con {{emoji}}…",
+    uma: "{{nome}} reaccionó con {{emoji}}",
+    duas: "{{primeiro}} y {{segundo}} reaccionaron con {{emoji}}",
+    varias: "{{nomes}} y {{quantos}} más reaccionaron con {{emoji}}",
+    dicaSuper: "Mantené apretado para súper reaccionar",
+  },
+  recado: {
+    gravar: "Grabar un audio",
+    descartar: "Descartar el audio",
+    mandar: "Mandar el audio",
+    semSuporte: "Este navegador no graba audio.",
+    semMicrofone: "Sin acceso al micrófono.",
+  },
   lista: {
     carregando: "Cargando mensajes…",
     carregandoMais: "Cargando…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Ver la imagen",
   },
   enquete: {
+    criar: "Crear encuesta",
+    pergunta: "Pregunta",
+    exemplo: "¿A qué jugamos hoy?",
+    respostas: "Respuestas",
+    adicionarOpcao: "Agregar opción",
+    removerOpcao: "Quitar opción",
+    varias: "Permitir más de una respuesta",
+    variasDetalhe: "Sin esto, votar por una opción te saca el voto de la anterior.",
+    duracao: "Duración",
+    umaHora: "1 hora",
+    quatroHoras: "4 horas",
+    oitoHoras: "8 horas",
+    umDia: "1 día",
+    tresDias: "3 días",
+    umaSemana: "1 semana",
+    ateEncerrar: "Hasta que yo la cierre",
     titulo: "Encuesta",
     encerrada: "Encuesta cerrada",
     variasRespostas: "Encuesta — varias respuestas",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "La búsqueda solo mira los canales que podés leer.",
   },
   entrada: {
+    semNome: "conversación",
+    anexo: "(archivo adjunto)",
     titulo: "Bandeja de entrada",
     naoLidas: "Sin leer",
     salvas: "Guardadas",

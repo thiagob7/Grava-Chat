@@ -2,28 +2,28 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { toast } from "react-toastify";
 
 import {
-  darDesfecho,
-  findDenuncias,
-  type Desfecho,
+  giveOutcome,
+  findReports,
+  type Outcome,
 } from "~/@core/application/requests/admin/denuncias";
 import { apiErrorMessage } from "~/@core/lib/api";
 
-export const useDenuncias = (pendentes: boolean, enabled: boolean) =>
+export const useReports = (pending: boolean, enabled: boolean) =>
   useInfiniteQuery({
-    queryKey: ["admin-denuncias", pendentes],
+    queryKey: ["admin-denuncias", pending],
     queryFn: ({ pageParam }) =>
-      findDenuncias({ pendentes: pendentes || undefined, antesDe: pageParam }),
+      findReports({ pending: pending || undefined, before: pageParam }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (ultima) => ultima.proxima ?? undefined,
+    getNextPageParam: (last) => last.next ?? undefined,
     enabled,
   });
 
-export const useDarDesfecho = () => {
-  const cliente = useQueryClient();
+export const useGiveOutcome = () => {
+  const client = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, decisao }: { id: string; decisao: Desfecho }) => darDesfecho(id, decisao),
-    onSuccess: () => void cliente.invalidateQueries({ queryKey: ["admin-denuncias"] }),
-    onError: (erro) => toast.error(apiErrorMessage(erro, "Não deu para registrar o desfecho.")),
+    mutationFn: ({ id, decision }: { id: string; decision: Outcome }) => giveOutcome(id, decision),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ["admin-denuncias"] }),
+    onError: (error) => toast.error(apiErrorMessage(error, "Não deu para registrar o desfecho.")),
   });
 };

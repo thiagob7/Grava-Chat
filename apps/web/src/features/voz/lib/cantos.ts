@@ -1,48 +1,48 @@
 
-export type Canto = "superior-esquerdo" | "superior-direito" | "inferior-esquerdo" | "inferior-direito";
+export type Corner = "superior-esquerdo" | "superior-direito" | "inferior-esquerdo" | "inferior-direito";
 
-export interface Retangulo {
+export interface Rectangle {
   x: number;
   y: number;
-  largura: number;
-  altura: number;
+  width: number;
+  height: number;
 }
 
 export interface Area {
-  largura: number;
-  altura: number;
-  margem: number;
+  width: number;
+  height: number;
+  margin: number;
 }
 
-export function cantoMaisProximo(card: Retangulo, area: Area): Canto {
-  const centroX = card.x + card.largura / 2;
-  const centroY = card.y + card.altura / 2;
+export function nextCornerMore(card: Rectangle, area: Area): Corner {
+  const centerX = card.x + card.width / 2;
+  const centerY = card.y + card.height / 2;
 
-  const direita = centroX >= area.largura / 2;
-  const baixo = centroY >= area.altura / 2;
+  const right = centerX >= area.width / 2;
+  const down = centerY >= area.height / 2;
 
-  if (baixo) return direita ? "inferior-direito" : "inferior-esquerdo";
-  return direita ? "superior-direito" : "superior-esquerdo";
+  if (down) return right ? "inferior-direito" : "inferior-esquerdo";
+  return right ? "superior-direito" : "superior-esquerdo";
 }
 
-export function posicaoDoCanto(canto: Canto, card: { largura: number; altura: number }, area: Area) {
-  const esquerda = area.margem;
-  const topo = area.margem;
-  const direita = Math.max(area.margem, area.largura - card.largura - area.margem);
-  const baixo = Math.max(area.margem, area.altura - card.altura - area.margem);
+export function cornerPosition(corner: Corner, card: { width: number; height: number }, area: Area) {
+  const left = area.margin;
+  const top = area.margin;
+  const right = Math.max(area.margin, area.width - card.width - area.margin);
+  const down = Math.max(area.margin, area.height - card.height - area.margin);
 
-  switch (canto) {
+  switch (corner) {
     case "superior-esquerdo":
-      return { x: esquerda, y: topo };
+      return { x: left, y: top };
     case "superior-direito":
-      return { x: direita, y: topo };
+      return { x: right, y: top };
     case "inferior-esquerdo":
-      return { x: esquerda, y: baixo };
+      return { x: left, y: down };
     case "inferior-direito":
-      return { x: direita, y: baixo };
+      return { x: right, y: down };
   }
 }
 
-export function encaixarNoCanto(card: Retangulo, area: Area) {
-  return posicaoDoCanto(cantoMaisProximo(card, area), card, area);
+export function fitCorner(card: Rectangle, area: Area) {
+  return cornerPosition(nextCornerMore(card, area), card, area);
 }

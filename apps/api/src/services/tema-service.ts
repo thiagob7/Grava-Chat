@@ -1,48 +1,49 @@
 import {
-  lerCabecalhoDoTema,
-  pesoDoTema,
-  type AtivoDoTema,
-  type TemaCompartilhado,
-  type TemaDaGaleria,
+  readThemeHeader,
+  themeWeight,
+  type ThemeActive,
+  type ThemeShared,
+  type GalleryTheme,
 } from "@gravae/shared";
 
-import { CAMINHO_DO_TEMA } from "@gravae/shared";
+import { THEME_PATH } from "@gravae/shared";
 import { env } from "~/env.js";
-import { sistemaService } from "~/services/sistema-service.js";
+import { systemService } from "~/services/sistema-service.js";
+import { officialService } from "~/services/oficial-service.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { prisma } from "~/lib/prisma.js";
-import type { PublicarTemaInput } from "~/validations/tema.js";
+import type { PublishThemeInput } from "~/validations/tema.js";
 
-const TEMAS_POR_PESSOA = 50;
+const THEMES_BY_PERSON = 50;
 
-type TemaComAutor = {
+type ThemeWithAuthor = {
   id: string;
-  nome: string;
-  descricao: string | null;
-  autor: string | null;
-  versao: string | null;
+  name: string;
+  description: string | null;
+  author: string | null;
+  version: string | null;
   tags: string[];
   css: string;
-  substituicoes: unknown;
-  ativos: unknown;
+  overrides: unknown;
+  actives: unknown;
   bytes: number;
   createdAt: Date;
-  usuario: { id: string; displayName: string; avatarUrl: string | null };
+  user: { id: string; displayName: string; avatarUrl: string | null };
 };
 
-function serializar(tema: TemaComAutor): TemaCompartilhado {
+function serialize(theme: ThemeWithAuthor): ThemeShared {
   return {
-    id: tema.id,
-    nome: tema.nome,
-    descricao: tema.descricao,
-    autor: tema.autor,
-    versao: tema.versao,
-    tags: tema.tags,
-    css: tema.css,
-    substituicoes: (tema.substituicoes ?? {}) as Record<string, string>,
-    ativos: lerAtivos(tema.ativos),
-    publicadoPor: tema.usuario,
-    createdAt: tema.createdAt.toISOString(),
+    id: theme.id,
+    name: theme.name,
+    description: theme.description,
+    author: theme.author,
+    version: theme.version,
+    tags: theme.tags,
+    css: theme.css,
+    overrides: (theme.overrides ?? {}) as Record<string, string>,
+    actives: readActive(theme.actives),
+    publishedBy: theme.user,
+    createdAt: theme.createdAt.toISOString(),
   };
 }
 
@@ -50,144 +51,141 @@ function serializar(tema: TemaComAutor): TemaCompartilhado {
   O que está no banco é Json, e Json aceita qualquer coisa. Antes de entregar
   para quem vai instalar, só passa o que tem nome e URL de texto.
 */
-function lerAtivos(valor: unknown): AtivoDoTema[] {
-  if (!Array.isArray(valor)) return [];
+function readActive(value: unknown): ThemeActive[] {
+  if (!Array.isArray(value)) return [];
 
-  return valor.flatMap((item) => {
+  return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
-    const { nome, url, tipo, bytes } = item as Record<string, unknown>;
-    if (typeof nome !== "string" || typeof url !== "string") return [];
+    const { name, url, kind, bytes } = item as Record<string, unknown>;
+    if (typeof name !== "string" || typeof url !== "string") return [];
 
     return [
       {
-        nome,
+        name,
         url,
-        ...(typeof tipo === "string" ? { tipo } : {}),
+        ...(typeof kind === "string" ? { kind } : {}),
         ...(typeof bytes === "number" ? { bytes } : {}),
       },
     ];
   });
 }
 
-function paraGaleria(tema: Omit<TemaComAutor, "css">): TemaDaGaleria {
+function forGallery(theme: Omit<ThemeWithAuthor, "css">): GalleryTheme {
   return {
-    id: tema.id,
-    nome: tema.nome,
-    descricao: tema.descricao,
-    autor: tema.autor,
-    versao: tema.versao,
-    tags: tema.tags,
-    substituicoes: (tema.substituicoes ?? {}) as Record<string, string>,
-    ativos: lerAtivos(tema.ativos),
-    pesoEmBytes: tema.bytes,
-    publicadoPor: tema.usuario,
-    createdAt: tema.createdAt.toISOString(),
+    id: theme.id,
+    name: theme.name,
+    description: theme.description,
+    author: theme.author,
+    version: theme.version,
+    tags: theme.tags,
+    overrides: (theme.overrides ?? {}) as Record<string, string>,
+    actives: readActive(theme.actives),
+    weightBytes: theme.bytes,
+    publishedBy: theme.user,
+    createdAt: theme.createdAt.toISOString(),
   };
 }
 
-const AUTOR = { select: { id: true, displayName: true, avatarUrl: true } };
+const AUTHOR = { select: { id: true, displayName: true, avatarUrl: true } };
 
-const SEM_CSS = {
+const WITHOUT_CSS = {
   id: true,
-  nome: true,
-  descricao: true,
-  autor: true,
-  versao: true,
+  name: true,
+  description: true,
+  author: true,
+  version: true,
   tags: true,
-  substituicoes: true,
-  ativos: true,
+  overrides: true,
+  actives: true,
   bytes: true,
   createdAt: true,
-  usuario: AUTOR,
+  user: AUTHOR,
 } as const;
 
-export const temaService = {
-  async publicar(userId: string, entrada: PublicarTemaInput): Promise<TemaCompartilhado> {
-    const temNada = !entrada.css.trim() && Object.keys(entrada.substituicoes).length === 0;
-    if (temNada) throw new AppError("Não há nada no tema para compartilhar", 400);
+export const themeService = {
+  async publish(userId: string, entry: PublishThemeInput): Promise<ThemeShared> {
+    const hasNothing = !entry.css.trim() && Object.keys(entry.overrides).length === 0;
+    if (hasNothing) throw new AppError("Não há nada no tema para compartilhar", 400);
 
-    const quantos = await prisma.tema.count({ where: { autorId: userId } });
-    if (quantos >= TEMAS_POR_PESSOA) {
+    const count = await prisma.theme.count({ where: { authorId: userId } });
+    if (count >= THEMES_BY_PERSON) {
       throw new AppError(
-        `Você já publicou ${TEMAS_POR_PESSOA} temas. Apague um antes de publicar outro.`,
+        `Você já publicou ${THEMES_BY_PERSON} temas. Apague um antes de publicar outro.`,
         409,
       );
     }
 
-    const cabecalho = lerCabecalhoDoTema(entrada.css);
+    const header = readThemeHeader(entry.css);
 
-    const tema = await prisma.tema.create({
+    const theme = await prisma.theme.create({
       data: {
-        nome: entrada.nome ?? cabecalho.nome ?? "Tema sem nome",
-        descricao: cabecalho.descricao,
-        autor: cabecalho.autor,
-        versao: cabecalho.versao,
-        tags: cabecalho.tags,
-        css: entrada.css,
-        substituicoes: entrada.substituicoes,
-        ativos: entrada.ativos,
-        bytes: pesoDoTema(entrada.css, entrada.ativos),
-        autorId: userId,
+        name: entry.name ?? header.name ?? "Tema sem nome",
+        description: header.description,
+        author: header.author,
+        version: header.version,
+        tags: header.tags,
+        css: entry.css,
+        overrides: entry.overrides,
+        actives: entry.actives,
+        bytes: themeWeight(entry.css, entry.actives),
+        authorId: userId,
       },
-      include: { usuario: AUTOR },
+      include: { user: AUTHOR },
     });
 
-    void sistemaService.avisar(
-      userId,
-      `Seu tema "${tema.nome}" foi publicado. O link abaixo vira um cartão de importar em qualquer canal.\n${env.WEB_ORIGIN.split(",")[0]?.trim() ?? ""}${CAMINHO_DO_TEMA}${tema.id}`,
-    );
+    void officialService.notify(userId, "themePublished", { name: theme.name, themeId: theme.id });
 
-    return serializar(tema);
+    return serialize(theme);
   },
 
-  async buscar(temaId: string): Promise<TemaCompartilhado> {
-    const tema = await prisma.tema.findUnique({
-      where: { id: temaId },
-      include: { usuario: AUTOR },
+  async search(themeId: string): Promise<ThemeShared> {
+    const theme = await prisma.theme.findUnique({
+      where: { id: themeId },
+      include: { user: AUTHOR },
     });
 
-    if (!tema) throw new NotFoundError("Tema não encontrado");
+    if (!theme) throw new NotFoundError("Tema não encontrado");
 
-    return serializar(tema);
+    return serialize(theme);
   },
 
-  async galeria(busca?: string): Promise<TemaDaGaleria[]> {
-    const termo = busca?.trim();
+  async gallery(search?: string): Promise<GalleryTheme[]> {
+    const term = search?.trim();
 
-    const temas = await prisma.tema.findMany({
-      where: termo
+    const themes = await prisma.theme.findMany({
+      where: term
         ? {
             OR: [
-              { nome: { contains: termo, mode: "insensitive" } },
-              { descricao: { contains: termo, mode: "insensitive" } },
-              { tags: { has: termo.toLowerCase() } },
+              { name: { contains: term, mode: "insensitive" } },
+              { description: { contains: term, mode: "insensitive" } },
+              { tags: { has: term.toLowerCase() } },
             ],
           }
         : {},
-      select: SEM_CSS,
+      select: WITHOUT_CSS,
       orderBy: { createdAt: "desc" },
       take: 60,
     });
 
-    return temas.map(paraGaleria);
+    return themes.map(forGallery);
   },
 
-  async meus(userId: string): Promise<TemaCompartilhado[]> {
-    const temas = await prisma.tema.findMany({
-      where: { autorId: userId },
-      include: { usuario: AUTOR },
+  async mine(userId: string): Promise<ThemeShared[]> {
+    const themes = await prisma.theme.findMany({
+      where: { authorId: userId },
+      include: { user: AUTHOR },
       orderBy: { createdAt: "desc" },
     });
 
-    return temas.map(serializar);
+    return themes.map(serialize);
   },
 
-  async apagar(userId: string, temaId: string) {
-    const tema = await prisma.tema.findUnique({ where: { id: temaId } });
+  async doDelete(userId: string, themeId: string) {
+    const theme = await prisma.theme.findUnique({ where: { id: themeId } });
 
-    if (!tema) throw new NotFoundError("Tema não encontrado");
-    if (tema.autorId !== userId) throw new AppError("Esse tema não é seu", 403);
+    if (!theme) throw new NotFoundError("Tema não encontrado");
+    if (theme.authorId !== userId) throw new AppError("Esse tema não é seu", 403);
 
-    await prisma.tema.delete({ where: { id: temaId } });
+    await prisma.theme.delete({ where: { id: themeId } });
   },
 };

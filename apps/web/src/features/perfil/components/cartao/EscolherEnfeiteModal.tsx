@@ -1,49 +1,49 @@
 import React, { type ReactNode } from "react";
 
-import type { Opcao } from "~/features/perfil/lib/catalogo";
+import type { Choice } from "~/features/perfil/lib/catalogo";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { GradeDeOpcoes } from "~/features/configuracoes/components/perfil/campos";
+import { OptionsGrid } from "~/features/configuracoes/components/perfil/campos";
 
-interface EscolherEnfeiteModalProps<T extends string> {
+interface PickCharmModalProps<T extends string> {
   open: boolean;
-  titulo: string;
+  title: string;
   legenda: string;
-  opcoes: Opcao<T>[];
-  valor: T;
-  onEscolher: (id: T) => void;
+  options: Choice<T>[];
+  value: T;
+  onPick: (id: T) => void;
   onClose: () => void;
-  amostra?: (id: T) => ReactNode;
-  previa: ReactNode;
+  sample?: (id: T) => ReactNode;
+  preview: ReactNode;
 }
 
-export function EscolherEnfeiteModal<T extends string>({
+export function PickCharmModal<T extends string>({
   open,
-  titulo,
+  title,
   legenda,
-  opcoes,
-  valor,
-  onEscolher,
+  options,
+  value,
+  onPick,
   onClose,
-  amostra,
-  previa,
-}: EscolherEnfeiteModalProps<T>) {
+  sample,
+  preview,
+}: PickCharmModalProps<T>) {
   return (
-    <Dialog data-gc="perfil.cartao.escolher-enfeite-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+    <Dialog data-gc="perfil.cartao.escolher-enfeite-modal.dialog" open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent data-gc="perfil.cartao.escolher-enfeite-modal.dialog-content" className="max-w-3xl p-5">
-        <DialogTitle data-gc="perfil.cartao.escolher-enfeite-modal.dialog-title" className="text-lg font-semibold">{titulo}</DialogTitle>
+        <DialogTitle data-gc="perfil.cartao.escolher-enfeite-modal.dialog-title" className="text-lg font-semibold">{title}</DialogTitle>
 
         <div data-gc="perfil.cartao.escolher-enfeite-modal.div" className="mt-4 flex gap-5">
           <div data-gc="perfil.cartao.escolher-enfeite-modal.div--2" className="max-h-[26rem] min-w-0 flex-1 overflow-y-auto pr-1">
-            <GradeDeOpcoes data-gc="perfil.cartao.escolher-enfeite-modal.grade-de-opcoes.on-escolher"
+            <OptionsGrid data-gc="perfil.cartao.escolher-enfeite-modal.options-grid.on-pick"
               label={legenda}
-              opcoes={opcoes}
-              valor={valor}
-              onEscolher={onEscolher}
-              amostra={amostra}
+              options={options}
+              value={value}
+              onPick={onPick}
+              sample={sample}
             />
           </div>
 
-          <div data-gc="perfil.cartao.escolher-enfeite-modal.div--3" className="w-80 shrink-0">{previa}</div>
+          <div data-gc="perfil.cartao.escolher-enfeite-modal.div--3" className="w-80 shrink-0">{preview}</div>
         </div>
       </DialogContent>
     </Dialog>

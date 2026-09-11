@@ -1,41 +1,41 @@
 import {
-  DECORACOES,
-  EFEITOS_DE_NOME,
-  EFEITOS_DE_PERFIL,
-  ESTILOS_DE_CARGO,
-  FONTES_DE_NOME,
-  MOLDURAS,
-  PATENTES,
-  PLACAS,
-  type Decoracao,
-  type EfeitoDeNome,
-  type EfeitoDePerfil,
-  type EstiloDeCargo,
-  type FonteDeNome,
-  type Moldura,
-  type Patente,
-  type Placa,
+  DECORATIONS,
+  NAME_EFFECTS,
+  PROFILE_EFFECTS,
+  ROLE_STYLES,
+  NAME_FONTS,
+  FRAMES,
+  RANKS,
+  PLATES,
+  type Decoration,
+  type NameEffect,
+  type ProfileEffect,
+  type RoleStyle,
+  type NameFont,
+  type Frame,
+  type Rank,
+  type Plate,
 } from "@gravae/shared";
 
-export interface Opcao<T extends string> {
+export interface Choice<T extends string> {
   id: T;
-  rotulo: string;
-  descricao?: string;
+  label: string;
+  description?: string;
 }
 
-function catalogar<T extends string>(
+function catalog<T extends string>(
   ids: readonly T[],
-  rotulos: Record<T, string | [string, string]>,
-): Opcao<T>[] {
+  labels: Record<T, string | [string, string]>,
+): Choice<T>[] {
   return ids.map((id) => {
-    const entrada = rotulos[id];
-    const [rotulo, descricao] = Array.isArray(entrada) ? entrada : [entrada, undefined];
+    const entry = labels[id];
+    const [label, description] = Array.isArray(entry) ? entry : [entry, undefined];
 
-    return { id, rotulo, descricao };
+    return { id, label, description };
   });
 }
 
-export const FONTES: Opcao<FonteDeNome>[] = catalogar(FONTES_DE_NOME, {
+export const FONTS: Choice<NameFont>[] = catalog(NAME_FONTS, {
   padrao: ["Padrão", "a mesma fonte do resto do app"],
   serifada: "Serifada",
   monoespacada: "Monoespaçada",
@@ -43,14 +43,14 @@ export const FONTES: Opcao<FonteDeNome>[] = catalogar(FONTES_DE_NOME, {
   manuscrita: "Manuscrita",
 });
 
-export const EFEITOS_DO_NOME: Opcao<EfeitoDeNome>[] = catalogar(EFEITOS_DE_NOME, {
+export const NAME_EFFECT_OPTIONS: Choice<NameEffect>[] = catalog(NAME_EFFECTS, {
   solido: ["Nenhum", "cor chapada"],
   gradiente: ["Gradiente", "duas cores; some em texto pequeno"],
   neon: "Neon",
   brilho: ["Brilho", "um lampejo que atravessa o nome"],
 });
 
-export const DECORACOES_DE_AVATAR: Opcao<Decoracao>[] = catalogar(DECORACOES, {
+export const AVATAR_DECORATIONS: Choice<Decoration>[] = catalog(DECORATIONS, {
   nenhuma: "Nenhuma",
   aurora: "Aurora",
   chamas: "Chamas",
@@ -65,7 +65,7 @@ export const DECORACOES_DE_AVATAR: Opcao<Decoracao>[] = catalogar(DECORACOES, {
   loureiro: ["Coroa de louros", "imagem — ramos com balanço leve"],
 });
 
-export const MOLDURAS_DE_AVATAR: Opcao<Moldura>[] = catalogar(MOLDURAS, {
+export const AVATAR_FRAMES: Choice<Frame>[] = catalog(FRAMES, {
   nenhuma: "Nenhuma",
   neon: "Neon",
   dourada: "Dourada",
@@ -81,7 +81,7 @@ export const MOLDURAS_DE_AVATAR: Opcao<Moldura>[] = catalogar(MOLDURAS, {
   espinheiro: ["Espinheiro", "desenhada — ramo de espinhos"],
 });
 
-export const EFEITOS_DO_PERFIL: Opcao<EfeitoDePerfil>[] = catalogar(EFEITOS_DE_PERFIL, {
+export const PROFILE_EFFECT_OPTIONS: Choice<ProfileEffect>[] = catalog(PROFILE_EFFECTS, {
   nenhum: "Nenhum",
   poeira: "Poeira",
   chuva: "Chuva",
@@ -89,7 +89,7 @@ export const EFEITOS_DO_PERFIL: Opcao<EfeitoDePerfil>[] = catalogar(EFEITOS_DE_P
   bolhas: "Bolhas",
 });
 
-export const PLACAS_DE_PERFIL: Opcao<Placa>[] = catalogar(PLACAS, {
+export const PROFILE_PLATES: Choice<Plate>[] = catalog(PLATES, {
   nenhuma: "Nenhuma",
   fita: "Fita",
   holograma: "Holograma",
@@ -97,17 +97,17 @@ export const PLACAS_DE_PERFIL: Opcao<Placa>[] = catalogar(PLACAS, {
   cristal: "Cristal",
 });
 
-export const PATENTES_DE_PERFIL: Opcao<Patente>[] = catalogar(PATENTES, {
+export const PROFILE_RANKS: Choice<Rank>[] = catalog(RANKS, {
   nenhuma: "Nenhuma",
   orbe: ["Orbe alado", "monta uma vez quando o cartão abre"],
 });
 
-export const ESTILOS_DO_CARGO: Opcao<EstiloDeCargo>[] = catalogar(ESTILOS_DE_CARGO, {
+export const ROLE_STYLE_OPTIONS: Choice<RoleStyle>[] = catalog(ROLE_STYLES, {
   solido: ["Sólido", "uma cor só"],
   gradiente: ["Gradiente", "usa a segunda cor"],
   holografico: "Holográfico",
 });
 
-export const VAZIOS = new Set<string>(["nenhum", "nenhuma", "solido", "padrao"]);
+export const EMPTY = new Set<string>(["nenhum", "nenhuma", "solido", "padrao"]);
 
-export const FAMILIAS_DESLIGADAS = new Set<string>(["moldura", "perfil", "placa"]);
+export const FAMILIES_OFF = new Set<string>(["moldura", "perfil", "placa"]);

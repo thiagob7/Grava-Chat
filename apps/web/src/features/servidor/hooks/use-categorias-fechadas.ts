@@ -1,62 +1,62 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 
-const CHAVE = "gravae:categorias-fechadas";
+const KEY = "gravae:categorias-fechadas";
 
-export function useCategoriasFechadas(): [
+export function useCategoriesClosed(): [
   Record<string, boolean>,
-  (proximo: Record<string, boolean>) => void,
+  (next: Record<string, boolean>) => void,
 ] {
-  const lembrar = useAparencia((s) => s.lembrarCategoriasFechadas);
-  const [fechadas, setFechadas] = useState<Record<string, boolean>>(() =>
-    lembrar ? ler() : {},
+  const remember = useAppearance((s) => s.rememberCategoriesClosed);
+  const [closed, setClosed] = useState<Record<string, boolean>>(() =>
+    remember ? read() : {},
   );
 
   useEffect(() => {
-    if (lembrar) {
-      setFechadas(ler());
+    if (remember) {
+      setClosed(read());
       return;
     }
 
     try {
-      localStorage.removeItem(CHAVE);
+      localStorage.removeItem(KEY);
     } catch {
     }
-  }, [lembrar]);
+  }, [remember]);
 
-  const guardar = useCallback(
-    (proximo: Record<string, boolean>) => {
-      setFechadas(proximo);
-      if (!lembrar) return;
+  const keep = useCallback(
+    (next: Record<string, boolean>) => {
+      setClosed(next);
+      if (!remember) return;
 
       try {
-        const fechadasSo = Object.fromEntries(
-          Object.entries(proximo).filter(([, valor]) => valor),
+        const closedSo = Object.fromEntries(
+          Object.entries(next).filter(([, value]) => value),
         );
 
-        localStorage.setItem(CHAVE, JSON.stringify(fechadasSo));
+        localStorage.setItem(KEY, JSON.stringify(closedSo));
       } catch {
       }
     },
-    [lembrar],
+    [remember],
   );
 
-  return [fechadas, guardar];
+  return [closed, keep];
 }
 
-function ler(): Record<string, boolean> {
+function read(): Record<string, boolean> {
   try {
-    const bruto = localStorage.getItem(CHAVE);
-    if (!bruto) return {};
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return {};
 
-    const dados: unknown = JSON.parse(bruto);
-    if (!dados || typeof dados !== "object") return {};
+    const data: unknown = JSON.parse(raw);
+    if (!data || typeof data !== "object") return {};
 
     return Object.fromEntries(
-      Object.entries(dados as Record<string, unknown>).map(([id, valor]) => [
+      Object.entries(data as Record<string, unknown>).map(([id, value]) => [
         id,
-        Boolean(valor),
+        Boolean(value),
       ]),
     );
   } catch {

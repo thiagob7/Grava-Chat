@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "يد صغيرة تلوّح",
+    botao: "لوّح لـ {{nome}}",
+  },
+  oficial: {
+    titulo: "هذه القناة للإعلانات الرسمية فقط.",
+    detalhe: "لا نطلب أبدًا كلمة السر ولا رمز حسابك.",
+    saibaMais: "اعرف المزيد",
+  },
+  topico: {
+    abrir: "عرض وصف القناة",
+  },
+  previaDoLink: {
+    carregando: "جارٍ فتح ما في الرابط…",
+    destino: "يذهب إلى {{destino}}",
+  },
+  reacao: {
+    carregando: "جارٍ معرفة من تفاعل بـ {{emoji}}…",
+    uma: "تفاعل {{nome}} بـ {{emoji}}",
+    duas: "تفاعل {{primeiro}} و{{segundo}} بـ {{emoji}}",
+    varias: "تفاعل {{nomes}} و{{quantos}} آخرون بـ {{emoji}}",
+    dicaSuper: "اضغط مطولًا للتفاعل الخارق",
+  },
+  recado: {
+    gravar: "تسجيل رسالة صوتية",
+    descartar: "تجاهل التسجيل",
+    mandar: "إرسال التسجيل",
+    semSuporte: "هذا المتصفح لا يسجّل الصوت.",
+    semMicrofone: "لا يوجد وصول إلى الميكروفون.",
+  },
   lista: {
     carregando: "جارٍ تحميل الرسائل…",
     carregandoMais: "جارٍ التحميل…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "عرض الصورة",
   },
   enquete: {
+    criar: "إنشاء استطلاع",
+    pergunta: "السؤال",
+    exemplo: "ماذا نلعب اليوم؟",
+    respostas: "الإجابات",
+    adicionarOpcao: "إضافة خيار",
+    removerOpcao: "إزالة الخيار",
+    varias: "السماح بأكثر من إجابة",
+    variasDetalhe: "بدون هذا، التصويت لخيار يلغي الصوت السابق.",
+    duracao: "المدة",
+    umaHora: "ساعة واحدة",
+    quatroHoras: "4 ساعات",
+    oitoHoras: "8 ساعات",
+    umDia: "يوم واحد",
+    tresDias: "3 أيام",
+    umaSemana: "أسبوع واحد",
+    ateEncerrar: "حتى أُنهيه بنفسي",
     titulo: "استطلاع",
     encerrada: "انتهى الاستطلاع",
     variasRespostas: "استطلاع — إجابات متعددة",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "البحث ينظر فقط في القنوات التي يمكنك قراءتها.",
   },
   entrada: {
+    semNome: "محادثة",
+    anexo: "(مرفق)",
     titulo: "صندوق الوارد",
     naoLidas: "غير مقروءة",
     salvas: "المحفوظة",

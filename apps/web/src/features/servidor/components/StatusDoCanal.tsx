@@ -2,58 +2,58 @@ import React, { useState } from "react";
 import { Pencil } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
-import { useDefinirStatusDoCanal } from "~/@core/application/queries/guild/use-status-do-canal";
+import { useSetChannelStatus } from "~/@core/application/queries/guild/use-status-do-canal";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogTitle } from "~/components/ui/dialog";
 import { Input, Label } from "~/components/ui/input";
 import { LottieArt } from "~/components/LottieArt";
 import { cn } from "~/lib/utils";
 
-export const StatusDoCanal: React.FC<{
+export const ChannelStatus: React.FC<{
   guildId: string;
   channelId: string;
-  nomeDoCanal: string;
+  channelName: string;
   status: string | null | undefined;
-  podeEditar: boolean;
-  sempreVisivel?: boolean;
+  canEdit: boolean;
+  visibleAlways?: boolean;
   className?: string;
-}> = ({ guildId, channelId, nomeDoCanal, status, podeEditar, sempreVisivel, className }) => {
-  const [editando, setEditando] = useState(false);
+}> = ({ guildId, channelId, channelName, status, canEdit, visibleAlways, className }) => {
+  const [editing, setEditing] = useState(false);
 
-  if (!status && !podeEditar) return null;
+  if (!status && !canEdit) return null;
 
   return (
     <>
       <span data-gc="servidor.status-do-canal.span"
-        role={podeEditar ? "button" : undefined}
-        tabIndex={podeEditar ? 0 : undefined}
+        role={canEdit ? "button" : undefined}
+        tabIndex={canEdit ? 0 : undefined}
         onClick={
-          podeEditar
+          canEdit
             ? (e) => {
                 e.stopPropagation();
-                setEditando(true);
+                setEditing(true);
               }
             : undefined
         }
         className={cn(
           "mt-px max-w-full items-center gap-1 text-11 leading-[14px]",
-          status || sempreVisivel ? "inline-flex" : "hidden",
+          status || visibleAlways ? "inline-flex" : "hidden",
           status ? "text-ink-muted" : "text-ink-faint",
-          podeEditar && "cursor-pointer hover:text-ink-muted",
+          canEdit && "cursor-pointer hover:text-ink-muted",
           className,
         )}
       >
         <span data-gc="servidor.status-do-canal.span--2" className="truncate">{status ?? "Definir um status do canal"}</span>
-        {podeEditar && <Pencil data-gc="servidor.status-do-canal.pencil" size={11} className="shrink-0" />}
+        {canEdit && <Pencil data-gc="servidor.status-do-canal.pencil" size={11} className="shrink-0" />}
       </span>
 
-      {editando && (
+      {editing && (
         <Editor data-gc="servidor.status-do-canal.editor"
           guildId={guildId}
           channelId={channelId}
-          nomeDoCanal={nomeDoCanal}
+          channelName={channelName}
           status={status ?? ""}
-          onFechar={() => setEditando(false)}
+          onClose={() => setEditing(false)}
         />
       )}
     </>
@@ -66,21 +66,21 @@ const loadBubbles = () =>
 const Editor: React.FC<{
   guildId: string;
   channelId: string;
-  nomeDoCanal: string;
+  channelName: string;
   status: string;
-  onFechar: () => void;
-}> = ({ guildId, channelId, nomeDoCanal, status, onFechar }) => {
-  const definir = useDefinirStatusDoCanal();
-  const [texto, setTexto] = useState(status);
+  onClose: () => void;
+}> = ({ guildId, channelId, channelName, status, onClose }) => {
+  const set = useSetChannelStatus();
+  const [text, setText] = useState(status);
 
-  const salvar = () =>
-    definir.mutate(
-      { guildId, channelId, status: texto.trim() || null },
-      { onSuccess: onFechar },
+  const save = () =>
+    set.mutate(
+      { guildId, channelId, status: text.trim() || null },
+      { onSuccess: onClose },
     );
 
   return (
-    <Dialog data-gc="servidor.status-do-canal.dialog" open onOpenChange={(aberto) => !aberto && onFechar()}>
+    <Dialog data-gc="servidor.status-do-canal.dialog" open onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent data-gc="servidor.status-do-canal.dialog-content" className="max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <div data-gc="servidor.status-do-canal.div" className="flex justify-center bg-gradient-to-b from-brand/25 to-transparent pb-2 pt-8">
           <LottieArt data-gc="servidor.status-do-canal.lottie-art"
@@ -106,11 +106,11 @@ const Editor: React.FC<{
             <Input data-gc="servidor.status-do-canal.input"
               id="status-do-canal"
               autoFocus
-              value={texto}
-              maxLength={LIMITS.statusDoCanal}
-              placeholder={`Status para ${nomeDoCanal}`}
-              onChange={(e) => setTexto(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && salvar()}
+              value={text}
+              maxLength={LIMITS.channelStatus}
+              placeholder={`Status para ${channelName}`}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && save()}
             />
           </div>
         </DialogBody>
@@ -120,20 +120,20 @@ const Editor: React.FC<{
             <Button data-gc="servidor.status-do-canal.button"
               variant="surface"
               className="mr-auto"
-              disabled={definir.isPending}
+              disabled={set.isPending}
               onClick={() =>
-                definir.mutate({ guildId, channelId, status: null }, { onSuccess: onFechar })
+                set.mutate({ guildId, channelId, status: null }, { onSuccess: onClose })
               }
             >
               Limpar
             </Button>
           )}
 
-          <Button data-gc="servidor.status-do-canal.button.on-fechar" variant="surface" onClick={onFechar}>
+          <Button data-gc="servidor.status-do-canal.button.on-close" variant="surface" onClick={onClose}>
             Cancelar
           </Button>
 
-          <Button data-gc="servidor.status-do-canal.button.salvar" disabled={definir.isPending} onClick={salvar}>
+          <Button data-gc="servidor.status-do-canal.button.save" disabled={set.isPending} onClick={save}>
             Definir status
           </Button>
         </DialogFooter>

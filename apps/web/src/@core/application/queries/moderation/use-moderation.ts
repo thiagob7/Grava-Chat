@@ -15,7 +15,7 @@ import {
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-const erro = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
+const error = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
 
 export const useFindBans = (guildId: string | undefined, enabled = true) =>
   useQuery({
@@ -26,11 +26,11 @@ export const useFindBans = (guildId: string | undefined, enabled = true) =>
 
 export const useFindAuditLog = (
   guildId: string | undefined,
-  filtro: { actorId?: string; action?: string },
+  filter: { actorId?: string; action?: string },
 ) =>
   useQuery({
-    queryKey: queryKeys.moderation.audit(guildId ?? "", JSON.stringify(filtro)),
-    queryFn: () => findAuditLog(guildId!, filtro),
+    queryKey: queryKeys.moderation.audit(guildId ?? "", JSON.stringify(filter)),
+    queryFn: () => findAuditLog(guildId!, filter),
     enabled: Boolean(guildId),
   });
 
@@ -41,7 +41,7 @@ export const useFindAutoModRules = (guildId: string | undefined) =>
     enabled: Boolean(guildId),
   });
 
-function useInvalidarModeracao(guildId: string | undefined) {
+function useInvalidateModeration(guildId: string | undefined) {
   const queryClient = useQueryClient();
 
   return () => {
@@ -54,51 +54,51 @@ function useInvalidarModeracao(guildId: string | undefined) {
 }
 
 export const useBanMember = (guildId: string | undefined) => {
-  const invalidar = useInvalidarModeracao(guildId);
+  const invalidate = useInvalidateModeration(guildId);
 
   return useMutation({
     mutationFn: banMember,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Pessoa banida.");
     },
-    onError: erro("Erro ao banir."),
+    onError: error("Erro ao banir."),
   });
 };
 
 export const useUnbanMember = (guildId: string | undefined) => {
-  const invalidar = useInvalidarModeracao(guildId);
+  const invalidate = useInvalidateModeration(guildId);
 
   return useMutation({
     mutationFn: unbanMember,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Banimento removido.");
     },
-    onError: erro("Erro ao desbanir."),
+    onError: error("Erro ao desbanir."),
   });
 };
 
 export const useTimeoutMember = (guildId: string | undefined) => {
-  const invalidar = useInvalidarModeracao(guildId);
+  const invalidate = useInvalidateModeration(guildId);
 
   return useMutation({
     mutationFn: timeoutMember,
-    onSuccess: (_, variaveis) => {
-      invalidar();
-      toast.success(variaveis.minutos ? "Pessoa de castigo." : "Castigo removido.");
+    onSuccess: (_, variables) => {
+      invalidate();
+      toast.success(variables.minutes ? "Pessoa de castigo." : "Castigo removido.");
     },
-    onError: erro("Erro ao castigar."),
+    onError: error("Erro ao castigar."),
   });
 };
 
 export const useSetNickname = (guildId: string | undefined) => {
-  const invalidar = useInvalidarModeracao(guildId);
+  const invalidate = useInvalidateModeration(guildId);
 
   return useMutation({
     mutationFn: setNickname,
-    onSuccess: invalidar,
-    onError: erro("Erro ao mudar o apelido."),
+    onSuccess: invalidate,
+    onError: error("Erro ao mudar o apelido."),
   });
 };
 
@@ -113,7 +113,7 @@ export const useSaveAutoModRule = (guildId: string | undefined) => {
       }
       toast.success("Regra salva.");
     },
-    onError: erro("Erro ao salvar a regra."),
+    onError: error("Erro ao salvar a regra."),
   });
 };
 
@@ -127,6 +127,6 @@ export const useDeleteAutoModRule = (guildId: string | undefined) => {
         void queryClient.invalidateQueries({ queryKey: queryKeys.moderation.automod(guildId) });
       }
     },
-    onError: erro("Erro ao apagar a regra."),
+    onError: error("Erro ao apagar a regra."),
   });
 };

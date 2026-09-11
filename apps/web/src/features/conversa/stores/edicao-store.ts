@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
-type EdicaoStore = {
-  pedido: string | null;
+type EditStore = {
+  request: string | null;
 
-  pedir: (messageId: string) => void;
-  recolher: () => void;
+  askFor: (messageId: string) => void;
+  collapse: () => void;
 };
 
-export const useEdicaoStore = create<EdicaoStore>((set) => ({
-  pedido: null,
+export const useEditStore = create<EditStore>((set) => ({
+  request: null,
 
-  pedir: (messageId) => set({ pedido: messageId }),
-  recolher: () => set({ pedido: null }),
+  askFor: (messageId) => set({ request: messageId }),
+  collapse: () => set({ request: null }),
 }));

@@ -11,17 +11,17 @@ export const userRepository = {
     return prisma.user.findUniqueOrThrow({ where: { id } });
   },
 
-  contar() {
-    return prisma.user.count({ where: { isBot: false, ...unset("sistema") } });
+  count() {
+    return prisma.user.count({ where: { isBot: false, ...unset("system") } });
   },
 
-  async idsDeTodos(): Promise<string[]> {
-    const linhas = await prisma.user.findMany({
-      where: { isBot: false, ...unset("sistema") },
+  async allIds(): Promise<string[]> {
+    const lines = await prisma.user.findMany({
+      where: { isBot: false, ...unset("system") },
       select: { id: true },
     });
 
-    return linhas.map((l) => l.id);
+    return lines.map((l) => l.id);
   },
 
   findByEmail(email: string) {
@@ -75,8 +75,8 @@ export const noteRepository = {
     return prisma.userNote.findUnique({ where: { ownerId_targetId: { ownerId, targetId } } });
   },
 
-  async upsert(ownerId: string, targetId: string, texto: string) {
-    if (!texto.trim()) {
+  async upsert(ownerId: string, targetId: string, text: string) {
+    if (!text.trim()) {
       await prisma.userNote
         .delete({ where: { ownerId_targetId: { ownerId, targetId } } })
         .catch(() => undefined);
@@ -86,8 +86,8 @@ export const noteRepository = {
 
     return prisma.userNote.upsert({
       where: { ownerId_targetId: { ownerId, targetId } },
-      create: { ownerId, targetId, texto },
-      update: { texto },
+      create: { ownerId, targetId, text },
+      update: { text },
     });
   },
 };

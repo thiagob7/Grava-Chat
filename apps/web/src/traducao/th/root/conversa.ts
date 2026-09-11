@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "มือน้อย ๆ ที่โบกทักทาย",
+    botao: "โบกมือทัก {{nome}}",
+  },
+  oficial: {
+    titulo: "ช่องนี้มีไว้สำหรับประกาศทางการเท่านั้น",
+    detalhe: "เราไม่เคยขอรหัสผ่านหรือโทเคนบัญชีของคุณ",
+    saibaMais: "อ่านเพิ่ม",
+  },
+  topico: {
+    abrir: "ดูคำอธิบายของช่อง",
+  },
+  previaDoLink: {
+    carregando: "กำลังดูว่าในลิงก์มีอะไร…",
+    destino: "ไปที่ {{destino}}",
+  },
+  reacao: {
+    carregando: "กำลังดูว่าใครแสดงความรู้สึกด้วย {{emoji}}…",
+    uma: "{{nome}} แสดงความรู้สึกด้วย {{emoji}}",
+    duas: "{{primeiro}} และ {{segundo}} แสดงความรู้สึกด้วย {{emoji}}",
+    varias: "{{nomes}} และอีก {{quantos}} คนแสดงความรู้สึกด้วย {{emoji}}",
+    dicaSuper: "กดค้างเพื่อซูเปอร์รีแอค",
+  },
+  recado: {
+    gravar: "อัดข้อความเสียง",
+    descartar: "ทิ้งเสียงที่อัด",
+    mandar: "ส่งเสียงที่อัด",
+    semSuporte: "เบราว์เซอร์นี้อัดเสียงไม่ได้",
+    semMicrofone: "เข้าถึงไมโครโฟนไม่ได้",
+  },
   lista: {
     carregando: "กำลังโหลดข้อความ…",
     carregandoMais: "กำลังโหลด…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "ดูรูปภาพ",
   },
   enquete: {
+    criar: "สร้างโพล",
+    pergunta: "คำถาม",
+    exemplo: "วันนี้เล่นอะไรกันดี",
+    respostas: "คำตอบ",
+    adicionarOpcao: "เพิ่มตัวเลือก",
+    removerOpcao: "เอาตัวเลือกออก",
+    varias: "ให้ตอบได้มากกว่าหนึ่งข้อ",
+    variasDetalhe: "ถ้าไม่เปิด การโหวตข้อใหม่จะดึงคะแนนออกจากข้อเดิม",
+    duracao: "ระยะเวลา",
+    umaHora: "1 ชั่วโมง",
+    quatroHoras: "4 ชั่วโมง",
+    oitoHoras: "8 ชั่วโมง",
+    umDia: "1 วัน",
+    tresDias: "3 วัน",
+    umaSemana: "1 สัปดาห์",
+    ateEncerrar: "จนกว่าฉันจะปิดเอง",
     titulo: "โพล",
     encerrada: "โพลปิดแล้ว",
     variasRespostas: "โพล — ตอบได้หลายข้อ",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "การค้นหาจะดูเฉพาะช่องที่คุณอ่านได้",
   },
   entrada: {
+    semNome: "การสนทนา",
+    anexo: "(ไฟล์แนบ)",
     titulo: "กล่องข้อความ",
     naoLidas: "ยังไม่อ่าน",
     salvas: "ที่บันทึกไว้",

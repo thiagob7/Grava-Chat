@@ -1,13 +1,13 @@
 import type { Message } from "@gravae/shared";
 
-import { prefsDeAviso, servidorSilenciado } from "~/stores/notificacoes";
-import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
-import { tocarSom } from "~/lib/ui-sounds";
+import { noticePrefs, serverMuted } from "~/stores/notificacoes";
+import { appearancePrefs } from "~/features/configuracoes/stores/aparencia";
+import { playSound } from "~/lib/ui-sounds";
 
-export type PermissaoDeAviso = "concedida" | "negada" | "perguntar" | "indisponivel";
+export type NoticePermission = "concedida" | "negada" | "perguntar" | "unavailable";
 
-export function permissaoDeAviso(): PermissaoDeAviso {
-  if (typeof Notification === "undefined") return "indisponivel";
+export function noticePermission(): NoticePermission {
+  if (typeof Notification === "undefined") return "unavailable";
 
   return Notification.permission === "granted"
     ? "concedida"
@@ -16,33 +16,33 @@ export function permissaoDeAviso(): PermissaoDeAviso {
       : "perguntar";
 }
 
-export async function pedirPermissaoDeAviso(): Promise<PermissaoDeAviso> {
-  if (typeof Notification === "undefined") return "indisponivel";
-  if (Notification.permission !== "default") return permissaoDeAviso();
+export async function noticeRequestPermission(): Promise<NoticePermission> {
+  if (typeof Notification === "undefined") return "unavailable";
+  if (Notification.permission !== "default") return noticePermission();
 
   await Notification.requestPermission().catch(() => undefined);
-  return permissaoDeAviso();
+  return noticePermission();
 }
 
-interface Contexto {
+interface Context {
   guildId?: string | null;
   message: Message;
-  meuId: string | undefined;
-  canalAberto: string | undefined;
-  mencao: { direta: boolean; everyone: boolean; cargo: boolean };
-  nomeDoCanal: string | undefined;
-  ehDm: boolean;
-  ignorado: boolean;
-  onAbrir: () => void;
+  myId: string | undefined;
+  channelIsOpen: string | undefined;
+  mention: { direct: boolean; everyone: boolean; role: boolean };
+  channelName: string | undefined;
+  isDm: boolean;
+  ignored: boolean;
+  onOpen: () => void;
 }
 
-function corpoDoAviso(message: Message) {
-  const texto = message.content
+function noticeBody(message: Message) {
+  const text = message.content
     .replace(/<@&?[a-f\d]{24}>/gi, "@alguém")
     .replace(/<a?:(\w+):\d+>/g, ":$1:")
     .trim();
 
-  if (texto) return texto.length > 180 ? `${texto.slice(0, 179)}…` : texto;
+  if (text) return text.length > 180 ? `${text.slice(0, 179)}…` : text;
   if (message.attachments.length) return "Mandou um anexo";
   if (message.sticker) return "Mandou uma figurinha";
   if (message.poll) return "Criou uma enquete";
@@ -50,67 +50,67 @@ function corpoDoAviso(message: Message) {
   return "Mandou uma mensagem";
 }
 
-export function avisarDeMensagem({
+export function notifyMessage({
   message,
-  meuId,
-  canalAberto,
-  mencao,
-  nomeDoCanal,
-  ehDm,
-  ignorado,
-  onAbrir,
+  myId,
+  channelIsOpen,
+  mention,
+  channelName,
+  isDm,
+  ignored,
+  onOpen,
   guildId,
-}: Contexto) {
-  if (!meuId || message.author.id === meuId || ignorado) return;
+}: Context) {
+  if (!myId || message.author.id === myId || ignored) return;
 
-  const prefs = prefsDeAviso();
-  const doServidorPrefs = guildId ? prefs.porServidor[guildId] : undefined;
+  const prefs = noticePrefs();
+  const fromServerPrefs = guildId ? prefs.byServer[guildId] : undefined;
 
-  const meMenciona =
-    mencao.direta ||
-    (mencao.everyone && doServidorPrefs?.everyone !== false) ||
-    (mencao.cargo && doServidorPrefs?.cargos !== false);
+  const meMentions =
+    mention.direct ||
+    (mention.everyone && fromServerPrefs?.everyone !== false) ||
+    (mention.role && fromServerPrefs?.roleList !== false);
 
-  const doCanal = prefs.porCanal[message.channelId] ?? null;
-  if (doCanal === "nada") return;
+  const fromChannel = prefs.byChannel[message.channelId] ?? null;
+  if (fromChannel === "nada") return;
 
-  if (servidorSilenciado(prefs, guildId)) return;
-  const doServidor = doServidorPrefs?.modo ?? null;
-  if (doServidor === "nada") return;
-  if (doServidor === "mencoes" && !meMenciona) return;
-  const emFoco = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();
-  const lendoEsteCanal = emFoco && canalAberto === message.channelId;
+  if (serverMuted(prefs, guildId)) return;
+  const fromServer = fromServerPrefs?.mode ?? null;
+  if (fromServer === "nada") return;
+  if (fromServer === "mencoes" && !meMentions) return;
+  const inFocus = typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus();
+  const readingThisChannel = inFocus && channelIsOpen === message.channelId;
 
-  const importante = meMenciona || ehDm;
+  const important = meMentions || isDm;
 
-  if (lendoEsteCanal && !meMenciona) return;
-  if (doCanal === "mencoes" && !meMenciona) return;
-  if (doCanal === null && prefs.soMencoes && !importante) return;
+  if (readingThisChannel && !meMentions) return;
+  if (fromChannel === "mencoes" && !meMentions) return;
+  if (fromChannel === null && prefs.soMentions && !important) return;
 
-  if (prefs.som && !lendoEsteCanal) tocarSom(importante ? "mencao" : "mensagem");
+  if (prefs.sound && !readingThisChannel) playSound(important ? "mention" : "message");
 
-  if (!prefs.aviso || emFoco) return;
-  if (permissaoDeAviso() !== "concedida") return;
+  if (!prefs.notice || inFocus) return;
+  if (noticePermission() !== "concedida") return;
 
-  const aparencia = prefsDeAparencia();
-  if (aparencia.modoStreamer && aparencia.streamerSemAvisos) return;
+  const appearance = appearancePrefs();
+  if (appearance.modeStreamer && appearance.streamerWithoutNotices) return;
 
-  const onde = ehDm ? "" : nomeDoCanal ? ` · #${nomeDoCanal}` : "";
+  const where = isDm ? "" : channelName ? ` · #${channelName}` : "";
 
   try {
-    const aviso = new Notification(`${message.author.displayName}${onde}`, {
-      body: corpoDoAviso(message),
+    const notice = new Notification(`${message.author.displayName}${where}`, {
+      body: noticeBody(message),
       icon: message.author.avatarUrl ?? "/favicon.ico",
       tag: message.channelId,
-      renotify: importante,
+      renotify: important,
       silent: true,
     } as NotificationOptions & { renotify: boolean });
 
-    aviso.onclick = () => {
+    notice.onclick = () => {
       window.focus();
-      void window.gravae?.janela?.focar();
-      onAbrir();
-      aviso.close();
+      void window.gravae?.appWindow?.focus();
+      onOpen();
+      notice.close();
     };
   } catch {
   }

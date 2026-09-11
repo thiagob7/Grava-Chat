@@ -1,133 +1,137 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
 import { Headphones, MonitorPlay } from "@phosphor-icons/react";
-import type { VozNoServidor } from "@gravae/shared";
+import type { VoiceServer } from "@gravae/shared";
 import { useTranslation } from "react-i18next";
 
 import type { GuildSummaryModel } from "~/@core/domain/models/guild-model";
-import { DicaDoServidor } from "~/features/servidor/components/DicaDoServidor";
-import { MenuDoServidor } from "~/features/servidor/components/MenuDoServidor";
-import type { Destino } from "~/features/servidor/lib/trilho";
+import { ServerHint } from "~/features/servidor/components/DicaDoServidor";
+import { ServerMenu } from "~/features/servidor/components/MenuDoServidor";
+import type { Destination } from "~/features/servidor/lib/trilho";
 import { avatarColor, initials } from "~/lib/format";
-import { servidorSilenciado, useAvisos } from "~/stores/notificacoes";
+import { serverMuted, useNotices } from "~/stores/notificacoes";
 import { cn } from "~/lib/utils";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 
-export const TIPO_DE_ARRASTO = "text/gravae-servidor";
+export const DRAG_KIND = "text/gravae-servidor";
 
-export type ZonaDeSoltar = "antes" | "depois" | "juntar" | null;
+export type DropZone = "antes" | "depois" | "juntar" | null;
 
-export function zonaDoPonteiro(e: React.DragEvent<HTMLElement>): ZonaDeSoltar {
+export function pointerZone(e: React.DragEvent<HTMLElement>): DropZone {
   const r = e.currentTarget.getBoundingClientRect();
   const y = (e.clientY - r.top) / r.height;
   return y < 0.3 ? "antes" : y > 0.7 ? "depois" : "juntar";
 }
 
-export const MarcaDeSoltar: React.FC<{ zona: ZonaDeSoltar }> = ({ zona }) =>
-  zona === "antes" || zona === "depois" ? (
+export const DropBrand: React.FC<{ zone: DropZone }> = ({ zone }) =>
+  zone === "antes" || zone === "depois" ? (
     <span data-gc="servidor.item-do-servidor.span"
       aria-hidden
       className={cn(
         "pointer-events-none absolute left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-brand",
-        zona === "antes" ? "-top-1.5" : "-bottom-1.5",
+        zone === "antes" ? "-top-1.5" : "-bottom-1.5",
       )}
     />
   ) : null;
 
-interface ItemDoServidorProps {
+interface ServerPropsItem {
   guild: GuildSummaryModel;
   active: boolean;
-  naoLidas: number;
-  mencoes: number;
-  vozes: VozNoServidor[];
+  notRead: number;
+  mentions: number;
+  voices: VoiceServer[];
   onSelect: (guildId: string) => void;
-  onConvidar: () => void;
-  onSoltar?: (guildId: string, destino: Destino) => void;
-  pastaId?: string;
-  compacto?: boolean;
+  onInvite: () => void;
+  onDrop?: (guildId: string, destination: Destination) => void;
+  folderId?: string;
+  compact?: boolean;
 }
 
-export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
+export const ServerItem: React.FC<ServerPropsItem> = ({
   guild,
   active,
-  naoLidas,
-  mencoes,
-  vozes,
+  notRead,
+  mentions,
+  voices,
   onSelect,
-  onConvidar,
-  onSoltar,
-  pastaId,
-  compacto = false,
+  onInvite,
+  onDrop,
+  folderId,
+  compact = false,
 }) => {
   const { t } = useTranslation();
-  const [zona, setZona] = useState<ZonaDeSoltar>(null);
+  const [zone, setZone] = useState<DropZone>(null);
 
-  const transmitindo = vozes.some((canal) => canal.transmitindo);
-  const naChamada = vozes.reduce((total, canal) => total + canal.pessoas.length, 0);
-  const silenciado = useAvisos((s) => servidorSilenciado(s, guild.id));
-  const temNovidade = !active && naoLidas > 0 && !silenciado;
+  const broadcasting = voices.some((channel) => channel.broadcasting);
+  const inCall = voices.reduce((total, channel) => total + channel.people.length, 0);
+  const muted = useNotices((s) => serverMuted(s, guild.id));
+  const hasNews = !active && notRead > 0 && !muted;
 
-  const dragging = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(TIPO_DE_ARRASTO);
+  const dragging = (e: React.DragEvent<HTMLElement>) => e.dataTransfer.types.includes(DRAG_KIND);
 
   return (
-    <MenuDoServidor data-gc="servidor.item-do-servidor.menu-do-servidor.on-convidar" guild={guild} onConvidar={onConvidar}>
+    <ServerMenu data-gc="servidor.item-do-servidor.server-menu.on-invite" guild={guild} onInvite={onInvite}>
       <div data-gc="servidor.item-do-servidor.div"
-        className="group relative flex w-full justify-center"
+        className="group/servidor relative flex w-full justify-center"
         onDragOver={(e) => {
-          if (!onSoltar || !dragging(e)) return;
+          if (!onDrop || !dragging(e)) return;
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
-          setZona(zonaDoPonteiro(e));
+          setZone(pointerZone(e));
         }}
-        onDragLeave={() => setZona(null)}
+        onDragLeave={() => setZone(null)}
         onDrop={(e) => {
-          if (!onSoltar) return;
-          const arrastado = e.dataTransfer.getData(TIPO_DE_ARRASTO);
-          const z = zonaDoPonteiro(e);
-          setZona(null);
-          if (!arrastado || arrastado === guild.id) return;
+          if (!onDrop) return;
+          const dragged = e.dataTransfer.getData(DRAG_KIND);
+          const z = pointerZone(e);
+          setZone(null);
+          if (!dragged || dragged === guild.id) return;
           e.preventDefault();
           e.stopPropagation();
 
-          if (pastaId) onSoltar(arrastado, { tipo: "pasta", pastaId });
-          else if (z === "juntar") onSoltar(arrastado, { tipo: "juntar", com: guild.id });
-          else onSoltar(arrastado, { tipo: z === "antes" ? "antes" : "depois", de: guild.id });
+          if (folderId) onDrop(dragged, { kind: "pasta", folderId });
+          else if (z === "juntar") onDrop(dragged, { kind: "juntar", having: guild.id });
+          else onDrop(dragged, { kind: z === "antes" ? "antes" : "depois", de: guild.id });
         }}
       >
-        <MarcaDeSoltar data-gc="servidor.item-do-servidor.marca-de-soltar" zona={pastaId ? null : zona} />
+        <DropBrand data-gc="servidor.item-do-servidor.drop-brand" zone={folderId ? null : zone} />
 
         <span data-gc="servidor.item-do-servidor.span--2"
-          {...flxAttr("pilulaDoServidor")}
+          {...flxAttr("serverPill")}
           className={cn(
-            flxCls("pilulaDoServidor"),
+            flxCls("serverPill"),
             "absolute left-0 top-1/2 w-1 -translate-y-1/2 transition-all",
-            active ? "h-10" : temNovidade ? "h-2 group-hover:h-5" : "h-0 group-hover:h-5",
+            active
+              ? "h-10"
+              : hasNews
+                ? "h-2 group-hover/servidor:h-5"
+                : "h-0 group-hover/servidor:h-5",
           )}
         >
           <span data-gc="servidor.item-do-servidor.span--3"
-            {...flxAttr("barraDaPilulaDoServidor")}
-            className={cn(flxCls("barraDaPilulaDoServidor"), "block size-full rounded-r-full bg-pilula")}
+            {...flxAttr("pillServerBar")}
+            className={cn(flxCls("pillServerBar"), "block size-full rounded-r-full bg-pilula")}
           />
         </span>
 
-        <DicaDoServidor data-gc="servidor.item-do-servidor.dica-do-servidor" nome={guild.name} verificada={guild.verificada} detectavel={guild.detectavel} vozes={vozes}>
+        <ServerHint data-gc="servidor.item-do-servidor.server-hint" name={guild.name} verified={guild.verified} detectable={guild.detectable} voices={voices}>
           <Link data-gc="servidor.item-do-servidor.link"
             to={`/channels/${guild.id}`}
             onClick={() => onSelect(guild.id)}
             draggable
             onDragStart={(e) => {
-              e.dataTransfer.setData(TIPO_DE_ARRASTO, guild.id);
+              e.dataTransfer.setData(DRAG_KIND, guild.id);
               e.dataTransfer.effectAllowed = "move";
             }}
             className={cn(
-              flxCls("iconeDoServidor"),
+              flxCls("serverIcon"),
               "flex items-center justify-center overflow-hidden font-semibold transition-all duration-200 ease-out active:translate-y-px active:scale-95",
-              compacto ? "size-10 text-sm" : "size-[var(--guild-icon-size)]",
+              compact ? "size-10 text-sm" : "size-[var(--guild-icon-size)]",
               active
-                ? cn("rounded-2xl bg-brand", flxCls("iconeDoServidorAtivo"))
+                ? cn("rounded-2xl bg-brand", flxCls("serverActiveIcon"))
                 : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
-              zona === "juntar" && !pastaId && "ring-2 ring-brand ring-offset-2 ring-offset-surface-1",
-              silenciado && !active && "opacity-60",
+              zone === "juntar" && !folderId && "ring-2 ring-brand ring-offset-2 ring-offset-surface-1",
+              muted && !active && "opacity-60",
             )}
             style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
           >
@@ -137,26 +141,26 @@ export const ItemDoServidor: React.FC<ItemDoServidorProps> = ({
               initials(guild.name)
             )}
           </Link>
-        </DicaDoServidor>
+        </ServerHint>
 
-        {naChamada > 0 && (
+        {inCall > 0 && (
           <span data-gc="servidor.item-do-servidor.span--4"
-            title={transmitindo ? t("servidor.trilho.transmitindo") : t("servidor.trilho.emChamada", { count: naChamada })}
+            title={broadcasting ? t("servidor.trilho.transmitindo") : t("servidor.trilho.emChamada", { count: inCall })}
             className="pointer-events-none absolute -top-0.5 right-2 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-surface-0 text-ink"
           >
-            {transmitindo ? <MonitorPlay data-gc="servidor.item-do-servidor.monitor-play" size={11} weight="fill" /> : <Headphones data-gc="servidor.item-do-servidor.headphones" size={11} weight="fill" />}
+            {broadcasting ? <MonitorPlay data-gc="servidor.item-do-servidor.monitor-play" size={11} weight="fill" /> : <Headphones data-gc="servidor.item-do-servidor.headphones" size={11} weight="fill" />}
           </span>
         )}
 
-        {mencoes > 0 && (
+        {mentions > 0 && (
           <span data-gc="servidor.item-do-servidor.span--5"
-            title={`${mencoes} menção${mencoes === 1 ? "" : "ões"} a você`}
+            title={`${mentions} menção${mentions === 1 ? "" : "ões"} a você`}
             className="pointer-events-none absolute bottom-0 right-3 flex min-w-[20px] items-center justify-center rounded-full border-2 border-surface-1 bg-danger px-1 text-11 font-bold leading-4 text-sobre-marca"
           >
-            {mencoes > 99 ? "99+" : mencoes}
+            {mentions > 99 ? "99+" : mentions}
           </span>
         )}
       </div>
-    </MenuDoServidor>
+    </ServerMenu>
   );
 };

@@ -11,7 +11,7 @@ import { useTranslation } from "~/traducao";
 
 export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
   const { t } = useTranslation();
-  const { data: convites = [], isLoading } = useFindGuildInvites(guildId, true);
+  const { data: invites = [], isLoading } = useFindGuildInvites(guildId, true);
   const confirm = useConfirm();
   const deleteInvite = useDeleteInvite();
 
@@ -26,44 +26,44 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
 
       {isLoading ? (
         <p data-gc="servidor.server-settings.invites-section.p--2" className="text-sm text-ink-faint">{t("comum.carregando")}</p>
-      ) : !convites.length ? (
+      ) : !invites.length ? (
         <p data-gc="servidor.server-settings.invites-section.p--3" className="py-8 text-center text-sm text-ink-faint">
           {t("servidor.convites.vazio")}
         </p>
       ) : (
         <div data-gc="servidor.server-settings.invites-section.div--3" className="space-y-px">
-          {convites.map((convite) => (
+          {invites.map((invite) => (
             <div data-gc="servidor.server-settings.invites-section.div--4"
-              key={convite.id}
+              key={invite.id}
               className={cn(
                 "flex items-center gap-3 border-t border-line px-2 py-3",
-                convite.expired && "opacity-50",
+                invite.expired && "opacity-50",
               )}
             >
               <Avatar data-gc="servidor.server-settings.invites-section.avatar"
-                id={convite.inviter.id}
-                name={convite.inviter.displayName}
-                url={convite.inviter.avatarUrl}
+                id={invite.inviter.id}
+                name={invite.inviter.displayName}
+                url={invite.inviter.avatarUrl}
                 size={32}
               />
 
               <div data-gc="servidor.server-settings.invites-section.div--5" className="min-w-0 flex-1">
                 <p data-gc="servidor.server-settings.invites-section.p--4" className="truncate text-sm font-medium">
-                  {convite.inviter.displayName}
+                  {invite.inviter.displayName}
                 </p>
-                <code data-gc="servidor.server-settings.invites-section.code" className="text-xs text-ink-faint">{convite.code}</code>
+                <code data-gc="servidor.server-settings.invites-section.code" className="text-xs text-ink-faint">{invite.code}</code>
               </div>
 
               <div data-gc="servidor.server-settings.invites-section.div--6" className="shrink-0 text-right text-xs text-ink-faint">
                 <p data-gc="servidor.server-settings.invites-section.p--5">
-                  {convite.uses} uso{convite.uses === 1 ? "" : "s"}
-                  {convite.maxUses !== null && ` de ${convite.maxUses}`}
+                  {invite.uses} uso{invite.uses === 1 ? "" : "s"}
+                  {invite.maxUses !== null && ` de ${invite.maxUses}`}
                 </p>
                 <p data-gc="servidor.server-settings.invites-section.p--6">
-                  {convite.expired
+                  {invite.expired
                     ? "Expirado"
-                    : convite.expiresAt
-                      ? `Expira ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(convite.expiresAt))}`
+                    : invite.expiresAt
+                      ? `Expira ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(invite.expiresAt))}`
                       : "Nunca expira"}
                 </p>
               </div>
@@ -74,13 +74,13 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
                     void confirm({
                       title: t("servidor.convites.revogarTitulo"),
                       description: t("servidor.convites.revogarDescricao", {
-                        codigo: convite.code,
+                        codigo: invite.code,
                       }),
                       action: t("servidor.convites.revogarAcao"),
                     }).then(
                       ({ confirmed }) =>
                         confirmed &&
-                        deleteInvite.mutate({ guildId, inviteId: convite.id }),
+                        deleteInvite.mutate({ guildId, inviteId: invite.id }),
                     )
                   }
                   className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"

@@ -1,4 +1,4 @@
-export const CHANNEL_TYPES = ["TEXT", "VOICE", "FORUM"] as const;
+export const CHANNEL_TYPES = ["TEXT", "VOICE", "FORUM", "LINK"] as const;
 export type ChannelType = (typeof CHANNEL_TYPES)[number];
 
 export const PRESENCE_STATUSES = ["ONLINE", "IDLE", "DND", "OFFLINE"] as const;
@@ -7,14 +7,14 @@ export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
 export const DESIRED_STATUSES = ["ONLINE", "IDLE", "DND", "INVISIBLE"] as const;
 export type DesiredStatus = (typeof DESIRED_STATUSES)[number];
 
-export const FILTROS_DE_SPAM = ["TODOS", "DESCONHECIDOS", "NENHUM"] as const;
-export type FiltroDeSpam = (typeof FILTROS_DE_SPAM)[number];
+export const SPAM_FILTERS = ["TODOS", "DESCONHECIDOS", "NENHUM"] as const;
+export type SpamFilter = (typeof SPAM_FILTERS)[number];
 
 export const LIMITS = {
   messageLength: 4000,
   guildName: 64,
   channelName: 48,
-  statusDoCanal: 500,
+  channelStatus: 500,
   username: 32,
   displayName: 48,
   attachmentsPerMessage: 10,
@@ -22,36 +22,38 @@ export const LIMITS = {
   avatarBytes: 2 * 1024 * 1024,
   bannerBytes: 10 * 1024 * 1024,
   roleIconBytes: 256 * 1024,
-  etiqueta: 6,
-  emblemasPorServidor: 20,
-  emblemasPorMembro: 5,
-  emblemaNome: 24,
-  emblemaBytes: 128 * 1024,
-  statusPersonalizado: 96,
+  tag: 6,
+  badgesByServer: 20,
+  badgesByMember: 5,
+  badgeName: 24,
+  badgeBytes: 128 * 1024,
+  customStatus: 96,
   bio: 512,
-  pronomes: 40,
+  pronouns: 40,
   messagePageSize: 50,
   typingTtlMs: 6000,
-  emojisPorServidor: 50,
-  figurinhasPorServidor: 5,
-  sonsPorServidor: 8,
-  somEsperaMs: 1500,
-  figurinhaBytes: 512 * 1024,
-  somBytes: 512 * 1024,
-  opcoesPorEnquete: 5,
-  mensagensFixadas: 50,
-  modoLentoMax: 21_600,
-  postTitulo: 100,
+  emojisByServer: 50,
+  stickersByServer: 5,
+  soundsByServer: 8,
+  soundWaitMs: 1500,
+  stickerBytes: 512 * 1024,
+  soundBytes: 512 * 1024,
+  optionsByPoll: 5,
+  messagesPinned: 50,
+  modeSlowMax: 21_600,
+  postTitle: 100,
 } as const;
 
-export const FINALIDADES_DE_UPLOAD = ["anexo", "avatar", "banner", "iconeDeCargo"] as const;
-export type FinalidadeDeUpload = (typeof FINALIDADES_DE_UPLOAD)[number];
+export const NOTE_LIMIT = 120;
 
-export const TETO_POR_FINALIDADE: Record<FinalidadeDeUpload, number> = {
+export const UPLOAD_PURPOSES = ["anexo", "avatar", "banner", "iconeDeCargo"] as const;
+export type UploadPurpose = (typeof UPLOAD_PURPOSES)[number];
+
+export const CEILING_BY_PURPOSE: Record<UploadPurpose, number> = {
   anexo: LIMITS.attachmentBytes,
   avatar: LIMITS.avatarBytes,
   banner: LIMITS.bannerBytes,
   iconeDeCargo: LIMITS.roleIconBytes,
 };
 
-export const MODO_LENTO_OPCOES = [0, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 21_600] as const;
+export const MODE_SLOW_OPTIONS = [0, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 21_600] as const;

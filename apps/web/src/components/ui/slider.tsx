@@ -21,7 +21,7 @@ export const Slider = ({
   return (
     <div data-gc="ui.slider.div"
       className={cn(
-        flxCls("controleDoSlider"),
+        flxCls("sliderControl"),
         "group/slider relative h-1.5 w-full",
         props.disabled && "cursor-not-allowed opacity-50",
         className,
@@ -34,23 +34,23 @@ export const Slider = ({
       />
 
       <div data-gc="ui.slider.div--2"
-        className={cn(flxCls("mioloDoSlider"), "pointer-events-none relative size-full")}
+        className={cn(flxCls("sliderCore"), "pointer-events-none relative size-full")}
       >
         <div data-gc="ui.slider.div--3"
           className={cn(
-            flxCls("trilhoDoSlider"),
+            flxCls("sliderRail"),
             "absolute inset-0 overflow-hidden rounded-full bg-trilho",
           )}
         >
           <div data-gc="ui.slider.div--4"
-            className={cn(flxCls("preenchimentoDoSlider"), "h-full rounded-full bg-brand")}
+            className={cn(flxCls("sliderFill"), "h-full rounded-full bg-brand")}
             style={{ width: position }}
           />
         </div>
 
         <div data-gc="ui.slider.div--5"
           className={cn(
-            flxCls("punhoDoSlider"),
+            flxCls("sliderFist"),
             "absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink shadow",
             "group-focus-within/slider:ring-2 group-focus-within/slider:ring-brand",
           )}
@@ -61,19 +61,19 @@ export const Slider = ({
       {defaultAt !== undefined && (
         <span data-gc="ui.slider.span"
           className={cn(
-            flxCls("marcaDoPadrao"),
+            flxCls("defaultBrand"),
             "pointer-events-none absolute top-full -translate-x-1/2 text-center",
           )}
           style={{ left: `${Math.min(Math.max(defaultAt, 0), 1) * 100}%` }}
         >
           <span data-gc="ui.slider.span--2"
             aria-hidden
-            className={cn(flxCls("risquinhoDaMarca"), "mx-auto block h-1 w-px bg-ink-faint")}
+            className={cn(flxCls("brandTick"), "mx-auto block h-1 w-px bg-ink-faint")}
           />
           {defaultLabel && (
             <span data-gc="ui.slider.span--3"
               className={cn(
-                flxCls("numeroDaMarca"),
+                flxCls("brandNumber"),
                 "block text-10 tabular-nums text-ink-faint",
               )}
             >

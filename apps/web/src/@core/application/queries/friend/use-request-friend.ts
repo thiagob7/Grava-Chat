@@ -9,9 +9,12 @@ export const useRequestFriend = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (username: string) => requestFriend(username),
-    onSuccess: ({ aceitou }) => {
-      toast.success(aceitou ? "Vocês agora são amigos!" : "Pedido de amizade enviado.");
+    mutationFn: (entry: string | { username: string; note?: string | null }) =>
+      typeof entry === "string"
+        ? requestFriend(entry)
+        : requestFriend(entry.username, entry.note),
+    onSuccess: ({ accepted }) => {
+      toast.success(accepted ? "Vocês agora são amigos!" : "Pedido de amizade enviado.");
       queryClient.invalidateQueries({ queryKey: [queryKeys.friend.find_many] });
     },
     onError: (error) => {

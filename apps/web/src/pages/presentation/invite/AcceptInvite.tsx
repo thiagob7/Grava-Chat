@@ -4,10 +4,10 @@ import { useNavigate, useParams } from "react-router";
 
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 import { useAcceptInvite } from "~/@core/application/queries/invite/use-accept-invite";
-import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
+import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 import { Button } from "~/components/ui/button";
 import { apiErrorMessage } from "~/@core/lib/api";
-import { ehDesktop } from "~/lib/desktop";
+import { isDesktop } from "~/lib/desktop";
 import { avatarColor, initials } from "~/lib/format";
 
 export const AcceptInvite: React.FC = () => {
@@ -24,13 +24,13 @@ export const AcceptInvite: React.FC = () => {
     if (result) navigate(`/channels/${result.guildId}`, { replace: true });
   };
 
-  const abrirNoApp = () => {
+  const openApp = () => {
     if (code) window.location.href = `gravae://invite/${code}`;
   };
 
   return (
     <div data-gc="invite.accept-invite.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
-      <FundoDaMarca data-gc="invite.accept-invite.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+      <BrandBackground data-gc="invite.accept-invite.brand-background" className="pointer-events-none absolute inset-0" />
 
       <div data-gc="invite.accept-invite.div--2" className="relative w-full max-w-sm rounded-xl bg-surface-1 p-8 text-center shadow-2xl ring-1 ring-line-sutil">
         {error ? (
@@ -79,8 +79,8 @@ export const AcceptInvite: React.FC = () => {
                   : "Aceitar convite"}
             </Button>
 
-            {!ehDesktop() && (
-              <Button data-gc="invite.accept-invite.button.abrir-no-app" variant="ghost" size="sm" onClick={abrirNoApp} className="mt-2 w-full">
+            {!isDesktop() && (
+              <Button data-gc="invite.accept-invite.button.open-app" variant="ghost" size="sm" onClick={openApp} className="mt-2 w-full">
                 <Monitor data-gc="invite.accept-invite.monitor" size={14} /> Abrir no aplicativo
               </Button>
             )}

@@ -11,16 +11,16 @@ import {
 } from "~/components/ui/dialog";
 
 interface Props {
-  canal: string | null;
-  onFechar: () => void;
-  onTrazerParaCa: () => void;
+  channel: string | null;
+  onClose: () => void;
+  onBringForCa: () => void;
 }
 
-export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerParaCa }) => {
+export const VoiceConfirmation: React.FC<Props> = ({ channel, onClose, onBringForCa }) => {
   const { t } = useTranslation();
 
   return (
-  <Dialog data-gc="voz.confirmacao-de-voz.dialog" open={Boolean(canal)} onOpenChange={(v) => !v && onFechar()}>
+  <Dialog data-gc="voz.confirmacao-de-voz.dialog" open={Boolean(channel)} onOpenChange={(v) => !v && onClose()}>
     <DialogContent data-gc="voz.confirmacao-de-voz.dialog-content" className="max-w-md">
       <DialogHeader data-gc="voz.confirmacao-de-voz.dialog-header">
         <DialogTitle data-gc="voz.confirmacao-de-voz.dialog-title">{t("chamada.jaConectado.titulo")}</DialogTitle>
@@ -28,16 +28,16 @@ export const ConfirmacaoDeVoz: React.FC<Props> = ({ canal, onFechar, onTrazerPar
 
       <DialogBody data-gc="voz.confirmacao-de-voz.dialog-body">
         <p data-gc="voz.confirmacao-de-voz.p" className="text-sm leading-relaxed text-ink-muted">
-          Sua conta está conectada em {canal ? <b data-gc="voz.confirmacao-de-voz.b" className="text-ink">{canal}</b> : "outro canal"}{" "}
+          Sua conta está conectada em {channel ? <b data-gc="voz.confirmacao-de-voz.b" className="text-ink">{channel}</b> : "outro canal"}{" "}
           por outro aparelho ou outra aba — e o áudio está tocando lá.
         </p>
 
         <div data-gc="voz.confirmacao-de-voz.div" className="mt-5 space-y-2">
-          <Button data-gc="voz.confirmacao-de-voz.button.on-trazer-para-ca" className="w-full" onClick={onTrazerParaCa}>
+          <Button data-gc="voz.confirmacao-de-voz.button.on-bring-for-ca" className="w-full" onClick={onBringForCa}>
             {t("chamada.jaConectado.trazer")}
           </Button>
 
-          <Button data-gc="voz.confirmacao-de-voz.button.on-fechar" variant="surface" className="w-full" onClick={onFechar}>
+          <Button data-gc="voz.confirmacao-de-voz.button.on-close" variant="surface" className="w-full" onClick={onClose}>
             {t("chamada.jaConectado.deixar")}
           </Button>
         </div>

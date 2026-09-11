@@ -1,14 +1,14 @@
-export const ESPERA_ENTRE_TROCAS_MS = 15_000;
+export const WAIT_BETWEEN_SWAPS_MS = 15_000;
 
-export const ehRecusaPorToken = (mensagem: string) => /token/i.test(mensagem);
+export const isRefusalByToken = (message: string) => /token/i.test(message);
 
-export function deveTrocarToken(
-  mensagem: string,
-  agora: number,
-  ultimaTroca: number,
-  espera = ESPERA_ENTRE_TROCAS_MS,
+export function mustSwapToken(
+  message: string,
+  now: number,
+  lastSwap: number,
+  wait = WAIT_BETWEEN_SWAPS_MS,
 ): boolean {
-  if (!ehRecusaPorToken(mensagem)) return false;
+  if (!isRefusalByToken(message)) return false;
 
-  return agora - ultimaTroca >= espera;
+  return now - lastSwap >= wait;
 }

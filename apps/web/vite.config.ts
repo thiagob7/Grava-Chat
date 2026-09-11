@@ -11,13 +11,13 @@ import path from "node:path";
 
   Vale a data da máquina que buildou, que na Vercel é UTC.
 */
-const agora = new Date();
-const doisDigitos = (n: number) => String(n).padStart(2, "0");
+const now = new Date();
+const twoDigits = (n: number) => String(n).padStart(2, "0");
 
-const VERSAO_WEB = [
-  agora.getUTCFullYear(),
-  `${agora.getUTCMonth() + 1}${doisDigitos(agora.getUTCDate())}`,
-  `${doisDigitos(agora.getUTCHours())}${doisDigitos(agora.getUTCMinutes())}${doisDigitos(agora.getUTCSeconds())}`,
+const VERSION_WEB = [
+  now.getUTCFullYear(),
+  `${now.getUTCMonth() + 1}${twoDigits(now.getUTCDate())}`,
+  `${twoDigits(now.getUTCHours())}${twoDigits(now.getUTCMinutes())}${twoDigits(now.getUTCSeconds())}`,
 ].join(".");
 
 export default defineConfig({
@@ -33,11 +33,11 @@ export default defineConfig({
       tela. Soltos, o navegador busca os que entram no campo de visão e guarda
       cada um em cache com o nome versionado.
     */
-    assetsInlineLimit: (arquivo: string) =>
-      arquivo.includes("/assets/cursores/") ? false : undefined,
+    assetsInlineLimit: (file: string) =>
+      file.includes("/assets/cursores/") ? false : undefined,
   },
 
-  define: { __VERSAO_WEB__: JSON.stringify(VERSAO_WEB) },
+  define: { __VERSION_WEB__: JSON.stringify(VERSION_WEB) },
   resolve: {
     alias: { "~": path.resolve(import.meta.dirname, "src") },
   },

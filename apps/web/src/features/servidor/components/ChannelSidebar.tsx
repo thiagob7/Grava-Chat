@@ -19,10 +19,11 @@ import {
   ChatsCircle,
   GearSix,
   Hash,
+  LinkSimple,
   SpeakerHigh,
   UserPlus,
 } from "@phosphor-icons/react";
-import { useFavoritos } from "~/features/servidor/stores/favoritos";
+import { useFavorites } from "~/features/servidor/stores/favoritos";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,11 +34,11 @@ import {
 import { ServerSettingsModal } from "~/features/servidor/components/server-settings/ServerSettingsModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { usePermissions } from "~/hooks/use-permissions";
-import { copiarTexto } from "~/lib/copiar";
-import { carregarFonte, familiaDaFonte } from "~/features/perfil/lib/fontes";
+import { copyText } from "~/lib/copiar";
+import { loadFont, fontFamily } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { useAvisos } from "~/stores/notificacoes";
+import { useNotices } from "~/stores/notificacoes";
 import { useCreateCategory } from "~/@core/application/queries/guild/use-create-category";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -53,11 +54,11 @@ import { Input, Label } from "~/components/ui/input";
 import { toast } from "react-toastify";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { useCategoriasFechadas } from "~/features/servidor/hooks/use-categorias-fechadas";
-import { useProporcaoDaFaixa } from "~/features/servidor/hooks/use-proporcao-da-faixa";
-import { SeloDaComunidade } from "~/features/servidor/components/SeloDaComunidade";
-import { StatusDoCanal } from "~/features/servidor/components/StatusDoCanal";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
+import { useCategoriesClosed } from "~/features/servidor/hooks/use-categorias-fechadas";
+import { useTrackRatio } from "~/features/servidor/hooks/use-proporcao-da-faixa";
+import { CommunitySeal } from "~/features/servidor/components/SeloDaComunidade";
+import { ChannelStatus } from "~/features/servidor/components/StatusDoCanal";
 import { EventsModal } from "~/features/servidor/components/EventsModal";
 import { InviteFriendsCard } from "~/features/servidor/components/InviteFriendsCard";
 import { useEvents } from "~/@core/application/queries/guild/use-events";
@@ -69,17 +70,17 @@ interface ChannelSidebarProps {
   activeChannelId: string | undefined;
   readStates: Record<
     string,
-    { lido: string | null; naoLidas: number; mencoes: number }
+    { read: string | null; notRead: number; mentions: number }
   >;
   user: SelfUserModel | null;
   onSelectChannel: (channelId: string) => void;
   onLeaveGuild: () => void;
   onOpenVoiceChat?: (channelId: string) => void;
-  largura: number;
-  fluida?: boolean;
+  width: number;
+  fluid?: boolean;
 }
 
-const PILULA =
+const PILL =
   "absolute left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand px-3 py-1 text-11 font-bold uppercase tracking-wide text-sobre-marca shadow-lg shadow-sombra transition hover:brightness-110";
 
 export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
@@ -91,62 +92,62 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   onSelectChannel,
   onLeaveGuild,
   onOpenVoiceChat,
-  largura,
-  fluida = false,
+  width,
+  fluid = false,
 }) => {
   const voiceChannelId = useVoiceStore((s) => s.channelId);
-  const faixaDoServidor = useAparencia((s) => s.faixaDoServidor);
+  const serverTrack = useAppearance((s) => s.serverTrack);
   const [viewingEvents, setViewingEvents] = useState(false);
-  const [collapsed, setCollapsed] = useCategoriasFechadas();
+  const [collapsed, setCollapsed] = useCategoriesClosed();
   const { t } = useTranslation();
-  const porCanal = useAvisos((s) => s.porCanal);
+  const byChannel = useNotices((s) => s.byChannel);
   const events = useEvents(detail?.guild.id, true);
-  const esconderSilenciados = useAvisos((s) => (detail ? (s.porServidor[detail.guild.id]?.esconderSilenciados ?? false) : false));
-  const rolador = useRef<HTMLDivElement>(null);
-  const [foraDaVista, setForaDaVista] = useState({ acima: false, abaixo: false });
+  const hideMuted = useNotices((s) => (detail ? (s.byServer[detail.guild.id]?.hideMuted ?? false) : false));
+  const scroller = useRef<HTMLDivElement>(null);
+  const [viewOutside, setViewOutside] = useState({ above: false, below: false });
 
-  const medirForaDaVista = useCallback(() => {
-    const caixa = rolador.current;
-    if (!caixa) return;
+  const measureViewOutside = useCallback(() => {
+    const box = scroller.current;
+    if (!box) return;
 
-    let acima = false;
-    let abaixo = false;
-    for (const linha of caixa.querySelectorAll<HTMLElement>("[data-nao-lido]")) {
-      const topo = linha.offsetTop - caixa.scrollTop;
-      if (topo + linha.offsetHeight < 0) acima = true;
-      else if (topo > caixa.clientHeight) abaixo = true;
+    let above = false;
+    let below = false;
+    for (const line of box.querySelectorAll<HTMLElement>("[data-nao-lido]")) {
+      const top = line.offsetTop - box.scrollTop;
+      if (top + line.offsetHeight < 0) above = true;
+      else if (top > box.clientHeight) below = true;
     }
 
-    setForaDaVista((atual) => (atual.acima === acima && atual.abaixo === abaixo ? atual : { acima, abaixo }));
+    setViewOutside((current) => (current.above === above && current.below === below ? current : { above, below }));
   }, []);
 
   useEffect(() => {
-    medirForaDaVista();
-  }, [medirForaDaVista, readStates, collapsed, detail]);
+    measureViewOutside();
+  }, [measureViewOutside, readStates, collapsed, detail]);
 
-  const irParaNaoLido = (lado: "acima" | "abaixo") => {
-    const caixa = rolador.current;
-    if (!caixa) return;
+  const irForNotRead = (side: "acima" | "abaixo") => {
+    const box = scroller.current;
+    if (!box) return;
 
-    const linhas = [...caixa.querySelectorAll<HTMLElement>("[data-nao-lido]")];
-    const alvo =
-      lado === "acima"
-        ? linhas.filter((l) => l.offsetTop - caixa.scrollTop + l.offsetHeight < 0).at(-1)
-        : linhas.find((l) => l.offsetTop - caixa.scrollTop > caixa.clientHeight);
+    const lines = [...box.querySelectorAll<HTMLElement>("[data-nao-lido]")];
+    const target =
+      side === "acima"
+        ? lines.filter((l) => l.offsetTop - box.scrollTop + l.offsetHeight < 0).at(-1)
+        : lines.find((l) => l.offsetTop - box.scrollTop > box.clientHeight);
 
-    alvo?.scrollIntoView({ block: "center", behavior: "smooth" });
+    target?.scrollIntoView({ block: "center", behavior: "smooth" });
   };
   const [creatingIn, setCreatingIn] = useState<string | null | false>(false);
-  const [criandoCategoria, setCriandoCategoria] = useState(false);
-  const [nomeDaCategoria, setNomeDaCategoria] = useState("");
-  const criarCategoria = useCreateCategory();
-  const definirServidor = useAvisos((s) => s.definirServidor);
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const createCategory = useCreateCategory();
+  const setServer = useNotices((s) => s.setServer);
   const [inviting, setInviting] = useState(false);
-  const configuracoes = useServerSettingsStore();
+  const settings = useServerSettingsStore();
 
-  const configurando =
-    configuracoes.aberto && configuracoes.guildId === detail?.guild.id;
-  const [editandoCanal, setEditandoCanal] = useState<string | null>(null);
+  const configuring =
+    settings.isOpen && settings.guildId === detail?.guild.id;
+  const [editingChannel, setEditingChannel] = useState<string | null>(null);
 
   const { can, canInChannel } = usePermissions(detail);
 
@@ -155,21 +156,21 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const canManageChannels = can("MANAGE_CHANNELS");
   const canManageRoles = can("MANAGE_ROLES");
   const canManageWebhooks = can("MANAGE_WEBHOOKS");
-  const podeConfigurar = canManage || canManageRoles || canManageWebhooks;
+  const canConfigure = canManage || canManageRoles || canManageWebhooks;
   const isOwner = Boolean(summary?.isOwner);
   const channels = detail?.channels ?? [];
 
   useEffect(() => {
-    channels.forEach((c) => carregarFonte(c.fonte));
+    channels.forEach((c) => loadFont(c.font));
   }, [channels]);
   const uncategorized = channels.filter((c) => !c.categoryId);
 
-  const favoritos = useFavoritos((s) => s.canais);
-  const canaisFavoritos = channels.filter((c) => favoritos.includes(c.id));
+  const favorites = useFavorites((s) => s.channels);
+  const channelsFavorites = channels.filter((c) => favorites.includes(c.id));
 
   const groups = [
-    ...(canaisFavoritos.length
-      ? [{ id: "favoritos", name: "Favoritos", channels: canaisFavoritos }]
+    ...(channelsFavorites.length
+      ? [{ id: "favoritos", name: "Favoritos", channels: channelsFavorites }]
       : []),
     ...(uncategorized.length
       ? [{ id: null, name: null, channels: uncategorized }]
@@ -181,41 +182,41 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
     })),
   ];
 
-  const comFaixa = Boolean(detail?.guild.bannerUrl) && faixaDoServidor;
+  const withTrack = Boolean(detail?.guild.bannerUrl) && serverTrack;
 
-  const proporcao = useProporcaoDaFaixa(comFaixa ? detail?.guild.bannerUrl : null);
+  const ratio = useTrackRatio(withTrack ? detail?.guild.bannerUrl : null);
 
   return (
     <>
       <aside data-gc="servidor.channel-sidebar.aside"
-        {...flxAttr("molduraDaListaDeCanais")}
+        {...flxAttr("listChannelsFrame")}
         className={cn(
           "group/coluna canto-do-miolo topo-do-miolo relative flex flex-col bg-surface-1",
-          fluida ? "min-w-0 flex-1" : "shrink-0",
-          flxCls("molduraDaListaDeCanais"),
+          fluid ? "min-w-0 flex-1" : "shrink-0",
+          flxCls("listChannelsFrame"),
         )}
-        style={fluida ? undefined : { width: largura }}
+        style={fluid ? undefined : { width: width }}
       >
-        <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("divisorDaLateral", "absolute inset-y-0 right-0 w-px bg-transparent")} />
-        <div data-gc="servidor.channel-sidebar.div--2" {...flx("listaDeCanais", "lista-de-canais miolo-recortado flex min-h-0 flex-1 flex-col")}>
+        <div data-gc="servidor.channel-sidebar.div" aria-hidden {...flx("sideDivider", "absolute inset-y-0 right-0 w-px bg-transparent")} />
+        <div data-gc="servidor.channel-sidebar.div--2" {...flx("listChannels", "lista-de-canais miolo-recortado flex min-h-0 flex-1 flex-col")}>
         <header data-gc="servidor.channel-sidebar.header"
           className={cn(
-            flxCls("cabecalhoDoServidor"),
-            flxCls("molduraDoCabecalhoDoServidor"),
-            "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-divisor shadow-sm",
-            !comFaixa && "h-[var(--layout-header-height)]",
+            flxCls("serverHeader"),
+            flxCls("headerServerFrame"),
+            "regiao-de-arrasto relative flex shrink-0 items-start overflow-hidden border-b border-line shadow-sm",
+            !withTrack && "h-[var(--layout-header-height)]",
           )}
           style={
-            comFaixa
+            withTrack
               ? {
-                  height: largura / proporcao,
+                  height: width / ratio,
                   minHeight: "var(--layout-header-height)",
                   maxHeight: "30vh",
                 }
               : undefined
           }
         >
-          {comFaixa && (
+          {withTrack && (
             <>
               <div data-gc="servidor.channel-sidebar.div--3"
                 aria-hidden
@@ -235,20 +236,20 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               <button data-gc="servidor.channel-sidebar.button"
                 className={cn(
                   "group/nome flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-left transition",
-                  comFaixa
+                  withTrack
                     ? "hover:bg-sobre-midia data-[state=open]:bg-sobre-midia"
                     : "hover:bg-surface-3 data-[state=open]:bg-surface-3",
                 )}
               >
-                <SeloDaComunidade data-gc="servidor.channel-sidebar.selo-da-comunidade"
-                  verificada={detail?.guild.verificada}
-                  detectavel={detail?.guild.detectavel}
-                  className={cn(comFaixa && "drop-shadow-[0_1px_2px_rgb(0_0_0/0.8)]")}
+                <CommunitySeal data-gc="servidor.channel-sidebar.community-seal"
+                  verified={detail?.guild.verified}
+                  detectable={detail?.guild.detectable}
+                  className={cn(withTrack && "drop-shadow-[0_1px_2px_rgb(0_0_0/0.8)]")}
                 />
                 <h1 data-gc="servidor.channel-sidebar.h1"
                   className={cn(
                     "truncate font-semibold",
-                    comFaixa && "text-sobre-marca [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
+                    withTrack && "text-sobre-marca [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]",
                   )}
                 >
                   {detail?.guild.name ?? "…"}
@@ -257,7 +258,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                   size={16}
                   className={cn(
                     "shrink-0 transition-transform duration-150 group-data-[state=open]/nome:rotate-180",
-                    comFaixa
+                    withTrack
                       ? "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                       : "text-ink-muted",
                   )}
@@ -272,9 +273,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 </DropdownMenuItem>
               )}
 
-              {podeConfigurar && (
+              {canConfigure && (
                 <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--2"
-                  onSelect={() => configuracoes.abrir(detail!.guild.id)}
+                  onSelect={() => settings.open(detail!.guild.id)}
                 >
                   Configurações do servidor <Settings data-gc="servidor.channel-sidebar.settings" size={16} />
                 </DropdownMenuItem>
@@ -292,7 +293,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               <DropdownMenuSeparator data-gc="servidor.channel-sidebar.dropdown-menu-separator--2" />
               <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--4"
                 onSelect={() => {
-                  void copiarTexto(detail?.guild.id ?? "");
+                  void copyText(detail?.guild.id ?? "");
                   toast.success("ID copiado.");
                 }}
               >
@@ -304,7 +305,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 <DropdownMenuItem data-gc="servidor.channel-sidebar.dropdown-menu-item--5"
                   danger
                   onSelect={() =>
-                    configuracoes.abrir(detail!.guild.id, "excluir")
+                    settings.open(detail!.guild.id, "doDelete")
                   }
                 >
                   Excluir servidor <Trash2 data-gc="servidor.channel-sidebar.trash2" size={16} />
@@ -323,7 +324,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 onClick={() => setInviting(true)}
                 className={cn(
                   "shrink-0 rounded-lg p-1.5 transition",
-                  comFaixa
+                  withTrack
                     ? "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-sobre-marca/80"
                     : "text-ink-muted hover:text-ink",
                 )}
@@ -340,20 +341,20 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         )}
 
         <div data-gc="servidor.channel-sidebar.div--6" className="relative flex min-h-0 flex-1 flex-col">
-          {foraDaVista.acima && (
-            <button data-gc="servidor.channel-sidebar.button--3" type="button" onClick={() => irParaNaoLido("acima")} className={PILULA + " top-2"}>
+          {viewOutside.above && (
+            <button data-gc="servidor.channel-sidebar.button--3" type="button" onClick={() => irForNotRead("acima")} className={PILL + " top-2"}>
               {t("servidor.novasMensagens")}
             </button>
           )}
-          {foraDaVista.abaixo && (
-            <button data-gc="servidor.channel-sidebar.button--4" type="button" onClick={() => irParaNaoLido("abaixo")} className={PILULA + " bottom-2"}>
+          {viewOutside.below && (
+            <button data-gc="servidor.channel-sidebar.button--4" type="button" onClick={() => irForNotRead("abaixo")} className={PILL + " bottom-2"}>
               {t("servidor.novasMensagens")}
             </button>
           )}
 
           <ContextMenu data-gc="servidor.channel-sidebar.context-menu">
           <ContextMenuTrigger data-gc="servidor.channel-sidebar.context-menu-trigger" asChild>
-          <div data-gc="servidor.channel-sidebar.div.medir-fora-da-vista" ref={rolador} onScroll={medirForaDaVista} {...flx("roladorDeCanais", "flex-1 overflow-y-auto px-2 py-3")}>
+          <div data-gc="servidor.channel-sidebar.div.measure-view-outside" ref={scroller} onScroll={measureViewOutside} {...flx("channelsScroller", "flex-1 overflow-y-auto px-2 py-3")}>
             <div data-gc="servidor.channel-sidebar.div--7" className="mb-2 border-b border-divisor pb-2">
               <button data-gc="servidor.channel-sidebar.button--5"
                 type="button"
@@ -375,7 +376,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
               const isCollapsed = group.id ? collapsed[group.id] : false;
 
               return (
-                <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("grupoDeCanais", "mb-4")}>
+                <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("channelsGroup", "mb-4")}>
                   {group.name && (
                     <div data-gc="servidor.channel-sidebar.div--8" className="group flex items-center justify-between px-1">
                       <button data-gc="servidor.channel-sidebar.button--6"
@@ -410,35 +411,40 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                   {!isCollapsed &&
                     group.channels.map((channel) => {
                       const active = channel.id === activeChannelId;
-                      if (!active && esconderSilenciados && porCanal[channel.id] === "nada") return null;
-                      const leitura = readStates[channel.id];
+                      if (!active && hideMuted && byChannel[channel.id] === "nada") return null;
+                      const reading = readStates[channel.id];
                       const unread =
                         !active &&
                         channel.lastMessageId &&
-                        channel.lastMessageId !== leitura?.lido;
-                      const naoLidas = unread ? (leitura?.naoLidas ?? 0) : 0;
-                      const mencoes = unread ? (leitura?.mencoes ?? 0) : 0;
+                        channel.lastMessageId !== reading?.read;
+                      const notRead = unread ? (reading?.notRead ?? 0) : 0;
+                      const mentions = unread ? (reading?.mentions ?? 0) : 0;
                       const inThisCall = voiceChannelId === channel.id;
-                      const bloqueado =
+                      const blocked =
                         channel.type === "VOICE" &&
                         !canInChannel(channel.id, "CONNECT");
 
-                      const entradas = (detail?.voiceStates[channel.id] ?? [])
+                      const entries = (detail?.voiceStates[channel.id] ?? [])
                         .map((v) => v.joinedAt)
                         .filter((t): t is number => Number.isFinite(t));
-                      const chamadaDesde = entradas.length
-                        ? Math.min(...entradas)
+                      const callSince = entries.length
+                        ? Math.min(...entries)
                         : null;
 
                       return (
                         <div data-gc="servidor.channel-sidebar.div--9" key={channel.id} className="group/canal relative" data-canal={channel.id} data-nao-lido={unread ? "1" : undefined}>
                           <button data-gc="servidor.channel-sidebar.button--8"
-                            onClick={() => onSelectChannel(channel.id)}
+                            onClick={() =>
+                              channel.type === "LINK"
+                                ? channel.url &&
+                                  window.open(channel.url, "_blank", "noopener,noreferrer")
+                                : onSelectChannel(channel.id)
+                            }
                             className={cn(
                               "mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 transition",
                               active
-                                ? cn("bg-selecionado text-ink", flxCls("itemDeCanalAtivo"))
-                                : bloqueado
+                                ? cn("bg-selecionado text-ink", flxCls("channelActiveItem"))
+                                : blocked
                                   ? "text-ink-faint hover:bg-hover"
                                   : unread
                                     ? "font-semibold text-ink hover:bg-hover"
@@ -446,7 +452,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                             )}
                           >
                             {channel.type === "VOICE" ? (
-                              bloqueado ? (
+                              blocked ? (
                                 <Lock data-gc="servidor.channel-sidebar.lock"
                                   size={20}
                                   className="shrink-0 text-ink-faint"
@@ -463,6 +469,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                   )}
                                 />
                               )
+                            ) : channel.type === "LINK" ? (
+                              <LinkSimple data-gc="servidor.channel-sidebar.link-simple"
+                                size={20}
+                                weight="bold"
+                                className="shrink-0 text-ink-faint"
+                              />
                             ) : channel.type === "FORUM" ? (
                               <ChatsCircle data-gc="servidor.channel-sidebar.chats-circle"
                                 size={20}
@@ -485,23 +497,23 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               className="flex min-w-0 flex-1 flex-col items-start justify-center text-left leading-[18px]"
                             >
                               <span data-gc="servidor.channel-sidebar.span--5"
-                                className="w-full truncate"
+                                className="-my-0.5 w-full truncate py-0.5"
                                 style={{
                                   fontFamily:
-                                    familiaDaFonte(channel.fonte) ?? undefined,
+                                    fontFamily(channel.font) ?? undefined,
                                 }}
                               >
                                 {channel.name}
                               </span>
 
                               {channel.type === "VOICE" && detail && (
-                                <StatusDoCanal data-gc="servidor.channel-sidebar.status-do-canal"
+                                <ChannelStatus data-gc="servidor.channel-sidebar.channel-status"
                                   guildId={detail.guild.id}
                                   channelId={channel.id}
-                                  nomeDoCanal={channel.name}
+                                  channelName={channel.name}
                                   status={channel.status}
-                                  podeEditar={inThisCall || canInChannel(channel.id, "MANAGE_CHANNELS")}
-                                  sempreVisivel={inThisCall}
+                                  canEdit={inThisCall || canInChannel(channel.id, "MANAGE_CHANNELS")}
+                                  visibleAlways={inThisCall}
                                 />
                               )}
                             </span>
@@ -510,39 +522,39 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
                                   <span data-gc="servidor.channel-sidebar.span--7"
-                                    title={`${entradas.length} de ${channel.userLimit}`}
+                                    title={`${entries.length} de ${channel.userLimit}`}
                                     className={cn(
                                       "text-11 font-medium tabular-nums",
-                                      entradas.length >= channel.userLimit
+                                      entries.length >= channel.userLimit
                                         ? "text-danger"
                                         : "text-ink-faint",
                                     )}
                                   >
-                                    {entradas.length}/{channel.userLimit}
+                                    {entries.length}/{channel.userLimit}
                                   </span>
                                 )}
 
                               {channel.type === "VOICE" &&
-                                chamadaDesde !== null &&
-                                !unread && <CallTimer data-gc="servidor.channel-sidebar.call-timer" desde={chamadaDesde} />}
+                                callSince !== null &&
+                                !unread && <CallTimer data-gc="servidor.channel-sidebar.call-timer" since={callSince} />}
 
                               {unread &&
-                                (naoLidas > 0 ? (
+                                (notRead > 0 ? (
                                   <span data-gc="servidor.channel-sidebar.span--8"
                                     title={
-                                      mencoes > 0
-                                        ? `${mencoes} menção(ões) a você`
+                                      mentions > 0
+                                        ? `${mentions} menção(ões) a você`
                                         : undefined
                                     }
                                     className={cn(
-                                      flxCls("seloDeMencao"),
+                                      flxCls("mentionSeal"),
                                       "min-w-[18px] rounded-full px-1.5 text-center text-11 font-bold leading-[18px]",
-                                      mencoes > 0
+                                      mentions > 0
                                         ? "bg-danger text-sobre-marca"
                                         : "bg-selecionado text-ink-muted",
                                     )}
                                   >
-                                    {naoLidas > 99 ? "99+" : naoLidas}
+                                    {notRead > 99 ? "99+" : notRead}
                                   </span>
                                 ) : (
                                   <span data-gc="servidor.channel-sidebar.span--9" className="size-2 rounded-full bg-ink" />
@@ -573,7 +585,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                             {(canManageChannels || canManageRoles) && (
                               <button data-gc="servidor.channel-sidebar.button--11"
-                                onClick={() => setEditandoCanal(channel.id)}
+                                onClick={() => setEditingChannel(channel.id)}
                                 title="Editar canal"
                                 className="rounded p-0.5 text-ink-faint transition hover:text-ink"
                               >
@@ -588,10 +600,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               members={detail?.members ?? []}
                               guildId={detail?.guild.id}
                               roles={detail?.roles}
-                              canaisDeVoz={channels.filter(
+                              voiceChannels={channels.filter(
                                 (c) => c.type === "VOICE",
                               )}
-                              minhasPermissoes={detail?.permissions}
+                              minePermissions={detail?.permissions}
                               currentUserId={user?.id}
                             />
                           )}
@@ -607,18 +619,18 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           <ContextMenuContent data-gc="servidor.channel-sidebar.context-menu-content">
             <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item"
               onSelect={() =>
-                detail && definirServidor(detail.guild.id, { esconderSilenciados: !esconderSilenciados })
+                detail && setServer(detail.guild.id, { hideMuted: !hideMuted })
               }
             >
               Ocultar canais silenciados
-              <Checkbox data-gc="servidor.channel-sidebar.checkbox" checked={esconderSilenciados} readOnly tabIndex={-1} className="pointer-events-none" />
+              <Checkbox data-gc="servidor.channel-sidebar.checkbox" checked={hideMuted} readOnly tabIndex={-1} className="pointer-events-none" />
             </ContextMenuItem>
 
             {canManageChannels && (
               <>
                 <ContextMenuSeparator data-gc="servidor.channel-sidebar.context-menu-separator" />
                 <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--2" onSelect={() => setCreatingIn(null)}>Criar canal</ContextMenuItem>
-                <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--3" onSelect={() => setCriandoCategoria(true)}>Criar categoria</ContextMenuItem>
+                <ContextMenuItem data-gc="servidor.channel-sidebar.context-menu-item--3" onSelect={() => setCreatingCategory(true)}>Criar categoria</ContextMenuItem>
               </>
             )}
 
@@ -642,7 +654,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         categoryId={creatingIn === false ? null : creatingIn}
         onClose={() => setCreatingIn(false)}
       />
-      <Dialog data-gc="servidor.channel-sidebar.dialog" open={criandoCategoria} onOpenChange={(aberto) => !aberto && setCriandoCategoria(false)}>
+      <Dialog data-gc="servidor.channel-sidebar.dialog" open={creatingCategory} onOpenChange={(isOpen) => !isOpen && setCreatingCategory(false)}>
         <DialogContent data-gc="servidor.channel-sidebar.dialog-content" className="max-w-sm">
           <DialogHeader data-gc="servidor.channel-sidebar.dialog-header">
             <DialogTitle data-gc="servidor.channel-sidebar.dialog-title">Criar categoria</DialogTitle>
@@ -652,30 +664,30 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
             <Label data-gc="servidor.channel-sidebar.label" htmlFor="nome-da-categoria">Nome da categoria</Label>
             <Input data-gc="servidor.channel-sidebar.input"
               id="nome-da-categoria"
-              value={nomeDaCategoria}
+              value={categoryName}
               maxLength={48}
               autoFocus
               placeholder="Ex: Conversas"
-              onChange={(e) => setNomeDaCategoria(e.target.value)}
+              onChange={(e) => setCategoryName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key !== "Enter" || !nomeDaCategoria.trim() || !detail) return;
-                criarCategoria.mutate(
-                  { guildId: detail.guild.id, name: nomeDaCategoria.trim() },
-                  { onSuccess: () => { setNomeDaCategoria(""); setCriandoCategoria(false); } },
+                if (e.key !== "Enter" || !categoryName.trim() || !detail) return;
+                createCategory.mutate(
+                  { guildId: detail.guild.id, name: categoryName.trim() },
+                  { onSuccess: () => { setCategoryName(""); setCreatingCategory(false); } },
                 );
               }}
             />
           </DialogBody>
 
           <DialogFooter data-gc="servidor.channel-sidebar.dialog-footer">
-            <Button data-gc="servidor.channel-sidebar.button--12" variant="surface" onClick={() => setCriandoCategoria(false)}>Cancelar</Button>
+            <Button data-gc="servidor.channel-sidebar.button--12" variant="surface" onClick={() => setCreatingCategory(false)}>Cancelar</Button>
             <Button data-gc="servidor.channel-sidebar.button--13"
-              disabled={!nomeDaCategoria.trim() || criarCategoria.isPending}
+              disabled={!categoryName.trim() || createCategory.isPending}
               onClick={() =>
                 detail &&
-                criarCategoria.mutate(
-                  { guildId: detail.guild.id, name: nomeDaCategoria.trim() },
-                  { onSuccess: () => { setNomeDaCategoria(""); setCriandoCategoria(false); } },
+                createCategory.mutate(
+                  { guildId: detail.guild.id, name: categoryName.trim() },
+                  { onSuccess: () => { setCategoryName(""); setCreatingCategory(false); } },
                 )
               }
             >
@@ -702,20 +714,20 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
       />
 
       {detail &&
-        editandoCanal &&
+        editingChannel &&
         (() => {
-          const canal = channels.find((c) => c.id === editandoCanal);
-          if (!canal) return null;
+          const channel = channels.find((c) => c.id === editingChannel);
+          if (!channel) return null;
 
           return (
             <ChannelSettingsModal data-gc="servidor.channel-sidebar.channel-settings-modal"
               open
-              onClose={() => setEditandoCanal(null)}
+              onClose={() => setEditingChannel(null)}
               guildId={detail.guild.id}
-              channel={canal}
+              channel={channel}
               roles={detail.roles}
               members={detail.members}
-              minhasPermissoes={detail.permissions}
+              minePermissions={detail.permissions}
               canManageChannels={canManageChannels}
               canManageRoles={canManageRoles}
             />
@@ -723,10 +735,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         })()}
 
       {detail && (
-        <ServerSettingsModal data-gc="servidor.channel-sidebar.server-settings-modal.fechar"
-          open={configurando}
-          onClose={configuracoes.fechar}
-          secaoInicial={configuracoes.secao}
+        <ServerSettingsModal data-gc="servidor.channel-sidebar.server-settings-modal.close"
+          open={configuring}
+          onClose={settings.close}
+          initialSection={settings.section}
           detail={detail}
           members={detail.members}
           currentUserId={user?.id}
@@ -734,7 +746,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           canManage={canManage}
           canManageRoles={canManageRoles}
           canManageWebhooks={canManageWebhooks}
-          permissoes={new Set(detail.permissions)}
+          permissions={new Set(detail.permissions)}
         />
       )}
     </>

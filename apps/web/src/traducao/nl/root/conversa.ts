@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Een klein zwaaiend handje",
+    botao: "Zwaai naar {{nome}}",
+  },
+  oficial: {
+    titulo: "Dit kanaal is alleen voor officiële mededelingen.",
+    detalhe: "We vragen nooit om je wachtwoord of het token van je account.",
+    saibaMais: "Meer weten",
+  },
+  topico: {
+    abrir: "De kanaalomschrijving bekijken",
+  },
+  previaDoLink: {
+    carregando: "Ik kijk wat er achter de link zit…",
+    destino: "Gaat naar {{destino}}",
+  },
+  reacao: {
+    carregando: "Ik kijk wie met {{emoji}} reageerde…",
+    uma: "{{nome}} reageerde met {{emoji}}",
+    duas: "{{primeiro}} en {{segundo}} reageerden met {{emoji}}",
+    varias: "{{nomes}} en nog {{quantos}} reageerden met {{emoji}}",
+    dicaSuper: "Houd ingedrukt om super te reageren",
+  },
+  recado: {
+    gravar: "Spraakbericht opnemen",
+    descartar: "Opname weggooien",
+    mandar: "Opname versturen",
+    semSuporte: "Deze browser neemt geen geluid op.",
+    semMicrofone: "Geen toegang tot de microfoon.",
+  },
   lista: {
     carregando: "Berichten laden…",
     carregandoMais: "Laden…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Afbeelding bekijken",
   },
   enquete: {
+    criar: "Peiling maken",
+    pergunta: "Vraag",
+    exemplo: "Wat spelen we vandaag?",
+    respostas: "Antwoorden",
+    adicionarOpcao: "Antwoord toevoegen",
+    removerOpcao: "Antwoord weghalen",
+    varias: "Meerdere antwoorden toestaan",
+    variasDetalhe: "Zonder dit haalt een stem op één antwoord je stem van het vorige af.",
+    duracao: "Duur",
+    umaHora: "1 uur",
+    quatroHoras: "4 uur",
+    oitoHoras: "8 uur",
+    umDia: "1 dag",
+    tresDias: "3 dagen",
+    umaSemana: "1 week",
+    ateEncerrar: "Tot ik hem sluit",
     titulo: "Peiling",
     encerrada: "Peiling gesloten",
     variasRespostas: "Peiling — meerdere antwoorden",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "De zoekopdracht kijkt alleen in kanalen die je mag lezen.",
   },
   entrada: {
+    semNome: "gesprek",
+    anexo: "(bijlage)",
     titulo: "Postvak in",
     naoLidas: "Ongelezen",
     salvas: "Bewaard",

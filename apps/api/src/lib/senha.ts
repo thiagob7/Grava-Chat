@@ -1,27 +1,27 @@
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 
-const CUSTO = 16384;
-const TAMANHO = 64;
+const COST = 16384;
+const SIZE = 64;
 
-function derivar(senha: string, sal: Buffer, tamanho: number, custo: number): Promise<Buffer> {
+function derive(password: string, sal: Buffer, size: number, cost: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    scrypt(senha, sal, tamanho, { N: custo }, (erro, chave) => (erro ? reject(erro) : resolve(chave)));
+    scrypt(password, sal, size, { N: cost }, (error, key) => (error ? reject(error) : resolve(key)));
   });
 }
 
-export async function gerarHash(senha: string): Promise<string> {
+export async function generateHash(password: string): Promise<string> {
   const sal = randomBytes(16);
-  const hash = await derivar(senha, sal, TAMANHO, CUSTO);
+  const hash = await derive(password, sal, SIZE, COST);
 
-  return `scrypt$${CUSTO}$${sal.toString("base64")}$${hash.toString("base64")}`;
+  return `scrypt$${COST}$${sal.toString("base64")}$${hash.toString("base64")}`;
 }
 
-export async function conferirSenha(senha: string, guardado: string): Promise<boolean> {
-  const [algoritmo, custo, sal, hash] = guardado.split("$");
-  if (algoritmo !== "scrypt" || !custo || !sal || !hash) return false;
+export async function checkPassword(password: string, kept: string): Promise<boolean> {
+  const [algorithm, cost, sal, hash] = kept.split("$");
+  if (algorithm !== "scrypt" || !cost || !sal || !hash) return false;
 
-  const esperado = Buffer.from(hash, "base64");
-  const calculado = await derivar(senha, Buffer.from(sal, "base64"), esperado.length, Number(custo));
+  const expected = Buffer.from(hash, "base64");
+  const computed = await derive(password, Buffer.from(sal, "base64"), expected.length, Number(cost));
 
-  return calculado.length === esperado.length && timingSafeEqual(calculado, esperado);
+  return computed.length === expected.length && timingSafeEqual(computed, expected);
 }

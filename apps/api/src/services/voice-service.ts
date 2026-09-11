@@ -1,9 +1,9 @@
 import { AccessToken, RoomServiceClient, TrackSource } from "livekit-server-sdk";
-import type { VoiceState, VozNoServidor } from "@gravae/shared";
+import type { VoiceState, VoiceServer } from "@gravae/shared";
 import { has, rooms } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError, ConflictError, ForbiddenError } from "~/lib/http.js";
-import { ehOutraAba } from "~/lib/retomada.js";
+import { isOtherTab } from "~/lib/retomada.js";
 import { redis, keys } from "~/lib/redis.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import {
@@ -11,17 +11,17 @@ import {
   guildRepository,
   memberRepository,
 } from "~/repositories/guild-repository.js";
-import type { Contexto } from "./access-service.js";
+import type { Context } from "./access-service.js";
 import { accessService } from "./access-service.js";
 
 export const roomName = (channelId: string) => `channel-${channelId}`;
-const canalDaSala = (nomeDaSala: string) => nomeDaSala.replace(/^channel-/, "");
+const roomChannel = (roomName: string) => roomName.replace(/^channel-/, "");
 
-const ehObjectId = (valor: string) => /^[0-9a-f]{24}$/i.test(valor);
+const isObjectId = (value: string) => /^[0-9a-f]{24}$/i.test(value);
 
-const ehChamadaDePrivado = (channel: { guildId: string | null }) => channel.guildId === null;
+const isPrivateCall = (channel: { guildId: string | null }) => channel.guildId === null;
 
-export async function destinatariosDaVoz(state: {
+export async function voiceRecipients(state: {
   guildId: string | null;
   channelId: string;
 }): Promise<string[]> {
@@ -31,7 +31,7 @@ export async function destinatariosDaVoz(state: {
   return (channel?.recipients ?? []).map(rooms.user);
 }
 
-const estaDeCastigo = (member: { timeoutUntil: Date | null } | null | undefined) =>
+const timeoutThis = (member: { timeoutUntil: Date | null } | null | undefined) =>
   Boolean(member?.timeoutUntil && member.timeoutUntil > new Date());
 
 let sfu: RoomServiceClient | null = null;
@@ -57,215 +57,215 @@ const DEFAULTS = {
 
 export const VOICE_GRACE_MS = 6_000;
 
-const TTL_DO_ORFAO_MS = 60_000;
+const ORPHAN_MS_TTL = 60_000;
 
-const CARENCIA_DO_SFU_MS = 25_000;
+const SFU_MS_GRACE = 25_000;
 
-export function fontesQuePodePublicar(
-  podeFalar: boolean,
-  contexto: Pick<Contexto, "permissions"> | null | undefined,
+export function fontsCanPublish(
+  canSpeak: boolean,
+  context: Pick<Context, "permissions"> | null | undefined,
 ) {
-  const fontes: TrackSource[] = [];
+  const fonts: TrackSource[] = [];
 
-  if (podeFalar) fontes.push(TrackSource.MICROPHONE);
-  if (!contexto || has(contexto.permissions, "VIDEO")) fontes.push(TrackSource.CAMERA);
-  if (!contexto || has(contexto.permissions, "SHARE_SCREEN")) {
-    fontes.push(TrackSource.SCREEN_SHARE, TrackSource.SCREEN_SHARE_AUDIO);
+  if (canSpeak) fonts.push(TrackSource.MICROPHONE);
+  if (!context || has(context.permissions, "VIDEO")) fonts.push(TrackSource.CAMERA);
+  if (!context || has(context.permissions, "SHARE_SCREEN")) {
+    fonts.push(TrackSource.SCREEN_SHARE, TrackSource.SCREEN_SHARE_AUDIO);
   }
 
-  return fontes;
+  return fonts;
 }
 
 export const voiceService = {
-  async estadoDoSfu() {
-    const [salas, chaves] = await Promise.all([
+  async sfuState() {
+    const [rooms, keys] = await Promise.all([
       roomService().listRooms(),
       redis.keys("voice:user:*"),
     ]);
 
-    const brutos = chaves.length ? await redis.mget(chaves) : [];
-    const noRedis = brutos
+    const raw = keys.length ? await redis.mget(keys) : [];
+    const inRedis = raw
       .filter((v): v is string => Boolean(v))
-      .map((v) => hidratar(JSON.parse(v) as VoiceState));
+      .map((v) => hydrate(JSON.parse(v) as VoiceState));
 
-    const comGente = await Promise.all(
-      salas.map(async (sala) => ({
-        sala,
-        pessoas: await roomService()
-          .listParticipants(sala.name)
+    const withFolks = await Promise.all(
+      rooms.map(async (room) => ({
+        room,
+        people: await roomService()
+          .listParticipants(room.name)
           .catch(() => []),
       })),
     );
 
-    const dentroDoSfu = new Set(
-      comGente.flatMap(({ sala, pessoas }) =>
-        pessoas.map((p) => `${canalDaSala(sala.name)}:${p.identity}`),
+    const sfuInside = new Set(
+      withFolks.flatMap(({ room, people }) =>
+        people.map((p) => `${roomChannel(room.name)}:${p.identity}`),
       ),
     );
-    const conhecidosPeloApp = new Set(noRedis.map((e) => `${e.channelId}:${e.userId}`));
+    const knownByApp = new Set(inRedis.map((e) => `${e.channelId}:${e.userId}`));
 
-    const agora = Date.now();
-    const fantasmas = noRedis.filter(
+    const now = Date.now();
+    const ghosts = inRedis.filter(
       (e) =>
-        agora - e.joinedAt > CARENCIA_DO_SFU_MS &&
-        !dentroDoSfu.has(`${e.channelId}:${e.userId}`),
+        now - e.joinedAt > SFU_MS_GRACE &&
+        !sfuInside.has(`${e.channelId}:${e.userId}`),
     );
 
-    const canais = await channelRepository.findManyByIds(
+    const channels = await channelRepository.findManyByIds(
       [
         ...new Set([
-          ...salas.map((s) => canalDaSala(s.name)),
-          ...fantasmas.map((f) => f.channelId),
+          ...rooms.map((s) => roomChannel(s.name)),
+          ...ghosts.map((f) => f.channelId),
         ]),
-      ].filter(ehObjectId),
+      ].filter(isObjectId),
     );
 
-    const guildPorCanal = new Map<string, string>();
-    for (const estado of noRedis) {
-      if (estado.guildId) guildPorCanal.set(estado.channelId, estado.guildId);
+    const guildByChannel = new Map<string, string>();
+    for (const state of inRedis) {
+      if (state.guildId) guildByChannel.set(state.channelId, state.guildId);
     }
 
     const guilds = await guildRepository.findManyByIds([
       ...new Set([
-        ...canais.map((c) => c.guildId).filter((id): id is string => Boolean(id)),
-        ...guildPorCanal.values(),
+        ...channels.map((c) => c.guildId).filter((id): id is string => Boolean(id)),
+        ...guildByChannel.values(),
       ]),
     ]);
 
-    const usuarios = await userRepository.findManyByIds(
+    const users = await userRepository.findManyByIds(
       [
         ...new Set([
-          ...comGente.flatMap(({ pessoas }) => pessoas.map((p) => p.identity)),
-          ...canais.filter((c) => c.guildId === null).flatMap((c) => c.recipients),
-          ...fantasmas.map((f) => f.userId),
+          ...withFolks.flatMap(({ people }) => people.map((p) => p.identity)),
+          ...channels.filter((c) => c.guildId === null).flatMap((c) => c.recipients),
+          ...ghosts.map((f) => f.userId),
         ]),
-      ].filter(ehObjectId),
+      ].filter(isObjectId),
     );
 
-    const canalPorId = new Map(canais.map((c) => [c.id, c]));
-    const guildPorId = new Map(guilds.map((g) => [g.id, g]));
-    const usuarioPorId = new Map(usuarios.map((u) => [u.id, u]));
+    const channelById = new Map(channels.map((c) => [c.id, c]));
+    const guildById = new Map(guilds.map((g) => [g.id, g]));
+    const userById = new Map(users.map((u) => [u.id, u]));
 
-    const nomeDoCanal = (canalId: string) => {
-      const canal = canalPorId.get(canalId);
-      if (!canal) return canalId;
+    const channelName = (channelId: string) => {
+      const channel = channelById.get(channelId);
+      if (!channel) return channelId;
 
-      if (canal.guildId === null)
-        return canal.recipients
-          .map((id) => usuarioPorId.get(id)?.displayName ?? "alguém")
+      if (channel.guildId === null)
+        return channel.recipients
+          .map((id) => userById.get(id)?.displayName ?? "alguém")
           .join(" e ");
 
-      return canal.name;
+      return channel.name;
     };
 
-    const detalhadas = comGente.map(({ sala, pessoas }) => {
-      const canalId = canalDaSala(sala.name);
-      const canal = canalPorId.get(canalId);
-      const guildId = canal?.guildId ?? guildPorCanal.get(canalId) ?? null;
-      const guild = guildId ? guildPorId.get(guildId) : null;
+    const detailed = withFolks.map(({ room, people }) => {
+      const channelId = roomChannel(room.name);
+      const channel = channelById.get(channelId);
+      const guildId = channel?.guildId ?? guildByChannel.get(channelId) ?? null;
+      const guild = guildId ? guildById.get(guildId) : null;
 
-      const alguemDaqui = pessoas.some((p) => usuarioPorId.has(p.identity));
-      const motivo: "canal-apagado" | "outro-ambiente" | null = canal
+      const someoneFromhere = people.some((p) => userById.has(p.identity));
+      const reason: "canal-apagado" | "outro-ambiente" | null = channel
         ? null
-        : pessoas.length > 0 && !alguemDaqui
+        : people.length > 0 && !someoneFromhere
           ? "outro-ambiente"
           : "canal-apagado";
 
       return {
-        canalId,
-        nome: canal ? nomeDoCanal(canalId) : null,
-        servidor: guild?.name ?? null,
-        ehPrivado: canal?.guildId === null,
-        motivo,
-        criadaEm: Number(sala.creationTime),
-        participantes: pessoas.map((p) => {
-          const trilha = (fonte: TrackSource) => p.tracks.find((t) => t.source === fonte);
-          const microfone = trilha(TrackSource.MICROPHONE);
-          const camera = trilha(TrackSource.CAMERA);
-          const tela = trilha(TrackSource.SCREEN_SHARE);
-          const user = usuarioPorId.get(p.identity);
+        channelId,
+        name: channel ? channelName(channelId) : null,
+        server: guild?.name ?? null,
+        isPrivate: channel?.guildId === null,
+        reason,
+        createdAt: Number(room.creationTime),
+        participants: people.map((p) => {
+          const trail = (font: TrackSource) => p.tracks.find((t) => t.source === font);
+          const microphone = trail(TrackSource.MICROPHONE);
+          const camera = trail(TrackSource.CAMERA);
+          const display = trail(TrackSource.SCREEN_SHARE);
+          const user = userById.get(p.identity);
 
           return {
             id: p.identity,
-            nome: user?.displayName ?? (p.name || p.identity),
+            name: user?.displayName ?? (p.name || p.identity),
             avatarUrl: user?.avatarUrl ?? null,
-            microfone: microfone ? (microfone.muted ? "mudo" : "aberto") : "sem",
+            microphone: microphone ? (microphone.muted ? "mudo" : "aberto") : "sem",
             camera: Boolean(camera && !camera.muted),
-            tela: Boolean(tela && !tela.muted),
-            entrouEm: Number(p.joinedAt),
-            soNoSfu: !conhecidosPeloApp.has(`${canalId}:${p.identity}`),
+            display: Boolean(display && !display.muted),
+            joinedAt: Number(p.joinedAt),
+            soNoSfu: !knownByApp.has(`${channelId}:${p.identity}`),
           };
         }),
       };
     });
 
     return {
-      salas: detalhadas,
-      participantes: detalhadas.reduce((total, s) => total + s.participantes.length, 0),
-      publicando: detalhadas.reduce(
-        (total, s) => total + s.participantes.filter((p) => p.microfone === "aberto").length,
+      rooms: detailed,
+      participants: detailed.reduce((total, s) => total + s.participants.length, 0),
+      publishing: detailed.reduce(
+        (total, s) => total + s.participants.filter((p) => p.microphone === "aberto").length,
         0,
       ),
-      fantasmas: fantasmas.map((e) => ({
+      ghosts: ghosts.map((e) => ({
         id: e.userId,
-        nome: usuarioPorId.get(e.userId)?.displayName ?? e.userId,
-        canal: canalPorId.has(e.channelId) ? nomeDoCanal(e.channelId) : null,
-        desde: Math.round(e.joinedAt / 1000),
-        aguardandoVolta: e.orphanedAt !== null,
+        name: userById.get(e.userId)?.displayName ?? e.userId,
+        channel: channelById.has(e.channelId) ? channelName(e.channelId) : null,
+        since: Math.round(e.joinedAt / 1000),
+        awaitingBack: e.orphanedAt !== null,
       })),
     };
   },
 
-  async moderar(
-    alvoId: string,
+  async moderate(
+    targetId: string,
     patch: { serverMute?: boolean; serverDeaf?: boolean },
   ): Promise<VoiceState | null> {
-    const state = await voiceService.get(alvoId);
+    const state = await voiceService.get(targetId);
     if (!state) return null;
 
     if (patch.serverMute !== undefined) {
-      await voiceService.mutarNoSfu(state.channelId, alvoId, patch.serverMute);
+      await voiceService.muteSfu(state.channelId, targetId, patch.serverMute);
     }
 
-    const proximo: VoiceState = { ...state, ...patch };
-    await redis.set(keys.voiceState(alvoId), JSON.stringify(proximo));
+    const next: VoiceState = { ...state, ...patch };
+    await redis.set(keys.voiceState(targetId), JSON.stringify(next));
 
-    return proximo;
+    return next;
   },
 
-  async mutarNoSfu(channelId: string, userId: string, mudo: boolean) {
-    const sala = roomName(channelId);
-    const participantes = await roomService().listParticipants(sala);
-    const alvo = participantes.find((p) => p.identity === userId);
+  async muteSfu(channelId: string, userId: string, isMuted: boolean) {
+    const room = roomName(channelId);
+    const participants = await roomService().listParticipants(room);
+    const target = participants.find((p) => p.identity === userId);
 
-    if (!alvo) throw new AppError("Essa pessoa não está mais na chamada", 409);
+    if (!target) throw new AppError("Essa pessoa não está mais na chamada", 409);
 
-    const microfones = alvo.tracks.filter((t) => t.source === TrackSource.MICROPHONE);
+    const microphones = target.tracks.filter((t) => t.source === TrackSource.MICROPHONE);
 
-    if (!microfones.length) {
-      if (mudo) return;
+    if (!microphones.length) {
+      if (isMuted) return;
       throw new AppError("Não achei o microfone dessa pessoa na chamada", 409);
     }
 
-    for (const track of microfones) {
-      await roomService().mutePublishedTrack(sala, userId, track.sid, mudo);
+    for (const track of microphones) {
+      await roomService().mutePublishedTrack(room, userId, track.sid, isMuted);
     }
   },
 
-  async desconectarDoSfu(channelId: string, userId: string) {
+  async sfuDisconnect(channelId: string, userId: string) {
     await roomService()
       .removeParticipant(roomName(channelId), userId)
       .catch(() => undefined);
   },
 
   async issueToken(userId: string, channelId: string) {
-    const { channel, contexto } = await accessService.requireChannelAccess(userId, channelId);
+    const { channel, context } = await accessService.requireChannelAccess(userId, channelId);
     const anterior = await voiceService.get(userId);
 
-    if (channel.type !== "VOICE" && !ehChamadaDePrivado(channel)) {
+    if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
       throw new AppError("Este canal não é de voz");
     }
-    if (contexto && !has(contexto.permissions, "CONNECT")) {
+    if (context && !has(context.permissions, "CONNECT")) {
       throw new ForbiddenError("Você não pode entrar neste canal de voz");
     }
 
@@ -278,26 +278,26 @@ export const voiceService = {
       ttl: "10m",
     });
 
-    const podeFalar =
-      !contexto ||
-      (has(contexto.permissions, "SPEAK") &&
-        !estaDeCastigo(contexto.member) &&
+    const canSpeak =
+      !context ||
+      (has(context.permissions, "SPEAK") &&
+        !timeoutThis(context.member) &&
         !(anterior?.channelId === channelId && anterior.serverMute));
 
-    const fontes = fontesQuePodePublicar(podeFalar, contexto);
+    const fonts = fontsCanPublish(canSpeak, context);
 
     token.addGrant({
       room: roomName(channelId),
       roomJoin: true,
-      canPublish: fontes.length > 0,
-      canPublishSources: fontes,
+      canPublish: fonts.length > 0,
+      canPublishSources: fonts,
       canSubscribe: true,
       canPublishData: true,
     });
 
-    const exigePushToTalk = Boolean(contexto) && !has(contexto!.permissions, "USE_VAD");
+    const requiresPushToTalk = Boolean(context) && !has(context!.permissions, "USE_VAD");
 
-    return { url: env.LIVEKIT_URL, token: await token.toJwt(), exigePushToTalk };
+    return { url: env.LIVEKIT_URL, token: await token.toJwt(), requiresPushToTalk };
   },
 
   async join(
@@ -305,21 +305,21 @@ export const voiceService = {
     channelId: string,
     socketId: string,
     resume = false,
-    clienteId: string | null = null,
+    clientId: string | null = null,
   ) {
     const { channel } = await accessService.requireChannelAccess(userId, channelId);
-    if (channel.type !== "VOICE" && !ehChamadaDePrivado(channel)) {
+    if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
       throw new AppError("Este canal não é de voz");
     }
 
     const previous = await voiceService.get(userId);
 
     if (channel.userLimit > 0 && previous?.channelId !== channelId) {
-      const dentro = await redis.scard(keys.voiceChannel(channelId));
-      if (dentro >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
+      const inside = await redis.scard(keys.voiceChannel(channelId));
+      if (inside >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
     }
 
-    if (ehOutraAba({ retomando: resume, anterior: previous, canalPedido: channelId, cliente: clienteId })) {
+    if (isOtherTab({ resuming: resume, anterior: previous, channelRequest: channelId, client: clientId })) {
       throw new AppError("Outra aba está nesta chamada");
     }
 
@@ -330,7 +330,7 @@ export const voiceService = {
       channelId,
       guildId: channel.guildId,
       socketId,
-      clienteId: clienteId ?? previous?.clienteId ?? null,
+      clientId: clientId ?? previous?.clientId ?? null,
       ...DEFAULTS,
       joinedAt: previous?.channelId === channelId ? previous.joinedAt : Date.now(),
       selfMute: previous?.selfMute ?? DEFAULTS.selfMute,
@@ -354,7 +354,7 @@ export const voiceService = {
     if (!state || state.socketId !== socketId || state.orphanedAt) return null;
 
     const orphaned = { ...state, orphanedAt: Date.now() };
-    await redis.set(keys.voiceState(userId), JSON.stringify(orphaned), "PX", TTL_DO_ORFAO_MS);
+    await redis.set(keys.voiceState(userId), JSON.stringify(orphaned), "PX", ORPHAN_MS_TTL);
     return orphaned;
   },
 
@@ -393,7 +393,7 @@ export const voiceService = {
 
   async get(userId: string): Promise<VoiceState | null> {
     const raw = await redis.get(keys.voiceState(userId));
-    return raw ? hidratar(JSON.parse(raw) as VoiceState) : null;
+    return raw ? hydrate(JSON.parse(raw) as VoiceState) : null;
   },
 
   async statesForChannels(channelIds: string[]): Promise<Record<string, VoiceState[]>> {
@@ -408,7 +408,7 @@ export const voiceService = {
 
     userIds.forEach((id, i) => {
       const value = raw[i];
-      if (value) byUser.set(id, hidratar(JSON.parse(value) as VoiceState));
+      if (value) byUser.set(id, hydrate(JSON.parse(value) as VoiceState));
     });
 
     return Object.fromEntries(
@@ -421,106 +421,106 @@ export const voiceService = {
     );
   },
 
-  async statesForUser(userId: string): Promise<Record<string, VozNoServidor[]>> {
-    const membros = await memberRepository.guildIdsOf(userId);
-    const guildIds = membros.map((m) => m.guildId);
+  async statesForUser(userId: string): Promise<Record<string, VoiceServer[]>> {
+    const members = await memberRepository.guildIdsOf(userId);
+    const guildIds = members.map((m) => m.guildId);
     if (!guildIds.length) return {};
 
-    const canais = await channelRepository.voiceChannelsOfGuilds(guildIds);
-    if (!canais.length) return {};
+    const channels = await channelRepository.voiceChannelsOfGuilds(guildIds);
+    if (!channels.length) return {};
 
-    const estados = await voiceService.statesForChannels(canais.map((c) => c.id));
+    const states = await voiceService.statesForChannels(channels.map((c) => c.id));
 
-    const ids = [...new Set(Object.values(estados).flatMap((lista) => lista.map((e) => e.userId)))];
-    const usuarios = new Map(
+    const ids = [...new Set(Object.values(states).flatMap((list) => list.map((e) => e.userId)))];
+    const users = new Map(
       (await userRepository.findManyByIds(ids)).map((u) => [
         u.id,
         { userId: u.id, displayName: u.displayName, avatarUrl: u.avatarUrl },
       ]),
     );
 
-    const porServidor: Record<string, VozNoServidor[]> = {};
+    const byServer: Record<string, VoiceServer[]> = {};
 
-    for (const canal of canais) {
-      const guildId = canal.guildId;
-      const dentro = estados[canal.id] ?? [];
-      if (!guildId || !dentro.length) continue;
+    for (const channel of channels) {
+      const guildId = channel.guildId;
+      const inside = states[channel.id] ?? [];
+      if (!guildId || !inside.length) continue;
 
-      const pessoas = dentro
-        .map((estado) => usuarios.get(estado.userId))
+      const people = inside
+        .map((state) => users.get(state.userId))
         .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
-      if (!pessoas.length) continue;
+      if (!people.length) continue;
 
-      (porServidor[guildId] ??= []).push({
-        channelId: canal.id,
-        channelName: canal.name,
-        transmitindo: dentro.some((estado) => estado.screenShare),
-        pessoas,
+      (byServer[guildId] ??= []).push({
+        channelId: channel.id,
+        channelName: channel.name,
+        broadcasting: inside.some((state) => state.screenShare),
+        people,
       });
     }
 
-    return porServidor;
+    return byServer;
   },
 
-  async reconciliar(): Promise<{ doRedis: VoiceState[]; doSfu: number }> {
-    const agora = Date.now();
+  async reconcile(): Promise<{ fromRedis: VoiceState[]; fromSfu: number }> {
+    const now = Date.now();
 
-    const [chaves, salas] = await Promise.all([
+    const [keys, rooms] = await Promise.all([
       redis.keys("voice:user:*"),
       roomService().listRooms().catch(() => []),
     ]);
 
-    const brutos = chaves.length ? await redis.mget(chaves) : [];
-    const noRedis = brutos
+    const raw = keys.length ? await redis.mget(keys) : [];
+    const inRedis = raw
       .filter((v): v is string => Boolean(v))
-      .map((v) => hidratar(JSON.parse(v) as VoiceState));
+      .map((v) => hydrate(JSON.parse(v) as VoiceState));
 
-    const nossas = salas.filter((sala) => sala.name.startsWith("channel-"));
+    const our = rooms.filter((room) => room.name.startsWith("channel-"));
 
-    const participantes = await Promise.all(
-      nossas.map(async (sala) => ({
-        channelId: sala.name.slice("channel-".length),
-        sala: sala.name,
-        lista: await roomService().listParticipants(sala.name).catch(() => []),
+    const participants = await Promise.all(
+      our.map(async (room) => ({
+        channelId: room.name.slice("channel-".length),
+        room: room.name,
+        list: await roomService().listParticipants(room.name).catch(() => []),
       })),
     );
 
-    const noSfu = new Set<string>();
-    for (const { channelId, lista } of participantes) {
-      for (const p of lista) noSfu.add(`${channelId}:${p.identity}`);
+    const inSfu = new Set<string>();
+    for (const { channelId, list } of participants) {
+      for (const p of list) inSfu.add(`${channelId}:${p.identity}`);
     }
 
-    const orfaos = noRedis.filter(
-      (e) => agora - e.joinedAt > CARENCIA_DO_SFU_MS && !noSfu.has(`${e.channelId}:${e.userId}`),
+    const orphans = inRedis.filter(
+      (e) => now - e.joinedAt > SFU_MS_GRACE && !inSfu.has(`${e.channelId}:${e.userId}`),
     );
 
-    const doRedis = (await Promise.all(orfaos.map((e) => voiceService.leave(e.userId)))).filter(
+    const fromRedis = (await Promise.all(orphans.map((e) => voiceService.leave(e.userId)))).filter(
       (e): e is VoiceState => Boolean(e),
     );
 
-    const conhecidos = new Set(noRedis.map((e) => `${e.channelId}:${e.userId}`));
+    const known = new Set(inRedis.map((e) => `${e.channelId}:${e.userId}`));
 
-    const zumbis = participantes.flatMap(({ channelId, sala, lista }) => {
-      const nossa = lista.some((p) => conhecidos.has(`${channelId}:${p.identity}`));
-      if (!nossa) return [];
+    const zombies = participants.flatMap(({ channelId, room, list }) => {
+      const our = list.some((p) => known.has(`${channelId}:${p.identity}`));
+      if (!our) return [];
 
-      return lista
+      return list
         .filter((p) => {
-          if (conhecidos.has(`${channelId}:${p.identity}`)) return false;
-          const entrouEm = Number(p.joinedAt ?? 0) * 1000;
-          return entrouEm > 0 && agora - entrouEm > CARENCIA_DO_SFU_MS;
+          if (known.has(`${channelId}:${p.identity}`)) return false;
+          const joinedAt = Number(p.joinedAt ?? 0) * 1000;
+          return joinedAt > 0 && now - joinedAt > SFU_MS_GRACE;
         })
-        .map((p) => ({ sala, identity: p.identity }));
+        .map((p) => ({ room, identity: p.identity }));
     });
 
     await Promise.all(
-      zumbis.map(({ sala, identity }) =>
-        roomService().removeParticipant(sala, identity).catch(() => undefined),
+      zombies.map(({ room, identity }) =>
+        roomService().removeParticipant(room, identity).catch(() => undefined),
       ),
     );
 
-    return { doRedis, doSfu: zumbis.length };
+    return { fromRedis, fromSfu: zombies.length };
   },
 
   async reset() {
@@ -529,7 +529,7 @@ export const voiceService = {
   },
 };
 
-function hidratar(state: VoiceState): VoiceState {
+function hydrate(state: VoiceState): VoiceState {
   return { ...state, joinedAt: state.joinedAt ?? Date.now() };
 }
 

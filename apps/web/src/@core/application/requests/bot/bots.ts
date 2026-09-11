@@ -5,22 +5,37 @@ import { api } from "~/@core/lib/api";
 
 export interface BotModel {
   id: string;
-  usuario: PublicUserModel;
-  descricao: string | null;
-  permissoesPedidas: Permission[];
-  publico: boolean;
+  user: PublicUserModel;
+  description: string | null;
+  coverUrl: string | null;
+  categories: string[];
+  languages: string[];
+  termsUrl: string | null;
+  policyUrl: string | null;
+  supportServerId: string | null;
+  permissionsRequested: Permission[];
+  isPublic: boolean;
   redirectUris: string[];
   clientSecret: string;
   createdAt: string;
   token?: string;
 }
 
-export type ConviteDeBotModel = Omit<
+export type InviteBotModel = Omit<
   BotModel,
-  "createdAt" | "token" | "clientSecret" | "redirectUris"
+  | "createdAt"
+  | "token"
+  | "clientSecret"
+  | "redirectUris"
+  | "coverUrl"
+  | "categories"
+  | "languages"
+  | "termsUrl"
+  | "policyUrl"
+  | "supportServerId"
 >;
 
-export interface ServidorDoBotModel {
+export interface BotModelServer {
   id: string;
   name: string;
   iconUrl: string | null;
@@ -31,22 +46,28 @@ export async function findBots(): Promise<BotModel[]> {
   return response.data;
 }
 
-export async function createBot(nome: string): Promise<BotModel> {
-  const response = await api.post<BotModel>("/bots", { nome });
+export async function createBot(name: string): Promise<BotModel> {
+  const response = await api.post<BotModel>("/bots", { name });
   return response.data;
 }
 
-export interface EditarBotInput {
-  nome?: string;
-  descricao?: string | null;
+export interface EditBotInput {
+  name?: string;
+  description?: string | null;
   avatarUrl?: string | null;
-  permissoesPedidas?: Permission[];
-  publico?: boolean;
+  coverUrl?: string | null;
+  categories?: string[];
+  languages?: string[];
+  termsUrl?: string | null;
+  policyUrl?: string | null;
+  supportServerId?: string | null;
+  permissionsRequested?: Permission[];
+  isPublic?: boolean;
   redirectUris?: string[];
 }
 
-export async function updateBot(botId: string, dados: EditarBotInput): Promise<BotModel> {
-  const response = await api.patch<BotModel>(`/bots/${botId}`, dados);
+export async function updateBot(botId: string, data: EditBotInput): Promise<BotModel> {
+  const response = await api.patch<BotModel>(`/bots/${botId}`, data);
   return response.data;
 }
 
@@ -59,24 +80,24 @@ export async function deleteBot(botId: string): Promise<void> {
   await api.delete(`/bots/${botId}`);
 }
 
-export async function findBotInvite(botId: string): Promise<ConviteDeBotModel> {
-  const response = await api.get<ConviteDeBotModel>(`/bots/${botId}/convite`);
+export async function findBotInvite(botId: string): Promise<InviteBotModel> {
+  const response = await api.get<InviteBotModel>(`/bots/${botId}/convite`);
   return response.data;
 }
 
-export interface DestinosDoBotModel {
-  destinos: ServidorDoBotModel[];
-  totalDeServidores: number;
-  jaEstaEm: number;
+export interface BotModelDestinations {
+  destinations: BotModelServer[];
+  serversTotal: number;
+  alreadyThisAt: number;
 }
 
-export async function findBotDestinations(botId: string): Promise<DestinosDoBotModel> {
-  const response = await api.get<DestinosDoBotModel>(`/bots/${botId}/destinos`);
+export async function findBotDestinations(botId: string): Promise<BotModelDestinations> {
+  const response = await api.get<BotModelDestinations>(`/bots/${botId}/destinos`);
   return response.data;
 }
 
-export async function findBotGuilds(botId: string): Promise<ServidorDoBotModel[]> {
-  const response = await api.get<ServidorDoBotModel[]>(`/bots/${botId}/servidores`);
+export async function findBotGuilds(botId: string): Promise<BotModelServer[]> {
+  const response = await api.get<BotModelServer[]>(`/bots/${botId}/servidores`);
   return response.data;
 }
 

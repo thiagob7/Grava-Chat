@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { findAtivos } from "~/@core/application/requests/friend/find-ativos";
+import { findActive } from "~/@core/application/requests/friend/find-ativos";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-export const useAtivos = () =>
+export const useActive = () =>
   useQuery({
-    queryKey: [queryKeys.friend.ativos],
-    queryFn: findAtivos,
+    queryKey: [queryKeys.friend.actives],
+    queryFn: findActive,
     refetchInterval: 10_000,
   });

@@ -1,5 +1,5 @@
 
-const TABELA: [RegExp, string][] = [
+const TABLE: [RegExp, string][] = [
   [/(^|\s):-?\)(?=\s|$)/g, "$1🙂"],
   [/(^|\s):-?D(?=\s|$)/g, "$1😄"],
   [/(^|\s):-?\((?=\s|$)/g, "$1🙁"],
@@ -12,6 +12,6 @@ const TABELA: [RegExp, string][] = [
   [/(^|\s)\^\^(?=\s|$)/g, "$1😊"],
 ];
 
-export function converterEmoticons(texto: string): string {
-  return TABELA.reduce((atual, [padrao, emoji]) => atual.replace(padrao, emoji), texto);
+export function convertEmoticons(text: string): string {
+  return TABLE.reduce((current, [fallback, emoji]) => current.replace(fallback, emoji), text);
 }

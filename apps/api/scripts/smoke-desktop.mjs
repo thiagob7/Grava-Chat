@@ -5,7 +5,7 @@ const BASE = "http://localhost:3333";
 const REDIS = process.env.REDIS_URL ?? "redis://localhost:6381";
 const ok = (m) => console.log(`  ok  ${m}`);
 
-const hash = (valor) => createHash("sha256").update(valor).digest("base64url");
+const hash = (value) => createHash("sha256").update(value).digest("base64url");
 const b64 = () => randomBytes(32).toString("base64url");
 
 const config = await fetch(`${BASE}/api/auth/config`).then((r) => r.json());
@@ -16,9 +16,9 @@ if (!config.google) {
 
 console.log("\n== o app abre o navegador ==");
 
-const verificador = b64();
+const verifier = b64();
 const start = await fetch(
-  `${BASE}/api/auth/desktop/start?desafio=${encodeURIComponent(hash(verificador))}`,
+  `${BASE}/api/auth/desktop/start?desafio=${encodeURIComponent(hash(verifier))}`,
   { redirect: "manual" },
 );
 
@@ -28,13 +28,13 @@ if (start.headers.get("location") !== "/api/auth/google") {
 }
 ok("start manda pro consentimento do Google");
 
-const cookieDesafio = start.headers.getSetCookie().find((c) => c.startsWith("gravae_desktop="));
-if (!cookieDesafio) throw new Error("o desafio nao foi guardado em cookie");
-if (!cookieDesafio.includes("HttpOnly")) throw new Error("o cookie do desafio precisa ser httpOnly");
+const cookieChallenge = start.headers.getSetCookie().find((c) => c.startsWith("gravae_desktop="));
+if (!cookieChallenge) throw new Error("o desafio nao foi guardado em cookie");
+if (!cookieChallenge.includes("HttpOnly")) throw new Error("o cookie do desafio precisa ser httpOnly");
 ok("o desafio viaja em cookie httpOnly ate o callback");
 
-const semDesafio = await fetch(`${BASE}/api/auth/desktop/start`, { redirect: "manual" });
-if (semDesafio.status !== 400) throw new Error(`start sem desafio devolveu ${semDesafio.status}`);
+const withoutChallenge = await fetch(`${BASE}/api/auth/desktop/start`, { redirect: "manual" });
+if (withoutChallenge.status !== 400) throw new Error(`start sem desafio devolveu ${withoutChallenge.status}`);
 ok("start sem desafio e recusado com 400");
 
 console.log("\n== o navegador devolve o codigo ==");
@@ -48,56 +48,56 @@ const { user } = await login.json();
 
 const redis = new Redis(REDIS, { maxRetriesPerRequest: 2 });
 
-const semear = async (desafio) => {
-  const codigo = b64();
+const seed = async (challenge) => {
+  const code = b64();
   await redis.set(
-    `desktop-login:${codigo}`,
-    JSON.stringify({ userId: user.id, desafio }),
+    `desktop-login:${code}`,
+    JSON.stringify({ userId: user.id, challenge }),
     "EX",
     120,
   );
-  return codigo;
+  return code;
 };
 
-const trocar = (codigo, verif) =>
+const swap = (code, check) =>
   fetch(`${BASE}/api/auth/desktop/trocar`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ codigo, verificador: verif }),
+    body: JSON.stringify({ code, verifier: check }),
   });
 
-const interceptado = await semear(hash(verificador));
-const roubo = await trocar(interceptado, b64());
-if (roubo.status !== 401) throw new Error(`codigo com verificador errado devolveu ${roubo.status}`);
+const intercepted = await seed(hash(verifier));
+const theft = await swap(intercepted, b64());
+if (theft.status !== 401) throw new Error(`codigo com verificador errado devolveu ${theft.status}`);
 ok("codigo interceptado, sem o verificador, nao vira sessao (401)");
 
-const sobrou = await redis.get(`desktop-login:${interceptado}`);
-if (sobrou) throw new Error("o codigo continua valido depois de uma tentativa errada");
+const leftover = await redis.get(`desktop-login:${intercepted}`);
+if (leftover) throw new Error("o codigo continua valido depois de uma tentativa errada");
 ok("a tentativa errada ja queima o codigo");
 
-const codigo = await semear(hash(verificador));
-const troca = await trocar(codigo, verificador);
-if (troca.status !== 200) throw new Error(`troca legitima devolveu ${troca.status}`);
+const code = await seed(hash(verifier));
+const swap = await swap(code, verifier);
+if (swap.status !== 200) throw new Error(`troca legitima devolveu ${swap.status}`);
 
-const sessao = await troca.json();
-if (sessao.user?.id !== user.id) throw new Error("a sessao saiu para o usuario errado");
-if (!troca.headers.getSetCookie().some((c) => c.startsWith("gravae_rt="))) {
+const session = await swap.json();
+if (session.user?.id !== user.id) throw new Error("a sessao saiu para o usuario errado");
+if (!swap.headers.getSetCookie().some((c) => c.startsWith("gravae_rt="))) {
   throw new Error("a troca nao gravou o cookie de refresh");
 }
 ok("troca legitima devolve sessao e cookie httpOnly");
 
 const me = await fetch(`${BASE}/api/me`, {
-  headers: { authorization: `Bearer ${sessao.accessToken}` },
+  headers: { authorization: `Bearer ${session.accessToken}` },
 });
 if (me.status !== 200) throw new Error(`o access token da troca nao funciona (${me.status})`);
 ok("o access token da troca abre /api/me");
 
-const repetido = await trocar(codigo, verificador);
-if (repetido.status !== 401) throw new Error(`codigo reusado devolveu ${repetido.status}`);
+const repeated = await swap(code, verifier);
+if (repeated.status !== 401) throw new Error(`codigo reusado devolveu ${repeated.status}`);
 ok("o mesmo codigo nao serve duas vezes (401)");
 
-const inventado = await trocar(b64(), verificador);
-if (inventado.status !== 401) throw new Error(`codigo inventado devolveu ${inventado.status}`);
+const invented = await swap(b64(), verifier);
+if (invented.status !== 401) throw new Error(`codigo inventado devolveu ${invented.status}`);
 ok("codigo inventado e recusado com 401");
 
 await redis.quit();

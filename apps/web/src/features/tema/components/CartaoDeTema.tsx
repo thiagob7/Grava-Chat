@@ -1,81 +1,83 @@
 import React from "react";
 import { Palette } from "lucide-react";
 
-import { pesoDoTema, pesoLegivel } from "@gravae/shared";
+import { PREVIEW_COLORS, themeWeight, weightReadable } from "@gravae/shared";
 
-import { useTema } from "~/@core/application/queries/tema/use-temas";
+import { useTheme } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
-import { useImportarTema } from "~/features/tema/stores/importar-tema";
+import { useImportTheme } from "~/features/tema/stores/importar-tema";
+import { ThemePreview } from "~/features/tema/components/PreviaDoTema";
+import { useTranslation } from "~/traducao";
 
-export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
-  const { data: tema, isLoading, isError } = useTema(temaId);
-  const abrirImportacao = useImportarTema((s) => s.abrir);
+export const ThemeCard: React.FC<{ themeId: string }> = ({ themeId }) => {
+  const { t } = useTranslation();
+  const { data: theme, isLoading, isError } = useTheme(themeId);
+  const openImport = useImportTheme((s) => s.open);
 
   if (isLoading)
     return (
       <div data-gc="tema.cartao-de-tema.div" className="mt-1 h-[6.5rem] w-72 animate-pulse rounded-lg border border-line bg-surface-2" />
     );
 
-  if (isError || !tema)
+  if (isError || !theme)
     return (
       <div data-gc="tema.cartao-de-tema.div--2" className="mt-1 w-72 rounded-lg border border-line bg-surface-2 p-3">
-        <p data-gc="tema.cartao-de-tema.p" className="text-sm font-medium text-ink-muted">Tema indisponível</p>
+        <p data-gc="tema.cartao-de-tema.p" className="text-sm font-medium text-ink-muted">{t("configuracoes.tema.indisponivel")}</p>
         <p data-gc="tema.cartao-de-tema.p--2" className="mt-0.5 text-xs text-ink-faint">
-          Quem publicou apagou, ou o link está errado.
+          {t("configuracoes.tema.indisponivelDetalhe")}
         </p>
       </div>
     );
 
-  const temCss = tema.css.trim().length > 0;
-  const quantosTokens = Object.keys(tema.substituicoes).length;
+  const hasCss = theme.css.trim().length > 0;
+  const countTokens = Object.keys(theme.overrides).length;
 
-  const resumo = [
-    temCss && "Você tem CSS!",
-    quantosTokens > 0 && `${quantosTokens} ${quantosTokens === 1 ? "cor" : "cores"}`,
-    tema.ativos.length > 0 &&
-      `${tema.ativos.length} ${tema.ativos.length === 1 ? "imagem" : "imagens"}`,
-    tema.ativos.length > 0 && pesoLegivel(pesoDoTema(tema.css, tema.ativos)),
+  const summary = [
+    hasCss && "Você tem CSS!",
+    countTokens > 0 && `${countTokens} ${countTokens === 1 ? "cor" : "cores"}`,
+    theme.actives.length > 0 &&
+      `${theme.actives.length} ${theme.actives.length === 1 ? "imagem" : "imagens"}`,
+    theme.actives.length > 0 && weightReadable(themeWeight(theme.css, theme.actives)),
   ]
     .filter(Boolean)
     .join(" · ");
 
-  const capa = tema.ativos.find((ativo) =>
-    ativo.tipo
-      ? ativo.tipo.startsWith("image/")
-      : /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(ativo.nome),
-  );
+  const colors = PREVIEW_COLORS.map((token) => theme.overrides[token]).filter(Boolean);
 
   return (
     <article data-gc="tema.cartao-de-tema.article" className="mt-1 w-72 overflow-hidden rounded-lg border border-line bg-surface-2">
-      {capa && (
-        <img data-gc="tema.cartao-de-tema.img"
-          src={capa.url}
-          alt=""
-          loading="lazy"
-          className="h-24 w-full border-b border-line object-cover"
-        />
-      )}
+      <div data-gc="tema.cartao-de-tema.div--3" className="relative flex aspect-video shrink-0 overflow-hidden bg-surface-4">
+        {colors.length ? (
+          colors.map((color, i) => (
+            <span data-gc="tema.cartao-de-tema.span" key={i} className="flex-1" style={{ backgroundColor: color }} />
+          ))
+        ) : (
+          <span data-gc="tema.cartao-de-tema.span--2" className="flex-1" />
+        )}
 
-      <div data-gc="tema.cartao-de-tema.div--3" className="flex items-center gap-3 p-3">
-        <span data-gc="tema.cartao-de-tema.span" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca">
+        <ThemePreview data-gc="tema.cartao-de-tema.theme-preview" themeId={theme.id} className="absolute inset-0 bg-transparent" />
+      </div>
+
+      <div data-gc="tema.cartao-de-tema.div--4" className="flex items-center gap-3 p-3">
+        <span data-gc="tema.cartao-de-tema.span--3" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca">
           <Palette data-gc="tema.cartao-de-tema.palette" size={20} />
         </span>
 
-        <div data-gc="tema.cartao-de-tema.div--4" className="min-w-0 flex-1">
-          <p data-gc="tema.cartao-de-tema.p--3" className="truncate text-sm font-semibold">{tema.nome}</p>
-          <p data-gc="tema.cartao-de-tema.p--4" className="truncate text-xs text-ink-faint">{resumo}</p>
+        <div data-gc="tema.cartao-de-tema.div--5" className="min-w-0 flex-1">
+          <p data-gc="tema.cartao-de-tema.p--3" className="truncate text-sm font-semibold">{theme.name}</p>
+          <p data-gc="tema.cartao-de-tema.p--4" className="truncate text-xs text-ink-faint">{summary}</p>
         </div>
       </div>
 
-      {(tema.descricao || tema.autor || tema.versao) && (
-        <div data-gc="tema.cartao-de-tema.div--5" className="px-3 pb-2">
-          {tema.descricao && (
-            <p data-gc="tema.cartao-de-tema.p--5" className="line-clamp-2 text-xs text-ink-muted">{tema.descricao}</p>
+      {(theme.description || theme.author || theme.version) && (
+        <div data-gc="tema.cartao-de-tema.div--6" className="px-3 pb-2">
+          {theme.description && (
+            <p data-gc="tema.cartao-de-tema.p--5" className="line-clamp-2 text-xs text-ink-muted">{theme.description}</p>
           )}
 
-          {(tema.autor || tema.versao) && (
+          {(theme.author || theme.version) && (
             <p data-gc="tema.cartao-de-tema.p--6" className="mt-1 truncate text-xs text-ink-faint">
-              {[tema.autor && `por ${tema.autor}`, tema.versao && `v${tema.versao}`]
+              {[theme.author && `por ${theme.author}`, theme.version && `v${theme.version}`]
                 .filter(Boolean)
                 .join(" · ")}
             </p>
@@ -83,13 +85,13 @@ export const CartaoDeTema: React.FC<{ temaId: string }> = ({ temaId }) => {
         </div>
       )}
 
-      <div data-gc="tema.cartao-de-tema.div--6" className="p-3 pt-1">
+      <div data-gc="tema.cartao-de-tema.div--7" className="p-3 pt-1">
         <Button data-gc="tema.cartao-de-tema.button"
           size="sm"
           className="w-full"
-          onClick={() => abrirImportacao(tema.id)}
+          onClick={() => openImport(theme.id)}
         >
-          Importar tema
+          {t("configuracoes.tema.importar")}
         </Button>
       </div>
     </article>

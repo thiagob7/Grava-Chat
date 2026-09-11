@@ -1,9 +1,9 @@
 import { z } from "zod";
 import {
-  estiloDePerfilSchema,
-  FILTROS_DE_SPAM,
+  profileStyleSchema,
+  SPAM_FILTERS,
   LIMITS,
-  statusPersonalizadoSchema,
+  statusCustomSchema,
 } from "@gravae/shared";
 import { env } from "~/env.js";
 
@@ -14,29 +14,29 @@ export const r2Url = z
     "A imagem precisa ter sido enviada aqui",
   );
 
-const senha = z.string().min(8, "A senha precisa de pelo menos 8 caracteres").max(128);
+const password = z.string().min(8, "A senha precisa de pelo menos 8 caracteres").max(128);
 
-export const registrarInput = z.object({
+export const registerInput = z.object({
   email: z.email(),
-  senha,
+  password,
   displayName: z.string().trim().min(1).max(LIMITS.displayName),
 });
 
-export const entrarInput = z.object({
+export const joinInput = z.object({
   email: z.email(),
-  senha: z.string().min(1).max(128),
+  password: z.string().min(1).max(128),
 });
 
-export const esqueciInput = z.object({ email: z.email() });
+export const forgotInput = z.object({ email: z.email() });
 
-export const redefinirInput = z.object({
+export const resetInput = z.object({
   token: z.string().min(16).max(200),
-  senha,
+  password,
 });
 
-export const trocarSenhaInput = z.object({
-  atual: z.string().max(128).optional(),
-  nova: senha,
+export const swapPasswordInput = z.object({
+  current: z.string().max(128).optional(),
+  fresh: password,
 });
 
 export const devLoginInput = z.object({
@@ -48,27 +48,27 @@ export const updateProfileInput = z.object({
   displayName: z.string().min(1).max(LIMITS.displayName).optional(),
   avatarUrl: r2Url.nullable().optional(),
   bio: z.string().max(LIMITS.bio).nullable().optional(),
-  pronomes: z.string().max(LIMITS.pronomes).nullable().optional(),
-  perfil: estiloDePerfilSchema
+  pronouns: z.string().max(LIMITS.pronouns).nullable().optional(),
+  profile: profileStyleSchema
     .extend({ bannerUrl: r2Url.nullable().optional() })
     .nullable()
     .optional(),
-  statusPersonalizado: statusPersonalizadoSchema.nullable().optional(),
+  customStatus: statusCustomSchema.nullable().optional(),
 
-  aceitaPedidos: z.boolean().optional(),
-  mostraAtividade: z.boolean().optional(),
-  mostraServidoresEmComum: z.boolean().optional(),
-  mostraAmigosEmComum: z.boolean().optional(),
-  permitirDmDeMembros: z.boolean().optional(),
-  filtroDeSpam: z.enum(FILTROS_DE_SPAM).optional(),
+  acceptedRequests: z.boolean().optional(),
+  showsActivity: z.boolean().optional(),
+  showsServersCommon: z.boolean().optional(),
+  showsFriendsCommon: z.boolean().optional(),
+  membersAllowDm: z.boolean().optional(),
+  spamFilter: z.enum(SPAM_FILTERS).optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 
 export const desktopStartInput = z.object({
-  desafio: z.string().min(20).max(200),
+  challenge: z.string().min(20).max(200),
 });
 
 export const desktopExchangeInput = z.object({
-  codigo: z.string().min(20).max(200),
-  verificador: z.string().min(20).max(200),
+  code: z.string().min(20).max(200),
+  verifier: z.string().min(20).max(200),
 });

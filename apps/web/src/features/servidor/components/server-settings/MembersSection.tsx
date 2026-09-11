@@ -43,13 +43,13 @@ interface MembersSectionProps {
   canManageRoles: boolean;
 }
 
-type Ordem = "recentes" | "antigos" | "nome";
+type Order = "recentes" | "antigos" | "nome";
 
-const CASTIGOS = [
-  { minutos: 5, chave: "servidor.membros.castigo5min" },
-  { minutos: 60, chave: "servidor.membros.castigo1h" },
-  { minutos: 60 * 24, chave: "servidor.membros.castigo1d" },
-  { minutos: 60 * 24 * 7, chave: "servidor.membros.castigo1s" },
+const TIMEOUTS = [
+  { minutes: 5, key: "servidor.membros.castigo5min" },
+  { minutes: 60, key: "servidor.membros.castigo1h" },
+  { minutes: 60 * 24, key: "servidor.membros.castigo1d" },
+  { minutes: 60 * 24 * 7, key: "servidor.membros.castigo1s" },
 ];
 
 export const MembersSection: React.FC<MembersSectionProps> = ({
@@ -65,22 +65,22 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
   const { t } = useTranslation();
   const confirm = useConfirm();
   const removeMember = useRemoveMember();
-  const banir = useBanMember(guild.id);
-  const castigar = useTimeoutMember(guild.id);
+  const ban = useBanMember(guild.id);
+  const timeout = useTimeoutMember(guild.id);
   const setRoles = useSetMemberRoles(guild.id);
 
-  const [busca, setBusca] = useState("");
-  const [ordem, setOrdem] = useState<Ordem>("recentes");
+  const [search, setSearch] = useState("");
+  const [order, setOrder] = useState<Order>("recentes");
 
-  const nomeDe = (member: GuildMember) =>
+  const name = (member: GuildMember) =>
     member.nickname ?? member.user.displayName;
 
-  const expulsar = async (member: GuildMember) => {
+  const kick = async (member: GuildMember) => {
     const { confirmed } = await confirm({
-      title: t("servidor.membros.expulsarTitulo", { nome: nomeDe(member) }),
+      title: t("servidor.membros.expulsarTitulo", { nome: name(member) }),
       description: (
         <>
-          <strong data-gc="servidor.server-settings.members-section.strong">{nomeDe(member)}</strong>{" "}
+          <strong data-gc="servidor.server-settings.members-section.strong">{name(member)}</strong>{" "}
           {t("servidor.membros.expulsarDescricao", { servidor: guild.name })}
         </>
       ),
@@ -91,12 +91,12 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       removeMember.mutate({ guildId: guild.id, userId: member.user.id });
   };
 
-  const banirMembro = async (member: GuildMember) => {
+  const banMember = async (member: GuildMember) => {
     const { confirmed, text } = await confirm({
-      title: t("servidor.membros.banirTitulo", { nome: nomeDe(member) }),
+      title: t("servidor.membros.banirTitulo", { nome: name(member) }),
       description: (
         <>
-          <strong data-gc="servidor.server-settings.members-section.strong--2">{nomeDe(member)}</strong>{" "}
+          <strong data-gc="servidor.server-settings.members-section.strong--2">{name(member)}</strong>{" "}
           {t("servidor.membros.banirDescricao", { servidor: guild.name })}
         </>
       ),
@@ -108,7 +108,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
     });
 
     if (confirmed) {
-      banir.mutate({
+      ban.mutate({
         guildId: guild.id,
         userId: member.user.id,
         reason: text || null,
@@ -116,27 +116,27 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
     }
   };
 
-  const lista = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+  const list = useMemo(() => {
+    const term = search.trim().toLowerCase();
 
-    const filtrados = termo
+    const filtered = term
       ? members.filter(
           (m) =>
-            m.user.displayName.toLowerCase().includes(termo) ||
-            m.user.username.toLowerCase().includes(termo),
+            m.user.displayName.toLowerCase().includes(term) ||
+            m.user.username.toLowerCase().includes(term),
         )
       : [...members];
 
-    return filtrados.sort((a, b) => {
-      if (ordem === "nome")
+    return filtered.sort((a, b) => {
+      if (order === "nome")
         return a.user.displayName.localeCompare(b.user.displayName);
 
       const tempoA = new Date(a.joinedAt).getTime();
       const tempoB = new Date(b.joinedAt).getTime();
 
-      return ordem === "recentes" ? tempoB - tempoA : tempoA - tempoB;
+      return order === "recentes" ? tempoB - tempoA : tempoA - tempoB;
     });
-  }, [members, busca, ordem]);
+  }, [members, search, order]);
 
   return (
     <div data-gc="servidor.server-settings.members-section.div" className="max-w-4xl pb-10">
@@ -148,8 +148,8 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
         <div data-gc="servidor.server-settings.members-section.div--3" className="flex flex-1 items-center gap-2 rounded bg-surface-0 px-3">
           <Search data-gc="servidor.server-settings.members-section.search" size={16} className="text-ink-faint" />
           <Input data-gc="servidor.server-settings.members-section.input"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder={t("servidor.membros.procurar")}
             className="bg-transparent px-0"
           />
@@ -159,19 +159,19 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
           variant="surface"
           size="sm"
           onClick={() =>
-            setOrdem((atual) =>
-              atual === "recentes"
+            setOrder((current) =>
+              current === "recentes"
                 ? "antigos"
-                : atual === "antigos"
+                : current === "antigos"
                   ? "nome"
                   : "recentes",
             )
           }
         >
           <ArrowUpDown data-gc="servidor.server-settings.members-section.arrow-up-down" size={14} />
-          {ordem === "recentes"
+          {order === "recentes"
             ? "Mais recentes"
-            : ordem === "antigos"
+            : order === "antigos"
               ? "Mais antigos"
               : "Nome"}
         </Button>
@@ -188,13 +188,13 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
         </thead>
 
         <tbody data-gc="servidor.server-settings.members-section.tbody">
-          {lista.map((member) => {
-            const ehDono = member.user.id === guild.ownerId;
-            const euMesmo = member.user.id === currentUserId;
-            const cargos = roles.filter(
+          {list.map((member) => {
+            const isOwner = member.user.id === guild.ownerId;
+            const euSame = member.user.id === currentUserId;
+            const roleList = roles.filter(
               (r) => !r.isEveryone && member.roleIds.includes(r.id),
             );
-            const deCastigo =
+            const fromTimeout =
               member.timeoutUntil && new Date(member.timeoutUntil) > new Date()
                 ? new Date(member.timeoutUntil)
                 : null;
@@ -216,8 +216,8 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                     <div data-gc="servidor.server-settings.members-section.div--5" className="min-w-0">
                       <p data-gc="servidor.server-settings.members-section.p" className="flex items-center gap-1.5 truncate text-sm font-medium">
                         {member.nickname ?? member.user.displayName}
-                        {ehDono && <Crown data-gc="servidor.server-settings.members-section.crown" size={13} className="text-idle" />}
-                        {deCastigo && (
+                        {isOwner && <Crown data-gc="servidor.server-settings.members-section.crown" size={13} className="text-idle" />}
+                        {fromTimeout && (
                           <span data-gc="servidor.server-settings.members-section.span" className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
                             <Clock data-gc="servidor.server-settings.members-section.clock" size={10} /> {t("servidor.membros.deCastigo")}
                           </span>
@@ -238,7 +238,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
 
                 <td data-gc="servidor.server-settings.members-section.td--3" className="py-3">
                   <div data-gc="servidor.server-settings.members-section.div--6" className="flex flex-wrap gap-1">
-                    {cargos.map((role) => (
+                    {roleList.map((role) => (
                       <span data-gc="servidor.server-settings.members-section.span--2"
                         key={role.id}
                         className="flex items-center gap-1 rounded bg-surface-0 px-1.5 py-0.5 text-11 text-ink-muted"
@@ -250,14 +250,14 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {role.name}
                       </span>
                     ))}
-                    {!cargos.length && (
+                    {!roleList.length && (
                       <span data-gc="servidor.server-settings.members-section.span--4" className="text-xs text-ink-faint">—</span>
                     )}
                   </div>
                 </td>
 
                 <td data-gc="servidor.server-settings.members-section.td--4" className="py-3 text-right">
-                  {!ehDono && !euMesmo && (
+                  {!isOwner && !euSame && (
                     <DropdownMenu data-gc="servidor.server-settings.members-section.dropdown-menu">
                       <DropdownMenuTrigger data-gc="servidor.server-settings.members-section.dropdown-menu-trigger" asChild>
                         <button data-gc="servidor.server-settings.members-section.button--2"
@@ -273,7 +273,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                           roles
                             .filter((r) => !r.isEveryone)
                             .map((role) => {
-                              const tem = member.roleIds.includes(role.id);
+                              const has = member.roleIds.includes(role.id);
 
                               return (
                                 <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item"
@@ -283,7 +283,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                     setRoles.mutate({
                                       guildId: guild.id,
                                       userId: member.user.id,
-                                      roleIds: tem
+                                      roleIds: has
                                         ? member.roleIds.filter(
                                             (id) => id !== role.id,
                                           )
@@ -301,7 +301,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                                     />
                                     {role.name}
                                   </span>
-                                  <Checkbox data-gc="servidor.server-settings.members-section.checkbox" readOnly checked={tem} />
+                                  <Checkbox data-gc="servidor.server-settings.members-section.checkbox" readOnly checked={has} />
                                 </DropdownMenuItem>
                               );
                             })}
@@ -309,31 +309,31 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {canTimeout && (
                           <>
                             <DropdownMenuSeparator data-gc="servidor.server-settings.members-section.dropdown-menu-separator" />
-                            {deCastigo ? (
+                            {fromTimeout ? (
                               <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--2"
                                 onSelect={() =>
-                                  castigar.mutate({
+                                  timeout.mutate({
                                     guildId: guild.id,
                                     userId: member.user.id,
-                                    minutos: 0,
+                                    minutes: 0,
                                   })
                                 }
                               >
                                 {t("servidor.membros.tirarCastigo")} <Clock data-gc="servidor.server-settings.members-section.clock--2" size={14} />
                               </DropdownMenuItem>
                             ) : (
-                              CASTIGOS.map((opcao) => (
+                              TIMEOUTS.map((option) => (
                                 <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--3"
-                                  key={opcao.minutos}
+                                  key={option.minutes}
                                   onSelect={() =>
-                                    castigar.mutate({
+                                    timeout.mutate({
                                       guildId: guild.id,
                                       userId: member.user.id,
-                                      minutos: opcao.minutos,
+                                      minutes: option.minutes,
                                     })
                                   }
                                 >
-                                  Castigo de {t(opcao.chave)}
+                                  Castigo de {t(option.key)}
                                 </DropdownMenuItem>
                               ))
                             )}
@@ -345,7 +345,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {canKick && (
                           <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--4"
                             danger
-                            onSelect={() => void expulsar(member)}
+                            onSelect={() => void kick(member)}
                           >
                             {t("servidor.membros.expulsar")} <UserX data-gc="servidor.server-settings.members-section.user-x" size={14} />
                           </DropdownMenuItem>
@@ -354,7 +354,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                         {canBan && (
                           <DropdownMenuItem data-gc="servidor.server-settings.members-section.dropdown-menu-item--5"
                             danger
-                            onSelect={() => void banirMembro(member)}
+                            onSelect={() => void banMember(member)}
                           >
                             {t("servidor.membros.banir")} <Ban data-gc="servidor.server-settings.members-section.ban" size={14} />
                           </DropdownMenuItem>
@@ -369,7 +369,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
         </tbody>
       </table>
 
-      {!lista.length && (
+      {!list.length && (
         <p data-gc="servidor.server-settings.members-section.p--3" className={cn("py-10 text-center text-sm text-ink-faint")}>
           {t("servidor.membros.vazio")}
         </p>

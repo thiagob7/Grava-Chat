@@ -2,56 +2,56 @@ import React, { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 
 import { Tooltip } from "~/components/ui/tooltip";
-import { adivinharLingua } from "~/features/conversa/lib/codigo";
-import { normalizarIdioma, realcar } from "~/features/conversa/lib/realce";
-import { copiarTexto } from "~/lib/copiar";
+import { guessLanguage } from "~/features/conversa/lib/codigo";
+import { normalizeLanguage, highlight } from "~/features/conversa/lib/realce";
+import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
-interface BlocoDeCodigoProps {
-  codigo: string;
-  lingua?: string | null;
+interface CodePropsBlock {
+  code: string;
+  language?: string | null;
   className?: string;
 }
 
-export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
-  codigo,
-  lingua,
+export const CodeBlock: React.FC<CodePropsBlock> = ({
+  code,
+  language,
   className,
 }) => {
   const { t } = useTranslation();
-  const [copiado, setCopiado] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [html, setHtml] = useState<string | null>(null);
-  const relogio = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const clock = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useEffect(() => () => clearTimeout(relogio.current), []);
+  useEffect(() => () => clearTimeout(clock.current), []);
 
   useEffect(() => {
-    let vivo = true;
+    let live = true;
 
-    void realcar(codigo, normalizarIdioma(lingua ?? adivinharLingua(codigo)))
-      .then((realce) => vivo && setHtml(realce.html))
+    void highlight(code, normalizeLanguage(language ?? guessLanguage(code)))
+      .then((highlight) => live && setHtml(highlight.html))
       .catch(() => undefined);
 
     return () => {
-      vivo = false;
+      live = false;
     };
-  }, [codigo, lingua]);
+  }, [code, language]);
 
-  const copiar = async () => {
-    if (!(await copiarTexto(codigo))) return;
+  const copy = async () => {
+    if (!(await copyText(code))) return;
 
-    setCopiado(true);
-    clearTimeout(relogio.current);
-    relogio.current = setTimeout(() => setCopiado(false), 1600);
+    setCopied(true);
+    clearTimeout(clock.current);
+    clock.current = setTimeout(() => setCopied(false), 1600);
   };
 
   return (
     <div data-gc="conversa.bloco-de-codigo.div"
-      {...flxAttr("blocoDeCodigo")}
+      {...flxAttr("codeBlock")}
       className={cn(
-        flxCls("blocoDeCodigo"),
+        flxCls("codeBlock"),
         "relative my-1 overflow-hidden rounded-md border border-line bg-codigo-bloco text-ink",
         className,
       )}
@@ -60,20 +60,20 @@ export const BlocoDeCodigo: React.FC<BlocoDeCodigoProps> = ({
         {html ? (
           <code data-gc="conversa.bloco-de-codigo.code" className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
         ) : (
-          <code data-gc="conversa.bloco-de-codigo.code--2" className="whitespace-pre">{codigo}</code>
+          <code data-gc="conversa.bloco-de-codigo.code--2" className="whitespace-pre">{code}</code>
         )}
       </pre>
 
-      <Tooltip data-gc="conversa.bloco-de-codigo.tooltip" label={t(copiado ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
-        <button data-gc="conversa.bloco-de-codigo.button.copiar"
+      <Tooltip data-gc="conversa.bloco-de-codigo.tooltip" label={t(copied ? "conversa.codigo.copiado" : "conversa.codigo.copiar")}>
+        <button data-gc="conversa.bloco-de-codigo.button.copy"
           type="button"
-          onClick={copiar}
+          onClick={copy}
           aria-label={t(
-            copiado ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
+            copied ? "conversa.codigo.copiadoAria" : "conversa.codigo.copiarAria",
           )}
-          className={cn("absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink", flxCls("acoesDoCodigo"))}
+          className={cn("absolute right-2 top-2 z-[1] flex size-7 items-center justify-center rounded border border-line bg-codigo text-ink-faint transition hover:bg-hover hover:text-ink", flxCls("codeActions"))}
         >
-          {copiado ? <Check data-gc="conversa.bloco-de-codigo.check" size={14} className="text-online" /> : <Copy data-gc="conversa.bloco-de-codigo.copy" size={14} />}
+          {copied ? <Check data-gc="conversa.bloco-de-codigo.check" size={14} className="text-online" /> : <Copy data-gc="conversa.bloco-de-codigo.copy" size={14} />}
         </button>
       </Tooltip>
     </div>

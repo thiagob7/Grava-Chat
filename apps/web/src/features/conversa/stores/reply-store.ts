@@ -1,24 +1,24 @@
 import { create } from "zustand";
 
-export interface AlvoDaResposta {
+export interface ReplyTarget {
   messageId: string;
   channelId: string;
-  autor: string;
-  autorId: string;
+  author: string;
+  authorId: string;
 }
 
 interface ReplyState {
-  alvo: AlvoDaResposta | null;
-  mencionar: boolean;
-  responder: (alvo: AlvoDaResposta) => void;
-  cancelar: () => void;
-  alternarMencao: () => void;
+  target: ReplyTarget | null;
+  mention: boolean;
+  reply: (target: ReplyTarget) => void;
+  cancel: () => void;
+  toggleMention: () => void;
 }
 
 export const useReplyStore = create<ReplyState>((set) => ({
-  alvo: null,
-  mencionar: true,
-  responder: (alvo) => set({ alvo }),
-  cancelar: () => set({ alvo: null }),
-  alternarMencao: () => set((s) => ({ mencionar: !s.mencionar })),
+  target: null,
+  mention: true,
+  reply: (target) => set({ target }),
+  cancel: () => set({ target: null }),
+  toggleMention: () => set((s) => ({ mention: !s.mention })),
 }));

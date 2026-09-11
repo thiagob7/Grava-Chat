@@ -31,7 +31,7 @@ export const sessionRepository = {
       .catch(() => undefined);
   },
 
-  findAtivasForUser(userId: string) {
+  findActiveForUser(userId: string) {
     return prisma.refreshToken.findMany({
       where: {
         userId,

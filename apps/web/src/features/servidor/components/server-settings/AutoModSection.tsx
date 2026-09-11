@@ -30,39 +30,39 @@ interface AutoModSectionProps {
   roles: Role[];
 }
 
-const GATILHOS = [
+const TRIGGERS = [
   {
-    valor: "WORDS" as const,
-    icone: TextCursorInput,
-    titulo: "servidor.automod.palavras.titulo",
-    descricao: "servidor.automod.palavras.descricao",
+    value: "WORDS" as const,
+    icon: TextCursorInput,
+    title: "servidor.automod.palavras.titulo",
+    description: "servidor.automod.palavras.descricao",
   },
   {
-    valor: "MENTION_SPAM" as const,
-    icone: AtSign,
-    titulo: "servidor.automod.mencoes.titulo",
-    descricao: "servidor.automod.mencoes.descricao",
+    value: "MENTION_SPAM" as const,
+    icon: AtSign,
+    title: "servidor.automod.mencoes.titulo",
+    description: "servidor.automod.mencoes.descricao",
   },
   {
-    valor: "LINKS" as const,
-    icone: Link2,
-    titulo: "servidor.automod.links.titulo",
-    descricao: "servidor.automod.links.descricao",
+    value: "LINKS" as const,
+    icon: Link2,
+    title: "servidor.automod.links.titulo",
+    description: "servidor.automod.links.descricao",
   },
 ];
 
-const novaRegra = (
+const newRule = (
   trigger: AutoModRuleModel["trigger"],
 ): Omit<AutoModRuleModel, "id" | "guildId"> => ({
-  name: i18next.t(GATILHOS.find((g) => g.valor === trigger)!.titulo),
+  name: i18next.t(TRIGGERS.find((g) => g.value === trigger)!.title),
   enabled: true,
   trigger,
-  palavras: [],
-  limiteMencoes: trigger === "MENTION_SPAM" ? 5 : null,
-  acoes: ["BLOCK"],
+  words: [],
+  limitMentions: trigger === "MENTION_SPAM" ? 5 : null,
+  actions: ["BLOCK"],
   alertChannelId: null,
   timeoutSeconds: null,
-  cargosIsentos: [],
+  rolesExempt: [],
 });
 
 export const AutoModSection: React.FC<AutoModSectionProps> = ({
@@ -71,13 +71,13 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
   roles,
 }) => {
   const { t } = useTranslation();
-  const { data: regras = [] } = useFindAutoModRules(guildId);
-  const salvar = useSaveAutoModRule(guildId);
+  const { data: rules = [] } = useFindAutoModRules(guildId);
+  const save = useSaveAutoModRule(guildId);
   const confirm = useConfirm();
-  const apagar = useDeleteAutoModRule(guildId);
-  const [editando, setEditando] = useState<AutoModRuleModel | null>(null);
+  const doDelete = useDeleteAutoModRule(guildId);
+  const [editing, setEditing] = useState<AutoModRuleModel | null>(null);
 
-  const canaisDeTexto = channels.filter((c) => c.type === "TEXT");
+  const textChannels = channels.filter((c) => c.type === "TEXT");
 
   return (
     <div data-gc="servidor.server-settings.auto-mod-section.div" className="max-w-2xl pb-10">
@@ -87,33 +87,33 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
       </p>
 
       <section data-gc="servidor.server-settings.auto-mod-section.section" className="mt-6 space-y-3">
-        {GATILHOS.map((gatilho) => {
-          const existente = regras.find((r) => r.trigger === gatilho.valor);
+        {TRIGGERS.map((trigger) => {
+          const existing = rules.find((r) => r.trigger === trigger.value);
 
           return (
-            <div data-gc="servidor.server-settings.auto-mod-section.div--2" key={gatilho.valor} className="rounded-lg bg-surface-1 p-4">
+            <div data-gc="servidor.server-settings.auto-mod-section.div--2" key={trigger.value} className="rounded-lg bg-surface-1 p-4">
               <div data-gc="servidor.server-settings.auto-mod-section.div--3" className="flex items-start gap-3">
-                <gatilho.icone data-gc="servidor.server-settings.auto-mod-section.gatilhoicone"
+                <trigger.icon data-gc="servidor.server-settings.auto-mod-section.triggericon"
                   size={20}
                   className="mt-0.5 shrink-0 text-ink-faint"
                 />
 
                 <div data-gc="servidor.server-settings.auto-mod-section.div--4" className="min-w-0 flex-1">
-                  <p data-gc="servidor.server-settings.auto-mod-section.p--2" className="text-sm font-semibold">{t(gatilho.titulo)}</p>
+                  <p data-gc="servidor.server-settings.auto-mod-section.p--2" className="text-sm font-semibold">{t(trigger.title)}</p>
                   <p data-gc="servidor.server-settings.auto-mod-section.p--3" className="mt-0.5 text-xs text-ink-faint">
-                    {t(gatilho.descricao)}
+                    {t(trigger.description)}
                   </p>
 
-                  {existente && (
+                  {existing && (
                     <div data-gc="servidor.server-settings.auto-mod-section.div--5" className="mt-2 flex flex-wrap gap-1">
-                      {existente.acoes.map((acao) => (
+                      {existing.actions.map((action) => (
                         <span data-gc="servidor.server-settings.auto-mod-section.span"
-                          key={acao}
+                          key={action}
                           className="rounded bg-surface-0 px-1.5 py-0.5 text-10 uppercase text-ink-faint"
                         >
-                          {acao === "BLOCK"
+                          {action === "BLOCK"
                             ? "bloquear mensagem"
-                            : acao === "ALERT"
+                            : action === "ALERT"
                               ? "enviar alerta"
                               : "castigo"}
                         </span>
@@ -122,15 +122,15 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                   )}
                 </div>
 
-                {existente ? (
+                {existing ? (
                   <div data-gc="servidor.server-settings.auto-mod-section.div--6" className="flex shrink-0 items-center gap-2">
                     <Switch data-gc="servidor.server-settings.auto-mod-section.switch"
-                      checked={existente.enabled}
+                      checked={existing.enabled}
                       onCheckedChange={(v) =>
-                        salvar.mutate({
-                          ...existente,
+                        save.mutate({
+                          ...existing,
                           guildId,
-                          ruleId: existente.id,
+                          ruleId: existing.id,
                           enabled: v,
                         })
                       }
@@ -138,7 +138,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                     <Button data-gc="servidor.server-settings.auto-mod-section.button"
                       variant="surface"
                       size="sm"
-                      onClick={() => setEditando(existente)}
+                      onClick={() => setEditing(existing)}
                     >
                       {t("servidor.automod.definir")}
                     </Button>
@@ -152,7 +152,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                         }).then(
                           ({ confirmed }) =>
                             confirmed &&
-                            apagar.mutate({ guildId, ruleId: existente.id }),
+                            doDelete.mutate({ guildId, ruleId: existing.id }),
                         )
                       }
                       title={t("servidor.automod.apagar")}
@@ -165,8 +165,8 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                   <Button data-gc="servidor.server-settings.auto-mod-section.button--3"
                     size="sm"
                     onClick={() =>
-                      setEditando({
-                        ...novaRegra(gatilho.valor),
+                      setEditing({
+                        ...newRule(trigger.value),
                         id: "",
                         guildId,
                       })
@@ -181,17 +181,17 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
         })}
       </section>
 
-      {editando && (
-        <EditorDeRegra data-gc="servidor.server-settings.auto-mod-section.editor-de-regra"
-          regra={editando}
+      {editing && (
+        <RuleEditor data-gc="servidor.server-settings.auto-mod-section.rule-editor"
+          rule={editing}
           guildId={guildId}
-          canais={canaisDeTexto}
+          channels={textChannels}
           roles={roles}
-          onFechar={() => setEditando(null)}
-          onSalvar={(regra) =>
-            salvar.mutate(
-              { ...regra, guildId, ruleId: regra.id || undefined },
-              { onSuccess: () => setEditando(null) },
+          onClose={() => setEditing(null)}
+          onSave={(rule) =>
+            save.mutate(
+              { ...rule, guildId, ruleId: rule.id || undefined },
+              { onSuccess: () => setEditing(null) },
             )
           }
         />
@@ -201,37 +201,37 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
 };
 
 interface EditorProps {
-  regra: AutoModRuleModel;
+  rule: AutoModRuleModel;
   guildId: string;
-  canais: Channel[];
+  channels: Channel[];
   roles: Role[];
-  onFechar: () => void;
-  onSalvar: (regra: AutoModRuleModel) => void;
+  onClose: () => void;
+  onSave: (rule: AutoModRuleModel) => void;
 }
 
-const EditorDeRegra: React.FC<EditorProps> = ({
-  regra,
-  canais,
+const RuleEditor: React.FC<EditorProps> = ({
+  rule,
+  channels,
   roles,
-  onFechar,
-  onSalvar,
+  onClose,
+  onSave,
 }) => {
   const { t } = useTranslation();
-  const [rascunho, setRascunho] = useState(regra);
-  const [palavra, setPalavra] = useState("");
+  const [draft, setDraft] = useState(rule);
+  const [word, setWord] = useState("");
 
-  const alternarAcao = (acao: AutoModRuleModel["acoes"][number]) =>
-    setRascunho((atual) => ({
-      ...atual,
-      acoes: atual.acoes.includes(acao)
-        ? atual.acoes.filter((a) => a !== acao)
-        : [...atual.acoes, acao],
+  const toggleAction = (action: AutoModRuleModel["actions"][number]) =>
+    setDraft((current) => ({
+      ...current,
+      actions: current.actions.includes(action)
+        ? current.actions.filter((a) => a !== action)
+        : [...current.actions, action],
     }));
 
   return (
     <div data-gc="servidor.server-settings.auto-mod-section.div--7" className="mt-6 rounded-lg border border-brand/40 bg-surface-1 p-5">
       <h3 data-gc="servidor.server-settings.auto-mod-section.h3" className="flex items-center gap-2 font-semibold">
-        <ShieldAlert data-gc="servidor.server-settings.auto-mod-section.shield-alert" size={18} /> {rascunho.name}
+        <ShieldAlert data-gc="servidor.server-settings.auto-mod-section.shield-alert" size={18} /> {draft.name}
       </h3>
 
       <div data-gc="servidor.server-settings.auto-mod-section.div--8" className="mt-4 space-y-4">
@@ -239,47 +239,47 @@ const EditorDeRegra: React.FC<EditorProps> = ({
           <Label data-gc="servidor.server-settings.auto-mod-section.label" htmlFor="regra-nome">{t("servidor.automod.nomeDaRegra")}</Label>
           <Input data-gc="servidor.server-settings.auto-mod-section.input"
             id="regra-nome"
-            value={rascunho.name}
+            value={draft.name}
             maxLength={48}
-            onChange={(e) => setRascunho({ ...rascunho, name: e.target.value })}
+            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
           />
         </div>
 
-        {rascunho.trigger === "WORDS" && (
+        {draft.trigger === "WORDS" && (
           <div data-gc="servidor.server-settings.auto-mod-section.div--10">
             <Label data-gc="servidor.server-settings.auto-mod-section.label--2" htmlFor="regra-palavra">{t("servidor.automod.bloqueadas")}</Label>
             <div data-gc="servidor.server-settings.auto-mod-section.div--11" className="flex gap-2">
               <Input data-gc="servidor.server-settings.auto-mod-section.input--2"
                 id="regra-palavra"
-                value={palavra}
+                value={word}
                 placeholder={t("servidor.automod.digiteEnter")}
-                onChange={(e) => setPalavra(e.target.value)}
+                onChange={(e) => setWord(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key !== "Enter" || !palavra.trim()) return;
+                  if (e.key !== "Enter" || !word.trim()) return;
                   e.preventDefault();
 
-                  setRascunho((atual) => ({
-                    ...atual,
-                    palavras: [
+                  setDraft((current) => ({
+                    ...current,
+                    words: [
                       ...new Set([
-                        ...atual.palavras,
-                        palavra.trim().toLowerCase(),
+                        ...current.words,
+                        word.trim().toLowerCase(),
                       ]),
                     ],
                   }));
-                  setPalavra("");
+                  setWord("");
                 }}
               />
             </div>
 
             <div data-gc="servidor.server-settings.auto-mod-section.div--12" className="mt-2 flex flex-wrap gap-1.5">
-              {rascunho.palavras.map((p) => (
+              {draft.words.map((p) => (
                 <button data-gc="servidor.server-settings.auto-mod-section.button--4"
                   key={p}
                   onClick={() =>
-                    setRascunho((atual) => ({
-                      ...atual,
-                      palavras: atual.palavras.filter((x) => x !== p),
+                    setDraft((current) => ({
+                      ...current,
+                      words: current.words.filter((x) => x !== p),
                     }))
                   }
                   className="rounded bg-surface-0 px-2 py-1 text-xs text-ink-muted transition hover:text-danger"
@@ -295,7 +295,7 @@ const EditorDeRegra: React.FC<EditorProps> = ({
           </div>
         )}
 
-        {rascunho.trigger === "MENTION_SPAM" && (
+        {draft.trigger === "MENTION_SPAM" && (
           <div data-gc="servidor.server-settings.auto-mod-section.div--13">
             <Label data-gc="servidor.server-settings.auto-mod-section.label--3" htmlFor="regra-mencoes">
               {t("servidor.automod.aPartirDe")}
@@ -305,11 +305,11 @@ const EditorDeRegra: React.FC<EditorProps> = ({
               type="number"
               min={2}
               max={50}
-              value={rascunho.limiteMencoes ?? 5}
+              value={draft.limitMentions ?? 5}
               onChange={(e) =>
-                setRascunho({
-                  ...rascunho,
-                  limiteMencoes: Number(e.target.value),
+                setDraft({
+                  ...draft,
+                  limitMentions: Number(e.target.value),
                 })
               }
             />
@@ -325,47 +325,47 @@ const EditorDeRegra: React.FC<EditorProps> = ({
                 ["ALERT", "Avisar num canal"],
                 ["TIMEOUT", "Deixar de castigo"],
               ] as const
-            ).map(([acao, rotulo]) => (
+            ).map(([action, label]) => (
               <label data-gc="servidor.server-settings.auto-mod-section.label--5"
-                key={acao}
+                key={action}
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded px-3 py-2 transition",
-                  rascunho.acoes.includes(acao)
+                  draft.actions.includes(action)
                     ? "bg-surface-4"
                     : "bg-surface-0 hover:bg-surface-4/60",
                 )}
               >
                 <Checkbox data-gc="servidor.server-settings.auto-mod-section.checkbox"
-                  checked={rascunho.acoes.includes(acao)}
-                  onChange={() => alternarAcao(acao)}
+                  checked={draft.actions.includes(action)}
+                  onChange={() => toggleAction(action)}
                 />
-                <span data-gc="servidor.server-settings.auto-mod-section.span--2" className="text-sm">{rotulo}</span>
+                <span data-gc="servidor.server-settings.auto-mod-section.span--2" className="text-sm">{label}</span>
               </label>
             ))}
           </div>
         </div>
 
-        {rascunho.acoes.includes("ALERT") && (
+        {draft.actions.includes("ALERT") && (
           <div data-gc="servidor.server-settings.auto-mod-section.div--16">
             <Label data-gc="servidor.server-settings.auto-mod-section.label--6" htmlFor="regra-canal">{t("servidor.automod.canalDoAlerta")}</Label>
             <SelectField data-gc="servidor.server-settings.auto-mod-section.select-field"
               id="regra-canal"
-              value={rascunho.alertChannelId ?? ""}
+              value={draft.alertChannelId ?? ""}
               onSelect={(id) =>
-                setRascunho({ ...rascunho, alertChannelId: id || null })
+                setDraft({ ...draft, alertChannelId: id || null })
               }
               options={[
                 { value: "", label: t("servidor.automod.escolhaCanal") },
-                ...canais.map((canal) => ({
-                  value: canal.id,
-                  label: `#${canal.name}`,
+                ...channels.map((channel) => ({
+                  value: channel.id,
+                  label: `#${channel.name}`,
                 })),
               ]}
             />
           </div>
         )}
 
-        {rascunho.acoes.includes("TIMEOUT") && (
+        {draft.actions.includes("TIMEOUT") && (
           <div data-gc="servidor.server-settings.auto-mod-section.div--17">
             <Label data-gc="servidor.server-settings.auto-mod-section.label--7" htmlFor="regra-castigo">{t("servidor.automod.castigo")}</Label>
             <Input data-gc="servidor.server-settings.auto-mod-section.input--4"
@@ -373,10 +373,10 @@ const EditorDeRegra: React.FC<EditorProps> = ({
               type="number"
               min={1}
               max={10080}
-              value={(rascunho.timeoutSeconds ?? 300) / 60}
+              value={(draft.timeoutSeconds ?? 300) / 60}
               onChange={(e) =>
-                setRascunho({
-                  ...rascunho,
+                setDraft({
+                  ...draft,
                   timeoutSeconds: Number(e.target.value) * 60,
                 })
               }
@@ -390,22 +390,22 @@ const EditorDeRegra: React.FC<EditorProps> = ({
             {roles
               .filter((r) => !r.isEveryone)
               .map((role) => {
-                const isento = rascunho.cargosIsentos.includes(role.id);
+                const exempt = draft.rolesExempt.includes(role.id);
 
                 return (
                   <button data-gc="servidor.server-settings.auto-mod-section.button--5"
                     key={role.id}
                     onClick={() =>
-                      setRascunho((atual) => ({
-                        ...atual,
-                        cargosIsentos: isento
-                          ? atual.cargosIsentos.filter((id) => id !== role.id)
-                          : [...atual.cargosIsentos, role.id],
+                      setDraft((current) => ({
+                        ...current,
+                        rolesExempt: exempt
+                          ? current.rolesExempt.filter((id) => id !== role.id)
+                          : [...current.rolesExempt, role.id],
                       }))
                     }
                     className={cn(
                       "rounded px-2 py-1 text-xs transition",
-                      isento
+                      exempt
                         ? "bg-brand text-sobre-marca"
                         : "bg-surface-0 text-ink-muted hover:text-ink",
                     )}
@@ -428,12 +428,12 @@ const EditorDeRegra: React.FC<EditorProps> = ({
         <Button data-gc="servidor.server-settings.auto-mod-section.button--6"
           variant="success"
           size="sm"
-          disabled={!rascunho.acoes.length}
-          onClick={() => onSalvar(rascunho)}
+          disabled={!draft.actions.length}
+          onClick={() => onSave(draft)}
         >
           {t("servidor.automod.salvarRegra")}
         </Button>
-        <Button data-gc="servidor.server-settings.auto-mod-section.button.on-fechar" variant="ghost" size="sm" onClick={onFechar}>
+        <Button data-gc="servidor.server-settings.auto-mod-section.button.on-close" variant="ghost" size="sm" onClick={onClose}>
           {t("comum.cancelar")}
         </Button>
       </div>

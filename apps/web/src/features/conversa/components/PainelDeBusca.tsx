@@ -2,92 +2,92 @@ import React from "react";
 import { Search, X } from "lucide-react";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { useBuscarMensagens } from "~/@core/application/queries/message/use-buscar-mensagens";
-import type { EscopoDeBusca, FiltrosDaBusca } from "~/@core/application/requests/message/buscar-mensagens";
-import { interpretarBusca, temOQueBuscar } from "~/features/conversa/lib/busca";
+import { useSearchMessages } from "~/@core/application/queries/message/use-buscar-mensagens";
+import type { SearchScope, SearchFilters } from "~/@core/application/requests/message/buscar-mensagens";
+import { parseSearch, hasSearch } from "~/features/conversa/lib/busca";
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
-import type { ResultadoDaBusca } from "~/@core/application/requests/message/buscar-mensagens";
+import type { SearchResult } from "~/@core/application/requests/message/buscar-mensagens";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserName } from "~/features/perfil/components/UserName";
-import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
-import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
+import { useCharms } from "~/features/perfil/hooks/use-enfeites";
+import { useMentions } from "~/features/conversa/hooks/use-mencoes";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
 
-interface PainelDeBuscaProps {
+interface SearchPropsPanel {
   guildId?: string;
-  canalId?: string;
-  termo: string;
-  escopo?: EscopoDeBusca;
+  channelId?: string;
+  term: string;
+  scope?: SearchScope;
   currentUserId?: string;
-  onFechar: () => void;
+  onClose: () => void;
   onIr: (channelId: string, messageId: string) => void;
 }
 
-export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
+export const SearchPanel: React.FC<SearchPropsPanel> = ({
   guildId,
-  canalId,
-  termo,
-  escopo,
+  channelId,
+  term,
+  scope,
   currentUserId,
-  onFechar,
+  onClose,
   onIr,
 }) => {
   const { t } = useTranslation();
   const { data: detail } = useFindGuild(guildId);
 
-  const lida = interpretarBusca(termo);
-  const membroPorNome = (nome?: string) => {
-    if (!nome) return undefined;
-    const baixo = nome.toLowerCase();
+  const read = parseSearch(term);
+  const memberByName = (name?: string) => {
+    if (!name) return undefined;
+    const down = name.toLowerCase();
     return detail?.members.find(
-      (m) => m.user.username.toLowerCase() === baixo || m.user.displayName.toLowerCase() === baixo,
+      (m) => m.user.username.toLowerCase() === down || m.user.displayName.toLowerCase() === down,
     )?.user.id;
   };
-  const canalPorNome = (nome?: string) =>
-    nome ? detail?.channels.find((c) => c.name.toLowerCase() === nome.toLowerCase())?.id : undefined;
+  const channelByName = (name?: string) =>
+    name ? detail?.channels.find((c) => c.name.toLowerCase() === name.toLowerCase())?.id : undefined;
 
-  const filtros: FiltrosDaBusca = {
-    termo: lida.termo,
-    escopo,
+  const filters: SearchFilters = {
+    term: read.term,
+    scope,
     guildId,
-    canalId: canalPorNome(lida.in) ?? canalId,
-    autorId: membroPorNome(lida.from),
-    mencionaId: membroPorNome(lida.mentions),
-    tem: lida.has,
-    depois: lida.after,
-    antes: lida.before,
-    em: lida.on,
-    fixada: lida.pinned,
-    tipoDeAutor: lida.authorType,
-    ordem: lida.sort,
+    channelId: channelByName(read.in) ?? channelId,
+    authorId: memberByName(read.from),
+    mentionsId: memberByName(read.mentions),
+    has: read.has,
+    after: read.after,
+    before: read.before,
+    em: read.on,
+    pinned: read.pinned,
+    authorKind: read.authorType,
+    order: read.sort,
   };
 
-  const busca = useBuscarMensagens(filtros, temOQueBuscar(lida));
-  const { data: expressoes } = useFindExpressions(guildId);
-  const enfeitesDe = useEnfeites(guildId);
-  const mencoes = useMencoes(guildId, false, currentUserId);
+  const search = useSearchMessages(filters, hasSearch(read));
+  const { data: expressions } = useFindExpressions(guildId);
+  const charms = useCharms(guildId);
+  const mentions = useMentions(guildId, false, currentUserId);
 
-  const resultados = busca.data?.pages.flatMap((p) => p.messages) ?? [];
-  const total = resultados.length;
+  const results = search.data?.pages.flatMap((p) => p.messages) ?? [];
+  const total = results.length;
 
   return (
-    <aside data-gc="conversa.painel-de-busca.aside" {...flx("painelDeBusca", "hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex")}>
+    <aside data-gc="conversa.painel-de-busca.aside" {...flx("searchPanel", "hidden w-96 shrink-0 flex-col border-l border-divisor bg-surface-1 lg:flex")}>
       <header data-gc="conversa.painel-de-busca.header" className="flex h-12 shrink-0 items-center gap-2 border-b border-divisor px-4">
         <Search data-gc="conversa.painel-de-busca.search" size={16} className="shrink-0 text-ink-faint" />
         <h2 data-gc="conversa.painel-de-busca.h2" className="min-w-0 flex-1 truncate text-sm font-semibold">
-          {busca.isLoading
+          {search.isLoading
             ? t("conversa.busca.procurando")
             : 
               t(total === 1 ? "conversa.busca.resultado" : "conversa.busca.resultados", {
-                quantos: `${total}${busca.hasNextPage ? "+" : ""}`,
+                quantos: `${total}${search.hasNextPage ? "+" : ""}`,
               })}
         </h2>
-        <button data-gc="conversa.painel-de-busca.button.on-fechar"
-          onClick={onFechar}
+        <button data-gc="conversa.painel-de-busca.button.on-close"
+          onClick={onClose}
           aria-label={t("conversa.busca.fechar")}
           className="text-ink-muted transition hover:text-ink"
         >
@@ -95,10 +95,10 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
         </button>
       </header>
 
-      <div data-gc="conversa.painel-de-busca.div" {...flx("resultadosDaBusca", "min-h-0 flex-1 overflow-y-auto p-3")}>
-        {!busca.isLoading && !total && (
+      <div data-gc="conversa.painel-de-busca.div" {...flx("searchResults", "min-h-0 flex-1 overflow-y-auto p-3")}>
+        {!search.isLoading && !total && (
           <p data-gc="conversa.painel-de-busca.p" className="px-2 py-8 text-center text-sm text-ink-muted">
-            {t("conversa.busca.nadaCom", { termo: lida.termo || termo })}
+            {t("conversa.busca.nadaCom", { termo: read.term || term })}
             <span data-gc="conversa.painel-de-busca.span" className="mt-1 block text-xs text-ink-faint">
               {t("conversa.busca.soOsQuePodeLer")}
             </span>
@@ -106,26 +106,26 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
         )}
 
         <div data-gc="conversa.painel-de-busca.div--2" className="flex flex-col gap-2">
-          {resultados.map((resultado) => (
-            <Resultado data-gc="conversa.painel-de-busca.resultado"
-              key={resultado.id}
-              resultado={resultado}
-              termo={lida.termo}
-              emojis={expressoes.emojis}
-              enfeites={enfeitesDe(resultado.author.id)}
-              mencoes={mencoes}
-              onIr={() => onIr(resultado.channelId, resultado.id)}
+          {results.map((result) => (
+            <Result data-gc="conversa.painel-de-busca.result"
+              key={result.id}
+              result={result}
+              term={read.term}
+              emojis={expressions.emojis}
+              charms={charms(result.author.id)}
+              mentions={mentions}
+              onIr={() => onIr(result.channelId, result.id)}
             />
           ))}
         </div>
 
-        {busca.hasNextPage && (
+        {search.hasNextPage && (
           <button data-gc="conversa.painel-de-busca.button"
-            onClick={() => void busca.fetchNextPage()}
-            disabled={busca.isFetchingNextPage}
+            onClick={() => void search.fetchNextPage()}
+            disabled={search.isFetchingNextPage}
             className="mt-3 w-full rounded bg-surface-3 py-2 text-xs text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
           >
-            {busca.isFetchingNextPage ? "Carregando…" : "Mostrar mais"}
+            {search.isFetchingNextPage ? "Carregando…" : "Mostrar mais"}
           </button>
         )}
       </div>
@@ -133,61 +133,61 @@ export const PainelDeBusca: React.FC<PainelDeBuscaProps> = ({
   );
 };
 
-const Resultado: React.FC<{
-  resultado: ResultadoDaBusca;
-  termo: string;
+const Result: React.FC<{
+  result: SearchResult;
+  term: string;
   emojis: GuildEmoji[];
-  enfeites: ReturnType<ReturnType<typeof useEnfeites>>;
-  mencoes: ReturnType<typeof useMencoes>;
+  charms: ReturnType<ReturnType<typeof useCharms>>;
+  mentions: ReturnType<typeof useMentions>;
   onIr: () => void;
-}> = ({ resultado, termo, emojis, enfeites, mencoes, onIr }) => (
+}> = ({ result, term, emojis, charms, mentions, onIr }) => (
   <button data-gc="conversa.painel-de-busca.button.on-ir"
     onClick={onIr}
-    {...flx("itemDoResultado", "block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3")}
+    {...flx("resultItem", "block w-full rounded border border-transparent bg-surface-2 p-3 text-left transition hover:border-line hover:bg-surface-3")}
   >
     <p data-gc="conversa.painel-de-busca.p--2" className="mb-1.5 flex items-center gap-1 text-xs text-ink-faint">
       <span data-gc="conversa.painel-de-busca.span--2" className="min-w-0 truncate">
-        {resultado.channelName ? `#${resultado.channelName}` : "Conversa"}
+        {result.channelName ? `#${result.channelName}` : "Conversa"}
       </span>
       <span data-gc="conversa.painel-de-busca.span--3" aria-hidden>·</span>
-      <span data-gc="conversa.painel-de-busca.span--4" className="shrink-0">{formatTimestamp(resultado.createdAt)}</span>
+      <span data-gc="conversa.painel-de-busca.span--4" className="shrink-0">{formatTimestamp(result.createdAt)}</span>
     </p>
 
     <div data-gc="conversa.painel-de-busca.div--3" className="flex gap-2">
       <Avatar data-gc="conversa.painel-de-busca.avatar"
-        id={resultado.author.id}
-        name={resultado.author.displayName}
-        url={resultado.author.avatarUrl}
+        id={result.author.id}
+        name={result.author.displayName}
+        url={result.author.avatarUrl}
         size={24}
       />
 
       <div data-gc="conversa.painel-de-busca.div--4" className="min-w-0 flex-1">
         <UserName data-gc="conversa.painel-de-busca.user-name"
-          nome={resultado.author.displayName}
-          perfil={enfeites?.perfil}
-          corDoCargo={enfeites?.corDoCargo}
-          ehBot={resultado.author.isBot}
-          ehSistema={resultado.author.sistema}
+          name={result.author.displayName}
+          profile={charms?.profile}
+          roleColor={charms?.roleColor}
+          isBot={result.author.isBot}
+          isSystem={result.author.system}
           className="text-sm font-medium"
         />
 
         <p data-gc="conversa.painel-de-busca.p--3" className="mt-0.5 line-clamp-4 whitespace-pre-wrap break-words text-sm text-ink-muted">
-          <MessageContent data-gc="conversa.painel-de-busca.message-content" content={trechoEmVolta(resultado.content, termo)} emojis={emojis} mencoes={mencoes} />
+          <MessageContent data-gc="conversa.painel-de-busca.message-content" content={snippetBack(result.content, term)} emojis={emojis} mentions={mentions} />
         </p>
       </div>
     </div>
   </button>
 );
 
-const MARGEM = 90;
+const MARGIN = 90;
 
-function trechoEmVolta(conteudo: string, termo: string) {
-  if (!termo) return conteudo;
-  const onde = conteudo.toLowerCase().indexOf(termo.toLowerCase());
-  if (onde < 0 || conteudo.length <= MARGEM * 2) return conteudo;
+function snippetBack(content: string, term: string) {
+  if (!term) return content;
+  const where = content.toLowerCase().indexOf(term.toLowerCase());
+  if (where < 0 || content.length <= MARGIN * 2) return content;
 
-  const inicio = Math.max(0, onde - MARGEM);
-  const fim = Math.min(conteudo.length, onde + termo.length + MARGEM);
+  const start = Math.max(0, where - MARGIN);
+  const end = Math.min(content.length, where + term.length + MARGIN);
 
-  return `${inicio > 0 ? "…" : ""}${conteudo.slice(inicio, fim)}${fim < conteudo.length ? "…" : ""}`;
+  return `${start > 0 ? "…" : ""}${content.slice(start, end)}${end < content.length ? "…" : ""}`;
 }

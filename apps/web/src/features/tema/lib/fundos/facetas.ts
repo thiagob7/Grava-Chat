@@ -1,4 +1,4 @@
-import { corDoTema, entre, tinta } from "~/features/tema/lib/fundos/comum";
+import { themeColor, between, tinta } from "~/features/tema/lib/fundos/comum";
 import type { Motor } from "~/features/tema/lib/fundos/tipos";
 
 /*
@@ -13,76 +13,76 @@ import type { Motor } from "~/features/tema/lib/fundos/tipos";
   polígono irregular preso à semente. Fica indistinguível a essa opacidade e
   custa uma fração do preço.
 */
-interface Caco {
+interface Shard {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  raio: number;
-  lados: number;
+  radius: number;
+  sides: number;
   giro: number;
-  volta: number;
-  cor: number[];
+  back: number;
+  color: number[];
   alfa: number;
 }
 
-export function facetas(): Motor {
-  let cacos: Caco[] = [];
-  let relogio = 0;
+export function facets(): Motor {
+  let shards: Shard[] = [];
+  let clock = 0;
 
-  const paleta = [
-    corDoTema("--color-brand", [150, 190, 255]),
-    corDoTema("--color-link", [120, 220, 230]),
-    corDoTema("--color-surface-3", [70, 80, 110]),
+  const palette = [
+    themeColor("--color-brand", [150, 190, 255]),
+    themeColor("--color-link", [120, 220, 230]),
+    themeColor("--color-surface-3", [70, 80, 110]),
   ];
 
-  const semear = (largura: number, altura: number) => {
-    const quantos = Math.max(14, Math.round((largura * altura) / 42000));
+  const seed = (width: number, height: number) => {
+    const count = Math.max(14, Math.round((width * height) / 42000));
 
-    cacos = Array.from({ length: quantos }, (_, i) => ({
-      x: entre(0, largura),
-      y: entre(0, altura),
-      vx: entre(-7, 7),
-      vy: entre(-7, 7),
-      raio: entre(70, 190),
-      lados: Math.round(entre(3, 6)),
-      giro: entre(0, Math.PI * 2),
-      volta: entre(-0.05, 0.05),
-      cor: paleta[i % paleta.length]!,
-      alfa: entre(0.04, 0.11),
+    shards = Array.from({ length: count }, (_, i) => ({
+      x: between(0, width),
+      y: between(0, height),
+      vx: between(-7, 7),
+      vy: between(-7, 7),
+      radius: between(70, 190),
+      sides: Math.round(between(3, 6)),
+      giro: between(0, Math.PI * 2),
+      back: between(-0.05, 0.05),
+      color: palette[i % palette.length]!,
+      alfa: between(0.04, 0.11),
     }));
   };
 
   return {
-    redimensionou: (palco) => semear(palco.largura, palco.altura),
+    resized: (stage) => seed(stage.width, stage.height),
 
-    quadro: ({ contexto: ctx, largura, altura }, passo) => {
-      if (!cacos.length) semear(largura, altura);
+    frame: ({ context: ctx, width, height }, step) => {
+      if (!shards.length) seed(width, height);
 
-      ctx.clearRect(0, 0, largura, altura);
-      relogio += passo;
+      ctx.clearRect(0, 0, width, height);
+      clock += step;
       ctx.globalCompositeOperation = "lighter";
 
-      for (const c of cacos) {
-        c.x += c.vx * passo;
-        c.y += c.vy * passo;
-        c.giro += c.volta * passo;
+      for (const c of shards) {
+        c.x += c.vx * step;
+        c.y += c.vy * step;
+        c.giro += c.back * step;
 
-        if (c.x < -c.raio) c.x = largura + c.raio;
-        if (c.x > largura + c.raio) c.x = -c.raio;
-        if (c.y < -c.raio) c.y = altura + c.raio;
-        if (c.y > altura + c.raio) c.y = -c.raio;
+        if (c.x < -c.radius) c.x = width + c.radius;
+        if (c.x > width + c.radius) c.x = -c.radius;
+        if (c.y < -c.radius) c.y = height + c.radius;
+        if (c.y > height + c.radius) c.y = -c.radius;
 
         ctx.beginPath();
 
-        for (let i = 0; i < c.lados; i++) {
-          const a = c.giro + (Math.PI * 2 * i) / c.lados;
+        for (let i = 0; i < c.sides; i++) {
+          const a = c.giro + (Math.PI * 2 * i) / c.sides;
           /*
             O raio de cada vértice oscila num compasso próprio. É o que
             impede o caco de virar um polígono regular girando, que é o
             desenho que denuncia efeito gerado.
           */
-          const r = c.raio * (0.62 + 0.38 * Math.abs(Math.sin(relogio * 0.13 + i * 2.1 + c.giro)));
+          const r = c.radius * (0.62 + 0.38 * Math.abs(Math.sin(clock * 0.13 + i * 2.1 + c.giro)));
           const px = c.x + Math.cos(a) * r;
           const py = c.y + Math.sin(a) * r;
 
@@ -91,9 +91,9 @@ export function facetas(): Motor {
         }
 
         ctx.closePath();
-        ctx.fillStyle = tinta(c.cor, c.alfa);
+        ctx.fillStyle = tinta(c.color, c.alfa);
         ctx.fill();
-        ctx.strokeStyle = tinta(c.cor, c.alfa * 2.4);
+        ctx.strokeStyle = tinta(c.color, c.alfa * 2.4);
         ctx.lineWidth = 1;
         ctx.stroke();
       }

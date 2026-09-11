@@ -18,13 +18,13 @@ import { memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { messageService } from "~/services/message-service.js";
 import { presenceService } from "~/services/presence-service.js";
-import { voiceService, destinatariosDaVoz, VOICE_GRACE_MS } from "~/services/voice-service.js";
+import { voiceService, voiceRecipients, VOICE_GRACE_MS } from "~/services/voice-service.js";
 import {
-  apagarMensagem,
-  editarMensagem,
-  enviarMensagem,
-  invocarComando,
-  reagir,
+  deleteMessage,
+  editMessage,
+  sendMessage,
+  invokeCommand,
+  react,
 } from "./difusao.js";
 import { io, type SocketData } from "./io.js";
 
@@ -59,9 +59,9 @@ function on<E extends ClientEventName>(
 
       if (!isDomainError) console.error(`[socket:${event}]`, err);
 
-      ack?.({ ok: false, error: message, motivo: isDomainError ? err.motivo : undefined });
+      ack?.({ ok: false, error: message, reason: isDomainError ? err.reason : undefined });
 
-      if (!isDomainError || err.avisar) socket.emit("error", { event, message });
+      if (!isDomainError || err.notify) socket.emit("error", { event, message });
     }
   });
 }
@@ -81,34 +81,34 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "message:send", async (payload) => {
-    const message = await enviarMensagem(userId, payload, socket.id);
+    const message = await sendMessage(userId, payload, socket.id);
     socket.emit("message:created", { ...message, nonce: payload.nonce });
 
     return { id: message.id };
   });
 
   on(socket, "message:edit", async (payload) => {
-    const message = await editarMensagem(userId, payload);
+    const message = await editMessage(userId, payload);
     return { id: message.id };
   });
 
   on(socket, "message:delete", async ({ messageId }) => {
-    await apagarMensagem(userId, messageId);
+    await deleteMessage(userId, messageId);
     return { id: messageId };
   });
 
   on(socket, "command:invoke", async (payload) => {
-    const message = await invocarComando(userId, payload);
+    const message = await invokeCommand(userId, payload);
     return { messageId: message.id };
   });
 
   on(socket, "message:react", async ({ messageId, emoji, burst }) => {
-    const { messageId: id } = await reagir(userId, messageId, emoji, true, burst ?? false);
+    const { messageId: id } = await react(userId, messageId, emoji, true, burst ?? false);
     return { messageId: id, emoji };
   });
 
   on(socket, "message:unreact", async ({ messageId, emoji }) => {
-    await reagir(userId, messageId, emoji, false);
+    await react(userId, messageId, emoji, false);
     return { messageId, emoji };
   });
 
@@ -123,14 +123,14 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "poll:vote", async ({ messageId, optionId }) => {
-    const message = await messageService.votar(userId, messageId, optionId);
+    const message = await messageService.vote(userId, messageId, optionId);
     io().to(rooms.channel(message.channelId)).emit("message:updated", message);
 
     return { id: message.id };
   });
 
   on(socket, "poll:close", async ({ messageId }) => {
-    const message = await messageService.encerrarEnquete(userId, messageId);
+    const message = await messageService.endPoll(userId, messageId);
     io().to(rooms.channel(message.channelId)).emit("message:updated", message);
 
     return { id: message.id };
@@ -145,10 +145,10 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "presence:update", async ({ status }) => {
-    await presenceService.setDesired(userId, status);
-    await broadcastPresence(userId);
+    const projected = await presenceService.setDesired(userId, status);
+    await broadcastPresence(userId, projected);
 
-    io().to(rooms.user(userId)).emit("presence:self", { status });
+    io().to(rooms.user(userId)).emit("presence:self", { status, projected });
     return { status };
   });
 
@@ -160,24 +160,24 @@ export function registerHandlers(socket: GravaeSocket) {
 
   on(socket, "voice:token", ({ channelId }) => voiceService.issueToken(userId, channelId));
 
-  on(socket, "voice:onde", async ({ userId: alvo }) => {
-    const estado = await voiceService.get(alvo);
-    return { channelId: estado?.channelId ?? null };
+  on(socket, "voice:onde", async ({ userId: target }) => {
+    const state = await voiceService.get(target);
+    return { channelId: state?.channelId ?? null };
   });
 
-  on(socket, "voice:join", async ({ channelId, resume, cliente }) => {
+  on(socket, "voice:join", async ({ channelId, resume, client }) => {
     const { state, left } = await voiceService.join(
       userId,
       channelId,
       socket.id,
       resume,
-      cliente ?? null,
+      client ?? null,
     );
     socket.data.voiceChannelId = channelId;
 
     if (left) await announceLeave(left.guildId, left.channelId, userId);
 
-    io().to(await destinatariosDaVoz(state)).emit("voice:joined", state);
+    io().to(await voiceRecipients(state)).emit("voice:joined", state);
     return state;
   });
 
@@ -191,57 +191,57 @@ export function registerHandlers(socket: GravaeSocket) {
 
   on(socket, "voice:state", async (patch) => {
     const state = await voiceService.update(userId, patch);
-    io().to(await destinatariosDaVoz(state)).emit("voice:updated", state);
+    io().to(await voiceRecipients(state)).emit("voice:updated", state);
     return state;
   });
 
   on(socket, "voice:sound", async ({ soundId }) => {
-    const estado = await voiceService.get(userId);
-    if (!estado) throw new ConflictError("Você não está numa chamada");
+    const state = await voiceService.get(userId);
+    if (!state) throw new ConflictError("Você não está numa chamada");
 
-    if (esperandoParaTocar(userId)) throw new AppError("Espera um pouquinho antes do próximo som");
+    if (waitingForPlay(userId)) throw new AppError("Espera um pouquinho antes do próximo som");
 
-    if (!estado.guildId) throw new AppError("O painel de sons só existe em servidor");
+    if (!state.guildId) throw new AppError("O painel de sons só existe em servidor");
 
-    const contexto = await accessService.requirePermission(
+    const context = await accessService.requirePermission(
       userId,
-      estado.guildId,
+      state.guildId,
       "USE_SOUNDBOARD",
-      estado.channelId,
+      state.channelId,
     );
-    void contexto;
+    void context;
 
-    const som = await expressionRepository.findSoundById(soundId);
-    if (!som || som.guildId !== estado.guildId) throw new NotFoundError("Som não encontrado");
+    const sound = await expressionRepository.findSoundById(soundId);
+    if (!sound || sound.guildId !== state.guildId) throw new NotFoundError("Som não encontrado");
 
     io()
-      .to(rooms.guild(estado.guildId))
+      .to(rooms.guild(state.guildId))
       .emit("voice:sound", {
-        channelId: estado.channelId,
+        channelId: state.channelId,
         userId,
-        url: som.url,
-        volume: som.volume,
+        url: sound.url,
+        volume: sound.volume,
       });
 
-    return { id: som.id };
+    return { id: sound.id };
   });
 
-  on(socket, "voice:moderate", async ({ userId: alvoId, serverMute, serverDeaf }) => {
-    const estado = await voiceService.get(alvoId);
-    if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
-    if (!estado.guildId) throw new AppError("Não há moderação numa chamada de privado");
+  on(socket, "voice:moderate", async ({ userId: targetId, serverMute, serverDeaf }) => {
+    const state = await voiceService.get(targetId);
+    if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!state.guildId) throw new AppError("Não há moderação numa chamada de privado");
 
     if (serverMute !== undefined) {
-      await accessService.requirePermission(userId, estado.guildId, "MUTE_MEMBERS");
+      await accessService.requirePermission(userId, state.guildId, "MUTE_MEMBERS");
     }
     if (serverDeaf !== undefined) {
-      await accessService.requirePermission(userId, estado.guildId, "DEAFEN_MEMBERS");
+      await accessService.requirePermission(userId, state.guildId, "DEAFEN_MEMBERS");
     }
 
-    const atualizado = await voiceService.moderar(alvoId, { serverMute, serverDeaf });
-    if (atualizado) io().to(await destinatariosDaVoz(atualizado)).emit("voice:updated", atualizado);
+    const updated = await voiceService.moderate(targetId, { serverMute, serverDeaf });
+    if (updated) io().to(await voiceRecipients(updated)).emit("voice:updated", updated);
 
-    return atualizado;
+    return updated;
   });
 
   on(socket, "voice:recusar", async ({ channelId }) => {
@@ -255,89 +255,89 @@ export function registerHandlers(socket: GravaeSocket) {
     return { channelId };
   });
 
-  on(socket, "voice:kick", async ({ userId: alvoId }) => {
-    const estado = await voiceService.get(alvoId);
-    if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
-    if (!estado.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
+  on(socket, "voice:kick", async ({ userId: targetId }) => {
+    const state = await voiceService.get(targetId);
+    if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!state.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
 
-    await accessService.requirePermission(userId, estado.guildId, "MOVE_MEMBERS");
-    await voiceService.desconectarDoSfu(estado.channelId, alvoId);
+    await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS");
+    await voiceService.sfuDisconnect(state.channelId, targetId);
 
-    const saiu = await voiceService.leave(alvoId);
-    if (saiu) await announceLeave(saiu.guildId, saiu.channelId, alvoId);
+    const left = await voiceService.leave(targetId);
+    if (left) await announceLeave(left.guildId, left.channelId, targetId);
 
-    io().to(rooms.user(alvoId)).emit("voice:move", { channelId: "" });
-    return { userId: alvoId };
+    io().to(rooms.user(targetId)).emit("voice:move", { channelId: "" });
+    return { userId: targetId };
   });
 
-  on(socket, "voice:moveMember", async ({ userId: alvoId, channelId }) => {
-    const estado = await voiceService.get(alvoId);
-    if (!estado) throw new NotFoundError("Esta pessoa não está numa chamada");
-    if (!estado.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
+  on(socket, "voice:moveMember", async ({ userId: targetId, channelId }) => {
+    const state = await voiceService.get(targetId);
+    if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
+    if (!state.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
 
-    await accessService.requirePermission(userId, estado.guildId, "MOVE_MEMBERS");
+    await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS");
 
-    const { channel } = await accessService.requireChannelAccess(alvoId, channelId);
+    const { channel } = await accessService.requireChannelAccess(targetId, channelId);
     if (channel.type !== "VOICE") throw new AppError("Só dá pra mover para canal de voz");
 
-    await voiceService.desconectarDoSfu(estado.channelId, alvoId);
-    io().to(rooms.user(alvoId)).emit("voice:move", { channelId });
+    await voiceService.sfuDisconnect(state.channelId, targetId);
+    io().to(rooms.user(targetId)).emit("voice:move", { channelId });
 
-    return { userId: alvoId, channelId };
+    return { userId: targetId, channelId };
   });
 }
 
-const ultimoSom = new Map<string, number>();
+const lastSound = new Map<string, number>();
 
-function esperandoParaTocar(userId: string): boolean {
-  const agora = Date.now();
-  const anterior = ultimoSom.get(userId);
+function waitingForPlay(userId: string): boolean {
+  const now = Date.now();
+  const anterior = lastSound.get(userId);
 
-  if (anterior !== undefined && agora - anterior < LIMITS.somEsperaMs) return true;
+  if (anterior !== undefined && now - anterior < LIMITS.soundWaitMs) return true;
 
-  if (ultimoSom.size > 500) {
-    for (const [id, quando] of ultimoSom) {
-      if (agora - quando > LIMITS.somEsperaMs) ultimoSom.delete(id);
+  if (lastSound.size > 500) {
+    for (const [id, when] of lastSound) {
+      if (now - when > LIMITS.soundWaitMs) lastSound.delete(id);
     }
   }
 
-  ultimoSom.set(userId, agora);
+  lastSound.set(userId, now);
   return false;
 }
 
 async function announceLeave(guildId: string | null, channelId: string, userId: string) {
-  const destinos = await destinatariosDaVoz({ guildId, channelId });
-  io().to(destinos).emit("voice:left", { channelId, userId });
+  const destinations = await voiceRecipients({ guildId, channelId });
+  io().to(destinations).emit("voice:left", { channelId, userId });
 }
 
-const INTERVALO_DA_VARREDURA_MS = 30_000;
+const SWEEP_MS_INTERVAL = 30_000;
 
-export function vigiarChamadasFantasma(aoErrar: (err: unknown) => void) {
-  const varrer = () =>
+export function watchCallsGhost(onFail: (err: unknown) => void) {
+  const sweep = () =>
     voiceService
-      .reconciliar()
-      .then(({ doRedis }) => {
-        for (const estado of doRedis) {
-          void announceLeave(estado.guildId, estado.channelId, estado.userId);
+      .reconcile()
+      .then(({ fromRedis }) => {
+        for (const state of fromRedis) {
+          void announceLeave(state.guildId, state.channelId, state.userId);
         }
       })
-      .catch(aoErrar);
+      .catch(onFail);
 
-  void varrer();
+  void sweep();
 
-  const relogio = setInterval(() => void varrer(), INTERVALO_DA_VARREDURA_MS);
-  relogio.unref();
+  const clock = setInterval(() => void sweep(), SWEEP_MS_INTERVAL);
+  clock.unref();
 
-  return () => clearInterval(relogio);
+  return () => clearInterval(clock);
 }
 
 export async function broadcastPresence(userId: string, status?: PresenceStatus) {
-  const projetado = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
+  const projected = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
   const memberships = await memberRepository.guildIdsOf(userId);
 
   io()
     .to(memberships.map((m) => rooms.guild(m.guildId)))
-    .emit("presence:changed", { userId, status: projetado });
+    .emit("presence:changed", { userId, status: projected });
 }
 
 export async function cleanupVoiceOnDisconnect(userId: string, socketId: string) {

@@ -8,13 +8,13 @@ type Props = {
   legenda?: string;
 };
 
-export const Codigo = ({ children, legenda }: Props) => {
-  const [copiado, setCopiado] = useState(false);
+export const Code = ({ children, legenda }: Props) => {
+  const [copied, setCopied] = useState(false);
 
-  const copiar = async () => {
+  const copy = async () => {
     await navigator.clipboard.writeText(children);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 1600);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
   };
 
   return (
@@ -24,11 +24,11 @@ export const Codigo = ({ children, legenda }: Props) => {
 
         <button
           type="button"
-          onClick={copiar}
+          onClick={copy}
           className="ml-auto flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink"
         >
-          {copiado ? <Check className="size-3.5 text-online" /> : <Copy className="size-3.5" />}
-          {copiado ? "copiado" : "copiar"}
+          {copied ? <Check className="size-3.5 text-online" /> : <Copy className="size-3.5" />}
+          {copied ? "copiado" : "copiar"}
         </button>
       </div>
 

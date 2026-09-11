@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
-  criarEmblema,
-  removerEmblema,
-  vestirEmblemas,
+  createBadge,
+  removeBadge,
+  wearBadges,
 } from "~/@core/application/requests/guild/emblemas";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-const useEmblemaMutation = <T,>(guildId: string, fn: (v: T) => Promise<unknown>, erro: string) => {
+const useBadgeMutation = <T,>(guildId: string, fn: (v: T) => Promise<unknown>, error: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -17,28 +17,28 @@ const useEmblemaMutation = <T,>(guildId: string, fn: (v: T) => Promise<unknown>,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
     },
-    onError: (e) => toast.error(apiErrorMessage(e, erro)),
+    onError: (e) => toast.error(apiErrorMessage(e, error)),
   });
 };
 
-export const useCriarEmblema = (guildId: string) =>
-  useEmblemaMutation(
+export const useCreateBadge = (guildId: string) =>
+  useBadgeMutation(
     guildId,
-    (data: { nome: string; emoji?: string | null; iconUrl?: string | null }) =>
-      criarEmblema(guildId, data),
+    (data: { name: string; emoji?: string | null; iconUrl?: string | null }) =>
+      createBadge(guildId, data),
     "Não consegui criar o emblema.",
   );
 
-export const useRemoverEmblema = (guildId: string) =>
-  useEmblemaMutation(
+export const useRemoveBadge = (guildId: string) =>
+  useBadgeMutation(
     guildId,
-    (emblemaId: string) => removerEmblema(guildId, emblemaId),
+    (badgeId: string) => removeBadge(guildId, badgeId),
     "Não consegui apagar o emblema.",
   );
 
-export const useVestirEmblemas = (guildId: string) =>
-  useEmblemaMutation(
+export const useWearBadges = (guildId: string) =>
+  useBadgeMutation(
     guildId,
-    (emblemIds: string[]) => vestirEmblemas(guildId, emblemIds),
+    (emblemIds: string[]) => wearBadges(guildId, emblemIds),
     "Não consegui salvar seus emblemas.",
   );

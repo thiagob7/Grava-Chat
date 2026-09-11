@@ -2,44 +2,44 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
-  apagarTema,
-  findMeusTemas,
-  findTema,
-  publicarTema,
+  deleteTheme,
+  findMineThemes,
+  findTheme,
+  publishTheme,
 } from "~/@core/application/requests/tema/temas";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-export const useTema = (temaId: string | undefined) =>
+export const useTheme = (themeId: string | undefined) =>
   useQuery({
-    queryKey: queryKeys.tema.find(temaId ?? ""),
-    queryFn: () => findTema(temaId!),
-    enabled: Boolean(temaId),
+    queryKey: queryKeys.theme.find(themeId ?? ""),
+    queryFn: () => findTheme(themeId!),
+    enabled: Boolean(themeId),
     retry: false,
   });
 
-export const useMeusTemas = (enabled: boolean) =>
-  useQuery({ queryKey: [queryKeys.tema.meus], queryFn: findMeusTemas, enabled });
+export const useMineThemes = (enabled: boolean) =>
+  useQuery({ queryKey: [queryKeys.theme.mine], queryFn: findMineThemes, enabled });
 
-export const usePublicarTema = () => {
-  const cliente = useQueryClient();
+export const usePublishTheme = () => {
+  const client = useQueryClient();
 
   return useMutation({
-    mutationFn: publicarTema,
-    onSuccess: () => void cliente.invalidateQueries({ queryKey: [queryKeys.tema.meus] }),
-    onError: (erro) => toast.error(apiErrorMessage(erro, "Não consegui publicar o tema.")),
+    mutationFn: publishTheme,
+    onSuccess: () => void client.invalidateQueries({ queryKey: [queryKeys.theme.mine] }),
+    onError: (error) => toast.error(apiErrorMessage(error, "Não consegui publicar o tema.")),
   });
 };
 
-export const useApagarTema = () => {
-  const cliente = useQueryClient();
+export const useDeleteTheme = () => {
+  const client = useQueryClient();
 
   return useMutation({
-    mutationFn: apagarTema,
+    mutationFn: deleteTheme,
     onSuccess: () => {
       toast.success("Tema apagado. O link parou de valer.");
-      void cliente.invalidateQueries({ queryKey: [queryKeys.tema.meus] });
+      void client.invalidateQueries({ queryKey: [queryKeys.theme.mine] });
     },
-    onError: (erro) => toast.error(apiErrorMessage(erro, "Não consegui apagar o tema.")),
+    onError: (error) => toast.error(apiErrorMessage(error, "Não consegui apagar o tema.")),
   });
 };
