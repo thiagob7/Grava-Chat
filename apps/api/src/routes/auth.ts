@@ -208,7 +208,7 @@ export async function authRoutes(app: FastifyInstance) {
       },
       startRedirectPath: "/auth/google",
       callbackUri: callbackUrl,
-      cookie: { path: "/api/auth", sameSite: "lax", secure: env.NODE_ENV === "production" },
+      cookie: cookiePolicy,
     });
 
     app.get("/auth/desktop/start", async (req, reply) => {
