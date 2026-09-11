@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Une petite main qui salue",
+    botao: "Faire coucou à {{nome}}",
+  },
+  oficial: {
+    titulo: "Ce salon sert uniquement aux annonces officielles.",
+    detalhe: "Nous ne demandons jamais votre mot de passe ni le jeton de votre compte.",
+    saibaMais: "En savoir plus",
+  },
+  topico: {
+    abrir: "Voir la description du salon",
+  },
+  previaDoLink: {
+    carregando: "Je regarde ce qu'il y a derrière le lien…",
+    destino: "Mène à {{destino}}",
+  },
+  reacao: {
+    carregando: "Je regarde qui a réagi avec {{emoji}}…",
+    uma: "{{nome}} a réagi avec {{emoji}}",
+    duas: "{{primeiro}} et {{segundo}} ont réagi avec {{emoji}}",
+    varias: "{{nomes}} et {{quantos}} autres ont réagi avec {{emoji}}",
+    dicaSuper: "Maintenez pour super réagir",
+  },
+  recado: {
+    gravar: "Enregistrer un vocal",
+    descartar: "Jeter l'enregistrement",
+    mandar: "Envoyer l'enregistrement",
+    semSuporte: "Ce navigateur n'enregistre pas le son.",
+    semMicrofone: "Pas d'accès au micro.",
+  },
   lista: {
     carregando: "Chargement des messages…",
     carregandoMais: "Chargement…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Voir l'image",
   },
   enquete: {
+    criar: "Créer un sondage",
+    pergunta: "Question",
+    exemplo: "On joue à quoi aujourd'hui ?",
+    respostas: "Réponses",
+    adicionarOpcao: "Ajouter une réponse",
+    removerOpcao: "Retirer la réponse",
+    varias: "Autoriser plusieurs réponses",
+    variasDetalhe: "Sans cela, voter pour une réponse retire votre voix de la précédente.",
+    duracao: "Durée",
+    umaHora: "1 heure",
+    quatroHoras: "4 heures",
+    oitoHoras: "8 heures",
+    umDia: "1 jour",
+    tresDias: "3 jours",
+    umaSemana: "1 semaine",
+    ateEncerrar: "Jusqu'à ce que je le ferme",
     titulo: "Sondage",
     encerrada: "Sondage clos",
     variasRespostas: "Sondage — plusieurs réponses",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "La recherche ne regarde que les salons que vous pouvez lire.",
   },
   entrada: {
+    semNome: "conversation",
+    anexo: "(pièce jointe)",
     titulo: "Boîte de réception",
     naoLidas: "Non lues",
     salvas: "Enregistrées",
