@@ -33,9 +33,9 @@ export const PopoverContent = ({
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        flxCls("balaoFlutuante"),
+        flxCls("balloonFloating"),
         "balao regiao-sem-arrasto z-50 w-72 rounded-lg border border-line bg-surface-4 p-4 shadow-2xl outline-none",
-        flxCls("balao"),
+        flxCls("balloon"),
         className,
       )}
       {...props}
