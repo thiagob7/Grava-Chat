@@ -2,11 +2,11 @@ import { randomUUID } from "node:crypto";
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "~/env.js";
-import { TETO_POR_FINALIDADE } from "@gravae/shared";
+import { CEILING_BY_PURPOSE } from "@gravae/shared";
 import { AppError } from "~/lib/http.js";
 import { redis, keys } from "~/lib/redis.js";
-import { cabeNaCota, mensagemDeCota, JANELA_DA_COTA_S } from "~/lib/cota-de-upload.js";
-import type { ImportarImagemInput, PresignInput } from "~/validations/upload.js";
+import { fitsQuota, quotaMessage, QUOTA_S_WINDOW } from "~/lib/cota-de-upload.js";
+import type { ImportImageInput, PresignInput } from "~/validations/upload.js";
 
 const s3 = new S3Client({
   region: env.R2_REGION,
@@ -20,18 +20,18 @@ const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "imag
 export const uploadService = {
   isImage: (contentType: string) => IMAGE_TYPES.includes(contentType),
 
-  async reservarCota(userId: string, tamanho: number) {
-    const chave = keys.cotaDeUpload(userId);
+  async reserveQuota(userId: string, size: number) {
+    const key = keys.uploadQuota(userId);
 
-    const jaUsado = await redis.get(chave).then(Number).catch(() => 0);
-    if (!cabeNaCota({ jaUsado: jaUsado || 0, tamanho })) {
-      throw new AppError(mensagemDeCota({ jaUsado: jaUsado || 0 }), 429);
+    const alreadyUsed = await redis.get(key).then(Number).catch(() => 0);
+    if (!fitsQuota({ alreadyUsed: alreadyUsed || 0, size })) {
+      throw new AppError(quotaMessage({ alreadyUsed: alreadyUsed || 0 }), 429);
     }
 
     await redis
       .multi()
-      .incrby(chave, tamanho)
-      .expire(chave, JANELA_DA_COTA_S, "NX")
+      .incrby(key, size)
+      .expire(key, QUOTA_S_WINDOW, "NX")
       .exec()
       .catch(() => undefined);
   },
@@ -46,7 +46,7 @@ export const uploadService = {
   },
 
   async upload(userId: string, file: { filename: string; contentType: string; body: Buffer }) {
-    await uploadService.reservarCota(userId, file.body.length);
+    await uploadService.reserveQuota(userId, file.body.length);
 
     const key = uploadService.buildKey(userId, file.filename);
 
@@ -68,49 +68,49 @@ export const uploadService = {
     };
   },
 
-  async remover(chaves: string[]) {
-    if (!chaves.length) return;
+  async remove(keys: string[]) {
+    if (!keys.length) return;
 
-    for (let i = 0; i < chaves.length; i += 1000) {
+    for (let i = 0; i < keys.length; i += 1000) {
       await s3
         .send(
           new DeleteObjectsCommand({
             Bucket: env.R2_BUCKET,
-            Delete: { Objects: chaves.slice(i, i + 1000).map((Key) => ({ Key })), Quiet: true },
+            Delete: { Objects: keys.slice(i, i + 1000).map((Key) => ({ Key })), Quiet: true },
           }),
         )
-        .catch((erro: unknown) => {
-          console.error("[r2] nao consegui apagar anexos:", (erro as Error).message);
+        .catch((error: unknown) => {
+          console.error("[r2] nao consegui apagar anexos:", (error as Error).message);
         });
     }
   },
 
-  async importar(userId: string, input: ImportarImagemInput) {
-    const teto = TETO_POR_FINALIDADE[input.purpose];
+  async doImport(userId: string, input: ImportImageInput) {
+    const ceiling = CEILING_BY_PURPOSE[input.purpose];
 
-    const resposta = await fetch(input.url, { signal: AbortSignal.timeout(10_000) }).catch(() => null);
-    if (!resposta?.ok) throw new AppError("Nao consegui baixar essa imagem", 502);
+    const reply = await fetch(input.url, { signal: AbortSignal.timeout(10_000) }).catch(() => null);
+    if (!reply?.ok) throw new AppError("Nao consegui baixar essa imagem", 502);
 
-    const anunciado = Number(resposta.headers.get("content-length") ?? 0);
-    if (anunciado > teto) throw new AppError(`A imagem passa de ${Math.round(teto / 1024)} KB`, 413);
+    const announced = Number(reply.headers.get("content-length") ?? 0);
+    if (announced > ceiling) throw new AppError(`A imagem passa de ${Math.round(ceiling / 1024)} KB`, 413);
 
-    const contentType = resposta.headers.get("content-type") ?? "";
+    const contentType = reply.headers.get("content-type") ?? "";
     if (!uploadService.isImage(contentType)) throw new AppError("Isso nao e uma imagem");
 
-    const body = Buffer.from(await resposta.arrayBuffer());
-    if (body.length > teto) throw new AppError(`A imagem passa de ${Math.round(teto / 1024)} KB`, 413);
+    const body = Buffer.from(await reply.arrayBuffer());
+    if (body.length > ceiling) throw new AppError(`A imagem passa de ${Math.round(ceiling / 1024)} KB`, 413);
 
-    const extensao = contentType.split("/")[1]?.split(";")[0] ?? "gif";
+    const extension = contentType.split("/")[1]?.split(";")[0] ?? "gif";
 
     return uploadService.upload(userId, {
-      filename: `importada.${extensao}`,
+      filename: `importada.${extension}`,
       contentType,
       body,
     });
   },
 
   async presign(userId: string, input: PresignInput) {
-    await uploadService.reservarCota(userId, input.size);
+    await uploadService.reserveQuota(userId, input.size);
 
     const key = uploadService.buildKey(userId, input.filename);
 

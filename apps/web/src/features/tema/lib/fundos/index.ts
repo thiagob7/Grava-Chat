@@ -1,38 +1,38 @@
-import { dunas } from "~/features/tema/lib/fundos/dunas";
-import { estrelas } from "~/features/tema/lib/fundos/estrelas";
-import { facetas } from "~/features/tema/lib/fundos/facetas";
-import { favos } from "~/features/tema/lib/fundos/favos";
-import { fitas } from "~/features/tema/lib/fundos/fitas";
-import { fogos } from "~/features/tema/lib/fundos/fogos";
-import { labirinto } from "~/features/tema/lib/fundos/labirinto";
-import { nebulosa } from "~/features/tema/lib/fundos/nebulosa";
+import { dunes } from "~/features/tema/lib/fundos/dunas";
+import { stars } from "~/features/tema/lib/fundos/estrelas";
+import { facets } from "~/features/tema/lib/fundos/facetas";
+import { combs } from "~/features/tema/lib/fundos/favos";
+import { ribbons } from "~/features/tema/lib/fundos/fitas";
+import { fires } from "~/features/tema/lib/fundos/fogos";
+import { maze } from "~/features/tema/lib/fundos/labirinto";
+import { nebula } from "~/features/tema/lib/fundos/nebulosa";
 import { neve } from "~/features/tema/lib/fundos/neve";
-import { ondas } from "~/features/tema/lib/fundos/ondas";
-import { velas } from "~/features/tema/lib/fundos/velas";
+import { waves } from "~/features/tema/lib/fundos/ondas";
+import { candles } from "~/features/tema/lib/fundos/velas";
 import type { Motor } from "~/features/tema/lib/fundos/tipos";
 
-export type { Motor, Palco } from "~/features/tema/lib/fundos/tipos";
+export type { Motor, Stage } from "~/features/tema/lib/fundos/tipos";
 
 /*
   A lista fechada é a segurança do arranjo: um tema escolhe pelo nome, e
   nome que não está aqui não liga nada. Não há caminho de um `.css` para
   código que não passe por esta tabela.
 */
-export const MOTORES: Record<string, () => Motor> = {
-  dunas,
-  estrelas,
-  facetas,
-  favos,
-  fitas,
-  fogos,
-  labirinto,
-  nebulosa,
+export const ENGINES: Record<string, () => Motor> = {
+  dunas: dunes,
+  estrelas: stars,
+  facetas: facets,
+  favos: combs,
+  fitas: ribbons,
+  fogos: fires,
+  labirinto: maze,
+  nebulosa: nebula,
   neve,
-  ondas,
-  velas,
+  ondas: waves,
+  velas: candles,
 };
 
-export const OQUEFAZ: Record<string, string> = {
+export const DOES: Record<string, string> = {
   dunas: "Cristas de areia, uma atrás da outra, andando devagar.",
   estrelas: "Campo de estrelas com paralaxe e umas poucas cintilando.",
   facetas: "Cacos de vidro que mudam de forma e atravessam a tela.",
@@ -46,7 +46,7 @@ export const OQUEFAZ: Record<string, string> = {
   velas: "Velas boiando no ar, cada chama tremendo no seu ritmo.",
 };
 
-export const NOME_DA_VARIAVEL = "--gc-fundo";
+export const VARIABLE_NAME = "--gc-fundo";
 
 /*
   Onde o motor pinta. Atrás é o certo para quase tudo, e exige superfícies
@@ -56,26 +56,26 @@ export const NOME_DA_VARIAVEL = "--gc-fundo";
   Fogo na frente foi justamente o que deu errado antes: faísca passando por
   cima da conversa cansa em dois minutos.
 */
-export const NOME_DA_CAMADA = "--gc-fundo-camada";
+export const LAYER_NAME = "--gc-fundo-camada";
 
-export function camadaPedidaPeloTema(): "frente" | "fundo" {
+export function layerRequestedByTheme(): "frente" | "fundo" {
   if (typeof document === "undefined") return "fundo";
 
-  const pedido = getComputedStyle(document.documentElement)
-    .getPropertyValue(NOME_DA_CAMADA)
+  const request = getComputedStyle(document.documentElement)
+    .getPropertyValue(LAYER_NAME)
     .trim()
     .replace(/^["']|["']$/g, "");
 
-  return pedido === "frente" ? "frente" : "fundo";
+  return request === "frente" ? "frente" : "fundo";
 }
 
-export function motorPedidoPeloTema(): string | null {
+export function motorRequestByTheme(): string | null {
   if (typeof document === "undefined") return null;
 
-  const pedido = getComputedStyle(document.documentElement)
-    .getPropertyValue(NOME_DA_VARIAVEL)
+  const request = getComputedStyle(document.documentElement)
+    .getPropertyValue(VARIABLE_NAME)
     .trim()
     .replace(/^["']|["']$/g, "");
 
-  return pedido && pedido in MOTORES ? pedido : null;
+  return request && request in ENGINES ? request : null;
 }

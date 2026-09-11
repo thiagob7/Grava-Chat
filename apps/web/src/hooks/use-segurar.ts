@@ -1,12 +1,12 @@
 import { useCallback, useRef } from "react";
 
-const SEGURAR_MS = 450;
+const HOLD_MS = 450;
 
-export function useSegurar(curto: () => void, longo: () => void) {
-  const disparou = useRef(false);
+export function useHold(short: () => void, long: () => void) {
+  const fired = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const limpar = useCallback(() => {
+  const clear = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
   }, []);
@@ -15,26 +15,26 @@ export function useSegurar(curto: () => void, longo: () => void) {
     onPointerDown: useCallback(
       (e: React.PointerEvent) => {
         if (e.button !== 0) return;
-        disparou.current = false;
+        fired.current = false;
 
         timer.current = setTimeout(() => {
-          disparou.current = true;
-          longo();
-        }, SEGURAR_MS);
+          fired.current = true;
+          long();
+        }, HOLD_MS);
       },
-      [longo],
+      [long],
     ),
 
     onPointerUp: useCallback(
       (e: React.PointerEvent) => {
         if (e.button !== 0) return;
-        limpar();
-        if (!disparou.current) curto();
+        clear();
+        if (!fired.current) short();
       },
-      [curto, limpar],
+      [short, clear],
     ),
 
-    onPointerLeave: useCallback(() => limpar(), [limpar]),
-    onPointerCancel: useCallback(() => limpar(), [limpar]),
+    onPointerLeave: useCallback(() => clear(), [clear]),
+    onPointerCancel: useCallback(() => clear(), [clear]),
   };
 }

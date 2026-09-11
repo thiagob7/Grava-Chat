@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { TEMA_APLICADO } from "~/features/configuracoes/lib/evento-de-tema";
+import { THEME_APPLIED } from "~/features/configuracoes/lib/evento-de-tema";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 type Edge = "left" | "right";
 
@@ -14,6 +15,7 @@ interface Options {
 }
 
 const storageKey = (name: string) => `gravae:largura:${name}`;
+const heightKey = (name: string) => `gravae:altura:${name}`;
 
 function measure(token: string | undefined, initial: number) {
   if (!token) return initial;
@@ -63,9 +65,9 @@ export function useResizableWidth(name: string, { initial, min, max, edge, token
     };
 
     remeasure();
-    window.addEventListener(TEMA_APLICADO, remeasure);
+    window.addEventListener(THEME_APPLIED, remeasure);
 
-    return () => window.removeEventListener(TEMA_APLICADO, remeasure);
+    return () => window.removeEventListener(THEME_APPLIED, remeasure);
   }, [name, token, initial]);
 
   useEffect(() => {
@@ -136,30 +138,124 @@ export const WidthHandle: React.FC<
     width: number;
     bounds: { min: number; max: number };
   } & React.ComponentProps<"div">
-> = ({ edge, dragging, width, bounds, className, ...props }) => (
-  <div data-gc="ui.resizable.div"
-    role="separator"
-    aria-orientation="vertical"
-    aria-label="Ajustar a largura"
-    aria-valuenow={Math.round(width)}
-    aria-valuemin={bounds.min}
-    aria-valuemax={bounds.max}
-    tabIndex={0}
-    className={cn(
-      "group/alca absolute inset-y-0 z-40 w-2 cursor-col-resize",
-      edge === "right" ? "-right-1" : "-left-1",
-      className,
-    )}
-    {...props}
-  >
-    <span data-gc="ui.resizable.span"
-      aria-hidden
+> = ({ edge, dragging, width, bounds, className, ...props }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div data-gc="ui.resizable.div"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label={t("comum.janela.ajustarLargura")}
+      aria-valuenow={Math.round(width)}
+      aria-valuemin={bounds.min}
+      aria-valuemax={bounds.max}
+      tabIndex={0}
       className={cn(
-        "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
-        dragging
-          ? "w-0.5 bg-ink-faint/45"
-          : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint/30 group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-ink-faint/45",
+        "group/alca absolute inset-y-0 z-40 w-2 cursor-col-resize",
+        edge === "right" ? "-right-1" : "-left-1",
+        className,
       )}
-    />
-  </div>
-);
+      {...props}
+    >
+      <span data-gc="ui.resizable.span"
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-full transition-all duration-150",
+          dragging
+            ? "w-0.5 bg-ink-faint/45"
+            : "w-px bg-transparent group-hover/alca:w-0.5 group-hover/alca:bg-ink-faint/30 group-focus-visible/alca:w-0.5 group-focus-visible/alca:bg-ink-faint/45",
+        )}
+      />
+    </div>
+  );
+};
+
+export function useResizableHeight(
+  name: string,
+  { initial, min, max }: { initial: number; min: number; max: number },
+) {
+  const kept = (() => {
+    try {
+      const saved = Number(localStorage.getItem(heightKey(name)));
+      return Number.isFinite(saved) && saved > 0 ? saved : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const clamp = (value: number) => Math.min(max, Math.max(min, value));
+
+  const [height, setHeight] = useState(() => clamp(kept ?? initial));
+  const [dragging, setDragging] = useState(false);
+  const start = useRef<{ y: number; height: number } | null>(null);
+
+  const keep = (value: number) => {
+    try {
+      localStorage.setItem(heightKey(name), String(value));
+    } catch {}
+  };
+
+  const handle = {
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      start.current = { y: e.clientY, height };
+      setDragging(true);
+    },
+
+    onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!start.current) return;
+      setHeight(clamp(start.current.height - (e.clientY - start.current.y)));
+    },
+
+    onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!start.current) return;
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      start.current = null;
+      setDragging(false);
+      keep(height);
+    },
+
+    onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const step = e.key === "ArrowUp" ? 16 : e.key === "ArrowDown" ? -16 : 0;
+      if (!step) return;
+
+      e.preventDefault();
+      const next = clamp(height + step);
+      setHeight(next);
+      keep(next);
+    },
+  };
+
+  return { height, dragging, handle, bounds: { min, max } };
+}
+
+export const HeightHandle: React.FC<
+  { dragging: boolean; height: number; bounds: { min: number; max: number } } & React.ComponentProps<"div">
+> = ({ dragging, height, bounds, className, ...props }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div data-gc="ui.resizable.div--2"
+      role="separator"
+      aria-orientation="horizontal"
+      aria-label={t("comum.janela.ajustarAltura")}
+      aria-valuenow={Math.round(height)}
+      aria-valuemin={bounds.min}
+      aria-valuemax={bounds.max}
+      tabIndex={0}
+      className={cn("group/alca absolute inset-x-0 -top-1 z-40 h-2 cursor-row-resize", className)}
+      {...props}
+    >
+      <span data-gc="ui.resizable.span--2"
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 rounded-full transition-all duration-150",
+          dragging
+            ? "h-0.5 bg-ink-faint/45"
+            : "h-px bg-transparent group-hover/alca:h-0.5 group-hover/alca:bg-ink-faint/30 group-focus-visible/alca:h-0.5 group-focus-visible/alca:bg-ink-faint/45",
+        )}
+      />
+    </div>
+  );
+};

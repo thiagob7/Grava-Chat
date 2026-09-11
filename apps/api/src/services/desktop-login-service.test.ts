@@ -11,12 +11,12 @@ vi.mock("~/lib/redis.js", () => ({
     set: (...a: unknown[]) => set(...a),
     getdel: (...a: unknown[]) => getdel(...a),
   },
-  keys: { desktopLogin: (codigo: string) => `desktop-login:${codigo}` },
+  keys: { desktopLogin: (code: string) => `desktop-login:${code}` },
 }));
 
 const { desktopLoginService } = await import("~/services/desktop-login-service.js");
 
-const hash = (valor: string) => createHash("sha256").update(valor).digest("base64url");
+const hash = (value: string) => createHash("sha256").update(value).digest("base64url");
 
 describe("desktopLoginService", () => {
   beforeEach(() => {
@@ -25,24 +25,24 @@ describe("desktopLoginService", () => {
   });
 
   it("guarda o código com validade curta e devolve o dono na troca", async () => {
-    const verificador = desktopLoginService.novoDesafio();
-    const codigo = await desktopLoginService.emitirCodigo("user-1", hash(verificador));
+    const verifier = desktopLoginService.newChallenge();
+    const code = await desktopLoginService.emitCode("user-1", hash(verifier));
 
     expect(set).toHaveBeenCalledWith(
-      `desktop-login:${codigo}`,
-      JSON.stringify({ userId: "user-1", desafio: hash(verificador) }),
+      `desktop-login:${code}`,
+      JSON.stringify({ userId: "user-1", challenge: hash(verifier) }),
       "EX",
       120,
     );
 
-    getdel.mockResolvedValue(JSON.stringify({ userId: "user-1", desafio: hash(verificador) }));
-    await expect(desktopLoginService.resgatar(codigo, verificador)).resolves.toBe("user-1");
+    getdel.mockResolvedValue(JSON.stringify({ userId: "user-1", challenge: hash(verifier) }));
+    await expect(desktopLoginService.redeem(code, verifier)).resolves.toBe("user-1");
   });
 
   it("recusa o código sem o verificador certo", async () => {
-    getdel.mockResolvedValue(JSON.stringify({ userId: "user-1", desafio: hash("o-certo") }));
+    getdel.mockResolvedValue(JSON.stringify({ userId: "user-1", challenge: hash("o-certo") }));
 
-    await expect(desktopLoginService.resgatar("codigo", "o-errado")).rejects.toBeInstanceOf(
+    await expect(desktopLoginService.redeem("codigo", "o-errado")).rejects.toBeInstanceOf(
       UnauthorizedError,
     );
   });
@@ -50,7 +50,7 @@ describe("desktopLoginService", () => {
   it("recusa código já usado ou expirado", async () => {
     getdel.mockResolvedValue(null);
 
-    await expect(desktopLoginService.resgatar("codigo", "verificador")).rejects.toBeInstanceOf(
+    await expect(desktopLoginService.redeem("codigo", "verificador")).rejects.toBeInstanceOf(
       UnauthorizedError,
     );
   });

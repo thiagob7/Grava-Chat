@@ -4,28 +4,28 @@ import type { Sticker } from "@gravae/shared";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
-import { AbaEmoji } from "~/features/expressao/components/seletor/AbaEmoji";
-import { AbaFigurinhas } from "~/features/expressao/components/seletor/AbaFigurinhas";
-import { AbaGifs } from "~/features/expressao/components/seletor/AbaGifs";
+import { TabEmoji } from "~/features/expressao/components/seletor/AbaEmoji";
+import { TabStickers } from "~/features/expressao/components/seletor/AbaFigurinhas";
+import { TabGifs } from "~/features/expressao/components/seletor/AbaGifs";
 import { bareField, fieldGroup } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
 
-export type Aba = "gifs" | "figurinhas" | "emoji";
+export type Tab = "gifs" | "figurinhas" | "emoji";
 
 interface ExpressionPickerProps {
   guildId: string | undefined;
-  abaInicial?: Aba;
-  modo?: "mensagem" | "reacao";
-  onEmoji: (texto: string) => void;
+  initialTab?: Tab;
+  mode?: "mensagem" | "reacao";
+  onEmoji: (text: string) => void;
   onSticker?: (sticker: Sticker) => void;
   onGif?: (gif: GifModel) => void;
-  onFechar?: () => void;
+  onClose?: () => void;
 }
 
-const ABAS: { id: Aba; label: string; placeholder: string }[] = [
+const TABS: { id: Tab; label: string; placeholder: string }[] = [
   { id: "gifs", label: "conversa.expressoes.gifs", placeholder: "conversa.expressoes.buscarGifs" },
   {
     id: "figurinhas",
@@ -37,62 +37,62 @@ const ABAS: { id: Aba; label: string; placeholder: string }[] = [
 
 export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
   guildId,
-  abaInicial = "emoji",
-  modo = "mensagem",
+  initialTab = "emoji",
+  mode = "mensagem",
   onEmoji,
   onSticker,
   onGif,
-  onFechar,
+  onClose,
 }) => {
   const { t } = useTranslation();
-  const soEmoji = modo === "reacao";
-  const [aba, setAba] = useState<Aba>(soEmoji ? "emoji" : abaInicial);
-  const [busca, setBusca] = useState("");
+  const soEmoji = mode === "reacao";
+  const [tab, setTab] = useState<Tab>(soEmoji ? "emoji" : initialTab);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => setBusca(""), [aba]);
+  useEffect(() => setSearch(""), [tab]);
 
-  const abrirConfiguracoes = useServerSettingsStore((s) => s.abrir);
+  const openSettings = useServerSettingsStore((s) => s.open);
 
-  const { data: servidor } = useFindGuild(guildId);
+  const { data: server } = useFindGuild(guildId);
 
-  const podeAdicionar = Boolean(
-    servidor?.permissions.some((p) =>
+  const canAdd = Boolean(
+    server?.permissions.some((p) =>
       ["ADMINISTRATOR", "MANAGE_EXPRESSIONS", "CREATE_EXPRESSIONS"].includes(p),
     ),
   );
 
-  const adicionarEmoji = () => {
+  const addEmoji = () => {
     if (!guildId) return;
-    onFechar?.();
-    abrirConfiguracoes(guildId, "emoji");
+    onClose?.();
+    openSettings(guildId, "emoji");
   };
 
-  const chaveDaDica = soEmoji
+  const hintKey = soEmoji
     ? "conversa.expressoes.buscarReacao"
-    : ABAS.find((a) => a.id === aba)?.placeholder;
-  const placeholder = chaveDaDica ? t(chaveDaDica) : undefined;
+    : TABS.find((a) => a.id === tab)?.placeholder;
+  const placeholder = hintKey ? t(hintKey) : undefined;
 
   return (
-    <div data-gc="expressao.expression-picker.div" {...flx("seletorDeExpressao", "flex h-[min(440px,70svh)] w-[min(460px,92vw)] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl")}>
+    <div data-gc="expressao.expression-picker.div" {...flx("expressionPicker", "flex h-[min(440px,70svh)] w-[min(460px,92vw)] flex-col overflow-hidden rounded-lg bg-surface-1 shadow-2xl")}>
       {!soEmoji && (
         <nav data-gc="expressao.expression-picker.nav" className="flex shrink-0 items-center gap-1 p-3 pb-2">
-          {ABAS.map((item) => (
+          {TABS.map((item) => (
             <button data-gc="expressao.expression-picker.button"
               key={item.id}
-              onClick={() => setAba(item.id)}
+              onClick={() => setTab(item.id)}
               className={cn(
                 "rounded px-3 py-1.5 text-sm transition",
-                aba === item.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
+                tab === item.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
               )}
             >
               {t(item.label)}
             </button>
           ))}
 
-          {aba === "emoji" && podeAdicionar && (
-            <button data-gc="expressao.expression-picker.button.adicionar-emoji"
+          {tab === "emoji" && canAdd && (
+            <button data-gc="expressao.expression-picker.button.add-emoji"
               type="button"
-              onClick={adicionarEmoji}
+              onClick={addEmoji}
               className="ml-auto flex shrink-0 items-center gap-1 rounded px-2 py-1.5 text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink"
             >
               <Plus data-gc="expressao.expression-picker.plus" size={14} />
@@ -108,16 +108,16 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
 
           <input data-gc="expressao.expression-picker.input"
             autoFocus
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder={placeholder}
             className={bareField}
           />
 
-          {busca && (
+          {search && (
             <button data-gc="expressao.expression-picker.button--2"
               type="button"
-              onClick={() => setBusca("")}
+              onClick={() => setSearch("")}
               aria-label={t("conversa.expressoes.limparBusca")}
               className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
             >
@@ -128,13 +128,13 @@ export const ExpressionPicker: React.FC<ExpressionPickerProps> = ({
       </div>
 
       <div data-gc="expressao.expression-picker.div--4" className="flex min-h-0 flex-1 flex-col">
-        {aba === "gifs" && onGif && <AbaGifs data-gc="expressao.expression-picker.aba-gifs.on-gif" busca={busca} onGif={onGif} onBusca={setBusca} />}
+        {tab === "gifs" && onGif && <TabGifs data-gc="expressao.expression-picker.tab-gifs.on-gif" search={search} onGif={onGif} onSearch={setSearch} />}
 
-        {aba === "figurinhas" && onSticker && (
-          <AbaFigurinhas data-gc="expressao.expression-picker.aba-figurinhas.on-sticker" guildId={guildId} busca={busca} onSticker={onSticker} />
+        {tab === "figurinhas" && onSticker && (
+          <TabStickers data-gc="expressao.expression-picker.tab-stickers.on-sticker" guildId={guildId} search={search} onSticker={onSticker} />
         )}
 
-        {aba === "emoji" && <AbaEmoji data-gc="expressao.expression-picker.aba-emoji.on-emoji" guildId={guildId} busca={busca} onEmoji={onEmoji} />}
+        {tab === "emoji" && <TabEmoji data-gc="expressao.expression-picker.tab-emoji.on-emoji" guildId={guildId} search={search} onEmoji={onEmoji} />}
       </div>
     </div>
   );

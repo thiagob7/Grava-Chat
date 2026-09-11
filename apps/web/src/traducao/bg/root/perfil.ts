@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Профилът не можа да се отвори.",
   carregando: "Зареждане…",
   editar: "Редактиране на профила",
   mensagem: "Съобщение",

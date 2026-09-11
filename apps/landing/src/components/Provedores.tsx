@@ -3,8 +3,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
-export const Provedores = ({ children }: { children: ReactNode }) => {
-  const [cliente] = useState(
+export const Providers = ({ children }: { children: ReactNode }) => {
+  const [client] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
@@ -17,5 +17,5 @@ export const Provedores = ({ children }: { children: ReactNode }) => {
       }),
   );
 
-  return <QueryClientProvider client={cliente}>{children}</QueryClientProvider>;
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 };

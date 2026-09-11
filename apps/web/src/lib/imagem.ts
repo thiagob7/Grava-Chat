@@ -1,41 +1,41 @@
-export async function baixarImagem(url: string, nome: string) {
+export async function downloadImage(url: string, name: string) {
   try {
-    const resposta = await fetch(url);
-    const arquivo = await resposta.blob();
-    const endereco = URL.createObjectURL(arquivo);
-    const ancora = document.createElement("a");
+    const reply = await fetch(url);
+    const file = await reply.blob();
+    const address = URL.createObjectURL(file);
+    const anchor = document.createElement("a");
 
-    ancora.href = endereco;
-    ancora.download = nome;
-    document.body.appendChild(ancora);
-    ancora.click();
-    ancora.remove();
-    URL.revokeObjectURL(endereco);
+    anchor.href = address;
+    anchor.download = name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(address);
   } catch {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }
 
-export async function copiarImagem(url: string): Promise<boolean> {
+export async function copyImage(url: string): Promise<boolean> {
   try {
-    const resposta = await fetch(url);
-    const arquivo = await resposta.blob();
+    const reply = await fetch(url);
+    const file = await reply.blob();
 
     const png =
-      arquivo.type === "image/png"
-        ? arquivo
-        : await new Promise<Blob | null>((resolver) => {
-            const imagem = new Image();
-            imagem.crossOrigin = "anonymous";
-            imagem.onload = () => {
+      file.type === "image/png"
+        ? file
+        : await new Promise<Blob | null>((resolve) => {
+            const image = new Image();
+            image.crossOrigin = "anonymous";
+            image.onload = () => {
               const screen = document.createElement("canvas");
-              screen.width = imagem.naturalWidth;
-              screen.height = imagem.naturalHeight;
-              screen.getContext("2d")?.drawImage(imagem, 0, 0);
-              screen.toBlob(resolver, "image/png");
+              screen.width = image.naturalWidth;
+              screen.height = image.naturalHeight;
+              screen.getContext("2d")?.drawImage(image, 0, 0);
+              screen.toBlob(resolve, "image/png");
             };
-            imagem.onerror = () => resolver(null);
-            imagem.src = URL.createObjectURL(arquivo);
+            image.onerror = () => resolve(null);
+            image.src = URL.createObjectURL(file);
           });
 
     if (!png) return false;

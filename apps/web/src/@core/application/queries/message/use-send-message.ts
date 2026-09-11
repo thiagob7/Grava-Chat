@@ -10,18 +10,18 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { CreatePollInput } from "@gravae/shared";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
-import { motivoDaFalha } from "~/features/conversa/lib/falha-de-envio";
+import { failureReason } from "~/features/conversa/lib/falha-de-envio";
 
 interface SendMessageVariables {
   channelId: string;
   content: string;
   replyToId?: string | null;
-  mencionarAutor?: boolean;
+  mentionAuthor?: boolean;
   attachments?: Attachment[];
   stickerId?: string;
   poll?: CreatePollInput;
   postId?: string | null;
-  encaminhadaDe?: { channelId: string; messageId: string } | null;
+  forwarded?: { channelId: string; messageId: string } | null;
 }
 
 type MessagesCache = { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
@@ -41,7 +41,7 @@ export const useSendMessage = () => {
         channelId: variables.channelId,
         author: me,
         content: variables.content,
-        tipo: "USER",
+        kind: "USER",
         attachments: variables.attachments ?? [],
         poll: null,
         sticker: null,
@@ -50,7 +50,7 @@ export const useSendMessage = () => {
         mentionRoleIds: [],
         mentionEveryone: false,
         replyToId: variables.replyToId ?? null,
-        encaminhadaDe: variables.encaminhadaDe ?? null,
+        forwarded: variables.forwarded ?? null,
         postId: variables.postId ?? null,
         pinnedAt: null,
         createdAt: new Date().toISOString(),
@@ -91,7 +91,7 @@ export const useSendMessage = () => {
     },
 
     onError: (error, variables) => {
-      const motivo = motivoDaFalha(error);
+      const reason = failureReason(error);
 
       queryClient.setQueryData(queryKeys.channel.messages(variables.channelId), (old: MessagesCache) => {
         if (!old) return old;
@@ -102,7 +102,7 @@ export const useSendMessage = () => {
             ...page,
             messages: page.messages.map((m) =>
               (m as PendingMessageModel).nonce === variables.nonce
-                ? { ...m, pending: undefined, failed: true, motivo }
+                ? { ...m, pending: undefined, failed: true, reason }
                 : m,
             ),
           })),

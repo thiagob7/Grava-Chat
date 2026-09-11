@@ -41,17 +41,17 @@ export const roleRepository = {
   },
 
   async countMembersByRole(guildId: string): Promise<Record<string, number>> {
-    const membros = await prisma.guildMember.findMany({
+    const members = await prisma.guildMember.findMany({
       where: { guildId },
       select: { roleIds: true },
     });
 
-    const contagem: Record<string, number> = {};
-    for (const m of membros) {
-      for (const id of m.roleIds) contagem[id] = (contagem[id] ?? 0) + 1;
+    const count: Record<string, number> = {};
+    for (const m of members) {
+      for (const id of m.roleIds) count[id] = (count[id] ?? 0) + 1;
     }
 
-    return contagem;
+    return count;
   },
 
   membersWithRole(guildId: string, roleId: string) {

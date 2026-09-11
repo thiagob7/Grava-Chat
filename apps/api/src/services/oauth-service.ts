@@ -1,6 +1,6 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
 
-import { ESCOPOS, has, type EscopoOAuth, type Permission } from "@gravae/shared";
+import { SCOPES, has, type ScopeAuth, type Permission } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
 import { keys, redis } from "~/lib/redis.js";
 import { toPublicUser } from "~/lib/serialize.js";
@@ -10,26 +10,26 @@ import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { botService } from "~/services/bot-service.js";
 
-const CODIGO_TTL = 120;
+const CODE_TTL = 120;
 const TOKEN_TTL = 7 * 24 * 60 * 60;
 
-type Escopo = EscopoOAuth;
+type Scope = ScopeAuth;
 
-interface Codigo {
+interface Code {
   userId: string;
   botId: string;
-  escopos: Escopo[];
+  scopes: Scope[];
   redirectUri: string;
 }
 
-interface TokenGuardado {
+interface TokenStored {
   userId: string;
   botId: string;
-  escopos: Escopo[];
-  criadoEm?: number;
+  scopes: Scope[];
+  createdAt?: number;
 }
 
-function iguais(a: string, b: string) {
+function equal(a: string, b: string) {
   const x = Buffer.from(a);
   const y = Buffer.from(b);
 
@@ -37,7 +37,7 @@ function iguais(a: string, b: string) {
 }
 
 export const oauthService = {
-  async descreverPedido(params: { botId: string; redirectUri: string; escopos: string[] }) {
+  async describeRequest(params: { botId: string; redirectUri: string; scopes: string[] }) {
     const bot = await botRepository.findById(params.botId);
     if (!bot) throw new NotFoundError("Aplicação não encontrada");
 
@@ -45,224 +45,224 @@ export const oauthService = {
       throw new AppError("Esse endereço de retorno não está registrado nesta aplicação.", 400);
     }
 
-    const pedidos = params.escopos.filter((e): e is Escopo =>
-      (ESCOPOS as readonly string[]).includes(e),
+    const requests = params.scopes.filter((e): e is Scope =>
+      (SCOPES as readonly string[]).includes(e),
     );
 
-    if (!pedidos.length) throw new AppError("Nenhum escopo válido pedido.", 400);
+    if (!requests.length) throw new AppError("Nenhum escopo válido pedido.", 400);
 
     return {
       bot: {
         id: bot.id,
-        usuario: toPublicUser(bot.usuario),
-        descricao: bot.descricao,
-        permissoesPedidas: bot.permissoesPedidas as Permission[],
+        user: toPublicUser(bot.user),
+        description: bot.description,
+        permissionsRequested: bot.permissionsRequested as Permission[],
       },
-      escopos: pedidos,
+      scopes: requests,
       redirectUri: params.redirectUri,
     };
   },
 
-  async emitirCodigo(
+  async emitCode(
     userId: string,
-    params: { botId: string; redirectUri: string; escopos: string[]; guildId?: string; permissoes?: string[] },
+    params: { botId: string; redirectUri: string; scopes: string[]; guildId?: string; permissions?: string[] },
   ) {
-    const pedido = await oauthService.descreverPedido(params);
+    const request = await oauthService.describeRequest(params);
 
-    if (pedido.escopos.includes("bot")) {
+    if (request.scopes.includes("bot")) {
       if (!params.guildId) throw new AppError("Escolha a comunidade onde o bot vai entrar.", 400);
 
-      const jaEsta = await botService.estaEm(pedido.bot.id, params.guildId);
-      if (!jaEsta) await botService.adicionarAoServidor(userId, pedido.bot.id, params.guildId, params.permissoes);
+      const alreadyThis = await botService.thisAt(request.bot.id, params.guildId);
+      if (!alreadyThis) await botService.addServer(userId, request.bot.id, params.guildId, params.permissions);
     }
 
-    const codigo = randomBytes(32).toString("base64url");
+    const code = randomBytes(32).toString("base64url");
 
-    const dados: Codigo = {
+    const data: Code = {
       userId,
-      botId: pedido.bot.id,
-      escopos: pedido.escopos,
+      botId: request.bot.id,
+      scopes: request.scopes,
       redirectUri: params.redirectUri,
     };
 
-    await redis.set(keys.oauthCode(codigo), JSON.stringify(dados), "EX", CODIGO_TTL);
+    await redis.set(keys.oauthCode(code), JSON.stringify(data), "EX", CODE_TTL);
 
-    return { codigo, redirectUri: params.redirectUri };
+    return { code, redirectUri: params.redirectUri };
   },
 
-  async trocarCodigo(params: {
-    codigo: string;
+  async swapCode(params: {
+    code: string;
     clientId: string;
     clientSecret: string;
     redirectUri: string;
   }) {
     const bot = await botRepository.findById(params.clientId);
-    if (!bot || !iguais(bot.clientSecret, params.clientSecret)) {
+    if (!bot || !equal(bot.clientSecret, params.clientSecret)) {
       throw new UnauthorizedError("Aplicação ou segredo inválido");
     }
 
-    const bruto = await redis.getdel(keys.oauthCode(params.codigo));
-    if (!bruto) throw new UnauthorizedError("Código expirado ou já usado");
+    const raw = await redis.getdel(keys.oauthCode(params.code));
+    if (!raw) throw new UnauthorizedError("Código expirado ou já usado");
 
-    const codigo = JSON.parse(bruto) as Codigo;
+    const code = JSON.parse(raw) as Code;
 
-    if (codigo.botId !== params.clientId || codigo.redirectUri !== params.redirectUri) {
+    if (code.botId !== params.clientId || code.redirectUri !== params.redirectUri) {
       throw new UnauthorizedError("Código não confere com a aplicação");
     }
 
     const token = randomBytes(32).toString("base64url");
-    const guardado: TokenGuardado = {
-      userId: codigo.userId,
-      botId: codigo.botId,
-      escopos: codigo.escopos,
-      criadoEm: Date.now(),
+    const kept: TokenStored = {
+      userId: code.userId,
+      botId: code.botId,
+      scopes: code.scopes,
+      createdAt: Date.now(),
     };
 
     await redis
       .multi()
-      .set(keys.oauthToken(token), JSON.stringify(guardado), "EX", TOKEN_TTL)
-      .sadd(keys.oauthDaPessoa(codigo.userId), token)
-      .expire(keys.oauthDaPessoa(codigo.userId), TOKEN_TTL)
+      .set(keys.oauthToken(token), JSON.stringify(kept), "EX", TOKEN_TTL)
+      .sadd(keys.personOauth(code.userId), token)
+      .expire(keys.personOauth(code.userId), TOKEN_TTL)
       .exec();
 
-    return { access_token: token, token_type: "Bearer", expires_in: TOKEN_TTL, scope: codigo.escopos.join(" ") };
+    return { access_token: token, token_type: "Bearer", expires_in: TOKEN_TTL, scope: code.scopes.join(" ") };
   },
 
-  async listarAutorizadas(userId: string) {
-    const chave = keys.oauthDaPessoa(userId);
-    const tokens = await redis.smembers(chave);
+  async listAuthorized(userId: string) {
+    const key = keys.personOauth(userId);
+    const tokens = await redis.smembers(key);
     if (!tokens.length) return [];
 
-    const brutos = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
+    const rawList = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
 
-    const mortos: string[] = [];
-    const vivos: TokenGuardado[] = [];
+    const dead: string[] = [];
+    const live: TokenStored[] = [];
 
     tokens.forEach((token, i) => {
-      const bruto = brutos[i];
-      if (!bruto) return mortos.push(token);
+      const raw = rawList[i];
+      if (!raw) return dead.push(token);
 
-      const dados = JSON.parse(bruto) as TokenGuardado;
+      const data = JSON.parse(raw) as TokenStored;
 
-      if (dados.userId !== userId) return mortos.push(token);
+      if (data.userId !== userId) return dead.push(token);
 
-      vivos.push(dados);
+      live.push(data);
     });
 
-    if (mortos.length) await redis.srem(chave, ...mortos);
-    if (!vivos.length) return [];
+    if (dead.length) await redis.srem(key, ...dead);
+    if (!live.length) return [];
 
-    const porBot = new Map<string, { escopos: Set<Escopo>; criadoEm: number | null }>();
+    const byBot = new Map<string, { scopes: Set<Scope>; createdAt: number | null }>();
 
-    for (const dados of vivos) {
-      const atual = porBot.get(dados.botId) ?? { escopos: new Set<Escopo>(), criadoEm: null };
+    for (const data of live) {
+      const current = byBot.get(data.botId) ?? { scopes: new Set<Scope>(), createdAt: null };
 
-      dados.escopos.forEach((e) => atual.escopos.add(e));
+      data.scopes.forEach((e) => current.scopes.add(e));
 
-      if (dados.criadoEm && (!atual.criadoEm || dados.criadoEm > atual.criadoEm)) {
-        atual.criadoEm = dados.criadoEm;
+      if (data.createdAt && (!current.createdAt || data.createdAt > current.createdAt)) {
+        current.createdAt = data.createdAt;
       }
 
-      porBot.set(dados.botId, atual);
+      byBot.set(data.botId, current);
     }
 
-    const lista = await Promise.all(
-      [...porBot].map(async ([botId, { escopos, criadoEm }]) => {
+    const list = await Promise.all(
+      [...byBot].map(async ([botId, { scopes, createdAt }]) => {
         const bot = await botRepository.findById(botId);
 
         if (!bot) return null;
 
         return {
           id: bot.id,
-          usuario: toPublicUser(bot.usuario),
-          descricao: bot.descricao,
-          escopos: [...escopos],
-          autorizadoEm: criadoEm ? new Date(criadoEm).toISOString() : null,
-          expiraEm: criadoEm ? new Date(criadoEm + TOKEN_TTL * 1000).toISOString() : null,
+          user: toPublicUser(bot.user),
+          description: bot.description,
+          scopes: [...scopes],
+          authorizedAt: createdAt ? new Date(createdAt).toISOString() : null,
+          expiresAt: createdAt ? new Date(createdAt + TOKEN_TTL * 1000).toISOString() : null,
         };
       }),
     );
 
-    return lista
+    return list
       .filter((a) => a !== null)
-      .sort((a, b) => (b.autorizadoEm ?? "").localeCompare(a.autorizadoEm ?? ""));
+      .sort((a, b) => (b.authorizedAt ?? "").localeCompare(a.authorizedAt ?? ""));
   },
 
-  async revogarAplicacao(userId: string, botId: string) {
-    const chave = keys.oauthDaPessoa(userId);
-    const tokens = await redis.smembers(chave);
+  async revokeApplication(userId: string, botId: string) {
+    const key = keys.personOauth(userId);
+    const tokens = await redis.smembers(key);
     if (!tokens.length) throw new NotFoundError("Essa aplicação não tem acesso à sua conta");
 
-    const brutos = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
+    const rawList = await redis.mget(tokens.map((t) => keys.oauthToken(t)));
 
-    const alvos = tokens.filter((_, i) => {
-      const bruto = brutos[i];
-      if (!bruto) return false;
+    const targets = tokens.filter((_, i) => {
+      const raw = rawList[i];
+      if (!raw) return false;
 
-      const dados = JSON.parse(bruto) as TokenGuardado;
+      const data = JSON.parse(raw) as TokenStored;
 
-      return dados.botId === botId && dados.userId === userId;
+      return data.botId === botId && data.userId === userId;
     });
 
-    if (!alvos.length) throw new NotFoundError("Essa aplicação não tem acesso à sua conta");
+    if (!targets.length) throw new NotFoundError("Essa aplicação não tem acesso à sua conta");
 
     await redis
       .multi()
-      .del(...alvos.map((t) => keys.oauthToken(t)))
-      .srem(chave, ...alvos)
+      .del(...targets.map((t) => keys.oauthToken(t)))
+      .srem(key, ...targets)
       .exec();
 
-    return { revogados: alvos.length };
+    return { revoked: targets.length };
   },
 
-  async resolverToken(token: string): Promise<TokenGuardado> {
-    const bruto = await redis.get(keys.oauthToken(token));
-    if (!bruto) throw new UnauthorizedError("Token inválido ou expirado");
+  async resolveToken(token: string): Promise<TokenStored> {
+    const raw = await redis.get(keys.oauthToken(token));
+    if (!raw) throw new UnauthorizedError("Token inválido ou expirado");
 
-    return JSON.parse(bruto) as TokenGuardado;
+    return JSON.parse(raw) as TokenStored;
   },
 
-  exigirEscopo(sessao: TokenGuardado, escopo: Escopo) {
-    if (!sessao.escopos.includes(escopo)) {
-      throw new ForbiddenError(`Esta aplicação não pediu o escopo "${escopo}"`);
+  requireScope(session: TokenStored, scope: Scope) {
+    if (!session.scopes.includes(scope)) {
+      throw new ForbiddenError(`Esta aplicação não pediu o escopo "${scope}"`);
     }
   },
 
-  async quemEh(sessao: TokenGuardado) {
-    oauthService.exigirEscopo(sessao, "identify");
+  async whoIs(session: TokenStored) {
+    oauthService.requireScope(session, "identify");
 
-    const user = await userRepository.findById(sessao.userId);
+    const user = await userRepository.findById(session.userId);
     if (!user) throw new NotFoundError("Usuário não encontrado");
 
-    const perfil = user.perfil as { conexoes?: unknown[] } | null;
+    const profile = user.profile as { connections?: unknown[] } | null;
 
     return {
       ...toPublicUser(user),
-      ...(sessao.escopos.includes("email") ? { email: user.email } : {}),
-      ...(sessao.escopos.includes("connections") ? { conexoes: perfil?.conexoes ?? [] } : {}),
+      ...(session.scopes.includes("email") ? { email: user.email } : {}),
+      ...(session.scopes.includes("connections") ? { connections: profile?.connections ?? [] } : {}),
     };
   },
 
-  async servidoresDe(sessao: TokenGuardado) {
-    oauthService.exigirEscopo(sessao, "guilds");
+  async servers(session: TokenStored) {
+    oauthService.requireScope(session, "guilds");
 
-    const [membros, bot] = await Promise.all([
-      memberRepository.guildIdsOf(sessao.userId),
-      botRepository.findById(sessao.botId),
+    const [members, bot] = await Promise.all([
+      memberRepository.guildIdsOf(session.userId),
+      botRepository.findById(session.botId),
     ]);
 
-    const lista = await Promise.all(
-      membros.map(async (m) => {
+    const list = await Promise.all(
+      members.map(async (m) => {
         const guild = await guildRepository.findById(m.guildId);
         if (!guild) return null;
 
-        const contexto = await accessService
-          .contextOf(sessao.userId, m.guildId)
+        const context = await accessService
+          .contextOf(session.userId, m.guildId)
           .catch(() => null);
 
-        const permissoes = contexto?.permissions ?? new Set<Permission>();
+        const permissions = context?.permissions ?? new Set<Permission>();
 
-        const temOBot = bot
+        const hasBot = bot
           ? Boolean(await memberRepository.find(m.guildId, bot.botUserId))
           : false;
 
@@ -270,13 +270,13 @@ export const oauthService = {
           id: guild.id,
           name: guild.name,
           iconUrl: guild.iconUrl,
-          owner: guild.ownerId === sessao.userId,
-          gerencia: has(permissoes, "MANAGE_GUILD"),
-          temOBot,
+          owner: guild.ownerId === session.userId,
+          manages: has(permissions, "MANAGE_GUILD"),
+          hasBot,
         };
       }),
     );
 
-    return lista.filter((g) => g !== null);
+    return list.filter((g) => g !== null);
   },
 };

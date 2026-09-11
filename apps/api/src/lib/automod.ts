@@ -1,13 +1,13 @@
-export type Gatilho = "WORDS" | "MENTION_SPAM" | "LINKS";
+export type Trigger = "WORDS" | "MENTION_SPAM" | "LINKS";
 
-export interface RegraDeConteudo {
-  trigger: Gatilho;
-  palavras: string[];
-  limiteMencoes: number | null;
+export interface ContentRule {
+  trigger: Trigger;
+  words: string[];
+  limitMentions: number | null;
 }
 
-export const normalizar = (texto: string) =>
-  texto
+export const normalize = (text: string) =>
+  text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "");
@@ -15,32 +15,32 @@ export const normalizar = (texto: string) =>
 const ESCAPE = /[.*+?^${}()|[\]\\]/g;
 const LINK = /\bhttps?:\/\/\S+|\bwww\.\S+\.\S+/i;
 
-function contarMencoes(content: string) {
-  const usuarios = content.match(/<@[a-f\d]{24}>/gi)?.length ?? 0;
-  const cargos = content.match(/<@&[a-f\d]{24}>/gi)?.length ?? 0;
-  const todos = content.match(/@(everyone|here)\b/gi)?.length ?? 0;
+function countMentions(content: string) {
+  const users = content.match(/<@[a-f\d]{24}>/gi)?.length ?? 0;
+  const roleList = content.match(/<@&[a-f\d]{24}>/gi)?.length ?? 0;
+  const all = content.match(/@(everyone|here)\b/gi)?.length ?? 0;
 
-  return usuarios + cargos + todos;
+  return users + roleList + all;
 }
 
-export function violacao(content: string, regra: RegraDeConteudo): string | null {
-  if (regra.trigger === "LINKS") {
+export function violation(content: string, rule: ContentRule): string | null {
+  if (rule.trigger === "LINKS") {
     return LINK.test(content) ? "link" : null;
   }
 
-  if (regra.trigger === "MENTION_SPAM") {
-    const limite = regra.limiteMencoes ?? 5;
-    return contarMencoes(content) >= limite ? "menções demais" : null;
+  if (rule.trigger === "MENTION_SPAM") {
+    const limit = rule.limitMentions ?? 5;
+    return countMentions(content) >= limit ? "menções demais" : null;
   }
 
-  const texto = normalizar(content);
+  const text = normalize(content);
 
-  for (const palavra of regra.palavras) {
-    const alvo = normalizar(palavra).trim();
-    if (!alvo) continue;
+  for (const word of rule.words) {
+    const target = normalize(word).trim();
+    if (!target) continue;
 
-    const padrao = new RegExp(`(^|[^\\p{L}\\p{N}])${alvo.replace(ESCAPE, "\\$&")}([^\\p{L}\\p{N}]|$)`, "u");
-    if (padrao.test(texto)) return `palavra bloqueada: ${palavra}`;
+    const fallback = new RegExp(`(^|[^\\p{L}\\p{N}])${target.replace(ESCAPE, "\\$&")}([^\\p{L}\\p{N}]|$)`, "u");
+    if (fallback.test(text)) return `palavra bloqueada: ${word}`;
   }
 
   return null;

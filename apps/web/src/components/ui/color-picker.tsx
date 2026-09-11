@@ -6,6 +6,7 @@ import { Input } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
+import { useTranslation } from "~/traducao";
 
 export interface Color {
   h: number;
@@ -34,7 +35,7 @@ export function formatColor({ h, s, l, a }: Color): string {
   return `rgb(${r} ${g} ${b} / ${Number(a.toFixed(3))})`;
 }
 
-const paraCss = (color: Color, alpha = color.a) =>
+const forCss = (color: Color, alpha = color.a) =>
   Color.hsl(color.h, color.s, color.l).alpha(alpha).string();
 
 interface ColorContextValue {
@@ -63,7 +64,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   className,
   children,
 }) => {
-  const [color, setColor] = React.useState<Color>(() => parseColor(value) ?? PRETO);
+  const [color, setColor] = React.useState<Color>(() => parseColor(value) ?? BLACK);
 
   const emitted = React.useRef<string | null>(null);
 
@@ -77,13 +78,13 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   const change = React.useCallback(
     (partial: Partial<Color>) => {
       setColor((current) => {
-        const proxima = { ...current, ...partial };
-        const text = formatColor(proxima);
+        const next = { ...current, ...partial };
+        const text = formatColor(next);
 
         emitted.current = text;
         onChange(text);
 
-        return proxima;
+        return next;
       });
     },
     [onChange],
@@ -91,24 +92,24 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <ColorContext.Provider value={{ color, change }}>
-      <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", flxCls("molduraDoSeletorDeCor"), className)}>{children}</div>
+      <div data-gc="ui.color-picker.div" className={cn("flex w-full flex-col gap-3", flxCls("pickerColorFrame"), className)}>{children}</div>
     </ColorContext.Provider>
   );
 };
 
-const PRETO: Color = { h: 0, s: 0, l: 0, a: 1 };
+const BLACK: Color = { h: 0, s: 0, l: 0, a: 1 };
 
-const claroNoTopo = (x: number) => (x < 0.01 ? 100 : 50 + 50 * (1 - x));
+const lightTop = (x: number) => (x < 0.01 ? 100 : 50 + 50 * (1 - x));
 
 export function colorAtPosition(x: number, y: number): Pick<Color, "s" | "l"> {
-  return { s: x * 100, l: claroNoTopo(x) * (1 - y) };
+  return { s: x * 100, l: lightTop(x) * (1 - y) };
 }
 
 export function colorPosition({ s, l }: Pick<Color, "s" | "l">): { x: number; y: number } {
   const x = s / 100;
-  const topo = claroNoTopo(x);
+  const top = lightTop(x);
 
-  return { x, y: topo ? Math.max(0, Math.min(1, 1 - l / topo)) : 0 };
+  return { x, y: top ? Math.max(0, Math.min(1, 1 - l / top)) : 0 };
 }
 
 export const ColorPickerSelection: React.FC<{ className?: string }> = ({ className }) => {
@@ -170,7 +171,7 @@ export const ColorPickerSelection: React.FC<{ className?: string }> = ({ classNa
   );
 };
 
-const REGUA = cn(
+const SLIDER = cn(
   "h-3.5 w-full cursor-pointer appearance-none rounded-full outline-none",
   "[&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none",
   "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2",
@@ -193,7 +194,7 @@ export const ColorPickerHue: React.FC = () => {
       value={Math.round(color.h)}
       onChange={(e) => change({ h: Number(e.target.value) })}
       aria-label="Matiz"
-      className={REGUA}
+      className={SLIDER}
       style={{
         background:
           "linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)",
@@ -214,9 +215,9 @@ export const ColorPickerAlpha: React.FC = () => {
       value={Math.round(color.a * 100)}
       onChange={(e) => change({ a: Number(e.target.value) / 100 })}
       aria-label="Opacidade"
-      className={REGUA}
+      className={SLIDER}
       style={{
-        backgroundImage: `linear-gradient(90deg, ${paraCss(color, 0)}, ${paraCss(color, 1)}),
+        backgroundImage: `linear-gradient(90deg, ${forCss(color, 0)}, ${forCss(color, 1)}),
                           repeating-conic-gradient(rgb(255 255 255 / 0.22) 0 25%, transparent 0 50%)`,
         backgroundSize: "auto, 8px 8px",
       }}
@@ -226,17 +227,18 @@ export const ColorPickerAlpha: React.FC = () => {
 
 export const ColorPickerEyeDropper: React.FC = () => {
   const { change } = useColor();
-  const existe = typeof window !== "undefined" && "EyeDropper" in window;
+  const { t } = useTranslation();
+  const exists = typeof window !== "undefined" && "EyeDropper" in window;
 
-  if (!existe) return null;
+  if (!exists) return null;
 
   const pickFromScreen = async () => {
     try {
-      const conta = new (window as unknown as {
+      const account = new (window as unknown as {
         EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> };
       }).EyeDropper();
 
-      const { sRGBHex } = await conta.open();
+      const { sRGBHex } = await account.open();
       const parsed = parseColor(sRGBHex);
 
       if (parsed) change({ h: parsed.h, s: parsed.s, l: parsed.l });
@@ -248,8 +250,8 @@ export const ColorPickerEyeDropper: React.FC = () => {
     <button data-gc="ui.color-picker.button"
       type="button"
       onClick={() => void pickFromScreen()}
-      title="Pescar uma cor da tela"
-      aria-label="Pescar uma cor da tela"
+      title={t("comum.cor.pescar")}
+      aria-label={t("comum.cor.pescar")}
       className="flex size-8 shrink-0 items-center justify-center rounded-md border border-line text-ink-muted transition hover:bg-surface-3 hover:text-ink"
     >
       <Pipette data-gc="ui.color-picker.pipette" size={14} />
@@ -263,6 +265,7 @@ const FORMATS: Format[] = ["hex", "rgb", "hsl", "css"];
 
 export const ColorPickerFormat: React.FC = () => {
   const { color, change } = useColor();
+  const { t } = useTranslation();
   const [format, setFormat] = React.useState<Format>("hex");
 
   const [draft, setDraft] = React.useState<string | null>(null);
@@ -293,7 +296,7 @@ export const ColorPickerFormat: React.FC = () => {
             if (parsed) change(parsed);
           }}
           onBlur={() => setDraft(null)}
-          aria-label="Valor em hexadecimal"
+          aria-label={t("comum.cor.hex")}
           className={fieldClass}
         />
       )}

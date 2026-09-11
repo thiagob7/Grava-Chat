@@ -1,39 +1,39 @@
-import { i18next, idiomaAtual } from "~/traducao";
-import { prefsDeAparencia } from "~/features/configuracoes/stores/aparencia";
+import { i18next, currentLanguage } from "~/traducao";
+import { appearancePrefs } from "~/features/configuracoes/stores/aparencia";
 
-const formatadores = new Map<string, Intl.DateTimeFormat>();
+const formatters = new Map<string, Intl.DateTimeFormat>();
 
-function guardado(sufixo: string, montar: () => Intl.DateTimeFormat): Intl.DateTimeFormat {
-  const chave = `${idiomaAtual()}|${sufixo}`;
-  let pronto = formatadores.get(chave);
+function kept(suffix: string, build: () => Intl.DateTimeFormat): Intl.DateTimeFormat {
+  const key = `${currentLanguage()}|${suffix}`;
+  let ready = formatters.get(key);
 
-  if (!pronto) {
-    pronto = montar();
-    formatadores.set(chave, pronto);
+  if (!ready) {
+    ready = build();
+    formatters.set(key, ready);
   }
 
-  return pronto;
+  return ready;
 }
 
-function formatadorDeHora(): Intl.DateTimeFormat {
-  const em24h = prefsDeAparencia().horaEm24h;
+function hourFormatter(): Intl.DateTimeFormat {
+  const in24h = appearancePrefs().hourIn24h;
 
-  return guardado(em24h ? "24h" : "12h", () =>
-    new Intl.DateTimeFormat(idiomaAtual(), {
+  return kept(in24h ? "24h" : "12h", () =>
+    new Intl.DateTimeFormat(currentLanguage(), {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: !em24h,
+      hour12: !in24h,
     }),
   );
 }
 
-const time = { format: (d: Date) => formatadorDeHora().format(d) };
+const time = { format: (d: Date) => hourFormatter().format(d) };
 const dayMonth = {
   format: (d: Date) =>
-    guardado(
+    kept(
       "dia-mes",
       () =>
-        new Intl.DateTimeFormat(idiomaAtual(), {
+        new Intl.DateTimeFormat(currentLanguage(), {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
@@ -66,10 +66,10 @@ export function formatDayDivider(iso: string) {
   if (isSameDay(d, now)) return i18next.t("conversa.data.hoje");
   if (isSameDay(d, yesterday)) return i18next.t("conversa.data.ontem");
 
-  return guardado(
+  return kept(
     "dia-por-extenso",
     () =>
-      new Intl.DateTimeFormat(idiomaAtual(), {
+      new Intl.DateTimeFormat(currentLanguage(), {
         day: "2-digit",
         month: "long",
         year: "numeric",
@@ -94,10 +94,10 @@ export const initials = (name: string) =>
     .toUpperCase();
 
 export const formatShortDate = (iso: string) =>
-  guardado(
+  kept(
     "data-curta",
     () =>
-      new Intl.DateTimeFormat(idiomaAtual(), {
+      new Intl.DateTimeFormat(currentLanguage(), {
         day: "numeric",
         month: "short",
         year: "numeric",

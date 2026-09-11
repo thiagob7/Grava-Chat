@@ -1,16 +1,17 @@
-export const CAMINHO_DO_CONVITE = "/invite/";
+import { houseAddress } from "./origens.js";
 
-export function codigoDoConviteNoLink(url: string, origem: string): string | null {
-  try {
-    const endereco = new URL(url, origem);
-    if (endereco.origin !== new URL(origem).origin) return null;
+export const INVITE_PATH = "/invite/";
 
-    const encontrado = new RegExp(`^${CAMINHO_DO_CONVITE}([A-Za-z0-9_-]{4,32})$`).exec(
-      endereco.pathname,
-    );
+export function inviteLinkCode(
+  url: string,
+  origin: string | readonly string[],
+): string | null {
+  const address = houseAddress(url, origin);
+  if (!address) return null;
 
-    return encontrado?.[1] ?? null;
-  } catch {
-    return null;
-  }
+  const found = new RegExp(
+    `^${INVITE_PATH}([A-Za-z0-9_-]{4,32})$`,
+  ).exec(address.pathname);
+
+  return found?.[1] ?? null;
 }

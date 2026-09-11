@@ -28,16 +28,16 @@ const emit = (s, ev, payload) =>
     s.emit(ev, payload, (r) => (r.ok ? resolve(r.data) : reject(new Error(r.error)))),
   );
 
-const dono = await api("/auth/dev-login", { body: { email: "dono-forum@gravae.io", displayName: "Dono" } });
+const owner = await api("/auth/dev-login", { body: { email: "dono-forum@gravae.io", displayName: "Dono" } });
 const ze = await api("/auth/dev-login", { body: { email: "ze-forum@gravae.io", displayName: "Ze" } });
 
-const guild = await api("/guilds", { token: dono.accessToken, body: { name: "Teste Forum" } });
-const convite = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
-await api(`/invites/${convite.code}/join`, { token: ze.accessToken });
+const guild = await api("/guilds", { token: owner.accessToken, body: { name: "Teste Forum" } });
+const invite = await api(`/guilds/${guild.id}/invites`, { token: owner.accessToken, body: {} });
+await api(`/invites/${invite.code}/join`, { token: ze.accessToken });
 
 console.log("\n== criar canal de forum ==");
 const forum = await api(`/guilds/${guild.id}/channels`, {
-  token: dono.accessToken,
+  token: owner.accessToken,
   body: { name: "duvidas", type: "FORUM" },
 });
 if (forum.type !== "FORUM") throw new Error("o canal nao virou forum");
@@ -47,51 +47,51 @@ console.log("\n== assuntos ==");
 const socketZe = await connect(ze.accessToken);
 await emit(socketZe, "channel:subscribe", { channelId: forum.id });
 
-const primeiro = await api(`/channels/${forum.id}/posts`, {
-  token: dono.accessToken,
+const first = await api(`/channels/${forum.id}/posts`, {
+  token: owner.accessToken,
   body: { title: "Como monta o PC?", content: "queria montar um pc pra jogar" },
 });
-if (primeiro.post.messageCount !== 1) throw new Error("o post nao contou a primeira mensagem");
-ok(`assunto criado ("${primeiro.post.title}") com o corpo como primeira mensagem`);
+if (first.post.messageCount !== 1) throw new Error("o post nao contou a primeira mensagem");
+ok(`assunto criado ("${first.post.title}") com o corpo como primeira mensagem`);
 
-const segundo = await api(`/channels/${forum.id}/posts`, {
+const second = await api(`/channels/${forum.id}/posts`, {
   token: ze.accessToken,
   body: { title: "Qual teclado?", content: "mecanico ou membrana" },
 });
 
-const lista = await api(`/channels/${forum.id}/posts`, { token: ze.accessToken, method: "GET" });
-if (lista.posts.length !== 2) throw new Error(`esperava 2 assuntos, veio ${lista.posts.length}`);
-if (lista.posts[0].id !== segundo.post.id) throw new Error("a lista nao esta por atividade");
+const list = await api(`/channels/${forum.id}/posts`, { token: ze.accessToken, method: "GET" });
+if (list.posts.length !== 2) throw new Error(`esperava 2 assuntos, veio ${list.posts.length}`);
+if (list.posts[0].id !== second.post.id) throw new Error("a lista nao esta por atividade");
 ok("a lista vem por atividade — o assunto mais recente no topo");
 
 console.log("\n== conversa dentro do assunto ==");
 await emit(socketZe, "message:send", {
   channelId: forum.id,
-  postId: primeiro.post.id,
+  postId: first.post.id,
   content: "eu montei o meu mes passado",
   nonce: "f1",
 });
 
-const doPost = await api(
-  `/channels/${forum.id}/messages?postId=${primeiro.post.id}`,
-  { token: dono.accessToken, method: "GET" },
+const fromPost = await api(
+  `/channels/${forum.id}/messages?postId=${first.post.id}`,
+  { token: owner.accessToken, method: "GET" },
 );
-if (doPost.messages.length !== 2) throw new Error(`esperava 2 mensagens no assunto, veio ${doPost.messages.length}`);
+if (fromPost.messages.length !== 2) throw new Error(`esperava 2 mensagens no assunto, veio ${fromPost.messages.length}`);
 ok("a resposta entra na conversa do assunto, junto com o corpo");
 
-const canalSolto = await api(`/channels/${forum.id}/messages`, { token: dono.accessToken, method: "GET" });
-if (canalSolto.messages.length !== 0) throw new Error("mensagem de assunto vazou pro canal");
+const channelLoose = await api(`/channels/${forum.id}/messages`, { token: owner.accessToken, method: "GET" });
+if (channelLoose.messages.length !== 0) throw new Error("mensagem de assunto vazou pro canal");
 ok("o canal em si nao mistura as mensagens dos assuntos");
 
-const depois = await api(`/channels/${forum.id}/posts`, { token: ze.accessToken, method: "GET" });
-const atualizado = depois.posts.find((p) => p.id === primeiro.post.id);
-if (atualizado.messageCount !== 2) throw new Error("a contagem de respostas nao subiu");
-if (depois.posts[0].id !== primeiro.post.id) throw new Error("responder nao subiu o assunto");
+const after = await api(`/channels/${forum.id}/posts`, { token: ze.accessToken, method: "GET" });
+const updated = after.posts.find((p) => p.id === first.post.id);
+if (updated.messageCount !== 2) throw new Error("a contagem de respostas nao subiu");
+if (after.posts[0].id !== first.post.id) throw new Error("responder nao subiu o assunto");
 ok("responder conta a mensagem e sobe o assunto pro topo");
 
 console.log("\n== fechar ==");
-await api(`/posts/${primeiro.post.id}`, {
-  token: dono.accessToken,
+await api(`/posts/${first.post.id}`, {
+  token: owner.accessToken,
   method: "PATCH",
   body: { closed: true },
 });
@@ -99,7 +99,7 @@ await api(`/posts/${primeiro.post.id}`, {
 try {
   await emit(socketZe, "message:send", {
     channelId: forum.id,
-    postId: primeiro.post.id,
+    postId: first.post.id,
     content: "ainda da?",
     nonce: "f2",
   });
@@ -118,5 +118,5 @@ try {
 }
 
 socketZe.close();
-await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "DELETE" });
+await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "DELETE" });
 console.log("\ntudo certo.");

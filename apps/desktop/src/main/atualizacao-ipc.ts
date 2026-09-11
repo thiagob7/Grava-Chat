@@ -1,22 +1,22 @@
 import { BrowserWindow, ipcMain } from "electron";
-import type { EstadoDaAtualizacao } from "@gravae/shared";
+import type { UpdateState } from "@gravae/shared";
 
-import { criarAtualizador } from "./atualizacao.js";
+import { createUpdater } from "./atualizacao.js";
 
-export function registrarAtualizacao(janela: () => BrowserWindow | null) {
-  const avisar = (estado: EstadoDaAtualizacao) => {
-    const alvo = janela();
-    if (alvo && !alvo.isDestroyed()) alvo.webContents.send("atualizacao:mudou", estado);
+export function registerUpdate(appWindow: () => BrowserWindow | null) {
+  const notify = (state: UpdateState) => {
+    const target = appWindow();
+    if (target && !target.isDestroyed()) target.webContents.send("atualizacao:mudou", state);
   };
 
-  const atualizador = criarAtualizador(avisar);
+  const updater = createUpdater(notify);
 
-  ipcMain.handle("atualizacao:estado", () => atualizador.estado());
-  ipcMain.handle("atualizacao:procurar", () => atualizador.procurar());
-  ipcMain.handle("atualizacao:baixar", () => atualizador.baixar());
-  ipcMain.handle("atualizacao:instalar", () => atualizador.instalar());
+  ipcMain.handle("atualizacao:estado", () => updater.state());
+  ipcMain.handle("atualizacao:procurar", () => updater.lookup());
+  ipcMain.handle("atualizacao:baixar", () => updater.download());
+  ipcMain.handle("atualizacao:instalar", () => updater.install());
 
-  atualizador.vigiar();
+  updater.watch();
 
-  return atualizador;
+  return updater;
 }

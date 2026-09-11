@@ -4,17 +4,17 @@ import { EMOJI, urlDoEmoji } from "~/features/expressao/lib/twemoji";
 import { cn } from "~/lib/utils";
 
 interface Props {
-  texto: string;
+  text: string;
   fontFamily?: string;
   className?: string;
 }
 
-const EmojiNoTexto: React.FC<{ emoji: string }> = ({ emoji }) => {
-  const [semDesenho, setSemDesenho] = React.useState(false);
+const EmojiText: React.FC<{ emoji: string }> = ({ emoji }) => {
+  const [withoutDrawing, setWithoutDrawing] = React.useState(false);
 
-  React.useEffect(() => setSemDesenho(false), [emoji]);
+  React.useEffect(() => setWithoutDrawing(false), [emoji]);
 
-  if (semDesenho) return <>{emoji}</>;
+  if (withoutDrawing) return <>{emoji}</>;
 
   return (
     <span data-gc="conversa.espelho-do-compositor.span" className="relative text-transparent">
@@ -23,27 +23,27 @@ const EmojiNoTexto: React.FC<{ emoji: string }> = ({ emoji }) => {
         src={urlDoEmoji(emoji)}
         alt=""
         aria-hidden
-        onError={() => setSemDesenho(true)}
+        onError={() => setWithoutDrawing(true)}
         className="pointer-events-none absolute inset-0 size-full object-contain"
       />
     </span>
   );
 };
 
-export const EspelhoDoCompositor = React.forwardRef<HTMLDivElement, Props>(
-  ({ texto, fontFamily, className }, ref) => {
-    const partes: React.ReactNode[] = [];
-    let ultimo = 0;
+export const ComposerMirror = React.forwardRef<HTMLDivElement, Props>(
+  ({ text, fontFamily, className }, ref) => {
+    const parts: React.ReactNode[] = [];
+    let last = 0;
 
-    for (const achado of texto.matchAll(EMOJI)) {
-      const inicio = achado.index!;
-      if (inicio > ultimo) partes.push(texto.slice(ultimo, inicio));
-      partes.push(<EmojiNoTexto data-gc="conversa.espelho-do-compositor.emoji-no-texto" key={inicio} emoji={achado[0]} />);
-      ultimo = inicio + achado[0].length;
+    for (const match of text.matchAll(EMOJI)) {
+      const start = match.index!;
+      if (start > last) parts.push(text.slice(last, start));
+      parts.push(<EmojiText data-gc="conversa.espelho-do-compositor.emoji-text" key={start} emoji={match[0]} />);
+      last = start + match[0].length;
     }
 
-    if (ultimo < texto.length) partes.push(texto.slice(ultimo));
-    if (texto.endsWith("\n")) partes.push("​");
+    if (last < text.length) parts.push(text.slice(last));
+    if (text.endsWith("\n")) parts.push("​");
 
     return (
       <div data-gc="conversa.espelho-do-compositor.div"
@@ -55,10 +55,10 @@ export const EspelhoDoCompositor = React.forwardRef<HTMLDivElement, Props>(
           className,
         )}
       >
-        {partes}
+        {parts}
       </div>
     );
   },
 );
 
-EspelhoDoCompositor.displayName = "EspelhoDoCompositor";
+ComposerMirror.displayName = "EspelhoDoCompositor";

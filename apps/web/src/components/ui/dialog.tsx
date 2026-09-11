@@ -19,13 +19,13 @@ export const DialogContent = ({
     <DialogPrimitive.Overlay data-gc="ui.dialog.dialog-primitiveoverlay"
       className={cn(
         "regiao-sem-arrasto fixed inset-0 z-50 bg-veu backdrop-blur-[3px]",
-        flxCls("fundoDaJanela"),
+        flxCls("windowBackground"),
       )}
     />
     <DialogPrimitive.Content data-gc="ui.dialog.dialog-primitivecontent"
       className={cn(
-        "janela regiao-sem-arrasto fixed inset-0 z-50 m-auto h-fit max-h-[92vh] w-[calc(100%-1.5rem)] max-w-md outline-none sm:w-full",
-        flxCls("janela"),
+        "janela regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-fit max-h-[92vh] w-[calc(100%-1.5rem)] max-w-md flex-col overflow-hidden outline-none sm:w-full",
+        flxCls("appWindow"),
         "rounded-xl border border-line bg-surface-1",
         "shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_0.25rem_0.75rem_-0.25rem_rgba(0,0,0,0.14),0_0.75rem_2rem_-0.75rem_rgba(0,0,0,0.12)]",
         className,
@@ -46,7 +46,7 @@ export const DialogContent = ({
 );
 
 export const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div data-gc="ui.dialog.div" className={cn("border-b border-line px-5 py-4", className)} {...props} />
+  <div data-gc="ui.dialog.div" className={cn("shrink-0 border-b border-line px-5 py-4", className)} {...props} />
 );
 
 export const DialogTitle = ({
@@ -64,9 +64,9 @@ export const DialogDescription = ({
 );
 
 export const DialogBody = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div data-gc="ui.dialog.div--2" className={cn("p-5", className)} {...props} />
+  <div data-gc="ui.dialog.div--2" className={cn("min-h-0 flex-1 overflow-y-auto p-5", className)} {...props} />
 );
 
 export const DialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div data-gc="ui.dialog.div--3" className={cn("flex justify-end gap-2 px-5 pb-5", className)} {...props} />
+  <div data-gc="ui.dialog.div--3" className={cn("flex shrink-0 justify-end gap-2 px-5 pb-5 pt-1", className)} {...props} />
 );

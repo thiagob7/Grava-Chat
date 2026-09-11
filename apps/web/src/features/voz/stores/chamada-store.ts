@@ -1,37 +1,37 @@
 import { create } from "zustand";
 
-export interface ChamadaTocando {
+export interface CallPlaying {
   channelId: string;
   userId: string;
-  comVideo: boolean;
-  desde: number;
+  withVideo: boolean;
+  since: number;
 }
 
-type ChamadaStore = {
-  tocando: ChamadaTocando | null;
+type CallStore = {
+  playing: CallPlaying | null;
 
-  receber: (chamada: Omit<ChamadaTocando, "desde">) => void;
-  atualizarVideo: (channelId: string, comVideo: boolean) => void;
-  encerrar: (channelId?: string) => void;
+  receive: (call: Omit<CallPlaying, "since">) => void;
+  updateVideo: (channelId: string, withVideo: boolean) => void;
+  end: (channelId?: string) => void;
 };
 
-export const useChamadaStore = create<ChamadaStore>((set, store) => ({
-  tocando: null,
+export const useCallStore = create<CallStore>((set, store) => ({
+  playing: null,
 
-  receber: (chamada) => set({ tocando: { ...chamada, desde: Date.now() } }),
+  receive: (call) => set({ playing: { ...call, since: Date.now() } }),
 
-  atualizarVideo: (channelId, comVideo) => {
-    const atual = store().tocando;
-    if (!atual || atual.channelId !== channelId) return;
+  updateVideo: (channelId, withVideo) => {
+    const current = store().playing;
+    if (!current || current.channelId !== channelId) return;
 
-    set({ tocando: { ...atual, comVideo } });
+    set({ playing: { ...current, withVideo } });
   },
 
-  encerrar: (channelId) => {
-    const atual = store().tocando;
-    if (!atual) return;
-    if (channelId && atual.channelId !== channelId) return;
+  end: (channelId) => {
+    const current = store().playing;
+    if (!current) return;
+    if (channelId && current.channelId !== channelId) return;
 
-    set({ tocando: null });
+    set({ playing: null });
   },
 }));

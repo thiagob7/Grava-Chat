@@ -6,12 +6,12 @@ import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserName } from "~/features/perfil/components/UserName";
-import { MenuDoProprioCartao, rotuloDoEstado } from "~/features/perfil/components/cartao/MenuDoProprioCartao";
+import { OwnCardMenu, stateLabel } from "~/features/perfil/components/cartao/MenuDoProprioCartao";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
 import { UserSettingsModal } from "~/features/configuracoes/components/UserSettingsModal";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
@@ -25,47 +25,47 @@ interface UserPanelProps {
 }
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
-  const secaoPedida = useConfiguracoes((s) => s.secao);
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
-  const fecharPedido = useConfiguracoes((s) => s.fechar);
-  const [editandoPerfil, setEditandoPerfil] = useState(false);
-  const [definindoStatus, setDefinindoStatus] = useState(false);
+  const sectionRequested = useSettings((s) => s.section);
+  const openSettings = useSettings((s) => s.open);
+  const closeRequest = useSettings((s) => s.close);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [settingStatus, setSettingStatus] = useState(false);
 
   const { micEnabled, micBlocked, deafened, toggleMic, toggleDeafen } = useVoiceStore();
-  const emChamada = useVoiceStore((v) => Boolean(v.channelId));
-  const emChamadaNoPrivado = useVoiceStore((v) => Boolean(v.channelId) && !v.guildId);
+  const inCall = useVoiceStore((v) => Boolean(v.channelId));
+  const privateInCall = useVoiceStore((v) => Boolean(v.channelId) && !v.guildId);
   const updateProfile = useUpdateProfile();
 
-  const { data: detalhe } = useFindGuild(guildId);
-  const meusIds = detalhe?.members.find((m) => m.user.id === user.id)?.roleIds ?? [];
-  const meusCargos = (detalhe?.roles ?? []).filter(
-    (r) => !r.isEveryone && meusIds.includes(r.id),
+  const { data: detail } = useFindGuild(guildId);
+  const mineIds = detail?.members.find((m) => m.user.id === user.id)?.roleIds ?? [];
+  const mineRoles = (detail?.roles ?? []).filter(
+    (r) => !r.isEveryone && mineIds.includes(r.id),
   );
 
   return (
     <>
-      <div data-gc="perfil.user-panel.div" {...flxAttr("linhaDoUsuario")} className={cn("painel-do-usuario flex cursor-pointer items-center gap-1 px-1", flxCls("linhaDoUsuario"))}>
+      <div data-gc="perfil.user-panel.div" {...flxAttr("userLine")} className={cn("painel-do-usuario flex cursor-pointer items-center gap-1 px-1", flxCls("userLine"))}>
         <Popover data-gc="perfil.user-panel.popover">
           <PopoverTrigger data-gc="perfil.user-panel.popover-trigger" asChild>
-            <button data-gc="perfil.user-panel.button" {...flx("linhaDeInfoDoUsuario", "flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3")}>
+            <button data-gc="perfil.user-panel.button" {...flx("infoUserLine", "flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-surface-3")}>
               <Avatar data-gc="perfil.user-panel.avatar"
                 id={user.id}
                 name={user.displayName}
                 url={user.avatarUrl}
                 size={32}
                 status={user.status}
-                enfeites={user.perfil}
+                charms={user.profile}
               />
-              <div data-gc="perfil.user-panel.div--2" {...flx("dadosNoRodape", "group/eu min-w-0 flex-1")}>
-                <p data-gc="perfil.user-panel.p" {...flx("nomeNoRodape", "truncate text-sm font-medium leading-tight")}>
-                  <UserName data-gc="perfil.user-panel.user-name" nome={user.displayName} perfil={user.perfil} />
+              <div data-gc="perfil.user-panel.div--2" {...flx("dataFooter", "group/eu min-w-0 flex-1")}>
+                <p data-gc="perfil.user-panel.p" {...flx("nameFooter", "truncate text-sm font-medium leading-tight")}>
+                  <UserName data-gc="perfil.user-panel.user-name" name={user.displayName} profile={user.profile} />
                 </p>
 
-                <span data-gc="perfil.user-panel.span" {...flx("statusNoRodape", "grid grid-cols-1 overflow-hidden text-xs text-ink-faint")}>
-                  <span data-gc="perfil.user-panel.span--2" {...flx("estadoPadraoDoStatus", "col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0")}>
-                    {emChamada ? (
+                <span data-gc="perfil.user-panel.span" {...flx("statusFooter", "grid grid-cols-1 overflow-hidden text-xs text-ink-faint")}>
+                  <span data-gc="perfil.user-panel.span--2" {...flx("statusStateDefault", "col-start-1 row-start-1 truncate transition duration-200 ease-out group-hover/eu:-translate-y-full group-hover/eu:opacity-0")}>
+                    {inCall ? (
                       <span data-gc="perfil.user-panel.span--3" className="flex items-center gap-1 text-online">
-                        {emChamadaNoPrivado ? (
+                        {privateInCall ? (
                           <>
                             <Phone data-gc="perfil.user-panel.phone" size={12} className="shrink-0" /> Em uma chamada
                           </>
@@ -76,11 +76,11 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
                         )}
                       </span>
                     ) : (
-                      (user.statusPersonalizado?.texto ?? rotuloDoEstado(user.desiredStatus))
+                      (user.customStatus?.text ?? stateLabel(user.desiredStatus))
                     )}
                   </span>
 
-                  <span data-gc="perfil.user-panel.span--4" {...flx("estadoNoHoverDoStatus", "col-start-1 row-start-1 translate-y-full truncate opacity-0 transition duration-200 ease-out group-hover/eu:translate-y-0 group-hover/eu:opacity-100")}>
+                  <span data-gc="perfil.user-panel.span--4" {...flx("statusStateHover", "col-start-1 row-start-1 translate-y-full truncate opacity-0 transition duration-200 ease-out group-hover/eu:translate-y-0 group-hover/eu:opacity-100")}>
                     {user.username}
                   </span>
                 </span>
@@ -95,47 +95,47 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               username={user.username}
               avatarUrl={user.avatarUrl}
               status={user.status}
-              perfil={user.perfil}
-              statusPersonalizado={user.statusPersonalizado}
+              profile={user.profile}
+              customStatus={user.customStatus}
               bio={user.bio}
               createdAt={user.createdAt}
-              cargos={meusCargos}
-              onStatus={() => setDefinindoStatus(true)}
+              roleList={mineRoles}
+              onStatus={() => setSettingStatus(true)}
               className="rounded-none"
             >
-              <MenuDoProprioCartao data-gc="perfil.user-panel.menu-do-proprio-cartao"
+              <OwnCardMenu data-gc="perfil.user-panel.own-card-menu"
                 user={user}
-                onEditarPerfil={() => setEditandoPerfil(true)}
-                onGerenciarContas={() => abrirConfiguracoes("conta")}
+                onEditProfile={() => setEditingProfile(true)}
+                onManageAccounts={() => openSettings("account")}
               />
             </ProfileCardVisual>
           </PopoverContent>
         </Popover>
 
-        <div data-gc="perfil.user-panel.div--3" {...flx("controlesDoUsuario", "flex shrink-0 items-center gap-1")}>
-          <BotaoDoPainel data-gc="perfil.user-panel.botao-do-painel"
+        <div data-gc="perfil.user-panel.div--3" {...flx("userControls", "flex shrink-0 items-center gap-1")}>
+          <PanelButton data-gc="perfil.user-panel.panel-button"
             label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
             onClick={() => void toggleMic()}
-            cortado={!micEnabled || micBlocked}
+            cut={!micEnabled || micBlocked}
           >
             {micEnabled && !micBlocked ? <Mic data-gc="perfil.user-panel.mic" size={18} /> : <MicOff data-gc="perfil.user-panel.mic-off" size={18} />}
-          </BotaoDoPainel>
+          </PanelButton>
 
-          <BotaoDoPainel data-gc="perfil.user-panel.botao-do-painel--2"
+          <PanelButton data-gc="perfil.user-panel.panel-button--2"
             label={deafened ? "Ouvir" : "Ficar surdo"}
             onClick={() => void toggleDeafen()}
-            cortado={deafened}
+            cut={deafened}
           >
             {deafened ? <HeadphoneOff data-gc="perfil.user-panel.headphone-off" size={18} /> : <Headphones data-gc="perfil.user-panel.headphones" size={18} />}
-          </BotaoDoPainel>
+          </PanelButton>
 
           <Tooltip data-gc="perfil.user-panel.tooltip" label="Configurações">
             <button data-gc="perfil.user-panel.button--2"
-              {...flxAttr("botaoDeConfiguracoes")}
-              onClick={() => abrirConfiguracoes("conta")}
+              {...flxAttr("settingsButton")}
+              onClick={() => openSettings("account")}
               aria-label="Configurações"
               className={cn(
-              flxCls("botaoDoRodape"),
+              flxCls("footerButton"),
               "rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink",
             )}
             >
@@ -145,61 +145,61 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
         </div>
       </div>
 
-      {secaoPedida && (
-        <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.fechar-pedido"
+      {sectionRequested && (
+        <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.close-request"
           open
-          key={secaoPedida}
-          secaoInicial={secaoPedida}
+          key={sectionRequested}
+          initialSection={sectionRequested}
           user={user}
-          onClose={fecharPedido}
+          onClose={closeRequest}
           onLogout={onLogout}
-          onEditarPerfil={() => {
-            fecharPedido();
-            setEditandoPerfil(true);
+          onEditProfile={() => {
+            closeRequest();
+            setEditingProfile(true);
           }}
         />
       )}
 
-      {editandoPerfil && (
-        <ProfileEditorModal data-gc="perfil.user-panel.profile-editor-modal" open user={user} onClose={() => setEditandoPerfil(false)} />
+      {editingProfile && (
+        <ProfileEditorModal data-gc="perfil.user-panel.profile-editor-modal" open user={user} onClose={() => setEditingProfile(false)} />
       )}
 
-      {definindoStatus && (
+      {settingStatus && (
         <StatusModal data-gc="perfil.user-panel.status-modal"
           open
           user={user}
-          perfil={user.perfil}
-          onClose={() => setDefinindoStatus(false)}
-          onSalvar={(status) =>
+          profile={user.profile}
+          onClose={() => setSettingStatus(false)}
+          onSave={(status) =>
             void updateProfile
-              .mutateAsync({ statusPersonalizado: status })
-              .then(() => setDefinindoStatus(false))
+              .mutateAsync({ customStatus: status })
+              .then(() => setSettingStatus(false))
               .catch(() => null)
           }
-          salvando={updateProfile.isPending}
+          saving={updateProfile.isPending}
         />
       )}
     </>
   );
 };
 
-interface BotaoDoPainelProps {
+interface PanelPropsButton {
   children: React.ReactNode;
   label: string;
   onClick: () => void;
-  cortado?: boolean;
+  cut?: boolean;
 }
 
-const BotaoDoPainel: React.FC<BotaoDoPainelProps> = ({ children, label, onClick, cortado }) => (
+const PanelButton: React.FC<PanelPropsButton> = ({ children, label, onClick, cut }) => (
   <Tooltip data-gc="perfil.user-panel.tooltip--2" label={label}>
     <button data-gc="perfil.user-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
-      aria-pressed={cortado}
+      aria-pressed={cut}
       className={cn(
-        flxCls("botaoDoRodape"),
+        flxCls("footerButton"),
         "shrink-0 rounded p-1.5 transition hover:bg-surface-3",
-        cortado ? "text-danger" : "text-ink-muted hover:text-ink",
+        cut ? "text-danger" : "text-ink-muted hover:text-ink",
       )}
     >
       {children}

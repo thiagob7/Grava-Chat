@@ -5,69 +5,69 @@ import { usePttGlobal } from "~/features/voz/stores/ptt-global";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
-function estaDigitando(alvo: EventTarget | null) {
-  if (!(alvo instanceof HTMLElement)) return false;
+function thisTyping(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
 
   return (
-    alvo.tagName === "INPUT" ||
-    alvo.tagName === "TEXTAREA" ||
-    alvo.tagName === "SELECT" ||
-    alvo.isContentEditable
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT" ||
+    target.isContentEditable
   );
 }
 
 export function usePushToTalk() {
-  const modo = useVoicePrefs((s) => s.modo);
-  const tecla = useVoicePrefs((s) => s.teclaPtt);
-  const emChamada = useVoiceStore((s) => s.channelId !== null);
-  const definirPtt = useVoiceStore((s) => s.definirPtt);
-  const definirEstadoGlobal = usePttGlobal((s) => s.definir);
+  const mode = useVoicePrefs((s) => s.mode);
+  const key = useVoicePrefs((s) => s.keyPtt);
+  const inCall = useVoiceStore((s) => s.channelId !== null);
+  const setPtt = useVoiceStore((s) => s.setPtt);
+  const setStateGlobal = usePttGlobal((s) => s.set);
 
   useEffect(() => {
-    if (modo !== "ptt" || !emChamada) return;
+    if (mode !== "ptt" || !inCall) return;
 
-    const pressionar = (e: KeyboardEvent) => {
-      if (e.code !== tecla || e.repeat || estaDigitando(e.target)) return;
-      if (tecla === "Space") e.preventDefault();
-      definirPtt(true);
+    const press = (e: KeyboardEvent) => {
+      if (e.code !== key || e.repeat || thisTyping(e.target)) return;
+      if (key === "Space") e.preventDefault();
+      setPtt(true);
     };
 
-    const soltar = (e: KeyboardEvent) => {
-      if (e.code !== tecla) return;
-      definirPtt(false);
+    const drop = (e: KeyboardEvent) => {
+      if (e.code !== key) return;
+      setPtt(false);
     };
 
-    const soltarTudo = () => definirPtt(false);
+    const dropEverything = () => setPtt(false);
 
-    window.addEventListener("keydown", pressionar);
-    window.addEventListener("keyup", soltar);
-    window.addEventListener("blur", soltarTudo);
+    window.addEventListener("keydown", press);
+    window.addEventListener("keyup", drop);
+    window.addEventListener("blur", dropEverything);
 
     return () => {
-      window.removeEventListener("keydown", pressionar);
-      window.removeEventListener("keyup", soltar);
-      window.removeEventListener("blur", soltarTudo);
-      definirPtt(false);
+      window.removeEventListener("keydown", press);
+      window.removeEventListener("keyup", drop);
+      window.removeEventListener("blur", dropEverything);
+      setPtt(false);
     };
-  }, [modo, tecla, emChamada, definirPtt]);
+  }, [mode, key, inCall, setPtt]);
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte) return;
+    const bridge = desktop();
+    if (!bridge) return;
 
-    const ativo = modo === "ptt" && emChamada;
-    let vivo = true;
+    const active = mode === "ptt" && inCall;
+    let live = true;
 
-    void ponte.ptt.configurar({ ativo, tecla }).then((estado) => {
-      if (vivo) definirEstadoGlobal(estado);
+    void bridge.ptt.configure({ active, key }).then((state) => {
+      if (live) setStateGlobal(state);
     });
 
-    const desinscrever = ponte.ptt.aoMudar(definirPtt);
+    const unsubscribe = bridge.ptt.onChange(setPtt);
 
     return () => {
-      vivo = false;
-      desinscrever();
-      void ponte.ptt.configurar({ ativo: false, tecla });
+      live = false;
+      unsubscribe();
+      void bridge.ptt.configure({ active: false, key });
     };
-  }, [modo, tecla, emChamada, definirPtt, definirEstadoGlobal]);
+  }, [mode, key, inCall, setPtt, setStateGlobal]);
 }

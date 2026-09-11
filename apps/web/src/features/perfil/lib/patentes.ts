@@ -1,26 +1,26 @@
-import type { Patente } from "@gravae/shared";
+import type { Rank } from "@gravae/shared";
 
-interface Arte {
-  arquivo: () => Promise<{ default: unknown }>;
-  proporcao: number;
+interface Art {
+  file: () => Promise<{ default: unknown }>;
+  ratio: number;
 }
 
-const ARQUIVOS: Partial<Record<Patente, Arte>> = {
+const FILES: Partial<Record<Rank, Art>> = {
   orbe: {
-    arquivo: () => import("~/assets/patentes/orbe.json"),
-    proporcao: 953 / 526,
+    file: () => import("~/assets/patentes/orbe.json"),
+    ratio: 953 / 526,
   },
 };
 
-export const ehPatenteComArte = (patente: Patente | null | undefined): boolean =>
-  !!patente && patente in ARQUIVOS;
+export const isRankWithArt = (rank: Rank | null | undefined): boolean =>
+  !!rank && rank in FILES;
 
-export async function carregarPatente(patente: Patente): Promise<unknown | null> {
-  const arte = ARQUIVOS[patente];
-  if (!arte) return null;
+export async function loadRank(rank: Rank): Promise<unknown | null> {
+  const art = FILES[rank];
+  if (!art) return null;
 
-  return (await arte.arquivo()).default;
+  return (await art.file()).default;
 }
 
-export const proporcaoDaPatente = (patente: Patente): number =>
-  ARQUIVOS[patente]?.proporcao ?? 1;
+export const rankRatio = (rank: Rank): number =>
+  FILES[rank]?.ratio ?? 1;

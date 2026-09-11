@@ -1,122 +1,122 @@
-export interface EstadoPtt {
-  ativo: boolean;
-  indisponivel: boolean;
-  precisaPermissao: boolean;
+export interface StatePtt {
+  active: boolean;
+  unavailable: boolean;
+  needsPermission: boolean;
 }
 
-export interface OpcoesPtt {
-  ativo: boolean;
-  tecla: string;
+export interface OptionsPtt {
+  active: boolean;
+  key: string;
 }
 
-export interface PontePtt {
-  configurar: (opcoes: OpcoesPtt) => Promise<EstadoPtt>;
-  pedirPermissao: (opcoes: OpcoesPtt) => Promise<EstadoPtt>;
-  aoMudar: (callback: (pressionada: boolean) => void) => () => void;
+export interface BridgePtt {
+  configure: (options: OptionsPtt) => Promise<StatePtt>;
+  requestPermission: (options: OptionsPtt) => Promise<StatePtt>;
+  onChange: (callback: (pressed: boolean) => void) => () => void;
 }
 
-export interface FonteDeTela {
+export interface ScreenFont {
   id: string;
-  nome: string;
-  ehTela: boolean;
-  miniatura: string | null;
-  icone: string | null;
+  name: string;
+  isScreen: boolean;
+  thumbnail: string | null;
+  icon: string | null;
 }
 
-export interface EscolhaDeTela {
+export interface ScreenChoice {
   id: string;
-  comAudio: boolean;
+  withAudio: boolean;
 }
 
-export interface PonteTela {
-  aoPedirEscolha: (callback: (fontes: FonteDeTela[]) => void) => () => void;
-  responder: (escolha: EscolhaDeTela | null) => void;
-  permissao: () => Promise<string>;
+export interface BridgeScreen {
+  onRequestChoice: (callback: (fonts: ScreenFont[]) => void) => () => void;
+  reply: (selection: ScreenChoice | null) => void;
+  permission: () => Promise<string>;
 }
 
-export interface CodigoDeLogin {
-  codigo: string;
-  verificador: string;
+export interface LoginCode {
+  code: string;
+  verifier: string;
 }
 
-export interface PonteLogin {
-  iniciar: () => void;
-  aoReceber: (callback: (dados: CodigoDeLogin) => void) => () => void;
+export interface BridgeLogin {
+  start: () => void;
+  onReceive: (callback: (data: LoginCode) => void) => () => void;
 }
 
-export type TipoDeMidia = "microphone" | "camera" | "screen";
+export type MediaKind = "microphone" | "camera" | "screen";
 
-export interface PonteMidia {
-  status: (tipo: TipoDeMidia) => Promise<string>;
-  garantir: (tipo: TipoDeMidia) => Promise<boolean>;
-  abrirAjustes: (tipo: TipoDeMidia) => void;
+export interface BridgeMedia {
+  status: (kind: MediaKind) => Promise<string>;
+  ensure: (kind: MediaKind) => Promise<boolean>;
+  openSettings: (kind: MediaKind) => void;
 }
 
-export interface PonteJanela {
-  contador: (quantas: number) => Promise<void>;
-  chamarAtencao: () => Promise<void>;
-  focar: () => Promise<void>;
-  minimizar?: () => Promise<void>;
-  alternarMaximizada?: () => Promise<void>;
-  fechar?: () => Promise<void>;
-  molduraPropria?: () => Promise<boolean>;
-  estaMaximizada?: () => Promise<boolean>;
-  aoMudarMaximizada?: (callback: (maximizada: boolean) => void) => () => void;
-  fixarPorCima?: (fixar: boolean) => Promise<boolean>;
-  estaPorCima?: () => Promise<boolean>;
+export interface BridgeWindow {
+  counter: (count: number) => Promise<void>;
+  callAttention: () => Promise<void>;
+  focus: () => Promise<void>;
+  minimize?: () => Promise<void>;
+  toggleMaximized?: () => Promise<void>;
+  close?: () => Promise<void>;
+  frameOwn?: () => Promise<boolean>;
+  thisMaximized?: () => Promise<boolean>;
+  onChangeMaximized?: (callback: (maximized: boolean) => void) => () => void;
+  pinByUp?: (pin: boolean) => Promise<boolean>;
+  thisByUp?: () => Promise<boolean>;
 }
 
-export interface PonteLinks {
-  aoAbrir: (callback: (rota: string) => void) => () => void;
+export interface BridgeLinks {
+  onOpen: (callback: (route: string) => void) => () => void;
 }
 
-export interface EstadoDaAtualizacao {
-  atual: string;
-  disponivel: string | null;
-  fase: "ociosa" | "procurando" | "baixando" | "pronta" | "instalando" | "erro";
-  progresso: number;
-  erro: string | null;
+export interface UpdateState {
+  current: string;
+  available: string | null;
+  phase: "ociosa" | "procurando" | "baixando" | "pronta" | "instalando" | "erro";
+  progress: number;
+  error: string | null;
 }
 
-export interface PonteAtualizacao {
-  estado: () => Promise<EstadoDaAtualizacao>;
-  aoMudar: (callback: (estado: EstadoDaAtualizacao) => void) => () => void;
-  procurar: () => Promise<EstadoDaAtualizacao>;
-  baixar: () => Promise<EstadoDaAtualizacao>;
-  instalar: () => Promise<void>;
+export interface BridgeUpdate {
+  state: () => Promise<UpdateState>;
+  onChange: (callback: (state: UpdateState) => void) => () => void;
+  lookup: () => Promise<UpdateState>;
+  download: () => Promise<UpdateState>;
+  install: () => Promise<void>;
 }
 
-export interface VersoesDoAplicativo {
+export interface AppVersions {
   app: string;
   electron: string;
   chrome: string;
-  sistema: string;
+  system: string;
 }
 
-export interface PonteSistema {
-  abrirNoLogin: () => Promise<boolean>;
-  definirAbrirNoLogin: (ligado: boolean) => Promise<boolean>;
-  podeAbrirNoLogin: () => Promise<boolean>;
-  reiniciar: () => Promise<void>;
+export interface BridgeSystem {
+  openLogin: () => Promise<boolean>;
+  setOpenLogin: (on: boolean) => Promise<boolean>;
+  canOpenLogin: () => Promise<boolean>;
+  restart: () => Promise<void>;
 }
 
-export interface PonteDesktop {
-  ehDesktop: true;
-  plataforma: string;
-  nomeNoSistema: string;
-  versoes?: () => Promise<VersoesDoAplicativo>;
-  ptt: PontePtt;
-  tela: PonteTela;
-  login: PonteLogin;
-  midia: PonteMidia;
-  janela: PonteJanela;
-  links: PonteLinks;
-  atualizacao: PonteAtualizacao;
-  sistema?: PonteSistema;
+export interface BridgeDesktop {
+  isDesktop: true;
+  platform: string;
+  nameSystem: string;
+  versions?: () => Promise<AppVersions>;
+  ptt: BridgePtt;
+  display: BridgeScreen;
+  login: BridgeLogin;
+  media: BridgeMedia;
+  appWindow: BridgeWindow;
+  links: BridgeLinks;
+  update: BridgeUpdate;
+  system?: BridgeSystem;
 }
 
 declare global {
   interface Window {
-    gravae?: PonteDesktop;
+    gravae?: BridgeDesktop;
   }
 }

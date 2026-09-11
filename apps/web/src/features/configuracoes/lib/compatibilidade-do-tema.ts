@@ -1,42 +1,42 @@
-import { LUGARES } from "~/lib/compat-de-tema";
+import { PLACES } from "~/lib/compat-de-tema";
 
-export interface Compatibilidade {
-  achados: string[];
-  faltando: string[];
+export interface Compatibility {
+  matches: string[];
+  missing: string[];
 }
 
-const nomesQueTemos = () => {
-  const todos = new Set<string>();
+const namesHave = () => {
+  const all = new Set<string>();
 
-  for (const lugar of Object.values(LUGARES)) {
-    for (const classe of lugar.classes as readonly string[]) todos.add(classe);
-    if ("flx" in lugar) todos.add(lugar.flx);
+  for (const place of Object.values(PLACES)) {
+    for (const cssClass of place.classes as readonly string[]) all.add(cssClass);
+    if ("flx" in place) all.add(place.flx);
   }
 
-  return todos;
+  return all;
 };
 
-export function conferirCompatibilidade(css: string): Compatibilidade {
-  const nossos = nomesQueTemos();
+export function checkCompatibility(css: string): Compatibility {
+  const our = namesHave();
 
-  const pedidos = new Set<string>();
+  const requests = new Set<string>();
 
-  for (const achado of css.matchAll(/\[class\*=["']([^"']+)["']\]/g)) {
-    if (achado[1]) pedidos.add(achado[1]);
+  for (const match of css.matchAll(/\[class\*=["']([^"']+)["']\]/g)) {
+    if (match[1]) requests.add(match[1]);
   }
 
-  for (const achado of css.matchAll(/\[data-flx=["']([^"']+)["']\]/g)) {
-    if (achado[1]) pedidos.add(achado[1]);
+  for (const match of css.matchAll(/\[data-flx=["']([^"']+)["']\]/g)) {
+    if (match[1]) requests.add(match[1]);
   }
 
-  const achados: string[] = [];
-  const faltando: string[] = [];
+  const matches: string[] = [];
+  const missing: string[] = [];
 
-  for (const pedido of [...pedidos].sort()) {
-    const temos = [...nossos].some((nosso) => nosso.includes(pedido));
+  for (const request of [...requests].sort()) {
+    const have = [...our].some((our) => our.includes(request));
 
-    (temos ? achados : faltando).push(pedido);
+    (have ? matches : missing).push(request);
   }
 
-  return { achados, faltando };
+  return { matches, missing };
 }

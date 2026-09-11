@@ -1,24 +1,24 @@
 import { z } from "zod";
-import { conexaoSchema } from "./conexoes.js";
+import { connectionSchema } from "./conexoes.js";
 
-export const FONTES_DE_NOME = [
+export const NAME_FONTS = [
   "padrao",
   "serifada",
   "monoespacada",
   "titulo",
   "manuscrita",
 ] as const;
-export type FonteDeNome = (typeof FONTES_DE_NOME)[number];
+export type NameFont = (typeof NAME_FONTS)[number];
 
-export const EFEITOS_DE_NOME = [
+export const NAME_EFFECTS = [
   "solido",
   "gradiente",
   "neon",
   "brilho",
 ] as const;
-export type EfeitoDeNome = (typeof EFEITOS_DE_NOME)[number];
+export type NameEffect = (typeof NAME_EFFECTS)[number];
 
-export const DECORACOES = [
+export const DECORATIONS = [
   "nenhuma",
   "aurora",
   "chamas",
@@ -32,9 +32,9 @@ export const DECORACOES = [
   "runas",
   "loureiro",
 ] as const;
-export type Decoracao = (typeof DECORACOES)[number];
+export type Decoration = (typeof DECORATIONS)[number];
 
-export const MOLDURAS = [
+export const FRAMES = [
   "nenhuma",
   "neon",
   "dourada",
@@ -49,85 +49,85 @@ export const MOLDURAS = [
   "grega",
   "espinheiro",
 ] as const;
-export type Moldura = (typeof MOLDURAS)[number];
+export type Frame = (typeof FRAMES)[number];
 
-export const EFEITOS_DE_PERFIL = [
+export const PROFILE_EFFECTS = [
   "nenhum",
   "poeira",
   "chuva",
   "brasas",
   "bolhas",
 ] as const;
-export type EfeitoDePerfil = (typeof EFEITOS_DE_PERFIL)[number];
+export type ProfileEffect = (typeof PROFILE_EFFECTS)[number];
 
-export const PLACAS = [
+export const PLATES = [
   "nenhuma",
   "fita",
   "holograma",
   "carimbo",
   "cristal",
 ] as const;
-export type Placa = (typeof PLACAS)[number];
+export type Plate = (typeof PLATES)[number];
 
-export const PATENTES = ["nenhuma", "orbe"] as const;
-export type Patente = (typeof PATENTES)[number];
+export const RANKS = ["nenhuma", "orbe"] as const;
+export type Rank = (typeof RANKS)[number];
 
-export const ESTILOS_DE_CARGO = ["solido", "gradiente", "holografico"] as const;
-export type EstiloDeCargo = (typeof ESTILOS_DE_CARGO)[number];
+export const ROLE_STYLES = ["solido", "gradiente", "holografico"] as const;
+export type RoleStyle = (typeof ROLE_STYLES)[number];
 
-const objectIdCosmetico = z.string().regex(/^[a-f\d]{24}$/i);
+const objectIdCosmetic = z.string().regex(/^[a-f\d]{24}$/i);
 
-export const corHex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida");
+export const colorHex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida");
 
-export const estiloDeNomeSchema = z.object({
-  fonte: z.enum(FONTES_DE_NOME).optional(),
-  efeito: z.enum(EFEITOS_DE_NOME).optional(),
-  cor: corHex.nullable().optional(),
-  cor2: corHex.nullable().optional(),
+export const nameStyleSchema = z.object({
+  font: z.enum(NAME_FONTS).optional(),
+  effect: z.enum(NAME_EFFECTS).optional(),
+  color: colorHex.nullable().optional(),
+  color2: colorHex.nullable().optional(),
 });
-export type EstiloDeNome = z.infer<typeof estiloDeNomeSchema>;
+export type NameStyle = z.infer<typeof nameStyleSchema>;
 
-export const estiloDePerfilSchema = z.object({
-  nome: estiloDeNomeSchema.optional(),
-  etiqueta: z.string().max(6).nullable().optional(),
-  patente: z.enum(PATENTES).optional(),
-  decoracao: z.enum(DECORACOES).optional(),
-  moldura: z.enum(MOLDURAS).optional(),
-  efeito: z.enum(EFEITOS_DE_PERFIL).optional(),
-  placa: z.enum(PLACAS).optional(),
-  tagGuildId: objectIdCosmetico.nullable().optional(),
+export const profileStyleSchema = z.object({
+  name: nameStyleSchema.optional(),
+  tag: z.string().max(6).nullable().optional(),
+  rank: z.enum(RANKS).optional(),
+  decoration: z.enum(DECORATIONS).optional(),
+  frame: z.enum(FRAMES).optional(),
+  effect: z.enum(PROFILE_EFFECTS).optional(),
+  plate: z.enum(PLATES).optional(),
+  tagGuildId: objectIdCosmetic.nullable().optional(),
   bannerUrl: z.string().nullable().optional(),
-  bannerCor: corHex.nullable().optional(),
-  temaPrimario: corHex.nullable().optional(),
-  temaSecundario: corHex.nullable().optional(),
-  conexoes: z.array(conexaoSchema).max(8).optional(),
+  bannerColor: colorHex.nullable().optional(),
+  themePrimary: colorHex.nullable().optional(),
+  secondaryTheme: colorHex.nullable().optional(),
+  connections: z.array(connectionSchema).max(8).optional(),
 });
-export type EstiloDePerfil = z.infer<typeof estiloDePerfilSchema>;
+export type ProfileStyle = z.infer<typeof profileStyleSchema>;
 
-export const statusPersonalizadoSchema = z.object({
-  texto: z.string().max(96),
+export const statusCustomSchema = z.object({
+  text: z.string().max(96),
   emoji: z.string().max(64).nullable().optional(),
-  expiraEm: z.iso.datetime().nullable().optional(),
+  expiresAt: z.iso.datetime().nullable().optional(),
 });
-export type StatusPersonalizado = z.infer<typeof statusPersonalizadoSchema>;
+export type CustomStatus = z.infer<typeof statusCustomSchema>;
 
-export const perfilPublicoSchema = z.object({
-  nome: estiloDeNomeSchema.optional(),
-  etiqueta: z.string().max(6).nullable().optional(),
-  etiquetaDoServidor: z
+export const profilePublicSchema = z.object({
+  name: nameStyleSchema.optional(),
+  tag: z.string().max(6).nullable().optional(),
+  serverTag: z
     .object({
-      guildId: objectIdCosmetico,
+      guildId: objectIdCosmetic,
       tag: z.string(),
       tagIcon: z.string().nullable(),
     })
     .nullable()
     .optional(),
-  emblemas: z.array(objectIdCosmetico).optional(),
-  patente: z.enum(PATENTES).optional(),
-  decoracao: z.enum(DECORACOES).optional(),
-  moldura: z.enum(MOLDURAS).optional(),
-  placa: z.enum(PLACAS).optional(),
-  status: statusPersonalizadoSchema.nullable().optional(),
-  conexoes: z.array(conexaoSchema).optional(),
+  badges: z.array(objectIdCosmetic).optional(),
+  rank: z.enum(RANKS).optional(),
+  decoration: z.enum(DECORATIONS).optional(),
+  frame: z.enum(FRAMES).optional(),
+  plate: z.enum(PLATES).optional(),
+  status: statusCustomSchema.nullable().optional(),
+  connections: z.array(connectionSchema).optional(),
 });
-export type PerfilPublico = z.infer<typeof perfilPublicoSchema>;
+export type ProfilePublic = z.infer<typeof profilePublicSchema>;

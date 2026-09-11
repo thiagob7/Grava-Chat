@@ -1,55 +1,55 @@
 
 
-export interface ParticipanteDaGrade {
+export interface GridParticipant {
   identity: string;
-  transmitindo: boolean;
+  broadcasting: boolean;
 }
 
-export type TipoDeQuadro = "pessoa" | "tela";
+export type FrameKind = "pessoa" | "tela";
 
-export interface QuadroDaGrade<T> {
+export interface GridFrame<T> {
   key: string;
-  tipo: TipoDeQuadro;
+  kind: FrameKind;
   de: T;
 }
 
-export function montarGrade<T extends ParticipanteDaGrade>(participantes: T[]): QuadroDaGrade<T>[] {
-  return participantes.flatMap((de) => {
-    const pessoa: QuadroDaGrade<T> = { key: de.identity, tipo: "pessoa", de };
+export function buildGrid<T extends GridParticipant>(participants: T[]): GridFrame<T>[] {
+  return participants.flatMap((de) => {
+    const person: GridFrame<T> = { key: de.identity, kind: "pessoa", de };
 
-    if (!de.transmitindo) return [pessoa];
+    if (!de.broadcasting) return [person];
 
-    return [pessoa, { key: `${de.identity}:tela`, tipo: "tela", de } satisfies QuadroDaGrade<T>];
+    return [person, { key: `${de.identity}:tela`, kind: "tela", de } satisfies GridFrame<T>];
   });
 }
 
-export interface FormatoDaGrade {
-  colunas: number;
-  denso: boolean;
+export interface FormatGrid {
+  columns: number;
+  dense: boolean;
 }
 
-const LIMITE_DENSO = 9;
+const LIMIT_DENSE = 9;
 
-export function formatoDaGrade(quadros: number): FormatoDaGrade {
-  const colunas =
-    quadros <= 1 ? 1 : quadros <= 4 ? 2 : quadros <= 9 ? 3 : quadros <= 16 ? 4 : 5;
+export function formatGrid(frames: number): FormatGrid {
+  const columns =
+    frames <= 1 ? 1 : frames <= 4 ? 2 : frames <= 9 ? 3 : frames <= 16 ? 4 : 5;
 
-  return { colunas, denso: quadros > LIMITE_DENSO };
+  return { columns, dense: frames > LIMIT_DENSE };
 }
 
-export interface GradeEmFoco<T> {
-  destaque: QuadroDaGrade<T>;
-  faixa: QuadroDaGrade<T>[];
+export interface GridFocus<T> {
+  highlight: GridFrame<T>;
+  track: GridFrame<T>[];
 }
 
-export function focar<T>(
-  quadros: QuadroDaGrade<T>[],
-  chaveFocada: string | null,
-): GradeEmFoco<T> | null {
-  if (!chaveFocada) return null;
+export function focus<T>(
+  frames: GridFrame<T>[],
+  keyFocused: string | null,
+): GridFocus<T> | null {
+  if (!keyFocused) return null;
 
-  const destaque = quadros.find((q) => q.key === chaveFocada);
-  if (!destaque) return null;
+  const highlight = frames.find((q) => q.key === keyFocused);
+  if (!highlight) return null;
 
-  return { destaque, faixa: quadros.filter((q) => q.key !== chaveFocada) };
+  return { highlight, track: frames.filter((q) => q.key !== keyFocused) };
 }

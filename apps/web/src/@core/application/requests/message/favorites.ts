@@ -14,9 +14,9 @@ export async function findFavoriteMessageIds(): Promise<string[]> {
 
 export async function toggleFavoriteMessage(
   messageId: string,
-  favoritar: boolean,
+  favorite: boolean,
 ): Promise<string[]> {
-  const response = favoritar
+  const response = favorite
     ? await api.put<string[]>(`/messages/${messageId}/favorita`)
     : await api.delete<string[]>(`/messages/${messageId}/favorita`);
 

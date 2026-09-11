@@ -1,4 +1,4 @@
-import { has, rooms, type ComandoDeBot } from "@gravae/shared";
+import { has, rooms, type BotCommand } from "@gravae/shared";
 
 import { AppError, ForbiddenError } from "~/lib/http.js";
 import { toMessage, toPublicUser } from "~/lib/serialize.js";
@@ -9,21 +9,21 @@ import { botService } from "~/services/bot-service.js";
 import { messageService } from "~/services/message-service.js";
 import { io } from "./io.js";
 
-export async function enviarMensagem(
+export async function sendMessage(
   userId: string,
   input: Parameters<typeof messageService.send>[1],
-  exceto?: string,
+  except?: string,
 ) {
   const message = await messageService.send(userId, input);
-  const sala = io().to(rooms.channel(input.channelId));
+  const room = io().to(rooms.channel(input.channelId));
 
-  if (exceto) sala.except(exceto).emit("message:created", message);
-  else sala.emit("message:created", message);
+  if (except) room.except(except).emit("message:created", message);
+  else room.emit("message:created", message);
 
   return message;
 }
 
-export async function editarMensagem(
+export async function editMessage(
   userId: string,
   input: Parameters<typeof messageService.edit>[1],
 ) {
@@ -33,17 +33,17 @@ export async function editarMensagem(
   return message;
 }
 
-export async function apagarMensagem(userId: string, messageId: string) {
+export async function deleteMessage(userId: string, messageId: string) {
   const result = await messageService.remove(userId, messageId);
   io().to(rooms.channel(result.channelId)).emit("message:deleted", result);
 
   return result;
 }
 
-export async function removerAnexo(userId: string, messageId: string, anexoId: string) {
-  const result = await messageService.removerAnexo(userId, messageId, anexoId);
+export async function removeAttachment(userId: string, messageId: string, attachmentId: string) {
+  const result = await messageService.removeAttachment(userId, messageId, attachmentId);
 
-  if (result.apagouAMensagem) {
+  if (result.deletedMessage) {
     io()
       .to(rooms.channel(result.channelId))
       .emit("message:deleted", { messageId: result.messageId, channelId: result.channelId });
@@ -54,7 +54,7 @@ export async function removerAnexo(userId: string, messageId: string, anexoId: s
   return result;
 }
 
-export async function reagir(
+export async function react(
   userId: string,
   messageId: string,
   emoji: string,
@@ -72,68 +72,68 @@ export async function reagir(
   return { messageId, emoji, channelId, reactions };
 }
 
-function comoFicaEscrito(comando: ComandoDeBot, opcoes: Record<string, string | number>) {
-  const partes = comando.opcoes
-    .filter((o) => opcoes[o.nome] !== undefined)
+function asStaysWritten(command: BotCommand, options: Record<string, string | number>) {
+  const parts = command.options
+    .filter((o) => options[o.name] !== undefined)
     .map((o) => {
-      const valor = String(opcoes[o.nome]);
+      const value = String(options[o.name]);
 
-      if (o.tipo === "usuario") return `<@${valor}>`;
-      if (o.tipo === "canal") return `<#${valor}>`;
+      if (o.kind === "usuario") return `<@${value}>`;
+      if (o.kind === "canal") return `<#${value}>`;
 
-      return valor;
+      return value;
     });
 
-  return [`/${comando.nome}`, ...partes].join(" ");
+  return [`/${command.name}`, ...parts].join(" ");
 }
 
-export async function invocarComando(
+export async function invokeCommand(
   userId: string,
-  input: { channelId: string; botId: string; comando: string; opcoes: Record<string, string> },
+  input: { channelId: string; botId: string; command: string; options: Record<string, string> },
 ) {
-  const { channel, contexto } = await accessService.requireChannelAccess(userId, input.channelId);
+  const { channel, context } = await accessService.requireChannelAccess(userId, input.channelId);
 
-  if (!channel.guildId || !contexto) {
+  if (!channel.guildId || !context) {
     throw new AppError("Comandos de barra só funcionam em servidor", 400);
   }
 
-  if (!has(contexto.permissions, "SEND_MESSAGES")) {
+  if (!has(context.permissions, "SEND_MESSAGES")) {
     throw new ForbiddenError("Você não pode escrever neste canal");
   }
 
-  const { bot, comando, opcoes } = await botService.resolverInvocacao({
+  const { bot, command, options } = await botService.resolveInvocation({
     guildId: channel.guildId,
     botId: input.botId,
-    comando: input.comando,
-    opcoes: input.opcoes,
+    command: input.command,
+    options: input.options,
   });
 
-  const mencionados = comando.opcoes
-    .filter((o) => o.tipo === "usuario" && opcoes[o.nome] !== undefined)
-    .map((o) => String(opcoes[o.nome]));
+  const mentioned = command.options
+    .filter((o) => o.kind === "usuario" && options[o.name] !== undefined)
+    .map((o) => String(options[o.name]));
 
-  const criada = await messageRepository.create({
+  const created = await messageRepository.create({
     channelId: channel.id,
     authorId: userId,
-    tipo: "COMANDO",
-    content: comoFicaEscrito(comando, opcoes),
+    kind: "COMANDO",
+    content: asStaysWritten(command, options),
     attachments: [],
     replyToId: null,
-    mentions: mencionados,
+    mentions: mentioned,
   });
 
-  const message = toMessage(criada, userId);
+  const message = toMessage(created, userId);
   io().to(rooms.channel(channel.id)).emit("message:created", message);
 
-  const usuario = await userRepository.findById(userId);
+  const user = await userRepository.findById(userId);
 
   io().to(rooms.user(bot.botUserId)).emit("command:invoked", {
     channelId: channel.id,
     guildId: channel.guildId,
     messageId: message.id,
-    comando: comando.nome,
-    opcoes,
-    usuario: toPublicUser(usuario!),
+    command: command.name,
+    options,
+    user: toPublicUser(user!),
   });
 
   return message;

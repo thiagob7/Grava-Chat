@@ -39,10 +39,10 @@ describe("ler e escrever cor", () => {
   it("a posição da bolinha é o inverso exato do arrasto", () => {
     for (const x of [0, 0.25, 0.5, 0.75, 1]) {
       for (const y of [0, 0.3, 0.6, 1]) {
-        const volta = colorPosition(colorAtPosition(x, y));
+        const back = colorPosition(colorAtPosition(x, y));
 
-        expect(volta.x).toBeCloseTo(x, 6);
-        expect(volta.y).toBeCloseTo(y, 6);
+        expect(back.x).toBeCloseTo(x, 6);
+        expect(back.y).toBeCloseTo(y, 6);
       }
     }
   });

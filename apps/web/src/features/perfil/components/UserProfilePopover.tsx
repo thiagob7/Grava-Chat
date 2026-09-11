@@ -1,10 +1,10 @@
 import React, { useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
-  comoSeLe,
-  enderecoDaConexao,
-  NOMES_DOS_SERVICOS,
-  type Conexao,
+  asLe,
+  connectionAddress,
+  SERVICES_NAMES,
+  type Connection,
 } from "@gravae/shared";
 import { toast } from "react-toastify";
 import {
@@ -26,7 +26,7 @@ import {
   UserPlus,
   UserX,
 } from "lucide-react";
-import { toast as aviso } from "react-toastify";
+import { toast as notice } from "react-toastify";
 
 import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
@@ -36,15 +36,15 @@ import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { highestPosition, type Role } from "@gravae/shared";
 
-import { useModeracao } from "~/features/servidor/stores/moderacao";
+import { useModeration } from "~/features/servidor/stores/moderacao";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
-import { CampoDeNota } from "~/features/perfil/components/cartao/CampoDeNota";
-import { EscolherEmblemas } from "~/features/perfil/components/cartao/EscolherEmblemas";
+import { NoteField } from "~/features/perfil/components/cartao/CampoDeNota";
+import { PickBadges } from "~/features/perfil/components/cartao/EscolherEmblemas";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Tooltip } from "~/components/ui/tooltip";
 import {
@@ -71,10 +71,10 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { useConfirm } from "~/components/ui/confirm";
-import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
+import { useCharms } from "~/features/perfil/hooks/use-enfeites";
 import { usePermissions } from "~/hooks/use-permissions";
-import { copiarTexto } from "~/lib/copiar";
-import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
+import { copyText } from "~/lib/copiar";
+import { roleMoreHighColor } from "~/features/perfil/lib/cargo";
 import { useTranslation } from "~/traducao";
 
 interface UserProfilePopoverProps {
@@ -84,7 +84,7 @@ interface UserProfilePopoverProps {
   guildId?: string;
   roles?: Role[];
   roleIds?: string[];
-  podeModerar?: boolean;
+  canModerate?: boolean;
 }
 
 export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
@@ -94,30 +94,34 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   guildId,
   roles = [],
   roleIds = [],
-  podeModerar = false,
+  canModerate = false,
 }) => {
   const { t } = useTranslation();
-  const [aberto, setAberto] = useState(false);
-  const { data: perfil, isLoading } = useFindProfile(aberto ? userId : null);
+  const [isOpen, setIsOpen] = useState(false);
+  const { data: profile, isLoading, isError } = useFindProfile(isOpen ? userId : null);
 
   return (
-    <Popover data-gc="perfil.user-profile-popover.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+    <Popover data-gc="perfil.user-profile-popover.popover.set-is-open" open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" asChild>{children}</PopoverTrigger>
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
         side={side}
         className="max-h-[80vh] w-[300px] overflow-y-auto p-0 shadow-lg shadow-sombra"
       >
-        {isLoading || !perfil ? (
-          <div data-gc="perfil.user-profile-popover.div" className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
+        {isError ? (
+          <div data-gc="perfil.user-profile-popover.div" className="p-6 text-sm text-ink-faint">
+            {t("perfil.semCartao")}
+          </div>
+        ) : isLoading || !profile ? (
+          <div data-gc="perfil.user-profile-popover.div--2" className="p-6 text-sm text-ink-faint">{t("perfil.carregando")}</div>
         ) : (
           <ProfileCard data-gc="perfil.user-profile-popover.profile-card"
-            perfil={perfil}
-            onFechar={() => setAberto(false)}
+            profile={profile}
+            onClose={() => setIsOpen(false)}
             guildId={guildId}
             roles={roles}
             roleIds={roleIds}
-            podeModerar={podeModerar}
+            canModerate={canModerate}
           />
         )}
       </PopoverContent>
@@ -126,96 +130,96 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
 };
 
 const ProfileCard: React.FC<{
-  perfil: ProfileModel;
-  onFechar: () => void;
+  profile: ProfileModel;
+  onClose: () => void;
   guildId?: string;
   roles: Role[];
   roleIds: string[];
-  podeModerar: boolean;
-}> = ({ perfil, onFechar, guildId, roles, roleIds, podeModerar }) => {
+  canModerate: boolean;
+}> = ({ profile, onClose, guildId, roles, roleIds, canModerate }) => {
   const { t } = useTranslation();
-  const [perfilCompleto, setPerfilCompleto] = useState(false);
-  const campoDaNota = useRef<HTMLTextAreaElement>(null);
-  const [editandoPerfil, setEditandoPerfil] = useState(false);
-  const [definindoStatus, setDefinindoStatus] = useState(false);
+  const [completeProfile, setProfileComplete] = useState(false);
+  const noteField = useRef<HTMLTextAreaElement>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [settingStatus, setSettingStatus] = useState(false);
   const { data: eu } = useMe(true);
   const updateProfile = useUpdateProfile();
 
-  const bloquear = useBlockUser();
+  const block = useBlockUser();
   const guilds = useFindManyGuilds(true);
-  const criarConvite = useCreateInvite();
-  const ignorados = useIgnoreStore((s) => s.ignorados);
-  const alternarIgnorado = useIgnoreStore((s) => s.alternar);
+  const createInvite = useCreateInvite();
+  const ignoredList = useIgnoreStore((s) => s.ignoredList);
+  const toggleIgnored = useIgnoreStore((s) => s.toggle);
 
-  const ignorado = ignorados.includes(perfil.id);
+  const ignored = ignoredList.includes(profile.id);
 
-  const enfeitesDe = useEnfeites(guildId);
-  const emblemas = enfeitesDe.emblemasDe(perfil.id);
-  const { data: detalheDoServidor } = useFindGuild(guildId);
-  const { can } = usePermissions(detalheDoServidor);
+  const charms = useCharms(guildId);
+  const badges = charms.badges(profile.id);
+  const { data: serverDetail } = useFindGuild(guildId);
+  const { can } = usePermissions(serverDetail);
   const setRoles = useSetMemberRoles(guildId);
 
-  const cargosDoServidor = detalheDoServidor?.roles ?? roles;
-  const membrosDoServidor = detalheDoServidor?.members ?? [];
-  const idsDoMembro =
-    membrosDoServidor.find((m) => m.user.id === perfil.id)?.roleIds ?? roleIds;
+  const serverRoles = serverDetail?.roles ?? roles;
+  const serverMembers = serverDetail?.members ?? [];
+  const memberIds =
+    serverMembers.find((m) => m.user.id === profile.id)?.roleIds ?? roleIds;
 
-  const cargosDoMembro = cargosDoServidor.filter(
-    (r) => !r.isEveryone && idsDoMembro.includes(r.id),
+  const memberRoles = serverRoles.filter(
+    (r) => !r.isEveryone && memberIds.includes(r.id),
   );
 
-  const corDoCargo = corDoCargoMaisAlto(idsDoMembro, cargosDoServidor);
+  const roleColor = roleMoreHighColor(memberIds, serverRoles);
 
-  const souDono = Boolean(eu && detalheDoServidor?.guild.ownerId === eu.id);
-  const meusIds =
-    membrosDoServidor.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
-  const minhaPosicao = souDono
+  const amOwner = Boolean(eu && serverDetail?.guild.ownerId === eu.id);
+  const mineIds =
+    serverMembers.find((m) => m.user.id === eu?.id)?.roleIds ?? [];
+  const myPosition = amOwner
     ? Number.POSITIVE_INFINITY
-    : highestPosition(cargosDoServidor.filter((r) => meusIds.includes(r.id)));
+    : highestPosition(serverRoles.filter((r) => mineIds.includes(r.id)));
 
-  const podeMexerNaPessoa =
-    souDono || highestPosition(cargosDoMembro) < minhaPosicao;
+  const canTouchPerson =
+    amOwner || highestPosition(memberRoles) < myPosition;
 
-  const cargosQuePossoDar =
-    guildId && can("MANAGE_ROLES") && podeMexerNaPessoa
-      ? cargosDoServidor.filter(
-          (r) => !r.isEveryone && r.position < minhaPosicao,
+  const rolesCanGive =
+    guildId && can("MANAGE_ROLES") && canTouchPerson
+      ? serverRoles.filter(
+          (r) => !r.isEveryone && r.position < myPosition,
         )
       : [];
 
-  const alternarCargo = (roleId: string) => {
+  const toggleRole = (roleId: string) => {
     if (!guildId) return;
 
-    const proximos = idsDoMembro.includes(roleId)
-      ? idsDoMembro.filter((id) => id !== roleId)
-      : [...idsDoMembro, roleId];
+    const next = memberIds.includes(roleId)
+      ? memberIds.filter((id) => id !== roleId)
+      : [...memberIds, roleId];
 
-    setRoles.mutate({ guildId, userId: perfil.id, roleIds: proximos });
+    setRoles.mutate({ guildId, userId: profile.id, roleIds: next });
   };
 
-  const convidarPara = async (targetGuildId: string) => {
-    const convite = await criarConvite
+  const inviteFor = async (targetGuildId: string) => {
+    const invite = await createInvite
       .mutateAsync({ guildId: targetGuildId })
       .catch(() => null);
-    if (!convite) return;
+    if (!invite) return;
 
-    const link = `${window.location.origin}/invite/${convite.code}`;
+    const link = `${window.location.origin}/invite/${invite.code}`;
 
-    if (perfil.friendship === "ACCEPTED") {
-      const canal = await openDm.mutateAsync(perfil.id).catch(() => null);
+    if (profile.friendship === "ACCEPTED") {
+      const channel = await openDm.mutateAsync(profile.id).catch(() => null);
 
-      if (canal) {
+      if (channel) {
         await sendMessage({
-          channelId: canal.id,
+          channelId: channel.id,
           content: link,
           nonce: crypto.randomUUID(),
         });
-        return aviso.success(t("perfil.conviteEnviado", { nome: perfil.displayName }));
+        return notice.success(t("perfil.conviteEnviado", { nome: profile.displayName }));
       }
     }
 
-    await copiarTexto(link);
-    aviso.info(t("perfil.amizade.linkCopiado"));
+    await copyText(link);
+    notice.info(t("perfil.amizade.linkCopiado"));
   };
   const navigate = useNavigate();
   const requestFriend = useRequestFriend();
@@ -224,105 +228,105 @@ const ProfileCard: React.FC<{
   const removeFriend = useRemoveFriend();
   const openDm = useOpenDm();
 
-  const desfazerAmizade = async () => {
+  const undoFriendship = async () => {
     const { confirmed } = await confirm({
-      title: t("perfil.amizade.desfazerTitulo", { nome: perfil.displayName }),
+      title: t("perfil.amizade.desfazerTitulo", { nome: profile.displayName }),
       description:
         t("perfil.amizade.desfazerDescricao"),
       action: t("perfil.amizade.desfazer"),
     });
 
-    if (confirmed && perfil.friendshipId)
-      removeFriend.mutate(perfil.friendshipId);
+    if (confirmed && profile.friendshipId)
+      removeFriend.mutate(profile.friendshipId);
   };
 
-  const bloquearUsuario = async () => {
+  const blockUser = async () => {
     const { confirmed } = await confirm({
-      title: t("perfil.amizade.bloquearTitulo", { nome: perfil.displayName }),
+      title: t("perfil.amizade.bloquearTitulo", { nome: profile.displayName }),
       description:
         t("perfil.amizade.bloquearDescricao"),
       action: t("perfil.amizade.bloquear"),
     });
 
     if (confirmed) {
-      bloquear.mutate(perfil.id);
-      onFechar();
+      block.mutate(profile.id);
+      onClose();
     }
   };
 
-  const conversar = async () => {
-    const canal = await openDm.mutateAsync(perfil.id).catch(() => null);
-    if (!canal) return;
+  const chat = async () => {
+    const channel = await openDm.mutateAsync(profile.id).catch(() => null);
+    if (!channel) return;
 
-    onFechar();
-    navigate(`/dm/${canal.id}`);
+    onClose();
+    navigate(`/dm/${channel.id}`);
   };
 
-  const ocupado =
+  const busy =
     requestFriend.isPending ||
     respondFriend.isPending ||
     removeFriend.isPending ||
     openDm.isPending;
 
-  const ehSistema = Boolean(perfil.sistema);
-  const ehBot = perfil.isBot && !ehSistema;
-  const podeConversar = perfil.friendship === "ACCEPTED" || ehSistema || ehBot;
+  const isSystem = Boolean(profile.system);
+  const isBot = profile.isBot && !isSystem;
+  const canChat = profile.friendship === "ACCEPTED" || isSystem || isBot;
 
-  const acoesDoTopo =
-    perfil.friendship === "SELF" ? null : (
+  const topActions =
+    profile.friendship === "SELF" ? null : (
       <>
-        {podeModerar && guildId && (
-          <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo"
+        {canModerate && guildId && (
+          <ButtonRound data-gc="perfil.user-profile-popover.button-round"
             label={t("perfil.moderador")}
             onClick={() => {
-              useModeracao.getState().abrir({
+              useModeration.getState().open({
                 guildId,
-                userId: perfil.id,
-                displayName: perfil.displayName,
-                username: perfil.username,
-                avatarUrl: perfil.avatarUrl,
+                userId: profile.id,
+                displayName: profile.displayName,
+                username: profile.username,
+                avatarUrl: profile.avatarUrl,
               });
-              onFechar();
+              onClose();
             }}
           >
             <ShieldAlert data-gc="perfil.user-profile-popover.shield-alert" size={15} />
-          </BotaoRedondo>
+          </ButtonRound>
         )}
 
-        {!ehBot && !ehSistema && (
-          <BotaoDeAmizade data-gc="perfil.user-profile-popover.botao-de-amizade" perfil={perfil} onAdicionar={() => requestFriend.mutate(perfil.username)} />
+        {!isBot && !isSystem && (
+          <FriendshipButton data-gc="perfil.user-profile-popover.friendship-button" profile={profile} onAdd={() => requestFriend.mutate(profile.username)} />
         )}
 
         <DropdownMenu data-gc="perfil.user-profile-popover.dropdown-menu">
           <DropdownMenuTrigger data-gc="perfil.user-profile-popover.dropdown-menu-trigger" asChild>
-            <button data-gc="perfil.user-profile-popover.button" aria-label={t("perfil.mais")} className={BOTAO_DA_FAIXA}>
+            <button data-gc="perfil.user-profile-popover.button" aria-label={t("perfil.mais")} className={TRACK_BUTTON}>
               <MoreHorizontal data-gc="perfil.user-profile-popover.more-horizontal" size={15} />
             </button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent data-gc="perfil.user-profile-popover.dropdown-menu-content" align="end">
-            {podeConversar && (
+            {canChat && (
               <>
-                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void conversar()}>
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item" onSelect={() => void chat()}>
                   {t("perfil.abrirConversa")} <MessageSquare data-gc="perfil.user-profile-popover.message-square" size={14} />
                 </DropdownMenuItem>
                 <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator" />
               </>
             )}
 
-            <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--2" onSelect={() => setPerfilCompleto(true)}>
+            <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--2" onSelect={() => setProfileComplete(true)}>
               {t("perfil.verCompleto")} <User data-gc="perfil.user-profile-popover.user" size={14} />
             </DropdownMenuItem>
 
-            {!ehSistema && (
+            {!isSystem && (
               <>
                 <DropdownMenuSub data-gc="perfil.user-profile-popover.dropdown-menu-sub">
                   <DropdownMenuSubTrigger data-gc="perfil.user-profile-popover.dropdown-menu-sub-trigger">{t("perfil.convidarParaServidor")}</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent data-gc="perfil.user-profile-popover.dropdown-menu-sub-content">
                     {guilds.data?.length ? (
-                      guilds.data.map((servidor) => (
-                        <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--3" key={servidor.id} onSelect={() => void convidarPara(servidor.id)}>
-                          {servidor.name}
+                      guilds.data.map((server) => (
+                        <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--3" key={server.id} onSelect={() => void inviteFor(server.id)}>
+                          {server.name}
                         </DropdownMenuItem>
                       ))
                     ) : (
@@ -333,17 +337,17 @@ const ProfileCard: React.FC<{
 
                 <DropdownMenuSeparator data-gc="perfil.user-profile-popover.dropdown-menu-separator--2" />
 
-                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--5" onSelect={() => alternarIgnorado(perfil.id)}>
-                  {t(ignorado ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
-                  {ignorado ? <Eye data-gc="perfil.user-profile-popover.eye" size={14} /> : <EyeOff data-gc="perfil.user-profile-popover.eye-off" size={14} />}
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--5" onSelect={() => toggleIgnored(profile.id)}>
+                  {t(ignored ? "perfil.deixarDeIgnorar" : "perfil.ignorar")}
+                  {ignored ? <Eye data-gc="perfil.user-profile-popover.eye" size={14} /> : <EyeOff data-gc="perfil.user-profile-popover.eye-off" size={14} />}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--6" danger onSelect={() => void bloquearUsuario()}>
+                <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--6" danger onSelect={() => void blockUser()}>
                   {t("perfil.amizade.bloquear")} <Ban data-gc="perfil.user-profile-popover.ban" size={14} />
                 </DropdownMenuItem>
 
-                {perfil.friendship === "ACCEPTED" && (
-                  <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--7" danger onSelect={() => void desfazerAmizade()}>
+                {profile.friendship === "ACCEPTED" && (
+                  <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--7" danger onSelect={() => void undoFriendship()}>
                     {t("perfil.amizade.desfazer")} <UserX data-gc="perfil.user-profile-popover.user-x" size={14} />
                   </DropdownMenuItem>
                 )}
@@ -354,8 +358,8 @@ const ProfileCard: React.FC<{
 
             <DropdownMenuItem data-gc="perfil.user-profile-popover.dropdown-menu-item--8"
               onSelect={() => {
-                void copiarTexto(perfil.id);
-                aviso.success(t("perfil.idCopiado"));
+                void copyText(profile.id);
+                notice.success(t("perfil.idCopiado"));
               }}
             >
               {t("perfil.copiarId")} <Copy data-gc="perfil.user-profile-popover.copy" size={14} />
@@ -365,26 +369,26 @@ const ProfileCard: React.FC<{
       </>
     );
 
-  const acoesDeBaixo =
-    perfil.friendship === "SELF" ? (
-      <Button data-gc="perfil.user-profile-popover.button--2" className="w-full" onClick={() => setEditandoPerfil(true)}>
+  const downActions =
+    profile.friendship === "SELF" ? (
+      <Button data-gc="perfil.user-profile-popover.button--2" className="w-full" onClick={() => setEditingProfile(true)}>
         <Pencil data-gc="perfil.user-profile-popover.pencil" size={14} /> {t("perfil.editar")}
       </Button>
     ) : (
       <>
-        {podeConversar && (
-          <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void conversar()} disabled={ocupado}>
+        {canChat && (
+          <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void chat()} disabled={busy}>
             <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} /> {t("perfil.mensagem")}
           </Button>
         )}
 
-        {ehBot && perfil.botId && (
+        {isBot && profile.botId && (
           <Button data-gc="perfil.user-profile-popover.button--4"
             className="w-full"
-            variant={podeConversar ? "surface" : "primary"}
+            variant={canChat ? "surface" : "primary"}
             onClick={() => {
-              onFechar();
-              navigate(`/bots/${perfil.botId}/adicionar`);
+              onClose();
+              navigate(`/bots/${profile.botId}/adicionar`);
             }}
           >
             <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
@@ -395,98 +399,98 @@ const ProfileCard: React.FC<{
 
   return (
     <>
-      {editandoPerfil && eu && (
+      {editingProfile && eu && (
         <ProfileEditorModal data-gc="perfil.user-profile-popover.profile-editor-modal"
           open
           user={eu}
-          onClose={() => setEditandoPerfil(false)}
+          onClose={() => setEditingProfile(false)}
         />
       )}
 
-      {definindoStatus && eu && (
+      {settingStatus && eu && (
         <StatusModal data-gc="perfil.user-profile-popover.status-modal"
           open
           user={eu}
-          perfil={eu.perfil}
-          onClose={() => setDefinindoStatus(false)}
-          onSalvar={(status) =>
+          profile={eu.profile}
+          onClose={() => setSettingStatus(false)}
+          onSave={(status) =>
             void updateProfile
-              .mutateAsync({ statusPersonalizado: status })
-              .then(() => setDefinindoStatus(false))
+              .mutateAsync({ customStatus: status })
+              .then(() => setSettingStatus(false))
               .catch(() => null)
           }
-          salvando={updateProfile.isPending}
+          saving={updateProfile.isPending}
         />
       )}
 
-      {perfilCompleto && (
+      {completeProfile && (
         <FullProfileModal data-gc="perfil.user-profile-popover.full-profile-modal"
           open
-          perfil={perfil}
-          cargos={cargosDoMembro}
-          onClose={() => setPerfilCompleto(false)}
+          profile={profile}
+          roleList={memberRoles}
+          onClose={() => setProfileComplete(false)}
         />
       )}
 
       <ProfileCardVisual data-gc="perfil.user-profile-popover.profile-card-visual"
-        onAbrirPerfil={() => setPerfilCompleto(true)}
-        onIrParaNota={
-          perfil.friendship === "SELF"
+        onOpenProfile={() => setProfileComplete(true)}
+        onIrForNote={
+          profile.friendship === "SELF" || profile.system
             ? undefined
             : () => {
-                campoDaNota.current?.scrollIntoView({ block: "nearest" });
-                campoDaNota.current?.focus();
+                noteField.current?.scrollIntoView({ block: "nearest" });
+                noteField.current?.focus();
               }
         }
-        id={perfil.id}
-        displayName={perfil.displayName}
-        username={perfil.username}
-        ehBot={perfil.isBot}
-        ehSistema={perfil.sistema}
-        avatarUrl={perfil.avatarUrl}
-        status={perfil.status}
-        perfil={perfil.perfil}
-        etiquetaDoServidor={perfil.etiquetaDoServidor}
-        statusPersonalizado={perfil.statusPersonalizado}
-        corDoCargo={corDoCargo}
-        bio={perfil.bio}
-        createdAt={perfil.createdAt}
-        entrouEm={detalheDoServidor?.members.find((m) => m.user.id === perfil.id)?.joinedAt}
-        nomeDoServidor={detalheDoServidor?.guild.name}
-        mutualFriends={perfil.mutualFriends}
-        mutualGuilds={perfil.mutualGuilds}
-        cargos={cargosDoMembro}
-        cargosDisponiveis={cargosQuePossoDar}
-        onAlternarCargo={cargosQuePossoDar.length ? alternarCargo : undefined}
-        salvandoCargos={setRoles.isPending}
+        id={profile.id}
+        displayName={profile.displayName}
+        username={profile.username}
+        isBot={profile.isBot}
+        isSystem={profile.system}
+        avatarUrl={profile.avatarUrl}
+        status={profile.status}
+        profile={profile.profile}
+        serverTag={profile.serverTag}
+        customStatus={profile.customStatus}
+        roleColor={roleColor}
+        bio={profile.bio}
+        createdAt={profile.system ? null : profile.createdAt}
+        joinedAt={serverDetail?.members.find((m) => m.user.id === profile.id)?.joinedAt}
+        serverName={serverDetail?.guild.name}
+        mutualFriends={profile.mutualFriends}
+        mutualGuilds={profile.mutualGuilds}
+        roleList={memberRoles}
+        availableRoles={rolesCanGive}
+        onToggleRole={rolesCanGive.length ? toggleRole : undefined}
+        savingRoles={setRoles.isPending}
         onStatus={
-          perfil.friendship === "SELF"
-            ? () => setDefinindoStatus(true)
+          profile.friendship === "SELF"
+            ? () => setSettingStatus(true)
             : undefined
         }
-        emblemas={emblemas}
-        acoesDoTopo={acoesDoTopo}
-        acoesDeBaixo={acoesDeBaixo}
+        badges={badges}
+        topActions={topActions}
+        downActions={downActions}
         className="rounded-none"
       >
-        <ConexoesDoPerfil data-gc="perfil.user-profile-popover.conexoes-do-perfil" conexoes={perfil.perfil?.conexoes} />
+        <ProfileConnections data-gc="perfil.user-profile-popover.profile-connections" connections={profile.profile?.connections} />
 
-        {perfil.friendship !== "SELF" && (
-          <CampoDeNota data-gc="perfil.user-profile-popover.campo-de-nota" userId={perfil.id} nota={perfil.nota} campo={campoDaNota} />
+        {profile.friendship !== "SELF" && !profile.system && (
+          <NoteField data-gc="perfil.user-profile-popover.note-field" userId={profile.id} note={profile.note} field={noteField} />
         )}
 
-        {perfil.friendship === "SELF" && guildId && (
-          <EscolherEmblemas data-gc="perfil.user-profile-popover.escolher-emblemas"
+        {profile.friendship === "SELF" && guildId && (
+          <PickBadges data-gc="perfil.user-profile-popover.pick-badges"
             guildId={guildId}
-            disponiveis={detalheDoServidor?.emblemas ?? []}
-            vestidos={emblemas}
+            available={serverDetail?.badges ?? []}
+            worn={badges}
           />
         )}
 
-        <div data-gc="perfil.user-profile-popover.div--2" className="mt-4 space-y-2">
-          {perfil.friendship !== "SELF" && (
+        <div data-gc="perfil.user-profile-popover.div--3" className="mt-4 space-y-2 empty:mt-0">
+          {profile.friendship !== "SELF" && !profile.system && (
             <>
-              {perfil.friendship === "PENDING_IN" && (
+              {profile.friendship === "PENDING_IN" && (
                 <>
                   <p data-gc="perfil.user-profile-popover.p" className="mb-1 text-center text-xs text-ink-faint">
                     {t("perfil.amizade.teMandouPedido")}
@@ -494,13 +498,13 @@ const ProfileCard: React.FC<{
                   <Button data-gc="perfil.user-profile-popover.button--5"
                     variant="success"
                     onClick={() =>
-                      perfil.friendshipId &&
+                      profile.friendshipId &&
                       respondFriend.mutate({
-                        friendshipId: perfil.friendshipId,
+                        friendshipId: profile.friendshipId,
                         accept: true,
                       })
                     }
-                    disabled={ocupado}
+                    disabled={busy}
                     className="w-full"
                   >
                     <Check data-gc="perfil.user-profile-popover.check" size={16} /> {t("perfil.amizade.aceitar")}
@@ -512,66 +516,66 @@ const ProfileCard: React.FC<{
         </div>
       </ProfileCardVisual>
 
-      {perfil.friendship === "ACCEPTED" && (
-        <ComposerDoPerfil data-gc="perfil.user-profile-popover.composer-do-perfil" userId={perfil.id} username={perfil.username} />
+      {profile.friendship === "ACCEPTED" && (
+        <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer" userId={profile.id} username={profile.username} />
       )}
     </>
   );
 };
 
-const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
+const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
   userId,
   username,
 }) => {
   const { t } = useTranslation();
   const openDm = useOpenDm();
-  const [text, setTexto] = useState("");
-  const [enviando, setEnviando] = useState(false);
-  const [enviada, setEnviada] = useState(false);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const enviar = async () => {
-    const conteudo = text.trim();
-    if (!conteudo || enviando) return;
+  const send = async () => {
+    const content = text.trim();
+    if (!content || sending) return;
 
-    setEnviando(true);
+    setSending(true);
 
     try {
-      const canal = await openDm.mutateAsync(userId);
+      const channel = await openDm.mutateAsync(userId);
       await sendMessage({
-        channelId: canal.id,
-        content: conteudo,
+        channelId: channel.id,
+        content: content,
         nonce: crypto.randomUUID(),
       });
 
-      setTexto("");
-      setEnviada(true);
-      setTimeout(() => setEnviada(false), 2500);
+      setText("");
+      setSent(true);
+      setTimeout(() => setSent(false), 2500);
     } catch {
       toast.error(t("perfil.recado.falhou"));
     } finally {
-      setEnviando(false);
+      setSending(false);
     }
   };
 
   return (
-    <div data-gc="perfil.user-profile-popover.div--3" className="border-t border-line p-3">
-      <div data-gc="perfil.user-profile-popover.div--4" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
+    <div data-gc="perfil.user-profile-popover.div--4" className="border-t border-line p-3">
+      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
           value={text}
-          onChange={(e) => setTexto(e.target.value)}
+          onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              void enviar();
+              void send();
             }
           }}
           placeholder={t("perfil.recado.escrever", { usuario: username })}
-          disabled={enviando}
+          disabled={sending}
           className="border-0 bg-transparent text-sm"
         />
         <button data-gc="perfil.user-profile-popover.button--6"
-          onClick={() => void enviar()}
-          disabled={!text.trim() || enviando}
+          onClick={() => void send()}
+          disabled={!text.trim() || sending}
           aria-label={t("perfil.recado.enviar")}
           className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
         >
@@ -579,7 +583,7 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
         </button>
       </div>
 
-      {enviada && (
+      {sent && (
         <p data-gc="perfil.user-profile-popover.p--2" className="mt-1.5 flex items-center gap-1 text-xs text-online">
           <Check data-gc="perfil.user-profile-popover.check--2" size={12} /> {t("perfil.recado.enviada")}
         </p>
@@ -588,92 +592,92 @@ const ComposerDoPerfil: React.FC<{ userId: string; username: string }> = ({
   );
 };
 
-const BOTAO_DA_FAIXA =
+const TRACK_BUTTON =
   "flex size-8 items-center justify-center rounded-full bg-sobre-midia text-palco-ink/85 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-palco-ink";
 
-const BotaoRedondo: React.FC<{
+const ButtonRound: React.FC<{
   children: ReactNode;
   label: string;
   onClick?: () => void;
-  desabilitado?: boolean;
-}> = ({ children, label, onClick, desabilitado }) => (
+  disabled?: boolean;
+}> = ({ children, label, onClick, disabled }) => (
   <Tooltip data-gc="perfil.user-profile-popover.tooltip" label={label}>
     <button data-gc="perfil.user-profile-popover.button.on-click"
       onClick={onClick}
-      disabled={desabilitado}
+      disabled={disabled}
       aria-label={label}
-      className={BOTAO_DA_FAIXA + " disabled:cursor-default"}
+      className={TRACK_BUTTON + " disabled:cursor-default"}
     >
       {children}
     </button>
   </Tooltip>
 );
 
-const BotaoDeAmizade: React.FC<{
-  perfil: ProfileModel;
-  onAdicionar: () => void;
-}> = ({ perfil, onAdicionar }) => {
+const FriendshipButton: React.FC<{
+  profile: ProfileModel;
+  onAdd: () => void;
+}> = ({ profile, onAdd }) => {
   const { t } = useTranslation();
 
-  if (perfil.friendship === "ACCEPTED") {
+  if (profile.friendship === "ACCEPTED") {
     return (
-      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--2" label={t("perfil.amizade.amigo")} desabilitado>
+      <ButtonRound data-gc="perfil.user-profile-popover.button-round--2" label={t("perfil.amizade.amigo")} disabled>
         <UserCheck data-gc="perfil.user-profile-popover.user-check" size={16} className="text-online" />
-      </BotaoRedondo>
+      </ButtonRound>
     );
   }
 
-  if (perfil.friendship === "PENDING_OUT") {
+  if (profile.friendship === "PENDING_OUT") {
     return (
-      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--3" label={t("perfil.amizade.pedidoEnviado")} desabilitado>
+      <ButtonRound data-gc="perfil.user-profile-popover.button-round--3" label={t("perfil.amizade.pedidoEnviado")} disabled>
         <Clock data-gc="perfil.user-profile-popover.clock" size={16} />
-      </BotaoRedondo>
+      </ButtonRound>
     );
   }
 
-  if (perfil.friendship === "PENDING_IN") {
+  if (profile.friendship === "PENDING_IN") {
     return (
-      <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo--4" label={t("perfil.amizade.respondaAbaixo")} desabilitado>
+      <ButtonRound data-gc="perfil.user-profile-popover.button-round--4" label={t("perfil.amizade.respondaAbaixo")} disabled>
         <UserPlus data-gc="perfil.user-profile-popover.user-plus" size={16} className="text-idle" />
-      </BotaoRedondo>
+      </ButtonRound>
     );
   }
 
   return (
-    <BotaoRedondo data-gc="perfil.user-profile-popover.botao-redondo.on-adicionar" label={t("perfil.amizade.adicionar")} onClick={onAdicionar}>
+    <ButtonRound data-gc="perfil.user-profile-popover.button-round.on-add" label={t("perfil.amizade.adicionar")} onClick={onAdd}>
       <UserPlus data-gc="perfil.user-profile-popover.user-plus--2" size={16} />
-    </BotaoRedondo>
+    </ButtonRound>
   );
 };
 
-const ConexoesDoPerfil: React.FC<{ conexoes?: Conexao[] }> = ({ conexoes }) => {
+const ProfileConnections: React.FC<{ connections?: Connection[] }> = ({ connections }) => {
   const { t } = useTranslation();
-  const validas = (conexoes ?? [])
-    .map((conexao) => ({ conexao, endereco: enderecoDaConexao(conexao) }))
+  const valid = (connections ?? [])
+    .map((connection) => ({ connection, address: connectionAddress(connection) }))
     .filter(
-      (c): c is { conexao: Conexao; endereco: string } => c.endereco !== null,
+      (c): c is { connection: Connection; address: string } => c.address !== null,
     );
 
-  if (!validas.length) return null;
+  if (!valid.length) return null;
 
   return (
-    <div data-gc="perfil.user-profile-popover.div--5" className="mt-3">
+    <div data-gc="perfil.user-profile-popover.div--6" className="mt-3">
       <p data-gc="perfil.user-profile-popover.p--3" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
         {t("perfil.conexoes")}
       </p>
 
-      <div data-gc="perfil.user-profile-popover.div--6" className="flex flex-wrap gap-1.5">
-        {validas.map(({ conexao, endereco }, indice) => (
+      <div data-gc="perfil.user-profile-popover.div--7" className="flex flex-wrap gap-1.5">
+        {valid.map(({ connection, address }, index) => (
           <a data-gc="perfil.user-profile-popover.a"
-            key={`${conexao.servico}-${indice}`}
-            href={endereco}
+            key={`${connection.service}-${index}`}
+            href={address}
             target="_blank"
             rel="noreferrer noopener"
-            title={`${NOMES_DOS_SERVICOS[conexao.servico]} — ${comoSeLe(conexao)}`}
+            title={`${SERVICES_NAMES[connection.service]} — ${asLe(connection)}`}
             className="flex max-w-full items-center gap-1.5 rounded-md bg-surface-3 px-2 py-1 text-11 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
           >
             <Link2 data-gc="perfil.user-profile-popover.link2" size={12} className="shrink-0" />
-            <span data-gc="perfil.user-profile-popover.span" className="truncate">{comoSeLe(conexao)}</span>
+            <span data-gc="perfil.user-profile-popover.span" className="truncate">{asLe(connection)}</span>
           </a>
         ))}
       </div>

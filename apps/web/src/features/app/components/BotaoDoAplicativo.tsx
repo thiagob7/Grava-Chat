@@ -2,21 +2,23 @@ import React from "react";
 import { ArrowClockwise, DownloadSimple } from "@phosphor-icons/react";
 
 import { Tooltip } from "~/components/ui/tooltip";
-import { ehDesktop } from "~/lib/desktop";
-import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { isDesktop } from "~/lib/desktop";
+import { useUpdate } from "~/features/app/hooks/use-atualizacao";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
-export const BotaoDoAplicativo: React.FC = () => {
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
-  const { estado, ponte, temNovidade, baixando, pronta, instalando } = useAtualizacao();
+export const AppButton: React.FC = () => {
+  const openSettings = useSettings((s) => s.open);
+  const { t } = useTranslation();
+  const { state, bridge, hasNews, downloading, ready, installing } = useUpdate();
 
-  if (!ehDesktop()) {
+  if (!isDesktop()) {
     return (
-      <Tooltip data-gc="app.botao-do-aplicativo.tooltip" label="Baixar o aplicativo">
+      <Tooltip data-gc="app.botao-do-aplicativo.tooltip" label={t("comum.atualizacao.baixarApp")}>
         <button data-gc="app.botao-do-aplicativo.button"
-          onClick={() => abrirConfiguracoes("aplicativo")}
-          aria-label="Baixar o aplicativo"
+          onClick={() => openSettings("app")}
+          aria-label={t("comum.atualizacao.baixarApp")}
           className="text-online transition hover:brightness-125"
         >
           <DownloadSimple data-gc="app.botao-do-aplicativo.download-simple" size={20} weight="bold" />
@@ -25,41 +27,41 @@ export const BotaoDoAplicativo: React.FC = () => {
     );
   }
 
-  if (!ponte || !temNovidade) return null;
+  if (!bridge || !hasNews) return null;
 
-  const aoClicar = () => void (pronta ? ponte.instalar() : ponte.baixar());
+  const onClick = () => void (ready ? bridge.install() : bridge.download());
 
   return (
     <Tooltip data-gc="app.botao-do-aplicativo.tooltip--2"
       label={
-        instalando
-          ? `Instalando a versão ${estado?.disponivel}…`
-          : estado?.erro && pronta
-            ? `${estado.erro} Clique para tentar de novo.`
-            : pronta
-              ? `Instalar a versão ${estado?.disponivel} e reiniciar`
-              : baixando
-                ? `Baixando a versão ${estado?.disponivel}…`
-                : `Saiu a versão ${estado?.disponivel} — clique para baixar`
+        installing
+          ? t("comum.atualizacao.instalando", { versao: state?.available })
+          : state?.error && ready
+            ? t("comum.atualizacao.erroTenteDeNovo", { erro: state.error })
+            : ready
+              ? t("comum.atualizacao.instalarVersaoEReiniciar", { versao: state?.available })
+              : downloading
+                ? t("comum.atualizacao.baixandoVersao", { versao: state?.available })
+                : t("comum.atualizacao.saiuVersaoClique", { versao: state?.available })
       }
     >
-      <button data-gc="app.botao-do-aplicativo.button.ao-clicar"
-        onClick={aoClicar}
-        disabled={baixando || instalando}
-        aria-label="Atualização do aplicativo"
+      <button data-gc="app.botao-do-aplicativo.button.on-click"
+        onClick={onClick}
+        disabled={downloading || installing}
+        aria-label={t("comum.atualizacao.ariaBotao")}
         className={cn(
           "relative transition hover:brightness-125 disabled:cursor-default",
-          estado?.erro && pronta ? "text-danger" : "text-online",
-          baixando && "animate-pulse",
+          state?.error && ready ? "text-danger" : "text-online",
+          downloading && "animate-pulse",
         )}
       >
-        {pronta || instalando ? (
-          <ArrowClockwise data-gc="app.botao-do-aplicativo.arrow-clockwise" size={20} weight="bold" className={cn(instalando && "animate-spin")} />
+        {ready || installing ? (
+          <ArrowClockwise data-gc="app.botao-do-aplicativo.arrow-clockwise" size={20} weight="bold" className={cn(installing && "animate-spin")} />
         ) : (
           <DownloadSimple data-gc="app.botao-do-aplicativo.download-simple--2" size={20} weight="bold" />
         )}
 
-        {pronta && (
+        {ready && (
           <span data-gc="app.botao-do-aplicativo.span" className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-online" />
         )}
       </button>

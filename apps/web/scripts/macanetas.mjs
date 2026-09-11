@@ -2,10 +2,10 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const CSS = join(AQUI, "..", "src", "styles", "index.css");
-const LISTA = join(
-  AQUI,
+const HERE = dirname(fileURLToPath(import.meta.url));
+const CSS = join(HERE, "..", "src", "styles", "index.css");
+const LIST = join(
+  HERE,
   "..",
   "src",
   "features",
@@ -14,34 +14,34 @@ const LISTA = join(
   "macanetas.json",
 );
 
-export function extrairMacanetas(css) {
-  const inicio = css.indexOf("@theme {");
-  const corpo = css.slice(inicio, css.indexOf("\n}", inicio));
-  const porToken = {};
+export function extractKnobs(css) {
+  const start = css.indexOf("@theme {");
+  const body = css.slice(start, css.indexOf("\n}", start));
+  const byToken = {};
 
-  for (const [, nome, valor] of corpo.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)) {
-    const nomes = [...valor.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]);
-    if (nomes.length) porToken[nome] = nomes;
+  for (const [, name, value] of body.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)) {
+    const names = [...value.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]);
+    if (names.length) byToken[name] = names;
   }
 
-  return porToken;
+  return byToken;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const saida = `${JSON.stringify(extrairMacanetas(readFileSync(CSS, "utf8")), null, 2)}\n`;
+  const output = `${JSON.stringify(extractKnobs(readFileSync(CSS, "utf8")), null, 2)}\n`;
 
   if (process.argv[2] === "--check") {
-    const atual = existsSync(LISTA) ? readFileSync(LISTA, "utf8") : "";
+    const current = existsSync(LIST) ? readFileSync(LIST, "utf8") : "";
 
-    if (atual !== saida) {
+    if (current !== output) {
       console.error("\nmacanetas.json está fora de dia. Rode: yarn tokens\n");
       process.exit(1);
     }
 
-    const quantos = Object.keys(JSON.parse(saida)).length;
-    console.log(`maçanetas em dia — ${quantos} tokens`);
+    const count = Object.keys(JSON.parse(output)).length;
+    console.log(`maçanetas em dia — ${count} tokens`);
   } else {
-    writeFileSync(LISTA, saida);
-    console.log(`maçanetas em ${relative(process.cwd(), LISTA)}`);
+    writeFileSync(LIST, output);
+    console.log(`maçanetas em ${relative(process.cwd(), LIST)}`);
   }
 }

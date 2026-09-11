@@ -2,20 +2,20 @@ import { AppError } from "~/lib/http.js";
 import { gifFavoriteRepository } from "~/repositories/gif-favorite-repository.js";
 import type { Gif } from "~/services/gif-service.js";
 
-const LIMITE = 200;
+const LIMIT = 200;
 
-interface Salvo {
+interface Saved {
   gifId: string;
-  descricao: string;
+  description: string;
   url: string;
   preview: string;
   width: number;
   height: number;
 }
 
-const paraGif = (f: Salvo): Gif => ({
+const forGif = (f: Saved): Gif => ({
   id: f.gifId,
-  descricao: f.descricao,
+  description: f.description,
   url: f.url,
   preview: f.preview,
   width: f.width,
@@ -23,33 +23,33 @@ const paraGif = (f: Salvo): Gif => ({
 });
 
 export const gifFavoriteService = {
-  async listar(userId: string): Promise<Gif[]> {
-    return (await gifFavoriteRepository.findManyOf(userId)).map(paraGif);
+  async list(userId: string): Promise<Gif[]> {
+    return (await gifFavoriteRepository.findManyOf(userId)).map(forGif);
   },
 
-  async salvar(userId: string, gif: Gif): Promise<Gif[]> {
-    const atuais = await gifFavoriteRepository.findManyOf(userId);
-    const jaTem = atuais.some((f) => f.gifId === gif.id);
+  async save(userId: string, gif: Gif): Promise<Gif[]> {
+    const current = await gifFavoriteRepository.findManyOf(userId);
+    const alreadyHas = current.some((f) => f.gifId === gif.id);
 
-    if (!jaTem && atuais.length >= LIMITE) {
-      throw new AppError(`Você já tem ${LIMITE} GIFs salvos. Tire um antes de guardar outro.`, 400);
+    if (!alreadyHas && current.length >= LIMIT) {
+      throw new AppError(`Você já tem ${LIMIT} GIFs salvos. Tire um antes de guardar outro.`, 400);
     }
 
     await gifFavoriteRepository.upsert({
       userId,
       gifId: gif.id,
-      descricao: gif.descricao,
+      description: gif.description,
       url: gif.url,
       preview: gif.preview,
       width: gif.width,
       height: gif.height,
     });
 
-    return gifFavoriteService.listar(userId);
+    return gifFavoriteService.list(userId);
   },
 
-  async remover(userId: string, gifId: string): Promise<Gif[]> {
+  async remove(userId: string, gifId: string): Promise<Gif[]> {
     await gifFavoriteRepository.deleteOne(userId, gifId);
-    return gifFavoriteService.listar(userId);
+    return gifFavoriteService.list(userId);
   },
 };

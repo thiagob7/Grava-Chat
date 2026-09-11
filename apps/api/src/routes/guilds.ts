@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { LIMITS, rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
-import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
+import { reportService, REPORT_REASONS } from "~/services/denuncia-service.js";
 import { guildEventService } from "~/services/guild-event-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
-import { emblemaService } from "~/services/emblema-service.js";
+import { badgeService } from "~/services/emblema-service.js";
 import { io } from "~/realtime/io.js";
 import {
   guildParams,
@@ -22,7 +22,7 @@ import {
   createCategoryInput,
   createInviteInput,
   updateGuildInput,
-  criarEmblemaInput,
+  createBadgeInput,
 } from "~/validations/guild.js";
 
 export async function guildRoutes(app: FastifyInstance) {
@@ -45,15 +45,15 @@ export async function guildRoutes(app: FastifyInstance) {
     { config: { rateLimit: { max: 3, timeWindow: "1 hour" } } },
     async (req, reply) => {
       const { guildId } = guildParams.parse(req.params);
-      const dados = z
+      const data = z
         .object({
-          motivo: z.enum(MOTIVOS_DE_DENUNCIA),
-          detalhes: z.string().trim().max(1000).optional(),
+          reason: z.enum(REPORT_REASONS),
+          details: z.string().trim().max(1000).optional(),
         })
         .parse(req.body);
 
-      const resultado = await denunciaService.denunciarServidor(req.userId, guildId, dados, req.log);
-      return reply.code(201).send(resultado);
+      const result = await reportService.reportServer(req.userId, guildId, data, req.log);
+      return reply.code(201).send(result);
     },
   );
 
@@ -103,14 +103,14 @@ export async function guildRoutes(app: FastifyInstance) {
 
   app.post("/guilds/:guildId/lidas", async (req) => {
     const { guildId } = guildParams.parse(req.params);
-    return messageService.marcarServidorLido(req.userId, guildId);
+    return messageService.markServerRead(req.userId, guildId);
   });
 
   app.put("/guilds/:guildId/verificacao", async (req) => {
     const { guildId } = guildParams.parse(req.params);
-    const { verificada } = z.object({ verificada: z.boolean() }).parse(req.body);
+    const { verified } = z.object({ verified: z.boolean() }).parse(req.body);
 
-    return guildService.verificar(req.userId, guildId, verificada);
+    return guildService.verify(req.userId, guildId, verified);
   });
 
   app.patch("/guilds/:guildId", async (req) => {
@@ -121,11 +121,53 @@ export async function guildRoutes(app: FastifyInstance) {
     return guild;
   });
 
+  app.get("/guilds/:guildId/comunidade", (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    return guildService.communityState(req.userId, guildId);
+  });
+
+  app.post("/guilds/:guildId/comunidade", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+
+    const data = z
+      .object({
+        verifiedRequiresEmail: z.boolean(),
+        filtersMediaExplicit: z.boolean(),
+        rulesChannelId: objectId.nullable(),
+        noticesChannelId: objectId.nullable(),
+        languagePrincipal: z.string().max(16).nullable(),
+      })
+      .parse(req.body);
+
+    const state = await guildService.enableCommunity(req.userId, guildId, data);
+    const detail = await guildService.detail(req.userId, guildId);
+
+    io().to(rooms.guild(guildId)).emit("guild:updated", detail.guild);
+    return state;
+  });
+
+  app.patch("/guilds/:guildId/comunidade", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+
+    const data = z
+      .object({
+        verifiedRequiresEmail: z.boolean().optional(),
+        filtersMediaExplicit: z.boolean().optional(),
+        rulesChannelId: objectId.nullable().optional(),
+        noticesChannelId: objectId.nullable().optional(),
+        securityChannelId: objectId.nullable().optional(),
+        languagePrincipal: z.string().max(16).nullable().optional(),
+      })
+      .parse(req.body);
+
+    return guildService.adjustCommunity(req.userId, guildId, data);
+  });
+
   app.get("/guilds/:guildId/comandos", async (req) => {
     const { guildId } = guildParams.parse(req.params);
     await guildService.detail(req.userId, guildId);
 
-    return botService.comandosDoServidor(guildId);
+    return botService.serverCommands(guildId);
   });
 
   app.get("/guilds/:guildId/invites", (req) => {
@@ -169,13 +211,13 @@ export async function guildRoutes(app: FastifyInstance) {
   app.put("/guilds/:guildId/channels/:channelId/status", async (req) => {
     const { guildId, channelId } = guildChannelParams.parse(req.params);
     const { status } = z
-      .object({ status: z.string().max(LIMITS.statusDoCanal).nullable() })
+      .object({ status: z.string().max(LIMITS.channelStatus).nullable() })
       .parse(req.body);
 
-    const canal = await guildService.definirStatusDoCanal(req.userId, guildId, channelId, status);
+    const channel = await guildService.setChannelStatus(req.userId, guildId, channelId, status);
 
-    io().to(rooms.guild(guildId)).emit("channel:updated", canal);
-    return canal;
+    io().to(rooms.guild(guildId)).emit("channel:updated", channel);
+    return channel;
   });
 
   app.delete("/guilds/:guildId/channels/:channelId", async (req, reply) => {
@@ -211,27 +253,27 @@ export async function guildRoutes(app: FastifyInstance) {
 
   app.get("/guilds/:guildId/emblemas", (req) => {
     const { guildId } = guildParams.parse(req.params);
-    return emblemaService.listar(req.userId, guildId);
+    return badgeService.list(req.userId, guildId);
   });
 
   app.post("/guilds/:guildId/emblemas", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
-    const emblema = await emblemaService.criar(
+    const badge = await badgeService.create(
       req.userId,
       guildId,
-      criarEmblemaInput.parse(req.body),
+      createBadgeInput.parse(req.body),
     );
 
     io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
-    return reply.code(201).send(emblema);
+    return reply.code(201).send(badge);
   });
 
-  app.delete("/guilds/:guildId/emblemas/:emblemaId", async (req, reply) => {
-    const { guildId, emblemaId } = z
-      .object({ guildId: objectId, emblemaId: objectId })
+  app.delete("/guilds/:guildId/emblemas/:badgeId", async (req, reply) => {
+    const { guildId, badgeId } = z
+      .object({ guildId: objectId, badgeId: objectId })
       .parse(req.params);
 
-    await emblemaService.remover(req.userId, guildId, emblemaId);
+    await badgeService.remove(req.userId, guildId, badgeId);
 
     io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
     return reply.code(204).send();
@@ -241,19 +283,19 @@ export async function guildRoutes(app: FastifyInstance) {
     const { guildId } = guildParams.parse(req.params);
     const { emblemIds } = z.object({ emblemIds: z.array(objectId) }).parse(req.body);
 
-    const resultado = await emblemaService.vestir(req.userId, guildId, emblemIds);
+    const result = await badgeService.wear(req.userId, guildId, emblemIds);
 
     io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
-    return resultado;
+    return result;
   });
 
   app.delete("/guilds/:guildId", async (req, reply) => {
     const { guildId } = guildParams.parse(req.params);
-    const membros = await guildService.remove(req.userId, guildId);
+    const members = await guildService.remove(req.userId, guildId);
 
     io().to(rooms.guild(guildId)).emit("guild:deleted", { guildId });
     io().in(rooms.guild(guildId)).socketsLeave(rooms.guild(guildId));
-    void membros;
+    void members;
 
     return reply.code(204).send();
   });
@@ -265,14 +307,14 @@ export async function guildRoutes(app: FastifyInstance) {
 
   app.get("/guilds/:guildId/members/:userId/messages", (req) => {
     const { guildId, userId } = guildMemberParams.parse(req.params);
-    const { filtro, before } = z
+    const { filter, before } = z
       .object({
-        filtro: z.enum(["todas", "links", "midia"]).default("todas"),
+        filter: z.enum(["todas", "links", "midia"]).default("todas"),
         before: objectId.optional(),
       })
       .parse(req.query);
 
-    return guildService.moderationMessages(req.userId, guildId, userId, filtro, before);
+    return guildService.moderationMessages(req.userId, guildId, userId, filter, before);
   });
 
   app.delete("/guilds/:guildId/members/:userId", async (req, reply) => {

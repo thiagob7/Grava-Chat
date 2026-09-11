@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
 
-export function useDispositivos(ativo = true) {
-  const [dispositivos, setDispositivos] = useState<MediaDeviceInfo[]>([]);
+export function useDevices(active = true) {
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
-    if (!ativo || !navigator.mediaDevices?.enumerateDevices) return;
+    if (!active || !navigator.mediaDevices?.enumerateDevices) return;
 
-    const listar = () => {
+    const list = () => {
       void navigator.mediaDevices
         .enumerateDevices()
-        .then(setDispositivos)
-        .catch(() => setDispositivos([]));
+        .then(setDevices)
+        .catch(() => setDevices([]));
     };
 
-    listar();
-    navigator.mediaDevices.addEventListener("devicechange", listar);
-    return () => navigator.mediaDevices.removeEventListener("devicechange", listar);
-  }, [ativo]);
+    list();
+    navigator.mediaDevices.addEventListener("devicechange", list);
+    return () => navigator.mediaDevices.removeEventListener("devicechange", list);
+  }, [active]);
 
   return {
-    entradas: dispositivos.filter((d) => d.kind === "audioinput"),
-    saidas: dispositivos.filter((d) => d.kind === "audiooutput"),
-    cameras: dispositivos.filter((d) => d.kind === "videoinput"),
+    entries: devices.filter((d) => d.kind === "audioinput"),
+    outputs: devices.filter((d) => d.kind === "audiooutput"),
+    cameras: devices.filter((d) => d.kind === "videoinput"),
   };
 }
 
-export const nomeDoDispositivo = (dispositivo: MediaDeviceInfo, indice: number, tipo: string) =>
-  dispositivo.label || `${tipo} ${indice + 1}`;
+export const deviceName = (device: MediaDeviceInfo, index: number, kind: string) =>
+  device.label || `${kind} ${index + 1}`;

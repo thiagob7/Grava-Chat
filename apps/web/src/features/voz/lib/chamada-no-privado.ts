@@ -1,34 +1,34 @@
 
-export interface ChamadaRecebida {
+export interface CallReceived {
   guildId: string | null;
   channelId: string;
-  quemEntrou: string;
-  euSou: string;
-  meuCanalDeVoz: string | null;
+  whoJoined: string;
+  euAm: string;
+  voiceMyChannel: string | null;
 }
 
-export function deveTocar({
+export function mustPlay({
   guildId,
   channelId,
-  quemEntrou,
-  euSou,
-  meuCanalDeVoz,
-}: ChamadaRecebida): boolean {
+  whoJoined,
+  euAm,
+  voiceMyChannel,
+}: CallReceived): boolean {
   if (guildId !== null) return false;
 
-  if (quemEntrou === euSou) return false;
+  if (whoJoined === euAm) return false;
 
-  if (meuCanalDeVoz === channelId) return false;
+  if (voiceMyChannel === channelId) return false;
 
   return true;
 }
 
-export function estaChamando({
+export function thisCalling({
   guildId,
-  quantosNaSala,
+  countRoom,
 }: {
   guildId: string | null;
-  quantosNaSala: number;
+  countRoom: number;
 }): boolean {
-  return guildId === null && quantosNaSala <= 1;
+  return guildId === null && countRoom <= 1;
 }

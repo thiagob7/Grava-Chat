@@ -1,4 +1,4 @@
-import type { CursorImportado } from "~/features/configuracoes/lib/cursor-importado";
+import type { CursorImported } from "~/features/configuracoes/lib/cursor-importado";
 
 /*
   O acervo inteiro do pacote, para escolher qualquer desenho em qualquer papel.
@@ -12,7 +12,7 @@ import type { CursorImportado } from "~/features/configuracoes/lib/cursor-import
   vez de um objeto bonito: assim uma linha é uma imagem, e regerar não vira um
   diff ilegível.
 */
-const ACERVO: [string, string, number, number][] = [
+const COLLECTION: [string, string, number, number][] = [
   ["arrow_e", "Seta", 37, 14],
   ["arrow_n", "Seta", 31, 8],
   ["arrow_ne", "Seta", 37, 12],
@@ -201,42 +201,42 @@ const ACERVO: [string, string, number, number][] = [
   embutir viraria quase 1 MB de texto que todo mundo baixa. Como arquivo solto,
   o navegador busca só os que aparecem na tela e guarda em cache.
 */
-const ARQUIVOS = import.meta.glob<string>("../../../assets/cursores/biblioteca/*.png", {
+const FILES = import.meta.glob<string>("../../../assets/cursores/biblioteca/*.png", {
   eager: true,
   query: "?url",
   import: "default",
 });
 
-const LADO = 64;
+const SIDE = 64;
 
-export interface ItemDaBiblioteca {
+export interface LibraryItem {
   id: string;
-  familia: string;
-  rotulo: string;
-  cursor: CursorImportado;
+  family: string;
+  label: string;
+  cursor: CursorImported;
 }
 
-const rotular = (id: string, familia: string) => {
-  const resto = id.split("_").slice(1).join(" ");
-  return resto ? `${familia} ${resto}` : familia;
+const rotular = (id: string, family: string) => {
+  const rest = id.split("_").slice(1).join(" ");
+  return rest ? `${family} ${rest}` : family;
 };
 
-export const BIBLIOTECA_DE_CURSORES: ItemDaBiblioteca[] = ACERVO.flatMap(
-  ([id, familia, pontoX, pontoY]) => {
-    const imagem = ARQUIVOS[`../../../assets/cursores/biblioteca/${id}.png`];
-    if (!imagem) return [];
+export const CURSORS_LIBRARY: LibraryItem[] = COLLECTION.flatMap(
+  ([id, family, dotX, dotY]) => {
+    const image = FILES[`../../../assets/cursores/biblioteca/${id}.png`];
+    if (!image) return [];
 
     return [
       {
         id,
-        familia,
-        rotulo: rotular(id, familia),
-        cursor: { imagem, largura: LADO, altura: LADO, pontoX, pontoY },
+        family,
+        label: rotular(id, family),
+        cursor: { image, width: SIDE, height: SIDE, dotX, dotY },
       },
     ];
   },
 );
 
-export const FAMILIAS_DA_BIBLIOTECA = [
-  ...new Set(BIBLIOTECA_DE_CURSORES.map((item) => item.familia)),
+export const LIBRARY_FAMILIES = [
+  ...new Set(CURSORS_LIBRARY.map((item) => item.family)),
 ].sort((a, b) => a.localeCompare(b, "pt-BR"));

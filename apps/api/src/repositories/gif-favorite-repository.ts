@@ -3,23 +3,23 @@ import { prisma } from "~/lib/prisma.js";
 
 export const gifFavoriteRepository = {
   findManyOf(userId: string) {
-    return prisma.gifFavorito.findMany({
+    return prisma.gifFavorite.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
   },
 
-  upsert(data: Prisma.GifFavoritoUncheckedCreateInput) {
-    const { userId, gifId, ...resto } = data;
+  upsert(data: Prisma.GifFavoriteUncheckedCreateInput) {
+    const { userId, gifId, ...rest } = data;
 
-    return prisma.gifFavorito.upsert({
+    return prisma.gifFavorite.upsert({
       where: { userId_gifId: { userId, gifId } },
-      create: { userId, gifId, ...resto },
-      update: resto,
+      create: { userId, gifId, ...rest },
+      update: rest,
     });
   },
 
   deleteOne(userId: string, gifId: string) {
-    return prisma.gifFavorito.deleteMany({ where: { userId, gifId } });
+    return prisma.gifFavorite.deleteMany({ where: { userId, gifId } });
   },
 };

@@ -1,6 +1,6 @@
 import React from "react";
 
-export const FundoDaMarca: React.FC<{ className?: string }> = ({ className }) => (
+export const BrandBackground: React.FC<{ className?: string }> = ({ className }) => (
   <div data-gc="app.fundo-da-marca.div" aria-hidden className={className}>
     <div data-gc="app.fundo-da-marca.div--2" className="absolute inset-0 bg-gradient-to-br from-brand via-brand to-brand-hover" />
 

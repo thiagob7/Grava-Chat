@@ -2,16 +2,16 @@ import { z } from "zod";
 import {
   CHANNEL_TYPES,
   DESIRED_STATUSES,
-  FILTROS_DE_SPAM,
+  SPAM_FILTERS,
   PRESENCE_STATUSES,
   LIMITS,
 } from "./constants.js";
 import {
-  corHex,
-  ESTILOS_DE_CARGO,
-  estiloDePerfilSchema,
-  FONTES_DE_NOME,
-  statusPersonalizadoSchema,
+  colorHex,
+  ROLE_STYLES,
+  profileStyleSchema,
+  NAME_FONTS,
+  statusCustomSchema,
 } from "./cosmeticos.js";
 
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, "id invalido");
@@ -23,41 +23,42 @@ export const publicUserSchema = z.object({
   avatarUrl: z.string().nullable(),
   status: z.enum(PRESENCE_STATUSES),
   isBot: z.boolean(),
-  sistema: z.boolean().optional(),
+  system: z.boolean().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
 export const selfUserSchema = publicUserSchema.extend({
   email: z.email(),
   bio: z.string().nullable(),
-  pronomes: z.string().nullable(),
+  pronouns: z.string().nullable(),
   providers: z.array(z.string()),
   createdAt: z.iso.datetime(),
-  perfil: estiloDePerfilSchema.nullable(),
-  statusPersonalizado: statusPersonalizadoSchema.nullable(),
+  profile: profileStyleSchema.nullable(),
+  customStatus: statusCustomSchema.nullable(),
   desiredStatus: z.enum(DESIRED_STATUSES),
   admin: z.boolean(),
 
-  aceitaPedidos: z.boolean(),
-  mostraAtividade: z.boolean(),
-  mostraServidoresEmComum: z.boolean(),
-  mostraAmigosEmComum: z.boolean(),
-  permitirDmDeMembros: z.boolean(),
-  filtroDeSpam: z.enum(FILTROS_DE_SPAM),
+  acceptedRequests: z.boolean(),
+  showsActivity: z.boolean(),
+  showsServersCommon: z.boolean(),
+  showsFriendsCommon: z.boolean(),
+  membersAllowDm: z.boolean(),
+  spamFilter: z.enum(SPAM_FILTERS),
 
-  excluirEm: z.iso.datetime().nullable(),
+  deleteAt: z.iso.datetime().nullable(),
+  verifiedEmail: z.boolean(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 
-export const pedidoDeDmSchema = z.object({
+export const dmRequestSchema = z.object({
   channelId: objectId,
   de: publicUserSchema,
   spam: z.boolean(),
-  servidoresEmComum: z.number().int(),
-  criadoEm: z.iso.datetime(),
-  previa: z.string().nullable(),
+  serversCommon: z.number().int(),
+  createdAt: z.iso.datetime(),
+  preview: z.string().nullable(),
 });
-export type PedidoDeDm = z.infer<typeof pedidoDeDmSchema>;
+export type DmRequest = z.infer<typeof dmRequestSchema>;
 
 export const guildSchema = z.object({
   id: objectId,
@@ -65,8 +66,8 @@ export const guildSchema = z.object({
   iconUrl: z.string().nullable(),
   ownerId: objectId,
   memberCount: z.number().int(),
-  verificada: z.boolean().optional(),
-  detectavel: z.boolean().optional(),
+  verified: z.boolean().optional(),
+  detectable: z.boolean().optional(),
 });
 export type Guild = z.infer<typeof guildSchema>;
 
@@ -83,8 +84,9 @@ export const channelSchema = z.object({
   guildId: objectId.nullable(),
   categoryId: objectId.nullable(),
   name: z.string(),
-  fonte: z.enum(FONTES_DE_NOME).nullable().optional(),
+  font: z.enum(NAME_FONTS).nullable().optional(),
   type: z.enum(CHANNEL_TYPES),
+  url: z.string().nullable().optional(),
   topic: z.string().nullable(),
   position: z.number().int(),
   isPrivate: z.boolean(),
@@ -107,21 +109,21 @@ export const attachmentSchema = z.object({
   height: z.number().int().nullable().optional(),
   spoiler: z.boolean().optional(),
   description: z.string().max(1024).nullable().optional(),
-  duracaoMs: z.number().int().nullable().optional(),
-  ondas: z.string().max(200).nullable().optional(),
+  durationMs: z.number().int().nullable().optional(),
+  waves: z.string().max(200).nullable().optional(),
 });
 export type Attachment = z.infer<typeof attachmentSchema>;
 
 export const pollOptionSchema = z.object({
   id: z.string(),
-  texto: z.string().max(80),
+  text: z.string().max(80),
   emoji: z.string().nullable().optional(),
   userIds: z.array(objectId),
 });
 
 export const pollSchema = z.object({
-  pergunta: z.string().max(200),
-  opcoes: z.array(pollOptionSchema).min(2).max(5),
+  question: z.string().max(200),
+  options: z.array(pollOptionSchema).min(2).max(5),
   multiSelect: z.boolean(),
   expiresAt: z.iso.datetime().nullable(),
   closedAt: z.iso.datetime().nullable(),
@@ -165,6 +167,13 @@ export const reactionSummarySchema = z.object({
 });
 export type ReactionSummary = z.infer<typeof reactionSummarySchema>;
 
+export const reactionPeopleSchema = z.object({
+  emoji: z.string(),
+  count: z.number().int(),
+  users: z.array(publicUserSchema),
+});
+export type ReactionPeople = z.infer<typeof reactionPeopleSchema>;
+
 export const reactionStateSchema = z.object({
   emoji: z.string(),
   userIds: z.array(objectId),
@@ -177,8 +186,8 @@ export const messageSchema = z.object({
   channelId: objectId,
   author: publicUserSchema,
   content: z.string(),
-  fonte: z.enum(FONTES_DE_NOME).nullable().optional(),
-  tipo: z.enum(["USER", "JOIN", "COMANDO"]),
+  font: z.enum(NAME_FONTS).nullable().optional(),
+  kind: z.enum(["USER", "JOIN", "COMANDO"]),
   attachments: z.array(attachmentSchema),
   poll: pollSchema.nullable(),
   sticker: stickerSchema.nullable(),
@@ -187,7 +196,7 @@ export const messageSchema = z.object({
   mentionRoleIds: z.array(objectId),
   mentionEveryone: z.boolean(),
   replyToId: objectId.nullable(),
-  encaminhadaDe: z
+  forwarded: z
     .object({ channelId: objectId, messageId: objectId })
     .nullable(),
   postId: objectId.nullable(),
@@ -215,7 +224,7 @@ export const roleSchema = z.object({
   colorSecondary: z.string().nullable(),
   iconUrl: z.string().nullable(),
   iconEmoji: z.string().nullable(),
-  estilo: z.enum(ESTILOS_DE_CARGO),
+  style: z.enum(ROLE_STYLES),
   position: z.number().int(),
   permissions: z.array(z.string()),
   hoist: z.boolean(),
@@ -224,14 +233,14 @@ export const roleSchema = z.object({
 });
 export type Role = z.infer<typeof roleSchema>;
 
-export const emblemaSchema = z.object({
+export const badgeSchema = z.object({
   id: objectId,
   guildId: objectId,
-  nome: z.string(),
+  name: z.string(),
   emoji: z.string().nullable(),
   iconUrl: z.string().nullable(),
 });
-export type Emblema = z.infer<typeof emblemaSchema>;
+export type Badge = z.infer<typeof badgeSchema>;
 
 export const overwriteSchema = z.object({
   channelId: objectId,
@@ -248,7 +257,7 @@ export const voiceStateSchema = z.object({
   channelId: objectId,
   guildId: objectId.nullable(),
   socketId: z.string(),
-  clienteId: z.string().nullable(),
+  clientId: z.string().nullable(),
   orphanedAt: z.number().nullable(),
   joinedAt: z.number(),
   selfMute: z.boolean(),
@@ -260,11 +269,11 @@ export const voiceStateSchema = z.object({
 });
 export type VoiceState = z.infer<typeof voiceStateSchema>;
 
-export const vozNoServidorSchema = z.object({
+export const voiceServerSchema = z.object({
   channelId: z.string(),
   channelName: z.string(),
-  transmitindo: z.boolean(),
-  pessoas: z.array(
+  broadcasting: z.boolean(),
+  people: z.array(
     z.object({
       userId: z.string(),
       displayName: z.string(),
@@ -272,7 +281,7 @@ export const vozNoServidorSchema = z.object({
     }),
   ),
 });
-export type VozNoServidor = z.infer<typeof vozNoServidorSchema>;
+export type VoiceServer = z.infer<typeof voiceServerSchema>;
 
 export const createGuildInput = z.object({
   name: z.string().min(2).max(LIMITS.guildName),
@@ -280,18 +289,19 @@ export const createGuildInput = z.object({
 
 export const createChannelInput = z.object({
   name: z.string().min(1).max(LIMITS.channelName),
-  fonte: z.enum(FONTES_DE_NOME).optional(),
+  font: z.enum(NAME_FONTS).optional(),
   type: z.enum(CHANNEL_TYPES),
+  url: z.string().url().max(512).nullable().optional(),
   categoryId: objectId.nullable().optional(),
   topic: z.string().max(512).nullable().optional(),
   isPrivate: z.boolean().optional(),
 });
 
 export const createPollInput = z.object({
-  pergunta: z.string().min(1).max(200),
-  opcoes: z.array(z.object({ texto: z.string().min(1).max(80), emoji: z.string().nullable().optional() })).min(2).max(5),
+  question: z.string().min(1).max(200),
+  options: z.array(z.object({ text: z.string().min(1).max(80), emoji: z.string().nullable().optional() })).min(2).max(5),
   multiSelect: z.boolean().optional(),
-  duracaoHoras: z.number().int().positive().max(720).nullable().optional(),
+  durationHours: z.number().int().positive().max(720).nullable().optional(),
 });
 
 export type CreatePollInput = z.infer<typeof createPollInput>;
@@ -299,17 +309,17 @@ export type CreatePollInput = z.infer<typeof createPollInput>;
 export const sendMessageInput = z.object({
   channelId: objectId,
   content: z.string().max(LIMITS.messageLength),
-  fonte: z.enum(FONTES_DE_NOME).optional(),
+  font: z.enum(NAME_FONTS).optional(),
   attachments: z.array(attachmentSchema).max(LIMITS.attachmentsPerMessage).optional(),
   poll: createPollInput.optional(),
   stickerId: objectId.optional(),
   postId: objectId.nullable().optional(),
   replyToId: objectId.nullable().optional(),
-  encaminhadaDe: z
+  forwarded: z
     .object({ channelId: objectId, messageId: objectId })
     .nullable()
     .optional(),
-  mencionarAutor: z.boolean().optional(),
+  mentionAuthor: z.boolean().optional(),
   nonce: z.string().max(64).optional(),
 });
 
@@ -318,41 +328,41 @@ export const editMessageInput = z.object({
   content: z.string().min(1).max(LIMITS.messageLength),
 });
 
-const nomeDeComando = z
+const commandName = z
   .string()
   .regex(/^[a-z0-9_-]{1,32}$/, "Só minúsculas, números, hífen e sublinhado");
 
-export const TIPOS_DE_OPCAO = ["texto", "numero", "usuario", "canal"] as const;
-export type TipoDeOpcao = (typeof TIPOS_DE_OPCAO)[number];
+export const OPTION_KINDS = ["texto", "numero", "usuario", "canal"] as const;
+export type OptionKind = (typeof OPTION_KINDS)[number];
 
-export const opcaoDeComandoSchema = z.object({
-  nome: nomeDeComando,
-  descricao: z.string().min(1).max(100),
-  tipo: z.enum(TIPOS_DE_OPCAO),
-  obrigatoria: z.boolean().optional(),
+export const commandOptionSchema = z.object({
+  name: commandName,
+  description: z.string().min(1).max(100),
+  kind: z.enum(OPTION_KINDS),
+  required: z.boolean().optional(),
 });
-export type OpcaoDeComando = z.infer<typeof opcaoDeComandoSchema>;
+export type CommandOption = z.infer<typeof commandOptionSchema>;
 
-export const comandoDeBotSchema = z.object({
-  nome: nomeDeComando,
-  descricao: z.string().min(1).max(100),
-  opcoes: z.array(opcaoDeComandoSchema).max(10).default([]),
+export const botCommandSchema = z.object({
+  name: commandName,
+  description: z.string().min(1).max(100),
+  options: z.array(commandOptionSchema).max(10).default([]),
 });
-export type ComandoDeBot = z.infer<typeof comandoDeBotSchema>;
+export type BotCommand = z.infer<typeof botCommandSchema>;
 
-export const definirComandosInput = z.object({
-  comandos: z.array(comandoDeBotSchema).max(25),
+export const setCommandsInput = z.object({
+  commands: z.array(botCommandSchema).max(25),
 });
 
-export const comandoDisponivelSchema = comandoDeBotSchema.extend({
+export const commandAvailableSchema = botCommandSchema.extend({
   botId: objectId,
   bot: publicUserSchema,
 });
-export type ComandoDisponivel = z.infer<typeof comandoDisponivelSchema>;
+export type AvailableCommand = z.infer<typeof commandAvailableSchema>;
 
-export const invocarComandoInput = z.object({
+export const invokeCommandInput = z.object({
   channelId: objectId,
   botId: objectId,
-  comando: nomeDeComando,
-  opcoes: z.record(z.string(), z.string().max(2000)).default({}),
+  command: commandName,
+  options: z.record(z.string(), z.string().max(2000)).default({}),
 });

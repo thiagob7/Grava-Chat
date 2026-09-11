@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Pieni vilkuttava käsi",
+    botao: "Vilkuta kaverille {{nome}}",
+  },
+  oficial: {
+    titulo: "Tämä kanava on vain virallisia tiedotteita varten.",
+    detalhe: "Emme koskaan kysy salasanaasi emmekä tilisi tunnistetta.",
+    saibaMais: "Lue lisää",
+  },
+  topico: {
+    abrir: "Näytä kanavan kuvaus",
+  },
+  previaDoLink: {
+    carregando: "Katson, mitä linkin takana on…",
+    destino: "Vie osoitteeseen {{destino}}",
+  },
+  reacao: {
+    carregando: "Katson, kuka reagoi merkillä {{emoji}}…",
+    uma: "{{nome}} reagoi merkillä {{emoji}}",
+    duas: "{{primeiro}} ja {{segundo}} reagoivat merkillä {{emoji}}",
+    varias: "{{nomes}} ja {{quantos}} muuta reagoivat merkillä {{emoji}}",
+    dicaSuper: "Pidä pohjassa superreaktioon",
+  },
+  recado: {
+    gravar: "Nauhoita ääniviesti",
+    descartar: "Hylkää nauhoitus",
+    mandar: "Lähetä nauhoitus",
+    semSuporte: "Tämä selain ei nauhoita ääntä.",
+    semMicrofone: "Ei pääsyä mikrofoniin.",
+  },
   lista: {
     carregando: "Ladataan viestejä…",
     carregandoMais: "Ladataan…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Näytä kuva",
   },
   enquete: {
+    criar: "Luo kysely",
+    pergunta: "Kysymys",
+    exemplo: "Mitä pelataan tänään?",
+    respostas: "Vastaukset",
+    adicionarOpcao: "Lisää vaihtoehto",
+    removerOpcao: "Poista vaihtoehto",
+    varias: "Salli useampi vastaus",
+    variasDetalhe: "Ilman tätä yhden vaihtoehdon äänestäminen poistaa äänen edelliseltä.",
+    duracao: "Kesto",
+    umaHora: "1 tunti",
+    quatroHoras: "4 tuntia",
+    oitoHoras: "8 tuntia",
+    umDia: "1 päivä",
+    tresDias: "3 päivää",
+    umaSemana: "1 viikko",
+    ateEncerrar: "Kunnes suljen sen itse",
     titulo: "Kysely",
     encerrada: "Kysely päättyi",
     variasRespostas: "Kysely — useita vastauksia",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Haku katsoo vain kanavia, joita saat lukea.",
   },
   entrada: {
+    semNome: "keskustelu",
+    anexo: "(liite)",
     titulo: "Saapuneet",
     naoLidas: "Lukemattomat",
     salvas: "Tallennetut",

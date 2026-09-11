@@ -1,35 +1,35 @@
 import { describe, expect, it } from "vitest";
 
-import { GRUPOS_DE_TOKENS, TODOS_OS_TOKENS } from "~/lib/tokens";
-import vivos from "~/features/configuracoes/lib/tokens-vivos.json";
+import { TOKENS_GROUPS, ALL_TOKENS } from "~/lib/tokens";
+import live from "~/features/configuracoes/lib/tokens-vivos.json";
 
-const VIVOS = vivos as string[];
+const LIVE = live as string[];
 
 describe("catálogo de tokens do estúdio", () => {
   it("dá rótulo a todo token que o app lê de verdade", () => {
-    const comRotulo = new Set(TODOS_OS_TOKENS.map((t) => t.nome));
-    const semRotulo = VIVOS.filter((nome) => !comRotulo.has(nome));
+    const withLabel = new Set(ALL_TOKENS.map((t) => t.name));
+    const withoutLabel = LIVE.filter((name) => !withLabel.has(name));
 
-    expect(semRotulo).toEqual([]);
+    expect(withoutLabel).toEqual([]);
   });
 
   it("não oferece rótulo de token morto", () => {
-    const vivo = new Set(VIVOS);
-    const fantasmas = TODOS_OS_TOKENS.map((t) => t.nome).filter(
-      (nome) => !vivo.has(nome),
+    const live = new Set(LIVE);
+    const ghosts = ALL_TOKENS.map((t) => t.name).filter(
+      (name) => !live.has(name),
     );
 
-    expect(fantasmas).toEqual([]);
+    expect(ghosts).toEqual([]);
   });
 
   it("não repete um token em dois grupos", () => {
-    const nomes = TODOS_OS_TOKENS.map((t) => t.nome);
+    const names = ALL_TOKENS.map((t) => t.name);
 
-    expect(nomes).toHaveLength(new Set(nomes).size);
+    expect(names).toHaveLength(new Set(names).size);
   });
 
   it("não deixa grupo vazio nem rótulo em branco", () => {
-    expect(GRUPOS_DE_TOKENS.filter((g) => !g.tokens.length)).toEqual([]);
-    expect(TODOS_OS_TOKENS.filter((t) => !t.rotulo.trim())).toEqual([]);
+    expect(TOKENS_GROUPS.filter((g) => !g.tokens.length)).toEqual([]);
+    expect(ALL_TOKENS.filter((t) => !t.label.trim())).toEqual([]);
   });
 });

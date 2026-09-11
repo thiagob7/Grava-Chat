@@ -2,17 +2,17 @@ import { api } from "~/@core/lib/api";
 
 export interface EmbedModel {
   url: string;
-  tipo: "link" | "video" | "imagem";
+  kind: "link" | "video" | "imagem";
   site: string | null;
-  titulo: string | null;
-  descricao: string | null;
-  imagem: string | null;
+  title: string | null;
+  description: string | null;
+  image: string | null;
   favicon: string | null;
-  autor: string | null;
+  author: string | null;
   player: string | null;
-  cor: string | null;
-  largura: number | null;
-  altura: number | null;
+  color: string | null;
+  width: number | null;
+  height: number | null;
 }
 
 export async function findEmbed(url: string): Promise<EmbedModel | null> {

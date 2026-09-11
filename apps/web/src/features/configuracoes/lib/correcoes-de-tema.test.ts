@@ -1,47 +1,47 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  CORRECOES_DE_TEMA,
-  pareceTemaDeFora,
+  THEME_FIXES,
+  outsideLooksTheme,
 } from "~/features/configuracoes/lib/correcoes-de-tema";
-import { LUGARES } from "~/lib/compat-de-tema";
+import { PLACES } from "~/lib/compat-de-tema";
 
 describe("correções para tema da referência", () => {
   it("reconhece o CSS escrito para a árvore deles", () => {
-    expect(pareceTemaDeFora('[data-flx="app.guilds-layout"] { color: red }')).toBe(true);
-    expect(pareceTemaDeFora('[class*="GuildNavbar.module__x_"] { color: red }')).toBe(true);
-    expect(pareceTemaDeFora(":root { --ThemePanelMargin: 4px }")).toBe(true);
+    expect(outsideLooksTheme('[data-flx="app.guilds-layout"] { color: red }')).toBe(true);
+    expect(outsideLooksTheme('[class*="GuildNavbar.module__x_"] { color: red }')).toBe(true);
+    expect(outsideLooksTheme(":root { --ThemePanelMargin: 4px }")).toBe(true);
   });
 
   it("deixa passar tema escrito para o Gravaê", () => {
-    expect(pareceTemaDeFora(':root { --color-brand: #123 }\n.avatar { border-radius: 0 }')).toBe(
+    expect(outsideLooksTheme(':root { --color-brand: #123 }\n.avatar { border-radius: 0 }')).toBe(
       false,
     );
-    expect(pareceTemaDeFora('[data-gc="conversa.message-item.div"] { color: red }')).toBe(false);
+    expect(outsideLooksTheme('[data-gc="conversa.message-item.div"] { color: red }')).toBe(false);
   });
 
   it("grita mais alto que o tema em toda declaração", () => {
-    const declaracoes = CORRECOES_DE_TEMA.split("\n")
-      .map((linha) => linha.trim())
-      .filter((linha) => linha.endsWith(";"))
-      .filter((linha) => !linha.startsWith("--"));
+    const declarations = THEME_FIXES.split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.endsWith(";"))
+      .filter((line) => !line.startsWith("--"));
 
-    expect(declaracoes.length).toBeGreaterThan(0);
-    expect(declaracoes.filter((linha) => !linha.includes("!important"))).toEqual([]);
+    expect(declarations.length).toBeGreaterThan(0);
+    expect(declarations.filter((line) => !line.includes("!important"))).toEqual([]);
   });
 
   it("só mira nome que a ponte carimba de verdade", () => {
-    const nossos = new Set<string>();
+    const our = new Set<string>();
 
-    for (const lugar of Object.values(LUGARES)) {
-      for (const classe of lugar.classes as readonly string[]) nossos.add(classe);
-      if ("flx" in lugar) nossos.add(lugar.flx);
+    for (const place of Object.values(PLACES)) {
+      for (const cssClass of place.classes as readonly string[]) our.add(cssClass);
+      if ("flx" in place) our.add(place.flx);
     }
 
-    const emprestados = [...CORRECOES_DE_TEMA.matchAll(/\[(?:class\*|data-flx)=["']([^"']+)["']\]/g)]
-      .map((achado) => achado[1] ?? "")
-      .filter((nome) => ![...nossos].some((nosso) => nosso.includes(nome)));
+    const borrowed = [...THEME_FIXES.matchAll(/\[(?:class\*|data-flx)=["']([^"']+)["']\]/g)]
+      .map((match) => match[1] ?? "")
+      .filter((name) => ![...our].some((our) => our.includes(name)));
 
-    expect(emprestados).toEqual([]);
+    expect(borrowed).toEqual([]);
   });
 });

@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "A csevegés vigyétek le",
+    paraOLado: "A csevegés vigyétek oldalra",
+  },
+  aparelhoNovo: {
+    microfone: "Új mikrofon bukkant fel",
+    saida: "Új hangkimenet bukkant fel",
+    apareceu: "Felbukkant: {{nome}}.",
+    falarPorEle: "Ezen szeretnél beszélni?",
+    ouvirPorEle: "Ezen szeretnél hallgatni?",
+    trocaNaHora: "A csere azonnal érvényes, a hívás elhagyása nélkül.",
+    naoSugerir: "Ne ajánld fel újra ezt az eszközt",
+    trocar: "Váltás rá",
+  },
   conectando: "Csatlakozás a híváshoz…",
   naoEntrou: "Nem sikerült csatlakozni a híváshoz",
   sair: "Kilépés a hívásból",

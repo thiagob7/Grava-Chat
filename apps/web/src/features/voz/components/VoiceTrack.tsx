@@ -31,20 +31,20 @@ export function VoiceVideo({ track, mirrored }: { track: Track; mirrored?: boole
 export function VoiceAudio({
   track,
   identity,
-  fonte = "voz",
+  font = "voz",
 }: {
   track: Track;
   identity: string;
-  fonte?: "voz" | "tela";
+  font?: "voz" | "tela";
 }) {
   const ref = useRef<HTMLAudioElement>(null);
 
-  const volumeSaida = useVoicePrefs((s) => s.volumeSaida);
+  const volumeOutput = useVoicePrefs((s) => s.volumeOutput);
   const individual = useVoiceStore((s) =>
-    fonte === "tela" ? (s.volumesDeTela[identity] ?? 1) : (s.volumesLocais[identity] ?? 1),
+    font === "tela" ? (s.screenVolumes[identity] ?? 1) : (s.volumesLocal[identity] ?? 1),
   );
-  const silenciado = useVoiceStore((s) =>
-    fonte === "tela" ? false : Boolean(s.silenciadosLocais[identity]),
+  const muted = useVoiceStore((s) =>
+    font === "tela" ? false : Boolean(s.mutedLocal[identity]),
   );
   const deafened = useVoiceStore((s) => s.deafened);
 
@@ -62,8 +62,8 @@ export function VoiceAudio({
     const el = ref.current;
     if (!el) return;
 
-    el.volume = silenciado || deafened ? 0 : Math.min(1, volumeSaida * individual);
-  }, [track, volumeSaida, individual, silenciado, deafened]);
+    el.volume = muted || deafened ? 0 : Math.min(1, volumeOutput * individual);
+  }, [track, volumeOutput, individual, muted, deafened]);
 
   return <audio data-gc="voz.voice-track.audio" ref={ref} autoPlay />;
 }

@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "這個資料打不開。",
   carregando: "正在載入…",
   editar: "編輯個人資料",
   mensagem: "傳訊息",

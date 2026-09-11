@@ -16,13 +16,13 @@ const api = async (path, { token, body, method = "POST" } = {}) => {
   return res.status === 204 ? null : res.json();
 };
 
-const recusa = async (esperado, descricao, fn) => {
+const refusal = async (expected, description, fn) => {
   try {
     await fn();
-    throw new Error(`FALHOU: ${descricao}`);
+    throw new Error(`FALHOU: ${description}`);
   } catch (e) {
-    if (!new RegExp(`-> ${esperado}`).test(e.message)) throw e;
-    ok(`${descricao} -> ${esperado}`);
+    if (!new RegExp(`-> ${expected}`).test(e.message)) throw e;
+    ok(`${description} -> ${expected}`);
   }
 };
 
@@ -43,71 +43,71 @@ const emit = (s, ev, payload) =>
     });
   });
 
-const dono = await api("/auth/dev-login", { body: { email: "dono-mod@gravae.io", displayName: "Dono" } });
+const owner = await api("/auth/dev-login", { body: { email: "dono-mod@gravae.io", displayName: "Dono" } });
 const ze = await api("/auth/dev-login", { body: { email: "ze-mod@gravae.io", displayName: "Ze" } });
-const bagunceiro = await api("/auth/dev-login", {
+const messy = await api("/auth/dev-login", {
   body: { email: "bagunceiro-mod@gravae.io", displayName: "Bagunceiro" },
 });
 
-const guild = await api("/guilds", { token: dono.accessToken, body: { name: "Teste Moderacao" } });
-const convite = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
-await api(`/invites/${convite.code}/join`, { token: ze.accessToken });
-await api(`/invites/${convite.code}/join`, { token: bagunceiro.accessToken });
+const guild = await api("/guilds", { token: owner.accessToken, body: { name: "Teste Moderacao" } });
+const invite = await api(`/guilds/${guild.id}/invites`, { token: owner.accessToken, body: {} });
+await api(`/invites/${invite.code}/join`, { token: ze.accessToken });
+await api(`/invites/${invite.code}/join`, { token: messy.accessToken });
 
-const detalhe = await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "GET" });
-const geral = detalhe.channels.find((c) => c.type === "TEXT");
+const detail = await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "GET" });
+const general = detail.channels.find((c) => c.type === "TEXT");
 
 console.log("\n== castigo ==");
 const socketZe = await connect(ze.accessToken);
-await emit(socketZe, "channel:subscribe", { channelId: geral.id });
-await emit(socketZe, "message:send", { channelId: geral.id, content: "antes do castigo", nonce: "c0" });
+await emit(socketZe, "channel:subscribe", { channelId: general.id });
+await emit(socketZe, "message:send", { channelId: general.id, content: "antes do castigo", nonce: "c0" });
 
 await api(`/guilds/${guild.id}/members/${ze.user.id}/timeout`, {
-  token: dono.accessToken,
+  token: owner.accessToken,
   method: "PUT",
-  body: { minutos: 10, reason: "brincadeira demais" },
+  body: { minutes: 10, reason: "brincadeira demais" },
 });
 
 try {
-  await emit(socketZe, "message:send", { channelId: geral.id, content: "e agora?", nonce: "c1" });
+  await emit(socketZe, "message:send", { channelId: general.id, content: "e agora?", nonce: "c1" });
   throw new Error("FALHOU: escreveu de castigo");
 } catch (e) {
   if (!/castigo/i.test(e.message)) throw e;
   ok(`de castigo nao escreve ("${e.message}")`);
 }
 
-await recusa(403, "de castigo tambem nao ganha token de voz pra falar", async () => {
-  const sala = detalhe.channels.find((c) => c.type === "VOICE");
-  const r = await api(`/channels/${sala.id}/voice-token`, { token: ze.accessToken });
+await refusal(403, "de castigo tambem nao ganha token de voz pra falar", async () => {
+  const room = detail.channels.find((c) => c.type === "VOICE");
+  const r = await api(`/channels/${room.id}/voice-token`, { token: ze.accessToken });
   if (r.token) throw new Error("-> 403");
 });
 
 await api(`/guilds/${guild.id}/members/${ze.user.id}/timeout`, {
-  token: dono.accessToken,
+  token: owner.accessToken,
   method: "PUT",
-  body: { minutos: 0 },
+  body: { minutes: 0 },
 });
-await emit(socketZe, "message:send", { channelId: geral.id, content: "voltei", nonce: "c2" });
+await emit(socketZe, "message:send", { channelId: general.id, content: "voltei", nonce: "c2" });
 ok("tirar o castigo devolve a voz na hora");
 
 console.log("\n== automod ==");
-const regra = await api(`/guilds/${guild.id}/automod`, {
-  token: dono.accessToken,
+const rule = await api(`/guilds/${guild.id}/automod`, {
+  token: owner.accessToken,
   body: {
     name: "Sem palavrao",
     trigger: "WORDS",
-    palavras: ["bobagem", "asneira"],
-    acoes: ["BLOCK"],
+    words: ["bobagem", "asneira"],
+    actions: ["BLOCK"],
   },
 });
-ok(`regra "${regra.name}" criada`);
+ok(`regra "${rule.name}" criada`);
 
-const socketBagunceiro = await connect(bagunceiro.accessToken);
-await emit(socketBagunceiro, "channel:subscribe", { channelId: geral.id });
+const socketMessy = await connect(messy.accessToken);
+await emit(socketMessy, "channel:subscribe", { channelId: general.id });
 
 try {
-  await emit(socketBagunceiro, "message:send", {
-    channelId: geral.id,
+  await emit(socketMessy, "message:send", {
+    channelId: general.id,
     content: "isso é uma BOBAGEM!",
     nonce: "a1",
   });
@@ -117,26 +117,26 @@ try {
   ok(`o automod bloqueia mesmo com maiuscula e pontuacao ("${e.message}")`);
 }
 
-await emit(socketBagunceiro, "message:send", {
-  channelId: geral.id,
+await emit(socketMessy, "message:send", {
+  channelId: general.id,
   content: "bobagemzinha nao conta",
   nonce: "a2",
 });
 ok("palavra dentro de outra palavra nao e bloqueada");
 
-const socketDono = await connect(dono.accessToken);
-await emit(socketDono, "channel:subscribe", { channelId: geral.id });
-await emit(socketDono, "message:send", { channelId: geral.id, content: "bobagem nenhuma", nonce: "a0" });
+const socketOwner = await connect(owner.accessToken);
+await emit(socketOwner, "channel:subscribe", { channelId: general.id });
+await emit(socketOwner, "message:send", { channelId: general.id, content: "bobagem nenhuma", nonce: "a0" });
 ok("quem administra o servidor passa pelo filtro");
 
 const spam = await api(`/guilds/${guild.id}/automod`, {
-  token: dono.accessToken,
-  body: { name: "Sem spam de mencao", trigger: "MENTION_SPAM", limiteMencoes: 3, acoes: ["BLOCK"] },
+  token: owner.accessToken,
+  body: { name: "Sem spam de mencao", trigger: "MENTION_SPAM", limitMentions: 3, actions: ["BLOCK"] },
 });
 try {
-  await emit(socketBagunceiro, "message:send", {
-    channelId: geral.id,
-    content: `<@${dono.user.id}> <@${ze.user.id}> <@${bagunceiro.user.id}> olha isso`,
+  await emit(socketMessy, "message:send", {
+    channelId: general.id,
+    content: `<@${owner.user.id}> <@${ze.user.id}> <@${messy.user.id}> olha isso`,
     nonce: "a3",
   });
   throw new Error("FALHOU: passou spam de mencao");
@@ -147,57 +147,57 @@ try {
 void spam;
 
 console.log("\n== banimento ==");
-await recusa(403, "quem nao tem BAN_MEMBERS nao bane", () =>
-  api(`/guilds/${guild.id}/bans/${bagunceiro.user.id}`, { token: ze.accessToken, method: "PUT", body: {} }),
+await refusal(403, "quem nao tem BAN_MEMBERS nao bane", () =>
+  api(`/guilds/${guild.id}/bans/${messy.user.id}`, { token: ze.accessToken, method: "PUT", body: {} }),
 );
 
-await api(`/guilds/${guild.id}/bans/${bagunceiro.user.id}`, {
-  token: dono.accessToken,
+await api(`/guilds/${guild.id}/bans/${messy.user.id}`, {
+  token: owner.accessToken,
   method: "PUT",
-  body: { reason: "spam", apagarHoras: 1 },
+  body: { reason: "spam", deleteHours: 1 },
 });
 ok("banido e removido do servidor");
 
-await recusa(404, "banido perde o acesso ao servidor na hora", () =>
-  api(`/guilds/${guild.id}`, { token: bagunceiro.accessToken, method: "GET" }),
+await refusal(404, "banido perde o acesso ao servidor na hora", () =>
+  api(`/guilds/${guild.id}`, { token: messy.accessToken, method: "GET" }),
 );
 
-await recusa(403, "banido nao volta nem com o convite na mao", () =>
-  api(`/invites/${convite.code}/join`, { token: bagunceiro.accessToken }),
+await refusal(403, "banido nao volta nem com o convite na mao", () =>
+  api(`/invites/${invite.code}/join`, { token: messy.accessToken }),
 );
 
-const bans = await api(`/guilds/${guild.id}/bans`, { token: dono.accessToken, method: "GET" });
+const bans = await api(`/guilds/${guild.id}/bans`, { token: owner.accessToken, method: "GET" });
 if (bans.length !== 1 || bans[0].reason !== "spam") throw new Error("a lista de banidos nao bateu");
 ok(`a lista mostra o banimento com motivo ("${bans[0].reason}")`);
 
-await api(`/guilds/${guild.id}/bans/${bagunceiro.user.id}`, { token: dono.accessToken, method: "DELETE" });
-await api(`/invites/${convite.code}/join`, { token: bagunceiro.accessToken });
+await api(`/guilds/${guild.id}/bans/${messy.user.id}`, { token: owner.accessToken, method: "DELETE" });
+await api(`/invites/${invite.code}/join`, { token: messy.accessToken });
 ok("desbanido consegue voltar");
 
 console.log("\n== auditoria ==");
-const registro = await api(`/guilds/${guild.id}/audit-log`, { token: dono.accessToken, method: "GET" });
-const acoes = registro.entries.map((e) => e.action);
+const record = await api(`/guilds/${guild.id}/audit-log`, { token: owner.accessToken, method: "GET" });
+const actions = record.entries.map((e) => e.action);
 
-for (const esperada of ["member.ban", "member.unban", "member.timeout", "automod.create"]) {
-  if (!acoes.includes(esperada)) throw new Error(`a auditoria nao registrou ${esperada}`);
+for (const expected of ["member.ban", "member.unban", "member.timeout", "automod.create"]) {
+  if (!actions.includes(expected)) throw new Error(`a auditoria nao registrou ${expected}`);
 }
-ok(`auditoria registrou ${registro.entries.length} acoes, incluindo ban, castigo e automod`);
+ok(`auditoria registrou ${record.entries.length} acoes, incluindo ban, castigo e automod`);
 
-const filtrado = await api(`/guilds/${guild.id}/audit-log?action=member.ban`, {
-  token: dono.accessToken,
+const filtered = await api(`/guilds/${guild.id}/audit-log?action=member.ban`, {
+  token: owner.accessToken,
   method: "GET",
 });
-if (!filtrado.entries.length || filtrado.entries.some((e) => !e.action.startsWith("member.ban"))) {
+if (!filtered.entries.length || filtered.entries.some((e) => !e.action.startsWith("member.ban"))) {
   throw new Error("o filtro por acao nao funcionou");
 }
 ok("o filtro por acao funciona");
 
-await recusa(403, "quem nao tem VIEW_AUDIT_LOG nao ve o registro", () =>
+await refusal(403, "quem nao tem VIEW_AUDIT_LOG nao ve o registro", () =>
   api(`/guilds/${guild.id}/audit-log`, { token: ze.accessToken, method: "GET" }),
 );
 
 socketZe.close();
-socketBagunceiro.close();
-socketDono.close();
-await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "DELETE" });
+socketMessy.close();
+socketOwner.close();
+await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "DELETE" });
 console.log("\ntudo certo.");

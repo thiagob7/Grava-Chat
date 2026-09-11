@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Monitor, AppWindow, Volume2 } from "lucide-react";
 import { Warning } from "@phosphor-icons/react";
-import type { FonteDeTela } from "@gravae/shared";
+import type { ScreenFont } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
@@ -11,83 +11,83 @@ import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-export const SeletorDeTela: React.FC = () => {
+export const ScreenPicker: React.FC = () => {
   const { t } = useTranslation();
-  const [fontes, setFontes] = useState<FonteDeTela[] | null>(null);
-  const [escolhido, setEscolhido] = useState<string | null>(null);
-  const [comAudio, setComAudio] = useState(true);
-  const [semPermissao, setSemPermissao] = useState(false);
-  const [temMaisAbaixo, setTemMaisAbaixo] = useState(false);
+  const [fonts, setFonts] = useState<ScreenFont[] | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [withAudio, setWithAudio] = useState(true);
+  const [withoutPermission, setWithoutPermission] = useState(false);
+  const [hasMoreBelow, setHasMoreBelow] = useState(false);
 
-  const respondido = useRef(true);
-  const rolagem = useRef<HTMLDivElement>(null);
-  const conteudo = useRef<HTMLDivElement>(null);
+  const replied = useRef(true);
+  const scroll = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
 
-  const definirFonteDaTela = useVoiceStore((s) => s.definirFonteDaTela);
+  const setScreenFont = useVoiceStore((s) => s.setScreenFont);
 
-  const responder = useCallback(
-    (escolha: { id: string; comAudio: boolean } | null, lista: FonteDeTela[] | null) => {
-      if (respondido.current) return;
-      respondido.current = true;
+  const reply = useCallback(
+    (selection: { id: string; withAudio: boolean } | null, list: ScreenFont[] | null) => {
+      if (replied.current) return;
+      replied.current = true;
 
-      const fonte = escolha ? lista?.find((f) => f.id === escolha.id) : null;
-      definirFonteDaTela(fonte ? { nome: fonte.nome, icone: fonte.icone } : null);
+      const font = selection ? list?.find((f) => f.id === selection.id) : null;
+      setScreenFont(font ? { name: font.name, icon: font.icon } : null);
 
-      desktop()?.tela.responder(escolha);
-      setFontes(null);
-      setEscolhido(null);
+      desktop()?.display.reply(selection);
+      setFonts(null);
+      setPicked(null);
     },
-    [definirFonteDaTela],
+    [setScreenFont],
   );
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte) return;
+    const bridge = desktop();
+    if (!bridge) return;
 
-    return ponte.tela.aoPedirEscolha((lista) => {
-      respondido.current = false;
-      setFontes(lista);
-      setEscolhido(lista[0]?.id ?? null);
-      void ponte.tela.permissao().then((p) => setSemPermissao(p !== "granted"));
+    return bridge.display.onRequestChoice((list) => {
+      replied.current = false;
+      setFonts(list);
+      setPicked(list[0]?.id ?? null);
+      void bridge.display.permission().then((p) => setWithoutPermission(p !== "granted"));
     });
   }, []);
 
   useEffect(() => {
-    const area = rolagem.current;
-    const dentro = conteudo.current;
-    if (!area || !dentro) return;
+    const area = scroll.current;
+    const inside = content.current;
+    if (!area || !inside) return;
 
-    const medir = () => setTemMaisAbaixo(area.scrollHeight - area.scrollTop - area.clientHeight > 8);
+    const measure = () => setHasMoreBelow(area.scrollHeight - area.scrollTop - area.clientHeight > 8);
 
-    medir();
-    area.addEventListener("scroll", medir, { passive: true });
+    measure();
+    area.addEventListener("scroll", measure, { passive: true });
 
-    const observador = new ResizeObserver(medir);
-    observador.observe(area);
-    observador.observe(dentro);
+    const observer = new ResizeObserver(measure);
+    observer.observe(area);
+    observer.observe(inside);
 
     return () => {
-      area.removeEventListener("scroll", medir);
-      observador.disconnect();
+      area.removeEventListener("scroll", measure);
+      observer.disconnect();
     };
-  }, [fontes, semPermissao]);
+  }, [fonts, withoutPermission]);
 
-  if (!fontes) return null;
+  if (!fonts) return null;
 
-  const telas = fontes.filter((f) => f.ehTela);
-  const janelas = fontes.filter((f) => !f.ehTela);
+  const screens = fonts.filter((f) => f.isScreen);
+  const windows = fonts.filter((f) => !f.isScreen);
 
   return (
-    <Dialog data-gc="voz.seletor-de-tela.dialog" open onOpenChange={(aberto) => !aberto && responder(null, fontes)}>
+    <Dialog data-gc="voz.seletor-de-tela.dialog" open onOpenChange={(isOpen) => !isOpen && reply(null, fonts)}>
       <DialogContent data-gc="voz.seletor-de-tela.dialog-content" className="max-w-3xl">
         <DialogHeader data-gc="voz.seletor-de-tela.dialog-header">
           <DialogTitle data-gc="voz.seletor-de-tela.dialog-title">{t("chamada.tela.compartilhar")}</DialogTitle>
         </DialogHeader>
 
         <div data-gc="voz.seletor-de-tela.div" className="relative">
-          <div data-gc="voz.seletor-de-tela.div--2" ref={rolagem} className="max-h-[55vh] overflow-y-auto px-5 py-4">
-            <div data-gc="voz.seletor-de-tela.div--3" ref={conteudo}>
-              {semPermissao && (
+          <div data-gc="voz.seletor-de-tela.div--2" ref={scroll} className="max-h-[55vh] overflow-y-auto px-5 py-4">
+            <div data-gc="voz.seletor-de-tela.div--3" ref={content}>
+              {withoutPermission && (
                 <div data-gc="voz.seletor-de-tela.div--4" className="mb-4 flex gap-3 rounded-md border border-idle/25 border-l-2 border-l-idle bg-idle/10 p-3">
                   <Warning data-gc="voz.seletor-de-tela.warning" size={16} weight="fill" className="mt-0.5 shrink-0 text-idle" />
 
@@ -98,7 +98,7 @@ export const SeletorDeTela: React.FC = () => {
 
                     <p data-gc="voz.seletor-de-tela.p--2" className="mt-1.5 text-12 leading-5 text-ink-muted">
                       {t("chamada.gravacaoDeTela.marque")}{" "}
-                      <b data-gc="voz.seletor-de-tela.b" className="font-semibold text-ink">{desktop()?.nomeNoSistema}</b>{" "}
+                      <b data-gc="voz.seletor-de-tela.b" className="font-semibold text-ink">{desktop()?.nameSystem}</b>{" "}
                       {t("chamada.gravacaoDeTela.reabra")}
                     </p>
 
@@ -110,7 +110,7 @@ export const SeletorDeTela: React.FC = () => {
                       className="mt-3"
                       variant="surface"
                       size="sm"
-                      onClick={() => desktop()?.midia.abrirAjustes("screen")}
+                      onClick={() => desktop()?.media.openSettings("screen")}
                     >
                       {t("chamada.microfone.abrirAjustes")}
                     </Button>
@@ -118,25 +118,25 @@ export const SeletorDeTela: React.FC = () => {
                 </div>
               )}
 
-              {fontes.length === 0 && !semPermissao && (
+              {fonts.length === 0 && !withoutPermission && (
                 <p data-gc="voz.seletor-de-tela.p--4" className="py-8 text-center text-sm text-ink-muted">
                   {t("chamada.tela.semFontes")}
                 </p>
               )}
 
-              <Grupo data-gc="voz.seletor-de-tela.grupo.set-escolhido"
-                titulo={t("chamada.tela.telas")}
-                icone={<Monitor data-gc="voz.seletor-de-tela.monitor" size={13} />}
-                fontes={telas}
-                escolhido={escolhido}
-                onEscolher={setEscolhido}
+              <Group data-gc="voz.seletor-de-tela.group.set-picked"
+                title={t("chamada.tela.telas")}
+                icon={<Monitor data-gc="voz.seletor-de-tela.monitor" size={13} />}
+                fonts={screens}
+                picked={picked}
+                onPick={setPicked}
               />
-              <Grupo data-gc="voz.seletor-de-tela.grupo.set-escolhido--2"
-                titulo={t("chamada.tela.janelas")}
-                icone={<AppWindow data-gc="voz.seletor-de-tela.app-window" size={13} />}
-                fontes={janelas}
-                escolhido={escolhido}
-                onEscolher={setEscolhido}
+              <Group data-gc="voz.seletor-de-tela.group.set-picked--2"
+                title={t("chamada.tela.janelas")}
+                icon={<AppWindow data-gc="voz.seletor-de-tela.app-window" size={13} />}
+                fonts={windows}
+                picked={picked}
+                onPick={setPicked}
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ export const SeletorDeTela: React.FC = () => {
             aria-hidden
             className={cn(
               "pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-surface-1 via-surface-1/60 to-transparent transition-opacity duration-200",
-              temMaisAbaixo ? "opacity-100" : "opacity-0",
+              hasMoreBelow ? "opacity-100" : "opacity-0",
             )}
           />
         </div>
@@ -153,13 +153,13 @@ export const SeletorDeTela: React.FC = () => {
         <DialogFooter data-gc="voz.seletor-de-tela.dialog-footer"
           className={cn(
             "items-center justify-between border-t border-line pt-4 transition-shadow",
-            temMaisAbaixo && "shadow-[0_-0.5rem_1rem_-0.75rem_var(--color-sombra)]",
+            hasMoreBelow && "shadow-[0_-0.5rem_1rem_-0.75rem_var(--color-sombra)]",
           )}
         >
           <div data-gc="voz.seletor-de-tela.div--7" className="flex items-center gap-2.5 text-sm text-ink-muted">
-            <Switch data-gc="voz.seletor-de-tela.switch.set-com-audio"
-              checked={comAudio}
-              onCheckedChange={setComAudio}
+            <Switch data-gc="voz.seletor-de-tela.switch.set-with-audio"
+              checked={withAudio}
+              onCheckedChange={setWithAudio}
               aria-label={t("chamada.tela.somDoSistema")}
             />
             <span data-gc="voz.seletor-de-tela.span" className="flex select-none items-center gap-1.5">
@@ -168,12 +168,12 @@ export const SeletorDeTela: React.FC = () => {
           </div>
 
           <div data-gc="voz.seletor-de-tela.div--8" className="flex gap-2">
-            <Button data-gc="voz.seletor-de-tela.button--2" variant="ghost" onClick={() => responder(null, fontes)}>
+            <Button data-gc="voz.seletor-de-tela.button--2" variant="ghost" onClick={() => reply(null, fonts)}>
               {t("chamada.tela.cancelar")}
             </Button>
             <Button data-gc="voz.seletor-de-tela.button--3"
-              disabled={!escolhido}
-              onClick={() => escolhido && responder({ id: escolhido, comAudio }, fontes)}
+              disabled={!picked}
+              onClick={() => picked && reply({ id: picked, withAudio }, fonts)}
             >
               {t("chamada.tela.compartilharAcao")}
             </Button>
@@ -184,44 +184,44 @@ export const SeletorDeTela: React.FC = () => {
   );
 };
 
-const Grupo: React.FC<{
-  titulo: string;
-  icone: React.ReactNode;
-  fontes: FonteDeTela[];
-  escolhido: string | null;
-  onEscolher: (id: string) => void;
-}> = ({ titulo, icone, fontes, escolhido, onEscolher }) => {
-  if (fontes.length === 0) return null;
+const Group: React.FC<{
+  title: string;
+  icon: React.ReactNode;
+  fonts: ScreenFont[];
+  picked: string | null;
+  onPick: (id: string) => void;
+}> = ({ title, icon, fonts, picked, onPick }) => {
+  if (fonts.length === 0) return null;
 
   return (
     <section data-gc="voz.seletor-de-tela.section" className="mb-5 last:mb-0">
       <h3 data-gc="voz.seletor-de-tela.h3" className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-        {icone} {titulo}
+        {icon} {title}
       </h3>
 
       <div data-gc="voz.seletor-de-tela.div--9" className="grid grid-cols-3 gap-3">
-        {fontes.map((fonte) => (
+        {fonts.map((font) => (
           <button data-gc="voz.seletor-de-tela.button--4"
-            key={fonte.id}
-            onClick={() => onEscolher(fonte.id)}
+            key={font.id}
+            onClick={() => onPick(font.id)}
             className={cn(
               "overflow-hidden rounded border-2 bg-surface-0 text-left transition",
-              escolhido === fonte.id
+              picked === font.id
                 ? "border-brand"
                 : "border-transparent hover:border-surface-4",
             )}
           >
             <div data-gc="voz.seletor-de-tela.div--10" className="grid aspect-video place-items-center bg-sobre-midia">
-              {fonte.miniatura ? (
-                <img data-gc="voz.seletor-de-tela.img" src={fonte.miniatura} alt="" className="max-h-full max-w-full object-contain" />
+              {font.thumbnail ? (
+                <img data-gc="voz.seletor-de-tela.img" src={font.thumbnail} alt="" className="max-h-full max-w-full object-contain" />
               ) : (
                 <Monitor data-gc="voz.seletor-de-tela.monitor--2" size={28} className="text-ink-faint" />
               )}
             </div>
 
             <p data-gc="voz.seletor-de-tela.p--5" className="flex items-center gap-1.5 truncate px-2 py-1.5 text-xs text-ink-muted">
-              {fonte.icone && <img data-gc="voz.seletor-de-tela.img--2" src={fonte.icone} alt="" className="size-4 shrink-0" />}
-              <span data-gc="voz.seletor-de-tela.span--2" className="truncate">{fonte.nome}</span>
+              {font.icon && <img data-gc="voz.seletor-de-tela.img--2" src={font.icon} alt="" className="size-4 shrink-0" />}
+              <span data-gc="voz.seletor-de-tela.span--2" className="truncate">{font.name}</span>
             </p>
           </button>
         ))}

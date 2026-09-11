@@ -16,19 +16,19 @@ describe("trocar de idioma", () => {
   });
 
   it("carrega TODOS os idiomas, não só o primeiro", async () => {
-    const iguaisAoPortugues: string[] = [];
+    const equalPortuguese: string[] = [];
 
-    for (const idioma of i18next.options.supportedLngs || []) {
-      if (idioma === "pt-BR" || idioma === "cimode") continue;
+    for (const language of i18next.options.supportedLngs || []) {
+      if (language === "pt-BR" || language === "cimode") continue;
 
-      await i18next.changeLanguage(idioma);
+      await i18next.changeLanguage(language);
 
       if (i18next.t("conversa.lista.carregando") === ptBR.conversa.lista.carregando) {
-        iguaisAoPortugues.push(idioma);
+        equalPortuguese.push(language);
       }
     }
 
-    expect(iguaisAoPortugues).toEqual([]);
+    expect(equalPortuguese).toEqual([]);
   });
 
   it("volta para o português", async () => {

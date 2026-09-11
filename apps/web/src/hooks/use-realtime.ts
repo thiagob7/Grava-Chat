@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { lerEmVoz } from "~/lib/ler-em-voz";
+import { readVoice } from "~/lib/ler-em-voz";
 import { useNavigate } from "react-router";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -8,15 +8,15 @@ import type {
   DesiredStatus,
   GuildMember,
   Message,
-  PerfilPublico,
+  ProfilePublic,
   PresenceStatus,
   PublicUser,
   VoiceState,
 } from "@gravae/shared";
 
-import { deveTocar } from "~/features/voz/lib/chamada-no-privado";
-import { useChamadaStore } from "~/features/voz/stores/chamada-store";
-import { tocarSom } from "~/lib/ui-sounds";
+import { mustPlay } from "~/features/voz/lib/chamada-no-privado";
+import { useCallStore } from "~/features/voz/stores/chamada-store";
+import { playSound } from "~/lib/ui-sounds";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import type {
@@ -27,8 +27,8 @@ import type {
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import axios from "axios";
 
-import { avisarSessaoPerdida, refreshSession } from "~/@core/lib/api";
-import { deveTrocarToken } from "~/features/app/lib/reconexao";
+import { notifySessionLost, refreshSession } from "~/@core/lib/api";
+import { mustSwapToken } from "~/features/app/lib/reconexao";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import {
@@ -51,7 +51,7 @@ import {
   onMessageSuper,
   offMessageSuper,
 } from "~/@core/lib/websocket/on-message-super";
-import { useSuperReacao } from "~/features/expressao/stores/super-reacao";
+import { useSuperReaction } from "~/features/expressao/stores/super-reacao";
 import {
   onTypingStarted,
   offTypingStarted,
@@ -130,8 +130,8 @@ import {
   offVoiceJoined,
 } from "~/@core/lib/websocket/on-voice-joined";
 import {
-  onVoiceRecusada,
-  offVoiceRecusada,
+  onVoiceRefused,
+  offVoiceRefused,
 } from "~/@core/lib/websocket/on-voice-recusada";
 import { onVoiceLeft, offVoiceLeft } from "~/@core/lib/websocket/on-voice-left";
 import {
@@ -151,14 +151,14 @@ import {
   offFriendUpdated,
 } from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
-import { avisarDeMensagem } from "~/lib/notificacoes";
+import { notifyMessage } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
-import { useAusencia } from "~/hooks/use-ausencia";
+import { useAbsence } from "~/hooks/use-ausencia";
 import { useTypingStore } from "~/features/conversa/stores/typing-store";
-import { tocarSomDoPainel } from "~/features/voz/lib/soundboard";
+import { playPanelSound } from "~/features/voz/lib/soundboard";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { useConexaoStore } from "~/features/app/stores/conexao-store";
+import { useConnectionStore } from "~/features/app/stores/conexao-store";
 
 type MessagesCache =
   { pages: MessagePageModel[]; pageParams: unknown[] } | undefined;
@@ -237,28 +237,28 @@ const cache = {
     );
   },
 
-  contarNaoLida(
+  countNotRead(
     queryClient: QueryClient,
     channelId: string,
     guildId: string | null,
-    mencionou: boolean,
+    mentioned: boolean,
   ) {
     queryClient.setQueryData(
       [queryKeys.message.read_states],
       (old: ReadStateModel[] | undefined) => {
-        const atual = (old ?? []).find((s) => s.channelId === channelId);
+        const current = (old ?? []).find((s) => s.channelId === channelId);
 
-        const proximo: ReadStateModel = {
+        const next: ReadStateModel = {
           channelId,
-          guildId: atual?.guildId ?? guildId,
-          lastReadMessageId: atual?.lastReadMessageId ?? null,
-          unreadCount: (atual?.unreadCount ?? 0) + 1,
-          mentionCount: (atual?.mentionCount ?? 0) + (mencionou ? 1 : 0),
+          guildId: current?.guildId ?? guildId,
+          lastReadMessageId: current?.lastReadMessageId ?? null,
+          unreadCount: (current?.unreadCount ?? 0) + 1,
+          mentionCount: (current?.mentionCount ?? 0) + (mentioned ? 1 : 0),
         };
 
         return [
           ...(old ?? []).filter((s) => s.channelId !== channelId),
-          proximo,
+          next,
         ];
       },
     );
@@ -292,7 +292,7 @@ export function useRealtime(
   currentGuildId: string | undefined,
   currentChannelId: string | undefined,
 ) {
-  useAusencia(true);
+  useAbsence(true);
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -300,64 +300,64 @@ export function useRealtime(
   useEffect(() => {
     const socketInstance = connectSocket();
 
-    const ondeCaiu = (channelId: string) => {
-      const detalhes = queryClient.getQueriesData<GuildDetailModel>({
+    const whereDropped = (channelId: string) => {
+      const details = queryClient.getQueriesData<GuildDetailModel>({
         queryKey: ["find-guild"],
       });
 
-      for (const [, detalhe] of detalhes) {
-        const canal = detalhe?.channels.find((c) => c.id === channelId);
-        if (canal && detalhe) return { canal, detalhe };
+      for (const [, detail] of details) {
+        const channel = detail?.channels.find((c) => c.id === channelId);
+        if (channel && detail) return { channel, detail };
       }
 
       return null;
     };
 
-    const avisar = (message: PendingMessageModel) => {
+    const notify = (message: PendingMessageModel) => {
       const eu = queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me]);
-      const lugar = ondeCaiu(message.channelId);
+      const place = whereDropped(message.channelId);
 
-      const meusCargos = new Set(
-        lugar?.detalhe.members.find((m) => m.user.id === eu?.id)?.roleIds ?? [],
+      const mineRoles = new Set(
+        place?.detail.members.find((m) => m.user.id === eu?.id)?.roleIds ?? [],
       );
 
-      const mencao = {
-        direta: Boolean(eu) && message.mentions.includes(eu?.id ?? ""),
+      const mention = {
+        direct: Boolean(eu) && message.mentions.includes(eu?.id ?? ""),
         everyone: Boolean(eu) && Boolean(message.mentionEveryone),
-        cargo: Boolean(eu) && message.mentionRoleIds.some((id) => meusCargos.has(id)),
+        role: Boolean(eu) && message.mentionRoleIds.some((id) => mineRoles.has(id)),
       };
 
-      const meMenciona = mencao.direta || mencao.everyone || mencao.cargo;
+      const meMentions = mention.direct || mention.everyone || mention.role;
 
-      const lendoAgora =
+      const readingNow =
         currentChannelId === message.channelId &&
         document.visibilityState === "visible" &&
         document.hasFocus();
 
-      if (eu && message.author.id !== eu.id && !lendoAgora) {
-        cache.contarNaoLida(
+      if (eu && message.author.id !== eu.id && !readingNow) {
+        cache.countNotRead(
           queryClient,
           message.channelId,
-          lugar?.detalhe.guild.id ?? null,
-          meMenciona,
+          place?.detail.guild.id ?? null,
+          meMentions,
         );
       }
 
-      lerEmVoz(message, eu?.id, currentChannelId);
+      readVoice(message, eu?.id, currentChannelId);
 
-      avisarDeMensagem({
+      notifyMessage({
         message,
-        meuId: eu?.id,
-        canalAberto: currentChannelId,
-        mencao,
-        nomeDoCanal: lugar?.canal.name,
-        ehDm: !lugar,
-        guildId: lugar?.detalhe.guild.id ?? null,
-        ignorado: useIgnoreStore.getState().estaIgnorado(message.author.id),
-        onAbrir: () =>
+        myId: eu?.id,
+        channelIsOpen: currentChannelId,
+        mention,
+        channelName: place?.channel.name,
+        isDm: !place,
+        guildId: place?.detail.guild.id ?? null,
+        ignored: useIgnoreStore.getState().thisIgnored(message.author.id),
+        onOpen: () =>
           navigate(
-            lugar
-              ? `/channels/${lugar.detalhe.guild.id}/${message.channelId}`
+            place
+              ? `/channels/${place.detail.guild.id}/${message.channelId}`
               : `/dm/${message.channelId}`,
           ),
       });
@@ -365,7 +365,7 @@ export function useRealtime(
 
     const handleMessageCreated = (message: PendingMessageModel) => {
       cache.appendMessage(queryClient, message);
-      avisar(message);
+      notify(message);
       cache.patchGuildsWhere(
         queryClient,
         (g) => g.channels.some((c) => c.id === message.channelId),
@@ -408,19 +408,19 @@ export function useRealtime(
 
     const handleUserUpdated = ({
       user,
-      perfil,
+      profile,
     }: {
       user: PublicUser;
-      perfil: PerfilPublico;
+      profile: ProfilePublic;
     }) => {
-      const temEnfeite = Object.keys(perfil).length > 0;
+      const hasCharm = Object.keys(profile).length > 0;
 
       cache.patchGuildsWhere(
         queryClient,
         (g) => g.members.some((m) => m.user.id === user.id),
         (g) => {
           const profiles = { ...g.profiles };
-          if (temEnfeite) profiles[user.id] = perfil;
+          if (hasCharm) profiles[user.id] = profile;
           else delete profiles[user.id];
 
           return {
@@ -440,27 +440,31 @@ export function useRealtime(
       });
     };
 
-    const handlePresenceSelf = ({ status }: { status: DesiredStatus }) => {
-      const projetado: PresenceStatus =
-        status === "INVISIBLE" ? "OFFLINE" : status;
+    const handlePresenceSelf = ({
+      status,
+      projected,
+    }: {
+      status: DesiredStatus;
+      projected: PresenceStatus;
+    }) => {
 
       queryClient.setQueryData([queryKeys.auth.me], (eu?: SelfUserModel) =>
-        eu ? { ...eu, desiredStatus: status, status: projetado } : eu,
+        eu ? { ...eu, desiredStatus: status, status: projected } : eu,
       );
 
-      const meuId = queryClient.getQueryData<SelfUserModel>([
+      const myId = queryClient.getQueryData<SelfUserModel>([
         queryKeys.auth.me,
       ])?.id;
-      if (!meuId) return;
+      if (!myId) return;
 
       cache.patchGuildsWhere(
         queryClient,
-        (g) => g.members.some((m) => m.user.id === meuId),
+        (g) => g.members.some((m) => m.user.id === myId),
         (g) => ({
           ...g,
           members: g.members.map((m) =>
-            m.user.id === meuId
-              ? { ...m, user: { ...m.user, status: projetado } }
+            m.user.id === myId
+              ? { ...m, user: { ...m.user, status: projected } }
               : m,
           ),
         }),
@@ -537,21 +541,21 @@ export function useRealtime(
         })),
       }),
     );
-    onMessageSuper(({ messageId, emoji, userId: quem }) => {
-      const meuId = queryClient.getQueryData<{ id: string }>([
+    onMessageSuper(({ messageId, emoji, userId: who }) => {
+      const myId = queryClient.getQueryData<{ id: string }>([
         queryKeys.auth.me,
       ])?.id;
-      if (quem === meuId) return;
+      if (who === myId) return;
 
-      const alvo = document.querySelector(`[data-mensagem="${messageId}"]`);
-      const caixa = alvo?.getBoundingClientRect();
+      const target = document.querySelector(`[data-mensagem="${messageId}"]`);
+      const box = target?.getBoundingClientRect();
 
-      useSuperReacao
+      useSuperReaction
         .getState()
-        .disparar(
+        .fire(
           emoji,
-          caixa
-            ? { x: caixa.left + caixa.width / 2, y: caixa.bottom }
+          box
+            ? { x: box.left + box.width / 2, y: box.bottom }
             : undefined,
         );
     });
@@ -599,7 +603,7 @@ export function useRealtime(
 
     onCommandsChanged(({ guildId }) => {
       void queryClient.invalidateQueries({
-        queryKey: queryKeys.comando.find_many(guildId),
+        queryKey: queryKeys.command.find_many(guildId),
       });
     });
 
@@ -621,33 +625,33 @@ export function useRealtime(
     });
 
     onVoiceSound(({ channelId, userId, url, volume }) => {
-      const voz = useVoiceStore.getState();
-      if (voz.channelId !== channelId || voz.deafened) return;
+      const voice = useVoiceStore.getState();
+      if (voice.channelId !== channelId || voice.deafened) return;
 
-      if (voz.silenciadosLocais[userId]) return;
+      if (voice.mutedLocal[userId]) return;
 
-      const { somDoPainel, volumeDoPainel, volumeSaida } =
+      const { panelSound, panelVolume, volumeOutput } =
         useVoicePrefs.getState();
-      if (!somDoPainel) return;
+      if (!panelSound) return;
 
-      const daPessoa = voz.volumesLocais[userId] ?? 1;
-      tocarSomDoPainel(
+      const fromPerson = voice.volumesLocal[userId] ?? 1;
+      playPanelSound(
         url,
-        volume * daPessoa * volumeDoPainel * volumeSaida,
+        volume * fromPerson * panelVolume * volumeOutput,
         userId,
       );
     });
 
     onVoiceMove(({ channelId }) => {
-      const voz = useVoiceStore.getState();
+      const voice = useVoiceStore.getState();
 
       if (!channelId) {
-        void voz.leave().catch(() => undefined);
+        void voice.leave().catch(() => undefined);
         toast.info("Você foi desconectado da chamada.");
         return;
       }
 
-      void voz.join(channelId).catch(() => undefined);
+      void voice.join(channelId).catch(() => undefined);
       toast.info("Você foi movido para outro canal de voz.");
     });
 
@@ -680,70 +684,70 @@ export function useRealtime(
       })),
     );
     onUserUpdated(handleUserUpdated);
-    const aoMudarAVozDoTrilho = () =>
+    const onRailChangeVoice = () =>
       void queryClient.invalidateQueries({ queryKey: [queryKeys.voice.states] });
 
-    const aoEntrarNaVoz = (state: VoiceState) => {
+    const onJoinVoice = (state: VoiceState) => {
       upsertVoiceState(state);
-      aoMudarAVozDoTrilho();
+      onRailChangeVoice();
 
-      const meuId = queryClient.getQueryData<SelfUserModel>([
+      const myId = queryClient.getQueryData<SelfUserModel>([
         queryKeys.auth.me,
       ])?.id;
-      if (!meuId) return;
+      if (!myId) return;
 
-      const tocar = deveTocar({
+      const play = mustPlay({
         guildId: state.guildId,
         channelId: state.channelId,
-        quemEntrou: state.userId,
-        euSou: meuId,
-        meuCanalDeVoz: useVoiceStore.getState().channelId,
+        whoJoined: state.userId,
+        euAm: myId,
+        voiceMyChannel: useVoiceStore.getState().channelId,
       });
 
-      if (!tocar) return;
+      if (!play) return;
 
-      useChamadaStore.getState().receber({
+      useCallStore.getState().receive({
         channelId: state.channelId,
         userId: state.userId,
-        comVideo: state.camera,
+        withVideo: state.camera,
       });
     };
 
-    const aoMudarNaVoz = (state: VoiceState) => {
+    const onChangeVoice = (state: VoiceState) => {
       upsertVoiceState(state);
-      aoMudarAVozDoTrilho();
-      useChamadaStore.getState().atualizarVideo(state.channelId, state.camera);
+      onRailChangeVoice();
+      useCallStore.getState().updateVideo(state.channelId, state.camera);
     };
 
-    const aoSairDaVoz = (p: { channelId: string; userId: string }) => {
+    const onLeaveVoice = (p: { channelId: string; userId: string }) => {
       removeVoiceState(p);
-      aoMudarAVozDoTrilho();
-      useChamadaStore.getState().encerrar(p.channelId);
+      onRailChangeVoice();
+      useCallStore.getState().end(p.channelId);
     };
 
-    const aoRecusarem = ({
+    const onRefuse = ({
       channelId,
-      userId: quemRecusou,
+      userId: whoRefused,
     }: {
       channelId: string;
       userId: string;
     }) => {
-      const meuId = queryClient.getQueryData<SelfUserModel>([
+      const myId = queryClient.getQueryData<SelfUserModel>([
         queryKeys.auth.me,
       ])?.id;
 
-      if (!meuId || quemRecusou === meuId) return;
+      if (!myId || whoRefused === myId) return;
       if (useVoiceStore.getState().channelId !== channelId) return;
 
-      tocarSom("recusada");
+      playSound("refused");
       toast.info("A chamada foi recusada.");
       void useVoiceStore.getState().leave();
     };
 
-    onVoiceJoined(aoEntrarNaVoz);
-    onVoiceUpdated(aoMudarNaVoz);
-    onVoiceLeft(aoSairDaVoz);
-    onVoiceRecusada(aoRecusarem);
+    onVoiceJoined(onJoinVoice);
+    onVoiceUpdated(onChangeVoice);
+    onVoiceLeft(onLeaveVoice);
+    onVoiceRefused(onRefuse);
     onSocketError(({ message }) => toast.error(message, { toastId: message }));
 
     onFriendUpdated(() => {
@@ -757,8 +761,8 @@ export function useRealtime(
     });
 
     const handleConnect = () => {
-      const caiuAntes = useConexaoStore.getState().jaConectou;
-      useConexaoStore.getState().conectou();
+      const droppedBefore = useConnectionStore.getState().alreadyConnected;
+      useConnectionStore.getState().didConnect();
 
       if (currentChannelId)
         void joinChannel(currentChannelId).catch(() => undefined);
@@ -768,47 +772,47 @@ export function useRealtime(
         });
       }
 
-      if (caiuAntes && currentChannelId) {
+      if (droppedBefore && currentChannelId) {
         void queryClient.invalidateQueries({
           queryKey: queryKeys.channel.messages(currentChannelId),
         });
       }
     };
 
-    const handleDisconnect = () => useConexaoStore.getState().caiu();
+    const handleDisconnect = () => useConnectionStore.getState().dropped();
 
-    let ultimaTroca = 0;
+    let lastSwap = 0;
 
-    const handleConnectError = (erro: Error) => {
-      useConexaoStore.getState().caiu();
+    const handleConnectError = (error: Error) => {
+      useConnectionStore.getState().dropped();
 
-      const agora = Date.now();
-      if (!deveTrocarToken(erro.message, agora, ultimaTroca)) return;
-      ultimaTroca = agora;
+      const now = Date.now();
+      if (!mustSwapToken(error.message, now, lastSwap)) return;
+      lastSwap = now;
 
       void refreshSession()
         .then(() => socketInstance.connect())
-        .catch((falha) => {
-          if (axios.isAxiosError(falha) && falha.response?.status === 401) {
-            avisarSessaoPerdida();
+        .catch((failure) => {
+          if (axios.isAxiosError(failure) && failure.response?.status === 401) {
+            notifySessionLost();
           }
         });
     };
-    const handleTentativa = (n: number) =>
-      useConexaoStore.getState().tentando(n);
+    const handleAttempt = (n: number) =>
+      useConnectionStore.getState().trying(n);
 
     socketInstance.on("connect", handleConnect);
     socketInstance.on("disconnect", handleDisconnect);
     socketInstance.on("connect_error", handleConnectError);
-    socketInstance.io.on("reconnect_attempt", handleTentativa);
+    socketInstance.io.on("reconnect_attempt", handleAttempt);
 
-    if (socketInstance.connected) useConexaoStore.getState().conectou();
+    if (socketInstance.connected) useConnectionStore.getState().didConnect();
 
     return () => {
       socketInstance.off("connect", handleConnect);
       socketInstance.off("disconnect", handleDisconnect);
       socketInstance.off("connect_error", handleConnectError);
-      socketInstance.io.off("reconnect_attempt", handleTentativa);
+      socketInstance.io.off("reconnect_attempt", handleAttempt);
       offMessageCreated();
       offMessageUpdated();
       offMessageDeleted();
@@ -837,7 +841,7 @@ export function useRealtime(
       offVoiceJoined();
       offVoiceUpdated();
       offVoiceLeft();
-      offVoiceRecusada();
+      offVoiceRefused();
       offSocketError();
       offFriendUpdated();
       offDmCreated();

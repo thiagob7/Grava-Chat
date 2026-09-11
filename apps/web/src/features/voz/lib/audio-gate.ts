@@ -7,286 +7,286 @@ import type { AudioProcessorOptions, TrackProcessor } from "livekit-client";
 
 let wasmDoRnnoise: Promise<ArrayBuffer> | null = null;
 
-const contextosPreparados = new WeakSet<BaseAudioContext>();
+const contextsPrepared = new WeakSet<BaseAudioContext>();
 
-async function criarRnnoise(ctx: AudioContext): Promise<RnnoiseWorkletNode> {
+async function createRnnoise(ctx: AudioContext): Promise<RnnoiseWorkletNode> {
   const { RnnoiseWorkletNode, loadRnnoise } = await import(
     "@sapphi-red/web-noise-suppressor"
   );
 
   wasmDoRnnoise ??= loadRnnoise({ url: rnnoiseWasmUrl, simdUrl: rnnoiseSimdWasmUrl });
-  const binario = await wasmDoRnnoise;
+  const binary = await wasmDoRnnoise;
 
-  if (!contextosPreparados.has(ctx)) {
+  if (!contextsPrepared.has(ctx)) {
     await ctx.audioWorklet.addModule(rnnoiseWorkletUrl);
-    contextosPreparados.add(ctx);
+    contextsPrepared.add(ctx);
   }
 
-  return new RnnoiseWorkletNode(ctx, { maxChannels: 2, wasmBinary: binario });
+  return new RnnoiseWorkletNode(ctx, { maxChannels: 2, wasmBinary: binary });
 }
 
-export type ModoDeEntrada = "voz" | "ptt";
+export type EntryMode = "voz" | "ptt";
 
-export interface AjustesDeVoz {
-  ganhoEntrada: number;
-  modo: ModoDeEntrada;
-  sensibilidadeAutomatica: boolean;
-  limiar: number;
-  supressaoDeRuido: boolean;
+export interface VoiceSettings {
+  gainEntry: number;
+  mode: EntryMode;
+  sensitivityAutomatic: boolean;
+  threshold: number;
+  noiseSuppression: boolean;
 }
 
-export const AJUSTES_PADRAO: AjustesDeVoz = {
-  ganhoEntrada: 1,
-  modo: "voz",
-  sensibilidadeAutomatica: true,
-  limiar: 0.08,
-  supressaoDeRuido: true,
+export const DEFAULT_SETTINGS: VoiceSettings = {
+  gainEntry: 1,
+  mode: "voz",
+  sensitivityAutomatic: true,
+  threshold: 0.08,
+  noiseSuppression: true,
 };
 
-const ATAQUE_S = 0.015;
-const QUEDA_S = 0.12;
-export const SUSTENTACAO_MS = 320;
-const INTERVALO_MS = 30;
+const ATTACK_S = 0.015;
+const FALL_S = 0.12;
+export const SUSTAIN_MS = 320;
+const INTERVAL_MS = 30;
 
-export function decidirAbertura(params: {
-  modo: ModoDeEntrada;
-  nivel: number;
-  limiar: number;
-  pttPressionado: boolean;
-  agora: number;
-  abertoAte: number;
-}): { aberto: boolean; abertoAte: number } {
-  const { modo, nivel, limiar, pttPressionado, agora, abertoAte } = params;
+export function decideOpening(params: {
+  mode: EntryMode;
+  level: number;
+  threshold: number;
+  pttPressed: boolean;
+  now: number;
+  isOpenUntil: number;
+}): { isOpen: boolean; isOpenUntil: number } {
+  const { mode, level, threshold, pttPressed, now, isOpenUntil } = params;
 
-  if (modo === "ptt") return { aberto: pttPressionado, abertoAte };
+  if (mode === "ptt") return { isOpen: pttPressed, isOpenUntil };
 
-  const proximo = nivel >= limiar ? agora + SUSTENTACAO_MS : abertoAte;
-  return { aberto: agora < proximo, abertoAte: proximo };
+  const next = level >= threshold ? now + SUSTAIN_MS : isOpenUntil;
+  return { isOpen: now < next, isOpenUntil: next };
 }
 
-export function proximoPiso(piso: number, nivel: number): number {
-  if (nivel < piso * 1.6) return piso * 0.95 + nivel * 0.05;
-  if (nivel < piso * 3) return piso * 0.995 + nivel * 0.005;
-  return piso;
+export function nextFloor(floor: number, level: number): number {
+  if (level < floor * 1.6) return floor * 0.95 + level * 0.05;
+  if (level < floor * 3) return floor * 0.995 + level * 0.005;
+  return floor;
 }
 
-export const limiarAutomatico = (piso: number) => Math.max(0.02, piso * 2.5 + 0.015);
+export const thresholdAutomatic = (floor: number) => Math.max(0.02, floor * 2.5 + 0.015);
 
-function nivelDe(analisador: AnalyserNode, buffer: Float32Array<ArrayBuffer>): number {
-  analisador.getFloatTimeDomainData(buffer);
+function levelFor(analyser: AnalyserNode, buffer: Float32Array<ArrayBuffer>): number {
+  analyser.getFloatTimeDomainData(buffer);
 
   let soma = 0;
-  for (const amostra of buffer) soma += amostra * amostra;
+  for (const sample of buffer) soma += sample * sample;
 
   return Math.min(1, Math.sqrt(soma / buffer.length) * 3);
 }
 
-export class ProcessadorDeVoz implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
+export class VoiceProcessor implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
   readonly name = "gravae-voice-gate";
   processedTrack?: MediaStreamTrack;
 
   private ctx?: AudioContext;
-  private fonte?: MediaStreamAudioSourceNode;
-  private passaAlta?: BiquadFilterNode;
-  private passaBaixa?: BiquadFilterNode;
-  private ganho?: GainNode;
+  private font?: MediaStreamAudioSourceNode;
+  private passesHigh?: BiquadFilterNode;
+  private passesLow?: BiquadFilterNode;
+  private gain?: GainNode;
   private porta?: GainNode;
-  private analisador?: AnalyserNode;
-  private destino?: MediaStreamAudioDestinationNode;
+  private analyser?: AnalyserNode;
+  private destination?: MediaStreamAudioDestinationNode;
   private buffer?: Float32Array<ArrayBuffer>;
-  private relogio?: ReturnType<typeof setInterval>;
+  private clock?: ReturnType<typeof setInterval>;
 
   private rnnoise?: RnnoiseWorkletNode;
 
-  private ajustes: AjustesDeVoz;
-  private pttPressionado = false;
-  private abertoAte = 0;
-  private pisoDeRuido = 0.02;
-  private ouvintes = new Set<(nivel: number, aberto: boolean) => void>();
+  private settings: VoiceSettings;
+  private pttPressed = false;
+  private isOpenUntil = 0;
+  private noiseFloor = 0.02;
+  private listeners = new Set<(level: number, isOpen: boolean) => void>();
 
-  supressaoDisponivel = true;
+  availableSuppression = true;
 
-  supressaoAtiva = false;
+  activeSuppression = false;
 
-  private fila: Promise<void> = Promise.resolve();
+  private queue: Promise<void> = Promise.resolve();
 
-  constructor(ajustes: AjustesDeVoz) {
-    this.ajustes = { ...ajustes };
+  constructor(settings: VoiceSettings) {
+    this.settings = { ...settings };
   }
 
   init = async (opts: AudioProcessorOptions) => {
     this.ctx = opts.audioContext;
 
-    await this.prepararSupressao();
-    this.montarCadeia(opts.track);
+    await this.prepareSuppression();
+    this.buildChain(opts.track);
   };
 
   restart = async (opts: AudioProcessorOptions) => {
-    await this.desmontar();
+    await this.unmount();
     await this.init(opts);
   };
 
   destroy = async () => {
-    await this.desmontar();
-    this.ouvintes.clear();
+    await this.unmount();
+    this.listeners.clear();
   };
 
-  async aplicar(ajustes: Partial<AjustesDeVoz>): Promise<void> {
-    const anterior = this.ajustes;
-    this.ajustes = { ...anterior, ...ajustes };
+  async apply(settings: Partial<VoiceSettings>): Promise<void> {
+    const anterior = this.settings;
+    this.settings = { ...anterior, ...settings };
 
-    if (ajustes.ganhoEntrada !== undefined && this.ganho && this.ctx) {
-      this.ganho.gain.setTargetAtTime(ajustes.ganhoEntrada, this.ctx.currentTime, 0.02);
+    if (settings.gainEntry !== undefined && this.gain && this.ctx) {
+      this.gain.gain.setTargetAtTime(settings.gainEntry, this.ctx.currentTime, 0.02);
     }
 
-    const alvo = ajustes.supressaoDeRuido;
+    const target = settings.noiseSuppression;
 
-    if (alvo !== undefined && (alvo !== anterior.supressaoDeRuido || alvo !== this.supressaoAtiva)) {
-      await this.trocarSupressao(alvo);
+    if (target !== undefined && (target !== anterior.noiseSuppression || target !== this.activeSuppression)) {
+      await this.swapSuppression(target);
     }
   }
 
-  definirPtt(pressionado: boolean) {
-    this.pttPressionado = pressionado;
+  setPtt(pressed: boolean) {
+    this.pttPressed = pressed;
   }
 
-  observarNivel(ouvinte: (nivel: number, aberto: boolean) => void) {
-    this.ouvintes.add(ouvinte);
-    return () => this.ouvintes.delete(ouvinte);
+  observeLevel(listener: (level: number, isOpen: boolean) => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
-  private async prepararSupressao() {
+  private async prepareSuppression() {
     const ctx = this.ctx;
-    if (!ctx || !this.ajustes.supressaoDeRuido || this.rnnoise) return;
+    if (!ctx || !this.settings.noiseSuppression || this.rnnoise) return;
 
     try {
-      this.rnnoise = await criarRnnoise(ctx);
-      this.supressaoDisponivel = true;
-    } catch (erro) {
-      console.warn("[voz] RNNoise não carregou:", erro);
+      this.rnnoise = await createRnnoise(ctx);
+      this.availableSuppression = true;
+    } catch (error) {
+      console.warn("[voz] RNNoise não carregou:", error);
       this.rnnoise = undefined;
-      this.supressaoDisponivel = false;
+      this.availableSuppression = false;
     }
   }
 
-  private ligarEntrada() {
-    const { fonte, passaAlta, rnnoise } = this;
-    if (!fonte || !passaAlta) return;
+  private turnonEntry() {
+    const { font, passesHigh, rnnoise } = this;
+    if (!font || !passesHigh) return;
 
-    fonte.disconnect();
+    font.disconnect();
     rnnoise?.disconnect();
 
-    const comSupressao = Boolean(this.ajustes.supressaoDeRuido && rnnoise);
-    this.supressaoAtiva = comSupressao;
+    const withSuppression = Boolean(this.settings.noiseSuppression && rnnoise);
+    this.activeSuppression = withSuppression;
 
-    if (comSupressao && rnnoise) {
-      fonte.connect(rnnoise);
-      rnnoise.connect(passaAlta);
+    if (withSuppression && rnnoise) {
+      font.connect(rnnoise);
+      rnnoise.connect(passesHigh);
       return;
     }
 
-    fonte.connect(passaAlta);
+    font.connect(passesHigh);
   }
 
-  private montarCadeia(entrada: MediaStreamTrack) {
+  private buildChain(entry: MediaStreamTrack) {
     const ctx = this.ctx;
     if (!ctx) return;
 
-    this.fonte = ctx.createMediaStreamSource(new MediaStream([entrada]));
+    this.font = ctx.createMediaStreamSource(new MediaStream([entry]));
 
-    this.passaAlta = ctx.createBiquadFilter();
-    this.passaAlta.type = "highpass";
-    this.passaAlta.frequency.value = 100;
+    this.passesHigh = ctx.createBiquadFilter();
+    this.passesHigh.type = "highpass";
+    this.passesHigh.frequency.value = 100;
 
-    this.passaBaixa = ctx.createBiquadFilter();
-    this.passaBaixa.type = "lowpass";
-    this.passaBaixa.frequency.value = 8000;
+    this.passesLow = ctx.createBiquadFilter();
+    this.passesLow.type = "lowpass";
+    this.passesLow.frequency.value = 8000;
 
-    this.ganho = ctx.createGain();
+    this.gain = ctx.createGain();
     this.porta = ctx.createGain();
-    this.analisador = ctx.createAnalyser();
-    this.destino = ctx.createMediaStreamDestination();
+    this.analyser = ctx.createAnalyser();
+    this.destination = ctx.createMediaStreamDestination();
 
-    this.analisador.fftSize = 1024;
-    this.buffer = new Float32Array(this.analisador.fftSize);
-    this.ganho.gain.value = this.ajustes.ganhoEntrada;
-    this.porta.gain.value = this.ajustes.modo === "ptt" ? 0 : 1;
+    this.analyser.fftSize = 1024;
+    this.buffer = new Float32Array(this.analyser.fftSize);
+    this.gain.gain.value = this.settings.gainEntry;
+    this.porta.gain.value = this.settings.mode === "ptt" ? 0 : 1;
 
-    this.ligarEntrada();
-    this.passaAlta.connect(this.passaBaixa);
-    this.passaBaixa.connect(this.ganho);
-    this.ganho.connect(this.analisador);
-    this.ganho.connect(this.porta);
-    this.porta.connect(this.destino);
+    this.turnonEntry();
+    this.passesHigh.connect(this.passesLow);
+    this.passesLow.connect(this.gain);
+    this.gain.connect(this.analyser);
+    this.gain.connect(this.porta);
+    this.porta.connect(this.destination);
 
-    this.processedTrack = this.destino.stream.getAudioTracks()[0];
-    this.relogio = setInterval(() => this.avaliar(), INTERVALO_MS);
+    this.processedTrack = this.destination.stream.getAudioTracks()[0];
+    this.clock = setInterval(() => this.evaluate(), INTERVAL_MS);
   }
 
-  private avaliar() {
-    const { ctx, analisador, buffer, porta } = this;
-    if (!ctx || !analisador || !buffer || !porta) return;
+  private evaluate() {
+    const { ctx, analyser, buffer, porta } = this;
+    if (!ctx || !analyser || !buffer || !porta) return;
 
-    const nivel = nivelDe(analisador, buffer);
-    const agora = Date.now();
+    const level = levelFor(analyser, buffer);
+    const now = Date.now();
 
-    this.pisoDeRuido = proximoPiso(this.pisoDeRuido, nivel);
+    this.noiseFloor = nextFloor(this.noiseFloor, level);
 
-    const limiar = this.ajustes.sensibilidadeAutomatica
-      ? limiarAutomatico(this.pisoDeRuido)
-      : this.ajustes.limiar;
+    const threshold = this.settings.sensitivityAutomatic
+      ? thresholdAutomatic(this.noiseFloor)
+      : this.settings.threshold;
 
-    const decisao = decidirAbertura({
-      modo: this.ajustes.modo,
-      nivel,
-      limiar,
-      pttPressionado: this.pttPressionado,
-      agora,
-      abertoAte: this.abertoAte,
+    const decision = decideOpening({
+      mode: this.settings.mode,
+      level,
+      threshold,
+      pttPressed: this.pttPressed,
+      now,
+      isOpenUntil: this.isOpenUntil,
     });
 
-    this.abertoAte = decisao.abertoAte;
-    const aberto = decisao.aberto;
+    this.isOpenUntil = decision.isOpenUntil;
+    const isOpen = decision.isOpen;
 
-    const alvo = aberto ? 1 : 0;
-    if (Math.abs(porta.gain.value - alvo) > 0.01) {
-      porta.gain.setTargetAtTime(alvo, ctx.currentTime, aberto ? ATAQUE_S : QUEDA_S);
+    const target = isOpen ? 1 : 0;
+    if (Math.abs(porta.gain.value - target) > 0.01) {
+      porta.gain.setTargetAtTime(target, ctx.currentTime, isOpen ? ATTACK_S : FALL_S);
     }
 
-    for (const ouvinte of this.ouvintes) ouvinte(nivel, aberto);
+    for (const listener of this.listeners) listener(level, isOpen);
   }
 
-  private trocarSupressao(ligar: boolean): Promise<void> {
-    this.fila = this.fila.then(() => this.executarTroca(ligar)).catch(() => undefined);
-    return this.fila;
+  private swapSuppression(turnon: boolean): Promise<void> {
+    this.queue = this.queue.then(() => this.runSwap(turnon)).catch(() => undefined);
+    return this.queue;
   }
 
-  private async executarTroca(ligar: boolean) {
-    if (ligar) await this.prepararSupressao();
-    this.ligarEntrada();
+  private async runSwap(turnon: boolean) {
+    if (turnon) await this.prepareSuppression();
+    this.turnonEntry();
   }
 
-  private async desmontar() {
-    if (this.relogio) clearInterval(this.relogio);
-    this.relogio = undefined;
+  private async unmount() {
+    if (this.clock) clearInterval(this.clock);
+    this.clock = undefined;
 
-    this.fonte?.disconnect();
-    this.passaAlta?.disconnect();
-    this.passaBaixa?.disconnect();
-    this.ganho?.disconnect();
+    this.font?.disconnect();
+    this.passesHigh?.disconnect();
+    this.passesLow?.disconnect();
+    this.gain?.disconnect();
     this.porta?.disconnect();
-    this.analisador?.disconnect();
+    this.analyser?.disconnect();
 
     this.rnnoise?.disconnect();
     this.rnnoise?.destroy();
     this.rnnoise = undefined;
-    this.supressaoAtiva = false;
+    this.activeSuppression = false;
     this.processedTrack?.stop();
     this.processedTrack = undefined;
   }
 }
 
-export async function criarMedidorDeTeste(deviceId?: string, supressao = true) {
+export async function createTestMeter(deviceId?: string, suppression = true) {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
@@ -297,44 +297,44 @@ export async function criarMedidorDeTeste(deviceId?: string, supressao = true) {
   });
 
   const ctx = new AudioContext({ sampleRate: 48_000 });
-  const fonte = ctx.createMediaStreamSource(stream);
+  const font = ctx.createMediaStreamSource(stream);
 
-  const rnnoise = supressao ? await criarRnnoise(ctx).catch(() => null) : null;
+  const rnnoise = suppression ? await createRnnoise(ctx).catch(() => null) : null;
 
-  const passaAlta = ctx.createBiquadFilter();
-  passaAlta.type = "highpass";
-  passaAlta.frequency.value = 100;
+  const passesHigh = ctx.createBiquadFilter();
+  passesHigh.type = "highpass";
+  passesHigh.frequency.value = 100;
 
-  const passaBaixa = ctx.createBiquadFilter();
-  passaBaixa.type = "lowpass";
-  passaBaixa.frequency.value = 8000;
+  const passesLow = ctx.createBiquadFilter();
+  passesLow.type = "lowpass";
+  passesLow.frequency.value = 8000;
 
-  const saida = ctx.createMediaStreamDestination();
-  const analisador = ctx.createAnalyser();
-  analisador.fftSize = 1024;
+  const output = ctx.createMediaStreamDestination();
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 1024;
 
   if (rnnoise) {
-    fonte.connect(rnnoise);
-    rnnoise.connect(passaAlta);
+    font.connect(rnnoise);
+    rnnoise.connect(passesHigh);
   } else {
-    fonte.connect(passaAlta);
+    font.connect(passesHigh);
   }
 
-  passaAlta.connect(passaBaixa);
-  passaBaixa.connect(analisador);
-  passaBaixa.connect(saida);
+  passesHigh.connect(passesLow);
+  passesLow.connect(analyser);
+  passesLow.connect(output);
 
-  const buffer = new Float32Array(analisador.fftSize) as Float32Array<ArrayBuffer>;
+  const buffer = new Float32Array(analyser.fftSize) as Float32Array<ArrayBuffer>;
 
   return {
-    stream: saida.stream,
-    ler: () => nivelDe(analisador, buffer),
-    parar: () => {
-      fonte.disconnect();
+    stream: output.stream,
+    read: () => levelFor(analyser, buffer),
+    stop: () => {
+      font.disconnect();
       rnnoise?.disconnect();
       rnnoise?.destroy();
-      passaAlta.disconnect();
-      passaBaixa.disconnect();
+      passesHigh.disconnect();
+      passesLow.disconnect();
       stream.getTracks().forEach((t) => t.stop());
       void ctx.close();
     },

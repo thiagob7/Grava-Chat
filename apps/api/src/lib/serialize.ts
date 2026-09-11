@@ -9,8 +9,8 @@ import type {
   Sticker,
   GuildEmoji,
   GuildSound,
-  PerfilPublico,
-  StatusPersonalizado,
+  ProfilePublic,
+  CustomStatus,
   DesiredStatus,
 } from "@gravae/shared";
 import { env } from "~/env.js";
@@ -26,59 +26,59 @@ export function toPublicUser(u: UserRow): PublicUser {
     avatarUrl: u.avatarUrl,
     status: u.status,
     isBot: u.isBot,
-    ...(u.sistema ? { sistema: true } : {}),
+    ...(u.system ? { system: true } : {}),
   };
 }
 
-export type EtiquetaResolvida = {
+export type TagResolved = {
   guildId: string;
   tag: string;
   tagIcon: string | null;
 };
 
-export function toPerfilPublico(
+export function toProfilePublic(
   u: UserRow,
-  emblemas: string[] = [],
-  etiquetaDoServidor: EtiquetaResolvida | null = null,
-): PerfilPublico {
-  const p = u.perfil;
+  badges: string[] = [],
+  serverTag: TagResolved | null = null,
+): ProfilePublic {
+  const p = u.profile;
 
   return {
-    ...(p?.nome ? { nome: limparNome(p.nome) } : {}),
-    ...(p?.etiqueta ? { etiqueta: p.etiqueta } : {}),
-    ...(etiquetaDoServidor ? { etiquetaDoServidor } : {}),
-    ...(emblemas.length ? { emblemas } : {}),
-    ...(p?.patente ? { patente: p.patente as PerfilPublico["patente"] } : {}),
-    ...(p?.decoracao
-      ? { decoracao: p.decoracao as PerfilPublico["decoracao"] }
+    ...(p?.name ? { name: clearName(p.name) } : {}),
+    ...(p?.tag ? { tag: p.tag } : {}),
+    ...(serverTag ? { serverTag } : {}),
+    ...(badges.length ? { badges } : {}),
+    ...(p?.rank ? { rank: p.rank as ProfilePublic["rank"] } : {}),
+    ...(p?.decoration
+      ? { decoration: p.decoration as ProfilePublic["decoration"] }
       : {}),
-    ...(p?.moldura ? { moldura: p.moldura as PerfilPublico["moldura"] } : {}),
-    ...(p?.placa ? { placa: p.placa as PerfilPublico["placa"] } : {}),
-    ...(statusVigente(u) ? { status: statusVigente(u) } : {}),
-    ...(p?.conexoes?.length
-      ? { conexoes: p.conexoes as NonNullable<PerfilPublico["conexoes"]> }
+    ...(p?.frame ? { frame: p.frame as ProfilePublic["frame"] } : {}),
+    ...(p?.plate ? { plate: p.plate as ProfilePublic["plate"] } : {}),
+    ...(currentStatus(u) ? { status: currentStatus(u) } : {}),
+    ...(p?.connections?.length
+      ? { connections: p.connections as NonNullable<ProfilePublic["connections"]> }
       : {}),
   };
 }
 
-export function statusVigente(u: UserRow): StatusPersonalizado | null {
-  const s = u.statusPersonalizado;
+export function currentStatus(u: UserRow): CustomStatus | null {
+  const s = u.customStatus;
   if (!s) return null;
-  if (s.expiraEm && s.expiraEm <= new Date()) return null;
+  if (s.expiresAt && s.expiresAt <= new Date()) return null;
 
   return {
-    texto: s.texto,
+    text: s.text,
     emoji: s.emoji,
-    expiraEm: s.expiraEm?.toISOString() ?? null,
+    expiresAt: s.expiresAt?.toISOString() ?? null,
   };
 }
 
-function limparNome(n: NonNullable<NonNullable<UserRow["perfil"]>["nome"]>) {
+function clearName(n: NonNullable<NonNullable<UserRow["profile"]>["name"]>) {
   return {
-    ...(n.fonte ? { fonte: n.fonte as "padrao" } : {}),
-    ...(n.efeito ? { efeito: n.efeito as "solido" } : {}),
-    ...(n.cor ? { cor: n.cor } : {}),
-    ...(n.cor2 ? { cor2: n.cor2 } : {}),
+    ...(n.font ? { font: n.font as "padrao" } : {}),
+    ...(n.effect ? { effect: n.effect as "solido" } : {}),
+    ...(n.color ? { color: n.color } : {}),
+    ...(n.color2 ? { color2: n.color2 } : {}),
   };
 }
 
@@ -88,7 +88,7 @@ export const ADMINS = new Set(
     .filter(Boolean),
 );
 
-export const ehAdmin = (email: string) => ADMINS.has(email.toLowerCase());
+export const isAdmin = (email: string) => ADMINS.has(email.toLowerCase());
 
 export function toSelfUser(
   u: UserRow,
@@ -99,20 +99,21 @@ export function toSelfUser(
     ...toPublicUser(u),
     email: u.email,
     bio: u.bio,
-    pronomes: u.pronomes,
+    pronouns: u.pronouns,
     providers,
     createdAt: u.createdAt.toISOString(),
-    perfil: u.perfil ? (u.perfil as SelfUser["perfil"]) : null,
-    statusPersonalizado: statusVigente(u),
+    profile: u.profile ? (u.profile as SelfUser["profile"]) : null,
+    customStatus: currentStatus(u),
     desiredStatus,
-    admin: ehAdmin(u.email),
-    aceitaPedidos: u.aceitaPedidos,
-    mostraAtividade: u.mostraAtividade,
-    permitirDmDeMembros: u.permitirDmDeMembros,
-    filtroDeSpam: u.filtroDeSpam,
-    mostraServidoresEmComum: u.mostraServidoresEmComum,
-    mostraAmigosEmComum: u.mostraAmigosEmComum,
-    excluirEm: u.excluirEm ? u.excluirEm.toISOString() : null,
+    admin: isAdmin(u.email),
+    acceptedRequests: u.acceptedRequests,
+    showsActivity: u.showsActivity,
+    membersAllowDm: u.membersAllowDm,
+    spamFilter: u.spamFilter,
+    showsServersCommon: u.showsServersCommon,
+    showsFriendsCommon: u.showsFriendsCommon,
+    deleteAt: u.deleteAt ? u.deleteAt.toISOString() : null,
+    verifiedEmail: Boolean(u.emailVerifiedAt),
   };
 }
 
@@ -122,8 +123,9 @@ export function toChannel(c: Prisma.ChannelGetPayload<object>): Channel {
     guildId: c.guildId,
     categoryId: c.categoryId,
     name: c.name,
-    fonte: (c.fonte ?? null) as Channel["fonte"],
+    font: (c.font ?? null) as Channel["font"],
     type: c.type,
+    url: c.url,
     topic: c.topic,
     position: c.position,
     isPrivate: c.isPrivate,
@@ -145,7 +147,7 @@ export function toRole(r: Prisma.RoleGetPayload<object>): Role {
     colorSecondary: r.colorSecondary,
     iconUrl: r.iconUrl,
     iconEmoji: r.iconEmoji,
-    estilo: (r.estilo as Role["estilo"]) ?? "solido",
+    style: (r.style as Role["style"]) ?? "solido",
     position: r.position,
     permissions: r.permissions,
     hoist: r.hoist,
@@ -191,8 +193,8 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
     channelId: m.channelId,
     author: toPublicUser(m.author),
     content: m.content,
-    fonte: (m.fonte ?? null) as Message["fonte"],
-    tipo: m.tipo,
+    font: (m.font ?? null) as Message["font"],
+    kind: m.kind,
     attachments: m.attachments.map((a) => ({
       id: a.id,
       url: a.url,
@@ -203,15 +205,15 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
       height: a.height,
       spoiler: a.spoiler,
       description: a.description,
-      duracaoMs: a.duracaoMs,
-      ondas: a.ondas,
+      durationMs: a.durationMs,
+      waves: a.waves,
     })),
     poll: m.poll
       ? {
-          pergunta: m.poll.pergunta,
-          opcoes: m.poll.opcoes.map((o) => ({
+          question: m.poll.question,
+          options: m.poll.options.map((o) => ({
             id: o.id,
-            texto: o.texto,
+            text: o.text,
             emoji: o.emoji,
             userIds: o.userIds,
           })),
@@ -231,9 +233,9 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
     mentionRoleIds: m.mentionRoleIds,
     mentionEveryone: m.mentionEveryone ?? false,
     replyToId: m.replyToId,
-    encaminhadaDe:
-      m.encaminhadaDeCanalId && m.encaminhadaDeMensagemId
-        ? { channelId: m.encaminhadaDeCanalId, messageId: m.encaminhadaDeMensagemId }
+    forwarded:
+      m.channelForwardedId && m.messageForwardedId
+        ? { channelId: m.channelForwardedId, messageId: m.messageForwardedId }
         : null,
     postId: m.postId,
     pinnedAt: m.pinnedAt?.toISOString() ?? null,

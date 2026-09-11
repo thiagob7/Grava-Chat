@@ -7,22 +7,22 @@ import { flxCls } from "~/lib/compat-de-tema";
 
 const buttonVariants = cva(
   cn(
-    flxCls("botao"),
+    flxCls("button"),
     "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-foco-anel disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0",
   ),
   {
     variants: {
       variant: {
-        primary: cn("bg-brand text-ink hover:bg-brand-hover", flxCls("botaoPrimario")),
+        primary: cn("bg-brand text-sobre-marca hover:brightness-110", flxCls("buttonPrimary")),
         success: "bg-online text-sobre-marca hover:brightness-110",
-        danger: cn("bg-danger text-sobre-marca hover:brightness-110", flxCls("botaoDePerigo")),
+        danger: cn("bg-danger text-sobre-marca hover:brightness-110", flxCls("dangerButton")),
         surface: cn(
           "bg-surface-3 text-ink-muted hover:bg-surface-4 hover:text-ink",
-          flxCls("botaoSecundario"),
+          flxCls("secondaryButton"),
         ),
         outline: cn(
           "border border-line bg-surface-4 text-ink hover:bg-[color-mix(in_srgb,var(--color-surface-4)_94%,var(--color-ink)_6%)]",
-          flxCls("botaoInvertido"),
+          flxCls("buttonInverted"),
         ),
         ghost: "text-ink-muted hover:bg-surface-3 hover:text-ink",
         link: "text-brand hover:underline",

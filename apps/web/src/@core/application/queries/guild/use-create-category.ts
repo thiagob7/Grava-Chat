@@ -10,7 +10,7 @@ export const useCreateCategory = () => {
 
   return useMutation({
     mutationFn: (data: CreateCategoryDTO) => createCategory(data),
-    onSuccess: (_categoria, { guildId }) => {
+    onSuccess: (_category, { guildId }) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.guild.find(guildId) });
       toast.success("Categoria criada.");
     },

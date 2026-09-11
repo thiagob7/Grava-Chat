@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import { registrarServiceWorker } from "~/lib/service-worker";
-import { aplicarCursores, useCursores } from "~/features/configuracoes/stores/cursores";
+import { registerServiceWorker } from "~/lib/service-worker";
+import { applyCursors, useCursors } from "~/features/configuracoes/stores/cursores";
 import "~/traducao";
 
 import { App, queryClient } from "~/App";
@@ -10,25 +10,25 @@ import { socket } from "~/@core/lib/websocket";
 import { getAccessToken } from "~/@core/lib/api";
 import { useVoiceStore, voiceTabChannelId } from "~/features/voz/stores/voice-store";
 import { useTypingStore } from "~/features/conversa/stores/typing-store";
-import "@fontsource-variable/ibm-plex-sans";
-import "@fontsource-variable/ibm-plex-sans/wght-italic.css";
+import "@fontsource-variable/radio-canada-big";
+import "@fontsource-variable/radio-canada-big/wght-italic.css";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/600.css";
 import "~/styles/index.css";
 import "react-toastify/dist/ReactToastify.css";
 
-import { marcarAmbienteDesktop } from "~/lib/desktop";
+import { markEnvironmentDesktop } from "~/lib/desktop";
 
-marcarAmbienteDesktop();
+markEnvironmentDesktop();
 
 if (import.meta.env.DEV) {
   Object.assign(window, {
     __gravae: {
       queryClient,
-      cache: (chave: string) =>
+      cache: (key: string) =>
         queryClient
-          .getQueriesData({ queryKey: [chave] })
+          .getQueriesData({ queryKey: [key] })
           .map(([key, data]) => ({ key, data })),
       voice: useVoiceStore,
       typing: useTypingStore,
@@ -39,8 +39,8 @@ if (import.meta.env.DEV) {
   });
 }
 
-registrarServiceWorker();
-aplicarCursores(useCursores.getState().cursores);
+registerServiceWorker();
+applyCursors(useCursors.getState().cursors);
 
 createRoot(document.getElementById("app")!).render(
   <StrictMode>

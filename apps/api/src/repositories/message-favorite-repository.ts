@@ -2,7 +2,7 @@ import { prisma } from "~/lib/prisma.js";
 
 export const messageFavoriteRepository = {
   findManyOf(userId: string, limit: number) {
-    return prisma.mensagemFavorita.findMany({
+    return prisma.messageFavorite.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: limit,
@@ -13,16 +13,16 @@ export const messageFavoriteRepository = {
   },
 
   idsOf(userId: string) {
-    return prisma.mensagemFavorita.findMany({ where: { userId }, select: { messageId: true } });
+    return prisma.messageFavorite.findMany({ where: { userId }, select: { messageId: true } });
   },
 
   add(userId: string, messageId: string) {
-    return prisma.mensagemFavorita
+    return prisma.messageFavorite
       .create({ data: { userId, messageId } })
       .catch(() => undefined);
   },
 
   remove(userId: string, messageId: string) {
-    return prisma.mensagemFavorita.deleteMany({ where: { userId, messageId } });
+    return prisma.messageFavorite.deleteMany({ where: { userId, messageId } });
   },
 };

@@ -1,11 +1,11 @@
-declare const __VERSAO__: string | undefined;
+declare const __VERSION__: string | undefined;
 declare const __BRANCH__: string | undefined;
-declare const __CONSTRUIDO_EM__: string | undefined;
+declare const __BUILT_AT__: string | undefined;
 
-const leia = (valor: string | undefined) => (valor && valor.length ? valor : null);
+const read = (value: string | undefined) => (value && value.length ? value : null);
 
-export const versaoDaApi = {
-  commit: typeof __VERSAO__ === "string" ? leia(__VERSAO__) : null,
-  branch: typeof __BRANCH__ === "string" ? leia(__BRANCH__) : null,
-  construidoEm: typeof __CONSTRUIDO_EM__ === "string" ? leia(__CONSTRUIDO_EM__) : null,
+export const apiVersion = {
+  commit: typeof __VERSION__ === "string" ? read(__VERSION__) : null,
+  branch: typeof __BRANCH__ === "string" ? read(__BRANCH__) : null,
+  builtAt: typeof __BUILT_AT__ === "string" ? read(__BUILT_AT__) : null,
 };

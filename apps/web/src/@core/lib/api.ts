@@ -19,7 +19,7 @@ export const setSessionLostHandler = (fn: () => void) => {
   onSessionLost = fn;
 };
 
-export const avisarSessaoPerdida = () => onSessionLost?.();
+export const notifySessionLost = () => onSessionLost?.();
 
 api.interceptors.request.use((config) => {
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;

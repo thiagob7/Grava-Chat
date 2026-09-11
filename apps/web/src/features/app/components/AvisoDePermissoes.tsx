@@ -1,39 +1,39 @@
 import React, { useEffect, useState } from "react";
 
-import { PermissoesDoMac } from "~/features/app/components/PermissoesDoMac";
+import { MacPermissions } from "~/features/app/components/PermissoesDoMac";
 import { desktop } from "~/lib/desktop";
 
-const CHAVE = "gravae:permissoes-vistas";
+const KEY = "gravae:permissoes-vistas";
 
-export const AvisoDePermissoes: React.FC = () => {
-  const [aberto, setAberto] = useState(false);
+export const PermissionsNotice: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte || ponte.plataforma !== "darwin") return;
+    const bridge = desktop();
+    if (!bridge || bridge.platform !== "darwin") return;
 
     try {
-      if (localStorage.getItem(CHAVE) === "1") return;
+      if (localStorage.getItem(KEY) === "1") return;
     } catch {
       return;
     }
 
     void Promise.all([
-      ponte.midia.status("microphone"),
-      ponte.midia.status("camera"),
-      ponte.midia.status("screen"),
-    ]).then((estados) => {
-      if (estados.some((e) => e !== "granted")) setAberto(true);
+      bridge.media.status("microphone"),
+      bridge.media.status("camera"),
+      bridge.media.status("screen"),
+    ]).then((states) => {
+      if (states.some((e) => e !== "granted")) setIsOpen(true);
     });
   }, []);
 
-  const fechar = () => {
-    setAberto(false);
+  const close = () => {
+    setIsOpen(false);
     try {
-      localStorage.setItem(CHAVE, "1");
+      localStorage.setItem(KEY, "1");
     } catch {
     }
   };
 
-  return <PermissoesDoMac data-gc="app.aviso-de-permissoes.permissoes-do-mac.fechar" aberto={aberto} onFechar={fechar} />;
+  return <MacPermissions data-gc="app.aviso-de-permissoes.mac-permissions.close" isOpen={isOpen} onClose={close} />;
 };

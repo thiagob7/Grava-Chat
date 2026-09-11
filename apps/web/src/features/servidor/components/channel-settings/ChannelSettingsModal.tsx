@@ -10,7 +10,7 @@ import { DeleteChannelSection } from "~/features/servidor/components/channel-set
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-type Secao = "visao" | "permissoes" | "convites" | "excluir";
+type Section = "visao" | "permissoes" | "convites" | "excluir";
 
 interface ChannelSettingsModalProps {
   open: boolean;
@@ -19,7 +19,7 @@ interface ChannelSettingsModalProps {
   channel: Channel;
   roles: Role[];
   members: GuildMember[];
-  minhasPermissoes: string[];
+  minePermissions: string[];
   canManageChannels: boolean;
   canManageRoles: boolean;
 }
@@ -31,23 +31,23 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
   channel,
   roles,
   members,
-  minhasPermissoes,
+  minePermissions,
   canManageChannels,
   canManageRoles,
 }) => {
   const { t } = useTranslation();
-  const [secao, setSecao] = useState<Secao>("visao");
+  const [section, setSection] = useState<Section>("visao");
 
-  type Item = { id: Secao; label: string; visivel: boolean; danger?: boolean };
+  type Item = { id: Section; label: string; visible: boolean; danger?: boolean };
 
-  const itens: Item[] = ([
-    { id: "visao", label: t("servidor.canal.visaoGeral"), visivel: canManageChannels },
-    { id: "permissoes", label: t("servidor.cargos.abaPermissoes"), visivel: canManageRoles },
-    { id: "convites", label: t("servidor.convites.titulo"), visivel: true },
-    { id: "excluir", label: t("servidor.canal.excluir.titulo"), visivel: canManageChannels, danger: true },
-  ] satisfies Item[]).filter((item) => item.visivel);
+  const items: Item[] = ([
+    { id: "visao", label: t("servidor.canal.visaoGeral"), visible: canManageChannels },
+    { id: "permissoes", label: t("servidor.cargos.abaPermissoes"), visible: canManageRoles },
+    { id: "convites", label: t("servidor.convites.titulo"), visible: true },
+    { id: "excluir", label: t("servidor.canal.excluir.titulo"), visible: canManageChannels, danger: true },
+  ] satisfies Item[]).filter((item) => item.visible);
 
-  const prefixo = channel.type === "VOICE" ? "CANAIS DE VOZ" : "CANAIS DE TEXTO";
+  const prefix = channel.type === "VOICE" ? "CANAIS DE VOZ" : "CANAIS DE TEXTO";
 
   return (
     <DialogPrimitive.Root data-gc="servidor.channel-settings.channel-settings-modal.dialog-primitiveroot" open={open} onOpenChange={(next) => !next && onClose()}>
@@ -60,18 +60,18 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
 
           <nav data-gc="servidor.channel-settings.channel-settings-modal.nav" className="w-60 shrink-0 overflow-y-auto bg-surface-1 px-3 py-12">
             <p data-gc="servidor.channel-settings.channel-settings-modal.p" className="mb-2 truncate px-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-              {channel.name} <span data-gc="servidor.channel-settings.channel-settings-modal.span" className="text-ink-faint/60">· {prefixo}</span>
+              {channel.name} <span data-gc="servidor.channel-settings.channel-settings-modal.span" className="text-ink-faint/60">· {prefix}</span>
             </p>
 
-            {itens.map((item) => (
+            {items.map((item) => (
               <button data-gc="servidor.channel-settings.channel-settings-modal.button"
                 key={item.id}
-                onClick={() => setSecao(item.id)}
+                onClick={() => setSection(item.id)}
                 className={cn(
                   "mb-0.5 flex w-full items-center justify-between rounded px-2.5 py-1.5 text-left text-sm transition",
                   item.danger
                     ? "text-danger hover:bg-danger-fundo"
-                    : secao === item.id
+                    : section === item.id
                       ? "bg-surface-4 text-ink"
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                 )}
@@ -83,21 +83,21 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
           </nav>
 
           <div data-gc="servidor.channel-settings.channel-settings-modal.div" className="flex-1 overflow-y-auto bg-surface-2 px-10 py-12">
-            {secao === "visao" && <ChannelOverviewSection data-gc="servidor.channel-settings.channel-settings-modal.channel-overview-section" guildId={guildId} channel={channel} />}
+            {section === "visao" && <ChannelOverviewSection data-gc="servidor.channel-settings.channel-settings-modal.channel-overview-section" guildId={guildId} channel={channel} />}
 
-            {secao === "permissoes" && (
+            {section === "permissoes" && (
               <ChannelPermissionsSection data-gc="servidor.channel-settings.channel-settings-modal.channel-permissions-section"
                 guildId={guildId}
                 channel={channel}
                 roles={roles}
                 members={members}
-                minhasPermissoes={minhasPermissoes}
+                minePermissions={minePermissions}
               />
             )}
 
-            {secao === "convites" && <InvitesSection data-gc="servidor.channel-settings.channel-settings-modal.invites-section" guildId={guildId} />}
+            {section === "convites" && <InvitesSection data-gc="servidor.channel-settings.channel-settings-modal.invites-section" guildId={guildId} />}
 
-            {secao === "excluir" && (
+            {section === "excluir" && (
               <DeleteChannelSection data-gc="servidor.channel-settings.channel-settings-modal.delete-channel-section.on-close" guildId={guildId} channel={channel} onClose={onClose} />
             )}
           </div>

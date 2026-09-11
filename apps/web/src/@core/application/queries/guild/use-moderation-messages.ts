@@ -6,10 +6,10 @@ import { queryKeys } from "~/@core/infra/constants/query-keys";
 export const useModerationMessages = (
   guildId: string | null,
   userId: string | null,
-  filtro: "todas" | "links" | "midia" | null,
+  filter: "todas" | "links" | "midia" | null,
 ) =>
   useQuery({
-    queryKey: [queryKeys.guild.moderation_messages, guildId, userId, filtro],
-    queryFn: () => findModerationMessages(guildId!, userId!, filtro!),
-    enabled: Boolean(guildId && userId && filtro),
+    queryKey: [queryKeys.guild.moderation_messages, guildId, userId, filter],
+    queryFn: () => findModerationMessages(guildId!, userId!, filter!),
+    enabled: Boolean(guildId && userId && filter),
   });

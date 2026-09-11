@@ -1,109 +1,109 @@
 
 
-export type Secao =
-  | "conta"
-  | "privacidade"
-  | "voz"
+export type Section =
+  | "account"
+  | "privacy"
+  | "voice"
   | "video"
-  | "avisos"
-  | "aplicativos"
-  | "conexoes"
-  | "aparencia"
-  | "bate-papo"
-  | "acessibilidade"
-  | "idioma"
-  | "aplicativo"
+  | "notices"
+  | "apps"
+  | "connections"
+  | "appearance"
+  | "chat"
+  | "accessibility"
+  | "language"
+  | "app"
   | "desktop"
-  | "atalhos"
-  | "avancado";
+  | "shortcuts"
+  | "advanced";
 
-export interface SubSecao {
+export interface SubSection {
   id: string;
-  chave: string;
+  key: string;
 }
 
-export const ancora = (id: string) => `config-${id}`;
+export const anchor = (id: string) => `config-${id}`;
 
-export const SUBSECOES: Record<Secao, SubSecao[]> = {
-  conta: [
-    { id: "detalhes-de-login", chave: "configuracoes.secoes.detalhesDeLogin" },
-    { id: "dispositivos", chave: "configuracoes.secoes.dispositivos" },
+export const SUBSECTIONS: Record<Section, SubSection[]> = {
+  account: [
+    { id: "detalhes-de-login", key: "configuracoes.secoes.detalhesDeLogin" },
+    { id: "dispositivos", key: "configuracoes.secoes.dispositivos" },
     {
       id: "usuarios-bloqueados",
-      chave: "configuracoes.secoes.usuariosBloqueados",
+      key: "configuracoes.secoes.usuariosBloqueados",
     },
     {
       id: "aplicativos-autorizados",
-      chave: "configuracoes.secoes.aplicativosAutorizados",
+      key: "configuracoes.secoes.aplicativosAutorizados",
     },
-    { id: "sessoes", chave: "configuracoes.secoes.sessoes" },
+    { id: "sessoes", key: "configuracoes.secoes.sessoes" },
   ],
-  privacidade: [
-    { id: "amigos-e-dms", chave: "configuracoes.secoes.amigosEDms" },
+  privacy: [
+    { id: "amigos-e-dms", key: "configuracoes.secoes.amigosEDms" },
     {
       id: "compartilhamento-de-atividade",
-      chave: "configuracoes.secoes.compartilhamentoDeAtividade",
+      key: "configuracoes.secoes.compartilhamentoDeAtividade",
     },
     {
       id: "visibilidade-do-perfil",
-      chave: "configuracoes.secoes.visibilidadeDoPerfil",
+      key: "configuracoes.secoes.visibilidadeDoPerfil",
     },
-    { id: "exportar-dados", chave: "configuracoes.secoes.exportarDados" },
-    { id: "exclusao-de-dados", chave: "configuracoes.secoes.exclusaoDeDados" },
+    { id: "exportar-dados", key: "configuracoes.secoes.exportarDados" },
+    { id: "exclusao-de-dados", key: "configuracoes.secoes.exclusaoDeDados" },
   ],
-  aparencia: [
-    { id: "tema", chave: "configuracoes.secoes.tema" },
-    { id: "cor-de-destaque", chave: "configuracoes.secoes.corDeDestaque" },
-    { id: "interface", chave: "configuracoes.secoes.interface" },
-    { id: "lista-de-canais", chave: "configuracoes.secoes.listaDeCanais" },
-    { id: "zoom-do-app", chave: "configuracoes.secoes.zoomDoApp" },
-    { id: "escala-da-fonte", chave: "configuracoes.secoes.escalaDaFonte" },
-    { id: "modo-streamer", chave: "configuracoes.secoes.modoStreamer" },
+  appearance: [
+    { id: "tema", key: "configuracoes.secoes.tema" },
+    { id: "cor-de-destaque", key: "configuracoes.secoes.corDeDestaque" },
+    { id: "interface", key: "configuracoes.secoes.interface" },
+    { id: "lista-de-canais", key: "configuracoes.secoes.listaDeCanais" },
+    { id: "zoom-do-app", key: "configuracoes.secoes.zoomDoApp" },
+    { id: "escala-da-fonte", key: "configuracoes.secoes.escalaDaFonte" },
+    { id: "modo-streamer", key: "configuracoes.secoes.modoStreamer" },
   ],
-  voz: [
-    { id: "dispositivos", chave: "configuracoes.secoes.dispositivosDeVoz" },
+  voice: [
+    { id: "dispositivos", key: "configuracoes.secoes.dispositivosDeVoz" },
     {
       id: "teste-do-microfone",
-      chave: "configuracoes.secoes.testeDoMicrofone",
+      key: "configuracoes.secoes.testeDoMicrofone",
     },
-    { id: "modo-de-entrada", chave: "configuracoes.secoes.modoDeEntrada" },
-    { id: "sensibilidade", chave: "configuracoes.secoes.sensibilidade" },
-    { id: "qualidade", chave: "configuracoes.secoes.qualidade" },
+    { id: "modo-de-entrada", key: "configuracoes.secoes.modoDeEntrada" },
+    { id: "sensibilidade", key: "configuracoes.secoes.sensibilidade" },
+    { id: "qualidade", key: "configuracoes.secoes.qualidade" },
   ],
   video: [
-    { id: "video", chave: "configuracoes.secoes.camera" },
-    { id: "transmissao", chave: "configuracoes.secoes.transmissao" },
+    { id: "video", key: "configuracoes.secoes.camera" },
+    { id: "transmissao", key: "configuracoes.secoes.transmissao" },
   ],
-  "bate-papo": [
-    { id: "exibicao", chave: "configuracoes.secoes.exibicao" },
-    { id: "entrada", chave: "configuracoes.secoes.entrada" },
-    { id: "midia", chave: "configuracoes.secoes.midia" },
+  chat: [
+    { id: "exibicao", key: "configuracoes.secoes.exibicao" },
+    { id: "entrada", key: "configuracoes.secoes.entrada" },
+    { id: "midia", key: "configuracoes.secoes.midia" },
   ],
-  avisos: [
-    { id: "geral", chave: "configuracoes.secoes.geral" },
+  notices: [
+    { id: "geral", key: "configuracoes.secoes.geral" },
     {
       id: "preferencia-de-mencao",
-      chave: "configuracoes.secoes.preferenciaDeMencao",
+      key: "configuracoes.secoes.preferenciaDeMencao",
     },
-    { id: "sons", chave: "configuracoes.secoes.sons" },
+    { id: "sons", key: "configuracoes.secoes.sons" },
   ],
-  acessibilidade: [
-    { id: "movimento", chave: "configuracoes.secoes.movimento" },
-    { id: "texto-em-voz", chave: "configuracoes.secoes.textoEmVoz" },
-    { id: "teclado", chave: "configuracoes.secoes.teclado" },
+  accessibility: [
+    { id: "movimento", key: "configuracoes.secoes.movimento" },
+    { id: "texto-em-voz", key: "configuracoes.secoes.textoEmVoz" },
+    { id: "teclado", key: "configuracoes.secoes.teclado" },
   ],
-  idioma: [
+  language: [
     {
       id: "idioma-da-interface",
-      chave: "configuracoes.secoes.idiomaDaInterface",
+      key: "configuracoes.secoes.idiomaDaInterface",
     },
-    { id: "formato-da-hora", chave: "configuracoes.secoes.formatoDaHora" },
+    { id: "formato-da-hora", key: "configuracoes.secoes.formatoDaHora" },
   ],
 
-  aplicativos: [],
-  conexoes: [],
-  aplicativo: [],
+  apps: [],
+  connections: [],
+  app: [],
   desktop: [],
-  atalhos: [],
-  avancado: [],
+  shortcuts: [],
+  advanced: [],
 };

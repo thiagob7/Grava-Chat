@@ -1,45 +1,45 @@
-import vivos from "~/features/configuracoes/lib/tokens-vivos.json";
+import live from "~/features/configuracoes/lib/tokens-vivos.json";
 
-const NOMES = vivos as string[];
+const NAMES = live as string[];
 
-export const CLASSE_DO_ESCUDO = "janela-neutra";
+export const SHIELD_CLASS = "janela-neutra";
 
-export const ID_DO_ESCUDO = "gc-escudo-estudio";
+export const SHIELD_ID = "gc-escudo-estudio";
 
-export function medirBase(idDaFolhaDoTema: string): Record<string, string> {
+export function measureBase(leafThemeId: string): Record<string, string> {
   if (typeof document === "undefined") return {};
 
-  const raiz = document.documentElement;
-  const emLinha = raiz.getAttribute("style");
-  const folha = document.getElementById(
-    idDaFolhaDoTema,
+  const root = document.documentElement;
+  const inLine = root.getAttribute("style");
+  const leaf = document.getElementById(
+    leafThemeId,
   ) as HTMLStyleElement | null;
 
-  raiz.removeAttribute("style");
-  if (folha) folha.disabled = true;
+  root.removeAttribute("style");
+  if (leaf) leaf.disabled = true;
 
-  const lido = getComputedStyle(raiz);
+  const read = getComputedStyle(root);
   const base: Record<string, string> = {};
 
-  for (const nome of NOMES) {
-    const valor = lido.getPropertyValue(nome).trim();
-    if (valor) base[nome] = valor;
+  for (const name of NAMES) {
+    const value = read.getPropertyValue(name).trim();
+    if (value) base[name] = value;
   }
 
-  if (folha) folha.disabled = false;
-  if (emLinha !== null) raiz.setAttribute("style", emLinha);
+  if (leaf) leaf.disabled = false;
+  if (inLine !== null) root.setAttribute("style", inLine);
 
   return base;
 }
 
-export function cssDoEscudo(base: Record<string, string>): string {
-  const linhas = Object.entries(base)
-    .map(([nome, valor]) => `  ${nome}: ${valor} !important;`)
+export function shieldCss(base: Record<string, string>): string {
+  const lines = Object.entries(base)
+    .map(([name, value]) => `  ${name}: ${value} !important;`)
     .join("\n");
 
-  return `.${CLASSE_DO_ESCUDO} {\n${linhas}\n}\n
-.${CLASSE_DO_ESCUDO},
-.${CLASSE_DO_ESCUDO} * {
+  return `.${SHIELD_CLASS} {\n${lines}\n}\n
+.${SHIELD_CLASS},
+.${SHIELD_CLASS} * {
   backdrop-filter: none !important;
 }
 `;

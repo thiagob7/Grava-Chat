@@ -1,41 +1,41 @@
 
 const API = "https://gravaechat-api.duckdns.org/api";
 
-export const PECAS = ["api", "banco", "cache", "sfu"] as const;
-export type Peca = (typeof PECAS)[number];
+export const PIECES = ["api", "banco", "cache", "sfu"] as const;
+export type Piece = (typeof PIECES)[number];
 
-export const NOMES: Record<Peca, string> = {
+export const NAMES: Record<Piece, string> = {
   api: "API",
   banco: "Banco de dados",
   cache: "Cache",
   sfu: "Servidor de voz",
 };
 
-export interface Medida {
-  peca: Peca;
-  estado: "up" | "down";
+export interface Measure {
+  piece: Piece;
+  state: "up" | "down";
   ms: number;
 }
 
-export interface DiaDaJanela {
-  dia: string;
+export interface WindowDay {
+  day: string;
   uptime: number | null;
 }
 
 export interface Status {
-  pecas: readonly Peca[];
-  agora: Medida[];
-  janela: Record<Peca, DiaDaJanela[]>;
-  dias: number;
+  pieces: readonly Piece[];
+  now: Measure[];
+  appWindow: Record<Piece, WindowDay[]>;
+  days: number;
   em: string;
 }
 
-export async function buscarStatus(): Promise<Status | null> {
-  const resposta = await fetch(`${API}/publico/status`, {
+export async function searchStatus(): Promise<Status | null> {
+  const reply = await fetch(`${API}/publico/status`, {
     cache: "no-store",
     signal: AbortSignal.timeout(8_000),
   });
-  if (!resposta.ok) return null;
+  if (!reply.ok) return null;
 
-  return (await resposta.json()) as Status;
+  return (await reply.json()) as Status;
 }

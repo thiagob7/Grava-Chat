@@ -1,19 +1,19 @@
 import { api } from "~/@core/lib/api";
 
-export interface SessaoModel {
+export interface SessionModel {
   id: string;
   userAgent: string | null;
   ip: string | null;
-  criadaEm: string;
-  expiraEm: string;
-  atual: boolean;
+  createdAt: string;
+  expiresAt: string;
+  current: boolean;
 }
 
-export async function findSessoes(): Promise<SessaoModel[]> {
-  const response = await api.get<SessaoModel[]>("/me/sessoes");
+export async function findSessions(): Promise<SessionModel[]> {
+  const response = await api.get<SessionModel[]>("/me/sessoes");
   return response.data;
 }
 
-export async function encerrarSessao(id: string): Promise<void> {
+export async function endSession(id: string): Promise<void> {
   await api.delete(`/me/sessoes/${id}`);
 }

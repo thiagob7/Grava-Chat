@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Perkelti pokalbį žemyn",
+    paraOLado: "Perkelti pokalbį į šoną",
+  },
+  aparelhoNovo: {
+    microfone: "Atsirado naujas mikrofonas",
+    saida: "Atsirado nauja garso išvestis",
+    apareceu: "Atsirado {{nome}}.",
+    falarPorEle: "Norite kalbėti per jį?",
+    ouvirPorEle: "Norite klausytis per jį?",
+    trocaNaHora: "Pakeitimas galioja iš karto, nepaliekant pokalbio.",
+    naoSugerir: "Daugiau nesiūlyti šio įrenginio",
+    trocar: "Persijungti į jį",
+  },
   conectando: "Jungiamasi prie skambučio…",
   naoEntrou: "Nepavyko prisijungti prie skambučio",
   sair: "Palikti skambutį",

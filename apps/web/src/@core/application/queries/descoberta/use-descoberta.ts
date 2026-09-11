@@ -2,45 +2,45 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { toast } from "react-toastify";
 
 import {
-  entrarNaComunidade,
-  findAplicativos,
-  findComunidades,
-  findTemasDaGaleria,
-  type FiltroDeDescoberta,
+  joinCommunity,
+  findApps,
+  findCommunities,
+  findGalleryThemes,
+  type DiscoveryFilter,
 } from "~/@core/application/requests/descoberta/descoberta";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-export const useComunidades = (filtro: FiltroDeDescoberta) =>
+export const useCommunities = (filter: DiscoveryFilter) =>
   useQuery({
-    queryKey: queryKeys.descoberta.comunidades(filtro.categoria ?? "", filtro.busca ?? ""),
-    queryFn: () => findComunidades(filtro),
+    queryKey: queryKeys.discovery.communities(filter.category ?? "", filter.search ?? ""),
+    queryFn: () => findCommunities(filter),
     placeholderData: keepPreviousData,
   });
 
-export const useTemasDaGaleria = (busca: string) =>
+export const useGalleryThemes = (search: string) =>
   useQuery({
-    queryKey: queryKeys.descoberta.temas(busca),
-    queryFn: () => findTemasDaGaleria(busca || undefined),
+    queryKey: queryKeys.discovery.themes(search),
+    queryFn: () => findGalleryThemes(search || undefined),
     placeholderData: keepPreviousData,
   });
 
-export const useAplicativos = (busca: string) =>
+export const useApps = (search: string, category = "") =>
   useQuery({
-    queryKey: queryKeys.descoberta.aplicativos(busca),
-    queryFn: () => findAplicativos(busca || undefined),
+    queryKey: queryKeys.discovery.apps(`${category}|${search}`),
+    queryFn: () => findApps(search || undefined, category || undefined),
     placeholderData: keepPreviousData,
   });
 
-export const useEntrarNaComunidade = () => {
-  const cliente = useQueryClient();
+export const useJoinCommunity = () => {
+  const client = useQueryClient();
 
   return useMutation({
-    mutationFn: entrarNaComunidade,
+    mutationFn: joinCommunity,
     onSuccess: () => {
-      void cliente.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
-      void cliente.invalidateQueries({ queryKey: ["descobrir-comunidades"] });
+      void client.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
+      void client.invalidateQueries({ queryKey: ["descobrir-comunidades"] });
     },
-    onError: (erro) => toast.error(apiErrorMessage(erro)),
+    onError: (error) => toast.error(apiErrorMessage(error)),
   });
 };

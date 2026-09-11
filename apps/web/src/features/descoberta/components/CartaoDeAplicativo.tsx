@@ -1,71 +1,88 @@
 import React from "react";
-import { Plus, SlashSquare } from "lucide-react";
-import { PERMISSION_LABELS, type AplicativoDescoberto, type Permission } from "@gravae/shared";
+import { SlashSquare } from "lucide-react";
+import type { AppDiscovered } from "@gravae/shared";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
+import { coverGenerated } from "~/lib/capa-gerada";
+import { initials } from "~/lib/format";
+import { useTranslation } from "~/traducao";
 
-const nomeDaPermissao = (permissao: string) =>
-  PERMISSION_LABELS[permissao as Permission]?.nome ?? permissao;
+export const AppCard: React.FC<{
+  app: AppDiscovered;
+  onOpen: () => void;
+}> = ({ app, onOpen }) => {
+  const { t } = useTranslation();
 
-export const CartaoDeAplicativo: React.FC<{
-  aplicativo: AplicativoDescoberto;
-  onAdicionar: () => void;
-}> = ({ aplicativo, onAdicionar }) => (
-  <article data-gc="descoberta.cartao-de-aplicativo.article.on-adicionar"
-    className="group flex cursor-pointer flex-col rounded-lg border border-line bg-surface-2 p-4 transition hover:border-ink-faint/30"
-    onClick={onAdicionar}
-  >
-    <div data-gc="descoberta.cartao-de-aplicativo.div" className="flex items-center gap-3">
-      <Avatar data-gc="descoberta.cartao-de-aplicativo.avatar"
-        id={aplicativo.id}
-        name={aplicativo.nome}
-        url={aplicativo.avatarUrl}
-        size={40}
-      />
+  const category = app.categories[0];
 
-      <div data-gc="descoberta.cartao-de-aplicativo.div--2" className="min-w-0">
-        <h3 data-gc="descoberta.cartao-de-aplicativo.h3" className="truncate text-sm font-semibold">{aplicativo.nome}</h3>
-        <p data-gc="descoberta.cartao-de-aplicativo.p" className="truncate text-xs text-ink-faint">de {aplicativo.dono.displayName}</p>
+  return (
+    <article data-gc="descoberta.cartao-de-aplicativo.article.on-open"
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border border-line bg-surface-2 outline-none transition hover:border-ink-faint/40 focus-visible:ring-2 focus-visible:ring-foco-anel"
+    >
+      <div data-gc="descoberta.cartao-de-aplicativo.div" className="relative shrink-0">
+        <div data-gc="descoberta.cartao-de-aplicativo.div--2" className="h-24 overflow-hidden bg-surface-3">
+          {app.coverUrl ? (
+            <img data-gc="descoberta.cartao-de-aplicativo.img"
+              src={app.coverUrl}
+              alt=""
+              loading="lazy"
+              className="size-full object-cover"
+            />
+          ) : (
+            <span data-gc="descoberta.cartao-de-aplicativo.span"
+              aria-hidden
+              className="flex size-full items-center justify-end overflow-hidden"
+              style={coverGenerated(app.id)}
+            >
+              <span data-gc="descoberta.cartao-de-aplicativo.span--2" className="-mr-1 select-none text-5xl font-black leading-none tracking-tighter text-sobre-marca opacity-15">
+                {initials(app.name)}
+              </span>
+            </span>
+          )}
+        </div>
+
+        <span data-gc="descoberta.cartao-de-aplicativo.span--3" className="absolute -bottom-5 left-4 rounded-full border-4 border-surface-2 bg-surface-2">
+          <Avatar data-gc="descoberta.cartao-de-aplicativo.avatar"
+            id={app.id}
+            name={app.name}
+            url={app.avatarUrl}
+            size={44}
+          />
+        </span>
       </div>
-    </div>
 
-    <p data-gc="descoberta.cartao-de-aplicativo.p--2" className="mt-3 line-clamp-3 text-xs text-ink-muted">
-      {aplicativo.descricao ?? "Sem descrição."}
-    </p>
+      <div data-gc="descoberta.cartao-de-aplicativo.div--3" className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-8">
+        <h3 data-gc="descoberta.cartao-de-aplicativo.h3" className="truncate text-sm font-semibold">
+          {app.name}
+        </h3>
 
-    {aplicativo.permissoesPedidas.length > 0 && (
-      <div data-gc="descoberta.cartao-de-aplicativo.div--3" className="mt-3 flex flex-wrap gap-1">
-        {aplicativo.permissoesPedidas.slice(0, 3).map((permissao) => (
-          <span data-gc="descoberta.cartao-de-aplicativo.span" key={permissao} className="rounded bg-surface-3 px-1.5 py-0.5 text-10 text-ink-faint">
-            {nomeDaPermissao(permissao)}
-          </span>
-        ))}
+        <p data-gc="descoberta.cartao-de-aplicativo.p" className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-ink-muted">
+          {app.description ?? t("servidor.descoberta.semDescricao")}
+        </p>
+      </div>
 
-        {aplicativo.permissoesPedidas.length > 3 && (
-          <span data-gc="descoberta.cartao-de-aplicativo.span--2" className="rounded bg-surface-3 px-1.5 py-0.5 text-10 text-ink-faint">
-            +{aplicativo.permissoesPedidas.length - 3}
+      <div data-gc="descoberta.cartao-de-aplicativo.div--4" className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-t border-line px-4 py-2.5 text-xs text-ink-faint">
+        {category && (
+          <span data-gc="descoberta.cartao-de-aplicativo.span--4" className="flex items-center gap-1.5">
+            <span data-gc="descoberta.cartao-de-aplicativo.span--5" className="size-1.5 rounded-full bg-brand" />
+            {t(`servidor.descoberta.categoria.${category}`)}
           </span>
         )}
+
+        <span data-gc="descoberta.cartao-de-aplicativo.span--6" className="flex items-center gap-1.5">
+          <SlashSquare data-gc="descoberta.cartao-de-aplicativo.slash-square" size={12} className="shrink-0" />
+          {t("servidor.descoberta.quantosComandos", { quantos: app.commands })}
+        </span>
       </div>
-    )}
-
-    <div data-gc="descoberta.cartao-de-aplicativo.div--4" className="mt-auto flex items-center gap-1.5 pt-4 text-xs text-ink-faint">
-      <SlashSquare data-gc="descoberta.cartao-de-aplicativo.slash-square" size={14} />
-      {aplicativo.comandos === 1 ? "1 comando" : `${aplicativo.comandos} comandos`}
-    </div>
-
-    <div data-gc="descoberta.cartao-de-aplicativo.div--5" className="mt-3">
-      <Button data-gc="descoberta.cartao-de-aplicativo.button"
-        size="sm"
-        className="w-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAdicionar();
-        }}
-      >
-        <Plus data-gc="descoberta.cartao-de-aplicativo.plus" size={14} /> Adicionar
-      </Button>
-    </div>
-  </article>
-);
+    </article>
+  );
+};

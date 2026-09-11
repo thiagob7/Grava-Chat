@@ -1,7 +1,7 @@
-export async function copiarTexto(texto: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(texto);
+      await navigator.clipboard.writeText(text);
       return true;
     }
   } catch {
@@ -9,7 +9,7 @@ export async function copiarTexto(texto: string): Promise<boolean> {
 
   try {
     const area = document.createElement("textarea");
-    area.value = texto;
+    area.value = text;
     area.setAttribute("readonly", "");
     area.style.position = "fixed";
     area.style.top = "0";
@@ -19,12 +19,12 @@ export async function copiarTexto(texto: string): Promise<boolean> {
 
     document.body.appendChild(area);
     area.select();
-    area.setSelectionRange(0, texto.length);
+    area.setSelectionRange(0, text.length);
 
-    const copiou = document.execCommand("copy");
+    const copied = document.execCommand("copy");
     area.remove();
 
-    return copiou;
+    return copied;
   } catch {
     return false;
   }

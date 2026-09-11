@@ -11,6 +11,7 @@ enum ChannelType {
   TEXT
   VOICE
   FORUM
+  LINK
 }
 
 enum ContentVisibility {
@@ -82,20 +83,20 @@ type Attachment {
   height      Int?
   spoiler     Boolean @default(false)
   description String?
-  duracaoMs   Int?
-  ondas       String?
+  durationMs   Int? @map("duracaoMs")
+  waves       String? @map("ondas")
 }
 
 type PollOption {
   id      String
-  texto   String
+  text   String @map("texto")
   emoji   String?
   userIds String[] @db.ObjectId
 }
 
 type Poll {
-  pergunta    String
-  opcoes      PollOption[]
+  question    String @map("pergunta")
+  options      PollOption[]
   multiSelect Boolean     @default(false)
   expiresAt   DateTime?
   closedAt    DateTime?
@@ -108,25 +109,26 @@ model User {
   displayName String
   avatarUrl   String?
   bio         String?
-  pronomes    String?
+  pronouns    String? @map("pronomes")
   isBot       Boolean        @default(false)
-  sistema     Boolean?
-  senhaHash   String?
+  system     Boolean? @map("sistema")
+  passwordHash   String? @map("senhaHash")
+  emailVerifiedAt DateTime? @map("emailVerificadoEm")
   status      PresenceStatus @default(OFFLINE)
-  perfil              EstiloDePerfil?
-  statusPersonalizado StatusPersonalizado?
+  profile              ProfileStyle?
+  customStatus CustomStatus?
   lastSeenAt  DateTime?
 
-  aceitaPedidos   Boolean @default(true)
-  mostraAtividade Boolean @default(true)
+  acceptedRequests   Boolean @default(true) @map("aceitaPedidos")
+  showsActivity Boolean @default(true) @map("mostraAtividade")
 
-  permitirDmDeMembros Boolean      @default(true)
-  filtroDeSpam        FiltroDeSpam @default(DESCONHECIDOS)
+  membersAllowDm Boolean      @default(true) @map("permitirDmDeMembros")
+  spamFilter        FiltroDeSpam @default(DESCONHECIDOS) @map("filtroDeSpam")
 
-  mostraServidoresEmComum Boolean @default(true)
-  mostraAmigosEmComum     Boolean @default(true)
+  showsServersCommon Boolean @default(true) @map("mostraServidoresEmComum")
+  showsFriendsCommon     Boolean @default(true) @map("mostraAmigosEmComum")
 
-  excluirEm DateTime?
+  deleteAt DateTime? @map("excluirEm")
 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -142,8 +144,8 @@ model User {
   streamKeys          StreamKey[]
   friendshipsSent     Friendship[]   @relation("FriendshipRequester")
   friendshipsReceived Friendship[]   @relation("FriendshipAddressee")
-  pedidosDeDmEnviados  PedidoDeDm[]  @relation("PedidoDeDmDe")
-  pedidosDeDmRecebidos PedidoDeDm[]  @relation("PedidoDeDmPara")
+  pedidosDeDmEnviados  DmRequest[]  @relation("PedidoDeDmDe")
+  pedidosDeDmRecebidos DmRequest[]  @relation("PedidoDeDmPara")
   webhookIdentity     Webhook?       @relation("WebhookBot")
   webhooksCreated     Webhook[]      @relation("WebhookCreator")
   auditLogs           AuditLog[]     @relation("AuditActor")
@@ -151,10 +153,10 @@ model User {
   notasRecebidas      UserNote[]     @relation("NotasRecebidas")
   bans                Ban[]          @relation("BanTarget")
   forumPosts          ForumPost[]    @relation("PostAuthor")
-  gifsFavoritos       GifFavorito[]
-  mensagensFavoritas  MensagemFavorita[]
+  gifsFavoritos       GifFavorite[]
+  mensagensFavoritas  MessageFavorite[]
   botsCriados         Bot[]          @relation("BotOwner")
-  temasPublicados     Tema[]         @relation("TemaAutor")
+  temasPublicados     Theme[]         @relation("TemaAutor")
   botIdentity         Bot?           @relation("BotIdentity")
 }
 
@@ -215,9 +217,17 @@ model Guild {
   systemChannelId String? @db.ObjectId
   welcomeEnabled  Boolean @default(true)
   welcomeMessage  String?
-  categoria   String?
-  descobrivel Boolean? @default(true)
-  verificada  Boolean?
+  category   String? @map("categoria")
+  discoverable Boolean? @default(true) @map("descobrivel")
+  verified  Boolean? @map("verificada")
+  community            Boolean? @default(false) @map("comunidade")
+  communitySince       DateTime? @map("comunidadeDesde")
+  rulesChannelId       String?  @db.ObjectId @map("canalDeRegrasId")
+  noticesChannelId       String?  @db.ObjectId @map("canalDeAvisosId")
+  securityChannelId    String?  @db.ObjectId @map("canalDeSegurancaId")
+  languagePrincipal       String? @map("idiomaPrincipal")
+  verifiedRequiresEmail  Boolean? @default(false) @map("exigeEmailVerificado")
+  filtersMediaExplicit  Boolean? @default(false) @map("filtraMidiaExplicita")
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
@@ -241,38 +251,38 @@ model Guild {
   @@index([ownerId])
 }
 
-type EstiloDeNome {
-  fonte  String?
-  efeito String?
-  cor    String?
-  cor2   String?
+type NameStyle {
+  font  String? @map("fonte")
+  effect String? @map("efeito")
+  color    String? @map("cor")
+  color2   String? @map("cor2")
 }
 
-type EstiloDePerfil {
-  nome           EstiloDeNome?
-  etiqueta       String?
+type ProfileStyle {
+  name           NameStyle?
+  tag       String? @map("etiqueta")
   tagGuildId     String?  @db.ObjectId
-  patente        String?
-  decoracao      String?
-  moldura        String?
-  efeito         String?
-  placa          String?
+  rank        String? @map("patente")
+  decoration      String? @map("decoracao")
+  frame        String? @map("moldura")
+  effect         String? @map("efeito")
+  plate          String? @map("placa")
   bannerUrl      String?
-  bannerCor      String?
-  temaPrimario   String?
-  temaSecundario String?
-  conexoes       Conexao[]
+  bannerColor      String? @map("bannerCor")
+  themePrimary   String? @map("temaPrimario")
+  secondaryTheme String? @map("temaSecundario")
+  connections       Connection[]
 }
 
-type Conexao {
-  servico String
-  valor   String
+type Connection {
+  service String @map("servico")
+  value   String @map("valor")
 }
 
-type StatusPersonalizado {
-  texto    String
+type CustomStatus {
+  text    String @map("texto")
   emoji    String?
-  expiraEm DateTime?
+  expiresAt DateTime? @map("expiraEm")
 }
 
 model GuildMember {
@@ -305,7 +315,7 @@ model Role {
   colorSecondary String?
   iconUrl        String?
   iconEmoji      String?
-  estilo         String?
+  style         String? @map("estilo")
   mentionable Boolean  @default(false)
   isEveryone  Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -348,9 +358,10 @@ model Channel {
   categoryId String?     @db.ObjectId
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   name       String
-  fonte      String?
+  font      String? @map("fonte")
   type       ChannelType @default(TEXT)
   topic      String?
+  url        String?
   position   Int         @default(0)
   isPrivate  Boolean     @default(false)
   slowmodeSeconds Int    @default(0)
@@ -367,7 +378,7 @@ model Channel {
   readStates ReadState[]
   invites    Invite[]
   streamKeys StreamKey[]
-  pedidoDeDm PedidoDeDm?
+  dmRequest DmRequest?
   overwrites PermissionOverwrite[]
   webhooks   Webhook[]
   posts      ForumPost[]
@@ -383,15 +394,15 @@ model Message {
   authorId    String       @db.ObjectId
   author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   content     String
-  fonte       String?
-  tipo        MessageType  @default(USER)
+  font       String? @map("fonte")
+  kind        MessageType  @default(USER) @map("tipo")
   attachments Attachment[]
   poll        Poll?
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
-  encaminhadaDeCanalId    String?  @db.ObjectId
-  encaminhadaDeMensagemId String?  @db.ObjectId
+  channelForwardedId    String?  @db.ObjectId @map("encaminhadaDeCanalId")
+  messageForwardedId String?  @db.ObjectId @map("encaminhadaDeMensagemId")
   mentions    String[]     @db.ObjectId
   mentionRoleIds String[]  @db.ObjectId
   mentionEveryone Boolean?
@@ -404,7 +415,7 @@ model Message {
   deletedAt   DateTime?
 
   reactions Reaction[]
-  favoritada MensagemFavorita[]
+  favoritada MessageFavorite[]
 
   @@index([channelId, createdAt])
   @@index([postId, createdAt])
@@ -477,13 +488,14 @@ model Friendship {
   addresseeId String           @db.ObjectId
   addressee   User             @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
   status      FriendshipStatus @default(PENDING)
+  note      String? @map("recado")
   createdAt   DateTime         @default(now())
 
   @@unique([requesterId, addresseeId])
   @@index([addresseeId])
 }
 
-model PedidoDeDm {
+model DmRequest {
   id        String           @id @default(auto()) @map("_id") @db.ObjectId
   channelId String           @unique @db.ObjectId
   channel   Channel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
@@ -496,6 +508,7 @@ model PedidoDeDm {
   createdAt DateTime         @default(now())
 
   @@index([toId, status])
+  @@map("PedidoDeDm")
 }
 
 model AuditLog {
@@ -536,12 +549,12 @@ model AutoModRule {
   name           String
   enabled        Boolean         @default(true)
   trigger        AutoModTrigger
-  palavras       String[]
-  limiteMencoes  Int?
-  acoes          AutoModAction[]
+  words       String[] @map("palavras")
+  limitMentions  Int? @map("limiteMencoes")
+  actions          AutoModAction[] @map("acoes")
   alertChannelId String?         @db.ObjectId
   timeoutSeconds Int?
-  cargosIsentos  String[]        @db.ObjectId
+  rolesExempt  String[]        @db.ObjectId @map("cargosIsentos")
   createdAt      DateTime        @default(now())
 
   @@index([guildId])
@@ -616,7 +629,7 @@ model UserNote {
   owner     User     @relation("NotasEscritas", fields: [ownerId], references: [id], onDelete: Cascade)
   targetId  String   @db.ObjectId
   target    User     @relation("NotasRecebidas", fields: [targetId], references: [id], onDelete: Cascade)
-  texto     String
+  text     String @map("texto")
   updatedAt DateTime @updatedAt
 
   @@unique([ownerId, targetId])
@@ -626,7 +639,7 @@ model GuildEmblem {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId     String   @db.ObjectId
   guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  nome        String
+  name        String @map("nome")
   emoji       String?
   iconUrl     String?
   createdById String   @db.ObjectId
@@ -635,12 +648,12 @@ model GuildEmblem {
   @@index([guildId])
 }
 
-model GifFavorito {
+model GifFavorite {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   gifId     String
-  descricao String
+  description String @map("descricao")
   url       String
   preview   String
   width     Int
@@ -649,9 +662,10 @@ model GifFavorito {
 
   @@unique([userId, gifId])
   @@index([userId, createdAt])
+  @@map("GifFavorito")
 }
 
-model MensagemFavorita {
+model MessageFavorite {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -661,6 +675,7 @@ model MensagemFavorita {
 
   @@unique([userId, messageId])
   @@index([userId, createdAt])
+  @@map("MensagemFavorita")
 }
 
 model Bot {
@@ -668,49 +683,57 @@ model Bot {
   ownerId   String   @db.ObjectId
   owner     User     @relation("BotOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   botUserId String   @unique @db.ObjectId
-  usuario   User     @relation("BotIdentity", fields: [botUserId], references: [id], onDelete: Cascade)
+  user   User     @relation("BotIdentity", fields: [botUserId], references: [id], onDelete: Cascade)
   token     String   @unique
-  descricao String?
-  permissoesPedidas String[]
-  publico   Boolean  @default(true)
+  description String? @map("descricao")
+  coverUrl   String? @map("capaUrl")
+  categories String[] @default([]) @map("categorias")
+  languages   String[] @default([]) @map("idiomas")
+  termsUrl String? @map("urlDosTermos")
+  policyUrl String? @map("urlDaPolitica")
+  supportServerId String? @db.ObjectId @map("servidorDeSuporteId")
+  permissionsRequested String[] @map("permissoesPedidas")
+  isPublic   Boolean  @default(true) @map("publico")
   clientSecret String @default("")
   redirectUris String[]
-  comandos  Json?
+  commands  Json? @map("comandos")
   createdAt DateTime @default(now())
 
   @@index([ownerId])
 }
 
-model StatusDoDia {
+model DayStatus {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
-  peca    String
-  dia     String
-  medidas Int    @default(0)
-  falhas  Int    @default(0)
+  piece    String @map("peca")
+  day     String @map("dia")
+  measures Int    @default(0) @map("medidas")
+  failures  Int    @default(0) @map("falhas")
   msSoma  Int    @default(0)
 
-  atualizadoEm DateTime @updatedAt
+  updatedAt DateTime @updatedAt @map("atualizadoEm")
 
-  @@unique([peca, dia])
-  @@index([dia])
+  @@unique([piece, day])
+  @@index([day])
+  @@map("StatusDoDia")
 }
 
-model Tema {
+model Theme {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome      String
-  descricao String?
-  autor     String?
-  versao    String?
+  name      String @map("nome")
+  description String? @map("descricao")
+  author     String? @map("autor")
+  version    String? @map("versao")
   tags      String[] @default([])
   css       String
-  substituicoes Json
-  ativos    Json?
+  overrides Json @map("substituicoes")
+  actives    Json? @map("ativos")
   bytes     Int      @default(0)
-  autorId   String   @db.ObjectId
-  usuario   User     @relation("TemaAutor", fields: [autorId], references: [id], onDelete: Cascade)
+  authorId   String   @db.ObjectId @map("autorId")
+  user   User     @relation("TemaAutor", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@index([autorId])
+  @@index([authorId])
+  @@map("Tema")
 }
 
 model GuildEvent {
@@ -734,23 +757,24 @@ model GuildEvent {
   @@index([guildId, startsAt])
 }
 
-model Denuncia {
+model Report {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  tipo      String?
+  kind      String? @map("tipo")
   guildId   String?  @db.ObjectId
   messageId String?  @db.ObjectId
   channelId String?  @db.ObjectId
-  acusadoId String?  @db.ObjectId
-  trecho    String?
-  autorId   String   @db.ObjectId
-  motivo    String
-  detalhes  String?
-  resolvidaEm  DateTime?
-  resolvidaPor String?  @db.ObjectId
-  decisao      String?
+  accusedId String?  @db.ObjectId @map("acusadoId")
+  snippet    String? @map("trecho")
+  authorId   String   @db.ObjectId @map("autorId")
+  reason    String @map("motivo")
+  details  String? @map("detalhes")
+  resolvedAt  DateTime? @map("resolvidaEm")
+  resolvedBy String?  @db.ObjectId @map("resolvidaPor")
+  decision      String? @map("decisao")
   createdAt DateTime @default(now())
 
   @@index([guildId])
   @@index([messageId])
-  @@index([resolvidaEm])
+  @@index([resolvedAt])
+  @@map("Denuncia")
 }

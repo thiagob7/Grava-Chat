@@ -4,11 +4,11 @@ import type { ModerationMessageModel } from "~/@core/domain/models/moderation-mo
 export async function findModerationMessages(
   guildId: string,
   userId: string,
-  filtro: "todas" | "links" | "midia",
+  filter: "todas" | "links" | "midia",
 ): Promise<ModerationMessageModel[]> {
   const response = await api.get<ModerationMessageModel[]>(
     `/guilds/${guildId}/members/${userId}/messages`,
-    { params: { filtro } },
+    { params: { filter } },
   );
 
   return response.data;

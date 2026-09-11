@@ -10,89 +10,91 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { comCabecalho, lerCabecalhoDoTema } from "@gravae/shared";
+import { withHeader, readThemeHeader } from "@gravae/shared";
 
 import { Button } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label, Textarea, bareField, fieldGroup } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import { useEstudio, type TemaSalvo } from "~/features/configuracoes/stores/estudio";
+import { useStudio, type ThemeSaved } from "~/features/configuracoes/stores/estudio";
 import { cn } from "~/lib/utils";
 
-function baixar(nome: string, conteudo: string, tipo: string) {
-  const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
-  const ancora = document.createElement("a");
+function download(name: string, content: string, kind: string) {
+  const url = URL.createObjectURL(new Blob([content], { type: kind }));
+  const anchor = document.createElement("a");
 
-  ancora.href = url;
-  ancora.download = nome;
-  document.body.appendChild(ancora);
-  ancora.click();
-  ancora.remove();
+  anchor.href = url;
+  anchor.download = name;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
   URL.revokeObjectURL(url);
 }
 
-const semExtensao = (nome: string) => nome.replace(/\.[^.]+$/, "");
+const withoutExtension = (name: string) => name.replace(/\.[^.]+$/, "");
 
-function arquivoDoTema(tema: TemaSalvo): string {
-  return comCabecalho(tema.css, {
-    nome: tema.nome,
-    descricao: tema.descricao ?? null,
-    autor: tema.autor ?? null,
-    versao: tema.versao ?? null,
-    tags: tema.tags ?? [],
+function themeFile(theme: ThemeSaved): string {
+  return withHeader(theme.css, {
+    name: theme.name,
+    description: theme.description ?? null,
+    author: theme.author ?? null,
+    version: theme.version ?? null,
+    font: null,
+    invite: null,
+    tags: theme.tags ?? [],
   });
 }
 
-export const AbaDaBiblioteca: React.FC = () => {
-  const biblioteca = useEstudio((s) => s.biblioteca);
-  const ativoId = useEstudio((s) => s.ativoId);
-  const substituicoes = useEstudio((s) => s.substituicoes);
-  const css = useEstudio((s) => s.css);
+export const LibraryTab: React.FC = () => {
+  const library = useStudio((s) => s.library);
+  const activeId = useStudio((s) => s.activeId);
+  const overrides = useStudio((s) => s.overrides);
+  const css = useStudio((s) => s.css);
 
-  const salvar = useEstudio((s) => s.salvarNaBiblioteca);
-  const alternar = useEstudio((s) => s.alternarTema);
-  const atualizar = useEstudio((s) => s.atualizarNaBiblioteca);
-  const duplicar = useEstudio((s) => s.duplicarDaBiblioteca);
-  const apagar = useEstudio((s) => s.apagarDaBiblioteca);
-  const importarCss = useEstudio((s) => s.importarCssComoTema);
-  const importarBiblioteca = useEstudio((s) => s.importarBiblioteca);
+  const save = useStudio((s) => s.saveLibrary);
+  const toggle = useStudio((s) => s.toggleTheme);
+  const update = useStudio((s) => s.updateLibrary);
+  const duplicate = useStudio((s) => s.libraryDuplicate);
+  const doDelete = useStudio((s) => s.deleteLibrary);
+  const importCss = useStudio((s) => s.importCssAsTheme);
+  const importLibrary = useStudio((s) => s.importLibrary);
 
   const confirm = useConfirm();
-  const arquivoCss = useRef<HTMLInputElement>(null);
-  const pasta = useRef<HTMLInputElement>(null);
-  const arquivoJson = useRef<HTMLInputElement>(null);
+  const fileCss = useRef<HTMLInputElement>(null);
+  const folder = useRef<HTMLInputElement>(null);
+  const fileJson = useRef<HTMLInputElement>(null);
 
-  const [busca, setBusca] = useState("");
-  const [escolhidoId, setEscolhidoId] = useState<string | null>(null);
-  const [nomeNovo, setNomeNovo] = useState("");
+  const [search, setSearch] = useState("");
+  const [pickedId, setPickedId] = useState<string | null>(null);
+  const [nameNew, setNameNew] = useState("");
 
-  const termo = busca.trim().toLowerCase();
+  const term = search.trim().toLowerCase();
 
-  const filtrados = biblioteca.filter(
-    (tema) =>
-      !termo ||
-      tema.nome.toLowerCase().includes(termo) ||
-      (tema.autor ?? "").toLowerCase().includes(termo) ||
-      (tema.tags ?? []).some((tag) => tag.toLowerCase().includes(termo)),
+  const filtered = library.filter(
+    (theme) =>
+      !term ||
+      theme.name.toLowerCase().includes(term) ||
+      (theme.author ?? "").toLowerCase().includes(term) ||
+      (theme.tags ?? []).some((tag) => tag.toLowerCase().includes(term)),
   );
 
-  const escolhido = biblioteca.find((tema) => tema.id === escolhidoId) ?? filtrados[0] ?? null;
+  const picked = library.find((theme) => theme.id === pickedId) ?? filtered[0] ?? null;
 
-  const lerArquivos = async (arquivos: File[]) => {
-    const css = arquivos.filter((a) => a.name.toLowerCase().endsWith(".css"));
+  const readFiles = async (files: File[]) => {
+    const css = files.filter((a) => a.name.toLowerCase().endsWith(".css"));
 
     if (!css.length) {
       toast.error("Nenhum arquivo .css aí dentro.");
       return;
     }
 
-    let ultimo = "";
+    let last = "";
 
-    for (const arquivo of css) {
-      ultimo = importarCss(await arquivo.text(), semExtensao(arquivo.name));
+    for (const file of css) {
+      last = importCss(await file.text(), withoutExtension(file.name));
     }
 
-    setEscolhidoId(ultimo);
+    setPickedId(last);
     toast.success(
       css.length === 1 ? "Tema importado." : `${css.length} temas importados.`,
     );
@@ -101,60 +103,60 @@ export const AbaDaBiblioteca: React.FC = () => {
   return (
     <>
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div" className="flex shrink-0 flex-wrap items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button" variant="surface" size="sm" onClick={() => arquivoCss.current?.click()}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button" variant="surface" size="sm" onClick={() => fileCss.current?.click()}>
           <Upload data-gc="configuracoes.estudio.aba-da-biblioteca.upload" size={14} /> Importar CSS
         </Button>
         <input data-gc="configuracoes.estudio.aba-da-biblioteca.input"
-          ref={arquivoCss}
+          ref={fileCss}
           type="file"
           accept=".css,text/css"
           multiple
           className="hidden"
           onChange={(e) => {
-            const arquivos = [...(e.target.files ?? [])];
+            const files = [...(e.target.files ?? [])];
             e.target.value = "";
-            void lerArquivos(arquivos);
+            void readFiles(files);
           }}
         />
 
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--2" variant="surface" size="sm" onClick={() => pasta.current?.click()}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--2" variant="surface" size="sm" onClick={() => folder.current?.click()}>
           <FolderUp data-gc="configuracoes.estudio.aba-da-biblioteca.folder-up" size={14} /> Importar pasta
         </Button>
         <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--2"
-          ref={pasta}
+          ref={folder}
           type="file"
           multiple
           className="hidden"
           // @ts-expect-error -- só o Chromium tem, e é degradação limpa: sem
           webkitdirectory=""
           onChange={(e) => {
-            const arquivos = [...(e.target.files ?? [])];
+            const files = [...(e.target.files ?? [])];
             e.target.value = "";
-            void lerArquivos(arquivos);
+            void readFiles(files);
           }}
         />
 
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--3" variant="surface" size="sm" onClick={() => arquivoJson.current?.click()}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--3" variant="surface" size="sm" onClick={() => fileJson.current?.click()}>
           <Library data-gc="configuracoes.estudio.aba-da-biblioteca.library" size={14} /> Importar biblioteca
         </Button>
         <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--3"
-          ref={arquivoJson}
+          ref={fileJson}
           type="file"
           accept="application/json,.json"
           className="hidden"
           onChange={async (e) => {
-            const arquivo = e.target.files?.[0];
+            const file = e.target.files?.[0];
             e.target.value = "";
-            if (!arquivo) return;
+            if (!file) return;
 
             try {
-              const lido = JSON.parse(await arquivo.text()) as unknown;
-              const temas = Array.isArray(lido) ? (lido as TemaSalvo[]) : [];
+              const read = JSON.parse(await file.text()) as unknown;
+              const themes = Array.isArray(read) ? (read as ThemeSaved[]) : [];
 
-              if (!temas.length) throw new Error("vazia");
+              if (!themes.length) throw new Error("vazia");
 
-              importarBiblioteca(temas);
-              toast.success(`${temas.length} temas na biblioteca.`);
+              importLibrary(themes);
+              toast.success(`${themes.length} temas na biblioteca.`);
             } catch {
               toast.error("Esse arquivo não é uma biblioteca de temas.");
             }
@@ -164,12 +166,12 @@ export const AbaDaBiblioteca: React.FC = () => {
         <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--4"
           variant="surface"
           size="sm"
-          disabled={!biblioteca.length}
+          disabled={!library.length}
           className="ml-auto"
           onClick={() =>
-            baixar(
+            download(
               "biblioteca-de-temas.json",
-              JSON.stringify(biblioteca, null, 2),
+              JSON.stringify(library, null, 2),
               "application/json",
             )
           }
@@ -184,16 +186,16 @@ export const AbaDaBiblioteca: React.FC = () => {
             <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--4" className={fieldGroup}>
               <Search data-gc="configuracoes.estudio.aba-da-biblioteca.search" size={14} className="shrink-0 text-ink-faint" />
               <input data-gc="configuracoes.estudio.aba-da-biblioteca.input--4"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Pesquisar temas"
                 aria-label="Pesquisar temas"
                 className={bareField}
               />
-              {busca && (
+              {search && (
                 <button data-gc="configuracoes.estudio.aba-da-biblioteca.button--5"
                   type="button"
-                  onClick={() => setBusca("")}
+                  onClick={() => setSearch("")}
                   aria-label="Limpar a busca"
                   className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
                 >
@@ -204,38 +206,38 @@ export const AbaDaBiblioteca: React.FC = () => {
           </div>
 
           <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--5" className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 pb-3">
-            {filtrados.map((tema) => (
+            {filtered.map((theme) => (
               <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--6"
-                key={tema.id}
+                key={theme.id}
                 className={cn(
                   "flex items-center gap-2 rounded-lg border px-2.5 py-2 transition",
-                  tema.id === escolhido?.id
+                  theme.id === picked?.id
                     ? "border-brand bg-brand/10"
                     : "border-line hover:bg-hover",
                 )}
               >
                 <button data-gc="configuracoes.estudio.aba-da-biblioteca.button--6"
                   type="button"
-                  onClick={() => setEscolhidoId(tema.id)}
+                  onClick={() => setPickedId(theme.id)}
                   className="min-w-0 flex-1 text-left"
                 >
-                  <p data-gc="configuracoes.estudio.aba-da-biblioteca.p" className="truncate text-sm font-medium">{tema.nome}</p>
+                  <p data-gc="configuracoes.estudio.aba-da-biblioteca.p" className="truncate text-sm font-medium">{theme.name}</p>
                   <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--2" className="truncate text-11 text-ink-faint">
-                    {tema.autor || `${tema.css.split("\n").length} linhas`}
+                    {theme.author || `${theme.css.split("\n").length} linhas`}
                   </p>
                 </button>
 
                 <Switch data-gc="configuracoes.estudio.aba-da-biblioteca.switch"
-                  checked={ativoId === tema.id}
-                  onCheckedChange={() => alternar(tema.id)}
-                  aria-label={`Usar ${tema.nome}`}
+                  checked={activeId === theme.id}
+                  onCheckedChange={() => toggle(theme.id)}
+                  aria-label={`Usar ${theme.name}`}
                 />
               </div>
             ))}
 
-            {!filtrados.length && (
+            {!filtered.length && (
               <p data-gc="configuracoes.estudio.aba-da-biblioteca.p--3" className="px-1 py-6 text-center text-13 text-ink-faint">
-                {termo ? "Nenhum tema com esse nome." : "Nenhum tema ainda."}
+                {term ? "Nenhum tema com esse nome." : "Nenhum tema ainda."}
               </p>
             )}
           </div>
@@ -245,17 +247,17 @@ export const AbaDaBiblioteca: React.FC = () => {
             <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--8" className="flex gap-2">
               <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--5"
                 id="estudio-nome"
-                value={nomeNovo}
+                value={nameNew}
                 maxLength={60}
                 placeholder="Ex: Índigo da casa"
-                onChange={(e) => setNomeNovo(e.target.value)}
+                onChange={(e) => setNameNew(e.target.value)}
               />
               <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--7"
                 size="sm"
-                disabled={!nomeNovo.trim() || (!css.trim() && !Object.keys(substituicoes).length)}
+                disabled={!nameNew.trim() || (!css.trim() && !Object.keys(overrides).length)}
                 onClick={() => {
-                  salvar(nomeNovo.trim());
-                  setNomeNovo("");
+                  save(nameNew.trim());
+                  setNameNew("");
                 }}
               >
                 Salvar
@@ -265,29 +267,29 @@ export const AbaDaBiblioteca: React.FC = () => {
         </aside>
 
         <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--9" className="min-h-0 flex-1 overflow-y-auto p-5">
-          {escolhido ? (
-            <DetalheDoTema data-gc="configuracoes.estudio.aba-da-biblioteca.detalhe-do-tema"
-              key={escolhido.id}
-              tema={escolhido}
-              onSalvar={(dados) => {
-                atualizar(escolhido.id, dados);
+          {picked ? (
+            <ThemeDetail data-gc="configuracoes.estudio.aba-da-biblioteca.theme-detail"
+              key={picked.id}
+              theme={picked}
+              onSave={(data) => {
+                update(picked.id, data);
                 toast.success("Tema salvo.");
               }}
-              onDuplicar={() => duplicar(escolhido.id)}
-              onExportar={() =>
-                baixar(`${escolhido.nome}.css`, arquivoDoTema(escolhido), "text/css")
+              onDuplicate={() => duplicate(picked.id)}
+              onExport={() =>
+                download(`${picked.name}.css`, themeFile(picked), "text/css")
               }
-              onExcluir={() =>
+              onDelete={() =>
                 void confirm({
-                  title: `Excluir ${escolhido.nome}?`,
+                  title: `Excluir ${picked.name}?`,
                   description: "O tema sai da biblioteca. Não dá para desfazer.",
                   action: "Excluir",
                   destructive: true,
                 }).then(({ confirmed }) => {
                   if (!confirmed) return;
 
-                  apagar(escolhido.id);
-                  setEscolhidoId(null);
+                  doDelete(picked.id);
+                  setPickedId(null);
                 })
               }
             />
@@ -302,79 +304,79 @@ export const AbaDaBiblioteca: React.FC = () => {
   );
 };
 
-const DetalheDoTema: React.FC<{
-  tema: TemaSalvo;
-  onSalvar: (dados: Partial<Omit<TemaSalvo, "id">>) => void;
-  onDuplicar: () => void;
-  onExportar: () => void;
-  onExcluir: () => void;
-}> = ({ tema, onSalvar, onDuplicar, onExportar, onExcluir }) => {
-  const [nome, setNome] = useState(tema.nome);
-  const [autor, setAutor] = useState(tema.autor ?? "");
-  const [versao, setVersao] = useState(tema.versao ?? "");
-  const [tags, setTags] = useState((tema.tags ?? []).join(", "));
-  const [descricao, setDescricao] = useState(tema.descricao ?? "");
-  const [css, setCss] = useState(tema.css);
+const ThemeDetail: React.FC<{
+  theme: ThemeSaved;
+  onSave: (data: Partial<Omit<ThemeSaved, "id">>) => void;
+  onDuplicate: () => void;
+  onExport: () => void;
+  onDelete: () => void;
+}> = ({ theme, onSave, onDuplicate, onExport, onDelete }) => {
+  const [name, setName] = useState(theme.name);
+  const [author, setAuthor] = useState(theme.author ?? "");
+  const [version, setVersion] = useState(theme.version ?? "");
+  const [tags, setTags] = useState((theme.tags ?? []).join(", "));
+  const [description, setDescription] = useState(theme.description ?? "");
+  const [css, setCss] = useState(theme.css);
 
-  const mudou =
-    nome !== tema.nome ||
-    autor !== (tema.autor ?? "") ||
-    versao !== (tema.versao ?? "") ||
-    tags !== (tema.tags ?? []).join(", ") ||
-    descricao !== (tema.descricao ?? "") ||
-    css !== tema.css;
+  const changed =
+    name !== theme.name ||
+    author !== (theme.author ?? "") ||
+    version !== (theme.version ?? "") ||
+    tags !== (theme.tags ?? []).join(", ") ||
+    description !== (theme.description ?? "") ||
+    css !== theme.css;
 
   return (
     <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--10" className="space-y-4">
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--11" className="flex items-center gap-2">
-        <h3 data-gc="configuracoes.estudio.aba-da-biblioteca.h3" className="min-w-0 flex-1 truncate text-lg font-semibold">{tema.nome}</h3>
+        <h3 data-gc="configuracoes.estudio.aba-da-biblioteca.h3" className="min-w-0 flex-1 truncate text-lg font-semibold">{theme.name}</h3>
 
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-exportar" variant="surface" size="sm" onClick={onExportar}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-export" variant="surface" size="sm" onClick={onExport}>
           <Download data-gc="configuracoes.estudio.aba-da-biblioteca.download--2" size={14} /> Exportar
         </Button>
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-duplicar" variant="surface" size="sm" onClick={onDuplicar}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-duplicate" variant="surface" size="sm" onClick={onDuplicate}>
           <Copy data-gc="configuracoes.estudio.aba-da-biblioteca.copy" size={14} /> Duplicar
         </Button>
-        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-excluir" variant="surface" size="sm" className="text-danger" onClick={onExcluir}>
+        <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button.on-delete" variant="surface" size="sm" className="text-danger" onClick={onDelete}>
           <Trash2 data-gc="configuracoes.estudio.aba-da-biblioteca.trash2" size={14} /> Excluir
         </Button>
       </div>
 
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--12" className="grid gap-3 sm:grid-cols-2">
         <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--13">
-          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--2" htmlFor={`nome-${tema.id}`}>Nome</Label>
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--2" htmlFor={`nome-${theme.id}`}>Nome</Label>
           <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--6"
-            id={`nome-${tema.id}`}
-            value={nome}
+            id={`nome-${theme.id}`}
+            value={name}
             maxLength={60}
-            onChange={(e) => setNome(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
         <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--14">
-          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--3" htmlFor={`autor-${tema.id}`}>Autor</Label>
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--3" htmlFor={`autor-${theme.id}`}>Autor</Label>
           <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--7"
-            id={`autor-${tema.id}`}
-            value={autor}
+            id={`autor-${theme.id}`}
+            value={author}
             maxLength={60}
-            onChange={(e) => setAutor(e.target.value)}
+            onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
 
         <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--15">
-          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--4" htmlFor={`versao-${tema.id}`}>Versão</Label>
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--4" htmlFor={`versao-${theme.id}`}>Versão</Label>
           <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--8"
-            id={`versao-${tema.id}`}
-            value={versao}
+            id={`versao-${theme.id}`}
+            value={version}
             maxLength={20}
-            onChange={(e) => setVersao(e.target.value)}
+            onChange={(e) => setVersion(e.target.value)}
           />
         </div>
 
         <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--16">
-          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--5" htmlFor={`tags-${tema.id}`}>Tags</Label>
+          <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--5" htmlFor={`tags-${theme.id}`}>Tags</Label>
           <Input data-gc="configuracoes.estudio.aba-da-biblioteca.input--9"
-            id={`tags-${tema.id}`}
+            id={`tags-${theme.id}`}
             value={tags}
             placeholder="escuro, gruvbox, compacto"
             onChange={(e) => setTags(e.target.value)}
@@ -383,20 +385,20 @@ const DetalheDoTema: React.FC<{
       </div>
 
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--17">
-        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--6" htmlFor={`descricao-${tema.id}`}>Descrição</Label>
+        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--6" htmlFor={`descricao-${theme.id}`}>Descrição</Label>
         <Textarea data-gc="configuracoes.estudio.aba-da-biblioteca.textarea"
-          id={`descricao-${tema.id}`}
-          value={descricao}
+          id={`descricao-${theme.id}`}
+          value={description}
           rows={2}
           maxLength={300}
-          onChange={(e) => setDescricao(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
 
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--18">
-        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--7" htmlFor={`css-${tema.id}`}>CSS</Label>
+        <Label data-gc="configuracoes.estudio.aba-da-biblioteca.label--7" htmlFor={`css-${theme.id}`}>CSS</Label>
         <textarea data-gc="configuracoes.estudio.aba-da-biblioteca.textarea--2"
-          id={`css-${tema.id}`}
+          id={`css-${theme.id}`}
           value={css}
           onChange={(e) => setCss(e.target.value)}
           spellCheck={false}
@@ -410,13 +412,13 @@ const DetalheDoTema: React.FC<{
 
       <div data-gc="configuracoes.estudio.aba-da-biblioteca.div--19" className="flex items-center gap-2">
         <Button data-gc="configuracoes.estudio.aba-da-biblioteca.button--8"
-          disabled={!mudou}
+          disabled={!changed}
           onClick={() =>
-            onSalvar({
-              nome: nome.trim() || tema.nome,
-              autor: autor.trim() || null,
-              versao: versao.trim() || null,
-              descricao: descricao.trim() || null,
+            onSave({
+              name: name.trim() || theme.name,
+              author: author.trim() || null,
+              version: version.trim() || null,
+              description: description.trim() || null,
               tags: tags
                 .split(",")
                 .map((tag) => tag.trim())
@@ -432,13 +434,13 @@ const DetalheDoTema: React.FC<{
           variant="ghost"
           size="sm"
           onClick={() => {
-            const cabecalho = lerCabecalhoDoTema(css);
+            const header = readThemeHeader(css);
 
-            setNome(cabecalho.nome ?? nome);
-            setAutor(cabecalho.autor ?? autor);
-            setVersao(cabecalho.versao ?? versao);
-            setDescricao(cabecalho.descricao ?? descricao);
-            if (cabecalho.tags.length) setTags(cabecalho.tags.join(", "));
+            setName(header.name ?? name);
+            setAuthor(header.author ?? author);
+            setVersion(header.version ?? version);
+            setDescription(header.description ?? description);
+            if (header.tags.length) setTags(header.tags.join(", "));
           }}
         >
           Ler do cabeçalho do CSS

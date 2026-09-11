@@ -1,18 +1,18 @@
 
-export function ehOutraAba(params: {
-  retomando: boolean;
-  anterior: { channelId: string; clienteId: string | null; orphanedAt: number | null } | null;
-  canalPedido: string;
-  cliente: string | null;
+export function isOtherTab(params: {
+  resuming: boolean;
+  anterior: { channelId: string; clientId: string | null; orphanedAt: number | null } | null;
+  channelRequest: string;
+  client: string | null;
 }): boolean {
-  const { retomando, anterior, canalPedido, cliente } = params;
+  const { resuming, anterior, channelRequest, client } = params;
 
-  if (!retomando || !anterior) return false;
-  if (anterior.channelId !== canalPedido) return false;
+  if (!resuming || !anterior) return false;
+  if (anterior.channelId !== channelRequest) return false;
 
   if (anterior.orphanedAt) return false;
 
-  if (cliente && anterior.clienteId && cliente === anterior.clienteId) return false;
+  if (client && anterior.clientId && client === anterior.clientId) return false;
 
   return true;
 }

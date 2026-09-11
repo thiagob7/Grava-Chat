@@ -1,19 +1,19 @@
 
-export type Qualidade = "excellent" | "good" | "poor" | "lost" | "unknown" | string;
+export type Quality = "excellent" | "good" | "poor" | "lost" | "unknown" | string;
 
-export interface AvisoDeQualidade {
-  rotulo: string;
-  cor: string;
-  pulsando: boolean;
+export interface QualityNotice {
+  label: string;
+  color: string;
+  pulsing: boolean;
 }
 
-export function avisoDeQualidade(qualidade: Qualidade): AvisoDeQualidade | null {
-  if (qualidade === "poor") {
-    return { rotulo: "Conexão instável", cor: "text-idle", pulsando: false };
+export function qualityNotice(quality: Quality): QualityNotice | null {
+  if (quality === "poor") {
+    return { label: "Conexão instável", color: "text-idle", pulsing: false };
   }
 
-  if (qualidade === "lost") {
-    return { rotulo: "Conexão perdida", cor: "text-danger", pulsando: true };
+  if (quality === "lost") {
+    return { label: "Conexão perdida", color: "text-danger", pulsing: true };
   }
 
   return null;

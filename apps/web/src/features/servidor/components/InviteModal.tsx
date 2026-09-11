@@ -9,12 +9,12 @@ import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { StepCarousel } from "~/components/ui/step-carousel";
 import {
-  ConfiguracoesDoConvite,
-  type OpcoesDoConvite,
+  InviteSettings,
+  type InviteOptions,
 } from "~/features/servidor/components/ConfiguracoesDoConvite";
-import { copiarTexto } from "~/lib/copiar";
+import { copyText } from "~/lib/copiar";
 import { formatTimestamp } from "~/lib/format";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -34,48 +34,48 @@ interface InviteModalProps {
   onClose: () => void;
 }
 
-type Envio = "enviando" | "enviado" | "erro";
+type Sending = "enviando" | "enviado" | "erro";
 
-type Etapa = "convidar" | "opcoes";
-const ETAPAS: readonly Etapa[] = ["convidar", "opcoes"];
+type Step = "convidar" | "opcoes";
+const STEPS: readonly Step[] = ["convidar", "opcoes"];
 
-const MASCARA = "••••••••••••••••••••••••••";
+const MASK = "••••••••••••••••••••••••••";
 
 export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildName, onClose }) => {
   const createInvite = useCreateInvite();
   const [link, setLink] = useState<string | null>(null);
-  const [expiraEm, setExpiraEm] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [vista, setVista] = useState<Etapa>("convidar");
-  const [opcoes, setOpcoes] = useState<OpcoesDoConvite>({
+  const [view, setView] = useState<Step>("convidar");
+  const [options, setOptions] = useState<InviteOptions>({
     expiresInHours: null,
     maxUses: null,
   });
-  const [revelado, setRevelado] = useState(false);
-  const prefs = useAparencia();
+  const [revealed, setRevealed] = useState(false);
+  const prefs = useAppearance();
 
-  const escondido = !revelado && prefs.modoStreamer && prefs.streamerEscondeConvites;
-  const [busca, setBusca] = useState("");
-  const [envios, setEnvios] = useState<Record<string, Envio>>({});
+  const hidden = !revealed && prefs.modeStreamer && prefs.streamerHidesInvites;
+  const [search, setSearch] = useState("");
+  const [sendings, setSendings] = useState<Record<string, Sending>>({});
 
-  const { data: amizades, isLoading } = useFindFriends(open);
+  const { data: friendships, isLoading } = useFindFriends(open);
 
   const { mutateAsync } = createInvite;
 
-  const gerar = useCallback(
-    (escolhidas: OpcoesDoConvite) => {
+  const generate = useCallback(
+    (picked: InviteOptions) => {
       if (!guildId) return;
 
       setLink(null);
-      setExpiraEm(null);
+      setExpiresAt(null);
       setCopied(false);
 
-      void mutateAsync({ guildId, ...escolhidas })
+      void mutateAsync({ guildId, ...picked })
         .then((invite) => {
           setLink(`${window.location.origin}/invite/${invite.code}`);
-          setExpiraEm(invite.expiresAt);
-          setOpcoes(escolhidas);
-          setVista("convidar");
+          setExpiresAt(invite.expiresAt);
+          setOptions(picked);
+          setView("convidar");
         })
         .catch(() => undefined);
     },
@@ -85,28 +85,28 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
   useEffect(() => {
     if (!open || !guildId) return;
 
-    setBusca("");
-    setEnvios({});
-    setVista("convidar");
-    gerar({ expiresInHours: null, maxUses: null });
-  }, [open, guildId, gerar]);
+    setSearch("");
+    setSendings({});
+    setView("convidar");
+    generate({ expiresInHours: null, maxUses: null });
+  }, [open, guildId, generate]);
 
-  const amigos = useMemo(() => {
-    const aceitos = (amizades ?? []).filter((a) => a.status === "ACCEPTED");
-    const termo = busca.trim().toLowerCase();
-    if (!termo) return aceitos;
+  const friends = useMemo(() => {
+    const accepted = (friendships ?? []).filter((a) => a.status === "ACCEPTED");
+    const term = search.trim().toLowerCase();
+    if (!term) return accepted;
 
-    return aceitos.filter(
+    return accepted.filter(
       (a) =>
-        a.user.displayName.toLowerCase().includes(termo) ||
-        a.user.username.toLowerCase().includes(termo),
+        a.user.displayName.toLowerCase().includes(term) ||
+        a.user.username.toLowerCase().includes(term),
     );
-  }, [amizades, busca]);
+  }, [friendships, search]);
 
   const copy = async () => {
     if (!link) return;
 
-    if (!(await copiarTexto(link))) {
+    if (!(await copyText(link))) {
       toast.error("Não deu pra copiar. Selecione o link e copie na mão.");
       return;
     }
@@ -115,18 +115,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const convidar = async (userId: string) => {
+  const invite = async (userId: string) => {
     if (!link) return;
 
-    setEnvios((atual) => ({ ...atual, [userId]: "enviando" }));
+    setSendings((current) => ({ ...current, [userId]: "enviando" }));
 
     try {
-      const canal = await openDm(userId);
-      await sendMessage({ channelId: canal.id, content: link, nonce: crypto.randomUUID() });
+      const channel = await openDm(userId);
+      await sendMessage({ channelId: channel.id, content: link, nonce: crypto.randomUUID() });
 
-      setEnvios((atual) => ({ ...atual, [userId]: "enviado" }));
+      setSendings((current) => ({ ...current, [userId]: "enviado" }));
     } catch {
-      setEnvios((atual) => ({ ...atual, [userId]: "erro" }));
+      setSendings((current) => ({ ...current, [userId]: "erro" }));
       toast.error("Não deu pra mandar o convite. Tente de novo.");
     }
   };
@@ -136,18 +136,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
       <Dialog data-gc="servidor.invite-modal.dialog" open={open} onOpenChange={(next) => !next && onClose()}>
         <DialogContent data-gc="servidor.invite-modal.dialog-content" className="overflow-hidden">
           <StepCarousel data-gc="servidor.invite-modal.step-carousel"
-            step={vista}
-            steps={ETAPAS}
+            step={view}
+            steps={STEPS}
             panels={{
-              opcoes: (
-                <ConfiguracoesDoConvite data-gc="servidor.invite-modal.configuracoes-do-convite.gerar"
-                  atuais={opcoes}
-                  gerando={createInvite.isPending}
-                  onVoltar={() => setVista("convidar")}
-                  onCriar={gerar}
+              options: (
+                <InviteSettings data-gc="servidor.invite-modal.invite-settings.generate"
+                  current={options}
+                  generating={createInvite.isPending}
+                  onBack={() => setView("convidar")}
+                  onCreate={generate}
                 />
               ),
-              convidar: (
+              invite: (
                 <>
               <DialogHeader data-gc="servidor.invite-modal.dialog-header">
               <DialogTitle data-gc="servidor.invite-modal.dialog-title">Convidar amigos {guildName ? `para ${guildName}` : ""}</DialogTitle>
@@ -163,26 +163,26 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
                 />
                 <Input data-gc="servidor.invite-modal.input"
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar amigos"
                   className="pl-9"
                 />
               </div>
 
               <div data-gc="servidor.invite-modal.div--2" className="cascata h-[25rem] space-y-0.5 overflow-y-auto pr-1">
-                {isLoading && <Vazio data-gc="servidor.invite-modal.vazio">Carregando…</Vazio>}
+                {isLoading && <Empty data-gc="servidor.invite-modal.empty">Carregando…</Empty>}
 
-                {!isLoading && !amigos.length && (
-                  <Vazio data-gc="servidor.invite-modal.vazio--2">
-                    {busca.trim()
+                {!isLoading && !friends.length && (
+                  <Empty data-gc="servidor.invite-modal.empty--2">
+                    {search.trim()
                       ? "Nenhum amigo com esse nome."
                       : "Você ainda não tem amigos adicionados. Use o link ali embaixo."}
-                  </Vazio>
+                  </Empty>
                 )}
 
-                {amigos.map(({ user }) => {
-                  const estado = envios[user.id];
+                {friends.map(({ user }) => {
+                  const state = sendings[user.id];
 
                   return (
                     <div data-gc="servidor.invite-modal.div--3"
@@ -204,18 +204,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
                       <Button data-gc="servidor.invite-modal.button"
                         size="sm"
-                        variant={estado === "enviado" ? "ghost" : "outline"}
-                        disabled={!link || estado === "enviando" || estado === "enviado"}
-                        onClick={() => void convidar(user.id)}
-                        className={cn(estado === "enviado" && "text-online")}
+                        variant={state === "enviado" ? "ghost" : "outline"}
+                        disabled={!link || state === "enviando" || state === "enviado"}
+                        onClick={() => void invite(user.id)}
+                        className={cn(state === "enviado" && "text-online")}
                       >
-                        {estado === "enviado" ? (
+                        {state === "enviado" ? (
                           <>
                             <Check data-gc="servidor.invite-modal.check" size={14} /> Enviado
                           </>
-                        ) : estado === "enviando" ? (
+                        ) : state === "enviando" ? (
                           "Enviando…"
-                        ) : estado === "erro" ? (
+                        ) : state === "erro" ? (
                           "Tentar de novo"
                         ) : (
                           "Convidar"
@@ -232,9 +232,9 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                 </p>
                 <FieldWithAction data-gc="servidor.invite-modal.field-with-action"
                   readOnly
-                  value={link ? (escondido ? MASCARA : link) : "Gerando…"}
-                  onFocus={() => setRevelado(true)}
-                  title={escondido ? "Escondido pelo modo streamer — clique para ver" : undefined}
+                  value={link ? (hidden ? MASK : link) : "Gerando…"}
+                  onFocus={() => setRevealed(true)}
+                  title={hidden ? "Escondido pelo modo streamer — clique para ver" : undefined}
                   action={
                     <Button data-gc="servidor.invite-modal.button--2" size="sm" onClick={() => void copy()} disabled={!link}>
                       {copied ? <Check data-gc="servidor.invite-modal.check--2" size={14} /> : <Copy data-gc="servidor.invite-modal.copy" size={14} />}
@@ -245,15 +245,15 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
                 <p data-gc="servidor.invite-modal.p--4" className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-ink-faint">
                   <span data-gc="servidor.invite-modal.span">
-                    {expiraEm
-                      ? `Seu link de convite expira em ${formatTimestamp(expiraEm)}.`
+                    {expiresAt
+                      ? `Seu link de convite expira em ${formatTimestamp(expiresAt)}.`
                       : "Seu link de convite não expira."}
-                    {opcoes.maxUses ? ` Vale ${opcoes.maxUses} uso(s).` : ""}
+                    {options.maxUses ? ` Vale ${options.maxUses} uso(s).` : ""}
                   </span>
 
                   <button data-gc="servidor.invite-modal.button--3"
                     type="button"
-                    onClick={() => setVista("opcoes")}
+                    onClick={() => setView("opcoes")}
                     className="text-brand transition hover:underline"
                   >
                     Editar link de convite
@@ -271,6 +271,6 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
   );
 };
 
-const Vazio: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Empty: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <p data-gc="servidor.invite-modal.p--5" className="px-2 py-8 text-center text-sm text-ink-muted">{children}</p>
 );

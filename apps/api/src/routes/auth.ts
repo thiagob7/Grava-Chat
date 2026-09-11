@@ -1,21 +1,23 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
+import { z } from "zod";
 import { env, isDev } from "~/env.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
-import { redefinicaoService } from "~/services/redefinicao-service.js";
-import { correio } from "~/lib/correio.js";
+import { resetService } from "~/services/redefinicao-service.js";
+import { verificationService } from "~/services/verificacao-service.js";
+import { mail } from "~/lib/correio.js";
 import { toSelfUser } from "~/lib/serialize.js";
 import {
   devLoginInput,
   desktopExchangeInput,
   desktopStartInput,
-  entrarInput,
-  esqueciInput,
-  redefinirInput,
-  registrarInput,
-  trocarSenhaInput,
+  joinInput,
+  forgotInput,
+  resetInput,
+  registerInput,
+  swapPasswordInput,
 } from "~/validations/auth.js";
 
 declare module "fastify" {
@@ -24,43 +26,43 @@ declare module "fastify" {
   }
 }
 
-const entreSites = env.COOKIE_ENTRE_SITES;
-const politicaDoCookie = {
+const betweenSites = env.COOKIE_BETWEEN_SITES;
+const cookiePolicy = {
   httpOnly: true,
   path: "/api/auth",
-  sameSite: (entreSites ? "none" : "lax") as "none" | "lax",
-  secure: entreSites || env.NODE_ENV === "production",
+  sameSite: (betweenSites ? "none" : "lax") as "none" | "lax",
+  secure: betweenSites || env.NODE_ENV === "production",
 };
 
 const refreshCookieOptions = {
-  ...politicaDoCookie,
+  ...cookiePolicy,
   maxAge: 30 * 24 * 60 * 60,
 };
 
 const DESKTOP_COOKIE = "gravae_desktop";
 
 const desktopCookieOptions = {
-  ...politicaDoCookie,
+  ...cookiePolicy,
   maxAge: 10 * 60,
 };
 
-function paginaDeVolta(destino: string | null) {
-  const corpo = destino
+function backPage(destination: string | null) {
+  const body = destination
     ? `<h1>Tudo certo!</h1>
        <p>Pode voltar pro Gravaê — a janela do aplicativo já está te esperando.</p>
-       <p><a href="${destino}">Abrir o Gravaê</a></p>
-       <script>location.href = ${JSON.stringify(destino)}</script>`
+       <p><a href="${destination}">Abrir o Gravaê</a></p>
+       <script>location.href = ${JSON.stringify(destination)}</script>`
     : `<h1>O login falhou</h1>
        <p>Volte pro aplicativo e tente de novo.</p>`;
 
   return `<!doctype html><html lang="pt-BR"><meta charset="utf-8">
     <title>Gravaê</title>
     <body style="background:#2b2d31;color:#f2f3f5;font:15px/1.6 -apple-system,Segoe UI,sans-serif;display:grid;place-items:center;height:100vh;margin:0;text-align:center">
-      <div>${corpo}</div>
+      <div>${body}</div>
     </body></html>`;
 }
 
-function origemDoTunel(req: FastifyRequest): string | null {
+function tunnelOrigin(req: FastifyRequest): string | null {
   if (!isDev) return null;
 
   const forwardedHost = req.headers["x-forwarded-host"];
@@ -70,11 +72,11 @@ function origemDoTunel(req: FastifyRequest): string | null {
 }
 
 function callbackUrl(req: FastifyRequest) {
-  return `${origemDoTunel(req) ?? env.API_PUBLIC_URL}/api/auth/google/callback`;
+  return `${tunnelOrigin(req) ?? env.API_PUBLIC_URL}/api/auth/google/callback`;
 }
 
 function webAppUrl(req: FastifyRequest, path = "/") {
-  const base = origemDoTunel(req) ?? env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
+  const base = tunnelOrigin(req) ?? env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
   return `${base}${path}`;
 }
 
@@ -96,33 +98,33 @@ export async function authRoutes(app: FastifyInstance) {
     });
   }
 
-  const abrirSessao = async (req: FastifyRequest, reply: FastifyReply, user: { id: string }) => {
-    const completo = await authService.requireUser(user.id);
-    const refresh = await authService.issueRefreshToken(completo.id, metaOf(req));
+  const openSession = async (req: FastifyRequest, reply: FastifyReply, user: { id: string }) => {
+    const complete = await authService.requireUser(user.id);
+    const refresh = await authService.issueRefreshToken(complete.id, metaOf(req));
 
     return reply
       .setCookie(REFRESH_COOKIE, refresh.raw, refreshCookieOptions)
       .send({
-        accessToken: app.jwt.sign({ sub: completo.id }),
-        user: toSelfUser(completo, await authService.providersOf(completo.id)),
+        accessToken: app.jwt.sign({ sub: complete.id }),
+        user: toSelfUser(complete, await authService.providersOf(complete.id)),
       });
   };
 
   app.post("/auth/registrar", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (req, reply) => {
-    const user = await authService.registrar(registrarInput.parse(req.body));
-    return abrirSessao(req, reply, user);
+    const user = await authService.register(registerInput.parse(req.body));
+    return openSession(req, reply, user);
   });
 
   app.post("/auth/entrar", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req, reply) => {
-    const user = await authService.entrarComSenha(entrarInput.parse(req.body));
-    return abrirSessao(req, reply, user);
+    const user = await authService.joinWithPassword(joinInput.parse(req.body));
+    return openSession(req, reply, user);
   });
 
   app.post(
     "/auth/esqueci",
     { config: { rateLimit: { max: 5, timeWindow: "15 minutes" } } },
     async (req, reply) => {
-      await redefinicaoService.pedir(esqueciInput.parse(req.body).email);
+      await resetService.askFor(forgotInput.parse(req.body).email);
 
       return reply.code(204).send();
     },
@@ -132,15 +134,35 @@ export async function authRoutes(app: FastifyInstance) {
     "/auth/redefinir",
     { config: { rateLimit: { max: 10, timeWindow: "15 minutes" } } },
     async (req, reply) => {
-      const { token, senha } = redefinirInput.parse(req.body);
-      await redefinicaoService.redefinir(token, senha);
+      const { token, password } = resetInput.parse(req.body);
+      await resetService.reset(token, password);
+
+      return reply.code(204).send();
+    },
+  );
+
+  app.post(
+    "/auth/verificar-email",
+    { preHandler: [app.authenticate], config: { rateLimit: { max: 5, timeWindow: "15 minutes" } } },
+    async (req, reply) => {
+      await verificationService.askFor(req.userId);
+
+      return reply.code(204).send();
+    },
+  );
+
+  app.post(
+    "/auth/verificar-email/confirmar",
+    { config: { rateLimit: { max: 10, timeWindow: "15 minutes" } } },
+    async (req, reply) => {
+      await verificationService.confirm(z.object({ token: z.string().min(10) }).parse(req.body).token);
 
       return reply.code(204).send();
     },
   );
 
   app.put("/auth/senha", { preHandler: [app.authenticate] }, async (req, reply) => {
-    await authService.trocarSenha(req.userId, trocarSenhaInput.parse(req.body));
+    await authService.swapPassword(req.userId, swapPasswordInput.parse(req.body));
     return reply.code(204).send();
   });
 
@@ -190,15 +212,15 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     app.get("/auth/desktop/start", async (req, reply) => {
-      const { desafio } = desktopStartInput.parse(req.query);
+      const { challenge } = desktopStartInput.parse(req.query);
 
       return reply
-        .setCookie(DESKTOP_COOKIE, desafio, desktopCookieOptions)
+        .setCookie(DESKTOP_COOKIE, challenge, desktopCookieOptions)
         .redirect("/api/auth/google");
     });
 
     app.get("/auth/google/callback", async (req, reply) => {
-      const desafio = req.cookies[DESKTOP_COOKIE];
+      const challenge = req.cookies[DESKTOP_COOKIE];
 
       try {
         const { token } = await app.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(req);
@@ -206,13 +228,13 @@ export async function authRoutes(app: FastifyInstance) {
 
         const user = await authService.signInWithProvider({ provider: "google", ...profile });
 
-        if (desafio) {
-          const codigo = await desktopLoginService.emitirCodigo(user.id, desafio);
+        if (challenge) {
+          const code = await desktopLoginService.emitCode(user.id, challenge);
 
           return reply
             .clearCookie(DESKTOP_COOKIE, desktopCookieOptions)
             .type("text/html")
-            .send(paginaDeVolta(`gravae://auth?codigo=${encodeURIComponent(codigo)}`));
+            .send(backPage(`gravae://auth?codigo=${encodeURIComponent(code)}`));
         }
 
         const refresh = await authService.issueRefreshToken(user.id, metaOf(req));
@@ -223,11 +245,11 @@ export async function authRoutes(app: FastifyInstance) {
       } catch (error) {
         req.log.error({ err: error }, "falha no login com Google");
 
-        if (desafio) {
+        if (challenge) {
           return reply
             .clearCookie(DESKTOP_COOKIE, desktopCookieOptions)
             .type("text/html")
-            .send(paginaDeVolta(null));
+            .send(backPage(null));
         }
 
         return reply.redirect(webAppUrl(req, "/login?erro=google"));
@@ -235,9 +257,9 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     app.post("/auth/desktop/trocar", async (req, reply) => {
-      const { codigo, verificador } = desktopExchangeInput.parse(req.body);
+      const { code, verifier } = desktopExchangeInput.parse(req.body);
 
-      const userId = await desktopLoginService.resgatar(codigo, verificador);
+      const userId = await desktopLoginService.redeem(code, verifier);
       const user = await authService.requireUser(userId);
       const refresh = await authService.issueRefreshToken(user.id, metaOf(req));
 
@@ -253,8 +275,8 @@ export async function authRoutes(app: FastifyInstance) {
   app.get("/auth/config", () => ({
     devLogin: isDev,
     google: googleConfigured,
-    senha: true,
-    esqueciSenha: correio.ligado(),
+    password: true,
+    forgotPassword: mail.on(),
     voiceUrl: env.LIVEKIT_URL,
   }));
 }

@@ -31,30 +31,30 @@ export function Combobox<T extends string | number>({
   disabled,
   className,
 }: ComboboxProps<T>) {
-  const [open, setAberto] = React.useState(false);
-  const [filtro, setFiltro] = React.useState<string | null>(null);
-  const [ativo, setAtivo] = React.useState(0);
+  const [open, setIsOpen] = React.useState(false);
+  const [filter, setFilter] = React.useState<string | null>(null);
+  const [active, setActive] = React.useState(0);
   const fieldClass = React.useRef<HTMLInputElement>(null);
   const anchor = React.useRef<HTMLDivElement>(null);
 
   const chosen = options.find((o) => o.value === value);
-  const digitando = filtro !== null;
+  const typing = filter !== null;
 
   const filtered = React.useMemo(() => {
-    const termo = (filtro ?? "").trim().toLowerCase();
-    if (!termo) return options;
+    const term = (filter ?? "").trim().toLowerCase();
+    if (!term) return options;
 
-    return options.filter((o) => o.label.toLowerCase().includes(termo));
-  }, [options, filtro]);
+    return options.filter((o) => o.label.toLowerCase().includes(term));
+  }, [options, filter]);
 
-  const abrirEm = (index: number) => {
-    setAberto(true);
-    setAtivo(index);
+  const openAt = (index: number) => {
+    setIsOpen(true);
+    setActive(index);
   };
 
   const close = () => {
-    setAberto(false);
-    setFiltro(null);
+    setIsOpen(false);
+    setFilter(null);
   };
 
   const commit = (choice: T) => {
@@ -67,19 +67,19 @@ export function Combobox<T extends string | number>({
       event.preventDefault();
 
       if (!open) {
-        abrirEm(Math.max(0, options.findIndex((o) => o.value === value)));
+        openAt(Math.max(0, options.findIndex((o) => o.value === value)));
         return;
       }
 
       if (!filtered.length) return;
       const step = event.key === "ArrowDown" ? 1 : -1;
-      setAtivo((current) => (current + step + filtered.length) % filtered.length);
+      setActive((current) => (current + step + filtered.length) % filtered.length);
       return;
     }
 
     if (event.key === "Enter" && open) {
       event.preventDefault();
-      const target = filtered[ativo];
+      const target = filtered[active];
       if (target) commit(target.value);
       return;
     }
@@ -91,13 +91,13 @@ export function Combobox<T extends string | number>({
   };
 
   return (
-    <Popover data-gc="ui.combobox.popover" open={open} onOpenChange={(proximo) => (proximo ? setAberto(true) : close())}>
+    <Popover data-gc="ui.combobox.popover" open={open} onOpenChange={(next) => (next ? setIsOpen(true) : close())}>
       <PopoverAnchor data-gc="ui.combobox.popover-anchor" asChild>
         <div data-gc="ui.combobox.div"
-          {...flxAttr("grupoDeCombo")}
+          {...flxAttr("comboGroup")}
           ref={anchor}
           className={cn(
-            flxCls("grupoDeCombo"),
+            flxCls("comboGroup"),
             "flex h-10 w-full items-center gap-2 rounded-lg border border-line bg-campo px-3 transition",
             "focus-within:border-ink-faint/40",
             disabled && "pointer-events-none opacity-50",
@@ -113,14 +113,14 @@ export function Combobox<T extends string | number>({
             autoComplete="off"
             disabled={disabled}
             placeholder={placeholder}
-            value={digitando ? filtro : (chosen?.label ?? "")}
+            value={typing ? filter : (chosen?.label ?? "")}
             onChange={(e) => {
-              setFiltro(e.target.value);
-              setAberto(true);
-              setAtivo(0);
+              setFilter(e.target.value);
+              setIsOpen(true);
+              setActive(0);
             }}
             onMouseDown={() => {
-              if (!open) abrirEm(Math.max(0, options.findIndex((o) => o.value === value)));
+              if (!open) openAt(Math.max(0, options.findIndex((o) => o.value === value)));
             }}
             onBlur={close}
             onKeyDown={handleKeyDown}
@@ -136,7 +136,7 @@ export function Combobox<T extends string | number>({
               if (open) return close();
 
               fieldClass.current?.focus();
-              abrirEm(Math.max(0, options.findIndex((o) => o.value === value)));
+              openAt(Math.max(0, options.findIndex((o) => o.value === value)));
             }}
             className="shrink-0 text-ink-faint transition hover:text-ink"
           >
@@ -177,10 +177,10 @@ export function Combobox<T extends string | number>({
                 event.preventDefault();
                 commit(option.value);
               }}
-              onMouseMove={() => setAtivo(index)}
+              onMouseMove={() => setActive(index)}
               className={cn(
                 "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
-                index === ativo ? "bg-brand text-sobre-marca" : "text-ink-muted",
+                index === active ? "bg-brand text-sobre-marca" : "text-ink-muted",
               )}
             >
               <span data-gc="ui.combobox.span" className="min-w-0 flex-1 truncate">{option.label}</span>

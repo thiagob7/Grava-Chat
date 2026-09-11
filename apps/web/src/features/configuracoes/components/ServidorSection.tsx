@@ -17,28 +17,28 @@ import {
 } from "lucide-react";
 
 import type {
-  ChecagemDeServico,
-  FantasmaDeVoz,
-  ParticipanteDaSala,
+  CheckService,
+  VoiceGhost,
+  RoomParticipant,
 } from "~/@core/application/requests/status/find-status";
 import { useStatus } from "~/@core/application/queries/status/use-status";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Tooltip } from "~/components/ui/tooltip";
-import { copiarTexto } from "~/lib/copiar";
+import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 
-const duracao = (s: number) => {
-  const dias = Math.floor(s / 86400);
-  const horas = Math.floor((s % 86400) / 3600);
-  const minutos = Math.floor((s % 3600) / 60);
+const duration = (s: number) => {
+  const days = Math.floor(s / 86400);
+  const hours = Math.floor((s % 86400) / 3600);
+  const minutes = Math.floor((s % 3600) / 60);
 
-  if (dias) return `${dias}d ${horas}h`;
-  if (horas) return `${horas}h ${minutos}min`;
-  if (minutos) return `${minutos}min`;
+  if (days) return `${days}d ${hours}h`;
+  if (hours) return `${hours}h ${minutes}min`;
+  if (minutes) return `${minutes}min`;
   return `${s}s`;
 };
 
-const tamanho = (bytes: number) => {
+const size = (bytes: number) => {
   const mb = bytes / 1024 / 1024;
 
   if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
@@ -46,7 +46,7 @@ const tamanho = (bytes: number) => {
   return `${Math.round(bytes / 1024)} KB`;
 };
 
-export const ServidorSection: React.FC = () => {
+export const ServerSection: React.FC = () => {
   const { data, isLoading, isError } = useStatus(true);
 
   if (isLoading) return <p data-gc="configuracoes.servidor-section.p" className="text-sm text-ink-muted">Medindo…</p>;
@@ -54,9 +54,9 @@ export const ServidorSection: React.FC = () => {
   if (isError || !data)
     return <p data-gc="configuracoes.servidor-section.p--2" className="text-sm text-danger">Não consegui falar com a API.</p>;
 
-  const { ambiente, node, uptimeDoProcesso } = data.api;
-  const ehProducao = ambiente === "production";
-  const salas = data.sfu.salas;
+  const { environment, node, processUptime } = data.api;
+  const isProduction = environment === "production";
+  const rooms = data.sfu.rooms;
 
   return (
     <div data-gc="configuracoes.servidor-section.div" className="max-w-2xl space-y-6">
@@ -66,17 +66,17 @@ export const ServidorSection: React.FC = () => {
           <span data-gc="configuracoes.servidor-section.span"
             className={cn(
               "rounded px-1.5 py-0.5 text-xs font-semibold",
-              ehProducao
+              isProduction
                 ? "bg-online/15 text-online"
                 : "bg-aviso/15 text-aviso",
             )}
           >
-            {ehProducao ? "produção" : "desenvolvimento"}
+            {isProduction ? "produção" : "desenvolvimento"}
           </span>
           <span data-gc="configuracoes.servidor-section.span--2">atualiza a cada 5 s</span>
         </p>
 
-        {!ehProducao && (
+        {!isProduction && (
           <p data-gc="configuracoes.servidor-section.p--4" className="mt-2 text-xs text-ink-faint">
             Estes números são da máquina onde a API está rodando — agora, a sua.
             Abra pelo endereço publicado para ver a VM.
@@ -84,21 +84,21 @@ export const ServidorSection: React.FC = () => {
         )}
       </div>
 
-      <Maquina data-gc="configuracoes.servidor-section.maquina"
-        caixa={{
-          titulo: "API",
+      <Machine data-gc="configuracoes.servidor-section.machine"
+        box={{
+          title: "API",
           host: data.api.host,
-          legenda: `Node ${node} · no ar há ${duracao(uptimeDoProcesso)}`,
+          legenda: `Node ${node} · no ar há ${duration(processUptime)}`,
           carga: data.api.carga,
-          nucleos: data.api.nucleos,
+          cores: data.api.cores,
           memoria: data.api.memoria,
-          disco: data.api.disco,
-          residente: { rotulo: "API", bytes: data.api.residente },
-          uptimeDaMaquina: data.api.uptimeDaMaquina,
+          disk: data.api.disk,
+          resident: { label: "API", bytes: data.api.resident },
+          machineUptime: data.api.machineUptime,
         }}
       />
 
-      {data.voz?.indisponivel === true ? (
+      {data.voice?.unavailable === true ? (
         <div data-gc="configuracoes.servidor-section.div--3" className="rounded-lg border border-danger/30 bg-danger/5 p-4">
           <p data-gc="configuracoes.servidor-section.p--5" className="text-sm font-medium">Voz</p>
           <p data-gc="configuracoes.servidor-section.p--6" className="mt-1 text-sm text-danger">
@@ -111,18 +111,18 @@ export const ServidorSection: React.FC = () => {
           </p>
         </div>
       ) : (
-        data.voz && (
-          <Maquina data-gc="configuracoes.servidor-section.maquina--2"
-            caixa={{
-              titulo: "Voz",
-              host: data.voz.host,
-              legenda: `LiveKit ${data.voz.livekit.noAr ? "no ar" : "parado"} · ${data.voz.ms} ms daqui`,
-              carga: data.voz.carga,
-              nucleos: data.voz.nucleos,
-              memoria: data.voz.memoria,
-              disco: data.voz.disco,
-              residente: { rotulo: "LiveKit", bytes: data.voz.livekit.residente },
-              uptimeDaMaquina: data.voz.uptimeDaMaquina,
+        data.voice && (
+          <Machine data-gc="configuracoes.servidor-section.machine--2"
+            box={{
+              title: "Voz",
+              host: data.voice.host,
+              legenda: `LiveKit ${data.voice.livekit.inAr ? "no ar" : "parado"} · ${data.voice.ms} ms daqui`,
+              carga: data.voice.carga,
+              cores: data.voice.cores,
+              memoria: data.voice.memoria,
+              disk: data.voice.disk,
+              resident: { label: "LiveKit", bytes: data.voice.livekit.resident },
+              machineUptime: data.voice.machineUptime,
             }}
           />
         )
@@ -134,24 +134,24 @@ export const ServidorSection: React.FC = () => {
         </p>
 
         <div data-gc="configuracoes.servidor-section.div--5" className="mt-3 space-y-2 text-sm">
-          <Linha data-gc="configuracoes.servidor-section.linha" rotulo="MongoDB (Atlas)" checagem={data.mongo} />
-          <Linha data-gc="configuracoes.servidor-section.linha--2" rotulo="Redis (local)" checagem={data.redis} />
-          <Linha data-gc="configuracoes.servidor-section.linha--3"
-            rotulo="Gateway (Socket.IO)"
+          <Line data-gc="configuracoes.servidor-section.line" label="MongoDB (Atlas)" check={data.mongo} />
+          <Line data-gc="configuracoes.servidor-section.line--2" label="Redis (local)" check={data.redis} />
+          <Line data-gc="configuracoes.servidor-section.line--3"
+            label="Gateway (Socket.IO)"
             ok={Boolean(data.gateway)}
-            nota={
+            note={
               data.gateway
-                ? `${data.gateway.conexoes} ${data.gateway.conexoes === 1 ? "conexão" : "conexões"} · ${data.gateway.pessoas} ${data.gateway.pessoas === 1 ? "pessoa" : "pessoas"}${data.gateway.bots ? ` · ${data.gateway.bots} bot${data.gateway.bots === 1 ? "" : "s"}` : ""}`
+                ? `${data.gateway.connections} ${data.gateway.connections === 1 ? "conexão" : "conexões"} · ${data.gateway.people} ${data.gateway.people === 1 ? "pessoa" : "pessoas"}${data.gateway.bots ? ` · ${data.gateway.bots} bot${data.gateway.bots === 1 ? "" : "s"}` : ""}`
                 : undefined
             }
           />
-          <Linha data-gc="configuracoes.servidor-section.linha--4"
-            rotulo="LiveKit (SFU)"
-            ok={!data.sfu.indisponivel}
-            nota={
-              data.sfu.indisponivel
+          <Line data-gc="configuracoes.servidor-section.line--4"
+            label="LiveKit (SFU)"
+            ok={!data.sfu.unavailable}
+            note={
+              data.sfu.unavailable
                 ? undefined
-                : `${salas.length} ${salas.length === 1 ? "sala" : "salas"}`
+                : `${rooms.length} ${rooms.length === 1 ? "sala" : "salas"}`
             }
           />
         </div>
@@ -163,65 +163,65 @@ export const ServidorSection: React.FC = () => {
             <Radio data-gc="configuracoes.servidor-section.radio" size={16} /> Chamadas agora
           </span>
 
-          {!data.sfu.indisponivel && data.sfu.participantes > 0 && (
+          {!data.sfu.unavailable && data.sfu.participants > 0 && (
             <span data-gc="configuracoes.servidor-section.span--4" className="text-xs font-normal text-ink-muted">
-              {data.sfu.participantes}{" "}
-              {data.sfu.participantes === 1 ? "pessoa" : "pessoas"} ·{" "}
-              {data.sfu.publicando} com microfone aberto
+              {data.sfu.participants}{" "}
+              {data.sfu.participants === 1 ? "pessoa" : "pessoas"} ·{" "}
+              {data.sfu.publishing} com microfone aberto
             </span>
           )}
         </p>
 
-        {data.sfu.indisponivel ? (
+        {data.sfu.unavailable ? (
           <p data-gc="configuracoes.servidor-section.p--10" className="mt-2 text-sm text-danger">O SFU não respondeu.</p>
-        ) : salas.length === 0 ? (
+        ) : rooms.length === 0 ? (
           <p data-gc="configuracoes.servidor-section.p--11" className="mt-2 text-sm text-ink-muted">Ninguém em voz.</p>
         ) : (
           <div data-gc="configuracoes.servidor-section.div--7" className="mt-3 space-y-3">
-            {salas.map((sala) => (
-              <div data-gc="configuracoes.servidor-section.div--8" key={sala.canalId} className="rounded-lg bg-surface-2 p-3">
+            {rooms.map((room) => (
+              <div data-gc="configuracoes.servidor-section.div--8" key={room.channelId} className="rounded-lg bg-surface-2 p-3">
                 <div data-gc="configuracoes.servidor-section.div--9" className="flex items-center justify-between gap-2 text-sm">
                   <span data-gc="configuracoes.servidor-section.span--5" className="flex min-w-0 items-center gap-1.5">
-                    {sala.ehPrivado ? (
+                    {room.isPrivate ? (
                       <Lock data-gc="configuracoes.servidor-section.lock" size={12} className="shrink-0 text-ink-muted" />
                     ) : (
                       <Hash data-gc="configuracoes.servidor-section.hash" size={12} className="shrink-0 text-ink-muted" />
                     )}
 
-                    {sala.nome ? (
-                      <span data-gc="configuracoes.servidor-section.span--6" className="truncate font-medium">{sala.nome}</span>
+                    {room.name ? (
+                      <span data-gc="configuracoes.servidor-section.span--6" className="truncate font-medium">{room.name}</span>
                     ) : (
-                      <Aviso data-gc="configuracoes.servidor-section.aviso" motivo={sala.motivo ?? "canal-apagado"} />
+                      <Notice data-gc="configuracoes.servidor-section.notice" reason={room.reason ?? "canal-apagado"} />
                     )}
 
-                    {sala.servidor && (
+                    {room.server && (
                       <span data-gc="configuracoes.servidor-section.span--7" className="truncate text-xs text-ink-muted">
-                        · {sala.servidor}
+                        · {room.server}
                       </span>
                     )}
 
-                    <Identificador data-gc="configuracoes.servidor-section.identificador" id={sala.canalId} oQueE="canal" />
+                    <Identifier data-gc="configuracoes.servidor-section.identifier" id={room.channelId} oQueE="canal" />
                   </span>
 
                   <span data-gc="configuracoes.servidor-section.span--8" className="shrink-0 text-xs text-ink-faint">
                     há{" "}
-                    {duracao(
+                    {duration(
                       Math.max(
                         0,
-                        Math.round(Date.now() / 1000 - sala.criadaEm),
+                        Math.round(Date.now() / 1000 - room.createdAt),
                       ),
                     )}
                   </span>
                 </div>
 
-                {sala.participantes.length === 0 ? (
+                {room.participants.length === 0 ? (
                   <p data-gc="configuracoes.servidor-section.p--12" className="mt-2 text-xs text-ink-faint">
                     Sala aberta, sem ninguém dentro — o SFU ainda vai fechá-la.
                   </p>
                 ) : (
                   <div data-gc="configuracoes.servidor-section.div--10" className="mt-2 space-y-1.5">
-                    {sala.participantes.map((p) => (
-                      <Pessoa data-gc="configuracoes.servidor-section.pessoa" key={p.id} pessoa={p} />
+                    {room.participants.map((p) => (
+                      <Person data-gc="configuracoes.servidor-section.person" key={p.id} person={p} />
                     ))}
                   </div>
                 )}
@@ -230,19 +230,19 @@ export const ServidorSection: React.FC = () => {
           </div>
         )}
 
-        {data.sfu.fantasmas.length > 0 && (
+        {data.sfu.ghosts.length > 0 && (
           <div data-gc="configuracoes.servidor-section.div--11" className="mt-3 rounded-lg border border-aviso/30 bg-aviso/5 p-3">
             <p data-gc="configuracoes.servidor-section.p--13" className="flex items-center gap-2 text-xs font-medium text-aviso">
               <Ghost data-gc="configuracoes.servidor-section.ghost" size={14} />
-              {data.sfu.fantasmas.length === 1
+              {data.sfu.ghosts.length === 1
                 ? "1 pessoa que o app acha que está em chamada"
-                : `${data.sfu.fantasmas.length} pessoas que o app acha que estão em chamada`}
+                : `${data.sfu.ghosts.length} pessoas que o app acha que estão em chamada`}
               , mas o SFU não vê
             </p>
 
             <div data-gc="configuracoes.servidor-section.div--12" className="mt-2 space-y-1">
-              {data.sfu.fantasmas.map((f) => (
-                <Fantasma data-gc="configuracoes.servidor-section.fantasma" key={f.id} fantasma={f} />
+              {data.sfu.ghosts.map((f) => (
+                <GhostRow data-gc="configuracoes.servidor-section.ghost-row" key={f.id} ghost={f} />
               ))}
             </div>
           </div>
@@ -253,20 +253,20 @@ export const ServidorSection: React.FC = () => {
   );
 };
 
-const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
+const Person: React.FC<{ person: RoomParticipant }> = ({ person }) => (
   <div data-gc="configuracoes.servidor-section.div--13" className="flex items-center gap-2">
     <Avatar data-gc="configuracoes.servidor-section.avatar"
-      id={pessoa.id}
-      name={pessoa.nome}
-      url={pessoa.avatarUrl}
+      id={person.id}
+      name={person.name}
+      url={person.avatarUrl}
       size={24}
     />
 
-    <span data-gc="configuracoes.servidor-section.span--9" className="min-w-0 flex-1 truncate text-sm">{pessoa.nome}</span>
+    <span data-gc="configuracoes.servidor-section.span--9" className="min-w-0 flex-1 truncate text-sm">{person.name}</span>
 
-    <Identificador data-gc="configuracoes.servidor-section.identificador--2" id={pessoa.id} oQueE="usuário" />
+    <Identifier data-gc="configuracoes.servidor-section.identifier--2" id={person.id} oQueE="usuário" />
 
-    {pessoa.soNoSfu && (
+    {person.soNoSfu && (
       <span data-gc="configuracoes.servidor-section.span--10"
         className="shrink-0 rounded bg-aviso/15 px-1.5 text-xs text-aviso"
         title="Está no SFU, mas o app não tem estado de voz desta pessoa"
@@ -276,12 +276,12 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
     )}
 
     <span data-gc="configuracoes.servidor-section.span--11" className="flex shrink-0 items-center gap-2 text-ink-faint">
-      {pessoa.camera && <Video data-gc="configuracoes.servidor-section.video" size={14} className="text-ink-muted" />}
-      {pessoa.tela && <MonitorUp data-gc="configuracoes.servidor-section.monitor-up" size={14} className="text-ink-muted" />}
+      {person.camera && <Video data-gc="configuracoes.servidor-section.video" size={14} className="text-ink-muted" />}
+      {person.display && <MonitorUp data-gc="configuracoes.servidor-section.monitor-up" size={14} className="text-ink-muted" />}
 
-      {pessoa.microfone === "aberto" ? (
+      {person.microphone === "aberto" ? (
         <Mic data-gc="configuracoes.servidor-section.mic" size={14} className="text-online" />
-      ) : pessoa.microfone === "mudo" ? (
+      ) : person.microphone === "mudo" ? (
         <MicOff data-gc="configuracoes.servidor-section.mic-off" size={14} className="text-ink-muted" />
       ) : (
         <span data-gc="configuracoes.servidor-section.span--12" title="não publicou microfone">
@@ -290,13 +290,13 @@ const Pessoa: React.FC<{ pessoa: ParticipanteDaSala }> = ({ pessoa }) => (
       )}
 
       <span data-gc="configuracoes.servidor-section.span--13" className="w-12 text-right text-xs tabular-nums">
-        {duracao(Math.max(0, Math.round(Date.now() / 1000 - pessoa.entrouEm)))}
+        {duration(Math.max(0, Math.round(Date.now() / 1000 - person.joinedAt)))}
       </span>
     </span>
   </div>
 );
 
-const Identificador: React.FC<{ id: string; oQueE: string }> = ({
+const Identifier: React.FC<{ id: string; oQueE: string }> = ({
   id,
   oQueE,
 }) => (
@@ -304,7 +304,7 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
     <button data-gc="configuracoes.servidor-section.button"
       type="button"
       onClick={() => {
-        void copiarTexto(id);
+        void copyText(id);
         toast.success("ID copiado.");
       }}
       className="shrink-0 text-ink-faint transition hover:text-ink"
@@ -315,40 +315,40 @@ const Identificador: React.FC<{ id: string; oQueE: string }> = ({
   </Tooltip>
 );
 
-const AVISOS = {
+const NOTICES = {
   "canal-apagado": {
-    rotulo: "canal apagado",
-    explicacao:
+    label: "canal apagado",
+    explanation:
       "O canal não existe mais no banco, mas a chamada continua de pé no SFU. A varredura de fantasmas encerra sozinha quando o último sair.",
   },
   "outro-ambiente": {
-    rotulo: "chamada de outro ambiente",
-    explicacao:
+    label: "chamada de outro ambiente",
+    explanation:
       "Ninguém desta sala existe neste banco: o LIVEKIT_URL desta API aponta para o SFU de outro ambiente. É o que o .env de desenvolvimento faz — ele mira o LiveKit de produção.",
   },
 } as const;
 
-const Aviso: React.FC<{ motivo: keyof typeof AVISOS }> = ({ motivo }) => (
-  <Tooltip data-gc="configuracoes.servidor-section.tooltip--2" label={AVISOS[motivo].explicacao}>
+const Notice: React.FC<{ reason: keyof typeof NOTICES }> = ({ reason }) => (
+  <Tooltip data-gc="configuracoes.servidor-section.tooltip--2" label={NOTICES[reason].explanation}>
     <span data-gc="configuracoes.servidor-section.span--14" className="cursor-help truncate font-medium italic text-aviso">
-      {AVISOS[motivo].rotulo}
+      {NOTICES[reason].label}
     </span>
   </Tooltip>
 );
 
-const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
+const GhostRow: React.FC<{ ghost: VoiceGhost }> = ({ ghost }) => (
   <div data-gc="configuracoes.servidor-section.div--14" className="flex items-center gap-2 text-xs">
     <span data-gc="configuracoes.servidor-section.span--15" className="min-w-0 flex-1 truncate text-ink">
-      {fantasma.nome}
+      {ghost.name}
       <span data-gc="configuracoes.servidor-section.span--16" className="text-ink-muted">
         {" em "}
-        {fantasma.canal ?? <span data-gc="configuracoes.servidor-section.span--17" className="italic">canal apagado</span>}
+        {ghost.channel ?? <span data-gc="configuracoes.servidor-section.span--17" className="italic">canal apagado</span>}
       </span>
     </span>
 
-    <Identificador data-gc="configuracoes.servidor-section.identificador--3" id={fantasma.id} oQueE="usuário" />
+    <Identifier data-gc="configuracoes.servidor-section.identifier--3" id={ghost.id} oQueE="usuário" />
 
-    {fantasma.aguardandoVolta && (
+    {ghost.awaitingBack && (
       <span data-gc="configuracoes.servidor-section.span--18"
         className="shrink-0 text-ink-faint"
         title="Caiu e está na janela de reconexão"
@@ -358,63 +358,63 @@ const Fantasma: React.FC<{ fantasma: FantasmaDeVoz }> = ({ fantasma }) => (
     )}
 
     <span data-gc="configuracoes.servidor-section.span--19" className="shrink-0 tabular-nums text-ink-faint">
-      há {duracao(Math.max(0, Math.round(Date.now() / 1000 - fantasma.desde)))}
+      há {duration(Math.max(0, Math.round(Date.now() / 1000 - ghost.since)))}
     </span>
   </div>
 );
 
-interface Caixa {
-  titulo: string;
+interface Box {
+  title: string;
   host: string;
   legenda: string;
-  carga: { um: number; cinco: number; quinze: number };
-  nucleos: number;
-  memoria: { total: number; livre: number; disponivel: number };
-  disco: { total: number; livre: number } | null;
-  residente: { rotulo: string; bytes: number };
-  uptimeDaMaquina: number;
+  carga: { um: number; five: number; quinze: number };
+  cores: number;
+  memoria: { total: number; livre: number; available: number };
+  disk: { total: number; livre: number } | null;
+  resident: { label: string; bytes: number };
+  machineUptime: number;
 }
 
-const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
-  const ocupacao = Math.min(caixa.carga.um / caixa.nucleos, 1);
+const Machine: React.FC<{ box: Box }> = ({ box }) => {
+  const occupancy = Math.min(box.carga.um / box.cores, 1);
 
-  const usada = caixa.memoria.total - caixa.memoria.disponivel;
-  const discoUsado = caixa.disco ? caixa.disco.total - caixa.disco.livre : 0;
+  const used = box.memoria.total - box.memoria.available;
+  const diskUsed = box.disk ? box.disk.total - box.disk.livre : 0;
 
   return (
     <div data-gc="configuracoes.servidor-section.div--15">
       <p data-gc="configuracoes.servidor-section.p--14" className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
-        <span data-gc="configuracoes.servidor-section.span--20" className="font-medium">{caixa.titulo}</span>
-        <code data-gc="configuracoes.servidor-section.code" className="text-xs text-ink-muted">{caixa.host}</code>
+        <span data-gc="configuracoes.servidor-section.span--20" className="font-medium">{box.title}</span>
+        <code data-gc="configuracoes.servidor-section.code" className="text-xs text-ink-muted">{box.host}</code>
         <span data-gc="configuracoes.servidor-section.span--21" className="text-xs text-ink-faint">
-          · {caixa.legenda} · ligada há {duracao(caixa.uptimeDaMaquina)}
+          · {box.legenda} · ligada há {duration(box.machineUptime)}
         </span>
       </p>
 
       <div data-gc="configuracoes.servidor-section.div--16" className="grid gap-3 sm:grid-cols-3">
-        <Cartao data-gc="configuracoes.servidor-section.cartao"
-          icone={<Cpu data-gc="configuracoes.servidor-section.cpu" size={16} />}
-          titulo="CPU"
-          valor={`${Math.round(ocupacao * 100)}%`}
-          detalhe={`carga ${caixa.carga.um.toFixed(2)} · ${caixa.carga.cinco.toFixed(2)} · ${caixa.carga.quinze.toFixed(2)} em ${caixa.nucleos} threads`}
-          proporcao={ocupacao}
+        <Card data-gc="configuracoes.servidor-section.card"
+          icon={<Cpu data-gc="configuracoes.servidor-section.cpu" size={16} />}
+          title="CPU"
+          value={`${Math.round(occupancy * 100)}%`}
+          detail={`carga ${box.carga.um.toFixed(2)} · ${box.carga.five.toFixed(2)} · ${box.carga.quinze.toFixed(2)} em ${box.cores} threads`}
+          ratio={occupancy}
         />
 
-        <Cartao data-gc="configuracoes.servidor-section.cartao--2"
-          icone={<MemoryStick data-gc="configuracoes.servidor-section.memory-stick" size={16} />}
-          titulo="Memória"
-          valor={tamanho(usada)}
-          detalhe={`de ${tamanho(caixa.memoria.total)} · ${tamanho(caixa.memoria.disponivel)} disponíveis · ${caixa.residente.rotulo} ${tamanho(caixa.residente.bytes)}`}
-          proporcao={usada / caixa.memoria.total}
+        <Card data-gc="configuracoes.servidor-section.card--2"
+          icon={<MemoryStick data-gc="configuracoes.servidor-section.memory-stick" size={16} />}
+          title="Memória"
+          value={size(used)}
+          detail={`de ${size(box.memoria.total)} · ${size(box.memoria.available)} disponíveis · ${box.resident.label} ${size(box.resident.bytes)}`}
+          ratio={used / box.memoria.total}
         />
 
-        {caixa.disco ? (
-          <Cartao data-gc="configuracoes.servidor-section.cartao--3"
-            icone={<HardDrive data-gc="configuracoes.servidor-section.hard-drive" size={16} />}
-            titulo="Disco"
-            valor={tamanho(discoUsado)}
-            detalhe={`de ${tamanho(caixa.disco.total)} · ${tamanho(caixa.disco.livre)} livres`}
-            proporcao={discoUsado / caixa.disco.total}
+        {box.disk ? (
+          <Card data-gc="configuracoes.servidor-section.card--3"
+            icon={<HardDrive data-gc="configuracoes.servidor-section.hard-drive" size={16} />}
+            title="Disco"
+            value={size(diskUsed)}
+            detail={`de ${size(box.disk.total)} · ${size(box.disk.livre)} livres`}
+            ratio={diskUsed / box.disk.total}
           />
         ) : (
           <div data-gc="configuracoes.servidor-section.div--17" className="rounded-lg border border-line bg-surface-2 p-4">
@@ -429,76 +429,76 @@ const Maquina: React.FC<{ caixa: Caixa }> = ({ caixa }) => {
   );
 };
 
-const Cartao: React.FC<{
-  icone: React.ReactNode;
-  titulo: string;
-  valor: string;
-  detalhe: string;
-  proporcao: number;
-}> = ({ icone, titulo, valor, detalhe, proporcao }) => (
+const Card: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  detail: string;
+  ratio: number;
+}> = ({ icon, title, value, detail, ratio }) => (
   <div data-gc="configuracoes.servidor-section.div--18" className="rounded-lg border border-line bg-surface-2 p-4">
     <p data-gc="configuracoes.servidor-section.p--17" className="flex items-center gap-2 text-sm font-medium">
-      {icone} {titulo}
+      {icon} {title}
     </p>
 
-    <p data-gc="configuracoes.servidor-section.p--18" className="mt-2 text-2xl font-semibold">{valor}</p>
+    <p data-gc="configuracoes.servidor-section.p--18" className="mt-2 text-2xl font-semibold">{value}</p>
 
     <div data-gc="configuracoes.servidor-section.div--19" className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
       <div data-gc="configuracoes.servidor-section.div--20"
         className={cn(
           "h-full rounded-full transition-all",
-          proporcao > 0.85
+          ratio > 0.85
             ? "bg-danger"
-            : proporcao > 0.6
+            : ratio > 0.6
               ? "bg-aviso"
               : "bg-online",
         )}
-        style={{ width: `${Math.round(proporcao * 100)}%` }}
+        style={{ width: `${Math.round(ratio * 100)}%` }}
       />
     </div>
 
-    <p data-gc="configuracoes.servidor-section.p--19" className="mt-2 text-xs text-ink-faint">{detalhe}</p>
+    <p data-gc="configuracoes.servidor-section.p--19" className="mt-2 text-xs text-ink-faint">{detail}</p>
   </div>
 );
 
-const Linha: React.FC<{
-  rotulo: string;
-  checagem?: ChecagemDeServico;
+const Line: React.FC<{
+  label: string;
+  check?: CheckService;
   ok?: boolean;
-  nota?: string;
-}> = ({ rotulo, checagem, ok, nota }) => {
-  const noAr = checagem ? checagem.estado === "up" : Boolean(ok);
-  const lento = noAr && checagem !== undefined && checagem.ms > 300;
+  note?: string;
+}> = ({ label, check, ok, note }) => {
+  const inAr = check ? check.state === "up" : Boolean(ok);
+  const slow = inAr && check !== undefined && check.ms > 300;
 
   return (
     <div data-gc="configuracoes.servidor-section.div--21" className="flex items-center justify-between">
-      <span data-gc="configuracoes.servidor-section.span--22" className="text-ink-muted">{rotulo}</span>
+      <span data-gc="configuracoes.servidor-section.span--22" className="text-ink-muted">{label}</span>
 
       <span data-gc="configuracoes.servidor-section.span--23" className="flex items-center gap-1.5">
-        {(checagem || nota) && (
+        {(check || note) && (
           <span data-gc="configuracoes.servidor-section.span--24"
             className={cn(
               "text-xs tabular-nums",
-              lento ? "text-aviso" : "text-ink-faint",
+              slow ? "text-aviso" : "text-ink-faint",
             )}
           >
-            {checagem ? `${checagem.ms} ms` : nota}
+            {check ? `${check.ms} ms` : note}
           </span>
         )}
 
         <span data-gc="configuracoes.servidor-section.span--25"
           className={cn(
             "flex items-center gap-1.5",
-            noAr ? (lento ? "text-aviso" : "text-online") : "text-danger",
+            inAr ? (slow ? "text-aviso" : "text-online") : "text-danger",
           )}
         >
           <span data-gc="configuracoes.servidor-section.span--26"
             className={cn(
               "size-2 rounded-full",
-              noAr ? (lento ? "bg-aviso" : "bg-online") : "bg-danger",
+              inAr ? (slow ? "bg-aviso" : "bg-online") : "bg-danger",
             )}
           />
-          {noAr ? (lento ? "lento" : "no ar") : "fora"}
+          {inAr ? (slow ? "lento" : "no ar") : "fora"}
         </span>
       </span>
     </div>

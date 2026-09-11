@@ -1,4 +1,4 @@
-export const MOTIVOS_DE_FALHA = [
+export const FAILURE_REASONS = [
   "sem-conexao",
   "sem-acesso",
   "sem-permissao",
@@ -11,11 +11,11 @@ export const MOTIVOS_DE_FALHA = [
   "erro",
 ] as const;
 
-export type MotivoDeFalha = (typeof MOTIVOS_DE_FALHA)[number];
+export type FailureReason = (typeof FAILURE_REASONS)[number];
 
-const ADIANTA_INSISTIR: readonly MotivoDeFalha[] = ["sem-conexao", "modo-lento", "depressa", "erro"];
+const HELPS_INSIST: readonly FailureReason[] = ["sem-conexao", "modo-lento", "depressa", "erro"];
 
-export const adiantaInsistir = (motivo: MotivoDeFalha) => ADIANTA_INSISTIR.includes(motivo);
+export const helpsInsist = (reason: FailureReason) => HELPS_INSIST.includes(reason);
 
-export const ehMotivoDeFalha = (valor: unknown): valor is MotivoDeFalha =>
-  MOTIVOS_DE_FALHA.includes(valor as MotivoDeFalha);
+export const isFailureReason = (value: unknown): value is FailureReason =>
+  FAILURE_REASONS.includes(value as FailureReason);

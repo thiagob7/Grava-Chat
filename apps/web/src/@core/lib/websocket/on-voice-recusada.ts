@@ -2,12 +2,12 @@ import type { ServerToClientEvents } from "@gravae/shared";
 
 import { socket } from ".";
 
-export type VoiceRecusadaFunc = ServerToClientEvents["voice:recusada"];
+export type VoiceRefusedFunc = ServerToClientEvents["voice:recusada"];
 
-export const onVoiceRecusada = (func: VoiceRecusadaFunc) => {
+export const onVoiceRefused = (func: VoiceRefusedFunc) => {
   socket()?.on("voice:recusada", func);
 };
 
-export const offVoiceRecusada = (func?: VoiceRecusadaFunc) => {
+export const offVoiceRefused = (func?: VoiceRefusedFunc) => {
   socket()?.off("voice:recusada", func);
 };

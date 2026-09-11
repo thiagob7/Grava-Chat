@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Mojuojanti rankytė",
+    botao: "Pamojuoti draugui {{nome}}",
+  },
+  oficial: {
+    titulo: "Šis kanalas skirtas tik oficialiems pranešimams.",
+    detalhe: "Niekada neprašome jūsų slaptažodžio nei paskyros prieigos rakto.",
+    saibaMais: "Sužinoti daugiau",
+  },
+  topico: {
+    abrir: "Peržiūrėti kanalo aprašymą",
+  },
+  previaDoLink: {
+    carregando: "Žiūriu, kas yra nuorodoje…",
+    destino: "Veda į {{destino}}",
+  },
+  reacao: {
+    carregando: "Žiūriu, kas reagavo su {{emoji}}…",
+    uma: "{{nome}} reagavo su {{emoji}}",
+    duas: "{{primeiro}} ir {{segundo}} reagavo su {{emoji}}",
+    varias: "{{nomes}} ir dar {{quantos}} reagavo su {{emoji}}",
+    dicaSuper: "Palaikykite super reakcijai",
+  },
+  recado: {
+    gravar: "Įrašyti balso žinutę",
+    descartar: "Atmesti įrašą",
+    mandar: "Siųsti įrašą",
+    semSuporte: "Ši naršyklė garso neįrašo.",
+    semMicrofone: "Nėra prieigos prie mikrofono.",
+  },
   lista: {
     carregando: "Įkeliamos žinutės…",
     carregandoMais: "Įkeliama…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Peržiūrėti paveikslėlį",
   },
   enquete: {
+    criar: "Sukurti apklausą",
+    pergunta: "Klausimas",
+    exemplo: "Ką šiandien žaidžiam?",
+    respostas: "Atsakymai",
+    adicionarOpcao: "Pridėti atsakymą",
+    removerOpcao: "Pašalinti atsakymą",
+    varias: "Leisti daugiau nei vieną atsakymą",
+    variasDetalhe: "Be to balsas už vieną atsakymą nuima balsą nuo ankstesnio.",
+    duracao: "Trukmė",
+    umaHora: "1 valanda",
+    quatroHoras: "4 valandos",
+    oitoHoras: "8 valandos",
+    umDia: "1 diena",
+    tresDias: "3 dienos",
+    umaSemana: "1 savaitė",
+    ateEncerrar: "Kol pats uždarysiu",
     titulo: "Apklausa",
     encerrada: "Apklausa uždaryta",
     variasRespostas: "Apklausa — keli atsakymai",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Paieška žiūri tik į kanalus, kuriuos gali skaityti.",
   },
   entrada: {
+    semNome: "pokalbis",
+    anexo: "(priedas)",
     titulo: "Gauta",
     naoLidas: "Neskaityta",
     salvas: "Išsaugota",

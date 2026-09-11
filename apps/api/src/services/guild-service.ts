@@ -1,12 +1,17 @@
-import { ehAdmin } from "~/lib/serialize.js";
-import { selosDoServidor } from "~/lib/selos.js";
-import { sistemaService } from "~/services/sistema-service.js";
+import { isAdmin } from "~/lib/serialize.js";
+import { serverSeals } from "~/lib/selos.js";
+import { systemService } from "~/services/sistema-service.js";
+import { officialService } from "~/services/oficial-service.js";
 import { randomBytes } from "node:crypto";
 import {
   computePermissions,
   DEFAULT_EVERYONE_PERMISSIONS,
   PERMISSIONS,
   has,
+  MEMBERS_FOR_COMMUNITY,
+  canFlipCommunity,
+  type CommunitySettings,
+  type CommunityState,
   type Permission,
 } from "@gravae/shared";
 import { AppError, NotFoundError, ForbiddenError } from "~/lib/http.js";
@@ -16,14 +21,14 @@ import {
   categoryRepository,
   channelRepository,
 } from "~/repositories/guild-repository.js";
-import { emblemaRepository, tagRepository } from "~/repositories/guild-repository.js";
+import { badgeRepository, tagRepository } from "~/repositories/guild-repository.js";
 import { inviteRepository } from "~/repositories/invite-repository.js";
-import { toChannel, toMember, toPerfilPublico, toPublicUser, toRole } from "~/lib/serialize.js";
+import { toChannel, toMember, toProfilePublic, toPublicUser, toRole } from "~/lib/serialize.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { toMessage } from "~/lib/serialize.js";
 import { accessService } from "./access-service.js";
-import { auditService, diferenca } from "./audit-service.js";
+import { auditService, difference } from "./audit-service.js";
 import { presenceService } from "./presence-service.js";
 import { voiceService } from "./voice-service.js";
 import { messageStatsRepository } from "~/repositories/message-repository.js";
@@ -38,7 +43,7 @@ import type {
 
 const DEFAULT_CATEGORIES = ["CANAIS DE TEXTO", "CANAIS DE VOZ"];
 
-const SAUDACOES = [
+const GREETINGS = [
   "{pessoa} acabou de chegar!",
   "Bem-vindo(a), {pessoa}. A gente estava esperando.",
   "{pessoa} entrou no servidor. Diz oi!",
@@ -46,22 +51,22 @@ const SAUDACOES = [
   "{pessoa} apareceu. Segura a emoção.",
 ];
 
-function preencher(
-  modelo: string,
-  dados: { userId: string; nome: string; servidor: string; contagem: number },
+function fill(
+  template: string,
+  data: { userId: string; name: string; server: string; count: number },
 ) {
-  return modelo
-    .replaceAll("{pessoa}", `<@${dados.userId}>`)
-    .replaceAll("{nome}", dados.nome)
-    .replaceAll("{servidor}", dados.servidor)
-    .replaceAll("{contagem}", String(dados.contagem));
+  return template
+    .replaceAll("{pessoa}", `<@${data.userId}>`)
+    .replaceAll("{nome}", data.name)
+    .replaceAll("{servidor}", data.server)
+    .replaceAll("{contagem}", String(data.count));
 }
 
 export const guildService = {
   async listForUser(userId: string) {
     const memberships = await guildRepository.findManyByUser(userId);
 
-    const porGuild = await Promise.all(
+    const byGuild = await Promise.all(
       memberships.map(async (m) => {
         const roles = await roleRepository.findForMember(m.guildId, m.roleIds);
         const isOwner = m.guild.ownerId === userId;
@@ -74,14 +79,14 @@ export const guildService = {
           memberCount: m.guild._count.members,
           tag: m.guild.tag,
           tagIcon: m.guild.tagIcon,
-          ...selosDoServidor(m.guild, m.guild._count.members),
+          ...serverSeals(m.guild, m.guild._count.members),
           isOwner,
           permissions: [...computePermissions({ userId, isOwner, roles })],
         };
       }),
     );
 
-    return porGuild;
+    return byGuild;
   },
 
   async create(userId: string, input: CreateGuildInput) {
@@ -94,10 +99,10 @@ export const guildService = {
 
     const [textCategory, voiceCategory] = guild.categories;
 
-    const geral = await channelRepository.create({
+    const general = await channelRepository.create({
       guildId: guild.id,
       categoryId: textCategory?.id ?? null,
-      name: "geral",
+      name: "general",
       type: "TEXT",
       topic: null,
       isPrivate: false,
@@ -108,7 +113,7 @@ export const guildService = {
       channelRepository.createMany([
         { guildId: guild.id, categoryId: voiceCategory?.id, name: "Sala 1", type: "VOICE", position: 0 },
       ]),
-      guildRepository.update(guild.id, { systemChannelId: geral.id }),
+      guildRepository.update(guild.id, { systemChannelId: general.id }),
     ]);
 
     return {
@@ -126,8 +131,8 @@ export const guildService = {
     const guild = await guildRepository.findByIdOrThrow(guildId);
     if (!guild.tag) throw new NotFoundError("Servidor não encontrado");
 
-    const membros = await memberRepository.findManyByGuild(guildId);
-    const presenca = await presenceService.mapFor(membros.map((m) => m.userId));
+    const members = await memberRepository.findManyByGuild(guildId);
+    const presence = await presenceService.mapFor(members.map((m) => m.userId));
 
     return {
       id: guild.id,
@@ -138,49 +143,49 @@ export const guildService = {
       tag: guild.tag,
       tagIcon: guild.tagIcon,
       memberCount: guild._count.members,
-      onlineCount: Object.values(presenca).filter((s) => s !== "OFFLINE").length,
+      onlineCount: Object.values(presence).filter((s) => s !== "OFFLINE").length,
       createdAt: guild.createdAt.toISOString(),
-      souMembro: membros.some((m) => m.userId === userId),
+      amMember: members.some((m) => m.userId === userId),
     };
   },
 
   async detail(userId: string, guildId: string) {
     const member = await accessService.requireMember(userId, guildId);
 
-    const [guild, categories, todosOsCanais, members, roles, emblemas] = await Promise.all([
+    const [guild, categories, allChannels, members, roles, badges] = await Promise.all([
       guildRepository.findByIdOrThrow(guildId),
       categoryRepository.findManyByGuild(guildId),
       channelRepository.findManyByGuild(guildId),
       memberRepository.findManyByGuild(guildId),
       roleRepository.findManyByGuild(guildId),
-      emblemaRepository.findManyByGuild(guildId),
+      badgeRepository.findManyByGuild(guildId),
     ]);
 
     const isOwner = guild.ownerId === userId;
-    const meusCargos = roles.filter((r) => r.isEveryone || member.roleIds.includes(r.id));
-    const overwrites = await overwriteRepository.findManyByChannels(todosOsCanais.map((c) => c.id));
+    const mineRoles = roles.filter((r) => r.isEveryone || member.roleIds.includes(r.id));
+    const overwrites = await overwriteRepository.findManyByChannels(allChannels.map((c) => c.id));
 
-    const porCanal = new Map<string, typeof overwrites>();
-    for (const o of overwrites) porCanal.set(o.channelId, [...(porCanal.get(o.channelId) ?? []), o]);
+    const byChannel = new Map<string, typeof overwrites>();
+    for (const o of overwrites) byChannel.set(o.channelId, [...(byChannel.get(o.channelId) ?? []), o]);
 
-    const permissoesPorCanal = new Map<string, Permission[]>();
-    const channels = todosOsCanais.filter((c) => {
-      const permissoes = computePermissions({
+    const permissionsByChannel = new Map<string, Permission[]>();
+    const channels = allChannels.filter((c) => {
+      const permissions = computePermissions({
         userId,
         isOwner,
-        roles: meusCargos,
-        overwrites: porCanal.get(c.id) ?? [],
+        roles: mineRoles,
+        overwrites: byChannel.get(c.id) ?? [],
       });
 
-      if (!has(permissoes, "VIEW_CHANNEL")) return false;
-      permissoesPorCanal.set(c.id, [...permissoes]);
+      if (!has(permissions, "VIEW_CHANNEL")) return false;
+      permissionsByChannel.set(c.id, [...permissions]);
       return true;
     });
 
-    const etiquetas = await tagRepository.resolverMuitas([
+    const tags = await tagRepository.resolveMany([
       ...new Set(
         members
-          .map((m) => (m.user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId)
+          .map((m) => (m.user.profile as { tagGuildId?: string | null } | null)?.tagGuildId)
           .filter((id): id is string => Boolean(id)),
       ),
     ]);
@@ -203,14 +208,14 @@ export const guildService = {
         systemChannelId: guild.systemChannelId,
         welcomeEnabled: guild.welcomeEnabled,
         welcomeMessage: guild.welcomeMessage,
-        categoria: guild.categoria,
-        descobrivel: guild.descobrivel,
+        category: guild.category,
+        discoverable: guild.discoverable,
         ownerId: guild.ownerId,
         memberCount: guild._count.members,
-        ...selosDoServidor(guild, guild._count.members),
+        ...serverSeals(guild, guild._count.members),
       },
-      permissions: [...computePermissions({ userId, isOwner, roles: meusCargos })],
-      channelPermissions: Object.fromEntries(permissoesPorCanal),
+      permissions: [...computePermissions({ userId, isOwner, roles: mineRoles })],
+      channelPermissions: Object.fromEntries(permissionsByChannel),
       roles: roles.map(toRole),
       categories: categories.map((c) => ({
         id: c.id,
@@ -229,24 +234,24 @@ export const guildService = {
       profiles: Object.fromEntries(
         members
           .map((m) => {
-            const escolhida = (m.user.perfil as { tagGuildId?: string | null } | null)?.tagGuildId;
-            const etiqueta = escolhida ? etiquetas.get(escolhida) : undefined;
+            const picked = (m.user.profile as { tagGuildId?: string | null } | null)?.tagGuildId;
+            const tag = picked ? tags.get(picked) : undefined;
 
             return [
               m.userId,
-              toPerfilPublico(
+              toProfilePublic(
                 m.user,
                 m.emblemIds,
-                etiqueta ? { guildId: escolhida!, ...etiqueta } : null,
+                tag ? { guildId: picked!, ...tag } : null,
               ),
             ] as const;
           })
-          .filter(([, perfil]) => Object.keys(perfil).length > 0),
+          .filter(([, profile]) => Object.keys(profile).length > 0),
       ),
-      emblemas: emblemas.map((e) => ({
+      badges: badges.map((e) => ({
         id: e.id,
         guildId: e.guildId,
-        nome: e.nome,
+        name: e.name,
         emoji: e.emoji,
         iconUrl: e.iconUrl,
       })),
@@ -257,17 +262,17 @@ export const guildService = {
   async update(userId: string, guildId: string, input: UpdateGuildInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    const antes = await guildRepository.findByIdOrThrow(guildId);
+    const before = await guildRepository.findByIdOrThrow(guildId);
     const guild = await guildRepository.update(guildId, input);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "guild.update",
       targetType: "guild",
       targetId: guildId,
       targetName: guild.name,
-      changes: diferenca(antes as unknown as Record<string, unknown>, input),
+      changes: difference(before as unknown as Record<string, unknown>, input),
     });
 
     return {
@@ -281,67 +286,169 @@ export const guildService = {
       systemChannelId: guild.systemChannelId,
       welcomeEnabled: guild.welcomeEnabled,
       welcomeMessage: guild.welcomeMessage,
-      categoria: guild.categoria,
-      descobrivel: guild.descobrivel,
+      category: guild.category,
+      discoverable: guild.discoverable,
       ownerId: guild.ownerId,
       memberCount: guild._count.members,
-      ...selosDoServidor(guild, guild._count.members),
+      ...serverSeals(guild, guild._count.members),
     };
   },
 
-  async verificar(adminId: string, guildId: string, verificada: boolean) {
-    const admin = await userRepository.findById(adminId);
-    if (!admin || !ehAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
+  async communityState(userId: string, guildId: string): Promise<CommunityState> {
+    await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
-    await guildRepository.findByIdOrThrow(guildId);
-    const guild = await guildRepository.update(guildId, { verificada });
+    const guild = await guildRepository.findByIdOrThrow(guildId);
+    const members = guild._count.members;
 
-    void sistemaService.avisar(
-      guild.ownerId,
-      verificada
-        ? `A comunidade "${guild.name}" foi verificada. O selo já aparece ao lado do nome dela.`
-        : `A verificação da comunidade "${guild.name}" foi retirada.`,
-    );
-
-    return { id: guild.id, verificada: Boolean(guild.verificada) };
+    return {
+      community: guild.community === true,
+      communitySince: guild.communitySince?.toISOString() ?? null,
+      members,
+      missing: Math.max(0, MEMBERS_FOR_COMMUNITY - members),
+      verifiedRequiresEmail: guild.verifiedRequiresEmail === true,
+      filtersMediaExplicit: guild.filtersMediaExplicit === true,
+      rulesChannelId: guild.rulesChannelId,
+      noticesChannelId: guild.noticesChannelId,
+      securityChannelId: guild.securityChannelId,
+      languagePrincipal: guild.languagePrincipal,
+    };
   },
 
-  async boasVindas(guildId: string, userId: string) {
+  async enableCommunity(
+    userId: string,
+    guildId: string,
+    input: {
+      verifiedRequiresEmail: boolean;
+      filtersMediaExplicit: boolean;
+      rulesChannelId: string | null;
+      noticesChannelId: string | null;
+      languagePrincipal: string | null;
+    },
+  ) {
+    await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+
+    const guild = await guildRepository.findByIdOrThrow(guildId);
+    if (guild.community === true) throw new AppError("Este servidor já é uma comunidade", 400);
+
+    if (!canFlipCommunity(guild._count.members)) {
+      throw new AppError(
+        `A comunidade abre com ${MEMBERS_FOR_COMMUNITY} membros. Faltam ${
+          MEMBERS_FOR_COMMUNITY - guild._count.members
+        }.`,
+        400,
+      );
+    }
+
+    const [category] = await categoryRepository.findManyByGuild(guildId);
+
+    const born = async (name: string, topic: string) => {
+      const created = await guildService.createChannel(userId, guildId, {
+        name: name,
+        type: "TEXT",
+        categoryId: category?.id ?? null,
+        topic: topic,
+      });
+
+      return created.id;
+    };
+
+    const rulesChannelId =
+      input.rulesChannelId ?? (await born("rules", "As regras desta comunidade."));
+
+    const noticesChannelId =
+      input.noticesChannelId ??
+      (await born("avisos-da-comunidade", "O que o Gravaê anuncia para quem administra aqui."));
+
+    const updated = await guildRepository.update(guildId, {
+      community: true,
+      communitySince: new Date(),
+      rulesChannelId,
+      noticesChannelId,
+      languagePrincipal: input.languagePrincipal,
+      verifiedRequiresEmail: input.verifiedRequiresEmail,
+      filtersMediaExplicit: input.filtersMediaExplicit,
+    });
+
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "guild.comunidade",
+      targetType: "guild",
+      targetId: guildId,
+      targetName: updated.name,
+    });
+
+    return guildService.communityState(userId, guildId);
+  },
+
+  async adjustCommunity(
+    userId: string,
+    guildId: string,
+    input: Partial<CommunitySettings>,
+  ) {
+    await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+
+    const guild = await guildRepository.findByIdOrThrow(guildId);
+    if (guild.community !== true) throw new AppError("Este servidor ainda não é uma comunidade", 400);
+
+    await guildRepository.update(guildId, input);
+
+    return guildService.communityState(userId, guildId);
+  },
+
+  async verify(adminId: string, guildId: string, verified: boolean) {
+    const admin = await userRepository.findById(adminId);
+    if (!admin || !isAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
+
+    await guildRepository.findByIdOrThrow(guildId);
+    const guild = await guildRepository.update(guildId, { verified });
+
+    void officialService.notify(
+      guild.ownerId,
+      verified ? "verifiedCommunity" : "communityWithoutSeal",
+      { name: guild.name },
+      { key: `selo:${guildId}:${verified}` },
+    );
+
+    return { id: guild.id, verified: Boolean(guild.verified) };
+  },
+
+  async goodWelcome(guildId: string, userId: string) {
     const guild = await guildRepository.findById(guildId);
     if (!guild?.welcomeEnabled || !guild.systemChannelId) return null;
 
-    const escrita = guild.welcomeMessage?.trim();
+    const writing = guild.welcomeMessage?.trim();
 
-    const modelo = escrita || SAUDACOES[Math.floor(Math.random() * SAUDACOES.length)]!;
+    const template = writing || GREETINGS[Math.floor(Math.random() * GREETINGS.length)]!;
 
-    const [pessoa, membros] = await Promise.all([
+    const [person, members] = await Promise.all([
       userRepository.findById(userId),
       memberRepository.findManyByGuild(guildId),
     ]);
 
-    const criada = await messageRepository.create({
+    const created = await messageRepository.create({
       channelId: guild.systemChannelId,
       authorId: userId,
-      tipo: "JOIN",
-      content: preencher(modelo, {
+      kind: "JOIN",
+      content: fill(template, {
         userId,
-        nome: pessoa?.displayName ?? "alguém",
-        servidor: guild.name,
-        contagem: membros.length,
+        name: person?.displayName ?? "alguém",
+        server: guild.name,
+        count: members.length,
       }),
       attachments: [],
       replyToId: null,
       mentions: [userId],
     });
 
-    return toMessage(criada, userId);
+    return toMessage(created, userId);
   },
 
   async listInvites(userId: string, guildId: string) {
     await accessService.requirePermission(userId, guildId, "CREATE_INVITE");
-    const convites = await inviteRepository.findManyByGuild(guildId);
+    const invites = await inviteRepository.findManyByGuild(guildId);
 
-    return convites.map((c) => ({
+    return invites.map((c) => ({
       id: c.id,
       code: c.code,
       inviter: toPublicUser(c.inviter),
@@ -358,10 +465,10 @@ export const guildService = {
   async removeInvite(userId: string, guildId: string, inviteId: string) {
     await accessService.requirePermission(userId, guildId, "CREATE_INVITE");
 
-    const convite = await inviteRepository.findById(inviteId);
-    if (!convite || convite.guildId !== guildId) throw new NotFoundError("Convite não encontrado");
+    const invite = await inviteRepository.findById(inviteId);
+    if (!invite || invite.guildId !== guildId) throw new NotFoundError("Convite não encontrado");
 
-    if (convite.inviterId !== userId) {
+    if (invite.inviterId !== userId) {
       await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
     }
 
@@ -378,8 +485,9 @@ export const guildService = {
       guildId,
       categoryId,
       name: input.name,
-      ...(input.fonte && input.fonte !== "padrao" ? { fonte: input.fonte } : {}),
+      ...(input.font && input.font !== "padrao" ? { font: input.font } : {}),
       type: input.type,
+      url: input.type === "LINK" ? (input.url ?? null) : null,
       topic: input.topic ?? null,
       isPrivate: input.isPrivate ?? false,
       position: (last?.position ?? -1) + 1,
@@ -407,7 +515,7 @@ export const guildService = {
       });
     }
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "channel.create",
@@ -419,40 +527,40 @@ export const guildService = {
     return toChannel(channel);
   },
 
-  async definirStatusDoCanal(userId: string, guildId: string, channelId: string, status: string | null) {
-    const canal = await channelRepository.findById(channelId);
-    if (!canal || canal.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
-    if (canal.type !== "VOICE") throw new AppError("Só canal de voz tem status");
+  async setChannelStatus(userId: string, guildId: string, channelId: string, status: string | null) {
+    const channel = await channelRepository.findById(channelId);
+    if (!channel || channel.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
+    if (channel.type !== "VOICE") throw new AppError("Só canal de voz tem status");
 
-    const naSala = await voiceService.get(userId);
+    const inRoom = await voiceService.get(userId);
 
-    if (naSala?.channelId !== channelId) {
+    if (inRoom?.channelId !== channelId) {
       await accessService.requirePermission(userId, guildId, "MANAGE_CHANNELS", channelId);
     } else {
       await accessService.requirePermission(userId, guildId, "VIEW_CHANNEL", channelId);
     }
 
-    const limpo = status?.trim() || null;
+    const clean = status?.trim() || null;
 
-    return toChannel(await channelRepository.update(channelId, { status: limpo }));
+    return toChannel(await channelRepository.update(channelId, { status: clean }));
   },
 
   async updateChannel(userId: string, guildId: string, channelId: string, input: UpdateChannelInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_CHANNELS", channelId);
 
-    const antes = await channelRepository.findById(channelId);
-    if (!antes || antes.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
+    const before = await channelRepository.findById(channelId);
+    if (!before || before.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
 
     const channel = await channelRepository.update(channelId, input);
 
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "channel.update",
       targetType: "channel",
       targetId: channelId,
       targetName: channel.name,
-      changes: diferenca(antes as unknown as Record<string, unknown>, input),
+      changes: difference(before as unknown as Record<string, unknown>, input),
     });
 
     return toChannel(channel);
@@ -465,7 +573,7 @@ export const guildService = {
     if (!channel || channel.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
 
     await channelRepository.remove(channelId);
-    auditService.registrar({
+    auditService.register({
       guildId,
       actorId: userId,
       action: "channel.delete",
@@ -505,43 +613,43 @@ export const guildService = {
     if (!guild) throw new NotFoundError("Servidor não encontrado");
     if (guild.ownerId !== userId) throw new AppError("Só o dono pode apagar o servidor", 403);
 
-    const membros = await memberRepository.findManyByGuild(guildId);
+    const members = await memberRepository.findManyByGuild(guildId);
     await guildRepository.remove(guildId);
 
-    return membros.map((m) => m.userId);
+    return members.map((m) => m.userId);
   },
 
   async moderationView(actorId: string, guildId: string, targetId: string) {
     await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
 
-    const membro = await memberRepository.find(guildId, targetId);
-    if (!membro) throw new NotFoundError("Essa pessoa não está no servidor");
+    const member = await memberRepository.find(guildId, targetId);
+    if (!member) throw new NotFoundError("Essa pessoa não está no servidor");
 
-    const canais = await channelRepository.findManyByGuild(guildId);
-    const contexto = await accessService.contextOf(targetId, guildId);
+    const channels = await channelRepository.findManyByGuild(guildId);
+    const context = await accessService.contextOf(targetId, guildId);
 
-    const usuario = await userRepository.findByIdOrThrow(targetId);
+    const user = await userRepository.findByIdOrThrow(targetId);
 
-    const [atividade, auditoria] = await Promise.all([
-      messageStatsRepository.byUserInChannels(targetId, canais.map((c) => c.id)),
+    const [activity, audit] = await Promise.all([
+      messageStatsRepository.byUserInChannels(targetId, channels.map((c) => c.id)),
       auditStatsRepository.countFor(guildId, targetId),
     ]);
 
-    const convidadoPor = membro.invitedById
-      ? await userRepository.findById(membro.invitedById)
+    const invitedBy = member.invitedById
+      ? await userRepository.findById(member.invitedById)
       : null;
 
     return {
-      atividade,
-      auditoria,
-      permissoes: [...contexto.permissions],
-      roleIds: membro.roleIds,
-      entrouNoServidor: membro.joinedAt,
-      entrouNoGravae: usuario.createdAt,
-      timeoutUntil: membro.timeoutUntil,
-      adesao: {
-        inviteCode: membro.inviteCode,
-        convidadoPor: convidadoPor ? convidadoPor.displayName : null,
+      activity,
+      audit,
+      permissions: [...context.permissions],
+      roleIds: member.roleIds,
+      joinedServer: member.joinedAt,
+      joinedGravae: user.createdAt,
+      timeoutUntil: member.timeoutUntil,
+      joining: {
+        inviteCode: member.inviteCode,
+        invitedBy: invitedBy ? invitedBy.displayName : null,
       },
     };
   },
@@ -550,21 +658,21 @@ export const guildService = {
     actorId: string,
     guildId: string,
     targetId: string,
-    filtro: "todas" | "links" | "midia",
+    filter: "todas" | "links" | "midia",
     before?: string,
   ) {
     await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
 
-    const canais = await channelRepository.findManyByGuild(guildId);
-    const linhas = await messageStatsRepository.findByUserInChannels({
+    const channels = await channelRepository.findManyByGuild(guildId);
+    const lines = await messageStatsRepository.findByUserInChannels({
       userId: targetId,
-      channelIds: canais.map((c) => c.id),
-      filtro,
+      channelIds: channels.map((c) => c.id),
+      filter,
       limit: 50,
       before,
     });
 
-    return linhas.map((m) => ({
+    return lines.map((m) => ({
       id: m.id,
       channelId: m.channelId,
       channelName: m.channel.name,
@@ -577,8 +685,8 @@ export const guildService = {
 
   async removeMember(actorId: string, guildId: string, targetId: string) {
     if (targetId !== actorId) {
-      const contexto = await accessService.requirePermission(actorId, guildId, "KICK_MEMBERS");
-      await accessService.requireAcimaDoAlvo(contexto, guildId, targetId);
+      const context = await accessService.requirePermission(actorId, guildId, "KICK_MEMBERS");
+      await accessService.targetRequireAbove(context, guildId, targetId);
     } else {
       await accessService.requireMember(actorId, guildId);
     }

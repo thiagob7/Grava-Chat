@@ -4,119 +4,119 @@ import { fileURLToPath } from "node:url";
 
 import ts from "typescript";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const RAIZ = join(AQUI, "..", "src");
-const PONTE = join(RAIZ, "lib", "compat-de-tema.ts");
-const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..", "src");
+const BRIDGE = join(ROOT, "lib", "compat-de-tema.ts");
+const FOLDERS_OUTSIDE = new Set(["traducao", "assets", "node_modules"]);
 
-const LUGARES = {};
+const PLACES = {};
 {
-  const fonte = readFileSync(PONTE, "utf8");
+  const font = readFileSync(BRIDGE, "utf8");
   const re = /(\w+):\s*\{\s*(?:flx:\s*"[^"]*",\s*)?classes:\s*\[([^\]]*)\]/g;
   let m;
-  while ((m = re.exec(fonte))) {
-    LUGARES[m[1]] = [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
+  while ((m = re.exec(font))) {
+    PLACES[m[1]] = [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
   }
 }
 
-const PARTES = {};
-for (const classes of Object.values(LUGARES)) {
-  for (const classe of classes) {
-    const m = /^([A-Za-z0-9]+)\.module__([A-Za-z0-9]+)_/.exec(classe);
-    if (m) (PARTES[m[1]] ??= new Set()).add(m[2]);
+const PARTS = {};
+for (const classes of Object.values(PLACES)) {
+  for (const cssClass of classes) {
+    const m = /^([A-Za-z0-9]+)\.module__([A-Za-z0-9]+)_/.exec(cssClass);
+    if (m) (PARTS[m[1]] ??= new Set()).add(m[2]);
   }
 }
 
-function arquivos(pasta, achados = []) {
-  for (const item of readdirSync(pasta)) {
-    if (PASTAS_FORA.has(item)) continue;
-    const caminho = join(pasta, item);
-    if (statSync(caminho).isDirectory()) arquivos(caminho, achados);
-    else if (extname(caminho) === ".tsx") achados.push(caminho);
+function files(folder, matches = []) {
+  for (const item of readdirSync(folder)) {
+    if (FOLDERS_OUTSIDE.has(item)) continue;
+    const path = join(folder, item);
+    if (statSync(path).isDirectory()) files(path, matches);
+    else if (extname(path) === ".tsx") matches.push(path);
   }
-  return achados;
+  return matches;
 }
 
-function classesDoElemento(no, fonte) {
-  const nomes = [];
-  const literais = [];
+function elementClasses(no, font) {
+  const names = [];
+  const literals = [];
 
-  const colher = (alvo, dentroDeClasse) => {
-    if (ts.isCallExpression(alvo)) {
-      const chamada = alvo.expression.getText(fonte);
+  const gather = (target, classInside) => {
+    if (ts.isCallExpression(target)) {
+      const call = target.expression.getText(font);
 
-      if (chamada === "flx" || chamada === "flxCls") {
-        const primeiro = alvo.arguments[0];
-        if (primeiro && ts.isStringLiteral(primeiro)) nomes.push(primeiro.text);
+      if (call === "flx" || call === "flxCls") {
+        const first = target.arguments[0];
+        if (first && ts.isStringLiteral(first)) names.push(first.text);
 
-        const resto = chamada === "flx" ? alvo.arguments.slice(1) : [];
-        for (const arg of resto) colher(arg, true);
+        const rest = call === "flx" ? target.arguments.slice(1) : [];
+        for (const arg of rest) gather(arg, true);
         return;
       }
 
-      for (const arg of alvo.arguments) colher(arg, dentroDeClasse);
+      for (const arg of target.arguments) gather(arg, classInside);
       return;
     }
 
-    if (dentroDeClasse && ts.isStringLiteral(alvo)) {
-      literais.push(alvo.text);
+    if (classInside && ts.isStringLiteral(target)) {
+      literals.push(target.text);
       return;
     }
 
-    ts.forEachChild(alvo, (filho) => colher(filho, dentroDeClasse));
+    ts.forEachChild(target, (child) => gather(child, classInside));
   };
 
-  for (const atributo of no.attributes.properties) {
-    if (ts.isJsxSpreadAttribute(atributo)) {
-      colher(atributo.expression, false);
+  for (const attribute of no.attributes.properties) {
+    if (ts.isJsxSpreadAttribute(attribute)) {
+      gather(attribute.expression, false);
       continue;
     }
 
-    const nome = atributo.name?.getText(fonte);
-    const valor = atributo.initializer;
-    if (!valor) continue;
+    const name = attribute.name?.getText(font);
+    const value = attribute.initializer;
+    if (!value) continue;
 
-    if (nome === "className") {
-      if (ts.isStringLiteral(valor)) literais.push(valor.text);
-      else if (ts.isJsxExpression(valor) && valor.expression) colher(valor.expression, true);
+    if (name === "className") {
+      if (ts.isStringLiteral(value)) literals.push(value.text);
+      else if (ts.isJsxExpression(value) && value.expression) gather(value.expression, true);
     }
   }
 
   return {
-    nomes,
-    utilitarias: literais.flatMap((t) => t.split(/\s+/)).filter(Boolean),
+    names,
+    utility: literals.flatMap((t) => t.split(/\s+/)).filter(Boolean),
   };
 }
 
-const achados = [];
+const matches = [];
 
-for (const caminho of arquivos(RAIZ)) {
-  const texto = readFileSync(caminho, "utf8");
-  const fonte = ts.createSourceFile(caminho, texto, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+for (const path of files(ROOT)) {
+  const text = readFileSync(path, "utf8");
+  const font = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
-  const visitar = (no) => {
+  const visit = (no) => {
     if (ts.isJsxOpeningElement(no) || ts.isJsxSelfClosingElement(no)) {
-      const { nomes, utilitarias } = classesDoElemento(no, fonte);
-      const carimbos = nomes.flatMap((n) => LUGARES[n] ?? []);
+      const { names, utility } = elementClasses(no, font);
+      const stamps = names.flatMap((n) => PLACES[n] ?? []);
 
-      if (carimbos.length) {
-        const meusArquivos = new Set(
-          carimbos.map((c) => /^([A-Za-z0-9]+)\.module__/.exec(c)?.[1]).filter(Boolean),
+      if (stamps.length) {
+        const mineFiles = new Set(
+          stamps.map((c) => /^([A-Za-z0-9]+)\.module__/.exec(c)?.[1]).filter(Boolean),
         );
 
-        for (const arquivo of meusArquivos) {
-          for (const parte of PARTES[arquivo] ?? []) {
-            if (carimbos.some((c) => c.startsWith(`${arquivo}.module__${parte}_`))) continue;
+        for (const file of mineFiles) {
+          for (const part of PARTS[file] ?? []) {
+            if (stamps.some((c) => c.startsWith(`${file}.module__${part}_`))) continue;
 
-            for (const util of utilitarias) {
-              if (!util.includes(parte) || carimbos.includes(util)) continue;
+            for (const util of utility) {
+              if (!util.includes(part) || stamps.includes(util)) continue;
 
-              const { line } = fonte.getLineAndCharacterOfPosition(no.getStart(fonte));
+              const { line } = font.getLineAndCharacterOfPosition(no.getStart(font));
 
-              achados.push(
-                `${relative(RAIZ, caminho)}:${line + 1} — ${nomes[0]}\n` +
-                  `    a classe "${util}" tem "${parte}" dentro, então ` +
-                  `[class*="${arquivo}"][class*="${parte}"] pousa aqui sem querer`,
+              matches.push(
+                `${relative(ROOT, path)}:${line + 1} — ${names[0]}\n` +
+                  `    a classe "${util}" tem "${part}" dentro, então ` +
+                  `[class*="${file}"][class*="${part}"] pousa aqui sem querer`,
               );
             }
           }
@@ -124,17 +124,17 @@ for (const caminho of arquivos(RAIZ)) {
       }
     }
 
-    ts.forEachChild(no, visitar);
+    ts.forEachChild(no, visit);
   };
 
-  visitar(fonte);
+  visit(font);
 }
 
-if (achados.length) {
-  console.error(`${achados.length} carimbo(s) pousando errado:\n`);
-  for (const a of achados) console.error(`  ${a}\n`);
+if (matches.length) {
+  console.error(`${matches.length} carimbo(s) pousando errado:\n`);
+  for (const a of matches) console.error(`  ${a}\n`);
   console.error("Troque a classe do Tailwind por uma sem a palavra dentro.\n");
   process.exit(1);
 }
 
-console.log(`sem fantasmas — ${Object.keys(PARTES).length} arquivos da referência conferidos`);
+console.log(`sem fantasmas — ${Object.keys(PARTS).length} arquivos da referência conferidos`);

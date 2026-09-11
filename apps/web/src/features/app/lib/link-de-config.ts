@@ -1,34 +1,34 @@
-import type { Secao } from "~/features/configuracoes/components/secoes";
+import type { Section } from "~/features/configuracoes/components/secoes";
 
-const PARAMETRO = "config";
+const PARAMETER = "config";
 
-export function linkDaSecao(secao: Secao, sub?: string): string {
+export function sectionLink(section: Section, sub?: string): string {
   const url = new URL(window.location.href);
 
   url.search = "";
   url.hash = sub ? `#${sub}` : "";
-  url.searchParams.set(PARAMETRO, secao);
+  url.searchParams.set(PARAMETER, section);
 
   return url.toString();
 }
 
-export interface PedidoDaUrl {
-  secao: Secao;
+export interface UrlRequest {
+  section: Section;
   sub: string | null;
 }
 
-export function lerPedidoDaUrl(): PedidoDaUrl | null {
+export function readUrlRequest(): UrlRequest | null {
   const url = new URL(window.location.href);
-  const secao = url.searchParams.get(PARAMETRO);
-  if (!secao) return null;
+  const section = url.searchParams.get(PARAMETER);
+  if (!section) return null;
 
-  return { secao: secao as Secao, sub: url.hash.replace(/^#/, "") || null };
+  return { section: section as Section, sub: url.hash.replace(/^#/, "") || null };
 }
 
-export function limparPedidoDaUrl(): void {
+export function clearUrlRequest(): void {
   const url = new URL(window.location.href);
 
-  url.searchParams.delete(PARAMETRO);
+  url.searchParams.delete(PARAMETER);
   url.hash = "";
 
   window.history.replaceState(null, "", url.toString());

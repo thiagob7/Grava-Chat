@@ -19,7 +19,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
-const PERMISSOES_POR_TIPO: Record<"TEXTO" | "VOZ", Permission[]> = {
+const PERMISSIONS_BY_KIND: Record<"TEXTO" | "VOZ", Permission[]> = {
   TEXTO: [
     "VIEW_CHANNEL",
     "SEND_MESSAGES",
@@ -43,7 +43,7 @@ const PERMISSOES_POR_TIPO: Record<"TEXTO" | "VOZ", Permission[]> = {
   ],
 };
 
-type Estado = "herdar" | "permitir" | "negar";
+type State = "herdar" | "permitir" | "negar";
 
 interface ChannelPermissionsBoardProps {
   guildId: string;
@@ -51,7 +51,7 @@ interface ChannelPermissionsBoardProps {
   channelType: ChannelType;
   roles: Role[];
   members: GuildMember[];
-  minhasPermissoes: Permission[];
+  minePermissions: Permission[];
 }
 
 export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = ({
@@ -60,81 +60,81 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
   channelType,
   roles,
   members,
-  minhasPermissoes,
+  minePermissions,
 }) => {
   const { data: overwrites = [] } = useFindChannelOverwrites(guildId, channelId);
-  const salvar = useSetChannelOverwrite(guildId, channelId);
+  const save = useSetChannelOverwrite(guildId, channelId);
 
-  const [alvo, setAlvo] = useState<{ id: string; type: "ROLE" | "MEMBER" } | null>(null);
-  const [busca, setBusca] = useState("");
+  const [target, setTarget] = useState<{ id: string; type: "ROLE" | "MEMBER" } | null>(null);
+  const [search, setSearch] = useState("");
 
-  const [pendentes, setPendentes] = useState<{ id: string; type: "ROLE" | "MEMBER" }[]>([]);
+  const [pending, setPending] = useState<{ id: string; type: "ROLE" | "MEMBER" }[]>([]);
 
   const everyone = roles.find((r) => r.isEveryone);
 
   useEffect(() => {
-    if (!alvo && everyone) setAlvo({ id: everyone.id, type: "ROLE" });
-  }, [alvo, everyone]);
+    if (!target && everyone) setTarget({ id: everyone.id, type: "ROLE" });
+  }, [target, everyone]);
 
-  useEffect(() => setPendentes([]), [channelId]);
+  useEffect(() => setPending([]), [channelId]);
 
-  const lista = useMemo(() => {
-    const comOverwrite = new Set([
+  const list = useMemo(() => {
+    const withOverwrite = new Set([
       ...overwrites.map((o) => o.targetId),
-      ...pendentes.map((p) => p.id),
+      ...pending.map((p) => p.id),
     ]);
 
-    const cargos = roles
-      .filter((r) => r.isEveryone || comOverwrite.has(r.id))
+    const roleList = roles
+      .filter((r) => r.isEveryone || withOverwrite.has(r.id))
       .sort((a, b) => b.position - a.position)
-      .map((r) => ({ id: r.id, type: "ROLE" as const, nome: r.isEveryone ? "@everyone" : r.name, cor: r.color, user: null }));
+      .map((r) => ({ id: r.id, type: "ROLE" as const, name: r.isEveryone ? "@everyone" : r.name, color: r.color, user: null }));
 
-    const pessoas = members
-      .filter((m) => comOverwrite.has(m.user.id))
-      .map((m) => ({ id: m.user.id, type: "MEMBER" as const, nome: m.user.displayName, cor: null, user: m.user }));
+    const people = members
+      .filter((m) => withOverwrite.has(m.user.id))
+      .map((m) => ({ id: m.user.id, type: "MEMBER" as const, name: m.user.displayName, color: null, user: m.user }));
 
-    return [...cargos, ...pessoas];
-  }, [roles, members, overwrites, pendentes]);
+    return [...roleList, ...people];
+  }, [roles, members, overwrites, pending]);
 
-  const termo = busca.trim().toLowerCase();
-  const jaNaLista = new Set(lista.map((i) => i.id));
+  const term = search.trim().toLowerCase();
+  const alreadyList = new Set(list.map((i) => i.id));
 
-  const sugestoes = termo
+  const suggestions = term
     ? [
         ...roles
-          .filter((r) => !r.isEveryone && !jaNaLista.has(r.id) && r.name.toLowerCase().includes(termo))
-          .map((r) => ({ id: r.id, type: "ROLE" as const, nome: r.name, user: null })),
+          .filter((r) => !r.isEveryone && !alreadyList.has(r.id) && r.name.toLowerCase().includes(term))
+          .map((r) => ({ id: r.id, type: "ROLE" as const, name: r.name, user: null })),
         ...members
           .filter(
             (m) =>
-              !jaNaLista.has(m.user.id) &&
-              (m.user.displayName.toLowerCase().includes(termo) ||
-                m.user.username.toLowerCase().includes(termo)),
+              !alreadyList.has(m.user.id) &&
+              (m.user.displayName.toLowerCase().includes(term) ||
+                m.user.username.toLowerCase().includes(term)),
           )
-          .map((m) => ({ id: m.user.id, type: "MEMBER" as const, nome: m.user.displayName, user: m.user })),
+          .map((m) => ({ id: m.user.id, type: "MEMBER" as const, name: m.user.displayName, user: m.user })),
       ].slice(0, 8)
     : [];
 
-  const atual = overwrites.find((o) => o.targetId === alvo?.id);
-  const permissoes = PERMISSOES_POR_TIPO[channelType === "VOICE" ? "VOZ" : "TEXTO"];
-  const souAdmin = minhasPermissoes.includes("ADMINISTRATOR");
+  const current = overwrites.find((o) => o.targetId === target?.id);
+  const permissions = PERMISSIONS_BY_KIND[channelType === "VOICE" ? "VOZ" : "TEXTO"];
+  const amAdmin = minePermissions.includes("ADMINISTRATOR");
 
-  const estadoDe = (permissao: Permission): Estado => {
-    if (atual?.allow.includes(permissao)) return "permitir";
-    if (atual?.deny.includes(permissao)) return "negar";
+  const stateFor = (permission: Permission): State => {
+    if (current?.allow.includes(permission)) return "permitir";
+    if (current?.deny.includes(permission)) return "negar";
     return "herdar";
   };
 
-  const mudar = (permissao: Permission, estado: Estado) => {
-    if (!alvo) return;
+  const change = (permission: Permission, state: State) => {
+    if (!target) return;
 
-    const allow = (atual?.allow ?? []).filter((p) => p !== permissao);
-    const deny = (atual?.deny ?? []).filter((p) => p !== permissao);
+    const allow = (current?.allow ?? []).filter((p) => p !== permission);
+    const deny = (current?.deny ?? []).filter((p) => p !== permission);
 
-    if (estado === "permitir") allow.push(permissao);
-    if (estado === "negar") deny.push(permissao);
+    if (state === "permitir") allow.push(permission);
+    if (state === "negar") deny.push(permission);
 
-    salvar.mutate({ guildId, channelId, targetId: alvo.id, type: alvo.type, allow, deny });
+    save.mutate({ guildId, channelId, targetId: target.id, type: target.type, allow, deny });
   };
 
   return (
@@ -143,30 +143,30 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
               <div data-gc="servidor.channel-permissions-modal.div--2" className="flex items-center gap-2 rounded bg-surface-0 px-2">
                 <Search data-gc="servidor.channel-permissions-modal.search" size={14} className="text-ink-faint" />
                 <Input data-gc="servidor.channel-permissions-modal.input"
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   placeholder="Cargo ou pessoa"
                   className="bg-transparent px-0 py-1.5 text-sm"
                 />
               </div>
 
-              {sugestoes.length > 0 && (
+              {suggestions.length > 0 && (
                 <div data-gc="servidor.channel-permissions-modal.div--3" className="mt-1 overflow-hidden rounded border border-line bg-surface-1">
-                  {sugestoes.map((s) => (
+                  {suggestions.map((s) => (
                     <button data-gc="servidor.channel-permissions-modal.button"
                       key={`${s.type}-${s.id}`}
                       onClick={() => {
-                        setPendentes((atuais) =>
-                          atuais.some((p) => p.id === s.id)
-                            ? atuais
-                            : [...atuais, { id: s.id, type: s.type }],
+                        setPending((current) =>
+                          current.some((p) => p.id === s.id)
+                            ? current
+                            : [...current, { id: s.id, type: s.type }],
                         );
-                        setAlvo({ id: s.id, type: s.type });
-                        setBusca("");
+                        setTarget({ id: s.id, type: s.type });
+                        setSearch("");
                       }}
                       className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm transition hover:bg-surface-3"
                     >
-                      <span data-gc="servidor.channel-permissions-modal.span" className="truncate">{s.nome}</span>
+                      <span data-gc="servidor.channel-permissions-modal.span" className="truncate">{s.name}</span>
                       <span data-gc="servidor.channel-permissions-modal.span--2" className="ml-auto shrink-0 text-10 uppercase text-ink-faint">
                         {s.type === "ROLE" ? "cargo" : "pessoa"}
                       </span>
@@ -176,13 +176,13 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
               )}
 
               <div data-gc="servidor.channel-permissions-modal.div--4" className="mt-3 min-h-0 flex-1 overflow-y-auto">
-                {lista.map((item) => (
+                {list.map((item) => (
                   <button data-gc="servidor.channel-permissions-modal.button--2"
                     key={`${item.type}-${item.id}`}
-                    onClick={() => setAlvo({ id: item.id, type: item.type })}
+                    onClick={() => setTarget({ id: item.id, type: item.type })}
                     className={cn(
                       "mb-0.5 flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm transition",
-                      alvo?.id === item.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
+                      target?.id === item.id ? "bg-surface-4 text-ink" : "text-ink-muted hover:bg-surface-3",
                     )}
                   >
                     {item.user ? (
@@ -190,72 +190,72 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                     ) : (
                       <span data-gc="servidor.channel-permissions-modal.span--3"
                         className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: item.cor ?? "#99aab5" }}
+                        style={{ backgroundColor: item.color ?? "#99aab5" }}
                       />
                     )}
-                    <span data-gc="servidor.channel-permissions-modal.span--4" className="truncate">{item.nome}</span>
+                    <span data-gc="servidor.channel-permissions-modal.span--4" className="truncate">{item.name}</span>
                   </button>
                 ))}
               </div>
             </aside>
 
             <div data-gc="servidor.channel-permissions-modal.div--5" className="min-w-0 flex-1 overflow-y-auto pr-1">
-              {alvo ? (
+              {target ? (
                 <div data-gc="servidor.channel-permissions-modal.div--6" className="space-y-4">
-                  {permissoes.map((permissao) => {
-                    const rotulo = PERMISSION_LABELS[permissao];
-                    const bloqueado = !souAdmin && !minhasPermissoes.includes(permissao);
-                    const estado = estadoDe(permissao);
+                  {permissions.map((permission) => {
+                    const label = PERMISSION_LABELS[permission];
+                    const blocked = !amAdmin && !minePermissions.includes(permission);
+                    const state = stateFor(permission);
 
                     return (
-                      <div data-gc="servidor.channel-permissions-modal.div--7" key={permissao} className={cn("flex items-start gap-4", bloqueado && "opacity-60")}>
+                      <div data-gc="servidor.channel-permissions-modal.div--7" key={permission} className={cn("flex items-start gap-4", blocked && "opacity-60")}>
                         <div data-gc="servidor.channel-permissions-modal.div--8" className="min-w-0 flex-1">
-                          <p data-gc="servidor.channel-permissions-modal.p" className="text-sm font-medium">{rotulo.nome}</p>
-                          <p data-gc="servidor.channel-permissions-modal.p--2" className="mt-0.5 text-xs text-ink-faint">{rotulo.descricao}</p>
+                          <p data-gc="servidor.channel-permissions-modal.p" className="text-sm font-medium">{label.name}</p>
+                          <p data-gc="servidor.channel-permissions-modal.p--2" className="mt-0.5 text-xs text-ink-faint">{label.description}</p>
                         </div>
 
                         <div data-gc="servidor.channel-permissions-modal.div--9" className="flex shrink-0 overflow-hidden rounded border border-line">
-                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado"
-                            ativo={estado === "negar"}
-                            disabled={bloqueado}
-                            cor="danger"
-                            onClick={() => mudar(permissao, "negar")}
-                            titulo="Negar"
+                          <ButtonState data-gc="servidor.channel-permissions-modal.button-state"
+                            active={state === "negar"}
+                            disabled={blocked}
+                            color="danger"
+                            onClick={() => change(permission, "negar")}
+                            title="Negar"
                           >
                             <X data-gc="servidor.channel-permissions-modal.x" size={16} />
-                          </BotaoEstado>
-                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado--2"
-                            ativo={estado === "herdar"}
-                            disabled={bloqueado}
-                            cor="neutro"
-                            onClick={() => mudar(permissao, "herdar")}
-                            titulo="Herdar do cargo"
+                          </ButtonState>
+                          <ButtonState data-gc="servidor.channel-permissions-modal.button-state--2"
+                            active={state === "herdar"}
+                            disabled={blocked}
+                            color="neutro"
+                            onClick={() => change(permission, "herdar")}
+                            title="Herdar do cargo"
                           >
                             <Minus data-gc="servidor.channel-permissions-modal.minus" size={16} />
-                          </BotaoEstado>
-                          <BotaoEstado data-gc="servidor.channel-permissions-modal.botao-estado--3"
-                            ativo={estado === "permitir"}
-                            disabled={bloqueado}
-                            cor="online"
-                            onClick={() => mudar(permissao, "permitir")}
-                            titulo="Permitir"
+                          </ButtonState>
+                          <ButtonState data-gc="servidor.channel-permissions-modal.button-state--3"
+                            active={state === "permitir"}
+                            disabled={blocked}
+                            color="online"
+                            onClick={() => change(permission, "permitir")}
+                            title="Permitir"
                           >
                             <Check data-gc="servidor.channel-permissions-modal.check" size={16} />
-                          </BotaoEstado>
+                          </ButtonState>
                         </div>
                       </div>
                     );
                   })}
 
-                  {atual && (
+                  {current && (
                     <Button data-gc="servidor.channel-permissions-modal.button--3"
                       variant="ghost"
                       size="sm"
                       className="mt-2"
                       onClick={() =>
-                        salvar.mutate(
-                          { guildId, channelId, targetId: alvo.id, type: alvo.type, allow: [], deny: [] },
-                          { onSuccess: () => everyone && setAlvo({ id: everyone.id, type: "ROLE" }) },
+                        save.mutate(
+                          { guildId, channelId, targetId: target.id, type: target.type, allow: [], deny: [] },
+                          { onSuccess: () => everyone && setTarget({ id: everyone.id, type: "ROLE" }) },
                         )
                       }
                     >
@@ -301,33 +301,33 @@ export const ChannelPermissionsModal: React.FC<ChannelPermissionsModalProps> = (
   </Dialog>
 );
 
-interface BotaoEstadoProps {
-  ativo: boolean;
+interface ButtonStateProps {
+  active: boolean;
   disabled?: boolean;
-  cor: "danger" | "neutro" | "online";
-  titulo: string;
+  color: "danger" | "neutro" | "online";
+  title: string;
   onClick: () => void;
   children: React.ReactNode;
 }
 
-const BotaoEstado: React.FC<BotaoEstadoProps> = ({
-  ativo,
+const ButtonState: React.FC<ButtonStateProps> = ({
+  active,
   disabled,
-  cor,
-  titulo,
+  color,
+  title,
   onClick,
   children,
 }) => (
   <button data-gc="servidor.channel-permissions-modal.button.on-click"
     onClick={onClick}
     disabled={disabled}
-    title={titulo}
+    title={title}
     className={cn(
       "flex size-8 items-center justify-center transition disabled:cursor-not-allowed",
-      ativo
-        ? cor === "danger"
+      active
+        ? color === "danger"
           ? "bg-danger text-sobre-marca"
-          : cor === "online"
+          : color === "online"
             ? "bg-online text-sobre-marca"
             : "bg-surface-4 text-ink"
         : "text-ink-faint hover:bg-surface-3 hover:text-ink",

@@ -1,45 +1,56 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { idDoTemaNoLink } from "@gravae/shared";
+import { houseAddress, themeLinkId } from "@gravae/shared";
 
-import { useImportarTema } from "~/features/tema/stores/importar-tema";
+import { useImportTheme } from "~/features/tema/stores/importar-tema";
 import { flxCls } from "~/lib/compat-de-tema";
 import { cn } from "~/lib/utils";
+import { houseOrigins } from "~/lib/origens";
+import { LinkPreview } from "~/features/conversa/components/PreviaDoLink";
+import { Tooltip } from "~/components/ui/tooltip";
 
-export const LinkDoTexto: React.FC<{ url: string }> = ({ url }) => {
+export const TextLink: React.FC<{ url: string }> = ({ url }) => {
   const navigate = useNavigate();
-  const abrirTema = useImportarTema((s) => s.abrir);
+  const openTheme = useImportTheme((s) => s.open);
 
-  const daCasa = (() => {
-    try {
-      return new URL(url, window.location.origin).origin === window.location.origin;
-    } catch {
-      return false;
-    }
-  })();
+  const our = useMemo(() => houseOrigins(), []);
+  const address = houseAddress(url, our);
+  const fromHouse = address !== null;
+  const [peeking, setPeeking] = useState(false);
 
-  return (
+  const link = (
     <a data-gc="conversa.link-do-texto.a"
       href={url}
-      target={daCasa ? undefined : "_blank"}
+      target={fromHouse ? undefined : "_blank"}
       rel="noreferrer noopener"
-      className={cn("text-link hover:underline", flxCls("linkNoTexto"))}
-      onClick={(evento) => {
-        if (!daCasa || evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.button !== 0) return;
+      className={cn("text-link hover:underline", flxCls("linkText"))}
+      onClick={(event) => {
+        if (!address || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
 
-        evento.preventDefault();
+        event.preventDefault();
 
-        const tema = idDoTemaNoLink(url, window.location.origin);
-        if (tema) {
-          abrirTema(tema);
+        const theme = themeLinkId(url, our);
+        if (theme) {
+          openTheme(theme);
           return;
         }
 
-        const endereco = new URL(url, window.location.origin);
-        navigate(`${endereco.pathname}${endereco.search}${endereco.hash}`);
+        navigate(`${address.pathname}${address.search}${address.hash}`);
       }}
     >
       {url}
     </a>
+  );
+
+  if (fromHouse) return link;
+
+  return (
+    <Tooltip data-gc="conversa.link-do-texto.tooltip.set-peeking"
+      onOpenChange={setPeeking}
+      className="px-2.5 py-2.5"
+      label={<LinkPreview data-gc="conversa.link-do-texto.link-preview" url={url} active={peeking} />}
+    >
+      {link}
+    </Tooltip>
   );
 };

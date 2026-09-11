@@ -1,37 +1,37 @@
-import { PONTE_DE_TEMA, nomesDeclaradosNoTema } from "~/features/configuracoes/lib/ponte-de-tema";
-import { TOKENS_DERIVADOS } from "~/features/configuracoes/lib/cores-mae";
+import { THEME_BRIDGE, namesDeclaredTheme } from "~/features/configuracoes/lib/ponte-de-tema";
+import { TOKENS_DERIVED } from "~/features/configuracoes/lib/cores-mae";
 
-export interface CompatibilidadeDeTokens {
-  traduzidos: string[];
-  deduzidos: string[];
-  ignorados: string[];
+export interface TokensCompatibility {
+  translated: string[];
+  inferred: string[];
+  ignoredList: string[];
 }
 
-const usadaPeloProprioTema = (css: string, nome: string) =>
-  css.includes(`var(${nome}`) || css.includes(`var( ${nome}`);
+const usedByOwnTheme = (css: string, name: string) =>
+  css.includes(`var(${name}`) || css.includes(`var( ${name}`);
 
-export function conferirTokens(css: string): CompatibilidadeDeTokens {
-  const declarados = nomesDeclaradosNoTema(css);
+export function checkTokens(css: string): TokensCompatibility {
+  const declared = namesDeclaredTheme(css);
 
-  const traduzidos: string[] = [];
-  const ignorados: string[] = [];
-  const destinos = new Set<string>();
+  const translated: string[] = [];
+  const ignoredList: string[] = [];
+  const destinations = new Set<string>();
 
-  for (const nome of [...declarados].sort()) {
-    const alvos = PONTE_DE_TEMA[nome];
+  for (const name of [...declared].sort()) {
+    const targets = THEME_BRIDGE[name];
 
-    if (alvos) {
-      traduzidos.push(nome);
-      for (const alvo of alvos) destinos.add(alvo);
+    if (targets) {
+      translated.push(name);
+      for (const target of targets) destinations.add(target);
       continue;
     }
 
-    if (!usadaPeloProprioTema(css, nome)) ignorados.push(nome);
+    if (!usedByOwnTheme(css, name)) ignoredList.push(name);
   }
 
-  const deduzidos = [...TOKENS_DERIVADOS]
-    .filter((token) => !destinos.has(token))
+  const inferred = [...TOKENS_DERIVED]
+    .filter((token) => !destinations.has(token))
     .sort();
 
-  return { traduzidos, deduzidos, ignorados };
+  return { translated, inferred, ignoredList };
 }

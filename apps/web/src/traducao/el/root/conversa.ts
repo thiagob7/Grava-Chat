@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Ένα χεράκι που χαιρετά",
+    botao: "Χαιρετήστε τον/την {{nome}}",
+  },
+  oficial: {
+    titulo: "Αυτό το κανάλι είναι μόνο για επίσημες ανακοινώσεις.",
+    detalhe: "Ποτέ δεν ζητάμε τον κωδικό σας ούτε το διακριτικό του λογαριασμού.",
+    saibaMais: "Μάθετε περισσότερα",
+  },
+  topico: {
+    abrir: "Δείτε την περιγραφή του καναλιού",
+  },
+  previaDoLink: {
+    carregando: "Βλέπω τι έχει ο σύνδεσμος…",
+    destino: "Πάει στο {{destino}}",
+  },
+  reacao: {
+    carregando: "Βλέπω ποιος αντέδρασε με {{emoji}}…",
+    uma: "Ο/Η {{nome}} αντέδρασε με {{emoji}}",
+    duas: "{{primeiro}} και {{segundo}} αντέδρασαν με {{emoji}}",
+    varias: "{{nomes}} και άλλοι {{quantos}} αντέδρασαν με {{emoji}}",
+    dicaSuper: "Κρατήστε για σούπερ αντίδραση",
+  },
+  recado: {
+    gravar: "Ηχογράφηση μηνύματος",
+    descartar: "Απόρριψη της ηχογράφησης",
+    mandar: "Αποστολή της ηχογράφησης",
+    semSuporte: "Αυτό το πρόγραμμα περιήγησης δεν ηχογραφεί.",
+    semMicrofone: "Δεν υπάρχει πρόσβαση στο μικρόφωνο.",
+  },
   lista: {
     carregando: "Φόρτωση μηνυμάτων…",
     carregandoMais: "Φόρτωση…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Προβολή εικόνας",
   },
   enquete: {
+    criar: "Δημιουργία ψηφοφορίας",
+    pergunta: "Ερώτηση",
+    exemplo: "Τι θα παίξουμε σήμερα;",
+    respostas: "Απαντήσεις",
+    adicionarOpcao: "Προσθήκη επιλογής",
+    removerOpcao: "Αφαίρεση επιλογής",
+    varias: "Να επιτρέπονται πολλές απαντήσεις",
+    variasDetalhe: "Χωρίς αυτό, η ψήφος σε μια επιλογή αφαιρεί την ψήφο από την προηγούμενη.",
+    duracao: "Διάρκεια",
+    umaHora: "1 ώρα",
+    quatroHoras: "4 ώρες",
+    oitoHoras: "8 ώρες",
+    umDia: "1 ημέρα",
+    tresDias: "3 ημέρες",
+    umaSemana: "1 εβδομάδα",
+    ateEncerrar: "Μέχρι να την κλείσω",
     titulo: "Δημοσκόπηση",
     encerrada: "Η δημοσκόπηση έκλεισε",
     variasRespostas: "Δημοσκόπηση — πολλές απαντήσεις",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Η αναζήτηση κοιτάζει μόνο τα κανάλια που μπορείς να διαβάσεις.",
   },
   entrada: {
+    semNome: "συνομιλία",
+    anexo: "(συνημμένο)",
     titulo: "Εισερχόμενα",
     naoLidas: "Μη αναγνωσμένα",
     salvas: "Αποθηκευμένα",

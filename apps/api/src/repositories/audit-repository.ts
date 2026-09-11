@@ -23,11 +23,11 @@ export const auditRepository = {
 
 export const auditStatsRepository = {
   async countFor(guildId: string, userId: string) {
-    const [feitas, sofridas] = await Promise.all([
+    const [made, suffered] = await Promise.all([
       prisma.auditLog.count({ where: { guildId, actorId: userId } }),
       prisma.auditLog.count({ where: { guildId, targetId: userId } }),
     ]);
 
-    return { feitas, sofridas };
+    return { made, suffered };
   },
 };

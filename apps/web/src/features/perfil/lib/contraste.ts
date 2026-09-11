@@ -1,52 +1,52 @@
-const MINIMO = 3;
+const MIN = 3;
 
-const FUNDO_PADRAO = "#18181b";
+const DEFAULT_BACKGROUND = "#18181b";
 
-function canal(v: number): number {
+function channel(v: number): number {
   const c = v / 255;
   return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 }
 
-export function paraRgb(hex: string): [number, number, number] {
-  const limpo = hex.replace("#", "");
-  const cheio = limpo.length === 3 ? [...limpo].map((c) => c + c).join("") : limpo;
+export function forRgb(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "");
+  const full = clean.length === 3 ? [...clean].map((c) => c + c).join("") : clean;
 
   return [
-    parseInt(cheio.slice(0, 2), 16),
-    parseInt(cheio.slice(2, 4), 16),
-    parseInt(cheio.slice(4, 6), 16),
+    parseInt(full.slice(0, 2), 16),
+    parseInt(full.slice(2, 4), 16),
+    parseInt(full.slice(4, 6), 16),
   ];
 }
 
-const paraHex = (rgb: number[]) =>
+const forHex = (rgb: number[]) =>
   `#${rgb.map((v) => Math.round(Math.min(255, Math.max(0, v))).toString(16).padStart(2, "0")).join("")}`;
 
-export function luminancia(hex: string): number {
-  const [r, g, b] = paraRgb(hex);
-  return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b);
+export function luminance(hex: string): number {
+  const [r, g, b] = forRgb(hex);
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-export function contraste(a: string, b: string): number {
-  const la = luminancia(a);
-  const lb = luminancia(b);
+export function contrast(a: string, b: string): number {
+  const la = luminance(a);
+  const lb = luminance(b);
 
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
-export function legivel(cor: string, fundo: string = FUNDO_PADRAO): string {
-  if (!/^#[0-9a-fA-F]{3,6}$/.test(cor)) return cor;
-  if (contraste(cor, fundo) >= MINIMO) return cor;
+export function readable(color: string, background: string = DEFAULT_BACKGROUND): string {
+  if (!/^#[0-9a-fA-F]{3,6}$/.test(color)) return color;
+  if (contrast(color, background) >= MIN) return color;
 
-  const rgb = paraRgb(cor);
-  const alvoClaro = luminancia(fundo) < 0.5;
+  const rgb = forRgb(color);
+  const targetLight = luminance(background) < 0.5;
 
-  for (let passo = 1; passo <= 20; passo++) {
-    const fator = passo * 0.05;
-    const proximo = rgb.map((v) => (alvoClaro ? v + (255 - v) * fator : v * (1 - fator)));
-    const hex = paraHex(proximo);
+  for (let step = 1; step <= 20; step++) {
+    const factor = step * 0.05;
+    const next = rgb.map((v) => (targetLight ? v + (255 - v) * factor : v * (1 - factor)));
+    const hex = forHex(next);
 
-    if (contraste(hex, fundo) >= MINIMO) return hex;
+    if (contrast(hex, background) >= MIN) return hex;
   }
 
-  return alvoClaro ? "#ffffff" : "#000000";
+  return targetLight ? "#ffffff" : "#000000";
 }

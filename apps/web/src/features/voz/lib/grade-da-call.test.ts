@@ -1,106 +1,106 @@
 import { describe, expect, it } from "vitest";
 
-import { focar, formatoDaGrade, montarGrade } from "./grade-da-call";
+import { focus, formatGrid, buildGrid } from "./grade-da-call";
 
-const pessoa = (identity: string, transmitindo = false) => ({ identity, transmitindo });
+const person = (identity: string, broadcasting = false) => ({ identity, broadcasting });
 
 describe("montarGrade", () => {
   it("quem não transmite ocupa um quadro só", () => {
-    const grade = montarGrade([pessoa("ana"), pessoa("bia")]);
+    const grid = buildGrid([person("ana"), person("bia")]);
 
-    expect(grade.map((q) => q.key)).toEqual(["ana", "bia"]);
-    expect(grade.every((q) => q.tipo === "pessoa")).toBe(true);
+    expect(grid.map((q) => q.key)).toEqual(["ana", "bia"]);
+    expect(grid.every((q) => q.kind === "pessoa")).toBe(true);
   });
 
   it("quem transmite ocupa dois quadros: a pessoa e a live", () => {
-    const grade = montarGrade([pessoa("ana", true)]);
+    const grid = buildGrid([person("ana", true)]);
 
-    expect(grade).toHaveLength(2);
-    expect(grade.map((q) => q.tipo)).toEqual(["pessoa", "tela"]);
-    expect(grade.map((q) => q.key)).toEqual(["ana", "ana:tela"]);
+    expect(grid).toHaveLength(2);
+    expect(grid.map((q) => q.kind)).toEqual(["pessoa", "tela"]);
+    expect(grid.map((q) => q.key)).toEqual(["ana", "ana:tela"]);
   });
 
   it("a live fica ao lado de quem a abriu, não no fim da lista", () => {
-    const grade = montarGrade([pessoa("ana"), pessoa("bia", true), pessoa("caio")]);
+    const grid = buildGrid([person("ana"), person("bia", true), person("caio")]);
 
-    expect(grade.map((q) => q.key)).toEqual(["ana", "bia", "bia:tela", "caio"]);
+    expect(grid.map((q) => q.key)).toEqual(["ana", "bia", "bia:tela", "caio"]);
   });
 
   it("as chaves não colidem quando várias pessoas transmitem", () => {
-    const grade = montarGrade([pessoa("ana", true), pessoa("bia", true)]);
-    const chaves = grade.map((q) => q.key);
+    const grid = buildGrid([person("ana", true), person("bia", true)]);
+    const keys = grid.map((q) => q.key);
 
-    expect(new Set(chaves).size).toBe(chaves.length);
+    expect(new Set(keys).size).toBe(keys.length);
   });
 
   it("o quadro carrega o participante de origem — a live sabe de quem é", () => {
-    const tela = montarGrade([pessoa("ana", true)]).find((q) => q.tipo === "tela");
+    const display = buildGrid([person("ana", true)]).find((q) => q.kind === "tela");
 
-    expect(tela?.de.identity).toBe("ana");
+    expect(display?.de.identity).toBe("ana");
   });
 
   it("sala vazia não gera quadro", () => {
-    expect(montarGrade([])).toEqual([]);
+    expect(buildGrid([])).toEqual([]);
   });
 });
 
 describe("formatoDaGrade", () => {
   it("uma pessoa sozinha ocupa a largura toda", () => {
-    expect(formatoDaGrade(1).colunas).toBe(1);
+    expect(formatGrid(1).columns).toBe(1);
   });
 
   it("as colunas crescem com a quantidade em vez de travar em três", () => {
-    expect(formatoDaGrade(4).colunas).toBe(2);
-    expect(formatoDaGrade(9).colunas).toBe(3);
-    expect(formatoDaGrade(15).colunas).toBe(4);
-    expect(formatoDaGrade(20).colunas).toBe(5);
+    expect(formatGrid(4).columns).toBe(2);
+    expect(formatGrid(9).columns).toBe(3);
+    expect(formatGrid(15).columns).toBe(4);
+    expect(formatGrid(20).columns).toBe(5);
   });
 
   it("as colunas nunca passam de cinco, senão o quadro fica ilegível", () => {
-    expect(formatoDaGrade(50).colunas).toBe(5);
+    expect(formatGrid(50).columns).toBe(5);
   });
 
   it("chamada pequena não usa o modo denso", () => {
-    expect(formatoDaGrade(4).denso).toBe(false);
-    expect(formatoDaGrade(9).denso).toBe(false);
+    expect(formatGrid(4).dense).toBe(false);
+    expect(formatGrid(9).dense).toBe(false);
   });
 
   it("chamada grande entra no modo denso pra caber sem rolagem", () => {
-    expect(formatoDaGrade(10).denso).toBe(true);
-    expect(formatoDaGrade(15).denso).toBe(true);
+    expect(formatGrid(10).dense).toBe(true);
+    expect(formatGrid(15).dense).toBe(true);
   });
 
   it("nunca devolve zero coluna, nem com a sala vazia", () => {
-    expect(formatoDaGrade(0).colunas).toBeGreaterThanOrEqual(1);
+    expect(formatGrid(0).columns).toBeGreaterThanOrEqual(1);
   });
 });
 
 describe("focar", () => {
-  const quadros = montarGrade([pessoa("ana"), pessoa("bia", true), pessoa("caio")]);
+  const frames = buildGrid([person("ana"), person("bia", true), person("caio")]);
 
   it("sem foco, não há destaque", () => {
-    expect(focar(quadros, null)).toBeNull();
+    expect(focus(frames, null)).toBeNull();
   });
 
   it("o quadro focado vira destaque e sai da faixa", () => {
-    const foco = focar(quadros, "bia:tela");
+    const spotlight = focus(frames, "bia:tela");
 
-    expect(foco?.destaque.key).toBe("bia:tela");
-    expect(foco?.faixa.map((q) => q.key)).toEqual(["ana", "bia", "caio"]);
+    expect(spotlight?.highlight.key).toBe("bia:tela");
+    expect(spotlight?.track.map((q) => q.key)).toEqual(["ana", "bia", "caio"]);
   });
 
   it("a faixa preserva a ordem original", () => {
-    expect(focar(quadros, "ana")?.faixa.map((q) => q.key)).toEqual(["bia", "bia:tela", "caio"]);
+    expect(focus(frames, "ana")?.track.map((q) => q.key)).toEqual(["bia", "bia:tela", "caio"]);
   });
 
   it("foco em quadro que sumiu volta pra grade normal", () => {
-    expect(focar(quadros, "alguem-que-saiu")).toBeNull();
+    expect(focus(frames, "alguem-que-saiu")).toBeNull();
   });
 
   it("quadro sozinho vira destaque com faixa vazia", () => {
-    const foco = focar(montarGrade([pessoa("ana")]), "ana");
+    const spotlight = focus(buildGrid([person("ana")]), "ana");
 
-    expect(foco?.destaque.key).toBe("ana");
-    expect(foco?.faixa).toEqual([]);
+    expect(spotlight?.highlight.key).toBe("ana");
+    expect(spotlight?.track).toEqual([]);
   });
 });

@@ -4,64 +4,64 @@ import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { voiceService } from "~/services/voice-service.js";
 
-export const PECAS = ["api", "banco", "cache", "sfu"] as const;
-export type Peca = (typeof PECAS)[number];
+export const PIECES = ["api", "banco", "cache", "sfu"] as const;
+export type Piece = (typeof PIECES)[number];
 
-const INTERVALO_MS = 60_000;
+const INTERVAL_MS = 60_000;
 
-const ATRASO_INICIAL_MS = 15_000;
+const DELAY_INITIAL_MS = 15_000;
 
-export const DIAS_GUARDADOS = 90;
+export const DAYS_STORED = 90;
 
-export interface Medida {
-  peca: Peca;
-  estado: "up" | "down";
+export interface Measure {
+  piece: Piece;
+  state: "up" | "down";
   ms: number;
 }
 
-export const diaUtc = (quando = new Date()) => quando.toISOString().slice(0, 10);
+export const dayUtc = (when = new Date()) => when.toISOString().slice(0, 10);
 
-async function medir(peca: Peca, tarefa: () => Promise<unknown>): Promise<Medida> {
-  const comeco = performance.now();
+async function measure(piece: Piece, tarefa: () => Promise<unknown>): Promise<Measure> {
+  const start = performance.now();
 
   try {
     await tarefa();
-    return { peca, estado: "up", ms: Math.round(performance.now() - comeco) };
+    return { piece, state: "up", ms: Math.round(performance.now() - start) };
   } catch {
-    return { peca, estado: "down", ms: Math.round(performance.now() - comeco) };
+    return { piece, state: "down", ms: Math.round(performance.now() - start) };
   }
 }
 
-export async function estadoAgora(): Promise<Medida[]> {
+export async function stateNow(): Promise<Measure[]> {
   const [banco, cache, sfu] = await Promise.all([
-    medir("banco", () => prisma.$runCommandRaw({ ping: 1 })),
-    medir("cache", () => redis.ping()),
-    medir("sfu", async () => {
-      const estado = await voiceService.estadoDoSfu();
-      if (!estado) throw new Error("sfu não respondeu");
+    measure("banco", () => prisma.$runCommandRaw({ ping: 1 })),
+    measure("cache", () => redis.ping()),
+    measure("sfu", async () => {
+      const state = await voiceService.sfuState();
+      if (!state) throw new Error("sfu não respondeu");
     }),
   ]);
 
-  return [{ peca: "api", estado: "up", ms: 0 }, banco, cache, sfu];
+  return [{ piece: "api", state: "up", ms: 0 }, banco, cache, sfu];
 }
 
-async function gravar(medidas: Medida[]): Promise<void> {
-  const dia = diaUtc();
+async function record(measures: Measure[]): Promise<void> {
+  const day = dayUtc();
 
   await Promise.all(
-    medidas.map((m) =>
-      prisma.statusDoDia.upsert({
-        where: { peca_dia: { peca: m.peca, dia } },
+    measures.map((m) =>
+      prisma.dayStatus.upsert({
+        where: { piece_day: { piece: m.piece, day } },
         create: {
-          peca: m.peca,
-          dia,
-          medidas: 1,
-          falhas: m.estado === "down" ? 1 : 0,
+          piece: m.piece,
+          day,
+          measures: 1,
+          failures: m.state === "down" ? 1 : 0,
           msSoma: m.ms,
         },
         update: {
-          medidas: { increment: 1 },
-          falhas: { increment: m.estado === "down" ? 1 : 0 },
+          measures: { increment: 1 },
+          failures: { increment: m.state === "down" ? 1 : 0 },
           msSoma: { increment: m.ms },
         },
       }),
@@ -69,73 +69,73 @@ async function gravar(medidas: Medida[]): Promise<void> {
   );
 }
 
-async function podar(): Promise<number> {
-  const limite = new Date(Date.now() - DIAS_GUARDADOS * 24 * 60 * 60 * 1000);
-  const { count } = await prisma.statusDoDia.deleteMany({
-    where: { dia: { lt: diaUtc(limite) } },
+async function prune(): Promise<number> {
+  const limit = new Date(Date.now() - DAYS_STORED * 24 * 60 * 60 * 1000);
+  const { count } = await prisma.dayStatus.deleteMany({
+    where: { day: { lt: dayUtc(limit) } },
   });
 
   return count;
 }
 
 export const statusService = {
-  estadoAgora,
+  stateNow,
 
-  async janela(): Promise<Record<Peca, { dia: string; uptime: number | null }[]>> {
-    const inicio = new Date(Date.now() - (DIAS_GUARDADOS - 1) * 24 * 60 * 60 * 1000);
+  async appWindow(): Promise<Record<Piece, { day: string; uptime: number | null }[]>> {
+    const start = new Date(Date.now() - (DAYS_STORED - 1) * 24 * 60 * 60 * 1000);
 
-    const registros = await prisma.statusDoDia.findMany({
-      where: { dia: { gte: diaUtc(inicio) } },
+    const records = await prisma.dayStatus.findMany({
+      where: { day: { gte: dayUtc(start) } },
     });
 
-    const porChave = new Map(registros.map((r) => [`${r.peca}|${r.dia}`, r]));
-    const saida = {} as Record<Peca, { dia: string; uptime: number | null }[]>;
+    const byKey = new Map(records.map((r) => [`${r.piece}|${r.day}`, r]));
+    const output = {} as Record<Piece, { day: string; uptime: number | null }[]>;
 
-    for (const peca of PECAS) {
-      saida[peca] = Array.from({ length: DIAS_GUARDADOS }, (_, i) => {
-        const dia = diaUtc(new Date(inicio.getTime() + i * 24 * 60 * 60 * 1000));
-        const registro = porChave.get(`${peca}|${dia}`);
+    for (const piece of PIECES) {
+      output[piece] = Array.from({ length: DAYS_STORED }, (_, i) => {
+        const day = dayUtc(new Date(start.getTime() + i * 24 * 60 * 60 * 1000));
+        const record = byKey.get(`${piece}|${day}`);
 
-        if (!registro?.medidas) return { dia, uptime: null };
+        if (!record?.measures) return { day, uptime: null };
 
-        const bons = registro.medidas - registro.falhas;
-        return { dia, uptime: Math.round((bons / registro.medidas) * 10000) / 100 };
+        const good = record.measures - record.failures;
+        return { day, uptime: Math.round((good / record.measures) * 10000) / 100 };
       });
     }
 
-    return saida;
+    return output;
   },
 
-  vigiar(log?: FastifyBaseLogger) {
-    const rodada = () => {
-      void estadoAgora()
-        .then(async (medidas) => {
-          await gravar(medidas);
+  watch(log?: FastifyBaseLogger) {
+    const round = () => {
+      void stateNow()
+        .then(async (measures) => {
+          await record(measures);
 
-          const caidas = medidas.filter((m) => m.estado === "down").map((m) => m.peca);
-          if (caidas.length) log?.warn({ caidas }, "peças fora do ar");
+          const fallen = measures.filter((m) => m.state === "down").map((m) => m.piece);
+          if (fallen.length) log?.warn({ fallen }, "peças fora do ar");
         })
         .catch((err) => log?.error({ err }, "rodada de status falhou"));
     };
 
-    const limpeza = () => {
-      void podar()
-        .then((apagados) => apagados && log?.info({ apagados }, "dias de status podados"))
+    const cleanup = () => {
+      void prune()
+        .then((deleted) => deleted && log?.info({ deleted }, "dias de status podados"))
         .catch((err) => log?.error({ err }, "poda de status falhou"));
     };
 
-    const primeira = setTimeout(rodada, ATRASO_INICIAL_MS);
-    const relogio = setInterval(rodada, INTERVALO_MS);
-    const faxina = setInterval(limpeza, 60 * 60 * 1000);
+    const first = setTimeout(round, DELAY_INITIAL_MS);
+    const clock = setInterval(round, INTERVAL_MS);
+    const cleaner = setInterval(cleanup, 60 * 60 * 1000);
 
-    primeira.unref();
-    relogio.unref();
-    faxina.unref();
+    first.unref();
+    clock.unref();
+    cleaner.unref();
 
     return () => {
-      clearTimeout(primeira);
-      clearInterval(relogio);
-      clearInterval(faxina);
+      clearTimeout(first);
+      clearInterval(clock);
+      clearInterval(cleaner);
     };
   },
 };

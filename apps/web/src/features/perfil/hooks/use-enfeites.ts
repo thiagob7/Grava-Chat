@@ -1,57 +1,57 @@
 import { useCallback, useMemo } from "react";
-import type { PerfilPublico } from "@gravae/shared";
+import type { ProfilePublic } from "@gravae/shared";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 
-export interface EnfeitesDaPessoa {
-  perfil: PerfilPublico | null;
-  corDoCargo: string | null;
+export interface PersonCharms {
+  profile: ProfilePublic | null;
+  roleColor: string | null;
 }
 
-const SEM_ENFEITE: EnfeitesDaPessoa = { perfil: null, corDoCargo: null };
+const WITHOUT_CHARM: PersonCharms = { profile: null, roleColor: null };
 
-export function useEnfeites(guildId: string | undefined) {
+export function useCharms(guildId: string | undefined) {
   const { data: detail } = useFindGuild(guildId);
 
-  const cores = useMemo(() => {
-    const mapa = new Map<string, string>();
-    if (!detail) return mapa;
+  const colors = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!detail) return map;
 
-    const comCor = detail.roles.filter((r) => r.color).sort((a, b) => b.position - a.position);
-    if (comCor.length === 0) return mapa;
+    const withColor = detail.roles.filter((r) => r.color).sort((a, b) => b.position - a.position);
+    if (withColor.length === 0) return map;
 
     for (const m of detail.members) {
-      const cargo = comCor.find((r) => m.roleIds.includes(r.id));
-      if (cargo?.color) mapa.set(m.user.id, cargo.color);
+      const role = withColor.find((r) => m.roleIds.includes(r.id));
+      if (role?.color) map.set(m.user.id, role.color);
     }
 
-    return mapa;
+    return map;
   }, [detail]);
 
-  const emblemasDe = useCallback(
+  const badges = useCallback(
     (userId: string) => {
-      const ids = detail?.profiles?.[userId]?.emblemas ?? [];
+      const ids = detail?.profiles?.[userId]?.badges ?? [];
       if (!ids.length) return [];
 
-      const porId = new Map((detail?.emblemas ?? []).map((e) => [e.id, e]));
-      return ids.map((id) => porId.get(id)).filter((e) => e !== undefined);
+      const byId = new Map((detail?.badges ?? []).map((e) => [e.id, e]));
+      return ids.map((id) => byId.get(id)).filter((e) => e !== undefined);
     },
     [detail],
   );
 
-  const resolver = useCallback(
-    (userId: string): EnfeitesDaPessoa => {
-      const perfil = detail?.profiles?.[userId] ?? null;
-      const corDoCargo = cores.get(userId) ?? null;
+  const resolve = useCallback(
+    (userId: string): PersonCharms => {
+      const profile = detail?.profiles?.[userId] ?? null;
+      const roleColor = colors.get(userId) ?? null;
 
-      if (!perfil && !corDoCargo) return SEM_ENFEITE;
+      if (!profile && !roleColor) return WITHOUT_CHARM;
 
-      return { perfil, corDoCargo };
+      return { profile, roleColor };
     },
-    [detail, cores],
+    [detail, colors],
   );
 
-  return Object.assign(resolver, { emblemasDe });
+  return Object.assign(resolve, { badges });
 }
 
-export type ResolverEnfeites = ReturnType<typeof useEnfeites>;
+export type ResolveCharms = ReturnType<typeof useCharms>;

@@ -10,10 +10,10 @@ import type {
   ServerToClientEvents,
 } from "@gravae/shared";
 
-import { Rest, type OpcoesDoCliente } from "./rest.js";
+import { Rest, type ClientOptions } from "./rest.js";
 
-export { ErroDaApi, motivoDoErro, adiantaInsistir } from "./rest.js";
-export type { OpcoesDoCliente } from "./rest.js";
+export { ApiError, errorReason, helpsInsist } from "./rest.js";
+export type { ClientOptions } from "./rest.js";
 
 /*
   O cliente é fino de propósito.
@@ -29,44 +29,44 @@ export class Gravae {
   private readonly base: string;
   private readonly token: string;
 
-  constructor(opcoes: OpcoesDoCliente) {
-    this.rest = new Rest(opcoes);
-    this.token = opcoes.token;
-    this.base = (opcoes.base ?? "https://gravaechat-api.duckdns.org/api").replace(/\/api\/?$/, "");
+  constructor(options: ClientOptions) {
+    this.rest = new Rest(options);
+    this.token = options.token;
+    this.base = (options.base ?? "https://gravaechat-api.duckdns.org/api").replace(/\/api\/?$/, "");
   }
 
   // ---- identidade ----
 
   eu() {
-    return this.rest.pedir<PublicUser>("GET", "/bot/eu");
+    return this.rest.askFor<PublicUser>("GET", "/bot/eu");
   }
 
   // ---- servidores e canais ----
 
-  servidores() {
-    return this.rest.pedir<Guild[]>("GET", "/bot/servidores");
+  servers() {
+    return this.rest.askFor<Guild[]>("GET", "/bot/servidores");
   }
 
-  canais(guildId: string) {
-    return this.rest.pedir<Channel[]>("GET", `/bot/servidores/${guildId}/canais`);
+  channels(guildId: string) {
+    return this.rest.askFor<Channel[]>("GET", `/bot/servidores/${guildId}/canais`);
   }
 
-  criarCanal(guildId: string, dados: { name: string; type?: "TEXT" | "VOICE" | "FORUM" }) {
-    return this.rest.pedir<Channel>("POST", `/bot/servidores/${guildId}/canais`, dados);
+  createChannel(guildId: string, data: { name: string; type?: "TEXT" | "VOICE" | "FORUM" }) {
+    return this.rest.askFor<Channel>("POST", `/bot/servidores/${guildId}/canais`, data);
   }
 
   // ---- membros e cargos ----
 
-  membros(guildId: string) {
-    return this.rest.pedir<GuildMember[]>("GET", `/bot/servidores/${guildId}/membros`);
+  members(guildId: string) {
+    return this.rest.askFor<GuildMember[]>("GET", `/bot/servidores/${guildId}/membros`);
   }
 
-  cargos(guildId: string) {
-    return this.rest.pedir<Role[]>("GET", `/bot/servidores/${guildId}/cargos`);
+  roleList(guildId: string) {
+    return this.rest.askFor<Role[]>("GET", `/bot/servidores/${guildId}/cargos`);
   }
 
-  darCargos(guildId: string, userId: string, roleIds: string[]) {
-    return this.rest.pedir<GuildMember>(
+  giveRoles(guildId: string, userId: string, roleIds: string[]) {
+    return this.rest.askFor<GuildMember>(
       "PUT",
       `/bot/servidores/${guildId}/membros/${userId}/cargos`,
       { roleIds },
@@ -75,21 +75,21 @@ export class Gravae {
 
   // ---- moderação ----
 
-  castigar(guildId: string, userId: string, minutos: number, reason?: string) {
-    return this.rest.pedir("PUT", `/bot/servidores/${guildId}/castigos/${userId}`, {
-      minutos,
+  timeout(guildId: string, userId: string, minutes: number, reason?: string) {
+    return this.rest.askFor("PUT", `/bot/servidores/${guildId}/castigos/${userId}`, {
+      minutes,
       reason,
     });
   }
 
-  banir(guildId: string, userId: string, opcoes: { reason?: string; apagarHoras?: number } = {}) {
-    return this.rest.pedir("PUT", `/bot/servidores/${guildId}/banimentos/${userId}`, opcoes);
+  ban(guildId: string, userId: string, options: { reason?: string; deleteHours?: number } = {}) {
+    return this.rest.askFor("PUT", `/bot/servidores/${guildId}/banimentos/${userId}`, options);
   }
 
   // ---- expressões ----
 
-  expressoes(guildId: string) {
-    return this.rest.pedir<{ emojis: GuildEmoji[] }>(
+  expressions(guildId: string) {
+    return this.rest.askFor<{ emojis: GuildEmoji[] }>(
       "GET",
       `/bot/servidores/${guildId}/expressoes`,
     );
@@ -97,43 +97,43 @@ export class Gravae {
 
   // ---- mensagens ----
 
-  enviar(channelId: string, conteudo: string | { content: string; replyToId?: string }) {
-    const corpo = typeof conteudo === "string" ? { content: conteudo } : conteudo;
+  send(channelId: string, content: string | { content: string; replyToId?: string }) {
+    const body = typeof content === "string" ? { content: content } : content;
 
-    return this.rest.pedir<Message>("POST", `/bot/canais/${channelId}/mensagens`, corpo);
+    return this.rest.askFor<Message>("POST", `/bot/canais/${channelId}/mensagens`, body);
   }
 
-  historico(channelId: string, opcoes: { before?: string; limit?: number } = {}) {
-    const busca = new URLSearchParams();
+  past(channelId: string, options: { before?: string; limit?: number } = {}) {
+    const search = new URLSearchParams();
 
-    if (opcoes.before) busca.set("before", opcoes.before);
-    if (opcoes.limit) busca.set("limit", String(opcoes.limit));
+    if (options.before) search.set("before", options.before);
+    if (options.limit) search.set("limit", String(options.limit));
 
-    const cauda = busca.size ? `?${busca}` : "";
+    const cauda = search.size ? `?${search}` : "";
 
-    return this.rest.pedir<Message[]>("GET", `/bot/canais/${channelId}/mensagens${cauda}`);
+    return this.rest.askFor<Message[]>("GET", `/bot/canais/${channelId}/mensagens${cauda}`);
   }
 
-  editar(messageId: string, content: string) {
-    return this.rest.pedir<Message>("PATCH", `/bot/mensagens/${messageId}`, { content });
+  edit(messageId: string, content: string) {
+    return this.rest.askFor<Message>("PATCH", `/bot/mensagens/${messageId}`, { content });
   }
 
-  apagar(messageId: string) {
-    return this.rest.pedir<void>("DELETE", `/bot/mensagens/${messageId}`);
+  doDelete(messageId: string) {
+    return this.rest.askFor<void>("DELETE", `/bot/mensagens/${messageId}`);
   }
 
-  reagir(messageId: string, emoji: string) {
-    return this.rest.pedir("PUT", `/bot/mensagens/${messageId}/reacoes/${encodeURIComponent(emoji)}`);
+  react(messageId: string, emoji: string) {
+    return this.rest.askFor("PUT", `/bot/mensagens/${messageId}/reacoes/${encodeURIComponent(emoji)}`);
   }
 
-  fixar(messageId: string) {
-    return this.rest.pedir("PUT", `/bot/mensagens/${messageId}/fixar`);
+  pin(messageId: string) {
+    return this.rest.askFor("PUT", `/bot/mensagens/${messageId}/fixar`);
   }
 
   // ---- comandos de barra ----
 
-  definirComandos(comandos: unknown[]) {
-    return this.rest.pedir("PUT", "/bot/comandos", { comandos });
+  setCommands(commands: unknown[]) {
+    return this.rest.askFor("PUT", "/bot/comandos", { commands });
   }
 
   // ---- tempo real ----
@@ -142,7 +142,7 @@ export class Gravae {
    * Abre a conexão. O bot NÃO precisa se inscrever em canal: ao conectar, ele
    * já recebe tudo o que o cargo dele alcança.
    */
-  conectar() {
+  connect() {
     if (this.socket) return this.socket;
 
     this.socket = io(this.base, {
@@ -154,12 +154,12 @@ export class Gravae {
   }
 
   /** Escuta um evento do servidor, com o tipo certo do payload. */
-  ao<E extends keyof ServerToClientEvents>(evento: E, ouvinte: ServerToClientEvents[E]) {
-    this.conectar().on(evento as string, ouvinte as never);
+  ao<E extends keyof ServerToClientEvents>(event: E, listener: ServerToClientEvents[E]) {
+    this.connect().on(event as string, listener as never);
     return this;
   }
 
-  desconectar() {
+  disconnect() {
     this.socket?.disconnect();
     this.socket = null;
   }

@@ -10,213 +10,213 @@ import {
   DialogDescription,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { useFindEmComum } from "~/@core/application/queries/user/use-find-em-comum";
-import { corMaisAlta } from "~/features/perfil/lib/cargo";
+import { useFindCommon } from "~/@core/application/queries/user/use-find-em-comum";
+import { colorMoreHigh } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { avatarColor } from "~/lib/format";
-import { idiomaAtual, useTranslation } from "~/traducao";
-import { flx, flxCls, type Lugares } from "~/lib/compat-de-tema";
+import { currentLanguage, useTranslation } from "~/traducao";
+import { flx, flxCls, type Places } from "~/lib/compat-de-tema";
 
 interface FullProfileModalProps {
   open: boolean;
-  perfil: ProfileModel;
-  cargos?: Role[];
+  profile: ProfileModel;
+  roleList?: Role[];
   onClose: () => void;
 }
 
-type Aba = "geral" | "amigos" | "servidores";
+type Tab = "geral" | "amigos" | "servidores";
 
-const MascaraDaFaixa: React.FC<{ id: string; lugar: Lugares; cx: number; raio: number }> = ({
+const TrackMask: React.FC<{ id: string; place: Places; cx: number; radius: number }> = ({
   id,
-  lugar,
+  place,
   cx,
-  raio,
+  radius,
 }) => (
-  <svg data-gc="perfil.full-profile-modal.svg" aria-hidden className={cn(flxCls(lugar), "absolute size-0")}>
+  <svg data-gc="perfil.full-profile-modal.svg" aria-hidden className={cn(flxCls(place), "absolute size-0")}>
     <mask data-gc="perfil.full-profile-modal.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
       <rect data-gc="perfil.full-profile-modal.rect" width="100%" height="100%" fill="white" />
-      <circle data-gc="perfil.full-profile-modal.circle" cx={cx} cy="100%" r={raio} fill="black" />
+      <circle data-gc="perfil.full-profile-modal.circle" cx={cx} cy="100%" r={radius} fill="black" />
     </mask>
   </svg>
 );
 
 export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
-  perfil,
-  cargos = [],
+  profile,
+  roleList = [],
   onClose,
 }) => {
   const { t } = useTranslation();
-  const idDaMascara = React.useId();
-  const [aba, setAba] = useState<Aba>("geral");
-  const emComum = useFindEmComum(perfil.id, aba !== "geral");
+  const maskId = React.useId();
+  const [tab, setTab] = useState<Tab>("geral");
+  const inCommon = useFindCommon(profile.id, tab !== "geral");
 
-  const abas: { id: Aba; rotulo: string }[] = [
-    { id: "geral" as const, rotulo: t("perfil.visaoGeral") },
-    ...(perfil.mutualFriends > 0
-      ? [{ id: "amigos" as const, rotulo: t("perfil.amigosEmComum", { quantidade: perfil.mutualFriends }) }]
+  const tabs: { id: Tab; label: string }[] = [
+    { id: "geral" as const, label: t("perfil.visaoGeral") },
+    ...(profile.mutualFriends > 0
+      ? [{ id: "amigos" as const, label: t("perfil.amigosEmComum", { quantidade: profile.mutualFriends }) }]
       : []),
-    ...(perfil.mutualGuilds > 0
-      ? [{ id: "servidores" as const, rotulo: t("perfil.servidoresEmComum", { quantidade: perfil.mutualGuilds }) }]
+    ...(profile.mutualGuilds > 0
+      ? [{ id: "servidores" as const, label: t("perfil.servidoresEmComum", { quantidade: profile.mutualGuilds }) }]
       : []),
   ];
 
   return (
-  <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+  <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
     <DialogContent data-gc="perfil.full-profile-modal.dialog-content"
-      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("perfilCompleto"), flxCls("conteudoDoPerfilCompleto"))}
+      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("completeProfile"), flxCls("profileCompleteContent"))}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
-      <MascaraDaFaixa data-gc="perfil.full-profile-modal.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixaNoPerfil" cx={72} raio={56} />
+      <TrackMask data-gc="perfil.full-profile-modal.track-mask" id={maskId} place="trackProfileMask" cx={72} radius={56} />
       <div data-gc="perfil.full-profile-modal.div"
         className="h-28 bg-cover bg-center"
         style={{
-          mask: `url(#${idDaMascara})`,
-          WebkitMask: `url(#${idDaMascara})`,
-          backgroundColor: perfil.perfil?.bannerCor ?? avatarColor(perfil.id),
-          ...(perfil.perfil?.bannerUrl
-            ? { backgroundImage: `url(${perfil.perfil.bannerUrl})` }
+          mask: `url(#${maskId})`,
+          WebkitMask: `url(#${maskId})`,
+          backgroundColor: profile.profile?.bannerColor?.trim() || avatarColor(profile.id),
+          ...(profile.profile?.bannerUrl
+            ? { backgroundImage: `url(${profile.profile.bannerUrl})` }
             : null),
         }}
       />
 
-      <div data-gc="perfil.full-profile-modal.div--2" {...flx("conteudoDoPerfil", "px-6 pb-6")}>
+      <div data-gc="perfil.full-profile-modal.div--2" {...flx("profileContent", "px-6 pb-6")}>
         <div data-gc="perfil.full-profile-modal.div--3" className="-mt-14 mb-4">
           <Avatar data-gc="perfil.full-profile-modal.avatar"
-            id={perfil.id}
-            name={perfil.displayName}
-            url={perfil.avatarUrl}
+            id={profile.id}
+            name={profile.displayName}
+            url={profile.avatarUrl}
             size={96}
-            status={perfil.status}
-            enfeites={perfil.perfil}
-            animar
+            status={profile.status}
+            charms={profile.profile}
+            animate
             className="rounded-full ring-[6px] ring-surface-3"
           />
         </div>
 
         <DialogTitle data-gc="perfil.full-profile-modal.dialog-title" className="text-2xl font-bold leading-tight">
           <UserName data-gc="perfil.full-profile-modal.user-name"
-            nome={perfil.displayName}
-            perfil={perfil.perfil}
-            corDoCargo={corMaisAlta(cargos)}
-            tamanho="md"
-            animar
-            fundo="#27272a"
-            ehBot={perfil.isBot}
-            ehSistema={perfil.sistema}
+            name={profile.displayName}
+            profile={profile.profile}
+            roleColor={colorMoreHigh(roleList)}
+            size="md"
+            animate
+            background="#27272a"
+            isBot={profile.isBot}
+            isSystem={profile.system}
           />
         </DialogTitle>
-        <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{perfil.username}</DialogDescription>
+        <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{profile.username}</DialogDescription>
 
-        {abas.length > 1 && (
-          <div data-gc="perfil.full-profile-modal.div--4" {...flx("molduraDasAbas", "mt-4 flex gap-4 border-b border-line")}>
-            {abas.map((item) => (
+        {tabs.length > 1 && (
+          <div data-gc="perfil.full-profile-modal.div--4" {...flx("tabsFrame", "mt-4 flex gap-4 border-b border-line")}>
+            {tabs.map((item) => (
               <button data-gc="perfil.full-profile-modal.button"
                 key={item.id}
-                onClick={() => setAba(item.id)}
-                aria-current={aba === item.id}
+                onClick={() => setTab(item.id)}
+                aria-current={tab === item.id}
                 className={cn(
                   "-mb-px border-b-2 pb-2 text-sm transition",
-                  aba === item.id
+                  tab === item.id
                     ? "border-brand font-medium text-ink"
                     : "border-transparent text-ink-muted hover:text-ink",
                 )}
               >
-                {item.rotulo}
+                {item.label}
               </button>
             ))}
           </div>
         )}
 
-        {aba !== "geral" && emComum.isPending && (
+        {tab !== "geral" && inCommon.isPending && (
           <p data-gc="perfil.full-profile-modal.p" className="py-8 text-center text-sm text-ink-faint">{t("perfil.carregando")}</p>
         )}
 
-        {aba === "amigos" && emComum.data && (
+        {tab === "amigos" && inCommon.data && (
           <div data-gc="perfil.full-profile-modal.div--5" className="mt-4 space-y-1">
-            {emComum.data.amigos.map((amigo) => (
-              <div data-gc="perfil.full-profile-modal.div--6" key={amigo.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+            {inCommon.data.friends.map((friend) => (
+              <div data-gc="perfil.full-profile-modal.div--6" key={friend.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
                 <Avatar data-gc="perfil.full-profile-modal.avatar--2"
-                  id={amigo.id}
-                  name={amigo.displayName}
-                  url={amigo.avatarUrl}
+                  id={friend.id}
+                  name={friend.displayName}
+                  url={friend.avatarUrl}
                   size={32}
-                  status={amigo.status}
+                  status={friend.status}
                 />
                 <span data-gc="perfil.full-profile-modal.span" className="min-w-0 flex-1 truncate text-sm font-medium">
-                  {amigo.displayName}
+                  {friend.displayName}
                 </span>
-                <span data-gc="perfil.full-profile-modal.span--2" className="shrink-0 text-xs text-ink-faint">@{amigo.username}</span>
+                <span data-gc="perfil.full-profile-modal.span--2" className="shrink-0 text-xs text-ink-faint">@{friend.username}</span>
               </div>
             ))}
           </div>
         )}
 
-        {aba === "servidores" && emComum.data && (
+        {tab === "servidores" && inCommon.data && (
           <div data-gc="perfil.full-profile-modal.div--7" className="mt-4 space-y-1">
-            {emComum.data.servidores.map((servidor) => (
-              <div data-gc="perfil.full-profile-modal.div--8" key={servidor.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
-                {servidor.iconUrl ? (
-                  <img data-gc="perfil.full-profile-modal.img" src={servidor.iconUrl} alt="" className="size-8 rounded-full object-cover" />
+            {inCommon.data.servers.map((server) => (
+              <div data-gc="perfil.full-profile-modal.div--8" key={server.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+                {server.iconUrl ? (
+                  <img data-gc="perfil.full-profile-modal.img" src={server.iconUrl} alt="" className="size-8 rounded-full object-cover" />
                 ) : (
                   <span data-gc="perfil.full-profile-modal.span--3" className="flex size-8 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold">
-                    {servidor.name.slice(0, 2).toUpperCase()}
+                    {server.name.slice(0, 2).toUpperCase()}
                   </span>
                 )}
-                <span data-gc="perfil.full-profile-modal.span--4" className="min-w-0 flex-1 truncate text-sm font-medium">{servidor.name}</span>
+                <span data-gc="perfil.full-profile-modal.span--4" className="min-w-0 flex-1 truncate text-sm font-medium">{server.name}</span>
               </div>
             ))}
           </div>
         )}
 
-        {aba === "geral" && perfil.pronomes && (
+        {tab === "geral" && profile.pronouns && (
           <p data-gc="perfil.full-profile-modal.p--2"
-            className={cn("text-sm text-ink-faint", flxCls("pronomesNoPerfil"))}
+            className={cn("text-sm text-ink-faint", flxCls("pronounsProfile"))}
           >
-            {perfil.pronomes}
+            {profile.pronouns}
           </p>
         )}
 
-        {aba === "geral" && perfil.bio && (
-          <Bloco data-gc="perfil.full-profile-modal.bloco" titulo={t("perfil.sobre")}>
+        {tab === "geral" && profile.bio && (
+          <Block data-gc="perfil.full-profile-modal.block" title={t("perfil.sobre")}>
             <p data-gc="perfil.full-profile-modal.p--3"
-              className={cn("whitespace-pre-wrap text-sm text-ink-muted", flxCls("bioDoPerfil"))}
+              className={cn("whitespace-pre-wrap text-sm text-ink-muted", flxCls("profileBio"))}
             >
-              {perfil.bio}
+              {profile.bio}
             </p>
-          </Bloco>
+          </Block>
         )}
 
-        {aba === "geral" && cargos.length > 0 && (
-          <Bloco data-gc="perfil.full-profile-modal.bloco--2" titulo={t("perfil.cargosTitulo")}>
+        {tab === "geral" && roleList.length > 0 && (
+          <Block data-gc="perfil.full-profile-modal.block--2" title={t("perfil.cargosTitulo")}>
             <div data-gc="perfil.full-profile-modal.div--9" className="flex flex-wrap gap-1.5">
-              {cargos.map((cargo) => (
+              {roleList.map((role) => (
                 <span data-gc="perfil.full-profile-modal.span--5"
-                  key={cargo.id}
+                  key={role.id}
                   className={cn(
-                    flxCls("seloDeCargo"),
+                    flxCls("roleSeal"),
                     "flex items-center gap-1.5 rounded bg-surface-1 px-2 py-1 text-xs",
                   )}
                 >
                   <span data-gc="perfil.full-profile-modal.span--6"
                     className="size-2 rounded-full"
-                    style={{ backgroundColor: cargo.color || "#99aab5" }}
+                    style={{ backgroundColor: role.color || "#99aab5" }}
                   />
-                  <span data-gc="perfil.full-profile-modal.span--7" className={flxCls("nomeDoCargo")}>{cargo.name}</span>
+                  <span data-gc="perfil.full-profile-modal.span--7" className={flxCls("roleName")}>{role.name}</span>
                 </span>
               ))}
             </div>
-          </Bloco>
+          </Block>
         )}
 
-        {aba === "geral" && (
-          <Bloco data-gc="perfil.full-profile-modal.bloco--3" titulo={t("perfil.membroDesde")}>
+        {tab === "geral" && (
+          <Block data-gc="perfil.full-profile-modal.block--3" title={t("perfil.membroDesde")}>
             <p data-gc="perfil.full-profile-modal.p--4" className="text-sm text-ink-muted">
-              {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "long" }).format(
-                new Date(perfil.createdAt),
+              {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "long" }).format(
+                new Date(profile.createdAt),
               )}
             </p>
-          </Bloco>
+          </Block>
         )}
       </div>
     </DialogContent>
@@ -224,9 +224,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   );
 };
 
-const Bloco: React.FC<{ titulo: string; children: React.ReactNode }> = ({ titulo, children }) => (
+const Block: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section data-gc="perfil.full-profile-modal.section" className="mt-5">
-    <h3 data-gc="perfil.full-profile-modal.h3" className="mb-1.5 text-sm font-bold text-ink">{titulo}</h3>
+    <h3 data-gc="perfil.full-profile-modal.h3" className="mb-1.5 text-sm font-bold text-ink">{title}</h3>
     {children}
   </section>
 );

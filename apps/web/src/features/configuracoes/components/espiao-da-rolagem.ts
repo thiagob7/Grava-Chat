@@ -1,24 +1,24 @@
-export interface Ancora {
+export interface Anchor {
   id: string;
-  topo: number;
+  top: number;
 }
 
-export interface Leitura {
-  ancoras: Ancora[];
-  linha: number;
-  rolagemTotal: number;
+export interface Reading {
+  anchors: Anchor[];
+  line: number;
+  scrollTotal: number;
 }
 
-export function subSecaoAtiva({ ancoras, linha, rolagemTotal }: Leitura): string | null {
-  const primeira = ancoras[0]?.id ?? null;
-  if (!ancoras.length) return null;
+export function activeSubSection({ anchors, line, scrollTotal }: Reading): string | null {
+  const first = anchors[0]?.id ?? null;
+  if (!anchors.length) return null;
 
-  if (rolagemTotal <= 8) return primeira;
+  if (scrollTotal <= 8) return first;
 
-  let atual: string | null = null;
-  for (const ancora of ancoras) {
-    if (ancora.topo <= linha) atual = ancora.id;
+  let current: string | null = null;
+  for (const anchor of anchors) {
+    if (anchor.top <= line) current = anchor.id;
   }
 
-  return atual ?? primeira;
+  return current ?? first;
 }

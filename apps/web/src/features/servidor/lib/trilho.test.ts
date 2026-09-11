@@ -1,84 +1,84 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  alternarPasta,
-  desfazerPasta,
-  editarPasta,
-  montarTrilho,
-  moverServidor,
-  type Arrumacao,
+  toggleFolder,
+  undoFolder,
+  editFolder,
+  buildRail,
+  moveServer,
+  type Layout,
 } from "~/features/servidor/lib/trilho";
 
 const g = (id: string) => ({ id });
 const guilds = [g("a"), g("b"), g("c"), g("d")];
 const ids = guilds.map((x) => x.id);
-const vazia: Arrumacao = { ordem: [], pastas: [] };
+const empty: Layout = { order: [], folders: [] };
 
 describe("o trilho arrumado", () => {
   it("sem arrumação, é a lista como veio", () => {
-    expect(montarTrilho(guilds, vazia).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(ids);
+    expect(buildRail(guilds, empty).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(ids);
   });
 
   it("juntar dois servidores vira pasta no lugar do alvo", () => {
-    const a = moverServidor(ids, vazia, "c", { tipo: "juntar", com: "a" });
-    const itens = montarTrilho(guilds, a);
+    const a = moveServer(ids, empty, "c", { kind: "juntar", having: "a" });
+    const items = buildRail(guilds, a);
 
-    expect(itens[0]!.tipo).toBe("pasta");
-    expect(itens[0]!.tipo === "pasta" && itens[0]!.guilds.map((x) => x.id)).toEqual(["a", "c"]);
-    expect(itens.slice(1).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(["b", "d"]);
+    expect(items[0]!.kind).toBe("pasta");
+    expect(items[0]!.kind === "pasta" && items[0]!.guilds.map((x) => x.id)).toEqual(["a", "c"]);
+    expect(items.slice(1).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(["b", "d"]);
   });
 
   it("antes e depois reordenam", () => {
-    const a = moverServidor(ids, vazia, "d", { tipo: "antes", de: "a" });
-    expect(montarTrilho(guilds, a).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(["d", "a", "b", "c"]);
+    const a = moveServer(ids, empty, "d", { kind: "antes", de: "a" });
+    expect(buildRail(guilds, a).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(["d", "a", "b", "c"]);
 
-    const b = moverServidor(ids, a, "a", { tipo: "depois", de: "c" });
-    expect(montarTrilho(guilds, b).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(["d", "b", "c", "a"]);
+    const b = moveServer(ids, a, "a", { kind: "depois", de: "c" });
+    expect(buildRail(guilds, b).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(["d", "b", "c", "a"]);
   });
 
   it("pôr numa pasta e tirar dela", () => {
-    let a = moverServidor(ids, vazia, "b", { tipo: "juntar", com: "a" });
-    const pasta = a.pastas[0]!;
-    a = moverServidor(ids, a, "c", { tipo: "pasta", pastaId: pasta.id });
-    expect(a.pastas[0]!.guildIds).toEqual(["a", "b", "c"]);
+    let a = moveServer(ids, empty, "b", { kind: "juntar", having: "a" });
+    const folder = a.folders[0]!;
+    a = moveServer(ids, a, "c", { kind: "pasta", folderId: folder.id });
+    expect(a.folders[0]!.guildIds).toEqual(["a", "b", "c"]);
 
-    a = moverServidor(ids, a, "a", { tipo: "fim" });
-    expect(a.pastas[0]!.guildIds).toEqual(["b", "c"]);
-    expect(a.ordem.at(-1)).toBe("a");
+    a = moveServer(ids, a, "a", { kind: "fim" });
+    expect(a.folders[0]!.guildIds).toEqual(["b", "c"]);
+    expect(a.order.at(-1)).toBe("a");
   });
 
   it("pasta com um só servidor se desfaz sozinha", () => {
-    let a = moverServidor(ids, vazia, "b", { tipo: "juntar", com: "a" });
-    a = moverServidor(ids, a, "b", { tipo: "fim" });
+    let a = moveServer(ids, empty, "b", { kind: "juntar", having: "a" });
+    a = moveServer(ids, a, "b", { kind: "fim" });
 
-    expect(a.pastas).toEqual([]);
-    expect(montarTrilho(guilds, a).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(["a", "c", "d", "b"]);
+    expect(a.folders).toEqual([]);
+    expect(buildRail(guilds, a).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(["a", "c", "d", "b"]);
   });
 
   it("desfazer a pasta devolve os servidores no lugar dela", () => {
-    let a = moverServidor(ids, vazia, "c", { tipo: "juntar", com: "b" });
-    a = desfazerPasta(a, a.pastas[0]!.id);
+    let a = moveServer(ids, empty, "c", { kind: "juntar", having: "b" });
+    a = undoFolder(a, a.folders[0]!.id);
 
-    expect(a.pastas).toEqual([]);
-    expect(montarTrilho(guilds, a).map((i) => i.tipo === "servidor" && i.guild.id)).toEqual(["a", "b", "c", "d"]);
+    expect(a.folders).toEqual([]);
+    expect(buildRail(guilds, a).map((i) => i.kind === "servidor" && i.guild.id)).toEqual(["a", "b", "c", "d"]);
   });
 
   it("servidor que saiu some; servidor novo entra no fim", () => {
-    const a = moverServidor(ids, vazia, "c", { tipo: "juntar", com: "b" });
-    const itens = montarTrilho([g("a"), g("c"), g("z")], a);
+    const a = moveServer(ids, empty, "c", { kind: "juntar", having: "b" });
+    const items = buildRail([g("a"), g("c"), g("z")], a);
 
-    expect(itens.map((i) => (i.tipo === "pasta" ? `pasta(${i.guilds.map((x) => x.id)})` : i.guild.id))).toEqual(["a", "pasta(c)", "z"]);
+    expect(items.map((i) => (i.kind === "pasta" ? `pasta(${i.guilds.map((x) => x.id)})` : i.guild.id))).toEqual(["a", "pasta(c)", "z"]);
   });
 
   it("abrir, fechar e batizar", () => {
-    let a = moverServidor(ids, vazia, "b", { tipo: "juntar", com: "a" });
-    const id = a.pastas[0]!.id;
+    let a = moveServer(ids, empty, "b", { kind: "juntar", having: "a" });
+    const id = a.folders[0]!.id;
 
-    expect(a.pastas[0]!.aberta).toBe(true);
-    a = alternarPasta(a, id);
-    expect(a.pastas[0]!.aberta).toBe(false);
+    expect(a.folders[0]!.isOpen).toBe(true);
+    a = toggleFolder(a, id);
+    expect(a.folders[0]!.isOpen).toBe(false);
 
-    a = editarPasta(a, id, { nome: "Jogos", cor: "#ff0000" });
-    expect(a.pastas[0]).toMatchObject({ nome: "Jogos", cor: "#ff0000" });
+    a = editFolder(a, id, { name: "Jogos", color: "#ff0000" });
+    expect(a.folders[0]).toMatchObject({ name: "Jogos", color: "#ff0000" });
   });
 });

@@ -1,32 +1,32 @@
 import { describe, expect, it } from "vitest";
 
-import { proximoAlvo, type EscolhaDeAlvo } from "./assistir";
+import { nextTarget, type TargetChoice } from "./assistir";
 
-const base: EscolhaDeAlvo = { atual: null, alvoAindaTransmite: false };
+const base: TargetChoice = { current: null, targetStillBroadcasts: false };
 
 describe("proximoAlvo", () => {
   it("a escolha de assistir a alguém sobrevive a vários eventos seguidos", () => {
-    const assistindoAmigo = { atual: "amigo", alvoAindaTransmite: true };
+    const watchingFriend = { current: "amigo", targetStillBroadcasts: true };
 
-    let alvo = proximoAlvo(assistindoAmigo);
-    for (let i = 0; i < 5; i++) alvo = proximoAlvo({ ...assistindoAmigo, atual: alvo });
+    let target = nextTarget(watchingFriend);
+    for (let i = 0; i < 5; i++) target = nextTarget({ ...watchingFriend, current: target });
 
-    expect(alvo).toBe("amigo");
+    expect(target).toBe("amigo");
   });
 
   it("começar a transmitir não sequestra a tela", () => {
-    expect(proximoAlvo(base)).toBeNull();
+    expect(nextTarget(base)).toBeNull();
   });
 
   it("quando a transmissão que eu assistia acaba, volta pra grade", () => {
-    expect(proximoAlvo({ atual: "amigo", alvoAindaTransmite: false })).toBeNull();
+    expect(nextTarget({ current: "amigo", targetStillBroadcasts: false })).toBeNull();
   });
 
   it("sem nada escolhido, fica na grade", () => {
-    expect(proximoAlvo(base)).toBeNull();
+    expect(nextTarget(base)).toBeNull();
   });
 
   it("alvo escolhido e no ar continua no ar", () => {
-    expect(proximoAlvo({ atual: "amigo", alvoAindaTransmite: true })).toBe("amigo");
+    expect(nextTarget({ current: "amigo", targetStillBroadcasts: true })).toBe("amigo");
   });
 });

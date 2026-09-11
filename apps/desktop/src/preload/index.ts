@@ -1,135 +1,135 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type {
-  CodigoDeLogin,
-  EstadoDaAtualizacao,
-  EscolhaDeTela,
-  EstadoPtt,
-  FonteDeTela,
-  OpcoesPtt,
-  PonteDesktop,
-  TipoDeMidia,
-  VersoesDoAplicativo,
+  LoginCode,
+  UpdateState,
+  ScreenChoice,
+  StatePtt,
+  ScreenFont,
+  OptionsPtt,
+  BridgeDesktop,
+  MediaKind,
+  AppVersions,
 } from "@gravae/shared";
 
-const ponte: PonteDesktop = {
-  ehDesktop: true as const,
-  plataforma: process.platform,
-  nomeNoSistema:
+const bridge: BridgeDesktop = {
+  isDesktop: true as const,
+  platform: process.platform,
+  nameSystem:
     process.argv.find((a) => a.startsWith("--gravae-nome="))?.split("=")[1] ?? "Gravaê",
 
-  versoes: (): Promise<VersoesDoAplicativo> => ipcRenderer.invoke("app:versoes"),
+  versions: (): Promise<AppVersions> => ipcRenderer.invoke("app:versoes"),
 
   ptt: {
-    configurar: (opcoes: OpcoesPtt): Promise<EstadoPtt> =>
-      ipcRenderer.invoke("ptt:configurar", opcoes),
+    configure: (options: OptionsPtt): Promise<StatePtt> =>
+      ipcRenderer.invoke("ptt:configurar", options),
 
-    pedirPermissao: (opcoes: OpcoesPtt): Promise<EstadoPtt> =>
-      ipcRenderer.invoke("ptt:pedir-permissao", opcoes),
+    requestPermission: (options: OptionsPtt): Promise<StatePtt> =>
+      ipcRenderer.invoke("ptt:pedir-permissao", options),
 
-    aoMudar: (callback: (pressionada: boolean) => void) => {
-      const ouvinte = (_e: unknown, pressionada: boolean) => callback(pressionada);
-      ipcRenderer.on("ptt:mudou", ouvinte);
-      return () => ipcRenderer.off("ptt:mudou", ouvinte);
+    onChange: (callback: (pressed: boolean) => void) => {
+      const listener = (_e: unknown, pressed: boolean) => callback(pressed);
+      ipcRenderer.on("ptt:mudou", listener);
+      return () => ipcRenderer.off("ptt:mudou", listener);
     },
   },
 
-  tela: {
-    aoPedirEscolha: (callback: (fontes: FonteDeTela[]) => void) => {
-      const ouvinte = (_e: unknown, fontes: FonteDeTela[]) => callback(fontes);
-      ipcRenderer.on("tela:escolher", ouvinte);
-      return () => ipcRenderer.off("tela:escolher", ouvinte);
+  display: {
+    onRequestChoice: (callback: (fonts: ScreenFont[]) => void) => {
+      const listener = (_e: unknown, fonts: ScreenFont[]) => callback(fonts);
+      ipcRenderer.on("tela:escolher", listener);
+      return () => ipcRenderer.off("tela:escolher", listener);
     },
 
-    responder: (escolha: EscolhaDeTela | null) => {
-      void ipcRenderer.invoke("tela:escolhida", escolha);
+    reply: (selection: ScreenChoice | null) => {
+      void ipcRenderer.invoke("tela:escolhida", selection);
     },
 
-    permissao: (): Promise<string> => ipcRenderer.invoke("tela:permissao"),
+    permission: (): Promise<string> => ipcRenderer.invoke("tela:permissao"),
   },
 
-  midia: {
-    status: (tipo: TipoDeMidia): Promise<string> => ipcRenderer.invoke("midia:status", tipo),
+  media: {
+    status: (kind: MediaKind): Promise<string> => ipcRenderer.invoke("midia:status", kind),
 
-    garantir: (tipo: TipoDeMidia): Promise<boolean> => ipcRenderer.invoke("midia:garantir", tipo),
+    ensure: (kind: MediaKind): Promise<boolean> => ipcRenderer.invoke("midia:garantir", kind),
 
-    abrirAjustes: (tipo: TipoDeMidia) => {
-      void ipcRenderer.invoke("midia:abrir-ajustes", tipo);
+    openSettings: (kind: MediaKind) => {
+      void ipcRenderer.invoke("midia:abrir-ajustes", kind);
     },
   },
 
-  janela: {
-    contador: (quantas: number): Promise<void> => ipcRenderer.invoke("janela:contador", quantas),
-    chamarAtencao: (): Promise<void> => ipcRenderer.invoke("janela:chamar-atencao"),
-    focar: (): Promise<void> => ipcRenderer.invoke("janela:focar"),
+  appWindow: {
+    counter: (count: number): Promise<void> => ipcRenderer.invoke("janela:contador", count),
+    callAttention: (): Promise<void> => ipcRenderer.invoke("janela:chamar-atencao"),
+    focus: (): Promise<void> => ipcRenderer.invoke("janela:focar"),
 
-    minimizar: (): Promise<void> => ipcRenderer.invoke("janela:minimizar"),
-    alternarMaximizada: (): Promise<void> =>
+    minimize: (): Promise<void> => ipcRenderer.invoke("janela:minimizar"),
+    toggleMaximized: (): Promise<void> =>
       ipcRenderer.invoke("janela:alternar-maximizada"),
-    fechar: (): Promise<void> => ipcRenderer.invoke("janela:fechar"),
-    molduraPropria: (): Promise<boolean> => ipcRenderer.invoke("janela:moldura-propria"),
-    estaMaximizada: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-maximizada"),
-    fixarPorCima: (fixar: boolean): Promise<boolean> =>
-      ipcRenderer.invoke("janela:fixar-por-cima", fixar),
-    estaPorCima: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-por-cima"),
+    close: (): Promise<void> => ipcRenderer.invoke("janela:fechar"),
+    frameOwn: (): Promise<boolean> => ipcRenderer.invoke("janela:moldura-propria"),
+    thisMaximized: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-maximizada"),
+    pinByUp: (pin: boolean): Promise<boolean> =>
+      ipcRenderer.invoke("janela:fixar-por-cima", pin),
+    thisByUp: (): Promise<boolean> => ipcRenderer.invoke("janela:esta-por-cima"),
 
-    aoMudarMaximizada: (callback: (maximizada: boolean) => void) => {
-      const ouvinte = (_e: unknown, maximizada: boolean) => callback(maximizada);
-      ipcRenderer.on("janela:maximizada", ouvinte);
-      return () => ipcRenderer.off("janela:maximizada", ouvinte);
+    onChangeMaximized: (callback: (maximized: boolean) => void) => {
+      const listener = (_e: unknown, maximized: boolean) => callback(maximized);
+      ipcRenderer.on("janela:maximizada", listener);
+      return () => ipcRenderer.off("janela:maximizada", listener);
     },
   },
 
   login: {
-    iniciar: () => {
+    start: () => {
       void ipcRenderer.invoke("login:iniciar");
     },
 
-    aoReceber: (callback: (dados: CodigoDeLogin) => void) => {
-      const ouvinte = (_e: unknown, dados: CodigoDeLogin) => callback(dados);
-      ipcRenderer.on("login:codigo", ouvinte);
+    onReceive: (callback: (data: LoginCode) => void) => {
+      const listener = (_e: unknown, data: LoginCode) => callback(data);
+      ipcRenderer.on("login:codigo", listener);
 
       void ipcRenderer
         .invoke("login:pendente")
-        .then((dados: CodigoDeLogin | null) => dados && callback(dados));
+        .then((data: LoginCode | null) => data && callback(data));
 
-      return () => ipcRenderer.off("login:codigo", ouvinte);
+      return () => ipcRenderer.off("login:codigo", listener);
     },
   },
 
   links: {
-    aoAbrir: (callback: (rota: string) => void) => {
-      const ouvinte = (_e: unknown, rota: string) => callback(rota);
-      ipcRenderer.on("link:abrir", ouvinte);
+    onOpen: (callback: (route: string) => void) => {
+      const listener = (_e: unknown, route: string) => callback(route);
+      ipcRenderer.on("link:abrir", listener);
 
       void ipcRenderer
         .invoke("link:pendente")
-        .then((rota: string | null) => rota && callback(rota));
+        .then((route: string | null) => route && callback(route));
 
-      return () => ipcRenderer.off("link:abrir", ouvinte);
+      return () => ipcRenderer.off("link:abrir", listener);
     },
   },
 
-  atualizacao: {
-    estado: () => ipcRenderer.invoke("atualizacao:estado"),
-    procurar: () => ipcRenderer.invoke("atualizacao:procurar"),
-    baixar: () => ipcRenderer.invoke("atualizacao:baixar"),
-    instalar: () => ipcRenderer.invoke("atualizacao:instalar"),
+  update: {
+    state: () => ipcRenderer.invoke("atualizacao:estado"),
+    lookup: () => ipcRenderer.invoke("atualizacao:procurar"),
+    download: () => ipcRenderer.invoke("atualizacao:baixar"),
+    install: () => ipcRenderer.invoke("atualizacao:instalar"),
 
-    aoMudar: (callback: (estado: EstadoDaAtualizacao) => void) => {
-      const ouvinte = (_e: unknown, estado: EstadoDaAtualizacao) => callback(estado);
-      ipcRenderer.on("atualizacao:mudou", ouvinte);
+    onChange: (callback: (state: UpdateState) => void) => {
+      const listener = (_e: unknown, state: UpdateState) => callback(state);
+      ipcRenderer.on("atualizacao:mudou", listener);
 
-      return () => ipcRenderer.off("atualizacao:mudou", ouvinte);
+      return () => ipcRenderer.off("atualizacao:mudou", listener);
     },
   },
 
-  sistema: {
-    podeAbrirNoLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:pode-abrir-no-login"),
-    abrirNoLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:abrir-no-login"),
-    definirAbrirNoLogin: (ligado: boolean): Promise<boolean> =>
-      ipcRenderer.invoke("sistema:definir-abrir-no-login", ligado),
-    reiniciar: (): Promise<void> => ipcRenderer.invoke("sistema:reiniciar"),
+  system: {
+    canOpenLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:pode-abrir-no-login"),
+    openLogin: (): Promise<boolean> => ipcRenderer.invoke("sistema:abrir-no-login"),
+    setOpenLogin: (on: boolean): Promise<boolean> =>
+      ipcRenderer.invoke("sistema:definir-abrir-no-login", on),
+    restart: (): Promise<void> => ipcRenderer.invoke("sistema:reiniciar"),
   },
 };
 
-contextBridge.exposeInMainWorld("gravae", ponte);
+contextBridge.exposeInMainWorld("gravae", bridge);

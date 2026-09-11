@@ -1,64 +1,64 @@
 import React from "react";
-import { FileCode2, Image as Imagem } from "lucide-react";
-import type { AtivoDoTema } from "@gravae/shared";
-import { pesoLegivel } from "@gravae/shared";
+import { FileCode2, Image as Picture } from "lucide-react";
+import type { ThemeActive } from "@gravae/shared";
+import { weightReadable } from "@gravae/shared";
 
-const ehImagem = (ativo: AtivoDoTema) =>
-  ativo.tipo ? ativo.tipo.startsWith("image/") : /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(ativo.nome);
+const isImage = (active: ThemeActive) =>
+  active.kind ? active.kind.startsWith("image/") : /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(active.name);
 
 /*
   O que a pessoa precisa saber antes de instalar: que o tema traz imagem, qual
   é a imagem, e quanto isso vai pesar. Sem isso ela clica em importar às cegas.
 */
-export const PreviaDosAtivos: React.FC<{
-  ativos: AtivoDoTema[] | undefined;
-  peso: number;
-  compacto?: boolean;
-}> = ({ ativos, peso, compacto }) => {
+export const ActivePreview: React.FC<{
+  actives: ThemeActive[] | undefined;
+  weight: number;
+  compact?: boolean;
+}> = ({ actives, weight, compact }) => {
   /* Aceita `undefined` de propósito: quem desenha conteúdo remoto não confia
      no formato dele. Ver o comentário em `requests/tema/temas.ts`. */
-  if (!ativos?.length) return null;
+  if (!actives?.length) return null;
 
-  const imagens = ativos.filter(ehImagem);
-  const mostrar = imagens.slice(0, compacto ? 3 : 4);
-  const sobrando = imagens.length - mostrar.length;
-  const arquivos = ativos.length - imagens.length;
+  const images = actives.filter(isImage);
+  const show = images.slice(0, compact ? 3 : 4);
+  const leftover = images.length - show.length;
+  const files = actives.length - images.length;
 
   return (
     <div data-gc="tema.previa-dos-ativos.div" className="mt-4">
-      {mostrar.length > 0 && (
+      {show.length > 0 && (
         <div data-gc="tema.previa-dos-ativos.div--2" className="flex gap-2">
-          {mostrar.map((ativo) => (
+          {show.map((active) => (
             <span data-gc="tema.previa-dos-ativos.span"
-              key={ativo.url}
-              title={ativo.nome}
+              key={active.url}
+              title={active.name}
               className="flex h-16 flex-1 items-center justify-center overflow-hidden rounded-lg border border-line bg-surface-1"
             >
               <img data-gc="tema.previa-dos-ativos.img"
-                src={ativo.url}
-                alt={ativo.nome}
+                src={active.url}
+                alt={active.name}
                 loading="lazy"
                 className="size-full object-cover"
               />
             </span>
           ))}
 
-          {sobrando > 0 && (
+          {leftover > 0 && (
             <span data-gc="tema.previa-dos-ativos.span--2" className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-1 text-sm font-medium text-ink-faint">
-              +{sobrando}
+              +{leftover}
             </span>
           )}
         </div>
       )}
 
       <p data-gc="tema.previa-dos-ativos.p" className="mt-2 flex items-center gap-1.5 text-xs text-ink-faint">
-        {imagens.length > 0 ? <Imagem data-gc="tema.previa-dos-ativos.imagem" size={13} /> : <FileCode2 data-gc="tema.previa-dos-ativos.file-code2" size={13} />}
+        {images.length > 0 ? <Picture data-gc="tema.previa-dos-ativos.picture" size={13} /> : <FileCode2 data-gc="tema.previa-dos-ativos.file-code2" size={13} />}
 
         {[
-          imagens.length > 0 &&
-            `${imagens.length} ${imagens.length === 1 ? "imagem" : "imagens"}`,
-          arquivos > 0 && `${arquivos} ${arquivos === 1 ? "arquivo" : "arquivos"}`,
-          `${pesoLegivel(peso)} no total`,
+          images.length > 0 &&
+            `${images.length} ${images.length === 1 ? "imagem" : "imagens"}`,
+          files > 0 && `${files} ${files === 1 ? "arquivo" : "arquivos"}`,
+          `${weightReadable(weight)} no total`,
         ]
           .filter(Boolean)
           .join(" · ")}

@@ -1,94 +1,120 @@
 import React from "react";
+import { Hand } from "lucide-react";
 
-import { useFindEmComum } from "~/@core/application/queries/user/use-find-em-comum";
+import { useFindCommon } from "~/@core/application/queries/user/use-find-em-comum";
+import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
 import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
 import { Button } from "~/components/ui/button";
-import { Tooltip } from "~/components/ui/tooltip";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { AvatarsGroup } from "~/components/ui/grupo-de-avatares";
+import { LottieArt } from "~/components/LottieArt";
+import { useTranslation } from "~/traducao";
 import type { PublicUser } from "@gravae/shared";
 
-export const InicioDaDm: React.FC<{ pessoa: PublicUser }> = ({ pessoa }) => {
-  const { data: perfil } = useFindProfile(pessoa.id);
-  const { data: emComum } = useFindEmComum(pessoa.id, true);
-  const pedir = useRequestFriend();
+const loadWave = () =>
+  import("~/assets/animations/add-friend.json").then((mod) => mod.default);
 
-  const servidores = emComum?.servidores ?? [];
-  const podePedir = perfil ? perfil.friendship === "NONE" && !pessoa.sistema : false;
+export const StartDm: React.FC<{ person: PublicUser; channelId?: string; empty?: boolean }> = ({
+  person,
+  channelId,
+  empty = false,
+}) => {
+  const { t } = useTranslation();
+  const { data: profile } = useFindProfile(person.id);
+  const { data: inCommon } = useFindCommon(person.id, true);
+  const askFor = useRequestFriend();
+  const send = useSendMessage();
+
+  const servers = inCommon?.servers ?? [];
+  const canRequest = profile ? profile.friendship === "NONE" && !person.system : false;
+  const canWave =
+    empty && Boolean(channelId) && !person.system && profile?.friendship === "ACCEPTED";
+
+  const wave = () => {
+    if (!channelId) return;
+
+    send.mutate({
+      channelId: channelId,
+      content: "👋",
+      nonce: crypto.randomUUID(),
+    });
+  };
 
   return (
     <div data-gc="conversa.inicio-da-dm.div" className="flex flex-col items-center px-4 pb-8 pt-10 text-center">
       <Avatar data-gc="conversa.inicio-da-dm.avatar"
-        id={pessoa.id}
-        name={pessoa.displayName}
-        url={pessoa.avatarUrl}
-        status={pessoa.status}
+        id={person.id}
+        name={person.displayName}
+        url={person.avatarUrl}
+        status={person.status}
         size={80}
       />
 
-      <h2 data-gc="conversa.inicio-da-dm.h2" className="mt-4 text-2xl font-bold">{pessoa.username}</h2>
+      <h2 data-gc="conversa.inicio-da-dm.h2" className="mt-4 text-2xl font-bold">{person.username}</h2>
 
       <p data-gc="conversa.inicio-da-dm.p" className="mt-3 text-ink-muted">
-        {pessoa.sistema ? (
+        {person.system ? (
           <>
             Esta é uma mensagem oficial da equipe do Gravaê. Não esqueça: o Gravaê nunca vai
             pedir sua senha nem o token da sua conta.
           </>
         ) : (
           <>
-            Diga oi para <strong data-gc="conversa.inicio-da-dm.strong" className="font-semibold text-ink">{pessoa.displayName}</strong>. Sua
+            Diga oi para <strong data-gc="conversa.inicio-da-dm.strong" className="font-semibold text-ink">{person.displayName}</strong>. Sua
             conversa começa aqui.
           </>
         )}
       </p>
 
-      {(servidores.length > 0 || podePedir) && (
+      {(servers.length > 0 || canRequest) && (
         <div data-gc="conversa.inicio-da-dm.div--2" className="mt-4 flex flex-wrap items-center justify-center gap-3">
-          {servidores.length > 0 && (
+          {servers.length > 0 && (
             <>
-              <span data-gc="conversa.inicio-da-dm.span" className="flex -space-x-2">
-                {servidores.slice(0, 3).map((servidor) => (
-                  <Tooltip data-gc="conversa.inicio-da-dm.tooltip" key={servidor.id} label={servidor.name}>
-                    <span data-gc="conversa.inicio-da-dm.span--2" className="size-6 overflow-hidden rounded-md ring-2 ring-surface-2">
-                      {servidor.iconUrl ? (
-                        <img data-gc="conversa.inicio-da-dm.img"
-                          src={servidor.iconUrl}
-                          alt=""
-                          className="size-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span data-gc="conversa.inicio-da-dm.span--3" className="flex size-full items-center justify-center bg-surface-4 text-10 font-semibold">
-                          {servidor.name.slice(0, 2).toUpperCase()}
-                        </span>
-                      )}
-                    </span>
-                  </Tooltip>
-                ))}
+              <AvatarsGroup data-gc="conversa.inicio-da-dm.avatars-group"
+                faces={servers.map((server) => ({
+                  id: server.id,
+                  name: server.name,
+                  url: server.iconUrl,
+                }))}
+              />
 
-                {servidores.length > 3 && (
-                  <span data-gc="conversa.inicio-da-dm.span--4" className="flex size-6 items-center justify-center rounded-md bg-surface-4 text-10 font-semibold ring-2 ring-surface-2">
-                    +{servidores.length - 3}
-                  </span>
-                )}
-              </span>
-
-              <span data-gc="conversa.inicio-da-dm.span--5" className="text-sm text-ink-muted">
-                {servidores.length}{" "}
-                {servidores.length === 1 ? "comunidade em comum" : "comunidades em comum"}
+              <span data-gc="conversa.inicio-da-dm.span" className="text-sm text-ink-muted">
+                {servers.length}{" "}
+                {servers.length === 1 ? "comunidade em comum" : "comunidades em comum"}
               </span>
             </>
           )}
 
-          {podePedir && (
+          {canRequest && (
             <Button data-gc="conversa.inicio-da-dm.button"
               size="sm"
-              disabled={pedir.isPending}
-              onClick={() => pedir.mutate(pessoa.username)}
+              disabled={askFor.isPending}
+              onClick={() => askFor.mutate(person.username)}
             >
               Enviar pedido de amizade
             </Button>
           )}
+        </div>
+      )}
+
+      {canWave && (
+        <div data-gc="conversa.inicio-da-dm.div--3" className="mt-8 flex flex-col items-center">
+          <LottieArt data-gc="conversa.inicio-da-dm.lottie-art"
+            name="add-friend"
+            load={loadWave}
+            label={t("conversa.acenar.ilustracao")}
+            className="size-32"
+          />
+
+          <Button data-gc="conversa.inicio-da-dm.button.wave"
+            className="mt-4"
+            disabled={send.isPending}
+            onClick={wave}
+          >
+            <Hand data-gc="conversa.inicio-da-dm.hand" size={16} />
+            {t("conversa.acenar.botao", { nome: person.displayName })}
+          </Button>
         </div>
       )}
     </div>

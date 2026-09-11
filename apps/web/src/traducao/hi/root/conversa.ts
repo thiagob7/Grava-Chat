@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "हाथ हिलाता एक नन्हा हाथ",
+    botao: "{{nome}} को हाथ हिलाइए",
+  },
+  oficial: {
+    titulo: "यह चैनल सिर्फ़ आधिकारिक सूचनाओं के लिए है।",
+    detalhe: "हम कभी आपका पासवर्ड या खाते का टोकन नहीं माँगते।",
+    saibaMais: "और जानें",
+  },
+  topico: {
+    abrir: "चैनल का विवरण देखें",
+  },
+  previaDoLink: {
+    carregando: "देख रहे हैं लिंक में क्या है…",
+    destino: "{{destino}} पर जाता है",
+  },
+  reacao: {
+    carregando: "देख रहे हैं किसने {{emoji}} से रिएक्ट किया…",
+    uma: "{{nome}} ने {{emoji}} से रिएक्ट किया",
+    duas: "{{primeiro}} और {{segundo}} ने {{emoji}} से रिएक्ट किया",
+    varias: "{{nomes}} और {{quantos}} अन्य ने {{emoji}} से रिएक्ट किया",
+    dicaSuper: "सुपर रिएक्ट करने के लिए दबाए रखें",
+  },
+  recado: {
+    gravar: "वॉइस नोट रिकॉर्ड करें",
+    descartar: "रिकॉर्डिंग छोड़ें",
+    mandar: "रिकॉर्डिंग भेजें",
+    semSuporte: "यह ब्राउज़र ऑडियो रिकॉर्ड नहीं करता।",
+    semMicrofone: "माइक्रोफ़ोन तक पहुँच नहीं है।",
+  },
   lista: {
     carregando: "संदेश लोड हो रहे हैं…",
     carregandoMais: "लोड हो रहा है…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "छवि देखें",
   },
   enquete: {
+    criar: "पोल बनाएँ",
+    pergunta: "सवाल",
+    exemplo: "आज क्या खेलें?",
+    respostas: "जवाब",
+    adicionarOpcao: "विकल्प जोड़ें",
+    removerOpcao: "विकल्प हटाएँ",
+    varias: "एक से ज़्यादा जवाब चुनने दें",
+    variasDetalhe: "इसके बिना, किसी विकल्प को वोट देने पर पिछला वोट हट जाता है।",
+    duracao: "अवधि",
+    umaHora: "1 घंटा",
+    quatroHoras: "4 घंटे",
+    oitoHoras: "8 घंटे",
+    umDia: "1 दिन",
+    tresDias: "3 दिन",
+    umaSemana: "1 हफ़्ता",
+    ateEncerrar: "जब तक मैं बंद न करूँ",
     titulo: "पोल",
     encerrada: "पोल बंद",
     variasRespostas: "पोल — कई जवाब",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "खोज सिर्फ़ उन चैनलों में देखती है जिन्हें आप पढ़ सकते हैं।",
   },
   entrada: {
+    semNome: "बातचीत",
+    anexo: "(अटैचमेंट)",
     titulo: "इनबॉक्स",
     naoLidas: "अपठित",
     salvas: "सहेजी गई",

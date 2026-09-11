@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Tätä profiilia ei saatu auki.",
   carregando: "Ladataan…",
   editar: "Muokkaa profiilia",
   mensagem: "Viesti",

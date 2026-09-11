@@ -1,39 +1,39 @@
 import { useEffect, useRef } from "react";
 
-import { marcarAusente } from "~/@core/lib/websocket/emit-message-actions";
+import { markMissing } from "~/@core/lib/websocket/emit-message-actions";
 
-const OCIOSO_MS = 10 * 60_000;
+const IDLE_MS = 10 * 60_000;
 
-const SINAIS = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart"] as const;
+const SIGNALS = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart"] as const;
 
-export function useAusencia(ligado: boolean) {
-  const ausente = useRef(false);
+export function useAbsence(on: boolean) {
+  const missing = useRef(false);
 
   useEffect(() => {
-    if (!ligado) return;
+    if (!on) return;
 
     let timer: ReturnType<typeof setTimeout>;
 
-    const avisar = (idle: boolean) => {
-      if (ausente.current === idle) return;
+    const notify = (idle: boolean) => {
+      if (missing.current === idle) return;
 
-      ausente.current = idle;
-      void marcarAusente(idle).catch(() => undefined);
+      missing.current = idle;
+      void markMissing(idle).catch(() => undefined);
     };
 
-    const reiniciar = () => {
-      avisar(false);
+    const restart = () => {
+      notify(false);
       clearTimeout(timer);
-      timer = setTimeout(() => avisar(true), OCIOSO_MS);
+      timer = setTimeout(() => notify(true), IDLE_MS);
     };
 
-    reiniciar();
-    for (const evento of SINAIS) window.addEventListener(evento, reiniciar, { passive: true });
+    restart();
+    for (const event of SIGNALS) window.addEventListener(event, restart, { passive: true });
 
     return () => {
       clearTimeout(timer);
-      for (const evento of SINAIS) window.removeEventListener(evento, reiniciar);
-      if (ausente.current) void marcarAusente(false).catch(() => undefined);
+      for (const event of SIGNALS) window.removeEventListener(event, restart);
+      if (missing.current) void markMissing(false).catch(() => undefined);
     };
-  }, [ligado]);
+  }, [on]);
 }

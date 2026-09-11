@@ -1,27 +1,27 @@
 import { app, ipcMain } from "electron";
 import { arch, release } from "node:os";
 
-import type { VersoesDoAplicativo } from "@gravae/shared";
+import type { AppVersions } from "@gravae/shared";
 
-const NOMES: Record<string, string> = {
+const NAMES: Record<string, string> = {
   darwin: "macOS",
   win32: "Windows",
   linux: "Linux",
 };
 
-function sistema(): string {
-  const nome = NOMES[process.platform] ?? process.platform;
-  return `${nome} ${release()} (${arch()})`;
+function system(): string {
+  const name = NAMES[process.platform] ?? process.platform;
+  return `${name} ${release()} (${arch()})`;
 }
 
-export function registrarVersoes(): void {
+export function registerVersions(): void {
   ipcMain.handle(
     "app:versoes",
-    (): VersoesDoAplicativo => ({
+    (): AppVersions => ({
       app: app.getVersion(),
       electron: process.versions.electron,
       chrome: process.versions.chrome,
-      sistema: sistema(),
+      system: system(),
     }),
   );
 }

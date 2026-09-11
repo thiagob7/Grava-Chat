@@ -7,37 +7,37 @@ import { formatBytes } from "~/lib/image";
 const AVATAR_MAX_PX = 256;
 const BANNER_MAX_PX = 640;
 
-type Campo = "avatarUrl" | "bannerUrl";
+type Field = "avatarUrl" | "bannerUrl";
 
-export function useEnvioDeImagemDePerfil(
-  definir: (campo: Campo, url: string) => void,
+export function useImageProfileSending(
+  set: (field: Field, url: string) => void,
 ) {
   const uploadImage = useUploadImage();
-  const [economia, setEconomia] = useState<string | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
 
-  const enviar = async (event: React.ChangeEvent<HTMLInputElement>, campo: Campo) => {
+  const send = async (event: React.ChangeEvent<HTMLInputElement>, field: Field) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
 
-    const foto = campo === "avatarUrl";
-    const resultado = await uploadImage
+    const photo = field === "avatarUrl";
+    const result = await uploadImage
       .mutateAsync({
         file,
-        maxSize: foto ? AVATAR_MAX_PX : BANNER_MAX_PX,
-        finalidade: foto ? "avatar" : "banner",
+        maxSize: photo ? AVATAR_MAX_PX : BANNER_MAX_PX,
+        purpose: photo ? "avatar" : "banner",
       })
       .catch(() => null);
 
-    if (!resultado) return;
+    if (!result) return;
 
-    definir(campo, resultado.attachment.url);
-    setEconomia(
-      resultado.uploadedSize < resultado.originalSize
-        ? `${formatBytes(resultado.originalSize)} → ${formatBytes(resultado.uploadedSize)}`
+    set(field, result.attachment.url);
+    setSaving(
+      result.uploadedSize < result.originalSize
+        ? `${formatBytes(result.originalSize)} → ${formatBytes(result.uploadedSize)}`
         : null,
     );
   };
 
-  return { enviar, economia, enviando: uploadImage.isPending };
+  return { send, saving, sending: uploadImage.isPending };
 }

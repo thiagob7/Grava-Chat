@@ -1,14 +1,14 @@
 import type { Permission } from "@gravae/shared";
 
 export interface ModerationViewModel {
-  atividade: { mensagens: number; links: number; midia: number };
-  auditoria: { feitas: number; sofridas: number };
-  permissoes: Permission[];
+  activity: { messages: number; links: number; media: number };
+  audit: { made: number; suffered: number };
+  permissions: Permission[];
   roleIds: string[];
-  entrouNoServidor: string;
-  entrouNoGravae: string;
+  joinedServer: string;
+  joinedGravae: string;
   timeoutUntil: string | null;
-  adesao: { inviteCode: string | null; convidadoPor: string | null };
+  joining: { inviteCode: string | null; invitedBy: string | null };
 }
 
 export interface ModerationMessageModel {

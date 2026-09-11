@@ -2,12 +2,12 @@ import type { PublicUser } from "@gravae/shared";
 import type { GuildEmoji, GuildSound, Sticker } from "@gravae/shared";
 import { api } from "~/@core/lib/api";
 
-type ComAutor<T> = T & { createdBy: PublicUser | null };
+type WithAuthor<T> = T & { createdBy: PublicUser | null };
 
 export interface ExpressionsModel {
-  emojis: ComAutor<GuildEmoji>[];
-  stickers: ComAutor<Sticker>[];
-  sounds: ComAutor<GuildSound>[];
+  emojis: WithAuthor<GuildEmoji>[];
+  stickers: WithAuthor<Sticker>[];
+  sounds: WithAuthor<GuildSound>[];
 }
 
 export async function findExpressions(guildId: string): Promise<ExpressionsModel> {

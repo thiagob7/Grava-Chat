@@ -1,40 +1,40 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
-import { useRedefinirSenha } from "~/@core/application/queries/auth/use-senha";
+import { useResetPassword } from "~/@core/application/queries/auth/use-senha";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
-import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
+import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 
-export const RedefinirSenha: React.FC = () => {
+export const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const redefinir = useRedefinirSenha();
+  const reset = useResetPassword();
 
   const token = params.get("token") ?? "";
-  const [senha, setSenha] = useState("");
-  const [repetida, setRepetida] = useState("");
-  const [erro, setErro] = useState<string | null>(null);
-  const [pronto, setPronto] = useState(false);
+  const [password, setPassword] = useState("");
+  const [repeated, setRepeated] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
-  const salvar = async () => {
-    if (senha.length < 8) return setErro("A senha precisa de pelo menos 8 caracteres");
-    if (senha !== repetida) return setErro("As duas não são iguais");
+  const save = async () => {
+    if (password.length < 8) return setError("A senha precisa de pelo menos 8 caracteres");
+    if (password !== repeated) return setError("As duas não são iguais");
 
-    setErro(null);
+    setError(null);
 
     try {
-      await redefinir.mutateAsync({ token, senha });
-      setPronto(true);
+      await reset.mutateAsync({ token, password });
+      setReady(true);
     } catch (e) {
-      setErro(apiErrorMessage(e, "Não deu para trocar a senha."));
+      setError(apiErrorMessage(e, "Não deu para trocar a senha."));
     }
   };
 
   return (
     <div data-gc="auth.redefinir-senha.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
-      <FundoDaMarca data-gc="auth.redefinir-senha.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+      <BrandBackground data-gc="auth.redefinir-senha.brand-background" className="pointer-events-none absolute inset-0" />
 
       <div data-gc="auth.redefinir-senha.div--2" className="relative w-full max-w-sm rounded-xl bg-surface-1 px-8 py-10 shadow-2xl ring-1 ring-line-sutil">
         <img data-gc="auth.redefinir-senha.img"
@@ -51,7 +51,7 @@ export const RedefinirSenha: React.FC = () => {
               Falta o código no endereço. Abra o link direto do e-mail, sem copiar pela metade.
             </p>
           </>
-        ) : pronto ? (
+        ) : ready ? (
           <>
             <h1 data-gc="auth.redefinir-senha.h1--2" className="text-lg font-semibold">Senha trocada</h1>
             <p data-gc="auth.redefinir-senha.p--2" className="mt-1 text-sm text-ink-muted">
@@ -74,9 +74,9 @@ export const RedefinirSenha: React.FC = () => {
               id="senha-nova"
               type="password"
               autoComplete="new-password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void salvar()}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void save()}
               placeholder="Pelo menos 8 caracteres"
               className="mb-3"
             />
@@ -86,15 +86,15 @@ export const RedefinirSenha: React.FC = () => {
               id="senha-repetida"
               type="password"
               autoComplete="new-password"
-              value={repetida}
-              onChange={(e) => setRepetida(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void salvar()}
+              value={repeated}
+              onChange={(e) => setRepeated(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void save()}
               placeholder="A mesma coisa"
-              error={erro ?? undefined}
+              error={error ?? undefined}
             />
 
-            <Button data-gc="auth.redefinir-senha.button--2" className="mt-5 w-full" disabled={redefinir.isPending} onClick={() => void salvar()}>
-              {redefinir.isPending ? "Um instante…" : "Salvar a senha"}
+            <Button data-gc="auth.redefinir-senha.button--2" className="mt-5 w-full" disabled={reset.isPending} onClick={() => void save()}>
+              {reset.isPending ? "Um instante…" : "Salvar a senha"}
             </Button>
           </>
         )}

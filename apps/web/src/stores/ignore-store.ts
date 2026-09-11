@@ -1,38 +1,38 @@
 import { create } from "zustand";
 
-const CHAVE = "gravae:ignorados";
+const KEY = "gravae:ignorados";
 
-function ler(): string[] {
+function read(): string[] {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    return salvo ? (JSON.parse(salvo) as string[]) : [];
+    const saved = localStorage.getItem(KEY);
+    return saved ? (JSON.parse(saved) as string[]) : [];
   } catch {
     return [];
   }
 }
 
 interface IgnoreStore {
-  ignorados: string[];
-  alternar: (userId: string) => void;
-  estaIgnorado: (userId: string) => boolean;
+  ignoredList: string[];
+  toggle: (userId: string) => void;
+  thisIgnored: (userId: string) => boolean;
 }
 
 export const useIgnoreStore = create<IgnoreStore>((set, store) => ({
-  ignorados: ler(),
+  ignoredList: read(),
 
-  alternar: (userId) => {
-    const atual = store().ignorados;
-    const proximo = atual.includes(userId)
-      ? atual.filter((id) => id !== userId)
-      : [...atual, userId];
+  toggle: (userId) => {
+    const current = store().ignoredList;
+    const next = current.includes(userId)
+      ? current.filter((id) => id !== userId)
+      : [...current, userId];
 
-    set({ ignorados: proximo });
+    set({ ignoredList: next });
 
     try {
-      localStorage.setItem(CHAVE, JSON.stringify(proximo));
+      localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
     }
   },
 
-  estaIgnorado: (userId) => store().ignorados.includes(userId),
+  thisIgnored: (userId) => store().ignoredList.includes(userId),
 }));

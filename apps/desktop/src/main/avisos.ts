@@ -1,56 +1,56 @@
 import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from "electron";
 
-export function registrarAvisos() {
-  const daChamada = (evento: IpcMainInvokeEvent) =>
-    BrowserWindow.fromWebContents(evento.sender) ?? BrowserWindow.getAllWindows()[0] ?? null;
+export function registerNotices() {
+  const fromCall = (event: IpcMainInvokeEvent) =>
+    BrowserWindow.fromWebContents(event.sender) ?? BrowserWindow.getAllWindows()[0] ?? null;
 
-  ipcMain.handle("janela:contador", (_e, quantas: number) => {
-    const numero = Number.isFinite(quantas) ? Math.max(0, Math.trunc(quantas)) : 0;
+  ipcMain.handle("janela:contador", (_e, count: number) => {
+    const number = Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0;
 
-    app.setBadgeCount(numero);
+    app.setBadgeCount(number);
   });
 
-  ipcMain.handle("janela:chamar-atencao", (evento) => {
-    const janela = daChamada(evento);
-    if (!janela || janela.isFocused()) return;
+  ipcMain.handle("janela:chamar-atencao", (event) => {
+    const appWindow = fromCall(event);
+    if (!appWindow || appWindow.isFocused()) return;
 
     if (process.platform === "darwin") app.dock?.bounce("informational");
-    else janela.flashFrame(true);
+    else appWindow.flashFrame(true);
   });
 
   ipcMain.handle("janela:moldura-propria", () => process.platform !== "darwin");
 
-  ipcMain.handle("janela:minimizar", (evento) => daChamada(evento)?.minimize());
+  ipcMain.handle("janela:minimizar", (event) => fromCall(event)?.minimize());
 
-  ipcMain.handle("janela:alternar-maximizada", (evento) => {
-    const janela = daChamada(evento);
-    if (!janela) return;
+  ipcMain.handle("janela:alternar-maximizada", (event) => {
+    const appWindow = fromCall(event);
+    if (!appWindow) return;
 
-    if (janela.isMaximized()) janela.unmaximize();
-    else janela.maximize();
+    if (appWindow.isMaximized()) appWindow.unmaximize();
+    else appWindow.maximize();
   });
 
-  ipcMain.handle("janela:fechar", (evento) => daChamada(evento)?.close());
+  ipcMain.handle("janela:fechar", (event) => fromCall(event)?.close());
 
-  ipcMain.handle("janela:esta-maximizada", (evento) => daChamada(evento)?.isMaximized() ?? false);
+  ipcMain.handle("janela:esta-maximizada", (event) => fromCall(event)?.isMaximized() ?? false);
 
-  ipcMain.handle("janela:fixar-por-cima", (evento, fixar: boolean) => {
-    const janela = daChamada(evento);
-    if (!janela) return false;
+  ipcMain.handle("janela:fixar-por-cima", (event, pin: boolean) => {
+    const appWindow = fromCall(event);
+    if (!appWindow) return false;
 
-    janela.setAlwaysOnTop(Boolean(fixar), "floating");
-    return janela.isAlwaysOnTop();
+    appWindow.setAlwaysOnTop(Boolean(pin), "floating");
+    return appWindow.isAlwaysOnTop();
   });
 
-  ipcMain.handle("janela:esta-por-cima", (evento) => daChamada(evento)?.isAlwaysOnTop() ?? false);
+  ipcMain.handle("janela:esta-por-cima", (event) => fromCall(event)?.isAlwaysOnTop() ?? false);
 
-  ipcMain.handle("janela:focar", (evento) => {
-    const janela = daChamada(evento);
-    if (!janela) return;
+  ipcMain.handle("janela:focar", (event) => {
+    const appWindow = fromCall(event);
+    if (!appWindow) return;
 
-    if (janela.isMinimized()) janela.restore();
-    janela.show();
-    janela.focus();
+    if (appWindow.isMinimized()) appWindow.restore();
+    appWindow.show();
+    appWindow.focus();
     if (process.platform === "darwin") app.focus({ steal: true });
   });
 }

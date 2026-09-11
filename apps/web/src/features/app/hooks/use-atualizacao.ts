@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
-import type { EstadoDaAtualizacao } from "@gravae/shared";
+import type { UpdateState } from "@gravae/shared";
 
 import { desktop } from "~/lib/desktop";
 
-export function useAtualizacao() {
-  const [estado, setEstado] = useState<EstadoDaAtualizacao | null>(null);
+export function useUpdate() {
+  const [state, setState] = useState<UpdateState | null>(null);
 
   useEffect(() => {
-    const ponte = desktop()?.atualizacao;
-    if (!ponte) return;
+    const bridge = desktop()?.update;
+    if (!bridge) return;
 
-    void ponte.estado().then(setEstado);
-    return ponte.aoMudar(setEstado);
+    void bridge.state().then(setState);
+    return bridge.onChange(setState);
   }, []);
 
-  const ponte = desktop()?.atualizacao;
+  const bridge = desktop()?.update;
 
   return {
-    estado,
-    ponte,
-    temNovidade: Boolean(estado?.disponivel) && estado?.fase !== "erro",
-    baixando: estado?.fase === "baixando",
-    pronta: estado?.fase === "pronta",
-    instalando: estado?.fase === "instalando",
+    state,
+    bridge,
+    hasNews: Boolean(state?.available) && state?.phase !== "erro",
+    downloading: state?.phase === "baixando",
+    ready: state?.phase === "pronta",
+    installing: state?.phase === "instalando",
   };
 }

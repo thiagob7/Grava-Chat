@@ -1,35 +1,35 @@
 import { create } from "zustand";
 
 import {
-  PAPEIS_DE_CURSOR,
-  comoRegra,
-  type CursorImportado,
-  type PapelDeCursor,
+  CURSOR_ROLES,
+  asRule,
+  type CursorImported,
+  type CursorRole,
 } from "~/features/configuracoes/lib/cursor-importado";
 
-const CHAVE = "gravae:cursores";
+const KEY = "gravae:cursores";
 
-export type ConjuntoDeCursores = Partial<Record<PapelDeCursor, CursorImportado>>;
+export type SetCursors = Partial<Record<CursorRole, CursorImported>>;
 
-interface StoreDeCursores {
-  cursores: ConjuntoDeCursores;
-  definir: (papel: PapelDeCursor, cursor: CursorImportado | null) => void;
-  aplicarPacote: (cursores: ConjuntoDeCursores) => void;
-  limpar: () => void;
+interface CursorsStore {
+  cursors: SetCursors;
+  set: (role: CursorRole, cursor: CursorImported | null) => void;
+  applyPacket: (cursors: SetCursors) => void;
+  clear: () => void;
 }
 
-function ler(): ConjuntoDeCursores {
+function read(): SetCursors {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    return salvo ? (JSON.parse(salvo) as ConjuntoDeCursores) : {};
+    const saved = localStorage.getItem(KEY);
+    return saved ? (JSON.parse(saved) as SetCursors) : {};
   } catch {
     return {};
   }
 }
 
-function guardar(cursores: ConjuntoDeCursores) {
+function keep(cursors: SetCursors) {
   try {
-    localStorage.setItem(CHAVE, JSON.stringify(cursores));
+    localStorage.setItem(KEY, JSON.stringify(cursors));
   } catch {
     /*
       A imagem vai embutida, então o armazenamento pode encher. Perder o que a
@@ -44,42 +44,42 @@ function guardar(cursores: ConjuntoDeCursores) {
   variáveis. Fazer assim, em vez de injetar regra de cursor para cada seletor,
   significa que uma folha de estilo só é escrita uma vez e nunca cresce.
 */
-export function aplicarCursores(cursores: ConjuntoDeCursores) {
-  const raiz = document.documentElement;
+export function applyCursors(cursors: SetCursors) {
+  const root = document.documentElement;
 
-  for (const papel of PAPEIS_DE_CURSOR) {
-    const regra = comoRegra(cursores[papel] ?? null, papel);
+  for (const role of CURSOR_ROLES) {
+    const rule = asRule(cursors[role] ?? null, role);
 
-    if (regra) raiz.style.setProperty(`--cursor-${papel}`, regra);
-    else raiz.style.removeProperty(`--cursor-${papel}`);
+    if (rule) root.style.setProperty(`--cursor-${role}`, rule);
+    else root.style.removeProperty(`--cursor-${role}`);
   }
 }
 
-export const useCursores = create<StoreDeCursores>((set, store) => ({
-  cursores: ler(),
+export const useCursors = create<CursorsStore>((set, store) => ({
+  cursors: read(),
 
-  definir: (papel, cursor) => {
-    const cursores = { ...store().cursores };
+  set: (role, cursor) => {
+    const cursors = { ...store().cursors };
 
-    if (cursor) cursores[papel] = cursor;
-    else delete cursores[papel];
+    if (cursor) cursors[role] = cursor;
+    else delete cursors[role];
 
-    set({ cursores });
-    guardar(cursores);
-    aplicarCursores(cursores);
+    set({ cursors });
+    keep(cursors);
+    applyCursors(cursors);
   },
 
-  aplicarPacote: (cursores) => {
-    const conjunto = { ...cursores };
+  applyPacket: (cursors) => {
+    const packet = { ...cursors };
 
-    set({ cursores: conjunto });
-    guardar(conjunto);
-    aplicarCursores(conjunto);
+    set({ cursors: packet });
+    keep(packet);
+    applyCursors(packet);
   },
 
-  limpar: () => {
-    set({ cursores: {} });
-    guardar({});
-    aplicarCursores({});
+  clear: () => {
+    set({ cursors: {} });
+    keep({});
+    applyCursors({});
   },
 }));

@@ -1,42 +1,56 @@
 import React from "react";
-import { Compass, SealCheck } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+
+import { Compass, Seal, SealCheck } from "@phosphor-icons/react";
 
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
-interface SeloDaComunidadeProps {
-  verificada?: boolean | null;
-  detectavel?: boolean | null;
-  tamanho?: number;
-  semDica?: boolean;
+interface CommunityPropsSeal {
+  verified?: boolean | null;
+  detectable?: boolean | null;
+  size?: number;
+  withoutHint?: boolean;
   className?: string;
 }
 
-export const SeloDaComunidade: React.FC<SeloDaComunidadeProps> = ({
-  verificada,
-  detectavel,
-  tamanho = 16,
-  semDica = false,
+export const CommunitySeal: React.FC<CommunityPropsSeal> = ({
+  verified,
+  detectable,
+  size = 16,
+  withoutHint = false,
   className,
 }) => {
   const { t } = useTranslation();
 
-  if (!verificada && !detectavel) return null;
+  if (!verified && !detectable) return null;
 
-  const rotulo = verificada ? t("servidor.selos.verificada") : t("servidor.selos.detectavel");
+  const label = verified ? t("servidor.selos.verificada") : t("servidor.selos.detectavel");
 
-  const icone = verificada ? (
-    <SealCheck data-gc="servidor.selo-da-comunidade.seal-check" size={tamanho} weight="fill" className={cn("shrink-0 text-brand", className)} aria-label={rotulo} />
+  const icon = verified ? (
+    <SealCheck data-gc="servidor.selo-da-comunidade.seal-check" size={size} weight="fill" className={cn("shrink-0 text-brand", className)} aria-label={label} />
   ) : (
-    <Compass data-gc="servidor.selo-da-comunidade.compass" size={tamanho} weight="fill" className={cn("shrink-0 text-ink-muted", className)} aria-label={rotulo} />
+    <span data-gc="servidor.selo-da-comunidade.span"
+      role="img"
+      aria-label={label}
+      className={cn("relative flex shrink-0 items-center justify-center", className)}
+      style={{ width: size, height: size }}
+    >
+      <Seal data-gc="servidor.selo-da-comunidade.seal" size={size} weight="fill" className="text-ink-muted" />
+
+      <Compass data-gc="servidor.selo-da-comunidade.compass"
+        size={Math.round(size * 0.58)}
+        weight="bold"
+        className="absolute text-surface-1"
+      />
+    </span>
   );
 
-  if (semDica) return icone;
+  if (withoutHint) return icon;
 
   return (
-    <Tooltip data-gc="servidor.selo-da-comunidade.tooltip" label={rotulo}>
-      <span data-gc="servidor.selo-da-comunidade.span" className="flex shrink-0 items-center">{icone}</span>
+    <Tooltip data-gc="servidor.selo-da-comunidade.tooltip" label={label}>
+      <span data-gc="servidor.selo-da-comunidade.span--2" className="flex shrink-0 items-center">{icon}</span>
     </Tooltip>
   );
 };

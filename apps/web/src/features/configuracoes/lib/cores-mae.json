@@ -1,355 +1,355 @@
 {
-  "fundo": {
-    "rotulo": "Fundo",
-    "dica": "as superfícies, as bordas, o hover e o palco de voz",
-    "mae": "--color-surface-0",
-    "padrao": "#1a181e",
-    "filhas": [
+  "background": {
+    "label": "Fundo",
+    "hint": "as superfícies, as bordas, o hover e o palco de voz",
+    "base": "--color-surface-0",
+    "fallback": "#1a181e",
+    "children": [
       {
-        "nome": "--color-surface-1",
+        "name": "--color-surface-1",
         "dL": 0,
-        "razaoC": 1,
+        "reasonC": 1,
         "dH": 0,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-surface-2",
+        "name": "--color-surface-2",
         "dL": 2.3971,
-        "razaoC": 0.9587,
+        "reasonC": 0.9587,
         "dH": -6.1686,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-surface-3",
+        "name": "--color-surface-3",
         "dL": 4.1721,
-        "razaoC": 1.2903,
+        "reasonC": 1.2903,
         "dH": 1.5583,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-surface-4",
+        "name": "--color-surface-4",
         "dL": 7.5787,
-        "razaoC": 1.4029,
+        "reasonC": 1.4029,
         "dH": 0.06,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-campo",
+        "name": "--color-campo",
         "dL": 4.9946,
-        "razaoC": 1.107,
+        "reasonC": 1.107,
         "dH": -1.7775,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-campo-foco",
+        "name": "--color-campo-foco",
         "dL": 9.9693,
-        "razaoC": 1.5242,
+        "reasonC": 1.5242,
         "dH": -1.1182,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-composer",
+        "name": "--color-composer",
         "dL": 2.3971,
-        "razaoC": 0.9587,
+        "reasonC": 0.9587,
         "dH": -6.1686,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-cabecalho",
+        "name": "--color-cabecalho",
         "dL": 2.3971,
-        "razaoC": 0.9587,
+        "reasonC": 0.9587,
         "dH": -6.1686,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-painel",
+        "name": "--color-painel",
         "dL": 4.1721,
-        "razaoC": 1.2903,
+        "reasonC": 1.2903,
         "dH": 1.5583,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-codigo",
+        "name": "--color-codigo",
         "dL": 4.6586,
-        "razaoC": 1.285,
+        "reasonC": 1.285,
         "dH": 1.5412,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-codigo-bloco",
+        "name": "--color-codigo-bloco",
         "dL": 3.1929,
-        "razaoC": 1.3014,
+        "reasonC": 1.3014,
         "dH": 1.5947,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-hover",
+        "name": "--color-hover",
         "dL": 91.2898,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -145.6898,
         "alfa": 0.05,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-selecionado",
+        "name": "--color-selecionado",
         "dL": 91.2898,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -145.6898,
         "alfa": 0.1,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-divisor",
+        "name": "--color-divisor",
         "dL": 91.2898,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -145.6898,
         "alfa": 0.05,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-line",
+        "name": "--color-line",
         "dL": 71.4993,
-        "razaoC": 1.6495,
+        "reasonC": 1.6495,
         "dH": -2.2314,
         "alfa": 0.15,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-line-sutil",
+        "name": "--color-line-sutil",
         "dL": 91.2898,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -145.6898,
         "alfa": 0.08,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-palco",
+        "name": "--color-palco",
         "dL": -5.9266,
-        "razaoC": 0.1846,
+        "reasonC": 0.1846,
         "dH": -13.7137,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-trilho",
+        "name": "--color-trilho",
         "dL": 67.6158,
-        "razaoC": 0.3493,
+        "reasonC": 0.3493,
         "dH": -13.5638,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-veu",
+        "name": "--color-veu",
         "dL": -8.7102,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": 56.1116,
         "alfa": 0.6,
         "L": 0,
-        "espelha": true,
-        "ancora": true
+        "mirrors": true,
+        "anchor": true
       },
       {
-        "nome": "--color-sombra",
+        "name": "--color-sombra",
         "dL": -8.7102,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": 56.1116,
         "alfa": 0.32,
         "L": 0,
-        "espelha": true,
-        "ancora": true
+        "mirrors": true,
+        "anchor": true
       },
       {
-        "nome": "--color-brilho",
+        "name": "--color-brilho",
         "dL": 91.2898,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -145.6898,
         "alfa": 0.35,
         "L": 100,
-        "espelha": true,
-        "ancora": true
+        "mirrors": true,
+        "anchor": true
       },
       {
-        "nome": "--color-sobre-midia",
+        "name": "--color-sobre-midia",
         "dL": -8.7102,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": 56.1116,
         "alfa": 0.6,
         "L": 0,
-        "espelha": true,
-        "ancora": true
+        "mirrors": true,
+        "anchor": true
       }
     ]
   },
-  "texto": {
-    "rotulo": "Texto",
-    "dica": "o texto forte, o apagado e o do palco",
-    "mae": "--color-ink",
-    "padrao": "#f4f4f6",
-    "filhas": [
+  "text": {
+    "label": "Texto",
+    "hint": "o texto forte, o apagado e o do palco",
+    "base": "--color-ink",
+    "fallback": "#f4f4f6",
+    "children": [
       {
-        "nome": "--color-ink-muted",
-        "dL": -14.084,
-        "razaoC": 1.6335,
-        "dH": 13.0233,
+        "name": "--color-ink-muted",
+        "dL": -16.7013,
+        "reasonC": 2.4882,
+        "dH": 0.5916,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-ink-faint",
-        "dL": -25.067,
-        "razaoC": 2.8053,
-        "dH": 13.2351,
+        "name": "--color-ink-faint",
+        "dL": -37.8364,
+        "reasonC": 3.4078,
+        "dH": 1.0942,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-pilula",
+        "name": "--color-pilula",
         "dL": 0,
-        "razaoC": 0.341,
+        "reasonC": 0.341,
         "dH": 0,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       },
       {
-        "nome": "--color-palco-ink",
+        "name": "--color-palco-ink",
         "dL": 0,
-        "razaoC": 0.341,
+        "reasonC": 0.341,
         "dH": 0,
         "alfa": null,
-        "espelha": true
+        "mirrors": true
       }
     ]
   },
-  "marca": {
-    "rotulo": "Marca",
-    "dica": "botão, link, menção, resposta e o anel de foco",
-    "mae": "--color-brand",
-    "padrao": "#413cdd",
-    "filhas": [
+  "brand": {
+    "label": "Marca",
+    "hint": "botão, link, menção, resposta e o anel de foco",
+    "base": "--color-brand",
+    "fallback": "#413cdd",
+    "children": [
       {
-        "nome": "--color-brand-hover",
+        "name": "--color-brand-hover",
         "dL": -4.6708,
-        "razaoC": 0.949,
+        "reasonC": 0.949,
         "dH": 0.3547,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-foco-anel",
+        "name": "--color-foco-anel",
         "dL": 0,
-        "razaoC": 1,
+        "reasonC": 1,
         "dH": 0,
         "alfa": 0.6,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-link",
+        "name": "--color-link",
         "dL": 41.7713,
-        "razaoC": 0.3562,
+        "reasonC": 0.3562,
         "dH": -63.4779,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-mencao",
+        "name": "--color-mencao",
         "dL": 41.7713,
-        "razaoC": 0.3562,
+        "reasonC": 0.3562,
         "dH": -63.4779,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-resposta",
+        "name": "--color-resposta",
         "dL": 18.5628,
-        "razaoC": 0.6958,
+        "reasonC": 0.6958,
         "dH": -17.6532,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-everyone",
+        "name": "--color-everyone",
         "dL": 26.5506,
-        "razaoC": 0.5963,
+        "reasonC": 0.5963,
         "dH": -2.0489,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-sobre-marca",
+        "name": "--color-sobre-marca",
         "dL": 62.9326,
-        "razaoC": 0,
+        "reasonC": 0,
         "dH": -144.6861,
         "alfa": null,
         "L": 100,
-        "espelha": false,
-        "contraste": true
+        "mirrors": false,
+        "contrast": true
       }
     ]
   },
-  "perigo": {
-    "rotulo": "Perigo e aviso",
-    "dica": "apagar, não perturbe, aviso e destaque",
-    "mae": "--color-danger",
-    "padrao": "#e53734",
-    "filhas": [
+  "danger": {
+    "label": "Perigo e aviso",
+    "hint": "apagar, não perturbe, aviso e destaque",
+    "base": "--color-danger",
+    "fallback": "#e53734",
+    "children": [
       {
-        "nome": "--color-danger-fundo",
+        "name": "--color-danger-fundo",
         "dL": 0,
-        "razaoC": 1,
+        "reasonC": 1,
         "dH": 0,
         "alfa": 0.12,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-dnd",
+        "name": "--color-dnd",
         "dL": 3.409,
-        "razaoC": 0.9689,
+        "reasonC": 0.9689,
         "dH": -2.3703,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-aviso",
+        "name": "--color-aviso",
         "dL": 29.5714,
-        "razaoC": 0.9934,
+        "reasonC": 0.9934,
         "dH": 52.0234,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-destaque",
+        "name": "--color-destaque",
         "dL": 29.1165,
-        "razaoC": 0.924,
+        "reasonC": 0.924,
         "dH": 56.9696,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-destaque-fundo",
+        "name": "--color-destaque-fundo",
         "dL": 29.1165,
-        "razaoC": 0.924,
+        "reasonC": 0.924,
         "dH": 56.9696,
         "alfa": 0.1,
-        "espelha": false
+        "mirrors": false
       },
       {
-        "nome": "--color-here",
+        "name": "--color-here",
         "dL": 34.8197,
-        "razaoC": 0.6951,
+        "reasonC": 0.6951,
         "dH": 56.6252,
         "alfa": null,
-        "espelha": false
+        "mirrors": false
       }
     ]
   }

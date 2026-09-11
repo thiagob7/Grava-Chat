@@ -5,33 +5,33 @@ import type { BotModel } from "~/@core/application/requests/bot/bots";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { formatShortDate } from "~/lib/format";
 
-interface ListaDeAplicativosProps {
+interface ListAppsProps {
   bots: BotModel[];
-  onAbrir: (botId: string) => void;
+  onOpen: (botId: string) => void;
 }
 
-export const ListaDeAplicativos: React.FC<ListaDeAplicativosProps> = ({ bots, onAbrir }) => (
+export const ListApps: React.FC<ListAppsProps> = ({ bots, onOpen }) => (
   <div data-gc="configuracoes.aplicativos.lista-de-aplicativos.div" className="overflow-hidden rounded-lg border border-line">
     {bots.map((bot) => (
       <button data-gc="configuracoes.aplicativos.lista-de-aplicativos.button"
         key={bot.id}
         type="button"
-        onClick={() => onAbrir(bot.id)}
+        onClick={() => onOpen(bot.id)}
         className="flex w-full items-center gap-3 border-b border-divisor px-3 py-2.5 text-left transition last:border-b-0 hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foco-anel"
       >
         <Avatar data-gc="configuracoes.aplicativos.lista-de-aplicativos.avatar"
-          id={bot.usuario.id}
-          name={bot.usuario.displayName}
-          url={bot.usuario.avatarUrl}
+          id={bot.user.id}
+          name={bot.user.displayName}
+          url={bot.user.avatarUrl}
           size={32}
         />
 
         <span data-gc="configuracoes.aplicativos.lista-de-aplicativos.span" className="min-w-0 flex-1">
           <span data-gc="configuracoes.aplicativos.lista-de-aplicativos.span--2" className="block truncate text-sm font-medium">
-            {bot.usuario.displayName}
+            {bot.user.displayName}
           </span>
           <span data-gc="configuracoes.aplicativos.lista-de-aplicativos.span--3" className="mt-0.5 block truncate text-xs text-ink-faint">
-            @{bot.usuario.username} · Criado em {formatShortDate(bot.createdAt)}
+            @{bot.user.username} · Criado em {formatShortDate(bot.createdAt)}
           </span>
         </span>
 

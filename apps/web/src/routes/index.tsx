@@ -1,52 +1,55 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
-import { BarraDeTitulo } from "~/features/app/components/BarraDeTitulo";
-import { CascaCarregando } from "~/features/app/components/CascaCarregando";
-import { FaixaDaComunidade } from "~/features/servidor/components/FaixaDaComunidade";
+import { TitleBar } from "~/features/app/components/BarraDeTitulo";
+import { ShellLoading } from "~/features/app/components/CascaCarregando";
+import { CommunityTrack } from "~/features/servidor/components/FaixaDaComunidade";
 import { Splash } from "~/features/app/components/Splash";
 
-import { ChamadaRecebida } from "~/features/voz/components/ChamadaRecebida";
+import { CallReceived } from "~/features/voz/components/ChamadaRecebida";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
-import { AvisoDeTemaDesligado } from "~/features/configuracoes/components/AvisoDeTemaDesligado";
-import { JanelaDoEstudio } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
-import { JanelaDeCursores } from "~/features/configuracoes/components/estudio/JanelaDeCursores";
+import { ThemeOffNotice } from "~/features/configuracoes/components/AvisoDeTemaDesligado";
+import { StudioWindow } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
+import { CursorsWindow } from "~/features/configuracoes/components/estudio/JanelaDeCursores";
 import { useSession } from "~/contexts/session-context";
-import { useAvisoNoTitulo } from "~/features/app/hooks/use-aviso-no-titulo";
-import { useConviteDeAviso } from "~/features/app/hooks/use-convite-de-aviso";
+import { useNoticeTitle } from "~/features/app/hooks/use-aviso-no-titulo";
+import { useInviteNotice } from "~/features/app/hooks/use-convite-de-aviso";
 import { useLinksDoDesktop } from "~/features/app/hooks/use-links-do-desktop";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
-import { RedefinirSenha } from "~/pages/presentation/auth/RedefinirSenha";
+import { ResetPassword } from "~/pages/presentation/auth/RedefinirSenha";
+import { VerifyEmail } from "~/pages/presentation/auth/VerificarEmail";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 
 const Admin = React.lazy(() => import("~/pages/presentation/admin/Admin"));
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
-import { AdicionarBot } from "~/pages/presentation/bot/AdicionarBot";
-import { AutorizarApp } from "~/pages/presentation/bot/AutorizarApp";
+import { AddBot } from "~/pages/presentation/bot/AdicionarBot";
+import { AuthorizeApp } from "~/pages/presentation/bot/AutorizarApp";
 import { DirectMessages } from "~/pages/presentation/friends/DirectMessages";
-import { Explorar } from "~/pages/presentation/descoberta/Explorar";
-import { EstudioEmJanela } from "~/pages/presentation/estudio/EstudioEmJanela";
-import { CursoresEmJanela } from "~/pages/presentation/cursores/CursoresEmJanela";
-import { VerTema } from "~/pages/presentation/tema/VerTema";
-import { useConfigPorUrl } from "~/features/app/hooks/use-config-por-url";
-import { ContaEmExclusao } from "~/features/perfil/components/ContaEmExclusao";
-import { FundoDoTema } from "~/features/tema/components/FundoDoTema";
+import { Explore } from "~/pages/presentation/descoberta/Explorar";
+import { StudioInWindow } from "~/pages/presentation/estudio/EstudioEmJanela";
+import { CursorsInWindow } from "~/pages/presentation/cursores/CursoresEmJanela";
+import { SeeTheme } from "~/pages/presentation/tema/VerTema";
+import { useConfigByUrl } from "~/features/app/hooks/use-config-por-url";
+import { AccountDeletion } from "~/features/perfil/components/ContaEmExclusao";
+import { ThemeBackground } from "~/features/tema/components/FundoDoTema";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { isDesktop } from "~/lib/desktop";
 
 export const AppRoutes: React.FC = () => {
-  useConfigPorUrl();
+  useConfigByUrl();
 
   return (
   <BrowserRouter>
-    <FundoDoTema data-gc="routes.fundo-do-tema" />
+    <ThemeBackground data-gc="routes.theme-background" />
     <div data-gc="routes.div" {...flx("containerDoApp", "flex h-full flex-col")}>
-      <CascaDoApp data-gc="routes.casca-do-app">
-      <div data-gc="routes.div--2" {...flxAttr("molduraExterna")} {...flx("molduraDoApp", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("molduraExterna")))}>
+      <AppShell data-gc="routes.app-shell">
+      <div data-gc="routes.div--2" {...flxAttr("frameExternal")} {...flx("appFrame", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("frameExternal")))}>
     <Routes>
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
-      <Route path="/redefinir" element={<RedefinirSenha data-gc="routes.redefinir-senha" />} />
+      <Route path="/redefinir" element={<ResetPassword data-gc="routes.reset-password" />} />
+      <Route path="/verificar-email" element={<VerifyEmail data-gc="routes.verify-email" />} />
       <Route
         path="/admin/:tela?"
         element={
@@ -66,33 +69,41 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/oauth2/autorizar"
+        path="/apps/:botId"
         element={
           <Protected data-gc="routes.protected--3">
-            <AutorizarApp data-gc="routes.autorizar-app" />
+            <Explore data-gc="routes.explore" />
+          </Protected>
+        }
+      />
+      <Route
+        path="/oauth2/autorizar"
+        element={
+          <Protected data-gc="routes.protected--4">
+            <AuthorizeApp data-gc="routes.authorize-app" />
           </Protected>
         }
       />
       <Route
         path="/bots/:botId/adicionar"
         element={
-          <Protected data-gc="routes.protected--4">
-            <AdicionarBot data-gc="routes.adicionar-bot" />
+          <Protected data-gc="routes.protected--5">
+            <AddBot data-gc="routes.add-bot" />
           </Protected>
         }
       />
       <Route
         path="/dm/solicitacoes"
         element={
-          <Protected data-gc="routes.protected--5">
-            <DirectMessages data-gc="routes.direct-messages" solicitacoes />
+          <Protected data-gc="routes.protected--6">
+            <DirectMessages data-gc="routes.direct-messages" requests />
           </Protected>
         }
       />
       <Route
         path="/dm/:channelId?"
         element={
-          <Protected data-gc="routes.protected--6">
+          <Protected data-gc="routes.protected--7">
             <DirectMessages data-gc="routes.direct-messages--2" />
           </Protected>
         }
@@ -100,39 +111,39 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/tema/:temaId"
         element={
-          <Protected data-gc="routes.protected--7">
-            <VerTema data-gc="routes.ver-tema" />
+          <Protected data-gc="routes.protected--8">
+            <SeeTheme data-gc="routes.see-theme" />
           </Protected>
         }
       />
       <Route
         path="/estudio"
         element={
-          <Protected data-gc="routes.protected--8">
-            <EstudioEmJanela data-gc="routes.estudio-em-janela" />
+          <Protected data-gc="routes.protected--9">
+            <StudioInWindow data-gc="routes.studio-in-window" />
           </Protected>
         }
       />
       <Route
         path="/cursores"
         element={
-          <Protected data-gc="routes.protected--9">
-            <CursoresEmJanela data-gc="routes.cursores-em-janela" />
+          <Protected data-gc="routes.protected--10">
+            <CursorsInWindow data-gc="routes.cursors-in-window" />
           </Protected>
         }
       />
       <Route
         path="/explorar"
         element={
-          <Protected data-gc="routes.protected--10">
-            <Explorar data-gc="routes.explorar" />
+          <Protected data-gc="routes.protected--11">
+            <Explore data-gc="routes.explore--2" />
           </Protected>
         }
       />
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--11">
+          <Protected data-gc="routes.protected--12">
             <Chat data-gc="routes.chat" />
           </Protected>
         }
@@ -140,30 +151,36 @@ export const AppRoutes: React.FC = () => {
       <Route path="*" element={<Navigate to="/channels" replace />} />
     </Routes>
       </div>
-      </CascaDoApp>
+      </AppShell>
     </div>
 
     <FloatingScreenShare data-gc="routes.floating-screen-share" />
-    <JanelaDoEstudio data-gc="routes.janela-do-estudio" />
-    <JanelaDeCursores data-gc="routes.janela-de-cursores" />
-    <AvisoDeTemaDesligado data-gc="routes.aviso-de-tema-desligado" />
-    <ChamadaRecebida data-gc="routes.chamada-recebida" />
+    <StudioWindow data-gc="routes.studio-window" />
+    <CursorsWindow data-gc="routes.cursors-window" />
+    <ThemeOffNotice data-gc="routes.theme-off-notice" />
+    <CallReceived data-gc="routes.call-received" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
   </BrowserRouter>
   );
 };
 
-const CascaDoApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const WINDOWS_OWN = ["/estudio", "/cursores"];
+
+const BRAND_SCREENS = [/^\/login$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
+
+const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
 
-  if (pathname === "/estudio" || pathname === "/cursores") return <>{children}</>;
+  if (WINDOWS_OWN.includes(pathname)) return <>{children}</>;
+
+  if (!isDesktop() && BRAND_SCREENS.some((display) => display.test(pathname))) return <>{children}</>;
 
   return (
     <>
-      <BarraDeTitulo data-gc="routes.barra-de-titulo" />
+      <TitleBar data-gc="routes.title-bar" />
 
       <div data-gc="routes.div--3" className="relative">
-        <FaixaDaComunidade data-gc="routes.faixa-da-comunidade" />
+        <CommunityTrack data-gc="routes.community-track" />
       </div>
 
       {children}
@@ -181,14 +198,14 @@ const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
 
   useDisconnectOnLogout(Boolean(user), isBooting);
-  useAvisoNoTitulo(Boolean(user));
-  useConviteDeAviso(Boolean(user));
+  useNoticeTitle(Boolean(user));
+  useInviteNotice(Boolean(user));
 
-  if (isBooting) return <CascaCarregando data-gc="routes.casca-carregando" />;
+  if (isBooting) return <ShellLoading data-gc="routes.shell-loading" />;
 
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
-  if (user.excluirEm) return <ContaEmExclusao data-gc="routes.conta-em-exclusao.end-session" user={user} onSair={endSession} />;
+  if (user.deleteAt) return <AccountDeletion data-gc="routes.account-deletion.end-session" user={user} onLeave={endSession} />;
 
   return <>{children}</>;
 };

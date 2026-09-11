@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "לא הצלחנו לפתוח את הפרופיל הזה.",
   carregando: "טוען…",
   editar: "עריכת פרופיל",
   mensagem: "הודעה",

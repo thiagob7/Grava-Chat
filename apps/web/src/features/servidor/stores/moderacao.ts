@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export interface AlvoDaModeracao {
+export interface ModerationTarget {
   guildId: string;
   userId: string;
   displayName: string;
@@ -8,14 +8,14 @@ export interface AlvoDaModeracao {
   avatarUrl: string | null;
 }
 
-interface StoreDeModeracao {
-  alvo: AlvoDaModeracao | null;
-  abrir: (alvo: AlvoDaModeracao) => void;
-  fechar: () => void;
+interface ModerationStore {
+  target: ModerationTarget | null;
+  open: (target: ModerationTarget) => void;
+  close: () => void;
 }
 
-export const useModeracao = create<StoreDeModeracao>((set) => ({
-  alvo: null,
-  abrir: (alvo) => set({ alvo }),
-  fechar: () => set({ alvo: null }),
+export const useModeration = create<ModerationStore>((set) => ({
+  target: null,
+  open: (target) => set({ target }),
+  close: () => set({ target: null }),
 }));

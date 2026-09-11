@@ -34,11 +34,11 @@ export const forumService = {
     channelId: string,
     input: { title: string; content: string; tags?: string[] },
   ) {
-    const { channel, contexto } = await accessService.requireChannelAccess(userId, channelId);
+    const { channel, context } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.type !== "FORUM") throw new AppError("Este canal não é um fórum");
     if (!channel.guildId) throw new AppError("Fórum precisa de servidor");
 
-    if (contexto && !has(contexto.permissions, "SEND_MESSAGES")) {
+    if (context && !has(context.permissions, "SEND_MESSAGES")) {
       throw new ForbiddenError("Você não pode criar assuntos neste fórum");
     }
 
@@ -51,7 +51,7 @@ export const forumService = {
       messageCount: 1,
     });
 
-    const primeira = await messageRepository.create({
+    const first = await messageRepository.create({
       channelId,
       authorId: userId,
       content: input.content.trim(),
@@ -61,7 +61,7 @@ export const forumService = {
       postId: post.id,
     });
 
-    return { post: toPost(post), message: toMessage(primeira, userId) };
+    return { post: toPost(post), message: toMessage(first, userId) };
   },
 
   async get(userId: string, postId: string) {
@@ -72,29 +72,29 @@ export const forumService = {
     return toPost(post);
   },
 
-  async fechar(userId: string, postId: string, fechado: boolean) {
+  async close(userId: string, postId: string, closed: boolean) {
     const post = await forumRepository.findById(postId);
     if (!post) throw new NotFoundError("Assunto não encontrado");
 
-    const { contexto } = await accessService.requireChannelAccess(userId, post.channelId);
-    const podeModerar = Boolean(contexto && has(contexto.permissions, "MANAGE_MESSAGES"));
+    const { context } = await accessService.requireChannelAccess(userId, post.channelId);
+    const canModerate = Boolean(context && has(context.permissions, "MANAGE_MESSAGES"));
 
-    if (post.authorId !== userId && !podeModerar) {
+    if (post.authorId !== userId && !canModerate) {
       throw new ForbiddenError("Só quem criou o assunto pode fechá-lo");
     }
 
-    return toPost(await forumRepository.update(postId, { closedAt: fechado ? new Date() : null }));
+    return toPost(await forumRepository.update(postId, { closedAt: closed ? new Date() : null }));
   },
 
-  async requirePostAberto(postId: string, channelId: string) {
+  async requirePostIsOpen(postId: string, channelId: string) {
     const post = await forumRepository.findById(postId);
     if (!post || post.channelId !== channelId) throw new NotFoundError("Assunto não encontrado");
     if (post.closedAt) throw new AppError("Este assunto está fechado");
   },
 
-  registrarResposta(postId: string) {
-    return forumRepository.registrarResposta(postId);
+  registerReply(postId: string) {
+    return forumRepository.registerReply(postId);
   },
 };
 
-export const LIMITE_TITULO = LIMITS.postTitulo;
+export const LIMIT_TITLE = LIMITS.postTitle;

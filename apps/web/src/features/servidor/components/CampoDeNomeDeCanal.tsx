@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { Smile } from "lucide-react";
-import type { FonteDeNome } from "@gravae/shared";
+import type { NameFont } from "@gravae/shared";
 
-import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
-import { IconeDeFonte } from "~/components/SeletorDeFonte";
+import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
+import { FontIcon } from "~/components/SeletorDeFonte";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,71 +12,71 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Tooltip } from "~/components/ui/tooltip";
 import { bareField, fieldGroup } from "~/components/ui/input";
-import { FONTES } from "~/features/perfil/lib/catalogo";
-import { carregarTodasAsFontes, familiaDaFonte } from "~/features/perfil/lib/fontes";
+import { FONTS } from "~/features/perfil/lib/catalogo";
+import { loadAllFonts, fontFamily } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 
-interface CampoDeNomeDeCanalProps {
+interface NameChannelPropsField {
   id?: string;
-  valor: string;
-  onMudar: (valor: string) => void;
-  fonte: FonteDeNome;
-  onFonte: (fonte: FonteDeNome) => void;
-  ehVoz: boolean;
-  icone?: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  font: NameFont;
+  onFont: (font: NameFont) => void;
+  isVoice: boolean;
+  icon?: React.ReactNode;
   placeholder?: string;
   autoFocus?: boolean;
   onEnter?: () => void;
 }
 
-export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
+export const NameChannelField: React.FC<NameChannelPropsField> = ({
   id,
-  valor,
-  onMudar,
-  fonte,
-  onFonte,
-  ehVoz,
-  icone,
+  value,
+  onChange,
+  font,
+  onFont,
+  isVoice,
+  icon,
   placeholder,
   autoFocus,
   onEnter,
 }) => {
-  const campo = useRef<HTMLInputElement>(null);
+  const field = useRef<HTMLInputElement>(null);
 
-  useEffect(() => carregarTodasAsFontes(), []);
+  useEffect(() => loadAllFonts(), []);
 
-  const normalizar = (bruto: string) => bruto.replace(/\s+/g, ehVoz ? " " : "-");
+  const normalize = (raw: string) => raw.replace(/\s+/g, isVoice ? " " : "-");
 
-  const inserirEmoji = (emoji: string) => {
-    const el = campo.current;
-    const corte = el?.selectionStart ?? valor.length;
-    onMudar(normalizar(valor.slice(0, corte) + emoji + valor.slice(corte)));
+  const insertEmoji = (emoji: string) => {
+    const el = field.current;
+    const cut = el?.selectionStart ?? value.length;
+    onChange(normalize(value.slice(0, cut) + emoji + value.slice(cut)));
 
     requestAnimationFrame(() => {
       el?.focus();
-      const fim = corte + emoji.length;
-      el?.setSelectionRange(fim, fim);
+      const end = cut + emoji.length;
+      el?.setSelectionRange(end, end);
     });
   };
 
   return (
     <div data-gc="servidor.campo-de-nome-de-canal.div" className={fieldGroup}>
-      {icone}
+      {icon}
 
       <input data-gc="servidor.campo-de-nome-de-canal.input"
-        ref={campo}
+        ref={field}
         id={id}
-        value={valor}
+        value={value}
         maxLength={48}
         autoFocus={autoFocus}
         placeholder={placeholder}
-        onChange={(e) => onMudar(normalizar(e.target.value))}
+        onChange={(e) => onChange(normalize(e.target.value))}
         onKeyDown={(e) => e.key === "Enter" && onEnter?.()}
-        style={{ fontFamily: familiaDaFonte(fonte) ?? undefined }}
+        style={{ fontFamily: fontFamily(font) ?? undefined }}
         className={bareField}
       />
 
-      <SeletorDeEmoji data-gc="servidor.campo-de-nome-de-canal.seletor-de-emoji.inserir-emoji" onEscolher={inserirEmoji}>
+      <EmojiPicker data-gc="servidor.campo-de-nome-de-canal.emoji-picker.insert-emoji" onPick={insertEmoji}>
         <button data-gc="servidor.campo-de-nome-de-canal.button"
           type="button"
           aria-label="Emoji no nome"
@@ -84,7 +84,7 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
         >
           <Smile data-gc="servidor.campo-de-nome-de-canal.smile" size={16} />
         </button>
-      </SeletorDeEmoji>
+      </EmojiPicker>
 
       <DropdownMenu data-gc="servidor.campo-de-nome-de-canal.dropdown-menu">
         <Tooltip data-gc="servidor.campo-de-nome-de-canal.tooltip" label="Fonte do nome">
@@ -94,23 +94,23 @@ export const CampoDeNomeDeCanal: React.FC<CampoDeNomeDeCanalProps> = ({
               aria-label="Fonte do nome"
               className={cn(
                 "flex size-7 shrink-0 items-center justify-center rounded transition hover:bg-surface-3",
-                fonte === "padrao" ? "text-ink-faint hover:text-ink" : "text-brand",
+                font === "padrao" ? "text-ink-faint hover:text-ink" : "text-brand",
               )}
             >
-              <IconeDeFonte data-gc="servidor.campo-de-nome-de-canal.icone-de-fonte" size={16} />
+              <FontIcon data-gc="servidor.campo-de-nome-de-canal.font-icon" size={16} />
             </button>
           </DropdownMenuTrigger>
         </Tooltip>
 
         <DropdownMenuContent data-gc="servidor.campo-de-nome-de-canal.dropdown-menu-content" align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
-          {FONTES.map((opcao) => (
+          {FONTS.map((option) => (
             <DropdownMenuItem data-gc="servidor.campo-de-nome-de-canal.dropdown-menu-item"
-              key={opcao.id}
-              onSelect={() => onFonte(opcao.id)}
-              className={cn("text-base", opcao.id === fonte && "text-brand")}
-              style={{ fontFamily: familiaDaFonte(opcao.id) ?? undefined }}
+              key={option.id}
+              onSelect={() => onFont(option.id)}
+              className={cn("text-base", option.id === font && "text-brand")}
+              style={{ fontFamily: fontFamily(option.id) ?? undefined }}
             >
-              {opcao.rotulo}
+              {option.label}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

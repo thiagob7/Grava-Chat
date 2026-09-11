@@ -1,6 +1,6 @@
 
 
-const NAVEGADORES: [RegExp, string][] = [
+const BROWSERS: [RegExp, string][] = [
   [/Edg\//, "Edge"],
   [/OPR\/|Opera/, "Opera"],
   [/Firefox\//, "Firefox"],
@@ -8,7 +8,7 @@ const NAVEGADORES: [RegExp, string][] = [
   [/Safari\//, "Safari"],
 ];
 
-const SISTEMAS: [RegExp, string][] = [
+const SYSTEMS: [RegExp, string][] = [
   [/iPhone/, "iPhone"],
   [/iPad/, "iPad"],
   [/Android/, "Android"],
@@ -17,20 +17,20 @@ const SISTEMAS: [RegExp, string][] = [
   [/Linux/, "Linux"],
 ];
 
-function primeiro(mapa: [RegExp, string][], ua: string): string | null {
-  return mapa.find(([padrao]) => padrao.test(ua))?.[1] ?? null;
+function first(map: [RegExp, string][], ua: string): string | null {
+  return map.find(([fallback]) => fallback.test(ua))?.[1] ?? null;
 }
 
-export function nomeDoAparelho(userAgent: string | null): string {
+export function deviceName(userAgent: string | null): string {
   if (!userAgent) return "Aparelho desconhecido";
 
   const app = /Electron/i.test(userAgent);
-  const sistema = primeiro(SISTEMAS, userAgent);
+  const system = first(SYSTEMS, userAgent);
 
-  if (app) return sistema ? `Aplicativo · ${sistema}` : "Aplicativo de desktop";
+  if (app) return system ? `Aplicativo · ${system}` : "Aplicativo de desktop";
 
-  const navegador = primeiro(NAVEGADORES, userAgent);
+  const browser = first(BROWSERS, userAgent);
 
-  if (navegador && sistema) return `${navegador} · ${sistema}`;
-  return navegador ?? sistema ?? "Aparelho desconhecido";
+  if (browser && system) return `${browser} · ${system}`;
+  return browser ?? system ?? "Aparelho desconhecido";
 }

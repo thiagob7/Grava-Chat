@@ -15,7 +15,7 @@ vi.mock("~/services/presence-service.js", () => ({
 
 const { friendshipService } = await import("~/services/friendship-service.js");
 
-const pessoa = (id: string) => ({
+const person = (id: string) => ({
   id,
   username: id,
   displayName: id,
@@ -24,7 +24,7 @@ const pessoa = (id: string) => ({
   isBot: false,
 });
 
-const relacao = (
+const relation = (
   id: string,
   requesterId: string,
   addresseeId: string,
@@ -35,8 +35,8 @@ const relacao = (
   addresseeId,
   status,
   createdAt: new Date("2026-09-03T00:00:00Z"),
-  requester: pessoa(requesterId),
-  addressee: pessoa(addresseeId),
+  requester: person(requesterId),
+  addressee: person(addresseeId),
 });
 
 beforeEach(() => {
@@ -46,31 +46,31 @@ beforeEach(() => {
 
 describe("lista de relações", () => {
   it("mostra quem EU bloqueei", async () => {
-    findAllForUser.mockResolvedValue([relacao("r1", "eu", "outra", "BLOCKED")]);
+    findAllForUser.mockResolvedValue([relation("r1", "eu", "outra", "BLOCKED")]);
 
-    const lista = await friendshipService.list("eu");
+    const list = await friendshipService.list("eu");
 
-    expect(lista).toHaveLength(1);
-    expect(lista[0]?.status).toBe("BLOCKED");
-    expect(lista[0]?.user.id).toBe("outra");
+    expect(list).toHaveLength(1);
+    expect(list[0]?.status).toBe("BLOCKED");
+    expect(list[0]?.user.id).toBe("outra");
   });
 
   it("não conta pra ninguém que foi bloqueado", async () => {
-    findAllForUser.mockResolvedValue([relacao("r1", "outra", "eu", "BLOCKED")]);
+    findAllForUser.mockResolvedValue([relation("r1", "outra", "eu", "BLOCKED")]);
 
     await expect(friendshipService.list("eu")).resolves.toEqual([]);
   });
 
   it("continua entregando amizade e pedido dos dois lados", async () => {
     findAllForUser.mockResolvedValue([
-      relacao("r1", "eu", "amiga", "ACCEPTED"),
-      relacao("r2", "eu", "convidada", "PENDING"),
-      relacao("r3", "quem-pediu", "eu", "PENDING"),
+      relation("r1", "eu", "amiga", "ACCEPTED"),
+      relation("r2", "eu", "convidada", "PENDING"),
+      relation("r3", "quem-pediu", "eu", "PENDING"),
     ]);
 
-    const lista = await friendshipService.list("eu");
+    const list = await friendshipService.list("eu");
 
-    expect(lista.map((r) => r.status)).toEqual([
+    expect(list.map((r) => r.status)).toEqual([
       "ACCEPTED",
       "PENDING_OUT",
       "PENDING_IN",

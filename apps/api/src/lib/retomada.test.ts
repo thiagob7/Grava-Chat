@@ -1,54 +1,54 @@
 import { describe, expect, it } from "vitest";
 
-import { ehOutraAba } from "./retomada.js";
+import { isOtherTab } from "./retomada.js";
 
-const base = { channelId: "c1", clienteId: "aba-1", orphanedAt: null };
+const base = { channelId: "c1", clientId: "aba-1", orphanedAt: null };
 
 describe("ehOutraAba", () => {
   it("recarregar a mesma aba retoma, mesmo com o estado ainda vivo", () => {
     expect(
-      ehOutraAba({ retomando: true, anterior: base, canalPedido: "c1", cliente: "aba-1" }),
+      isOtherTab({ resuming: true, anterior: base, channelRequest: "c1", client: "aba-1" }),
     ).toBe(false);
   });
 
   it("uma segunda aba com a chamada viva leva o aviso", () => {
     expect(
-      ehOutraAba({ retomando: true, anterior: base, canalPedido: "c1", cliente: "aba-2" }),
+      isOtherTab({ resuming: true, anterior: base, channelRequest: "c1", client: "aba-2" }),
     ).toBe(true);
   });
 
   it("estado já enterrado nunca é outra aba", () => {
     expect(
-      ehOutraAba({
-        retomando: true,
+      isOtherTab({
+        resuming: true,
         anterior: { ...base, orphanedAt: Date.now() },
-        canalPedido: "c1",
-        cliente: "aba-2",
+        channelRequest: "c1",
+        client: "aba-2",
       }),
     ).toBe(false);
   });
 
   it("sem estado anterior não há o que disputar", () => {
     expect(
-      ehOutraAba({ retomando: true, anterior: null, canalPedido: "c1", cliente: "aba-1" }),
+      isOtherTab({ resuming: true, anterior: null, channelRequest: "c1", client: "aba-1" }),
     ).toBe(false);
   });
 
   it("entrar noutro canal não é retomada", () => {
     expect(
-      ehOutraAba({ retomando: true, anterior: base, canalPedido: "c2", cliente: "aba-2" }),
+      isOtherTab({ resuming: true, anterior: base, channelRequest: "c2", client: "aba-2" }),
     ).toBe(false);
   });
 
   it("entrada normal, sem retomada, passa direto", () => {
     expect(
-      ehOutraAba({ retomando: false, anterior: base, canalPedido: "c1", cliente: "aba-2" }),
+      isOtherTab({ resuming: false, anterior: base, channelRequest: "c1", client: "aba-2" }),
     ).toBe(false);
   });
 
   it("sem identidade, decide pelo órfão como antes", () => {
     expect(
-      ehOutraAba({ retomando: true, anterior: { ...base, clienteId: null }, canalPedido: "c1", cliente: null }),
+      isOtherTab({ resuming: true, anterior: { ...base, clientId: null }, channelRequest: "c1", client: null }),
     ).toBe(true);
   });
 });

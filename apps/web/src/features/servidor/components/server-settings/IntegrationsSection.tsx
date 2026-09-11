@@ -22,7 +22,7 @@ import { Button } from "~/components/ui/button";
 import { SelectField } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useConfirm } from "~/components/ui/confirm";
-import { copiarTexto } from "~/lib/copiar";
+import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -37,9 +37,9 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { data: webhooks = [], isLoading } = useFindWebhooks(guildId);
-  const criar = useCreateWebhook(guildId);
+  const create = useCreateWebhook(guildId);
 
-  const canaisDeTexto = channels.filter(
+  const textChannels = channels.filter(
     (c) => c.type === "TEXT" || c.type === "FORUM",
   );
 
@@ -55,12 +55,12 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
 
         <Button data-gc="servidor.server-settings.integrations-section.button"
           size="sm"
-          disabled={criar.isPending || !canaisDeTexto.length}
+          disabled={create.isPending || !textChannels.length}
           onClick={() =>
-            criar.mutate({
+            create.mutate({
               guildId,
               name: "Webhook",
-              channelId: canaisDeTexto[0]!.id,
+              channelId: textChannels[0]!.id,
             })
           }
         >
@@ -81,44 +81,44 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
         )}
 
         {webhooks.map((webhook) => (
-          <CartaoDoWebhook data-gc="servidor.server-settings.integrations-section.cartao-do-webhook"
+          <WebhookCard data-gc="servidor.server-settings.integrations-section.webhook-card"
             key={webhook.id}
             guildId={guildId}
             webhook={webhook}
-            canais={canaisDeTexto}
+            channels={textChannels}
           />
         ))}
       </div>
 
-      {webhooks.length > 0 && <ComoUsar data-gc="servidor.server-settings.integrations-section.como-usar" exemplo={webhooks[0]!.url} />}
+      {webhooks.length > 0 && <AsUse data-gc="servidor.server-settings.integrations-section.as-use" example={webhooks[0]!.url} />}
     </div>
   );
 };
 
-interface CartaoProps {
+interface CardProps {
   guildId: string;
   webhook: WebhookModel;
-  canais: Channel[];
+  channels: Channel[];
 }
 
-const CartaoDoWebhook: React.FC<CartaoProps> = ({
+const WebhookCard: React.FC<CardProps> = ({
   guildId,
   webhook,
-  canais,
+  channels,
 }) => {
   const { t } = useTranslation();
-  const salvar = useUpdateWebhook(guildId);
-  const apagar = useDeleteWebhook(guildId);
+  const save = useUpdateWebhook(guildId);
+  const doDelete = useDeleteWebhook(guildId);
 
-  const [nome, setNome] = useState(webhook.name);
-  const [mostrandoUrl, setMostrandoUrl] = useState(false);
-  const [copiado, setCopiado] = useState(false);
+  const [name, setName] = useState(webhook.name);
+  const [showingUrl, setShowingUrl] = useState(false);
+  const [copied, setCopied] = useState(false);
   const confirm = useConfirm();
 
-  const copiar = async () => {
-    await copiarTexto(webhook.url);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2000);
+  const copy = async () => {
+    await copyText(webhook.url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -126,7 +126,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
       <div data-gc="servidor.server-settings.integrations-section.div--6" className="flex items-center gap-3">
         <Avatar data-gc="servidor.server-settings.integrations-section.avatar"
           id={webhook.bot.id}
-          name={nome || webhook.name}
+          name={name || webhook.name}
           url={webhook.avatarUrl}
           size={40}
         />
@@ -137,15 +137,15 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
               {t("comum.nome")}
             </span>
             <Input data-gc="servidor.server-settings.integrations-section.input"
-              value={nome}
+              value={name}
               maxLength={48}
-              onChange={(e) => setNome(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               onBlur={() => {
-                if (nome.trim() && nome !== webhook.name) {
-                  salvar.mutate({
+                if (name.trim() && name !== webhook.name) {
+                  save.mutate({
                     guildId,
                     webhookId: webhook.id,
-                    name: nome.trim(),
+                    name: name.trim(),
                   });
                 }
               }}
@@ -160,11 +160,11 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
             <SelectField data-gc="servidor.server-settings.integrations-section.select-field"
               value={webhook.channelId}
               onSelect={(channelId) =>
-                salvar.mutate({ guildId, webhookId: webhook.id, channelId })
+                save.mutate({ guildId, webhookId: webhook.id, channelId })
               }
-              options={canais.map((canal) => ({
-                value: canal.id,
-                label: `#${canal.name}`,
+              options={channels.map((channel) => ({
+                value: channel.id,
+                label: `#${channel.name}`,
               }))}
             />
           </label>
@@ -179,7 +179,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
               action: t("servidor.integracoes.apagar"),
             }).then(
               ({ confirmed }) =>
-                confirmed && apagar.mutate({ guildId, webhookId: webhook.id }),
+                confirmed && doDelete.mutate({ guildId, webhookId: webhook.id }),
             )
           }
           title={t("servidor.integracoes.apagar")}
@@ -193,25 +193,25 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
         <code data-gc="servidor.server-settings.integrations-section.code"
           className={cn(
             "min-w-0 flex-1 truncate rounded bg-surface-0 px-3 py-2 text-xs",
-            mostrandoUrl ? "text-ink-muted" : "text-ink-faint",
+            showingUrl ? "text-ink-muted" : "text-ink-faint",
           )}
         >
-          {mostrandoUrl
+          {showingUrl
             ? webhook.url
             : webhook.url.replace(/\/[^/]+$/, "/••••••••••••••••")}
         </code>
 
         <button data-gc="servidor.server-settings.integrations-section.button--3"
-          onClick={() => setMostrandoUrl((v) => !v)}
-          title={mostrandoUrl ? "Esconder" : "Mostrar"}
+          onClick={() => setShowingUrl((v) => !v)}
+          title={showingUrl ? "Esconder" : "Mostrar"}
           className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-ink"
         >
-          {mostrandoUrl ? <EyeOff data-gc="servidor.server-settings.integrations-section.eye-off" size={16} /> : <Eye data-gc="servidor.server-settings.integrations-section.eye" size={16} />}
+          {showingUrl ? <EyeOff data-gc="servidor.server-settings.integrations-section.eye-off" size={16} /> : <Eye data-gc="servidor.server-settings.integrations-section.eye" size={16} />}
         </button>
 
-        <Button data-gc="servidor.server-settings.integrations-section.button--4" variant="surface" size="sm" onClick={() => void copiar()}>
-          {copiado ? <Check data-gc="servidor.server-settings.integrations-section.check" size={14} /> : <Copy data-gc="servidor.server-settings.integrations-section.copy" size={14} />}
-          {copiado ? "Copiado" : "Copiar URL"}
+        <Button data-gc="servidor.server-settings.integrations-section.button--4" variant="surface" size="sm" onClick={() => void copy()}>
+          {copied ? <Check data-gc="servidor.server-settings.integrations-section.check" size={14} /> : <Copy data-gc="servidor.server-settings.integrations-section.copy" size={14} />}
+          {copied ? "Copiado" : "Copiar URL"}
         </Button>
       </div>
 
@@ -223,7 +223,7 @@ const CartaoDoWebhook: React.FC<CartaoProps> = ({
   );
 };
 
-const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => {
+const AsUse: React.FC<{ example: string }> = ({ example }) => {
   const { t } = useTranslation();
 
   return (
@@ -236,7 +236,7 @@ const ComoUsar: React.FC<{ exemplo: string }> = ({ exemplo }) => {
     </p>
 
     <pre data-gc="servidor.server-settings.integrations-section.pre" className="mt-3 overflow-x-auto rounded bg-surface-0 p-4 text-xs text-ink-muted">
-      {`curl -X POST ${exemplo.replace(/\/[^/]+$/, "/SEU_TOKEN")} \\
+      {`curl -X POST ${example.replace(/\/[^/]+$/, "/SEU_TOKEN")} \\
   -H "Content-Type: application/json" \\
   -d '{"content": "build 42 passou ✅", "username": "CI"}'`}
     </pre>

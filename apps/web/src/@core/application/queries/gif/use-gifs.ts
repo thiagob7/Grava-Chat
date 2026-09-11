@@ -30,11 +30,11 @@ export const useTrendingGifs = (enabled: boolean) =>
     staleTime: 10 * 60_000,
   });
 
-export const useSearchGifs = (termo: string) =>
+export const useSearchGifs = (term: string) =>
   useQuery({
-    queryKey: queryKeys.gif.search(termo),
-    queryFn: () => searchGifs(termo),
-    enabled: termo.trim().length > 1,
+    queryKey: queryKeys.gif.search(term),
+    queryFn: () => searchGifs(term),
+    enabled: term.trim().length > 1,
     staleTime: 10 * 60_000,
   });
 
@@ -58,9 +58,9 @@ export const useToggleFavoriteGif = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ gif, salvo }: { gif: GifModel; salvo: boolean }) =>
-      salvo ? removeFavoriteGif(gif.id) : saveFavoriteGif(gif),
-    onSuccess: (lista) => queryClient.setQueryData([queryKeys.gif.favorites], lista),
+    mutationFn: ({ gif, saved }: { gif: GifModel; saved: boolean }) =>
+      saved ? removeFavoriteGif(gif.id) : saveFavoriteGif(gif),
+    onSuccess: (list) => queryClient.setQueryData([queryKeys.gif.favorites], list),
     onError: (e) => toast.error(apiErrorMessage(e, "Não deu pra salvar esse GIF.")),
   });
 };

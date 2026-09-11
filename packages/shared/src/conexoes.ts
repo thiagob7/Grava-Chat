@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SERVICOS = [
+export const SERVICES = [
   "github",
   "gitlab",
   "x",
@@ -15,9 +15,9 @@ export const SERVICOS = [
   "site",
 ] as const;
 
-export type Servico = (typeof SERVICOS)[number];
+export type Service = (typeof SERVICES)[number];
 
-export const NOMES_DOS_SERVICOS: Record<Servico, string> = {
+export const SERVICES_NAMES: Record<Service, string> = {
   github: "GitHub",
   gitlab: "GitLab",
   x: "X",
@@ -32,7 +32,7 @@ export const NOMES_DOS_SERVICOS: Record<Servico, string> = {
   site: "Site",
 };
 
-const MOLDES: Record<Exclude<Servico, "site">, string> = {
+const MOLDS: Record<Exclude<Service, "site">, string> = {
   github: "https://github.com/",
   gitlab: "https://gitlab.com/",
   x: "https://x.com/",
@@ -48,22 +48,22 @@ const MOLDES: Record<Exclude<Servico, "site">, string> = {
 
 const HANDLE = /^[A-Za-z0-9._-]{1,40}$/;
 
-export const conexaoSchema = z.object({
-  servico: z.enum(SERVICOS),
-  valor: z.string().min(1).max(200),
+export const connectionSchema = z.object({
+  service: z.enum(SERVICES),
+  value: z.string().min(1).max(200),
 });
 
-export type Conexao = z.infer<typeof conexaoSchema>;
+export type Connection = z.infer<typeof connectionSchema>;
 
-export function enderecoDaConexao({ servico, valor }: Conexao): string | null {
-  const limpo = valor.trim().replace(/^@/, "");
-  if (!limpo) return null;
+export function connectionAddress({ service, value }: Connection): string | null {
+  const clean = value.trim().replace(/^@/, "");
+  if (!clean) return null;
 
-  if (servico === "site") {
-    const comEsquema = /^https?:\/\//i.test(limpo) ? limpo : `https://${limpo}`;
+  if (service === "site") {
+    const withSchema = /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
 
     try {
-      const url = new URL(comEsquema);
+      const url = new URL(withSchema);
       if (url.protocol !== "http:" && url.protocol !== "https:") return null;
       if (!url.hostname.includes(".")) return null;
 
@@ -73,19 +73,19 @@ export function enderecoDaConexao({ servico, valor }: Conexao): string | null {
     }
   }
 
-  if (!HANDLE.test(limpo)) return null;
+  if (!HANDLE.test(clean)) return null;
 
-  return `${MOLDES[servico]}${limpo}`;
+  return `${MOLDS[service]}${clean}`;
 }
 
-export function comoSeLe({ servico, valor }: Conexao): string {
-  const limpo = valor.trim().replace(/^@/, "");
-  if (servico !== "site") return limpo;
+export function asLe({ service, value }: Connection): string {
+  const clean = value.trim().replace(/^@/, "");
+  if (service !== "site") return clean;
 
   try {
-    return new URL(/^https?:\/\//i.test(limpo) ? limpo : `https://${limpo}`)
+    return new URL(/^https?:\/\//i.test(clean) ? clean : `https://${clean}`)
       .hostname;
   } catch {
-    return limpo;
+    return clean;
   }
 }

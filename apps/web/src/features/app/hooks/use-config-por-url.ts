@@ -1,22 +1,22 @@
 import { useEffect } from "react";
 
-import { lerPedidoDaUrl, limparPedidoDaUrl } from "~/features/app/lib/link-de-config";
-import { SUBSECOES } from "~/features/configuracoes/components/secoes";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
+import { readUrlRequest, clearUrlRequest } from "~/features/app/lib/link-de-config";
+import { SUBSECTIONS } from "~/features/configuracoes/components/secoes";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 
-export function useConfigPorUrl(): void {
+export function useConfigByUrl(): void {
   useEffect(() => {
-    const pedido = lerPedidoDaUrl();
-    if (!pedido) return;
+    const request = readUrlRequest();
+    if (!request) return;
 
-    if (!(pedido.secao in SUBSECOES)) {
-      limparPedidoDaUrl();
+    if (!(request.section in SUBSECTIONS)) {
+      clearUrlRequest();
       return;
     }
 
-    const existe = SUBSECOES[pedido.secao].some((sub) => sub.id === pedido.sub);
+    const exists = SUBSECTIONS[request.section].some((sub) => sub.id === request.sub);
 
-    useConfiguracoes.getState().abrir(pedido.secao, existe ? (pedido.sub ?? undefined) : undefined);
-    limparPedidoDaUrl();
+    useSettings.getState().open(request.section, exists ? (request.sub ?? undefined) : undefined);
+    clearUrlRequest();
   }, []);
 }

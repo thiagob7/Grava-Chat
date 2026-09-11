@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "一隻揮手的小手",
+    botao: "向 {{nome}} 揮手",
+  },
+  oficial: {
+    titulo: "這個頻道只發官方通知。",
+    detalhe: "我們從不索取你的密碼或帳號權杖。",
+    saibaMais: "了解更多",
+  },
+  topico: {
+    abrir: "檢視頻道簡介",
+  },
+  previaDoLink: {
+    carregando: "正在看連結裡有什麼…",
+    destino: "通往 {{destino}}",
+  },
+  reacao: {
+    carregando: "正在看誰用 {{emoji}} 回應…",
+    uma: "{{nome}} 用 {{emoji}} 回應了",
+    duas: "{{primeiro}} 和 {{segundo}} 用 {{emoji}} 回應了",
+    varias: "{{nomes}} 和另外 {{quantos}} 人用 {{emoji}} 回應了",
+    dicaSuper: "長按可超級回應",
+  },
+  recado: {
+    gravar: "錄一則語音",
+    descartar: "丟棄錄音",
+    mandar: "傳送錄音",
+    semSuporte: "這個瀏覽器不能錄音。",
+    semMicrofone: "用不了麥克風。",
+  },
   lista: {
     carregando: "正在載入訊息…",
     carregandoMais: "載入中…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "查看圖片",
   },
   enquete: {
+    criar: "建立投票",
+    pergunta: "問題",
+    exemplo: "今天玩點什麼？",
+    respostas: "選項",
+    adicionarOpcao: "新增選項",
+    removerOpcao: "刪除選項",
+    varias: "允許多選",
+    variasDetalhe: "不開這個的話，投給一個選項會把上一個的票收回。",
+    duracao: "時長",
+    umaHora: "1 小時",
+    quatroHoras: "4 小時",
+    oitoHoras: "8 小時",
+    umDia: "1 天",
+    tresDias: "3 天",
+    umaSemana: "1 週",
+    ateEncerrar: "直到我自己結束",
     titulo: "投票",
     encerrada: "投票已結束",
     variasRespostas: "投票 — 可複選",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "搜尋只查看你能讀取的頻道。",
   },
   entrada: {
+    semNome: "會話",
+    anexo: "（附件）",
     titulo: "收件匣",
     naoLidas: "未讀",
     salvas: "已儲存",

@@ -1,2396 +1,2401 @@
 {
   "rest": [
     {
-      "metodo": "GET",
-      "caminho": "/bot/eu",
-      "grupo": "Identidade",
-      "descricao": "Quem é o bot deste token.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/eu",
+      "group": "Identidade",
+      "description": "Quem é o bot deste token.",
+      "body": null,
       "parametros": []
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores",
-      "grupo": "Servidores e canais",
-      "descricao": "Os servidores em que o bot está.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores",
+      "group": "Servidores e canais",
+      "description": "Os servidores em que o bot está.",
+      "body": null,
       "parametros": []
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/canais",
-      "grupo": "Servidores e canais",
-      "descricao": "Os canais de um servidor, com o que o bot alcança.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/canais",
+      "group": "Servidores e canais",
+      "description": "Os canais de um servidor, com o que o bot alcança.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/membros",
-      "grupo": "Membros e moderação",
-      "descricao": "Quem está no servidor, com apelido, cargos e desde quando.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/membros",
+      "group": "Membros e moderação",
+      "description": "Quem está no servidor, com apelido, cargos e desde quando.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/cargos",
-      "grupo": "Cargos",
-      "descricao": "Os cargos do servidor, com as permissões de cada um.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/cargos",
+      "group": "Cargos",
+      "description": "Os cargos do servidor, com as permissões de cada um.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/servidores/:guildId/membros/:userId/apelido",
-      "grupo": "Membros e moderação",
-      "descricao": "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
-      "corpo": "{ nickname: string | null }",
+      "method": "PATCH",
+      "path": "/bot/servidores/:guildId/membros/:userId/apelido",
+      "group": "Membros e moderação",
+      "description": "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
+      "body": "{ nickname: string | null }",
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/servidores/:guildId/membros/:userId/cargos",
-      "grupo": "Membros e moderação",
-      "descricao": "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
-      "corpo": "{ roleIds: string[] }",
+      "method": "PUT",
+      "path": "/bot/servidores/:guildId/membros/:userId/cargos",
+      "group": "Membros e moderação",
+      "description": "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
+      "body": "{ roleIds: string[] }",
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/servidores/:guildId/membros/:userId",
-      "grupo": "Membros e moderação",
-      "descricao": "Expulsa. Quem foi expulso volta com convite novo.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/servidores/:guildId/membros/:userId",
+      "group": "Membros e moderação",
+      "description": "Expulsa. Quem foi expulso volta com convite novo.",
+      "body": null,
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/servidores/:guildId/castigos/:userId",
-      "grupo": "Membros e moderação",
-      "descricao": "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
-      "corpo": "{ minutos: number, reason?: string }",
+      "method": "PUT",
+      "path": "/bot/servidores/:guildId/castigos/:userId",
+      "group": "Membros e moderação",
+      "description": "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
+      "body": "{ minutos: number, reason?: string }",
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/banimentos",
-      "grupo": "Membros e moderação",
-      "descricao": "Quem está banido, e por quê.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/banimentos",
+      "group": "Membros e moderação",
+      "description": "Quem está banido, e por quê.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/servidores/:guildId/banimentos/:userId",
-      "grupo": "Membros e moderação",
-      "descricao": "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
-      "corpo": "{ reason?: string, apagarHoras?: number }",
+      "method": "PUT",
+      "path": "/bot/servidores/:guildId/banimentos/:userId",
+      "group": "Membros e moderação",
+      "description": "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
+      "body": "{ reason?: string, apagarHoras?: number }",
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/servidores/:guildId/banimentos/:userId",
-      "grupo": "Membros e moderação",
-      "descricao": "Desbane, devolvendo o acesso na hora.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/servidores/:guildId/banimentos/:userId",
+      "group": "Membros e moderação",
+      "description": "Desbane, devolvendo o acesso na hora.",
+      "body": null,
       "parametros": [
         "guildId",
         "userId"
       ]
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/servidores/:guildId/canais",
-      "grupo": "Servidores e canais",
-      "descricao": "Cria um canal de texto, voz ou fórum.",
-      "corpo": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
+      "method": "POST",
+      "path": "/bot/servidores/:guildId/canais",
+      "group": "Servidores e canais",
+      "description": "Cria um canal de texto, voz ou fórum.",
+      "body": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/servidores/:guildId/canais/:channelId",
-      "grupo": "Servidores e canais",
-      "descricao": "Muda nome, tópico, categoria, posição ou modo lento do canal.",
-      "corpo": "updateChannelInput — tudo opcional",
+      "method": "PATCH",
+      "path": "/bot/servidores/:guildId/canais/:channelId",
+      "group": "Servidores e canais",
+      "description": "Muda nome, tópico, categoria, posição ou modo lento do canal.",
+      "body": "updateChannelInput — tudo opcional",
       "parametros": [
         "guildId",
         "channelId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/servidores/:guildId/canais/:channelId",
-      "grupo": "Servidores e canais",
-      "descricao": "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/servidores/:guildId/canais/:channelId",
+      "group": "Servidores e canais",
+      "description": "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
+      "body": null,
       "parametros": [
         "guildId",
         "channelId"
       ]
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/servidores/:guildId/convites",
-      "grupo": "Servidores e canais",
-      "descricao": "Cria um link de convite pro servidor.",
-      "corpo": "{ maxUses?: number, expiresInHours?: number }",
+      "method": "POST",
+      "path": "/bot/servidores/:guildId/convites",
+      "group": "Servidores e canais",
+      "description": "Cria um link de convite pro servidor.",
+      "body": "{ maxUses?: number, expiresInHours?: number }",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/servidores/:guildId",
-      "grupo": "Servidores e canais",
-      "descricao": "Muda nome, ícone, banner ou descrição do servidor.",
-      "corpo": "updateGuildInput — tudo opcional",
+      "method": "PATCH",
+      "path": "/bot/servidores/:guildId",
+      "group": "Servidores e canais",
+      "description": "Muda nome, ícone, banner ou descrição do servidor.",
+      "body": "updateGuildInput — tudo opcional",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/auditoria",
-      "grupo": "Membros e moderação",
-      "descricao": "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/auditoria",
+      "group": "Membros e moderação",
+      "description": "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/servidores/:guildId/cargos",
-      "grupo": "Cargos",
-      "descricao": "Cria um cargo, já com as permissões dele.",
-      "corpo": "createRoleInput — name, permissions[]",
+      "method": "POST",
+      "path": "/bot/servidores/:guildId/cargos",
+      "group": "Cargos",
+      "description": "Cria um cargo, já com as permissões dele.",
+      "body": "createRoleInput — name, permissions[]",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/servidores/:guildId/cargos/:roleId",
-      "grupo": "Cargos",
-      "descricao": "Muda nome, permissões, cor ou ícone do cargo.",
-      "corpo": "updateRoleInput — tudo opcional",
+      "method": "PATCH",
+      "path": "/bot/servidores/:guildId/cargos/:roleId",
+      "group": "Cargos",
+      "description": "Muda nome, permissões, cor ou ícone do cargo.",
+      "body": "updateRoleInput — tudo opcional",
       "parametros": [
         "guildId",
         "roleId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/servidores/:guildId/cargos/:roleId",
-      "grupo": "Cargos",
-      "descricao": "Apaga o cargo e tira ele de quem o tinha.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/servidores/:guildId/cargos/:roleId",
+      "group": "Cargos",
+      "description": "Apaga o cargo e tira ele de quem o tinha.",
+      "body": null,
       "parametros": [
         "guildId",
         "roleId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/servidores/:guildId/cargos",
-      "grupo": "Cargos",
-      "descricao": "Reordena os cargos. A ordem é quem manda em quem.",
-      "corpo": "{ roles: [{ id, position }] }",
+      "method": "PUT",
+      "path": "/bot/servidores/:guildId/cargos",
+      "group": "Cargos",
+      "description": "Reordena os cargos. A ordem é quem manda em quem.",
+      "body": "{ roles: [{ id, position }] }",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/expressoes",
-      "grupo": "Expressões",
-      "descricao": "Emojis, figurinhas e sons do servidor.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/expressoes",
+      "group": "Expressões",
+      "description": "Emojis, figurinhas e sons do servidor.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/servidores/:guildId/emojis",
-      "grupo": "Expressões",
-      "descricao": "Sobe um emoji a partir de uma URL de imagem.",
-      "corpo": "{ name, url, animated? }",
+      "method": "POST",
+      "path": "/bot/servidores/:guildId/emojis",
+      "group": "Expressões",
+      "description": "Sobe um emoji a partir de uma URL de imagem.",
+      "body": "{ name, url, animated? }",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
-      "grupo": "Expressões",
-      "descricao": "Renomeia o emoji.",
-      "corpo": "{ name }",
+      "method": "PATCH",
+      "path": "/bot/servidores/:guildId/emojis/:emojiId",
+      "group": "Expressões",
+      "description": "Renomeia o emoji.",
+      "body": "{ name }",
       "parametros": [
         "guildId",
         "emojiId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
-      "grupo": "Expressões",
-      "descricao": "Apaga o emoji do servidor.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/servidores/:guildId/emojis/:emojiId",
+      "group": "Expressões",
+      "description": "Apaga o emoji do servidor.",
+      "body": null,
       "parametros": [
         "guildId",
         "emojiId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/servidores/:guildId/webhooks",
-      "grupo": "Webhooks",
-      "descricao": "Os webhooks do servidor, com a URL de cada um.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/servidores/:guildId/webhooks",
+      "group": "Webhooks",
+      "description": "Os webhooks do servidor, com a URL de cada um.",
+      "body": null,
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/servidores/:guildId/webhooks",
-      "grupo": "Webhooks",
-      "descricao": "Cria um webhook apontado pra um canal.",
-      "corpo": "{ name, channelId }",
+      "method": "POST",
+      "path": "/bot/servidores/:guildId/webhooks",
+      "group": "Webhooks",
+      "description": "Cria um webhook apontado pra um canal.",
+      "body": "{ name, channelId }",
       "parametros": [
         "guildId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/comandos",
-      "grupo": "Identidade",
-      "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
-      "corpo": "definirComandosInput",
+      "method": "PUT",
+      "path": "/bot/comandos",
+      "group": "Identidade",
+      "description": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
+      "body": "definirComandosInput",
       "parametros": []
     },
     {
-      "metodo": "POST",
-      "caminho": "/bot/canais/:channelId/mensagens",
-      "grupo": "Mensagens",
-      "descricao": "Manda uma mensagem no canal.",
-      "corpo": "sendMessageInput sem channelId e nonce",
+      "method": "POST",
+      "path": "/bot/canais/:channelId/mensagens",
+      "group": "Mensagens",
+      "description": "Manda uma mensagem no canal.",
+      "body": "sendMessageInput sem channelId e nonce",
       "parametros": [
         "channelId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/canais/:channelId/mensagens",
-      "grupo": "Mensagens",
-      "descricao": "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/canais/:channelId/mensagens",
+      "group": "Mensagens",
+      "description": "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
+      "body": null,
       "parametros": [
         "channelId"
       ]
     },
     {
-      "metodo": "GET",
-      "caminho": "/bot/canais/:channelId/fixadas",
-      "grupo": "Mensagens",
-      "descricao": "As mensagens fixadas do canal.",
-      "corpo": null,
+      "method": "GET",
+      "path": "/bot/canais/:channelId/fixadas",
+      "group": "Mensagens",
+      "description": "As mensagens fixadas do canal.",
+      "body": null,
       "parametros": [
         "channelId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/mensagens/:messageId/fixar",
-      "grupo": "Mensagens",
-      "descricao": "Fixa a mensagem no canal.",
-      "corpo": "sem corpo — o id vai no endereço",
+      "method": "PUT",
+      "path": "/bot/mensagens/:messageId/fixar",
+      "group": "Mensagens",
+      "description": "Fixa a mensagem no canal.",
+      "body": "sem corpo — o id vai no endereço",
       "parametros": [
         "messageId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/mensagens/:messageId/fixar",
-      "grupo": "Mensagens",
-      "descricao": "Desafixa a mensagem.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/mensagens/:messageId/fixar",
+      "group": "Mensagens",
+      "description": "Desafixa a mensagem.",
+      "body": null,
       "parametros": [
         "messageId"
       ]
     },
     {
-      "metodo": "PATCH",
-      "caminho": "/bot/mensagens/:messageId",
-      "grupo": "Mensagens",
-      "descricao": "Edita uma mensagem do próprio bot.",
-      "corpo": "editMessageInput sem messageId",
+      "method": "PATCH",
+      "path": "/bot/mensagens/:messageId",
+      "group": "Mensagens",
+      "description": "Edita uma mensagem do próprio bot.",
+      "body": "editMessageInput sem messageId",
       "parametros": [
         "messageId"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/mensagens/:messageId",
-      "grupo": "Mensagens",
-      "descricao": "Apaga uma mensagem do próprio bot.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/mensagens/:messageId",
+      "group": "Mensagens",
+      "description": "Apaga uma mensagem do próprio bot.",
+      "body": null,
       "parametros": [
         "messageId"
       ]
     },
     {
-      "metodo": "PUT",
-      "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
-      "grupo": "Mensagens",
-      "descricao": "Reage a uma mensagem.",
-      "corpo": "{ burst?: boolean }",
+      "method": "PUT",
+      "path": "/bot/mensagens/:messageId/reacoes/:emoji",
+      "group": "Mensagens",
+      "description": "Reage a uma mensagem.",
+      "body": "{ burst?: boolean }",
       "parametros": [
         "messageId",
         "emoji"
       ]
     },
     {
-      "metodo": "DELETE",
-      "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
-      "grupo": "Mensagens",
-      "descricao": "Tira a reação do bot.",
-      "corpo": null,
+      "method": "DELETE",
+      "path": "/bot/mensagens/:messageId/reacoes/:emoji",
+      "group": "Mensagens",
+      "description": "Tira a reação do bot.",
+      "body": null,
       "parametros": [
         "messageId",
         "emoji"
       ]
     }
   ],
-  "eventos": [
+  "events": [
     {
-      "nome": "channel:subscribe",
-      "campos": [
+      "name": "channel:subscribe",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "channel:unsubscribe",
-      "campos": [
+      "name": "channel:unsubscribe",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "message:send",
-      "campos": [
+      "name": "message:send",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "content",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": 4000
+          "name": "content",
+          "kind": "string",
+          "required": true,
+          "limit": 4000
         },
         {
-          "nome": "fonte",
-          "tipo": "string",
-          "obrigatorio": false,
-          "limite": null
+          "name": "font",
+          "kind": "string",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "attachments",
-          "tipo": "array",
-          "obrigatorio": false,
-          "limite": null
+          "name": "attachments",
+          "kind": "array",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "poll",
-          "tipo": "object",
-          "obrigatorio": false,
-          "limite": null
+          "name": "poll",
+          "kind": "object",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "stickerId",
-          "tipo": "string",
-          "obrigatorio": false,
-          "limite": null
+          "name": "stickerId",
+          "kind": "string",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "postId",
-          "tipo": "vários",
-          "obrigatorio": false,
-          "limite": null
+          "name": "postId",
+          "kind": "vários",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "replyToId",
-          "tipo": "vários",
-          "obrigatorio": false,
-          "limite": null
+          "name": "replyToId",
+          "kind": "vários",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "encaminhadaDe",
-          "tipo": "vários",
-          "obrigatorio": false,
-          "limite": null
+          "name": "forwarded",
+          "kind": "vários",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "mencionarAutor",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "mentionAuthor",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "nonce",
-          "tipo": "string",
-          "obrigatorio": false,
-          "limite": 64
+          "name": "nonce",
+          "kind": "string",
+          "required": false,
+          "limit": 64
         }
       ]
     },
     {
-      "nome": "message:edit",
-      "campos": [
+      "name": "message:edit",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "content",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": 4000
+          "name": "content",
+          "kind": "string",
+          "required": true,
+          "limit": 4000
         }
       ]
     },
     {
-      "nome": "message:delete",
-      "campos": [
+      "name": "message:delete",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "message:react",
-      "campos": [
+      "name": "message:react",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "emoji",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": 64
+          "name": "emoji",
+          "kind": "string",
+          "required": true,
+          "limit": 64
         },
         {
-          "nome": "burst",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "burst",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "message:unreact",
-      "campos": [
+      "name": "message:unreact",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "emoji",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": 64
+          "name": "emoji",
+          "kind": "string",
+          "required": true,
+          "limit": 64
         }
       ]
     },
     {
-      "nome": "message:ack",
-      "campos": [
+      "name": "message:ack",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "message:unread",
-      "campos": [
+      "name": "message:unread",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "poll:vote",
-      "campos": [
+      "name": "poll:vote",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "optionId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": 64
+          "name": "optionId",
+          "kind": "string",
+          "required": true,
+          "limit": 64
         }
       ]
     },
     {
-      "nome": "poll:close",
-      "campos": [
+      "name": "poll:close",
+      "fields": [
         {
-          "nome": "messageId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "typing:start",
-      "campos": [
+      "name": "typing:start",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "command:invoke",
-      "campos": [
+      "name": "command:invoke",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "botId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "botId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "comando",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "command",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "opcoes",
-          "tipo": "object",
-          "obrigatorio": false,
-          "limite": null
+          "name": "options",
+          "kind": "object",
+          "required": false,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "presence:update",
-      "campos": [
+      "name": "presence:update",
+      "fields": [
         {
-          "nome": "status",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "status",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "presence:afk",
-      "campos": [
+      "name": "presence:afk",
+      "fields": [
         {
-          "nome": "idle",
-          "tipo": "boolean",
-          "obrigatorio": true,
-          "limite": null
+          "name": "idle",
+          "kind": "boolean",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:join",
-      "campos": [
+      "name": "voice:join",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "resume",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "resume",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "cliente",
-          "tipo": "string",
-          "obrigatorio": false,
-          "limite": 64
+          "name": "client",
+          "kind": "string",
+          "required": false,
+          "limit": 64
         }
       ]
     },
     {
-      "nome": "voice:leave",
-      "campos": []
+      "name": "voice:leave",
+      "fields": []
     },
     {
-      "nome": "voice:token",
-      "campos": [
+      "name": "voice:token",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:onde",
-      "campos": [
+      "name": "voice:onde",
+      "fields": [
         {
-          "nome": "userId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "userId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:sound",
-      "campos": [
+      "name": "voice:sound",
+      "fields": [
         {
-          "nome": "soundId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "soundId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:moderate",
-      "campos": [
+      "name": "voice:moderate",
+      "fields": [
         {
-          "nome": "userId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "userId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "serverMute",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "serverMute",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "serverDeaf",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "serverDeaf",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:recusar",
-      "campos": [
+      "name": "voice:recusar",
+      "fields": [
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:kick",
-      "campos": [
+      "name": "voice:kick",
+      "fields": [
         {
-          "nome": "userId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "userId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:moveMember",
-      "campos": [
+      "name": "voice:moveMember",
+      "fields": [
         {
-          "nome": "userId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "userId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         },
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true,
-          "limite": null
+          "name": "channelId",
+          "kind": "string",
+          "required": true,
+          "limit": null
         }
       ]
     },
     {
-      "nome": "voice:state",
-      "campos": [
+      "name": "voice:state",
+      "fields": [
         {
-          "nome": "selfMute",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "selfMute",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "selfDeaf",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "selfDeaf",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "camera",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "camera",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         },
         {
-          "nome": "screenShare",
-          "tipo": "boolean",
-          "obrigatorio": false,
-          "limite": null
+          "name": "screenShare",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         }
       ]
     }
   ],
-  "recebidos": [
+  "received": [
     {
-      "nome": "message:created",
-      "descricao": "Mensagem nova num canal que o bot acompanha."
+      "name": "message:created",
+      "description": "Mensagem nova num canal que o bot acompanha."
     },
     {
-      "nome": "message:updated",
-      "descricao": "Mensagem editada."
+      "name": "message:updated",
+      "description": "Mensagem editada."
     },
     {
-      "nome": "message:deleted",
-      "descricao": "Mensagem apagada."
+      "name": "message:deleted",
+      "description": "Mensagem apagada."
     },
     {
-      "nome": "message:reactions",
-      "descricao": "A lista de reações da mensagem inteira, já recontada."
+      "name": "message:reactions",
+      "description": "A lista de reações da mensagem inteira, já recontada."
     },
     {
-      "nome": "message:super",
-      "descricao": "Alguém mandou a reação em destaque."
+      "name": "message:super",
+      "description": "Alguém mandou a reação em destaque."
     },
     {
-      "nome": "typing:started",
-      "descricao": "Alguém começou a digitar no canal."
+      "name": "typing:started",
+      "description": "Alguém começou a digitar no canal."
     },
     {
-      "nome": "command:invoked",
-      "descricao": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+      "name": "command:invoked",
+      "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
     },
     {
-      "nome": "commands:changed",
-      "descricao": "A lista de comandos do servidor mudou."
+      "name": "commands:changed",
+      "description": "A lista de comandos do servidor mudou."
     },
     {
-      "nome": "presence:changed",
-      "descricao": "Alguém ficou on-line, ausente ou saiu."
+      "name": "presence:changed",
+      "description": "Alguém ficou on-line, ausente ou saiu."
     },
     {
-      "nome": "presence:self",
-      "descricao": "O estado que o servidor guardou para esta conexão."
+      "name": "presence:self",
+      "description": "O estado que o servidor guardou para esta conexão."
     },
     {
-      "nome": "user:updated",
-      "descricao": "Perfil ou apelido de alguém mudou."
+      "name": "user:updated",
+      "description": "Perfil ou apelido de alguém mudou."
     },
     {
-      "nome": "friend:updated",
-      "descricao": "Algo mudou na lista de amizades."
+      "name": "friend:updated",
+      "description": "Algo mudou na lista de amizades."
     },
     {
-      "nome": "dm:created",
-      "descricao": "Abriram uma conversa direta."
+      "name": "dm:created",
+      "description": "Abriram uma conversa direta."
     },
     {
-      "nome": "dm:pedido",
-      "descricao": "Uma solicitação de mensagem entrou, saiu ou mudou de estado na sua caixa de pedidos."
+      "name": "dm:pedido",
+      "description": "Uma solicitação de mensagem entrou, saiu ou mudou de estado na sua caixa de pedidos."
     },
     {
-      "nome": "member:joined",
-      "descricao": "Entrou gente no servidor."
+      "name": "member:joined",
+      "description": "Entrou gente no servidor."
     },
     {
-      "nome": "member:updated",
-      "descricao": "Cargo ou apelido de um membro mudou."
+      "name": "member:updated",
+      "description": "Cargo ou apelido de um membro mudou."
     },
     {
-      "nome": "member:left",
-      "descricao": "Saiu gente do servidor."
+      "name": "member:left",
+      "description": "Saiu gente do servidor."
     },
     {
-      "nome": "channel:created",
-      "descricao": "Canal novo."
+      "name": "channel:created",
+      "description": "Canal novo."
     },
     {
-      "nome": "channel:updated",
-      "descricao": "Canal renomeado ou remexido."
+      "name": "channel:updated",
+      "description": "Canal renomeado ou remexido."
     },
     {
-      "nome": "channel:deleted",
-      "descricao": "Canal apagado."
+      "name": "channel:deleted",
+      "description": "Canal apagado."
     },
     {
-      "nome": "event:updated",
-      "descricao": "A agenda de eventos do servidor mudou: criaram, editaram, cancelaram ou marcaram interesse."
+      "name": "event:updated",
+      "description": "A agenda de eventos do servidor mudou: criaram, editaram, cancelaram ou marcaram interesse."
     },
     {
-      "nome": "guild:refresh",
-      "descricao": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo."
+      "name": "guild:refresh",
+      "description": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo."
     },
     {
-      "nome": "post:created",
-      "descricao": "Post novo no fórum."
+      "name": "post:created",
+      "description": "Post novo no fórum."
     },
     {
-      "nome": "post:updated",
-      "descricao": "Post do fórum editado."
+      "name": "post:updated",
+      "description": "Post do fórum editado."
     },
     {
-      "nome": "expressions:changed",
-      "descricao": "Os emojis ou figurinhas do servidor mudaram."
+      "name": "expressions:changed",
+      "description": "Os emojis ou figurinhas do servidor mudaram."
     },
     {
-      "nome": "guild:deleted",
-      "descricao": "O servidor foi apagado."
+      "name": "guild:deleted",
+      "description": "O servidor foi apagado."
     },
     {
-      "nome": "guild:updated",
-      "descricao": "Nome, ícone ou descrição do servidor mudou."
+      "name": "guild:updated",
+      "description": "Nome, ícone ou descrição do servidor mudou."
     },
     {
-      "nome": "voice:states",
-      "descricao": "O retrato completo de quem está na chamada do canal."
+      "name": "voice:states",
+      "description": "O retrato completo de quem está na chamada do canal."
     },
     {
-      "nome": "voice:sound",
-      "descricao": "Alguém tocou um som na chamada."
+      "name": "voice:sound",
+      "description": "Alguém tocou um som na chamada."
     },
     {
-      "nome": "voice:move",
-      "descricao": "Arrastaram esta conexão para outro canal de voz."
+      "name": "voice:move",
+      "description": "Arrastaram esta conexão para outro canal de voz."
     },
     {
-      "nome": "voice:joined",
-      "descricao": "Alguém entrou na chamada."
+      "name": "voice:joined",
+      "description": "Alguém entrou na chamada."
     },
     {
-      "nome": "voice:left",
-      "descricao": "Alguém saiu da chamada."
+      "name": "voice:left",
+      "description": "Alguém saiu da chamada."
     },
     {
-      "nome": "voice:updated",
-      "descricao": "Mudou o microfone, o fone ou a transmissão de alguém."
+      "name": "voice:updated",
+      "description": "Mudou o microfone, o fone ou a transmissão de alguém."
     },
     {
-      "nome": "voice:recusada",
-      "descricao": "A entrada na chamada foi recusada."
+      "name": "voice:recusada",
+      "description": "A entrada na chamada foi recusada."
     },
     {
-      "nome": "live:started",
-      "descricao": "Começou uma transmissão de tela."
+      "name": "live:started",
+      "description": "Começou uma transmissão de tela."
     },
     {
-      "nome": "live:ended",
-      "descricao": "A transmissão de tela acabou."
+      "name": "live:ended",
+      "description": "A transmissão de tela acabou."
     },
     {
-      "nome": "error",
-      "descricao": "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo."
+      "name": "error",
+      "description": "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo."
     }
   ],
-  "objetos": [
+  "objects": [
     {
       "id": "mensagem",
-      "nome": "Mensagem",
-      "resumo": "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
-      "campos": [
+      "name": "Mensagem",
+      "summary": "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "channelId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "author",
-          "tipo": "object",
-          "obrigatorio": true
+          "name": "author",
+          "kind": "object",
+          "required": true
         },
         {
-          "nome": "content",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "content",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "fonte",
-          "tipo": "vários",
-          "obrigatorio": false
+          "name": "font",
+          "kind": "vários",
+          "required": false
         },
         {
-          "nome": "tipo",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "kind",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "attachments",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "attachments",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "poll",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "poll",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "sticker",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "sticker",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "reactions",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "reactions",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "mentions",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "mentions",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "mentionRoleIds",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "mentionRoleIds",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "mentionEveryone",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "mentionEveryone",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "replyToId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "replyToId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "encaminhadaDe",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "forwarded",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "postId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "postId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "pinnedAt",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "pinnedAt",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "createdAt",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "createdAt",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "editedAt",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "editedAt",
+          "kind": "vários",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "POST",
-          "caminho": "/bot/canais/:channelId/mensagens",
-          "grupo": "Mensagens",
-          "descricao": "Manda uma mensagem no canal.",
-          "corpo": "sendMessageInput sem channelId e nonce",
+          "method": "POST",
+          "path": "/bot/canais/:channelId/mensagens",
+          "group": "Mensagens",
+          "description": "Manda uma mensagem no canal.",
+          "body": "sendMessageInput sem channelId e nonce",
           "parametros": [
             "channelId"
           ]
         },
         {
-          "metodo": "GET",
-          "caminho": "/bot/canais/:channelId/mensagens",
-          "grupo": "Mensagens",
-          "descricao": "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/canais/:channelId/mensagens",
+          "group": "Mensagens",
+          "description": "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
+          "body": null,
           "parametros": [
             "channelId"
           ]
         },
         {
-          "metodo": "GET",
-          "caminho": "/bot/canais/:channelId/fixadas",
-          "grupo": "Mensagens",
-          "descricao": "As mensagens fixadas do canal.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/canais/:channelId/fixadas",
+          "group": "Mensagens",
+          "description": "As mensagens fixadas do canal.",
+          "body": null,
           "parametros": [
             "channelId"
           ]
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/mensagens/:messageId/fixar",
-          "grupo": "Mensagens",
-          "descricao": "Fixa a mensagem no canal.",
-          "corpo": "sem corpo — o id vai no endereço",
+          "method": "PUT",
+          "path": "/bot/mensagens/:messageId/fixar",
+          "group": "Mensagens",
+          "description": "Fixa a mensagem no canal.",
+          "body": "sem corpo — o id vai no endereço",
           "parametros": [
             "messageId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/mensagens/:messageId/fixar",
-          "grupo": "Mensagens",
-          "descricao": "Desafixa a mensagem.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/mensagens/:messageId/fixar",
+          "group": "Mensagens",
+          "description": "Desafixa a mensagem.",
+          "body": null,
           "parametros": [
             "messageId"
           ]
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/mensagens/:messageId",
-          "grupo": "Mensagens",
-          "descricao": "Edita uma mensagem do próprio bot.",
-          "corpo": "editMessageInput sem messageId",
+          "method": "PATCH",
+          "path": "/bot/mensagens/:messageId",
+          "group": "Mensagens",
+          "description": "Edita uma mensagem do próprio bot.",
+          "body": "editMessageInput sem messageId",
           "parametros": [
             "messageId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/mensagens/:messageId",
-          "grupo": "Mensagens",
-          "descricao": "Apaga uma mensagem do próprio bot.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/mensagens/:messageId",
+          "group": "Mensagens",
+          "description": "Apaga uma mensagem do próprio bot.",
+          "body": null,
           "parametros": [
             "messageId"
           ]
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
-          "grupo": "Mensagens",
-          "descricao": "Reage a uma mensagem.",
-          "corpo": "{ burst?: boolean }",
+          "method": "PUT",
+          "path": "/bot/mensagens/:messageId/reacoes/:emoji",
+          "group": "Mensagens",
+          "description": "Reage a uma mensagem.",
+          "body": "{ burst?: boolean }",
           "parametros": [
             "messageId",
             "emoji"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/mensagens/:messageId/reacoes/:emoji",
-          "grupo": "Mensagens",
-          "descricao": "Tira a reação do bot.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/mensagens/:messageId/reacoes/:emoji",
+          "group": "Mensagens",
+          "description": "Tira a reação do bot.",
+          "body": null,
           "parametros": [
             "messageId",
             "emoji"
           ]
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "message:created",
-          "descricao": "Mensagem nova num canal que o bot acompanha."
+          "name": "message:created",
+          "description": "Mensagem nova num canal que o bot acompanha."
         },
         {
-          "nome": "message:updated",
-          "descricao": "Mensagem editada."
+          "name": "message:updated",
+          "description": "Mensagem editada."
         },
         {
-          "nome": "message:deleted",
-          "descricao": "Mensagem apagada."
+          "name": "message:deleted",
+          "description": "Mensagem apagada."
         },
         {
-          "nome": "message:reactions",
-          "descricao": "A lista de reações da mensagem inteira, já recontada."
+          "name": "message:reactions",
+          "description": "A lista de reações da mensagem inteira, já recontada."
         },
         {
-          "nome": "message:super",
-          "descricao": "Alguém mandou a reação em destaque."
+          "name": "message:super",
+          "description": "Alguém mandou a reação em destaque."
         },
         {
-          "nome": "typing:started",
-          "descricao": "Alguém começou a digitar no canal."
+          "name": "typing:started",
+          "description": "Alguém começou a digitar no canal."
         }
       ]
     },
     {
       "id": "canal",
-      "nome": "Canal",
-      "resumo": "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
-      "campos": [
+      "name": "Canal",
+      "summary": "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "guildId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "guildId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "categoryId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "categoryId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "name",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "name",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "fonte",
-          "tipo": "vários",
-          "obrigatorio": false
+          "name": "font",
+          "kind": "vários",
+          "required": false
         },
         {
-          "nome": "type",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "type",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "topic",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "url",
+          "kind": "vários",
+          "required": false
         },
         {
-          "nome": "position",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "topic",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "isPrivate",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "position",
+          "kind": "integer",
+          "required": true
         },
         {
-          "nome": "slowmodeSeconds",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "isPrivate",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "contentVisibility",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "slowmodeSeconds",
+          "kind": "integer",
+          "required": true
         },
         {
-          "nome": "status",
-          "tipo": "vários",
-          "obrigatorio": false
+          "name": "contentVisibility",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "bitrate",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "status",
+          "kind": "vários",
+          "required": false
         },
         {
-          "nome": "videoQuality",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "bitrate",
+          "kind": "integer",
+          "required": true
         },
         {
-          "nome": "userLimit",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "videoQuality",
+          "kind": "string",
+          "required": true
+        },
+        {
+          "name": "userLimit",
+          "kind": "integer",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/canais",
-          "grupo": "Servidores e canais",
-          "descricao": "Os canais de um servidor, com o que o bot alcança.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/canais",
+          "group": "Servidores e canais",
+          "description": "Os canais de um servidor, com o que o bot alcança.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "POST",
-          "caminho": "/bot/servidores/:guildId/canais",
-          "grupo": "Servidores e canais",
-          "descricao": "Cria um canal de texto, voz ou fórum.",
-          "corpo": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
+          "method": "POST",
+          "path": "/bot/servidores/:guildId/canais",
+          "group": "Servidores e canais",
+          "description": "Cria um canal de texto, voz ou fórum.",
+          "body": "createChannelInput — name, type (TEXT | VOICE | FORUM)",
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/servidores/:guildId/canais/:channelId",
-          "grupo": "Servidores e canais",
-          "descricao": "Muda nome, tópico, categoria, posição ou modo lento do canal.",
-          "corpo": "updateChannelInput — tudo opcional",
+          "method": "PATCH",
+          "path": "/bot/servidores/:guildId/canais/:channelId",
+          "group": "Servidores e canais",
+          "description": "Muda nome, tópico, categoria, posição ou modo lento do canal.",
+          "body": "updateChannelInput — tudo opcional",
           "parametros": [
             "guildId",
             "channelId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/servidores/:guildId/canais/:channelId",
-          "grupo": "Servidores e canais",
-          "descricao": "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/servidores/:guildId/canais/:channelId",
+          "group": "Servidores e canais",
+          "description": "Apaga o canal, e com ele todas as mensagens. Não tem como desfazer.",
+          "body": null,
           "parametros": [
             "guildId",
             "channelId"
           ]
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "channel:created",
-          "descricao": "Canal novo."
+          "name": "channel:created",
+          "description": "Canal novo."
         },
         {
-          "nome": "channel:updated",
-          "descricao": "Canal renomeado ou remexido."
+          "name": "channel:updated",
+          "description": "Canal renomeado ou remexido."
         },
         {
-          "nome": "channel:deleted",
-          "descricao": "Canal apagado."
+          "name": "channel:deleted",
+          "description": "Canal apagado."
         },
         {
-          "nome": "post:created",
-          "descricao": "Post novo no fórum."
+          "name": "post:created",
+          "description": "Post novo no fórum."
         },
         {
-          "nome": "post:updated",
-          "descricao": "Post do fórum editado."
+          "name": "post:updated",
+          "description": "Post do fórum editado."
         }
       ]
     },
     {
       "id": "servidor",
-      "nome": "Servidor",
-      "resumo": "A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.",
-      "campos": [
+      "name": "Servidor",
+      "summary": "A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "name",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "name",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "iconUrl",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "iconUrl",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "ownerId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "ownerId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "memberCount",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "memberCount",
+          "kind": "integer",
+          "required": true
         },
         {
-          "nome": "verificada",
-          "tipo": "boolean",
-          "obrigatorio": false
+          "name": "verified",
+          "kind": "boolean",
+          "required": false
         },
         {
-          "nome": "detectavel",
-          "tipo": "boolean",
-          "obrigatorio": false
+          "name": "detectable",
+          "kind": "boolean",
+          "required": false
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores",
-          "grupo": "Servidores e canais",
-          "descricao": "Os servidores em que o bot está.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores",
+          "group": "Servidores e canais",
+          "description": "Os servidores em que o bot está.",
+          "body": null,
           "parametros": []
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/servidores/:guildId",
-          "grupo": "Servidores e canais",
-          "descricao": "Muda nome, ícone, banner ou descrição do servidor.",
-          "corpo": "updateGuildInput — tudo opcional",
+          "method": "PATCH",
+          "path": "/bot/servidores/:guildId",
+          "group": "Servidores e canais",
+          "description": "Muda nome, ícone, banner ou descrição do servidor.",
+          "body": "updateGuildInput — tudo opcional",
           "parametros": [
             "guildId"
           ]
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "guild:updated",
-          "descricao": "Nome, ícone ou descrição do servidor mudou."
+          "name": "guild:updated",
+          "description": "Nome, ícone ou descrição do servidor mudou."
         },
         {
-          "nome": "guild:deleted",
-          "descricao": "O servidor foi apagado."
+          "name": "guild:deleted",
+          "description": "O servidor foi apagado."
         },
         {
-          "nome": "guild:refresh",
-          "descricao": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo."
+          "name": "guild:refresh",
+          "description": "Recarregue o servidor: mudou coisa demais pra avisar campo a campo."
         },
         {
-          "nome": "event:updated",
-          "descricao": "A agenda de eventos do servidor mudou: criaram, editaram, cancelaram ou marcaram interesse."
+          "name": "event:updated",
+          "description": "A agenda de eventos do servidor mudou: criaram, editaram, cancelaram ou marcaram interesse."
         }
       ]
     },
     {
       "id": "membro",
-      "nome": "Membro",
-      "resumo": "Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.",
-      "campos": [
+      "name": "Membro",
+      "summary": "Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "guildId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "guildId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "user",
-          "tipo": "object",
-          "obrigatorio": true
+          "name": "user",
+          "kind": "object",
+          "required": true
         },
         {
-          "nome": "roleIds",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "roleIds",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "nickname",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "nickname",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "timeoutUntil",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "timeoutUntil",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "joinedAt",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "joinedAt",
+          "kind": "string",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/membros",
-          "grupo": "Membros e moderação",
-          "descricao": "Quem está no servidor, com apelido, cargos e desde quando.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/membros",
+          "group": "Membros e moderação",
+          "description": "Quem está no servidor, com apelido, cargos e desde quando.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/servidores/:guildId/membros/:userId/apelido",
-          "grupo": "Membros e moderação",
-          "descricao": "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
-          "corpo": "{ nickname: string | null }",
+          "method": "PATCH",
+          "path": "/bot/servidores/:guildId/membros/:userId/apelido",
+          "group": "Membros e moderação",
+          "description": "Troca o apelido de alguém no servidor. `null` devolve o nome de origem.",
+          "body": "{ nickname: string | null }",
           "parametros": [
             "guildId",
             "userId"
           ]
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/servidores/:guildId/membros/:userId/cargos",
-          "grupo": "Membros e moderação",
-          "descricao": "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
-          "corpo": "{ roleIds: string[] }",
+          "method": "PUT",
+          "path": "/bot/servidores/:guildId/membros/:userId/cargos",
+          "group": "Membros e moderação",
+          "description": "Define os cargos do membro. Substitui a lista inteira, e o bot não alcança cargo acima do dele.",
+          "body": "{ roleIds: string[] }",
           "parametros": [
             "guildId",
             "userId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/servidores/:guildId/membros/:userId",
-          "grupo": "Membros e moderação",
-          "descricao": "Expulsa. Quem foi expulso volta com convite novo.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/servidores/:guildId/membros/:userId",
+          "group": "Membros e moderação",
+          "description": "Expulsa. Quem foi expulso volta com convite novo.",
+          "body": null,
           "parametros": [
             "guildId",
             "userId"
           ]
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "member:joined",
-          "descricao": "Entrou gente no servidor."
+          "name": "member:joined",
+          "description": "Entrou gente no servidor."
         },
         {
-          "nome": "member:updated",
-          "descricao": "Cargo ou apelido de um membro mudou."
+          "name": "member:updated",
+          "description": "Cargo ou apelido de um membro mudou."
         },
         {
-          "nome": "member:left",
-          "descricao": "Saiu gente do servidor."
+          "name": "member:left",
+          "description": "Saiu gente do servidor."
         },
         {
-          "nome": "presence:changed",
-          "descricao": "Alguém ficou on-line, ausente ou saiu."
+          "name": "presence:changed",
+          "description": "Alguém ficou on-line, ausente ou saiu."
         },
         {
-          "nome": "user:updated",
-          "descricao": "Perfil ou apelido de alguém mudou."
+          "name": "user:updated",
+          "description": "Perfil ou apelido de alguém mudou."
         }
       ]
     },
     {
       "id": "cargo",
-      "nome": "Cargo",
-      "resumo": "O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.",
-      "campos": [
+      "name": "Cargo",
+      "summary": "O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "guildId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "guildId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "name",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "name",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "color",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "color",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "colorSecondary",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "colorSecondary",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "iconUrl",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "iconUrl",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "iconEmoji",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "iconEmoji",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "estilo",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "style",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "position",
-          "tipo": "integer",
-          "obrigatorio": true
+          "name": "position",
+          "kind": "integer",
+          "required": true
         },
         {
-          "nome": "permissions",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "permissions",
+          "kind": "array",
+          "required": true
         },
         {
-          "nome": "hoist",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "hoist",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "mentionable",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "mentionable",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "isEveryone",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "isEveryone",
+          "kind": "boolean",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/cargos",
-          "grupo": "Cargos",
-          "descricao": "Os cargos do servidor, com as permissões de cada um.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/cargos",
+          "group": "Cargos",
+          "description": "Os cargos do servidor, com as permissões de cada um.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "POST",
-          "caminho": "/bot/servidores/:guildId/cargos",
-          "grupo": "Cargos",
-          "descricao": "Cria um cargo, já com as permissões dele.",
-          "corpo": "createRoleInput — name, permissions[]",
+          "method": "POST",
+          "path": "/bot/servidores/:guildId/cargos",
+          "group": "Cargos",
+          "description": "Cria um cargo, já com as permissões dele.",
+          "body": "createRoleInput — name, permissions[]",
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/servidores/:guildId/cargos/:roleId",
-          "grupo": "Cargos",
-          "descricao": "Muda nome, permissões, cor ou ícone do cargo.",
-          "corpo": "updateRoleInput — tudo opcional",
+          "method": "PATCH",
+          "path": "/bot/servidores/:guildId/cargos/:roleId",
+          "group": "Cargos",
+          "description": "Muda nome, permissões, cor ou ícone do cargo.",
+          "body": "updateRoleInput — tudo opcional",
           "parametros": [
             "guildId",
             "roleId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/servidores/:guildId/cargos/:roleId",
-          "grupo": "Cargos",
-          "descricao": "Apaga o cargo e tira ele de quem o tinha.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/servidores/:guildId/cargos/:roleId",
+          "group": "Cargos",
+          "description": "Apaga o cargo e tira ele de quem o tinha.",
+          "body": null,
           "parametros": [
             "guildId",
             "roleId"
           ]
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/servidores/:guildId/cargos",
-          "grupo": "Cargos",
-          "descricao": "Reordena os cargos. A ordem é quem manda em quem.",
-          "corpo": "{ roles: [{ id, position }] }",
+          "method": "PUT",
+          "path": "/bot/servidores/:guildId/cargos",
+          "group": "Cargos",
+          "description": "Reordena os cargos. A ordem é quem manda em quem.",
+          "body": "{ roles: [{ id, position }] }",
           "parametros": [
             "guildId"
           ]
         }
       ],
-      "eventos": []
+      "events": []
     },
     {
       "id": "moderacao",
-      "nome": "Moderação",
-      "resumo": "Castigo e banimento. As duas ações que tiram alguém de circulação.",
-      "campos": [],
-      "rotas": [
+      "name": "Moderação",
+      "summary": "Castigo e banimento. As duas ações que tiram alguém de circulação.",
+      "fields": [],
+      "routes": [
         {
-          "metodo": "PUT",
-          "caminho": "/bot/servidores/:guildId/castigos/:userId",
-          "grupo": "Membros e moderação",
-          "descricao": "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
-          "corpo": "{ minutos: number, reason?: string }",
+          "method": "PUT",
+          "path": "/bot/servidores/:guildId/castigos/:userId",
+          "group": "Membros e moderação",
+          "description": "Castiga por N minutos: a pessoa fica sem escrever nem falar. `minutos: 0` solta na hora.",
+          "body": "{ minutos: number, reason?: string }",
           "parametros": [
             "guildId",
             "userId"
           ]
         },
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/banimentos",
-          "grupo": "Membros e moderação",
-          "descricao": "Quem está banido, e por quê.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/banimentos",
+          "group": "Membros e moderação",
+          "description": "Quem está banido, e por quê.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/servidores/:guildId/banimentos/:userId",
-          "grupo": "Membros e moderação",
-          "descricao": "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
-          "corpo": "{ reason?: string, apagarHoras?: number }",
+          "method": "PUT",
+          "path": "/bot/servidores/:guildId/banimentos/:userId",
+          "group": "Membros e moderação",
+          "description": "Bane. `apagarHoras` apaga junto o que a pessoa escreveu nas últimas N horas.",
+          "body": "{ reason?: string, apagarHoras?: number }",
           "parametros": [
             "guildId",
             "userId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/servidores/:guildId/banimentos/:userId",
-          "grupo": "Membros e moderação",
-          "descricao": "Desbane, devolvendo o acesso na hora.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/servidores/:guildId/banimentos/:userId",
+          "group": "Membros e moderação",
+          "description": "Desbane, devolvendo o acesso na hora.",
+          "body": null,
           "parametros": [
             "guildId",
             "userId"
           ]
         }
       ],
-      "eventos": []
+      "events": []
     },
     {
       "id": "expressao",
-      "nome": "Expressão",
-      "resumo": "Emojis, figurinhas e sons do servidor.",
-      "campos": [
+      "name": "Expressão",
+      "summary": "Emojis, figurinhas e sons do servidor.",
+      "fields": [
         {
-          "nome": "id",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "id",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "guildId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "guildId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "name",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "name",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "url",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "url",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "animated",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "animated",
+          "kind": "boolean",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/expressoes",
-          "grupo": "Expressões",
-          "descricao": "Emojis, figurinhas e sons do servidor.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/expressoes",
+          "group": "Expressões",
+          "description": "Emojis, figurinhas e sons do servidor.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "POST",
-          "caminho": "/bot/servidores/:guildId/emojis",
-          "grupo": "Expressões",
-          "descricao": "Sobe um emoji a partir de uma URL de imagem.",
-          "corpo": "{ name, url, animated? }",
+          "method": "POST",
+          "path": "/bot/servidores/:guildId/emojis",
+          "group": "Expressões",
+          "description": "Sobe um emoji a partir de uma URL de imagem.",
+          "body": "{ name, url, animated? }",
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "PATCH",
-          "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
-          "grupo": "Expressões",
-          "descricao": "Renomeia o emoji.",
-          "corpo": "{ name }",
+          "method": "PATCH",
+          "path": "/bot/servidores/:guildId/emojis/:emojiId",
+          "group": "Expressões",
+          "description": "Renomeia o emoji.",
+          "body": "{ name }",
           "parametros": [
             "guildId",
             "emojiId"
           ]
         },
         {
-          "metodo": "DELETE",
-          "caminho": "/bot/servidores/:guildId/emojis/:emojiId",
-          "grupo": "Expressões",
-          "descricao": "Apaga o emoji do servidor.",
-          "corpo": null,
+          "method": "DELETE",
+          "path": "/bot/servidores/:guildId/emojis/:emojiId",
+          "group": "Expressões",
+          "description": "Apaga o emoji do servidor.",
+          "body": null,
           "parametros": [
             "guildId",
             "emojiId"
           ]
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "expressions:changed",
-          "descricao": "Os emojis ou figurinhas do servidor mudaram."
+          "name": "expressions:changed",
+          "description": "Os emojis ou figurinhas do servidor mudaram."
         }
       ]
     },
     {
       "id": "voz",
-      "nome": "Voz",
-      "resumo": "Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.",
-      "campos": [
+      "name": "Voz",
+      "summary": "Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.",
+      "fields": [
         {
-          "nome": "userId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "userId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "channelId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "channelId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "guildId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "guildId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "socketId",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "socketId",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "clienteId",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "clientId",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "orphanedAt",
-          "tipo": "vários",
-          "obrigatorio": true
+          "name": "orphanedAt",
+          "kind": "vários",
+          "required": true
         },
         {
-          "nome": "joinedAt",
-          "tipo": "number",
-          "obrigatorio": true
+          "name": "joinedAt",
+          "kind": "number",
+          "required": true
         },
         {
-          "nome": "selfMute",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "selfMute",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "selfDeaf",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "selfDeaf",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "serverMute",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "serverMute",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "serverDeaf",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "serverDeaf",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "camera",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "camera",
+          "kind": "boolean",
+          "required": true
         },
         {
-          "nome": "screenShare",
-          "tipo": "boolean",
-          "obrigatorio": true
+          "name": "screenShare",
+          "kind": "boolean",
+          "required": true
         }
       ],
-      "rotas": [],
-      "eventos": [
+      "routes": [],
+      "events": [
         {
-          "nome": "voice:states",
-          "descricao": "O retrato completo de quem está na chamada do canal."
+          "name": "voice:states",
+          "description": "O retrato completo de quem está na chamada do canal."
         },
         {
-          "nome": "voice:joined",
-          "descricao": "Alguém entrou na chamada."
+          "name": "voice:joined",
+          "description": "Alguém entrou na chamada."
         },
         {
-          "nome": "voice:left",
-          "descricao": "Alguém saiu da chamada."
+          "name": "voice:left",
+          "description": "Alguém saiu da chamada."
         },
         {
-          "nome": "voice:updated",
-          "descricao": "Mudou o microfone, o fone ou a transmissão de alguém."
+          "name": "voice:updated",
+          "description": "Mudou o microfone, o fone ou a transmissão de alguém."
         },
         {
-          "nome": "voice:sound",
-          "descricao": "Alguém tocou um som na chamada."
+          "name": "voice:sound",
+          "description": "Alguém tocou um som na chamada."
         },
         {
-          "nome": "voice:move",
-          "descricao": "Arrastaram esta conexão para outro canal de voz."
+          "name": "voice:move",
+          "description": "Arrastaram esta conexão para outro canal de voz."
         },
         {
-          "nome": "voice:recusada",
-          "descricao": "A entrada na chamada foi recusada."
+          "name": "voice:recusada",
+          "description": "A entrada na chamada foi recusada."
         },
         {
-          "nome": "live:started",
-          "descricao": "Começou uma transmissão de tela."
+          "name": "live:started",
+          "description": "Começou uma transmissão de tela."
         },
         {
-          "nome": "live:ended",
-          "descricao": "A transmissão de tela acabou."
+          "name": "live:ended",
+          "description": "A transmissão de tela acabou."
         }
       ]
     },
     {
       "id": "aplicativo",
-      "nome": "Aplicativo",
-      "resumo": "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
-      "campos": [
+      "name": "Aplicativo",
+      "summary": "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
+      "fields": [
         {
-          "nome": "nome",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "name",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "descricao",
-          "tipo": "string",
-          "obrigatorio": true
+          "name": "description",
+          "kind": "string",
+          "required": true
         },
         {
-          "nome": "opcoes",
-          "tipo": "array",
-          "obrigatorio": true
+          "name": "options",
+          "kind": "array",
+          "required": true
         }
       ],
-      "rotas": [
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/eu",
-          "grupo": "Identidade",
-          "descricao": "Quem é o bot deste token.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/eu",
+          "group": "Identidade",
+          "description": "Quem é o bot deste token.",
+          "body": null,
           "parametros": []
         },
         {
-          "metodo": "PUT",
-          "caminho": "/bot/comandos",
-          "grupo": "Identidade",
-          "descricao": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
-          "corpo": "definirComandosInput",
+          "method": "PUT",
+          "path": "/bot/comandos",
+          "group": "Identidade",
+          "description": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
+          "body": "definirComandosInput",
           "parametros": []
         }
       ],
-      "eventos": [
+      "events": [
         {
-          "nome": "command:invoked",
-          "descricao": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+          "name": "command:invoked",
+          "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
         },
         {
-          "nome": "commands:changed",
-          "descricao": "A lista de comandos do servidor mudou."
+          "name": "commands:changed",
+          "description": "A lista de comandos do servidor mudou."
         }
       ]
     },
     {
       "id": "webhook",
-      "nome": "Webhook",
-      "resumo": "Um endereço que escreve num canal sem precisar de bot conectado.",
-      "campos": [],
-      "rotas": [
+      "name": "Webhook",
+      "summary": "Um endereço que escreve num canal sem precisar de bot conectado.",
+      "fields": [],
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/webhooks",
-          "grupo": "Webhooks",
-          "descricao": "Os webhooks do servidor, com a URL de cada um.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/webhooks",
+          "group": "Webhooks",
+          "description": "Os webhooks do servidor, com a URL de cada um.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         },
         {
-          "metodo": "POST",
-          "caminho": "/bot/servidores/:guildId/webhooks",
-          "grupo": "Webhooks",
-          "descricao": "Cria um webhook apontado pra um canal.",
-          "corpo": "{ name, channelId }",
+          "method": "POST",
+          "path": "/bot/servidores/:guildId/webhooks",
+          "group": "Webhooks",
+          "description": "Cria um webhook apontado pra um canal.",
+          "body": "{ name, channelId }",
           "parametros": [
             "guildId"
           ]
         }
       ],
-      "eventos": []
+      "events": []
     },
     {
       "id": "convite",
-      "nome": "Convite",
-      "resumo": "O link que leva alguém para dentro do servidor.",
-      "campos": [],
-      "rotas": [
+      "name": "Convite",
+      "summary": "O link que leva alguém para dentro do servidor.",
+      "fields": [],
+      "routes": [
         {
-          "metodo": "POST",
-          "caminho": "/bot/servidores/:guildId/convites",
-          "grupo": "Servidores e canais",
-          "descricao": "Cria um link de convite pro servidor.",
-          "corpo": "{ maxUses?: number, expiresInHours?: number }",
+          "method": "POST",
+          "path": "/bot/servidores/:guildId/convites",
+          "group": "Servidores e canais",
+          "description": "Cria um link de convite pro servidor.",
+          "body": "{ maxUses?: number, expiresInHours?: number }",
           "parametros": [
             "guildId"
           ]
         }
       ],
-      "eventos": []
+      "events": []
     },
     {
       "id": "auditoria",
-      "nome": "Auditoria",
-      "resumo": "O registro do que a equipe fez no servidor, e de quem fez.",
-      "campos": [],
-      "rotas": [
+      "name": "Auditoria",
+      "summary": "O registro do que a equipe fez no servidor, e de quem fez.",
+      "fields": [],
+      "routes": [
         {
-          "metodo": "GET",
-          "caminho": "/bot/servidores/:guildId/auditoria",
-          "grupo": "Membros e moderação",
-          "descricao": "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
-          "corpo": null,
+          "method": "GET",
+          "path": "/bot/servidores/:guildId/auditoria",
+          "group": "Membros e moderação",
+          "description": "Quem fez o quê no servidor. Filtra por `actorId` e `action`, e pagina com `before`.",
+          "body": null,
           "parametros": [
             "guildId"
           ]
         }
       ],
-      "eventos": []
+      "events": []
     }
   ],
-  "limites": [
+  "limits": [
     {
-      "rotulo": "Tamanho de uma mensagem",
-      "formato": "caracteres",
-      "valor": 4000
+      "label": "Tamanho de uma mensagem",
+      "format": "caracteres",
+      "value": 4000
     },
     {
-      "rotulo": "Anexos por mensagem",
-      "formato": "numero",
-      "valor": 10
+      "label": "Anexos por mensagem",
+      "format": "numero",
+      "value": 10
     },
     {
-      "rotulo": "Tamanho de cada anexo",
-      "formato": "bytes",
-      "valor": 52428800
+      "label": "Tamanho de cada anexo",
+      "format": "bytes",
+      "value": 52428800
     },
     {
-      "rotulo": "Tamanho da foto de perfil",
-      "formato": "bytes",
-      "valor": 2097152
+      "label": "Tamanho da foto de perfil",
+      "format": "bytes",
+      "value": 2097152
     },
     {
-      "rotulo": "Tamanho do banner",
-      "formato": "bytes",
-      "valor": 10485760
+      "label": "Tamanho do banner",
+      "format": "bytes",
+      "value": 10485760
     },
     {
-      "rotulo": "Sobre mim",
-      "formato": "caracteres",
-      "valor": 512
+      "label": "Sobre mim",
+      "format": "caracteres",
+      "value": 512
     },
     {
-      "rotulo": "Recado do perfil",
-      "formato": "caracteres",
-      "valor": 96
+      "label": "Recado do perfil",
+      "format": "caracteres",
+      "value": 96
     },
     {
-      "rotulo": "Emojis por servidor",
-      "formato": "numero",
-      "valor": 50
+      "label": "Emojis por servidor",
+      "format": "numero",
+      "value": 50
     },
     {
-      "rotulo": "Figurinhas por servidor",
-      "formato": "numero",
-      "valor": 5
+      "label": "Figurinhas por servidor",
+      "format": "numero",
+      "value": 5
     },
     {
-      "rotulo": "Sons por servidor",
-      "formato": "numero",
-      "valor": 8
+      "label": "Sons por servidor",
+      "format": "numero",
+      "value": 8
     },
     {
-      "rotulo": "Opções por enquete",
-      "formato": "numero",
-      "valor": 5
+      "label": "Opções por enquete",
+      "format": "numero",
+      "value": 5
     },
     {
-      "rotulo": "Mensagens fixadas por canal",
-      "formato": "numero",
-      "valor": 50
+      "label": "Mensagens fixadas por canal",
+      "format": "numero",
+      "value": 50
     },
     {
-      "rotulo": "Modo lento, no máximo",
-      "formato": "segundos",
-      "valor": 21600
+      "label": "Modo lento, no máximo",
+      "format": "segundos",
+      "value": 21600
     }
   ],
-  "permissoes": [
+  "permissions": [
     {
-      "titulo": "Geral do servidor",
-      "itens": [
+      "title": "Geral do servidor",
+      "items": [
         {
-          "chave": "ADMINISTRATOR",
-          "nome": "Administrador",
-          "descricao": "Concede TODAS as permissões e ignora restrições de canal. Dê com cuidado.",
-          "padrao": false
+          "key": "ADMINISTRATOR",
+          "name": "Administrador",
+          "description": "Concede TODAS as permissões e ignora restrições de canal. Dê com cuidado.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_GUILD",
-          "nome": "Gerenciar servidor",
-          "descricao": "Mudar nome, ícone e descrição.",
-          "padrao": false
+          "key": "MANAGE_GUILD",
+          "name": "Gerenciar servidor",
+          "description": "Mudar nome, ícone e descrição.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_ROLES",
-          "nome": "Gerenciar cargos",
-          "descricao": "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
-          "padrao": false
+          "key": "MANAGE_ROLES",
+          "name": "Gerenciar cargos",
+          "description": "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_CHANNELS",
-          "nome": "Gerenciar canais",
-          "descricao": "Criar, editar e apagar canais.",
-          "padrao": false
+          "key": "MANAGE_CHANNELS",
+          "name": "Gerenciar canais",
+          "description": "Criar, editar e apagar canais.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_EVENTS",
-          "nome": "Gerenciar eventos",
-          "descricao": "Criar, editar e cancelar os eventos do servidor.",
-          "padrao": false
+          "key": "MANAGE_EVENTS",
+          "name": "Gerenciar eventos",
+          "description": "Criar, editar e cancelar os eventos do servidor.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_WEBHOOKS",
-          "nome": "Gerenciar webhooks",
-          "descricao": "Criar e apagar integrações.",
-          "padrao": false
+          "key": "MANAGE_WEBHOOKS",
+          "name": "Gerenciar webhooks",
+          "description": "Criar e apagar integrações.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_EXPRESSIONS",
-          "nome": "Gerenciar expressões",
-          "descricao": "Subir e apagar emojis, figurinhas e efeitos sonoros do servidor.",
-          "padrao": false
+          "key": "MANAGE_EXPRESSIONS",
+          "name": "Gerenciar expressões",
+          "description": "Subir e apagar emojis, figurinhas e efeitos sonoros do servidor.",
+          "fallback": false
         },
         {
-          "chave": "CREATE_EXPRESSIONS",
-          "nome": "Criar expressões",
-          "descricao": "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
-          "padrao": false
+          "key": "CREATE_EXPRESSIONS",
+          "name": "Criar expressões",
+          "description": "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
+          "fallback": false
         },
         {
-          "chave": "CREATE_INVITE",
-          "nome": "Criar convite",
-          "descricao": "Gerar links para convidar pessoas.",
-          "padrao": true
+          "key": "CREATE_INVITE",
+          "name": "Criar convite",
+          "description": "Gerar links para convidar pessoas.",
+          "fallback": true
         },
         {
-          "chave": "VIEW_AUDIT_LOG",
-          "nome": "Ver registro de auditoria",
-          "descricao": "Ver quem fez o quê no servidor.",
-          "padrao": false
+          "key": "VIEW_AUDIT_LOG",
+          "name": "Ver registro de auditoria",
+          "description": "Ver quem fez o quê no servidor.",
+          "fallback": false
         }
       ]
     },
     {
-      "titulo": "Moderação",
-      "itens": [
+      "title": "Moderação",
+      "items": [
         {
-          "chave": "KICK_MEMBERS",
-          "nome": "Expulsar membros",
-          "descricao": "Remover quem está abaixo de você.",
-          "padrao": false
+          "key": "KICK_MEMBERS",
+          "name": "Expulsar membros",
+          "description": "Remover quem está abaixo de você.",
+          "fallback": false
         },
         {
-          "chave": "BAN_MEMBERS",
-          "nome": "Banir membros",
-          "descricao": "Remover e impedir de voltar, mesmo com convite novo.",
-          "padrao": false
+          "key": "BAN_MEMBERS",
+          "name": "Banir membros",
+          "description": "Remover e impedir de voltar, mesmo com convite novo.",
+          "fallback": false
         },
         {
-          "chave": "MODERATE_MEMBERS",
-          "nome": "Castigar membros",
-          "descricao": "Deixar alguém sem escrever nem falar por um tempo.",
-          "padrao": false
+          "key": "MODERATE_MEMBERS",
+          "name": "Castigar membros",
+          "description": "Deixar alguém sem escrever nem falar por um tempo.",
+          "fallback": false
         },
         {
-          "chave": "MANAGE_NICKNAMES",
-          "nome": "Gerenciar apelidos",
-          "descricao": "Mudar o apelido de outras pessoas.",
-          "padrao": false
+          "key": "MANAGE_NICKNAMES",
+          "name": "Gerenciar apelidos",
+          "description": "Mudar o apelido de outras pessoas.",
+          "fallback": false
         },
         {
-          "chave": "CHANGE_NICKNAME",
-          "nome": "Alterar apelido",
-          "descricao": "Mudar o próprio apelido neste servidor.",
-          "padrao": true
+          "key": "CHANGE_NICKNAME",
+          "name": "Alterar apelido",
+          "description": "Mudar o próprio apelido neste servidor.",
+          "fallback": true
         }
       ]
     },
     {
-      "titulo": "Canais de texto",
-      "itens": [
+      "title": "Canais de texto",
+      "items": [
         {
-          "chave": "VIEW_CHANNEL",
-          "nome": "Ver canal",
-          "descricao": "Ver o canal e ler o histórico.",
-          "padrao": true
+          "key": "VIEW_CHANNEL",
+          "name": "Ver canal",
+          "description": "Ver o canal e ler o histórico.",
+          "fallback": true
         },
         {
-          "chave": "SEND_MESSAGES",
-          "nome": "Enviar mensagens",
-          "descricao": "Escrever nos canais de texto.",
-          "padrao": true
+          "key": "SEND_MESSAGES",
+          "name": "Enviar mensagens",
+          "description": "Escrever nos canais de texto.",
+          "fallback": true
         },
         {
-          "chave": "MANAGE_MESSAGES",
-          "nome": "Gerenciar mensagens",
-          "descricao": "Apagar mensagens de outras pessoas.",
-          "padrao": false
+          "key": "MANAGE_MESSAGES",
+          "name": "Gerenciar mensagens",
+          "description": "Apagar mensagens de outras pessoas.",
+          "fallback": false
         },
         {
-          "chave": "ATTACH_FILES",
-          "nome": "Anexar arquivos",
-          "descricao": "Enviar imagens e arquivos.",
-          "padrao": true
+          "key": "ATTACH_FILES",
+          "name": "Anexar arquivos",
+          "description": "Enviar imagens e arquivos.",
+          "fallback": true
         },
         {
-          "chave": "ADD_REACTIONS",
-          "nome": "Adicionar reações",
-          "descricao": "Reagir às mensagens.",
-          "padrao": true
+          "key": "ADD_REACTIONS",
+          "name": "Adicionar reações",
+          "description": "Reagir às mensagens.",
+          "fallback": true
         },
         {
-          "chave": "MENTION_EVERYONE",
-          "nome": "Mencionar @everyone",
-          "descricao": "Notificar o servidor inteiro.",
-          "padrao": false
+          "key": "MENTION_EVERYONE",
+          "name": "Mencionar @everyone",
+          "description": "Notificar o servidor inteiro.",
+          "fallback": false
         },
         {
-          "chave": "READ_MESSAGE_HISTORY",
-          "nome": "Ver histórico de mensagens",
-          "descricao": "Ler o que foi dito antes de você abrir o canal.",
-          "padrao": true
+          "key": "READ_MESSAGE_HISTORY",
+          "name": "Ver histórico de mensagens",
+          "description": "Ler o que foi dito antes de você abrir o canal.",
+          "fallback": true
         },
         {
-          "chave": "PIN_MESSAGES",
-          "nome": "Fixar mensagens",
-          "descricao": "Fixar e desafixar qualquer mensagem.",
-          "padrao": false
+          "key": "PIN_MESSAGES",
+          "name": "Fixar mensagens",
+          "description": "Fixar e desafixar qualquer mensagem.",
+          "fallback": false
         },
         {
-          "chave": "BYPASS_SLOWMODE",
-          "nome": "Ignorar modo lento",
-          "descricao": "Escrever sem esperar o intervalo do canal.",
-          "padrao": false
+          "key": "BYPASS_SLOWMODE",
+          "name": "Ignorar modo lento",
+          "description": "Escrever sem esperar o intervalo do canal.",
+          "fallback": false
         },
         {
-          "chave": "CREATE_POLLS",
-          "nome": "Criar enquetes",
-          "descricao": "Publicar enquetes nos canais.",
-          "padrao": true
+          "key": "CREATE_POLLS",
+          "name": "Criar enquetes",
+          "description": "Publicar enquetes nos canais.",
+          "fallback": true
         }
       ]
     },
     {
-      "titulo": "Canais de voz",
-      "itens": [
+      "title": "Canais de voz",
+      "items": [
         {
-          "chave": "CONNECT",
-          "nome": "Conectar",
-          "descricao": "Entrar em canais de voz.",
-          "padrao": true
+          "key": "CONNECT",
+          "name": "Conectar",
+          "description": "Entrar em canais de voz.",
+          "fallback": true
         },
         {
-          "chave": "SPEAK",
-          "nome": "Falar",
-          "descricao": "Transmitir áudio na chamada.",
-          "padrao": true
+          "key": "SPEAK",
+          "name": "Falar",
+          "description": "Transmitir áudio na chamada.",
+          "fallback": true
         },
         {
-          "chave": "VIDEO",
-          "nome": "Câmera",
-          "descricao": "Ligar a webcam na chamada.",
-          "padrao": true
+          "key": "VIDEO",
+          "name": "Câmera",
+          "description": "Ligar a webcam na chamada.",
+          "fallback": true
         },
         {
-          "chave": "SHARE_SCREEN",
-          "nome": "Compartilhar tela",
-          "descricao": "Transmitir a tela na chamada.",
-          "padrao": true
+          "key": "SHARE_SCREEN",
+          "name": "Compartilhar tela",
+          "description": "Transmitir a tela na chamada.",
+          "fallback": true
         },
         {
-          "chave": "USE_SOUNDBOARD",
-          "nome": "Usar efeitos sonoros",
-          "descricao": "Tocar os sons do painel na chamada.",
-          "padrao": false
+          "key": "USE_SOUNDBOARD",
+          "name": "Usar efeitos sonoros",
+          "description": "Tocar os sons do painel na chamada.",
+          "fallback": false
         },
         {
-          "chave": "USE_VAD",
-          "nome": "Usar detecção de voz",
-          "descricao": "Falar sem apertar tecla. Sem isto, só push-to-talk.",
-          "padrao": true
+          "key": "USE_VAD",
+          "name": "Usar detecção de voz",
+          "description": "Falar sem apertar tecla. Sem isto, só push-to-talk.",
+          "fallback": true
         },
         {
-          "chave": "MUTE_MEMBERS",
-          "nome": "Silenciar membros",
-          "descricao": "Mutar outras pessoas na chamada.",
-          "padrao": false
+          "key": "MUTE_MEMBERS",
+          "name": "Silenciar membros",
+          "description": "Mutar outras pessoas na chamada.",
+          "fallback": false
         },
         {
-          "chave": "DEAFEN_MEMBERS",
-          "nome": "Ensurdecer membros",
-          "descricao": "Tirar o áudio da chamada de outra pessoa.",
-          "padrao": false
+          "key": "DEAFEN_MEMBERS",
+          "name": "Ensurdecer membros",
+          "description": "Tirar o áudio da chamada de outra pessoa.",
+          "fallback": false
         },
         {
-          "chave": "MOVE_MEMBERS",
-          "nome": "Mover membros",
-          "descricao": "Puxar alguém para outro canal de voz, ou desconectar.",
-          "padrao": false
+          "key": "MOVE_MEMBERS",
+          "name": "Mover membros",
+          "description": "Puxar alguém para outro canal de voz, ou desconectar.",
+          "fallback": false
         }
       ]
     }
   ],
-  "falhas": {
-    "codigos": [
+  "failures": {
+    "codes": [
       {
-        "codigo": 400,
-        "quando": "O pedido não passou na validação. Vem com `issues`, dizendo qual campo e por quê."
+        "code": 400,
+        "when": "O pedido não passou na validação. Vem com `issues`, dizendo qual campo e por quê."
       },
       {
-        "codigo": 401,
-        "quando": "Sem credencial, ou com credencial vencida. Gere outro token."
+        "code": 401,
+        "when": "Sem credencial, ou com credencial vencida. Gere outro token."
       },
       {
-        "codigo": 403,
-        "quando": "Autenticado, mas sem permissão para isto neste servidor ou canal."
+        "code": 403,
+        "when": "Autenticado, mas sem permissão para isto neste servidor ou canal."
       },
       {
-        "codigo": 404,
-        "quando": "Não existe — ou existe e você não pode enxergar. A resposta é a mesma de propósito."
+        "code": 404,
+        "when": "Não existe — ou existe e você não pode enxergar. A resposta é a mesma de propósito."
       },
       {
-        "codigo": 409,
-        "quando": "Conflito com o estado atual. O caso comum é criar algo que já existe."
+        "code": 409,
+        "when": "Conflito com o estado atual. O caso comum é criar algo que já existe."
       },
       {
-        "codigo": 429,
-        "quando": "Rápido demais. Espere o que diz o cabeçalho e tente de novo."
+        "code": 429,
+        "when": "Rápido demais. Espere o que diz o cabeçalho e tente de novo."
       },
       {
-        "codigo": 500,
-        "quando": "Erro nosso. Se repetir, é bug: abra um chamado com o horário."
+        "code": 500,
+        "when": "Erro nosso. Se repetir, é bug: abra um chamado com o horário."
       }
     ],
-    "motivos": [
+    "reasons": [
       {
-        "motivo": "sem-conexao",
-        "quando": "A conexão de tempo real caiu no meio do envio."
+        "reason": "sem-conexao",
+        "when": "A conexão de tempo real caiu no meio do envio."
       },
       {
-        "motivo": "sem-acesso",
-        "quando": "O canal saiu do alcance do bot, ou nunca esteve."
+        "reason": "sem-acesso",
+        "when": "O canal saiu do alcance do bot, ou nunca esteve."
       },
       {
-        "motivo": "sem-permissao",
-        "quando": "Falta a permissão que a ação exige."
+        "reason": "sem-permissao",
+        "when": "Falta a permissão que a ação exige."
       },
       {
-        "motivo": "castigo",
-        "quando": "O bot está de castigo neste servidor."
+        "reason": "castigo",
+        "when": "O bot está de castigo neste servidor."
       },
       {
-        "motivo": "modo-lento",
-        "quando": "O modo lento do canal ainda não liberou."
+        "reason": "modo-lento",
+        "when": "O modo lento do canal ainda não liberou."
       },
       {
-        "motivo": "depressa",
-        "quando": "Passou do limite de velocidade."
+        "reason": "depressa",
+        "when": "Passou do limite de velocidade."
       },
       {
-        "motivo": "automod",
-        "quando": "A automoderação bloqueou o conteúdo."
+        "reason": "automod",
+        "when": "A automoderação bloqueou o conteúdo."
       },
       {
-        "motivo": "recusada",
-        "quando": "A conversa não aceita resposta, como as de aviso da casa."
+        "reason": "recusada",
+        "when": "A conversa não aceita resposta, como as de aviso da casa."
       },
       {
-        "motivo": "nao-entregue",
-        "quando": "A pessoa não recebe mensagem de quem não é amigo."
+        "reason": "nao-entregue",
+        "when": "A pessoa não recebe mensagem de quem não é amigo."
       },
       {
-        "motivo": "erro",
-        "quando": "Falha genérica. Vale tentar de novo."
+        "reason": "erro",
+        "when": "Falha genérica. Vale tentar de novo."
       }
     ]
   }

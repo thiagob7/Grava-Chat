@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "यह प्रोफ़ाइल नहीं खुल सकी।",
   carregando: "लोड हो रहा है…",
   editar: "प्रोफ़ाइल संपादित करें",
   mensagem: "संदेश",

@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Tangan kecil yang melambai",
+    botao: "Lambaikan tangan ke {{nome}}",
+  },
+  oficial: {
+    titulo: "Kanal ini hanya untuk pengumuman resmi.",
+    detalhe: "Kami tidak pernah meminta kata sandi atau token akunmu.",
+    saibaMais: "Pelajari lagi",
+  },
+  topico: {
+    abrir: "Lihat deskripsi kanal",
+  },
+  previaDoLink: {
+    carregando: "Melihat isi tautannya…",
+    destino: "Menuju {{destino}}",
+  },
+  reacao: {
+    carregando: "Melihat siapa yang bereaksi dengan {{emoji}}…",
+    uma: "{{nome}} bereaksi dengan {{emoji}}",
+    duas: "{{primeiro}} dan {{segundo}} bereaksi dengan {{emoji}}",
+    varias: "{{nomes}} dan {{quantos}} lainnya bereaksi dengan {{emoji}}",
+    dicaSuper: "Tahan untuk reaksi super",
+  },
+  recado: {
+    gravar: "Rekam pesan suara",
+    descartar: "Buang rekaman",
+    mandar: "Kirim rekaman",
+    semSuporte: "Peramban ini tidak merekam audio.",
+    semMicrofone: "Tidak ada akses ke mikrofon.",
+  },
   lista: {
     carregando: "Memuat pesan…",
     carregandoMais: "Memuat…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Lihat gambar",
   },
   enquete: {
+    criar: "Buat jajak pendapat",
+    pergunta: "Pertanyaan",
+    exemplo: "Hari ini main apa?",
+    respostas: "Jawaban",
+    adicionarOpcao: "Tambah pilihan",
+    removerOpcao: "Hapus pilihan",
+    varias: "Izinkan lebih dari satu jawaban",
+    variasDetalhe: "Tanpa ini, memilih satu jawaban akan menarik suara dari jawaban sebelumnya.",
+    duracao: "Durasi",
+    umaHora: "1 jam",
+    quatroHoras: "4 jam",
+    oitoHoras: "8 jam",
+    umDia: "1 hari",
+    tresDias: "3 hari",
+    umaSemana: "1 minggu",
+    ateEncerrar: "Sampai saya tutup sendiri",
     titulo: "Jajak pendapat",
     encerrada: "Jajak pendapat ditutup",
     variasRespostas: "Jajak pendapat — banyak jawaban",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Pencarian hanya melihat kanal yang boleh kamu baca.",
   },
   entrada: {
+    semNome: "percakapan",
+    anexo: "(lampiran)",
     titulo: "Kotak masuk",
     naoLidas: "Belum dibaca",
     salvas: "Tersimpan",

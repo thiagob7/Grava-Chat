@@ -27,7 +27,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     <span data-gc="ui.checkbox.span--2"
       aria-hidden
       className={cn(
-        flxCls("caixaDeMarcarSolta"),
+        flxCls("markLooseBox"),
         "pointer-events-none flex size-4 items-center justify-center rounded border transition",
         "border-ink-faint/60 bg-transparent",
         "peer-hover:border-ink-faint",

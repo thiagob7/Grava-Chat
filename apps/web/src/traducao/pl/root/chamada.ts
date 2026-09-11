@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Przenieś czat na dół",
+    paraOLado: "Przenieś czat na bok",
+  },
+  aparelhoNovo: {
+    microfone: "Pojawił się nowy mikrofon",
+    saida: "Pojawiło się nowe wyjście dźwięku",
+    apareceu: "Pojawiło się {{nome}}.",
+    falarPorEle: "Chcesz mówić przez to?",
+    ouvirPorEle: "Chcesz słuchać przez to?",
+    trocaNaHora: "Zmiana działa od razu, bez wychodzenia z rozmowy.",
+    naoSugerir: "Nie proponuj więcej tego urządzenia",
+    trocar: "Przełącz na nie",
+  },
   conectando: "Łączenie z rozmową…",
   naoEntrou: "Nie udało się dołączyć do rozmowy",
   sair: "Opuść rozmowę",

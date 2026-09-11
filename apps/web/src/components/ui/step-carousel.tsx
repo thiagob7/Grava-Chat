@@ -16,7 +16,7 @@ interface Props {
   className?: string;
 }
 
-const deslize: Variants = {
+const swipe: Variants = {
   entering: (direction: number) => ({ opacity: 0, x: direction > 0 ? 24 : direction < 0 ? -24 : 0 }),
   center: {
     opacity: 1,
@@ -31,9 +31,9 @@ const deslize: Variants = {
 };
 
 const heightOf: Transition = { type: "spring", stiffness: 460, damping: 40, mass: 0.7 };
-const instantaneo: Transition = { duration: 0 };
+const instant: Transition = { duration: 0 };
 
-const semMovimento: Variants = {
+const withoutMotion: Variants = {
   entering: { opacity: 0, x: 0 },
   center: { opacity: 1, x: 0 },
   leaving: { opacity: 0, x: 0 },
@@ -43,7 +43,7 @@ export const StepCarousel: React.FC<Props> = ({ step, steps, panels, className }
   const [previous, setPrevious] = React.useState(step);
   const [direction, setDirection] = React.useState(0);
   const [height, setHeight] = React.useState<number>();
-  const noAnimation = useReducedMotion();
+  const inAnimation = useReducedMotion();
 
   if (previous !== step) {
     setDirection(steps.indexOf(step) > steps.indexOf(previous) ? 1 : -1);
@@ -53,10 +53,10 @@ export const StepCarousel: React.FC<Props> = ({ step, steps, panels, className }
   const measure = React.useCallback((no: HTMLDivElement | null) => {
     if (!no) return;
 
-    const ler = () => setHeight(no.offsetHeight);
-    ler();
+    const read = () => setHeight(no.offsetHeight);
+    read();
 
-    const observer = new ResizeObserver(ler);
+    const observer = new ResizeObserver(read);
     observer.observe(no);
     return () => observer.disconnect();
   }, []);
@@ -64,7 +64,7 @@ export const StepCarousel: React.FC<Props> = ({ step, steps, panels, className }
   return (
     <motion.div data-gc="ui.step-carousel.motiondiv"
       animate={{ height: height }}
-      transition={noAnimation ? instantaneo : heightOf}
+      transition={inAnimation ? instant : heightOf}
       className={cn("relative overflow-hidden", className)}
     >
       <AnimatePresence data-gc="ui.step-carousel.animate-presence" mode="wait" initial={false} custom={direction}>
@@ -72,11 +72,11 @@ export const StepCarousel: React.FC<Props> = ({ step, steps, panels, className }
           key={step}
           ref={measure}
           custom={direction}
-          variants={noAnimation ? semMovimento : deslize}
+          variants={inAnimation ? withoutMotion : swipe}
           initial="entra"
           animate="centro"
           exit="sai"
-          transition={noAnimation ? instantaneo : undefined}
+          transition={inAnimation ? instant : undefined}
           className="flex flex-col"
         >
           {panels[step]}

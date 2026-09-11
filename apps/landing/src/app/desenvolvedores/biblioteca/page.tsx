@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { Adiante, Aviso, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
-import { Codigo } from "~/components/docs/Codigo";
+import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
+import { Code } from "~/components/docs/Codigo";
 
 export const metadata: Metadata = {
   title: "Biblioteca — Documentação do Gravaê",
@@ -9,17 +9,17 @@ export const metadata: Metadata = {
     "O cliente oficial em JavaScript: cabeçalho, formato de erro e reenvio resolvidos, com os tipos do próprio servidor.",
 };
 
-export default function Biblioteca() {
+export default function Library() {
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Guias" pagina="Biblioteca" />
-        <Titulo chamada="Dá para falar com a API só com fetch. A biblioteca existe para você não reescrever as três coisas que todo mundo erra.">
+        <Trail group="Guias" page="Biblioteca" />
+        <Title call="Dá para falar com a API só com fetch. A biblioteca existe para você não reescrever as três coisas que todo mundo erra.">
           Biblioteca
-        </Titulo>
+        </Title>
       </header>
 
-      <Secao id="o-que-resolve" titulo="O que ela resolve">
+      <Section id="o-que-resolve" title="O que ela resolve">
         <p>
           O cabeçalho de autenticação em toda chamada. O formato do erro, que vem
           com <code>message</code> e às vezes <code>issues</code>, e que ninguém
@@ -33,14 +33,14 @@ export default function Biblioteca() {
           servidor usa para validar, então não existe cópia de tipo que possa
           envelhecer em silêncio.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="instalar" titulo="Instalando">
-        <Codigo>{`yarn add @gravae/bot`}</Codigo>
-      </Secao>
+      <Section id="instalar" title="Instalando">
+        <Code>{`yarn add @gravae/bot`}</Code>
+      </Section>
 
-      <Secao id="primeiro" titulo="O primeiro bot, inteiro">
-        <Codigo>{`import { Gravae } from "@gravae/bot";
+      <Section id="primeiro" title="O primeiro bot, inteiro">
+        <Code>{`import { Gravae } from "@gravae/bot";
 
 const bot = new Gravae({ token: process.env.GRAVAE_BOT_TOKEN! });
 
@@ -52,27 +52,27 @@ bot.ao("message:created", async (mensagem) => {
   if (mensagem.content !== "!ping") return;
 
   await bot.enviar(mensagem.channelId, "pong");
-});`}</Codigo>
+});`}</Code>
 
-        <Aviso>
+        <Notice>
           <strong>Sempre ignore as próprias mensagens.</strong> Sem a primeira
           linha do ouvinte, um bot que responde a tudo responde a si mesmo, para
           sempre, e leva o canal junto.
-        </Aviso>
+        </Notice>
 
         <p>
           O bot não precisa se inscrever em canal nenhum: ao conectar, ele já
           recebe tudo o que o cargo dele alcança.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="erros" titulo="Erros">
+      <Section id="erros" title="Erros">
         <p>
           Toda falha vira um <code>ErroDaApi</code>, com <code>status</code>,{" "}
           <code>message</code> e, quando for validação, <code>issues</code>.
         </p>
 
-        <Codigo>{`import { ErroDaApi } from "@gravae/bot";
+        <Code>{`import { ErroDaApi } from "@gravae/bot";
 
 try {
   await bot.banir(servidor, alguem, { reason: "spam" });
@@ -83,25 +83,25 @@ try {
   }
 
   throw erro;
-}`}</Codigo>
+}`}</Code>
 
         <p>
           Reenvio já vem ligado, com espera crescente e teto de oito segundos.
           Para desligar, passe <code>tentativas: 0</code> ao construir.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="o-que-tem" titulo="O que ela cobre">
+      <Section id="o-que-tem" title="O que ela cobre">
         <p>
           Identidade, servidores, canais, membros, cargos, moderação, expressões,
           mensagens e comandos de barra. O que não tiver atalho ainda continua
           alcançável pelo caminho de baixo, que aceita qualquer rota:
         </p>
 
-        <Codigo>{`const auditoria = await bot.rest.pedir("GET", "/bot/servidores/ID/auditoria");`}</Codigo>
-      </Secao>
+        <Code>{`const auditoria = await bot.rest.pedir("GET", "/bot/servidores/ID/auditoria");`}</Code>
+      </Section>
 
-      <Adiante href="/desenvolvedores/comunidade" />
+      <Ahead href="/desenvolvedores/comunidade" />
     </article>
   );
 }

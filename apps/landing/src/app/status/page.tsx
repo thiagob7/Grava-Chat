@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 
-import { Cabecalho } from "~/components/Cabecalho";
-import { PainelDeStatus } from "~/components/PainelDeStatus";
-import { Rodape } from "~/components/Rodape";
+import { Header } from "~/components/Cabecalho";
+import { StatusPanel } from "~/components/PainelDeStatus";
+import { Footer } from "~/components/Rodape";
 
 export const metadata: Metadata = {
   title: "Status do Gravaê",
   description: "Se o Gravaê está no ar, e como ele esteve nos últimos 90 dias.",
 };
 
-export default function StatusDaPlataforma() {
+export default function PlatformStatus() {
   return (
     <>
-      <Cabecalho />
+      <Header />
 
       <main className="mx-auto max-w-2xl px-6 py-20">
         <h1 className="text-center text-4xl font-bold">Status</h1>
@@ -21,7 +21,7 @@ export default function StatusDaPlataforma() {
           últimos 90 dias.
         </p>
 
-        <PainelDeStatus />
+        <StatusPanel />
 
         <p className="mx-auto mt-12 max-w-md text-center text-xs leading-relaxed text-ink-faint">
           As medições são feitas de minuto em minuto pela própria API. Dia em
@@ -32,7 +32,7 @@ export default function StatusDaPlataforma() {
         </p>
       </main>
 
-      <Rodape />
+      <Footer />
     </>
   );
 }

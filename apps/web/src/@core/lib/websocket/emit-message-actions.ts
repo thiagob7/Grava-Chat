@@ -25,9 +25,9 @@ export const unreadFromMessage = (channelId: string, messageId: string) =>
 
 export const startTyping = (channelId: string) => emit("typing:start", { channelId });
 
-export const invocarComando = (payload: ClientEventPayload<"command:invoke">) =>
+export const invokeCommand = (payload: ClientEventPayload<"command:invoke">) =>
   emit("command:invoke", payload);
 
 export const updatePresence = (status: DesiredStatus) => emit("presence:update", { status });
 
-export const marcarAusente = (idle: boolean) => emit("presence:afk", { idle });
+export const markMissing = (idle: boolean) => emit("presence:afk", { idle });

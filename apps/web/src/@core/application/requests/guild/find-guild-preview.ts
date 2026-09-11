@@ -11,10 +11,10 @@ export interface GuildPreviewModel {
   memberCount: number;
   onlineCount: number;
   createdAt: string;
-  souMembro: boolean;
+  amMember: boolean;
 }
 
 export async function findGuildPreview(guildId: string): Promise<GuildPreviewModel> {
-  const resposta = await api.get<GuildPreviewModel>(`/guilds/${guildId}/preview`);
-  return resposta.data;
+  const reply = await api.get<GuildPreviewModel>(`/guilds/${guildId}/preview`);
+  return reply.data;
 }

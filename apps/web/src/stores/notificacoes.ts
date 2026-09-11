@@ -1,105 +1,105 @@
 import { create } from "zustand";
 
-export type ModoDoCanal = "tudo" | "mencoes" | "nada";
+export type ChannelMode = "tudo" | "mencoes" | "nada";
 
-export interface PrefsDoServidor {
-  modo: ModoDoCanal | null;
-  silenciadoAte: number | null;
-  esconderSilenciados: boolean;
+export interface ServerPrefs {
+  mode: ChannelMode | null;
+  mutedUntil: number | null;
+  hideMuted: boolean;
   everyone?: boolean;
-  cargos?: boolean;
+  roleList?: boolean;
 }
 
-export interface PrefsDeAviso {
-  aviso: boolean;
-  soMencoes: boolean;
-  som: boolean;
-  contador: boolean;
-  porCanal: Record<string, ModoDoCanal>;
-  porServidor: Record<string, PrefsDoServidor>;
-  sonsDesligados: Record<string, boolean>;
+export interface NoticePrefs {
+  notice: boolean;
+  soMentions: boolean;
+  sound: boolean;
+  counter: boolean;
+  byChannel: Record<string, ChannelMode>;
+  byServer: Record<string, ServerPrefs>;
+  soundsOff: Record<string, boolean>;
 }
 
-const PADRAO: PrefsDeAviso = {
-  aviso: true,
-  soMencoes: false,
-  som: true,
-  contador: true,
-  porCanal: {},
-  porServidor: {},
-  sonsDesligados: {},
+const DEFAULT: NoticePrefs = {
+  notice: true,
+  soMentions: false,
+  sound: true,
+  counter: true,
+  byChannel: {},
+  byServer: {},
+  soundsOff: {},
 };
 
-const CHAVE = "gravae:avisos";
+const KEY = "gravae:avisos";
 
-function ler(): PrefsDeAviso {
+function read(): NoticePrefs {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    return salvo ? { ...PADRAO, ...(JSON.parse(salvo) as Partial<PrefsDeAviso>) } : PADRAO;
+    const saved = localStorage.getItem(KEY);
+    return saved ? { ...DEFAULT, ...(JSON.parse(saved) as Partial<NoticePrefs>) } : DEFAULT;
   } catch {
-    return PADRAO;
+    return DEFAULT;
   }
 }
 
-interface StoreDeAvisos extends PrefsDeAviso {
-  definir: (mudanca: Partial<PrefsDeAviso>) => void;
-  definirCanal: (channelId: string, modo: ModoDoCanal | null) => void;
-  definirServidor: (guildId: string, mudanca: Partial<PrefsDoServidor>) => void;
-  definirSom: (nome: string, ligado: boolean) => void;
+interface NoticesStore extends NoticePrefs {
+  set: (change: Partial<NoticePrefs>) => void;
+  setChannel: (channelId: string, mode: ChannelMode | null) => void;
+  setServer: (guildId: string, change: Partial<ServerPrefs>) => void;
+  setSound: (name: string, on: boolean) => void;
 }
 
-export const useAvisos = create<StoreDeAvisos>((set, store) => ({
-  ...ler(),
+export const useNotices = create<NoticesStore>((set, store) => ({
+  ...read(),
 
-  definir: (mudanca) => {
-    set(mudanca);
+  set: (change) => {
+    set(change);
 
     try {
-      const { definir, definirCanal, definirServidor, definirSom, ...prefs } = store();
-      void definir;
-      void definirCanal;
-      void definirServidor;
-      void definirSom;
-      localStorage.setItem(CHAVE, JSON.stringify(prefs));
+      const { set, setChannel, setServer, setSound, ...prefs } = store();
+      void set;
+      void setChannel;
+      void setServer;
+      void setSound;
+      localStorage.setItem(KEY, JSON.stringify(prefs));
     } catch {
     }
   },
 
-  definirSom: (nome, ligado) => {
-    const sonsDesligados = { ...store().sonsDesligados };
+  setSound: (name, on) => {
+    const soundsOff = { ...store().soundsOff };
 
-    if (ligado) delete sonsDesligados[nome];
-    else sonsDesligados[nome] = true;
+    if (on) delete soundsOff[name];
+    else soundsOff[name] = true;
 
-    store().definir({ sonsDesligados });
+    store().set({ soundsOff });
   },
-  definirServidor: (guildId, mudanca) => {
-    const atual = store().porServidor[guildId] ?? { modo: null, silenciadoAte: null, esconderSilenciados: false };
+  setServer: (guildId, change) => {
+    const current = store().byServer[guildId] ?? { mode: null, mutedUntil: null, hideMuted: false };
 
-    store().definir({ porServidor: { ...store().porServidor, [guildId]: { ...atual, ...mudanca } } });
+    store().set({ byServer: { ...store().byServer, [guildId]: { ...current, ...change } } });
   },
 
-  definirCanal: (channelId, modo) => {
-    const porCanal = { ...store().porCanal };
+  setChannel: (channelId, mode) => {
+    const byChannel = { ...store().byChannel };
 
-    if (modo === null) delete porCanal[channelId];
-    else porCanal[channelId] = modo;
+    if (mode === null) delete byChannel[channelId];
+    else byChannel[channelId] = mode;
 
-    store().definir({ porCanal });
+    store().set({ byChannel });
   },
 }));
 
-export const servidorSilenciado = (prefs: Pick<PrefsDeAviso, "porServidor">, guildId: string | null | undefined): boolean => {
+export const serverMuted = (prefs: Pick<NoticePrefs, "byServer">, guildId: string | null | undefined): boolean => {
   if (!guildId) return false;
-  const ate = prefs.porServidor[guildId]?.silenciadoAte ?? null;
-  return ate === -1 || (ate !== null && ate > Date.now());
+  const until = prefs.byServer[guildId]?.mutedUntil ?? null;
+  return until === -1 || (until !== null && until > Date.now());
 };
 
-export const modoDoCanal = (channelId: string): ModoDoCanal | null =>
-  useAvisos.getState().porCanal[channelId] ?? null;
+export const channelMode = (channelId: string): ChannelMode | null =>
+  useNotices.getState().byChannel[channelId] ?? null;
 
-export const prefsDeAviso = (): PrefsDeAviso => {
-  const { definir, ...prefs } = useAvisos.getState();
-  void definir;
+export const noticePrefs = (): NoticePrefs => {
+  const { set, ...prefs } = useNotices.getState();
+  void set;
   return prefs;
 };

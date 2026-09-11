@@ -5,7 +5,7 @@ import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
 export const VoiceAudioSink: React.FC = () => {
   const tiles = useVoiceStore((s) => s.tiles);
-  const assistindo = useVoiceStore((s) => s.assistindo);
+  const watching = useVoiceStore((s) => s.watching);
 
   return (
     <div data-gc="voz.voice-audio-sink.div" className="hidden" aria-hidden>
@@ -13,8 +13,8 @@ export const VoiceAudioSink: React.FC = () => {
         <React.Fragment key={tile.identity}>
           {tile.micTrack && <VoiceAudio data-gc="voz.voice-audio-sink.voice-audio" track={tile.micTrack} identity={tile.identity} />}
 
-          {tile.screenAudioTrack && assistindo === tile.identity && (
-            <VoiceAudio data-gc="voz.voice-audio-sink.voice-audio--2" track={tile.screenAudioTrack} identity={tile.identity} fonte="tela" />
+          {tile.screenAudioTrack && watching === tile.identity && (
+            <VoiceAudio data-gc="voz.voice-audio-sink.voice-audio--2" track={tile.screenAudioTrack} identity={tile.identity} font="tela" />
           )}
         </React.Fragment>
       ))}

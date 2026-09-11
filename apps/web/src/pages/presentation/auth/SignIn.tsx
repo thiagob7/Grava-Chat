@@ -1,82 +1,86 @@
 import React, { useState } from "react";
 
 import { useDevLogin } from "~/@core/application/queries/auth/use-dev-login";
-import { useEntrar, usePedirSenhaNova, useRegistrar } from "~/@core/application/queries/auth/use-senha";
+import { useJoin, useRequestPasswordNew, useRegister } from "~/@core/application/queries/auth/use-senha";
 import { apiErrorMessage, BASE_DA_API } from "~/@core/lib/api";
 import { useSession } from "~/contexts/session-context";
 import { Button } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
-import { FundoDaMarca } from "~/features/app/components/FundoDaMarca";
+import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 import { desktop } from "~/lib/desktop";
 import { flx } from "~/lib/compat-de-tema";
 
 export const SignIn: React.FC = () => {
   const devLogin = useDevLogin();
-  const entrar = useEntrar();
-  const registrar = useRegistrar();
-  const pedirSenhaNova = usePedirSenhaNova();
+  const join = useJoin();
+  const register = useRegister();
+  const requestPasswordNew = useRequestPasswordNew();
   const {
     devLoginEnabled,
     googleEnabled,
-    senhaEnabled,
-    esqueciSenhaEnabled,
+    passwordEnabled,
+    forgotPasswordEnabled,
     apiUnreachable,
     retry,
     startSession,
   } = useSession();
 
   const [email, setEmail] = useState("");
+  const [emailDeDev, setEmailDeDev] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const [modo, setModo] = useState<"entrar" | "criar" | "esqueci">("entrar");
-  const [pedido, setPedido] = useState(false);
-  const [senha, setSenha] = useState("");
-  const [nome, setNome] = useState("");
-  const [erroDaSenha, setErroDaSenha] = useState<string | null>(null);
-  const ocupado = entrar.isPending || registrar.isPending || pedirSenhaNova.isPending;
+  const [mode, setMode] = useState<"entrar" | "criar" | "esqueci">("entrar");
+  const [request, setRequest] = useState(false);
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const busy = join.isPending || register.isPending || requestPasswordNew.isPending;
 
-  const pedirNova = async () => {
-    if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
+  const requestNew = async () => {
+    if (!email.includes("@")) return setPasswordError("Informe um e-mail válido");
 
-    setErroDaSenha(null);
+    setPasswordError(null);
 
     try {
-      await pedirSenhaNova.mutateAsync(email.trim());
-      setPedido(true);
-    } catch (erro) {
-      setErroDaSenha(apiErrorMessage(erro, "Não deu para pedir agora."));
+      await requestPasswordNew.mutateAsync(email.trim());
+      setRequest(true);
+    } catch (error) {
+      setPasswordError(apiErrorMessage(error, "Não deu para pedir agora."));
     }
   };
 
-  const comSenha = async () => {
-    if (modo === "esqueci") return pedirNova();
-    if (!email.includes("@")) return setErroDaSenha("Informe um e-mail válido");
-    if (senha.length < 8) return setErroDaSenha("A senha precisa de pelo menos 8 caracteres");
-    if (modo === "criar" && !nome.trim()) return setErroDaSenha("Diga como quer ser chamado");
+  const withPassword = async () => {
+    if (mode === "esqueci") return requestNew();
+    if (!email.includes("@")) return setPasswordError("Informe um e-mail válido");
+    if (password.length < 8) return setPasswordError("A senha precisa de pelo menos 8 caracteres");
+    if (mode === "criar" && !displayName.trim()) return setPasswordError("Diga como quer ser chamado");
 
-    setErroDaSenha(null);
+    setPasswordError(null);
 
     try {
       const session =
-        modo === "criar"
-          ? await registrar.mutateAsync({ email: email.trim(), senha, displayName: nome.trim() })
-          : await entrar.mutateAsync({ email: email.trim(), senha });
+        mode === "criar"
+          ? await register.mutateAsync({ email: email.trim(), password, displayName: displayName.trim() })
+          : await join.mutateAsync({ email: email.trim(), password });
 
       startSession(session.user);
-    } catch (erro) {
-      setErroDaSenha(apiErrorMessage(erro, "Não deu para entrar."));
+    } catch (error) {
+      setPasswordError(apiErrorMessage(error, "Não deu para entrar."));
     }
   };
 
-  const ponte = desktop();
+  const bridge = desktop();
 
   const submit = async () => {
-    if (!email.includes("@")) return setError("Informe um email válido");
+    if (!emailDeDev.includes("@")) return setError("Informe um email válido");
 
     setError(null);
     const session = await devLogin
-      .mutateAsync({ email: email.trim(), displayName: name.trim() || email.split("@")[0] })
+      .mutateAsync({
+        email: emailDeDev.trim(),
+        displayName: name.trim() || emailDeDev.split("@")[0]!,
+      })
       .catch(() => null);
 
     if (session) startSession(session.user);
@@ -84,9 +88,9 @@ export const SignIn: React.FC = () => {
 
   return (
     <div data-gc="auth.sign-in.div" className="relative flex min-h-full items-center justify-center overflow-hidden p-6">
-      <FundoDaMarca data-gc="auth.sign-in.fundo-da-marca" className="pointer-events-none absolute inset-0" />
+      <BrandBackground data-gc="auth.sign-in.brand-background" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="auth.sign-in.div--2" {...flx("cartaoDeEntrada", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
+      <div data-gc="auth.sign-in.div--2" {...flx("entryCard", "relative grid w-full max-w-3xl overflow-hidden rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]")}>
         <aside data-gc="auth.sign-in.aside" className="flex flex-col items-center justify-center gap-4 border-b border-divisor bg-surface-0 px-8 py-10 sm:border-b-0 sm:border-r">
           <img data-gc="auth.sign-in.img"
             src="/brand/logo%20g%20branco.svg"
@@ -109,13 +113,13 @@ export const SignIn: React.FC = () => {
           <p data-gc="auth.sign-in.p--2" className="mt-1 text-sm text-ink-muted">Que bom te ver de novo.</p>
         </div>
 
-        {ponte ? (
+        {bridge ? (
           <Button data-gc="auth.sign-in.button"
             disabled={!googleEnabled}
             variant="surface"
             title={googleEnabled ? undefined : "Configure GOOGLE_CLIENT_ID no .env"}
             className="mb-2 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
-            onClick={() => ponte.login.iniciar()}
+            onClick={() => bridge.login.start()}
           >
             <GoogleMark data-gc="auth.sign-in.google-mark" /> Entrar com Google
           </Button>
@@ -139,7 +143,7 @@ export const SignIn: React.FC = () => {
           </Button>
         )}
 
-        {ponte && googleEnabled && (
+        {bridge && googleEnabled && (
           <p data-gc="auth.sign-in.p--3" className="mb-4 text-center text-xs text-ink-faint">
             Abre no seu navegador e volta pra cá sozinho.
           </p>
@@ -166,12 +170,12 @@ export const SignIn: React.FC = () => {
           </div>
         )}
 
-        {senhaEnabled && (
+        {passwordEnabled && (
           <>
             <div data-gc="auth.sign-in.div--6" className="mb-4 flex items-center gap-2">
               <span data-gc="auth.sign-in.span--3" className="h-px flex-1 bg-line" />
               <span data-gc="auth.sign-in.span--4" className="text-xs uppercase text-ink-faint">
-                {modo === "criar" ? "ou crie uma conta" : modo === "esqueci" ? "recuperar a senha" : "ou entre com e-mail"}
+                {mode === "criar" ? "ou crie uma conta" : mode === "esqueci" ? "recuperar a senha" : "ou entre com e-mail"}
               </span>
               <span data-gc="auth.sign-in.span--5" className="h-px flex-1 bg-line" />
             </div>
@@ -183,39 +187,39 @@ export const SignIn: React.FC = () => {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+              onKeyDown={(e) => e.key === "Enter" && void withPassword()}
               placeholder="voce@exemplo.com"
               className="mb-3"
             />
 
-            {modo === "criar" && (
+            {mode === "criar" && (
               <>
                 <Label data-gc="auth.sign-in.label--2" htmlFor="nome-de-exibicao">Nome de exibição</Label>
                 <Input data-gc="auth.sign-in.input--2"
                   id="nome-de-exibicao"
                   autoComplete="nickname"
-                  value={nome}
+                  value={displayName}
                   maxLength={32}
-                  onChange={(e) => setNome(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && void comSenha()}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && void withPassword()}
                   placeholder="Como seus amigos te chamam"
                   className="mb-3"
                 />
               </>
             )}
 
-            {modo !== "esqueci" && (
+            {mode !== "esqueci" && (
               <>
                 <div data-gc="auth.sign-in.div--7" className="flex items-baseline justify-between">
                   <Label data-gc="auth.sign-in.label--3" htmlFor="senha">Senha</Label>
 
-                  {modo === "entrar" && esqueciSenhaEnabled && (
+                  {mode === "entrar" && forgotPasswordEnabled && (
                     <button data-gc="auth.sign-in.button--3"
                       type="button"
                       onClick={() => {
-                        setModo("esqueci");
-                        setErroDaSenha(null);
-                        setPedido(false);
+                        setMode("esqueci");
+                        setPasswordError(null);
+                        setRequest(false);
                       }}
                       className="text-xs font-medium text-link hover:underline"
                     >
@@ -227,18 +231,18 @@ export const SignIn: React.FC = () => {
                 <Input data-gc="auth.sign-in.input--3"
                   id="senha"
                   type="password"
-                  autoComplete={modo === "criar" ? "new-password" : "current-password"}
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && void comSenha()}
-                  placeholder={modo === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
-                  error={erroDaSenha ?? undefined}
+                  autoComplete={mode === "criar" ? "new-password" : "current-password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && void withPassword()}
+                  placeholder={mode === "criar" ? "Pelo menos 8 caracteres" : "Sua senha"}
+                  error={passwordError ?? undefined}
                 />
               </>
             )}
 
-            {modo === "esqueci" &&
-              (pedido ? (
+            {mode === "esqueci" &&
+              (request ? (
                 <p data-gc="auth.sign-in.p--7" className="rounded bg-surface-2 px-3 py-2 text-sm text-ink-muted">
                   Se houver uma conta com esse e-mail, o link de senha nova já está a caminho.
                   Ele vale por 30 minutos.
@@ -247,30 +251,30 @@ export const SignIn: React.FC = () => {
                 <p data-gc="auth.sign-in.p--8" className="text-xs text-ink-faint">
                   Mandamos um link para escolher uma senha nova. Ele vale por 30 minutos e só
                   serve uma vez.
-                  {erroDaSenha && <span data-gc="auth.sign-in.span--6" className="mt-1 block text-danger">{erroDaSenha}</span>}
+                  {passwordError && <span data-gc="auth.sign-in.span--6" className="mt-1 block text-danger">{passwordError}</span>}
                 </p>
               ))}
 
-            {!(modo === "esqueci" && pedido) && (
-              <Button data-gc="auth.sign-in.button--4" onClick={() => void comSenha()} disabled={ocupado} className="mt-5 w-full">
-                {ocupado
+            {!(mode === "esqueci" && request) && (
+              <Button data-gc="auth.sign-in.button--4" onClick={() => void withPassword()} disabled={busy} className="mt-5 w-full">
+                {busy
                   ? "Um instante…"
-                  : modo === "criar"
+                  : mode === "criar"
                     ? "Criar conta"
-                    : modo === "esqueci"
+                    : mode === "esqueci"
                       ? "Mandar o link"
                       : "Entrar"}
               </Button>
             )}
 
             <p data-gc="auth.sign-in.p--9" className="mt-3 text-center text-xs text-ink-faint">
-              {modo === "esqueci" ? (
+              {mode === "esqueci" ? (
                 <button data-gc="auth.sign-in.button--5"
                   type="button"
                   onClick={() => {
-                    setModo("entrar");
-                    setErroDaSenha(null);
-                    setPedido(false);
+                    setMode("entrar");
+                    setPasswordError(null);
+                    setRequest(false);
                   }}
                   className="font-medium text-link hover:underline"
                 >
@@ -278,16 +282,16 @@ export const SignIn: React.FC = () => {
                 </button>
               ) : (
                 <>
-                  {modo === "criar" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
+                  {mode === "criar" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
                   <button data-gc="auth.sign-in.button--6"
                     type="button"
                     onClick={() => {
-                      setModo(modo === "criar" ? "entrar" : "criar");
-                      setErroDaSenha(null);
+                      setMode(mode === "criar" ? "entrar" : "criar");
+                      setPasswordError(null);
                     }}
                     className="font-medium text-link hover:underline"
                   >
-                    {modo === "criar" ? "Entrar" : "Criar uma"}
+                    {mode === "criar" ? "Entrar" : "Criar uma"}
                   </button>
                 </>
               )}
@@ -306,8 +310,10 @@ export const SignIn: React.FC = () => {
             <Label data-gc="auth.sign-in.label--4" htmlFor="email">Email</Label>
             <Input data-gc="auth.sign-in.input--4"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              autoComplete="off"
+              value={emailDeDev}
+              onChange={(e) => setEmailDeDev(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void submit()}
               placeholder="voce@exemplo.com"
               className="mb-3"

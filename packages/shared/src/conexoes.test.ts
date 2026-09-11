@@ -1,68 +1,68 @@
 import { describe, expect, it } from "vitest";
 
-import { comoSeLe, enderecoDaConexao } from "./conexoes.js";
+import { asLe, connectionAddress } from "./conexoes.js";
 
 describe("endereço da conexão", () => {
   it("monta o endereço do serviço a partir do nome de usuário", () => {
-    expect(enderecoDaConexao({ servico: "github", valor: "thiagob7" })).toBe(
+    expect(connectionAddress({ service: "github", value: "thiagob7" })).toBe(
       "https://github.com/thiagob7",
     );
-    expect(enderecoDaConexao({ servico: "youtube", valor: "canal" })).toBe(
+    expect(connectionAddress({ service: "youtube", value: "canal" })).toBe(
       "https://youtube.com/@canal",
     );
   });
 
   it("aceita o @ que a pessoa digita por hábito", () => {
-    expect(enderecoDaConexao({ servico: "x", valor: "@alguem" })).toBe(
+    expect(connectionAddress({ service: "x", value: "@alguem" })).toBe(
       "https://x.com/alguem",
     );
   });
 
   it("recusa nome de usuário que escapa do molde", () => {
     expect(
-      enderecoDaConexao({ servico: "github", valor: "a/../b" }),
+      connectionAddress({ service: "github", value: "a/../b" }),
     ).toBeNull();
-    expect(enderecoDaConexao({ servico: "github", valor: "a b" })).toBeNull();
+    expect(connectionAddress({ service: "github", value: "a b" })).toBeNull();
     expect(
-      enderecoDaConexao({ servico: "github", valor: "javascript:alert(1)" }),
+      connectionAddress({ service: "github", value: "javascript:alert(1)" }),
     ).toBeNull();
-    expect(enderecoDaConexao({ servico: "github", valor: "" })).toBeNull();
+    expect(connectionAddress({ service: "github", value: "" })).toBeNull();
   });
 
   it("completa o site com https quando falta", () => {
-    expect(enderecoDaConexao({ servico: "site", valor: "exemplo.com" })).toBe(
+    expect(connectionAddress({ service: "site", value: "exemplo.com" })).toBe(
       "https://exemplo.com/",
     );
   });
 
   it("não deixa o site virar um esquema perigoso", () => {
     expect(
-      enderecoDaConexao({ servico: "site", valor: "javascript:alert(1)" }),
+      connectionAddress({ service: "site", value: "javascript:alert(1)" }),
     ).toBeNull();
     expect(
-      enderecoDaConexao({ servico: "site", valor: "JaVaScRiPt:alert(1)" }),
+      connectionAddress({ service: "site", value: "JaVaScRiPt:alert(1)" }),
     ).toBeNull();
     expect(
-      enderecoDaConexao({ servico: "site", valor: "data:text/html,<b>" }),
+      connectionAddress({ service: "site", value: "data:text/html,<b>" }),
     ).toBeNull();
   });
 
   it("recusa site sem domínio de verdade", () => {
     expect(
-      enderecoDaConexao({ servico: "site", valor: "localhost" }),
+      connectionAddress({ service: "site", value: "localhost" }),
     ).toBeNull();
   });
 });
 
 describe("como a conexão é escrita", () => {
   it("mostra o handle sem o arroba", () => {
-    expect(comoSeLe({ servico: "x", valor: "@alguem" })).toBe("alguem");
+    expect(asLe({ service: "x", value: "@alguem" })).toBe("alguem");
   });
 
   it("mostra só o domínio do site", () => {
     expect(
-      comoSeLe({ servico: "site", valor: "https://exemplo.com/sobre" }),
+      asLe({ service: "site", value: "https://exemplo.com/sobre" }),
     ).toBe("exemplo.com");
-    expect(comoSeLe({ servico: "site", valor: "exemplo.com" })).toBe("exemplo.com");
+    expect(asLe({ service: "site", value: "exemplo.com" })).toBe("exemplo.com");
   });
 });

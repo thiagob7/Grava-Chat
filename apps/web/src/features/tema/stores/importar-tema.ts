@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-interface ImportarTema {
-  temaId: string | null;
-  abrir: (temaId: string) => void;
-  fechar: () => void;
+interface ImportTheme {
+  themeId: string | null;
+  open: (themeId: string) => void;
+  close: () => void;
 }
 
-export const useImportarTema = create<ImportarTema>((set) => ({
-  temaId: null,
-  abrir: (temaId) => set({ temaId }),
-  fechar: () => set({ temaId: null }),
+export const useImportTheme = create<ImportTheme>((set) => ({
+  themeId: null,
+  open: (themeId) => set({ themeId }),
+  close: () => set({ themeId: null }),
 }));

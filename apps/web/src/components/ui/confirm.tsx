@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input, Label } from "~/components/ui/input";
+import { useTranslation } from "~/traducao";
 
 export interface ConfirmRequest {
   title: string;
@@ -28,14 +29,15 @@ const ConfirmContext = createContext<((request: ConfirmRequest) => Promise<Confi
 );
 
 export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [request, setRequest] = useState<ConfirmRequest | null>(null);
-  const [text, setTexto] = useState("");
+  const [text, setText] = useState("");
 
   const pending = useRef<((r: ConfirmAnswer) => void) | null>(null);
 
   const confirm = useCallback((next: ConfirmRequest) => {
     setRequest(next);
-    setTexto("");
+    setText("");
 
     return new Promise<ConfirmAnswer>((resolve) => {
       pending.current = resolve;
@@ -65,8 +67,10 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
             {request?.shiftHint && (
               <p data-gc="ui.confirm.p" className="mt-2 text-sm text-ink-muted">
-                <span data-gc="ui.confirm.span" className="font-semibold text-online">Dica:</span> segure Shift ao clicar
-                para pular esta confirmação.
+                <span data-gc="ui.confirm.span" className="font-semibold text-online">
+                  {t("comum.dica.rotulo")}
+                </span>{" "}
+                {t("comum.dica.pularConfirmacao")}
               </p>
             )}
           </DialogHeader>
@@ -78,7 +82,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 id="confirm-campo"
                 autoFocus
                 value={text}
-                onChange={(e) => setTexto(e.target.value)}
+                onChange={(e) => setText(e.target.value)}
                 placeholder={request.field.placeholder}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !missingField) answer(true);

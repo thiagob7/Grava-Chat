@@ -1,29 +1,29 @@
 import { useEffect, useRef } from "react";
 
-import { ATALHOS, eventoCombina } from "~/features/configuracoes/lib/atalhos";
-import { useAtalhos } from "~/features/configuracoes/stores/atalhos";
+import { SHORTCUTS, eventMatches } from "~/features/configuracoes/lib/atalhos";
+import { useShortcuts } from "~/features/configuracoes/stores/atalhos";
 
-export function useAtalhoGlobal(id: string, acao: () => void) {
-  const trocados = useAtalhos((s) => s.trocados);
-  const desligados = useAtalhos((s) => s.desligados);
+export function useShortcutGlobal(id: string, action: () => void) {
+  const swapped = useShortcuts((s) => s.swapped);
+  const off = useShortcuts((s) => s.off);
 
-  const ultimaAcao = useRef(acao);
-  ultimaAcao.current = acao;
+  const lastAction = useRef(action);
+  lastAction.current = action;
 
   useEffect(() => {
-    const atalho = ATALHOS.find((a) => a.id === id);
-    if (!atalho || desligados.includes(id)) return;
+    const shortcut = SHORTCUTS.find((a) => a.id === id);
+    if (!shortcut || off.includes(id)) return;
 
-    const combo = trocados[id] ?? atalho.padrao;
+    const combo = swapped[id] ?? shortcut.fallback;
 
-    const aoTeclar = (evento: KeyboardEvent) => {
-      if (!eventoCombina(evento, combo)) return;
+    const onType = (event: KeyboardEvent) => {
+      if (!eventMatches(event, combo)) return;
 
-      evento.preventDefault();
-      ultimaAcao.current();
+      event.preventDefault();
+      lastAction.current();
     };
 
-    window.addEventListener("keydown", aoTeclar);
-    return () => window.removeEventListener("keydown", aoTeclar);
-  }, [id, trocados, desligados]);
+    window.addEventListener("keydown", onType);
+    return () => window.removeEventListener("keydown", onType);
+  }, [id, swapped, off]);
 }

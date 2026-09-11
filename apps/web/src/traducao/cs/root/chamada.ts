@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Přesunout chat dolů",
+    paraOLado: "Přesunout chat na stranu",
+  },
+  aparelhoNovo: {
+    microfone: "Objevil se tu nový mikrofon",
+    saida: "Objevil se tu nový zvukový výstup",
+    apareceu: "Objevilo se {{nome}}.",
+    falarPorEle: "Chcete přes něj mluvit?",
+    ouvirPorEle: "Chcete přes něj poslouchat?",
+    trocaNaHora: "Změna platí hned, bez opuštění hovoru.",
+    naoSugerir: "Toto zařízení už znovu nenabízet",
+    trocar: "Přepnout na něj",
+  },
   conectando: "Připojování k hovoru…",
   naoEntrou: "Nepodařilo se připojit k hovoru",
   sair: "Opustit hovor",

@@ -1,70 +1,70 @@
 import { describe, expect, it } from "vitest";
 
-import { subSecaoAtiva } from "./espiao-da-rolagem";
+import { activeSubSection } from "./espiao-da-rolagem";
 
-const MINHA_CONTA = ["detalhes", "dispositivos", "bloqueados", "aplicativos", "sessoes"];
+const MY_ACCOUNT = ["detalhes", "dispositivos", "bloqueados", "aplicativos", "sessoes"];
 
-const em = (...topos: number[]) =>
-  topos.map((topo, i) => ({ id: MINHA_CONTA[i]!, topo }));
+const em = (...tops: number[]) =>
+  tops.map((top, i) => ({ id: MY_ACCOUNT[i]!, top }));
 
 describe("qual seção a lateral acende", () => {
   it("acende a última que passou da linha de leitura", () => {
-    const ativa = subSecaoAtiva({
-      ancoras: em(-400, -120, 300, 560, 730),
-      linha: 80,
-      rolagemTotal: 2000,
+    const active = activeSubSection({
+      anchors: em(-400, -120, 300, 560, 730),
+      line: 80,
+      scrollTotal: 2000,
     });
 
-    expect(ativa).toBe("dispositivos");
+    expect(active).toBe("dispositivos");
   });
 
   it("no fim da rolagem, com quatro seções na tela, não pula para a última", () => {
-    const ativa = subSecaoAtiva({
-      ancoras: em(-400, -120, 300, 560, 730),
-      linha: 80,
-      rolagemTotal: 2000,
+    const active = activeSubSection({
+      anchors: em(-400, -120, 300, 560, 730),
+      line: 80,
+      scrollTotal: 2000,
     });
 
-    expect(ativa).not.toBe("sessoes");
+    expect(active).not.toBe("sessoes");
   });
 
   it("tela que não rola marca a primeira, não a última", () => {
-    const ativa = subSecaoAtiva({
-      ancoras: em(0, 120, 240, 360, 480),
-      linha: 80,
-      rolagemTotal: 0,
+    const active = activeSubSection({
+      anchors: em(0, 120, 240, 360, 480),
+      line: 80,
+      scrollTotal: 0,
     });
 
-    expect(ativa).toBe("detalhes");
+    expect(active).toBe("detalhes");
   });
 
   it("trata a rolagem que existe só no papel como tela que não rola", () => {
     expect(
-      subSecaoAtiva({ ancoras: em(0, 120, 240), linha: 80, rolagemTotal: 6 }),
+      activeSubSection({ anchors: em(0, 120, 240), line: 80, scrollTotal: 6 }),
     ).toBe("detalhes");
   });
 
   it("no topo, com nada acima da linha, acende a primeira", () => {
-    const ativa = subSecaoAtiva({
-      ancoras: em(200, 400, 600, 800, 1000),
-      linha: 80,
-      rolagemTotal: 900,
+    const active = activeSubSection({
+      anchors: em(200, 400, 600, 800, 1000),
+      line: 80,
+      scrollTotal: 900,
     });
 
-    expect(ativa).toBe("detalhes");
+    expect(active).toBe("detalhes");
   });
 
   it("sem seção nenhuma devolve nulo em vez de estourar", () => {
-    expect(subSecaoAtiva({ ancoras: [], linha: 80, rolagemTotal: 500 })).toBeNull();
+    expect(activeSubSection({ anchors: [], line: 80, scrollTotal: 500 })).toBeNull();
   });
 
   it("a última seção se marca sozinha quando ela chega à linha", () => {
-    const ativa = subSecaoAtiva({
-      ancoras: em(-1200, -900, -600, -300, 40),
-      linha: 80,
-      rolagemTotal: 2000,
+    const active = activeSubSection({
+      anchors: em(-1200, -900, -600, -300, 40),
+      line: 80,
+      scrollTotal: 2000,
     });
 
-    expect(ativa).toBe("sessoes");
+    expect(active).toBe("sessoes");
   });
 });
