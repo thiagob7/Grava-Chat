@@ -7,7 +7,7 @@ import { useRespondFriend } from "~/@core/application/queries/friend/use-respond
 import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-friend";
 import type { FriendshipModel } from "~/@core/domain/models/friend-model";
 import { AddFriendForm } from "~/features/amizades/components/AddFriendForm";
-import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
+import { EntryBox } from "~/features/conversa/components/CaixaDeEntrada";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { useConfirm } from "~/components/ui/confirm";
 import { Input } from "~/components/ui/input";
@@ -16,56 +16,56 @@ import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
 
-type Aba = "online" | "todos" | "pendentes" | "adicionar";
+type Tab = "online" | "todos" | "pendentes" | "adicionar";
 
 interface FriendsProps {
   onOpenConversation: (userId: string) => void;
-  onAbrirMenu?: () => void;
+  onOpenMenu?: () => void;
 }
 
-export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onAbrirMenu }) => {
+export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onOpenMenu }) => {
   const { t } = useTranslation();
-  const { data: relacoes = [], isLoading } = useFindFriends(true);
-  const [aba, setAba] = useState<Aba>("online");
-  const [busca, setBusca] = useState("");
+  const { data: relations = [], isLoading } = useFindFriends(true);
+  const [tab, setTab] = useState<Tab>("online");
+  const [search, setSearch] = useState("");
 
-  const amigos = relacoes.filter((r) => r.status === "ACCEPTED");
-  const pendentes = relacoes.filter((r) => r.status === "PENDING_IN" || r.status === "PENDING_OUT");
-  const recebidos = pendentes.filter((r) => r.status === "PENDING_IN").length;
+  const friends = relations.filter((r) => r.status === "ACCEPTED");
+  const pending = relations.filter((r) => r.status === "PENDING_IN" || r.status === "PENDING_OUT");
+  const received = pending.filter((r) => r.status === "PENDING_IN").length;
 
-  const listaDaAba =
-    aba === "online" ? amigos.filter((r) => r.user.status !== "OFFLINE")
-    : aba === "todos" ? amigos
-    : aba === "pendentes" ? pendentes
+  const listTab =
+    tab === "online" ? friends.filter((r) => r.user.status !== "OFFLINE")
+    : tab === "todos" ? friends
+    : tab === "pendentes" ? pending
     : [];
 
-  const visiveis = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    if (!termo) return listaDaAba;
+  const visible = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return listTab;
 
-    return listaDaAba.filter(
-      (relacao) =>
-        relacao.user.displayName.toLowerCase().includes(termo) ||
-        relacao.user.username.toLowerCase().includes(termo),
+    return listTab.filter(
+      (relation) =>
+        relation.user.displayName.toLowerCase().includes(term) ||
+        relation.user.username.toLowerCase().includes(term),
     );
-  }, [listaDaAba, busca]);
+  }, [listTab, search]);
 
-  const abas: { id: Aba; label: string; badge?: number }[] = [
+  const tabs: { id: Tab; label: string; badge?: number }[] = [
     { id: "online", label: "Online" },
     { id: "todos", label: "Todos" },
-    { id: "pendentes", label: "Pendentes", badge: recebidos },
+    { id: "pendentes", label: "Pendentes", badge: received },
     { id: "adicionar", label: "Adicionar amigo" },
   ];
 
   return (
-    <main data-gc="friends.friends.main" {...flxAttr("colunaDeAmigos")} {...flx("listaDeAmigos", cn("topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("colunaDeAmigos")))}>
-      <header data-gc="friends.friends.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-line shadow-sm")}>
+    <main data-gc="friends.friends.main" {...flxAttr("friendsColumn")} {...flx("listFriends", cn("topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2", flxCls("friendsColumn")))}>
+      <header data-gc="friends.friends.header" {...flx("channelTop", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor shadow-sm")}>
         <div data-gc="friends.friends.div"
-          {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-1 overflow-x-auto px-4")}
+          {...flx("topChannelCore", "flex h-full w-full items-center gap-1 overflow-x-auto px-4")}
         >
-          {onAbrirMenu && (
-            <button data-gc="friends.friends.button.on-abrir-menu"
-              onClick={onAbrirMenu}
+          {onOpenMenu && (
+            <button data-gc="friends.friends.button.on-open-menu"
+              onClick={onOpenMenu}
               aria-label={t("amizades.abrirMenu")}
               className="-ml-1 mr-1 shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink md:hidden"
             >
@@ -73,29 +73,29 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onAbrirMen
             </button>
           )}
 
-          <span data-gc="friends.friends.span" {...flx("tituloDosAmigos", "mr-2 flex shrink-0 items-center gap-2 font-semibold")}>
-            <Users data-gc="friends.friends.users" size={18} className={cn("text-ink-muted", flxCls("iconeDoTituloDeAmigos"))} />
-            <span data-gc="friends.friends.span--2" {...flx("textoDoTituloDeAmigos", "hidden sm:inline")}>{t("amizades.amigos")}</span>
+          <span data-gc="friends.friends.span" {...flx("friendsTitle", "mr-2 flex shrink-0 items-center gap-2 font-semibold")}>
+            <Users data-gc="friends.friends.users" size={18} className={cn("text-ink-muted", flxCls("titleFriendsIcon"))} />
+            <span data-gc="friends.friends.span--2" {...flx("titleFriendsText", "hidden sm:inline")}>{t("amizades.amigos")}</span>
           </span>
-          <span data-gc="friends.friends.span--3" {...flx("divisorDoTopoDeAmigos", "mr-2 hidden h-5 w-px shrink-0 bg-line sm:block")} />
-          {abas.map((item) => (
+          <span data-gc="friends.friends.span--3" {...flx("topFriendsDivider", "mr-2 hidden h-5 w-px shrink-0 bg-line sm:block")} />
+          {tabs.map((item) => (
             <button data-gc="friends.friends.button"
               key={item.id}
-              onClick={() => setAba(item.id)}
+              onClick={() => setTab(item.id)}
               {...flx(
-                "abaDeAmigos",
+                "friendsTab",
                 cn(
                   "flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
                   item.id === "adicionar"
-                    ? aba === item.id
-                      ? "bg-brand font-medium text-sobre-marca"
-                      : "font-medium text-brand hover:bg-brand/10"
-                    : aba === item.id
+                    ? tab === item.id
+                      ? "bg-brand/15 font-semibold text-brand"
+                      : "bg-brand font-semibold text-sobre-marca shadow-sm hover:bg-brand-hover"
+                    : tab === item.id
                       ? "bg-surface-4 text-ink"
                       : "text-ink-muted hover:bg-surface-3 hover:text-ink",
-                  flxCls("aba"),
-                  aba === item.id && cn(flxCls("abaDeAmigosAtiva"), flxCls("abaEscolhida")),
-                  item.id === "adicionar" && flxCls("abaDeAmigosPrincipal"),
+                  flxCls("tab"),
+                  tab === item.id && cn(flxCls("friendsActiveTab"), flxCls("tabPicked")),
+                  item.id === "adicionar" && flxCls("friendsPrincipalTab"),
                 ),
               )}
             >
@@ -109,56 +109,56 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onAbrirMen
           ))}
 
           <div data-gc="friends.friends.div--2" className="ml-auto">
-            <CaixaDeEntrada data-gc="friends.friends.caixa-de-entrada" />
+            <EntryBox data-gc="friends.friends.entry-box" />
           </div>
         </div>
       </header>
 
-      <div data-gc="friends.friends.div--3" {...flx("corpoDaAbaDeAmigos", "flex-1 overflow-y-auto px-6 py-5")}>
-        {aba === "adicionar" ? (
+      <div data-gc="friends.friends.div--3" {...flx("tabFriendsBody", "flex-1 overflow-y-auto px-6 py-5")}>
+        {tab === "adicionar" ? (
           <AddFriendForm data-gc="friends.friends.add-friend-form" />
         ) : isLoading ? (
           <p data-gc="friends.friends.p" className="text-sm text-ink-faint">Carregando…</p>
         ) : (
           <>
-            <div data-gc="friends.friends.div--4" {...flx("molduraDaBuscaDeAmigos", "relative mb-4")}>
+            <div data-gc="friends.friends.div--4" {...flx("searchFriendsFrame", "relative mb-4")}>
               <Search data-gc="friends.friends.search"
                 size={16}
                 className={cn(
                   "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint",
-                  flxCls("iconeDaBuscaDeAmigos"),
+                  flxCls("searchFriendsIcon"),
                 )}
               />
               <Input data-gc="friends.friends.input"
-                {...flxAttr("buscaDeAmigos")}
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                {...flxAttr("friendsSearch")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder={
-                  aba === "pendentes" ? "Buscar solicitações pendentes" : "Procurar amigos"
+                  tab === "pendentes" ? "Buscar solicitações pendentes" : "Procurar amigos"
                 }
                 aria-label="Procurar na lista"
                 className="h-10 border-transparent pl-9 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
               />
             </div>
 
-            {visiveis.length === 0 ? (
-              <EmptyState data-gc="friends.friends.empty-state" aba={aba} filtrando={Boolean(busca.trim())} />
+            {visible.length === 0 ? (
+              <EmptyState data-gc="friends.friends.empty-state" tab={tab} filtering={Boolean(search.trim())} />
             ) : (
               <>
                 <h3 data-gc="friends.friends.h3" className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                  {aba === "pendentes"
+                  {tab === "pendentes"
                     ? "Solicitações de amizade"
-                    : aba === "online"
+                    : tab === "online"
                       ? "Online"
                       : "Todos os amigos"}{" "}
-                  — {visiveis.length}
+                  — {visible.length}
                 </h3>
 
                 <div data-gc="friends.friends.div--5" className="space-y-px">
-                  {visiveis.map((relacao) => (
+                  {visible.map((relation) => (
                     <FriendRow data-gc="friends.friends.friend-row.on-open-conversation"
-                      key={relacao.id}
-                      relacao={relacao}
+                      key={relation.id}
+                      relation={relation}
                       onOpenConversation={onOpenConversation}
                     />
                   ))}
@@ -172,22 +172,22 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onAbrirMen
   );
 };
 
-const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando }) => (
+const EmptyState: React.FC<{ tab: Tab; filtering: boolean }> = ({ tab, filtering }) => (
   <div data-gc="friends.friends.div--6" className="flex flex-col items-center justify-center gap-3 py-24 text-center">
     <Users data-gc="friends.friends.users--2" size={48} className="text-ink-faint/60" strokeWidth={1.5} />
 
     <p data-gc="friends.friends.p--2" className="text-lg font-semibold">
-      {filtrando
+      {filtering
         ? "Ninguém com esse nome"
-        : aba === "pendentes"
+        : tab === "pendentes"
           ? "Nenhum pedido pendente"
-          : aba === "online"
+          : tab === "online"
             ? "Ninguém online agora"
             : "Esta lista de amigos precisa de mais gente"}
     </p>
 
     <p data-gc="friends.friends.p--3" className="max-w-sm text-sm text-ink-muted">
-      {filtrando ? (
+      {filtering ? (
         "Tente outro nome — a busca olha o apelido e o nome de usuário."
       ) : (
         <>
@@ -200,79 +200,79 @@ const EmptyState: React.FC<{ aba: Aba; filtrando: boolean }> = ({ aba, filtrando
 );
 
 interface FriendRowProps {
-  relacao: FriendshipModel;
+  relation: FriendshipModel;
   onOpenConversation: (userId: string) => void;
 }
 
-const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) => {
+const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) => {
   const respond = useRespondFriend();
   const remove = useRemoveFriend();
   const confirm = useConfirm();
 
-  const responder = async (evento: React.MouseEvent, aceitar: boolean) => {
-    if (!evento.shiftKey) {
+  const reply = async (event: React.MouseEvent, accept: boolean) => {
+    if (!event.shiftKey) {
       const { confirmed } = await confirm({
-        title: aceitar ? "Aceitar pedido de amizade" : "Recusar pedido de amizade",
-        description: aceitar
-          ? `Aceitar o pedido de amizade de ${relacao.user.displayName}?`
-          : `Recusar o pedido de ${relacao.user.displayName}? Ela não é avisada — e pode pedir de novo.`,
-        action: aceitar ? "Aceitar" : "Recusar",
-        destructive: !aceitar,
+        title: accept ? "Aceitar pedido de amizade" : "Recusar pedido de amizade",
+        description: accept
+          ? `Aceitar o pedido de amizade de ${relation.user.displayName}?`
+          : `Recusar o pedido de ${relation.user.displayName}? Ela não é avisada — e pode pedir de novo.`,
+        action: accept ? "Aceitar" : "Recusar",
+        destructive: !accept,
         shiftHint: true,
       });
 
       if (!confirmed) return;
     }
 
-    respond.mutate({ friendshipId: relacao.id, accept: aceitar });
+    respond.mutate({ friendshipId: relation.id, accept: accept });
   };
 
-  const desfazer = async (evento: React.MouseEvent) => {
-    if (!evento.shiftKey) {
+  const undo = async (event: React.MouseEvent) => {
+    if (!event.shiftKey) {
       const { confirmed } = await confirm({
         title:
-          relacao.status === "ACCEPTED" ? "Desfazer amizade" : "Cancelar o pedido enviado",
+          relation.status === "ACCEPTED" ? "Desfazer amizade" : "Cancelar o pedido enviado",
         description:
-          relacao.status === "ACCEPTED"
-            ? `Tirar ${relacao.user.displayName} da sua lista de amigos? A conversa continua onde está.`
-            : `Cancelar o pedido enviado para ${relacao.user.displayName}?`,
-        action: relacao.status === "ACCEPTED" ? "Desfazer" : "Cancelar pedido",
+          relation.status === "ACCEPTED"
+            ? `Tirar ${relation.user.displayName} da sua lista de amigos? A conversa continua onde está.`
+            : `Cancelar o pedido enviado para ${relation.user.displayName}?`,
+        action: relation.status === "ACCEPTED" ? "Desfazer" : "Cancelar pedido",
         shiftHint: true,
       });
 
       if (!confirmed) return;
     }
 
-    remove.mutate(relacao.id);
+    remove.mutate(relation.id);
   };
 
   const legenda =
-    relacao.status === "PENDING_IN"
+    relation.status === "PENDING_IN"
       ? "Pedido de amizade recebido"
-      : relacao.status === "PENDING_OUT"
+      : relation.status === "PENDING_OUT"
         ? "Pedido enviado"
-        : `@${relacao.user.username}`;
+        : `@${relation.user.username}`;
 
   return (
     <div data-gc="friends.friends.div--7" className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
       <Avatar data-gc="friends.friends.avatar"
-        id={relacao.user.id}
-        name={relacao.user.displayName}
-        url={relacao.user.avatarUrl}
+        id={relation.user.id}
+        name={relation.user.displayName}
+        url={relation.user.avatarUrl}
         size={36}
-        status={relacao.status === "ACCEPTED" ? relacao.user.status : undefined}
+        status={relation.status === "ACCEPTED" ? relation.user.status : undefined}
       />
 
       <div data-gc="friends.friends.div--8" className="min-w-0 flex-1">
-        <p data-gc="friends.friends.p--4" className="truncate text-sm font-semibold">{relacao.user.displayName}</p>
+        <p data-gc="friends.friends.p--4" className="truncate text-sm font-semibold">{relation.user.displayName}</p>
         <p data-gc="friends.friends.p--5" className="truncate text-xs text-ink-faint">{legenda}</p>
       </div>
 
       <div data-gc="friends.friends.div--9" className="flex shrink-0 items-center gap-2">
-        {relacao.status === "ACCEPTED" && (
+        {relation.status === "ACCEPTED" && (
           <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
             <button data-gc="friends.friends.button--2"
-              onClick={() => onOpenConversation(relacao.user.id)}
+              onClick={() => onOpenConversation(relation.user.id)}
               className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-ink"
             >
               <MessageSquare data-gc="friends.friends.message-square" size={18} />
@@ -280,10 +280,10 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
           </Tooltip>
         )}
 
-        {relacao.status === "PENDING_IN" && (
+        {relation.status === "PENDING_IN" && (
           <Tooltip data-gc="friends.friends.tooltip--2" label="Aceitar">
             <button data-gc="friends.friends.button--3"
-              onClick={(e) => void responder(e, true)}
+              onClick={(e) => void reply(e, true)}
               className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-online"
             >
               <Check data-gc="friends.friends.check" size={18} />
@@ -293,16 +293,16 @@ const FriendRow: React.FC<FriendRowProps> = ({ relacao, onOpenConversation }) =>
 
         <Tooltip data-gc="friends.friends.tooltip--3"
           label={
-            relacao.status === "ACCEPTED"
+            relation.status === "ACCEPTED"
               ? "Desfazer amizade"
-              : relacao.status === "PENDING_IN"
+              : relation.status === "PENDING_IN"
                 ? "Recusar"
                 : "Cancelar pedido"
           }
         >
           <button data-gc="friends.friends.button--4"
             onClick={(e) =>
-              relacao.status === "PENDING_IN" ? void responder(e, false) : void desfazer(e)
+              relation.status === "PENDING_IN" ? void reply(e, false) : void undo(e)
             }
             className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-danger"
           >
