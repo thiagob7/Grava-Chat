@@ -2,71 +2,71 @@ import { create } from "zustand";
 
 import type { Combo } from "~/features/configuracoes/lib/atalhos";
 
-export interface PrefsDeAtalhos {
-  trocados: Record<string, Combo>;
-  desligados: string[];
+export interface ShortcutsPrefs {
+  swapped: Record<string, Combo>;
+  off: string[];
 }
 
-const PADRAO: PrefsDeAtalhos = { trocados: {}, desligados: [] };
+const DEFAULT: ShortcutsPrefs = { swapped: {}, off: [] };
 
-const CHAVE = "gravae:atalhos";
+const KEY = "gravae:atalhos";
 
-function ler(): PrefsDeAtalhos {
+function read(): ShortcutsPrefs {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    if (!salvo) return PADRAO;
+    const saved = localStorage.getItem(KEY);
+    if (!saved) return DEFAULT;
 
-    return { ...PADRAO, ...(JSON.parse(salvo) as Partial<PrefsDeAtalhos>) };
+    return { ...DEFAULT, ...(JSON.parse(saved) as Partial<ShortcutsPrefs>) };
   } catch {
-    return PADRAO;
+    return DEFAULT;
   }
 }
 
-interface StoreDeAtalhos extends PrefsDeAtalhos {
-  trocar: (id: string, combo: Combo) => void;
-  devolverPadrao: (id: string) => void;
-  alternar: (id: string, ligado: boolean) => void;
-  restaurarTudo: () => void;
+interface ShortcutsStore extends ShortcutsPrefs {
+  swap: (id: string, combo: Combo) => void;
+  defaultGive: (id: string) => void;
+  toggle: (id: string, on: boolean) => void;
+  restoreEverything: () => void;
 }
 
-const guardar = (prefs: PrefsDeAtalhos) => {
+const keep = (prefs: ShortcutsPrefs) => {
   try {
-    localStorage.setItem(CHAVE, JSON.stringify(prefs));
+    localStorage.setItem(KEY, JSON.stringify(prefs));
   } catch {}
 };
 
-export const useAtalhos = create<StoreDeAtalhos>((set, store) => ({
-  ...ler(),
+export const useShortcuts = create<ShortcutsStore>((set, store) => ({
+  ...read(),
 
-  trocar: (id, combo) => {
-    const trocados = { ...store().trocados, [id]: combo };
+  swap: (id, combo) => {
+    const swapped = { ...store().swapped, [id]: combo };
 
-    set({ trocados });
-    guardar({ trocados, desligados: store().desligados });
+    set({ swapped });
+    keep({ swapped, off: store().off });
   },
 
-  devolverPadrao: (id) => {
-    const trocados = { ...store().trocados };
-    delete trocados[id];
+  defaultGive: (id) => {
+    const swapped = { ...store().swapped };
+    delete swapped[id];
 
-    set({ trocados });
-    guardar({ trocados, desligados: store().desligados });
+    set({ swapped });
+    keep({ swapped, off: store().off });
   },
 
-  alternar: (id, ligado) => {
-    const desligados = ligado
-      ? store().desligados.filter((outro) => outro !== id)
-      : [...new Set([...store().desligados, id])];
+  toggle: (id, on) => {
+    const off = on
+      ? store().off.filter((other) => other !== id)
+      : [...new Set([...store().off, id])];
 
-    set({ desligados });
-    guardar({ trocados: store().trocados, desligados });
+    set({ off });
+    keep({ swapped: store().swapped, off });
   },
 
-  restaurarTudo: () => {
-    set(PADRAO);
-    guardar(PADRAO);
+  restoreEverything: () => {
+    set(DEFAULT);
+    keep(DEFAULT);
   },
 }));
 
-export const comboDe = (id: string, padrao: Combo): Combo =>
-  useAtalhos.getState().trocados[id] ?? padrao;
+export const comboDe = (id: string, fallback: Combo): Combo =>
+  useShortcuts.getState().swapped[id] ?? fallback;
