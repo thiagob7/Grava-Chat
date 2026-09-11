@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { Codigo } from "~/components/docs/Codigo";
-import { Adiante, Aviso, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
+import { Code } from "~/components/docs/Codigo";
+import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
@@ -9,57 +9,57 @@ export const metadata: Metadata = {
   description: "Registrar comandos de barra e responder quando alguém chama.",
 };
 
-export default function Comandos() {
+export default function Commands() {
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Guias" pagina="Comandos de barra" />
-        <Titulo chamada="Comando de barra é como o bot aparece para quem usa o servidor: um nome com descrição, listado na caixa de texto, que chama o seu código.">
+        <Trail group="Guias" page="Comandos de barra" />
+        <Title call="Comando de barra é como o bot aparece para quem usa o servidor: um nome com descrição, listado na caixa de texto, que chama o seu código.">
           Comandos de barra
-        </Titulo>
+        </Title>
       </header>
 
-      <Secao id="registrar" titulo="Registre a lista">
-        <Codigo>{`curl -X PUT ${API}/bot/comandos \\
+      <Section id="registrar" title="Registre a lista">
+        <Code>{`curl -X PUT ${API}/bot/comandos \\
   -H "Authorization: Bot $GRAVAE_TOKEN" \\
   -H "Content-Type: application/json" \\
-  -d '{"comandos":[{"nome":"clima","descricao":"O tempo agora"}]}'`}</Codigo>
+  -d '{"comandos":[{"nome":"clima","descricao":"O tempo agora"}]}'`}</Code>
 
-        <Aviso>
+        <Notice>
           O <code>PUT</code> <strong className="text-ink">substitui a lista inteira</strong>. Mandar
           só o comando novo apaga todos os outros; mandar um array vazio apaga tudo. Sempre envie a
           lista completa.
-        </Aviso>
+        </Notice>
 
         <p>
           Registrar é uma vez, não a cada vez que o bot sobe. Rode quando a lista mudar — os
           comandos ficam guardados, e o servidor avisa os aplicativos abertos que a lista mudou.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="responder" titulo="Responda quando chamarem">
+      <Section id="responder" title="Responda quando chamarem">
         <p>
           Quem chama o comando manda pelo aplicativo; o que chega no seu bot é o evento{" "}
           <code>command:invoked</code>, pela conexão de tempo real:
         </p>
 
-        <Codigo legenda="bot.js">{`socket.on("command:invoked", ({ comando, channelId, opcoes, usuario }) => {
+        <Code legenda="bot.js">{`socket.on("command:invoked", ({ comando, channelId, opcoes, usuario }) => {
   if (comando !== "clima") return;
 
   socket.emit("message:send", {
     channelId,
     content: \`\${usuario.displayName}, agora faz 24°C.\`,
   });
-});`}</Codigo>
+});`}</Code>
 
         <p>
           Vem junto o <code>guildId</code>, o <code>messageId</code> de quem chamou, e as{" "}
           <code>opcoes</code> que a pessoa preencheu. Responder é mandar mensagem no{" "}
           <code>channelId</code> que veio no evento — não existe canal escondido de resposta.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="cuidados" titulo="Dois cuidados">
+      <Section id="cuidados" title="Dois cuidados">
         <p>
           <strong className="text-ink">Responda rápido.</strong> Quem chamou está olhando para a
           tela. Se a sua resposta depende de uma consulta lenta, mande logo uma mensagem dizendo
@@ -70,9 +70,9 @@ export default function Comandos() {
           servidor. Se o comando faz algo que nem todo mundo devia fazer, essa conferência é sua —
           o Gravaê garante que a pessoa pode ver o canal, não que ela pode usar o seu comando.
         </p>
-      </Secao>
+      </Section>
 
-      <Adiante href="/desenvolvedores/comandos" />
+      <Ahead href="/desenvolvedores/comandos" />
     </article>
   );
 }
