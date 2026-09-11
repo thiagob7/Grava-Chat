@@ -2,213 +2,213 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const RAIZ = join(AQUI, "..", "src");
-const VOCABULARIO = join(AQUI, "vocabulario-de-temas.json");
-const PASTAS_FORA = new Set(["traducao", "assets", "node_modules"]);
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..", "src");
+const VOCABULARY = join(HERE, "vocabulario-de-temas.json");
+const FOLDERS_OUTSIDE = new Set(["traducao", "assets", "node_modules"]);
 
-function lugaresVivos() {
-  const mapa = readFileSync(join(RAIZ, "lib", "compat-de-tema.ts"), "utf8");
-  const codigo = [];
+function placesLive() {
+  const map = readFileSync(join(ROOT, "lib", "compat-de-tema.ts"), "utf8");
+  const code = [];
 
-  const andar = (pasta) => {
-    for (const item of readdirSync(pasta, { withFileTypes: true })) {
-      const caminho = join(pasta, item.name);
+  const walk = (folder) => {
+    for (const item of readdirSync(folder, { withFileTypes: true })) {
+      const path = join(folder, item.name);
 
       if (item.isDirectory()) {
-        if (!PASTAS_FORA.has(item.name)) andar(caminho);
+        if (!FOLDERS_OUTSIDE.has(item.name)) walk(path);
       } else if (
         /\.tsx?$/.test(item.name) &&
         !item.name.endsWith(".test.ts") &&
         item.name !== "compat-de-tema.ts"
       ) {
-        codigo.push(readFileSync(caminho, "utf8"));
+        code.push(readFileSync(path, "utf8"));
       }
     }
   };
 
-  andar(RAIZ);
-  const todoOCodigo = codigo.join("\n");
+  walk(ROOT);
+  const todoCode = code.join("\n");
 
   const classes = new Set();
   const flx = new Set();
-  const dono = new Map();
+  const owner = new Map();
 
-  for (const achado of mapa.matchAll(/^ {2}(\w+): \{/gm)) {
-    const nome = achado[1];
-    const inicio = mapa.indexOf("{", achado.index);
+  for (const match of map.matchAll(/^ {2}(\w+): \{/gm)) {
+    const name = match[1];
+    const start = map.indexOf("{", match.index);
 
-    let fundo = 0;
-    let fim = inicio;
+    let background = 0;
+    let end = start;
 
-    for (; fim < mapa.length; fim++) {
-      if (mapa[fim] === "{") fundo++;
-      else if (mapa[fim] === "}" && --fundo === 0) break;
+    for (; end < map.length; end++) {
+      if (map[end] === "{") background++;
+      else if (map[end] === "}" && --background === 0) break;
     }
 
-    const corpo = mapa.slice(inicio, fim + 1);
+    const body = map.slice(start, end + 1);
 
-    const usado = todoOCodigo.includes(`"${nome}"`);
+    const used = todoCode.includes(`"${name}"`);
 
-    if (!usado) continue;
+    if (!used) continue;
 
-    for (const [, classe] of corpo.matchAll(/"([A-Za-z]+\.module__[A-Za-z0-9]+)_gc"/g)) {
-      classes.add(classe);
-      dono.set(classe, nome);
+    for (const [, cssClass] of body.matchAll(/"([A-Za-z]+\.module__[A-Za-z0-9]+)_gc"/g)) {
+      classes.add(cssClass);
+      owner.set(cssClass, name);
     }
 
-    const caminho = /flx:\s*"([^"]+)"/.exec(corpo);
-    if (caminho) flx.add(caminho[1]);
+    const path = /flx:\s*"([^"]+)"/.exec(body);
+    if (path) flx.add(path[1]);
   }
 
-  return { classes, flx, dono };
+  return { classes, flx, owner };
 }
 
-function cadeiaQuebrada(seletor, dono) {
-  for (const parte of seletor.split(",")) {
-    const degraus = parte
+function chainBroken(picker, owner) {
+  for (const part of picker.split(",")) {
+    const steps = part
       .replace(/\\/g, "")
       .split(/\s*[>\s]\s*/)
-      .map((d) => [...nomesDoSeletor(d)])
-      .filter((nomes) => nomes.length);
+      .map((d) => [...pickerNames(d)])
+      .filter((names) => names.length);
 
-    for (let i = 1; i < degraus.length; i++) {
-      const antes = degraus[i - 1].map((c) => dono.get(c)).filter(Boolean);
-      const agora = degraus[i].map((c) => dono.get(c)).filter(Boolean);
+    for (let i = 1; i < steps.length; i++) {
+      const before = steps[i - 1].map((c) => owner.get(c)).filter(Boolean);
+      const now = steps[i].map((c) => owner.get(c)).filter(Boolean);
 
-      if (antes.length && agora.length && agora.every((l) => antes.includes(l))) return true;
+      if (before.length && now.length && now.every((l) => before.includes(l))) return true;
     }
   }
 
   return false;
 }
 
-const semComentario = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
+const withoutComment = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-function nomesDoSeletor(seletor) {
-  const limpo = seletor.replace(/\\/g, "");
-  const nomes = new Set(
-    [...limpo.matchAll(/([A-Za-z]+\.module__[A-Za-z0-9]+)/g)].map((m) => m[1]),
+function pickerNames(picker) {
+  const clean = picker.replace(/\\/g, "");
+  const names = new Set(
+    [...clean.matchAll(/([A-Za-z]+\.module__[A-Za-z0-9]+)/g)].map((m) => m[1]),
   );
 
-  for (const [, modulo, local] of limpo.matchAll(
+  for (const [, modulo, local] of clean.matchAll(
     /\[class\*=["']([A-Za-z]+)["']\]\s*\[class\*=["']([A-Za-z]+)["']\]/g,
   )) {
-    nomes.add(`${modulo}.module__${local}`);
+    names.add(`${modulo}.module__${local}`);
   }
 
-  return nomes;
+  return names;
 }
 
-export function placar(css, vivos) {
-  const perdidas = new Map();
+export function scoreboard(css, live) {
+  const lost = new Map();
   let total = 0;
-  let pousam = 0;
+  let land = 0;
 
-  for (const [, seletor, corpo] of semComentario(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const alvo = seletor.trim();
+  for (const [, picker, body] of withoutComment(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const target = picker.trim();
 
-    if (!alvo || alvo.startsWith("@") || !corpo.includes(":")) continue;
+    if (!target || target.startsWith("@") || !body.includes(":")) continue;
 
     total++;
 
-    const classes = nomesDoSeletor(alvo);
+    const classes = pickerNames(target);
     const flx = new Set(
-      [...alvo.matchAll(/data-flx\s*=\s*["']([^"']+)["']/g)].map((m) => m[1]),
+      [...target.matchAll(/data-flx\s*=\s*["']([^"']+)["']/g)].map((m) => m[1]),
     );
 
     if (!classes.size && !flx.size) {
-      pousam++;
+      land++;
       continue;
     }
 
-    const casa =
-      !cadeiaQuebrada(alvo, vivos.dono) &&
-      ([...classes].some((c) => vivos.classes.has(c)) ||
-        [...flx].some((f) => vivos.flx.has(f)));
+    const house =
+      !chainBroken(target, live.owner) &&
+      ([...classes].some((c) => live.classes.has(c)) ||
+        [...flx].some((f) => live.flx.has(f)));
 
-    if (casa) {
-      pousam++;
+    if (house) {
+      land++;
       continue;
     }
 
-    for (const nome of [...classes].filter((c) => !vivos.classes.has(c))) {
-      perdidas.set(nome, (perdidas.get(nome) ?? 0) + 1);
+    for (const name of [...classes].filter((c) => !live.classes.has(c))) {
+      lost.set(name, (lost.get(name) ?? 0) + 1);
     }
 
-    for (const nome of [...flx].filter((f) => !vivos.flx.has(f))) {
-      perdidas.set(nome, (perdidas.get(nome) ?? 0) + 1);
+    for (const name of [...flx].filter((f) => !live.flx.has(f))) {
+      lost.set(name, (lost.get(name) ?? 0) + 1);
     }
   }
 
-  return { total, pousam, perdidas };
+  return { total, land, lost };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
-  const detalhe = args.includes("--detalhe");
-  const arquivos = args.filter((a) => !a.startsWith("--") && statSync(a).isFile());
+  const detail = args.includes("--detalhe");
+  const files = args.filter((a) => !a.startsWith("--") && statSync(a).isFile());
 
-  if (!arquivos.length) {
+  if (!files.length) {
     console.error("uso: node scripts/placar-de-tema.mjs <tema.css> [...]");
     process.exit(1);
   }
 
-  const vivos = lugaresVivos();
+  const live = placesLive();
 
-  const vocabulario = existsSync(VOCABULARIO)
-    ? JSON.parse(readFileSync(VOCABULARIO, "utf8"))
+  const vocabulary = existsSync(VOCABULARY)
+    ? JSON.parse(readFileSync(VOCABULARY, "utf8"))
     : { classes: [], flx: [] };
-  const doreferência = new Set([...vocabulario.classes, ...vocabulario.flx]);
+  const fromReference = new Set([...vocabulary.classes, ...vocabulary.flx]);
 
-  const somadas = new Map();
+  const summed = new Map();
   console.log(
     `\n${"tema".padEnd(34)}${"regras".padStart(8)}${"pousam".padStart(8)}${"".padStart(9)}`,
   );
   console.log("-".repeat(59));
 
-  let totalGeral = 0;
-  let pousamGeral = 0;
+  let totalGeneral = 0;
+  let landGeneral = 0;
 
-  for (const caminho of arquivos) {
-    const { total, pousam, perdidas } = placar(readFileSync(caminho, "utf8"), vivos);
-    totalGeral += total;
-    pousamGeral += pousam;
+  for (const path of files) {
+    const { total, land, lost } = scoreboard(readFileSync(path, "utf8"), live);
+    totalGeneral += total;
+    landGeneral += land;
 
-    for (const [nome, n] of perdidas) somadas.set(nome, (somadas.get(nome) ?? 0) + n);
+    for (const [name, n] of lost) summed.set(name, (summed.get(name) ?? 0) + n);
 
-    const pct = total ? Math.round((100 * pousam) / total) : 100;
+    const pct = total ? Math.round((100 * land) / total) : 100;
     console.log(
-      `${basename(caminho).slice(0, 33).padEnd(34)}${String(total).padStart(8)}` +
-        `${String(pousam).padStart(8)}${`${pct}%`.padStart(9)}`,
+      `${basename(path).slice(0, 33).padEnd(34)}${String(total).padStart(8)}` +
+        `${String(land).padStart(8)}${`${pct}%`.padStart(9)}`,
     );
   }
 
   console.log("-".repeat(59));
-  const pctGeral = totalGeral ? Math.round((100 * pousamGeral) / totalGeral) : 100;
+  const pctGeneral = totalGeneral ? Math.round((100 * landGeneral) / totalGeneral) : 100;
   console.log(
-    `${"TOTAL".padEnd(34)}${String(totalGeral).padStart(8)}` +
-      `${String(pousamGeral).padStart(8)}${`${pctGeral}%`.padStart(9)}`,
+    `${"TOTAL".padEnd(34)}${String(totalGeneral).padStart(8)}` +
+      `${String(landGeneral).padStart(8)}${`${pctGeneral}%`.padStart(9)}`,
   );
 
-  const ordenadas = [...somadas].sort((a, b) => b[1] - a[1]);
-  const reais = ordenadas.filter(([nome]) => doreferência.has(nome));
-  const inventadas = ordenadas.filter(([nome]) => !doreferência.has(nome));
+  const ordered = [...summed].sort((a, b) => b[1] - a[1]);
+  const real = ordered.filter(([name]) => fromReference.has(name));
+  const invented = ordered.filter(([name]) => !fromReference.has(name));
 
-  if (reais.length) {
+  if (real.length) {
     console.log("\nnomes que mais custam regra (existem na referência — são trabalho nosso):");
-    for (const [nome, n] of reais.slice(0, detalhe ? reais.length : 20)) {
-      console.log(`  ${String(n).padStart(3)}  ${nome}`);
+    for (const [name, n] of real.slice(0, detail ? real.length : 20)) {
+      console.log(`  ${String(n).padStart(3)}  ${name}`);
     }
   }
 
-  if (inventadas.length) {
+  if (invented.length) {
     console.log(
-      `\n${inventadas.length} nome(s) que o tema mira e NÃO existem na referência` +
+      `\n${invented.length} nome(s) que o tema mira e NÃO existem na referência` +
         " — erro do tema, não nosso." +
-        (detalhe ? "" : " Use --detalhe para ver."),
+        (detail ? "" : " Use --detalhe para ver."),
     );
-    if (detalhe) for (const [nome, n] of inventadas) console.log(`  ${String(n).padStart(3)}  ${nome}`);
+    if (detail) for (const [name, n] of invented) console.log(`  ${String(n).padStart(3)}  ${name}`);
   }
 
   console.log();
