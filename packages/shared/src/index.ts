@@ -9,6 +9,7 @@ export * from "./falhas.js";
 export * from "./explorar.js";
 export * from "./guild-events.js";
 export * from "./permissions.js";
+export * from "./origens.js";
 export * from "./convites.js";
 export * from "./temas.js";
 export * from "./desktop.js";

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { DESIRED_STATUSES, type DesiredStatus } from "./constants.js";
-import { perfilPublicoSchema } from "./cosmeticos.js";
-import type { MotivoDeFalha } from "./falhas.js";
+import { profilePublicSchema } from "./cosmeticos.js";
+import type { FailureReason } from "./falhas.js";
 import {
   objectId,
   messageSchema,
@@ -12,7 +12,7 @@ import {
   channelSchema,
   sendMessageInput,
   editMessageInput,
-  invocarComandoInput,
+  invokeCommandInput,
 } from "./models.js";
 import type { PresenceStatus } from "./constants.js";
 
@@ -37,7 +37,7 @@ export const clientEventSchemas = {
 
   "typing:start": z.object({ channelId: objectId }),
 
-  "command:invoke": invocarComandoInput,
+  "command:invoke": invokeCommandInput,
 
   "presence:update": z.object({ status: z.enum(DESIRED_STATUSES) }),
   "presence:afk": z.object({ idle: z.boolean() }),
@@ -45,7 +45,7 @@ export const clientEventSchemas = {
   "voice:join": z.object({
     channelId: objectId,
     resume: z.boolean().optional(),
-    cliente: z.string().min(1).max(64).optional(),
+    client: z.string().min(1).max(64).optional(),
   }),
   "voice:leave": z.object({}),
   "voice:token": z.object({ channelId: objectId }),
@@ -72,7 +72,7 @@ export type ClientEventName = keyof typeof clientEventSchemas;
 export type ClientEventPayload<E extends ClientEventName> = z.infer<(typeof clientEventSchemas)[E]>;
 
 export type Ack<T = void> = (
-  res: { ok: true; data: T } | { ok: false; error: string; motivo?: MotivoDeFalha },
+  res: { ok: true; data: T } | { ok: false; error: string; reason?: FailureReason },
 ) => void;
 
 export type ClientToServerEvents = {
@@ -115,18 +115,18 @@ export type ServerToClientEvents = {
     channelId: string;
     guildId: string;
     messageId: string;
-    comando: string;
-    opcoes: Record<string, string | number>;
-    usuario: z.infer<typeof publicUserSchema>;
+    command: string;
+    options: Record<string, string | number>;
+    user: z.infer<typeof publicUserSchema>;
   }) => void;
 
   "commands:changed": (p: { guildId: string }) => void;
 
   "presence:changed": (p: { userId: string; status: PresenceStatus }) => void;
-  "presence:self": (p: { status: DesiredStatus }) => void;
+  "presence:self": (p: { status: DesiredStatus; projected: PresenceStatus }) => void;
   "user:updated": (p: {
     user: z.infer<typeof publicUserSchema>;
-    perfil: z.infer<typeof perfilPublicoSchema>;
+    profile: z.infer<typeof profilePublicSchema>;
   }) => void;
 
   "friend:updated": () => void;
