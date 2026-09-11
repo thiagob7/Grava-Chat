@@ -20,7 +20,7 @@ export const SheetContent = ({
     <DialogPrimitive.Overlay data-gc="ui.sheet.dialog-primitiveoverlay" className="regiao-sem-arrasto fixed inset-0 z-50 bg-veu" />
     <DialogPrimitive.Content data-gc="ui.sheet.dialog-primitivecontent"
       className={cn(
-        "regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",
+        "gaveta-segura regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",
         flxCls("drawer"),
         className,
       )}

@@ -347,25 +347,6 @@
   }
 
   /*
-    Instalado como app no telefone, a página abre com `viewport-fit=cover` e a
-    barra de status translúcida: o app desenha POR BAIXO do relógio, do sinal e
-    da bateria. Sem isto o cabeçalho e os botões do topo ficam embaixo deles —
-    ilegíveis, e alguns sem como tocar.
-
-    Vale para os quatro lados: o entalhe na horizontal e a barra de gesto
-    embaixo mordem o mesmo tanto.
-
-    Fora do app instalado os quatro `env()` valem zero, então nada muda no
-    navegador nem no aplicativo de desktop.
-  */
-  #app {
-    padding-top: env(safe-area-inset-top);
-    padding-right: env(safe-area-inset-right);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-  }
-
-  /*
     `--text-selection` é o realce do texto selecionado, não um fundo de item.
     Ele já foi lido como cor do canal ativo, e um tema que o declara opaco
     pintava a lateral de branco.
@@ -654,6 +635,59 @@ body[data-scroll-locked] .regiao-de-arrasto {
 
 .palco-de-um {
   container-type: size;
+}
+
+/*
+  Instalado como app no telefone, a página abre com `viewport-fit=cover` e a
+  barra de status translúcida: o app desenha POR BAIXO do relógio, do sinal e
+  da bateria.
+
+  A primeira tentativa foi empurrar o `#app` inteiro, e estava errada por dois
+  motivos. Sobrava uma faixa da cor do `body` entre a barra do sistema e o
+  app — a "borda preta" —, porque quem devia crescer é o fundo da própria
+  barra, não o espaço em volta dela. E não alcançava a gaveta nem as
+  configurações, que são portais pendurados no `body`, fora do `#app`.
+
+  Então o recuo mora em quem ENCOSTA na borda, e cada um cresce com o fundo
+  que já tem. Fora do app instalado os quatro `env()` valem zero, então nada
+  disto muda no navegador nem no aplicativo de desktop.
+*/
+:root {
+  --recuo-topo: env(safe-area-inset-top);
+  --recuo-baixo: env(safe-area-inset-bottom);
+  --recuo-esquerda: env(safe-area-inset-left);
+  --recuo-direita: env(safe-area-inset-right);
+}
+
+/* O cabeçalho do canal cresce para dentro da barra de status. */
+.topo-do-canal {
+  height: calc(var(--layout-header-height) + var(--recuo-topo));
+  padding-top: var(--recuo-topo);
+}
+
+/* A caixa de escrever cresce para dentro da barra de gesto. O 0.75rem é o `pb-3` dela. */
+.caixa-de-escrever {
+  padding-bottom: calc(0.75rem + var(--recuo-baixo));
+}
+
+/*
+  Filho posicionado por `absolute` mede a partir da BORDA do pai, não do
+  recuo dele: o botão de fechar da gaveta ficava embaixo do relógio mesmo com
+  a gaveta já recuada. Ele desce junto.
+*/
+.fechar-seguro {
+  top: calc(0.5rem + var(--recuo-topo));
+}
+
+/*
+  Gaveta e tela cheia são portais no `body`: o `#app` não os alcança, e eles
+  cobrem a tela toda, então recuam nos quatro lados.
+*/
+.gaveta-segura {
+  padding-top: var(--recuo-topo);
+  padding-right: var(--recuo-direita);
+  padding-bottom: var(--recuo-baixo);
+  padding-left: var(--recuo-esquerda);
 }
 
 .grade-de-varios {

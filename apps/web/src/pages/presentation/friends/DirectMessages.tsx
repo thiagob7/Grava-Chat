@@ -193,7 +193,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
         <Sheet data-gc="friends.direct-messages.sheet.set-menu-is-open" open={menuIsOpen} onOpenChange={setMenuIsOpen}>
           <SheetContent data-gc="friends.direct-messages.sheet-content" className="inset-y-0 left-0 right-auto w-full max-w-none flex-row p-0 sm:w-[min(24rem,93vw)]">
             <SheetTitle data-gc="friends.direct-messages.sheet-title" className="sr-only">Conversas</SheetTitle>
-            <SheetCloseButton data-gc="friends.direct-messages.sheet-close-button" className="absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
+            <SheetCloseButton data-gc="friends.direct-messages.sheet-close-button" className="fechar-seguro absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
             {navigation}
           </SheetContent>
         </Sheet>
