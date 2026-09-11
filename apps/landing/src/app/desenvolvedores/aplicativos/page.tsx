@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 
-import { Adiante, Aviso, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
+import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
   title: "Aplicativos e bots — Documentação do Gravaê",
   description: "Como nasce um aplicativo do Gravaê, e como ele entra num servidor.",
 };
 
-export default function Aplicativos() {
+export default function Apps() {
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Fundamentos" pagina="Aplicativos e bots" />
-        <Titulo chamada="Aplicativo é o cadastro; bot é o usuário que ele controla. Os dois nascem juntos, na mesma tela, e não dá para ter um sem o outro.">
+        <Trail group="Fundamentos" page="Aplicativos e bots" />
+        <Title call="Aplicativo é o cadastro; bot é o usuário que ele controla. Os dois nascem juntos, na mesma tela, e não dá para ter um sem o outro.">
           Aplicativos e bots
-        </Titulo>
+        </Title>
       </header>
 
-      <Secao id="criar" titulo="Crie o aplicativo">
+      <Section id="criar" title="Crie o aplicativo">
         <p>
           No Gravaê, vá em <strong className="text-ink">Configurações</strong> →{" "}
           <strong className="text-ink">Desenvolvedor</strong> →{" "}
@@ -29,9 +29,9 @@ export default function Aplicativos() {
           Essa tela é o portal do desenvolvedor: é dela que sai o token, é nela que se trocam a
           foto e a descrição, e é por ela que se apaga o aplicativo quando ele não serve mais.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="convite" titulo="Ponha o bot num servidor">
+      <Section id="convite" title="Ponha o bot num servidor">
         <p>
           O bot não entra sozinho, e não enxerga servidor onde não foi convidado. Na mesma tela sai
           um <strong className="text-ink">link de convite</strong> — quem tem permissão de
@@ -42,23 +42,23 @@ export default function Aplicativos() {
           confirmar, então peça só o que o bot usa: um bot que só manda mensagem pedindo para banir
           membros é um bot que ninguém convida.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao id="o-que-ele-ve" titulo="O que o bot enxerga">
+      <Section id="o-que-ele-ve" title="O que o bot enxerga">
         <p>
           O mesmo que um membro enxergaria com aqueles cargos. Canal que o cargo dele não vê, ele
           não vê; mensagem de canal fechado, ele não recebe. Não existe token que passe por cima
           das permissões do servidor.
         </p>
 
-        <Aviso>
+        <Notice>
           Rota que mexe em mensagem só aceita mensagem do próprio bot. Para apagar mensagem dos
           outros, o bot precisa da permissão de gerenciar mensagens — e mesmo assim é pelo caminho
           normal de moderação, não por ser bot.
-        </Aviso>
-      </Secao>
+        </Notice>
+      </Section>
 
-      <Adiante href="/desenvolvedores/aplicativos" />
+      <Ahead href="/desenvolvedores/aplicativos" />
     </article>
   );
 }
