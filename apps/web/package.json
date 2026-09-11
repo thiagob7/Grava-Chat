@@ -6,7 +6,7 @@
   "scripts": {
     "predev": "node scripts/copiar-emoji.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/copiar-emoji.mjs",
+    "prebuild": "node scripts/checar-hooks.mjs && node scripts/copiar-emoji.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
@@ -14,6 +14,7 @@
     "ganchos": "node scripts/ganchos-de-tema.mjs",
     "ganchos:check": "node scripts/ganchos-de-tema.mjs --check",
     "fantasmas:check": "node scripts/checar-fantasmas.mjs",
+    "hooks:check": "node scripts/checar-hooks.mjs",
     "cadeias": "node scripts/checar-cadeias.mjs",
     "base-de-tema": "node scripts/base-de-tema.mjs",
     "base-de-tema:check": "node scripts/base-de-tema.mjs --check",

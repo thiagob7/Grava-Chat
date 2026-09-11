@@ -187,8 +187,6 @@ export const Chat: React.FC = () => {
     endSession();
   };
 
-  if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
-
   const side = useResizableWidth("canais", {
     initial: 320,
     token: "--layout-sidebar-width",
@@ -196,6 +194,8 @@ export const Chat: React.FC = () => {
     max: 420,
     edge: "right",
   });
+
+  if (guildsLoaded && !guilds.length) return <Navigate to="/dm" replace />;
 
   const navigation = (
     <LeftColumn data-gc="chat.chat.left-column"
