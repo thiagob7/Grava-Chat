@@ -1,99 +1,99 @@
-export type AreaDeAtalho = "navegacao" | "mensagens" | "voz";
+export type ShortcutArea = "navigation" | "messages" | "voice";
 
 export interface Combo {
   key: string;
-  comando?: boolean;
+  command?: boolean;
   shift?: boolean;
   alt?: boolean;
 }
 
-export interface Atalho {
+export interface Shortcut {
   id: string;
-  area: AreaDeAtalho;
-  nome: string;
-  detalhe: string;
-  padrao: Combo;
-  fixo?: boolean;
+  area: ShortcutArea;
+  name: string;
+  detail: string;
+  fallback: Combo;
+  fixed?: boolean;
 }
 
-export const AREAS: { id: AreaDeAtalho; nome: string; detalhe: string }[] = [
+export const AREAS: { id: ShortcutArea; name: string; detail: string }[] = [
   {
-    id: "navegacao",
-    nome: "Navegação",
-    detalhe: "Valem em qualquer lugar do app.",
+    id: "navigation",
+    name: "Navegação",
+    detail: "Valem em qualquer lugar do app.",
   },
   {
-    id: "mensagens",
-    nome: "Mensagens",
-    detalhe: "Valem com o cursor na caixa de escrever.",
+    id: "messages",
+    name: "Mensagens",
+    detail: "Valem com o cursor na caixa de escrever.",
   },
   {
-    id: "voz",
-    nome: "Voz",
-    detalhe: "A tecla do push-to-talk mora em Áudio, junto do resto da voz.",
+    id: "voice",
+    name: "Voz",
+    detail: "A tecla do push-to-talk mora em Áudio, junto do resto da voz.",
   },
 ];
 
-export const ATALHOS: Atalho[] = [
+export const SHORTCUTS: Shortcut[] = [
   {
     id: "servidor-novo",
-    area: "navegacao",
-    nome: "Criar servidor",
-    detalhe: "Abre a janela de criar servidor de onde você estiver.",
-    padrao: { key: "n", comando: true, shift: true },
+    area: "navigation",
+    name: "Criar servidor",
+    detail: "Abre a janela de criar servidor de onde você estiver.",
+    fallback: { key: "n", command: true, shift: true },
   },
   {
     id: "configuracoes",
-    area: "navegacao",
-    nome: "Abrir configurações",
-    detalhe: "Abre esta janela na última tela que você viu.",
-    padrao: { key: ",", comando: true },
+    area: "navigation",
+    name: "Abrir configurações",
+    detail: "Abre esta janela na última tela que você viu.",
+    fallback: { key: ",", command: true },
   },
   {
     id: "fechar",
-    area: "navegacao",
-    nome: "Fechar o que estiver aberto",
-    detalhe: "Fecha a janela, o menu ou o painel da vez.",
-    padrao: { key: "Escape" },
-    fixo: true,
+    area: "navigation",
+    name: "Fechar o que estiver aberto",
+    detail: "Fecha a janela, o menu ou o painel da vez.",
+    fallback: { key: "Escape" },
+    fixed: true,
   },
   {
     id: "enviar",
-    area: "mensagens",
-    nome: "Enviar a mensagem",
-    detalhe: "Com o botão de enviar ligado, o clique faz o mesmo.",
-    padrao: { key: "Enter" },
-    fixo: true,
+    area: "messages",
+    name: "Enviar a mensagem",
+    detail: "Com o botão de enviar ligado, o clique faz o mesmo.",
+    fallback: { key: "Enter" },
+    fixed: true,
   },
   {
     id: "quebrar-linha",
-    area: "mensagens",
-    nome: "Quebrar linha",
-    detalhe: "Continua na mesma mensagem, numa linha nova.",
-    padrao: { key: "Enter", shift: true },
-    fixo: true,
+    area: "messages",
+    name: "Quebrar linha",
+    detail: "Continua na mesma mensagem, numa linha nova.",
+    fallback: { key: "Enter", shift: true },
+    fixed: true,
   },
   {
     id: "expressoes",
-    area: "mensagens",
-    nome: "Abrir emojis e figurinhas",
-    detalhe: "Abre o seletor na aba de emoji, com a caixa em foco.",
-    padrao: { key: "e", comando: true },
+    area: "messages",
+    name: "Abrir emojis e figurinhas",
+    detail: "Abre o seletor na aba de emoji, com a caixa em foco.",
+    fallback: { key: "e", command: true },
   },
   {
     id: "editar-ultima",
-    area: "mensagens",
-    nome: "Editar a última mensagem",
-    detalhe: "Só funciona com a caixa vazia, e só pega mensagem sua.",
-    padrao: { key: "ArrowUp" },
-    fixo: true,
+    area: "messages",
+    name: "Editar a última mensagem",
+    detail: "Só funciona com a caixa vazia, e só pega mensagem sua.",
+    fallback: { key: "ArrowUp" },
+    fixed: true,
   },
 ];
 
-const ehMac = () =>
+const isMac = () =>
   typeof navigator !== "undefined" && /mac|iphone|ipad/i.test(navigator.userAgent);
 
-const NOMES: Record<string, string> = {
+const NAMES: Record<string, string> = {
   Escape: "Esc",
   Enter: "Enter",
   ArrowUp: "↑",
@@ -103,41 +103,41 @@ const NOMES: Record<string, string> = {
   " ": "Espaço",
 };
 
-export function escreverCombo(combo: Combo): string {
-  const mac = ehMac();
-  const partes: string[] = [];
+export function writeCombo(combo: Combo): string {
+  const mac = isMac();
+  const parts: string[] = [];
 
-  if (combo.comando) partes.push(mac ? "⌘" : "Ctrl");
-  if (combo.shift) partes.push(mac ? "⇧" : "Shift");
-  if (combo.alt) partes.push(mac ? "⌥" : "Alt");
+  if (combo.command) parts.push(mac ? "⌘" : "Ctrl");
+  if (combo.shift) parts.push(mac ? "⇧" : "Shift");
+  if (combo.alt) parts.push(mac ? "⌥" : "Alt");
 
-  partes.push(NOMES[combo.key] ?? combo.key.toUpperCase());
+  parts.push(NAMES[combo.key] ?? combo.key.toUpperCase());
 
-  return partes.join(mac ? "" : " + ");
+  return parts.join(mac ? "" : " + ");
 }
 
-export function comboDoEvento(evento: KeyboardEvent): Combo | null {
-  if (["Shift", "Control", "Alt", "Meta"].includes(evento.key)) return null;
+export function eventCombo(event: KeyboardEvent): Combo | null {
+  if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return null;
 
   return {
-    key: evento.key.length === 1 ? evento.key.toLowerCase() : evento.key,
-    comando: evento.metaKey || evento.ctrlKey,
-    shift: evento.shiftKey,
-    alt: evento.altKey,
+    key: event.key.length === 1 ? event.key.toLowerCase() : event.key,
+    command: event.metaKey || event.ctrlKey,
+    shift: event.shiftKey,
+    alt: event.altKey,
   };
 }
 
-export function combinam(a: Combo, b: Combo): boolean {
+export function match(a: Combo, b: Combo): boolean {
   return (
     a.key.toLowerCase() === b.key.toLowerCase() &&
-    Boolean(a.comando) === Boolean(b.comando) &&
+    Boolean(a.command) === Boolean(b.command) &&
     Boolean(a.shift) === Boolean(b.shift) &&
     Boolean(a.alt) === Boolean(b.alt)
   );
 }
 
-export function eventoCombina(evento: KeyboardEvent, combo: Combo): boolean {
-  const doEvento = comboDoEvento(evento);
+export function eventMatches(event: KeyboardEvent, combo: Combo): boolean {
+  const fromEvent = eventCombo(event);
 
-  return doEvento ? combinam(doEvento, combo) : false;
+  return fromEvent ? match(fromEvent, combo) : false;
 }

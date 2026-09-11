@@ -4,56 +4,56 @@ import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-const raiz = dirname(fileURLToPath(import.meta.url));
-const html = readFileSync(join(raiz, "..", "..", "..", "..", "index.html"), "utf8");
+const root = dirname(fileURLToPath(import.meta.url));
+const html = readFileSync(join(root, "..", "..", "..", "..", "index.html"), "utf8");
 const hook = readFileSync(
-  join(raiz, "..", "hooks", "use-aparencia.ts"),
+  join(root, "..", "hooks", "use-aparencia.ts"),
   "utf8",
 );
 
-const corpo = /<script>([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "";
+const body = /<script>([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "";
 
-interface Falso {
+interface IsFalse {
   dataset: Record<string, string>;
   classes: string[];
   props: Record<string, string>;
 }
 
-function rodar(guardado: Record<string, unknown>): Falso {
-  const falso: Falso = { dataset: {}, classes: [], props: {} };
+function run(kept: Record<string, unknown>): IsFalse {
+  const isFalse: IsFalse = { dataset: {}, classes: [], props: {} };
 
-  const documento = {
+  const doc = {
     documentElement: {
-      dataset: falso.dataset,
-      classList: { add: (nome: string) => falso.classes.push(nome) },
+      dataset: isFalse.dataset,
+      classList: { add: (name: string) => isFalse.classes.push(name) },
       style: {
-        setProperty: (nome: string, valor: string) => {
-          falso.props[nome] = valor;
+        setProperty: (name: string, value: string) => {
+          isFalse.props[name] = value;
         },
       },
     },
   };
 
-  const armazem = {
-    getItem: (chave: string) =>
-      chave in guardado ? JSON.stringify(guardado[chave]) : null,
+  const warehouse = {
+    getItem: (key: string) =>
+      key in kept ? JSON.stringify(kept[key]) : null,
   };
 
-  new Function("document", "localStorage", corpo)(documento, armazem);
+  new Function("document", "localStorage", body)(doc, warehouse);
 
-  return falso;
+  return isFalse;
 }
 
 describe("script anti-piscada", () => {
   it("existe, e roda antes do módulo do app", () => {
-    expect(corpo.length).toBeGreaterThan(0);
+    expect(body.length).toBeGreaterThan(0);
     expect(html.indexOf("<script>")).toBeLessThan(
       html.indexOf('src="/src/main.tsx"'),
     );
   });
 
   it("põe o tema de fábrica quando não há nada guardado", () => {
-    const { dataset, classes } = rodar({});
+    const { dataset, classes } = run({});
 
     expect(dataset.tema).toBe("escuro");
     expect(dataset.densidade).toBe("confortavel");
@@ -61,8 +61,8 @@ describe("script anti-piscada", () => {
   });
 
   it("põe o tema claro antes de qualquer pintura", () => {
-    const { dataset, classes } = rodar({
-      "gravae:aparencia": { tema: "claro", densidade: "compacta" },
+    const { dataset, classes } = run({
+      "gravae:aparencia": { theme: "claro", density: "compacta" },
     });
 
     expect(dataset.tema).toBe("claro");
@@ -71,31 +71,31 @@ describe("script anti-piscada", () => {
   });
 
   it("aplica as cores do estúdio", () => {
-    const { props } = rodar({
+    const { props } = run({
       "gravae:estudio": {
-        substituicoes: { "--color-surface-0": "#010203", naoEhToken: "x" },
+        overrides: { "--color-surface-0": "#010203", notIsToken: "x" },
       },
     });
 
     expect(props["--color-surface-0"]).toBe("#010203");
-    expect(props.naoEhToken).toBeUndefined();
+    expect(props.notIsToken).toBeUndefined();
   });
 
   it("deixa a marca do estúdio ganhar da cor de destaque", () => {
-    const semEstudio = rodar({
-      "gravae:aparencia": { destaque: "#ff0000" },
+    const withoutStudio = run({
+      "gravae:aparencia": { highlight: "#ff0000" },
     });
-    expect(semEstudio.props["--color-brand"]).toBe("#ff0000");
+    expect(withoutStudio.props["--color-brand"]).toBe("#ff0000");
 
-    const comEstudio = rodar({
-      "gravae:aparencia": { destaque: "#ff0000" },
-      "gravae:estudio": { substituicoes: { "--color-brand": "#00ff00" } },
+    const withStudio = run({
+      "gravae:aparencia": { highlight: "#ff0000" },
+      "gravae:estudio": { overrides: { "--color-brand": "#00ff00" } },
     });
-    expect(comEstudio.props["--color-brand"]).toBe("#00ff00");
+    expect(withStudio.props["--color-brand"]).toBe("#00ff00");
   });
 
   it("não derruba a página quando o guardado está podre", () => {
-    const documento = {
+    const doc = {
       documentElement: {
         dataset: {} as Record<string, string>,
         classList: { add: () => {} },
@@ -103,23 +103,23 @@ describe("script anti-piscada", () => {
       },
     };
 
-    const armazem = {
+    const warehouse = {
       getItem: () => "{ isto não é json",
     };
 
     expect(() =>
-      new Function("document", "localStorage", corpo)(documento, armazem),
+      new Function("document", "localStorage", body)(doc, warehouse),
     ).not.toThrow();
   });
 
   it("escreve as mesmas marcas que o hook de aparência", () => {
-    const marcas = ["tema", "densidade", "cantos", "animacao", "foco"];
+    const brands = ["tema", "densidade", "cantos", "animacao", "foco"];
 
-    const soNoHtml = marcas.filter(
-      (marca) => corpo.includes(`dataset.${marca}`) && !hook.includes(`dataset.${marca}`),
+    const soNoHtml = brands.filter(
+      (brand) => body.includes(`dataset.${brand}`) && !hook.includes(`dataset.${brand}`),
     );
-    const soNoHook = marcas.filter(
-      (marca) => hook.includes(`dataset.${marca}`) && !corpo.includes(`dataset.${marca}`),
+    const soNoHook = brands.filter(
+      (brand) => hook.includes(`dataset.${brand}`) && !body.includes(`dataset.${brand}`),
     );
 
     expect({ soNoHtml, soNoHook }).toEqual({ soNoHtml: [], soNoHook: [] });
