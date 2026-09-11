@@ -28,6 +28,10 @@ const FORGIVEN: { file: string; because: string }[] = [
     file: "features/configuracoes/components/AppearanceSection.tsx",
     because: "as miniaturas desenham cada tema base; são amostra, não interface",
   },
+  {
+    file: "components/Confete.tsx",
+    because: "papel picado é enfeite de festa, não peça de interface",
+  },
 ];
 
 function files(folder: string, matches: string[] = []) {
