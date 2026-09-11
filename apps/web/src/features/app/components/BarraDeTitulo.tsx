@@ -4,62 +4,62 @@ import { useLocation, useMatch } from "react-router";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useSession } from "~/contexts/session-context";
-import { ehDesktop } from "~/lib/desktop";
+import { isDesktop } from "~/lib/desktop";
 import { avatarColor, initials } from "~/lib/format";
 
 import { cn } from "~/lib/utils";
 import { flx, flxCls } from "~/lib/compat-de-tema";
 
-const ControlesDaJanela: React.FC = () => {
-  const [propria, setPropria] = React.useState(false);
-  const [maximizada, setMaximizada] = React.useState(false);
-  const janela = window.gravae?.janela;
+const WindowControls: React.FC = () => {
+  const [own, setOwn] = React.useState(false);
+  const [maximized, setMaximized] = React.useState(false);
+  const appWindow = window.gravae?.appWindow;
 
-  const completa =
-    !!janela?.molduraPropria &&
-    !!janela.estaMaximizada &&
-    !!janela.aoMudarMaximizada &&
-    !!janela.minimizar &&
-    !!janela.alternarMaximizada &&
-    !!janela.fechar;
+  const complete =
+    !!appWindow?.frameOwn &&
+    !!appWindow.thisMaximized &&
+    !!appWindow.onChangeMaximized &&
+    !!appWindow.minimize &&
+    !!appWindow.toggleMaximized &&
+    !!appWindow.close;
 
   React.useEffect(() => {
-    if (!completa || !janela?.molduraPropria) return;
+    if (!complete || !appWindow?.frameOwn) return;
 
-    void janela.molduraPropria().then(setPropria);
-    void janela.estaMaximizada?.().then(setMaximizada);
+    void appWindow.frameOwn().then(setOwn);
+    void appWindow.thisMaximized?.().then(setMaximized);
 
-    return janela.aoMudarMaximizada?.(setMaximizada);
-  }, [completa, janela]);
+    return appWindow.onChangeMaximized?.(setMaximized);
+  }, [complete, appWindow]);
 
-  if (!completa || !propria || !janela) return null;
+  if (!complete || !own || !appWindow) return null;
 
-  const botao = cn(
-    flxCls("botaoDaJanela"),
+  const button = cn(
+    flxCls("windowButton"),
     "regiao-sem-arrasto flex h-8 w-11 items-center justify-center text-ink-muted transition",
     "hover:bg-hover hover:text-ink",
   );
 
   return (
-    <div data-gc="app.barra-de-titulo.div" className={cn(flxCls("controlesDaJanela"), "absolute right-0 top-0 flex")}>
-      <button data-gc="app.barra-de-titulo.button" type="button" aria-label="Minimizar" className={botao} onClick={() => void janela.minimizar?.()}>
+    <div data-gc="app.barra-de-titulo.div" className={cn(flxCls("windowControls"), "absolute right-0 top-0 flex")}>
+      <button data-gc="app.barra-de-titulo.button" type="button" aria-label="Minimizar" className={button} onClick={() => void appWindow.minimize?.()}>
         <Minus data-gc="app.barra-de-titulo.minus" size={14} />
       </button>
 
       <button data-gc="app.barra-de-titulo.button--2"
         type="button"
-        aria-label={maximizada ? "Restaurar" : "Maximizar"}
-        className={botao}
-        onClick={() => void janela.alternarMaximizada?.()}
+        aria-label={maximized ? "Restaurar" : "Maximizar"}
+        className={button}
+        onClick={() => void appWindow.toggleMaximized?.()}
       >
-        {maximizada ? <CopySimple data-gc="app.barra-de-titulo.copy-simple" size={13} /> : <Square data-gc="app.barra-de-titulo.square" size={12} />}
+        {maximized ? <CopySimple data-gc="app.barra-de-titulo.copy-simple" size={13} /> : <Square data-gc="app.barra-de-titulo.square" size={12} />}
       </button>
 
       <button data-gc="app.barra-de-titulo.button--3"
         type="button"
         aria-label="Fechar"
-        className={cn(botao, "hover:bg-danger hover:text-sobre-marca")}
-        onClick={() => void janela.fechar?.()}
+        className={cn(button, "hover:bg-danger hover:text-sobre-marca")}
+        onClick={() => void appWindow.close?.()}
       >
         <X data-gc="app.barra-de-titulo.x" size={14} />
       </button>
@@ -67,31 +67,31 @@ const ControlesDaJanela: React.FC = () => {
   );
 };
 
-const LUGARES: { teste: (caminho: string) => boolean; icone: React.ReactNode; titulo: string }[] = [
+const PLACES: { test: (path: string) => boolean; icon: React.ReactNode; title: string }[] = [
   {
-    teste: (c) => c.startsWith("/dm/solicitacoes"),
-    icone: null,
-    titulo: "",
+    test: (c) => c.startsWith("/dm/solicitacoes"),
+    icon: null,
+    title: "",
   },
   {
-    teste: (c) => c === "/dm" || c === "/dm/",
-    icone: <UsersThree data-gc="app.barra-de-titulo.users-three" size={14} weight="fill" />,
-    titulo: "Amigos",
+    test: (c) => c === "/dm" || c === "/dm/",
+    icon: <UsersThree data-gc="app.barra-de-titulo.users-three" size={14} weight="fill" />,
+    title: "Amigos",
   },
   {
-    teste: (c) => c.startsWith("/dm/"),
-    icone: <ChatsCircle data-gc="app.barra-de-titulo.chats-circle" size={14} weight="fill" />,
-    titulo: "Mensagens diretas",
+    test: (c) => c.startsWith("/dm/"),
+    icon: <ChatsCircle data-gc="app.barra-de-titulo.chats-circle" size={14} weight="fill" />,
+    title: "Mensagens diretas",
   },
   {
-    teste: (c) => c.startsWith("/explorar"),
-    icone: <Compass data-gc="app.barra-de-titulo.compass" size={14} weight="fill" />,
-    titulo: "Explorar",
+    test: (c) => c.startsWith("/explorar"),
+    icon: <Compass data-gc="app.barra-de-titulo.compass" size={14} weight="fill" />,
+    title: "Explorar",
   },
 ];
 
-export const BarraDeTitulo: React.FC = () => {
-  const rota = useMatch("/channels/:guildId/*");
+export const TitleBar: React.FC = () => {
+  const route = useMatch("/channels/:guildId/*");
   const { pathname } = useLocation();
   const { user } = useSession();
   const { data: guilds = [] } = useFindManyGuilds(Boolean(user));
@@ -103,40 +103,40 @@ export const BarraDeTitulo: React.FC = () => {
     botões de minimizar, maximizar e fechar — some ela, some o jeito de fechar
     a janela.
   */
-  if (!user && !ehDesktop()) return null;
+  if (!user && !isDesktop()) return null;
 
-  const atual = guilds.find((g) => g.id === rota?.params.guildId);
-  const lugar = atual ? null : LUGARES.find((l) => l.teste(pathname));
+  const current = guilds.find((g) => g.id === route?.params.guildId);
+  const place = current ? null : PLACES.find((l) => l.test(pathname));
 
   return (
-    <header data-gc="app.barra-de-titulo.header" {...flx("barraDeTitulo", "regiao-de-arrasto relative flex h-8 shrink-0 items-center justify-center bg-surface-1 px-2")}>
+    <header data-gc="app.barra-de-titulo.header" {...flx("titleBar", "regiao-de-arrasto relative flex h-8 shrink-0 items-center justify-center bg-surface-1 px-2")}>
       <span data-gc="app.barra-de-titulo.span" className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
-        {atual ? (
+        {current ? (
           <>
-            {atual.iconUrl ? (
-              <img data-gc="app.barra-de-titulo.img" src={atual.iconUrl} alt="" className="size-4 shrink-0 rounded object-cover" />
+            {current.iconUrl ? (
+              <img data-gc="app.barra-de-titulo.img" src={current.iconUrl} alt="" className="size-4 shrink-0 rounded object-cover" />
             ) : (
               <span data-gc="app.barra-de-titulo.span--2"
                 aria-hidden
                 className="flex size-4 shrink-0 items-center justify-center rounded text-10 font-bold text-sobre-marca"
-                style={{ backgroundColor: avatarColor(atual.id) }}
+                style={{ backgroundColor: avatarColor(current.id) }}
               >
-                {initials(atual.name)}
+                {initials(current.name)}
               </span>
             )}
-            <span data-gc="app.barra-de-titulo.span--3" className="truncate">{atual.name}</span>
+            <span data-gc="app.barra-de-titulo.span--3" className="truncate">{current.name}</span>
           </>
-        ) : lugar?.titulo ? (
+        ) : place?.title ? (
           <>
             <span data-gc="app.barra-de-titulo.span--4" aria-hidden className="flex shrink-0 items-center text-ink-faint">
-              {lugar.icone}
+              {place.icon}
             </span>
-            <span data-gc="app.barra-de-titulo.span--5" className="truncate">{lugar.titulo}</span>
+            <span data-gc="app.barra-de-titulo.span--5" className="truncate">{place.title}</span>
           </>
         ) : null}
       </span>
 
-      <ControlesDaJanela data-gc="app.barra-de-titulo.controles-da-janela" />
+      <WindowControls data-gc="app.barra-de-titulo.window-controls" />
     </header>
   );
 };
