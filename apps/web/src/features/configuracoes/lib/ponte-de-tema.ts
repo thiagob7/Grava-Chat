@@ -1,4 +1,4 @@
-export const PONTE_DE_TEMA: Record<string, string[]> = {
+export const THEME_BRIDGE: Record<string, string[]> = {
   "--background-floating": ["--color-surface-4"],
   "--background-accent": ["--color-brand"],
   "--background-mobile-primary": ["--color-surface-0"],
@@ -142,32 +142,32 @@ export const PONTE_DE_TEMA: Record<string, string[]> = {
   "--font-mono": ["--font-mono"],
 };
 
-export const NOMES_DE_ORIGEM = Object.keys(PONTE_DE_TEMA);
+export const ORIGIN_NAMES = Object.keys(THEME_BRIDGE);
 
-export function traduzirTema(
-  lidos: Record<string, string>,
-  intocaveis: ReadonlySet<string> = new Set(),
+export function translateTheme(
+  read: Record<string, string>,
+  untouchable: ReadonlySet<string> = new Set(),
 ): Record<string, string> {
-  const saida: Record<string, string> = {};
+  const output: Record<string, string> = {};
 
-  for (const [origem, destinos] of Object.entries(PONTE_DE_TEMA)) {
-    const valor = lidos[origem]?.trim();
-    if (!valor) continue;
+  for (const [origin, destinations] of Object.entries(THEME_BRIDGE)) {
+    const value = read[origin]?.trim();
+    if (!value) continue;
 
-    for (const destino of destinos) {
-      if (!intocaveis.has(destino)) saida[destino] = valor;
+    for (const destination of destinations) {
+      if (!untouchable.has(destination)) output[destination] = value;
     }
   }
 
-  return saida;
+  return output;
 }
 
-export function nomesDeclaradosNoTema(css: string): Set<string> {
-  const achados = new Set<string>();
+export function namesDeclaredTheme(css: string): Set<string> {
+  const matches = new Set<string>();
 
-  for (const declaracao of css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)) {
-    if (declaracao[1]) achados.add(declaracao[1]);
+  for (const declaration of css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)) {
+    if (declaration[1]) matches.add(declaration[1]);
   }
 
-  return achados;
+  return matches;
 }

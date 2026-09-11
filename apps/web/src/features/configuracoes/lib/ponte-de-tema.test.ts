@@ -1,85 +1,85 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  NOMES_DE_ORIGEM,
-  nomesDeclaradosNoTema,
-  PONTE_DE_TEMA,
-  traduzirTema,
+  ORIGIN_NAMES,
+  namesDeclaredTheme,
+  THEME_BRIDGE,
+  translateTheme,
 } from "./ponte-de-tema";
-import tokensVivos from "~/features/configuracoes/lib/tokens-vivos.json";
+import tokensLive from "~/features/configuracoes/lib/tokens-vivos.json";
 
 describe("ponte de tema", () => {
   it("traduz o fundo da lateral para o nosso nome", () => {
-    expect(traduzirTema({ "--background-secondary": "#1a181e" })).toEqual({
+    expect(translateTheme({ "--background-secondary": "#1a181e" })).toEqual({
       "--color-surface-1": "#1a181e",
     });
   });
 
   it("uma origem pode pintar varios dos nossos", () => {
-    const saida = traduzirTema({ "--background-secondary-lighter": "#1e1d23" });
+    const output = translateTheme({ "--background-secondary-lighter": "#1e1d23" });
 
-    expect(saida["--color-surface-2"]).toBe("#1e1d23");
-    expect(saida["--color-composer"]).toBe("#1e1d23");
+    expect(output["--color-surface-2"]).toBe("#1e1d23");
+    expect(output["--color-composer"]).toBe("#1e1d23");
   });
 
   it("o cabecalho do canal vem do token proprio deles", () => {
-    expect(traduzirTema({ "--background-channel-header": "#111" })["--color-cabecalho"]).toBe(
+    expect(translateTheme({ "--background-channel-header": "#111" })["--color-cabecalho"]).toBe(
       "#111",
     );
   });
 
   it("varias origens podem cair no mesmo destino, e a ultima vale", () => {
-    const saida = traduzirTema({
+    const output = translateTheme({
       "--background-header-secondary": "#aaa",
       "--border-color": "#bbb",
     });
 
-    expect(saida["--color-line"]).toBe("#bbb");
+    expect(output["--color-line"]).toBe("#bbb");
   });
 
   it("ignora o que o tema nao declarou", () => {
-    expect(traduzirTema({ "--background-secondary": "" })).toEqual({});
-    expect(traduzirTema({})).toEqual({});
+    expect(translateTheme({ "--background-secondary": "" })).toEqual({});
+    expect(translateTheme({})).toEqual({});
   });
 
   it("nao pisa no token que a pessoa escolheu na mao", () => {
-    const saida = traduzirTema(
+    const output = translateTheme(
       { "--background-secondary": "#000" },
       new Set(["--color-surface-1"]),
     );
 
-    expect(saida).toEqual({});
+    expect(output).toEqual({});
   });
 
   it("apara espaco em volta do valor", () => {
-    expect(traduzirTema({ "--text-primary": "  #fff  " })["--color-ink"]).toBe("#fff");
+    expect(translateTheme({ "--text-primary": "  #fff  " })["--color-ink"]).toBe("#fff");
   });
 
   it("os nomes de origem batem com o mapa", () => {
-    expect(NOMES_DE_ORIGEM).toEqual(Object.keys(PONTE_DE_TEMA));
-    expect(NOMES_DE_ORIGEM.every((n) => n.startsWith("--"))).toBe(true);
+    expect(ORIGIN_NAMES).toEqual(Object.keys(THEME_BRIDGE));
+    expect(ORIGIN_NAMES.every((n) => n.startsWith("--"))).toBe(true);
   });
 
   it("todo destino é um token que o app realmente lê", () => {
-    const vivos = new Set(tokensVivos as string[]);
-    const combinado = new Set(["--font-display"]);
+    const live = new Set(tokensLive as string[]);
+    const matched = new Set(["--font-display"]);
 
-    const mortos = [
-      ...new Set(Object.values(PONTE_DE_TEMA).flat()),
-    ].filter((destino) => !vivos.has(destino) && !combinado.has(destino));
+    const dead = [
+      ...new Set(Object.values(THEME_BRIDGE).flat()),
+    ].filter((destination) => !live.has(destination) && !matched.has(destination));
 
-    expect(mortos).toEqual([]);
+    expect(dead).toEqual([]);
   });
 });
 
 describe("o que o tema declarou", () => {
   it("acha as variáveis que o arquivo escreve", () => {
-    const nomes = nomesDeclaradosNoTema(`
+    const names = namesDeclaredTheme(`
       :root { --background-secondary: #111; --text-primary: #fff }
       body { --brand-primary: rgb(254, 128, 25); }
     `);
 
-    expect([...nomes].sort()).toEqual([
+    expect([...names].sort()).toEqual([
       "--background-secondary",
       "--brand-primary",
       "--text-primary",
@@ -87,25 +87,25 @@ describe("o que o tema declarou", () => {
   });
 
   it("não conta variável que o tema só lê", () => {
-    const nomes = nomesDeclaradosNoTema(
+    const names = namesDeclaredTheme(
       ".x { color: var(--background-channel-header); border: 1px solid var(--text-primary) }",
     );
 
-    expect([...nomes]).toEqual([]);
+    expect([...names]).toEqual([]);
   });
 
   it("conta a que o tema declara em função de outra", () => {
-    const nomes = nomesDeclaradosNoTema(":root { --background-primary: var(--ThemeFlatDarker) }");
+    const names = namesDeclaredTheme(":root { --background-primary: var(--ThemeFlatDarker) }");
 
-    expect([...nomes]).toEqual(["--background-primary"]);
+    expect([...names]).toEqual(["--background-primary"]);
   });
 
   it("deixa o nome canônico vencer o específico", () => {
-    const nomes = Object.keys(PONTE_DE_TEMA);
-    const antes = (especifico: string, canonico: string) =>
-      nomes.indexOf(especifico) < nomes.indexOf(canonico);
+    const names = Object.keys(THEME_BRIDGE);
+    const before = (specific: string, canonical: string) =>
+      names.indexOf(specific) < names.indexOf(canonical);
 
-    const pares: [string, string][] = [
+    const pairs: [string, string][] = [
       ["--button-primary-fill", "--brand-primary"],
       ["--button-primary-active-fill", "--brand-secondary"],
       ["--button-danger-fill", "--accent-danger"],
@@ -118,60 +118,60 @@ describe("o que o tema declarou", () => {
       ["--control-button-normal-text", "--text-secondary"],
     ];
 
-    expect(pares.filter(([e, c]) => !antes(e, c))).toEqual([]);
+    expect(pairs.filter(([e, c]) => !before(e, c))).toEqual([]);
   });
 
   it("o botão do tema pinta a nossa marca quando o tema só fala de botão", () => {
-    expect(traduzirTema({ "--button-primary-fill": "#ff0000" })).toEqual({
+    expect(translateTheme({ "--button-primary-fill": "#ff0000" })).toEqual({
       "--color-brand": "#ff0000",
     });
   });
 
   it("mas a marca do tema vence o botão quando ele fala dos dois", () => {
-    const saida = traduzirTema({
+    const output = translateTheme({
       "--button-primary-fill": "#ff0000",
       "--brand-primary": "#00ff00",
     });
 
-    expect(saida["--color-brand"]).toBe("#00ff00");
+    expect(output["--color-brand"]).toBe("#00ff00");
   });
 
   it("não repete um nome de origem em duas linhas", () => {
-    const nomes = Object.keys(PONTE_DE_TEMA);
+    const names = Object.keys(THEME_BRIDGE);
 
-    expect(nomes).toHaveLength(new Set(nomes).size);
+    expect(names).toHaveLength(new Set(names).size);
   });
 
   it("acha os nomes tanto em :root quanto em body", () => {
-    const declaracoes = "--background-primary: #120e1a; --brand-primary: #8a5cf6;";
+    const declarations = "--background-primary: #120e1a; --brand-primary: #8a5cf6;";
 
-    const naRaiz = nomesDeclaradosNoTema(`:root { ${declaracoes} }`);
-    const noBody = nomesDeclaradosNoTema(`body { ${declaracoes} }`);
+    const inRoot = namesDeclaredTheme(`:root { ${declarations} }`);
+    const inBody = namesDeclaredTheme(`body { ${declarations} }`);
 
-    expect([...noBody].sort()).toEqual([...naRaiz].sort());
-    expect(noBody.has("--background-primary")).toBe(true);
+    expect([...inBody].sort()).toEqual([...inRoot].sort());
+    expect(inBody.has("--background-primary")).toBe(true);
   });
 
   it("traduz o vocabulário do Discord, não só o da referência", () => {
-    const saida = traduzirTema({
+    const output = translateTheme({
       "--header-primary": "#ffffff",
       "--text-muted": "#888888",
       "--brand-experiment": "#5865f2",
       "--channeltextarea-background": "#1e182e",
     });
 
-    expect(saida["--color-ink"]).toBe("#ffffff");
-    expect(saida["--color-ink-faint"]).toBe("#888888");
-    expect(saida["--color-brand"]).toBe("#5865f2");
-    expect(saida["--color-campo"]).toBe("#1e182e");
+    expect(output["--color-ink"]).toBe("#ffffff");
+    expect(output["--color-ink-faint"]).toBe("#888888");
+    expect(output["--color-brand"]).toBe("#5865f2");
+    expect(output["--color-campo"]).toBe("#1e182e");
   });
 
   it("o nome da referência vence o do Discord quando o tema fala os dois", () => {
-    const saida = traduzirTema({
+    const output = translateTheme({
       "--header-primary": "#111111",
       "--text-primary": "#222222",
     });
 
-    expect(saida["--color-ink"]).toBe("#222222");
+    expect(output["--color-ink"]).toBe("#222222");
   });
 });
