@@ -1,11 +1,11 @@
-import { ehDetectavel } from "@gravae/shared";
+import { isDiscoverable } from "@gravae/shared";
 
-export function selosDoServidor(
-  guild: { descobrivel: boolean | null; verificada: boolean | null },
-  membros: number,
+export function serverSeals(
+  guild: { discoverable: boolean | null; verified: boolean | null },
+  members: number,
 ) {
   return {
-    verificada: Boolean(guild.verificada),
-    detectavel: ehDetectavel(guild.descobrivel, membros),
+    verified: Boolean(guild.verified),
+    detectable: isDiscoverable(guild.discoverable, members),
   };
 }
