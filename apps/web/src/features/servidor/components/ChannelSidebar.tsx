@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router";
 import { ChevronDown, Lock, LogOut, Plus, Settings, Trash2 } from "lucide-react";
 
 import type {
@@ -98,6 +99,28 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
   const voiceChannelId = useVoiceStore((s) => s.channelId);
   const serverTrack = useAppearance((s) => s.serverTrack);
   const [viewingEvents, setViewingEvents] = useState(false);
+  const [search, setSearch] = useSearchParams();
+
+  /*
+    O endereço de um evento chega como `?evento=`. Abrimos o painel e tiramos a
+    marca da barra de endereço, senão fechar o painel e recarregar o abriria de
+    novo para sempre.
+  */
+  const eventInFocus = search.get("evento");
+
+  useEffect(() => {
+    if (!eventInFocus) return;
+
+    setViewingEvents(true);
+    setSearch(
+      (old) => {
+        const next = new URLSearchParams(old);
+        next.delete("evento");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [eventInFocus, setSearch]);
   const [collapsed, setCollapsed] = useCategoriesClosed();
   const { t } = useTranslation();
   const byChannel = useNotices((s) => s.byChannel);
