@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export interface Explosao {
+export interface Burst {
   id: number;
   emoji: string;
   url?: string | null;
@@ -8,34 +8,34 @@ export interface Explosao {
   y: number;
 }
 
-interface SuperReacaoState {
-  explosoes: Explosao[];
-  disparar: (
+interface SuperReactionState {
+  bursts: Burst[];
+  fire: (
     emoji: string,
-    origem?: { x: number; y: number },
+    origin?: { x: number; y: number },
     url?: string | null,
   ) => void;
-  encerrar: (id: number) => void;
+  end: (id: number) => void;
 }
 
-let proximo = 0;
+let next = 0;
 
-export const useSuperReacao = create<SuperReacaoState>((set) => ({
-  explosoes: [],
+export const useSuperReaction = create<SuperReactionState>((set) => ({
+  bursts: [],
 
-  disparar: (emoji, origem, url) =>
+  fire: (emoji, origin, url) =>
     set((s) => ({
-      explosoes: [
-        ...s.explosoes,
+      bursts: [
+        ...s.bursts,
         {
-          id: proximo++,
+          id: next++,
           emoji,
           url,
-          x: origem?.x ?? window.innerWidth / 2,
-          y: origem?.y ?? window.innerHeight - 120,
+          x: origin?.x ?? window.innerWidth / 2,
+          y: origin?.y ?? window.innerHeight - 120,
         },
       ],
     })),
 
-  encerrar: (id) => set((s) => ({ explosoes: s.explosoes.filter((e) => e.id !== id) })),
+  end: (id) => set((s) => ({ bursts: s.bursts.filter((e) => e.id !== id) })),
 }));
