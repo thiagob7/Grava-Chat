@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
-import { Provedores } from "~/components/Provedores";
+import { Providers } from "~/components/Provedores";
 import "./globals.css";
 
 const APP = "https://gravae-chat.vercel.app";
@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className="font-sans antialiased">
-        <Provedores>{children}</Provedores>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

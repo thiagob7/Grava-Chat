@@ -8,17 +8,17 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { BotoesDeDownload } from "~/components/BotoesDeDownload";
-import { Cabecalho } from "~/components/Cabecalho";
-import { PalcoDoApp } from "~/components/PalcoDoApp";
-import { Rodape } from "~/components/Rodape";
-import { VersaoPublicada } from "~/components/VersaoPublicada";
+import { DownloadButtons } from "~/components/BotoesDeDownload";
+import { Header } from "~/components/Cabecalho";
+import { AppStage } from "~/components/PalcoDoApp";
+import { Footer } from "~/components/Rodape";
+import { VersionPublished } from "~/components/VersaoPublicada";
 
-const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
+const RESOURCES: { icon: LucideIcon; title: string; items: string[] }[] = [
   {
-    icone: Hash,
-    titulo: "Conversa",
-    itens: [
+    icon: Hash,
+    title: "Conversa",
+    items: [
       "Servidores com canais de texto e de voz",
       "Conversas privadas entre duas pessoas",
       "Anexos, imagens, GIFs e prévia de links",
@@ -26,9 +26,9 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
     ],
   },
   {
-    icone: Mic,
-    titulo: "Voz",
-    itens: [
+    icon: Mic,
+    title: "Voz",
+    items: [
       "Chamada em grupo no canal, ou direto no privado",
       "Supressão de ruído que roda no seu aparelho",
       "Push-to-talk que funciona com o app em segundo plano",
@@ -36,9 +36,9 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
     ],
   },
   {
-    icone: Cast,
-    titulo: "Vídeo e tela",
-    itens: [
+    icon: Cast,
+    title: "Vídeo e tela",
+    items: [
       "Câmera na chamada, com grade ou destaque",
       "Transmissão de tela ou de uma janela só",
       "Janelinha flutuante pra continuar assistindo",
@@ -46,9 +46,9 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
     ],
   },
   {
-    icone: ShieldCheck,
-    titulo: "Moderação",
-    itens: [
+    icon: ShieldCheck,
+    title: "Moderação",
+    items: [
       "Cargos com permissões por canal",
       "Expulsar, banir e castigo temporário",
       "Registro de auditoria do que foi feito",
@@ -56,9 +56,9 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
     ],
   },
   {
-    icone: Sparkles,
-    titulo: "Do seu jeito",
-    itens: [
+    icon: Sparkles,
+    title: "Do seu jeito",
+    items: [
       "Perfil com foto, faixa e enfeites",
       "Emojis e figurinhas do servidor",
       "Temas e cor de destaque",
@@ -66,9 +66,9 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
     ],
   },
   {
-    icone: Server,
-    titulo: "Nosso, de verdade",
-    itens: [
+    icon: Server,
+    title: "Nosso, de verdade",
+    items: [
       "Código aberto, do servidor ao aplicativo",
       "Servidor de voz próprio, não alugado",
       "Sem anúncio e sem venda de dado",
@@ -80,7 +80,7 @@ const RECURSOS: { icone: LucideIcon; titulo: string; itens: string[] }[] = [
 export default function Home() {
   return (
     <>
-      <Cabecalho />
+      <Header />
 
       <main>
         <section className="relative overflow-hidden px-6 pb-8 pt-20 text-center sm:pt-24">
@@ -105,15 +105,15 @@ export default function Home() {
             </p>
 
             <div className="mt-8">
-              <BotoesDeDownload />
+              <DownloadButtons />
             </div>
 
             <p className="mt-4 text-xs text-ink-faint">
-              <VersaoPublicada /> · Windows e macOS
+              <VersionPublished /> · Windows e macOS
             </p>
           </div>
 
-          <PalcoDoApp />
+          <AppStage />
 
           <div
             aria-hidden
@@ -132,16 +132,16 @@ export default function Home() {
             </p>
 
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {RECURSOS.map(({ icone: Icone, titulo, itens }) => (
-                <div key={titulo} className="rounded-xl border border-line bg-surface-2 p-6">
+              {RESOURCES.map(({ icon: Icon, title, items }) => (
+                <div key={title} className="rounded-xl border border-line bg-surface-2 p-6">
                   <span className="flex size-10 items-center justify-center rounded-lg bg-brand/15 text-brand">
-                    <Icone size={20} />
+                    <Icon size={20} />
                   </span>
 
-                  <h3 className="mt-4 text-base font-semibold">{titulo}</h3>
+                  <h3 className="mt-4 text-base font-semibold">{title}</h3>
 
                   <ul className="mt-3 space-y-2">
-                    {itens.map((item) => (
+                    {items.map((item) => (
                       <li key={item} className="flex gap-2 text-sm leading-relaxed text-ink-muted">
                         <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-brand" />
                         {item}
@@ -163,13 +163,13 @@ export default function Home() {
             </p>
 
             <div className="mt-8">
-              <BotoesDeDownload />
+              <DownloadButtons />
             </div>
           </div>
         </section>
       </main>
 
-      <Rodape />
+      <Footer />
     </>
   );
 }
