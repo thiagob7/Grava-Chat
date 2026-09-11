@@ -1,48 +1,48 @@
-export interface VersaoDaApi {
+export interface ApiVersion {
   commit: string | null;
   branch: string | null;
-  construidoEm: string | null;
-  desdeSegundos: number | null;
+  builtAt: string | null;
+  sinceSeconds: number | null;
 }
 
-export interface Ambiente {
+export interface Environment {
   id: "producao" | "staging";
-  nome: string;
+  name: string;
   api: string;
   front: string;
   branch: string;
 }
 
-export const AMBIENTES: Ambiente[] = [
+export const ENVIRONMENTS: Environment[] = [
   {
     id: "producao",
-    nome: "Produção",
+    name: "Produção",
     api: "https://gravaechat-api.duckdns.org",
     front: "https://gravae-chat.vercel.app",
     branch: "master",
   },
   {
     id: "staging",
-    nome: "Staging",
+    name: "Staging",
     api: "https://gravaechat-api-staging.duckdns.org",
     front: "https://gravae-chat-staging.vercel.app",
     branch: "staging",
   },
 ];
 
-export const REPOSITORIO = "thiagob7/Grava-Chat";
-export const FLUXO_DA_API = "api.yml";
+export const REPOSITORY = "thiagob7/Grava-Chat";
+export const API_FLOW = "api.yml";
 
-export interface Publicacao {
+export interface Post {
   id: number;
-  titulo: string;
+  title: string;
   commit: string;
-  situacao: "esperando" | "rodando" | "boa" | "falhou" | "cancelada";
-  quando: string;
+  situation: "esperando" | "rodando" | "boa" | "falhou" | "cancelada";
+  when: string;
   link: string;
 }
 
-const SITUACAO: Record<string, Publicacao["situacao"]> = {
+const SITUATION: Record<string, Post["situation"]> = {
   waiting: "esperando",
   queued: "rodando",
   requested: "rodando",
@@ -50,29 +50,29 @@ const SITUACAO: Record<string, Publicacao["situacao"]> = {
   in_progress: "rodando",
 };
 
-export function lerSituacao(status: string, conclusao: string | null): Publicacao["situacao"] {
-  if (status !== "completed") return SITUACAO[status] ?? "rodando";
-  if (conclusao === "success") return "boa";
+export function readSituation(status: string, conclusion: string | null): Post["situation"] {
+  if (status !== "completed") return SITUATION[status] ?? "rodando";
+  if (conclusion === "success") return "boa";
 
-  return conclusao === "cancelled" ? "cancelada" : "falhou";
+  return conclusion === "cancelled" ? "cancelada" : "falhou";
 }
 
-export const ESPERANDO_APROVACAO = (p: Publicacao) => p.situacao === "esperando";
+export const WAITING_APPROVAL = (p: Post) => p.situation === "esperando";
 
-export function escreverDesde(segundos: number | null): string {
-  if (segundos === null) return "—";
+export function writeSince(seconds: number | null): string {
+  if (seconds === null) return "—";
 
-  const dias = Math.floor(segundos / 86_400);
-  if (dias >= 1) return `${dias}d`;
+  const days = Math.floor(seconds / 86_400);
+  if (days >= 1) return `${days}d`;
 
-  const horas = Math.floor(segundos / 3600);
-  if (horas >= 1) return `${horas}h`;
+  const hours = Math.floor(seconds / 3600);
+  if (hours >= 1) return `${hours}h`;
 
-  return `${Math.max(1, Math.floor(segundos / 60))}min`;
+  return `${Math.max(1, Math.floor(seconds / 60))}min`;
 }
 
-export function atraso(daApi: string | null, doGit: string | null): "igual" | "atras" | "desconhecido" {
-  if (!daApi || !doGit) return "desconhecido";
+export function delay(fromApi: string | null, fromGit: string | null): "igual" | "atras" | "desconhecido" {
+  if (!fromApi || !fromGit) return "desconhecido";
 
-  return doGit.startsWith(daApi) || daApi.startsWith(doGit) ? "igual" : "atras";
+  return fromGit.startsWith(fromApi) || fromApi.startsWith(fromGit) ? "igual" : "atras";
 }
