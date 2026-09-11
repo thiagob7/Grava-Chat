@@ -1,4 +1,4 @@
-import type { EstiloDePerfil, FiltroDeSpam, StatusPersonalizado } from "@gravae/shared";
+import type { ProfileStyle, SpamFilter, CustomStatus } from "@gravae/shared";
 
 export interface DevLoginDTO {
   email: string;
@@ -9,35 +9,35 @@ export interface UpdateProfileDTO {
   displayName?: string;
   avatarUrl?: string | null;
   bio?: string | null;
-  pronomes?: string | null;
-  perfil?: EstiloDePerfil | null;
-  statusPersonalizado?: StatusPersonalizado | null;
+  pronouns?: string | null;
+  profile?: ProfileStyle | null;
+  customStatus?: CustomStatus | null;
 
-  aceitaPedidos?: boolean;
-  mostraAtividade?: boolean;
-  mostraServidoresEmComum?: boolean;
-  mostraAmigosEmComum?: boolean;
-  permitirDmDeMembros?: boolean;
-  filtroDeSpam?: FiltroDeSpam;
+  acceptedRequests?: boolean;
+  showsActivity?: boolean;
+  showsServersCommon?: boolean;
+  showsFriendsCommon?: boolean;
+  membersAllowDm?: boolean;
+  spamFilter?: SpamFilter;
 }
 
 export interface DesktopLoginDTO {
-  codigo: string;
-  verificador: string;
+  code: string;
+  verifier: string;
 }
 
-export interface RegistrarDTO {
+export interface RegisterDto {
   email: string;
-  senha: string;
+  password: string;
   displayName: string;
 }
 
-export interface EntrarDTO {
+export interface JoinDto {
   email: string;
-  senha: string;
+  password: string;
 }
 
-export interface TrocarSenhaDTO {
-  atual?: string;
-  nova: string;
+export interface SwapPasswordDto {
+  current?: string;
+  fresh: string;
 }

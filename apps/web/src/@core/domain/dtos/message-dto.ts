@@ -1,4 +1,4 @@
-import type { FinalidadeDeUpload } from "@gravae/shared";
+import type { UploadPurpose } from "@gravae/shared";
 
 export interface FindMessagesDTO {
   channelId: string;
@@ -10,5 +10,5 @@ export interface PresignUploadDTO {
   filename: string;
   contentType: string;
   size: number;
-  purpose?: FinalidadeDeUpload;
+  purpose?: UploadPurpose;
 }
