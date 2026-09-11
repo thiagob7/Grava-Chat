@@ -1,26 +1,26 @@
 import React from "react";
-import type { ComandoDisponivel, OpcaoDeComando } from "@gravae/shared";
+import type { AvailableCommand, CommandOption } from "@gravae/shared";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { cn } from "~/lib/utils";
 
-const assinatura = (opcoes: OpcaoDeComando[]) =>
-  opcoes.map((o) => (o.obrigatoria ? `<${o.nome}>` : `[${o.nome}]`)).join(" ");
+const signature = (options: CommandOption[]) =>
+  options.map((o) => (o.required ? `<${o.name}>` : `[${o.name}]`)).join(" ");
 
-interface ComandoSugestoesProps {
-  itens: ComandoDisponivel[];
-  indice: number;
-  onEscolher: (item: ComandoDisponivel) => void;
-  onPassarMouse: (indice: number) => void;
+interface CommandSuggestionsProps {
+  items: AvailableCommand[];
+  index: number;
+  onPick: (item: AvailableCommand) => void;
+  onPassMouse: (index: number) => void;
 }
 
-export const ComandoSugestoes: React.FC<ComandoSugestoesProps> = ({
-  itens,
-  indice,
-  onEscolher,
-  onPassarMouse,
+export const CommandSuggestions: React.FC<CommandSuggestionsProps> = ({
+  items,
+  index,
+  onPick,
+  onPassMouse,
 }) => {
-  if (!itens.length) return null;
+  if (!items.length) return null;
 
   return (
     <div data-gc="conversa.comando-sugestoes.div" className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg bg-surface-1 shadow-2xl ring-1 ring-line">
@@ -29,30 +29,30 @@ export const ComandoSugestoes: React.FC<ComandoSugestoesProps> = ({
       </p>
 
       <ul data-gc="conversa.comando-sugestoes.ul" className="max-h-72 overflow-y-auto p-1.5">
-        {itens.map((item, i) => (
-          <li data-gc="conversa.comando-sugestoes.li" key={`${item.botId}-${item.nome}`}>
+        {items.map((item, i) => (
+          <li data-gc="conversa.comando-sugestoes.li" key={`${item.botId}-${item.name}`}>
             <button data-gc="conversa.comando-sugestoes.button"
               type="button"
               onMouseDown={(e) => {
                 e.preventDefault();
-                onEscolher(item);
+                onPick(item);
               }}
-              onMouseEnter={() => onPassarMouse(i)}
+              onMouseEnter={() => onPassMouse(i)}
               className={cn(
                 "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm transition",
-                i === indice ? "bg-surface-3 text-ink" : "text-ink-muted",
+                i === index ? "bg-surface-3 text-ink" : "text-ink-muted",
               )}
             >
-              <span data-gc="conversa.comando-sugestoes.span" className="shrink-0 font-medium text-ink">/{item.nome}</span>
+              <span data-gc="conversa.comando-sugestoes.span" className="shrink-0 font-medium text-ink">/{item.name}</span>
 
-              {item.opcoes.length > 0 && (
+              {item.options.length > 0 && (
                 <span data-gc="conversa.comando-sugestoes.span--2" className="shrink-0 font-mono text-xs text-ink-faint">
-                  {assinatura(item.opcoes)}
+                  {signature(item.options)}
                 </span>
               )}
 
               <span data-gc="conversa.comando-sugestoes.span--3" className="min-w-0 flex-1 truncate text-xs text-ink-faint">
-                {item.descricao}
+                {item.description}
               </span>
 
               <span data-gc="conversa.comando-sugestoes.span--4" className="flex shrink-0 items-center gap-1.5 text-xs text-ink-faint">
@@ -72,58 +72,58 @@ export const ComandoSugestoes: React.FC<ComandoSugestoesProps> = ({
   );
 };
 
-export const DicaDoComando: React.FC<{
-  comando: ComandoDisponivel;
-  preenchidas: Record<string, string>;
-  faltando: OpcaoDeComando[];
-}> = ({ comando, preenchidas, faltando }) => {
-  const atual = comando.opcoes.find((o) => !preenchidas[o.nome]) ?? null;
+export const CommandHint: React.FC<{
+  command: AvailableCommand;
+  filled: Record<string, string>;
+  missing: CommandOption[];
+}> = ({ command, filled, missing }) => {
+  const current = command.options.find((o) => !filled[o.name]) ?? null;
 
   return (
     <div data-gc="conversa.comando-sugestoes.div--2" className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg bg-surface-1 shadow-2xl ring-1 ring-line">
       <div data-gc="conversa.comando-sugestoes.div--3" className="flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2">
-        <span data-gc="conversa.comando-sugestoes.span--5" className="font-medium text-ink">/{comando.nome}</span>
+        <span data-gc="conversa.comando-sugestoes.span--5" className="font-medium text-ink">/{command.name}</span>
 
-        {comando.opcoes.map((opcao) => (
+        {command.options.map((option) => (
           <span data-gc="conversa.comando-sugestoes.span--6"
-            key={opcao.nome}
+            key={option.name}
             className={cn(
               "rounded px-1.5 py-0.5 font-mono text-xs transition",
-              opcao.nome === atual?.nome
+              option.name === current?.name
                 ? "bg-brand/20 text-brand"
-                : preenchidas[opcao.nome]
+                : filled[option.name]
                   ? "text-ink-muted"
                   : "text-ink-faint",
             )}
           >
-            {opcao.obrigatoria ? `<${opcao.nome}>` : `[${opcao.nome}]`}
+            {option.required ? `<${option.name}>` : `[${option.name}]`}
           </span>
         ))}
 
         <span data-gc="conversa.comando-sugestoes.span--7" className="ml-auto flex items-center gap-1.5 text-xs text-ink-faint">
           <Avatar data-gc="conversa.comando-sugestoes.avatar--2"
-            id={comando.bot.id}
-            name={comando.bot.displayName}
-            url={comando.bot.avatarUrl}
+            id={command.bot.id}
+            name={command.bot.displayName}
+            url={command.bot.avatarUrl}
             size={16}
           />
-          {comando.bot.displayName}
+          {command.bot.displayName}
         </span>
       </div>
 
       <p data-gc="conversa.comando-sugestoes.p--2" className="border-t border-line px-3 py-1.5 text-xs text-ink-faint">
-        {atual ? (
+        {current ? (
           <>
-            <span data-gc="conversa.comando-sugestoes.span--8" className="font-medium text-ink-muted">{atual.nome}</span> — {atual.descricao}
+            <span data-gc="conversa.comando-sugestoes.span--8" className="font-medium text-ink-muted">{current.name}</span> — {current.description}
           </>
         ) : (
-          comando.descricao
+          command.description
         )}
       </p>
 
-      {faltando.length > 0 && (
+      {missing.length > 0 && (
         <p data-gc="conversa.comando-sugestoes.p--3" className="border-t border-line bg-danger-fundo px-3 py-1.5 text-xs text-danger">
-          Falta {faltando.map((o) => o.nome).join(", ")}.
+          Falta {missing.map((o) => o.name).join(", ")}.
         </p>
       )}
     </div>
