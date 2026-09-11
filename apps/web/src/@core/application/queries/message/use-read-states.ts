@@ -12,36 +12,36 @@ export const useReadStates = (enabled: boolean) =>
       Object.fromEntries(
         states.map((s) => [
           s.channelId,
-          { lido: s.lastReadMessageId, naoLidas: s.unreadCount, mencoes: s.mentionCount },
+          { read: s.lastReadMessageId, notRead: s.unreadCount, mentions: s.mentionCount },
         ]),
-      ) as Record<string, { lido: string | null; naoLidas: number; mencoes: number }>,
+      ) as Record<string, { read: string | null; notRead: number; mentions: number }>,
   });
 
-export const useReadStatesLista = (enabled: boolean) =>
+export const useReadStatesList = (enabled: boolean) =>
   useQuery({
     queryKey: [queryKeys.message.read_states],
     queryFn: findReadStates,
     enabled,
   });
 
-export const useReadStatesPorServidor = (enabled: boolean) =>
+export const useReadStatesByServer = (enabled: boolean) =>
   useQuery({
     queryKey: [queryKeys.message.read_states],
     queryFn: findReadStates,
     enabled,
     select: (states) => {
-      const porServidor: Record<string, { naoLidas: number; mencoes: number }> = {};
+      const byServer: Record<string, { notRead: number; mentions: number }> = {};
 
-      for (const estado of states) {
-        if (!estado.guildId) continue;
+      for (const state of states) {
+        if (!state.guildId) continue;
 
-        const atual = porServidor[estado.guildId] ?? { naoLidas: 0, mencoes: 0 };
-        porServidor[estado.guildId] = {
-          naoLidas: atual.naoLidas + estado.unreadCount,
-          mencoes: atual.mencoes + estado.mentionCount,
+        const current = byServer[state.guildId] ?? { notRead: 0, mentions: 0 };
+        byServer[state.guildId] = {
+          notRead: current.notRead + state.unreadCount,
+          mentions: current.mentions + state.mentionCount,
         };
       }
 
-      return porServidor;
+      return byServer;
     },
   });

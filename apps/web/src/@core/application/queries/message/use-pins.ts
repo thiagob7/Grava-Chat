@@ -17,11 +17,11 @@ export const usePinMessage = (channelId: string | undefined) => {
 
   return useMutation({
     mutationFn: pinMessage,
-    onSuccess: (_, variaveis) => {
+    onSuccess: (_, variables) => {
       if (channelId) {
         void queryClient.invalidateQueries({ queryKey: queryKeys.channel.pins(channelId) });
       }
-      toast.success(variaveis.pin ? "Mensagem fixada." : "Mensagem desafixada.");
+      toast.success(variables.pin ? "Mensagem fixada." : "Mensagem desafixada.");
     },
     onError: (e) => toast.error(apiErrorMessage(e, "Erro ao fixar a mensagem.")),
   });
