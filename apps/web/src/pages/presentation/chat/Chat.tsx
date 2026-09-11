@@ -65,7 +65,7 @@ import { useRealtime } from "~/hooks/use-realtime";
 import { useReconnectVoice } from "~/features/voz/hooks/use-reconnect-voice";
 import { useModeration } from "~/features/servidor/stores/moderacao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { fontFamily } from "~/features/perfil/lib/fontes";
+import { fontFamily, loadFont } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
@@ -123,6 +123,8 @@ export const Chat: React.FC = () => {
   useEffect(() => useModeration.getState().close(), [routeGuildId]);
 
   const channel = detail?.channels.find((c) => c.id === routeChannelId);
+
+  useEffect(() => loadFont(channel?.font), [channel?.font]);
   const voiceVisibleChat = voiceIsOpenChat && channel?.type === "VOICE";
   const chatVoiceSide = useVoiceChat((s) => s.side);
 
@@ -314,7 +316,12 @@ export const Chat: React.FC = () => {
             ) : (
               <Hash data-gc="chat.chat.hash" size={20} weight="bold" className={cn("text-ink-faint", flxCls("channelIcon"))} />
             )}
-            <h2 data-gc="chat.chat.h2" {...flx("channelName", "font-semibold")}>{channel?.name ?? "…"}</h2>
+            <h2 data-gc="chat.chat.h2"
+              {...flx("channelName", "font-semibold")}
+              style={{ fontFamily: fontFamily(channel?.font) ?? undefined }}
+            >
+              {channel?.name ?? "…"}
+            </h2>
 
             {channel?.topic && (
               <ChannelTopic data-gc="chat.chat.channel-topic"
