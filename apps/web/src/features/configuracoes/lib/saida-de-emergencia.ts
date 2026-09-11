@@ -1,14 +1,14 @@
-export const CHAVE_DA_SAIDA = "sem-tema";
+export const OUTPUT_KEY = "sem-tema";
 
-export function temaDesligadoPelaUrl(): boolean {
+export function themeOffByUrl(): boolean {
   if (typeof window === "undefined") return false;
 
-  return new URLSearchParams(window.location.search).has(CHAVE_DA_SAIDA);
+  return new URLSearchParams(window.location.search).has(OUTPUT_KEY);
 }
 
-export function enderecoDaSaida(): string {
-  const endereco = new URL(window.location.href);
-  endereco.searchParams.set(CHAVE_DA_SAIDA, "");
+export function outputAddress(): string {
+  const address = new URL(window.location.href);
+  address.searchParams.set(OUTPUT_KEY, "");
 
-  return endereco.toString();
+  return address.toString();
 }
