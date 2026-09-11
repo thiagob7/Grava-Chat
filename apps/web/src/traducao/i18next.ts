@@ -8,14 +8,14 @@ import {
   defaultNS,
   fallbackLng,
   languages,
-  pastaDoIdioma,
+  languageFolder,
   storageKey,
 } from "./settings";
 
-const carregar = resourcesToBackend(async (lng: string) => {
+const load = resourcesToBackend(async (lng: string) => {
   if (lng === fallbackLng) return ptBR;
 
-  const modulo = (await import(`./${pastaDoIdioma(lng)}/index.ts`)) as {
+  const modulo = (await import(`./${languageFolder(lng)}/index.ts`)) as {
     default: typeof ptBR;
   };
   return modulo.default;
@@ -24,7 +24,7 @@ const carregar = resourcesToBackend(async (lng: string) => {
 void i18next
   .use(initReactI18next)
   .use(LanguageDetector)
-  .use(carregar)
+  .use(load)
   .init({
     supportedLngs: languages,
     fallbackLng,

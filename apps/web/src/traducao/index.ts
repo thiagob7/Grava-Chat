@@ -1,11 +1,11 @@
 import "./i18next";
 
-export { useTranslation, idiomaAtual, trocarIdioma } from "./client";
+export { useTranslation, currentLanguage, swapLanguage } from "./client";
 export {
-  IDIOMAS,
-  ehRtl,
+  LANGUAGES,
+  isRtl,
   fallbackLng,
   languages,
-  type Idioma,
+  type Language,
 } from "./settings";
 export { default as i18next } from "./i18next";
