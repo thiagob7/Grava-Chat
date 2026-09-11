@@ -1,27 +1,27 @@
 import { describe, expect, it } from "vitest";
 
-import { statusDaConversa } from "./status-da-conversa";
+import { chatStatus } from "./status-da-conversa";
 
 describe("statusDaConversa", () => {
   it("sem nada acontecendo, não há subtítulo", () => {
-    expect(statusDaConversa({ emChamadaComigo: false, emVozNoServidor: false })).toBeNull();
+    expect(chatStatus({ inCallWithMe: false, inVoiceServer: false })).toBeNull();
   });
 
   it("chamada de privado comigo", () => {
-    expect(statusDaConversa({ emChamadaComigo: true, emVozNoServidor: false })).toEqual({
-      texto: "Em uma chamada",
-      tipo: "chamada",
+    expect(chatStatus({ inCallWithMe: true, inVoiceServer: false })).toEqual({
+      key: "amizades.status.emChamada",
+      kind: "chamada",
     });
   });
 
   it("em voz num servidor que compartilhamos", () => {
-    expect(statusDaConversa({ emChamadaComigo: false, emVozNoServidor: true })).toEqual({
-      texto: "Em voz",
-      tipo: "voz",
+    expect(chatStatus({ inCallWithMe: false, inVoiceServer: true })).toEqual({
+      key: "amizades.status.emVoz",
+      kind: "voz",
     });
   });
 
   it("estando nos dois, a chamada comigo vence", () => {
-    expect(statusDaConversa({ emChamadaComigo: true, emVozNoServidor: true })?.tipo).toBe("chamada");
+    expect(chatStatus({ inCallWithMe: true, inVoiceServer: true })?.kind).toBe("chamada");
   });
 });
