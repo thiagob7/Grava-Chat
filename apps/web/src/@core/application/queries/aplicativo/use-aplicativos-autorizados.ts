@@ -2,26 +2,26 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
-  findAplicativosAutorizados,
-  revogarAplicativo,
+  findAppsAuthorized,
+  revokeApp,
 } from "~/@core/application/requests/aplicativo/aplicativos-autorizados";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-export const useAplicativosAutorizados = () =>
+export const useAppsAuthorized = () =>
   useQuery({
-    queryKey: [queryKeys.aplicativo.autorizados],
-    queryFn: findAplicativosAutorizados,
+    queryKey: [queryKeys.app.authorized],
+    queryFn: findAppsAuthorized,
     refetchOnWindowFocus: true,
   });
 
-export const useRevogarAplicativo = () => {
+export const useRevokeApp = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: revogarAplicativo,
+    mutationFn: revokeApp,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.aplicativo.autorizados] });
+      void queryClient.invalidateQueries({ queryKey: [queryKeys.app.authorized] });
       toast.success("Acesso revogado.");
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Não consegui revogar o acesso.")),
