@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "把聊天挪到下面",
+    paraOLado: "把聊天挪到側邊",
+  },
+  aparelhoNovo: {
+    microfone: "這裡出現了新麥克風",
+    saida: "這裡出現了新的音訊輸出",
+    apareceu: "出現了 {{nome}}。",
+    falarPorEle: "要用它說話嗎？",
+    ouvirPorEle: "要用它收聽嗎？",
+    trocaNaHora: "切換立刻生效，不用退出通話。",
+    naoSugerir: "不要再推薦這個裝置",
+    trocar: "換成它",
+  },
   conectando: "正在連線到通話…",
   naoEntrou: "沒能加入通話",
   sair: "離開通話",
