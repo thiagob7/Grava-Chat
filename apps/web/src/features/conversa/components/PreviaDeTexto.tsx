@@ -55,8 +55,15 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
     let live = true;
 
     void api
-      .get<{ content: string }>("/anexos/texto", { params: { url: attachment.url } })
-      .then(({ data }) => live && setContent(data.content))
+      .get<{ content?: string; text?: string }>("/anexos/texto", { params: { url: attachment.url } })
+      .then(({ data }) => {
+        if (!live) return;
+
+        const body = data.content ?? data.text;
+        if (body === undefined) return setFailed(true);
+
+        setContent(body);
+      })
       .catch(() => live && setFailed(true));
 
     return () => {
@@ -65,7 +72,7 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
   }, [attachment.url]);
 
   useEffect(() => {
-    if (content === null) return;
+    if (content == null) return;
 
     let live = true;
 
@@ -85,7 +92,7 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
 
   if (failed) return <>{onFail}</>;
 
-  if (content === null) {
+  if (content == null) {
     return (
       <div data-gc="conversa.previa-de-texto.div" className="h-28 w-full max-w-4xl animate-pulse rounded-md border border-line bg-codigo-bloco" />
     );
