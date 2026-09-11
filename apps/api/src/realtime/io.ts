@@ -7,7 +7,7 @@ export type SocketData = {
   userId: string;
   guildIds: string[];
   voiceChannelId: string | null;
-  ehBot?: boolean;
+  isBot?: boolean;
 };
 
 let instance: GravaeServer | null = null;
@@ -21,7 +21,7 @@ export function io(): GravaeServer {
   return instance;
 }
 
-export async function fecharIo() {
+export async function closeIo() {
   if (!instance) return;
 
   instance.disconnectSockets(true);
