@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "ย้ายแชทไปด้านล่าง",
+    paraOLado: "ย้ายแชทไปด้านข้าง",
+  },
+  aparelhoNovo: {
+    microfone: "มีไมโครโฟนใหม่โผล่มา",
+    saida: "มีช่องออกเสียงใหม่โผล่มา",
+    apareceu: "{{nome}} โผล่มา",
+    falarPorEle: "อยากพูดผ่านตัวนี้ไหม",
+    ouvirPorEle: "อยากฟังผ่านตัวนี้ไหม",
+    trocaNaHora: "การสลับมีผลทันที โดยไม่ต้องออกจากสาย",
+    naoSugerir: "อย่าเสนออุปกรณ์นี้อีก",
+    trocar: "สลับไปใช้ตัวนี้",
+  },
   conectando: "กำลังเชื่อมต่อกับสาย…",
   naoEntrou: "เข้าร่วมสายไม่สำเร็จ",
   sair: "ออกจากสาย",

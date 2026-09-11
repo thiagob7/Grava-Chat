@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "เปิดโปรไฟล์นี้ไม่ได้",
   carregando: "กำลังโหลด…",
   editar: "แก้ไขโปรไฟล์",
   mensagem: "ข้อความ",
