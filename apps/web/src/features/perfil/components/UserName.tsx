@@ -1,79 +1,79 @@
 import React, { useEffect } from "react";
 import { Check } from "@phosphor-icons/react";
-import type { PerfilPublico, Role } from "@gravae/shared";
+import type { ProfilePublic, Role } from "@gravae/shared";
 
-import { corDoCargoMaisAlto } from "~/features/perfil/lib/cargo";
-import { carregarFonte } from "~/features/perfil/lib/fontes";
-import { estiloDoNome } from "~/features/perfil/lib/nome";
+import { roleMoreHighColor } from "~/features/perfil/lib/cargo";
+import { loadFont } from "~/features/perfil/lib/fontes";
+import { nameStyle } from "~/features/perfil/lib/nome";
 import { cn } from "~/lib/utils";
 import { flx } from "~/lib/compat-de-tema";
 
 interface UserNameProps {
-  nome: string;
-  perfil?: PerfilPublico | null;
+  name: string;
+  profile?: ProfilePublic | null;
   roleIds?: string[];
   roles?: Role[];
-  corDoCargo?: string | null;
-  tamanho?: "sm" | "md";
-  animar?: boolean;
-  fundo?: string;
+  roleColor?: string | null;
+  size?: "sm" | "md";
+  animate?: boolean;
+  background?: string;
   className?: string;
   title?: string;
-  ehBot?: boolean;
-  ehSistema?: boolean;
-  selo?: "sm" | "md";
+  isBot?: boolean;
+  isSystem?: boolean;
+  seal?: "sm" | "md";
 }
 
 export const UserName: React.FC<UserNameProps> = ({
-  nome,
-  perfil,
+  name,
+  profile,
   roleIds,
   roles,
-  corDoCargo,
-  tamanho = "sm",
-  animar = false,
-  fundo,
+  roleColor,
+  size = "sm",
+  animate = false,
+  background,
   className,
   title,
-  ehBot = false,
-  ehSistema = false,
-  selo = "md",
+  isBot = false,
+  isSystem = false,
+  seal = "md",
 }) => {
-  useEffect(() => carregarFonte(perfil?.nome?.fonte), [perfil?.nome?.fonte]);
+  useEffect(() => loadFont(profile?.name?.font), [profile?.name?.font]);
 
-  const cor = corDoCargo ?? (roleIds && roles ? corDoCargoMaisAlto(roleIds, roles) : null);
-  const enfeite = estiloDoNome({ estilo: perfil?.nome, corDoCargo: cor, tamanho, animar, fundo });
+  const color = roleColor ?? (roleIds && roles ? roleMoreHighColor(roleIds, roles) : null);
+  const charm = nameStyle({ style: profile?.name, roleColor: color, size, animate, background });
 
-  const escrito = (
-    <span data-gc="perfil.user-name.span" className={cn(className, enfeite.className)} style={enfeite.style} title={title}>
-      {nome}
+  const written = (
+    <span data-gc="perfil.user-name.span" className={cn(className, charm.className)} style={charm.style} title={title}>
+      {name}
     </span>
   );
 
-  if (!ehBot && !ehSistema) return escrito;
+  if (!isBot && !isSystem) return written;
 
   return (
     <span data-gc="perfil.user-name.span--2" className="inline-flex items-center gap-1.5">
-      {escrito}
-      <SeloDeApp data-gc="perfil.user-name.selo-de-app" sistema={ehSistema} tamanho={selo} />
+      {written}
+      <AppSeal data-gc="perfil.user-name.app-seal" system={isSystem} size={seal} />
     </span>
   );
 };
 
-export const SeloDeApp: React.FC<{ sistema?: boolean; tamanho?: "sm" | "md" }> = ({
-  sistema = false,
-  tamanho = "md",
+export const AppSeal: React.FC<{ system?: boolean; size?: "sm" | "md" }> = ({
+  system = false,
+  size = "md",
 }) => (
   <span data-gc="perfil.user-name.span--3"
     {...flx(
-      tamanho === "sm" ? "seloDeAppMiudo" : "seloDeApp",
+      size === "sm" ? "appTinySeal" : "appSeal",
       cn(
         "inline-flex shrink-0 items-center gap-0.5 rounded-[3px] bg-brand font-bold uppercase text-sobre-marca",
-        tamanho === "sm" ? "px-1 py-0 text-[0.5625rem] leading-[1.35]" : "px-1 py-px text-10 leading-tight",
+        size === "sm" ? "px-1 py-0 text-[0.5625rem] leading-[1.35]" : "px-1 py-px text-10 leading-tight",
       ),
     )}
   >
-    {sistema && <Check data-gc="perfil.user-name.check" size={tamanho === "sm" ? 8 : 10} weight="bold" />}
-    {sistema ? "oficial" : "bot"}
+    {system && <Check data-gc="perfil.user-name.check" size={size === "sm" ? 8 : 10} weight="bold" />}
+    {system ? "oficial" : "bot"}
   </span>
 );
