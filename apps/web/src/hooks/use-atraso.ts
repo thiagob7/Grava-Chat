@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-export function useAtraso<T>(valor: T, ms = 300): T {
-  const [atrasado, setAtrasado] = useState(valor);
+export function useDelay<T>(value: T, ms = 300): T {
+  const [late, setLate] = useState(value);
 
   useEffect(() => {
-    const prazo = window.setTimeout(() => setAtrasado(valor), ms);
-    return () => window.clearTimeout(prazo);
-  }, [valor, ms]);
+    const deadline = window.setTimeout(() => setLate(value), ms);
+    return () => window.clearTimeout(deadline);
+  }, [value, ms]);
 
-  return atrasado;
+  return late;
 }
