@@ -64,9 +64,17 @@ export const updateProfileInput = z.object({
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 
-export const desktopStartInput = z.object({
-  challenge: z.string().min(20).max(200),
-});
+/*
+  `desafio` é o nome que a casca de antes da virada para o inglês manda, e ela
+  segue instalada na máquina de quem não reconstruiu. Sai daqui quando não
+  restar nenhuma.
+*/
+const challenge = z.string().min(20).max(200);
+
+export const desktopStartInput = z.union([
+  z.object({ challenge }),
+  z.object({ desafio: challenge }).transform((query) => ({ challenge: query.desafio })),
+]);
 
 export const desktopExchangeInput = z.object({
   code: z.string().min(20).max(200),

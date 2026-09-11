@@ -4,7 +4,7 @@ import { useLocation, useMatch } from "react-router";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useSession } from "~/contexts/session-context";
-import { isDesktop } from "~/lib/desktop";
+import { desktop, isDesktop } from "~/lib/desktop";
 import { avatarColor, initials } from "~/lib/format";
 
 import { cn } from "~/lib/utils";
@@ -13,7 +13,7 @@ import { flx, flxCls } from "~/lib/compat-de-tema";
 const WindowControls: React.FC = () => {
   const [own, setOwn] = React.useState(false);
   const [maximized, setMaximized] = React.useState(false);
-  const appWindow = window.gravae?.appWindow;
+  const appWindow = desktop()?.appWindow;
 
   const complete =
     !!appWindow?.frameOwn &&

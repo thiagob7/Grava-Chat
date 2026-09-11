@@ -3,6 +3,7 @@ import type { Message } from "@gravae/shared";
 import { noticePrefs, serverMuted } from "~/stores/notificacoes";
 import { appearancePrefs } from "~/features/configuracoes/stores/aparencia";
 import { playSound } from "~/lib/ui-sounds";
+import { desktop } from "~/lib/desktop";
 
 export type NoticePermission = "concedida" | "negada" | "perguntar" | "unavailable";
 
@@ -108,7 +109,7 @@ export function notifyMessage({
 
     notice.onclick = () => {
       window.focus();
-      void window.gravae?.appWindow?.focus();
+      void desktop()?.appWindow.focus();
       onOpen();
       notice.close();
     };
