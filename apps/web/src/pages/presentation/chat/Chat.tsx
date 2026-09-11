@@ -65,7 +65,7 @@ import { useRealtime } from "~/hooks/use-realtime";
 import { useReconnectVoice } from "~/features/voz/hooks/use-reconnect-voice";
 import { useModeration } from "~/features/servidor/stores/moderacao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import { fontFamily } from "~/features/perfil/lib/fontes";
+import { fontFamily, loadFont } from "~/features/perfil/lib/fontes";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
@@ -123,6 +123,8 @@ export const Chat: React.FC = () => {
   useEffect(() => useModeration.getState().close(), [routeGuildId]);
 
   const channel = detail?.channels.find((c) => c.id === routeChannelId);
+
+  useEffect(() => loadFont(channel?.font), [channel?.font]);
   const voiceVisibleChat = voiceIsOpenChat && channel?.type === "VOICE";
   const chatVoiceSide = useVoiceChat((s) => s.side);
 
@@ -178,6 +180,7 @@ export const Chat: React.FC = () => {
 
   const screenNarrow = useScreenNarrow();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [membersIsOpen, setMembersIsOpen] = useState(false);
 
   const withoutHeader = channel?.type === "VOICE" && !screenNarrow;
   const [confirmingVoice, setConfirmingVoice] = useState<string | null>(null);
@@ -199,6 +202,7 @@ export const Chat: React.FC = () => {
 
   const navigation = (
     <LeftColumn data-gc="chat.chat.left-column"
+      fluid={screenNarrow}
       footer={
         <BarFooter data-gc="chat.chat.bar-footer"
           user={user}
@@ -257,12 +261,36 @@ export const Chat: React.FC = () => {
         <Sheet data-gc="chat.chat.sheet.set-menu-is-open" open={menuIsOpen} onOpenChange={setMenuIsOpen}>
           <SheetContent data-gc="chat.chat.sheet-content" className="inset-y-0 left-0 right-auto w-full max-w-none flex-row p-0 sm:w-[min(24rem,93vw)]">
             <SheetTitle data-gc="chat.chat.sheet-title" className="sr-only">Servidores e canais</SheetTitle>
-            <SheetCloseButton data-gc="chat.chat.sheet-close-button" className="absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
+            <SheetCloseButton data-gc="chat.chat.sheet-close-button" className="fechar-seguro absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
             {navigation}
           </SheetContent>
         </Sheet>
       ) : (
         navigation
+      )}
+
+      {screenNarrow && (
+        <Sheet data-gc="chat.chat.sheet.set-members-is-open" open={membersIsOpen} onOpenChange={setMembersIsOpen}>
+          <SheetContent data-gc="chat.chat.sheet-content--2" className="w-full max-w-none p-0">
+            <header data-gc="chat.chat.header--2"
+              className="flex h-[var(--layout-header-height)] shrink-0 items-center justify-between border-b border-divisor bg-cabecalho px-4 shadow-sm"
+            >
+              <SheetTitle data-gc="chat.chat.sheet-title--2" className="text-sm font-semibold text-ink">Membros</SheetTitle>
+              <SheetCloseButton data-gc="chat.chat.sheet-close-button--2" className="-mr-1" />
+            </header>
+
+            <MemberList data-gc="chat.chat.member-list--2"
+              fluid
+              members={detail?.members ?? []}
+              loading={!detail}
+              roles={detail?.roles ?? []}
+              ownerId={detail?.guild.ownerId}
+              guildId={detail?.guild.id}
+              canModerate={can("MODERATE_MEMBERS")}
+              inVoice={whoThisVoice}
+            />
+          </SheetContent>
+        </Sheet>
       )}
 
       <div data-gc="chat.chat.div--2" {...flx("coreColumn", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
@@ -288,7 +316,12 @@ export const Chat: React.FC = () => {
             ) : (
               <Hash data-gc="chat.chat.hash" size={20} weight="bold" className={cn("text-ink-faint", flxCls("channelIcon"))} />
             )}
-            <h2 data-gc="chat.chat.h2" {...flx("channelName", "font-semibold")}>{channel?.name ?? "…"}</h2>
+            <h2 data-gc="chat.chat.h2"
+              {...flx("channelName", "font-semibold")}
+              style={{ fontFamily: fontFamily(channel?.font) ?? undefined }}
+            >
+              {channel?.name ?? "…"}
+            </h2>
 
             {channel?.topic && (
               <ChannelTopic data-gc="chat.chat.channel-topic"
@@ -327,8 +360,10 @@ export const Chat: React.FC = () => {
 
               <Tooltip data-gc="chat.chat.tooltip--2" label="Membros">
                 <button data-gc="chat.chat.button--3"
-                  onClick={() => setShowMembers((v) => !v)}
-                  className={cn("transition hover:text-ink", flxCls("topChannelButton"), showMembers ? "text-ink" : "text-ink-muted")}
+                  onClick={() =>
+                    screenNarrow ? setMembersIsOpen(true) : setShowMembers((v) => !v)
+                  }
+                  className={cn("transition hover:text-ink", flxCls("topChannelButton"), showMembers || membersIsOpen ? "text-ink" : "text-ink-muted")}
                 >
                   <Users data-gc="chat.chat.users" size={20} weight="fill" />
                 </button>

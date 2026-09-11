@@ -336,7 +336,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
         <DialogPrimitive.Overlay data-gc="configuracoes.user-settings-modal.dialog-primitiveoverlay" className="fixed inset-0 z-50 bg-veu" />
         <DialogPrimitive.Content data-gc="configuracoes.user-settings-modal.dialog-primitivecontent"
           className={cn(
-            "regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-full w-full overflow-hidden bg-surface-1 shadow-2xl outline-none md:h-[min(60rem,92vh)] md:w-[min(87.5rem,94vw)] md:rounded-xl",
+            "gaveta-segura regiao-sem-arrasto fixed inset-0 z-50 m-auto flex h-full w-full overflow-hidden bg-surface-1 shadow-2xl outline-none md:h-[min(60rem,92vh)] md:w-[min(87.5rem,94vw)] md:rounded-xl",
             flxCls("settingsWindow"),
           )}
           aria-label="Configurações do usuário"
