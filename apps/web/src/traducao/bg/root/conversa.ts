@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Ръчичка, която маха",
+    botao: "Помахайте на {{nome}}",
+  },
+  oficial: {
+    titulo: "Този канал е само за официални съобщения.",
+    detalhe: "Никога не искаме паролата ви, нито токена на акаунта.",
+    saibaMais: "Научете повече",
+  },
+  topico: {
+    abrir: "Виж описанието на канала",
+  },
+  previaDoLink: {
+    carregando: "Гледам какво има в връзката…",
+    destino: "Води към {{destino}}",
+  },
+  reacao: {
+    carregando: "Гледам кой реагира с {{emoji}}…",
+    uma: "{{nome}} реагира с {{emoji}}",
+    duas: "{{primeiro}} и {{segundo}} реагираха с {{emoji}}",
+    varias: "{{nomes}} и още {{quantos}} реагираха с {{emoji}}",
+    dicaSuper: "Задръжте за супер реакция",
+  },
+  recado: {
+    gravar: "Запиши гласово",
+    descartar: "Изхвърли записа",
+    mandar: "Изпрати записа",
+    semSuporte: "Този браузър не записва звук.",
+    semMicrofone: "Няма достъп до микрофона.",
+  },
   lista: {
     carregando: "Зареждане на съобщенията…",
     carregandoMais: "Зареждане…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Виж изображението",
   },
   enquete: {
+    criar: "Създаване на анкета",
+    pergunta: "Въпрос",
+    exemplo: "Какво да играем днес?",
+    respostas: "Отговори",
+    adicionarOpcao: "Добави отговор",
+    removerOpcao: "Премахни отговора",
+    varias: "Позволи повече от един отговор",
+    variasDetalhe: "Без това гласът за един отговор маха гласа за предишния.",
+    duracao: "Времетраене",
+    umaHora: "1 час",
+    quatroHoras: "4 часа",
+    oitoHoras: "8 часа",
+    umDia: "1 ден",
+    tresDias: "3 дни",
+    umaSemana: "1 седмица",
+    ateEncerrar: "Докато аз не я затворя",
     titulo: "Анкета",
     encerrada: "Анкетата е затворена",
     variasRespostas: "Анкета — няколко отговора",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Търсенето гледа само каналите, които можеш да четеш.",
   },
   entrada: {
+    semNome: "разговор",
+    anexo: "(прикачен файл)",
     titulo: "Входящи",
     naoLidas: "Непрочетени",
     salvas: "Запазени",
