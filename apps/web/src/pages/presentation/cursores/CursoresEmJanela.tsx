@@ -1,34 +1,34 @@
 import React, { Suspense, useEffect } from "react";
 
-const CursoresSection = React.lazy(() =>
+const CursorsSection = React.lazy(() =>
   import("~/features/configuracoes/components/CursoresSection").then((m) => ({
-    default: m.CursoresSection,
+    default: m.CursorsSection,
   })),
 );
 
-import { FixarPorCima } from "~/features/configuracoes/components/estudio/FixarPorCima";
-import { ehDesktop } from "~/lib/desktop";
+import { PinByUp } from "~/features/configuracoes/components/estudio/FixarPorCima";
+import { isDesktop } from "~/lib/desktop";
 
-export const CursoresEmJanela: React.FC = () => {
+export const CursorsInWindow: React.FC = () => {
   useEffect(() => {
-    const antes = document.title;
+    const before = document.title;
     document.title = "Cursores — Gravaê";
 
     return () => {
-      document.title = antes;
+      document.title = before;
     };
   }, []);
 
   return (
     <div data-gc="cursores.cursores-em-janela.div" className="flex h-full flex-col overflow-hidden bg-surface-2">
-      {ehDesktop() && (
+      {isDesktop() && (
         <div data-gc="cursores.cursores-em-janela.div--2" className="regiao-de-arrasto flex h-8 shrink-0 items-center justify-end border-b border-line bg-surface-1 px-2">
-          <FixarPorCima data-gc="cursores.cursores-em-janela.fixar-por-cima" />
+          <PinByUp data-gc="cursores.cursores-em-janela.pin-by-up" />
         </div>
       )}
 
       <div data-gc="cursores.cursores-em-janela.div--3" className="min-h-0 flex-1 overflow-y-auto p-6">
-        <CursoresSection data-gc="cursores.cursores-em-janela.cursores-section" />
+        <CursorsSection data-gc="cursores.cursores-em-janela.cursors-section" />
       </div>
     </div>
   );

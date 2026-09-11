@@ -1,30 +1,30 @@
 
-export interface CandidataAEdicao {
+export interface CandidateEdit {
   id: string;
   author: { id: string };
-  tipo?: string;
+  kind?: string;
   pending?: boolean;
   failed?: boolean;
 }
 
-export function mensagemParaEditar({
-  rascunho,
-  euSou,
-  mensagens,
+export function messageForEdit({
+  draft,
+  euAm,
+  messages,
 }: {
-  rascunho: string;
-  euSou: string | undefined;
-  mensagens: CandidataAEdicao[];
+  draft: string;
+  euAm: string | undefined;
+  messages: CandidateEdit[];
 }): string | null {
-  if (rascunho.length > 0) return null;
+  if (draft.length > 0) return null;
 
-  if (!euSou) return null;
+  if (!euAm) return null;
 
-  for (let i = mensagens.length - 1; i >= 0; i--) {
-    const m = mensagens[i];
-    if (!m || m.author.id !== euSou) continue;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (!m || m.author.id !== euAm) continue;
 
-    if (m.tipo && m.tipo !== "USER") continue;
+    if (m.kind && m.kind !== "USER") continue;
     if (m.pending || m.failed) continue;
 
     return m.id;

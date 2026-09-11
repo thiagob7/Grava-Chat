@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { Adiante, Secao, Titulo, Trilha } from "~/components/docs/PecasDosDocs";
-import { CamposDoObjeto, EventosDoObjeto, RotasDoObjeto } from "~/components/docs/ReferenciaDaApi";
-import referencia from "~/dados/referencia.json";
+import { Ahead, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
+import { ObjectFields, ObjectEvents, ObjectRoutes } from "~/components/docs/ReferenciaDaApi";
+import reference from "~/dados/referencia.json";
 
-const achar = (id: string) => referencia.objetos.find((objeto) => objeto.id === id);
+const find = (id: string) => reference.objects.find((object) => object.id === id);
 
 export function generateStaticParams() {
-  return referencia.objetos.map((objeto) => ({ objeto: objeto.id }));
+  return reference.objects.map((object) => ({ objeto: object.id }));
 }
 
 export async function generateMetadata({
@@ -16,64 +16,64 @@ export async function generateMetadata({
 }: {
   params: Promise<{ objeto: string }>;
 }): Promise<Metadata> {
-  const objeto = achar((await params).objeto);
-  if (!objeto) return {};
+  const object = find((await params).objeto);
+  if (!object) return {};
 
   return {
-    title: `${objeto.nome} — Documentação do Gravaê`,
-    description: objeto.resumo,
+    title: `${object.name} — Documentação do Gravaê`,
+    description: object.summary,
   };
 }
 
-export default async function Objeto({ params }: { params: Promise<{ objeto: string }> }) {
-  const objeto = achar((await params).objeto);
-  if (!objeto) notFound();
+export default async function Obj({ params }: { params: Promise<{ objeto: string }> }) {
+  const object = find((await params).objeto);
+  if (!object) notFound();
 
   return (
     <article className="space-y-10">
       <header>
-        <Trilha grupo="Referência" pagina={objeto.nome} />
-        <Titulo chamada={objeto.resumo}>{objeto.nome}</Titulo>
+        <Trail group="Referência" page={object.name} />
+        <Title call={object.summary}>{object.name}</Title>
       </header>
 
-      {objeto.campos.length > 0 && (
-        <Secao id="campos" titulo="Campos">
+      {object.fields.length > 0 && (
+        <Section id="campos" title="Campos">
           <p>
             Lidos do mesmo esquema que o servidor usa para validar. Campo que
             entrou na API aparece aqui sozinho; campo que saiu, some.
           </p>
 
-          <CamposDoObjeto campos={objeto.campos} />
-        </Secao>
+          <ObjectFields fields={object.fields} />
+        </Section>
       )}
 
-      {objeto.rotas.length > 0 && (
-        <Secao id="rotas" titulo="Rotas">
-          <RotasDoObjeto rotas={objeto.rotas} />
-        </Secao>
+      {object.routes.length > 0 && (
+        <Section id="rotas" title="Rotas">
+          <ObjectRoutes routes={object.routes} />
+        </Section>
       )}
 
-      {objeto.eventos.length > 0 && (
-        <Secao id="eventos" titulo="Eventos">
+      {object.events.length > 0 && (
+        <Section id="eventos" title="Eventos">
           <p>
             O que chega pela conexão de tempo real quando este objeto muda. O bot
             não precisa pedir: assim que entra num servidor, passa a receber.
           </p>
 
-          <EventosDoObjeto eventos={objeto.eventos} />
-        </Secao>
+          <ObjectEvents events={object.events} />
+        </Section>
       )}
 
-      {objeto.rotas.length === 0 && (
-        <Secao id="sem-rota" titulo="Sem rota REST">
+      {object.routes.length === 0 && (
+        <Section id="sem-rota" title="Sem rota REST">
           <p>
             Este objeto não tem rota própria: ele só existe pela conexão de tempo
             real. Para agir sobre ele, use os eventos que o bot envia.
           </p>
-        </Secao>
+        </Section>
       )}
 
-      <Adiante href="/desenvolvedores/referencia" />
+      <Ahead href="/desenvolvedores/referencia" />
     </article>
   );
 }

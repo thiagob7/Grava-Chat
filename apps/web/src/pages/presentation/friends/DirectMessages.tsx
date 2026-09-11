@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
-import { Menu, Info } from "lucide-react";
+import { Menu } from "lucide-react";
+import { Check, ShieldCheck } from "@phosphor-icons/react";
 import { Phone, PhoneSlash, User, VideoCamera } from "@phosphor-icons/react";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
@@ -13,51 +14,54 @@ import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserName } from "~/features/perfil/components/UserName";
 import {
-  AreaDeConversa,
-  PainelDaConversa,
-  RodapeDaConversa,
+  ChatArea,
+  ChatPanel,
+  ChatFooter,
 } from "~/features/conversa/components/AreaDeConversa";
 import { Composer } from "~/features/conversa/components/Composer";
-import { AtivosAgora } from "~/features/amizades/components/AtivosAgora";
+import { ActiveNow } from "~/features/amizades/components/AtivosAgora";
 import { DmSidebar } from "~/features/amizades/components/DmSidebar";
 import { Sheet, SheetCloseButton, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
-import { PrimeiroServidor } from "~/features/servidor/components/PrimeiroServidor";
-import { useTelaEstreita } from "~/hooks/use-tela-estreita";
+import { FirstServer } from "~/features/servidor/components/PrimeiroServidor";
+import { useScreenNarrow } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
-import { ColunaDaEsquerda } from "~/features/app/components/ColunaDaEsquerda";
+import { LeftColumn } from "~/features/app/components/ColunaDaEsquerda";
 import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
-import { RodapeDaBarra } from "~/features/app/components/RodapeDaBarra";
+import { BarFooter } from "~/features/app/components/RodapeDaBarra";
 import { GuildRail } from "~/features/servidor/components/GuildRail";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
-import { BotaoDoAplicativo } from "~/features/app/components/BotaoDoAplicativo";
-import { CaixaDeEntrada } from "~/features/conversa/components/CaixaDeEntrada";
+import { AppButton } from "~/features/app/components/BotaoDoAplicativo";
+import { EntryBox } from "~/features/conversa/components/CaixaDeEntrada";
 import { PinnedMessagesPanel } from "~/features/conversa/components/PinnedMessagesPanel";
-import { PainelDePerfilDoDm } from "~/features/perfil/components/PainelDePerfilDoDm";
-import { estaChamando } from "~/features/voz/lib/chamada-no-privado";
-import { tocarSom } from "~/lib/ui-sounds";
+import { ProfileDmPanel } from "~/features/perfil/components/PainelDePerfilDoDm";
+import { useTranslation } from "~/traducao";
+
+const HELP = import.meta.env.VITE_HELP_URL as string | undefined;
+import { thisCalling } from "~/features/voz/lib/chamada-no-privado";
+import { playSound } from "~/lib/ui-sounds";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
-import type { EscopoDeBusca } from "~/@core/application/requests/message/buscar-mensagens";
-import { CampoDeBusca } from "~/features/conversa/components/CampoDeBusca";
-import { EstrelaDoCanal } from "~/features/conversa/components/EstrelaDoCanal";
-import { InicioDaDm } from "~/features/conversa/components/InicioDaDm";
+import type { SearchScope } from "~/@core/application/requests/message/buscar-mensagens";
+import { SearchField } from "~/features/conversa/components/CampoDeBusca";
+import { ChannelStar } from "~/features/conversa/components/EstrelaDoCanal";
+import { StartDm } from "~/features/conversa/components/InicioDaDm";
 import { MessageList } from "~/features/conversa/components/MessageList";
-import { PainelDeBusca } from "~/features/conversa/components/PainelDeBusca";
+import { SearchPanel } from "~/features/conversa/components/PainelDeBusca";
 import { TypingIndicator } from "~/features/conversa/components/TypingIndicator";
 import { useSession } from "~/contexts/session-context";
 import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
-import { SolicitacoesDeMensagens } from "~/features/amizades/components/SolicitacoesDeMensagens";
+import { MessagesRequests } from "~/features/amizades/components/SolicitacoesDeMensagens";
 import { flx, flxCls } from "~/lib/compat-de-tema";
 
-export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitacoes = false }) => {
+export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = false }) => {
   const { channelId } = useParams();
   const navigate = useNavigate();
 
   const { user, endSession } = useSession();
   const { data: dms = [] } = useFindDms(true);
-  const { data: relacoes = [] } = useFindFriends(true);
+  const { data: relations = [] } = useFindFriends(true);
   const { data: readStates = {} } = useReadStates(true);
   const openDm = useOpenDm();
   const logout = useLogout();
@@ -68,74 +72,75 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
     if (channelId) void joinChannel(channelId).catch(() => undefined);
   }, [channelId]);
 
-  const conversa = dms.find((dm) => dm.id === channelId);
-  const pendentes = relacoes.filter((r) => r.status === "PENDING_IN").length;
+  const chat = dms.find((dm) => dm.id === channelId);
+  const pending = relations.filter((r) => r.status === "PENDING_IN").length;
 
-  const abrirConversa = async (userId: string) => {
-    const canal = await openDm.mutateAsync(userId).catch(() => null);
-    if (canal) navigate(`/dm/${canal.id}`);
+  const openChat = async (userId: string) => {
+    const channel = await openDm.mutateAsync(userId).catch(() => null);
+    if (channel) navigate(`/dm/${channel.id}`);
   };
 
-  const sair = async () => {
+  const leave = async () => {
     await logout.mutateAsync().catch(() => undefined);
     endSession();
   };
 
-  const telaEstreita = useTelaEstreita();
-  const [menuAberto, setMenuAberto] = useState(false);
+  const { t } = useTranslation();
+  const screenNarrow = useScreenNarrow();
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const { data: guildsDaConta = [], isSuccess: guildsCarregadas } = useFindManyGuilds(true);
-  const [dispensado, setDispensado] = useState(false);
-  const convidando = guildsCarregadas && guildsDaConta.length === 0 && !dispensado;
-  const [perfilAberto, setPerfilAberto] = useState(true);
-  const [busca, setBusca] = useState("");
-  const [escopoDaBusca, setEscopoDaBusca] = useState<EscopoDeBusca>("canal");
+  const { data: accountGuilds = [], isSuccess: guildsLoaded } = useFindManyGuilds(true);
+  const [dismissed, setDismissed] = useState(false);
+  const inviting = guildsLoaded && accountGuilds.length === 0 && !dismissed;
+  const [profileIsOpen, setProfileIsOpen] = useState(true);
+  const [search, setSearch] = useState("");
+  const [searchScope, setSearchScope] = useState<SearchScope>("canal");
 
-  const canalEmChamada = useVoiceStore((s) => s.channelId);
-  const entrarNaChamada = useVoiceStore((s) => s.join);
-  const sairDaChamada = useVoiceStore((s) => s.leave);
-  const ligarCamera = useVoiceStore((s) => s.toggleCamera);
-  const cameraLigada = useVoiceStore((s) => s.cameraEnabled);
-  const chatDaChamada = useVoiceStore((s) => s.chatDaChamada);
-  const emChamadaAqui = Boolean(channelId) && canalEmChamada === channelId;
+  const channelCall = useVoiceStore((s) => s.channelId);
+  const joinCall = useVoiceStore((s) => s.join);
+  const leaveCall = useVoiceStore((s) => s.leave);
+  const turnonCamera = useVoiceStore((s) => s.toggleCamera);
+  const cameraOn = useVoiceStore((s) => s.cameraEnabled);
+  const callChat = useVoiceStore((s) => s.callChat);
+  const inCallHere = Boolean(channelId) && channelCall === channelId;
 
-  const naSala = useVoiceStore((s) => s.tiles.length);
-  const assistindo = useVoiceStore((s) => Boolean(s.assistindo));
-  const chamando = emChamadaAqui && estaChamando({ guildId: null, quantosNaSala: naSala });
+  const inRoom = useVoiceStore((s) => s.tiles.length);
+  const watching = useVoiceStore((s) => Boolean(s.watching));
+  const calling = inCallHere && thisCalling({ guildId: null, countRoom: inRoom });
 
-  const alguemEntrou = useRef(false);
+  const someoneJoined = useRef(false);
 
   useEffect(() => {
-    if (!emChamadaAqui) {
-      alguemEntrou.current = false;
+    if (!inCallHere) {
+      someoneJoined.current = false;
       return;
     }
 
-    if (naSala > 1) {
-      alguemEntrou.current = true;
+    if (inRoom > 1) {
+      someoneJoined.current = true;
       return;
     }
 
-    if (!alguemEntrou.current) return;
+    if (!someoneJoined.current) return;
 
-    const prazo = setTimeout(() => {
+    const deadline = setTimeout(() => {
       if (useVoiceStore.getState().tiles.length > 1) return;
 
-      void sairDaChamada();
+      void leaveCall();
       toast.info("A chamada terminou.");
     }, 4000);
 
-    return () => clearTimeout(prazo);
-  }, [emChamadaAqui, naSala, sairDaChamada]);
+    return () => clearTimeout(deadline);
+  }, [inCallHere, inRoom, leaveCall]);
 
-  const ligarComVideo = async (id: string) => {
-    if (!emChamadaAqui) await entrarNaChamada(id);
-    if (!useVoiceStore.getState().cameraEnabled) await ligarCamera();
+  const turnonWithVideo = async (id: string) => {
+    if (!inCallHere) await joinCall(id);
+    if (!useVoiceStore.getState().cameraEnabled) await turnonCamera();
   };
 
   if (!user) return null;
 
-  const lateral = useResizableWidth("dm", {
+  const side = useResizableWidth("dm", {
     initial: 320,
     token: "--layout-sidebar-width",
     min: 180,
@@ -143,16 +148,16 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
     edge: "right",
   });
 
-  const navegacao = (
-    <ColunaDaEsquerda data-gc="friends.direct-messages.coluna-da-esquerda"
-      rodape={<RodapeDaBarra data-gc="friends.direct-messages.rodape-da-barra" user={user} onLogout={() => void sair()} />}
+  const navigation = (
+    <LeftColumn data-gc="friends.direct-messages.left-column"
+      footer={<BarFooter data-gc="friends.direct-messages.bar-footer" user={user} onLogout={() => void leave()} />}
       alca={
         <WidthHandle data-gc="friends.direct-messages.width-handle"
           edge="right"
-          dragging={lateral.dragging}
-          width={lateral.width}
-          bounds={lateral.bounds}
-          {...lateral.handle}
+          dragging={side.dragging}
+          width={side.width}
+          bounds={side.bounds}
+          {...side.handle}
         />
       }
     >
@@ -160,51 +165,51 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
         activeGuildId={null}
         onSelect={(id) => navigate(`/channels/${id}`)}
         onOpenFriends={() => navigate("/dm")}
-        pendingFriendRequests={pendentes}
+        pendingFriendRequests={pending}
       />
 
       <DmSidebar data-gc="friends.direct-messages.dm-sidebar"
         activeChannelId={channelId}
-        largura={lateral.width}
-        fluida={telaEstreita}
-        solicitacoesAbertas={solicitacoes}
-        onOpenSolicitacoes={() => navigate("/dm/solicitacoes")}
+        width={side.width}
+        fluid={screenNarrow}
+        requestsIsOpen={requests}
+        onOpenRequests={() => navigate("/dm/solicitacoes")}
         readStates={readStates}
         user={user}
         onOpenFriends={() => navigate("/dm")}
         onSelectDm={(id) => {
           navigate(`/dm/${id}`);
-          setMenuAberto(false);
+          setMenuIsOpen(false);
         }}
       />
-    </ColunaDaEsquerda>
+    </LeftColumn>
   );
 
   return (
-    <div data-gc="friends.direct-messages.div" {...flx("paginaDeConversas", "flex h-full bg-surface-0")}>
-      <PrimeiroServidor data-gc="friends.direct-messages.primeiro-servidor" aberto={convidando} onFechar={() => setDispensado(true)} />
+    <div data-gc="friends.direct-messages.div" {...flx("chatsPage", "flex h-full bg-surface-0")}>
+      <FirstServer data-gc="friends.direct-messages.first-server" isOpen={inviting} onClose={() => setDismissed(true)} />
 
-      {telaEstreita ? (
-        <Sheet data-gc="friends.direct-messages.sheet.set-menu-aberto" open={menuAberto} onOpenChange={setMenuAberto}>
+      {screenNarrow ? (
+        <Sheet data-gc="friends.direct-messages.sheet.set-menu-is-open" open={menuIsOpen} onOpenChange={setMenuIsOpen}>
           <SheetContent data-gc="friends.direct-messages.sheet-content" className="inset-y-0 left-0 right-auto w-full max-w-none flex-row p-0 sm:w-[min(24rem,93vw)]">
             <SheetTitle data-gc="friends.direct-messages.sheet-title" className="sr-only">Conversas</SheetTitle>
             <SheetCloseButton data-gc="friends.direct-messages.sheet-close-button" className="absolute right-2 top-2 z-[60] rounded-full bg-surface-3/90 p-1.5 shadow-lg shadow-sombra backdrop-blur-sm sm:hidden" />
-            {navegacao}
+            {navigation}
           </SheetContent>
         </Sheet>
       ) : (
-        navegacao
+        navigation
       )}
 
-      {conversa ? (
-        <div data-gc="friends.direct-messages.div--2" {...flx("colunaDaConversaDireta", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
-          <header data-gc="friends.direct-messages.header" {...flx("topoDoCanal", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-line bg-surface-2 shadow-sm")}>
+      {chat ? (
+        <div data-gc="friends.direct-messages.div--2" {...flx("chatDirectColumn", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
+          <header data-gc="friends.direct-messages.header" {...flx("channelTop", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
             <div data-gc="friends.direct-messages.div--3"
-              {...flx("mioloDoTopoDoCanal", "flex h-full w-full items-center gap-2 px-4")}
+              {...flx("topChannelCore", "flex h-full w-full items-center gap-2 px-4")}
             >
-              {telaEstreita && (
+              {screenNarrow && (
                 <button data-gc="friends.direct-messages.button"
-                  onClick={() => setMenuAberto(true)}
+                  onClick={() => setMenuIsOpen(true)}
                   aria-label="Abrir conversas"
                   className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
                 >
@@ -212,39 +217,39 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
                 </button>
               )}
               <Avatar data-gc="friends.direct-messages.avatar"
-                id={conversa.user.id}
-                name={conversa.user.displayName}
-                url={conversa.user.avatarUrl}
-                status={conversa.user.status}
+                id={chat.user.id}
+                name={chat.user.displayName}
+                url={chat.user.avatarUrl}
+                status={chat.user.status}
                 size={24}
               />
               <h2 data-gc="friends.direct-messages.h2" className="font-semibold">
-                <UserName data-gc="friends.direct-messages.user-name" nome={conversa.user.displayName} ehBot={conversa.user.isBot} ehSistema={conversa.user.sistema} />
+                <UserName data-gc="friends.direct-messages.user-name" name={chat.user.displayName} isBot={chat.user.isBot} isSystem={chat.user.system} />
               </h2>
 
-              {emChamadaAqui ? (
+              {inCallHere ? (
                 <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
                   <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> Em uma chamada
                 </span>
               ) : (
-                <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{conversa.user.username}</span>
+                <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{chat.user.username}</span>
               )}
 
               <div data-gc="friends.direct-messages.div--4" className="ml-auto flex items-center gap-1">
-                <Tooltip data-gc="friends.direct-messages.tooltip" label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip" label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}>
                   <button data-gc="friends.direct-messages.button--2"
                     onClick={() =>
-                      void (emChamadaAqui ? sairDaChamada() : entrarNaChamada(conversa.id))
+                      void (inCallHere ? leaveCall() : joinCall(chat.id))
                     }
-                    aria-label={emChamadaAqui ? "Desligar" : "Iniciar chamada de voz"}
+                    aria-label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}
                     className={cn(
                       "flex size-8 items-center justify-center rounded-full transition",
-                      emChamadaAqui
+                      inCallHere
                         ? "bg-danger text-sobre-marca hover:brightness-110"
                         : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                     )}
                   >
-                    {emChamadaAqui ? (
+                    {inCallHere ? (
                       <PhoneSlash data-gc="friends.direct-messages.phone-slash" size={17} weight="fill" />
                     ) : (
                       <Phone data-gc="friends.direct-messages.phone--2" size={17} weight="fill" />
@@ -252,13 +257,13 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
                   </button>
                 </Tooltip>
 
-                <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
                   <button data-gc="friends.direct-messages.button--3"
-                    onClick={() => void (cameraLigada ? ligarCamera() : ligarComVideo(conversa.id))}
-                    aria-label={cameraLigada ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
+                    onClick={() => void (cameraOn ? turnonCamera() : turnonWithVideo(chat.id))}
+                    aria-label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
                     className={cn(
                       "flex size-8 items-center justify-center rounded-full transition",
-                      cameraLigada && emChamadaAqui
+                      cameraOn && inCallHere
                         ? "bg-surface-4 text-ink"
                         : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                     )}
@@ -267,16 +272,16 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
                   </button>
                 </Tooltip>
 
-                <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={conversa.id} canManage />
+                <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={chat.id} canManage />
 
-                <Tooltip data-gc="friends.direct-messages.tooltip--3" label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip--3" label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}>
                   <button data-gc="friends.direct-messages.button--4"
-                    onClick={() => setPerfilAberto((aberto) => !aberto)}
-                    aria-label={perfilAberto ? "Ocultar perfil" : "Mostrar perfil"}
-                    aria-pressed={perfilAberto}
+                    onClick={() => setProfileIsOpen((isOpen) => !isOpen)}
+                    aria-label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}
+                    aria-pressed={profileIsOpen}
                     className={cn(
                       "flex size-8 items-center justify-center rounded-full transition",
-                      perfilAberto
+                      profileIsOpen
                         ? "bg-surface-4 text-ink"
                         : "text-ink-muted hover:bg-surface-3 hover:text-ink",
                     )}
@@ -285,18 +290,18 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
                   </button>
                 </Tooltip>
 
-                <EstrelaDoCanal data-gc="friends.direct-messages.estrela-do-canal" channelId={conversa.id} />
+                <ChannelStar data-gc="friends.direct-messages.channel-star" channelId={chat.id} />
 
-                <CampoDeBusca data-gc="friends.direct-messages.campo-de-busca.set-busca"
-                  termo={busca}
-                  onBuscar={setBusca}
-                  escopo={escopoDaBusca}
-                  escopos={["canal", "dms", "tudo"]}
-                  onEscopo={setEscopoDaBusca}
+                <SearchField data-gc="friends.direct-messages.search-field.set-search"
+                  term={search}
+                  onSearch={setSearch}
+                  scope={searchScope}
+                  scopes={["canal", "dms", "tudo"]}
+                  onScope={setSearchScope}
                 />
 
-                <BotaoDoAplicativo data-gc="friends.direct-messages.botao-do-aplicativo" />
-                <CaixaDeEntrada data-gc="friends.direct-messages.caixa-de-entrada" />
+                <AppButton data-gc="friends.direct-messages.app-button" />
+                <EntryBox data-gc="friends.direct-messages.entry-box" />
               </div>
             </div>
           </header>
@@ -304,130 +309,152 @@ export const DirectMessages: React.FC<{ solicitacoes?: boolean }> = ({ solicitac
           <div data-gc="friends.direct-messages.div--5" className="flex min-h-0 flex-1">
             <main data-gc="friends.direct-messages.main" className="flex min-w-0 flex-1 flex-col bg-surface-2">
 
-          {emChamadaAqui && (
+          {inCallHere && (
             <div data-gc="friends.direct-messages.div--6"
               className={cn(
-                flxCls("chamadaCompacta"),
+                flxCls("callCompact"),
                 "flex flex-col overflow-hidden border-b border-divisor",
-                chatDaChamada
-                  ? cn("shrink-0", assistindo ? "h-96 max-h-[50vh]" : "h-56")
+                callChat
+                  ? cn("shrink-0", watching ? "h-96 max-h-[50vh]" : "h-56")
                   : "min-h-0 flex-1",
               )}
             >
-              {chamando ? (
-                <Chamando data-gc="friends.direct-messages.chamando"
-                  nome={conversa.user.displayName}
-                  userId={conversa.user.id}
-                  avatarUrl={conversa.user.avatarUrl}
-                  onDesistir={() => void sairDaChamada()}
+              {calling ? (
+                <Calling data-gc="friends.direct-messages.calling"
+                  name={chat.user.displayName}
+                  userId={chat.user.id}
+                  avatarUrl={chat.user.avatarUrl}
+                  onGiveup={() => void leaveCall()}
                 />
               ) : (
-                <VoiceStage data-gc="friends.direct-messages.voice-stage" channelName={conversa.user.displayName} currentUserId={user.id} compacto />
+                <VoiceStage data-gc="friends.direct-messages.voice-stage" channelName={chat.user.displayName} currentUserId={user.id} compact />
               )}
             </div>
           )}
 
-          {chatDaChamada && (
-          <AreaDeConversa data-gc="friends.direct-messages.area-de-conversa">
-            <PainelDaConversa data-gc="friends.direct-messages.painel-da-conversa">
+          {callChat && (
+          <ChatArea data-gc="friends.direct-messages.chat-area">
+            <ChatPanel data-gc="friends.direct-messages.chat-panel">
             <MessageList data-gc="friends.direct-messages.message-list"
-              channelId={conversa.id}
-              channelName={conversa.user.displayName}
+              channelId={chat.id}
+              channelName={chat.user.displayName}
               currentUserId={user.id}
               isModerator={false}
-              header={<InicioDaDm data-gc="friends.direct-messages.inicio-da-dm" pessoa={conversa.user} />}
+              header={
+                <StartDm data-gc="friends.direct-messages.start-dm"
+                  person={chat.user}
+                  channelId={chat.id}
+                  empty={!chat.lastMessageId}
+                />
+              }
             />
 
-            </PainelDaConversa>
+            </ChatPanel>
 
-          <RodapeDaConversa data-gc="friends.direct-messages.rodape-da-conversa">
-            {conversa.user.sistema ? (
+          <ChatFooter data-gc="friends.direct-messages.chat-footer">
+            {chat.user.system ? (
               <section
                 data-gc="friends.direct-messages.section"
                 className="caixa-de-escrever bg-composer px-2 pb-3 @sm:px-3"
               >
-                <p data-gc="friends.direct-messages.p" className="flex min-h-[var(--composer-box-height)] items-center gap-3 rounded-[var(--footer-box-radius)] bg-campo px-3 py-2 text-sm leading-4 text-ink-muted">
-                  <span data-gc="friends.direct-messages.span--3" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-ink-faint text-surface-1">
-                    <Info data-gc="friends.direct-messages.info" size={13} strokeWidth={2.5} />
-                  </span>
-                  <span data-gc="friends.direct-messages.span--4" className="min-w-0">
-                    <span data-gc="friends.direct-messages.span--5" className="block truncate font-medium text-ink">
-                      Este chat é destinado a avisos oficiais do Gravaê.
-                    </span>
-                    <span data-gc="friends.direct-messages.span--6" className="block truncate text-11">
-                      Nunca pedimos sua senha nem o token da sua conta.
+                <div data-gc="friends.direct-messages.div--7" className="flex min-h-[var(--composer-box-height)] items-center gap-3 rounded-[var(--footer-box-radius)] bg-campo px-3 py-2 text-sm leading-4 text-ink-muted">
+                  <span data-gc="friends.direct-messages.span--3" className="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-4 text-ink-muted">
+                    <ShieldCheck data-gc="friends.direct-messages.shield-check" size={18} weight="fill" />
+
+                    <span data-gc="friends.direct-messages.span--4" className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full border-2 border-campo bg-brand text-sobre-marca">
+                      <Check data-gc="friends.direct-messages.check" size={8} weight="bold" />
                     </span>
                   </span>
-                </p>
+
+                  <span data-gc="friends.direct-messages.span--5" className="min-w-0 flex-1">
+                    <span data-gc="friends.direct-messages.span--6" className="block truncate font-semibold text-ink">
+                      {t("conversa.oficial.titulo")}
+                    </span>
+                    <span data-gc="friends.direct-messages.span--7" className="block truncate text-11">
+                      {t("conversa.oficial.detalhe")}
+                    </span>
+                  </span>
+
+                  {HELP && (
+                    <a data-gc="friends.direct-messages.a"
+                      href={HELP}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 rounded-md bg-surface-3 px-3 py-1.5 text-13 font-medium text-ink transition hover:bg-surface-4"
+                    >
+                      {t("conversa.oficial.saibaMais")}
+                    </a>
+                  )}
+                </div>
               </section>
             ) : (
               <>
-                <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={conversa.id} currentUserId={user.id} />
-                <Composer data-gc="friends.direct-messages.composer" channelId={conversa.id} channelName={conversa.user.displayName} />
+                <TypingIndicator data-gc="friends.direct-messages.typing-indicator" channelId={chat.id} currentUserId={user.id} />
+                <Composer data-gc="friends.direct-messages.composer" channelId={chat.id} channelName={chat.user.displayName} />
               </>
             )}
-          </RodapeDaConversa>
-          </AreaDeConversa>
+          </ChatFooter>
+          </ChatArea>
           )}
             </main>
 
-            {busca ? (
-              <PainelDeBusca data-gc="friends.direct-messages.painel-de-busca"
-                canalId={conversa.id}
-                termo={busca}
-                escopo={escopoDaBusca}
+            {search ? (
+              <SearchPanel data-gc="friends.direct-messages.search-panel"
+                channelId={chat.id}
+                term={search}
+                scope={searchScope}
                 currentUserId={user.id}
-                onFechar={() => setBusca("")}
-                onIr={(canal, messageId) => navigate(`/dm/${canal}?m=${messageId}`)}
+                onClose={() => setSearch("")}
+                onIr={(channel, messageId) => navigate(`/dm/${channel}?m=${messageId}`)}
               />
             ) : (
-              perfilAberto && <PainelDePerfilDoDm data-gc="friends.direct-messages.painel-de-perfil-do-dm" userId={conversa.user.id} />
+              profileIsOpen && <ProfileDmPanel data-gc="friends.direct-messages.profile-dm-panel" userId={chat.user.id} />
             )}
           </div>
         </div>
-      ) : solicitacoes ? (
-        <SolicitacoesDeMensagens data-gc="friends.direct-messages.solicitacoes-de-mensagens" />
+      ) : requests ? (
+        <MessagesRequests data-gc="friends.direct-messages.messages-requests" />
       ) : (
         <>
           <Friends data-gc="friends.direct-messages.friends"
-            onOpenConversation={(userId) => void abrirConversa(userId)}
-            onAbrirMenu={telaEstreita ? () => setMenuAberto(true) : undefined}
+            onOpenConversation={(userId) => void openChat(userId)}
+            onOpenMenu={screenNarrow ? () => setMenuIsOpen(true) : undefined}
           />
-          <AtivosAgora data-gc="friends.direct-messages.ativos-agora" />
+          <ActiveNow data-gc="friends.direct-messages.active-now" />
         </>
       )}
     </div>
   );
 };
 
-const INTERVALO_DA_ESPERA_MS = 3_000;
+const WAIT_MS_INTERVAL = 3_000;
 
-const Chamando: React.FC<{
-  nome: string;
+const Calling: React.FC<{
+  name: string;
   userId: string;
   avatarUrl: string | null;
-  onDesistir: () => void;
-}> = ({ nome, userId, avatarUrl, onDesistir }) => {
+  onGiveup: () => void;
+}> = ({ name, userId, avatarUrl, onGiveup }) => {
   useEffect(() => {
-    tocarSom("chamando");
-    const espera = setInterval(() => tocarSom("chamando"), INTERVALO_DA_ESPERA_MS);
+    playSound("calling");
+    const wait = setInterval(() => playSound("calling"), WAIT_MS_INTERVAL);
 
-    return () => clearInterval(espera);
+    return () => clearInterval(wait);
   }, []);
 
   return (
-    <div data-gc="friends.direct-messages.div--7" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
-      <span data-gc="friends.direct-messages.span--7" className="relative">
-        <Avatar data-gc="friends.direct-messages.avatar--2" id={userId} name={nome} url={avatarUrl} size={72} />
-        <span data-gc="friends.direct-messages.span--8" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
+    <div data-gc="friends.direct-messages.div--8" className="flex flex-1 flex-col items-center justify-center gap-3 bg-surface-2">
+      <span data-gc="friends.direct-messages.span--8" className="relative">
+        <Avatar data-gc="friends.direct-messages.avatar--2" id={userId} name={name} url={avatarUrl} size={72} />
+        <span data-gc="friends.direct-messages.span--9" className="absolute inset-0 animate-ping rounded-full ring-2 ring-online" />
       </span>
 
-      <p data-gc="friends.direct-messages.p--2" className="text-sm text-ink-muted">
-        Chamando <span data-gc="friends.direct-messages.span--9" className="font-semibold text-ink">{nome}</span>…
+      <p data-gc="friends.direct-messages.p" className="text-sm text-ink-muted">
+        Chamando <span data-gc="friends.direct-messages.span--10" className="font-semibold text-ink">{name}</span>…
       </p>
 
-      <button data-gc="friends.direct-messages.button.on-desistir"
-        onClick={onDesistir}
+      <button data-gc="friends.direct-messages.button.on-giveup"
+        onClick={onGiveup}
         className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-sobre-marca transition hover:brightness-110"
       >
         <PhoneSlash data-gc="friends.direct-messages.phone-slash--2" size={15} weight="fill" /> Cancelar

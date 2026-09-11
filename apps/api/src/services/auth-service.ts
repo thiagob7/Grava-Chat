@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { AppError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
-import { conferirSenha, gerarHash } from "~/lib/senha.js";
+import { officialService } from "~/services/oficial-service.js";
+import { checkPassword, generateHash } from "~/lib/senha.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
 import { accountRepository } from "~/repositories/account-repository.js";
@@ -33,8 +34,8 @@ export const authService = {
     if (existing.revokedAt) return null;
 
     if (existing.supersededAt) {
-      const idade = Date.now() - existing.supersededAt.getTime();
-      if (idade > ROTATION_GRACE_MS) return null;
+      const age = Date.now() - existing.supersededAt.getTime();
+      if (age > ROTATION_GRACE_MS) return null;
 
       return { userId: existing.userId, ...(await authService.issueRefreshToken(existing.userId, meta)) };
     }
@@ -48,33 +49,33 @@ export const authService = {
     await sessionRepository.revoke(hashToken(raw));
   },
 
-  async listarSessoes(userId: string, raw: string | undefined) {
-    const atual = raw ? hashToken(raw) : null;
-    const sessoes = await sessionRepository.findAtivasForUser(userId);
+  async listSessions(userId: string, raw: string | undefined) {
+    const current = raw ? hashToken(raw) : null;
+    const sessions = await sessionRepository.findActiveForUser(userId);
 
-    const daAtual = atual
-      ? await sessionRepository.findByHash(atual).then((s) => s?.id ?? null)
+    const currentFrom = current
+      ? await sessionRepository.findByHash(current).then((s) => s?.id ?? null)
       : null;
 
-    return sessoes.map((s) => ({
+    return sessions.map((s) => ({
       id: s.id,
       userAgent: s.userAgent,
       ip: s.ip,
-      criadaEm: s.createdAt.toISOString(),
-      expiraEm: s.expiresAt.toISOString(),
-      atual: s.id === daAtual,
+      createdAt: s.createdAt.toISOString(),
+      expiresAt: s.expiresAt.toISOString(),
+      current: s.id === currentFrom,
     }));
   },
 
-  async revogarSessao(userId: string, id: string, raw: string | undefined) {
-    const atual = raw ? await sessionRepository.findByHash(hashToken(raw)) : null;
+  async revokeSession(userId: string, id: string, raw: string | undefined) {
+    const current = raw ? await sessionRepository.findByHash(hashToken(raw)) : null;
 
-    if (atual?.id === id) {
+    if (current?.id === id) {
       throw new AppError("Esta é a sessão deste aparelho. Use 'Sair desta conta'.");
     }
 
-    const deu = await sessionRepository.revokeById(userId, id);
-    if (!deu) throw new NotFoundError("Sessão não encontrada");
+    const gave = await sessionRepository.revokeById(userId, id);
+    if (!gave) throw new NotFoundError("Sessão não encontrada");
   },
 
   async revokeAll(userId: string) {
@@ -88,8 +89,8 @@ export const authService = {
   },
 
   async providersOf(userId: string) {
-    const contas = await accountRepository.findManyByUser(userId);
-    return contas.map((c) => c.provider);
+    const accounts = await accountRepository.findManyByUser(userId);
+    return accounts.map((c) => c.provider);
   },
 
   async uniqueUsername(seed: string) {
@@ -121,7 +122,7 @@ export const authService = {
     });
   },
 
-  async registrar(params: { email: string; senha: string; displayName: string }) {
+  async register(params: { email: string; password: string; displayName: string }) {
     const email = params.email.toLowerCase();
 
     if (await userRepository.findByEmail(email)) {
@@ -132,7 +133,7 @@ export const authService = {
       email,
       username: await authService.uniqueUsername(email.split("@")[0] ?? "user"),
       displayName: params.displayName,
-      senhaHash: await gerarHash(params.senha),
+      passwordHash: await generateHash(params.password),
     });
 
     await accountRepository.create({ userId: user.id, provider: "senha", providerAccountId: email });
@@ -140,32 +141,34 @@ export const authService = {
     return user;
   },
 
-  async entrarComSenha(params: { email: string; senha: string }) {
+  async joinWithPassword(params: { email: string; password: string }) {
     const user = await userRepository.findByEmail(params.email.toLowerCase());
-    const guardado = user?.senhaHash;
+    const kept = user?.passwordHash;
 
-    if (!user || !guardado || !(await conferirSenha(params.senha, guardado))) {
+    if (!user || !kept || !(await checkPassword(params.password, kept))) {
       throw new UnauthorizedError("E-mail ou senha errados");
     }
 
     return user;
   },
 
-  async trocarSenha(userId: string, params: { atual?: string; nova: string }) {
+  async swapPassword(userId: string, params: { current?: string; fresh: string }) {
     const user = await authService.requireUser(userId);
 
-    if (user.senhaHash) {
-      if (!params.atual || !(await conferirSenha(params.atual, user.senhaHash))) {
+    if (user.passwordHash) {
+      if (!params.current || !(await checkPassword(params.current, user.passwordHash))) {
         throw new AppError("A senha atual não confere");
       }
     }
 
-    await userRepository.update(userId, { senhaHash: await gerarHash(params.nova) });
+    await userRepository.update(userId, { passwordHash: await generateHash(params.fresh) });
 
-    const contas = await accountRepository.findManyByUser(userId);
-    if (!contas.some((c) => c.provider === "senha")) {
+    const accounts = await accountRepository.findManyByUser(userId);
+    if (!accounts.some((c) => c.provider === "senha")) {
       await accountRepository.create({ userId, provider: "senha", providerAccountId: user.email });
     }
+
+    void officialService.notify(userId, "passwordSwapped", undefined);
   },
 
   async signInWithProvider(params: {

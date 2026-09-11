@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { computePermissions, has, highestPosition, type RoleLike } from "./permissions.js";
 
 const EU = "6a8781da7415b08f427be1a4";
-const OUTRO = "6a8781f57415b08f427be1ad";
+const OTHER = "6a8781f57415b08f427be1ad";
 
 const everyone: RoleLike = {
   id: "role-everyone",
@@ -44,8 +44,8 @@ describe("no nível do servidor", () => {
   });
 
   it("permissão desconhecida no banco é ignorada em vez de virar acesso", () => {
-    const estranho: RoleLike = { ...design, permissions: ["INVENTADA", "MANAGE_GUILD"] };
-    const p = computePermissions({ userId: EU, isOwner: false, roles: [estranho] });
+    const odd: RoleLike = { ...design, permissions: ["INVENTADA", "MANAGE_GUILD"] };
+    const p = computePermissions({ userId: EU, isOwner: false, roles: [odd] });
 
     expect(p.has("INVENTADA" as never)).toBe(false);
     expect(has(p, "MANAGE_GUILD")).toBe(true);
@@ -81,16 +81,16 @@ describe("dentro de um canal", () => {
   });
 
   it("entre cargos, permitir vence negar (não depende da ordem do banco)", () => {
-    const outroCargo: RoleLike = { id: "role-x", position: 2, permissions: [], isEveryone: false };
+    const otherRole: RoleLike = { id: "role-x", position: 2, permissions: [], isEveryone: false };
 
     const overwrites = [
       { targetId: design.id, type: "ROLE" as const, allow: [], deny: ["SEND_MESSAGES"] },
-      { targetId: outroCargo.id, type: "ROLE" as const, allow: ["SEND_MESSAGES"], deny: [] },
+      { targetId: otherRole.id, type: "ROLE" as const, allow: ["SEND_MESSAGES"], deny: [] },
     ];
 
-    const roles = [everyone, design, outroCargo];
+    const roles = [everyone, design, otherRole];
     const normal = computePermissions({ userId: EU, isOwner: false, roles, overwrites });
-    const invertido = computePermissions({
+    const inverted = computePermissions({
       userId: EU,
       isOwner: false,
       roles,
@@ -98,7 +98,7 @@ describe("dentro de um canal", () => {
     });
 
     expect(has(normal, "SEND_MESSAGES")).toBe(true);
-    expect(has(invertido, "SEND_MESSAGES")).toBe(true);
+    expect(has(inverted, "SEND_MESSAGES")).toBe(true);
   });
 
   it("o overwrite da pessoa vence o do cargo", () => {
@@ -120,7 +120,7 @@ describe("dentro de um canal", () => {
       userId: EU,
       isOwner: false,
       roles: [everyone],
-      overwrites: [{ targetId: OUTRO, type: "MEMBER", allow: [], deny: ["VIEW_CHANNEL"] }],
+      overwrites: [{ targetId: OTHER, type: "MEMBER", allow: [], deny: ["VIEW_CHANNEL"] }],
     });
 
     expect(has(p, "VIEW_CHANNEL")).toBe(true);

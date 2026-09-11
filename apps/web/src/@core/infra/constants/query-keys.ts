@@ -11,6 +11,8 @@ export const queryKeys = {
   guild: {
     find_many: "find-many-guilds",
     find: (guildId: string) => ["find-guild", guildId] as const,
+    detail: (guildId: string) => ["find-guild", guildId] as const,
+    community: (guildId: string) => ["find-guild-comunidade", guildId] as const,
     preview: (guildId: string) => ["find-guild-preview", guildId] as const,
     invites: (guildId: string) => ["find-guild-invites", guildId] as const,
     moderation: "find-moderation-view",
@@ -26,7 +28,7 @@ export const queryKeys = {
     find_many: (guildId: string) => ["find-webhooks", guildId] as const,
   },
 
-  comando: {
+  command: {
     find_many: (guildId: string) => ["find-comandos", guildId] as const,
   },
 
@@ -36,7 +38,7 @@ export const queryKeys = {
 
   moderation: {
     bans: (guildId: string) => ["find-bans", guildId] as const,
-    audit: (guildId: string, filtro: string) => ["find-audit-log", guildId, filtro] as const,
+    audit: (guildId: string, filter: string) => ["find-audit-log", guildId, filter] as const,
     automod: (guildId: string) => ["find-automod", guildId] as const,
   },
 
@@ -61,14 +63,15 @@ export const queryKeys = {
     messages: (channelId: string) => ["find-channel-messages", channelId] as const,
     postMessages: (postId: string) => ["find-post-messages", postId] as const,
     pins: (channelId: string) => ["find-pins", channelId] as const,
+    whoReacted: (messageId: string) => ["find-quem-reagiu", messageId] as const,
   },
 
-  sessao: {
-    lista: "find-sessoes",
+  session: {
+    list: "find-sessoes",
   },
 
-  aplicativo: {
-    autorizados: "find-aplicativos-autorizados",
+  app: {
+    authorized: "find-aplicativos-autorizados",
   },
 
   voice: {
@@ -80,19 +83,20 @@ export const queryKeys = {
     read_states: "find-read-states",
     favorites: "find-favorite-messages",
     favorite_ids: "find-favorite-message-ids",
-    busca: (filtros: string) => ["buscar-mensagens", filtros] as const,
+    search: (filters: string) => ["buscar-mensagens", filters] as const,
   },
 
-  tema: {
-    meus: "meus-temas",
-    find: (temaId: string) => ["find-tema", temaId] as const,
+  theme: {
+    mine: "meus-temas",
+    find: (themeId: string) => ["find-tema", themeId] as const,
   },
 
-  descoberta: {
-    comunidades: (categoria: string, busca: string) =>
-      ["descobrir-comunidades", categoria, busca] as const,
-    temas: (busca: string) => ["descobrir-temas", busca] as const,
-    aplicativos: (busca: string) => ["descobrir-aplicativos", busca] as const,
+  discovery: {
+    communities: (category: string, search: string) =>
+      ["descobrir-comunidades", category, search] as const,
+    themes: (search: string) => ["descobrir-temas", search] as const,
+    apps: (search: string) => ["descobrir-aplicativos", search] as const,
+    app: (botId: string) => ["descobrir-aplicativo", botId] as const,
   },
 
   bot: {
@@ -104,14 +108,14 @@ export const queryKeys = {
 
   user: {
     profile: (userId: string) => ["find-profile", userId] as const,
-    emComum: (userId: string) => ["find-em-comum", userId] as const,
+    inCommon: (userId: string) => ["find-em-comum", userId] as const,
   },
 
   friend: {
-    ativos: "find-friends-ativos",
+    actives: "find-friends-ativos",
     find_many: "find-many-friends",
     dms: "find-many-dms",
-    pedidos: "find-pedidos-de-dm",
+    requests: "find-pedidos-de-dm",
   },
 
   invite: {

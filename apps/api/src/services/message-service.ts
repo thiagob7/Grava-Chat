@@ -1,67 +1,69 @@
 import { randomUUID } from "node:crypto";
-import type { BuscaQuery } from "~/validations/message.js";
+import type { SearchQuery } from "~/validations/message.js";
 import { guildRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { has, LIMITS } from "@gravae/shared";
+import { has, LIMITS, type ReactionPeople } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import {
   messageRepository,
   reactionRepository,
   readStateRepository,
 } from "~/repositories/message-repository.js";
-import { toMessage } from "~/lib/serialize.js";
+import { toMessage, toPublicUser } from "~/lib/serialize.js";
 import { dmRepository } from "~/repositories/friendship-repository.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { redis, keys } from "~/lib/redis.js";
 import { roleRepository } from "~/repositories/role-repository.js";
-import { accessService, type Contexto } from "./access-service.js";
+import { accessService, type Context } from "./access-service.js";
 import { autoModService } from "./automod-service.js";
 import { forumService } from "./forum-service.js";
 import {
-  passouDoFluxo,
-  mensagemDeFluxo,
-  JANELA_S as JANELA_DO_FLUXO_S,
+  flowPassed,
+  flowMessage,
+  WINDOW_S as FLOW_S_WINDOW,
 } from "~/lib/fluxo-de-mensagens.js";
 import { uploadService } from "./upload-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
 
-const MENCAO_DE_USUARIO = /<@([a-f\d]{24})>/gi;
-const MENCAO_DE_CARGO = /<@&([a-f\d]{24})>/gi;
-const MENCAO_DE_TODOS = /@(everyone|here)\b/;
+const USER_MENTION = /<@([a-f\d]{24})>/gi;
+const ROLE_MENTION = /<@&([a-f\d]{24})>/gi;
+const ALL_MENTION = /@(everyone|here)\b/;
 
-const unicos = (ids: string[]) => ids.filter((v, i, a) => a.indexOf(v) === i);
+const unique = (ids: string[]) => ids.filter((v, i, a) => a.indexOf(v) === i);
 
 const extractMentions = (content: string) =>
-  unicos([...content.matchAll(MENCAO_DE_USUARIO)].map((m) => m[1]!));
+  unique([...content.matchAll(USER_MENTION)].map((m) => m[1]!));
 
-const extrairCargos = (content: string) =>
-  unicos([...content.matchAll(MENCAO_DE_CARGO)].map((m) => m[1]!));
+const extractRoles = (content: string) =>
+  unique([...content.matchAll(ROLE_MENTION)].map((m) => m[1]!));
 
-async function resolverMencoes(
+async function resolveMentions(
   content: string,
   guildId: string | null,
-  contexto: Contexto | null,
+  context: Context | null,
 ): Promise<{ mentionRoleIds: string[]; mentionEveryone: boolean }> {
-  if (!guildId || !contexto) return { mentionRoleIds: [], mentionEveryone: false };
+  if (!guildId || !context) return { mentionRoleIds: [], mentionEveryone: false };
 
-  const podeTodos = has(contexto.permissions, "MENTION_EVERYONE");
-  const pedidos = extrairCargos(content);
+  const canAll = has(context.permissions, "MENTION_EVERYONE");
+  const requests = extractRoles(content);
 
-  if (!pedidos.length) {
-    return { mentionRoleIds: [], mentionEveryone: podeTodos && MENCAO_DE_TODOS.test(content) };
+  if (!requests.length) {
+    return { mentionRoleIds: [], mentionEveryone: canAll && ALL_MENTION.test(content) };
   }
 
-  const cargos = await roleRepository.findManyByGuild(guildId);
-  const permitidos = new Set(
-    cargos.filter((c) => podeTodos || c.mentionable).map((c) => c.id),
+  const roleList = await roleRepository.findManyByGuild(guildId);
+  const allowed = new Set(
+    roleList.filter((c) => canAll || c.mentionable).map((c) => c.id),
   );
 
   return {
-    mentionRoleIds: pedidos.filter((id) => permitidos.has(id)),
-    mentionEveryone: podeTodos && MENCAO_DE_TODOS.test(content),
+    mentionRoleIds: requests.filter((id) => allowed.has(id)),
+    mentionEveryone: canAll && ALL_MENTION.test(content),
   };
 }
+
+const WHO_REACTED_LIMIT = 50;
 
 export const messageService = {
   async history(
@@ -69,10 +71,10 @@ export const messageService = {
     channelId: string,
     params: { before?: string; limit: number; postId?: string },
   ) {
-    const { contexto } = await accessService.requireChannelAccess(userId, channelId);
+    const { context } = await accessService.requireChannelAccess(userId, channelId);
 
-    if (contexto && !has(contexto.permissions, "READ_MESSAGE_HISTORY")) {
-      return { messages: [], hasMore: false, semHistorico: true as const };
+    if (context && !has(context.permissions, "READ_MESSAGE_HISTORY")) {
+      return { messages: [], hasMore: false, withoutHistory: true as const };
     }
 
     const messages = await messageRepository.findPage({ channelId, ...params });
@@ -80,103 +82,110 @@ export const messageService = {
     return {
       messages: messages.reverse().map((m) => toMessage(m, userId)),
       hasMore: messages.length === params.limit,
-      semHistorico: false as const,
+      withoutHistory: false as const,
     };
   },
 
-  async buscar(userId: string, params: Omit<BuscaQuery, "q"> & { termo: string }) {
-    const escopo =
-      params.escopo ?? (params.guildId ? "servidor" : "canal");
+  async search(userId: string, params: Omit<SearchQuery, "q"> & { term: string }) {
+    const scope =
+      params.scope ?? (params.guildId ? "servidor" : "canal");
 
-    const dosServidores = async () => {
-      const filiacoes = await guildRepository.findManyByUser(userId);
-      const porServidor = await Promise.all(
-        filiacoes.map((m) => accessService.readableChannels(userId, m.guildId)),
+    const fromServers = async () => {
+      const memberships = await guildRepository.findManyByUser(userId);
+      const byServer = await Promise.all(
+        memberships.map((m) => accessService.readableChannels(userId, m.guildId)),
       );
-      return porServidor.flat();
+      return byServer.flat();
     };
-    const dasConversas = async () =>
+    const fromChats = async () =>
       (await dmRepository.findManyForUser(userId)).map((c) => c.id);
 
-    const canais =
-      escopo === "tudo"
-        ? [...(await dosServidores()), ...(await dasConversas())]
-        : escopo === "comunidades"
-          ? await dosServidores()
-          : escopo === "dms"
-            ? await dasConversas()
+    const channels =
+      scope === "tudo"
+        ? [...(await fromServers()), ...(await fromChats())]
+        : scope === "comunidades"
+          ? await fromServers()
+          : scope === "dms"
+            ? await fromChats()
             : params.guildId
               ? await accessService.readableChannels(userId, params.guildId)
               : await accessService
-                  .requireChannelAccess(userId, params.canalId!)
+                  .requireChannelAccess(userId, params.channelId!)
                   .then(({ channel }) => [channel.id]);
 
-    const linhas = await messageRepository.buscar({
-      channelIds: canais,
-      termo: params.termo,
-      canalId: escopo === "servidor" || escopo === "canal" ? params.canalId : undefined,
-      autorId: params.autorId,
-      mencionaId: params.mencionaId,
-      tem: params.tem,
-      depois: params.depois,
-      antes: params.antes,
+    const lines = await messageRepository.search({
+      channelIds: channels,
+      term: params.term,
+      channelId: scope === "servidor" || scope === "canal" ? params.channelId : undefined,
+      authorId: params.authorId,
+      mentionsId: params.mentionsId,
+      has: params.has,
+      after: params.after,
+      until: params.until,
       em: params.em,
-      fixada: params.fixada,
-      tipoDeAutor: params.tipoDeAutor,
-      ordem: params.ordem ?? "recente",
+      pinned: params.pinned,
+      authorKind: params.authorKind,
+      order: params.order ?? "recente",
       before: params.before,
       limit: 25,
     });
 
     return {
-      messages: linhas.map((m) => ({
+      messages: lines.map((m) => ({
         ...toMessage(m, userId),
         channelName: m.channel.name,
         channelType: m.channel.type,
       })),
-      hasMore: linhas.length === 25,
+      hasMore: lines.length === 25,
     };
   },
 
   async send(userId: string, input: SendMessageInput) {
-    const { channel, contexto } = await accessService.requireChannelAccess(userId, input.channelId);
+    const { channel, context } = await accessService.requireChannelAccess(userId, input.channelId);
 
     if (channel.type === "FORUM" && !input.postId) {
       throw new AppError("No fórum, a mensagem vai dentro de um assunto");
     }
 
-    if (input.postId) await forumService.requirePostAberto(input.postId, channel.id);
+    if (input.postId) await forumService.requirePostIsOpen(input.postId, channel.id);
 
     if (!channel.guildId) {
-      const outroId = (channel.recipients ?? []).find((id) => id !== userId);
-      const outro = outroId ? await userRepository.findById(outroId) : null;
+      const otherId = (channel.recipients ?? []).find((id) => id !== userId);
+      const other = otherId ? await userRepository.findById(otherId) : null;
 
-      if (outro?.sistema) {
-        throw new ForbiddenError("Esta conversa é só de avisos da casa. Não dá para responder aqui.").com(
+      if (other?.system) {
+        throw new ForbiddenError("Esta conversa é só de avisos da casa. Não dá para responder aqui.").having(
           "recusada",
         );
       }
     }
 
-    if (contexto) {
-      requireNaoEstaDeCastigo(contexto);
+    let messageGuild: Awaited<ReturnType<typeof guildRepository.findById>> = null;
 
-      if (!has(contexto.permissions, "SEND_MESSAGES")) {
-        throw new ForbiddenError("Você não pode escrever neste canal").com("sem-permissao");
+    if (context) {
+      timeoutRequireNotThis(context);
+
+      if (!has(context.permissions, "SEND_MESSAGES")) {
+        throw new ForbiddenError("Você não pode escrever neste canal").having("sem-permissao");
       }
 
-      if (input.attachments?.length && !has(contexto.permissions, "ATTACH_FILES")) {
-        throw new ForbiddenError("Você não pode anexar arquivos neste canal").com("sem-permissao");
+      if (input.attachments?.length && !has(context.permissions, "ATTACH_FILES")) {
+        throw new ForbiddenError("Você não pode anexar arquivos neste canal").having("sem-permissao");
       }
 
-      if (input.poll && !has(contexto.permissions, "CREATE_POLLS")) {
-        throw new ForbiddenError("Você não pode criar enquetes neste canal").com("sem-permissao");
+      if (input.poll && !has(context.permissions, "CREATE_POLLS")) {
+        throw new ForbiddenError("Você não pode criar enquetes neste canal").having("sem-permissao");
       }
 
-      await respeitarModoLento(userId, channel, contexto);
+      await respectModeSlow(userId, channel, context);
+
+      if (channel.guildId) {
+        messageGuild = await guildRepository.findById(channel.guildId);
+        await verifiedRequireEmail(userId, messageGuild, context);
+      }
     }
 
-    await garantirFluxo(userId);
+    await ensureFlow(userId);
 
     const content = input.content.trim();
     if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
@@ -184,24 +193,24 @@ export const messageService = {
     }
 
     if (input.stickerId) {
-      const figurinha = await expressionRepository.findStickerById(input.stickerId);
-      if (!figurinha || figurinha.guildId !== channel.guildId) {
+      const sticker = await expressionRepository.findStickerById(input.stickerId);
+      if (!sticker || sticker.guildId !== channel.guildId) {
         throw new NotFoundError("Figurinha não encontrada");
       }
     }
 
-    if (channel.guildId && contexto) {
-      await autoModService.avaliar({
+    if (channel.guildId && context) {
+      await autoModService.evaluate({
         guildId: channel.guildId,
         channelId: channel.id,
         userId,
-        contexto,
+        context,
         content,
       });
     }
 
-    const autorRespondido =
-      input.mencionarAutor && input.replyToId
+    const authorReplied =
+      input.mentionAuthor && input.replyToId
         ? await messageRepository
             .findById(input.replyToId)
             .then((m) => (m && m.authorId !== userId ? m.authorId : null))
@@ -212,30 +221,30 @@ export const messageService = {
       channelId: input.channelId,
       authorId: userId,
       content,
-      ...(input.fonte && input.fonte !== "padrao" ? { fonte: input.fonte } : {}),
+      ...(input.font && input.font !== "padrao" ? { font: input.font } : {}),
       attachments: (input.attachments ?? []).map((a) => ({
         ...a,
         width: a.width ?? null,
         height: a.height ?? null,
-        spoiler: a.spoiler ?? false,
+        spoiler: a.spoiler || (messageGuild?.filtersMediaExplicit === true && isMedia(a.contentType)),
         description: a.description ?? null,
-        duracaoMs: a.duracaoMs ?? null,
-        ondas: a.ondas ?? null,
+        durationMs: a.durationMs ?? null,
+        waves: a.waves ?? null,
       })),
-      ...(input.poll ? { poll: montarEnquete(input.poll) } : {}),
+      ...(input.poll ? { poll: buildPoll(input.poll) } : {}),
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
-      encaminhadaDeCanalId: input.encaminhadaDe?.channelId ?? null,
-      encaminhadaDeMensagemId: input.encaminhadaDe?.messageId ?? null,
-      mentions: unicos([
+      channelForwardedId: input.forwarded?.channelId ?? null,
+      messageForwardedId: input.forwarded?.messageId ?? null,
+      mentions: unique([
         ...extractMentions(content),
-        ...(autorRespondido ? [autorRespondido] : []),
+        ...(authorReplied ? [authorReplied] : []),
       ]),
-      ...(await resolverMencoes(content, channel.guildId, contexto)),
+      ...(await resolveMentions(content, channel.guildId, context)),
     });
 
-    if (input.postId) await forumService.registrarResposta(input.postId).catch(() => undefined);
+    if (input.postId) await forumService.registerReply(input.postId).catch(() => undefined);
 
     await readStateRepository.markRead(userId, input.channelId, created.id);
 
@@ -249,14 +258,14 @@ export const messageService = {
 
     const content = input.content.trim();
 
-    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
-    const canal = await channelRepository.findById(existing.channelId);
+    const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const channel = await channelRepository.findById(existing.channelId);
 
     const updated = await messageRepository.update(input.messageId, {
       content,
       editedAt: new Date(),
       mentions: extractMentions(content),
-      ...(await resolverMencoes(content, canal?.guildId ?? null, contexto)),
+      ...(await resolveMentions(content, channel?.guildId ?? null, context)),
     });
 
     return toMessage(updated, userId);
@@ -266,83 +275,83 @@ export const messageService = {
     const existing = await messageRepository.findById(messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
     const isAuthor = existing.authorId === userId;
-    const podeModerar = Boolean(contexto && has(contexto.permissions, "MANAGE_MESSAGES"));
+    const canModerate = Boolean(context && has(context.permissions, "MANAGE_MESSAGES"));
 
-    if (!isAuthor && !podeModerar) throw new ForbiddenError("Sem permissão para apagar esta mensagem");
+    if (!isAuthor && !canModerate) throw new ForbiddenError("Sem permissão para apagar esta mensagem");
 
     await messageRepository.softDelete(messageId);
 
-    void uploadService.remover(existing.attachments.map((a) => a.id));
+    void uploadService.remove(existing.attachments.map((a) => a.id));
 
     return { messageId, channelId: existing.channelId };
   },
 
-  async removerAnexo(userId: string, messageId: string, anexoId: string) {
+  async removeAttachment(userId: string, messageId: string, attachmentId: string) {
     const existing = await messageRepository.findById(messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const alvo = existing.attachments.find((a) => a.id === anexoId);
-    if (!alvo) throw new NotFoundError("Anexo não encontrado");
+    const target = existing.attachments.find((a) => a.id === attachmentId);
+    if (!target) throw new NotFoundError("Anexo não encontrado");
 
-    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
-    const ehAutor = existing.authorId === userId;
-    const podeModerar = Boolean(contexto && has(contexto.permissions, "MANAGE_MESSAGES"));
+    const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const isAuthor = existing.authorId === userId;
+    const canModerate = Boolean(context && has(context.permissions, "MANAGE_MESSAGES"));
 
-    if (!ehAutor && !podeModerar) {
+    if (!isAuthor && !canModerate) {
       throw new ForbiddenError("Sem permissão para mexer nesta mensagem");
     }
 
-    const restantes = existing.attachments.filter((a) => a.id !== anexoId);
-    const ficouVazia =
-      restantes.length === 0 &&
+    const remaining = existing.attachments.filter((a) => a.id !== attachmentId);
+    const emptyStayed =
+      remaining.length === 0 &&
       !existing.content?.trim() &&
       !existing.poll &&
       !existing.stickerId;
 
-    void uploadService.remover([anexoId]);
+    void uploadService.remove([attachmentId]);
 
-    if (ficouVazia) {
+    if (emptyStayed) {
       await messageRepository.softDelete(messageId);
-      return { apagouAMensagem: true as const, channelId: existing.channelId, messageId };
+      return { deletedMessage: true as const, channelId: existing.channelId, messageId };
     }
 
-    await messageRepository.update(messageId, { attachments: { set: restantes } });
+    await messageRepository.update(messageId, { attachments: { set: remaining } });
 
-    const atualizada = await messageRepository.findByIdWithRelations(messageId);
+    const updated = await messageRepository.findByIdWithRelations(messageId);
 
     return {
-      apagouAMensagem: false as const,
+      deletedMessage: false as const,
       channelId: existing.channelId,
-      message: toMessage(atualizada!, userId),
+      message: toMessage(updated!, userId),
     };
   },
 
-  async pin(userId: string, messageId: string, fixar: boolean) {
+  async pin(userId: string, messageId: string, pin: boolean) {
     const existing = await messageRepository.findById(messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const { contexto } = await accessService.requireChannelAccess(userId, existing.channelId);
+    const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
 
-    const podeFixar =
-      has(contexto?.permissions ?? new Set(), "PIN_MESSAGES") ||
-      has(contexto?.permissions ?? new Set(), "MANAGE_MESSAGES");
+    const canPin =
+      has(context?.permissions ?? new Set(), "PIN_MESSAGES") ||
+      has(context?.permissions ?? new Set(), "MANAGE_MESSAGES");
 
-    if (contexto && !podeFixar) {
+    if (context && !canPin) {
       throw new ForbiddenError("Você não pode fixar mensagens neste canal");
     }
 
-    if (fixar) {
-      const fixadas = await messageRepository.countPinned(existing.channelId);
-      if (fixadas >= LIMITS.mensagensFixadas) {
-        throw new AppError(`O canal já tem ${LIMITS.mensagensFixadas} mensagens fixadas`);
+    if (pin) {
+      const pinned = await messageRepository.countPinned(existing.channelId);
+      if (pinned >= LIMITS.messagesPinned) {
+        throw new AppError(`O canal já tem ${LIMITS.messagesPinned} mensagens fixadas`);
       }
     }
 
     const updated = await messageRepository.update(messageId, {
-      pinnedAt: fixar ? new Date() : null,
-      pinnedById: fixar ? userId : null,
+      pinnedAt: pin ? new Date() : null,
+      pinnedById: pin ? userId : null,
     });
 
     return toMessage(updated, userId);
@@ -351,43 +360,43 @@ export const messageService = {
   async pinned(userId: string, channelId: string) {
     await accessService.requireChannelAccess(userId, channelId);
 
-    const mensagens = await messageRepository.findPinned(channelId);
-    return mensagens.map((m) => toMessage(m, userId));
+    const messages = await messageRepository.findPinned(channelId);
+    return messages.map((m) => toMessage(m, userId));
   },
 
-  async votar(userId: string, messageId: string, optionId: string) {
+  async vote(userId: string, messageId: string, optionId: string) {
     const message = await messageRepository.findByIdWithRelations(messageId);
     if (!message.poll || message.deletedAt) throw new NotFoundError("Enquete não encontrada");
 
     await accessService.requireChannelAccess(userId, message.channelId);
 
-    const fechada =
+    const closed =
       message.poll.closedAt !== null ||
       (message.poll.expiresAt !== null && message.poll.expiresAt < new Date());
-    if (fechada) throw new AppError("Esta enquete já encerrou");
+    if (closed) throw new AppError("Esta enquete já encerrou");
 
-    const jaVotou = message.poll.opcoes.some(
+    const alreadyVoted = message.poll.options.some(
       (o) => o.id === optionId && o.userIds.includes(userId),
     );
 
-    const opcoes = message.poll.opcoes.map((o) => {
-      const semEsteVoto = o.userIds.filter((id) => id !== userId);
+    const options = message.poll.options.map((o) => {
+      const withoutThisVote = o.userIds.filter((id) => id !== userId);
 
       if (o.id !== optionId) {
-        return { ...o, userIds: message.poll!.multiSelect ? o.userIds : semEsteVoto };
+        return { ...o, userIds: message.poll!.multiSelect ? o.userIds : withoutThisVote };
       }
 
-      return { ...o, userIds: jaVotou ? semEsteVoto : [...semEsteVoto, userId] };
+      return { ...o, userIds: alreadyVoted ? withoutThisVote : [...withoutThisVote, userId] };
     });
 
     const updated = await messageRepository.update(messageId, {
-      poll: { ...message.poll, opcoes },
+      poll: { ...message.poll, options },
     });
 
     return toMessage(updated, userId);
   },
 
-  async encerrarEnquete(userId: string, messageId: string) {
+  async endPoll(userId: string, messageId: string) {
     const message = await messageRepository.findByIdWithRelations(messageId);
     if (!message.poll) throw new NotFoundError("Enquete não encontrada");
     if (message.authorId !== userId) throw new ForbiddenError("Só quem criou encerra a enquete");
@@ -403,8 +412,8 @@ export const messageService = {
     const message = await messageRepository.findById(messageId);
     if (!message || message.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const { contexto } = await accessService.requireChannelAccess(userId, message.channelId);
-    if (add && contexto && !has(contexto.permissions, "ADD_REACTIONS")) {
+    const { context } = await accessService.requireChannelAccess(userId, message.channelId);
+    if (add && context && !has(context.permissions, "ADD_REACTIONS")) {
       throw new ForbiddenError("Você não pode reagir neste canal");
     }
 
@@ -412,6 +421,27 @@ export const messageService = {
     else await reactionRepository.remove(messageId, userId, emoji);
 
     return { channelId: message.channelId, reactions: await messageService.reactionsOf(messageId) };
+  },
+
+  async whoReacted(userId: string, messageId: string) {
+    const message = await messageRepository.findById(messageId);
+    if (!message) throw new NotFoundError("Mensagem não encontrada");
+
+    await accessService.requireChannelAccess(userId, message.channelId);
+
+    const rows = await reactionRepository.findManyByMessageWithUser(messageId);
+    const grouped = new Map<string, ReactionPeople>();
+
+    for (const row of rows) {
+      const entry = grouped.get(row.emoji) ?? { emoji: row.emoji, count: 0, users: [] };
+
+      entry.count += 1;
+      if (entry.users.length < WHO_REACTED_LIMIT) entry.users.push(toPublicUser(row.user));
+
+      grouped.set(row.emoji, entry);
+    }
+
+    return [...grouped.values()];
   },
 
   async reactionsOf(messageId: string) {
@@ -433,19 +463,19 @@ export const messageService = {
     await readStateRepository.markRead(userId, channelId, messageId);
   },
 
-  async marcarServidorLido(userId: string, guildId: string) {
-    const canais = await accessService.readableChannels(userId, guildId);
-    const lidos: { channelId: string; messageId: string }[] = [];
+  async markServerRead(userId: string, guildId: string) {
+    const channels = await accessService.readableChannels(userId, guildId);
+    const read: { channelId: string; messageId: string }[] = [];
 
-    for (const canalId of canais) {
-      const ultima = await readStateRepository.findLastIn(canalId);
-      if (!ultima) continue;
+    for (const channelId of channels) {
+      const last = await readStateRepository.findLastIn(channelId);
+      if (!last) continue;
 
-      await readStateRepository.markRead(userId, canalId, ultima.id);
-      lidos.push({ channelId: canalId, messageId: ultima.id });
+      await readStateRepository.markRead(userId, channelId, last.id);
+      read.push({ channelId: channelId, messageId: last.id });
     }
 
-    return lidos;
+    return read;
   },
 
   async markUnread(userId: string, channelId: string, messageId: string) {
@@ -461,24 +491,24 @@ export const messageService = {
       dmRepository.findManyForUser(userId),
     ]);
 
-    const canaisDeServidor = await channelRepository.idsByGuilds(guildIds.map((g) => g.guildId));
-    const channelIds = [...canaisDeServidor.map((c) => c.id), ...dms.map((d) => d.id)];
+    const serverChannels = await channelRepository.idsByGuilds(guildIds.map((g) => g.guildId));
+    const channelIds = [...serverChannels.map((c) => c.id), ...dms.map((d) => d.id)];
     if (!channelIds.length) return [];
 
-    const desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const mensagens = await messageRepository.findMentions(userId, channelIds, desde);
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const messages = await messageRepository.findMentions(userId, channelIds, since);
 
-    const canais = await channelRepository.findManyByIds([
-      ...new Set(mensagens.map((m) => m.channelId)),
+    const channels = await channelRepository.findManyByIds([
+      ...new Set(messages.map((m) => m.channelId)),
     ]);
-    const porCanal = new Map(canais.map((c) => [c.id, c]));
+    const byChannel = new Map(channels.map((c) => [c.id, c]));
 
-    return mensagens.map((m) => ({
+    return messages.map((m) => ({
       ...toMessage(m, userId),
-      canal: {
+      channel: {
         id: m.channelId,
-        nome: porCanal.get(m.channelId)?.name ?? "conversa",
-        guildId: porCanal.get(m.channelId)?.guildId ?? null,
+        name: byChannel.get(m.channelId)?.name ?? "conversa",
+        guildId: byChannel.get(m.channelId)?.guildId ?? null,
       },
     }));
   },
@@ -487,16 +517,16 @@ export const messageService = {
     const states = await readStateRepository.findManyByUser(userId);
 
     const memberships = await memberRepository.membershipsOf(userId);
-    const meusCargos = [...new Set(memberships.flatMap((m) => m.roleIds))];
+    const mineRoles = [...new Set(memberships.flatMap((m) => m.roleIds))];
 
-    const canais = await channelRepository.guildIdsOf(states.map((s) => s.channelId));
-    const dadosDoCanal = new Map(canais.map((c) => [c.id, c]));
+    const channels = await channelRepository.guildIdsOf(states.map((s) => s.channelId));
+    const channelData = new Map(channels.map((c) => [c.id, c]));
 
-    const lidos = await Promise.all(
+    const read = await Promise.all(
       states.map(async (s) => ({
         channelId: s.channelId,
-        guildId: dadosDoCanal.get(s.channelId)?.guildId ?? null,
-        channelName: dadosDoCanal.get(s.channelId)?.name ?? null,
+        guildId: channelData.get(s.channelId)?.guildId ?? null,
+        channelName: channelData.get(s.channelId)?.name ?? null,
         lastReadMessageId: s.lastReadMessageId,
         unreadCount: s.lastReadMessageId
           ? await readStateRepository.countUnread(s.channelId, s.lastReadMessageId)
@@ -506,20 +536,20 @@ export const messageService = {
               s.channelId,
               s.lastReadMessageId,
               userId,
-              meusCargos,
+              mineRoles,
             )
           : 0,
       })),
     );
 
-    const nunca = await mencoesEmCanalNuncaAberto(
+    const never = await mentionsChannelNeverIsOpen(
       userId,
       new Set(states.map((s) => s.channelId)),
       memberships,
-      meusCargos,
+      mineRoles,
     );
 
-    return [...lidos, ...nunca];
+    return [...read, ...never];
   },
 
   get pageSize() {
@@ -527,44 +557,44 @@ export const messageService = {
   },
 };
 
-async function mencoesEmCanalNuncaAberto(
+async function mentionsChannelNeverIsOpen(
   userId: string,
-  jaTemEstado: Set<string>,
+  alreadyHasState: Set<string>,
   memberships: { guildId: string; roleIds: string[]; joinedAt: Date }[],
-  meusCargos: string[],
+  mineRoles: string[],
 ) {
   if (!memberships.length) return [];
 
-  const visiveis = await accessService.listenableChannels(
+  const visible = await accessService.listenableChannels(
     userId,
     memberships.map((m) => m.guildId),
   );
 
-  const novos = visiveis.filter((id) => !jaTemEstado.has(id));
-  if (!novos.length) return [];
+  const fresh = visible.filter((id) => !alreadyHasState.has(id));
+  if (!fresh.length) return [];
 
-  const canais = await channelRepository.guildIdsOf(novos);
-  const entrada = new Map(memberships.map((m) => [m.guildId, m.joinedAt]));
+  const channels = await channelRepository.guildIdsOf(fresh);
+  const entry = new Map(memberships.map((m) => [m.guildId, m.joinedAt]));
 
-  const porServidor = new Map<string, string[]>();
-  for (const canal of canais) {
-    if (!canal.guildId || !entrada.has(canal.guildId)) continue;
-    porServidor.set(canal.guildId, [...(porServidor.get(canal.guildId) ?? []), canal.id]);
+  const byServer = new Map<string, string[]>();
+  for (const channel of channels) {
+    if (!channel.guildId || !entry.has(channel.guildId)) continue;
+    byServer.set(channel.guildId, [...(byServer.get(channel.guildId) ?? []), channel.id]);
   }
 
-  const contagens = await Promise.all(
-    [...porServidor].map(([guildId, ids]) =>
-      readStateRepository.mentionsSince(ids, entrada.get(guildId)!, userId, meusCargos),
+  const counts = await Promise.all(
+    [...byServer].map(([guildId, ids]) =>
+      readStateRepository.mentionsSince(ids, entry.get(guildId)!, userId, mineRoles),
     ),
   );
 
-  const porId = new Map(canais.map((c) => [c.id, c]));
+  const byId = new Map(channels.map((c) => [c.id, c]));
 
-  return contagens.flatMap((parcial) =>
-    [...parcial].map(([channelId, mentionCount]) => ({
+  return counts.flatMap((partial) =>
+    [...partial].map(([channelId, mentionCount]) => ({
       channelId,
-      guildId: porId.get(channelId)?.guildId ?? null,
-      channelName: porId.get(channelId)?.name ?? null,
+      guildId: byId.get(channelId)?.guildId ?? null,
+      channelName: byId.get(channelId)?.name ?? null,
       lastReadMessageId: null as string | null,
       unreadCount: 0,
       mentionCount,
@@ -572,60 +602,79 @@ async function mencoesEmCanalNuncaAberto(
   );
 }
 
-function requireNaoEstaDeCastigo(contexto: Contexto) {
-  const ate = contexto.member?.timeoutUntil;
-  if (!ate || ate <= new Date()) return;
+function timeoutRequireNotThis(context: Context) {
+  const until = context.member?.timeoutUntil;
+  if (!until || until <= new Date()) return;
 
-  const minutos = Math.ceil((ate.getTime() - Date.now()) / 60_000);
-  throw new ForbiddenError(`Você está de castigo neste servidor por mais ${minutos} min`).com("castigo");
+  const minutes = Math.ceil((until.getTime() - Date.now()) / 60_000);
+  throw new ForbiddenError(`Você está de castigo neste servidor por mais ${minutes} min`).having("castigo");
 }
 
-async function respeitarModoLento(
+async function respectModeSlow(
   userId: string,
   channel: { id: string; slowmodeSeconds: number },
-  contexto: Contexto,
+  context: Context,
 ) {
   if (!channel.slowmodeSeconds) return;
 
   if (
-    has(contexto.permissions, "BYPASS_SLOWMODE") ||
-    has(contexto.permissions, "MANAGE_MESSAGES") ||
-    has(contexto.permissions, "MANAGE_CHANNELS")
+    has(context.permissions, "BYPASS_SLOWMODE") ||
+    has(context.permissions, "MANAGE_MESSAGES") ||
+    has(context.permissions, "MANAGE_CHANNELS")
   ) {
     return;
   }
 
-  const chave = keys.slowmode(channel.id, userId);
-  const primeiro = await redis.set(chave, "1", "EX", channel.slowmodeSeconds, "NX");
+  const key = keys.slowmode(channel.id, userId);
+  const first = await redis.set(key, "1", "EX", channel.slowmodeSeconds, "NX");
 
-  if (!primeiro) {
-    const faltam = await redis.ttl(chave);
-    throw new AppError(`Modo lento: espere ${Math.max(faltam, 1)}s para mandar de novo`, 429).com("modo-lento");
+  if (!first) {
+    const missing = await redis.ttl(key);
+    throw new AppError(`Modo lento: espere ${Math.max(missing, 1)}s para mandar de novo`, 429).having("modo-lento");
   }
 }
 
-async function garantirFluxo(userId: string) {
-  const chave = keys.fluxoDeMensagens(userId);
+const isMedia = (contentType: string) =>
+  contentType.startsWith("image/") || contentType.startsWith("video/");
 
-  const usos = await redis.incr(chave);
-  if (usos === 1) await redis.expire(chave, JANELA_DO_FLUXO_S);
+async function verifiedRequireEmail(
+  userId: string,
+  guild: { verifiedRequiresEmail: boolean | null } | null,
+  context: Context,
+) {
+  if (context.isOwner || context.member?.roleIds?.length) return;
+  if (!guild?.verifiedRequiresEmail) return;
 
-  if (passouDoFluxo(usos)) {
-    throw new AppError(mensagemDeFluxo(await redis.ttl(chave)), 429).com("depressa");
+  const user = await userRepository.findById(userId);
+  if (user?.isBot || user?.emailVerifiedAt) return;
+
+  throw new ForbiddenError(
+    "Esta comunidade só deixa falar quem confirmou o e-mail. Confirme o seu nas configurações da conta.",
+  ).having("recusada");
+}
+
+async function ensureFlow(userId: string) {
+  const key = keys.messagesFlow(userId);
+
+  const uses = await redis.incr(key);
+  if (uses === 1) await redis.expire(key, FLOW_S_WINDOW);
+
+  if (flowPassed(uses)) {
+    throw new AppError(flowMessage(await redis.ttl(key)), 429).having("depressa");
   }
 }
 
-function montarEnquete(input: NonNullable<SendMessageInput["poll"]>) {
+function buildPoll(input: NonNullable<SendMessageInput["poll"]>) {
   return {
-    pergunta: input.pergunta.trim(),
-    opcoes: input.opcoes.map((o) => ({
+    question: input.question.trim(),
+    options: input.options.map((o) => ({
       id: randomUUID(),
-      texto: o.texto.trim(),
+      text: o.text.trim(),
       emoji: o.emoji ?? null,
       userIds: [],
     })),
     multiSelect: input.multiSelect ?? false,
-    expiresAt: input.duracaoHoras ? new Date(Date.now() + input.duracaoHoras * 3600_000) : null,
+    expiresAt: input.durationHours ? new Date(Date.now() + input.durationHours * 3600_000) : null,
     closedAt: null,
   };
 }

@@ -1,25 +1,25 @@
 import { describe, expect, it, vi } from "vitest";
 
-const candidatas = vi.fn();
-const membrosDe = vi.fn();
-const acharMembro = vi.fn();
-const criarMembro = vi.fn();
-const acharBanimento = vi.fn();
+const candidates = vi.fn();
+const members = vi.fn();
+const findMember = vi.fn();
+const createMember = vi.fn();
+const findBan = vi.fn();
 const mapFor = vi.fn();
 
 vi.mock("~/repositories/guild-repository.js", () => ({
-  descobertaRepository: {
-    candidatas: (...args: unknown[]) => candidatas(...args),
-    membrosDe: (...args: unknown[]) => membrosDe(...args),
+  discoveryRepository: {
+    candidates: (...args: unknown[]) => candidates(...args),
+    members: (...args: unknown[]) => members(...args),
   },
   memberRepository: {
-    find: (...args: unknown[]) => acharMembro(...args),
-    create: (...args: unknown[]) => criarMembro(...args),
+    find: (...args: unknown[]) => findMember(...args),
+    create: (...args: unknown[]) => createMember(...args),
   },
 }));
 
 vi.mock("~/repositories/ban-repository.js", () => ({
-  banRepository: { find: (...args: unknown[]) => acharBanimento(...args) },
+  banRepository: { find: (...args: unknown[]) => findBan(...args) },
 }));
 
 vi.mock("~/services/presence-service.js", () => ({
@@ -28,44 +28,44 @@ vi.mock("~/services/presence-service.js", () => ({
 
 vi.mock("~/lib/serialize.js", () => ({ toMember: (m: unknown) => m }));
 
-const { descobertaService } = await import("~/services/descoberta-service.js");
+const { discoveryService } = await import("~/services/descoberta-service.js");
 
-const servidor = (id: string, membros: number, extras = {}) => ({
+const server = (id: string, members: number, extras = {}) => ({
   id,
   name: `Servidor ${id}`,
   iconUrl: null,
   bannerUrl: null,
   description: null,
-  categoria: null,
-  _count: { members: membros },
+  category: null,
+  _count: { members: members },
   ...extras,
 });
 
 describe("listar comunidades", () => {
   it("deixa de fora quem nao chegou aos cem membros", async () => {
-    candidatas.mockResolvedValue([servidor("a", 99), servidor("b", 100)]);
-    membrosDe.mockResolvedValue(new Map([["b", ["u1"]]]));
+    candidates.mockResolvedValue([server("a", 99), server("b", 100)]);
+    members.mockResolvedValue(new Map([["b", ["u1"]]]));
     mapFor.mockResolvedValue({ u1: "ONLINE" });
 
-    const lista = await descobertaService.listar("eu", {});
+    const list = await discoveryService.list("eu", {});
 
-    expect(lista.map((c) => c.id)).toEqual(["b"]);
+    expect(list.map((c) => c.id)).toEqual(["b"]);
   });
 
   it("conta como online so quem nao esta offline", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100)]);
-    membrosDe.mockResolvedValue(new Map([["a", ["u1", "u2", "u3"]]]));
+    candidates.mockResolvedValue([server("a", 100)]);
+    members.mockResolvedValue(new Map([["a", ["u1", "u2", "u3"]]]));
     mapFor.mockResolvedValue({ u1: "ONLINE", u2: "OFFLINE", u3: "DND" });
 
-    const lista = await descobertaService.listar("eu", {});
+    const list = await discoveryService.list("eu", {});
 
-    expect(lista[0]?.online).toBe(2);
-    expect(lista[0]?.membros).toBe(100);
+    expect(list[0]?.online).toBe(2);
+    expect(list[0]?.members).toBe(100);
   });
 
   it("marca onde eu ja estou dentro", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100), servidor("b", 200)]);
-    membrosDe.mockResolvedValue(
+    candidates.mockResolvedValue([server("a", 100), server("b", 200)]);
+    members.mockResolvedValue(
       new Map([
         ["a", ["eu"]],
         ["b", ["outro"]],
@@ -73,69 +73,69 @@ describe("listar comunidades", () => {
     );
     mapFor.mockResolvedValue({});
 
-    const lista = await descobertaService.listar("eu", {});
+    const list = await discoveryService.list("eu", {});
 
-    expect(lista.find((c) => c.id === "a")?.jaSouMembro).toBe(true);
-    expect(lista.find((c) => c.id === "b")?.jaSouMembro).toBe(false);
+    expect(list.find((c) => c.id === "a")?.alreadyAmMember).toBe(true);
+    expect(list.find((c) => c.id === "b")?.alreadyAmMember).toBe(false);
   });
 
   it("poe as maiores primeiro", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100), servidor("b", 900), servidor("c", 300)]);
-    membrosDe.mockResolvedValue(new Map());
+    candidates.mockResolvedValue([server("a", 100), server("b", 900), server("c", 300)]);
+    members.mockResolvedValue(new Map());
     mapFor.mockResolvedValue({});
 
-    const lista = await descobertaService.listar("eu", {});
+    const list = await discoveryService.list("eu", {});
 
-    expect(lista.map((c) => c.id)).toEqual(["b", "c", "a"]);
+    expect(list.map((c) => c.id)).toEqual(["b", "c", "a"]);
   });
 
   it("ignora categoria que nao existe em vez de nao achar nada", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100)]);
-    membrosDe.mockResolvedValue(new Map());
+    candidates.mockResolvedValue([server("a", 100)]);
+    members.mockResolvedValue(new Map());
     mapFor.mockResolvedValue({});
 
-    await descobertaService.listar("eu", { categoria: "INVENTADA" });
+    await discoveryService.list("eu", { category: "INVENTADA" });
 
-    expect(candidatas).toHaveBeenCalledWith(null, null);
+    expect(candidates).toHaveBeenCalledWith(null, null);
   });
 });
 
 describe("entrar pela descoberta", () => {
   it("recusa servidor que nao esta na lista", async () => {
-    candidatas.mockResolvedValue([servidor("a", 99)]);
+    candidates.mockResolvedValue([server("a", 99)]);
 
-    await expect(descobertaService.entrar("eu", "a")).rejects.toThrow(
+    await expect(discoveryService.join("eu", "a")).rejects.toThrow(
       "Esta comunidade não está no Explorar",
     );
   });
 
   it("recusa quem esta banido", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100)]);
-    acharBanimento.mockResolvedValue({ id: "ban" });
+    candidates.mockResolvedValue([server("a", 100)]);
+    findBan.mockResolvedValue({ id: "ban" });
 
-    await expect(descobertaService.entrar("eu", "a")).rejects.toThrow("banido");
+    await expect(discoveryService.join("eu", "a")).rejects.toThrow("banido");
   });
 
   it("nao cria membro de novo pra quem ja esta dentro", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100)]);
-    acharBanimento.mockResolvedValue(null);
-    acharMembro.mockResolvedValue({ id: "m1" });
+    candidates.mockResolvedValue([server("a", 100)]);
+    findBan.mockResolvedValue(null);
+    findMember.mockResolvedValue({ id: "m1" });
 
-    const resultado = await descobertaService.entrar("eu", "a");
+    const result = await discoveryService.join("eu", "a");
 
-    expect(resultado.jaEraMembro).toBe(true);
-    expect(criarMembro).not.toHaveBeenCalled();
+    expect(result.alreadyWasMember).toBe(true);
+    expect(createMember).not.toHaveBeenCalled();
   });
 
   it("entra sem convite nenhum", async () => {
-    candidatas.mockResolvedValue([servidor("a", 100)]);
-    acharBanimento.mockResolvedValue(null);
-    acharMembro.mockResolvedValue(null);
-    criarMembro.mockResolvedValue({ id: "m2" });
+    candidates.mockResolvedValue([server("a", 100)]);
+    findBan.mockResolvedValue(null);
+    findMember.mockResolvedValue(null);
+    createMember.mockResolvedValue({ id: "m2" });
 
-    const resultado = await descobertaService.entrar("eu", "a");
+    const result = await discoveryService.join("eu", "a");
 
-    expect(resultado.jaEraMembro).toBe(false);
-    expect(criarMembro).toHaveBeenCalledWith({ guildId: "a", userId: "eu" });
+    expect(result.alreadyWasMember).toBe(false);
+    expect(createMember).toHaveBeenCalledWith({ guildId: "a", userId: "eu" });
   });
 });

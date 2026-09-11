@@ -6,36 +6,44 @@ export const botRepository = {
     return prisma.bot.findMany({
       where: { ownerId },
       orderBy: { createdAt: "desc" },
-      include: { usuario: true },
+      include: { user: true },
     });
   },
 
-  findPublicos(busca?: string) {
+  findPublic(search?: string, category?: string) {
     return prisma.bot.findMany({
       where: {
-        publico: true,
-        ...(busca
-          ? { usuario: { is: { displayName: { contains: busca, mode: "insensitive" } } } }
+        isPublic: true,
+        ...(search
+          ? { user: { is: { displayName: { contains: search, mode: "insensitive" } } } }
           : {}),
+        ...(category ? { categories: { has: category } } : {}),
       },
       orderBy: { createdAt: "desc" },
       take: 60,
-      include: { usuario: true, owner: { select: { id: true, displayName: true } } },
+      include: { user: true, owner: { select: { id: true, displayName: true } } },
+    });
+  },
+
+  findPublicById(id: string) {
+    return prisma.bot.findFirst({
+      where: { id, isPublic: true },
+      include: { user: true, owner: { select: { id: true, displayName: true } } },
     });
   },
 
   findById(id: string) {
-    return prisma.bot.findUnique({ where: { id }, include: { usuario: true } });
+    return prisma.bot.findUnique({ where: { id }, include: { user: true } });
   },
 
   findByToken(token: string) {
-    return prisma.bot.findUnique({ where: { token }, include: { usuario: true } });
+    return prisma.bot.findUnique({ where: { token }, include: { user: true } });
   },
 
   findManyByUserIds(botUserIds: string[]) {
     return prisma.bot.findMany({
       where: { botUserId: { in: botUserIds } },
-      include: { usuario: true },
+      include: { user: true },
     });
   },
 
@@ -44,17 +52,17 @@ export const botRepository = {
     botUserId: string;
     token: string;
     clientSecret: string;
-    permissoesPedidas: string[];
+    permissionsRequested: string[];
   }) {
-    return prisma.bot.create({ data, include: { usuario: true } });
+    return prisma.bot.create({ data, include: { user: true } });
   },
 
   update(id: string, data: Prisma.BotUpdateInput) {
-    return prisma.bot.update({ where: { id }, data, include: { usuario: true } });
+    return prisma.bot.update({ where: { id }, data, include: { user: true } });
   },
 
   updateToken(id: string, token: string) {
-    return prisma.bot.update({ where: { id }, data: { token }, include: { usuario: true } });
+    return prisma.bot.update({ where: { id }, data: { token }, include: { user: true } });
   },
 
   delete(id: string) {

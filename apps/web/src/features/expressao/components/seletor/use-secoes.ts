@@ -1,39 +1,39 @@
 import { useCallback, useRef, useState } from "react";
 
-export function useSecoes(inicial: string | null = null) {
+export function useSections(initial: string | null = null) {
   const container = useRef<HTMLDivElement | null>(null);
-  const secoes = useRef(new Map<string, HTMLElement>());
-  const [ativo, setAtivo] = useState<string | null>(inicial);
+  const sections = useRef(new Map<string, HTMLElement>());
+  const [active, setActive] = useState<string | null>(initial);
 
-  const registrar = useCallback(
+  const register = useCallback(
     (id: string) => (el: HTMLElement | null) => {
-      if (el) secoes.current.set(id, el);
-      else secoes.current.delete(id);
+      if (el) sections.current.set(id, el);
+      else sections.current.delete(id);
     },
     [],
   );
 
-  const irPara = useCallback((id: string) => {
-    const alvo = secoes.current.get(id);
-    if (!alvo || !container.current) return;
+  const irFor = useCallback((id: string) => {
+    const target = sections.current.get(id);
+    if (!target || !container.current) return;
 
-    container.current.scrollTop = alvo.offsetTop;
-    setAtivo(id);
+    container.current.scrollTop = target.offsetTop;
+    setActive(id);
   }, []);
 
-  const aoRolar = useCallback(() => {
+  const onScroll = useCallback(() => {
     const el = container.current;
     if (!el) return;
 
-    const limite = el.scrollTop + 12;
-    let atual: string | null = null;
+    const limit = el.scrollTop + 12;
+    let current: string | null = null;
 
-    for (const [id, secao] of secoes.current) {
-      if (secao.offsetTop <= limite) atual = id;
+    for (const [id, section] of sections.current) {
+      if (section.offsetTop <= limit) current = id;
     }
 
-    setAtivo(atual ?? secoes.current.keys().next().value ?? null);
+    setActive(current ?? sections.current.keys().next().value ?? null);
   }, []);
 
-  return { container, registrar, irPara, aoRolar, ativo };
+  return { container, register, irFor, onScroll, active };
 }

@@ -5,20 +5,20 @@ import { useVoiceStore, voiceTabChannelId } from "~/features/voz/stores/voice-st
 export function useReconnectVoice(enabled: boolean) {
   const join = useVoiceStore((s) => s.join);
   const connectedHere = useVoiceStore((s) => s.channelId);
-  const tentou = useRef(false);
+  const tried = useRef(false);
 
   useEffect(() => {
-    if (!enabled || tentou.current) return;
+    if (!enabled || tried.current) return;
 
     if (connectedHere) {
-      tentou.current = true;
+      tried.current = true;
       return;
     }
 
     const channelId = voiceTabChannelId();
     if (!channelId) return;
 
-    tentou.current = true;
+    tried.current = true;
 
     void join(channelId, { resume: true }).catch(() => undefined);
   }, [enabled, connectedHere, join]);

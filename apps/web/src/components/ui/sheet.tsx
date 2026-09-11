@@ -21,7 +21,7 @@ export const SheetContent = ({
     <DialogPrimitive.Content data-gc="ui.sheet.dialog-primitivecontent"
       className={cn(
         "regiao-sem-arrasto fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface-2 shadow-2xl outline-none",
-        flxCls("gaveta"),
+        flxCls("drawer"),
         className,
       )}
       {...props}

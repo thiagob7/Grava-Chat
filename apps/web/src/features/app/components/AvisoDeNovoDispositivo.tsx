@@ -13,130 +13,134 @@ import {
 } from "~/components/ui/dialog";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useTranslation } from "~/traducao";
 
-const CHAVE = "gravae:dispositivos-ignorados";
+const KEY = "gravae:dispositivos-ignorados";
 
-const lerIgnorados = (): string[] => {
+const readIgnored = (): string[] => {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE) ?? "[]") as string[];
+    return JSON.parse(localStorage.getItem(KEY) ?? "[]") as string[];
   } catch {
     return [];
   }
 };
 
-interface Novo {
+interface Fresh {
   id: string;
-  nome: string;
-  tipo: "audioinput" | "audiooutput";
+  name: string;
+  kind: "audioinput" | "audiooutput";
 }
 
-export const AvisoDeNovoDispositivo: React.FC = () => {
-  const aplicarAjustes = useVoiceStore((s) => s.aplicarAjustes);
-  const emChamada = useVoiceStore((s) => s.channelId !== null);
-  const [novo, setNovo] = useState<Novo | null>(null);
-  const [naoSugerir, setNaoSugerir] = useState(false);
+export const NewDeviceNotice: React.FC = () => {
+  const { t } = useTranslation();
+  const applySettings = useVoiceStore((s) => s.applySettings);
+  const inCall = useVoiceStore((s) => s.channelId !== null);
+  const [fresh, setNew] = useState<Fresh | null>(null);
+  const [notSuggest, setNotSuggest] = useState(false);
 
-  const conhecidos = useRef<Set<string> | null>(null);
+  const known = useRef<Set<string> | null>(null);
 
   useEffect(() => {
-    const midia = navigator.mediaDevices;
-    if (!midia?.enumerateDevices) return;
+    const media = navigator.mediaDevices;
+    if (!media?.enumerateDevices) return;
 
-    const conferir = async () => {
-      const lista = await midia.enumerateDevices().catch(() => []);
-      const audio = lista.filter(
+    const check = async () => {
+      const list = await media.enumerateDevices().catch(() => []);
+      const audio = list.filter(
         (d) => d.kind === "audioinput" || d.kind === "audiooutput",
       );
 
-      if (!conhecidos.current) {
-        conhecidos.current = new Set(audio.map((d) => d.deviceId));
+      if (!known.current) {
+        known.current = new Set(audio.map((d) => d.deviceId));
         return;
       }
 
-      const ignorados = lerIgnorados();
-      const achado = audio.find(
+      const ignoredList = readIgnored();
+      const match = audio.find(
         (d) =>
           d.deviceId &&
           d.deviceId !== "default" &&
-          !conhecidos.current!.has(d.deviceId) &&
-          !ignorados.includes(d.label || d.deviceId),
+          !known.current!.has(d.deviceId) &&
+          !ignoredList.includes(d.label || d.deviceId),
       );
 
-      for (const d of audio) conhecidos.current.add(d.deviceId);
+      for (const d of audio) known.current.add(d.deviceId);
 
-      if (achado?.label) {
-        setNaoSugerir(false);
-        setNovo({
-          id: achado.deviceId,
-          nome: achado.label,
-          tipo: achado.kind as Novo["tipo"],
+      if (match?.label) {
+        setNotSuggest(false);
+        setNew({
+          id: match.deviceId,
+          name: match.label,
+          kind: match.kind as Fresh["kind"],
         });
       }
     };
 
-    void conferir();
-    midia.addEventListener("devicechange", conferir);
-    return () => midia.removeEventListener("devicechange", conferir);
+    void check();
+    media.addEventListener("devicechange", check);
+    return () => media.removeEventListener("devicechange", check);
   }, []);
 
-  if (!novo) return null;
+  if (!fresh) return null;
 
-  const ehEntrada = novo.tipo === "audioinput";
+  const isEntry = fresh.kind === "audioinput";
 
-  const fechar = () => {
-    if (naoSugerir) {
+  const close = () => {
+    if (notSuggest) {
       try {
         localStorage.setItem(
-          CHAVE,
-          JSON.stringify([...lerIgnorados(), novo.nome]),
+          KEY,
+          JSON.stringify([...readIgnored(), fresh.name]),
         );
       } catch {
       }
     }
 
-    setNovo(null);
+    setNew(null);
   };
 
-  const trocar = () => {
-    void aplicarAjustes(
-      ehEntrada ? { entradaId: novo.id } : { saidaId: novo.id },
+  const swap = () => {
+    void applySettings(
+      isEntry ? { entryId: fresh.id } : { outputId: fresh.id },
     );
-    setNovo(null);
+    setNew(null);
   };
 
   return (
-    <Dialog data-gc="app.aviso-de-novo-dispositivo.dialog" open onOpenChange={(v) => !v && fechar()}>
+    <Dialog data-gc="app.aviso-de-novo-dispositivo.dialog" open onOpenChange={(v) => !v && close()}>
       <DialogContent data-gc="app.aviso-de-novo-dispositivo.dialog-content" className="max-w-md">
         <DialogHeader data-gc="app.aviso-de-novo-dispositivo.dialog-header">
           <DialogTitle data-gc="app.aviso-de-novo-dispositivo.dialog-title" className="flex items-center gap-2">
             <Headphones data-gc="app.aviso-de-novo-dispositivo.headphones" size={18} className="text-brand" />
-            {ehEntrada
-              ? "Microfone novo por aqui"
-              : "Saída de áudio nova por aqui"}
+            {isEntry
+              ? t("chamada.aparelhoNovo.microfone")
+              : t("chamada.aparelhoNovo.saida")}
           </DialogTitle>
         </DialogHeader>
 
         <DialogBody data-gc="app.aviso-de-novo-dispositivo.dialog-body">
           <p data-gc="app.aviso-de-novo-dispositivo.p" className="text-sm leading-relaxed text-ink-muted">
-            Apareceu <b data-gc="app.aviso-de-novo-dispositivo.b" className="text-ink">{novo.nome}</b>.{" "}
-            {ehEntrada ? "Quer falar por ele?" : "Quer ouvir por ele?"}
-            {emChamada && " A troca vale na hora, sem sair da chamada."}
+            {t("chamada.aparelhoNovo.apareceu", { nome: fresh.name })}{" "}
+            {isEntry
+              ? t("chamada.aparelhoNovo.falarPorEle")
+              : t("chamada.aparelhoNovo.ouvirPorEle")}
+            {inCall && ` ${t("chamada.aparelhoNovo.trocaNaHora")}`}
           </p>
 
           <label data-gc="app.aviso-de-novo-dispositivo.label" className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-ink-muted">
             <Checkbox data-gc="app.aviso-de-novo-dispositivo.checkbox"
-              checked={naoSugerir}
-              onChange={(e) => setNaoSugerir(e.target.checked)}
+              checked={notSuggest}
+              onChange={(e) => setNotSuggest(e.target.checked)}
             />
-            Não sugerir este aparelho de novo
+            {t("chamada.aparelhoNovo.naoSugerir")}
           </label>
         </DialogBody>
 
         <DialogFooter data-gc="app.aviso-de-novo-dispositivo.dialog-footer">
-          <Button data-gc="app.aviso-de-novo-dispositivo.button.fechar" variant="ghost" onClick={fechar}>
-            Agora não
+          <Button data-gc="app.aviso-de-novo-dispositivo.button.close" variant="ghost" onClick={close}>
+            {t("comum.agoraNao")}
           </Button>
-          <Button data-gc="app.aviso-de-novo-dispositivo.button.trocar" onClick={trocar}>Trocar para ele</Button>
+          <Button data-gc="app.aviso-de-novo-dispositivo.button.swap" onClick={swap}>{t("chamada.aparelhoNovo.trocar")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

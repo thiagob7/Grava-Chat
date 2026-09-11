@@ -14,10 +14,10 @@ import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopo
 import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { Popover, PopoverAnchor, PopoverContent } from "~/components/ui/popover";
-import { avisoDeQualidade } from "~/features/voz/lib/qualidade-da-conexao";
-import { useSomDoPainel } from "~/features/voz/lib/soundboard";
+import { qualityNotice } from "~/features/voz/lib/qualidade-da-conexao";
+import { usePanelSound } from "~/features/voz/lib/soundboard";
 import { Tooltip } from "~/components/ui/tooltip";
-import { PreviaDaTransmissao } from "~/features/voz/components/PreviaDaTransmissao";
+import { BroadcastPreview } from "~/features/voz/components/PreviaDaTransmissao";
 import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
@@ -28,8 +28,8 @@ interface VoiceMembersProps {
   members: GuildMember[];
   guildId?: string;
   roles?: Role[];
-  canaisDeVoz?: Channel[];
-  minhasPermissoes?: Permission[];
+  voiceChannels?: Channel[];
+  minePermissions?: Permission[];
   currentUserId?: string;
 }
 
@@ -38,20 +38,20 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   members,
   guildId,
   roles = [],
-  canaisDeVoz = [],
-  minhasPermissoes = [],
+  voiceChannels = [],
+  minePermissions = [],
   currentUserId,
 }) => {
   const { t } = useTranslation();
   const tiles = useVoiceStore((s) => s.tiles);
-  const somDe = useSomDoPainel((s) => s.quem);
-  const falando = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
+  const sound = usePanelSound((s) => s.who);
+  const speaking = new Set(tiles.filter((t) => t.speaking).map((t) => t.identity));
 
-  const canalConectado = useVoiceStore((s) => s.channelId);
-  const assistir = useVoiceStore((s) => s.assistir);
-  const assistindo = useVoiceStore((s) => s.assistindo);
+  const channelConnected = useVoiceStore((s) => s.channelId);
+  const watch = useVoiceStore((s) => s.watch);
+  const watching = useVoiceStore((s) => s.watching);
 
-  const podeModerar = has(new Set(minhasPermissoes), "MODERATE_MEMBERS");
+  const canModerate = has(new Set(minePermissions), "MODERATE_MEMBERS");
 
   if (!states.length) return null;
 
@@ -61,26 +61,26 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
         const member = members.find((m) => m.user.id === state.userId);
         const name = member?.nickname ?? member?.user.displayName ?? "…";
 
-        const podeAssistir =
-          state.screenShare && canalConectado === state.channelId && assistindo !== state.userId;
+        const canWatch =
+          state.screenShare && channelConnected === state.channelId && watching !== state.userId;
 
-        const naSala = tiles.find((t) => t.identity === state.userId);
-        const transmissao = naSala?.screenTrack ?? null;
-        const conexao = naSala ? avisoDeQualidade(naSala.qualidade) : null;
+        const inRoom = tiles.find((t) => t.identity === state.userId);
+        const broadcast = inRoom?.screenTrack ?? null;
+        const connection = inRoom ? qualityNotice(inRoom.quality) : null;
 
-        const linha = (
-          <ConviteParaLive data-gc="voz.voice-members.convite-para-live"
-            ativo={podeAssistir}
-            nome={name}
-            transmissao={transmissao}
-            onAssistir={() => assistir(state.userId)}
+        const line = (
+          <InviteForLive data-gc="voz.voice-members.invite-for-live"
+            active={canWatch}
+            name={name}
+            broadcast={broadcast}
+            onWatch={() => watch(state.userId)}
           >
             <UserProfilePopover data-gc="voz.voice-members.user-profile-popover"
               userId={state.userId}
               guildId={guildId}
               roles={roles}
               roleIds={member?.roleIds ?? []}
-              podeModerar={podeModerar}
+              canModerate={canModerate}
             >
               <button data-gc="voz.voice-members.button"
                 data-gc-usuario={state.userId}
@@ -91,7 +91,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                   name={name}
                   url={member?.user.avatarUrl}
                   size={24}
-                  speaking={falando.has(state.userId) || somDe === state.userId}
+                  speaking={speaking.has(state.userId) || sound === state.userId}
                 />
               <span data-gc="voz.voice-members.span"
                 className={cn(
@@ -102,13 +102,13 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 {name}
               </span>
                 <span data-gc="voz.voice-members.span--2" className="flex shrink-0 items-center gap-1 text-ink-faint">
-                {conexao && (
-                  <Tooltip data-gc="voz.voice-members.tooltip" label={conexao.rotulo}>
-                    <span data-gc="voz.voice-members.span--3" className={cn("flex items-center", conexao.cor)} aria-label={conexao.rotulo}>
+                {connection && (
+                  <Tooltip data-gc="voz.voice-members.tooltip" label={connection.label}>
+                    <span data-gc="voz.voice-members.span--3" className={cn("flex items-center", connection.color)} aria-label={connection.label}>
                       <CellSignalLow data-gc="voz.voice-members.cell-signal-low"
                         size={14}
                         weight="fill"
-                        className={conexao.pulsando ? "animate-pulse" : undefined}
+                        className={connection.pulsing ? "animate-pulse" : undefined}
                       />
                     </span>
                   </Tooltip>
@@ -116,7 +116,7 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 {state.screenShare && (
                   <Tooltip data-gc="voz.voice-members.tooltip--2" label={t("chamada.aoVivo")}>
                     <span data-gc="voz.voice-members.span--4"
-                      className={cn(flxCls("seloDeAoVivo"), "flex items-center text-online")}
+                      className={cn(flxCls("liveSeal"), "flex items-center text-online")}
                       aria-label={t("chamada.aoVivo")}
                     >
                       <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up" size={14} weight="fill" />
@@ -134,10 +134,10 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 </span>
               </button>
             </UserProfilePopover>
-          </ConviteParaLive>
+          </InviteForLive>
         );
 
-        if (!guildId) return <div data-gc="voz.voice-members.div--2" key={state.userId}>{linha}</div>;
+        if (!guildId) return <div data-gc="voz.voice-members.div--2" key={state.userId}>{line}</div>;
 
         return (
           <VoiceMemberMenu data-gc="voz.voice-members.voice-member-menu"
@@ -148,11 +148,11 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
             voiceState={state}
             member={member}
             roles={roles}
-            canaisDeVoz={canaisDeVoz}
-            minhasPermissoes={minhasPermissoes}
+            voiceChannels={voiceChannels}
+            minePermissions={minePermissions}
             currentUserId={currentUserId}
           >
-            <div data-gc="voz.voice-members.div--3">{linha}</div>
+            <div data-gc="voz.voice-members.div--3">{line}</div>
           </VoiceMemberMenu>
         );
       })}
@@ -160,22 +160,22 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
   );
 };
 
-const ConviteParaLive: React.FC<{
-  ativo: boolean;
-  nome: string;
-  transmissao: Track | null;
-  onAssistir: () => void;
+const InviteForLive: React.FC<{
+  active: boolean;
+  name: string;
+  broadcast: Track | null;
+  onWatch: () => void;
   children: React.ReactNode;
-}> = ({ ativo, nome, transmissao, onAssistir, children }) => {
+}> = ({ active, name, broadcast, onWatch, children }) => {
   const { t } = useTranslation();
-  const [aberto, setAberto] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  if (!ativo) return <div data-gc="voz.voice-members.div--4">{children}</div>;
+  if (!active) return <div data-gc="voz.voice-members.div--4">{children}</div>;
 
   return (
-    <Popover data-gc="voz.voice-members.popover.set-aberto" open={aberto} onOpenChange={setAberto}>
+    <Popover data-gc="voz.voice-members.popover.set-is-open" open={isOpen} onOpenChange={setIsOpen}>
       <PopoverAnchor data-gc="voz.voice-members.popover-anchor" asChild>
-        <div data-gc="voz.voice-members.div--5" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
+        <div data-gc="voz.voice-members.div--5" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
           {children}
         </div>
       </PopoverAnchor>
@@ -184,8 +184,8 @@ const ConviteParaLive: React.FC<{
         side="right"
         align="center"
         className="w-64 space-y-2 p-2"
-        onMouseEnter={() => setAberto(true)}
-        onMouseLeave={() => setAberto(false)}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div data-gc="voz.voice-members.div--6" className="relative aspect-video overflow-hidden rounded bg-palco ring-1 ring-line-sutil">
@@ -193,7 +193,7 @@ const ConviteParaLive: React.FC<{
             {t("chamada.carregandoPrevia")}
           </div>
 
-          {transmissao && <PreviaDaTransmissao data-gc="voz.voice-members.previa-da-transmissao" track={transmissao} />}
+          {broadcast && <BroadcastPreview data-gc="voz.voice-members.broadcast-preview" track={broadcast} />}
 
           <span data-gc="voz.voice-members.span--5" className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-sm bg-danger px-1.5 py-0.5 text-10 font-bold uppercase tracking-wide text-sobre-marca">
             <span data-gc="voz.voice-members.span--6" className="size-1.5 animate-pulse rounded-full bg-sobre-marca" />
@@ -203,13 +203,13 @@ const ConviteParaLive: React.FC<{
 
         <button data-gc="voz.voice-members.button--2"
           onClick={() => {
-            onAssistir();
-            setAberto(false);
+            onWatch();
+            setIsOpen(false);
           }}
           className="flex w-full items-center justify-center gap-2 rounded border border-line bg-surface-3 px-2 py-2 text-sm font-medium text-ink transition hover:bg-surface-4"
         >
           <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up--2" size={15} weight="fill" className="text-online" />
-          {t("chamada.live.assistirPessoa", { nome })}
+          {t("chamada.live.assistirPessoa", { nome: name })}
         </button>
       </PopoverContent>
     </Popover>

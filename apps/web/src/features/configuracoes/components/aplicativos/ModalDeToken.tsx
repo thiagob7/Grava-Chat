@@ -11,15 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { CampoDeSegredo } from "~/features/configuracoes/components/aplicativos/comum";
+import { SecretField } from "~/features/configuracoes/components/aplicativos/comum";
 
 interface ModalDeTokenProps {
   token: string | null;
-  onFechar: () => void;
+  onClose: () => void;
 }
 
-export const ModalDeToken: React.FC<ModalDeTokenProps> = ({ token, onFechar }) => (
-  <Dialog data-gc="configuracoes.aplicativos.modal-de-token.dialog" open={Boolean(token)} onOpenChange={(estado) => !estado && onFechar()}>
+export const ModalDeToken: React.FC<ModalDeTokenProps> = ({ token, onClose }) => (
+  <Dialog data-gc="configuracoes.aplicativos.modal-de-token.dialog" open={Boolean(token)} onOpenChange={(state) => !state && onClose()}>
     <DialogContent data-gc="configuracoes.aplicativos.modal-de-token.dialog-content">
       <DialogHeader data-gc="configuracoes.aplicativos.modal-de-token.dialog-header">
         <DialogTitle data-gc="configuracoes.aplicativos.modal-de-token.dialog-title" className="flex items-center gap-2">
@@ -34,16 +34,16 @@ export const ModalDeToken: React.FC<ModalDeTokenProps> = ({ token, onFechar }) =
 
       <DialogBody data-gc="configuracoes.aplicativos.modal-de-token.dialog-body">
         {token && (
-          <CampoDeSegredo data-gc="configuracoes.aplicativos.modal-de-token.campo-de-segredo"
-            valor={token}
-            rotuloCopiar="Copiar o token"
-            avisoCopiado="Token copiado."
+          <SecretField data-gc="configuracoes.aplicativos.modal-de-token.secret-field"
+            value={token}
+            labelCopy="Copiar o token"
+            noticeCopied="Token copiado."
           />
         )}
       </DialogBody>
 
       <DialogFooter data-gc="configuracoes.aplicativos.modal-de-token.dialog-footer">
-        <Button data-gc="configuracoes.aplicativos.modal-de-token.button.on-fechar" onClick={onFechar}>Guardei</Button>
+        <Button data-gc="configuracoes.aplicativos.modal-de-token.button.on-close" onClick={onClose}>Guardei</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

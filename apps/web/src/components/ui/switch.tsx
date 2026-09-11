@@ -10,13 +10,13 @@ export const Switch = ({
 }: React.ComponentProps<typeof SwitchPrimitive.Root>) => (
   <SwitchPrimitive.Root data-gc="ui.switch.switch-primitiveroot"
     className={cn(
-      flxCls("chave"),
+      flxCls("key"),
       "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors",
       "outline-none focus-visible:ring-2 focus-visible:ring-foco-anel disabled:cursor-not-allowed disabled:opacity-50",
       "data-[state=checked]:bg-online data-[state=unchecked]:bg-surface-4",
       className,
     )}
-    {...flxAttr("chave")}
+    {...flxAttr("key")}
     {...props}
   >
     <SwitchPrimitive.Thumb data-gc="ui.switch.switch-primitivethumb" className="pointer-events-none block size-5 rounded-full bg-sobre-marca shadow transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />

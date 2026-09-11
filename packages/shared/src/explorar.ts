@@ -1,33 +1,64 @@
-import type { AtivoDoTema } from "./temas.js";
+import type { ThemeActive } from "./temas.js";
 
-export interface TemaDaGaleria {
+export interface GalleryTheme {
   id: string;
-  nome: string;
-  descricao: string | null;
-  autor: string | null;
-  versao: string | null;
+  name: string;
+  description: string | null;
+  author: string | null;
+  version: string | null;
   tags: string[];
-  substituicoes: Record<string, string>;
-  ativos: AtivoDoTema[];
-  pesoEmBytes: number;
-  publicadoPor: { id: string; displayName: string; avatarUrl: string | null };
+  overrides: Record<string, string>;
+  actives: ThemeActive[];
+  weightBytes: number;
+  publishedBy: { id: string; displayName: string; avatarUrl: string | null };
   createdAt: string;
 }
 
-export interface AplicativoDescoberto {
+export interface AppDiscovered {
   id: string;
-  nome: string;
+  name: string;
   avatarUrl: string | null;
-  descricao: string | null;
-  permissoesPedidas: string[];
-  comandos: number;
-  dono: { id: string; displayName: string };
+  coverUrl: string | null;
+  categories: string[];
+  description: string | null;
+  permissionsRequested: string[];
+  commands: number;
+  owner: { id: string; displayName: string };
   createdAt: string;
 }
 
-export const CORES_DA_PREVIA = [
+export interface AppPublic extends AppDiscovered {
+  username: string;
+  userId: string;
+  languages: string[];
+  termsUrl: string | null;
+  policyUrl: string | null;
+  supportServer: { id: string; name: string; iconUrl: string | null; members: number } | null;
+  servers: number;
+  listCommands: { name: string; description: string }[];
+  serversCommon: number;
+}
+
+export const PREVIEW_COLORS = [
   "--color-brand",
   "--background-primary",
   "--background-secondary",
   "--text-primary",
 ] as const;
+
+export const APP_CATEGORIES = [
+  "GAMES",
+  "MUSICA",
+  "MODERACAO",
+  "PRODUTIVIDADE",
+  "SOCIAL",
+  "UTILIDADES",
+  "ARTE_E_CRIACAO",
+  "EDUCACAO",
+  "OUTRA",
+] as const;
+
+export type AppCategory = (typeof APP_CATEGORIES)[number];
+
+export const CATEGORIES_LIMIT = 3;
+export const LANGUAGES_LIMIT = 6;

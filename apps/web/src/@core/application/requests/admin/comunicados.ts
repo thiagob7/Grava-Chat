@@ -1,16 +1,16 @@
 import { api } from "~/@core/lib/api";
 
-export interface ComunicadoDTO {
-  conteudo: string;
+export interface AnnouncementDto {
+  content: string;
   userIds?: string[];
 }
 
-export async function mandarComunicado(data: ComunicadoDTO) {
-  const response = await api.post<{ destinatarios: number }>("/admin/comunicados", data);
+export async function sendAnnouncement(data: AnnouncementDto) {
+  const response = await api.post<{ recipients: number }>("/admin/comunicados", data);
   return response.data;
 }
 
-export async function contarPessoas() {
+export async function countPeople() {
   const response = await api.get<{ total: number }>("/admin/pessoas");
   return response.data;
 }

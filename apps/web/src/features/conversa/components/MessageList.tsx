@@ -10,8 +10,8 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { MessageItem, shouldGroup } from "~/features/conversa/components/MessageItem";
-import { useEnfeites } from "~/features/perfil/hooks/use-enfeites";
-import { useMencoes } from "~/features/conversa/hooks/use-mencoes";
+import { useCharms } from "~/features/perfil/hooks/use-enfeites";
+import { useMentions } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider } from "~/lib/format";
 import { lineWidth, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
@@ -42,36 +42,36 @@ export const MessageList: React.FC<MessageListProps> = ({
     channelId,
     postId,
   );
-  const { data: expressoes } = useFindExpressions(guildId);
-  const enfeitesDe = useEnfeites(guildId);
-  const mencoes = useMencoes(guildId, false, currentUserId);
+  const { data: expressions } = useFindExpressions(guildId);
+  const charms = useCharms(guildId);
+  const mentions = useMentions(guildId, false, currentUserId);
   const pinMessage = usePinMessage(channelId);
   const sendMessage = useSendMessage();
   const markRead = useMarkRead();
 
   const scroller = useRef<HTMLDivElement>(null);
-  const conteudo = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
   const bottomAnchor = useRef(true);
   const previousHeight = useRef(0);
 
   const [params, setParams] = useSearchParams();
-  const alvo = params.get("m");
-  const [destacada, setDestacada] = useState<string | null>(null);
+  const target = params.get("m");
+  const [highlighted, setHighlighted] = useState<string | null>(null);
 
-  const { data: amizades = [] } = useFindFriends(Boolean(currentUserId));
-  const bloqueados = useMemo(
-    () => new Set(amizades.filter((a) => a.status === "BLOCKED").map((a) => a.user.id)),
-    [amizades],
+  const { data: friendships = [] } = useFindFriends(Boolean(currentUserId));
+  const blocked = useMemo(
+    () => new Set(friendships.filter((a) => a.status === "BLOCKED").map((a) => a.user.id)),
+    [friendships],
   );
-  const [abertas, setAbertas] = useState<Set<string>>(() => new Set());
-  const paginasPedidas = useRef(0);
+  const [isOpen, setIsOpen] = useState<Set<string>>(() => new Set());
+  const pagesRequested = useRef(0);
 
   const messages = useMemo(
     () => [...(data?.pages ?? [])].reverse().flatMap((page) => page.messages) as PendingMessageModel[],
     [data],
   );
 
-  const semHistorico = data?.pages?.some((page) => page.semHistorico) ?? false;
+  const withoutHistory = data?.pages?.some((page) => page.withoutHistory) ?? false;
 
   useLayoutEffect(() => {
     const el = scroller.current;
@@ -94,33 +94,33 @@ export const MessageList: React.FC<MessageListProps> = ({
   useEffect(() => {
     bottomAnchor.current = true;
     previousHeight.current = 0;
-    paginasPedidas.current = 0;
+    pagesRequested.current = 0;
   }, [channelId]);
 
   useEffect(() => {
-    const alvo = conteudo.current;
-    const caixa = scroller.current;
-    if (!alvo || !caixa || typeof ResizeObserver === "undefined") return;
+    const target = content.current;
+    const box = scroller.current;
+    if (!target || !box || typeof ResizeObserver === "undefined") return;
 
-    const observador = new ResizeObserver(() => {
+    const observer = new ResizeObserver(() => {
       if (!bottomAnchor.current) return;
-      caixa.scrollTop = caixa.scrollHeight;
+      box.scrollTop = box.scrollHeight;
     });
 
-    observador.observe(alvo);
-    observador.observe(caixa);
+    observer.observe(target);
+    observer.observe(box);
 
-    return () => observador.disconnect();
+    return () => observer.disconnect();
   }, [channelId]);
 
   useEffect(() => {
-    if (!alvo) return setDestacada(null);
+    if (!target) return setHighlighted(null);
 
-    const elemento = scroller.current?.querySelector(`[data-mensagem="${alvo}"]`);
+    const element = scroller.current?.querySelector(`[data-mensagem="${target}"]`);
 
-    if (!elemento) {
-      if (paginasPedidas.current < 8 && hasNextPage && !isFetchingNextPage) {
-        paginasPedidas.current += 1;
+    if (!element) {
+      if (pagesRequested.current < 8 && hasNextPage && !isFetchingNextPage) {
+        pagesRequested.current += 1;
         previousHeight.current = scroller.current?.scrollHeight ?? 0;
         void fetchNextPage();
       }
@@ -128,23 +128,23 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
 
     bottomAnchor.current = false;
-    elemento.scrollIntoView({ block: "center" });
-    setDestacada(alvo);
+    element.scrollIntoView({ block: "center" });
+    setHighlighted(target);
 
-    const relogio = setTimeout(() => {
-      setDestacada(null);
+    const clock = setTimeout(() => {
+      setHighlighted(null);
       setParams(
-        (atuais) => {
-          const proximos = new URLSearchParams(atuais);
-          proximos.delete("m");
-          return proximos;
+        (current) => {
+          const next = new URLSearchParams(current);
+          next.delete("m");
+          return next;
         },
         { replace: true },
       );
     }, 2_500);
 
-    return () => clearTimeout(relogio);
-  }, [alvo, messages, hasNextPage, isFetchingNextPage, fetchNextPage, setParams]);
+    return () => clearTimeout(clock);
+  }, [target, messages, hasNextPage, isFetchingNextPage, fetchNextPage, setParams]);
 
   const markCurrentRead = () => {
     const last = messages.findLast((m) => !m.pending && !m.failed);
@@ -207,33 +207,33 @@ export const MessageList: React.FC<MessageListProps> = ({
     );
   }
 
-  const porId = new Map(messages.map((m) => [m.id, m]));
+  const byId = new Map(messages.map((m) => [m.id, m]));
 
   let lastDay = "";
 
   return (
     <div data-gc="conversa.message-list.div.on-scroll"
       ref={scroller}
-      {...flxAttr("conteudoDoRolador")}
+      {...flxAttr("scrollerContent")}
       onScroll={onScroll}
-      className={cn("lista-de-mensagens mede-a-largura flex-1 overflow-y-auto pt-4", flxCls("rolador"), flxCls("conteudoDoRolador"))}
+      className={cn("lista-de-mensagens mede-a-largura flex-1 overflow-y-auto pt-4", flxCls("scroller"), flxCls("scrollerContent"))}
     >
-      <div data-gc="conversa.message-list.div--5" ref={conteudo} {...flx("conteudoDasMensagens", "pb-4")}>
+      <div data-gc="conversa.message-list.div--5" ref={content} {...flx("messagesContent", "pb-4")}>
       {hasNextPage ? (
         <p data-gc="conversa.message-list.p" className="py-3 text-center text-xs text-ink-faint">
           {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}
         </p>
       ) : (
         (header ?? (
-          <div data-gc="conversa.message-list.div--6" {...flx("boasVindasDoCanal", "px-2 pb-6 pt-4 @sm:px-4")}>
+          <div data-gc="conversa.message-list.div--6" {...flx("channelGoodWelcome", "px-2 pb-6 pt-4 @sm:px-4")}>
             <div data-gc="conversa.message-list.div--7" className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
-              {semHistorico ? (
+              {withoutHistory ? (
                 <Lock data-gc="conversa.message-list.lock" size={32} className="text-ink-muted" />
               ) : (
                 <Hash data-gc="conversa.message-list.hash" size={36} className="text-ink" />
               )}
             </div>
-            {semHistorico ? (
+            {withoutHistory ? (
               <>
                 <h2 data-gc="conversa.message-list.h2" className="text-2xl font-bold">{t("conversa.lista.semHistorico")}</h2>
                 <p data-gc="conversa.message-list.p--2" className="mt-1 text-ink-muted">
@@ -259,18 +259,18 @@ export const MessageList: React.FC<MessageListProps> = ({
         const isNewDay = day !== lastDay;
         lastDay = day;
 
-        if (bloqueados.has(message.author.id) && !abertas.has(message.id)) {
+        if (blocked.has(message.author.id) && !isOpen.has(message.id)) {
           const anterior = messages[index - 1];
-          if (anterior && bloqueados.has(anterior.author.id) && !abertas.has(anterior.id)) {
+          if (anterior && blocked.has(anterior.author.id) && !isOpen.has(anterior.id)) {
             return null;
           }
 
-          let quantas = 0;
+          let count = 0;
           const ids: string[] = [];
           for (let i = index; i < messages.length; i++) {
             const m = messages[i]!;
-            if (!bloqueados.has(m.author.id) || abertas.has(m.id)) break;
-            quantas++;
+            if (!blocked.has(m.author.id) || isOpen.has(m.id)) break;
+            count++;
             ids.push(m.id);
           }
 
@@ -278,13 +278,13 @@ export const MessageList: React.FC<MessageListProps> = ({
             <div data-gc="conversa.message-list.div--8" key={message.id}>
               <button data-gc="conversa.message-list.button"
                 type="button"
-                onClick={() => setAbertas((atual) => new Set([...atual, ...ids]))}
+                onClick={() => setIsOpen((current) => new Set([...current, ...ids]))}
                 className={cn(
-                  flxCls("grupoDeBloqueadas"),
+                  flxCls("blockedGroup"),
                   "mx-2 my-1 flex items-center gap-2 rounded px-3 py-1 text-xs text-ink-faint transition hover:bg-hover hover:text-ink @sm:mx-4",
                 )}
               >
-                {t("conversa.mensagem.bloqueadas", { quantas })}
+                {t("conversa.mensagem.bloqueadas", { quantas: count })}
                 <span data-gc="conversa.message-list.span" className="font-medium">{t("conversa.mensagem.mostrarBloqueadas")}</span>
               </button>
             </div>
@@ -296,7 +296,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             {isNewDay && (
               <div data-gc="conversa.message-list.div--10" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
                 <span data-gc="conversa.message-list.span--2" className="h-px flex-1 bg-line" />
-                <span data-gc="conversa.message-list.span--3" {...flx("divisorDoDia", "text-xs font-semibold text-ink-faint")}>
+                <span data-gc="conversa.message-list.span--3" {...flx("dayDivider", "text-xs font-semibold text-ink-faint")}>
                   {formatDayDivider(message.createdAt)}
                 </span>
                 <span data-gc="conversa.message-list.span--4" className="h-px flex-1 bg-line" />
@@ -308,15 +308,15 @@ export const MessageList: React.FC<MessageListProps> = ({
               isOwn={message.author.id === currentUserId}
               currentUserId={currentUserId}
               guildId={guildId}
-              respondida={message.replyToId ? porId.get(message.replyToId) : undefined}
-              emojis={expressoes.emojis}
-              enfeites={enfeitesDe(message.author.id)}
-              mencoes={mencoes}
-              meMenciona={mencoes.mencionaVoce(message)}
-              destacada={message.id === destacada}
+              replied={message.replyToId ? byId.get(message.replyToId) : undefined}
+              emojis={expressions.emojis}
+              charms={charms(message.author.id)}
+              mentions={mentions}
+              meMentions={mentions.mentionsYou(message)}
+              highlighted={message.id === highlighted}
               canDelete={message.author.id === currentUserId || isModerator}
               canPin={isModerator}
-              onPin={(alvo, fixar) => pinMessage.mutate({ messageId: alvo.id, pin: fixar })}
+              onPin={(target, pin) => pinMessage.mutate({ messageId: target.id, pin: pin })}
               onRetry={retry}
             />
           </div>

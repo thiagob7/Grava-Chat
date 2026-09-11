@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "En lille hånd der vinker",
+    botao: "Vink til {{nome}}",
+  },
+  oficial: {
+    titulo: "Denne kanal er kun til officielle beskeder.",
+    detalhe: "Vi beder aldrig om din adgangskode eller din kontos token.",
+    saibaMais: "Læs mere",
+  },
+  topico: {
+    abrir: "Se kanalens beskrivelse",
+  },
+  previaDoLink: {
+    carregando: "Ser, hvad der er på linket…",
+    destino: "Fører til {{destino}}",
+  },
+  reacao: {
+    carregando: "Ser efter, hvem der reagerede med {{emoji}}…",
+    uma: "{{nome}} reagerede med {{emoji}}",
+    duas: "{{primeiro}} og {{segundo}} reagerede med {{emoji}}",
+    varias: "{{nomes}} og {{quantos}} andre reagerede med {{emoji}}",
+    dicaSuper: "Hold nede for superreaktion",
+  },
+  recado: {
+    gravar: "Optag en talebesked",
+    descartar: "Kassér optagelsen",
+    mandar: "Send optagelsen",
+    semSuporte: "Denne browser optager ikke lyd.",
+    semMicrofone: "Ingen adgang til mikrofonen.",
+  },
   lista: {
     carregando: "Indlæser beskeder…",
     carregandoMais: "Indlæser…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Se billedet",
   },
   enquete: {
+    criar: "Lav en afstemning",
+    pergunta: "Spørgsmål",
+    exemplo: "Hvad spiller vi i dag?",
+    respostas: "Svar",
+    adicionarOpcao: "Tilføj svar",
+    removerOpcao: "Fjern svar",
+    varias: "Tillad mere end ét svar",
+    variasDetalhe: "Uden det fjerner en stemme på ét svar stemmen på det forrige.",
+    duracao: "Varighed",
+    umaHora: "1 time",
+    quatroHoras: "4 timer",
+    oitoHoras: "8 timer",
+    umDia: "1 dag",
+    tresDias: "3 dage",
+    umaSemana: "1 uge",
+    ateEncerrar: "Indtil jeg lukker den",
     titulo: "Afstemning",
     encerrada: "Afstemningen er lukket",
     variasRespostas: "Afstemning — flere svar",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Søgningen kigger kun i kanaler, du må læse.",
   },
   entrada: {
+    semNome: "samtale",
+    anexo: "(vedhæftning)",
     titulo: "Indbakke",
     naoLidas: "Ulæste",
     salvas: "Gemte",

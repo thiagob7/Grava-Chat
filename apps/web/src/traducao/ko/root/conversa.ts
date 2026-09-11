@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "손을 흔드는 작은 손",
+    botao: "{{nome}}에게 인사하기",
+  },
+  oficial: {
+    titulo: "이 채널은 공식 알림만 옵니다.",
+    detalhe: "비밀번호나 계정 토큰은 절대 묻지 않습니다.",
+    saibaMais: "더 알아보기",
+  },
+  topico: {
+    abrir: "채널 설명 보기",
+  },
+  previaDoLink: {
+    carregando: "링크에 뭐가 있는지 보는 중…",
+    destino: "{{destino}}(으)로 갑니다",
+  },
+  reacao: {
+    carregando: "{{emoji}}로 반응한 사람을 보는 중…",
+    uma: "{{nome}}님이 {{emoji}}로 반응했습니다",
+    duas: "{{primeiro}}님과 {{segundo}}님이 {{emoji}}로 반응했습니다",
+    varias: "{{nomes}}님 외 {{quantos}}명이 {{emoji}}로 반응했습니다",
+    dicaSuper: "길게 눌러 슈퍼 반응",
+  },
+  recado: {
+    gravar: "음성 메모 녹음",
+    descartar: "녹음 버리기",
+    mandar: "녹음 보내기",
+    semSuporte: "이 브라우저는 소리를 녹음하지 못합니다.",
+    semMicrofone: "마이크를 쓸 수 없습니다.",
+  },
   lista: {
     carregando: "메시지를 불러오는 중…",
     carregandoMais: "불러오는 중…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "이미지 보기",
   },
   enquete: {
+    criar: "투표 만들기",
+    pergunta: "질문",
+    exemplo: "오늘 뭐 할까요?",
+    respostas: "답변",
+    adicionarOpcao: "항목 추가",
+    removerOpcao: "항목 삭제",
+    varias: "여러 개 고를 수 있게 하기",
+    variasDetalhe: "이걸 끄면 다른 항목에 투표할 때 앞의 표가 빠집니다.",
+    duracao: "기간",
+    umaHora: "1시간",
+    quatroHoras: "4시간",
+    oitoHoras: "8시간",
+    umDia: "1일",
+    tresDias: "3일",
+    umaSemana: "1주",
+    ateEncerrar: "내가 닫을 때까지",
     titulo: "투표",
     encerrada: "투표 종료됨",
     variasRespostas: "투표 — 복수 응답",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "검색은 당신이 읽을 수 있는 채널만 봅니다.",
   },
   entrada: {
+    semNome: "대화",
+    anexo: "(첨부 파일)",
     titulo: "받은 편지함",
     naoLidas: "읽지 않음",
     salvas: "저장됨",

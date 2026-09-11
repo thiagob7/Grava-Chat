@@ -1,9 +1,9 @@
 import { execSync } from "node:child_process";
 import { defineConfig } from "tsup";
 
-const git = (comando: string) => {
+const git = (command: string) => {
   try {
-    return execSync(comando, { encoding: "utf8" }).trim();
+    return execSync(command, { encoding: "utf8" }).trim();
   } catch {
     return "";
   }
@@ -11,9 +11,9 @@ const git = (comando: string) => {
 
 export default defineConfig({
   define: {
-    __VERSAO__: JSON.stringify(git("git rev-parse --short HEAD")),
+    __VERSION__: JSON.stringify(git("git rev-parse --short HEAD")),
     __BRANCH__: JSON.stringify(git("git rev-parse --abbrev-ref HEAD")),
-    __CONSTRUIDO_EM__: JSON.stringify(new Date().toISOString()),
+    __BUILT_AT__: JSON.stringify(new Date().toISOString()),
   },
   entry: ["src/server.ts"],
   format: ["esm"],
@@ -21,7 +21,7 @@ export default defineConfig({
   platform: "node",
   clean: true,
   sourcemap: true,
-  noExternal: ["@gravae/shared"],
+  inExternal: ["@gravae/shared"],
   /// Os temas da casa viajam com o dist: a API os lê do disco ao publicar.
   onSuccess: "mkdir -p dist/temas && cp temas/*.css dist/temas/",
 });

@@ -1,4 +1,30 @@
 export const amizades = {
+  mensagensDiretas: "Mensagens diretas",
+  nova: {
+    titulo: "Nova conversa",
+    detalhe: "Escolha um amigo para abrir a conversa.",
+    procurar: "Procurar um amigo",
+    semAmigos: "Você ainda não tem amigos por aqui.",
+    semResultado: "Nenhum amigo com esse nome.",
+  },
+  adicionar: {
+    recado: "Escreva um recado (opcional)",
+    recadoDica: "O que você escrever aqui também aparece na conversa de vocês, se virarem amigos.",
+    enviadoPara: "Pronto! O pedido de amizade foi para {{nome}}.",
+    outrosLugares: "Outros lugares para fazer amizade",
+    outrosLugaresDetalhe: "Não lembra de ninguém? Dê uma olhada nas comunidades abertas, tem gente falando de quase tudo.",
+    explorarComunidades: "Explorar comunidades",
+    titulo: "Adicionar amigo",
+    detalhe: "Você pode adicionar amigos pelo nome de usuário deles.",
+    exemplo: "Nome de usuário, ex: thiago",
+    enviando: "Enviando…",
+    enviar: "Enviar pedido",
+  },
+  gatinhoChorando: "Um gatinho chorando",
+  status: {
+    emChamada: "Em uma chamada",
+    emVoz: "Em voz",
+  },
   ativosAgora: "Ativo agora",
   procurando: "Vendo quem está por aí…",
   tudoTranquilo: "Está tudo tranquilo por enquanto…",
@@ -12,7 +38,6 @@ export const amizades = {
   entrarNaChamada: "Entrar na chamada",
   abrirCanal: "Abrir {{canal}} em {{servidor}}",
 
-  mensagensDiretas: "Mensagens diretas",
   encontreConversa: "Encontre uma conversa",
   amigos: "Amigos",
   conversas: "Conversas",

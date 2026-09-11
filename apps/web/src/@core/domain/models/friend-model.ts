@@ -6,6 +6,7 @@ export interface FriendshipModel {
   id: string;
   user: PublicUser;
   status: FriendshipStatus;
+  note?: string | null;
   createdAt: string;
 }
 

@@ -14,7 +14,7 @@ const s3 = new S3Client({
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY },
 });
 
-const origens = [
+const origins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://*.ngrok-free.dev",
@@ -30,7 +30,7 @@ try {
       CORSConfiguration: {
         CORSRules: [
           {
-            AllowedOrigins: origens,
+            AllowedOrigins: origins,
             AllowedMethods: ["PUT", "GET", "HEAD"],
             AllowedHeaders: ["content-type"],
             ExposeHeaders: ["etag"],
@@ -41,16 +41,16 @@ try {
     }),
   );
 
-  const atual = await s3.send(new GetBucketCorsCommand({ Bucket: env.R2_BUCKET }));
+  const current = await s3.send(new GetBucketCorsCommand({ Bucket: env.R2_BUCKET }));
   console.log("CORS aplicado no bucket", env.R2_BUCKET);
-  for (const regra of atual.CORSRules ?? []) {
-    console.log("  origens:", regra.AllowedOrigins?.join(", "));
-    console.log("  metodos:", regra.AllowedMethods?.join(", "));
+  for (const rule of current.CORSRules ?? []) {
+    console.log("  origens:", rule.AllowedOrigins?.join(", "));
+    console.log("  metodos:", rule.AllowedMethods?.join(", "));
   }
 } catch (e) {
   console.log("nao consegui aplicar:", e.name, "-", e.message);
   console.log("\nO token do R2 provavelmente nao tem permissao de configuracao de bucket.");
   console.log("Nesse caso, configure no painel: R2 > bucket > Settings > CORS Policy");
-  console.log(JSON.stringify([{ AllowedOrigins: origens, AllowedMethods: ["PUT","GET","HEAD"], AllowedHeaders: ["content-type"], ExposeHeaders: ["etag"], MaxAgeSeconds: 3600 }], null, 2));
+  console.log(JSON.stringify([{ AllowedOrigins: origins, AllowedMethods: ["PUT","GET","HEAD"], AllowedHeaders: ["content-type"], ExposeHeaders: ["etag"], MaxAgeSeconds: 3600 }], null, 2));
   process.exit(1);
 }

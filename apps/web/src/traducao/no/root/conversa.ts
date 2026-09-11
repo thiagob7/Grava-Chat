@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "En liten hånd som vinker",
+    botao: "Vink til {{nome}}",
+  },
+  oficial: {
+    titulo: "Denne kanalen er bare for offisielle meldinger.",
+    detalhe: "Vi spør aldri om passordet ditt eller kontoens token.",
+    saibaMais: "Les mer",
+  },
+  topico: {
+    abrir: "Se beskrivelsen av kanalen",
+  },
+  previaDoLink: {
+    carregando: "Ser hva som ligger bak lenken…",
+    destino: "Går til {{destino}}",
+  },
+  reacao: {
+    carregando: "Ser hvem som reagerte med {{emoji}}…",
+    uma: "{{nome}} reagerte med {{emoji}}",
+    duas: "{{primeiro}} og {{segundo}} reagerte med {{emoji}}",
+    varias: "{{nomes}} og {{quantos}} til reagerte med {{emoji}}",
+    dicaSuper: "Hold inne for superreaksjon",
+  },
+  recado: {
+    gravar: "Ta opp en talemelding",
+    descartar: "Forkast opptaket",
+    mandar: "Send opptaket",
+    semSuporte: "Denne nettleseren tar ikke opp lyd.",
+    semMicrofone: "Ingen tilgang til mikrofonen.",
+  },
   lista: {
     carregando: "Laster meldinger…",
     carregandoMais: "Laster…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Se bildet",
   },
   enquete: {
+    criar: "Lag en avstemning",
+    pergunta: "Spørsmål",
+    exemplo: "Hva spiller vi i dag?",
+    respostas: "Svar",
+    adicionarOpcao: "Legg til svar",
+    removerOpcao: "Fjern svar",
+    varias: "Tillat mer enn ett svar",
+    variasDetalhe: "Uten dette tar en stemme på ett svar stemmen bort fra det forrige.",
+    duracao: "Varighet",
+    umaHora: "1 time",
+    quatroHoras: "4 timer",
+    oitoHoras: "8 timer",
+    umDia: "1 dag",
+    tresDias: "3 dager",
+    umaSemana: "1 uke",
+    ateEncerrar: "Til jeg lukker den",
     titulo: "Avstemning",
     encerrada: "Avstemningen er lukket",
     variasRespostas: "Avstemning — flere svar",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Søket ser bare i kanaler du får lese.",
   },
   entrada: {
+    semNome: "samtale",
+    anexo: "(vedlegg)",
     titulo: "Innboks",
     naoLidas: "Uleste",
     salvas: "Lagret",

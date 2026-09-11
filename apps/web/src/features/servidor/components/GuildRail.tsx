@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { ArrowDownToLine, Compass, Download, Plus, RotateCw } from "lucide-react";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
-import { useReadStatesPorServidor } from "~/@core/application/queries/message/use-read-states";
+import { useReadStatesByServer } from "~/@core/application/queries/message/use-read-states";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
-import { AdicionarServidorModal } from "~/features/servidor/components/AdicionarServidorModal";
+import { AddServerModal } from "~/features/servidor/components/AdicionarServidorModal";
 import { Tooltip } from "~/components/ui/tooltip";
 import { InviteModal } from "~/features/servidor/components/InviteModal";
-import { ItemDoServidor, TIPO_DE_ARRASTO } from "~/features/servidor/components/ItemDoServidor";
-import { PastaDoTrilho } from "~/features/servidor/components/PastaDoTrilho";
-import { montarTrilho, type Destino } from "~/features/servidor/lib/trilho";
-import { usePastas } from "~/features/servidor/stores/pastas";
+import { ServerItem, DRAG_KIND } from "~/features/servidor/components/ItemDoServidor";
+import { RailFolder } from "~/features/servidor/components/PastaDoTrilho";
+import { buildRail, type Destination } from "~/features/servidor/lib/trilho";
+import { useFolders } from "~/features/servidor/stores/pastas";
 import { useVoiceStates } from "~/@core/application/queries/voice/use-voice-states";
-import { desktop, ehDesktop } from "~/lib/desktop";
-import { useAtalhoGlobal } from "~/features/app/hooks/use-atalho-global";
-import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
-import { flx, flxAttr, flxCls, type Lugares } from "~/lib/compat-de-tema";
+import { desktop, isDesktop } from "~/lib/desktop";
+import { useShortcutGlobal } from "~/features/app/hooks/use-atalho-global";
+import { useUpdate } from "~/features/app/hooks/use-atualizacao";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
+import { flx, flxAttr, flxCls, type Places } from "~/lib/compat-de-tema";
 
 interface GuildRailProps {
   activeGuildId: string | null;
@@ -27,8 +27,8 @@ interface GuildRailProps {
   pendingFriendRequests: number;
 }
 
-const ehMac =
-  desktop()?.plataforma === "darwin" ||
+const isMac =
+  desktop()?.platform === "darwin" ||
   (typeof navigator !== "undefined" && /Mac/.test(navigator.platform));
 
 export const GuildRail: React.FC<GuildRailProps> = ({
@@ -39,35 +39,38 @@ export const GuildRail: React.FC<GuildRailProps> = ({
 }) => {
   const { t } = useTranslation();
   const { data: guilds = [] } = useFindManyGuilds(true);
-  const [convidandoEm, setConvidandoEm] = useState<string | null>(null);
-  const arrumacao = usePastas((s) => s.arrumacao);
-  const mover = usePastas((s) => s.mover);
-  const [soltandoNoFim, setSoltandoNoFim] = useState(false);
-  const itens = montarTrilho(guilds, arrumacao);
-  const soltar = (guildId: string, destino: Destino) => mover(guilds.map((g) => g.id), guildId, destino);
-  const { data: porServidor = {} } = useReadStatesPorServidor(true);
-  const { data: vozes = {} } = useVoiceStates(true);
+  const [invitingAt, setInvitingAt] = useState<string | null>(null);
+  const layout = useFolders((s) => s.layout);
+  const move = useFolders((s) => s.move);
+  const [droppingEnd, setDroppingEnd] = useState(false);
+  const items = buildRail(guilds, layout);
+  const drop = (guildId: string, destination: Destination) => move(guilds.map((g) => g.id), guildId, destination);
+  const { data: byServer = {} } = useReadStatesByServer(true);
+  const { data: voices = {} } = useVoiceStates(true);
   const [creating, setCreating] = useState(false);
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+  const openSettings = useSettings((s) => s.open);
   const navigate = useNavigate();
-  const atualizacao = useAtualizacao();
+  const { pathname } = useLocation();
+  const inExplore = pathname.startsWith("/explorar") || pathname.startsWith("/apps/");
+  const inChats = activeGuildId === null && !inExplore;
+  const update = useUpdate();
 
-  useAtalhoGlobal("servidor-novo", () => setCreating(true));
-  useAtalhoGlobal("configuracoes", () => abrirConfiguracoes("conta"));
+  useShortcutGlobal("servidor-novo", () => setCreating(true));
+  useShortcutGlobal("configuracoes", () => openSettings("account"));
 
   return (
     <>
-      <nav data-gc="servidor.guild-rail.nav" {...flx("trilhoDeServidores", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col bg-surface-1")}>
-        <div data-gc="servidor.guild-rail.div" {...flx("roladorDoTrilho", "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
-        <div data-gc="servidor.guild-rail.div--2" {...flx("conteudoDoTrilho", "flex flex-col items-center gap-2 pb-36 pt-3")}>
-        <div data-gc="servidor.guild-rail.div--3" {...flx("secaoDoTopoDoTrilho", "flex w-full flex-col items-center gap-2")}>
-        <div data-gc="servidor.guild-rail.div--4" {...flx("itemDoTrilho", "group relative flex w-full justify-center")}>
+      <nav data-gc="servidor.guild-rail.nav" {...flx("serversRail", "trilho-de-servidores flex w-[var(--layout-guild-list-width)] shrink-0 flex-col bg-surface-1")}>
+        <div data-gc="servidor.guild-rail.div" {...flx("railScroller", "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
+        <div data-gc="servidor.guild-rail.div--2" {...flx("railContent", "flex flex-col items-center gap-2 pb-36 pt-3")}>
+        <div data-gc="servidor.guild-rail.div--3" {...flx("topRailSection", "flex w-full flex-col items-center gap-2")}>
+        <div data-gc="servidor.guild-rail.div--4" {...flx("railItem", "group/servidor relative flex w-full justify-center")}>
           <span data-gc="servidor.guild-rail.span"
             {...flx(
-              "pilulaDoServidor",
+              "serverPill",
               cn(
                 "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
-                activeGuildId === null ? "h-10" : "h-0 group-hover:h-5",
+                inChats ? "h-10" : "h-0 group-hover/servidor:h-5",
               ),
             )}
           />
@@ -76,7 +79,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
               onClick={onOpenFriends}
               className={cn(
                 "relative flex size-[var(--guild-icon-size)] items-center justify-center text-xl font-bold transition-all",
-                activeGuildId === null
+                inChats
                   ? "rounded-2xl bg-brand"
                   : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
               )}
@@ -88,7 +91,7 @@ export const GuildRail: React.FC<GuildRailProps> = ({
                 draggable={false}
               />
               {pendingFriendRequests > 0 && (
-                <span data-gc="servidor.guild-rail.span--2" {...flx("seloDoServidor", "absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-sobre-marca")}>
+                <span data-gc="servidor.guild-rail.span--2" {...flx("serverSeal", "absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-surface-1 bg-danger text-10 font-bold text-sobre-marca")}>
                   {pendingFriendRequests}
                 </span>
               )}
@@ -96,54 +99,54 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           </Tooltip>
         </div>
 
-        <div data-gc="servidor.guild-rail.div--5" {...flx("divisorDoTrilho", "my-1 h-0.5 w-8 rounded-full bg-surface-3")} />
+        <div data-gc="servidor.guild-rail.div--5" {...flx("railDivider", "my-1 h-0.5 w-8 rounded-full bg-surface-3")} />
         </div>
 
-        <div data-gc="servidor.guild-rail.div--6" {...flx("secaoDeServidores", "flex w-full flex-col items-center gap-2")}>
+        <div data-gc="servidor.guild-rail.div--6" {...flx("serversSection", "flex w-full flex-col items-center gap-2")}>
 
-        {itens.map((item) =>
-          item.tipo === "pasta" ? (
-            <PastaDoTrilho data-gc="servidor.guild-rail.pasta-do-trilho.on-select"
-              key={`pasta:${item.pasta.id}`}
-              pasta={item.pasta}
+        {items.map((item) =>
+          item.kind === "pasta" ? (
+            <RailFolder data-gc="servidor.guild-rail.rail-folder.on-select"
+              key={`pasta:${item.folder.id}`}
+              folder={item.folder}
               guilds={item.guilds}
               activeGuildId={activeGuildId}
-              porServidor={porServidor}
-              vozes={vozes}
+              byServer={byServer}
+              voices={voices}
               onSelect={onSelect}
-              onConvidar={setConvidandoEm}
-              onSoltar={soltar}
+              onInvite={setInvitingAt}
+              onDrop={drop}
             />
           ) : (
-            <ItemDoServidor data-gc="servidor.guild-rail.item-do-servidor.on-select"
+            <ServerItem data-gc="servidor.guild-rail.server-item.on-select"
               key={item.guild.id}
               guild={item.guild}
               active={item.guild.id === activeGuildId}
-              naoLidas={porServidor[item.guild.id]?.naoLidas ?? 0}
-              mencoes={porServidor[item.guild.id]?.mencoes ?? 0}
-              vozes={vozes[item.guild.id] ?? []}
+              notRead={byServer[item.guild.id]?.notRead ?? 0}
+              mentions={byServer[item.guild.id]?.mentions ?? 0}
+              voices={voices[item.guild.id] ?? []}
               onSelect={onSelect}
-              onConvidar={() => setConvidandoEm(item.guild.id)}
-              onSoltar={soltar}
+              onInvite={() => setInvitingAt(item.guild.id)}
+              onDrop={drop}
             />
           ),
         )}
 
         <div data-gc="servidor.guild-rail.div--7"
           aria-hidden
-          className={cn("h-2 w-full transition-all", soltandoNoFim && "h-6")}
+          className={cn("h-2 w-full transition-all", droppingEnd && "h-6")}
           onDragOver={(e) => {
-            if (!e.dataTransfer.types.includes(TIPO_DE_ARRASTO)) return;
+            if (!e.dataTransfer.types.includes(DRAG_KIND)) return;
             e.preventDefault();
-            setSoltandoNoFim(true);
+            setDroppingEnd(true);
           }}
-          onDragLeave={() => setSoltandoNoFim(false)}
+          onDragLeave={() => setDroppingEnd(false)}
           onDrop={(e) => {
-            const arrastado = e.dataTransfer.getData(TIPO_DE_ARRASTO);
-            setSoltandoNoFim(false);
-            if (!arrastado) return;
+            const dragged = e.dataTransfer.getData(DRAG_KIND);
+            setDroppingEnd(false);
+            if (!dragged) return;
             e.preventDefault();
-            soltar(arrastado, { tipo: "fim" });
+            drop(dragged, { kind: "fim" });
           }}
         />
         </div>
@@ -152,66 +155,71 @@ export const GuildRail: React.FC<GuildRailProps> = ({
           <div data-gc="servidor.guild-rail.div--8" className="my-1 h-0.5 w-8 rounded-full bg-surface-3" />
         )}
 
-        <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho"
+        <RailAction data-gc="servidor.guild-rail.rail-action"
           label="Criar ou entrar num servidor"
-          lugar="botaoDeCriarServidor"
-          atalho={[ehMac ? "⌘" : "Ctrl", "Shift", "N"]}
+          place="createServerButton"
+          shortcut={[isMac ? "⌘" : "Ctrl", "Shift", "N"]}
           onClick={() => setCreating(true)}
         >
-          <Plus data-gc="servidor.guild-rail.plus" size={22} className={flxCls("iconeDeCriarServidor")} />
-        </AcaoDoTrilho>
+          <Plus data-gc="servidor.guild-rail.plus" size={22} className={flxCls("createServerIcon")} />
+        </RailAction>
 
-        <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho--2" label="Explorar comunidades" lugar="botaoDeExplorar" onClick={() => navigate("/explorar")}>
+        <RailAction data-gc="servidor.guild-rail.rail-action--2"
+          label="Explorar comunidades"
+          place="exploreButton"
+          active={inExplore}
+          onClick={() => navigate("/explorar")}
+        >
           <Compass data-gc="servidor.guild-rail.compass" size={22} />
-        </AcaoDoTrilho>
+        </RailAction>
 
-        {!ehDesktop() ? (
-          <AcaoDoTrilho data-gc="servidor.guild-rail.acao-do-trilho--3" label="Baixar o aplicativo" onClick={() => abrirConfiguracoes("aplicativo")}>
+        {!isDesktop() ? (
+          <RailAction data-gc="servidor.guild-rail.rail-action--3" label="Baixar o aplicativo" onClick={() => openSettings("app")}>
             <Download data-gc="servidor.guild-rail.download" size={20} />
-          </AcaoDoTrilho>
+          </RailAction>
         ) : (
-          atualizacao.temNovidade && (
+          update.hasNews && (
             <Tooltip data-gc="servidor.guild-rail.tooltip--2"
               side="right"
               label={
-                atualizacao.instalando
-                  ? `Instalando a versão ${atualizacao.estado?.disponivel}…`
-                  : atualizacao.estado?.erro && atualizacao.pronta
-                    ? `${atualizacao.estado.erro} Clique para tentar de novo.`
-                    : atualizacao.pronta
-                      ? `Versão ${atualizacao.estado?.disponivel} pronta — clique para reiniciar`
-                      : atualizacao.baixando
-                        ? `Baixando a versão ${atualizacao.estado?.disponivel}…`
-                        : `Saiu a versão ${atualizacao.estado?.disponivel} — clique para baixar`
+                update.installing
+                  ? `Instalando a versão ${update.state?.available}…`
+                  : update.state?.error && update.ready
+                    ? `${update.state.error} Clique para tentar de novo.`
+                    : update.ready
+                      ? `Versão ${update.state?.available} pronta — clique para reiniciar`
+                      : update.downloading
+                        ? `Baixando a versão ${update.state?.available}…`
+                        : `Saiu a versão ${update.state?.available} — clique para baixar`
               }
             >
               <button data-gc="servidor.guild-rail.button"
                 aria-label="Atualização do aplicativo"
-                disabled={atualizacao.baixando || atualizacao.instalando}
+                disabled={update.downloading || update.installing}
                 onClick={() =>
-                  void (atualizacao.pronta
-                    ? atualizacao.ponte?.instalar()
-                    : atualizacao.ponte?.baixar())
+                  void (update.ready
+                    ? update.bridge?.install()
+                    : update.bridge?.download())
                 }
                 className={cn(
                   "relative flex size-12 items-center justify-center rounded-3xl border-2 border-dashed transition-all",
                   "hover:rounded-2xl disabled:cursor-default",
-                  atualizacao.estado?.erro && atualizacao.pronta
+                  update.state?.error && update.ready
                     ? "border-danger text-danger hover:bg-danger-fundo"
-                    : atualizacao.pronta || atualizacao.instalando
+                    : update.ready || update.installing
                       ? "border-online text-online hover:bg-online/10"
                       : "border-surface-4 text-ink-muted hover:border-ink hover:text-ink",
                 )}
               >
-                {atualizacao.instalando ? (
+                {update.installing ? (
                   <RotateCw data-gc="servidor.guild-rail.rotate-cw" size={20} className="animate-spin" />
-                ) : atualizacao.baixando ? (
+                ) : update.downloading ? (
                   <ArrowDownToLine data-gc="servidor.guild-rail.arrow-down-to-line" size={20} className="animate-pulse" />
                 ) : (
                   <ArrowDownToLine data-gc="servidor.guild-rail.arrow-down-to-line--2" size={20} />
                 )}
 
-                {atualizacao.pronta && (
+                {update.ready && (
                   <span data-gc="servidor.guild-rail.span--3" className="absolute right-0 top-0 size-3 rounded-full border-2 border-surface-1 bg-online" />
                 )}
               </button>
@@ -222,39 +230,55 @@ export const GuildRail: React.FC<GuildRailProps> = ({
         </div>
       </nav>
 
-      <AdicionarServidorModal data-gc="servidor.guild-rail.adicionar-servidor-modal.on-select"
+      <AddServerModal data-gc="servidor.guild-rail.add-server-modal.on-select"
         open={creating}
         onClose={() => setCreating(false)}
         onCreated={onSelect}
       />
       <InviteModal data-gc="servidor.guild-rail.invite-modal"
-        open={convidandoEm !== null}
-        guildId={convidandoEm ?? ""}
-        guildName={guilds.find((g) => g.id === convidandoEm)?.name ?? ""}
-        onClose={() => setConvidandoEm(null)}
+        open={invitingAt !== null}
+        guildId={invitingAt ?? ""}
+        guildName={guilds.find((g) => g.id === invitingAt)?.name ?? ""}
+        onClose={() => setInvitingAt(null)}
       />
     </>
   );
 };
 
-const AcaoDoTrilho: React.FC<{
+const RailAction: React.FC<{
   label: string;
-  atalho?: string[];
-  lugar?: Lugares;
+  shortcut?: string[];
+  place?: Places;
+  active?: boolean;
   onClick: () => void;
   children: React.ReactNode;
-}> = ({ label, atalho, lugar, onClick, children }) => (
-  <Tooltip data-gc="servidor.guild-rail.tooltip--3" label={label} shortcut={atalho} side="right">
-    <button data-gc="servidor.guild-rail.button.on-click"
-      {...(lugar ? flxAttr(lugar) : {})}
-      onClick={onClick}
-      aria-label={label}
-      className={cn(
-        "flex size-12 items-center justify-center rounded-3xl border-2 border-dashed border-surface-4 text-ink-muted transition-all",
-        "hover:rounded-2xl hover:border-ink hover:text-ink",
+}> = ({ label, shortcut, place, active = false, onClick, children }) => (
+  <div data-gc="servidor.guild-rail.div--9" {...flx("railItem", "group/servidor relative flex w-full justify-center")}>
+    <span data-gc="servidor.guild-rail.span--4"
+      {...flx(
+        "serverPill",
+        cn(
+          "absolute left-0 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-pilula transition-all",
+          active ? "h-10" : "h-0 group-hover/servidor:h-5",
+        ),
       )}
-    >
-      {children}
-    </button>
-  </Tooltip>
+    />
+
+    <Tooltip data-gc="servidor.guild-rail.tooltip--3" label={label} shortcut={shortcut} side="right">
+      <button data-gc="servidor.guild-rail.button.on-click"
+        {...(place ? flxAttr(place) : {})}
+        onClick={onClick}
+        aria-label={label}
+        aria-current={active}
+        className={cn(
+          "flex size-12 items-center justify-center border-2 transition-all",
+          active
+            ? "rounded-2xl border-solid border-transparent bg-brand text-sobre-marca"
+            : "rounded-3xl border-dashed border-surface-4 text-ink-muted hover:rounded-2xl hover:border-ink hover:text-ink",
+        )}
+      >
+        {children}
+      </button>
+    </Tooltip>
+  </div>
 );

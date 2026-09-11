@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Ручка, що махає",
+    botao: "Помахати: {{nome}}",
+  },
+  oficial: {
+    titulo: "Цей канал лише для офіційних повідомлень.",
+    detalhe: "Ми ніколи не просимо ваш пароль чи токен облікового запису.",
+    saibaMais: "Докладніше",
+  },
+  topico: {
+    abrir: "Переглянути опис каналу",
+  },
+  previaDoLink: {
+    carregando: "Дивлюся, що за посиланням…",
+    destino: "Веде на {{destino}}",
+  },
+  reacao: {
+    carregando: "Дивлюся, хто відреагував із {{emoji}}…",
+    uma: "{{nome}} відреагував із {{emoji}}",
+    duas: "{{primeiro}} і {{segundo}} відреагували із {{emoji}}",
+    varias: "{{nomes}} і ще {{quantos}} відреагували із {{emoji}}",
+    dicaSuper: "Утримуйте для суперреакції",
+  },
+  recado: {
+    gravar: "Записати голосове",
+    descartar: "Відкинути запис",
+    mandar: "Надіслати запис",
+    semSuporte: "Цей браузер не записує звук.",
+    semMicrofone: "Немає доступу до мікрофона.",
+  },
   lista: {
     carregando: "Завантаження повідомлень…",
     carregandoMais: "Завантаження…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Переглянути зображення",
   },
   enquete: {
+    criar: "Створити опитування",
+    pergunta: "Питання",
+    exemplo: "У що сьогодні граємо?",
+    respostas: "Відповіді",
+    adicionarOpcao: "Додати варіант",
+    removerOpcao: "Прибрати варіант",
+    varias: "Дозволити кілька відповідей",
+    variasDetalhe: "Без цього голос за один варіант знімає голос з попереднього.",
+    duracao: "Тривалість",
+    umaHora: "1 година",
+    quatroHoras: "4 години",
+    oitoHoras: "8 годин",
+    umDia: "1 день",
+    tresDias: "3 дні",
+    umaSemana: "1 тиждень",
+    ateEncerrar: "Поки я сам не закрию",
     titulo: "Опитування",
     encerrada: "Опитування завершено",
     variasRespostas: "Опитування — кілька відповідей",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Пошук дивиться лише в канали, які ви можете читати.",
   },
   entrada: {
+    semNome: "розмова",
+    anexo: "(вкладення)",
     titulo: "Вхідні",
     naoLidas: "Непрочитані",
     salvas: "Збережені",

@@ -2,13 +2,13 @@ import type { FastifyInstance } from "fastify";
 import { messageService } from "~/services/message-service.js";
 import { messageFavoriteService } from "~/services/message-favorite-service.js";
 import { accessService } from "~/services/access-service.js";
-import { denunciaService, MOTIVOS_DE_DENUNCIA } from "~/services/denuncia-service.js";
+import { reportService, REPORT_REASONS } from "~/services/denuncia-service.js";
 import { objectId, channelParams } from "~/validations/common.js";
 import { rooms } from "@gravae/shared";
 import { z } from "zod";
 import { io } from "~/realtime/io.js";
-import { removerAnexo } from "~/realtime/difusao.js";
-import { buscaQuery, historyQuery } from "~/validations/message.js";
+import { removeAttachment } from "~/realtime/difusao.js";
+import { searchQuery, historyQuery } from "~/validations/message.js";
 
 export async function messageRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -29,6 +29,11 @@ export async function messageRoutes(app: FastifyInstance) {
     return messageService.pinned(req.userId, channelId);
   });
 
+  app.get("/messages/:messageId/reactions", (req) => {
+    const { messageId } = messageParams.parse(req.params);
+    return messageService.whoReacted(req.userId, messageId);
+  });
+
   app.put("/messages/:messageId/pin", async (req) => {
     const { messageId } = messageParams.parse(req.params);
     const message = await messageService.pin(req.userId, messageId, true);
@@ -45,10 +50,10 @@ export async function messageRoutes(app: FastifyInstance) {
     return message;
   });
 
-  app.delete("/messages/:messageId/anexos/:anexoId", async (req, reply) => {
-    const { messageId, anexoId } = anexoParams.parse(req.params);
+  app.delete("/messages/:messageId/anexos/:attachmentId", async (req, reply) => {
+    const { messageId, attachmentId } = attachmentParams.parse(req.params);
 
-    await removerAnexo(req.userId, messageId, anexoId);
+    await removeAttachment(req.userId, messageId, attachmentId);
 
     return reply.status(204).send();
   });
@@ -58,37 +63,37 @@ export async function messageRoutes(app: FastifyInstance) {
     { config: { rateLimit: { max: 5, timeWindow: "1 hour" } } },
     async (req, reply) => {
       const { messageId } = messageParams.parse(req.params);
-      const dados = z
+      const data = z
         .object({
-          motivo: z.enum(MOTIVOS_DE_DENUNCIA),
-          detalhes: z.string().trim().max(1000).optional(),
+          reason: z.enum(REPORT_REASONS),
+          details: z.string().trim().max(1000).optional(),
         })
         .parse(req.body);
 
-      const resultado = await denunciaService.denunciarMensagem(req.userId, messageId, dados, req.log);
-      return reply.code(201).send(resultado);
+      const result = await reportService.reportMessage(req.userId, messageId, data, req.log);
+      return reply.code(201).send(result);
     },
   );
 
   app.get("/messages/busca", (req) => {
-    const { q, ...filtros } = buscaQuery.parse(req.query);
-    return messageService.buscar(req.userId, { ...filtros, termo: q });
+    const { q, ...filters } = searchQuery.parse(req.query);
+    return messageService.search(req.userId, { ...filters, term: q });
   });
 
-  app.get("/messages/favoritas", (req) => messageFavoriteService.listar(req.userId));
+  app.get("/messages/favoritas", (req) => messageFavoriteService.list(req.userId));
 
   app.get("/messages/favoritas/ids", (req) => messageFavoriteService.idsDe(req.userId));
 
   app.put("/messages/:messageId/favorita", (req) => {
     const { messageId } = messageParams.parse(req.params);
-    return messageFavoriteService.alternar(req.userId, messageId, true);
+    return messageFavoriteService.toggle(req.userId, messageId, true);
   });
 
   app.delete("/messages/:messageId/favorita", (req) => {
     const { messageId } = messageParams.parse(req.params);
-    return messageFavoriteService.alternar(req.userId, messageId, false);
+    return messageFavoriteService.toggle(req.userId, messageId, false);
   });
 }
 
 const messageParams = z.object({ messageId: objectId });
-const anexoParams = messageParams.extend({ anexoId: objectId });
+const attachmentParams = messageParams.extend({ attachmentId: objectId });

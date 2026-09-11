@@ -11,7 +11,7 @@ export default defineConfig({
   // O app empacotado nao tem .env: o `dotenv` do script `dev` so envolve o
   // electron, nao o build. Sem embutir a URL aqui, o .dmg instalado cai no
   // fallback de localhost e abre a tela de erro.
-  env: { GRAVAE_APP_URL_EMBUTIDO: process.env.GRAVAE_APP_URL ?? "" },
+  env: { GRAVAE_APP_URL_EMBEDDED: process.env.GRAVAE_APP_URL ?? "" },
   clean: true,
   sourcemap: true,
 });

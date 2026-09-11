@@ -9,17 +9,17 @@ import {
   type LocalAudioTrack,
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
-import { proximoAlvo } from "~/features/voz/lib/assistir";
+import { nextTarget } from "~/features/voz/lib/assistir";
 import {
-  reacaoAFalhaDeMicrofone,
-  type ReacaoAFalhaDeMicrofone,
+  microphoneReactionFailure,
+  type MicrophoneReactionFailure,
 } from "~/features/voz/lib/falha-de-microfone";
-import { descreverFonte } from "~/lib/fonte-da-tela";
-import { ProcessadorDeVoz } from "~/features/voz/lib/audio-gate";
+import { describeFont } from "~/lib/fonte-da-tela";
+import { VoiceProcessor } from "~/features/voz/lib/audio-gate";
 import { desktop } from "~/lib/desktop";
-import { pararSomDoPainel } from "~/features/voz/lib/soundboard";
-import { tocarSom, type SomDaInterface } from "~/lib/ui-sounds";
-import { ajustesDe, useVoicePrefs, type VoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { stopPanelSound } from "~/features/voz/lib/soundboard";
+import { playSound, type InterfaceSound } from "~/lib/ui-sounds";
+import { settingsFor, useVoicePrefs, type VoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { apiErrorMessage } from "~/@core/lib/api";
 import {
   joinVoiceChannel,
@@ -38,7 +38,7 @@ export type VoiceTile = {
   screenTrack: Track | null;
   micTrack: Track | null;
   screenAudioTrack: Track | null;
-  qualidade: string;
+  quality: string;
 };
 
 type VoiceStore = {
@@ -49,8 +49,8 @@ type VoiceStore = {
 
   micEnabled: boolean;
   micBlocked: boolean;
-  reconectando: boolean;
-  processador: ProcessadorDeVoz | null;
+  reconnecting: boolean;
+  processor: VoiceProcessor | null;
   noiseFilterAvailable: boolean;
   noiseFilterBusy: boolean;
   deafened: boolean;
@@ -58,14 +58,14 @@ type VoiceStore = {
   screenEnabled: boolean;
 
   tiles: VoiceTile[];
-  assistindo: string | null;
-  exigePushToTalk: boolean;
+  watching: string | null;
+  requiresPushToTalk: boolean;
   guildId: string | null;
-  palcoVisivel: boolean;
-  volumesLocais: Record<string, number>;
-  silenciadosLocais: Record<string, boolean>;
-  volumesDeTela: Record<string, number>;
-  fonteDaTela: { nome: string; icone: string | null } | null;
+  visibleStage: boolean;
+  volumesLocal: Record<string, number>;
+  mutedLocal: Record<string, boolean>;
+  screenVolumes: Record<string, number>;
+  screenFont: { name: string; icon: string | null } | null;
 
   join: (channelId: string, options?: { resume?: boolean }) => Promise<void>;
   leave: () => Promise<void>;
@@ -74,21 +74,21 @@ type VoiceStore = {
   toggleCamera: () => Promise<void>;
   toggleScreen: () => Promise<void>;
   toggleNoiseFilter: () => Promise<void>;
-  assistir: (identity: string | null) => void;
-  definirPalcoVisivel: (visivel: boolean) => void;
-  chatDaChamada: boolean;
-  alternarChatDaChamada: () => void;
+  watch: (identity: string | null) => void;
+  setStageVisible: (visible: boolean) => void;
+  callChat: boolean;
+  toggleCallChat: () => void;
   setVolumeLocal: (userId: string, volume: number) => void;
-  setVolumeDeTela: (userId: string, volume: number) => void;
-  definirFonteDaTela: (fonte: { nome: string; icone: string | null } | null) => void;
-  toggleSilenciarLocal: (userId: string) => void;
-  aplicarAjustes: (mudanca: Partial<VoicePrefs>) => Promise<void>;
-  definirPtt: (pressionado: boolean) => void;
-  observarNivel: (ouvinte: (nivel: number, aberto: boolean) => void) => () => void;
+  setScreenVolume: (userId: string, volume: number) => void;
+  setScreenFont: (font: { name: string; icon: string | null } | null) => void;
+  toggleMuteLocal: (userId: string) => void;
+  applySettings: (change: Partial<VoicePrefs>) => Promise<void>;
+  setPtt: (pressed: boolean) => void;
+  observeLevel: (listener: (level: number, isOpen: boolean) => void) => () => void;
   reset: () => void;
 };
 
-function avatarDoParticipante(metadata: string | undefined): string | null {
+function participantAvatar(metadata: string | undefined): string | null {
   if (!metadata) return null;
 
   try {
@@ -105,20 +105,20 @@ function snapshot(room: Room): VoiceTile[] {
       return pub?.track ?? null;
     };
 
-    const ouvivel = (source: Track.Source) => (isLocal ? null : track(source));
+    const audible = (source: Track.Source) => (isLocal ? null : track(source));
 
     return {
       identity: p.identity,
       name: p.name || p.identity,
-      avatarUrl: avatarDoParticipante(p.metadata),
+      avatarUrl: participantAvatar(p.metadata),
       isLocal,
       speaking: p.isSpeaking,
       micEnabled: p.isMicrophoneEnabled,
       cameraTrack: track(Track.Source.Camera),
       screenTrack: track(Track.Source.ScreenShare),
-      micTrack: ouvivel(Track.Source.Microphone),
-      screenAudioTrack: ouvivel(Track.Source.ScreenShareAudio),
-      qualidade: p.connectionQuality,
+      micTrack: audible(Track.Source.Microphone),
+      screenAudioTrack: audible(Track.Source.ScreenShareAudio),
+      quality: p.connectionQuality,
     };
   };
 
@@ -131,48 +131,48 @@ function snapshot(room: Room): VoiceTile[] {
 const TAB_VOICE_KEY = "gravae:voice-channel";
 const TAB_ID_KEY = "gravae:voice-cliente";
 
-export const clienteDestaAba = (): string | undefined => {
+export const clientThisTab = (): string | undefined => {
   try {
-    const salvo = sessionStorage.getItem(TAB_ID_KEY);
-    if (salvo) return salvo;
+    const saved = sessionStorage.getItem(TAB_ID_KEY);
+    if (saved) return saved;
 
-    const novo = crypto.randomUUID();
-    sessionStorage.setItem(TAB_ID_KEY, novo);
-    return novo;
+    const fresh = crypto.randomUUID();
+    sessionStorage.setItem(TAB_ID_KEY, fresh);
+    return fresh;
   } catch {
     return undefined;
   }
 };
 
-const AJUSTES_KEY = "gravae:volumes-por-pessoa";
+const SETTINGS_KEY = "gravae:volumes-por-pessoa";
 
-interface AjustesPorPessoa {
+interface SettingsByPerson {
   volumes: Record<string, number>;
-  silenciados: Record<string, boolean>;
-  telas: Record<string, number>;
+  mutedIds: Record<string, boolean>;
+  screens: Record<string, number>;
 }
 
-function lerAjustesPorPessoa(): AjustesPorPessoa {
+function readSettingsByPerson(): SettingsByPerson {
   try {
-    const salvo = localStorage.getItem(AJUSTES_KEY);
-    if (!salvo) return { volumes: {}, silenciados: {}, telas: {} };
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (!saved) return { volumes: {}, mutedIds: {}, screens: {} };
 
-    const dados = JSON.parse(salvo) as Partial<AjustesPorPessoa>;
-    return { volumes: dados.volumes ?? {}, silenciados: dados.silenciados ?? {}, telas: dados.telas ?? {} };
+    const data = JSON.parse(saved) as Partial<SettingsByPerson>;
+    return { volumes: data.volumes ?? {}, mutedIds: data.mutedIds ?? {}, screens: data.screens ?? {} };
   } catch {
-    return { volumes: {}, silenciados: {}, telas: {} };
+    return { volumes: {}, mutedIds: {}, screens: {} };
   }
 }
 
-function guardarAjustesPorPessoa(ajustes: AjustesPorPessoa) {
+function storeSettingsByPerson(settings: SettingsByPerson) {
   try {
-    localStorage.setItem(AJUSTES_KEY, JSON.stringify(ajustes));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   } catch {
   }
 }
 
-const apontaProLocalhost = (url: string) => /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
-const estamosNoLocalhost = () =>
+const pointsProLocalhost = (url: string) => /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
+const areLocalhost = () =>
   ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
 
 export const rememberVoiceTab = (channelId: string | null) => {
@@ -191,93 +191,93 @@ export const voiceTabChannelId = (): string | null => {
   }
 };
 
-const CAPTURA_LIMPA = {
+const CAPTURE_CLEAN = {
   echoCancellation: true,
   noiseSuppression: true,
   autoGainControl: true,
 } as const;
 
-function opcoesDeCaptura() {
-  const { entradaId } = useVoicePrefs.getState();
+function captureOptions() {
+  const { entryId } = useVoicePrefs.getState();
 
   return {
-    ...CAPTURA_LIMPA,
-    ...(entradaId ? { deviceId: { exact: entradaId } } : {}),
+    ...CAPTURE_CLEAN,
+    ...(entryId ? { deviceId: { exact: entryId } } : {}),
   };
 }
 
-const permissaoDoSistema = (): Promise<boolean> =>
-  desktop()?.midia.garantir("microphone") ?? Promise.resolve(true);
+const systemPermission = (): Promise<boolean> =>
+  desktop()?.media.ensure("microphone") ?? Promise.resolve(true);
 
-function aplicarFalhaDeMicrofone(
-  erro: unknown,
-  set: (parcial: Partial<VoiceStore>) => void,
+function applyMicrophoneFailure(
+  error: unknown,
+  set: (partial: Partial<VoiceStore>) => void,
   store: () => VoiceStore,
-): ReacaoAFalhaDeMicrofone {
-  const reacao = reacaoAFalhaDeMicrofone(erro, { reconectando: store().reconectando });
+): MicrophoneReactionFailure {
+  const reaction = microphoneReactionFailure(error, { reconnecting: store().reconnecting });
 
-  if (reacao === "estourar") {
-    console.error("[voz] falha de microfone que é bug nosso:", erro);
+  if (reaction === "estourar") {
+    console.error("[voz] falha de microfone que é bug nosso:", error);
     set({ micEnabled: false, micBlocked: true });
-    return reacao;
+    return reaction;
   }
 
-  if (reacao === "mutar") {
-    console.warn("[voz] não deu pra publicar o microfone:", erro);
+  if (reaction === "mutar") {
+    console.warn("[voz] não deu pra publicar o microfone:", error);
     set({ micEnabled: false, micBlocked: true });
-    return reacao;
+    return reaction;
   }
 
-  if (reacao === "adiar") {
-    console.info("[voz] microfone falhou por algo passageiro; tentando de novo depois:", erro);
+  if (reaction === "adiar") {
+    console.info("[voz] microfone falhou por algo passageiro; tentando de novo depois:", error);
     set({ micBlocked: false });
   }
 
-  return reacao;
+  return reaction;
 }
 
-async function reaplicarMicrofone(
+async function reapplyMicrophone(
   room: Room,
-  set: (parcial: Partial<VoiceStore>) => void,
+  set: (partial: Partial<VoiceStore>) => void,
   store: () => VoiceStore,
 ) {
-  const { micEnabled, deafened, processador } = store();
+  const { micEnabled, deafened, processor } = store();
 
   try {
     await room.localParticipant.setMicrophoneEnabled(
       micEnabled && !deafened,
-      opcoesDeCaptura(),
+      captureOptions(),
     );
 
-    if (processador) await prenderProcessador(room, processador);
+    if (processor) await holdProcessor(room, processor);
     set({ micBlocked: false });
-  } catch (erro) {
-    aplicarFalhaDeMicrofone(erro, set, store);
+  } catch (error) {
+    applyMicrophoneFailure(error, set, store);
   }
 }
 
-async function prenderProcessador(room: Room, processador: ProcessadorDeVoz) {
-  const publicacao = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-  const track = publicacao?.track as LocalAudioTrack | undefined;
+async function holdProcessor(room: Room, processor: VoiceProcessor) {
+  const post = room.localParticipant.getTrackPublication(Track.Source.Microphone);
+  const track = post?.track as LocalAudioTrack | undefined;
 
   if (!track || track.getProcessor()) return;
-  await track.setProcessor(processador);
+  await track.setProcessor(processor);
 }
 
-function disponibilidade(processador: ProcessadorDeVoz): boolean {
-  return useVoicePrefs.getState().supressaoDeRuido
-    ? processador.supressaoAtiva
-    : processador.supressaoDisponivel;
+function availability(processor: VoiceProcessor): boolean {
+  return useVoicePrefs.getState().noiseSuppression
+    ? processor.activeSuppression
+    : processor.availableSuppression;
 }
 
-function bipe(nome: SomDaInterface) {
-  const { somDaInterface, volumeSaida } = useVoicePrefs.getState();
-  tocarSom(nome, { mudo: !somDaInterface || store_().deafened, volume: volumeSaida });
+function beep(name: InterfaceSound) {
+  const { interfaceSound, volumeOutput } = useVoicePrefs.getState();
+  playSound(name, { isMuted: !interfaceSound || store_().deafened, volume: volumeOutput });
 }
 
 let store_: () => VoiceStore;
 
-const avisarOServidor = (patch: Parameters<typeof updateVoiceState>[0]) => {
+const notifyServer = (patch: Parameters<typeof updateVoiceState>[0]) => {
   if (!store_().channelId) return Promise.resolve(null);
 
   return updateVoiceState(patch).catch(() => null);
@@ -293,23 +293,23 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   error: null,
   micEnabled: true,
   micBlocked: false,
-  reconectando: false,
-  processador: null,
+  reconnecting: false,
+  processor: null,
   noiseFilterAvailable: true,
   noiseFilterBusy: false,
   deafened: false,
-  chatDaChamada: true,
+  callChat: true,
   cameraEnabled: false,
   screenEnabled: false,
   tiles: [],
-  assistindo: null,
-  exigePushToTalk: false,
+  watching: null,
+  requiresPushToTalk: false,
   guildId: null,
-  palcoVisivel: false,
-  volumesLocais: lerAjustesPorPessoa().volumes,
-  silenciadosLocais: lerAjustesPorPessoa().silenciados,
-  volumesDeTela: lerAjustesPorPessoa().telas,
-  fonteDaTela: null,
+  visibleStage: false,
+  volumesLocal: readSettingsByPerson().volumes,
+  mutedLocal: readSettingsByPerson().mutedIds,
+  screenVolumes: readSettingsByPerson().screens,
+  screenFont: null,
 
   join: async (channelId, options) => {
     if (store().channelId === channelId) return;
@@ -318,9 +318,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     set({ connecting: true, error: null, channelId });
 
     try {
-      const { url, token, exigePushToTalk } = await findVoiceToken(channelId);
+      const { url, token, requiresPushToTalk } = await findVoiceToken(channelId);
 
-      if (apontaProLocalhost(url) && !estamosNoLocalhost()) {
+      if (pointsProLocalhost(url) && !areLocalhost()) {
         throw new Error(
           "A voz não está disponível neste acesso: o servidor de voz roda só na máquina de quem hospeda. " +
             "O texto, os anexos e o resto do chat funcionam normalmente.",
@@ -337,35 +337,35 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
         const eu = tiles.find((t) => t.isLocal);
         const camera = Boolean(eu?.cameraTrack);
-        const tela = Boolean(eu?.screenTrack);
-        const { cameraEnabled, screenEnabled, assistindo } = store();
+        const display = Boolean(eu?.screenTrack);
+        const { cameraEnabled, screenEnabled, watching } = store();
 
-        const proximoAssistindo = proximoAlvo({
-          atual: assistindo,
-          alvoAindaTransmite: tiles.some((t) => t.identity === assistindo && t.screenTrack),
+        const nextWatching = nextTarget({
+          current: watching,
+          targetStillBroadcasts: tiles.some((t) => t.identity === watching && t.screenTrack),
         });
 
-        if (proximoAssistindo !== assistindo) set({ assistindo: proximoAssistindo });
+        if (nextWatching !== watching) set({ watching: nextWatching });
 
-        set({ tiles, cameraEnabled: camera, screenEnabled: tela });
+        set({ tiles, cameraEnabled: camera, screenEnabled: display });
 
-        if (camera !== cameraEnabled || tela !== screenEnabled) {
-          void avisarOServidor({
+        if (camera !== cameraEnabled || display !== screenEnabled) {
+          void notifyServer({
             ...(camera !== cameraEnabled ? { camera } : {}),
-            ...(tela !== screenEnabled ? { screenShare: tela } : {}),
+            ...(display !== screenEnabled ? { screenShare: display } : {}),
           });
 
-          if (tela !== screenEnabled) bipe(tela ? "liveNoAr" : "liveEncerrada");
+          if (display !== screenEnabled) beep(display ? "liveNoAr" : "liveEnded");
         }
       };
 
       room
         .on(RoomEvent.ParticipantConnected, () => {
-          bipe("alguemEntrou");
+          beep("someoneJoined");
           refresh();
         })
         .on(RoomEvent.ParticipantDisconnected, () => {
-          bipe("alguemSaiu");
+          beep("someoneLeft");
           refresh();
         })
         .on(RoomEvent.TrackSubscribed, refresh)
@@ -378,60 +378,60 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         .on(RoomEvent.TrackMuted, refresh)
         .on(RoomEvent.TrackUnmuted, refresh)
         .on(RoomEvent.ActiveSpeakersChanged, refresh)
-        .on(RoomEvent.Reconnecting, () => set({ reconectando: true }))
+        .on(RoomEvent.Reconnecting, () => set({ reconnecting: true }))
         .on(RoomEvent.Reconnected, () => {
-          set({ reconectando: false });
-          void reaplicarMicrofone(room, set, store);
+          set({ reconnecting: false });
+          void reapplyMicrophone(room, set, store);
         })
         .on(RoomEvent.Disconnected, () => {
-          set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, reconectando: false });
+          set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, reconnecting: false });
         });
 
       await room.connect(url, token);
 
-      set({ exigePushToTalk: Boolean(exigePushToTalk) });
+      set({ requiresPushToTalk: Boolean(requiresPushToTalk) });
 
       const prefs = useVoicePrefs.getState();
-      const ajustes = ajustesDe(prefs);
+      const settings = settingsFor(prefs);
 
-      const processador = new ProcessadorDeVoz(
-        exigePushToTalk ? { ...ajustes, modo: "ptt" } : ajustes,
+      const processor = new VoiceProcessor(
+        requiresPushToTalk ? { ...settings, mode: "ptt" } : settings,
       );
-      set({ processador });
+      set({ processor });
 
       try {
-        await permissaoDoSistema();
+        await systemPermission();
         await room.localParticipant.setMicrophoneEnabled(
           !store().deafened && store().micEnabled,
-          opcoesDeCaptura(),
+          captureOptions(),
         );
 
-        await prenderProcessador(room, processador);
-        set({ micBlocked: false, noiseFilterAvailable: disponibilidade(processador) });
-        bipe("entrarNaChamada");
-      } catch (erro) {
-        if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
+        await holdProcessor(room, processor);
+        set({ micBlocked: false, noiseFilterAvailable: availability(processor) });
+        beep("joinCall");
+      } catch (error) {
+        if (applyMicrophoneFailure(error, set, store) === "adiar" && !store().reconnecting) {
           set({ micEnabled: false, micBlocked: true });
         }
       }
 
-      if (prefs.saidaId) {
-        await room.switchActiveDevice("audiooutput", prefs.saidaId).catch(() => undefined);
+      if (prefs.outputId) {
+        await room.switchActiveDevice("audiooutput", prefs.outputId).catch(() => undefined);
       }
 
       set({ room, connecting: false, tiles: snapshot(room) });
       rememberVoiceTab(channelId);
 
-      const estado = (await joinVoiceChannel(
+      const state = (await joinVoiceChannel(
         channelId,
         options?.resume ?? false,
-        clienteDestaAba(),
+        clientThisTab(),
       )) as
         | { guildId?: string }
         | undefined;
 
-      if (estado?.guildId) set({ guildId: estado.guildId });
-      await avisarOServidor({ selfMute: !store().micEnabled, selfDeaf: store().deafened });
+      if (state?.guildId) set({ guildId: state.guildId });
+      await notifyServer({ selfMute: !store().micEnabled, selfDeaf: store().deafened });
     } catch (err) {
       set({ connecting: false, channelId: null, error: apiErrorMessage(err, "Não deu pra entrar na chamada") });
       throw err;
@@ -444,11 +444,11 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     rememberVoiceTab(null);
 
-    bipe("sairDaChamada");
-    pararSomDoPainel();
-    set({ chatDaChamada: true });
+    beep("leaveCall");
+    stopPanelSound();
+    set({ callChat: true });
     await room.disconnect();
-    set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, processor: null });
     await leaveVoiceChannel().catch(() => undefined);
   },
 
@@ -460,37 +460,37 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (next && deafened) await store().toggleDeafen();
 
     try {
-      await permissaoDoSistema();
-      await room?.localParticipant.setMicrophoneEnabled(next, opcoesDeCaptura());
+      await systemPermission();
+      await room?.localParticipant.setMicrophoneEnabled(next, captureOptions());
 
-      const { processador } = store();
-      if (room && processador) await prenderProcessador(room, processador);
+      const { processor } = store();
+      if (room && processor) await holdProcessor(room, processor);
       set({ micBlocked: false });
-      bipe(next ? "desmutar" : "mutar");
-    } catch (erro) {
-      if (aplicarFalhaDeMicrofone(erro, set, store) === "adiar" && !store().reconectando) {
+      beep(next ? "unmute" : "mute");
+    } catch (error) {
+      if (applyMicrophoneFailure(error, set, store) === "adiar" && !store().reconnecting) {
         set({ micEnabled: !next });
       }
       return;
     }
 
-    await avisarOServidor({ selfMute: !next });
+    await notifyServer({ selfMute: !next });
   },
 
   toggleDeafen: async () => {
     const { room, deafened } = store();
     const next = !deafened;
 
-    if (next) bipe("ensurdecer");
-    if (next) pararSomDoPainel();
+    if (next) beep("deafen");
+    if (next) stopPanelSound();
     set({ deafened: next });
-    if (!next) bipe("desensurdecer");
+    if (!next) beep("undeafen");
     if (next) {
       set({ micEnabled: false });
       await room?.localParticipant.setMicrophoneEnabled(false);
     }
 
-    await avisarOServidor({ selfDeaf: next, selfMute: next ? true : undefined });
+    await notifyServer({ selfDeaf: next, selfMute: next ? true : undefined });
   },
 
   toggleCamera: async () => {
@@ -504,85 +504,84 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       cameraId ? { deviceId: { exact: cameraId } } : undefined,
     );
     set({ cameraEnabled: next, tiles: snapshot(room) });
-    await avisarOServidor({ camera: next });
+    await notifyServer({ camera: next });
   },
 
   reset: () => {
     rememberVoiceTab(null);
     void store().room?.disconnect();
-    set({ room: null, channelId: null, guildId: null, tiles: [], assistindo: null, cameraEnabled: false, screenEnabled: false, processador: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, processor: null });
   },
 
-  assistir: (identity) => set({ assistindo: identity }),
-  alternarChatDaChamada: () => set({ chatDaChamada: !store().chatDaChamada }),
+  watch: (identity) => set({ watching: identity }),
+  toggleCallChat: () => set({ callChat: !store().callChat }),
 
-  definirPalcoVisivel: (visivel) => set({ palcoVisivel: visivel }),
-  definirFonteDaTela: (fonte) => set({ fonteDaTela: fonte }),
+  setStageVisible: (visible) => set({ visibleStage: visible }),
+  setScreenFont: (font) => set({ screenFont: font }),
 
   toggleNoiseFilter: async () => {
-    const { supressaoDeRuido } = useVoicePrefs.getState();
-    await store().aplicarAjustes({ supressaoDeRuido: !supressaoDeRuido });
+    const { noiseSuppression } = useVoicePrefs.getState();
+    await store().applySettings({ noiseSuppression: !noiseSuppression });
   },
 
-  aplicarAjustes: async (mudanca) => {
-    const { definir } = useVoicePrefs.getState();
-    definir(mudanca);
+  applySettings: async (change) => {
+    useVoicePrefs.getState().set(change);
 
-    const { room, processador } = store();
+    const { room, processor } = store();
     const prefs = useVoicePrefs.getState();
 
-    const trocouSupressao = mudanca.supressaoDeRuido !== undefined && !!processador;
+    const swappedSuppression = change.noiseSuppression !== undefined && !!processor;
 
-    if (trocouSupressao) set({ noiseFilterBusy: true });
+    if (swappedSuppression) set({ noiseFilterBusy: true });
 
     try {
-      const ajustes = ajustesDe(prefs);
-      await processador?.aplicar(
-        store().exigePushToTalk ? { ...ajustes, modo: "ptt" } : ajustes,
+      const settings = settingsFor(prefs);
+      await processor?.apply(
+        store().requiresPushToTalk ? { ...settings, mode: "ptt" } : settings,
       );
     } finally {
-      if (trocouSupressao && processador) {
-        set({ noiseFilterBusy: false, noiseFilterAvailable: disponibilidade(processador) });
+      if (swappedSuppression && processor) {
+        set({ noiseFilterBusy: false, noiseFilterAvailable: availability(processor) });
       }
     }
 
     if (!room) return;
 
-    if (mudanca.entradaId !== undefined) {
-      await room.switchActiveDevice("audioinput", mudanca.entradaId ?? "default").catch(() => undefined);
+    if (change.entryId !== undefined) {
+      await room.switchActiveDevice("audioinput", change.entryId ?? "default").catch(() => undefined);
     }
 
-    if (mudanca.saidaId !== undefined) {
-      await room.switchActiveDevice("audiooutput", mudanca.saidaId ?? "default").catch(() => undefined);
+    if (change.outputId !== undefined) {
+      await room.switchActiveDevice("audiooutput", change.outputId ?? "default").catch(() => undefined);
     }
   },
 
-  definirPtt: (pressionado) => store().processador?.definirPtt(pressionado),
+  setPtt: (pressed) => store().processor?.setPtt(pressed),
 
   setVolumeLocal: (userId, volume) => {
-    const volumes = { ...store().volumesLocais, [userId]: volume };
-    set({ volumesLocais: volumes });
-    guardarAjustesPorPessoa({ volumes, silenciados: store().silenciadosLocais, telas: store().volumesDeTela });
+    const volumes = { ...store().volumesLocal, [userId]: volume };
+    set({ volumesLocal: volumes });
+    storeSettingsByPerson({ volumes, mutedIds: store().mutedLocal, screens: store().screenVolumes });
   },
 
-  setVolumeDeTela: (userId, volume) => {
-    const telas = { ...store().volumesDeTela, [userId]: volume };
-    set({ volumesDeTela: telas });
-    guardarAjustesPorPessoa({
-      volumes: store().volumesLocais,
-      silenciados: store().silenciadosLocais,
-      telas,
+  setScreenVolume: (userId, volume) => {
+    const screens = { ...store().screenVolumes, [userId]: volume };
+    set({ screenVolumes: screens });
+    storeSettingsByPerson({
+      volumes: store().volumesLocal,
+      mutedIds: store().mutedLocal,
+      screens,
     });
   },
 
-  toggleSilenciarLocal: (userId) => {
-    const mudo = !store().silenciadosLocais[userId];
-    const silenciados = { ...store().silenciadosLocais, [userId]: mudo };
-    set({ silenciadosLocais: silenciados });
-    guardarAjustesPorPessoa({ volumes: store().volumesLocais, silenciados, telas: store().volumesDeTela });
+  toggleMuteLocal: (userId) => {
+    const isMuted = !store().mutedLocal[userId];
+    const mutedIds = { ...store().mutedLocal, [userId]: isMuted };
+    set({ mutedLocal: mutedIds });
+    storeSettingsByPerson({ volumes: store().volumesLocal, mutedIds, screens: store().screenVolumes });
   },
 
-  observarNivel: (ouvinte) => store().processador?.observarNivel(ouvinte) ?? (() => undefined),
+  observeLevel: (listener) => store().processor?.observeLevel(listener) ?? (() => undefined),
 
   toggleScreen: async () => {
     const { room, screenEnabled } = store();
@@ -590,24 +589,24 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     const next = !screenEnabled;
 
-    if (!next) set({ fonteDaTela: null });
+    if (!next) set({ screenFont: null });
 
     try {
-      const { somDaTela } = useVoicePrefs.getState();
-      await room.localParticipant.setScreenShareEnabled(next, { audio: somDaTela });
+      const { screenSound } = useVoicePrefs.getState();
+      await room.localParticipant.setScreenShareEnabled(next, { audio: screenSound });
       const tiles = snapshot(room);
 
       set({
         screenEnabled: next,
         tiles,
-        fonteDaTela: next
-          ? descreverFonte(store().fonteDaTela, tiles.find((t) => t.isLocal)?.screenTrack?.mediaStreamTrack)
+        screenFont: next
+          ? describeFont(store().screenFont, tiles.find((t) => t.isLocal)?.screenTrack?.mediaStreamTrack)
           : null,
       });
-      bipe(next ? "liveNoAr" : "liveEncerrada");
-      await avisarOServidor({ screenShare: next });
+      beep(next ? "liveNoAr" : "liveEnded");
+      await notifyServer({ screenShare: next });
     } catch {
-      set({ screenEnabled: false, fonteDaTela: null });
+      set({ screenEnabled: false, screenFont: null });
     }
   },
   };

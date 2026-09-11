@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Smile, X } from "lucide-react";
-import { LIMITS, type StatusPersonalizado } from "@gravae/shared";
+import { LIMITS, type CustomStatus } from "@gravae/shared";
 
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Button } from "~/components/ui/button";
@@ -8,80 +8,80 @@ import { SelectField } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { Label, bareField, fieldGroup } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
-import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
+import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import type { EstiloDePerfil } from "@gravae/shared";
-import { i18next, idiomaAtual, useTranslation } from "~/traducao";
+import type { ProfileStyle } from "@gravae/shared";
+import { i18next, currentLanguage, useTranslation } from "~/traducao";
 
-const PRAZOS = [
-  { id: "nunca", chave: "naoLimpar", minutos: null },
-  { id: "30m", chave: "limpar30m", minutos: 30 },
-  { id: "1h", chave: "limpar1h", minutos: 60 },
-  { id: "4h", chave: "limpar4h", minutos: 240 },
+const DEADLINES = [
+  { id: "never", key: "naoLimpar", minutes: null },
+  { id: "30m", key: "limpar30m", minutes: 30 },
+  { id: "1h", key: "limpar1h", minutes: 60 },
+  { id: "4h", key: "limpar4h", minutes: 240 },
   {
     id: "hoje",
-    chave: "limparHoje",
-    minutos: null as number | null,
-    ateOFimDoDia: true,
+    key: "limparHoje",
+    minutes: null as number | null,
+    dayUntilEnd: true,
   },
-  { id: "amanha", chave: "limparAmanha", minutos: 24 * 60 },
+  { id: "amanha", key: "limparAmanha", minutes: 24 * 60 },
 ] as const;
 
-function rotuloComHora(prazo: (typeof PRAZOS)[number]): string {
-  const nome = i18next.t(`perfil.status.${prazo.chave}`);
-  const iso = calcularExpiracao(prazo);
-  if (!iso) return nome;
+function labelWithHour(deadline: (typeof DEADLINES)[number]): string {
+  const name = i18next.t(`perfil.status.${deadline.key}`);
+  const iso = computeExpiry(deadline);
+  if (!iso) return name;
 
-  const hora = new Date(iso).toLocaleTimeString(idiomaAtual(), {
+  const hour = new Date(iso).toLocaleTimeString(currentLanguage(), {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  return i18next.t("perfil.status.comHora", { prazo: nome, hora });
+  return i18next.t("perfil.status.comHora", { prazo: name, hora: hour });
 }
 
 interface StatusModalProps {
   open: boolean;
   user: SelfUserModel;
-  perfil: EstiloDePerfil | null;
+  profile: ProfileStyle | null;
   onClose: () => void;
-  onSalvar: (status: StatusPersonalizado | null) => void;
-  salvando?: boolean;
+  onSave: (status: CustomStatus | null) => void;
+  saving?: boolean;
 }
 
 export const StatusModal: React.FC<StatusModalProps> = ({
   open,
   user,
-  perfil,
+  profile,
   onClose,
-  onSalvar,
-  salvando = false,
+  onSave,
+  saving = false,
 }) => {
   const { t } = useTranslation();
-  const atual = user.statusPersonalizado;
-  const [texto, setTexto] = useState(atual?.texto ?? "");
-  const [emoji, setEmoji] = useState(atual?.emoji ?? "");
-  const [prazo, setPrazo] = useState<string>("nunca");
+  const current = user.customStatus;
+  const [text, setText] = useState(current?.text ?? "");
+  const [emoji, setEmoji] = useState(current?.emoji ?? "");
+  const [deadline, setDeadline] = useState<string>("never");
 
-  const previa: StatusPersonalizado | null = texto.trim()
-    ? { texto: texto.trim(), emoji: emoji.trim() || null, expiraEm: null }
+  const preview: CustomStatus | null = text.trim()
+    ? { text: text.trim(), emoji: emoji.trim() || null, expiresAt: null }
     : null;
 
-  const previaNoCartao: StatusPersonalizado = previa ?? {
-    texto: t("perfil.status.oQuePensa"),
+  const previewCard: CustomStatus = preview ?? {
+    text: t("perfil.status.oQuePensa"),
     emoji: null,
-    expiraEm: null,
+    expiresAt: null,
   };
 
-  const salvar = () => {
-    if (!previa) return onSalvar(null);
+  const save = () => {
+    if (!preview) return onSave(null);
 
-    const escolhido = PRAZOS.find((p) => p.id === prazo);
-    onSalvar({ ...previa, expiraEm: calcularExpiracao(escolhido) });
+    const picked = DEADLINES.find((p) => p.id === deadline);
+    onSave({ ...preview, expiresAt: computeExpiry(picked) });
   };
 
   return (
-    <Dialog data-gc="perfil.cartao.status-modal.dialog" open={open} onOpenChange={(aberto) => !aberto && onClose()}>
+    <Dialog data-gc="perfil.cartao.status-modal.dialog" open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent data-gc="perfil.cartao.status-modal.dialog-content" className="max-w-md p-5">
         <DialogTitle data-gc="perfil.cartao.status-modal.dialog-title" className="text-lg font-semibold">
           {t("perfil.status.definir")}
@@ -94,8 +94,8 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             username={user.username}
             avatarUrl={user.avatarUrl}
             status={user.status}
-            perfil={perfil}
-            statusPersonalizado={previaNoCartao}
+            profile={profile}
+            customStatus={previewCard}
           />
         </div>
 
@@ -103,7 +103,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
           <Label data-gc="perfil.cartao.status-modal.label" htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
 
           <div data-gc="perfil.cartao.status-modal.div--3" className={cn(fieldGroup, "gap-1 px-1.5")}>
-            <SeletorDeEmoji data-gc="perfil.cartao.status-modal.seletor-de-emoji.set-emoji" onEscolher={setEmoji}>
+            <EmojiPicker data-gc="perfil.cartao.status-modal.emoji-picker.set-emoji" onPick={setEmoji}>
               <button data-gc="perfil.cartao.status-modal.button"
                 type="button"
                 aria-label={t("perfil.status.escolherEmoji")}
@@ -111,14 +111,14 @@ export const StatusModal: React.FC<StatusModalProps> = ({
               >
                 {emoji || <Smile data-gc="perfil.cartao.status-modal.smile" size={16} />}
               </button>
-            </SeletorDeEmoji>
+            </EmojiPicker>
 
             <input data-gc="perfil.cartao.status-modal.input"
               id="status-texto"
               autoFocus
-              value={texto}
-              onChange={(e) => setTexto(e.target.value)}
-              maxLength={LIMITS.statusPersonalizado}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={LIMITS.customStatus}
               placeholder={t("perfil.status.oQuePensa")}
               className={bareField}
             />
@@ -137,21 +137,21 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         </div>
 
         <div data-gc="perfil.cartao.status-modal.div--4" className="mt-4 flex items-center gap-3">
-          <SelectField data-gc="perfil.cartao.status-modal.select-field.set-prazo"
-            value={prazo}
-            onSelect={setPrazo}
+          <SelectField data-gc="perfil.cartao.status-modal.select-field.set-deadline"
+            value={deadline}
+            onSelect={setDeadline}
             className="flex-1"
-            options={PRAZOS.map((p) => ({ value: p.id, label: rotuloComHora(p) }))}
+            options={DEADLINES.map((p) => ({ value: p.id, label: labelWithHour(p) }))}
           />
 
-          <Button data-gc="perfil.cartao.status-modal.button.salvar" onClick={salvar} disabled={salvando}>
-            {t(salvando ? "comum.salvando" : "comum.salvar")}
+          <Button data-gc="perfil.cartao.status-modal.button.save" onClick={save} disabled={saving}>
+            {t(saving ? "comum.salvando" : "comum.salvar")}
           </Button>
         </div>
 
-        {atual && (
+        {current && (
           <button data-gc="perfil.cartao.status-modal.button--3"
-            onClick={() => onSalvar(null)}
+            onClick={() => onSave(null)}
             className="mt-3 text-xs text-ink-faint transition hover:text-danger"
           >
             {t("perfil.status.limparAgora")}
@@ -162,16 +162,16 @@ export const StatusModal: React.FC<StatusModalProps> = ({
   );
 };
 
-function calcularExpiracao(prazo?: (typeof PRAZOS)[number]): string | null {
-  if (!prazo) return null;
+function computeExpiry(deadline?: (typeof DEADLINES)[number]): string | null {
+  if (!deadline) return null;
 
-  if ("ateOFimDoDia" in prazo && prazo.ateOFimDoDia) {
-    const fim = new Date();
-    fim.setHours(23, 59, 59, 999);
-    return fim.toISOString();
+  if ("dayUntilEnd" in deadline && deadline.dayUntilEnd) {
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    return end.toISOString();
   }
 
-  if (!prazo.minutos) return null;
+  if (!deadline.minutes) return null;
 
-  return new Date(Date.now() + prazo.minutos * 60_000).toISOString();
+  return new Date(Date.now() + deadline.minutes * 60_000).toISOString();
 }

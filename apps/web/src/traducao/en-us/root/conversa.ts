@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "A little waving hand",
+    botao: "Wave at {{nome}}",
+  },
+  oficial: {
+    titulo: "This channel is only for official announcements.",
+    detalhe: "We never ask for your password or your account token.",
+    saibaMais: "Learn more",
+  },
+  topico: {
+    abrir: "See the channel description",
+  },
+  previaDoLink: {
+    carregando: "Seeing what's behind the link…",
+    destino: "Goes to {{destino}}",
+  },
+  reacao: {
+    carregando: "Seeing who reacted with {{emoji}}…",
+    uma: "{{nome}} reacted with {{emoji}}",
+    duas: "{{primeiro}} and {{segundo}} reacted with {{emoji}}",
+    varias: "{{nomes}} and {{quantos}} more reacted with {{emoji}}",
+    dicaSuper: "Hold to super react",
+  },
+  recado: {
+    gravar: "Record a voice note",
+    descartar: "Discard the recording",
+    mandar: "Send the recording",
+    semSuporte: "This browser doesn't record audio.",
+    semMicrofone: "No access to the microphone.",
+  },
   lista: {
     carregando: "Loading messages…",
     carregandoMais: "Loading…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "View image",
   },
   enquete: {
+    criar: "Create a poll",
+    pergunta: "Question",
+    exemplo: "What are we playing today?",
+    respostas: "Answers",
+    adicionarOpcao: "Add an answer",
+    removerOpcao: "Remove answer",
+    varias: "Allow more than one answer",
+    variasDetalhe: "Without this, voting for one answer takes your vote off the previous one.",
+    duracao: "Duration",
+    umaHora: "1 hour",
+    quatroHoras: "4 hours",
+    oitoHoras: "8 hours",
+    umDia: "1 day",
+    tresDias: "3 days",
+    umaSemana: "1 week",
+    ateEncerrar: "Until I close it",
     titulo: "Poll",
     encerrada: "Poll closed",
     variasRespostas: "Poll — multiple answers",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "The search only looks at channels you can read.",
   },
   entrada: {
+    semNome: "conversation",
+    anexo: "(attachment)",
     titulo: "Inbox",
     naoLidas: "Unread",
     salvas: "Saved",

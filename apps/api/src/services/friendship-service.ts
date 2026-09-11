@@ -4,7 +4,7 @@ import {
   friendshipRepository,
   dmRepository,
   mutualRepository,
-  pedidoDeDmRepository,
+  dmRepositoryRequest,
 } from "~/repositories/friendship-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import {
@@ -20,292 +20,297 @@ export type FriendshipView = {
   id: string;
   user: PublicUser;
   status: "ACCEPTED" | "PENDING_IN" | "PENDING_OUT" | "BLOCKED";
+  note: string | null;
   createdAt: string;
 };
 
 export const friendshipService = {
-  async ativosAgora(userId: string) {
-    const [relacoes, eu] = await Promise.all([
+  async activeNow(userId: string) {
+    const [relations, eu] = await Promise.all([
       friendshipRepository.findAllForUser(userId),
       userRepository.findById(userId),
     ]);
 
-    const amigos = relacoes
+    const friends = relations
       .filter((r) => r.status === "ACCEPTED")
       .map((r) => (r.requesterId === userId ? r.addressee : r.requester))
-      .filter((amigo) => amigo.mostraAtividade);
+      .filter((friend) => friend.showsActivity);
 
-    const pessoas = eu ? [eu, ...amigos] : amigos;
+    const people = eu ? [eu, ...friends] : friends;
 
-    if (!pessoas.length) return [];
+    if (!people.length) return [];
 
-    const estados = await Promise.all(pessoas.map((a) => voiceService.get(a.id)));
+    const states = await Promise.all(people.map((a) => voiceService.get(a.id)));
 
-    const emVoz = pessoas
-      .map((amigo, i) => ({ amigo, canalId: estados[i]?.channelId ?? null }))
-      .filter((x): x is { amigo: (typeof pessoas)[number]; canalId: string } => Boolean(x.canalId));
+    const inVoice = people
+      .map((friend, i) => ({ friend, channelId: states[i]?.channelId ?? null }))
+      .filter((x): x is { friend: (typeof people)[number]; channelId: string } => Boolean(x.channelId));
 
-    if (!emVoz.length) return [];
+    if (!inVoice.length) return [];
 
-    const [meusServidores, canais] = await Promise.all([
+    const [mineServers, channels] = await Promise.all([
       memberRepository.guildIdsOf(userId),
-      channelRepository.guildIdsOf(emVoz.map((x) => x.canalId)),
+      channelRepository.guildIdsOf(inVoice.map((x) => x.channelId)),
     ]);
 
-    const guildPorCanal = new Map(canais.map((c) => [c.id, c.guildId]));
-    const meus = new Set(meusServidores.map((m) => m.guildId));
+    const guildByChannel = new Map(channels.map((c) => [c.id, c.guildId]));
+    const mine = new Set(mineServers.map((m) => m.guildId));
 
-    const visiveis = emVoz.filter((x) => {
-      const guildId = guildPorCanal.get(x.canalId);
-      return guildId && meus.has(guildId);
+    const visible = inVoice.filter((x) => {
+      const guildId = guildByChannel.get(x.channelId);
+      return guildId && mine.has(guildId);
     });
 
-    if (!visiveis.length) return [];
+    if (!visible.length) return [];
 
-    const [detalhesDeCanal, servidores] = await Promise.all([
-      channelRepository.findManyByIds(visiveis.map((x) => x.canalId)),
+    const [channelDetails, servers] = await Promise.all([
+      channelRepository.findManyByIds(visible.map((x) => x.channelId)),
       guildRepository.findManyByIds([
-        ...new Set(visiveis.map((x) => guildPorCanal.get(x.canalId)!)),
+        ...new Set(visible.map((x) => guildByChannel.get(x.channelId)!)),
       ]),
     ]);
 
-    const canalPorId = new Map(detalhesDeCanal.map((c) => [c.id, c] as const));
-    const servidorPorId = new Map(servidores.map((g) => [g.id, g] as const));
+    const channelById = new Map(channelDetails.map((c) => [c.id, c] as const));
+    const serverById = new Map(servers.map((g) => [g.id, g] as const));
 
-    return visiveis.flatMap((x) => {
-      const canal = canalPorId.get(x.canalId);
-      const servidor = servidorPorId.get(guildPorCanal.get(x.canalId)!);
-      if (!canal || !servidor) return [];
+    return visible.flatMap((x) => {
+      const channel = channelById.get(x.channelId);
+      const server = serverById.get(guildByChannel.get(x.channelId)!);
+      if (!channel || !server) return [];
 
       return [
         {
-          user: toPublicUser(x.amigo),
-          canal: { id: canal.id, nome: canal.name },
-          servidor: { id: servidor.id, nome: servidor.name, iconUrl: servidor.iconUrl },
+          user: toPublicUser(x.friend),
+          channel: { id: channel.id, name: channel.name },
+          server: { id: server.id, name: server.name, iconUrl: server.iconUrl },
         },
       ];
     });
   },
 
   async list(userId: string): Promise<FriendshipView[]> {
-    const todas = await friendshipRepository.findAllForUser(userId);
-    const relacoes = todas.filter(
+    const all = await friendshipRepository.findAllForUser(userId);
+    const relations = all.filter(
       (r) => r.status !== "BLOCKED" || r.requesterId === userId,
     );
 
-    const outros = relacoes.map((r) => (r.requesterId === userId ? r.addressee : r.requester));
-    const presenca = await presenceService.mapFor(outros.map((u) => u.id));
+    const others = relations.map((r) => (r.requesterId === userId ? r.addressee : r.requester));
+    const presence = await presenceService.mapFor(others.map((u) => u.id));
 
-    return relacoes.map((relacao) => {
-      const euPedi = relacao.requesterId === userId;
-      const outro = euPedi ? relacao.addressee : relacao.requester;
+    return relations.map((relation) => {
+      const euRequested = relation.requesterId === userId;
+      const other = euRequested ? relation.addressee : relation.requester;
 
       return {
-        id: relacao.id,
-        user: { ...toPublicUser(outro), status: presenca[outro.id] ?? "OFFLINE" },
+        id: relation.id,
+        user: { ...toPublicUser(other), status: presence[other.id] ?? "OFFLINE" },
         status:
-          relacao.status === "PENDING" ? (euPedi ? "PENDING_OUT" : "PENDING_IN") : relacao.status,
-        createdAt: relacao.createdAt.toISOString(),
+          relation.status === "PENDING" ? (euRequested ? "PENDING_OUT" : "PENDING_IN") : relation.status,
+        note: relation.status === "PENDING" ? (relation.note ?? null) : null,
+        createdAt: relation.createdAt.toISOString(),
       };
     });
   },
 
-  async block(userId: string, alvoId: string) {
-    if (alvoId === userId) throw new AppError("Você não pode bloquear a si mesmo");
+  async block(userId: string, targetId: string) {
+    if (targetId === userId) throw new AppError("Você não pode bloquear a si mesmo");
 
-    const alvo = await userRepository.findById(alvoId);
-    if (!alvo) throw new NotFoundError("Usuário não encontrado");
+    const target = await userRepository.findById(targetId);
+    if (!target) throw new NotFoundError("Usuário não encontrado");
 
-    const existente = await friendshipRepository.findBetween(userId, alvoId);
+    const existing = await friendshipRepository.findBetween(userId, targetId);
 
-    if (existente) await friendshipRepository.remove(existente.id);
+    if (existing) await friendshipRepository.remove(existing.id);
 
-    await friendshipRepository.createBlocked(userId, alvoId);
+    await friendshipRepository.createBlocked(userId, targetId);
   },
 
-  async unblock(userId: string, alvoId: string) {
-    const relacao = await friendshipRepository.findBetween(userId, alvoId);
+  async unblock(userId: string, targetId: string) {
+    const relation = await friendshipRepository.findBetween(userId, targetId);
 
-    if (!relacao || relacao.status !== "BLOCKED") throw new AppError("Essa pessoa não está bloqueada");
-    if (relacao.requesterId !== userId) throw new AppError("Quem bloqueou foi a outra pessoa");
+    if (!relation || relation.status !== "BLOCKED") throw new AppError("Essa pessoa não está bloqueada");
+    if (relation.requesterId !== userId) throw new AppError("Quem bloqueou foi a outra pessoa");
 
-    await friendshipRepository.remove(relacao.id);
+    await friendshipRepository.remove(relation.id);
   },
 
-  async request(userId: string, username: string) {
-    const alvo = await userRepository.findByUsernamePublic(username.replace(/^@/, "").trim());
-    if (!alvo) throw new NotFoundError("Não achei ninguém com esse nome de usuário");
-    if (alvo.id === userId) throw new AppError("Você não pode adicionar a si mesmo");
+  async request(userId: string, username: string, note?: string | null) {
+    const target = await userRepository.findByUsernamePublic(username.replace(/^@/, "").trim());
+    if (!target) throw new NotFoundError("Não achei ninguém com esse nome de usuário");
+    if (target.id === userId) throw new AppError("Você não pode adicionar a si mesmo");
 
-    if (!alvo.aceitaPedidos) throw new AppError("Não foi possível enviar o pedido");
+    if (!target.acceptedRequests) throw new AppError("Não foi possível enviar o pedido");
 
-    const existente = await friendshipRepository.findBetween(userId, alvo.id);
+    const existing = await friendshipRepository.findBetween(userId, target.id);
 
-    if (existente) {
-      if (existente.status === "ACCEPTED") throw new AppError("Vocês já são amigos");
-      if (existente.status === "BLOCKED") throw new AppError("Não foi possível enviar o pedido");
+    if (existing) {
+      if (existing.status === "ACCEPTED") throw new AppError("Vocês já são amigos");
+      if (existing.status === "BLOCKED") throw new AppError("Não foi possível enviar o pedido");
 
-      if (existente.addresseeId === userId) {
-        return { relacao: await friendshipRepository.updateStatus(existente.id, "ACCEPTED"), aceitou: true };
+      if (existing.addresseeId === userId) {
+        return { relation: await friendshipRepository.updateStatus(existing.id, "ACCEPTED"), accepted: true };
       }
 
       throw new AppError("Você já enviou um pedido para essa pessoa");
     }
 
-    return { relacao: await friendshipRepository.create(userId, alvo.id), aceitou: false };
-  },
-
-  async respond(userId: string, friendshipId: string, aceitar: boolean) {
-    const relacao = await friendshipRepository.findById(friendshipId);
-    if (!relacao) throw new NotFoundError("Pedido não encontrado");
-
-    if (relacao.addresseeId !== userId) throw new AppError("Este pedido não é seu");
-    if (relacao.status !== "PENDING") throw new AppError("Este pedido já foi respondido");
-
-    if (!aceitar) {
-      await friendshipRepository.remove(relacao.id);
-      return null;
-    }
-
-    return friendshipRepository.updateStatus(relacao.id, "ACCEPTED");
-  },
-
-  async remove(userId: string, friendshipId: string) {
-    const relacao = await friendshipRepository.findById(friendshipId);
-    if (!relacao) throw new NotFoundError("Não encontrado");
-
-    if (relacao.requesterId !== userId && relacao.addresseeId !== userId) {
-      throw new AppError("Esta relação não é sua");
-    }
-
-    await friendshipRepository.remove(relacao.id);
-  },
-
-  async openDm(userId: string, outroId: string) {
-    const relacao = await friendshipRepository.findBetween(userId, outroId);
-
-    if (relacao?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
-
-    const outro = await userRepository.findById(outroId);
-    if (!outro) throw new NotFoundError("Pessoa não encontrada");
-
-    const diretoSemAmizade = Boolean(outro.sistema || outro.isBot);
-    const saoAmigos = relacao?.status === "ACCEPTED";
-
-    const existente = await dmRepository.findBetween(userId, outroId);
-
-    if (diretoSemAmizade || saoAmigos) {
-      if (existente) return { canal: toChannel(existente), pedido: false };
-      return { canal: toChannel(await dmRepository.create([userId, outroId])), pedido: false };
-    }
-
-    if (existente) {
-      const pedido = await pedidoDeDmRepository.findByChannel(existente.id);
-      if (!pedido || pedido.status === "ACCEPTED") return { canal: toChannel(existente), pedido: false };
-
-      return { canal: toChannel(existente), pedido: true };
-    }
-
-    if (!outro.permitirDmDeMembros) throw naoEntregue();
-
-    const emComum = await mutualRepository.guildIdsInCommon(userId, outroId);
-    if (!emComum.length) throw naoEntregue();
-
-    const canal = await dmRepository.create([userId, outroId]);
-    const suspeito = await ehSuspeito(outro, userId);
-    await pedidoDeDmRepository.create(canal.id, userId, outroId, suspeito);
-
-    return { canal: toChannel(canal), pedido: true };
-  },
-
-  async listPedidos(userId: string) {
-    const pedidos = await pedidoDeDmRepository.pendentesPara(userId);
-    if (!pedidos.length) return { pedidos: [], spam: [] };
-
-    const [previas, ...emComum] = await Promise.all([
-      pedidoDeDmRepository.previas(pedidos.map((p) => p.channelId)),
-      ...pedidos.map((p) => mutualRepository.guildIdsInCommon(userId, p.fromId)),
-    ]);
-
-    const lista = pedidos.map((pedido, i) => ({
-      channelId: pedido.channelId,
-      de: toPublicUser(pedido.from),
-      spam: pedido.spam,
-      servidoresEmComum: emComum[i]?.length ?? 0,
-      criadoEm: pedido.createdAt.toISOString(),
-      previa: previas.get(pedido.channelId) ?? null,
-    }));
-
     return {
-      pedidos: lista.filter((p) => !p.spam),
-      spam: lista.filter((p) => p.spam),
+      relation: await friendshipRepository.create(userId, target.id, note?.trim() || null),
+      accepted: false,
     };
   },
 
-  async responderPedido(userId: string, channelId: string, acao: "aceitar" | "ignorar" | "spam") {
-    const pedido = await pedidoDeDmRepository.findByChannel(channelId);
+  async respond(userId: string, friendshipId: string, accept: boolean) {
+    const relation = await friendshipRepository.findById(friendshipId);
+    if (!relation) throw new NotFoundError("Pedido não encontrado");
 
-    if (!pedido || pedido.toId !== userId || pedido.status !== "PENDING") {
+    if (relation.addresseeId !== userId) throw new AppError("Este pedido não é seu");
+    if (relation.status !== "PENDING") throw new AppError("Este pedido já foi respondido");
+
+    if (!accept) {
+      await friendshipRepository.remove(relation.id);
+      return null;
+    }
+
+    return friendshipRepository.updateStatus(relation.id, "ACCEPTED");
+  },
+
+  async remove(userId: string, friendshipId: string) {
+    const relation = await friendshipRepository.findById(friendshipId);
+    if (!relation) throw new NotFoundError("Não encontrado");
+
+    if (relation.requesterId !== userId && relation.addresseeId !== userId) {
+      throw new AppError("Esta relação não é sua");
+    }
+
+    await friendshipRepository.remove(relation.id);
+  },
+
+  async openDm(userId: string, otherId: string) {
+    const relation = await friendshipRepository.findBetween(userId, otherId);
+
+    if (relation?.status === "BLOCKED") throw new AppError("Não foi possível abrir a conversa");
+
+    const other = await userRepository.findById(otherId);
+    if (!other) throw new NotFoundError("Pessoa não encontrada");
+
+    const directWithoutFriendship = Boolean(other.system || other.isBot);
+    const areFriends = relation?.status === "ACCEPTED";
+
+    const existing = await dmRepository.findBetween(userId, otherId);
+
+    if (directWithoutFriendship || areFriends) {
+      if (existing) return { channel: toChannel(existing), request: false };
+      return { channel: toChannel(await dmRepository.create([userId, otherId])), request: false };
+    }
+
+    if (existing) {
+      const request = await dmRepositoryRequest.findByChannel(existing.id);
+      if (!request || request.status === "ACCEPTED") return { channel: toChannel(existing), request: false };
+
+      return { channel: toChannel(existing), request: true };
+    }
+
+    if (!other.membersAllowDm) throw notDelivered();
+
+    const inCommon = await mutualRepository.guildIdsInCommon(userId, otherId);
+    if (!inCommon.length) throw notDelivered();
+
+    const channel = await dmRepository.create([userId, otherId]);
+    const suspect = await isSuspect(other, userId);
+    await dmRepositoryRequest.create(channel.id, userId, otherId, suspect);
+
+    return { channel: toChannel(channel), request: true };
+  },
+
+  async listRequests(userId: string) {
+    const requests = await dmRepositoryRequest.pendingFor(userId);
+    if (!requests.length) return { requests: [], spam: [] };
+
+    const [previews, ...inCommon] = await Promise.all([
+      dmRepositoryRequest.previews(requests.map((p) => p.channelId)),
+      ...requests.map((p) => mutualRepository.guildIdsInCommon(userId, p.fromId)),
+    ]);
+
+    const list = requests.map((request, i) => ({
+      channelId: request.channelId,
+      de: toPublicUser(request.from),
+      spam: request.spam,
+      serversCommon: inCommon[i]?.length ?? 0,
+      createdAt: request.createdAt.toISOString(),
+      preview: previews.get(request.channelId) ?? null,
+    }));
+
+    return {
+      requests: list.filter((p) => !p.spam),
+      spam: list.filter((p) => p.spam),
+    };
+  },
+
+  async replyRequest(userId: string, channelId: string, action: "aceitar" | "ignorar" | "spam") {
+    const request = await dmRepositoryRequest.findByChannel(channelId);
+
+    if (!request || request.toId !== userId || request.status !== "PENDING") {
       throw new NotFoundError("Pedido não encontrado");
     }
 
-    if (acao === "aceitar") {
-      await pedidoDeDmRepository.aceitar(channelId);
-      return { aceito: true };
+    if (action === "aceitar") {
+      await dmRepositoryRequest.accept(channelId);
+      return { accepted: true };
     }
 
-    await pedidoDeDmRepository.ignorar(channelId, acao === "spam");
-    return { aceito: false };
+    await dmRepositoryRequest.ignore(channelId, action === "spam");
+    return { accepted: false };
   },
 
   async listDms(userId: string) {
 
-    const canais = await dmRepository.findManyForUser(userId);
-    if (!canais.length) return [];
+    const channels = await dmRepository.findManyForUser(userId);
+    if (!channels.length) return [];
 
-    const pedidos = await pedidoDeDmRepository.porCanal(canais.map((c) => c.id));
-    const visiveis = canais.filter((canal) => {
-      const pedido = pedidos.get(canal.id);
-      return !pedido || pedido.status === "ACCEPTED" || pedido.toId !== userId;
+    const requests = await dmRepositoryRequest.byChannel(channels.map((c) => c.id));
+    const visible = channels.filter((channel) => {
+      const request = requests.get(channel.id);
+      return !request || request.status === "ACCEPTED" || request.toId !== userId;
     });
 
-    if (!visiveis.length) return [];
+    if (!visible.length) return [];
 
-    const outrosIds = visiveis.map((c) => c.recipients.find((r) => r !== userId)!).filter(Boolean);
-    const [usuarios, presenca, ultimas] = await Promise.all([
-      userRepository.findManyByIds(outrosIds),
-      presenceService.mapFor(outrosIds),
-      channelRepository.lastMessageIdByChannel(visiveis.map((c) => c.id)),
+    const othersIds = visible.map((c) => c.recipients.find((r) => r !== userId)!).filter(Boolean);
+    const [users, presence, latest] = await Promise.all([
+      userRepository.findManyByIds(othersIds),
+      presenceService.mapFor(othersIds),
+      channelRepository.lastMessageIdByChannel(visible.map((c) => c.id)),
     ]);
 
-    const porId = new Map(usuarios.map((u) => [u.id, u]));
+    const byId = new Map(users.map((u) => [u.id, u]));
 
-    return visiveis.flatMap((canal) => {
-      const outroId = canal.recipients.find((r) => r !== userId);
-      const outro = outroId ? porId.get(outroId) : undefined;
-      if (!outro) return [];
+    return visible.flatMap((channel) => {
+      const otherId = channel.recipients.find((r) => r !== userId);
+      const other = otherId ? byId.get(otherId) : undefined;
+      if (!other) return [];
 
       return [
         {
-          ...toChannel(canal),
-          lastMessageId: ultimas.get(canal.id) ?? null,
-          user: { ...toPublicUser(outro), status: presenca[outro.id] ?? "OFFLINE" },
+          ...toChannel(channel),
+          lastMessageId: latest.get(channel.id) ?? null,
+          user: { ...toPublicUser(other), status: presence[other.id] ?? "OFFLINE" },
         },
       ];
     });
   },
 };
 
-function naoEntregue() {
+function notDelivered() {
   return new AppError(
     "Sua mensagem não pôde ser entregue. Isso costuma acontecer porque vocês não compartilham nenhuma comunidade, ou porque essa pessoa só recebe mensagens de amigos.",
-  ).com("nao-entregue");
+  ).having("nao-entregue");
 }
 
-async function ehSuspeito(destino: { id: string; filtroDeSpam: string }, remetenteId: string) {
-  if (destino.filtroDeSpam === "NENHUM") return false;
-  if (destino.filtroDeSpam === "TODOS") return true;
+async function isSuspect(destination: { id: string; spamFilter: string }, senderId: string) {
+  if (destination.spamFilter === "NENHUM") return false;
+  if (destination.spamFilter === "TODOS") return true;
 
-  const amigosEmComum = await mutualRepository.friendIdsInCommon(destino.id, remetenteId);
-  return amigosEmComum.length === 0;
+  const friendsCommon = await mutualRepository.friendIdsInCommon(destination.id, senderId);
+  return friendsCommon.length === 0;
 }

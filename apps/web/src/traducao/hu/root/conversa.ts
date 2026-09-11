@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Egy integető kis kéz",
+    botao: "Integess neki: {{nome}}",
+  },
+  oficial: {
+    titulo: "Ez a csatorna csak hivatalos híreknek van.",
+    detalhe: "Soha nem kérjük a jelszavadat, sem a fiókod tokenjét.",
+    saibaMais: "Tudj meg többet",
+  },
+  topico: {
+    abrir: "A csatorna leírásának megtekintése",
+  },
+  previaDoLink: {
+    carregando: "Nézem, mi van a hivatkozás mögött…",
+    destino: "Ide visz: {{destino}}",
+  },
+  reacao: {
+    carregando: "Nézem, ki reagált ezzel: {{emoji}}…",
+    uma: "{{nome}} reagált ezzel: {{emoji}}",
+    duas: "{{primeiro}} és {{segundo}} reagált ezzel: {{emoji}}",
+    varias: "{{nomes}} és még {{quantos}} reagált ezzel: {{emoji}}",
+    dicaSuper: "Tartsd nyomva a szuperreakcióhoz",
+  },
+  recado: {
+    gravar: "Hangüzenet rögzítése",
+    descartar: "Felvétel eldobása",
+    mandar: "Felvétel küldése",
+    semSuporte: "Ez a böngésző nem rögzít hangot.",
+    semMicrofone: "Nincs hozzáférés a mikrofonhoz.",
+  },
   lista: {
     carregando: "Üzenetek betöltése…",
     carregandoMais: "Betöltés…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Kép megtekintése",
   },
   enquete: {
+    criar: "Szavazás készítése",
+    pergunta: "Kérdés",
+    exemplo: "Mit játsszunk ma?",
+    respostas: "Válaszok",
+    adicionarOpcao: "Válasz hozzáadása",
+    removerOpcao: "Válasz eltávolítása",
+    varias: "Több válasz is megengedett",
+    variasDetalhe: "Enélkül az egyik válaszra adott szavazat leveszi a szavazatot az előzőről.",
+    duracao: "Időtartam",
+    umaHora: "1 óra",
+    quatroHoras: "4 óra",
+    oitoHoras: "8 óra",
+    umDia: "1 nap",
+    tresDias: "3 nap",
+    umaSemana: "1 hét",
+    ateEncerrar: "Amíg magam le nem zárom",
     titulo: "Szavazás",
     encerrada: "A szavazás lezárult",
     variasRespostas: "Szavazás — több válasz",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "A keresés csak azokat a csatornákat nézi, amiket olvashatsz.",
   },
   entrada: {
+    semNome: "beszélgetés",
+    anexo: "(melléklet)",
     titulo: "Beérkezett üzenetek",
     naoLidas: "Olvasatlan",
     salvas: "Mentett",

@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 
-async function limpar(guildIds, token) {
+async function clear(guildIds, token) {
   for (const id of guildIds.filter(Boolean)) {
     await fetch(`${BASE}/api/guilds/${id}`, {
       method: "DELETE",
@@ -157,12 +157,12 @@ try {
 }
 
 const voiceChannel = detail.channels.find((c) => c.type === "VOICE");
-const naVoz = await emit(sa, "message:send", { channelId: voiceChannel.id, content: "chat da call", nonce: "v1" });
-if (!naVoz?.id) throw new Error("canal de voz recusou a mensagem do chat");
+const inVoice = await emit(sa, "message:send", { channelId: voiceChannel.id, content: "chat da call", nonce: "v1" });
+if (!inVoice?.id) throw new Error("canal de voz recusou a mensagem do chat");
 ok("canal de voz aceita mensagem (o chat da chamada)");
 
 sa.close();
 sb.close();
-await limpar([guild.id], a.accessToken);
+await clear([guild.id], a.accessToken);
 console.log("\nTempo real ok.\n");
 process.exit(0);

@@ -1,18 +1,18 @@
 import { app, ipcMain } from "electron";
 
-const suportado = () => process.platform === "darwin" || process.platform === "win32";
+const supported = () => process.platform === "darwin" || process.platform === "win32";
 
-export function registrarSistema() {
-  ipcMain.handle("sistema:pode-abrir-no-login", () => suportado());
+export function registerSystem() {
+  ipcMain.handle("sistema:pode-abrir-no-login", () => supported());
 
   ipcMain.handle("sistema:abrir-no-login", () =>
-    suportado() ? app.getLoginItemSettings().openAtLogin : false,
+    supported() ? app.getLoginItemSettings().openAtLogin : false,
   );
 
-  ipcMain.handle("sistema:definir-abrir-no-login", (_e, ligado: boolean) => {
-    if (!suportado()) return false;
+  ipcMain.handle("sistema:definir-abrir-no-login", (_e, on: boolean) => {
+    if (!supported()) return false;
 
-    app.setLoginItemSettings({ openAtLogin: ligado, openAsHidden: ligado });
+    app.setLoginItemSettings({ openAtLogin: on, openAsHidden: on });
 
     return app.getLoginItemSettings().openAtLogin;
   });

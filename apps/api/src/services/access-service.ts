@@ -11,7 +11,7 @@ import { banRepository } from "~/repositories/ban-repository.js";
 import { dmRepository } from "~/repositories/friendship-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 
-export interface Contexto {
+export interface Context {
   member: Awaited<ReturnType<typeof memberRepository.find>>;
   roles: RoleLike[];
   isOwner: boolean;
@@ -32,7 +32,7 @@ export const accessService = {
     return member;
   },
 
-  async contextOf(userId: string, guildId: string, channelId?: string): Promise<Contexto> {
+  async contextOf(userId: string, guildId: string, channelId?: string): Promise<Context> {
     const [member, guild] = await Promise.all([
       accessService.requireMember(userId, guildId),
       guildRepository.findById(guildId),
@@ -59,35 +59,35 @@ export const accessService = {
     permission: Permission,
     channelId?: string,
   ) {
-    const contexto = await accessService.contextOf(userId, guildId, channelId);
+    const context = await accessService.contextOf(userId, guildId, channelId);
 
-    if (!has(contexto.permissions, permission)) {
+    if (!has(context.permissions, permission)) {
       throw new ForbiddenError("Você não tem permissão para isso");
     }
 
-    return contexto;
+    return context;
   },
 
   async requireChannelAccess(userId: string, channelId: string) {
     const channel = await channelRepository.findById(channelId);
-    if (!channel) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
+    if (!channel) throw new NotFoundError("Canal não encontrado").having("sem-acesso");
 
     if (channel.guildId === null) {
-      if (!channel.recipients.includes(userId)) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
-      return { channel, contexto: null };
+      if (!channel.recipients.includes(userId)) throw new NotFoundError("Canal não encontrado").having("sem-acesso");
+      return { channel, context: null };
     }
 
-    const contexto = await accessService.contextOf(userId, channel.guildId, channelId);
+    const context = await accessService.contextOf(userId, channel.guildId, channelId);
 
-    if (!has(contexto.permissions, "VIEW_CHANNEL")) throw new NotFoundError("Canal não encontrado").com("sem-acesso");
+    if (!has(context.permissions, "VIEW_CHANNEL")) throw new NotFoundError("Canal não encontrado").having("sem-acesso");
 
-    return { channel, contexto };
+    return { channel, context };
   },
 
   async readableChannels(
     userId: string,
     guildId: string,
-    { comHistorico = true } = {},
+    { withHistory = true } = {},
   ): Promise<string[]> {
     const [member, guild] = await Promise.all([
       accessService.requireMember(userId, guildId),
@@ -98,60 +98,60 @@ export const accessService = {
 
     const isOwner = guild.ownerId === userId;
     const roles = await roleRepository.findForMember(guildId, member.roleIds);
-    const canais = await channelRepository.findManyByGuild(guildId);
-    const overwrites = await overwriteRepository.findManyByChannels(canais.map((c) => c.id));
+    const channels = await channelRepository.findManyByGuild(guildId);
+    const overwrites = await overwriteRepository.findManyByChannels(channels.map((c) => c.id));
 
-    const porCanal = new Map<string, typeof overwrites>();
-    for (const o of overwrites) porCanal.set(o.channelId, [...(porCanal.get(o.channelId) ?? []), o]);
+    const byChannel = new Map<string, typeof overwrites>();
+    for (const o of overwrites) byChannel.set(o.channelId, [...(byChannel.get(o.channelId) ?? []), o]);
 
-    return canais
-      .filter((canal) => {
-        const permissoes = computePermissions({
+    return channels
+      .filter((channel) => {
+        const permissions = computePermissions({
           userId,
           isOwner,
           roles,
-          overwrites: porCanal.get(canal.id) ?? [],
+          overwrites: byChannel.get(channel.id) ?? [],
         });
 
-        if (!has(permissoes, "VIEW_CHANNEL")) return false;
-        return !comHistorico || has(permissoes, "READ_MESSAGE_HISTORY");
+        if (!has(permissions, "VIEW_CHANNEL")) return false;
+        return !withHistory || has(permissions, "READ_MESSAGE_HISTORY");
       })
-      .map((canal) => canal.id);
+      .map((channel) => channel.id);
   },
 
   async listenableChannels(userId: string, guildIds: string[]): Promise<string[]> {
-    const porServidor = await Promise.all(
+    const byServer = await Promise.all(
       guildIds.map((guildId) =>
         accessService
-          .readableChannels(userId, guildId, { comHistorico: false })
+          .readableChannels(userId, guildId, { withHistory: false })
           .catch(() => [] as string[]),
       ),
     );
 
     const dms = await dmRepository.findManyForUser(userId);
 
-    return [...porServidor.flat(), ...dms.map((c) => c.id)];
+    return [...byServer.flat(), ...dms.map((c) => c.id)];
   },
 
-  requireAbove(contexto: Contexto, posicaoAlvo: number, mensagem: string) {
-    if (contexto.isOwner) return;
-    if (contexto.highest <= posicaoAlvo) throw new ForbiddenError(mensagem);
+  requireAbove(context: Context, positionTarget: number, message: string) {
+    if (context.isOwner) return;
+    if (context.highest <= positionTarget) throw new ForbiddenError(message);
   },
 
-  async requireAcimaDoAlvo(contexto: Contexto, guildId: string, targetId: string) {
+  async targetRequireAbove(context: Context, guildId: string, targetId: string) {
     const guild = await guildRepository.findById(guildId);
     if (!guild) throw new NotFoundError("Servidor não encontrado");
     if (guild.ownerId === targetId) {
       throw new AppError("O dono do servidor não pode ser moderado", 403);
     }
 
-    const alvo = await memberRepository.find(guildId, targetId);
-    if (!alvo) return;
+    const target = await memberRepository.find(guildId, targetId);
+    if (!target) return;
 
-    const roles = await roleRepository.findForMember(guildId, alvo.roleIds);
+    const roles = await roleRepository.findForMember(guildId, target.roleIds);
 
     accessService.requireAbove(
-      contexto,
+      context,
       highestPosition(roles),
       "Esta pessoa está acima de você na hierarquia",
     );

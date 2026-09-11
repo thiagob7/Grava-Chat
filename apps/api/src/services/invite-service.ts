@@ -1,4 +1,4 @@
-import { selosDoServidor } from "~/lib/selos.js";
+import { serverSeals } from "~/lib/selos.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { inviteRepository } from "~/repositories/invite-repository.js";
 import { memberRepository } from "~/repositories/guild-repository.js";
@@ -11,8 +11,8 @@ export const inviteService = {
     const invite = await inviteRepository.findByCodeWithRelations(code);
     if (!invite) throw new NotFoundError("Convite inválido ou expirado");
 
-    const membros = await memberRepository.findManyByGuild(invite.guildId);
-    const presenca = await presenceService.mapFor(membros.map((m) => m.userId));
+    const members = await memberRepository.findManyByGuild(invite.guildId);
+    const presence = await presenceService.mapFor(members.map((m) => m.userId));
 
     return {
       code: invite.code,
@@ -23,8 +23,8 @@ export const inviteService = {
         bannerUrl: invite.guild.bannerUrl,
         description: invite.guild.description,
         memberCount: invite.guild._count.members,
-        ...selosDoServidor(invite.guild, invite.guild._count.members),
-        onlineCount: Object.values(presenca).filter((estado) => estado !== "OFFLINE").length,
+        ...serverSeals(invite.guild, invite.guild._count.members),
+        onlineCount: Object.values(presence).filter((state) => state !== "OFFLINE").length,
       },
       inviter: invite.inviter.displayName,
       alreadyMember: Boolean(await memberRepository.find(invite.guildId, userId)),

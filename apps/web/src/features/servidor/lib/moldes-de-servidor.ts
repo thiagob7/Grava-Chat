@@ -1,64 +1,64 @@
 
-export interface MoldeDeServidor {
+export interface ServerMold {
   id: string;
-  nome: string;
+  name: string;
   emoji: string;
-  sugestaoDeNome: string;
-  canais: { nome: string; tipo: "TEXT" | "VOICE" }[];
+  nameSuggestion: string;
+  channels: { name: string; kind: "TEXT" | "VOICE" }[];
 }
 
-export const MOLDES: MoldeDeServidor[] = [
+export const MOLDS: ServerMold[] = [
   {
     id: "jogos",
-    nome: "Jogos",
+    name: "Jogos",
     emoji: "🎮",
-    sugestaoDeNome: "Squad",
-    canais: [
-      { nome: "combinar-jogo", tipo: "TEXT" },
-      { nome: "clipes", tipo: "TEXT" },
-      { nome: "Sala 2", tipo: "VOICE" },
+    nameSuggestion: "Squad",
+    channels: [
+      { name: "combinar-jogo", kind: "TEXT" },
+      { name: "clipes", kind: "TEXT" },
+      { name: "Sala 2", kind: "VOICE" },
     ],
   },
   {
     id: "amigos",
-    nome: "Amigos",
+    name: "Amigos",
     emoji: "💜",
-    sugestaoDeNome: "A turma",
-    canais: [
-      { nome: "figurinhas", tipo: "TEXT" },
-      { nome: "rolês", tipo: "TEXT" },
+    nameSuggestion: "A turma",
+    channels: [
+      { name: "figurinhas", kind: "TEXT" },
+      { name: "rolês", kind: "TEXT" },
     ],
   },
   {
     id: "estudos",
-    nome: "Grupo de estudos",
+    name: "Grupo de estudos",
     emoji: "📚",
-    sugestaoDeNome: "Grupo de estudos",
-    canais: [
-      { nome: "materiais", tipo: "TEXT" },
-      { nome: "dúvidas", tipo: "TEXT" },
-      { nome: "Sala de estudo", tipo: "VOICE" },
+    nameSuggestion: "Grupo de estudos",
+    channels: [
+      { name: "materiais", kind: "TEXT" },
+      { name: "dúvidas", kind: "TEXT" },
+      { name: "Sala de estudo", kind: "VOICE" },
     ],
   },
   {
     id: "criadores",
-    nome: "Artistas e criadores",
+    name: "Artistas e criadores",
     emoji: "🎨",
-    sugestaoDeNome: "Ateliê",
-    canais: [
-      { nome: "trabalhos", tipo: "TEXT" },
-      { nome: "feedback", tipo: "TEXT" },
+    nameSuggestion: "Ateliê",
+    channels: [
+      { name: "trabalhos", kind: "TEXT" },
+      { name: "feedback", kind: "TEXT" },
     ],
   },
 ];
 
-export function codigoDoConvite(entrada: string): string | null {
-  const limpo = entrada.trim();
-  if (!limpo) return null;
+export function inviteCode(entry: string): string | null {
+  const clean = entry.trim();
+  if (!clean) return null;
 
-  const ultimo = limpo.split(/[/\\]/).filter(Boolean).pop() ?? "";
+  const last = clean.split(/[/\\]/).filter(Boolean).pop() ?? "";
 
-  const codigo = ultimo.split(/[?#]/)[0]?.trim() ?? "";
+  const code = last.split(/[?#]/)[0]?.trim() ?? "";
 
-  return codigo.length ? codigo : null;
+  return code.length ? code : null;
 }

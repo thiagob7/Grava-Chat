@@ -1,61 +1,61 @@
-const CERCA = /```([^\n`]*)\n?([\s\S]*?)```/g;
-const EM_LINHA = /`([^`\n]*[^\s`][^`\n]*)`/g;
+const FENCE = /```([^\n`]*)\n?([\s\S]*?)```/g;
+const IN_LINE = /`([^`\n]*[^\s`][^`\n]*)`/g;
 
-export type Pedaco =
-  | { tipo: "texto"; texto: string }
-  | { tipo: "linha"; codigo: string }
-  | { tipo: "bloco"; codigo: string; lingua: string | null };
+export type Piece =
+  | { kind: "texto"; text: string }
+  | { kind: "linha"; code: string }
+  | { kind: "bloco"; code: string; language: string | null };
 
-export function partirEmCodigo(conteudo: string): Pedaco[] {
-  const pedacos: Pedaco[] = [];
-  let ultimo = 0;
+export function fromCode(content: string): Piece[] {
+  const pieces: Piece[] = [];
+  let last = 0;
 
-  for (const casamento of conteudo.matchAll(CERCA)) {
-    if (casamento.index === undefined) continue;
+  for (const match of content.matchAll(FENCE)) {
+    if (match.index === undefined) continue;
 
-    const [inteiro, informe, corpo] = casamento;
-    const codigo = (corpo ?? "").replace(/\n$/, "");
+    const [whole, report, body] = match;
+    const code = (body ?? "").replace(/\n$/, "");
 
-    if (!codigo.trim()) continue;
+    if (!code.trim()) continue;
 
-    if (casamento.index > ultimo) {
-      pedacos.push(...emLinha(conteudo.slice(ultimo, casamento.index)));
+    if (match.index > last) {
+      pieces.push(...inLine(content.slice(last, match.index)));
     }
 
-    pedacos.push({ tipo: "bloco", codigo, lingua: primeiraPalavra(informe) });
-    ultimo = casamento.index + inteiro.length;
+    pieces.push({ kind: "bloco", code, language: firstWord(report) });
+    last = match.index + whole.length;
   }
 
-  if (ultimo < conteudo.length) pedacos.push(...emLinha(conteudo.slice(ultimo)));
+  if (last < content.length) pieces.push(...inLine(content.slice(last)));
 
-  return pedacos;
+  return pieces;
 }
 
-function emLinha(trecho: string): Pedaco[] {
-  const pedacos: Pedaco[] = [];
-  let ultimo = 0;
+function inLine(snippet: string): Piece[] {
+  const pieces: Piece[] = [];
+  let last = 0;
 
-  for (const casamento of trecho.matchAll(EM_LINHA)) {
-    if (casamento.index === undefined) continue;
+  for (const match of snippet.matchAll(IN_LINE)) {
+    if (match.index === undefined) continue;
 
-    if (casamento.index > ultimo) {
-      pedacos.push({ tipo: "texto", texto: trecho.slice(ultimo, casamento.index) });
+    if (match.index > last) {
+      pieces.push({ kind: "texto", text: snippet.slice(last, match.index) });
     }
 
-    pedacos.push({ tipo: "linha", codigo: casamento[1] ?? "" });
-    ultimo = casamento.index + casamento[0].length;
+    pieces.push({ kind: "linha", code: match[1] ?? "" });
+    last = match.index + match[0].length;
   }
 
-  if (ultimo < trecho.length) pedacos.push({ tipo: "texto", texto: trecho.slice(ultimo) });
+  if (last < snippet.length) pieces.push({ kind: "texto", text: snippet.slice(last) });
 
-  return pedacos;
+  return pieces;
 }
 
-function primeiraPalavra(informe: string | undefined): string | null {
-  return (informe ?? "").trim().split(/\s+/)[0] || null;
+function firstWord(report: string | undefined): string | null {
+  return (report ?? "").trim().split(/\s+/)[0] || null;
 }
 
-const LINGUAS: Record<string, string> = {
+const LANGUAGES: Record<string, string> = {
   bash: "Bash",
   c: "C",
   cpp: "C++",
@@ -91,19 +91,19 @@ const LINGUAS: Record<string, string> = {
   zsh: "Shell",
 };
 
-export function rotuloDaLingua(lingua: string | null | undefined): string {
-  const chave = lingua?.trim().toLowerCase();
-  if (!chave) return "Código";
+export function languageLabel(language: string | null | undefined): string {
+  const key = language?.trim().toLowerCase();
+  if (!key) return "Código";
 
-  return LINGUAS[chave] ?? chave.charAt(0).toUpperCase() + chave.slice(1);
+  return LANGUAGES[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
 }
 
-const RESERVADA =
+const RESERVED =
   /^[ \t]*(import|export|from|const|let|var|function|class|def|return|public|private|static|package|using|#include|#!|SELECT|INSERT|UPDATE|DELETE|CREATE|npm|yarn|pnpm|git|docker|sudo|apt|brew|curl|cd|mkdir|chmod)\b/i;
 
-const ATRIBUICAO = /^[ \t]*[\w.$"'[\]-]+[ \t]*[:=][ \t]*\S/;
+const ASSIGNMENT = /^[ \t]*[\w.$"'[\]-]+[ \t]*[:=][ \t]*\S/;
 
-const SINAIS: RegExp[] = [
+const SIGNALS: RegExp[] = [
   /[;{]\s*$/m,
   /=>|->|::|!==|===|\+=|\|\|/,
   /^[ \t]*(\/\/|#|\/\*|\*\s)/m,
@@ -112,39 +112,39 @@ const SINAIS: RegExp[] = [
   /\b[\w-]+\.(tsx?|jsx?|mjs|py|rb|go|rs|java|kt|php|css|json|html|yml|yaml):\d+/i,
 ];
 
-function densidadeEstrutural(texto: string): number {
-  const uteis = texto.replace(/\s/g, "");
-  if (!uteis.length) return 0;
+function densityStructural(text: string): number {
+  const useful = text.replace(/\s/g, "");
+  if (!useful.length) return 0;
 
-  return (uteis.match(/[{}()[\]<>=;|&*/\\+]/g)?.length ?? 0) / uteis.length;
+  return (useful.match(/[{}()[\]<>=;|&*/\\+]/g)?.length ?? 0) / useful.length;
 }
 
-export function pareceCodigo(texto: string): boolean {
-  if (texto.includes("```")) return false;
+export function looksCode(text: string): boolean {
+  if (text.includes("```")) return false;
 
-  const semLinks = texto.replace(/https?:\/\/\S+/g, " ");
-  const linhas = semLinks.split("\n").filter((l) => l.trim());
-  if (linhas.length < 3) return false;
+  const withoutLinks = text.replace(/https?:\/\/\S+/g, " ");
+  const lines = withoutLinks.split("\n").filter((l) => l.trim());
+  if (lines.length < 3) return false;
 
-  const comReservada = linhas.filter((l) => RESERVADA.test(l)).length;
-  const comAtribuicao = linhas.filter((l) => ATRIBUICAO.test(l)).length;
-  const recuadas = linhas.filter((l) => /^[ \t]{2,}\S/.test(l)).length;
-  const chavesSozinhas = linhas.filter((l) => /^[ \t]*[\w.-]+:[ \t]*$/.test(l)).length;
-  const densidade = densidadeEstrutural(semLinks);
+  const withReserved = lines.filter((l) => RESERVED.test(l)).length;
+  const withAssignment = lines.filter((l) => ASSIGNMENT.test(l)).length;
+  const indented = lines.filter((l) => /^[ \t]{2,}\S/.test(l)).length;
+  const keysAlone = lines.filter((l) => /^[ \t]*[\w.-]+:[ \t]*$/.test(l)).length;
+  const density = densityStructural(withoutLinks);
 
-  const pontos =
-    (comReservada >= 2 ? 3 : comReservada ? 2 : 0) +
-    (comAtribuicao >= 3 ? 2 : comAtribuicao ? 1 : 0) +
-    (densidade >= 0.08 ? 2 : densidade >= 0.04 ? 1 : 0) +
-    (recuadas >= 2 ? 1 : 0) +
-    (chavesSozinhas >= 2 ? 1 : 0) +
-    SINAIS.filter((sinal) => sinal.test(semLinks)).length;
+  const points =
+    (withReserved >= 2 ? 3 : withReserved ? 2 : 0) +
+    (withAssignment >= 3 ? 2 : withAssignment ? 1 : 0) +
+    (density >= 0.08 ? 2 : density >= 0.04 ? 1 : 0) +
+    (indented >= 2 ? 1 : 0) +
+    (keysAlone >= 2 ? 1 : 0) +
+    SIGNALS.filter((signal) => signal.test(withoutLinks)).length;
 
-  return pontos >= 3;
+  return points >= 3;
 }
 
-export function adivinharLingua(texto: string): string | null {
-  const t = texto.trim();
+export function guessLanguage(text: string): string | null {
+  const t = text.trim();
 
   if (/^[[{]/.test(t)) {
     try {
@@ -171,13 +171,13 @@ export function adivinharLingua(texto: string): string | null {
   return null;
 }
 
-export function cercarCodigo(texto: string): string {
-  const limpo = texto.replace(/\s+$/, "");
+export function surroundCode(text: string): string {
+  const clean = text.replace(/\s+$/, "");
 
-  return `\`\`\`${adivinharLingua(limpo) ?? ""}\n${limpo}\n\`\`\``;
+  return `\`\`\`${guessLanguage(clean) ?? ""}\n${clean}\n\`\`\``;
 }
 
-const EXTENSAO: Record<string, string> = {
+const EXTENSION: Record<string, string> = {
   bash: "sh",
   css: "css",
   html: "html",
@@ -197,26 +197,26 @@ const EXTENSAO: Record<string, string> = {
   yml: "yml",
 };
 
-export interface ArquivoDeTexto {
-  nome: string;
-  conteudo: string;
+export interface TextFile {
+  name: string;
+  content: string;
 }
 
-export function textoParaArquivo(texto: string, base = "mensagem"): ArquivoDeTexto {
-  const pedacos = partirEmCodigo(texto).filter(
-    (p) => p.tipo !== "texto" || p.texto.trim().length > 0,
+export function textForFile(text: string, base = "mensagem"): TextFile {
+  const pieces = fromCode(text).filter(
+    (p) => p.kind !== "texto" || p.text.trim().length > 0,
   );
 
-  const blocos = pedacos.filter((p) => p.tipo === "bloco");
-  const soBlocos = blocos.length > 0 && blocos.length === pedacos.length;
+  const blocks = pieces.filter((p) => p.kind === "bloco");
+  const soBlocks = blocks.length > 0 && blocks.length === pieces.length;
 
-  if (!soBlocos) return { nome: `${base}.txt`, conteudo: texto.trim() };
+  if (!soBlocks) return { name: `${base}.txt`, content: text.trim() };
 
-  const lingua = blocos.find((b) => b.lingua)?.lingua ?? adivinharLingua(blocos[0]!.codigo);
-  const extensao = EXTENSAO[(lingua ?? "").toLowerCase()] ?? "txt";
+  const language = blocks.find((b) => b.language)?.language ?? guessLanguage(blocks[0]!.code);
+  const extension = EXTENSION[(language ?? "").toLowerCase()] ?? "txt";
 
   return {
-    nome: `${base}.${extensao}`,
-    conteudo: blocos.map((b) => b.codigo.trim()).join("\n\n"),
+    name: `${base}.${extension}`,
+    content: blocks.map((b) => b.code.trim()).join("\n\n"),
   };
 }

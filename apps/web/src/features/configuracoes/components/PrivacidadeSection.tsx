@@ -4,43 +4,43 @@ import { toast } from "react-toastify";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
-import { usePedirExclusao } from "~/@core/application/queries/conta/use-exclusao";
+import { useRequestDeletion } from "~/@core/application/queries/conta/use-exclusao";
 import { api } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
-import { Escolha, Opcao } from "~/features/configuracoes/components/campos-de-config";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { Selection, Choice } from "~/features/configuracoes/components/campos-de-config";
 
-interface PrivacidadeSectionProps {
+interface PrivacySectionProps {
   user: SelfUserModel;
 }
 
-export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
+export const PrivacySection: React.FC<PrivacySectionProps> = ({
   user,
 }) => {
-  const salvar = useUpdateProfile();
-  const [baixando, setBaixando] = useState(false);
+  const save = useUpdateProfile();
+  const [downloading, setDownloading] = useState(false);
 
-  const exportar = async () => {
-    setBaixando(true);
+  const doExport = async () => {
+    setDownloading(true);
 
     try {
-      const resposta = await api.get("/me/exportar", { responseType: "blob" });
-      const url = URL.createObjectURL(resposta.data as Blob);
-      const ancora = document.createElement("a");
+      const reply = await api.get("/me/exportar", { responseType: "blob" });
+      const url = URL.createObjectURL(reply.data as Blob);
+      const anchor = document.createElement("a");
 
-      ancora.href = url;
-      ancora.download = `gravae-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(ancora);
-      ancora.click();
-      ancora.remove();
+      anchor.href = url;
+      anchor.download = `gravae-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
       URL.revokeObjectURL(url);
 
       toast.success("Arquivo gerado.");
     } catch {
       toast.error("Não consegui gerar o arquivo agora.");
     } finally {
-      setBaixando(false);
+      setDownloading(false);
     }
   };
 
@@ -51,74 +51,74 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
         outras pessoas, então quem precisa conhecê-las é o servidor.
       </p>
 
-      <Secao data-gc="configuracoes.privacidade-section.secao"
+      <Section data-gc="configuracoes.privacidade-section.section"
         id="amigos-e-dms"
-        titulo="Amigos e mensagens diretas"
-        detalhe="Quem consegue chegar até você."
+        title="Amigos e mensagens diretas"
+        detail="Quem consegue chegar até você."
       >
-        <Opcao data-gc="configuracoes.privacidade-section.opcao"
-          titulo="Aceitar pedidos de amizade"
-          detalhe="Desligado, ninguém consegue te adicionar pelo nome de usuário. Quem tentar recebe a mesma resposta de quem procura um nome que não existe — dizer 'essa pessoa não aceita pedidos' confirmaria que a conta existe."
-          ligado={user.aceitaPedidos}
-          onMudar={(aceitaPedidos) => salvar.mutate({ aceitaPedidos })}
+        <Choice data-gc="configuracoes.privacidade-section.choice"
+          title="Aceitar pedidos de amizade"
+          detail="Desligado, ninguém consegue te adicionar pelo nome de usuário. Quem tentar recebe a mesma resposta de quem procura um nome que não existe — dizer 'essa pessoa não aceita pedidos' confirmaria que a conta existe."
+          on={user.acceptedRequests}
+          onChange={(acceptedRequests) => save.mutate({ acceptedRequests })}
         />
 
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--2"
-          titulo="Permitir mensagens de membros dos meus servidores"
-          detalhe="Ligado, quem divide um servidor com você consegue mandar a primeira mensagem — e ela cai em Solicitações de mensagens, não nas suas conversas. Desligado, só amigos alcançam você, e quem tentar recebe um aviso de que a mensagem não foi entregue."
-          ligado={user.permitirDmDeMembros}
-          onMudar={(permitirDmDeMembros) => salvar.mutate({ permitirDmDeMembros })}
+        <Choice data-gc="configuracoes.privacidade-section.choice--2"
+          title="Permitir mensagens de membros dos meus servidores"
+          detail="Ligado, quem divide um servidor com você consegue mandar a primeira mensagem — e ela cai em Solicitações de mensagens, não nas suas conversas. Desligado, só amigos alcançam você, e quem tentar recebe um aviso de que a mensagem não foi entregue."
+          on={user.membersAllowDm}
+          onChange={(membersAllowDm) => save.mutate({ membersAllowDm })}
         />
 
-        <Escolha data-gc="configuracoes.privacidade-section.escolha"
-          titulo="Filtro de spam"
-          detalhe="O que fazer com a solicitação antes de você ver. O que for separado não some: fica na aba Spam, dentro de Solicitações de mensagens."
-          valor={user.filtroDeSpam}
-          opcoes={[
-            { valor: "TODOS", rotulo: "Separar toda solicitação de quem não é meu amigo" },
+        <Selection data-gc="configuracoes.privacidade-section.selection"
+          title="Filtro de spam"
+          detail="O que fazer com a solicitação antes de você ver. O que for separado não some: fica na aba Spam, dentro de Solicitações de mensagens."
+          value={user.spamFilter}
+          options={[
+            { value: "TODOS", label: "Separar toda solicitação de quem não é meu amigo" },
             {
-              valor: "DESCONHECIDOS",
-              rotulo: "Separar só quem não tem nenhum amigo em comum comigo (recomendado)",
+              value: "DESCONHECIDOS",
+              label: "Separar só quem não tem nenhum amigo em comum comigo (recomendado)",
             },
-            { valor: "NENHUM", rotulo: "Não separar nada; tudo cai em Pedidos" },
+            { value: "NENHUM", label: "Não separar nada; tudo cai em Pedidos" },
           ]}
-          onMudar={(filtroDeSpam) => salvar.mutate({ filtroDeSpam })}
+          onChange={(spamFilter) => save.mutate({ spamFilter })}
         />
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.privacidade-section.secao--2"
+      <Section data-gc="configuracoes.privacidade-section.section--2"
         id="compartilhamento-de-atividade"
-        titulo="Compartilhamento de atividade"
-        detalhe="O que os seus amigos veem sobre o que você está fazendo."
+        title="Compartilhamento de atividade"
+        detail="O que os seus amigos veem sobre o que você está fazendo."
       >
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--3"
-          titulo="Mostrar quando estou em chamada"
-          detalhe="Aparecer em 'Ativos agora' na tela de mensagens diretas. Desligado, você some de lá para os outros — mas continua se vendo, senão perderia o próprio caminho de volta pra chamada."
-          ligado={user.mostraAtividade}
-          onMudar={(mostraAtividade) => salvar.mutate({ mostraAtividade })}
+        <Choice data-gc="configuracoes.privacidade-section.choice--3"
+          title="Mostrar quando estou em chamada"
+          detail="Aparecer em 'Ativos agora' na tela de mensagens diretas. Desligado, você some de lá para os outros — mas continua se vendo, senão perderia o próprio caminho de volta pra chamada."
+          on={user.showsActivity}
+          onChange={(showsActivity) => save.mutate({ showsActivity })}
         />
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.privacidade-section.secao--3"
+      <Section data-gc="configuracoes.privacidade-section.section--3"
         id="visibilidade-do-perfil"
-        titulo="Visibilidade do perfil"
-        detalhe="O que o seu perfil conta sobre você para quem abre ele."
+        title="Visibilidade do perfil"
+        detail="O que o seu perfil conta sobre você para quem abre ele."
       >
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--4"
-          titulo="Mostrar servidores em comum"
-          detalhe="A aba que diz de quais servidores vocês dois participam. A lista desenha a sua rotina — onde você passa o dia, de que comunidade faz parte. Desligado, ela vem vazia para todo mundo; a sua continua completa."
-          ligado={user.mostraServidoresEmComum}
-          onMudar={(mostraServidoresEmComum) =>
-            salvar.mutate({ mostraServidoresEmComum })
+        <Choice data-gc="configuracoes.privacidade-section.choice--4"
+          title="Mostrar servidores em comum"
+          detail="A aba que diz de quais servidores vocês dois participam. A lista desenha a sua rotina — onde você passa o dia, de que comunidade faz parte. Desligado, ela vem vazia para todo mundo; a sua continua completa."
+          on={user.showsServersCommon}
+          onChange={(showsServersCommon) =>
+            save.mutate({ showsServersCommon })
           }
         />
 
-        <Opcao data-gc="configuracoes.privacidade-section.opcao--5"
-          titulo="Mostrar amigos em comum"
-          detalhe="A aba com as pessoas que vocês dois conhecem. É a sua rede, e é uma pergunta diferente da de cima — por isso são dois interruptores, e não um."
-          ligado={user.mostraAmigosEmComum}
-          onMudar={(mostraAmigosEmComum) =>
-            salvar.mutate({ mostraAmigosEmComum })
+        <Choice data-gc="configuracoes.privacidade-section.choice--5"
+          title="Mostrar amigos em comum"
+          detail="A aba com as pessoas que vocês dois conhecem. É a sua rede, e é uma pergunta diferente da de cima — por isso são dois interruptores, e não um."
+          on={user.showsFriendsCommon}
+          onChange={(showsFriendsCommon) =>
+            save.mutate({ showsFriendsCommon })
           }
         />
 
@@ -126,12 +126,12 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
           Quem esconde, esconde no servidor: com o interruptor desligado a lista
           nem sai daqui. Não é a outra tela deixando de desenhar.
         </p>
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.privacidade-section.secao--4"
+      <Section data-gc="configuracoes.privacidade-section.section--4"
         id="exportar-dados"
-        titulo="Exportar dados"
-        detalhe="Um arquivo com o que a sua conta guarda aqui."
+        title="Exportar dados"
+        detail="Um arquivo com o que a sua conta guarda aqui."
       >
         <div data-gc="configuracoes.privacidade-section.div--2" className="flex items-start gap-4">
           <div data-gc="configuracoes.privacidade-section.div--3" className="min-w-0 flex-1">
@@ -145,38 +145,38 @@ export const PrivacidadeSection: React.FC<PrivacidadeSectionProps> = ({
 
           <Button data-gc="configuracoes.privacidade-section.button"
             variant="surface"
-            onClick={() => void exportar()}
-            disabled={baixando}
+            onClick={() => void doExport()}
+            disabled={downloading}
           >
-            {baixando ? (
+            {downloading ? (
               <Loader2 data-gc="configuracoes.privacidade-section.loader2" size={16} className="animate-spin" />
             ) : (
               <Download data-gc="configuracoes.privacidade-section.download" size={16} />
             )}
-            {baixando ? "Gerando…" : "Baixar"}
+            {downloading ? "Gerando…" : "Baixar"}
           </Button>
         </div>
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.privacidade-section.secao--5"
+      <Section data-gc="configuracoes.privacidade-section.section--5"
         id="exclusao-de-dados"
-        titulo="Exclusão de dados"
-        detalhe="Sair de vez — com quinze dias para mudar de ideia."
+        title="Exclusão de dados"
+        detail="Sair de vez — com quinze dias para mudar de ideia."
       >
-        <ExcluirConta data-gc="configuracoes.privacidade-section.excluir-conta" nome={user.displayName} />
-      </Secao>
+        <DeleteAccount data-gc="configuracoes.privacidade-section.delete-account" name={user.displayName} />
+      </Section>
     </div>
   );
 };
 
-const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
-  const [confirmando, setConfirmando] = useState(false);
-  const [digitado, setDigitado] = useState("");
-  const excluir = usePedirExclusao();
+const DeleteAccount: React.FC<{ name: string }> = ({ name }) => {
+  const [confirming, setConfirming] = useState(false);
+  const [typed, setTyped] = useState("");
+  const doDelete = useRequestDeletion();
 
-  const confere = digitado.trim().toLowerCase() === nome.trim().toLowerCase();
+  const checks = typed.trim().toLowerCase() === name.trim().toLowerCase();
 
-  if (!confirmando) {
+  if (!confirming) {
     return (
       <div data-gc="configuracoes.privacidade-section.div--4" className="flex items-start gap-4">
         <div data-gc="configuracoes.privacidade-section.div--5" className="min-w-0 flex-1">
@@ -188,7 +188,7 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
           </p>
         </div>
 
-        <Button data-gc="configuracoes.privacidade-section.button--2" variant="danger" onClick={() => setConfirmando(true)}>
+        <Button data-gc="configuracoes.privacidade-section.button--2" variant="danger" onClick={() => setConfirming(true)}>
           <ShieldAlert data-gc="configuracoes.privacidade-section.shield-alert" size={16} /> Excluir
         </Button>
       </div>
@@ -198,7 +198,7 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
   return (
     <div data-gc="configuracoes.privacidade-section.div--6" className="rounded-lg border border-danger/40 bg-danger/5 p-4">
       <p data-gc="configuracoes.privacidade-section.p--7" className="text-sm font-medium text-ink">
-        Para confirmar, escreva <span data-gc="configuracoes.privacidade-section.span" className="font-semibold">{nome}</span>{" "}
+        Para confirmar, escreva <span data-gc="configuracoes.privacidade-section.span" className="font-semibold">{name}</span>{" "}
         abaixo.
       </p>
       <p data-gc="configuracoes.privacidade-section.p--8" className="mt-1 text-xs text-ink-muted">
@@ -207,9 +207,9 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
       </p>
 
       <Input data-gc="configuracoes.privacidade-section.input"
-        value={digitado}
-        onChange={(e) => setDigitado(e.target.value)}
-        placeholder={nome}
+        value={typed}
+        onChange={(e) => setTyped(e.target.value)}
+        placeholder={name}
         aria-label="Confirme escrevendo o seu nome"
         className="mt-3"
       />
@@ -217,17 +217,17 @@ const ExcluirConta: React.FC<{ nome: string }> = ({ nome }) => {
       <div data-gc="configuracoes.privacidade-section.div--7" className="mt-3 flex gap-2">
         <Button data-gc="configuracoes.privacidade-section.button--3"
           variant="danger"
-          disabled={!confere || excluir.isPending}
-          onClick={() => excluir.mutate()}
+          disabled={!checks || doDelete.isPending}
+          onClick={() => doDelete.mutate()}
         >
-          {excluir.isPending ? "Excluindo…" : "Excluir a minha conta"}
+          {doDelete.isPending ? "Excluindo…" : "Excluir a minha conta"}
         </Button>
 
         <Button data-gc="configuracoes.privacidade-section.button--4"
           variant="surface"
           onClick={() => {
-            setConfirmando(false);
-            setDigitado("");
+            setConfirming(false);
+            setTyped("");
           }}
         >
           Cancelar

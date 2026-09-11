@@ -4,39 +4,39 @@ import { messageFavoriteRepository } from "~/repositories/message-favorite-repos
 import { messageRepository } from "~/repositories/message-repository.js";
 import { accessService } from "~/services/access-service.js";
 
-const LIMITE = 200;
+const LIMIT = 200;
 
 export const messageFavoriteService = {
-  async listar(userId: string) {
-    const salvas = await messageFavoriteRepository.findManyOf(userId, LIMITE);
+  async list(userId: string) {
+    const saved = await messageFavoriteRepository.findManyOf(userId, LIMIT);
 
-    const visiveis = await Promise.all(
-      salvas
+    const visible = await Promise.all(
+      saved
         .filter((f) => f.message && !f.message.deletedAt)
         .map(async (f) => {
-          const pode = await accessService
+          const can = await accessService
             .requireChannelAccess(userId, f.message.channelId)
             .then(() => true)
             .catch(() => false);
 
-          return pode ? toMessage(f.message, userId) : null;
+          return can ? toMessage(f.message, userId) : null;
         }),
     );
 
-    return visiveis.filter((m) => m !== null);
+    return visible.filter((m) => m !== null);
   },
 
   async idsDe(userId: string) {
     return (await messageFavoriteRepository.idsOf(userId)).map((f) => f.messageId);
   },
 
-  async alternar(userId: string, messageId: string, favoritar: boolean) {
+  async toggle(userId: string, messageId: string, favorite: boolean) {
     const message = await messageRepository.findById(messageId);
     if (!message || message.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
     await accessService.requireChannelAccess(userId, message.channelId);
 
-    if (favoritar) await messageFavoriteRepository.add(userId, messageId);
+    if (favorite) await messageFavoriteRepository.add(userId, messageId);
     else await messageFavoriteRepository.remove(userId, messageId);
 
     return messageFavoriteService.idsDe(userId);

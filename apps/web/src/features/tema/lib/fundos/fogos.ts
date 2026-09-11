@@ -1,4 +1,4 @@
-import type { Motor, Palco } from "~/features/tema/lib/fundos/tipos";
+import type { Motor, Stage } from "~/features/tema/lib/fundos/tipos";
 
 /*
   Fogos com física, em canvas.
@@ -12,16 +12,16 @@ import type { Motor, Palco } from "~/features/tema/lib/fundos/tipos";
   desenhado: a tela é apagada com um preto quase transparente a cada quadro,
   e o que sobra do quadro anterior é o rastro.
 */
-const GRAVIDADE = 46;
+const GRAVITY = 46;
 /*
   Arrasto por quadro a 60 Hz. Começou em 0.86 e o estouro virava um bolinho:
   a essa taxa a faísca perde a velocidade em meio segundo e anda quinze
   pixels. O ar segura a brasa, não freia ela.
 */
-const ARRASTO = 0.985;
-const ESPERA = [0.7, 1.9];
+const DRAG = 0.985;
+const WAIT = [0.7, 1.9];
 
-const PALETA = [
+const PALETTE = [
   [255, 206, 110],
   [255, 152, 64],
   [150, 196, 255],
@@ -30,24 +30,24 @@ const PALETA = [
   [214, 176, 255],
 ];
 
-interface Ponto {
+interface Dot {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  vida: number;
+  life: number;
   total: number;
-  cor: number[];
-  brilho: number;
+  color: number[];
+  glow: number;
 }
 
-interface Foguete {
+interface Rocket {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  alvo: number;
-  cor: number[];
+  target: number;
+  color: number[];
 }
 
 /*
@@ -56,21 +56,21 @@ interface Foguete {
   a faísca corre; o segmento é o próprio borrão de movimento, e sai certo em
   qualquer taxa de quadro.
 */
-function risco(
+function risk(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  paraX: number,
-  paraY: number,
-  cor: number[],
+  forX: number,
+  forY: number,
+  color: number[],
   alfa: number,
-  grossura: number,
+  thickness: number,
 ) {
-  const tinta = `${cor[0]} ${cor[1]} ${cor[2]}`;
+  const tinta = `${color[0]} ${color[1]} ${color[2]}`;
 
   ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.lineTo(paraX, paraY);
+  ctx.lineTo(forX, forY);
 
   /*
     Duas passadas no mesmo traço: uma larga e fraca, que é o halo, e a fina
@@ -78,68 +78,68 @@ function risco(
     brilho, então sem o halo a faísca chega apagada do outro lado do vidro.
   */
   ctx.strokeStyle = `rgb(${tinta} / ${alfa * 0.22})`;
-  ctx.lineWidth = grossura * 3.2;
+  ctx.lineWidth = thickness * 3.2;
   ctx.stroke();
 
   ctx.strokeStyle = `rgb(${tinta} / ${alfa})`;
-  ctx.lineWidth = grossura;
+  ctx.lineWidth = thickness;
   ctx.stroke();
 }
 
-const entre = (a: number, b: number) => a + Math.random() * (b - a);
+const between = (a: number, b: number) => a + Math.random() * (b - a);
 
-export function fogos(): Motor {
-  let foguetes: Foguete[] = [];
-  let faiscas: Ponto[] = [];
-  let proximo = 0.6;
+export function fires(): Motor {
+  let rockets: Rocket[] = [];
+  let sparks: Dot[] = [];
+  let next = 0.6;
 
-  const lancar = (palco: Palco, x?: number, y?: number) => {
-    const saida = x ?? entre(palco.largura * 0.15, palco.largura * 0.85);
-    const topo = y ?? entre(palco.altura * 0.12, palco.altura * 0.46);
+  const launch = (stage: Stage, x?: number, y?: number) => {
+    const output = x ?? between(stage.width * 0.15, stage.width * 0.85);
+    const top = y ?? between(stage.height * 0.12, stage.height * 0.46);
 
-    foguetes.push({
-      x: saida,
-      y: palco.altura + 12,
-      vx: entre(-14, 14),
-      vy: -entre(340, 430),
-      alvo: topo,
-      cor: PALETA[Math.floor(Math.random() * PALETA.length)]!,
+    rockets.push({
+      x: output,
+      y: stage.height + 12,
+      vx: between(-14, 14),
+      vy: -between(340, 430),
+      target: top,
+      color: PALETTE[Math.floor(Math.random() * PALETTE.length)]!,
     });
   };
 
-  const abrir = (foguete: Foguete) => {
-    const quantas = Math.round(entre(84, 128));
-    const forca = entre(130, 240);
-    const anel = Math.random() < 0.45;
+  const open = (rocket: Rocket) => {
+    const count = Math.round(between(84, 128));
+    const force = between(130, 240);
+    const ring = Math.random() < 0.45;
 
-    for (let i = 0; i < quantas; i++) {
-      const angulo = (i / quantas) * Math.PI * 2 + entre(-0.05, 0.05);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + between(-0.05, 0.05);
       /*
         Metade dos estouros é anel, metade é bola. O anel tem todas as
         faíscas na mesma velocidade e abre uma casca limpa; a bola sorteia,
         e sai mais cheia no miolo. Só anel deixa o céu repetitivo.
       */
-      const velocidade = anel ? forca * entre(0.92, 1.06) : forca * Math.sqrt(Math.random());
-      const vida = entre(1.3, 2.4);
+      const speed = ring ? force * between(0.92, 1.06) : force * Math.sqrt(Math.random());
+      const life = between(1.3, 2.4);
 
-      faiscas.push({
-        x: foguete.x,
-        y: foguete.y,
-        vx: Math.cos(angulo) * velocidade,
-        vy: Math.sin(angulo) * velocidade,
-        vida,
-        total: vida,
-        cor: foguete.cor,
-        brilho: entre(0.7, 1),
+      sparks.push({
+        x: rocket.x,
+        y: rocket.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life,
+        total: life,
+        color: rocket.color,
+        glow: between(0.7, 1),
       });
     }
   };
 
   return {
-    clicou: (palco, x, y) => lancar(palco, x, y),
+    clicked: (stage, x, y) => launch(stage, x, y),
 
-    quadro: (palco, passo) => {
-      const { contexto: ctx, largura, altura } = palco;
+    frame: (stage, step) => {
+      const { context: ctx, width, height } = stage;
 
       /*
         O rastro. Apagar com preto translúcido em vez de limpar a tela deixa
@@ -148,73 +148,73 @@ export function fogos(): Motor {
       */
       ctx.globalCompositeOperation = "destination-out";
       ctx.fillStyle = "rgba(0, 0, 0, 0.11)";
-      ctx.fillRect(0, 0, largura, altura);
+      ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = "lighter";
 
-      proximo -= passo;
-      if (proximo <= 0) {
-        lancar(palco);
-        proximo = entre(ESPERA[0]!, ESPERA[1]!);
+      next -= step;
+      if (next <= 0) {
+        launch(stage);
+        next = between(WAIT[0]!, WAIT[1]!);
       }
 
       ctx.lineCap = "round";
 
-      foguetes = foguetes.filter((f) => {
-        const deX = f.x;
-        const deY = f.y;
+      rockets = rockets.filter((f) => {
+        const fromX = f.x;
+        const fromY = f.y;
 
-        f.vy += GRAVIDADE * passo * 3;
-        f.x += f.vx * passo;
-        f.y += f.vy * passo;
+        f.vy += GRAVITY * step * 3;
+        f.x += f.vx * step;
+        f.y += f.vy * step;
 
-        if (f.y <= f.alvo || f.vy >= -40) {
-          abrir(f);
+        if (f.y <= f.target || f.vy >= -40) {
+          open(f);
           return false;
         }
 
-        risco(ctx, deX, deY, f.x, f.y, [255, 240, 200], 0.9, 2);
+        risk(ctx, fromX, fromY, f.x, f.y, [255, 240, 200], 0.9, 2);
         return true;
       });
 
-      faiscas = faiscas.filter((p) => {
-        p.vida -= passo;
-        if (p.vida <= 0) return false;
+      sparks = sparks.filter((p) => {
+        p.life -= step;
+        if (p.life <= 0) return false;
 
-        const deX = p.x;
-        const deY = p.y;
-        const atrito = ARRASTO ** (passo * 60);
+        const fromX = p.x;
+        const fromY = p.y;
+        const friction = DRAG ** (step * 60);
 
-        p.vx *= atrito;
-        p.vy = p.vy * atrito + GRAVIDADE * passo;
-        p.x += p.vx * passo;
-        p.y += p.vy * passo;
+        p.vx *= friction;
+        p.vy = p.vy * friction + GRAVITY * step;
+        p.x += p.vx * step;
+        p.y += p.vy * step;
 
-        const resto = p.vida / p.total;
+        const rest = p.life / p.total;
         /* Apaga rápido no fim: faísca não some devagar, ela pisca e acaba. */
-        const alfa = resto * resto * p.brilho;
+        const alfa = rest * rest * p.glow;
 
         /*
           Recém-aberta a faísca é quase branca, e vai virando a cor do fogo
           conforme esfria. É o que o olho espera de brasa, e é o que separa
           um estouro de um punhado de bolinhas coloridas.
         */
-        const quente = resto > 0.82 ? (resto - 0.82) / 0.18 : 0;
-        const cor = [
-          p.cor[0]! + (255 - p.cor[0]!) * quente,
-          p.cor[1]! + (255 - p.cor[1]!) * quente,
-          p.cor[2]! + (255 - p.cor[2]!) * quente,
+        const hot = rest > 0.82 ? (rest - 0.82) / 0.18 : 0;
+        const color = [
+          p.color[0]! + (255 - p.color[0]!) * hot,
+          p.color[1]! + (255 - p.color[1]!) * hot,
+          p.color[2]! + (255 - p.color[2]!) * hot,
         ];
 
-        risco(ctx, deX, deY, p.x, p.y, cor, alfa, 2.3);
+        risk(ctx, fromX, fromY, p.x, p.y, color, alfa, 2.3);
         return true;
       });
 
       ctx.globalCompositeOperation = "source-over";
     },
 
-    redimensionou: () => {
-      foguetes = [];
-      faiscas = [];
+    resized: () => {
+      rockets = [];
+      sparks = [];
     },
   };
 }

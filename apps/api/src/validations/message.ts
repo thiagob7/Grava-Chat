@@ -12,39 +12,39 @@ export const historyQuery = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(LIMITS.messagePageSize),
 });
 
-const dia = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "data no formato AAAA-MM-DD");
+const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "data no formato AAAA-MM-DD");
 
-export const ESCOPOS_DE_BUSCA = ["servidor", "canal", "comunidades", "dms", "tudo"] as const;
-export const TEM_NA_BUSCA = ["link", "imagem", "video", "som", "arquivo", "anexo"] as const;
+export const SEARCH_SCOPES = ["servidor", "canal", "comunidades", "dms", "tudo"] as const;
+export const HAS_SEARCH = ["link", "imagem", "video", "som", "arquivo", "anexo"] as const;
 
-export const buscaQuery = z
+export const searchQuery = z
   .object({
     q: z.string().trim().max(100),
-    escopo: z.enum(ESCOPOS_DE_BUSCA).optional(),
+    scope: z.enum(SEARCH_SCOPES).optional(),
     guildId: objectId.optional(),
-    canalId: objectId.optional(),
-    autorId: objectId.optional(),
-    mencionaId: objectId.optional(),
-    tem: z.enum(TEM_NA_BUSCA).optional(),
-    depois: dia.optional(),
-    antes: dia.optional(),
-    em: dia.optional(),
-    fixada: z.stringbool().optional(),
-    tipoDeAutor: z.enum(["usuario", "bot"]).optional(),
-    ordem: z.enum(["recente", "antiga"]).optional(),
+    channelId: objectId.optional(),
+    authorId: objectId.optional(),
+    mentionsId: objectId.optional(),
+    has: z.enum(HAS_SEARCH).optional(),
+    after: day.optional(),
+    until: day.optional(),
+    em: day.optional(),
+    pinned: z.stringbool().optional(),
+    authorKind: z.enum(["usuario", "bot"]).optional(),
+    order: z.enum(["recente", "antiga"]).optional(),
     before: objectId.optional(),
   })
   .refine(
-    (valor) =>
-      ["comunidades", "dms", "tudo"].includes(valor.escopo ?? "") ||
-      Boolean(valor.guildId ?? valor.canalId),
+    (value) =>
+      ["comunidades", "dms", "tudo"].includes(value.scope ?? "") ||
+      Boolean(value.guildId ?? value.channelId),
     { message: "Diga em que servidor ou em que canal procurar", path: ["guildId"] },
   )
   .refine(
-    (valor) =>
-      valor.q.length >= 2 ||
-      Boolean(valor.autorId ?? valor.mencionaId ?? valor.tem ?? valor.depois ?? valor.antes ?? valor.em ?? valor.fixada ?? valor.tipoDeAutor),
+    (value) =>
+      value.q.length >= 2 ||
+      Boolean(value.authorId ?? value.mentionsId ?? value.has ?? value.after ?? value.before ?? value.em ?? value.pinned ?? value.authorKind),
     { message: "Escreva ao menos duas letras, ou escolha um filtro", path: ["q"] },
   );
 
-export type BuscaQuery = z.infer<typeof buscaQuery>;
+export type SearchQuery = z.infer<typeof searchQuery>;

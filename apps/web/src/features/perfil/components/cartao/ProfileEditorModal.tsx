@@ -1,16 +1,16 @@
 import React, { useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Pencil, X } from "lucide-react";
-import type { StatusPersonalizado } from "@gravae/shared";
+import type { CustomStatus } from "@gravae/shared";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
-import { useEnvioDeImagemDePerfil } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
+import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
-import { EscolherEnfeiteModal } from "~/features/perfil/components/cartao/EscolherEnfeiteModal";
-import { DECORACOES_DE_AVATAR } from "~/features/perfil/lib/catalogo";
+import { PickCharmModal } from "~/features/perfil/components/cartao/EscolherEnfeiteModal";
+import { AVATAR_DECORATIONS } from "~/features/perfil/lib/catalogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,13 +20,13 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { UserName } from "~/features/perfil/components/UserName";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Amostra, EnfeitesAba } from "~/features/configuracoes/components/perfil/EnfeitesAba";
-import { IdentidadeAba } from "~/features/configuracoes/components/perfil/IdentidadeAba";
+import { Sample, CharmsTab } from "~/features/configuracoes/components/perfil/EnfeitesAba";
+import { IdentityTab } from "~/features/configuracoes/components/perfil/IdentidadeAba";
 import {
-  doUsuario,
-  paraPerfil,
+  fromUser,
+  forProfile,
 } from "~/features/configuracoes/components/perfil/rascunho";
-import { useRascunho } from "~/features/perfil/hooks/use-rascunho";
+import { useDraft } from "~/features/perfil/hooks/use-rascunho";
 import { useTranslation } from "~/traducao";
 
 export const ProfileEditorModal: React.FC<{
@@ -36,50 +36,50 @@ export const ProfileEditorModal: React.FC<{
 }> = ({ open, user, onClose }) => {
   const { t } = useTranslation();
   const updateProfile = useUpdateProfile();
-  const [definindoStatus, setDefinindoStatus] = useState(false);
-  const escolherFoto = useRef<HTMLInputElement>(null);
-  const escolherFaixa = useRef<HTMLInputElement>(null);
-  const [enfeiteAberto, setEnfeiteAberto] = useState<"decoracao" | null>(null);
+  const [settingStatus, setSettingStatus] = useState(false);
+  const pickPhoto = useRef<HTMLInputElement>(null);
+  const pickTrack = useRef<HTMLInputElement>(null);
+  const [charmIsOpen, setCharmIsOpen] = useState<"decoration" | null>(null);
 
-  const salvo = useMemo(() => doUsuario(user), [user]);
-  const { rascunho, definir, descartar, sujo } = useRascunho(salvo);
-  const perfil = paraPerfil(rascunho);
-  const { enviar } = useEnvioDeImagemDePerfil((campo, url) => definir(campo, url));
+  const saved = useMemo(() => fromUser(user), [user]);
+  const { draft, set, discard, dirty } = useDraft(saved);
+  const profile = forProfile(draft);
+  const { send } = useImageProfileSending((field, url) => set(field, url));
 
-  const previaDoCartao = {
+  const cardPreview = {
     id: user.id,
-    displayName: rascunho.displayName || user.displayName,
+    displayName: draft.displayName || user.displayName,
     username: user.username,
-    avatarUrl: rascunho.avatarUrl,
+    avatarUrl: draft.avatarUrl,
     status: user.status,
-    perfil,
-    statusPersonalizado: user.statusPersonalizado,
-    bio: rascunho.bio || null,
-    pronomes: rascunho.pronomes || null,
+    profile,
+    customStatus: user.customStatus,
+    bio: draft.bio || null,
+    pronouns: draft.pronouns || null,
     createdAt: user.createdAt,
   };
 
-  const salvar = () => {
-    const displayName = rascunho.displayName.trim();
-    const bio = rascunho.bio.trim() || null;
-    const pronomes = rascunho.pronomes.trim() || null;
+  const save = () => {
+    const displayName = draft.displayName.trim();
+    const bio = draft.bio.trim() || null;
+    const pronouns = draft.pronouns.trim() || null;
 
     void updateProfile
       .mutateAsync({
-        ...(displayName !== salvo.displayName ? { displayName } : {}),
-        ...(bio !== (salvo.bio || null) ? { bio } : {}),
-        ...(pronomes !== (salvo.pronomes || null) ? { pronomes } : {}),
-        ...(rascunho.avatarUrl !== salvo.avatarUrl ? { avatarUrl: rascunho.avatarUrl } : {}),
-        ...(JSON.stringify(perfil) !== JSON.stringify(paraPerfil(salvo)) ? { perfil } : {}),
+        ...(displayName !== saved.displayName ? { displayName } : {}),
+        ...(bio !== (saved.bio || null) ? { bio } : {}),
+        ...(pronouns !== (saved.pronouns || null) ? { pronouns } : {}),
+        ...(draft.avatarUrl !== saved.avatarUrl ? { avatarUrl: draft.avatarUrl } : {}),
+        ...(JSON.stringify(profile) !== JSON.stringify(forProfile(saved)) ? { profile } : {}),
       })
-      .then(() => descartar())
+      .then(() => discard())
       .catch(() => null);
   };
 
-  const salvarStatus = (status: StatusPersonalizado | null) =>
+  const saveStatus = (status: CustomStatus | null) =>
     void updateProfile
-      .mutateAsync({ statusPersonalizado: status })
-      .then(() => setDefinindoStatus(false))
+      .mutateAsync({ customStatus: status })
+      .then(() => setSettingStatus(false))
       .catch(() => null);
 
   return (
@@ -101,31 +101,31 @@ export const ProfileEditorModal: React.FC<{
             <h2 data-gc="perfil.cartao.profile-editor-modal.h2" className="mb-4 text-sm font-semibold">{t("perfil.editor.principal")}</h2>
 
             <div data-gc="perfil.cartao.profile-editor-modal.div" className="space-y-6">
-              <IdentidadeAba data-gc="perfil.cartao.profile-editor-modal.identidade-aba"
+              <IdentityTab data-gc="perfil.cartao.profile-editor-modal.identity-tab"
                 id={user.id}
                 username={user.username}
-                rascunho={rascunho}
-                definir={definir}
+                draft={draft}
+                set={set}
               />
               <div data-gc="perfil.cartao.profile-editor-modal.div--2" className="h-px bg-line" />
-              <EnfeitesAba data-gc="perfil.cartao.profile-editor-modal.enfeites-aba" rascunho={rascunho} definir={definir} />
+              <CharmsTab data-gc="perfil.cartao.profile-editor-modal.charms-tab" draft={draft} set={set} />
             </div>
           </aside>
 
           <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-4 md:p-8">
             <input data-gc="perfil.cartao.profile-editor-modal.input"
-              ref={escolherFoto}
+              ref={pickPhoto}
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => void enviar(e, "avatarUrl")}
+              onChange={(e) => void send(e, "avatarUrl")}
             />
             <input data-gc="perfil.cartao.profile-editor-modal.input--2"
-              ref={escolherFaixa}
+              ref={pickTrack}
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => void enviar(e, "bannerUrl")}
+              onChange={(e) => void send(e, "bannerUrl")}
             />
 
             <div data-gc="perfil.cartao.profile-editor-modal.div--3" className="mx-auto w-full max-w-96">
@@ -133,23 +133,23 @@ export const ProfileEditorModal: React.FC<{
                 <div data-gc="perfil.cartao.profile-editor-modal.div--5">
                   <ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual"
                     id={user.id}
-                    displayName={rascunho.displayName || user.displayName}
+                    displayName={draft.displayName || user.displayName}
                     username={user.username}
-                    avatarUrl={rascunho.avatarUrl}
+                    avatarUrl={draft.avatarUrl}
                     status={user.status}
-                    perfil={perfil}
-                    statusPersonalizado={user.statusPersonalizado}
-                    bio={rascunho.bio || null}
-                    pronomes={rascunho.pronomes || null}
+                    profile={profile}
+                    customStatus={user.customStatus}
+                    bio={draft.bio || null}
+                    pronouns={draft.pronouns || null}
                     createdAt={user.createdAt}
-                    editavel
-                    onEtiqueta={(valor) => definir("etiqueta", valor)}
-                    onEtiquetaDoServidor={(guildId) =>
-                      definir("tagGuildId", guildId)
+                    editable
+                    onTag={(value) => set("tag", value)}
+                    onServerTag={(guildId) =>
+                      set("tagGuildId", guildId)
                     }
-                    onStatus={() => setDefinindoStatus(true)}
-                    onEditarFoto={() => escolherFoto.current?.click()}
-                    menuDaFaixa={
+                    onStatus={() => setSettingStatus(true)}
+                    onEditPhoto={() => pickPhoto.current?.click()}
+                    trackMenu={
                       <DropdownMenu data-gc="perfil.cartao.profile-editor-modal.dropdown-menu">
                         <DropdownMenuTrigger data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-trigger" asChild>
                           <button data-gc="perfil.cartao.profile-editor-modal.button"
@@ -163,19 +163,19 @@ export const ProfileEditorModal: React.FC<{
 
                         <DropdownMenuContent data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-content" align="end">
                           <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item"
-                            onSelect={() => escolherFaixa.current?.click()}
+                            onSelect={() => pickTrack.current?.click()}
                           >
                             Trocar a faixa
                           </DropdownMenuItem>
                           <DropdownMenuSeparator data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-separator" />
-                          <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item--2" onSelect={() => setEnfeiteAberto("decoracao")}>
+                          <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item--2" onSelect={() => setCharmIsOpen("decoration")}>
                             {t("perfil.editor.decoracao")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     }
-                    onBio={(valor) => definir("bio", valor)}
-                    onPronomes={(valor) => definir("pronomes", valor)}
+                    onBio={(value) => set("bio", value)}
+                    onPronouns={(value) => set("pronouns", value)}
                   />
                 </div>
               </div>
@@ -187,16 +187,16 @@ export const ProfileEditorModal: React.FC<{
                 <div data-gc="perfil.cartao.profile-editor-modal.div--7" className="flex gap-3 rounded-lg border border-line bg-surface-1 px-3 py-2.5">
                   <Avatar data-gc="perfil.cartao.profile-editor-modal.avatar"
                     id={user.id}
-                    name={rascunho.displayName || user.displayName}
-                    url={rascunho.avatarUrl}
+                    name={draft.displayName || user.displayName}
+                    url={draft.avatarUrl}
                     size={40}
-                    enfeites={perfil}
+                    charms={profile}
                   />
                   <div data-gc="perfil.cartao.profile-editor-modal.div--8" className="min-w-0">
                     <p data-gc="perfil.cartao.profile-editor-modal.p--2" className="text-sm font-medium leading-tight">
                       <UserName data-gc="perfil.cartao.profile-editor-modal.user-name"
-                        nome={rascunho.displayName || user.displayName}
-                        perfil={perfil}
+                        name={draft.displayName || user.displayName}
+                        profile={profile}
                       />
                     </p>
                     <p data-gc="perfil.cartao.profile-editor-modal.p--3" className="text-sm text-ink-muted">
@@ -223,35 +223,35 @@ export const ProfileEditorModal: React.FC<{
             <X data-gc="perfil.cartao.profile-editor-modal.x" size={20} />
           </DialogPrimitive.Close>
 
-          <EscolherEnfeiteModal data-gc="perfil.cartao.profile-editor-modal.escolher-enfeite-modal"
-            open={enfeiteAberto === "decoracao"}
-            titulo={t("perfil.editor.decoracao")}
+          <PickCharmModal data-gc="perfil.cartao.profile-editor-modal.pick-charm-modal"
+            open={charmIsOpen === "decoration"}
+            title={t("perfil.editor.decoracao")}
             legenda="Suas decorações"
-            opcoes={DECORACOES_DE_AVATAR}
-            valor={rascunho.decoracao}
-            onEscolher={(id) => definir("decoracao", id)}
-            onClose={() => setEnfeiteAberto(null)}
-            amostra={(id) => <Amostra data-gc="perfil.cartao.profile-editor-modal.amostra" familia="decoracao" id={id} />}
-            previa={<ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual--2" {...previaDoCartao} />}
+            options={AVATAR_DECORATIONS}
+            value={draft.decoration}
+            onPick={(id) => set("decoration", id)}
+            onClose={() => setCharmIsOpen(null)}
+            sample={(id) => <Sample data-gc="perfil.cartao.profile-editor-modal.sample" family="decoration" id={id} />}
+            preview={<ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual--2" {...cardPreview} />}
           />
 
-          {definindoStatus && (
-            <StatusModal data-gc="perfil.cartao.profile-editor-modal.status-modal.salvar-status"
+          {settingStatus && (
+            <StatusModal data-gc="perfil.cartao.profile-editor-modal.status-modal.save-status"
               open
               user={user}
-              perfil={perfil}
-              onClose={() => setDefinindoStatus(false)}
-              onSalvar={salvarStatus}
-              salvando={updateProfile.isPending}
+              profile={profile}
+              onClose={() => setSettingStatus(false)}
+              onSave={saveStatus}
+              saving={updateProfile.isPending}
             />
           )}
         </DialogPrimitive.Content>
 
-        <UnsavedBar data-gc="perfil.cartao.profile-editor-modal.unsaved-bar.descartar"
-          visible={sujo}
+        <UnsavedBar data-gc="perfil.cartao.profile-editor-modal.unsaved-bar.discard"
+          visible={dirty}
           saving={updateProfile.isPending}
-          onDiscard={descartar}
-          onSave={salvar}
+          onDiscard={discard}
+          onSave={save}
           text={t("perfil.editor.naoSalvo")}
           discardLabel={t("comum.redefinir")}
           floating

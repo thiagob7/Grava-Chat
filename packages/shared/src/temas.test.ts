@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  comCabecalho,
-  escreverCabecalhoDoTema,
-  idDoTemaNoLink,
-  lerCabecalhoDoTema,
+  withHeader,
+  writeThemeHeader,
+  themeLinkId,
+  readThemeHeader,
 } from "./temas.js";
 
-const EXEMPLO = `/**
+const EXAMPLE = `/**
  * @name Quiet System Gruvbox
  * @description based on system24 by refact0r
  * @author BEQUIETBRO
@@ -19,92 +19,133 @@ body { background: #282828; }`;
 
 describe("cabecalho do tema", () => {
   it("le os cinco campos do bloco", () => {
-    const cabecalho = lerCabecalhoDoTema(EXEMPLO);
+    const header = readThemeHeader(EXAMPLE);
 
-    expect(cabecalho.nome).toBe("Quiet System Gruvbox");
-    expect(cabecalho.autor).toBe("BEQUIETBRO");
-    expect(cabecalho.versao).toBe("1.0.0");
-    expect(cabecalho.tags).toEqual(["liquid glass", "modern", "customizable", "gruvbox"]);
+    expect(header.name).toBe("Quiet System Gruvbox");
+    expect(header.author).toBe("BEQUIETBRO");
+    expect(header.version).toBe("1.0.0");
+    expect(header.tags).toEqual(["liquid glass", "modern", "customizable", "gruvbox"]);
   });
 
   it("devolve tudo vazio quando o css nao tem bloco", () => {
-    expect(lerCabecalhoDoTema("body { color: red; }").nome).toBeNull();
-    expect(lerCabecalhoDoTema("body { color: red; }").tags).toEqual([]);
+    expect(readThemeHeader("body { color: red; }").name).toBeNull();
+    expect(readThemeHeader("body { color: red; }").tags).toEqual([]);
   });
 
   it("ignora bloco que nao esta no topo", () => {
-    expect(lerCabecalhoDoTema("body{}\n/**\n * @name Tarde\n */").nome).toBeNull();
+    expect(readThemeHeader("body{}\n/**\n * @name Tarde\n */").name).toBeNull();
   });
 
   it("nao se perde com comentario comum de uma estrela", () => {
-    expect(lerCabecalhoDoTema("/* @name Nao vale */\nbody{}").nome).toBeNull();
+    expect(readThemeHeader("/* @name Nao vale */\nbody{}").name).toBeNull();
   });
 
   it("aceita campo sem asterisco na frente", () => {
-    expect(lerCabecalhoDoTema("/**\n@name Solto\n*/").nome).toBe("Solto");
+    expect(readThemeHeader("/**\n@name Solto\n*/").name).toBe("Solto");
   });
 
   it("corta tag vazia e limita a oito", () => {
-    const muitas = lerCabecalhoDoTema(
+    const many = readThemeHeader(
       "/**\n * @tags a, , b, c, d, e, f, g, h, i, j\n */",
     );
 
-    expect(muitas.tags).toHaveLength(8);
-    expect(muitas.tags).not.toContain("");
+    expect(many.tags).toHaveLength(8);
+    expect(many.tags).not.toContain("");
   });
 
   it("volta a escrever o bloco que leu", () => {
-    const cabecalho = lerCabecalhoDoTema(EXEMPLO);
-    const escrito = escreverCabecalhoDoTema(cabecalho);
+    const header = readThemeHeader(EXAMPLE);
+    const written = writeThemeHeader(header);
 
-    expect(lerCabecalhoDoTema(escrito)).toEqual(cabecalho);
+    expect(readThemeHeader(written)).toEqual(header);
   });
 
   it("nao escreve bloco quando nao ha nada para dizer", () => {
     expect(
-      escreverCabecalhoDoTema({
-        nome: null,
-        descricao: null,
-        autor: null,
-        versao: null,
+      writeThemeHeader({
+        name: null,
+        description: null,
+        author: null,
+        version: null,
+        font: null,
+        invite: null,
         tags: [],
       }),
     ).toBe("");
   });
 
   it("troca o cabecalho em vez de empilhar outro", () => {
-    const trocado = comCabecalho(EXEMPLO, {
-      nome: "Outro",
-      descricao: null,
-      autor: null,
-      versao: null,
+    const swapped = withHeader(EXAMPLE, {
+      name: "Outro",
+      description: null,
+      author: null,
+      version: null,
+      font: null,
+      invite: null,
       tags: [],
     });
 
-    expect(lerCabecalhoDoTema(trocado).nome).toBe("Outro");
-    expect(trocado.match(/@name/g)).toHaveLength(1);
-    expect(trocado).toContain("background: #282828");
+    expect(readThemeHeader(swapped).name).toBe("Outro");
+    expect(swapped.match(/@name/g)).toHaveLength(1);
+    expect(swapped).toContain("background: #282828");
   });
 });
 
 describe("link de tema", () => {
-  const origem = "https://gravae-chat.vercel.app";
+  const origin = "https://gravae-chat.vercel.app";
 
   it("acha o id no link do proprio app", () => {
-    expect(idDoTemaNoLink(`${origem}/tema/6a9c1970588464cf66fa7161`, origem)).toBe(
+    expect(themeLinkId(`${origin}/tema/6a9c1970588464cf66fa7161`, origin)).toBe(
       "6a9c1970588464cf66fa7161",
     );
   });
 
   it("recusa link de outro site", () => {
-    expect(idDoTemaNoLink("https://outro.com/tema/6a9c1970588464cf66fa7161", origem)).toBeNull();
+    expect(themeLinkId("https://outro.com/tema/6a9c1970588464cf66fa7161", origin)).toBeNull();
+  });
+
+  it("aceita o tema copiado de outro ambiente nosso", () => {
+    expect(
+      themeLinkId("https://gravae-chat.vercel.app/tema/6a9c1970588464cf66fa7161", [
+        "http://localhost:5173",
+        "https://gravae-chat.vercel.app",
+      ]),
+    ).toBe("6a9c1970588464cf66fa7161");
   });
 
   it("recusa id que nao e de objeto", () => {
-    expect(idDoTemaNoLink(`${origem}/tema/abc`, origem)).toBeNull();
+    expect(themeLinkId(`${origin}/tema/abc`, origin)).toBeNull();
   });
 
   it("nao estoura com texto que nao e url", () => {
-    expect(idDoTemaNoLink("nem url isso é", origem)).toBeNull();
+    expect(themeLinkId("nem url isso é", origin)).toBeNull();
+  });
+});
+
+describe("endereco no cabecalho", () => {
+  it("guarda a fonte e o convite quando sao https", () => {
+    const read = readThemeHeader(
+      [
+        "/**",
+        " * @name Azul",
+        " * @updateUrl https://gravae.io/temas/azul.css",
+        " * @invite https://gravae.io/convite/abc",
+        " */",
+      ].join("\n"),
+    );
+
+    expect(read.font).toBe("https://gravae.io/temas/azul.css");
+    expect(read.invite).toBe("https://gravae.io/convite/abc");
+  });
+
+  it("recusa endereco que nao seja https", () => {
+    const read = readThemeHeader(
+      ["/**", " * @updateUrl javascript:alert(1)", " * @invite http://gravae.io/x", " */"].join(
+        "\n",
+      ),
+    );
+
+    expect(read.font).toBeNull();
+    expect(read.invite).toBeNull();
   });
 });

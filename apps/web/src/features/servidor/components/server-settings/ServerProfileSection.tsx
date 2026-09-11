@@ -12,7 +12,7 @@ import { formatBytes } from "~/lib/image";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-const ICONE_MAX_PX = 256;
+const ICON_MAX_PX = 256;
 
 export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
   guild,
@@ -20,58 +20,58 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
   const { t } = useTranslation();
   const updateGuild = useUpdateGuild();
   const uploadImage = useUploadImage();
-  const inputArquivo = useRef<HTMLInputElement>(null);
+  const inputFile = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(guild.name);
   const [description, setDescription] = useState(guild.description ?? "");
   const [iconUrl, setIconUrl] = useState(guild.iconUrl);
   const [bannerUrl, setBannerUrl] = useState(guild.bannerUrl ?? null);
-  const [economia, setEconomia] = useState<string | null>(null);
-  const inputDaFaixa = useRef<HTMLInputElement>(null);
+  const [saving, setSaving] = useState<string | null>(null);
+  const trackInput = useRef<HTMLInputElement>(null);
 
-  const enviarIcone = async (file: File) => {
-    const enviado = await uploadImage
-      .mutateAsync({ file, maxSize: ICONE_MAX_PX })
+  const sendIcon = async (file: File) => {
+    const sent = await uploadImage
+      .mutateAsync({ file, maxSize: ICON_MAX_PX })
       .catch(() => null);
-    if (!enviado) return;
+    if (!sent) return;
 
-    setIconUrl(enviado.attachment.url);
-    setEconomia(
-      enviado.uploadedSize < enviado.originalSize
-        ? `${formatBytes(enviado.originalSize)} → ${formatBytes(enviado.uploadedSize)}`
+    setIconUrl(sent.attachment.url);
+    setSaving(
+      sent.uploadedSize < sent.originalSize
+        ? `${formatBytes(sent.originalSize)} → ${formatBytes(sent.uploadedSize)}`
         : null,
     );
   };
 
-  const escolherIcone = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const pickIcon = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (file) await enviarIcone(file);
+    if (file) await sendIcon(file);
   };
 
-  const enviarFaixa = async (file: File) => {
-    const enviado = await uploadImage
+  const sendTrack = async (file: File) => {
+    const sent = await uploadImage
       .mutateAsync({ file, maxSize: 960 })
       .catch(() => null);
-    if (enviado) setBannerUrl(enviado.attachment.url);
+    if (sent) setBannerUrl(sent.attachment.url);
   };
 
-  const escolherFaixa = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const pickTrack = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (file) await enviarFaixa(file);
+    if (file) await sendTrack(file);
   };
 
-  const [dragging, setArrastando] = useState(false);
-  const [arrastandoIcone, setArrastandoIcone] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [draggingIcon, setDraggingIcon] = useState(false);
 
-  const mudou =
+  const changed =
     name.trim() !== guild.name ||
     (description.trim() || null) !== (guild.description ?? null) ||
     iconUrl !== guild.iconUrl ||
     bannerUrl !== (guild.bannerUrl ?? null);
 
-  const salvar = () =>
+  const save = () =>
     updateGuild.mutate({
       guildId: guild.id,
       name: name.trim(),
@@ -93,24 +93,24 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
       <div data-gc="servidor.server-settings.server-profile-section.div--3" className="flex flex-wrap items-center gap-4">
         <button data-gc="servidor.server-settings.server-profile-section.button"
           type="button"
-          onClick={() => inputArquivo.current?.click()}
+          onClick={() => inputFile.current?.click()}
           onDragOver={(e) => {
             e.preventDefault();
-            setArrastandoIcone(true);
+            setDraggingIcon(true);
           }}
-          onDragLeave={() => setArrastandoIcone(false)}
+          onDragLeave={() => setDraggingIcon(false)}
           onDrop={(e) => {
             e.preventDefault();
-            setArrastandoIcone(false);
-            const arquivo = e.dataTransfer.files?.[0];
-            if (arquivo?.type.startsWith("image/")) void enviarIcone(arquivo);
+            setDraggingIcon(false);
+            const file = e.dataTransfer.files?.[0];
+            if (file?.type.startsWith("image/")) void sendIcon(file);
           }}
           disabled={uploadImage.isPending}
           aria-label={iconUrl ? "Alterar o ícone do servidor" : "Enviar o ícone do servidor"}
           className={cn(
             "group/icone relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-2 outline-none transition",
             "focus-visible:border-brand",
-            arrastandoIcone ? "border-solid border-brand" : "border-transparent hover:border-line",
+            draggingIcon ? "border-solid border-brand" : "border-transparent hover:border-line",
             uploadImage.isPending && "cursor-wait opacity-70",
           )}
           style={iconUrl ? undefined : { backgroundColor: avatarColor(guild.id) }}
@@ -131,7 +131,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             <Button data-gc="servidor.server-settings.server-profile-section.button--2"
               variant="surface"
               size="sm"
-              onClick={() => inputArquivo.current?.click()}
+              onClick={() => inputFile.current?.click()}
               disabled={uploadImage.isPending}
             >
               <Upload data-gc="servidor.server-settings.server-profile-section.upload--2" size={14} />
@@ -151,16 +151,16 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
           </div>
 
           <p data-gc="servidor.server-settings.server-profile-section.p--2" className="mt-1.5 text-xs text-ink-faint">
-            {economia
-              ? t("servidor.perfil.comprimido", { economia })
+            {saving
+              ? t("servidor.perfil.comprimido", { economia: saving })
               : "A imagem é reduzida no navegador."}
           </p>
 
           <input data-gc="servidor.server-settings.server-profile-section.input"
-            ref={inputArquivo}
+            ref={inputFile}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void escolherIcone(e)}
+            onChange={(e) => void pickIcon(e)}
             className="hidden"
           />
         </div>
@@ -174,17 +174,17 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
         <div data-gc="servidor.server-settings.server-profile-section.div--8" className="relative">
           <button data-gc="servidor.server-settings.server-profile-section.button--4"
             type="button"
-            onClick={() => inputDaFaixa.current?.click()}
+            onClick={() => trackInput.current?.click()}
             onDragOver={(e) => {
               e.preventDefault();
-              setArrastando(true);
+              setDragging(true);
             }}
-            onDragLeave={() => setArrastando(false)}
+            onDragLeave={() => setDragging(false)}
             onDrop={(e) => {
               e.preventDefault();
-              setArrastando(false);
-              const arquivo = e.dataTransfer.files?.[0];
-              if (arquivo?.type.startsWith("image/")) void enviarFaixa(arquivo);
+              setDragging(false);
+              const file = e.dataTransfer.files?.[0];
+              if (file?.type.startsWith("image/")) void sendTrack(file);
             }}
             disabled={uploadImage.isPending}
             aria-label={
@@ -245,10 +245,10 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
         </p>
 
         <input data-gc="servidor.server-settings.server-profile-section.input--2"
-          ref={inputDaFaixa}
+          ref={trackInput}
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
-          onChange={(e) => void escolherFaixa(e)}
+          onChange={(e) => void pickTrack(e)}
           className="hidden"
         />
       </div>
@@ -275,7 +275,7 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
         />
       </div>
 
-      {mudou && (
+      {changed && (
         <div data-gc="servidor.server-settings.server-profile-section.div--11" className="mt-6 flex items-center justify-between rounded-lg bg-surface-0 px-4 py-3">
           <p data-gc="servidor.server-settings.server-profile-section.p--4" className="text-sm text-ink-muted">
             {t("comum.naoSalvo")}
@@ -293,9 +293,9 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({
             >
               {t("comum.descartar")}
             </Button>
-            <Button data-gc="servidor.server-settings.server-profile-section.button.salvar"
+            <Button data-gc="servidor.server-settings.server-profile-section.button.save"
               size="sm"
-              onClick={salvar}
+              onClick={save}
               disabled={updateGuild.isPending || !name.trim()}
             >
               {updateGuild.isPending ? "Salvando…" : "Salvar"}

@@ -1,88 +1,88 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import {
-  AMBIENTES,
-  FLUXO_DA_API,
-  lerSituacao,
-  REPOSITORIO,
-  type Ambiente,
-  type Publicacao,
-  type VersaoDaApi,
+  ENVIRONMENTS,
+  API_FLOW,
+  readSituation,
+  REPOSITORY,
+  type Environment,
+  type Post,
+  type ApiVersion,
 } from "~/features/configuracoes/lib/publicacoes";
 
-const buscarVersao = async (ambiente: Ambiente): Promise<VersaoDaApi> => {
-  const resposta = await fetch(`${ambiente.api}/api/publico/versao`, { cache: "no-store" });
-  if (!resposta.ok) throw new Error(`${ambiente.nome} respondeu ${resposta.status}`);
+const searchVersion = async (environment: Environment): Promise<ApiVersion> => {
+  const reply = await fetch(`${environment.api}/api/publico/versao`, { cache: "no-store" });
+  if (!reply.ok) throw new Error(`${environment.name} respondeu ${reply.status}`);
 
-  return (await resposta.json()) as VersaoDaApi;
+  return (await reply.json()) as ApiVersion;
 };
 
-const buscarBranch = async (branch: string) => {
-  const resposta = await fetch(
-    `https://api.github.com/repos/${REPOSITORIO}/commits/${branch}`,
+const searchBranch = async (branch: string) => {
+  const reply = await fetch(
+    `https://api.github.com/repos/${REPOSITORY}/commits/${branch}`,
     { headers: { accept: "application/vnd.github+json" }, cache: "no-store" },
   );
 
-  if (!resposta.ok) throw new Error(`GitHub respondeu ${resposta.status}`);
+  if (!reply.ok) throw new Error(`GitHub respondeu ${reply.status}`);
 
-  const dados = (await resposta.json()) as {
+  const data = (await reply.json()) as {
     sha: string;
     commit: { message: string; author: { date: string } };
   };
 
   return {
-    sha: dados.sha,
-    mensagem: dados.commit.message.split("\n")[0] ?? "",
-    quando: dados.commit.author.date,
+    sha: data.sha,
+    message: data.commit.message.split("\n")[0] ?? "",
+    when: data.commit.author.date,
   };
 };
 
-export const usePublicacoes = (habilitado: boolean) => {
+export const usePosts = (enabled: boolean) => {
   const apis = useQueries({
-    queries: AMBIENTES.map((ambiente) => ({
-      queryKey: ["publicacao-api", ambiente.id],
-      queryFn: () => buscarVersao(ambiente),
-      enabled: habilitado,
+    queries: ENVIRONMENTS.map((environment) => ({
+      queryKey: ["publicacao-api", environment.id],
+      queryFn: () => searchVersion(environment),
+      enabled: enabled,
       retry: 0,
       refetchInterval: 30_000,
     })),
   });
 
   const branches = useQueries({
-    queries: AMBIENTES.map((ambiente) => ({
-      queryKey: ["publicacao-branch", ambiente.branch],
-      queryFn: () => buscarBranch(ambiente.branch),
-      enabled: habilitado,
+    queries: ENVIRONMENTS.map((environment) => ({
+      queryKey: ["publicacao-branch", environment.branch],
+      queryFn: () => searchBranch(environment.branch),
+      enabled: enabled,
       retry: 0,
       staleTime: 30_000,
     })),
   });
 
-  return AMBIENTES.map((ambiente, i) => ({
-    ambiente,
+  return ENVIRONMENTS.map((environment, i) => ({
+    environment,
     api: apis[i]!,
     branch: branches[i]!,
   }));
 };
 
-export const useBranchDoGit = (branch: string, habilitado: boolean) =>
+export const useBranchDoGit = (branch: string, enabled: boolean) =>
   useQuery({
     queryKey: ["publicacao-branch", branch],
-    queryFn: () => buscarBranch(branch),
-    enabled: habilitado,
+    queryFn: () => searchBranch(branch),
+    enabled: enabled,
     retry: 0,
     staleTime: 30_000,
   });
 
-const buscarPublicacoes = async (): Promise<Publicacao[]> => {
-  const resposta = await fetch(
-    `https://api.github.com/repos/${REPOSITORIO}/actions/workflows/${FLUXO_DA_API}/runs?per_page=5`,
+const searchPosts = async (): Promise<Post[]> => {
+  const reply = await fetch(
+    `https://api.github.com/repos/${REPOSITORY}/actions/workflows/${API_FLOW}/runs?per_page=5`,
     { headers: { accept: "application/vnd.github+json" }, cache: "no-store" },
   );
 
-  if (!resposta.ok) throw new Error(`GitHub respondeu ${resposta.status}`);
+  if (!reply.ok) throw new Error(`GitHub respondeu ${reply.status}`);
 
-  const dados = (await resposta.json()) as {
+  const data = (await reply.json()) as {
     workflow_runs: {
       id: number;
       display_title: string;
@@ -94,21 +94,21 @@ const buscarPublicacoes = async (): Promise<Publicacao[]> => {
     }[];
   };
 
-  return (dados.workflow_runs ?? []).map((r) => ({
+  return (data.workflow_runs ?? []).map((r) => ({
     id: r.id,
-    titulo: r.display_title,
+    title: r.display_title,
     commit: r.head_sha.slice(0, 7),
-    situacao: lerSituacao(r.status, r.conclusion),
-    quando: r.created_at,
+    situation: readSituation(r.status, r.conclusion),
+    when: r.created_at,
     link: r.html_url,
   }));
 };
 
-export const useHistoricoDePublicacoes = (habilitado: boolean) =>
+export const usePostsHistory = (enabled: boolean) =>
   useQuery({
     queryKey: ["publicacoes-do-fluxo"],
-    queryFn: buscarPublicacoes,
-    enabled: habilitado,
+    queryFn: searchPosts,
+    enabled: enabled,
     retry: 0,
     refetchInterval: 20_000,
   });

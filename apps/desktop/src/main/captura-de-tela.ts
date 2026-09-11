@@ -1,12 +1,12 @@
 import { BrowserWindow, desktopCapturer, ipcMain, session, systemPreferences } from "electron";
-import type { FonteDeTela, EscolhaDeTela } from "@gravae/shared";
+import type { ScreenFont, ScreenChoice } from "@gravae/shared";
 
-let pendente: ((escolha: EscolhaDeTela | null) => void) | null = null;
+let pending: ((selection: ScreenChoice | null) => void) | null = null;
 
-export function registrarCapturaDeTela() {
-  ipcMain.handle("tela:escolhida", (_e, escolha: EscolhaDeTela | null) => {
-    pendente?.(escolha);
-    pendente = null;
+export function screenRegisterCapture() {
+  ipcMain.handle("tela:escolhida", (_e, selection: ScreenChoice | null) => {
+    pending?.(selection);
+    pending = null;
   });
 
   ipcMain.handle("tela:permissao", () =>
@@ -14,53 +14,53 @@ export function registrarCapturaDeTela() {
   );
 
   session.defaultSession.setDisplayMediaRequestHandler(
-    async (_pedido, callback) => {
-      const janela = BrowserWindow.getAllWindows()[0];
-      if (!janela) return callback({});
+    async (_request, callback) => {
+      const appWindow = BrowserWindow.getAllWindows()[0];
+      if (!appWindow) return callback({});
 
-      let fontes: Electron.DesktopCapturerSource[] = [];
+      let fonts: Electron.DesktopCapturerSource[] = [];
 
       try {
-        fontes = await desktopCapturer.getSources({
+        fonts = await desktopCapturer.getSources({
           types: ["screen", "window"],
           thumbnailSize: { width: 320, height: 180 },
           fetchWindowIcons: true,
         });
-      } catch (erro) {
-        console.error("[desktop] não consegui listar as telas:", erro);
+      } catch (error) {
+        console.error("[desktop] não consegui listar as telas:", error);
       }
 
-      let telas = 0;
-      const lista: FonteDeTela[] = fontes.map((fonte) => {
-        const ehTela = fonte.id.startsWith("screen:");
-        if (ehTela) telas += 1;
+      let screens = 0;
+      const list: ScreenFont[] = fonts.map((font) => {
+        const isScreen = font.id.startsWith("screen:");
+        if (isScreen) screens += 1;
 
         return {
-          id: fonte.id,
-          nome: ehTela ? `Tela ${telas}` : fonte.name || "Janela",
-          ehTela,
-          miniatura: fonte.thumbnail.isEmpty() ? null : fonte.thumbnail.toDataURL(),
-          icone: fonte.appIcon && !fonte.appIcon.isEmpty() ? fonte.appIcon.toDataURL() : null,
+          id: font.id,
+          name: isScreen ? `Tela ${screens}` : font.name || "Janela",
+          isScreen,
+          thumbnail: font.thumbnail.isEmpty() ? null : font.thumbnail.toDataURL(),
+          icon: font.appIcon && !font.appIcon.isEmpty() ? font.appIcon.toDataURL() : null,
         };
       });
 
-      pendente?.(null);
+      pending?.(null);
 
-      const escolha = await new Promise<EscolhaDeTela | null>((resolve) => {
-        pendente = resolve;
-        janela.webContents.send("tela:escolher", lista);
+      const selection = await new Promise<ScreenChoice | null>((resolve) => {
+        pending = resolve;
+        appWindow.webContents.send("tela:escolher", list);
       });
 
-      if (!escolha) return callback({});
+      if (!selection) return callback({});
 
-      const fonte = fontes.find((f) => f.id === escolha.id);
-      if (!fonte) return callback({});
+      const font = fonts.find((f) => f.id === selection.id);
+      if (!font) return callback({});
 
       try {
-        callback(escolha.comAudio ? { video: fonte, audio: "loopback" } : { video: fonte });
-      } catch (erro) {
-        console.error("[desktop] áudio do sistema indisponível, seguindo sem ele:", erro);
-        callback({ video: fonte });
+        callback(selection.withAudio ? { video: font, audio: "loopback" } : { video: font });
+      } catch (error) {
+        console.error("[desktop] áudio do sistema indisponível, seguindo sem ele:", error);
+        callback({ video: font });
       }
     },
     { useSystemPicker: false },

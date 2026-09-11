@@ -6,19 +6,19 @@ import { Button } from "~/components/ui/button";
 import { SelectField } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import {
-  calar,
-  daPraFalar,
-  falar,
-  vozesDisponiveis,
-  type ModoDeLeitura,
+  silence,
+  fromForSpeak,
+  speak,
+  availableVoices,
+  type ReadingMode,
 } from "~/lib/voz";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 
-export const AcessibilidadeSection: React.FC = () => {
-  const prefs = useAparencia();
+export const AccessibilitySection: React.FC = () => {
+  const prefs = useAppearance();
 
-  const sistemaPede =
+  const systemAsks =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -28,42 +28,42 @@ export const AcessibilidadeSection: React.FC = () => {
         Vale para este aparelho — nada aqui viaja com a conta.
       </p>
 
-      <Secao data-gc="configuracoes.acessibilidade-section.secao"
+      <Section data-gc="configuracoes.acessibilidade-section.section"
         id="movimento"
-        titulo="Movimento"
-        detalhe="Aberturas, deslizes e transições. Desligar não tira nada da tela: só faz o que ia se mover aparecer direto no lugar."
+        title="Movimento"
+        detail="Aberturas, deslizes e transições. Desligar não tira nada da tela: só faz o que ia se mover aparecer direto no lugar."
       >
         <div data-gc="configuracoes.acessibilidade-section.div--2" className="flex items-start gap-4">
           <div data-gc="configuracoes.acessibilidade-section.div--3" className="min-w-0 flex-1">
             <p data-gc="configuracoes.acessibilidade-section.p--2" className="text-sm font-medium">Reduzir animação</p>
             <p data-gc="configuracoes.acessibilidade-section.p--3" className="mt-0.5 text-xs text-ink-faint">
-              {sistemaPede
+              {systemAsks
                 ? "O seu sistema já pede movimento reduzido, e o Gravaê já obedece. Este botão é para quem quer o mesmo sem mexer no sistema inteiro."
                 : "Corta as animações do app inteiro, inclusive as dos avisos e as do painel de chamada."}
             </p>
           </div>
 
           <Switch data-gc="configuracoes.acessibilidade-section.switch"
-            checked={prefs.reduzirAnimacao}
-            onCheckedChange={(reduzirAnimacao) =>
-              prefs.definir({ reduzirAnimacao })
+            checked={prefs.reduceAnimation}
+            onCheckedChange={(reduceAnimation) =>
+              prefs.set({ reduceAnimation })
             }
           />
         </div>
-      </Secao>
+      </Section>
 
-      <Secao data-gc="configuracoes.acessibilidade-section.secao--2"
+      <Section data-gc="configuracoes.acessibilidade-section.section--2"
         id="texto-em-voz"
-        titulo="Texto em voz"
-        detalhe="A mensagem que chega, lida em voz alta pela voz que o seu sistema já tem instalada — a mesma do VoiceOver e do Narrador. Nada sai daqui: nenhuma chave, nenhum servidor, nenhum áudio enviado."
+        title="Texto em voz"
+        detail="A mensagem que chega, lida em voz alta pela voz que o seu sistema já tem instalada — a mesma do VoiceOver e do Narrador. Nada sai daqui: nenhuma chave, nenhum servidor, nenhum áudio enviado."
       >
-        <TextoEmVoz data-gc="configuracoes.acessibilidade-section.texto-em-voz" />
-      </Secao>
+        <TextVoice data-gc="configuracoes.acessibilidade-section.text-voice" />
+      </Section>
 
-      <Secao data-gc="configuracoes.acessibilidade-section.secao--3"
+      <Section data-gc="configuracoes.acessibilidade-section.section--3"
         id="teclado"
-        titulo="Teclado"
-        detalhe="Como o app responde a quem navega sem o mouse."
+        title="Teclado"
+        detail="Como o app responde a quem navega sem o mouse."
       >
         <div data-gc="configuracoes.acessibilidade-section.div--4" className="flex items-start gap-4">
           <div data-gc="configuracoes.acessibilidade-section.div--5" className="min-w-0 flex-1">
@@ -79,58 +79,58 @@ export const AcessibilidadeSection: React.FC = () => {
           </div>
 
           <Switch data-gc="configuracoes.acessibilidade-section.switch--2"
-            checked={prefs.focoSempreVisivel}
-            onCheckedChange={(focoSempreVisivel) =>
-              prefs.definir({ focoSempreVisivel })
+            checked={prefs.visibleFocusAlways}
+            onCheckedChange={(visibleFocusAlways) =>
+              prefs.set({ visibleFocusAlways })
             }
           />
         </div>
 
         <div data-gc="configuracoes.acessibilidade-section.div--6" className="mt-5 overflow-hidden rounded-lg border border-line">
-          {ATALHOS.map((atalho) => (
+          {SHORTCUTS.map((shortcut) => (
             <div data-gc="configuracoes.acessibilidade-section.div--7"
-              key={atalho.o_que}
+              key={shortcut.o_que}
               className="flex items-center justify-between gap-4 border-b border-divisor px-3 py-2 last:border-b-0"
             >
-              <span data-gc="configuracoes.acessibilidade-section.span" className="min-w-0 truncate text-sm">{atalho.o_que}</span>
+              <span data-gc="configuracoes.acessibilidade-section.span" className="min-w-0 truncate text-sm">{shortcut.o_que}</span>
               <span data-gc="configuracoes.acessibilidade-section.span--2" className="shrink-0 font-mono text-11 text-ink-faint">
-                {atalho.teclas}
+                {shortcut.keys}
               </span>
             </div>
           ))}
         </div>
-      </Secao>
+      </Section>
     </div>
   );
 };
 
-const ATALHOS = [
-  { o_que: "Enviar a mensagem", teclas: "Enter" },
-  { o_que: "Quebrar linha sem enviar", teclas: "Shift + Enter" },
-  { o_que: "Editar a última mensagem sua", teclas: "↑ na caixa vazia" },
-  { o_que: "Fechar o que estiver aberto", teclas: "Esc" },
-  { o_que: "Falar enquanto segura", teclas: "a tecla do push-to-talk" },
+const SHORTCUTS = [
+  { o_que: "Enviar a mensagem", keys: "Enter" },
+  { o_que: "Quebrar linha sem enviar", keys: "Shift + Enter" },
+  { o_que: "Editar a última mensagem sua", keys: "↑ na caixa vazia" },
+  { o_que: "Fechar o que estiver aberto", keys: "Esc" },
+  { o_que: "Falar enquanto segura", keys: "a tecla do push-to-talk" },
 ];
 
-const TextoEmVoz: React.FC = () => {
-  const prefs = useAparencia();
-  const [vozes, setVozes] = useState<SpeechSynthesisVoice[]>([]);
+const TextVoice: React.FC = () => {
+  const prefs = useAppearance();
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
-    if (!daPraFalar()) return;
+    if (!fromForSpeak()) return;
 
-    const atualizar = () => setVozes(vozesDisponiveis());
+    const update = () => setVoices(availableVoices());
 
-    atualizar();
-    window.speechSynthesis.addEventListener("voiceschanged", atualizar);
+    update();
+    window.speechSynthesis.addEventListener("voiceschanged", update);
 
     return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", atualizar);
-      calar();
+      window.speechSynthesis.removeEventListener("voiceschanged", update);
+      silence();
     };
   }, []);
 
-  if (!daPraFalar()) {
+  if (!fromForSpeak()) {
     return (
       <p data-gc="configuracoes.acessibilidade-section.p--6" className="text-sm text-ink-muted">
         Este navegador não tem síntese de voz. No aplicativo de desktop e nos
@@ -139,7 +139,7 @@ const TextoEmVoz: React.FC = () => {
     );
   }
 
-  const ligado = prefs.lerEmVozAlta !== "nunca";
+  const on = prefs.readVoiceHigh !== "nunca";
 
   return (
     <div data-gc="configuracoes.acessibilidade-section.div--8" className="space-y-5">
@@ -149,26 +149,26 @@ const TextoEmVoz: React.FC = () => {
         </p>
 
         <div data-gc="configuracoes.acessibilidade-section.div--10" className="space-y-2">
-          {MODOS.map((modo) => (
+          {MODES.map((mode) => (
             <button data-gc="configuracoes.acessibilidade-section.button"
-              key={modo.valor}
+              key={mode.value}
               type="button"
               onClick={() => {
-                calar();
-                prefs.definir({ lerEmVozAlta: modo.valor });
+                silence();
+                prefs.set({ readVoiceHigh: mode.value });
               }}
-              aria-pressed={prefs.lerEmVozAlta === modo.valor}
+              aria-pressed={prefs.readVoiceHigh === mode.value}
               className={cn(
                 "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition",
-                prefs.lerEmVozAlta === modo.valor
+                prefs.readVoiceHigh === mode.value
                   ? "border-brand bg-brand/5"
                   : "border-line hover:bg-surface-3",
               )}
             >
               <span data-gc="configuracoes.acessibilidade-section.span--3" className="min-w-0 flex-1">
-                <span data-gc="configuracoes.acessibilidade-section.span--4" className="block text-sm font-medium">{modo.titulo}</span>
+                <span data-gc="configuracoes.acessibilidade-section.span--4" className="block text-sm font-medium">{mode.title}</span>
                 <span data-gc="configuracoes.acessibilidade-section.span--5" className="mt-0.5 block text-xs text-ink-faint">
-                  {modo.detalhe}
+                  {mode.detail}
                 </span>
               </span>
 
@@ -176,12 +176,12 @@ const TextoEmVoz: React.FC = () => {
                 aria-hidden
                 className={cn(
                   "relative mt-px size-4 shrink-0 rounded-full border transition",
-                  prefs.lerEmVozAlta === modo.valor
+                  prefs.readVoiceHigh === mode.value
                     ? "border-brand"
                     : "border-surface-4",
                 )}
               >
-                {prefs.lerEmVozAlta === modo.valor && (
+                {prefs.readVoiceHigh === mode.value && (
                   <span data-gc="configuracoes.acessibilidade-section.span--7" className="absolute inset-[3px] rounded-full bg-brand" />
                 )}
               </span>
@@ -190,26 +190,26 @@ const TextoEmVoz: React.FC = () => {
         </div>
       </div>
 
-      {ligado && (
+      {on && (
         <>
           <label data-gc="configuracoes.acessibilidade-section.label" className="block">
             <span data-gc="configuracoes.acessibilidade-section.span--8" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
               Voz
             </span>
             <SelectField data-gc="configuracoes.acessibilidade-section.select-field"
-              value={prefs.vozDaLeitura ?? ""}
-              onSelect={(valor) =>
-                prefs.definir({ vozDaLeitura: valor || null })
+              value={prefs.readingVoice ?? ""}
+              onSelect={(value) =>
+                prefs.set({ readingVoice: value || null })
               }
               options={[
                 { value: "", label: "A que o sistema escolher" },
-                ...vozes.map((voz) => ({
-                  value: voz.name,
-                  label: `${voz.name} (${voz.lang})`,
+                ...voices.map((voice) => ({
+                  value: voice.name,
+                  label: `${voice.name} (${voice.lang})`,
                 })),
               ]}
             />
-            {!vozes.length && (
+            {!voices.length && (
               <span data-gc="configuracoes.acessibilidade-section.span--9" className="mt-1.5 block text-xs text-ink-faint">
                 Procurando as vozes do sistema…
               </span>
@@ -222,7 +222,7 @@ const TextoEmVoz: React.FC = () => {
                 Velocidade
               </span>
               <span data-gc="configuracoes.acessibilidade-section.span--11" className="font-mono text-11 text-ink-faint">
-                {prefs.velocidadeDaLeitura.toFixed(1)}×
+                {prefs.readingSpeed.toFixed(1)}×
               </span>
             </div>
 
@@ -231,9 +231,9 @@ const TextoEmVoz: React.FC = () => {
               min={0.5}
               max={2}
               step={0.1}
-              value={prefs.velocidadeDaLeitura}
+              value={prefs.readingSpeed}
               onChange={(e) =>
-                prefs.definir({ velocidadeDaLeitura: Number(e.target.value) })
+                prefs.set({ readingSpeed: Number(e.target.value) })
               }
               aria-label="Velocidade da leitura"
               className="w-full accent-brand"
@@ -244,9 +244,9 @@ const TextoEmVoz: React.FC = () => {
             variant="surface"
             size="sm"
             onClick={() =>
-              falar("Ana diz: é assim que as mensagens vão soar.", {
-                voz: prefs.vozDaLeitura,
-                velocidade: prefs.velocidadeDaLeitura,
+              speak("Ana diz: é assim que as mensagens vão soar.", {
+                voice: prefs.readingVoice,
+                speed: prefs.readingSpeed,
               })
             }
           >
@@ -258,18 +258,18 @@ const TextoEmVoz: React.FC = () => {
   );
 };
 
-const MODOS: { valor: ModoDeLeitura; titulo: string; detalhe: string }[] = [
-  { valor: "nunca", titulo: "Nunca", detalhe: "Nada é lido em voz alta." },
+const MODES: { value: ReadingMode; title: string; detail: string }[] = [
+  { value: "nunca", title: "Nunca", detail: "Nada é lido em voz alta." },
   {
-    valor: "canal-aberto",
-    titulo: "Só o canal aberto",
-    detalhe:
+    value: "canal-aberto",
+    title: "Só o canal aberto",
+    detail:
       "Lê o que chega na conversa que você está vendo. É o modo que serve pro dia a dia.",
   },
   {
-    valor: "todos",
-    titulo: "Todos os canais",
-    detalhe:
+    value: "todos",
+    title: "Todos os canais",
+    detail:
       "Lê tudo o que chega, de qualquer servidor. Numa conta movimentada, é uma voz que não para.",
   },
 ];

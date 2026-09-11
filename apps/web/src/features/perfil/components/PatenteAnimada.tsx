@@ -1,42 +1,42 @@
 import React, { useCallback, useRef } from "react";
-import type { Patente } from "@gravae/shared";
+import type { Rank } from "@gravae/shared";
 
-import { usarLottie } from "~/features/perfil/lib/lottie";
-import { carregarPatente, ehPatenteComArte, proporcaoDaPatente } from "~/features/perfil/lib/patentes";
-import { PATENTES_DE_PERFIL } from "~/features/perfil/lib/catalogo";
+import { useLottie } from "~/features/perfil/lib/lottie";
+import { loadRank, isRankWithArt, rankRatio } from "~/features/perfil/lib/patentes";
+import { PROFILE_RANKS } from "~/features/perfil/lib/catalogo";
 
-interface PatenteAnimadaProps {
-  patente: Patente;
-  animar: boolean;
-  altura?: number;
+interface RankAnimatedProps {
+  rank: Rank;
+  animate: boolean;
+  height?: number;
 }
 
-export const PatenteAnimada: React.FC<PatenteAnimadaProps> = ({
-  patente,
-  animar,
-  altura = 20,
+export const RankAnimated: React.FC<RankAnimatedProps> = ({
+  rank,
+  animate,
+  height = 20,
 }) => {
-  const caixa = useRef<HTMLSpanElement>(null);
+  const box = useRef<HTMLSpanElement>(null);
 
-  usarLottie(caixa, {
-    chave: patente,
-    carregar: useCallback(() => carregarPatente(patente), [patente]),
-    animar,
-    repetir: false,
+  useLottie(box, {
+    key: rank,
+    load: useCallback(() => loadRank(rank), [rank]),
+    animate,
+    repeat: false,
   });
 
-  if (!ehPatenteComArte(patente)) return null;
+  if (!isRankWithArt(rank)) return null;
 
-  const rotulo = PATENTES_DE_PERFIL.find((o) => o.id === patente)?.rotulo ?? patente;
+  const label = PROFILE_RANKS.find((o) => o.id === rank)?.label ?? rank;
 
   return (
     <span data-gc="perfil.patente-animada.span"
-      ref={caixa}
+      ref={box}
       role="img"
-      aria-label={rotulo}
-      title={rotulo}
+      aria-label={label}
+      title={label}
       className="inline-block shrink-0 align-middle"
-      style={{ height: altura, width: Math.round(altura * proporcaoDaPatente(patente)) }}
+      style={{ height: height, width: Math.round(height * rankRatio(rank)) }}
     />
   );
 };

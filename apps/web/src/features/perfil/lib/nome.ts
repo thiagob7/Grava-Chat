@@ -1,47 +1,47 @@
-import type { EfeitoDeNome, EstiloDeNome } from "@gravae/shared";
+import type { NameEffect, NameStyle } from "@gravae/shared";
 
-import { legivel } from "./contraste";
-import { variaveisDoEnfeite, type EstiloCss } from "./estilos";
-import { familiaDaFonte } from "./fontes";
+import { readable } from "./contraste";
+import { charmVariables, type StyleCss } from "./estilos";
+import { fontFamily } from "./fontes";
 
-export interface Enfeite {
+export interface Charm {
   className?: string;
-  style?: EstiloCss;
+  style?: StyleCss;
 }
 
-const RECORTAM_O_TEXTO = new Set<EfeitoDeNome>(["gradiente", "brilho"]);
+const CROP_TEXT = new Set<NameEffect>(["gradiente", "brilho"]);
 
-export interface EntradaDoNome {
-  estilo?: EstiloDeNome | null;
-  corDoCargo?: string | null;
-  tamanho?: "sm" | "md";
-  animar?: boolean;
-  fundo?: string;
+export interface NameEntry {
+  style?: NameStyle | null;
+  roleColor?: string | null;
+  size?: "sm" | "md";
+  animate?: boolean;
+  background?: string;
 }
 
-export function estiloDoNome({
-  estilo,
-  corDoCargo,
-  tamanho = "sm",
-  animar = false,
-  fundo,
-}: EntradaDoNome): Enfeite {
-  const pedido = estilo?.efeito ?? "solido";
-  const rebaixado = RECORTAM_O_TEXTO.has(pedido) && tamanho === "sm";
-  const efeito = rebaixado ? "solido" : pedido;
+export function nameStyle({
+  style,
+  roleColor,
+  size = "sm",
+  animate = false,
+  background,
+}: NameEntry): Charm {
+  const request = style?.effect ?? "solido";
+  const demoted = CROP_TEXT.has(request) && size === "sm";
+  const effect = demoted ? "solido" : request;
 
-  const corDoUsuario = estilo?.cor ?? null;
-  const fonte = familiaDaFonte(estilo?.fonte);
+  const userColor = style?.color ?? null;
+  const font = fontFamily(style?.font);
   const classes: string[] = [];
 
-  if (fonte) classes.push("gc-fonte");
+  if (font) classes.push("gc-fonte");
 
-  if (efeito === "solido") {
-    const cor = rebaixado ? (corDoUsuario ?? corDoCargo) : (corDoCargo ?? corDoUsuario);
+  if (effect === "solido") {
+    const color = demoted ? (userColor ?? roleColor) : (roleColor ?? userColor);
 
-    const style: EstiloCss = {
-      ...(cor ? { color: legivel(cor, fundo) } : null),
-      ...variaveisDoEnfeite({ fonte }),
+    const style: StyleCss = {
+      ...(color ? { color: readable(color, background) } : null),
+      ...charmVariables({ font }),
     };
 
     return {
@@ -50,18 +50,18 @@ export function estiloDoNome({
     };
   }
 
-  classes.push(`gc-nome--${efeito}`);
+  classes.push(`gc-nome--${effect}`);
 
   return {
     className: classes.join(" "),
-    style: variaveisDoEnfeite({
-      cor1: legivelOuNada(corDoUsuario ?? corDoCargo, fundo),
-      cor2: legivelOuNada(estilo?.cor2, fundo),
-      fonte,
-      animar,
+    style: charmVariables({
+      color1: readableOuNothing(userColor ?? roleColor, background),
+      color2: readableOuNothing(style?.color2, background),
+      font,
+      animate,
     }),
   };
 }
 
-const legivelOuNada = (cor: string | null | undefined, fundo?: string) =>
-  cor ? legivel(cor, fundo) : null;
+const readableOuNothing = (color: string | null | undefined, background?: string) =>
+  color ? readable(color, background) : null;

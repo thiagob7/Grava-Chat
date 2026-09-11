@@ -1,85 +1,85 @@
 import { useEffect } from "react";
 
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { revisarEscudo, useEstudio } from "~/features/configuracoes/stores/estudio";
-import { marcarTemaDaRaiz } from "~/features/configuracoes/lib/normalizar-tema";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
+import { reviewShield, useStudio } from "~/features/configuracoes/stores/estudio";
+import { markRootTheme } from "~/features/configuracoes/lib/normalizar-tema";
 
-export function useAparenciaAplicada() {
-  const tema = useAparencia((s) => s.tema);
-  const destaque = useAparencia((s) => s.destaque);
-  const densidade = useAparencia((s) => s.densidade);
-  const zoomDoApp = useAparencia((s) => s.zoomDoApp);
-  const escalaDoChat = useAparencia((s) => s.escalaDoChat);
-  const reduzirAnimacao = useAparencia((s) => s.reduzirAnimacao);
-  const cantosArredondados = useAparencia((s) => s.cantosArredondados);
-  const focoSempreVisivel = useAparencia((s) => s.focoSempreVisivel);
-  const marcaDoEstudio = useEstudio((s) =>
-    Boolean(s.substituicoes["--color-brand"]),
+export function useAppearanceApplied() {
+  const theme = useAppearance((s) => s.theme);
+  const highlight = useAppearance((s) => s.highlight);
+  const density = useAppearance((s) => s.density);
+  const zoomDoApp = useAppearance((s) => s.zoomDoApp);
+  const chatScale = useAppearance((s) => s.chatScale);
+  const reduceAnimation = useAppearance((s) => s.reduceAnimation);
+  const cornersRounded = useAppearance((s) => s.cornersRounded);
+  const visibleFocusAlways = useAppearance((s) => s.visibleFocusAlways);
+  const studioBrand = useStudio((s) =>
+    Boolean(s.overrides["--color-brand"]),
   );
 
   useEffect(() => {
-    document.documentElement.dataset.tema = tema;
+    document.documentElement.dataset.tema = theme;
 
-    marcarTemaDaRaiz(tema);
+    markRootTheme(theme);
 
-    revisarEscudo();
-  }, [tema]);
-
-  useEffect(() => {
-    document.documentElement.dataset.densidade = densidade;
-  }, [densidade]);
+    reviewShield();
+  }, [theme]);
 
   useEffect(() => {
-    const raiz = document.documentElement;
+    document.documentElement.dataset.densidade = density;
+  }, [density]);
 
-    if (zoomDoApp === 100) raiz.style.removeProperty("zoom");
-    else raiz.style.setProperty("zoom", String(zoomDoApp / 100));
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (zoomDoApp === 100) root.style.removeProperty("zoom");
+    else root.style.setProperty("zoom", String(zoomDoApp / 100));
   }, [zoomDoApp]);
 
   useEffect(() => {
-    const raiz = document.documentElement;
+    const root = document.documentElement;
 
-    if (escalaDoChat === 100) raiz.style.removeProperty("--gc-escala-do-chat");
+    if (chatScale === 100) root.style.removeProperty("--gc-escala-do-chat");
     else
-      raiz.style.setProperty("--gc-escala-do-chat", String(escalaDoChat / 100));
-  }, [escalaDoChat]);
+      root.style.setProperty("--gc-escala-do-chat", String(chatScale / 100));
+  }, [chatScale]);
 
   useEffect(() => {
-    const raiz = document.documentElement;
+    const root = document.documentElement;
 
-    if (reduzirAnimacao) raiz.dataset.animacao = "reduzida";
-    else delete raiz.dataset.animacao;
-  }, [reduzirAnimacao]);
-
-  useEffect(() => {
-    const raiz = document.documentElement;
-
-    if (cantosArredondados) delete raiz.dataset.cantos;
-    else raiz.dataset.cantos = "retos";
-  }, [cantosArredondados]);
+    if (reduceAnimation) root.dataset.animacao = "reduzida";
+    else delete root.dataset.animacao;
+  }, [reduceAnimation]);
 
   useEffect(() => {
-    const raiz = document.documentElement;
+    const root = document.documentElement;
 
-    if (focoSempreVisivel) raiz.dataset.foco = "sempre";
-    else delete raiz.dataset.foco;
-  }, [focoSempreVisivel]);
+    if (cornersRounded) delete root.dataset.cantos;
+    else root.dataset.cantos = "retos";
+  }, [cornersRounded]);
 
   useEffect(() => {
-    if (marcaDoEstudio) return;
+    const root = document.documentElement;
 
-    const raiz = document.documentElement;
+    if (visibleFocusAlways) root.dataset.foco = "sempre";
+    else delete root.dataset.foco;
+  }, [visibleFocusAlways]);
 
-    if (!destaque) {
-      raiz.style.removeProperty("--color-brand");
-      raiz.style.removeProperty("--color-brand-hover");
+  useEffect(() => {
+    if (studioBrand) return;
+
+    const root = document.documentElement;
+
+    if (!highlight) {
+      root.style.removeProperty("--color-brand");
+      root.style.removeProperty("--color-brand-hover");
       return;
     }
 
-    raiz.style.setProperty("--color-brand", destaque);
-    raiz.style.setProperty(
+    root.style.setProperty("--color-brand", highlight);
+    root.style.setProperty(
       "--color-brand-hover",
-      `color-mix(in oklab, ${destaque}, black 18%)`,
+      `color-mix(in oklab, ${highlight}, black 18%)`,
     );
-  }, [destaque, marcaDoEstudio]);
+  }, [highlight, studioBrand]);
 }

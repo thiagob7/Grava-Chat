@@ -993,10 +993,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.12.tgz#afefe785949f16ac4cdd1e695935a321572dd56a"
   integrity sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==
 
-"@fontsource-variable/ibm-plex-sans@^5.3.0":
+"@fontsource-variable/radio-canada-big@^5.3.0":
   version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@fontsource-variable/ibm-plex-sans/-/ibm-plex-sans-5.3.0.tgz#61ed443b8f904720fb28049370dc201e152f3ed5"
-  integrity sha512-agG8tXFEo0hD9+J7npa4vbbWult52eMLVaQ6WQRlhs/iCAojrMAoejru85W9HTVXHfyUj96KM7gp/KGAS87XaQ==
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/radio-canada-big/-/radio-canada-big-5.3.0.tgz#da1561350a741f2c06d06e7320efd4111019dfb5"
+  integrity sha512-/FeAm/7zKWokLGpXKJXga307K/ZOOO08t8ldHKQuemPucgjRcLBqLA5dZFY1QQsIK+j2XBMyWfk0Z6hHN/rNpw==
 
 "@fontsource/bebas-neue@^5.3.0":
   version "5.3.0"

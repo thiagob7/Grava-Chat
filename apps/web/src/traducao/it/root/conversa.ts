@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Una manina che saluta",
+    botao: "Saluta {{nome}}",
+  },
+  oficial: {
+    titulo: "Questo canale serve solo per gli annunci ufficiali.",
+    detalhe: "Non chiediamo mai la tua password né il token del tuo account.",
+    saibaMais: "Scopri di più",
+  },
+  topico: {
+    abrir: "Vedi la descrizione del canale",
+  },
+  previaDoLink: {
+    carregando: "Sto vedendo cosa c'è dietro il link…",
+    destino: "Porta a {{destino}}",
+  },
+  reacao: {
+    carregando: "Sto vedendo chi ha reagito con {{emoji}}…",
+    uma: "{{nome}} ha reagito con {{emoji}}",
+    duas: "{{primeiro}} e {{segundo}} hanno reagito con {{emoji}}",
+    varias: "{{nomes}} e altri {{quantos}} hanno reagito con {{emoji}}",
+    dicaSuper: "Tieni premuto per super reagire",
+  },
+  recado: {
+    gravar: "Registra un vocale",
+    descartar: "Scarta la registrazione",
+    mandar: "Invia la registrazione",
+    semSuporte: "Questo browser non registra l'audio.",
+    semMicrofone: "Nessun accesso al microfono.",
+  },
   lista: {
     carregando: "Caricamento dei messaggi…",
     carregandoMais: "Caricamento…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Vedi l'immagine",
   },
   enquete: {
+    criar: "Crea un sondaggio",
+    pergunta: "Domanda",
+    exemplo: "A cosa giochiamo oggi?",
+    respostas: "Risposte",
+    adicionarOpcao: "Aggiungi risposta",
+    removerOpcao: "Togli la risposta",
+    varias: "Permetti più di una risposta",
+    variasDetalhe: "Senza questo, votare una risposta toglie il voto a quella precedente.",
+    duracao: "Durata",
+    umaHora: "1 ora",
+    quatroHoras: "4 ore",
+    oitoHoras: "8 ore",
+    umDia: "1 giorno",
+    tresDias: "3 giorni",
+    umaSemana: "1 settimana",
+    ateEncerrar: "Finché non lo chiudo io",
     titulo: "Sondaggio",
     encerrada: "Sondaggio chiuso",
     variasRespostas: "Sondaggio — più risposte",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "La ricerca guarda solo i canali che puoi leggere.",
   },
   entrada: {
+    semNome: "conversazione",
+    anexo: "(allegato)",
     titulo: "Posta in arrivo",
     naoLidas: "Non lette",
     salvas: "Salvate",

@@ -21,20 +21,20 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
   channels,
 }) => {
   const { t } = useTranslation();
-  const salvar = useUpdateGuild();
+  const save = useUpdateGuild();
   const [welcome, setWelcome] = useState(guild.welcomeEnabled ?? true);
-  const [canal, setCanal] = useState(guild.systemChannelId ?? "");
-  const [texto, setTexto] = useState(guild.welcomeMessage ?? "");
+  const [channel, setChannel] = useState(guild.systemChannelId ?? "");
+  const [text, setText] = useState(guild.welcomeMessage ?? "");
   const { user } = useSession();
 
-  const canaisDeTexto = channels.filter((c) => c.type === "TEXT");
+  const textChannels = channels.filter((c) => c.type === "TEXT");
 
-  const mudou =
+  const changed =
     welcome !== (guild.welcomeEnabled ?? true) ||
-    canal !== (guild.systemChannelId ?? "") ||
-    texto !== (guild.welcomeMessage ?? "");
+    channel !== (guild.systemChannelId ?? "") ||
+    text !== (guild.welcomeMessage ?? "");
 
-  const previa = (texto.trim() || "{pessoa} acabou de chegar!")
+  const preview = (text.trim() || "{pessoa} acabou de chegar!")
     .replaceAll("{pessoa}", `@${user?.displayName ?? "alguém"}`)
     .replaceAll("{nome}", user?.displayName ?? "alguém")
     .replaceAll("{servidor}", guild.name)
@@ -66,13 +66,13 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
 
         <div data-gc="servidor.server-settings.engagement-section.div--4" className="mt-5">
           <Label data-gc="servidor.server-settings.engagement-section.label" htmlFor="canal-sistema">{t("servidor.engajamento.canalDoSistema")}</Label>
-          <SelectField data-gc="servidor.server-settings.engagement-section.select-field.set-canal"
+          <SelectField data-gc="servidor.server-settings.engagement-section.select-field.set-channel"
             id="canal-sistema"
-            value={canal}
-            onSelect={setCanal}
+            value={channel}
+            onSelect={setChannel}
             options={[
               { value: "", label: t("servidor.engajamento.semCanal") },
-              ...canaisDeTexto.map((c) => ({
+              ...textChannels.map((c) => ({
                 value: c.id,
                 label: `#${c.name}`,
               })),
@@ -81,10 +81,10 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
           <p data-gc="servidor.server-settings.engagement-section.p--4"
             className={cn(
               "mt-1.5 text-xs",
-              welcome && !canal ? "text-idle" : "text-ink-faint",
+              welcome && !channel ? "text-idle" : "text-ink-faint",
             )}
           >
-            {welcome && !canal
+            {welcome && !channel
               ? "Escolha um canal — sem ele a chave acima não envia nada."
               : "Sem canal escolhido, a boas-vindas não é enviada."}
           </p>
@@ -95,8 +95,8 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
 
           <Textarea data-gc="servidor.server-settings.engagement-section.textarea"
             id="texto-boas-vindas"
-            value={texto}
-            onChange={(e) => setTexto(e.target.value)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             maxLength={500}
             rows={2}
             disabled={!welcome}
@@ -104,16 +104,16 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
           />
 
           <div data-gc="servidor.server-settings.engagement-section.div--6" className="mt-2 flex flex-wrap gap-1.5">
-            {VARIAVEIS.map((v) => (
+            {VARIABLES.map((v) => (
               <button data-gc="servidor.server-settings.engagement-section.button"
-                key={v.chave}
+                key={v.key}
                 type="button"
                 disabled={!welcome}
-                onClick={() => setTexto((atual) => `${atual}${v.chave}`)}
-                title={v.explica}
+                onClick={() => setText((current) => `${current}${v.key}`)}
+                title={v.explains}
                 className="rounded bg-surface-0 px-1.5 py-0.5 font-mono text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink disabled:opacity-50"
               >
-                {v.chave}
+                {v.key}
               </button>
             ))}
           </div>
@@ -124,7 +124,7 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
                 {t("comum.previa")}
               </p>
               <p data-gc="servidor.server-settings.engagement-section.p--6" className="mt-1 whitespace-pre-wrap break-words text-sm text-ink-muted">
-                {previa}
+                {preview}
               </p>
             </div>
           )}
@@ -132,19 +132,19 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
       </section>
 
       <UnsavedBar data-gc="servidor.server-settings.engagement-section.unsaved-bar"
-        visible={mudou}
-        saving={salvar.isPending}
+        visible={changed}
+        saving={save.isPending}
         onDiscard={() => {
           setWelcome(guild.welcomeEnabled ?? true);
-          setCanal(guild.systemChannelId ?? "");
-          setTexto(guild.welcomeMessage ?? "");
+          setChannel(guild.systemChannelId ?? "");
+          setText(guild.welcomeMessage ?? "");
         }}
         onSave={() =>
-          salvar.mutate({
+          save.mutate({
             guildId: guild.id,
             welcomeEnabled: welcome,
-            systemChannelId: canal || null,
-            welcomeMessage: texto.trim() || null,
+            systemChannelId: channel || null,
+            welcomeMessage: text.trim() || null,
           })
         }
       />
@@ -152,9 +152,9 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
   );
 };
 
-const VARIAVEIS = [
-  { chave: "{pessoa}", explica: "Marca a pessoa — ela é notificada" },
-  { chave: "{nome}", explica: "O nome, sem marcar ninguém" },
-  { chave: "{servidor}", explica: "O nome do servidor" },
-  { chave: "{contagem}", explica: "Quantos membros o servidor tem agora" },
+const VARIABLES = [
+  { key: "{pessoa}", explains: "Marca a pessoa — ela é notificada" },
+  { key: "{nome}", explains: "O nome, sem marcar ninguém" },
+  { key: "{servidor}", explains: "O nome do servidor" },
+  { key: "{contagem}", explains: "Quantos membros o servidor tem agora" },
 ];

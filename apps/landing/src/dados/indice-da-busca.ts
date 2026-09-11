@@ -1,93 +1,93 @@
-import { GRUPOS } from "~/dados/docs";
-import referencia from "~/dados/referencia.json";
+import { GROUPS } from "~/dados/docs";
+import reference from "~/dados/referencia.json";
 
-export type Achado = {
-  titulo: string;
-  contexto: string;
+export type Found = {
+  title: string;
+  context: string;
   href: string;
-  tipo: "Página" | "Rota" | "Evento" | "Permissão" | "Limite";
+  kind: "Página" | "Rota" | "Evento" | "Permissão" | "Limite";
 };
 
-const paginas: Achado[] = GRUPOS.flatMap((grupo) =>
-  grupo.paginas.map((pagina) => ({
-    titulo: pagina.titulo,
-    contexto: pagina.resumo,
-    href: pagina.href,
-    tipo: "Página" as const,
+const pages: Found[] = GROUPS.flatMap((group) =>
+  group.pages.map((page) => ({
+    title: page.title,
+    context: page.summary,
+    href: page.href,
+    kind: "Página" as const,
   })),
 );
 
-const rotas: Achado[] = referencia.rest.map((rota) => ({
-  titulo: `${rota.metodo} ${rota.caminho}`,
-  contexto: rota.descricao,
+const routes: Found[] = reference.rest.map((route) => ({
+  title: `${route.method} ${route.path}`,
+  context: route.description,
   href: "/desenvolvedores/referencia",
-  tipo: "Rota",
+  kind: "Rota",
 }));
 
-const enviados: Achado[] = referencia.eventos.map((evento) => ({
-  titulo: evento.nome,
-  contexto: `Evento que o bot envia — ${
-    evento.campos.map((campo) => campo.nome).join(", ") || "sem campos"
+const sent: Found[] = reference.events.map((event) => ({
+  title: event.name,
+  context: `Evento que o bot envia — ${
+    event.fields.map((field) => field.name).join(", ") || "sem campos"
   }`,
   href: "/desenvolvedores/eventos#enviados",
-  tipo: "Evento",
+  kind: "Evento",
 }));
 
-const recebidos: Achado[] = referencia.recebidos.map((evento) => ({
-  titulo: evento.nome,
-  contexto: evento.descricao,
+const received: Found[] = reference.received.map((event) => ({
+  title: event.name,
+  context: event.description,
   href: "/desenvolvedores/eventos#recebidos",
-  tipo: "Evento",
+  kind: "Evento",
 }));
 
-const permissoes: Achado[] = referencia.permissoes.flatMap((grupo) =>
-  grupo.itens.map((item) => ({
-    titulo: item.nome,
-    contexto: `${item.chave} — ${item.descricao}`,
+const permissions: Found[] = reference.permissions.flatMap((group) =>
+  group.items.map((item) => ({
+    title: item.name,
+    context: `${item.key} — ${item.description}`,
     href: "/desenvolvedores/permissoes",
-    tipo: "Permissão" as const,
+    kind: "Permissão" as const,
   })),
 );
 
-const limites: Achado[] = referencia.limites.map((limite) => ({
-  titulo: limite.rotulo,
-  contexto: "Limite que o servidor aplica",
+const limits: Found[] = reference.limits.map((limit) => ({
+  title: limit.label,
+  context: "Limite que o servidor aplica",
   href: "/desenvolvedores/limites",
-  tipo: "Limite",
+  kind: "Limite",
 }));
 
-export const INDICE: Achado[] = [
-  ...paginas,
-  ...rotas,
-  ...enviados,
-  ...recebidos,
-  ...permissoes,
-  ...limites,
+export const INDEX: Found[] = [
+  ...pages,
+  ...routes,
+  ...sent,
+  ...received,
+  ...permissions,
+  ...limits,
 ];
 
-const semAcento = (texto: string) =>
-  texto
+const withoutAccent = (text: string) =>
+  text
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-export const buscar = (termo: string) => {
-  const alvo = semAcento(termo.trim());
+export const search = (term: string) => {
+  const target = withoutAccent(term.trim());
 
-  if (!alvo) return [];
+  if (!target) return [];
 
-  return INDICE.map((achado) => {
-    const titulo = semAcento(achado.titulo);
-    const contexto = semAcento(achado.contexto);
+  return INDEX.map((match) => {
+    const title = withoutAccent(match.title);
+    const context = withoutAccent(match.context);
 
-    if (titulo.startsWith(alvo)) return { achado, peso: 0 };
-    if (titulo.includes(alvo)) return { achado, peso: 1 };
-    if (contexto.includes(alvo)) return { achado, peso: 2 };
+    if (title.startsWith(target)) return { match, weight: 0 };
+    if (title.includes(target)) return { match, weight: 1 };
+    if (context.includes(target)) return { match, weight: 2 };
 
     return null;
   })
-    .filter((linha) => linha !== null)
-    .sort((a, b) => a.peso - b.peso)
+    .filter((line) => line !== null)
+    .sort((a, b) => a.weight - b.weight)
     .slice(0, 12)
-    .map((linha) => linha.achado);
+    .map((line) => line.match);
 };

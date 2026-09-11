@@ -9,7 +9,7 @@ export const RadioIndicator: React.FC<{ selected: boolean; className?: string }>
 }) => (
   <span data-gc="ui.radio-group.span"
     aria-hidden
-    className={cn(flxCls("indicadorDeRadio"), "block size-4 shrink-0", className)}
+    className={cn(flxCls("radioIndicator"), "block size-4 shrink-0", className)}
   >
     <svg data-gc="ui.radio-group.svg" viewBox="0 0 16 16" className="size-full">
       <circle data-gc="ui.radio-group.circle"
@@ -22,7 +22,7 @@ export const RadioIndicator: React.FC<{ selected: boolean; className?: string }>
         stroke={selected ? "var(--color-brand)" : "var(--color-surface-4)"}
       />
       <circle data-gc="ui.radio-group.circle--2"
-        className={flxCls("pontoDoRadio")}
+        className={flxCls("radioDot")}
         cx="8"
         cy="8"
         r="4"
@@ -32,6 +32,6 @@ export const RadioIndicator: React.FC<{ selected: boolean; className?: string }>
   </span>
 );
 
-export const radioOptionClass = () => flxCls("opcaoDeRadio");
+export const radioOptionClass = () => flxCls("radioOption");
 
-export const radioGroupClass = () => flxCls("grupoDeRadio");
+export const radioGroupClass = () => flxCls("radioGroup");

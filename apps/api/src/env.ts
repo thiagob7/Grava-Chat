@@ -37,16 +37,18 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
-  COOKIE_ENTRE_SITES: z.stringbool().default(false),
+  COOKIE_BETWEEN_SITES: z.stringbool().default(false),
 
-  ACEITAR_PREVIAS_VERCEL: z.stringbool().default(false),
+  ACCEPT_PREVIEWS_VERCEL: z.stringbool().default(false),
 
   RESEND_API_KEY: z.string().default(""),
-  EMAIL_REMETENTE: z.string().default("Gravaê <onboarding@resend.dev>"),
+  EMAIL_SENDER: z.string().default("Gravaê <onboarding@resend.dev>"),
 
-  SERVIDOR_DE_TEMAS_DONO: z.string().default(""),
+  THEMES_OWNER_SERVER: z.string().default(""),
+  DEVELOPERS_OWNER_SERVER: z.string().default(""),
+  HOUSE_OWNER_SERVER: z.string().default(""),
 
-  DOCS_ABERTAS: z.stringbool().default(false),
+  DOCS_ISOPEN: z.stringbool().default(false),
 });
 
 const parsed = schema.safeParse(process.env);

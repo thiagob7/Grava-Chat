@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Check, Search, Trash2, UserMinus, X } from "lucide-react";
-import type { EstiloDeCargo, GuildMember, Permission } from "@gravae/shared";
+import type { RoleStyle, GuildMember, Permission } from "@gravae/shared";
 import { PERMISSION_GROUPS, PERMISSION_LABELS } from "@gravae/shared";
 
 import {
@@ -15,12 +15,12 @@ import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, colorFieldClass } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirm } from "~/components/ui/confirm";
-import { ESTILOS_DO_CARGO } from "~/features/perfil/lib/catalogo";
-import { estiloDoCargo } from "~/features/perfil/lib/cargo";
+import { ROLE_STYLE_OPTIONS } from "~/features/perfil/lib/catalogo";
+import { roleStyle } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-export const CORES = [
+export const COLORS = [
   "#1abc9c",
   "#2ecc71",
   "#3498db",
@@ -33,14 +33,14 @@ export const CORES = [
   "#607d8b",
 ];
 
-type Aba = "exibicao" | "permissoes" | "membros";
+type Tab = "exibicao" | "permissoes" | "membros";
 
 interface RoleEditorProps {
   guildId: string;
   role: RoleModel;
   members: GuildMember[];
-  minhasPermissoes: Permission[];
-  editavel: boolean;
+  minePermissions: Permission[];
+  editable: boolean;
   onDeleted: () => void;
 }
 
@@ -48,8 +48,8 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   guildId,
   role,
   members,
-  minhasPermissoes,
-  editavel,
+  minePermissions,
+  editable,
   onDeleted,
 }) => {
   const { t } = useTranslation();
@@ -57,58 +57,58 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
   const deleteRole = useDeleteRole(guildId);
   const setMemberRoles = useSetMemberRoles(guildId);
 
-  const [aba, setAba] = useState<Aba>("exibicao");
-  const [nome, setNome] = useState(role.name);
-  const [cor, setCor] = useState<string | null>(role.color);
-  const [cor2, setCor2] = useState<string | null>(role.colorSecondary);
-  const [estilo, setEstilo] = useState<EstiloDeCargo>(role.estilo);
+  const [tab, setTab] = useState<Tab>("exibicao");
+  const [name, setName] = useState(role.name);
+  const [color, setColor] = useState<string | null>(role.color);
+  const [color2, setColor2] = useState<string | null>(role.colorSecondary);
+  const [style, setStyle] = useState<RoleStyle>(role.style);
   const [emoji, setEmoji] = useState(role.iconEmoji ?? "");
   const [hoist, setHoist] = useState(role.hoist);
   const [mentionable, setMentionable] = useState(role.mentionable);
-  const [permissoes, setPermissoes] = useState<Permission[]>(
+  const [permissions, setPermissions] = useState<Permission[]>(
     role.permissions as Permission[],
   );
-  const [busca, setBusca] = useState("");
+  const [search, setSearch] = useState("");
   const confirm = useConfirm();
 
   useEffect(() => {
-    setNome(role.name);
-    setCor(role.color);
+    setName(role.name);
+    setColor(role.color);
     setHoist(role.hoist);
     setMentionable(role.mentionable);
-    setPermissoes(role.permissions as Permission[]);
+    setPermissions(role.permissions as Permission[]);
   }, [role]);
 
-  const souAdmin = minhasPermissoes.includes("ADMINISTRATOR");
-  const posso = (permissao: Permission) =>
-    souAdmin || minhasPermissoes.includes(permissao);
+  const amAdmin = minePermissions.includes("ADMINISTRATOR");
+  const can = (permission: Permission) =>
+    amAdmin || minePermissions.includes(permission);
 
-  const sujo = useMemo(() => {
-    const mesmasPermissoes =
-      permissoes.length === role.permissions.length &&
-      permissoes.every((p) => role.permissions.includes(p));
+  const dirty = useMemo(() => {
+    const samePermissions =
+      permissions.length === role.permissions.length &&
+      permissions.every((p) => role.permissions.includes(p));
 
     return (
-      nome !== role.name ||
-      cor !== role.color ||
+      name !== role.name ||
+      color !== role.color ||
       hoist !== role.hoist ||
       mentionable !== role.mentionable ||
-      !mesmasPermissoes
+      !samePermissions
     );
-  }, [nome, cor, hoist, mentionable, permissoes, role]);
+  }, [name, color, hoist, mentionable, permissions, role]);
 
-  const salvar = () => {
+  const save = () => {
     updateRole.mutate({
       guildId,
       roleId: role.id,
-      permissions: permissoes,
+      permissions: permissions,
       ...(role.isEveryone
         ? {}
         : {
-            name: nome,
-            color: cor,
-            colorSecondary: cor2,
-            estilo,
+            name: name,
+            color: color,
+            colorSecondary: color2,
+            style,
             iconEmoji: emoji.trim() || null,
             hoist,
             mentionable,
@@ -116,52 +116,52 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
     });
   };
 
-  const comOCargo = members.filter((m) => m.roleIds.includes(role.id));
-  const termo = busca.trim().toLowerCase();
-  const candidatos = termo
+  const withRole = members.filter((m) => m.roleIds.includes(role.id));
+  const term = search.trim().toLowerCase();
+  const candidates = term
     ? members
         .filter((m) => !m.roleIds.includes(role.id))
         .filter(
           (m) =>
-            m.user.displayName.toLowerCase().includes(termo) ||
-            m.user.username.toLowerCase().includes(termo),
+            m.user.displayName.toLowerCase().includes(term) ||
+            m.user.username.toLowerCase().includes(term),
         )
         .slice(0, 8)
     : [];
 
-  const mudarCargoDe = (member: GuildMember, incluir: boolean) => {
-    const roleIds = incluir
+  const changeRole = (member: GuildMember, include: boolean) => {
+    const roleIds = include
       ? [...member.roleIds, role.id]
       : member.roleIds.filter((id) => id !== role.id);
 
     setMemberRoles.mutate({ guildId, userId: member.user.id, roleIds });
-    setBusca("");
+    setSearch("");
   };
 
-  const abas: { id: Aba; label: string }[] = [
+  const tabs: { id: Tab; label: string }[] = [
     ...(role.isEveryone
       ? []
       : [{ id: "exibicao" as const, label: t("servidor.cargos.abaExibicao") }]),
     { id: "permissoes", label: t("servidor.cargos.abaPermissoes") },
     ...(role.isEveryone
       ? []
-      : [{ id: "membros" as const, label: t("servidor.cargos.abaMembros", { quantos: comOCargo.length }) }]),
+      : [{ id: "membros" as const, label: t("servidor.cargos.abaMembros", { quantos: withRole.length }) }]),
   ];
 
-  const abaAtiva = abas.some((a) => a.id === aba) ? aba : "permissoes";
+  const activeTab = tabs.some((a) => a.id === tab) ? tab : "permissoes";
 
   return (
     <div data-gc="servidor.server-settings.role-editor.div" className="flex min-w-0 flex-1 flex-col">
       <header data-gc="servidor.server-settings.role-editor.header" className="flex items-center gap-3">
         <span data-gc="servidor.server-settings.role-editor.span"
           className="size-3 shrink-0 rounded-full"
-          style={{ backgroundColor: cor ?? "#99aab5" }}
+          style={{ backgroundColor: color ?? "#99aab5" }}
         />
         <h3 data-gc="servidor.server-settings.role-editor.h3" className="truncate text-lg font-semibold">
-          {role.isEveryone ? "@everyone" : nome || "Cargo sem nome"}
+          {role.isEveryone ? "@everyone" : name || "Cargo sem nome"}
         </h3>
 
-        {!role.isEveryone && editavel && (
+        {!role.isEveryone && editable && (
           <button data-gc="servidor.server-settings.role-editor.button"
             onClick={() =>
               void confirm({
@@ -193,13 +193,13 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
       )}
 
       <nav data-gc="servidor.server-settings.role-editor.nav" className="mt-5 flex gap-4 border-b border-line">
-        {abas.map((a) => (
+        {tabs.map((a) => (
           <button data-gc="servidor.server-settings.role-editor.button--2"
             key={a.id}
-            onClick={() => setAba(a.id)}
+            onClick={() => setTab(a.id)}
             className={cn(
               "-mb-px border-b-2 pb-2 text-sm transition",
-              abaAtiva === a.id
+              activeTab === a.id
                 ? "border-brand text-ink"
                 : "border-transparent text-ink-muted hover:text-ink",
             )}
@@ -210,17 +210,17 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
       </nav>
 
       <div data-gc="servidor.server-settings.role-editor.div--2" className="mt-5 flex-1">
-        {abaAtiva === "exibicao" && (
+        {activeTab === "exibicao" && (
           <div data-gc="servidor.server-settings.role-editor.div--3" className="max-w-md space-y-6">
             <label data-gc="servidor.server-settings.role-editor.label" className="block">
               <span data-gc="servidor.server-settings.role-editor.span--2" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 {t("servidor.cargos.nomeDoCargo")}
               </span>
               <Input data-gc="servidor.server-settings.role-editor.input"
-                value={nome}
-                disabled={!editavel}
+                value={name}
+                disabled={!editable}
                 maxLength={48}
-                onChange={(e) => setNome(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
               />
             </label>
 
@@ -234,35 +234,35 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
               <div data-gc="servidor.server-settings.role-editor.div--5" className="flex flex-wrap items-center gap-2">
                 <button data-gc="servidor.server-settings.role-editor.button--3"
-                  onClick={() => editavel && setCor(null)}
+                  onClick={() => editable && setColor(null)}
                   className={cn(
                     "flex size-8 items-center justify-center rounded border border-line bg-surface-0 text-ink-faint transition",
-                    cor === null && "ring-2 ring-brand",
+                    color === null && "ring-2 ring-brand",
                   )}
                   title={t("servidor.cargos.semCor")}
                 >
                   <X data-gc="servidor.server-settings.role-editor.x" size={14} />
                 </button>
 
-                {CORES.map((c) => (
+                {COLORS.map((c) => (
                   <button data-gc="servidor.server-settings.role-editor.button--4"
                     key={c}
-                    onClick={() => editavel && setCor(c)}
+                    onClick={() => editable && setColor(c)}
                     style={{ backgroundColor: c }}
                     className={cn(
                       "flex size-8 items-center justify-center rounded transition",
-                      cor === c && "ring-2 ring-ink",
+                      color === c && "ring-2 ring-ink",
                     )}
                   >
-                    {cor === c && <Check data-gc="servidor.server-settings.role-editor.check" size={14} className="text-sobre-marca" />}
+                    {color === c && <Check data-gc="servidor.server-settings.role-editor.check" size={14} className="text-sobre-marca" />}
                   </button>
                 ))}
 
                 <input data-gc="servidor.server-settings.role-editor.input--2"
                   type="color"
-                  value={cor ?? "#99aab5"}
-                  disabled={!editavel}
-                  onChange={(e) => setCor(e.target.value)}
+                  value={color ?? "#99aab5"}
+                  disabled={!editable}
+                  onChange={(e) => setColor(e.target.value)}
                   className={cn(colorFieldClass, "size-8 rounded")}
                   title={t("servidor.cargos.corPersonalizada")}
                 />
@@ -275,36 +275,36 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </span>
 
               <div data-gc="servidor.server-settings.role-editor.div--7" className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {ESTILOS_DO_CARGO.map((opcao) => (
+                {ROLE_STYLE_OPTIONS.map((option) => (
                   <button data-gc="servidor.server-settings.role-editor.button--5"
-                    key={opcao.id}
-                    onClick={() => editavel && setEstilo(opcao.id)}
-                    title={opcao.descricao}
+                    key={option.id}
+                    onClick={() => editable && setStyle(option.id)}
+                    title={option.description}
                     className={cn(
                       "rounded border px-2 py-2 text-xs transition",
-                      estilo === opcao.id
+                      style === option.id
                         ? "border-brand bg-surface-3 text-ink"
                         : "border-line bg-surface-0 text-ink-muted hover:bg-surface-3",
                     )}
                   >
-                    {opcao.rotulo}
+                    {option.label}
                   </button>
                 ))}
               </div>
 
-              {estilo !== "solido" && (
+              {style !== "solido" && (
                 <div data-gc="servidor.server-settings.role-editor.div--8" className="flex items-center gap-2">
                   <span data-gc="servidor.server-settings.role-editor.span--5" className="text-xs text-ink-muted">{t("servidor.cargos.segundaCor")}</span>
                   <input data-gc="servidor.server-settings.role-editor.input--3"
                     type="color"
-                    value={cor2 ?? "#a855f7"}
-                    disabled={!editavel}
-                    onChange={(e) => setCor2(e.target.value)}
+                    value={color2 ?? "#a855f7"}
+                    disabled={!editable}
+                    onChange={(e) => setColor2(e.target.value)}
                     className={cn(colorFieldClass, "size-8 rounded")}
                   />
-                  {cor2 && (
+                  {color2 && (
                     <button data-gc="servidor.server-settings.role-editor.button--6"
-                      onClick={() => setCor2(null)}
+                      onClick={() => setColor2(null)}
                       className="rounded p-1 text-ink-faint transition hover:text-ink"
                       aria-label={t("servidor.cargos.limparSegundaCor")}
                     >
@@ -324,7 +324,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </span>
               <Input data-gc="servidor.server-settings.role-editor.input--4"
                 value={emoji}
-                disabled={!editavel}
+                disabled={!editable}
                 maxLength={8}
                 placeholder="⚡"
                 onChange={(e) => setEmoji(e.target.value)}
@@ -341,69 +341,69 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </span>
 
               <div data-gc="servidor.server-settings.role-editor.div--11" className="space-y-2 rounded bg-surface-0 p-3">
-                <PreviaDoCargo data-gc="servidor.server-settings.role-editor.previa-do-cargo"
-                  cargo={{ color: cor, colorSecondary: cor2, estilo }}
+                <RolePreview data-gc="servidor.server-settings.role-editor.role-preview"
+                  role={{ color: color, colorSecondary: color2, style }}
                   emoji={emoji}
-                  nome={nome}
+                  name={name}
                   legenda="na lista de membros"
                 />
-                <PreviaDoCargo data-gc="servidor.server-settings.role-editor.previa-do-cargo--2"
-                  cargo={{ color: cor, colorSecondary: cor2, estilo }}
+                <RolePreview data-gc="servidor.server-settings.role-editor.role-preview--2"
+                  role={{ color: color, colorSecondary: color2, style }}
                   emoji={emoji}
-                  nome={nome}
+                  name={name}
                   legenda="no chat"
-                  tamanho="md"
+                  size="md"
                 />
               </div>
             </div>
 
-            <Linha data-gc="servidor.server-settings.role-editor.linha.set-hoist"
-              titulo={t("servidor.cargos.exibirSeparado")}
-              descricao={t("servidor.cargos.exibirSeparadoDica")}
+            <Line data-gc="servidor.server-settings.role-editor.line.set-hoist"
+              title={t("servidor.cargos.exibirSeparado")}
+              description={t("servidor.cargos.exibirSeparadoDica")}
               checked={hoist}
-              disabled={!editavel}
+              disabled={!editable}
               onChange={setHoist}
             />
 
-            <Linha data-gc="servidor.server-settings.role-editor.linha.set-mentionable"
-              titulo={t("servidor.cargos.permitirMencionar")}
-              descricao={t("servidor.cargos.permitirMencionarDica")}
+            <Line data-gc="servidor.server-settings.role-editor.line.set-mentionable"
+              title={t("servidor.cargos.permitirMencionar")}
+              description={t("servidor.cargos.permitirMencionarDica")}
               checked={mentionable}
-              disabled={!editavel}
+              disabled={!editable}
               onChange={setMentionable}
             />
           </div>
         )}
 
-        {abaAtiva === "permissoes" && (
+        {activeTab === "permissoes" && (
           <div data-gc="servidor.server-settings.role-editor.div--12" className="max-w-2xl space-y-7">
-            {PERMISSION_GROUPS.map((grupo) => (
-              <section data-gc="servidor.server-settings.role-editor.section" key={grupo.label}>
+            {PERMISSION_GROUPS.map((group) => (
+              <section data-gc="servidor.server-settings.role-editor.section" key={group.label}>
                 <h4 data-gc="servidor.server-settings.role-editor.h4" className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                  {grupo.label}
+                  {group.label}
                 </h4>
 
                 <div data-gc="servidor.server-settings.role-editor.div--13" className="space-y-4">
-                  {grupo.permissions.map((permissao) => {
-                    const rotulo = PERMISSION_LABELS[permissao];
-                    const bloqueado = !editavel || !posso(permissao);
+                  {group.permissions.map((permission) => {
+                    const label = PERMISSION_LABELS[permission];
+                    const blocked = !editable || !can(permission);
 
                     return (
-                      <Linha data-gc="servidor.server-settings.role-editor.linha"
-                        key={permissao}
-                        titulo={rotulo.nome}
-                        descricao={
-                          bloqueado && editavel
-                            ? t("servidor.cargos.semPoderDeConceder", { descricao: rotulo.descricao })
-                            : rotulo.descricao
+                      <Line data-gc="servidor.server-settings.role-editor.line"
+                        key={permission}
+                        title={label.name}
+                        description={
+                          blocked && editable
+                            ? t("servidor.cargos.semPoderDeConceder", { descricao: label.description })
+                            : label.description
                         }
-                        checked={permissoes.includes(permissao)}
-                        disabled={bloqueado}
-                        onChange={(valor) =>
-                          setPermissoes((atual) =>
-                            valor
-                              ? [...atual, permissao]
-                              : atual.filter((p) => p !== permissao),
+                        checked={permissions.includes(permission)}
+                        disabled={blocked}
+                        onChange={(value) =>
+                          setPermissions((current) =>
+                            value
+                              ? [...current, permission]
+                              : current.filter((p) => p !== permission),
                           )
                         }
                       />
@@ -415,25 +415,25 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
           </div>
         )}
 
-        {abaAtiva === "membros" && (
+        {activeTab === "membros" && (
           <div data-gc="servidor.server-settings.role-editor.div--14" className="max-w-2xl">
             <div data-gc="servidor.server-settings.role-editor.div--15" className="flex items-center gap-2 rounded bg-surface-0 px-3">
               <Search data-gc="servidor.server-settings.role-editor.search" size={16} className="text-ink-faint" />
               <Input data-gc="servidor.server-settings.role-editor.input--5"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("servidor.cargos.adicionar")}
                 className="bg-transparent px-0"
-                disabled={!editavel}
+                disabled={!editable}
               />
             </div>
 
-            {candidatos.length > 0 && (
+            {candidates.length > 0 && (
               <div data-gc="servidor.server-settings.role-editor.div--16" className="mt-2 overflow-hidden rounded border border-line bg-surface-1">
-                {candidatos.map((m) => (
+                {candidates.map((m) => (
                   <button data-gc="servidor.server-settings.role-editor.button--7"
                     key={m.id}
-                    onClick={() => mudarCargoDe(m, true)}
+                    onClick={() => changeRole(m, true)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-surface-3"
                   >
                     <Avatar data-gc="servidor.server-settings.role-editor.avatar"
@@ -454,7 +454,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
             )}
 
             <div data-gc="servidor.server-settings.role-editor.div--17" className="mt-4 space-y-px">
-              {comOCargo.map((m) => (
+              {withRole.map((m) => (
                 <div data-gc="servidor.server-settings.role-editor.div--18"
                   key={m.id}
                   className="flex items-center gap-3 border-t border-line px-2 py-2.5 transition hover:bg-surface-3"
@@ -474,9 +474,9 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     </p>
                   </div>
 
-                  {editavel && (
+                  {editable && (
                     <button data-gc="servidor.server-settings.role-editor.button--8"
-                      onClick={() => mudarCargoDe(m, false)}
+                      onClick={() => changeRole(m, false)}
                       title={t("servidor.cargos.tirar")}
                       className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
                     >
@@ -486,7 +486,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                 </div>
               ))}
 
-              {!comOCargo.length && (
+              {!withRole.length && (
                 <p data-gc="servidor.server-settings.role-editor.p--6" className="py-8 text-center text-sm text-ink-faint">
                   {t("servidor.cargos.semNinguem")}
                 </p>
@@ -496,73 +496,73 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         )}
       </div>
 
-      <UnsavedBar data-gc="servidor.server-settings.role-editor.unsaved-bar.salvar"
-        visible={sujo && editavel}
+      <UnsavedBar data-gc="servidor.server-settings.role-editor.unsaved-bar.save"
+        visible={dirty && editable}
         saving={updateRole.isPending}
         onDiscard={() => {
-          setNome(role.name);
-          setCor(role.color);
-          setCor2(role.colorSecondary);
-          setEstilo(role.estilo);
+          setName(role.name);
+          setColor(role.color);
+          setColor2(role.colorSecondary);
+          setStyle(role.style);
           setEmoji(role.iconEmoji ?? "");
           setHoist(role.hoist);
           setMentionable(role.mentionable);
-          setPermissoes(role.permissions as Permission[]);
+          setPermissions(role.permissions as Permission[]);
         }}
-        onSave={salvar}
+        onSave={save}
       />
     </div>
   );
 };
 
-interface LinhaProps {
-  titulo: string;
-  descricao: string;
+interface LineProps {
+  title: string;
+  description: string;
   checked: boolean;
   disabled?: boolean;
-  onChange: (valor: boolean) => void;
+  onChange: (value: boolean) => void;
 }
 
-const Linha: React.FC<LinhaProps> = ({
-  titulo,
-  descricao,
+const Line: React.FC<LineProps> = ({
+  title,
+  description,
   checked,
   disabled,
   onChange,
 }) => (
   <div data-gc="servidor.server-settings.role-editor.div--20" className={cn("flex items-start gap-4", disabled && "opacity-60")}>
     <div data-gc="servidor.server-settings.role-editor.div--21" className="min-w-0 flex-1">
-      <p data-gc="servidor.server-settings.role-editor.p--7" className="text-sm font-medium">{titulo}</p>
-      <p data-gc="servidor.server-settings.role-editor.p--8" className="mt-0.5 text-xs text-ink-faint">{descricao}</p>
+      <p data-gc="servidor.server-settings.role-editor.p--7" className="text-sm font-medium">{title}</p>
+      <p data-gc="servidor.server-settings.role-editor.p--8" className="mt-0.5 text-xs text-ink-faint">{description}</p>
     </div>
     <Switch data-gc="servidor.server-settings.role-editor.switch.on-change" checked={checked} disabled={disabled} onCheckedChange={onChange} />
   </div>
 );
 
-const PreviaDoCargo: React.FC<{
-  cargo: {
+const RolePreview: React.FC<{
+  role: {
     color: string | null;
     colorSecondary: string | null;
-    estilo: EstiloDeCargo;
+    style: RoleStyle;
   };
   emoji: string;
-  nome: string;
+  name: string;
   legenda: string;
-  tamanho?: "sm" | "md";
-}> = ({ cargo, emoji, nome, legenda, tamanho = "sm" }) => {
-  const enfeite = estiloDoCargo(cargo, { tamanho, animar: true });
+  size?: "sm" | "md";
+}> = ({ role, emoji, name, legenda, size = "sm" }) => {
+  const charm = roleStyle(role, { size, animate: true });
 
   return (
     <p data-gc="servidor.server-settings.role-editor.p--9" className="flex items-baseline gap-2">
       <span data-gc="servidor.server-settings.role-editor.span--11"
         className={cn(
-          tamanho === "md" ? "text-base font-semibold" : "text-sm font-medium",
-          enfeite.className,
+          size === "md" ? "text-base font-semibold" : "text-sm font-medium",
+          charm.className,
         )}
-        style={enfeite.style}
+        style={charm.style}
       >
         {emoji.trim() && <span data-gc="servidor.server-settings.role-editor.span--12" className="mr-1">{emoji.trim()}</span>}
-        {nome || "Cargo"}
+        {name || "Cargo"}
       </span>
       <span data-gc="servidor.server-settings.role-editor.span--13" className="text-xs text-ink-faint">{legenda}</span>
     </p>

@@ -1,149 +1,169 @@
 import { create } from "zustand";
 
-import type { ModoDeLeitura } from "~/lib/voz";
+import type { ReadingMode } from "~/lib/voz";
 
-export type Tema = "escuro" | "mais-escuro" | "claro" | "sistema" | "gravae";
-export type Densidade = "confortavel" | "compacta";
-export type QuandoMostrarSpoiler = "ao-clicar" | "sempre";
+export type Theme = "escuro" | "mais-escuro" | "claro" | "sistema" | "gravae";
+export type Density = "confortavel" | "compacta";
+export type WhenShowSpoiler = "ao-clicar" | "sempre";
 
-export interface PrefsDeAparencia {
-  tema: Tema;
-  destaque: string | null;
-  densidade: Densidade;
+export interface AppearancePrefs {
+  theme: Theme;
+  highlight: string | null;
+  density: Density;
 
   zoomDoApp: number;
-  escalaDoChat: number;
+  chatScale: number;
 
-  cantosArredondados: boolean;
-  listaDeMembros: boolean;
+  cornersRounded: boolean;
+  listMembers: boolean;
 
-  faixaDoServidor: boolean;
-  lembrarCategoriasFechadas: boolean;
+  serverTrack: boolean;
+  rememberCategoriesClosed: boolean;
 
-  reduzirAnimacao: boolean;
-  focoSempreVisivel: boolean;
+  reduceAnimation: boolean;
+  visibleFocusAlways: boolean;
 
-  lerEmVozAlta: ModoDeLeitura;
-  vozDaLeitura: string | null;
-  velocidadeDaLeitura: number;
+  readVoiceHigh: ReadingMode;
+  readingVoice: string | null;
+  readingSpeed: number;
 
-  horaEm24h: boolean;
+  hourIn24h: boolean;
 
-  imagensDeLinks: boolean;
-  imagensEnviadas: boolean;
-  previaDeLinks: boolean;
-  reacoes: boolean;
-  spoilers: QuandoMostrarSpoiler;
-  avatares: boolean;
+  linksImages: boolean;
+  imagesSent: boolean;
+  linksPreview: boolean;
+  reactions: boolean;
+  spoilers: WhenShowSpoiler;
+  avatars: boolean;
 
-  sugestoes: boolean;
+  suggestions: boolean;
   emoticons: boolean;
-  botaoDeEnviar: boolean;
+  sendButton: boolean;
 
-  modoStreamer: boolean;
-  streamerEscondeDados: boolean;
-  streamerEscondeConvites: boolean;
-  streamerSemSom: boolean;
-  streamerSemAvisos: boolean;
+  cursorTrail: boolean;
+  trailColor: string;
+  trailSize: number;
+  trailWisp: number;
+
+  clickSpark: boolean;
+  sparkColor: string;
+  sparkSize: number;
+  countSparks: number;
+
+  modeStreamer: boolean;
+  streamerHidesData: boolean;
+  streamerHidesInvites: boolean;
+  streamerWithoutSound: boolean;
+  streamerWithoutNotices: boolean;
 }
 
-const PADRAO: PrefsDeAparencia = {
-  tema: "escuro",
-  destaque: null,
-  densidade: "confortavel",
+const DEFAULT: AppearancePrefs = {
+  theme: "escuro",
+  highlight: null,
+  density: "confortavel",
 
   zoomDoApp: 100,
-  escalaDoChat: 100,
+  chatScale: 100,
 
-  cantosArredondados: true,
-  listaDeMembros: true,
-  faixaDoServidor: true,
-  lembrarCategoriasFechadas: true,
+  cornersRounded: true,
+  listMembers: true,
+  serverTrack: true,
+  rememberCategoriesClosed: true,
 
-  reduzirAnimacao: false,
-  focoSempreVisivel: false,
-  lerEmVozAlta: "nunca",
-  vozDaLeitura: null,
-  velocidadeDaLeitura: 1,
-  horaEm24h: true,
+  reduceAnimation: false,
+  visibleFocusAlways: false,
+  readVoiceHigh: "nunca",
+  readingVoice: null,
+  readingSpeed: 1,
+  hourIn24h: true,
 
-  imagensDeLinks: true,
-  imagensEnviadas: true,
-  previaDeLinks: true,
-  reacoes: true,
+  linksImages: true,
+  imagesSent: true,
+  linksPreview: true,
+  reactions: true,
   spoilers: "ao-clicar",
-  avatares: true,
+  avatars: true,
 
-  sugestoes: true,
+  suggestions: true,
   emoticons: true,
-  botaoDeEnviar: false,
+  sendButton: false,
 
-  modoStreamer: false,
-  streamerEscondeDados: true,
-  streamerEscondeConvites: true,
-  streamerSemSom: true,
-  streamerSemAvisos: true,
+  cursorTrail: false,
+  trailColor: "#a78bfa",
+  trailSize: 8,
+  trailWisp: 24,
+
+  clickSpark: false,
+  sparkColor: "#ffffff",
+  sparkSize: 10,
+  countSparks: 8,
+
+  modeStreamer: false,
+  streamerHidesData: true,
+  streamerHidesInvites: true,
+  streamerWithoutSound: true,
+  streamerWithoutNotices: true,
 };
 
-const CHAVE = "gravae:aparencia";
+const KEY = "gravae:aparencia";
 
-const NOMES_ANTIGOS: Record<string, Tema> = {
+const OLD_NAMES: Record<string, Theme> = {
   indigo: "escuro",
   "indigo-carvao": "mais-escuro",
   "indigo-claro": "claro",
 };
 
-function ler(): PrefsDeAparencia {
+function read(): AppearancePrefs {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    if (!salvo) return PADRAO;
+    const saved = localStorage.getItem(KEY);
+    if (!saved) return DEFAULT;
 
     const prefs = {
-      ...PADRAO,
-      ...(JSON.parse(salvo) as Partial<PrefsDeAparencia>),
+      ...DEFAULT,
+      ...(JSON.parse(saved) as Partial<AppearancePrefs>),
     };
-    return { ...prefs, tema: NOMES_ANTIGOS[prefs.tema] ?? prefs.tema };
+    return { ...prefs, theme: OLD_NAMES[prefs.theme] ?? prefs.theme };
   } catch {
-    return PADRAO;
+    return DEFAULT;
   }
 }
 
-interface StoreDeAparencia extends PrefsDeAparencia {
-  definir: (mudanca: Partial<PrefsDeAparencia>) => void;
-  restaurarPadrao: () => void;
+interface AppearanceStore extends AppearancePrefs {
+  set: (change: Partial<AppearancePrefs>) => void;
+  defaultRestore: () => void;
 }
 
-export const useAparencia = create<StoreDeAparencia>((set, store) => ({
-  ...ler(),
+export const useAppearance = create<AppearanceStore>((set, store) => ({
+  ...read(),
 
-  definir: (mudanca) => {
-    set(mudanca);
+  set: (change) => {
+    set(change);
 
     try {
-      const { definir, restaurarPadrao, ...prefs } = store();
-      void definir;
-      void restaurarPadrao;
-      localStorage.setItem(CHAVE, JSON.stringify(prefs));
+      const { set, defaultRestore, ...prefs } = store();
+      void set;
+      void defaultRestore;
+      localStorage.setItem(KEY, JSON.stringify(prefs));
     } catch {}
   },
 
-  restaurarPadrao: () => store().definir(PADRAO),
+  defaultRestore: () => store().set(DEFAULT),
 }));
 
-export const prefsDeAparencia = (): PrefsDeAparencia => {
-  const { definir, restaurarPadrao, ...prefs } = useAparencia.getState();
-  void definir;
-  void restaurarPadrao;
+export const appearancePrefs = (): AppearancePrefs => {
+  const { set, defaultRestore, ...prefs } = useAppearance.getState();
+  void set;
+  void defaultRestore;
   return prefs;
 };
 
-export const CORES_DE_DESTAQUE = [
-  { nome: "Gravaê", valor: "#d30404" },
-  { nome: "Laranja", valor: "#e2620d" },
-  { nome: "Âmbar", valor: "#b7791f" },
-  { nome: "Verde", valor: "#0f8a4b" },
-  { nome: "Turquesa", valor: "#0d7d8c" },
-  { nome: "Azul", valor: "#1f5fd0" },
-  { nome: "Violeta", valor: "#6b3fd4" },
-  { nome: "Rosa", valor: "#c02b7a" },
+export const HIGHLIGHT_COLORS = [
+  { name: "Gravaê", value: "#d30404" },
+  { name: "Laranja", value: "#e2620d" },
+  { name: "Âmbar", value: "#b7791f" },
+  { name: "Verde", value: "#0f8a4b" },
+  { name: "Turquesa", value: "#0d7d8c" },
+  { name: "Azul", value: "#1f5fd0" },
+  { name: "Violeta", value: "#6b3fd4" },
+  { name: "Rosa", value: "#c02b7a" },
 ] as const;

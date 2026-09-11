@@ -1,45 +1,45 @@
 import {
-  CATEGORIAS_DE_COMUNIDADE,
-  MEMBROS_PARA_DESCOBRIR,
-  type CategoriaDeComunidade,
-  type ComunidadeDescoberta,
+  COMMUNITY_CATEGORIES,
+  MEMBERS_FOR_DISCOVER,
+  type CommunityCategory,
+  type CommunityDiscovery,
 } from "@gravae/shared";
 
 import { AppError } from "~/lib/http.js";
 import { banRepository } from "~/repositories/ban-repository.js";
-import { descobertaRepository, memberRepository } from "~/repositories/guild-repository.js";
+import { discoveryRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { presenceService } from "~/services/presence-service.js";
 import { toMember } from "~/lib/serialize.js";
 
-const ehCategoria = (valor: string | null): valor is CategoriaDeComunidade =>
-  valor !== null && (CATEGORIAS_DE_COMUNIDADE as readonly string[]).includes(valor);
+const isCategory = (value: string | null): value is CommunityCategory =>
+  value !== null && (COMMUNITY_CATEGORIES as readonly string[]).includes(value);
 
-export const descobertaService = {
-  async listar(
+export const discoveryService = {
+  async list(
     userId: string,
-    filtro: { categoria?: string; busca?: string },
-  ): Promise<ComunidadeDescoberta[]> {
-    const categoria = ehCategoria(filtro.categoria ?? null) ? filtro.categoria! : null;
-    const busca = filtro.busca?.trim() || null;
+    filter: { category?: string; search?: string },
+  ): Promise<CommunityDiscovery[]> {
+    const category = isCategory(filter.category ?? null) ? filter.category! : null;
+    const search = filter.search?.trim() || null;
 
-    const candidatas = await descobertaRepository.candidatas(categoria, busca);
+    const candidates = await discoveryRepository.candidates(category, search);
 
-    const grandes = candidatas.filter(
-      (guild) => guild._count.members >= MEMBROS_PARA_DESCOBRIR,
+    const large = candidates.filter(
+      (guild) => guild.verified || guild._count.members >= MEMBERS_FOR_DISCOVER,
     );
 
-    if (!grandes.length) return [];
+    if (!large.length) return [];
 
-    const membrosPorServidor = await descobertaRepository.membrosDe(
-      grandes.map((guild) => guild.id),
+    const membersByServer = await discoveryRepository.members(
+      large.map((guild) => guild.id),
     );
 
-    const todosOsMembros = [...new Set([...membrosPorServidor.values()].flat())];
-    const presenca = await presenceService.mapFor(todosOsMembros);
+    const allMembers = [...new Set([...membersByServer.values()].flat())];
+    const presence = await presenceService.mapFor(allMembers);
 
-    return grandes
+    return large
       .map((guild) => {
-        const membros = membrosPorServidor.get(guild.id) ?? [];
+        const members = membersByServer.get(guild.id) ?? [];
 
         return {
           id: guild.id,
@@ -47,34 +47,36 @@ export const descobertaService = {
           iconUrl: guild.iconUrl,
           bannerUrl: guild.bannerUrl,
           description: guild.description,
-          categoria: ehCategoria(guild.categoria) ? guild.categoria : null,
-          membros: guild._count.members,
-          online: membros.filter((id) => presenca[id] && presenca[id] !== "OFFLINE").length,
-          jaSouMembro: membros.includes(userId),
-          verificada: Boolean(guild.verificada),
+          category: isCategory(guild.category) ? guild.category : null,
+          members: guild._count.members,
+          online: members.filter((id) => presence[id] && presence[id] !== "OFFLINE").length,
+          alreadyAmMember: members.includes(userId),
+          verified: Boolean(guild.verified),
         };
       })
-      .sort((a, b) => b.membros - a.membros);
+      .sort((a, b) => b.members - a.members);
   },
 
-  async entrar(userId: string, guildId: string) {
-    const candidatas = await descobertaRepository.candidatas(null, null);
+  async join(userId: string, guildId: string) {
+    const candidates = await discoveryRepository.candidates(null, null);
 
-    const aberta = candidatas.find(
-      (guild) => guild.id === guildId && guild._count.members >= MEMBROS_PARA_DESCOBRIR,
+    const isOpen = candidates.find(
+      (guild) =>
+        guild.id === guildId &&
+        (guild.verified || guild._count.members >= MEMBERS_FOR_DISCOVER),
     );
 
-    if (!aberta) throw new AppError("Esta comunidade não está no Explorar", 404);
+    if (!isOpen) throw new AppError("Esta comunidade não está no Explorar", 404);
 
     if (await banRepository.find(guildId, userId)) {
       throw new AppError("Você está banido deste servidor", 403);
     }
 
-    const existente = await memberRepository.find(guildId, userId);
-    if (existente) return { guildId, jaEraMembro: true as const, member: null };
+    const existing = await memberRepository.find(guildId, userId);
+    if (existing) return { guildId, alreadyWasMember: true as const, member: null };
 
-    const membro = await memberRepository.create({ guildId, userId });
+    const member = await memberRepository.create({ guildId, userId });
 
-    return { guildId, jaEraMembro: false as const, member: toMember(membro) };
+    return { guildId, alreadyWasMember: false as const, member: toMember(member) };
   },
 };

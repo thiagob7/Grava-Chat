@@ -2,42 +2,42 @@ import React, { useRef, useState } from "react";
 import { ImageUp, Upload, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
-import { importarImagem } from "~/@core/application/requests/upload/importar-imagem";
-import { useEnvioDeImagemDePerfil } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
-import { SeletorDeImagem } from "~/components/SeletorDeImagem";
+import { importImage } from "~/@core/application/requests/upload/importar-imagem";
+import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
+import { ImagePicker } from "~/components/SeletorDeImagem";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
-import { CampoDeCor } from "~/features/configuracoes/components/perfil/campos";
-import type { RascunhoDePerfil } from "~/features/configuracoes/components/perfil/rascunho";
+import { ColorField } from "~/features/configuracoes/components/perfil/campos";
+import type { ProfileDraft } from "~/features/configuracoes/components/perfil/rascunho";
 import { toast } from "react-toastify";
 
-interface IdentidadeAbaProps {
+interface IdentityTabProps {
   id: string;
   username: string;
-  rascunho: RascunhoDePerfil;
-  definir: <K extends keyof RascunhoDePerfil>(campo: K, valor: RascunhoDePerfil[K]) => void;
+  draft: ProfileDraft;
+  set: <K extends keyof ProfileDraft>(field: K, value: ProfileDraft[K]) => void;
 }
 
-export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rascunho, definir }) => {
-  const { enviar, economia, enviando } = useEnvioDeImagemDePerfil((campo, url) =>
-    definir(campo, url),
+export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, set }) => {
+  const { send, saving, sending } = useImageProfileSending((field, url) =>
+    set(field, url),
   );
-  const escolherFoto = useRef<HTMLInputElement>(null);
-  const escolherBanner = useRef<HTMLInputElement>(null);
-  const [escolhendoFaixa, setEscolhendoFaixa] = useState(false);
-  const [importando, setImportando] = useState(false);
+  const pickPhoto = useRef<HTMLInputElement>(null);
+  const pickBanner = useRef<HTMLInputElement>(null);
+  const [pickingTrack, setPickingTrack] = useState(false);
+  const [importing, setImporting] = useState(false);
 
-  const usarGif = async (url: string) => {
-    setImportando(true);
-    const anexo = await importarImagem(url, "banner")
+  const useGif = async (url: string) => {
+    setImporting(true);
+    const attachment = await importImage(url, "banner")
       .catch(() => {
         toast.error("Não consegui trazer esse GIF.");
         return null;
       })
-      .finally(() => setImportando(false));
+      .finally(() => setImporting(false));
 
-    if (anexo) definir("bannerUrl", anexo.url);
+    if (attachment) set("bannerUrl", attachment.url);
   };
 
   return (
@@ -45,35 +45,35 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
       <div data-gc="configuracoes.perfil.identidade-aba.div--2" className="flex items-center gap-4">
         <Avatar data-gc="configuracoes.perfil.identidade-aba.avatar"
           id={id}
-          name={rascunho.displayName}
-          url={rascunho.avatarUrl}
+          name={draft.displayName}
+          url={draft.avatarUrl}
           size={72}
-          enfeites={{ decoracao: rascunho.decoracao, moldura: rascunho.moldura }}
-          animar
+          charms={{ decoration: draft.decoration, frame: draft.frame }}
+          animate
         />
 
         <div data-gc="configuracoes.perfil.identidade-aba.div--3">
           <Button data-gc="configuracoes.perfil.identidade-aba.button"
             variant="surface"
             size="sm"
-            onClick={() => escolherFoto.current?.click()}
-            disabled={enviando}
+            onClick={() => pickPhoto.current?.click()}
+            disabled={sending}
           >
             <Upload data-gc="configuracoes.perfil.identidade-aba.upload" size={14} />
-            {enviando ? "Enviando…" : "Trocar foto"}
+            {sending ? "Enviando…" : "Trocar foto"}
           </Button>
 
           <p data-gc="configuracoes.perfil.identidade-aba.p" className="mt-1.5 text-xs text-ink-faint">
-            {economia
-              ? `Comprimida antes de subir: ${economia}`
+            {saving
+              ? `Comprimida antes de subir: ${saving}`
               : "A imagem é reduzida no navegador antes de subir."}
           </p>
 
           <input data-gc="configuracoes.perfil.identidade-aba.input"
-            ref={escolherFoto}
+            ref={pickPhoto}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void enviar(e, "avatarUrl")}
+            onChange={(e) => void send(e, "avatarUrl")}
             className="hidden"
           />
         </div>
@@ -83,8 +83,8 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         <Label data-gc="configuracoes.perfil.identidade-aba.label" htmlFor="display-name">Nome de exibição</Label>
         <Input data-gc="configuracoes.perfil.identidade-aba.input--2"
           id="display-name"
-          value={rascunho.displayName}
-          onChange={(e) => definir("displayName", e.target.value)}
+          value={draft.displayName}
+          onChange={(e) => set("displayName", e.target.value)}
           maxLength={LIMITS.displayName}
         />
       </div>
@@ -101,8 +101,8 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         <Label data-gc="configuracoes.perfil.identidade-aba.label--3" htmlFor="bio">Sobre mim</Label>
         <Textarea data-gc="configuracoes.perfil.identidade-aba.textarea"
           id="bio"
-          value={rascunho.bio}
-          onChange={(e) => definir("bio", e.target.value)}
+          value={draft.bio}
+          onChange={(e) => set("bio", e.target.value)}
           maxLength={512}
           rows={3}
           placeholder="Conte algo sobre você"
@@ -117,25 +117,25 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
           <Button data-gc="configuracoes.perfil.identidade-aba.button--2"
             variant="surface"
             size="sm"
-            onClick={() => setEscolhendoFaixa(true)}
-            disabled={enviando || importando}
+            onClick={() => setPickingTrack(true)}
+            disabled={sending || importing}
           >
             <ImageUp data-gc="configuracoes.perfil.identidade-aba.image-up" size={14} />
-            {importando ? "Trazendo o GIF…" : "Escolher imagem ou GIF"}
+            {importing ? "Trazendo o GIF…" : "Escolher imagem ou GIF"}
           </Button>
 
-          {rascunho.bannerUrl && (
-            <Button data-gc="configuracoes.perfil.identidade-aba.button--3" variant="ghost" size="sm" onClick={() => definir("bannerUrl", null)}>
+          {draft.bannerUrl && (
+            <Button data-gc="configuracoes.perfil.identidade-aba.button--3" variant="ghost" size="sm" onClick={() => set("bannerUrl", null)}>
               <X data-gc="configuracoes.perfil.identidade-aba.x" size={14} /> Tirar
             </Button>
           )}
         </div>
 
         <input data-gc="configuracoes.perfil.identidade-aba.input--4"
-          ref={escolherBanner}
+          ref={pickBanner}
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
-          onChange={(e) => void enviar(e, "bannerUrl")}
+          onChange={(e) => void send(e, "bannerUrl")}
           className="hidden"
         />
 
@@ -145,36 +145,36 @@ export const IdentidadeAba: React.FC<IdentidadeAbaProps> = ({ id, username, rasc
         </p>
       </div>
 
-      <SeletorDeImagem data-gc="configuracoes.perfil.identidade-aba.seletor-de-imagem"
-        open={escolhendoFaixa}
-        onClose={() => setEscolhendoFaixa(false)}
-        onArquivo={() => {
-          setEscolhendoFaixa(false);
-          escolherBanner.current?.click();
+      <ImagePicker data-gc="configuracoes.perfil.identidade-aba.image-picker"
+        open={pickingTrack}
+        onClose={() => setPickingTrack(false)}
+        onFile={() => {
+          setPickingTrack(false);
+          pickBanner.current?.click();
         }}
-        onGif={(gif) => void usarGif(gif.url)}
-        titulo="Faixa do perfil"
-        rodape={`PNG, JPG ou GIF até ${Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. O GIF continua animado — ele não passa pelo redimensionador.`}
+        onGif={(gif) => void useGif(gif.url)}
+        title="Faixa do perfil"
+        footer={`PNG, JPG ou GIF até ${Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. O GIF continua animado — ele não passa pelo redimensionador.`}
       />
 
-      <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor"
+      <ColorField data-gc="configuracoes.perfil.identidade-aba.color-field"
         label="Cor da faixa"
-        valor={rascunho.bannerCor}
-        onMudar={(cor) => definir("bannerCor", cor)}
-        dica="Usada quando não há imagem. Sem escolha, fica a cor gerada do seu id."
+        value={draft.bannerColor}
+        onChange={(color) => set("bannerColor", color)}
+        hint="Usada quando não há imagem. Sem escolha, fica a cor gerada do seu id."
       />
 
       <div data-gc="configuracoes.perfil.identidade-aba.div--10" className="grid grid-cols-2 gap-4">
-        <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor--2"
+        <ColorField data-gc="configuracoes.perfil.identidade-aba.color-field--2"
           label="Tema — cor 1"
-          valor={rascunho.temaPrimario}
-          onMudar={(cor) => definir("temaPrimario", cor)}
+          value={draft.themePrimary}
+          onChange={(color) => set("themePrimary", color)}
         />
-        <CampoDeCor data-gc="configuracoes.perfil.identidade-aba.campo-de-cor--3"
+        <ColorField data-gc="configuracoes.perfil.identidade-aba.color-field--3"
           label="Tema — cor 2"
-          valor={rascunho.temaSecundario}
-          onMudar={(cor) => definir("temaSecundario", cor)}
-          dica="Com as duas, o corpo do cartão vira um degradê."
+          value={draft.secondaryTheme}
+          onChange={(color) => set("secondaryTheme", color)}
+          hint="Com as duas, o corpo do cartão vira um degradê."
         />
       </div>
     </div>

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { cercarCodigo, pareceCodigo, partirEmCodigo, rotuloDaLingua } from "./codigo";
+import { surroundCode, looksCode, fromCode, languageLabel } from "./codigo";
 
-const COLADO = `import { cameraTimeline } from "@gravae/ai-analytics";
+const PASTED = `import { cameraTimeline } from "@gravae/ai-analytics";
 
 await cameraTimeline({
   path: { left: "/capturas/cam01", right: "/capturas/cam02" },
@@ -11,26 +11,26 @@ await cameraTimeline({
 
 describe("do Ctrl+V ao bloco na tela", () => {
   it("o texto do print vira um bloco com a língua no cabeçalho", () => {
-    expect(pareceCodigo(COLADO)).toBe(true);
+    expect(looksCode(PASTED)).toBe(true);
 
-    const pedacos = partirEmCodigo(cercarCodigo(COLADO));
+    const pieces = fromCode(surroundCode(PASTED));
 
-    expect(pedacos).toHaveLength(1);
-    expect(pedacos[0]).toMatchObject({ tipo: "bloco", lingua: "js" });
-    expect(rotuloDaLingua("js")).toBe("JavaScript");
+    expect(pieces).toHaveLength(1);
+    expect(pieces[0]).toMatchObject({ kind: "bloco", language: "js" });
+    expect(languageLabel("js")).toBe("JavaScript");
   });
 
   it("não mexe numa vírgula do que foi colado", () => {
-    const [pedaco] = partirEmCodigo(cercarCodigo(COLADO));
+    const [piece] = fromCode(surroundCode(PASTED));
 
-    expect(pedaco).toMatchObject({ codigo: COLADO });
+    expect(piece).toMatchObject({ code: PASTED });
   });
 
   it("não cerca o que já tem cerca", () => {
-    expect(pareceCodigo(cercarCodigo(COLADO))).toBe(false);
+    expect(looksCode(surroundCode(PASTED))).toBe(false);
   });
 
   it("sem língua conhecida o cabeçalho ainda diz o que é", () => {
-    expect(rotuloDaLingua(null)).toBe("Código");
+    expect(languageLabel(null)).toBe("Código");
   });
 });

@@ -3,103 +3,104 @@ import { Download, Loader2, RefreshCw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { useAtualizacao } from "~/features/app/hooks/use-atualizacao";
-import { SecaoDeConfig as Secao } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useUpdate } from "~/features/app/hooks/use-atualizacao";
+import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { useTranslation } from "~/traducao";
 
-export const AtualizacaoDoApp: React.FC = () => {
-  const { estado, ponte, baixando, pronta, instalando } = useAtualizacao();
+export const UpdateApp: React.FC = () => {
+  const { state, bridge, downloading, ready, installing } = useUpdate();
+  const { t } = useTranslation();
 
-  if (!ponte) {
+  if (!bridge) {
     return (
-      <Secao data-gc="configuracoes.atualizacao-do-app.secao" id="atualizacao" titulo="Atualização">
+      <Section data-gc="configuracoes.atualizacao-do-app.section" id="atualizacao" title={t("comum.atualizacao.titulo")}>
         <p data-gc="configuracoes.atualizacao-do-app.p" className="text-sm text-ink-muted">
-          Esta versão do aplicativo não sabe se atualizar sozinha. Baixe o
-          instalador mais novo abaixo e instale por cima.
+          {t("comum.atualizacao.semAuto")}
         </p>
-      </Secao>
+      </Section>
     );
   }
 
-  const temNovidade = Boolean(estado?.disponivel);
+  const hasNews = Boolean(state?.available);
 
   return (
-    <Secao data-gc="configuracoes.atualizacao-do-app.secao--2"
+    <Section data-gc="configuracoes.atualizacao-do-app.section--2"
       id="atualizacao"
-      titulo="Atualização"
-      detalhe={estado ? `Você está na versão ${estado.atual}.` : undefined}
+      title={t("comum.atualizacao.titulo")}
+      detail={state ? t("comum.atualizacao.versaoAtual", { versao: state.current }) : undefined}
     >
       <div data-gc="configuracoes.atualizacao-do-app.div" className="flex items-start gap-4">
         <div data-gc="configuracoes.atualizacao-do-app.div--2" className="min-w-0 flex-1">
           <p data-gc="configuracoes.atualizacao-do-app.p--2" className="text-sm font-medium">
-            {instalando
-              ? `Instalando a versão ${estado?.disponivel}…`
-              : pronta
-                ? `Versão ${estado?.disponivel} pronta para instalar`
-                : baixando
-                  ? `Baixando a versão ${estado?.disponivel}…`
-                  : temNovidade
-                    ? `Saiu a versão ${estado?.disponivel}`
-                    : estado?.fase === "procurando"
-                      ? "Procurando…"
-                      : "Você está em dia"}
+            {installing
+              ? t("comum.atualizacao.instalando", { versao: state?.available })
+              : ready
+                ? t("comum.atualizacao.prontaVersao", { versao: state?.available })
+                : downloading
+                  ? t("comum.atualizacao.baixandoVersao", { versao: state?.available })
+                  : hasNews
+                    ? t("comum.atualizacao.saiuVersao", { versao: state?.available })
+                    : state?.phase === "procurando"
+                      ? t("comum.atualizacao.procurando")
+                      : t("comum.atualizacao.emDia")}
           </p>
 
           <p data-gc="configuracoes.atualizacao-do-app.p--3"
             className={cn(
               "mt-0.5 text-xs",
-              estado?.erro ? "text-danger" : "text-ink-faint",
+              state?.error ? "text-danger" : "text-ink-faint",
             )}
           >
-            {estado?.erro
-              ? estado.erro
-              : instalando
-                ? "O aplicativo vai fechar em instantes."
-                : pronta
-                  ? "O aplicativo fecha, troca a versão e reabre sozinho. Sai da chamada se você estiver em uma."
-                  : estado?.fase === "erro"
-                    ? "Não consegui falar com o servidor de versões."
-                    : "O aplicativo procura sozinho na abertura e a cada seis horas."}
+            {state?.error
+              ? state.error
+              : installing
+                ? t("comum.atualizacao.vaiFechar")
+                : ready
+                  ? t("comum.atualizacao.comoInstala")
+                  : state?.phase === "erro"
+                    ? t("comum.atualizacao.semServidor")
+                    : t("comum.atualizacao.procuraSozinho")}
           </p>
 
-          {baixando && (
+          {downloading && (
             <div data-gc="configuracoes.atualizacao-do-app.div--3" className="mt-2 h-1 w-full overflow-hidden rounded-full bg-trilho">
               <div data-gc="configuracoes.atualizacao-do-app.div--4"
                 className="h-full rounded-full bg-brand transition-all"
                 style={{
-                  width: `${Math.round((estado?.progresso ?? 0) * 100)}%`,
+                  width: `${Math.round((state?.progress ?? 0) * 100)}%`,
                 }}
               />
             </div>
           )}
         </div>
 
-        {instalando ? (
+        {installing ? (
           <Button data-gc="configuracoes.atualizacao-do-app.button" variant="surface" disabled>
-            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2" size={16} className="animate-spin" /> Instalando
+            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2" size={16} className="animate-spin" /> {t("comum.atualizacao.instalandoCurto")}
           </Button>
-        ) : pronta ? (
-          <Button data-gc="configuracoes.atualizacao-do-app.button--2" onClick={() => void ponte.instalar()}>
+        ) : ready ? (
+          <Button data-gc="configuracoes.atualizacao-do-app.button--2" onClick={() => void bridge.install()}>
             <RefreshCw data-gc="configuracoes.atualizacao-do-app.refresh-cw" size={16} />{" "}
-            {estado?.erro ? "Tentar de novo" : "Instalar e reiniciar"}
+            {state?.error ? t("comum.atualizacao.tentarDeNovo") : t("comum.atualizacao.instalarEReiniciar")}
           </Button>
-        ) : baixando ? (
+        ) : downloading ? (
           <Button data-gc="configuracoes.atualizacao-do-app.button--3" variant="surface" disabled>
-            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2--2" size={16} className="animate-spin" /> Baixando
+            <Loader2 data-gc="configuracoes.atualizacao-do-app.loader2--2" size={16} className="animate-spin" /> {t("comum.atualizacao.baixandoCurto")}
           </Button>
-        ) : temNovidade ? (
-          <Button data-gc="configuracoes.atualizacao-do-app.button--4" onClick={() => void ponte.baixar()}>
-            <Download data-gc="configuracoes.atualizacao-do-app.download" size={16} /> Baixar
+        ) : hasNews ? (
+          <Button data-gc="configuracoes.atualizacao-do-app.button--4" onClick={() => void bridge.download()}>
+            <Download data-gc="configuracoes.atualizacao-do-app.download" size={16} /> {t("comum.atualizacao.baixar")}
           </Button>
         ) : (
           <Button data-gc="configuracoes.atualizacao-do-app.button--5"
             variant="surface"
-            disabled={estado?.fase === "procurando"}
-            onClick={() => void ponte.procurar()}
+            disabled={state?.phase === "procurando"}
+            onClick={() => void bridge.lookup()}
           >
-            <RefreshCw data-gc="configuracoes.atualizacao-do-app.refresh-cw--2" size={16} /> Procurar
+            <RefreshCw data-gc="configuracoes.atualizacao-do-app.refresh-cw--2" size={16} /> {t("comum.atualizacao.procurar")}
           </Button>
         )}
       </div>
-    </Secao>
+    </Section>
   );
 };

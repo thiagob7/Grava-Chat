@@ -7,9 +7,9 @@ export function useLinksDoDesktop() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const ponte = desktop();
-    if (!ponte?.links) return;
+    const bridge = desktop();
+    if (!bridge?.links) return;
 
-    return ponte.links.aoAbrir((rota) => navigate(rota));
+    return bridge.links.onOpen((route) => navigate(route));
   }, [navigate]);
 }

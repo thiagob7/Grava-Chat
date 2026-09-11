@@ -3,38 +3,38 @@ import { auditRepository } from "~/repositories/audit-repository.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import { accessService } from "./access-service.js";
 
-export interface EntradaDeAuditoria {
+export interface AuditEntry {
   guildId: string;
   actorId: string;
   action: string;
   targetType: string;
   targetId?: string;
   targetName?: string;
-  changes?: Record<string, { de: unknown; para: unknown }>;
+  changes?: Record<string, { de: unknown; toward: unknown }>;
   reason?: string;
 }
 
-export function diferenca<T extends Record<string, unknown>>(antes: T, depois: Partial<T>) {
-  const changes: Record<string, { de: unknown; para: unknown }> = {};
+export function difference<T extends Record<string, unknown>>(before: T, after: Partial<T>) {
+  const changes: Record<string, { de: unknown; toward: unknown }> = {};
 
-  for (const [campo, valor] of Object.entries(depois)) {
-    if (valor === undefined) continue;
+  for (const [field, value] of Object.entries(after)) {
+    if (value === undefined) continue;
 
-    const anterior = antes[campo];
-    const igual = Array.isArray(valor)
-      ? JSON.stringify(anterior) === JSON.stringify(valor)
-      : anterior === valor;
+    const anterior = before[field];
+    const equal = Array.isArray(value)
+      ? JSON.stringify(anterior) === JSON.stringify(value)
+      : anterior === value;
 
-    if (!igual) changes[campo] = { de: anterior ?? null, para: valor };
+    if (!equal) changes[field] = { de: anterior ?? null, toward: value };
   }
 
   return Object.keys(changes).length ? changes : undefined;
 }
 
 export const auditService = {
-  registrar(entrada: EntradaDeAuditoria) {
+  register(entry: AuditEntry) {
     void auditRepository
-      .create({ ...entrada, changes: (entrada.changes ?? undefined) as Prisma.InputJsonValue })
+      .create({ ...entry, changes: (entry.changes ?? undefined) as Prisma.InputJsonValue })
       .catch(() => undefined);
   },
 
@@ -45,21 +45,21 @@ export const auditService = {
   ) {
     await accessService.requirePermission(userId, guildId, "VIEW_AUDIT_LOG");
 
-    const entradas = await auditRepository.findPage({ guildId, ...params });
+    const entries = await auditRepository.findPage({ guildId, ...params });
 
     return {
-      entries: entradas.map((e) => ({
+      entries: entries.map((e) => ({
         id: e.id,
         actor: toPublicUser(e.actor),
         action: e.action,
         targetType: e.targetType,
         targetId: e.targetId,
         targetName: e.targetName,
-        changes: (e.changes ?? null) as Record<string, { de: unknown; para: unknown }> | null,
+        changes: (e.changes ?? null) as Record<string, { de: unknown; toward: unknown }> | null,
         reason: e.reason,
         createdAt: e.createdAt.toISOString(),
       })),
-      hasMore: entradas.length === params.limit,
+      hasMore: entries.length === params.limit,
     };
   },
 };

@@ -1,4 +1,5 @@
 import type { ChannelType, Prisma } from "@prisma/client";
+import { ForbiddenError } from "~/lib/http.js";
 import { prisma } from "~/lib/prisma.js";
 
 export const guildRepository = {
@@ -67,17 +68,17 @@ export const guildRepository = {
   },
 };
 
-export const descobertaRepository = {
-  async candidatas(categoria: string | null, busca: string | null) {
+export const discoveryRepository = {
+  async candidates(category: string | null, search: string | null) {
     return prisma.guild.findMany({
       where: {
-        NOT: { descobrivel: false },
-        ...(categoria ? { categoria } : {}),
-        ...(busca
+        NOT: { discoverable: false },
+        ...(category ? { category } : {}),
+        ...(search
           ? {
               OR: [
-                { name: { contains: busca, mode: "insensitive" as const } },
-                { description: { contains: busca, mode: "insensitive" as const } },
+                { name: { contains: search, mode: "insensitive" as const } },
+                { description: { contains: search, mode: "insensitive" as const } },
               ],
             }
           : {}),
@@ -86,27 +87,27 @@ export const descobertaRepository = {
     });
   },
 
-  async membrosDe(guildIds: string[]): Promise<Map<string, string[]>> {
-    const porServidor = new Map<string, string[]>();
-    if (!guildIds.length) return porServidor;
+  async members(guildIds: string[]): Promise<Map<string, string[]>> {
+    const byServer = new Map<string, string[]>();
+    if (!guildIds.length) return byServer;
 
-    const membros = await prisma.guildMember.findMany({
+    const members = await prisma.guildMember.findMany({
       where: { guildId: { in: guildIds } },
       select: { guildId: true, userId: true },
     });
 
-    for (const membro of membros) {
-      const lista = porServidor.get(membro.guildId);
-      if (lista) lista.push(membro.userId);
-      else porServidor.set(membro.guildId, [membro.userId]);
+    for (const member of members) {
+      const list = byServer.get(member.guildId);
+      if (list) list.push(member.userId);
+      else byServer.set(member.guildId, [member.userId]);
     }
 
-    return porServidor;
+    return byServer;
   },
 };
 
 export const tagRepository = {
-  async resolverMuitas(guildIds: string[]) {
+  async resolveMany(guildIds: string[]) {
     if (!guildIds.length) return new Map<string, { tag: string; tagIcon: string | null }>();
 
     const guilds = await prisma.guild.findMany({
@@ -135,21 +136,21 @@ export const memberRepository = {
     return prisma.guildMember.findMany({ where: { userId }, select: { guildId: true } });
   },
 
-  definirEmblemas(memberId: string, emblemIds: string[]) {
+  setBadges(memberId: string, emblemIds: string[]) {
     return prisma.guildMember.update({ where: { id: memberId }, data: { emblemIds } });
   },
 
-  async removerEmblemaDeTodos(guildId: string, emblemaId: string) {
-    const afetados = await prisma.guildMember.findMany({
-      where: { guildId, emblemIds: { has: emblemaId } },
+  async removeAllBadge(guildId: string, badgeId: string) {
+    const affected = await prisma.guildMember.findMany({
+      where: { guildId, emblemIds: { has: badgeId } },
       select: { id: true, emblemIds: true },
     });
 
     await Promise.all(
-      afetados.map((m) =>
+      affected.map((m) =>
         prisma.guildMember.update({
           where: { id: m.id },
-          data: { emblemIds: m.emblemIds.filter((id) => id !== emblemaId) },
+          data: { emblemIds: m.emblemIds.filter((id) => id !== badgeId) },
         }),
       ),
     );
@@ -162,20 +163,29 @@ export const memberRepository = {
     });
   },
 
-  create(data: {
+  async create(data: {
     guildId: string;
     userId: string;
     roleIds?: string[];
     inviteCode?: string;
     invitedById?: string;
   }) {
+    const owner = await prisma.user.findUnique({
+      where: { id: data.userId },
+      select: { system: true },
+    });
+
+    if (owner?.system) {
+      throw new ForbiddenError("A conta oficial não entra em servidor");
+    }
+
     return prisma.guildMember.create({ data, include: { user: true } });
   },
 
-  setTimeout(guildId: string, userId: string, ate: Date | null) {
+  setTimeout(guildId: string, userId: string, until: Date | null) {
     return prisma.guildMember.update({
       where: { guildId_userId: { guildId, userId } },
-      data: { timeoutUntil: ate },
+      data: { timeoutUntil: until },
       include: { user: true },
     });
   },
@@ -197,13 +207,13 @@ export const memberRepository = {
   },
 
   async pullRole(guildId: string, roleId: string) {
-    const afetados = await prisma.guildMember.findMany({
+    const affected = await prisma.guildMember.findMany({
       where: { guildId, roleIds: { has: roleId } },
       select: { userId: true, roleIds: true },
     });
 
     await Promise.all(
-      afetados.map((m) =>
+      affected.map((m) =>
         prisma.guildMember.update({
           where: { guildId_userId: { guildId, userId: m.userId } },
           data: { roleIds: m.roleIds.filter((id) => id !== roleId) },
@@ -290,6 +300,7 @@ export const channelRepository = {
     categoryId: string | null;
     name: string;
     type: ChannelType;
+    url?: string | null;
     topic: string | null;
     isPrivate: boolean;
     position: number;
@@ -324,7 +335,7 @@ export const channelRepository = {
   },
 };
 
-export const emblemaRepository = {
+export const badgeRepository = {
   findManyByGuild(guildId: string) {
     return prisma.guildEmblem.findMany({ where: { guildId }, orderBy: { createdAt: "asc" } });
   },
@@ -339,7 +350,7 @@ export const emblemaRepository = {
 
   create(data: {
     guildId: string;
-    nome: string;
+    name: string;
     emoji: string | null;
     iconUrl: string | null;
     createdById: string;

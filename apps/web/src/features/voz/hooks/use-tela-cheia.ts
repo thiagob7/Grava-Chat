@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export function useTelaCheia(alvo?: React.RefObject<HTMLElement | null>) {
-  const [ativa, setAtiva] = useState(false);
+export function useScreenFull(target?: React.RefObject<HTMLElement | null>) {
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const sincronizar = () => setAtiva(Boolean(document.fullscreenElement));
+    const sync = () => setActive(Boolean(document.fullscreenElement));
 
-    sincronizar();
-    document.addEventListener("fullscreenchange", sincronizar);
-    return () => document.removeEventListener("fullscreenchange", sincronizar);
+    sync();
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
   }, []);
 
-  const alternar = useCallback(async () => {
+  const toggle = useCallback(async () => {
     try {
       if (document.fullscreenElement) return void (await document.exitFullscreen());
 
@@ -21,12 +21,12 @@ export function useTelaCheia(alvo?: React.RefObject<HTMLElement | null>) {
         return;
       }
 
-      await (alvo?.current ?? document.documentElement).requestFullscreen();
-    } catch (erro) {
-      const motivo = erro instanceof Error ? erro.message : String(erro);
-      toast.error(`Não consegui abrir em tela cheia: ${motivo}`);
+      await (target?.current ?? document.documentElement).requestFullscreen();
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      toast.error(`Não consegui abrir em tela cheia: ${reason}`);
     }
-  }, [alvo]);
+  }, [target]);
 
-  return { ativa, alternar };
+  return { active, toggle };
 }

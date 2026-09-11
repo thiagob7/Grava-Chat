@@ -16,13 +16,13 @@ const api = async (path, { token, body, method = "POST" } = {}) => {
   return res.status === 204 ? null : res.json();
 };
 
-const recusa = async (esperado, descricao, fn) => {
+const refusal = async (expected, description, fn) => {
   try {
     await fn();
-    throw new Error(`FALHOU: ${descricao}`);
+    throw new Error(`FALHOU: ${description}`);
   } catch (e) {
-    if (!new RegExp(`-> ${esperado}`).test(e.message)) throw e;
-    ok(`${descricao} -> ${esperado}`);
+    if (!new RegExp(`-> ${expected}`).test(e.message)) throw e;
+    ok(`${description} -> ${expected}`);
   }
 };
 
@@ -38,25 +38,25 @@ const emit = (s, ev, payload) =>
     s.emit(ev, payload, (r) => (r.ok ? resolve(r.data) : reject(new Error(r.error)))),
   );
 
-const dono = await api("/auth/dev-login", { body: { email: "dono-msg@gravae.io", displayName: "Dono" } });
+const owner = await api("/auth/dev-login", { body: { email: "dono-msg@gravae.io", displayName: "Dono" } });
 const ze = await api("/auth/dev-login", { body: { email: "ze-msg@gravae.io", displayName: "Ze" } });
 
-const guild = await api("/guilds", { token: dono.accessToken, body: { name: "Teste Mensagens" } });
-const convite = await api(`/guilds/${guild.id}/invites`, { token: dono.accessToken, body: {} });
-await api(`/invites/${convite.code}/join`, { token: ze.accessToken });
+const guild = await api("/guilds", { token: owner.accessToken, body: { name: "Teste Mensagens" } });
+const invite = await api(`/guilds/${guild.id}/invites`, { token: owner.accessToken, body: {} });
+await api(`/invites/${invite.code}/join`, { token: ze.accessToken });
 
-const detalhe = await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "GET" });
-const geral = detalhe.channels.find((c) => c.type === "TEXT");
-const sala = detalhe.channels.find((c) => c.type === "VOICE");
+const detail = await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "GET" });
+const general = detail.channels.find((c) => c.type === "TEXT");
+const room = detail.channels.find((c) => c.type === "VOICE");
 
-const socketDono = await connect(dono.accessToken);
+const socketOwner = await connect(owner.accessToken);
 const socketZe = await connect(ze.accessToken);
-await emit(socketDono, "channel:subscribe", { channelId: geral.id });
-await emit(socketZe, "channel:subscribe", { channelId: geral.id });
+await emit(socketOwner, "channel:subscribe", { channelId: general.id });
+await emit(socketZe, "channel:subscribe", { channelId: general.id });
 
 console.log("\n== anexo com spoiler ==");
-const enviadaComSpoiler = await emit(socketDono, "message:send", {
-  channelId: geral.id,
+const sentWithSpoiler = await emit(socketOwner, "message:send", {
+  channelId: general.id,
   content: "olha isso",
   nonce: "s1",
   attachments: [
@@ -71,81 +71,81 @@ const enviadaComSpoiler = await emit(socketDono, "message:send", {
     },
   ],
 });
-const historico = await api(`/channels/${geral.id}/messages`, { token: ze.accessToken, method: "GET" });
-const comSpoiler = historico.messages.find((m) => m.id === enviadaComSpoiler.id);
-const anexo = comSpoiler.attachments[0];
-if (!anexo.spoiler) throw new Error("o spoiler nao chegou marcado");
-if (anexo.description !== "o final do filme") throw new Error("a descricao do anexo sumiu");
+const past = await api(`/channels/${general.id}/messages`, { token: ze.accessToken, method: "GET" });
+const withSpoiler = past.messages.find((m) => m.id === sentWithSpoiler.id);
+const attachment = withSpoiler.attachments[0];
+if (!attachment.spoiler) throw new Error("o spoiler nao chegou marcado");
+if (attachment.description !== "o final do filme") throw new Error("a descricao do anexo sumiu");
 ok("anexo chega marcado como spoiler e com texto alternativo");
 
 console.log("\n== chat no canal de voz ==");
-await emit(socketDono, "message:send", { channelId: sala.id, content: "chat da call", nonce: "v1" });
-const naVoz = await api(`/channels/${sala.id}/messages`, { token: ze.accessToken, method: "GET" });
-if (naVoz.messages.at(-1).content !== "chat da call") throw new Error("mensagem no canal de voz falhou");
+await emit(socketOwner, "message:send", { channelId: room.id, content: "chat da call", nonce: "v1" });
+const inVoice = await api(`/channels/${room.id}/messages`, { token: ze.accessToken, method: "GET" });
+if (inVoice.messages.at(-1).content !== "chat da call") throw new Error("mensagem no canal de voz falhou");
 ok("canal de voz aceita mensagem (o chat que fica ao lado da chamada)");
 
 console.log("\n== fixar ==");
-await recusa(403, "membro comum nao fixa", () =>
-  api(`/messages/${comSpoiler.id}/pin`, { token: ze.accessToken, method: "PUT" }),
+await refusal(403, "membro comum nao fixa", () =>
+  api(`/messages/${withSpoiler.id}/pin`, { token: ze.accessToken, method: "PUT" }),
 );
 
-const fixada = await api(`/messages/${comSpoiler.id}/pin`, { token: dono.accessToken, method: "PUT" });
-if (!fixada.pinnedAt) throw new Error("a mensagem nao ficou fixada");
+const pinned = await api(`/messages/${withSpoiler.id}/pin`, { token: owner.accessToken, method: "PUT" });
+if (!pinned.pinnedAt) throw new Error("a mensagem nao ficou fixada");
 
-const fixadas = await api(`/channels/${geral.id}/pins`, { token: ze.accessToken, method: "GET" });
-if (fixadas.length !== 1) throw new Error(`esperava 1 fixada, veio ${fixadas.length}`);
+const pinned = await api(`/channels/${general.id}/pins`, { token: ze.accessToken, method: "GET" });
+if (pinned.length !== 1) throw new Error(`esperava 1 fixada, veio ${pinned.length}`);
 ok("quem modera fixa, e a fixada aparece no painel para todo mundo");
 
-await api(`/messages/${comSpoiler.id}/pin`, { token: dono.accessToken, method: "DELETE" });
-if ((await api(`/channels/${geral.id}/pins`, { token: dono.accessToken, method: "GET" })).length !== 0) {
+await api(`/messages/${withSpoiler.id}/pin`, { token: owner.accessToken, method: "DELETE" });
+if ((await api(`/channels/${general.id}/pins`, { token: owner.accessToken, method: "GET" })).length !== 0) {
   throw new Error("desafixar nao tirou do painel");
 }
 ok("desafixar tira do painel");
 
 console.log("\n== enquete ==");
-const criada = await emit(socketDono, "message:send", {
-  channelId: geral.id,
+const created = await emit(socketOwner, "message:send", {
+  channelId: general.id,
   content: "",
   nonce: "p1",
-  poll: { pergunta: "pizza hoje?", opcoes: [{ texto: "sim" }, { texto: "claro" }] },
+  poll: { question: "pizza hoje?", options: [{ text: "sim" }, { text: "claro" }] },
 });
 
-const buscar = async (id) =>
-  (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
+const search = async (id) =>
+  (await api(`/channels/${general.id}/messages`, { token: owner.accessToken, method: "GET" }))
     .messages.find((m) => m.id === id);
 
-const enquete = await buscar(criada.id);
-if (enquete.poll?.opcoes?.length !== 2) throw new Error("a enquete nao foi criada");
-ok(`enquete criada com ${enquete.poll.opcoes.length} opcoes`);
+const poll = await search(created.id);
+if (poll.poll?.options?.length !== 2) throw new Error("a enquete nao foi criada");
+ok(`enquete criada com ${poll.poll.options.length} opcoes`);
 
-const opcaoA = enquete.poll.opcoes[0].id;
-const opcaoB = enquete.poll.opcoes[1].id;
+const option = poll.poll.options[0].id;
+const optionB = poll.poll.options[1].id;
 
-await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoA });
-await emit(socketDono, "poll:vote", { messageId: enquete.id, optionId: opcaoA });
+await emit(socketZe, "poll:vote", { messageId: poll.id, optionId: option });
+await emit(socketOwner, "poll:vote", { messageId: poll.id, optionId: option });
 
-let atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
-  .messages.find((m) => m.id === enquete.id);
-if (atual.poll.opcoes[0].userIds.length !== 2) throw new Error("os votos nao contaram");
+let current = (await api(`/channels/${general.id}/messages`, { token: owner.accessToken, method: "GET" }))
+  .messages.find((m) => m.id === poll.id);
+if (current.poll.options[0].userIds.length !== 2) throw new Error("os votos nao contaram");
 ok("dois votos na mesma opcao contam os dois");
 
-await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoB });
-atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
-  .messages.find((m) => m.id === enquete.id);
-if (atual.poll.opcoes[0].userIds.length !== 1 || atual.poll.opcoes[1].userIds.length !== 1) {
+await emit(socketZe, "poll:vote", { messageId: poll.id, optionId: optionB });
+current = (await api(`/channels/${general.id}/messages`, { token: owner.accessToken, method: "GET" }))
+  .messages.find((m) => m.id === poll.id);
+if (current.poll.options[0].userIds.length !== 1 || current.poll.options[1].userIds.length !== 1) {
   throw new Error("escolha unica nao moveu o voto");
 }
 ok("enquete de escolha unica move o voto em vez de somar");
 
-await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoB });
-atual = (await api(`/channels/${geral.id}/messages`, { token: dono.accessToken, method: "GET" }))
-  .messages.find((m) => m.id === enquete.id);
-if (atual.poll.opcoes[1].userIds.length !== 0) throw new Error("nao deu pra desmarcar o voto");
+await emit(socketZe, "poll:vote", { messageId: poll.id, optionId: optionB });
+current = (await api(`/channels/${general.id}/messages`, { token: owner.accessToken, method: "GET" }))
+  .messages.find((m) => m.id === poll.id);
+if (current.poll.options[1].userIds.length !== 0) throw new Error("nao deu pra desmarcar o voto");
 ok("clicar na opcao ja marcada tira o voto");
 
-await emit(socketDono, "poll:close", { messageId: enquete.id });
+await emit(socketOwner, "poll:close", { messageId: poll.id });
 try {
-  await emit(socketZe, "poll:vote", { messageId: enquete.id, optionId: opcaoA });
+  await emit(socketZe, "poll:vote", { messageId: poll.id, optionId: option });
   throw new Error("FALHOU: votou numa enquete encerrada");
 } catch (e) {
   if (!/encerrou/i.test(e.message)) throw e;
@@ -153,26 +153,26 @@ try {
 }
 
 console.log("\n== modo lento ==");
-await api(`/guilds/${guild.id}/channels/${geral.id}`, {
-  token: dono.accessToken,
+await api(`/guilds/${guild.id}/channels/${general.id}`, {
+  token: owner.accessToken,
   method: "PATCH",
   body: { slowmodeSeconds: 10 },
 });
 
-await emit(socketZe, "message:send", { channelId: geral.id, content: "primeira", nonce: "l1" });
+await emit(socketZe, "message:send", { channelId: general.id, content: "primeira", nonce: "l1" });
 try {
-  await emit(socketZe, "message:send", { channelId: geral.id, content: "segunda", nonce: "l2" });
+  await emit(socketZe, "message:send", { channelId: general.id, content: "segunda", nonce: "l2" });
   throw new Error("FALHOU: o modo lento deixou passar a segunda");
 } catch (e) {
   if (!/modo lento/i.test(e.message)) throw e;
   ok(`o modo lento segura a segunda mensagem ("${e.message}")`);
 }
 
-await emit(socketDono, "message:send", { channelId: geral.id, content: "eu passo", nonce: "l3" });
-await emit(socketDono, "message:send", { channelId: geral.id, content: "duas vezes", nonce: "l4" });
+await emit(socketOwner, "message:send", { channelId: general.id, content: "eu passo", nonce: "l3" });
+await emit(socketOwner, "message:send", { channelId: general.id, content: "duas vezes", nonce: "l4" });
 ok("quem modera o canal passa direto pelo modo lento");
 
-socketDono.close();
+socketOwner.close();
 socketZe.close();
-await api(`/guilds/${guild.id}`, { token: dono.accessToken, method: "DELETE" });
+await api(`/guilds/${guild.id}`, { token: owner.accessToken, method: "DELETE" });
 console.log("\ntudo certo.");

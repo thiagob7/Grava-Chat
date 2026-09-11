@@ -1,76 +1,76 @@
 import { create } from "zustand";
 
-import { AJUSTES_PADRAO, type AjustesDeVoz, type ModoDeEntrada } from "~/features/voz/lib/audio-gate";
+import { DEFAULT_SETTINGS, type VoiceSettings, type EntryMode } from "~/features/voz/lib/audio-gate";
 
-export interface VoicePrefs extends AjustesDeVoz {
-  entradaId: string | null;
-  saidaId: string | null;
+export interface VoicePrefs extends VoiceSettings {
+  entryId: string | null;
+  outputId: string | null;
   cameraId: string | null;
-  espelharCamera: boolean;
-  mostrarSemVideo: boolean;
-  volumeSaida: number;
-  teclaPtt: string;
-  somDaInterface: boolean;
-  somDaTela: boolean;
-  somDoPainel: boolean;
-  volumeDoPainel: number;
+  mirrorCamera: boolean;
+  showWithoutVideo: boolean;
+  volumeOutput: number;
+  keyPtt: string;
+  interfaceSound: boolean;
+  screenSound: boolean;
+  panelSound: boolean;
+  panelVolume: number;
 }
 
-const PADRAO: VoicePrefs = {
-  ...AJUSTES_PADRAO,
-  entradaId: null,
-  saidaId: null,
+const DEFAULT: VoicePrefs = {
+  ...DEFAULT_SETTINGS,
+  entryId: null,
+  outputId: null,
   cameraId: null,
-  espelharCamera: true,
-  mostrarSemVideo: true,
-  volumeSaida: 1,
-  teclaPtt: "Space",
-  somDaInterface: true,
-  somDaTela: true,
-  somDoPainel: true,
-  volumeDoPainel: 1,
+  mirrorCamera: true,
+  showWithoutVideo: true,
+  volumeOutput: 1,
+  keyPtt: "Space",
+  interfaceSound: true,
+  screenSound: true,
+  panelSound: true,
+  panelVolume: 1,
 };
 
-const CHAVE = "gravae:voice-prefs";
+const KEY = "gravae:voice-prefs";
 
-function ler(): VoicePrefs {
+function read(): VoicePrefs {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    return salvo ? { ...PADRAO, ...(JSON.parse(salvo) as Partial<VoicePrefs>) } : PADRAO;
+    const saved = localStorage.getItem(KEY);
+    return saved ? { ...DEFAULT, ...(JSON.parse(saved) as Partial<VoicePrefs>) } : DEFAULT;
   } catch {
-    return PADRAO;
+    return DEFAULT;
   }
 }
 
 interface VoicePrefsStore extends VoicePrefs {
-  definir: (mudanca: Partial<VoicePrefs>) => void;
-  restaurarPadrao: () => void;
+  set: (change: Partial<VoicePrefs>) => void;
+  defaultRestore: () => void;
 }
 
 export const useVoicePrefs = create<VoicePrefsStore>((set, store) => ({
-  ...ler(),
+  ...read(),
 
-  definir: (mudanca) => {
-    set(mudanca);
+  set: (change) => {
+    set(change);
 
     try {
-      const { definir, restaurarPadrao, ...prefs } = store();
-      void definir;
-      void restaurarPadrao;
-      localStorage.setItem(CHAVE, JSON.stringify(prefs));
+      const { set, defaultRestore, ...prefs } = store();
+      void set;
+      void defaultRestore;
+      localStorage.setItem(KEY, JSON.stringify(prefs));
     } catch {
     }
   },
 
-  restaurarPadrao: () => store().definir(PADRAO),
+  defaultRestore: () => store().set(DEFAULT),
 }));
 
-export const ajustesDe = (prefs: VoicePrefs): AjustesDeVoz => ({
-  ganhoEntrada: prefs.ganhoEntrada,
-  modo: prefs.modo,
-  sensibilidadeAutomatica: prefs.sensibilidadeAutomatica,
-  limiar: prefs.limiar,
-  supressaoDeRuido: prefs.supressaoDeRuido,
+export const settingsFor = (prefs: VoicePrefs): VoiceSettings => ({
+  gainEntry: prefs.gainEntry,
+  mode: prefs.mode,
+  sensitivityAutomatic: prefs.sensitivityAutomatic,
+  threshold: prefs.threshold,
+  noiseSuppression: prefs.noiseSuppression,
 });
 
-export type { ModoDeEntrada };
+export type { EntryMode };

@@ -1,13 +1,13 @@
 
-const numeros = (versao: string) =>
-  versao
+const numbers = (version: string) =>
+  version
     .replace(/^v/, "")
     .split(".")
     .map((n) => Number.parseInt(n, 10) || 0);
 
-export function ehMaisNova(candidata: string, atual: string): boolean {
-  const a = numeros(candidata);
-  const b = numeros(atual);
+export function isMoreNew(candidate: string, current: string): boolean {
+  const a = numbers(candidate);
+  const b = numbers(current);
 
   for (let i = 0; i < Math.max(a.length, b.length); i++) {
     const x = a[i] ?? 0;

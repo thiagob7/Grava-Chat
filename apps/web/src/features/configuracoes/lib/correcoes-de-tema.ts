@@ -1,4 +1,4 @@
-export const CORRECOES_DE_TEMA = `
+export const THEME_FIXES = `
 .trilho-de-servidores {
   width: var(--layout-guild-list-width) !important;
 }
@@ -16,8 +16,8 @@ export const CORRECOES_DE_TEMA = `
 
 `;
 
-const SINAIS = ["data-flx", ".module__", "--Theme", "referencia"];
+const SIGNALS = ["data-flx", ".module__", "--Theme", "referencia"];
 
-export function pareceTemaDeFora(css: string) {
-  return SINAIS.some((sinal) => css.includes(sinal));
+export function outsideLooksTheme(css: string) {
+  return SIGNALS.some((signal) => css.includes(signal));
 }

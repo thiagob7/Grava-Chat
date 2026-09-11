@@ -1,5 +1,35 @@
 
 export const conversa = {
+  acenar: {
+    ilustracao: "Uma mãozinha acenando",
+    botao: "Acenar para {{nome}}",
+  },
+  oficial: {
+    titulo: "Este canal é só para avisos oficiais do Gravaê.",
+    detalhe: "Nunca pedimos a sua senha nem o token da sua conta.",
+    saibaMais: "Saiba mais",
+  },
+  topico: {
+    abrir: "Ver a descrição do canal",
+  },
+  previaDoLink: {
+    carregando: "Vendo o que tem no link…",
+    destino: "Vai para {{destino}}",
+  },
+  reacao: {
+    carregando: "Vendo quem reagiu com {{emoji}}…",
+    uma: "{{nome}} reagiu com {{emoji}}",
+    duas: "{{primeiro}} e {{segundo}} reagiram com {{emoji}}",
+    varias: "{{nomes}} e mais {{quantos}} reagiram com {{emoji}}",
+    dicaSuper: "Segure para super reagir",
+  },
+  recado: {
+    gravar: "Gravar um recado",
+    descartar: "Descartar o recado",
+    mandar: "Mandar o recado",
+    semSuporte: "Este navegador não grava áudio.",
+    semMicrofone: "Sem acesso ao microfone.",
+  },
   lista: {
     carregando: "Carregando mensagens…",
     carregandoMais: "Carregando…",
@@ -199,6 +229,22 @@ export const conversa = {
     verImagem: "Ver imagem",
   },
   enquete: {
+    criar: "Criar enquete",
+    pergunta: "Pergunta",
+    exemplo: "O que a gente joga hoje?",
+    respostas: "Respostas",
+    adicionarOpcao: "Adicionar opção",
+    removerOpcao: "Remover opção",
+    varias: "Permitir mais de uma resposta",
+    variasDetalhe: "Sem isto, votar numa opção tira o voto da anterior.",
+    duracao: "Duração",
+    umaHora: "1 hora",
+    quatroHoras: "4 horas",
+    oitoHoras: "8 horas",
+    umDia: "1 dia",
+    tresDias: "3 dias",
+    umaSemana: "1 semana",
+    ateEncerrar: "Até eu encerrar",
     titulo: "Enquete",
     encerrada: "Enquete encerrada",
     variasRespostas: "Enquete — várias respostas",
@@ -270,6 +316,8 @@ export const conversa = {
   },
 
   entrada: {
+    semNome: "conversa",
+    anexo: "(anexo)",
     titulo: "Caixa de entrada",
     naoLidas: "Não lidas",
     salvas: "Salvas",

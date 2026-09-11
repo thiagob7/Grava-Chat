@@ -1,84 +1,84 @@
 import { useCallback, useMemo } from "react";
-import type { ComandoDisponivel } from "@gravae/shared";
+import type { AvailableCommand } from "@gravae/shared";
 
-import { useFindComandos } from "~/@core/application/queries/comando/use-find-comandos";
+import { useFindCommands } from "~/@core/application/queries/comando/use-find-comandos";
 
-export function detectarComando(texto: string, cursor: number) {
-  if (!texto.startsWith("/")) return null;
+export function detectCommand(text: string, cursor: number) {
+  if (!text.startsWith("/")) return null;
 
-  const ate = texto.slice(0, cursor);
-  if (ate.includes(" ")) return null;
+  const until = text.slice(0, cursor);
+  if (until.includes(" ")) return null;
 
-  return { termo: ate.slice(1) };
+  return { term: until.slice(1) };
 }
 
-export function repartir(comando: ComandoDisponivel, resto: string) {
-  const opcoes: Record<string, string> = {};
-  let sobra = resto.trim();
+export function split(command: AvailableCommand, rest: string) {
+  const options: Record<string, string> = {};
+  let leftover = rest.trim();
 
-  comando.opcoes.forEach((opcao, i) => {
-    const ultima = i === comando.opcoes.length - 1;
+  command.options.forEach((option, i) => {
+    const last = i === command.options.length - 1;
 
-    if (!sobra) return;
+    if (!leftover) return;
 
-    if (ultima) {
-      opcoes[opcao.nome] = sobra;
-      sobra = "";
+    if (last) {
+      options[option.name] = leftover;
+      leftover = "";
       return;
     }
 
-    const espaco = sobra.search(/\s/);
+    const space = leftover.search(/\s/);
 
-    if (espaco < 0) {
-      opcoes[opcao.nome] = sobra;
-      sobra = "";
+    if (space < 0) {
+      options[option.name] = leftover;
+      leftover = "";
       return;
     }
 
-    opcoes[opcao.nome] = sobra.slice(0, espaco);
-    sobra = sobra.slice(espaco).trimStart();
+    options[option.name] = leftover.slice(0, space);
+    leftover = leftover.slice(space).trimStart();
   });
 
-  return opcoes;
+  return options;
 }
 
-export function useComandos(guildId: string | undefined) {
-  const { data: comandos = [] } = useFindComandos(guildId);
+export function useCommands(guildId: string | undefined) {
+  const { data: commands = [] } = useFindCommands(guildId);
 
-  const filtrar = useCallback(
-    (termo: string) => {
-      const alvo = termo.toLowerCase();
+  const filter = useCallback(
+    (term: string) => {
+      const target = term.toLowerCase();
 
-      return comandos
-        .filter((c) => !alvo || c.nome.includes(alvo) || c.descricao.toLowerCase().includes(alvo))
-        .sort((a, b) => Number(b.nome.startsWith(alvo)) - Number(a.nome.startsWith(alvo)))
+      return commands
+        .filter((c) => !target || c.name.includes(target) || c.description.toLowerCase().includes(target))
+        .sort((a, b) => Number(b.name.startsWith(target)) - Number(a.name.startsWith(target)))
         .slice(0, 10);
     },
-    [comandos],
+    [commands],
   );
 
-  const analisar = useCallback(
-    (texto: string) => {
-      if (!texto.startsWith("/")) return null;
+  const analyse = useCallback(
+    (text: string) => {
+      if (!text.startsWith("/")) return null;
 
-      const linha = texto.slice(1);
-      const espaco = linha.search(/\s/);
-      const nome = (espaco < 0 ? linha : linha.slice(0, espaco)).toLowerCase();
+      const line = text.slice(1);
+      const space = line.search(/\s/);
+      const name = (space < 0 ? line : line.slice(0, space)).toLowerCase();
 
-      const comando = comandos.find((c) => c.nome === nome);
-      if (!comando) return null;
+      const command = commands.find((c) => c.name === name);
+      if (!command) return null;
 
-      const resto = espaco < 0 ? "" : linha.slice(espaco + 1);
-      const opcoes = repartir(comando, resto);
+      const rest = space < 0 ? "" : line.slice(space + 1);
+      const options = split(command, rest);
 
-      const faltando = comando.opcoes.filter((o) => o.obrigatoria && !opcoes[o.nome]);
+      const missing = command.options.filter((o) => o.required && !options[o.name]);
 
-      return { comando, opcoes, faltando };
+      return { command, options, missing };
     },
-    [comandos],
+    [commands],
   );
 
-  const algum = useMemo(() => comandos.length > 0, [comandos]);
+  const algum = useMemo(() => commands.length > 0, [commands]);
 
-  return { filtrar, analisar, algum };
+  return { filter, analyse, algum };
 }

@@ -1,19 +1,19 @@
-const CHAVE_FIGURINHAS = "gravae:figurinhas-recentes";
-const QUANTAS = 12;
+const KEY_STICKERS = "gravae:figurinhas-recentes";
+const COUNT = 12;
 
-export function figurinhasRecentes(): string[] {
+export function recentStickers(): string[] {
   try {
-    const salvo = JSON.parse(localStorage.getItem(CHAVE_FIGURINHAS) ?? "[]") as unknown;
-    return Array.isArray(salvo) ? salvo.filter((id): id is string => typeof id === "string") : [];
+    const saved = JSON.parse(localStorage.getItem(KEY_STICKERS) ?? "[]") as unknown;
+    return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === "string") : [];
   } catch {
     return [];
   }
 }
 
-export function registrarFigurinha(id: string) {
+export function registerSticker(id: string) {
   try {
-    const atual = figurinhasRecentes().filter((s) => s !== id);
-    localStorage.setItem(CHAVE_FIGURINHAS, JSON.stringify([id, ...atual].slice(0, QUANTAS)));
+    const current = recentStickers().filter((s) => s !== id);
+    localStorage.setItem(KEY_STICKERS, JSON.stringify([id, ...current].slice(0, COUNT)));
   } catch {
   }
 }

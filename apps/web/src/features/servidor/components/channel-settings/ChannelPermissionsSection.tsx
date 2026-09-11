@@ -9,7 +9,7 @@ interface ChannelPermissionsSectionProps {
   channel: Channel;
   roles: Role[];
   members: GuildMember[];
-  minhasPermissoes: string[];
+  minePermissions: string[];
 }
 
 export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps> = ({
@@ -17,7 +17,7 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
   channel,
   roles,
   members,
-  minhasPermissoes,
+  minePermissions,
 }) => {
   const { t } = useTranslation();
 
@@ -33,7 +33,7 @@ export const ChannelPermissionsSection: React.FC<ChannelPermissionsSectionProps>
         channelType={channel.type}
         roles={roles}
         members={members}
-        minhasPermissoes={minhasPermissoes as Permission[]}
+        minePermissions={minePermissions as Permission[]}
       />
     </div>
   </div>

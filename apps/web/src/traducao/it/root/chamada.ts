@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Sposta la chat in basso",
+    paraOLado: "Sposta la chat di lato",
+  },
+  aparelhoNovo: {
+    microfone: "È spuntato un microfono nuovo",
+    saida: "È spuntata un'uscita audio nuova",
+    apareceu: "È spuntato {{nome}}.",
+    falarPorEle: "Vuoi parlarci da lì?",
+    ouvirPorEle: "Vuoi ascoltare da lì?",
+    trocaNaHora: "Il cambio vale subito, senza uscire dalla chiamata.",
+    naoSugerir: "Non proporre più questo dispositivo",
+    trocar: "Passa a quello",
+  },
   conectando: "Connessione alla chiamata…",
   naoEntrou: "Non è stato possibile entrare nella chiamata",
   sair: "Esci dalla chiamata",

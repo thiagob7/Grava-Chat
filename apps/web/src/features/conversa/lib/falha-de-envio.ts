@@ -1,6 +1,6 @@
-import { adiantaInsistir, ehMotivoDeFalha, type MotivoDeFalha } from "@gravae/shared";
+import { helpsInsist, isFailureReason, type FailureReason } from "@gravae/shared";
 
-const CHAVES: Record<MotivoDeFalha, string> = {
+const KEYS: Record<FailureReason, string> = {
   "sem-conexao": "conversa.falha.semConexao",
   "sem-acesso": "conversa.falha.semAcesso",
   "sem-permissao": "conversa.falha.semPermissao",
@@ -13,14 +13,14 @@ const CHAVES: Record<MotivoDeFalha, string> = {
   erro: "conversa.falha.erro",
 };
 
-export const motivoDaFalha = (erro: unknown): MotivoDeFalha => {
-  const motivo = (erro as { motivo?: unknown } | null)?.motivo;
+export const failureReason = (error: unknown): FailureReason => {
+  const reason = (error as { reason?: unknown } | null)?.reason;
 
-  return ehMotivoDeFalha(motivo) ? motivo : "erro";
+  return isFailureReason(reason) ? reason : "erro";
 };
 
-export const chaveDaFalha = (motivo: MotivoDeFalha | undefined) =>
-  CHAVES[motivo && ehMotivoDeFalha(motivo) ? motivo : "erro"];
+export const failureKey = (reason: FailureReason | undefined) =>
+  KEYS[reason && isFailureReason(reason) ? reason : "erro"];
 
-export const podeTentarDeNovo = (motivo: MotivoDeFalha | undefined) =>
-  !motivo || !ehMotivoDeFalha(motivo) ? true : adiantaInsistir(motivo);
+export const newCanTry = (reason: FailureReason | undefined) =>
+  !reason || !isFailureReason(reason) ? true : helpsInsist(reason);

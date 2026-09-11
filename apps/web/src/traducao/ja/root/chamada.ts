@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "チャットを下に移す",
+    paraOLado: "チャットを横に移す",
+  },
+  aparelhoNovo: {
+    microfone: "新しいマイクが見つかりました",
+    saida: "新しい音声出力が見つかりました",
+    apareceu: "{{nome}} が現れました。",
+    falarPorEle: "こちらで話しますか？",
+    ouvirPorEle: "こちらで聞きますか？",
+    trocaNaHora: "切り替えはすぐ反映され、通話から出る必要はありません。",
+    naoSugerir: "この機器を今後すすめない",
+    trocar: "こちらに切り替える",
+  },
   conectando: "通話に接続しています…",
   naoEntrou: "通話に参加できませんでした",
   sair: "通話から退出",

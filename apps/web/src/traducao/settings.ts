@@ -42,88 +42,88 @@ export const languages = [
 export const defaultNS = "traducao";
 export const storageKey = "gravae:idioma";
 
-export type Idioma = (typeof languages)[number];
+export type Language = (typeof languages)[number];
 
-export type Catalogo = typeof ptBR;
+export type Catalog = typeof ptBR;
 
-export interface DadosDoIdioma {
-  lng: Idioma;
-  nativo: string;
-  nome: string;
-  bandeira: string;
+export interface LanguageData {
+  lng: Language;
+  native: string;
+  name: string;
+  flag: string;
   rtl?: boolean;
 }
 
-export const IDIOMAS: DadosDoIdioma[] = [
+export const LANGUAGES: LanguageData[] = [
   {
     lng: "pt-BR",
-    nativo: "Português do Brasil",
-    nome: "Português do Brasil",
-    bandeira: "🇧🇷",
+    native: "Português do Brasil",
+    name: "Português do Brasil",
+    flag: "🇧🇷",
   },
-  { lng: "ar", nativo: "العربية", nome: "Árabe", bandeira: "🇸🇦", rtl: true },
-  { lng: "bg", nativo: "Български", nome: "Búlgaro", bandeira: "🇧🇬" },
-  { lng: "cs", nativo: "Čeština", nome: "Tcheco", bandeira: "🇨🇿" },
-  { lng: "da", nativo: "Dansk", nome: "Dinamarquês", bandeira: "🇩🇰" },
-  { lng: "de", nativo: "Deutsch", nome: "Alemão", bandeira: "🇩🇪" },
-  { lng: "el", nativo: "Ελληνικά", nome: "Grego", bandeira: "🇬🇷" },
+  { lng: "ar", native: "العربية", name: "Árabe", flag: "🇸🇦", rtl: true },
+  { lng: "bg", native: "Български", name: "Búlgaro", flag: "🇧🇬" },
+  { lng: "cs", native: "Čeština", name: "Tcheco", flag: "🇨🇿" },
+  { lng: "da", native: "Dansk", name: "Dinamarquês", flag: "🇩🇰" },
+  { lng: "de", native: "Deutsch", name: "Alemão", flag: "🇩🇪" },
+  { lng: "el", native: "Ελληνικά", name: "Grego", flag: "🇬🇷" },
   {
     lng: "en-GB",
-    nativo: "English (UK)",
-    nome: "Inglês britânico",
-    bandeira: "🇬🇧",
+    native: "English (UK)",
+    name: "Inglês britânico",
+    flag: "🇬🇧",
   },
-  { lng: "en-US", nativo: "English (US)", nome: "Inglês", bandeira: "🇺🇸" },
+  { lng: "en-US", native: "English (US)", name: "Inglês", flag: "🇺🇸" },
   {
     lng: "es-419",
-    nativo: "Español de Latinoamérica",
-    nome: "Espanhol latino",
-    bandeira: "🇲🇽",
+    native: "Español de Latinoamérica",
+    name: "Espanhol latino",
+    flag: "🇲🇽",
   },
   {
     lng: "es-ES",
-    nativo: "Español de España",
-    nome: "Espanhol",
-    bandeira: "🇪🇸",
+    native: "Español de España",
+    name: "Espanhol",
+    flag: "🇪🇸",
   },
-  { lng: "fi", nativo: "Suomi", nome: "Finlandês", bandeira: "🇫🇮" },
-  { lng: "fr", nativo: "Français", nome: "Francês", bandeira: "🇫🇷" },
-  { lng: "he", nativo: "עברית", nome: "Hebraico", bandeira: "🇮🇱", rtl: true },
-  { lng: "hi", nativo: "हिन्दी", nome: "Híndi", bandeira: "🇮🇳" },
-  { lng: "hr", nativo: "Hrvatski", nome: "Croata", bandeira: "🇭🇷" },
-  { lng: "hu", nativo: "Magyar", nome: "Húngaro", bandeira: "🇭🇺" },
-  { lng: "id", nativo: "Bahasa Indonesia", nome: "Indonésio", bandeira: "🇮🇩" },
-  { lng: "it", nativo: "Italiano", nome: "Italiano", bandeira: "🇮🇹" },
-  { lng: "ja", nativo: "日本語", nome: "Japonês", bandeira: "🇯🇵" },
-  { lng: "ko", nativo: "한국어", nome: "Coreano", bandeira: "🇰🇷" },
-  { lng: "lt", nativo: "Lietuvių", nome: "Lituano", bandeira: "🇱🇹" },
-  { lng: "nl", nativo: "Nederlands", nome: "Holandês", bandeira: "🇳🇱" },
-  { lng: "no", nativo: "Norsk", nome: "Norueguês", bandeira: "🇳🇴" },
-  { lng: "pl", nativo: "Polski", nome: "Polonês", bandeira: "🇵🇱" },
-  { lng: "ro", nativo: "Română", nome: "Romeno", bandeira: "🇷🇴" },
-  { lng: "ru", nativo: "Русский", nome: "Russo", bandeira: "🇷🇺" },
-  { lng: "sv-SE", nativo: "Svenska", nome: "Sueco", bandeira: "🇸🇪" },
-  { lng: "th", nativo: "ไทย", nome: "Tailandês", bandeira: "🇹🇭" },
-  { lng: "tr", nativo: "Türkçe", nome: "Turco", bandeira: "🇹🇷" },
-  { lng: "uk", nativo: "Українська", nome: "Ucraniano", bandeira: "🇺🇦" },
-  { lng: "vi", nativo: "Tiếng Việt", nome: "Vietnamita", bandeira: "🇻🇳" },
+  { lng: "fi", native: "Suomi", name: "Finlandês", flag: "🇫🇮" },
+  { lng: "fr", native: "Français", name: "Francês", flag: "🇫🇷" },
+  { lng: "he", native: "עברית", name: "Hebraico", flag: "🇮🇱", rtl: true },
+  { lng: "hi", native: "हिन्दी", name: "Híndi", flag: "🇮🇳" },
+  { lng: "hr", native: "Hrvatski", name: "Croata", flag: "🇭🇷" },
+  { lng: "hu", native: "Magyar", name: "Húngaro", flag: "🇭🇺" },
+  { lng: "id", native: "Bahasa Indonesia", name: "Indonésio", flag: "🇮🇩" },
+  { lng: "it", native: "Italiano", name: "Italiano", flag: "🇮🇹" },
+  { lng: "ja", native: "日本語", name: "Japonês", flag: "🇯🇵" },
+  { lng: "ko", native: "한국어", name: "Coreano", flag: "🇰🇷" },
+  { lng: "lt", native: "Lietuvių", name: "Lituano", flag: "🇱🇹" },
+  { lng: "nl", native: "Nederlands", name: "Holandês", flag: "🇳🇱" },
+  { lng: "no", native: "Norsk", name: "Norueguês", flag: "🇳🇴" },
+  { lng: "pl", native: "Polski", name: "Polonês", flag: "🇵🇱" },
+  { lng: "ro", native: "Română", name: "Romeno", flag: "🇷🇴" },
+  { lng: "ru", native: "Русский", name: "Russo", flag: "🇷🇺" },
+  { lng: "sv-SE", native: "Svenska", name: "Sueco", flag: "🇸🇪" },
+  { lng: "th", native: "ไทย", name: "Tailandês", flag: "🇹🇭" },
+  { lng: "tr", native: "Türkçe", name: "Turco", flag: "🇹🇷" },
+  { lng: "uk", native: "Українська", name: "Ucraniano", flag: "🇺🇦" },
+  { lng: "vi", native: "Tiếng Việt", name: "Vietnamita", flag: "🇻🇳" },
   {
     lng: "zh-CN",
-    nativo: "简体中文",
-    nome: "Chinês simplificado",
-    bandeira: "🇨🇳",
+    native: "简体中文",
+    name: "Chinês simplificado",
+    flag: "🇨🇳",
   },
   {
     lng: "zh-TW",
-    nativo: "繁體中文",
-    nome: "Chinês tradicional",
-    bandeira: "🇹🇼",
+    native: "繁體中文",
+    name: "Chinês tradicional",
+    flag: "🇹🇼",
   },
 ];
 
-export const ehRtl = (lng: Idioma): boolean =>
-  IDIOMAS.find((idioma) => idioma.lng === lng)?.rtl === true;
+export const isRtl = (lng: Language): boolean =>
+  LANGUAGES.find((language) => language.lng === lng)?.rtl === true;
 
 export { ptBR };
 
-export const pastaDoIdioma = (lng: string) => lng.toLowerCase();
+export const languageFolder = (lng: string) => lng.toLowerCase();

@@ -30,9 +30,9 @@
   ],
   "--color-line": [
     "--border-color",
-    "--background-header-secondary",
     "--panel-control-border",
-    "--settings-border-color"
+    "--settings-border-color",
+    "--background-modifier-accent"
   ],
   "--color-campo": [
     "--background-textarea",
@@ -48,7 +48,9 @@
     "--background-secondary-lighter"
   ],
   "--color-cabecalho": [
-    "--background-channel-header"
+    "--background-channel-header",
+    "--background-secondary-lighter",
+    "--settings-surface-background"
   ],
   "--color-painel": [
     "--background-secondary-alt",

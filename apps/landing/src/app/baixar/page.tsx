@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Apple, Globe, Monitor } from "lucide-react";
 
-import { Cabecalho } from "~/components/Cabecalho";
-import { Rodape } from "~/components/Rodape";
-import { VersaoPublicada } from "~/components/VersaoPublicada";
+import { Header } from "~/components/Cabecalho";
+import { Footer } from "~/components/Rodape";
+import { VersionPublished } from "~/components/VersaoPublicada";
 import { LINK_MAC, LINK_RELEASES, LINK_WINDOWS } from "~/lib/release";
 
 export const metadata: Metadata = {
@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 
 const APP = "https://gravae-chat.vercel.app";
 
-export default function Baixar() {
+export default function Download() {
   return (
     <>
-      <Cabecalho />
+      <Header />
 
       <main className="mx-auto max-w-3xl px-6 py-20">
         <h1 className="text-center text-4xl font-bold">Baixar o Gravaê</h1>
@@ -26,34 +26,34 @@ export default function Baixar() {
         </p>
 
         <p className="mt-3 text-center text-xs text-ink-faint">
-          <VersaoPublicada />
+          <VersionPublished />
         </p>
 
         <div className="mt-12 space-y-4">
-          <Opcao
-            icone={<Apple size={22} />}
-            titulo="macOS"
-            detalhe="Intel e Apple Silicon no mesmo arquivo · macOS 11+"
+          <Choice
+            icon={<Apple size={22} />}
+            title="macOS"
+            detail="Intel e Apple Silicon no mesmo arquivo · macOS 11+"
             href={LINK_MAC}
-            acao="Baixar .dmg"
-            aviso="Na primeira vez, o macOS avisa que não conseguiu verificar o desenvolvedor: Ajustes do Sistema → Privacidade e Segurança → Abrir Assim Mesmo. Só uma vez."
+            action="Baixar .dmg"
+            notice="Na primeira vez, o macOS avisa que não conseguiu verificar o desenvolvedor: Ajustes do Sistema → Privacidade e Segurança → Abrir Assim Mesmo. Só uma vez."
           />
 
-          <Opcao
-            icone={<Monitor size={22} />}
-            titulo="Windows"
-            detalhe="64 bits · Windows 10 ou mais novo"
+          <Choice
+            icon={<Monitor size={22} />}
+            title="Windows"
+            detail="64 bits · Windows 10 ou mais novo"
             href={LINK_WINDOWS}
-            acao="Baixar .exe"
-            aviso="Se o Windows avisar, clique em Mais informações → Executar assim mesmo. É porque o instalador não tem certificado pago."
+            action="Baixar .exe"
+            notice="Se o Windows avisar, clique em Mais informações → Executar assim mesmo. É porque o instalador não tem certificado pago."
           />
 
-          <Opcao
-            icone={<Globe size={22} />}
-            titulo="Navegador"
-            detalhe="Funciona sem instalar nada, em qualquer sistema"
+          <Choice
+            icon={<Globe size={22} />}
+            title="Navegador"
+            detail="Funciona sem instalar nada, em qualquer sistema"
             href={APP}
-            acao="Abrir o Gravaê"
+            action="Abrir o Gravaê"
           />
         </div>
 
@@ -83,45 +83,45 @@ export default function Baixar() {
         </div>
       </main>
 
-      <Rodape />
+      <Footer />
     </>
   );
 }
 
-const Opcao = ({
-  icone,
-  titulo,
-  detalhe,
+const Choice = ({
+  icon,
+  title,
+  detail,
   href,
-  acao,
-  aviso,
+  action,
+  notice,
 }: {
-  icone: React.ReactNode;
-  titulo: string;
-  detalhe: string;
+  icon: React.ReactNode;
+  title: string;
+  detail: string;
   href: string;
-  acao: string;
-  aviso?: string;
+  action: string;
+  notice?: string;
 }) => (
   <div className="rounded-xl border border-line bg-surface-1 p-6">
     <div className="flex flex-wrap items-center gap-4">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
-        {icone}
+        {icon}
       </span>
 
       <div className="min-w-0 flex-1">
-        <h2 className="text-lg font-semibold">{titulo}</h2>
-        <p className="mt-0.5 text-sm text-ink-muted">{detalhe}</p>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="mt-0.5 text-sm text-ink-muted">{detail}</p>
       </div>
 
       <a
         href={href}
         className="shrink-0 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover"
       >
-        {acao}
+        {action}
       </a>
     </div>
 
-    {aviso && <p className="mt-4 text-xs leading-relaxed text-ink-faint">{aviso}</p>}
+    {notice && <p className="mt-4 text-xs leading-relaxed text-ink-faint">{notice}</p>}
   </div>
 );

@@ -1,13 +1,13 @@
 
 
-const SELETOR_DE_VARIACAO = /\uFE0F/g;
+const VARIATION_PICKER = /\uFE0F/g;
 const ZWJ = "\u200D";
 
 export function codepointDoEmoji(emoji: string): string {
-  const texto = emoji.includes(ZWJ) ? emoji : emoji.replace(SELETOR_DE_VARIACAO, "");
+  const text = emoji.includes(ZWJ) ? emoji : emoji.replace(VARIATION_PICKER, "");
 
-  return [...texto]
-    .map((caractere) => caractere.codePointAt(0)!.toString(16))
+  return [...text]
+    .map((character) => character.codePointAt(0)!.toString(16))
     .join("-");
 }
 

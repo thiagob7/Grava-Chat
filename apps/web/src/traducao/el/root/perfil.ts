@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Δεν έγινε να ανοίξει αυτό το προφίλ.",
   carregando: "Φόρτωση…",
   editar: "Επεξεργασία προφίλ",
   mensagem: "Μήνυμα",

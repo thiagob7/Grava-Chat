@@ -1,4 +1,34 @@
 export const conversa = {
+  acenar: {
+    ilustracao: "Машущая ручка",
+    botao: "Помахать: {{nome}}",
+  },
+  oficial: {
+    titulo: "Этот канал только для официальных сообщений.",
+    detalhe: "Мы никогда не спрашиваем ваш пароль и токен аккаунта.",
+    saibaMais: "Подробнее",
+  },
+  topico: {
+    abrir: "Посмотреть описание канала",
+  },
+  previaDoLink: {
+    carregando: "Смотрю, что по ссылке…",
+    destino: "Ведёт на {{destino}}",
+  },
+  reacao: {
+    carregando: "Смотрю, кто отреагировал с {{emoji}}…",
+    uma: "{{nome}} отреагировал с {{emoji}}",
+    duas: "{{primeiro}} и {{segundo}} отреагировали с {{emoji}}",
+    varias: "{{nomes}} и ещё {{quantos}} отреагировали с {{emoji}}",
+    dicaSuper: "Удерживайте для суперреакции",
+  },
+  recado: {
+    gravar: "Записать голосовое",
+    descartar: "Выбросить запись",
+    mandar: "Отправить запись",
+    semSuporte: "Этот браузер не записывает звук.",
+    semMicrofone: "Нет доступа к микрофону.",
+  },
   lista: {
     carregando: "Загрузка сообщений…",
     carregandoMais: "Загрузка…",
@@ -196,6 +226,22 @@ export const conversa = {
     verImagem: "Посмотреть изображение",
   },
   enquete: {
+    criar: "Создать опрос",
+    pergunta: "Вопрос",
+    exemplo: "Во что сегодня играем?",
+    respostas: "Ответы",
+    adicionarOpcao: "Добавить вариант",
+    removerOpcao: "Убрать вариант",
+    varias: "Разрешить несколько ответов",
+    variasDetalhe: "Без этого голос за один вариант снимает голос с предыдущего.",
+    duracao: "Длительность",
+    umaHora: "1 час",
+    quatroHoras: "4 часа",
+    oitoHoras: "8 часов",
+    umDia: "1 день",
+    tresDias: "3 дня",
+    umaSemana: "1 неделя",
+    ateEncerrar: "Пока я сам не закрою",
     titulo: "Опрос",
     encerrada: "Опрос завершён",
     variasRespostas: "Опрос — несколько ответов",
@@ -253,6 +299,8 @@ export const conversa = {
     soOsQuePodeLer: "Поиск смотрит только в каналы, которые вы можете читать.",
   },
   entrada: {
+    semNome: "беседа",
+    anexo: "(вложение)",
     titulo: "Входящие",
     naoLidas: "Непрочитанные",
     salvas: "Сохранённые",

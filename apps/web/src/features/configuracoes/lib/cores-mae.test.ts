@@ -6,22 +6,22 @@ import Color from "color";
 import { describe, expect, it } from "vitest";
 
 import {
-  CORES_MAE,
-  MAES,
-  TOKENS_DERIVADOS,
-  completarComDerivacao,
-  derivar,
-  montarTema,
+  COLORS_BASE,
+  BASE,
+  TOKENS_DERIVED,
+  completeWithDerivation,
+  derive,
+  buildTheme,
 } from "~/features/configuracoes/lib/cores-mae";
 
-const raiz = dirname(fileURLToPath(import.meta.url));
+const root = dirname(fileURLToPath(import.meta.url));
 const css = readFileSync(
-  join(raiz, "..", "..", "..", "styles", "index.css"),
+  join(root, "..", "..", "..", "styles", "index.css"),
   "utf8",
 );
 
-function corDaReserva(valor: string): string {
-  let v = valor.trim();
+function reserveColor(value: string): string {
+  let v = value.trim();
 
   while (v.startsWith("var(")) {
     const virgula = v.indexOf(",");
@@ -32,21 +32,21 @@ function corDaReserva(valor: string): string {
   return v;
 }
 
-function coresDoTema(): Record<string, string> {
-  const inicio = css.indexOf("@theme {");
-  const corpo = css.slice(inicio, css.indexOf("\n}", inicio));
-  const cores: Record<string, string> = {};
+function themeColors(): Record<string, string> {
+  const start = css.indexOf("@theme {");
+  const body = css.slice(start, css.indexOf("\n}", start));
+  const colors: Record<string, string> = {};
 
-  for (const [, nome, valor] of corpo.matchAll(
+  for (const [, name, value] of body.matchAll(
     /^\s+(--color-[\w-]+):\s*([^;]+);/gm,
   )) {
-    if (nome && valor) cores[nome] = corDaReserva(valor);
+    if (name && value) colors[name] = reserveColor(value);
   }
 
-  return cores;
+  return colors;
 }
 
-const mesmaCor = (a: string, b: string) => {
+const sameColor = (a: string, b: string) => {
   const x = Color(a);
   const y = Color(b);
 
@@ -59,123 +59,123 @@ const mesmaCor = (a: string, b: string) => {
 
 describe("cores-mãe", () => {
   it("derivar o padrão devolve o tema base, cor por cor", () => {
-    const base = coresDoTema();
-    const diferentes: string[] = [];
+    const base = themeColors();
+    const different: string[] = [];
 
-    for (const id of MAES) {
-      const familia = CORES_MAE[id]!;
+    for (const id of BASE) {
+      const family = COLORS_BASE[id]!;
 
-      for (const [nome, valor] of Object.entries(
-        derivar(id, familia.padrao),
+      for (const [name, value] of Object.entries(
+        derive(id, family.fallback),
       )) {
-        const esperado = base[nome];
-        if (esperado && !mesmaCor(esperado, valor)) {
-          diferentes.push(`${nome}: base ${esperado} · derivado ${valor}`);
+        const expected = base[name];
+        if (expected && !sameColor(expected, value)) {
+          different.push(`${name}: base ${expected} · derivado ${value}`);
         }
       }
     }
 
-    expect(diferentes).toEqual([]);
+    expect(different).toEqual([]);
   });
 
   it("clarear a mãe do fundo escurece as bordas, em vez de sumir com elas", () => {
-    const escuro = derivar("fundo", "#1a181e");
-    const claro = derivar("fundo", "#f2f2f4");
+    const dark = derive("background", "#1a181e");
+    const light = derive("background", "#f2f2f4");
 
-    const luz = (cor: string) => Color(cor).lch().array()[0] ?? 0;
+    const luminance = (color: string) => Color(color).lch().array()[0] ?? 0;
 
-    expect(luz(escuro["--color-line"]!)).toBeGreaterThan(luz("#1a181e"));
-    expect(luz(claro["--color-line"]!)).toBeLessThan(luz("#f2f2f4"));
+    expect(luminance(dark["--color-line"]!)).toBeGreaterThan(luminance("#1a181e"));
+    expect(luminance(light["--color-line"]!)).toBeLessThan(luminance("#f2f2f4"));
   });
 
   it("o véu do modal continua escuro num tema claro", () => {
-    const claro = derivar("fundo", "#f2f2f4");
+    const light = derive("background", "#f2f2f4");
 
-    expect(Color(claro["--color-veu"]!).lch().array()[0]).toBeLessThan(20);
+    expect(Color(light["--color-veu"]!).lch().array()[0]).toBeLessThan(20);
   });
 
   it("o texto de cima do botão vira o polo oposto ao da marca", () => {
-    const luz = (cor: string) => Color(cor).lch().array()[0] ?? 0;
+    const luminance = (color: string) => Color(color).lch().array()[0] ?? 0;
 
-    expect(luz(derivar("marca", "#413cdd")["--color-sobre-marca"]!)).toBeGreaterThan(90);
-    expect(luz(derivar("marca", "#f7d56e")["--color-sobre-marca"]!)).toBeLessThan(10);
+    expect(luminance(derive("brand", "#413cdd")["--color-sobre-marca"]!)).toBeGreaterThan(90);
+    expect(luminance(derive("brand", "#f7d56e")["--color-sobre-marca"]!)).toBeLessThan(10);
   });
 
   it("a rampa do fundo respeita a ordem de luminosidade", () => {
-    const cores = derivar("fundo", "#123123");
-    const luz = (nome: string) => Color(cores[nome]!).lch().array()[0] ?? 0;
+    const colors = derive("background", "#123123");
+    const luminance = (name: string) => Color(colors[name]!).lch().array()[0] ?? 0;
 
-    expect(luz("--color-surface-0")).toBeLessThanOrEqual(luz("--color-surface-2"));
-    expect(luz("--color-surface-2")).toBeLessThanOrEqual(luz("--color-surface-3"));
-    expect(luz("--color-surface-3")).toBeLessThanOrEqual(luz("--color-surface-4"));
+    expect(luminance("--color-surface-0")).toBeLessThanOrEqual(luminance("--color-surface-2"));
+    expect(luminance("--color-surface-2")).toBeLessThanOrEqual(luminance("--color-surface-3"));
+    expect(luminance("--color-surface-3")).toBeLessThanOrEqual(luminance("--color-surface-4"));
   });
 
   it("o fator de saturação zerado entrega cinza", () => {
-    const cores = derivar("marca", "#413cdd", 0);
+    const colors = derive("brand", "#413cdd", 0);
 
-    for (const valor of Object.values(cores)) {
-      const [, croma = 0] = Color(valor).lch().array();
-      expect(croma).toBeLessThan(1);
+    for (const value of Object.values(colors)) {
+      const [, chroma = 0] = Color(value).lch().array();
+      expect(chroma).toBeLessThan(1);
     }
   });
 
   it("não deixa duas mães brigando pelo mesmo token", () => {
-    const todos = Object.values(CORES_MAE).flatMap((f) => [
-      f.mae,
-      ...f.filhas.map((c) => c.nome),
+    const all = Object.values(COLORS_BASE).flatMap((f) => [
+      f.base,
+      ...f.children.map((c) => c.name),
     ]);
 
-    expect(todos).toHaveLength(TOKENS_DERIVADOS.size);
+    expect(all).toHaveLength(TOKENS_DERIVED.size);
   });
 
   it("o que foi mexido à mão sobrevive a uma nova derivação", () => {
-    const meu = { "--color-surface-2": "#0d0d0d" };
+    const my = { "--color-surface-2": "#0d0d0d" };
 
-    const antes = montarTema({ fundo: "#1a181e" }, 1, meu);
-    const depois = montarTema({ fundo: "#2b1a3d" }, 1, meu);
+    const before = buildTheme({ background: "#1a181e" }, 1, my);
+    const after = buildTheme({ background: "#2b1a3d" }, 1, my);
 
-    expect(antes["--color-surface-2"]).toBe("#0d0d0d");
-    expect(depois["--color-surface-2"]).toBe("#0d0d0d");
+    expect(before["--color-surface-2"]).toBe("#0d0d0d");
+    expect(after["--color-surface-2"]).toBe("#0d0d0d");
 
-    expect(depois["--color-surface-3"]).not.toBe(antes["--color-surface-3"]);
+    expect(after["--color-surface-3"]).not.toBe(before["--color-surface-3"]);
   });
 
   it("sem mãe escolhida, o tema é só o que foi mexido à mão", () => {
-    expect(montarTema({}, 1, { "--color-ink": "#fff" })).toEqual({
+    expect(buildTheme({}, 1, { "--color-ink": "#fff" })).toEqual({
       "--color-ink": "#fff",
     });
   });
 
   it("preenche o que o tema não disse a partir do que ele disse", () => {
-    const doTema = { "--color-surface-0": "#1a0000" };
-    const resto = completarComDerivacao(doTema);
+    const fromTheme = { "--color-surface-0": "#1a0000" };
+    const rest = completeWithDerivation(fromTheme);
 
-    expect(resto["--color-palco"]).toBeTruthy();
-    expect(resto["--color-veu"]).toBeTruthy();
-    expect(resto["--color-line"]).toBeTruthy();
-    expect(resto["--color-hover"]).toBeTruthy();
+    expect(rest["--color-palco"]).toBeTruthy();
+    expect(rest["--color-veu"]).toBeTruthy();
+    expect(rest["--color-line"]).toBeTruthy();
+    expect(rest["--color-hover"]).toBeTruthy();
 
-    const [, croma = 0, matiz = 0] = Color(resto["--color-surface-3"]!)
+    const [, chroma = 0, hue = 0] = Color(rest["--color-surface-3"]!)
       .lch()
       .array();
-    expect(croma).toBeGreaterThan(1);
-    expect(Math.abs(matiz - (Color("#1a0000").lch().array()[2] ?? 0))).toBeLessThan(20);
+    expect(chroma).toBeGreaterThan(1);
+    expect(Math.abs(hue - (Color("#1a0000").lch().array()[2] ?? 0))).toBeLessThan(20);
   });
 
   it("não encosta no que o tema disse com todas as letras", () => {
-    const doTema = {
+    const fromTheme = {
       "--color-surface-0": "#1a0000",
       "--color-surface-3": "#00ff00",
       "--color-line": "#0000ff",
     };
 
-    const resto = completarComDerivacao(doTema);
+    const rest = completeWithDerivation(fromTheme);
 
-    expect(resto["--color-surface-3"]).toBeUndefined();
-    expect(resto["--color-line"]).toBeUndefined();
+    expect(rest["--color-surface-3"]).toBeUndefined();
+    expect(rest["--color-line"]).toBeUndefined();
   });
 
   it("sem cor de mãe no tema, não inventa nada", () => {
-    expect(completarComDerivacao({ "--color-mencao": "#fff" })).toEqual({});
+    expect(completeWithDerivation({ "--color-mencao": "#fff" })).toEqual({});
   });
 });

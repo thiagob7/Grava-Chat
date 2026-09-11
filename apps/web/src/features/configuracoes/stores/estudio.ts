@@ -1,471 +1,471 @@
 import { create } from "zustand";
 
-import existeNaReferencia from "~/features/configuracoes/lib/existe-na-referencia.json";
+import existsReference from "~/features/configuracoes/lib/existe-na-referencia.json";
 
-import { lerCabecalhoDoTema } from "@gravae/shared";
+import { readThemeHeader } from "@gravae/shared";
 
 import {
-  CORRECOES_DE_TEMA,
-  pareceTemaDeFora,
+  THEME_FIXES,
+  outsideLooksTheme,
 } from "~/features/configuracoes/lib/correcoes-de-tema";
-import { resolverAtivos } from "~/features/configuracoes/lib/ativos-do-tema";
+import { resolveActive } from "~/features/configuracoes/lib/ativos-do-tema";
 import {
-  completarComDerivacao,
-  montarTema,
+  completeWithDerivation,
+  buildTheme,
 } from "~/features/configuracoes/lib/cores-mae";
 import {
-  ID_DO_ESCUDO,
-  cssDoEscudo,
-  medirBase,
+  SHIELD_ID,
+  shieldCss,
+  measureBase,
 } from "~/features/configuracoes/lib/escudo-do-estudio";
-import { avisarTemaAplicado } from "~/features/configuracoes/lib/evento-de-tema";
+import { notifyThemeApplied } from "~/features/configuracoes/lib/evento-de-tema";
 import {
-  traduzirSeletoresTravados,
-  filtrarRegrasMortas,
+  translatePickersLocked,
+  filterRulesDead,
 } from "~/features/configuracoes/lib/normalizar-tema";
-import { temaDesligadoPelaUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
+import { themeOffByUrl } from "~/features/configuracoes/lib/saida-de-emergencia";
 import {
-  NOMES_DE_ORIGEM,
-  nomesDeclaradosNoTema,
-  traduzirTema,
+  ORIGIN_NAMES,
+  namesDeclaredTheme,
+  translateTheme,
 } from "~/features/configuracoes/lib/ponte-de-tema";
 
-export interface TemaSalvo {
+export interface ThemeSaved {
   id: string;
-  nome: string;
-  autor?: string | null;
-  versao?: string | null;
-  descricao?: string | null;
+  name: string;
+  author?: string | null;
+  version?: string | null;
+  description?: string | null;
   tags?: string[];
-  substituicoes: Record<string, string>;
-  coresMae?: Record<string, string>;
-  saturacao?: number;
-  manuais?: Record<string, string>;
+  overrides: Record<string, string>;
+  colorsBase?: Record<string, string>;
+  saturation?: number;
+  manual?: Record<string, string>;
   css: string;
-  aRisca?: boolean | null;
-  soOQueExisteLa?: boolean | null;
-  origemId?: string | null;
+  stripe?: boolean | null;
+  soExistsLa?: boolean | null;
+  originId?: string | null;
 }
 
-export interface AtivoDoTema {
+export interface ThemeActive {
   id: string;
-  nome: string;
+  name: string;
   url: string;
-  tipo: string;
+  kind: string;
   bytes?: number;
 }
 
-interface AtivoQueChegou {
-  nome: string;
+interface ActiveArrived {
+  name: string;
   url: string;
-  tipo?: string;
+  kind?: string;
   bytes?: number;
 }
 
-interface EstadoDoEstudio {
-  substituicoes: Record<string, string>;
-  coresMae: Record<string, string>;
-  saturacao: number;
-  manuais: Record<string, string>;
+interface StudioState {
+  overrides: Record<string, string>;
+  colorsBase: Record<string, string>;
+  saturation: number;
+  manual: Record<string, string>;
   css: string;
-  biblioteca: TemaSalvo[];
-  ativos: AtivoDoTema[];
-  ativoId: string | null;
-  aRisca: boolean | null;
-  soOQueExisteLa: boolean | null;
+  library: ThemeSaved[];
+  actives: ThemeActive[];
+  activeId: string | null;
+  stripe: boolean | null;
+  soExistsLa: boolean | null;
   /*
     De qual tema publicado o CSS de agora veio. Sem isso o tema importado
     congela: quem publicou solta uma versão nova e a cópia daqui nunca fica
     sabendo.
   */
-  origemId: string | null;
+  originId: string | null;
 }
 
-interface EstudioStore extends EstadoDoEstudio {
-  definirToken: (nome: string, valor: string | null) => void;
-  definirCorMae: (id: string, valor: string | null) => void;
-  definirSaturacao: (fator: number) => void;
-  definirCss: (css: string) => void;
-  salvarNaBiblioteca: (nome: string) => void;
-  aplicarDaBiblioteca: (id: string) => void;
-  apagarDaBiblioteca: (id: string) => void;
-  importar: (tema: {
-    substituicoes?: Record<string, string>;
+interface StudioStore extends StudioState {
+  setToken: (name: string, value: string | null) => void;
+  setColorBase: (id: string, value: string | null) => void;
+  setSaturation: (factor: number) => void;
+  setCss: (css: string) => void;
+  saveLibrary: (name: string) => void;
+  applyLibrary: (id: string) => void;
+  deleteLibrary: (id: string) => void;
+  doImport: (theme: {
+    overrides?: Record<string, string>;
     css?: string;
-    nome?: string;
-    ativos?: AtivoQueChegou[];
-    origemId?: string | null;
+    name?: string;
+    actives?: ActiveArrived[];
+    originId?: string | null;
   }) => void;
-  importarCssComoTema: (css: string, nomeDoArquivo?: string) => string;
-  atualizarNaBiblioteca: (id: string, dados: Partial<Omit<TemaSalvo, "id">>) => void;
-  duplicarDaBiblioteca: (id: string) => void;
-  alternarTema: (id: string) => void;
-  definirARisca: (aRisca: boolean) => void;
-  definirSoOQueExisteLa: (ligado: boolean) => void;
-  importarBiblioteca: (temas: TemaSalvo[]) => void;
-  guardarAtivo: (ativo: Omit<AtivoDoTema, "id">) => void;
-  apagarAtivo: (id: string) => void;
-  limparSubstituicoes: () => void;
-  limparTudo: () => void;
+  importCssAsTheme: (css: string, fileName?: string) => string;
+  updateLibrary: (id: string, data: Partial<Omit<ThemeSaved, "id">>) => void;
+  libraryDuplicate: (id: string) => void;
+  toggleTheme: (id: string) => void;
+  setStripe: (stripe: boolean) => void;
+  setSoExistsLa: (on: boolean) => void;
+  importLibrary: (themes: ThemeSaved[]) => void;
+  activeStore: (active: Omit<ThemeActive, "id">) => void;
+  deleteActive: (id: string) => void;
+  clearOverrides: () => void;
+  clearEverything: () => void;
 }
 
-const CHAVE = "gravae:estudio";
+const KEY = "gravae:estudio";
 
-let canal: BroadcastChannel | null = null;
-const VAZIO: EstadoDoEstudio = {
-  substituicoes: {},
-  coresMae: {},
-  saturacao: 1,
-  manuais: {},
+let channel: BroadcastChannel | null = null;
+const EMPTY: StudioState = {
+  overrides: {},
+  colorsBase: {},
+  saturation: 1,
+  manual: {},
   css: "",
-  biblioteca: [],
-  ativos: [],
-  ativoId: null,
-  aRisca: null,
-  soOQueExisteLa: null,
-  origemId: null,
+  library: [],
+  actives: [],
+  activeId: null,
+  stripe: null,
+  soExistsLa: null,
+  originId: null,
 };
 
-function ler(): EstadoDoEstudio {
+function read(): StudioState {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    if (!salvo) return VAZIO;
+    const saved = localStorage.getItem(KEY);
+    if (!saved) return EMPTY;
 
-    const guardado = JSON.parse(salvo) as Partial<EstadoDoEstudio>;
+    const kept = JSON.parse(saved) as Partial<StudioState>;
 
-    const escolheuARisca = (guardado.biblioteca ?? []).some((t) => t.aRisca !== undefined);
+    const pickedStripe = (kept.library ?? []).some((t) => t.stripe !== undefined);
 
     return {
-      ...VAZIO,
-      ...guardado,
-      manuais: guardado.manuais ?? guardado.substituicoes ?? {},
-      aRisca: escolheuARisca ? (guardado.aRisca ?? null) : null,
+      ...EMPTY,
+      ...kept,
+      manual: kept.manual ?? kept.overrides ?? {},
+      stripe: pickedStripe ? (kept.stripe ?? null) : null,
     };
   } catch {
-    return VAZIO;
+    return EMPTY;
   }
 }
 
-const SEM_TEMA = { coresMae: {}, saturacao: 1, manuais: {} };
+const WITHOUT_THEME = { colorsBase: {}, saturation: 1, manual: {} };
 
-function doTema(tema: TemaSalvo) {
+function fromTheme(theme: ThemeSaved) {
   return {
-    coresMae: { ...(tema.coresMae ?? {}) },
-    saturacao: tema.saturacao ?? 1,
-    manuais: { ...(tema.manuais ?? tema.substituicoes) },
+    colorsBase: { ...(theme.colorsBase ?? {}) },
+    saturation: theme.saturation ?? 1,
+    manual: { ...(theme.manual ?? theme.overrides) },
   };
 }
 
-const ID_DO_ESTILO = "gc-estudio-css";
-const ID_DAS_CORRECOES = "gc-correcoes-de-tema";
+const STYLE_ID = "gc-estudio-css";
+const FIXES_ID = "gc-correcoes-de-tema";
 
-const ehAJanelaDoEstudio = () =>
+const isStudioWindow = () =>
   typeof window !== "undefined" && window.location.pathname === "/estudio";
 
-let escritos = new Set<string>();
+let written = new Set<string>();
 
-function aplicar(estado: EstadoDoEstudio) {
-  const raiz = document.documentElement;
+function apply(state: StudioState) {
+  const root = document.documentElement;
 
-  for (const nome of escritos) {
-    if (!(nome in estado.substituicoes)) raiz.style.removeProperty(nome);
+  for (const name of written) {
+    if (!(name in state.overrides)) root.style.removeProperty(name);
   }
 
-  escritos = new Set(Object.keys(estado.substituicoes));
+  written = new Set(Object.keys(state.overrides));
 
-  if (ehAJanelaDoEstudio() || temaDesligadoPelaUrl()) {
-    avisarTemaAplicado();
+  if (isStudioWindow() || themeOffByUrl()) {
+    notifyThemeApplied();
     return;
   }
 
-  for (const [nome, valor] of Object.entries(estado.substituicoes)) {
-    raiz.style.setProperty(nome, valor);
+  for (const [name, value] of Object.entries(state.overrides)) {
+    root.style.setProperty(name, value);
   }
 
-  if (estado.saturacao === 1) raiz.style.removeProperty("--saturation-factor");
-  else raiz.style.setProperty("--saturation-factor", String(estado.saturacao));
+  if (state.saturation === 1) root.style.removeProperty("--saturation-factor");
+  else root.style.setProperty("--saturation-factor", String(state.saturation));
 
-  let estilo = document.getElementById(ID_DO_ESTILO);
-  if (!estilo) {
-    estilo = document.createElement("style");
-    estilo.id = ID_DO_ESTILO;
-    document.head.appendChild(estilo);
+  let style = document.getElementById(STYLE_ID);
+  if (!style) {
+    style = document.createElement("style");
+    style.id = STYLE_ID;
+    document.head.appendChild(style);
   }
 
-  const doAtivo = estado.biblioteca.find((t) => t.id === estado.ativoId);
-  const escolha = doAtivo ? doAtivo.aRisca : estado.aRisca;
+  const activeFrom = state.library.find((t) => t.id === state.activeId);
+  const selection = activeFrom ? activeFrom.stripe : state.stripe;
 
-  const aRisca = escolha ?? false;
+  const stripe = selection ?? false;
 
-  const escolhaDeExistir = doAtivo ? doAtivo.soOQueExisteLa : estado.soOQueExisteLa;
-  const soOQueExisteLa = escolhaDeExistir ?? true;
-  const cssVisto = soOQueExisteLa ? filtrarRegrasMortas(estado.css, existeNaReferencia) : estado.css;
+  const existChoice = activeFrom ? activeFrom.soExistsLa : state.soExistsLa;
+  const soExistsLa = existChoice ?? true;
+  const cssSeen = soExistsLa ? filterRulesDead(state.css, existsReference) : state.css;
 
-  const resolvido = resolverAtivos(
-    aRisca ? cssVisto : traduzirSeletoresTravados(cssVisto),
-    estado.ativos,
+  const resolved = resolveActive(
+    stripe ? cssSeen : translatePickersLocked(cssSeen),
+    state.actives,
   );
 
-  faltandoAgora = resolvido.faltando;
-  estilo.textContent = resolvido.css;
+  missingNow = resolved.missing;
+  style.textContent = resolved.css;
 
-  let correcoes = document.getElementById(ID_DAS_CORRECOES);
+  let fixes = document.getElementById(FIXES_ID);
 
-  if (pareceTemaDeFora(estado.css)) {
-    if (!correcoes) {
-      correcoes = document.createElement("style");
-      correcoes.id = ID_DAS_CORRECOES;
-      document.head.appendChild(correcoes);
+  if (outsideLooksTheme(state.css)) {
+    if (!fixes) {
+      fixes = document.createElement("style");
+      fixes.id = FIXES_ID;
+      document.head.appendChild(fixes);
     }
 
-    correcoes.textContent = CORRECOES_DE_TEMA;
+    fixes.textContent = THEME_FIXES;
   } else {
-    correcoes?.remove();
+    fixes?.remove();
   }
 
-  aplicarPonte(estado);
-  aplicarEscudo();
-  avisarTemaAplicado();
+  applyBridge(state);
+  applyShield();
+  notifyThemeApplied();
 }
 
-let faltandoAgora: string[] = [];
+let missingNow: string[] = [];
 
-export const ativosFaltando = () => faltandoAgora;
+export const activeMissing = () => missingNow;
 
-let escudoDe: string | null = null;
+let shieldFor: string | null = null;
 
-function aplicarEscudo() {
-  const variante = document.documentElement.dataset.tema ?? "";
-  if (escudoDe === variante) return;
+function applyShield() {
+  const variant = document.documentElement.dataset.tema ?? "";
+  if (shieldFor === variant) return;
 
-  let escudo = document.getElementById(ID_DO_ESCUDO);
+  let shield = document.getElementById(SHIELD_ID);
 
-  if (!escudo) {
-    escudo = document.createElement("style");
-    escudo.id = ID_DO_ESCUDO;
+  if (!shield) {
+    shield = document.createElement("style");
+    shield.id = SHIELD_ID;
   }
 
-  escudo.textContent = cssDoEscudo(medirBase(ID_DO_ESTILO));
-  document.head.appendChild(escudo);
-  escudoDe = variante;
+  shield.textContent = shieldCss(measureBase(STYLE_ID));
+  document.head.appendChild(shield);
+  shieldFor = variant;
 }
 
-export function revisarEscudo() {
-  escudoDe = null;
-  aplicarEscudo();
+export function reviewShield() {
+  shieldFor = null;
+  applyShield();
 }
 
-let daPonte = new Set<string>();
+let fromBridge = new Set<string>();
 
-function aplicarPonte(estado: EstadoDoEstudio) {
-  const raiz = document.documentElement;
+function applyBridge(state: StudioState) {
+  const root = document.documentElement;
 
-  for (const nome of daPonte) {
-    if (!(nome in estado.substituicoes)) raiz.style.removeProperty(nome);
+  for (const name of fromBridge) {
+    if (!(name in state.overrides)) root.style.removeProperty(name);
   }
 
-  daPonte = new Set();
+  fromBridge = new Set();
 
-  if (!estado.css.trim()) return;
+  if (!state.css.trim()) return;
 
-  const declarados = nomesDeclaradosNoTema(estado.css);
+  const declared = namesDeclaredTheme(state.css);
 
-  const lido = getComputedStyle(document.body ?? raiz);
-  const origens: Record<string, string> = {};
+  const read = getComputedStyle(document.body ?? root);
+  const origins: Record<string, string> = {};
 
-  for (const nome of NOMES_DE_ORIGEM) {
-    if (declarados.has(nome)) origens[nome] = lido.getPropertyValue(nome);
+  for (const name of ORIGIN_NAMES) {
+    if (declared.has(name)) origins[name] = read.getPropertyValue(name);
   }
 
-  const escolhidos = new Set(Object.keys(estado.substituicoes));
-  const traduzidos = traduzirTema(origens, escolhidos);
+  const picked = new Set(Object.keys(state.overrides));
+  const translated = translateTheme(origins, picked);
 
-  for (const [nome, valor] of Object.entries(
-    completarComDerivacao(traduzidos, estado.saturacao),
+  for (const [name, value] of Object.entries(
+    completeWithDerivation(translated, state.saturation),
   )) {
-    if (escolhidos.has(nome)) continue;
+    if (picked.has(name)) continue;
 
-    raiz.style.setProperty(nome, valor);
-    daPonte.add(nome);
+    root.style.setProperty(name, value);
+    fromBridge.add(name);
   }
 
 }
 
-export const useEstudio = create<EstudioStore>((set, store) => {
-  const guardar = (mudanca: Partial<EstadoDoEstudio>) => {
-    set(mudanca);
+export const useStudio = create<StudioStore>((set, store) => {
+  const keep = (change: Partial<StudioState>) => {
+    set(change);
 
     const {
       css,
-      biblioteca,
-      ativos,
-      ativoId,
-      coresMae,
-      saturacao,
-      manuais,
-      aRisca,
-      soOQueExisteLa,
-      origemId,
+      library,
+      actives,
+      activeId,
+      colorsBase,
+      saturation,
+      manual,
+      stripe,
+      soExistsLa,
+      originId,
     } = store();
 
-    const substituicoes = montarTema(coresMae, saturacao, manuais);
-    set({ substituicoes });
+    const overrides = buildTheme(colorsBase, saturation, manual);
+    set({ overrides });
 
-    const inteiro = {
-      substituicoes,
-      coresMae,
-      saturacao,
-      manuais,
+    const whole = {
+      overrides,
+      colorsBase,
+      saturation,
+      manual,
       css,
-      biblioteca,
-      ativos,
-      ativoId,
-      aRisca,
-      soOQueExisteLa,
-      origemId,
+      library,
+      actives,
+      activeId,
+      stripe,
+      soExistsLa,
+      originId,
     };
 
-    aplicar(inteiro);
+    apply(whole);
 
     try {
-      localStorage.setItem(CHAVE, JSON.stringify(inteiro));
+      localStorage.setItem(KEY, JSON.stringify(whole));
     } catch {
     }
 
-    canal?.postMessage(1);
+    channel?.postMessage(1);
   };
 
   return {
-    ...ler(),
+    ...read(),
 
-    definirToken: (nome, valor) => {
-      const manuais = { ...store().manuais };
-      if (valor === null) delete manuais[nome];
-      else manuais[nome] = valor;
+    setToken: (name, value) => {
+      const manual = { ...store().manual };
+      if (value === null) delete manual[name];
+      else manual[name] = value;
 
-      guardar({ manuais });
+      keep({ manual });
     },
 
-    definirCorMae: (id, valor) => {
-      const coresMae = { ...store().coresMae };
-      if (valor === null) delete coresMae[id];
-      else coresMae[id] = valor;
+    setColorBase: (id, value) => {
+      const colorsBase = { ...store().colorsBase };
+      if (value === null) delete colorsBase[id];
+      else colorsBase[id] = value;
 
-      guardar({ coresMae });
+      keep({ colorsBase });
     },
 
-    definirSaturacao: (fator) => guardar({ saturacao: fator }),
+    setSaturation: (factor) => keep({ saturation: factor }),
 
-    definirARisca: (aRisca) => {
-      const { ativoId, biblioteca } = store();
-      if (!ativoId) return guardar({ aRisca });
+    setStripe: (stripe) => {
+      const { activeId, library } = store();
+      if (!activeId) return keep({ stripe });
 
-      guardar({
-        aRisca,
-        biblioteca: biblioteca.map((t) => (t.id === ativoId ? { ...t, aRisca } : t)),
+      keep({
+        stripe,
+        library: library.map((t) => (t.id === activeId ? { ...t, stripe } : t)),
       });
     },
 
-    definirSoOQueExisteLa: (ligado) => {
-      const { ativoId, biblioteca } = store();
-      if (!ativoId) return guardar({ soOQueExisteLa: ligado });
+    setSoExistsLa: (on) => {
+      const { activeId, library } = store();
+      if (!activeId) return keep({ soExistsLa: on });
 
-      guardar({
-        soOQueExisteLa: ligado,
-        biblioteca: biblioteca.map((t) => (t.id === ativoId ? { ...t, soOQueExisteLa: ligado } : t)),
+      keep({
+        soExistsLa: on,
+        library: library.map((t) => (t.id === activeId ? { ...t, soExistsLa: on } : t)),
       });
     },
 
-    definirCss: (css) => guardar({ css }),
+    setCss: (css) => keep({ css }),
 
-    salvarNaBiblioteca: (nome) =>
-      guardar({
-        biblioteca: [
-          ...store().biblioteca,
+    saveLibrary: (name) =>
+      keep({
+        library: [
+          ...store().library,
           {
             id: crypto.randomUUID(),
-            nome,
-            substituicoes: { ...store().substituicoes },
-            coresMae: { ...store().coresMae },
-            saturacao: store().saturacao,
-            manuais: { ...store().manuais },
+            name,
+            overrides: { ...store().overrides },
+            colorsBase: { ...store().colorsBase },
+            saturation: store().saturation,
+            manual: { ...store().manual },
             css: store().css,
-            origemId: store().origemId,
+            originId: store().originId,
           },
         ],
       }),
 
-    aplicarDaBiblioteca: (id) => {
-      const tema = store().biblioteca.find((t) => t.id === id);
-      if (!tema) return;
+    applyLibrary: (id) => {
+      const theme = store().library.find((t) => t.id === id);
+      if (!theme) return;
 
-      guardar({
-        ...doTema(tema),
-        css: tema.css,
-        ativoId: id,
-        origemId: tema.origemId ?? null,
+      keep({
+        ...fromTheme(theme),
+        css: theme.css,
+        activeId: id,
+        originId: theme.originId ?? null,
       });
     },
 
-    alternarTema: (id) => {
-      const tema = store().biblioteca.find((t) => t.id === id);
-      if (!tema) return;
+    toggleTheme: (id) => {
+      const theme = store().library.find((t) => t.id === id);
+      if (!theme) return;
 
-      if (store().ativoId === id) {
-        guardar({ ...SEM_TEMA, css: "", ativoId: null, origemId: null });
+      if (store().activeId === id) {
+        keep({ ...WITHOUT_THEME, css: "", activeId: null, originId: null });
         return;
       }
 
-      guardar({
-        ...doTema(tema),
-        css: tema.css,
-        ativoId: id,
-        origemId: tema.origemId ?? null,
+      keep({
+        ...fromTheme(theme),
+        css: theme.css,
+        activeId: id,
+        originId: theme.originId ?? null,
       });
     },
 
-    atualizarNaBiblioteca: (id, dados) => {
-      const biblioteca = store().biblioteca.map((tema) =>
-        tema.id === id ? { ...tema, ...dados } : tema,
+    updateLibrary: (id, data) => {
+      const library = store().library.map((theme) =>
+        theme.id === id ? { ...theme, ...data } : theme,
       );
 
-      const valendo = store().ativoId === id;
-      const atual = biblioteca.find((t) => t.id === id);
+      const worth = store().activeId === id;
+      const current = library.find((t) => t.id === id);
 
-      guardar(
-        valendo && atual
-          ? { biblioteca, ...doTema(atual), css: atual.css }
-          : { biblioteca },
+      keep(
+        worth && current
+          ? { library, ...fromTheme(current), css: current.css }
+          : { library },
       );
     },
 
-    duplicarDaBiblioteca: (id) => {
-      const tema = store().biblioteca.find((t) => t.id === id);
-      if (!tema) return;
+    libraryDuplicate: (id) => {
+      const theme = store().library.find((t) => t.id === id);
+      if (!theme) return;
 
-      guardar({
-        biblioteca: [
-          ...store().biblioteca,
-          { ...tema, id: crypto.randomUUID(), nome: `${tema.nome} (cópia)` },
+      keep({
+        library: [
+          ...store().library,
+          { ...theme, id: crypto.randomUUID(), name: `${theme.name} (cópia)` },
         ],
       });
     },
 
-    importarCssComoTema: (css, nomeDoArquivo) => {
-      const cabecalho = lerCabecalhoDoTema(css);
+    importCssAsTheme: (css, fileName) => {
+      const header = readThemeHeader(css);
       const id = crypto.randomUUID();
 
-      guardar({
-        biblioteca: [
-          ...store().biblioteca,
+      keep({
+        library: [
+          ...store().library,
           {
             id,
-            nome: cabecalho.nome ?? nomeDoArquivo ?? "Tema sem nome",
-            autor: cabecalho.autor,
-            versao: cabecalho.versao,
-            descricao: cabecalho.descricao,
-            tags: cabecalho.tags,
-            substituicoes: {},
+            name: header.name ?? fileName ?? "Tema sem nome",
+            author: header.author,
+            version: header.version,
+            description: header.description,
+            tags: header.tags,
+            overrides: {},
             css,
           },
         ],
@@ -474,18 +474,18 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       return id;
     },
 
-    importarBiblioteca: (temas) =>
-      guardar({
-        biblioteca: [
-          ...store().biblioteca,
-          ...temas.map((tema) => ({ ...tema, id: crypto.randomUUID() })),
+    importLibrary: (themes) =>
+      keep({
+        library: [
+          ...store().library,
+          ...themes.map((theme) => ({ ...theme, id: crypto.randomUUID() })),
         ],
       }),
 
-    apagarDaBiblioteca: (id) =>
-      guardar({
-        biblioteca: store().biblioteca.filter((tema) => tema.id !== id),
-        ...(store().ativoId === id ? { ...SEM_TEMA, css: "", ativoId: null } : {}),
+    deleteLibrary: (id) =>
+      keep({
+        library: store().library.filter((theme) => theme.id !== id),
+        ...(store().activeId === id ? { ...WITHOUT_THEME, css: "", activeId: null } : {}),
       }),
 
     /*
@@ -493,61 +493,61 @@ export const useEstudio = create<EstudioStore>((set, store) => {
       estava aqui sai do caminho, senão o `gc-ativo()` do tema novo resolveria
       para a imagem do tema velho.
     */
-    importar: ({ substituicoes, css, ativos, origemId }) => {
-      const chegaram = (ativos ?? []).map((ativo) => ({
+    doImport: ({ overrides, css, actives, originId }) => {
+      const arrived = (actives ?? []).map((active) => ({
         id: crypto.randomUUID(),
-        nome: ativo.nome,
-        url: ativo.url,
-        tipo: ativo.tipo ?? "",
-        ...(ativo.bytes === undefined ? {} : { bytes: ativo.bytes }),
+        name: active.name,
+        url: active.url,
+        kind: active.kind ?? "",
+        ...(active.bytes === undefined ? {} : { bytes: active.bytes }),
       }));
 
-      const nomes = new Set(chegaram.map((ativo) => ativo.nome));
+      const names = new Set(arrived.map((active) => active.name));
 
-      guardar({
-        ...SEM_TEMA,
-        manuais: { ...(substituicoes ?? {}) },
+      keep({
+        ...WITHOUT_THEME,
+        manual: { ...(overrides ?? {}) },
         css: css ?? "",
-        ativos: [...store().ativos.filter((a) => !nomes.has(a.nome)), ...chegaram],
-        origemId: origemId ?? null,
+        actives: [...store().actives.filter((a) => !names.has(a.name)), ...arrived],
+        originId: originId ?? null,
       });
     },
 
-    guardarAtivo: (ativo) =>
-      guardar({ ativos: [...store().ativos, { ...ativo, id: crypto.randomUUID() }] }),
+    activeStore: (active) =>
+      keep({ actives: [...store().actives, { ...active, id: crypto.randomUUID() }] }),
 
-    apagarAtivo: (id) => guardar({ ativos: store().ativos.filter((a) => a.id !== id) }),
+    deleteActive: (id) => keep({ actives: store().actives.filter((a) => a.id !== id) }),
 
-    limparSubstituicoes: () => guardar({ ...SEM_TEMA }),
+    clearOverrides: () => keep({ ...WITHOUT_THEME }),
 
-    limparTudo: () =>
-      guardar({
-        ...SEM_TEMA,
+    clearEverything: () =>
+      keep({
+        ...WITHOUT_THEME,
         css: "",
-        biblioteca: [],
-        ativos: [],
-        ativoId: null,
-        origemId: null,
+        library: [],
+        actives: [],
+        activeId: null,
+        originId: null,
       }),
   };
 });
 
-aplicar(useEstudio.getState());
+apply(useStudio.getState());
 
-function receber() {
-  const chegou = ler();
+function receive() {
+  const arrived = read();
 
-  useEstudio.setState(chegou);
-  aplicar(chegou);
+  useStudio.setState(arrived);
+  apply(arrived);
 }
 
 if (typeof window !== "undefined") {
-  window.addEventListener("storage", (evento) => {
-    if (evento.key === CHAVE) receber();
+  window.addEventListener("storage", (event) => {
+    if (event.key === KEY) receive();
   });
 
   if (typeof BroadcastChannel !== "undefined") {
-    canal = new BroadcastChannel(CHAVE);
-    canal.onmessage = receber;
+    channel = new BroadcastChannel(KEY);
+    channel.onmessage = receive;
   }
 }

@@ -1,33 +1,33 @@
 import type { CSSProperties } from "react";
 
-import { FAMILIAS_DESLIGADAS, VAZIOS } from "./catalogo";
+import { FAMILIES_OFF, EMPTY } from "./catalogo";
 
-export type EstiloCss = CSSProperties & Record<`--${string}`, string | number | undefined>;
+export type StyleCss = CSSProperties & Record<`--${string}`, string | number | undefined>;
 
 export const PARADO = "0s";
 
-export function classeDoEnfeite(familia: string, id: string | null | undefined): string | null {
-  if (!id || VAZIOS.has(id) || FAMILIAS_DESLIGADAS.has(familia)) return null;
+export function charmClass(family: string, id: string | null | undefined): string | null {
+  if (!id || EMPTY.has(id) || FAMILIES_OFF.has(family)) return null;
 
-  return `gc-${familia}--${id}`;
+  return `gc-${family}--${id}`;
 }
 
-interface Variaveis {
-  cor1?: string | null;
-  cor2?: string | null;
-  fonte?: string | null;
-  animar?: boolean;
-  velocidade?: string;
+interface Variables {
+  color1?: string | null;
+  color2?: string | null;
+  font?: string | null;
+  animate?: boolean;
+  speed?: string;
 }
 
-export function variaveisDoEnfeite(v: Variaveis): EstiloCss | undefined {
-  const estilo: EstiloCss = {};
+export function charmVariables(v: Variables): StyleCss | undefined {
+  const style: StyleCss = {};
 
-  if (v.cor1) estilo["--gc-cor-1"] = v.cor1;
-  if (v.cor2) estilo["--gc-cor-2"] = v.cor2;
-  if (v.fonte) estilo["--gc-fonte"] = v.fonte;
+  if (v.color1) style["--gc-cor-1"] = v.color1;
+  if (v.color2) style["--gc-cor-2"] = v.color2;
+  if (v.font) style["--gc-fonte"] = v.font;
 
-  if (v.animar) estilo["--gc-vel"] = v.velocidade ?? "4s";
+  if (v.animate) style["--gc-vel"] = v.speed ?? "4s";
 
-  return Object.keys(estilo).length > 0 ? estilo : undefined;
+  return Object.keys(style).length > 0 ? style : undefined;
 }

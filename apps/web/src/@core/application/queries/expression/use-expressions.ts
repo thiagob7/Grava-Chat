@@ -17,7 +17,7 @@ import {
 import { apiErrorMessage } from "~/@core/lib/api";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 
-const VAZIO: ExpressionsModel = { emojis: [], stickers: [], sounds: [] };
+const EMPTY: ExpressionsModel = { emojis: [], stickers: [], sounds: [] };
 
 export const useFindExpressions = (guildId: string | undefined) => {
   const query = useQuery({
@@ -27,11 +27,11 @@ export const useFindExpressions = (guildId: string | undefined) => {
     staleTime: 5 * 60_000,
   });
 
-  return { ...query, data: query.data ?? VAZIO };
+  return { ...query, data: query.data ?? EMPTY };
 };
 
 export const useFindExpressionsOf = (guildIds: string[], enabled = true) => {
-  const resultados = useQueries({
+  const results = useQueries({
     queries: guildIds.map((id) => ({
       queryKey: queryKeys.expression.find_many(id),
       queryFn: () => findExpressions(id),
@@ -40,10 +40,10 @@ export const useFindExpressionsOf = (guildIds: string[], enabled = true) => {
     })),
   });
 
-  return guildIds.map((guildId, i) => ({ guildId, data: resultados[i]?.data ?? VAZIO }));
+  return guildIds.map((guildId, i) => ({ guildId, data: results[i]?.data ?? EMPTY }));
 };
 
-function useInvalidar(guildId: string | undefined) {
+function useInvalidate(guildId: string | undefined) {
   const queryClient = useQueryClient();
 
   return () => {
@@ -53,71 +53,71 @@ function useInvalidar(guildId: string | undefined) {
   };
 }
 
-const erro = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
+const error = (fallback: string) => (e: unknown) => toast.error(apiErrorMessage(e, fallback));
 
 export const useCreateEmoji = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: createEmoji,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Emoji adicionado.");
     },
-    onError: erro("Erro ao subir o emoji."),
+    onError: error("Erro ao subir o emoji."),
   });
 };
 
 export const useDeleteEmoji = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
-  return useMutation({ mutationFn: deleteEmoji, onSuccess: invalidar, onError: erro("Erro ao apagar.") });
+  return useMutation({ mutationFn: deleteEmoji, onSuccess: invalidate, onError: error("Erro ao apagar.") });
 };
 
 export const useCreateSticker = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: createSticker,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Figurinha adicionada.");
     },
-    onError: erro("Erro ao subir a figurinha."),
+    onError: error("Erro ao subir a figurinha."),
   });
 };
 
 export const useDeleteSticker = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
-  return useMutation({ mutationFn: deleteSticker, onSuccess: invalidar, onError: erro("Erro ao apagar.") });
+  return useMutation({ mutationFn: deleteSticker, onSuccess: invalidate, onError: error("Erro ao apagar.") });
 };
 
 export const useCreateSound = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: createSound,
     onSuccess: () => {
-      invalidar();
+      invalidate();
       toast.success("Som adicionado.");
     },
-    onError: erro("Erro ao subir o som."),
+    onError: error("Erro ao subir o som."),
   });
 };
 
 export const useUpdateSound = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
   return useMutation({
     mutationFn: updateSound,
-    onSuccess: invalidar,
-    onError: erro("Erro ao mudar o som."),
+    onSuccess: invalidate,
+    onError: error("Erro ao mudar o som."),
   });
 };
 
 export const useDeleteSound = (guildId: string | undefined) => {
-  const invalidar = useInvalidar(guildId);
+  const invalidate = useInvalidate(guildId);
 
-  return useMutation({ mutationFn: deleteSound, onSuccess: invalidar, onError: erro("Erro ao apagar.") });
+  return useMutation({ mutationFn: deleteSound, onSuccess: invalidate, onError: error("Erro ao apagar.") });
 };

@@ -1,23 +1,23 @@
 
 export const LINK = /https?:\/\/[^\s<]+/g;
 
-export const limparLink = (url: string) => url.replace(/[.,;:!?)\]}]+$/, "");
+export const clearLink = (url: string) => url.replace(/[.,;:!?)\]}]+$/, "");
 
-export const EH_IMAGEM = /\.(gif|png|jpe?g|webp|avif)(\?|#|$)/i;
+export const IS_IMAGE = /\.(gif|png|jpe?g|webp|avif)(\?|#|$)/i;
 
 export const SO_UM_LINK = /^https?:\/\/\S+$/;
 
-export function extrairLinks(conteudo: string, maximo = 3): string[] {
-  const achados = new Set<string>();
+export function extractLinks(content: string, max = 3): string[] {
+  const matches = new Set<string>();
 
-  for (const [bruto] of conteudo.matchAll(LINK)) {
-    const url = limparLink(bruto);
+  for (const [raw] of content.matchAll(LINK)) {
+    const url = clearLink(raw);
 
-    if (EH_IMAGEM.test(url)) continue;
+    if (IS_IMAGE.test(url)) continue;
 
-    achados.add(url);
-    if (achados.size >= maximo) break;
+    matches.add(url);
+    if (matches.size >= max) break;
   }
 
-  return [...achados];
+  return [...matches];
 }

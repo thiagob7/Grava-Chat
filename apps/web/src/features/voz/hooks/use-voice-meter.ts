@@ -1,25 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 
-import { criarMedidorDeTeste } from "~/features/voz/lib/audio-gate";
+import { createTestMeter } from "~/features/voz/lib/audio-gate";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
-interface Medicao {
-  nivel: number;
-  aberto: boolean;
-  erro: string | null;
+interface Measurement {
+  level: number;
+  isOpen: boolean;
+  error: string | null;
   stream: MediaStream | null;
 }
 
-export function useVoiceMeter(ativo: boolean): Medicao {
-  const emChamada = useVoiceStore((s) => s.channelId !== null);
-  const observarNivel = useVoiceStore((s) => s.observarNivel);
+export function useVoiceMeter(active: boolean): Measurement {
+  const inCall = useVoiceStore((s) => s.channelId !== null);
+  const observeLevel = useVoiceStore((s) => s.observeLevel);
   const prefs = useVoicePrefs();
 
-  const [medicao, setMedicao] = useState<Medicao>({
-    nivel: 0,
-    aberto: false,
-    erro: null,
+  const [measurement, setMeasurement] = useState<Measurement>({
+    level: 0,
+    isOpen: false,
+    error: null,
     stream: null,
   });
 
@@ -27,56 +27,56 @@ export function useVoiceMeter(ativo: boolean): Medicao {
   prefsRef.current = prefs;
 
   useEffect(() => {
-    if (!ativo) {
-      setMedicao({ nivel: 0, aberto: false, erro: null, stream: null });
+    if (!active) {
+      setMeasurement({ level: 0, isOpen: false, error: null, stream: null });
       return;
     }
 
-    if (emChamada) {
-      return observarNivel((nivel, aberto) =>
-        setMedicao((atual) => ({ ...atual, nivel, aberto, erro: null })),
+    if (inCall) {
+      return observeLevel((level, isOpen) =>
+        setMeasurement((current) => ({ ...current, level, isOpen, error: null })),
       );
     }
 
-    let vivo = true;
-    let parar: (() => void) | null = null;
-    let relogio: ReturnType<typeof setInterval> | null = null;
+    let live = true;
+    let stop: (() => void) | null = null;
+    let clock: ReturnType<typeof setInterval> | null = null;
 
-    void criarMedidorDeTeste(
-      prefsRef.current.entradaId ?? undefined,
-      prefsRef.current.supressaoDeRuido,
+    void createTestMeter(
+      prefsRef.current.entryId ?? undefined,
+      prefsRef.current.noiseSuppression,
     )
-      .then((medidor) => {
-        if (!vivo) return medidor.parar();
+      .then((meter) => {
+        if (!live) return meter.stop();
 
-        parar = medidor.parar;
-        setMedicao((atual) => ({ ...atual, stream: medidor.stream, erro: null }));
+        stop = meter.stop;
+        setMeasurement((current) => ({ ...current, stream: meter.stream, error: null }));
 
-        relogio = setInterval(() => {
-          const nivel = medidor.ler();
-          const { modo, sensibilidadeAutomatica, limiar } = prefsRef.current;
+        clock = setInterval(() => {
+          const level = meter.read();
+          const { mode, sensitivityAutomatic, threshold } = prefsRef.current;
 
-          const aberto =
-            modo === "ptt" ? false : nivel >= (sensibilidadeAutomatica ? 0.05 : limiar);
+          const isOpen =
+            mode === "ptt" ? false : level >= (sensitivityAutomatic ? 0.05 : threshold);
 
-          setMedicao((atual) => ({ ...atual, nivel, aberto }));
+          setMeasurement((current) => ({ ...current, level, isOpen }));
         }, 60);
       })
       .catch(() =>
-        setMedicao({
-          nivel: 0,
-          aberto: false,
+        setMeasurement({
+          level: 0,
+          isOpen: false,
           stream: null,
-          erro: "Não deu pra abrir o microfone. Confira a permissão no navegador.",
+          error: "Não deu pra abrir o microfone. Confira a permissão no navegador.",
         }),
       );
 
     return () => {
-      vivo = false;
-      if (relogio) clearInterval(relogio);
-      parar?.();
+      live = false;
+      if (clock) clearInterval(clock);
+      stop?.();
     };
-  }, [ativo, emChamada, observarNivel]);
+  }, [active, inCall, observeLevel]);
 
-  return medicao;
+  return measurement;
 }

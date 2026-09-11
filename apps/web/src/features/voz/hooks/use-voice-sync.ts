@@ -11,36 +11,36 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
   const channelId = useVoiceStore((s) => s.channelId);
   const tiles = useVoiceStore((s) => s.tiles);
 
-  const vistos = useRef(new Set<string>());
+  const seen = useRef(new Set<string>());
 
   useEffect(() => {
-    vistos.current = new Set();
+    seen.current = new Set();
   }, [channelId]);
 
   useEffect(() => {
     if (!guildId || !channelId) return;
 
-    const presentes = new Set(tiles.map((t) => t.identity));
-    for (const id of presentes) vistos.current.add(id);
+    const present = new Set(tiles.map((t) => t.identity));
+    for (const id of present) seen.current.add(id);
 
     queryClient.setQueryData(
       queryKeys.guild.find(guildId),
-      (antigo: GuildDetailModel | undefined) => {
-        if (!antigo) return antigo;
+      (old: GuildDetailModel | undefined) => {
+        if (!old) return old;
 
-        const semFantasmas = currentUserId
+        const withoutGhosts = currentUserId
           ? Object.fromEntries(
-              Object.entries(antigo.voiceStates).map(([id, estados]) => [
+              Object.entries(old.voiceStates).map(([id, states]) => [
                 id,
-                id === channelId ? estados : estados.filter((v) => v.userId !== currentUserId),
+                id === channelId ? states : states.filter((v) => v.userId !== currentUserId),
               ]),
             )
-          : antigo.voiceStates;
+          : old.voiceStates;
 
-        const atuais = semFantasmas[channelId] ?? [];
+        const current = withoutGhosts[channelId] ?? [];
 
-        const mantidos = atuais
-          .filter((v) => presentes.has(v.userId) || !vistos.current.has(v.userId))
+        const kept = current
+          .filter((v) => present.has(v.userId) || !seen.current.has(v.userId))
           .map((v) => {
             const tile = tiles.find((t) => t.identity === v.userId);
             if (!tile) return v;
@@ -52,27 +52,27 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
             };
           });
 
-        const faltando = tiles.filter((t) => !atuais.some((v) => v.userId === t.identity));
+        const missing = tiles.filter((t) => !current.some((v) => v.userId === t.identity));
 
-        const limpou = Object.entries(semFantasmas).some(
-          ([id, estados]) => estados.length !== (antigo.voiceStates[id] ?? []).length,
+        const cleared = Object.entries(withoutGhosts).some(
+          ([id, states]) => states.length !== (old.voiceStates[id] ?? []).length,
         );
 
-        const flagsIguais = mantidos.every((v, i) => {
-          const antes = atuais[i];
-          return antes && antes.camera === v.camera && antes.screenShare === v.screenShare;
+        const flagsEqual = kept.every((v, i) => {
+          const before = current[i];
+          return before && before.camera === v.camera && before.screenShare === v.screenShare;
         });
 
-        if (mantidos.length === atuais.length && !faltando.length && !limpou && flagsIguais) {
-          return antigo;
+        if (kept.length === current.length && !missing.length && !cleared && flagsEqual) {
+          return old;
         }
 
-        const sintetizados: VoiceState[] = faltando.map((t) => ({
+        const synthesized: VoiceState[] = missing.map((t) => ({
           userId: t.identity,
           channelId,
           guildId,
           socketId: "",
-          clienteId: null,
+          clientId: null,
           orphanedAt: null,
           joinedAt: Date.now(),
           selfMute: !t.micEnabled,
@@ -84,10 +84,10 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
         }));
 
         return {
-          ...antigo,
+          ...old,
           voiceStates: {
-            ...semFantasmas,
-            [channelId]: [...mantidos, ...sintetizados],
+            ...withoutGhosts,
+            [channelId]: [...kept, ...synthesized],
           },
         };
       },

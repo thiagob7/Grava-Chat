@@ -34,7 +34,7 @@ import { Slider } from "~/components/ui/slider";
 import { useConfirm } from "~/components/ui/confirm";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useTranslation } from "~/traducao";
-import { copiarTexto } from "~/lib/copiar";
+import { copyText } from "~/lib/copiar";
 
 interface VoiceMemberMenuProps {
   children: React.ReactNode;
@@ -44,8 +44,8 @@ interface VoiceMemberMenuProps {
   voiceState?: VoiceState;
   member?: GuildMember;
   roles: Role[];
-  canaisDeVoz: Channel[];
-  minhasPermissoes: Permission[];
+  voiceChannels: Channel[];
+  minePermissions: Permission[];
   currentUserId: string | undefined;
 }
 
@@ -57,8 +57,8 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   voiceState,
   member,
   roles,
-  canaisDeVoz,
-  minhasPermissoes,
+  voiceChannels,
+  minePermissions,
   currentUserId,
 }) => {
   const { t } = useTranslation();
@@ -68,21 +68,21 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
   const confirm = useConfirm();
   const setNickname = useSetNickname(guildId);
 
-  const volumes = useVoiceStore((s) => s.volumesLocais);
+  const volumes = useVoiceStore((s) => s.volumesLocal);
   const setVolumeLocal = useVoiceStore((s) => s.setVolumeLocal);
-  const silenciados = useVoiceStore((s) => s.silenciadosLocais);
+  const mutedIds = useVoiceStore((s) => s.mutedLocal);
   const micEnabled = useVoiceStore((s) => s.micEnabled);
   const deafened = useVoiceStore((s) => s.deafened);
   const toggleMic = useVoiceStore((s) => s.toggleMic);
   const toggleDeafen = useVoiceStore((s) => s.toggleDeafen);
-  const sair = useVoiceStore((s) => s.leave);
-  const toggleSilenciarLocal = useVoiceStore((s) => s.toggleSilenciarLocal);
+  const leave = useVoiceStore((s) => s.leave);
+  const toggleMuteLocal = useVoiceStore((s) => s.toggleMuteLocal);
 
-  const euMesmo = userId === currentUserId;
-  const permissoes = new Set(minhasPermissoes);
-  const pode = (p: Permission) => has(permissoes as Set<Permission>, p);
+  const euSame = userId === currentUserId;
+  const permissions = new Set(minePermissions);
+  const can = (p: Permission) => has(permissions as Set<Permission>, p);
 
-  const naChamada = Boolean(voiceState);
+  const inCall = Boolean(voiceState);
   const volume = Math.min(1, volumes[userId] ?? 1);
 
   return (
@@ -91,13 +91,13 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
       <ContextMenuContent data-gc="voz.voice-member-menu.context-menu-content">
         <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item" onSelect={() => navigate(`/channels/${guildId}`)}>
-          {euMesmo ? "Ver meu perfil" : "Perfil"}
+          {euSame ? "Ver meu perfil" : "Perfil"}
         </ContextMenuItem>
 
-        {euMesmo && (
+        {euSame && (
           <>
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--2"
-              disabled={!pode("CHANGE_NICKNAME") && !pode("MANAGE_NICKNAMES")}
+              disabled={!can("CHANGE_NICKNAME") && !can("MANAGE_NICKNAMES")}
               onSelect={() =>
                 void confirm({
                   title: t("chamada.membro.apelidoTitulo"),
@@ -119,7 +119,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               {t("chamada.membro.mudarMeuApelido")}
             </ContextMenuItem>
 
-            {naChamada && (
+            {inCall && (
               <>
                 <ContextMenuSeparator data-gc="voz.voice-member-menu.context-menu-separator" />
 
@@ -145,7 +145,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
                 <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--5"
                   className="text-danger"
-                  onSelect={() => void sair()}
+                  onSelect={() => void leave()}
                 >
                   {t("chamada.sair")}
                 </ContextMenuItem>
@@ -156,7 +156,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--6"
               onSelect={() => {
-                void copiarTexto(userId);
+                void copyText(userId);
                 toast.success(t("chamada.membro.idCopiado"));
               }}
             >
@@ -165,11 +165,11 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
           </>
         )}
 
-        {!euMesmo && (
+        {!euSame && (
           <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--7"
             onSelect={() =>
               openDm.mutate(userId, {
-                onSuccess: (canal) => navigate(`/dm/${canal.id}`),
+                onSuccess: (channel) => navigate(`/dm/${channel.id}`),
               })
             }
           >
@@ -177,7 +177,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
           </ContextMenuItem>
         )}
 
-        {!euMesmo && naChamada && (
+        {!euSame && inCall && (
           <>
             <ContextMenuSeparator data-gc="voz.voice-member-menu.context-menu-separator--3" />
             <ContextMenuLabel data-gc="voz.voice-member-menu.context-menu-label">
@@ -200,21 +200,21 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--8"
               onSelect={(e) => {
                 e.preventDefault();
-                toggleSilenciarLocal(userId);
+                toggleMuteLocal(userId);
               }}
             >
               {t("chamada.membro.silenciar")}
-              <Checkbox data-gc="voz.voice-member-menu.checkbox--3" readOnly checked={Boolean(silenciados[userId])} />
+              <Checkbox data-gc="voz.voice-member-menu.checkbox--3" readOnly checked={Boolean(mutedIds[userId])} />
             </ContextMenuItem>
           </>
         )}
 
-        {!euMesmo && (
+        {!euSame && (
           <>
             <ContextMenuSeparator data-gc="voz.voice-member-menu.context-menu-separator--4" />
 
             <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--9"
-              disabled={!pode("MANAGE_NICKNAMES")}
+              disabled={!can("MANAGE_NICKNAMES")}
               onSelect={() =>
                 void confirm({
                   title: t("chamada.membro.apelidoDeAlguem", { nome: displayName }),
@@ -236,21 +236,21 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               {t("chamada.membro.alterarApelido")}
             </ContextMenuItem>
 
-            {pode("MANAGE_ROLES") && (
+            {can("MANAGE_ROLES") && (
               <ContextMenuSub data-gc="voz.voice-member-menu.context-menu-sub">
                 <ContextMenuSubTrigger data-gc="voz.voice-member-menu.context-menu-sub-trigger">{t("chamada.membro.cargos")}</ContextMenuSubTrigger>
                 <ContextMenuSubContent data-gc="voz.voice-member-menu.context-menu-sub-content">
                   {roles
                     .filter((r) => !r.isEveryone)
                     .map((role) => {
-                      const tem = member?.roleIds.includes(role.id) ?? false;
+                      const has = member?.roleIds.includes(role.id) ?? false;
 
                       return (
                         <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--10"
                           key={role.id}
                           onSelect={(e) => {
                             e.preventDefault();
-                            const roleIds = tem
+                            const roleIds = has
                               ? (member?.roleIds ?? []).filter(
                                   (id) => id !== role.id,
                                 )
@@ -268,7 +268,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                             />
                             {role.name}
                           </span>
-                          <Checkbox data-gc="voz.voice-member-menu.checkbox--4" readOnly checked={tem} />
+                          <Checkbox data-gc="voz.voice-member-menu.checkbox--4" readOnly checked={has} />
                         </ContextMenuItem>
                       );
                     })}
@@ -282,41 +282,41 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
               </ContextMenuSub>
             )}
 
-            {naChamada && pode("MOVE_MEMBERS") && (
+            {inCall && can("MOVE_MEMBERS") && (
               <ContextMenuSub data-gc="voz.voice-member-menu.context-menu-sub--2">
                 <ContextMenuSubTrigger data-gc="voz.voice-member-menu.context-menu-sub-trigger--2">{t("chamada.membro.moverPara")}</ContextMenuSubTrigger>
                 <ContextMenuSubContent data-gc="voz.voice-member-menu.context-menu-sub-content--2">
-                  {canaisDeVoz
+                  {voiceChannels
                     .filter((c) => c.id !== voiceState?.channelId)
-                    .map((canal) => (
+                    .map((channel) => (
                       <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--12"
-                        key={canal.id}
+                        key={channel.id}
                         onSelect={() =>
-                          void moveMember(userId, canal.id).catch((e: Error) =>
+                          void moveMember(userId, channel.id).catch((e: Error) =>
                             toast.error(e.message),
                           )
                         }
                       >
-                        {canal.name}
+                        {channel.name}
                       </ContextMenuItem>
                     ))}
                 </ContextMenuSubContent>
               </ContextMenuSub>
             )}
 
-            {naChamada && (
+            {inCall && (
               <>
                 <ContextMenuSeparator data-gc="voz.voice-member-menu.context-menu-separator--5" />
 
                 <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--13"
-                  disabled={!pode("MUTE_MEMBERS")}
+                  disabled={!can("MUTE_MEMBERS")}
                   danger={voiceState?.serverMute}
                   onSelect={(e) => {
                     e.preventDefault();
                     void moderateVoice({
                       userId,
                       serverMute: !voiceState?.serverMute,
-                    }).catch((erro: Error) => toast.error(erro.message));
+                    }).catch((error: Error) => toast.error(error.message));
                   }}
                 >
                   {t("chamada.membro.silenciarNoServidor")}
@@ -327,14 +327,14 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                 </ContextMenuItem>
 
                 <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--14"
-                  disabled={!pode("DEAFEN_MEMBERS")}
+                  disabled={!can("DEAFEN_MEMBERS")}
                   danger={voiceState?.serverDeaf}
                   onSelect={(e) => {
                     e.preventDefault();
                     void moderateVoice({
                       userId,
                       serverDeaf: !voiceState?.serverDeaf,
-                    }).catch((erro: Error) => toast.error(erro.message));
+                    }).catch((error: Error) => toast.error(error.message));
                   }}
                 >
                   {t("chamada.membro.desativarAudioNoServidor")}
@@ -346,10 +346,10 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
 
                 <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--15"
                   danger
-                  disabled={!pode("MOVE_MEMBERS")}
+                  disabled={!can("MOVE_MEMBERS")}
                   onSelect={() =>
-                    void kickFromVoice(userId).catch((erro: Error) =>
-                      toast.error(erro.message),
+                    void kickFromVoice(userId).catch((error: Error) =>
+                      toast.error(error.message),
                     )
                   }
                 >

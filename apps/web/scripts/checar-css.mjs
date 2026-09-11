@@ -5,18 +5,18 @@ import { fileURLToPath } from "node:url";
 import postcss from "postcss";
 import tailwind from "@tailwindcss/postcss";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const ENTRADA = join(AQUI, "..", "src", "styles", "index.css");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ENTRY = join(HERE, "..", "src", "styles", "index.css");
 
 try {
-  const css = await readFile(ENTRADA, "utf8");
-  const { css: saida } = await postcss([tailwind()]).process(css, { from: ENTRADA });
+  const css = await readFile(ENTRY, "utf8");
+  const { css: output } = await postcss([tailwind()]).process(css, { from: ENTRY });
 
-  console.log(`css: ok — ${saida.split("\n").length} linhas geradas`);
-} catch (erro) {
-  console.error(`\n  O CSS não compila:\n\n  ${erro.message}\n`);
+  console.log(`css: ok — ${output.split("\n").length} linhas geradas`);
+} catch (error) {
+  console.error(`\n  O CSS não compila:\n\n  ${error.message}\n`);
 
-  if (typeof erro.showSourceCode === "function") console.error(erro.showSourceCode(false));
+  if (typeof error.showSourceCode === "function") console.error(error.showSourceCode(false));
 
   process.exit(1);
 }

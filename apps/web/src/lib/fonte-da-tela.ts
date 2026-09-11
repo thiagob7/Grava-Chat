@@ -1,27 +1,27 @@
 
-export interface FonteEmTransmissao {
-  nome: string;
-  icone: string | null;
+export interface FontBroadcast {
+  name: string;
+  icon: string | null;
 }
 
-const NOME_POR_SUPERFICIE: Record<string, string> = {
+const NAME_BY_SURFACE: Record<string, string> = {
   browser: "Uma aba do navegador",
   window: "Uma janela",
   monitor: "A tela inteira",
 };
 
-const EH_IDENTIFICADOR = /^(screen:|window:|[a-z-]+:\/\/)/i;
+const IS_IDENTIFIER = /^(screen:|window:|[a-z-]+:\/\/)/i;
 
-export function descreverFonte(
-  jaEscolhido: FonteEmTransmissao | null,
-  faixa: { label?: string; getSettings?: () => { displaySurface?: string } } | null | undefined,
-): FonteEmTransmissao | null {
-  if (jaEscolhido) return jaEscolhido;
+export function describeFont(
+  alreadyPicked: FontBroadcast | null,
+  track: { label?: string; getSettings?: () => { displaySurface?: string } } | null | undefined,
+): FontBroadcast | null {
+  if (alreadyPicked) return alreadyPicked;
 
-  const rotulo = faixa?.label?.trim() ?? "";
-  if (rotulo && !EH_IDENTIFICADOR.test(rotulo)) return { nome: rotulo, icone: null };
+  const label = track?.label?.trim() ?? "";
+  if (label && !IS_IDENTIFIER.test(label)) return { name: label, icon: null };
 
-  const superficie = faixa?.getSettings?.().displaySurface ?? "";
+  const surface = track?.getSettings?.().displaySurface ?? "";
 
-  return { nome: NOME_POR_SUPERFICIE[superficie] ?? "Sua tela", icone: null };
+  return { name: NAME_BY_SURFACE[surface] ?? "Sua tela", icon: null };
 }

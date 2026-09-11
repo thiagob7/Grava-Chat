@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Bu profil açılamadı.",
   carregando: "Yükleniyor…",
   editar: "Profili düzenle",
   mensagem: "Mesaj",

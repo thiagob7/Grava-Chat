@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "De chat naar onderen zetten",
+    paraOLado: "De chat naar de zijkant zetten",
+  },
+  aparelhoNovo: {
+    microfone: "Er is een nieuwe microfoon opgedoken",
+    saida: "Er is een nieuwe geluidsuitgang opgedoken",
+    apareceu: "{{nome}} dook op.",
+    falarPorEle: "Wil je daarmee praten?",
+    ouvirPorEle: "Wil je daarmee luisteren?",
+    trocaNaHora: "De wissel geldt meteen, zonder het gesprek te verlaten.",
+    naoSugerir: "Stel dit apparaat niet nog eens voor",
+    trocar: "Daarnaartoe wisselen",
+  },
   conectando: "Verbinden met het gesprek…",
   naoEntrou: "Kon niet deelnemen aan het gesprek",
   sair: "Gesprek verlaten",

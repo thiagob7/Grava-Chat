@@ -1,4 +1,4 @@
-import { enderecoDaConexao, type EstiloDePerfil } from "@gravae/shared";
+import { connectionAddress, type ProfileStyle } from "@gravae/shared";
 
 import type { UpdateProfileInput } from "~/validations/auth.js";
 import { AppError } from "~/lib/http.js";
@@ -11,46 +11,46 @@ import {
 } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 
-const JANELA_S = 2;
-const POR_JANELA = 10;
+const WINDOW_S = 2;
+const BY_WINDOW = 10;
 
-const TETO_DE_MENSAGENS = 10_000;
+const MESSAGES_CEILING = 10_000;
 
-const DIAS_DE_ARREPENDIMENTO = 15;
+const REGRET_DAYS = 15;
 
 export const meService = {
-  async pedirExclusao(userId: string) {
-    const donoDe = await prisma.guild.findMany({
+  async requestDeletion(userId: string) {
+    const owner = await prisma.guild.findMany({
       where: { ownerId: userId },
       select: { name: true, _count: { select: { members: true } } },
     });
 
-    const comGente = donoDe
+    const withFolks = owner
       .filter((g) => g._count.members > 1)
       .map((g) => g.name);
 
-    if (comGente.length) {
+    if (withFolks.length) {
       throw new AppError(
-        `Você ainda é dono de ${comGente.length === 1 ? "um servidor" : "servidores"} com outras pessoas (${comGente.join(", ")}). Passe a posse ou exclua ${comGente.length === 1 ? "ele" : "eles"} antes.`,
+        `Você ainda é dono de ${withFolks.length === 1 ? "um servidor" : "servidores"} com outras pessoas (${withFolks.join(", ")}). Passe a posse ou exclua ${withFolks.length === 1 ? "ele" : "eles"} antes.`,
       );
     }
 
-    const excluirEm = new Date(
-      Date.now() + DIAS_DE_ARREPENDIMENTO * 24 * 60 * 60 * 1000,
+    const deleteAt = new Date(
+      Date.now() + REGRET_DAYS * 24 * 60 * 60 * 1000,
     );
 
-    await userRepository.update(userId, { excluirEm });
+    await userRepository.update(userId, { deleteAt });
     await authService.revokeAll(userId);
 
-    return { excluirEm: excluirEm.toISOString() };
+    return { deleteAt: deleteAt.toISOString() };
   },
 
-  async cancelarExclusao(userId: string) {
-    await userRepository.update(userId, { excluirEm: null });
+  async cancelDeletion(userId: string) {
+    await userRepository.update(userId, { deleteAt: null });
   },
 
-  async exportar(userId: string) {
-    const [usuario, membros, amizades, mensagens, quantasMensagens] =
+  async doExport(userId: string) {
+    const [user, members, friendships, messages, countMessages] =
       await Promise.all([
         userRepository.findById(userId),
         prisma.guildMember.findMany({
@@ -75,105 +75,105 @@ export const meService = {
           where: { authorId: userId, deletedAt: null },
           select: { id: true, channelId: true, content: true, createdAt: true },
           orderBy: { createdAt: "desc" },
-          take: TETO_DE_MENSAGENS,
+          take: MESSAGES_CEILING,
         }),
         prisma.message.count({ where: { authorId: userId, deletedAt: null } }),
       ]);
 
-    if (!usuario) throw new AppError("Conta não encontrada", 404);
+    if (!user) throw new AppError("Conta não encontrada", 404);
 
     return {
-      geradoEm: new Date().toISOString(),
-      conta: {
-        id: usuario.id,
-        email: usuario.email,
-        username: usuario.username,
-        displayName: usuario.displayName,
-        bio: usuario.bio,
-        pronomes: usuario.pronomes,
-        criadaEm: usuario.createdAt.toISOString(),
-        aceitaPedidos: usuario.aceitaPedidos,
-        mostraAtividade: usuario.mostraAtividade,
-        mostraServidoresEmComum: usuario.mostraServidoresEmComum,
-        mostraAmigosEmComum: usuario.mostraAmigosEmComum,
-        permitirDmDeMembros: usuario.permitirDmDeMembros,
-        filtroDeSpam: usuario.filtroDeSpam,
+      generatedAt: new Date().toISOString(),
+      account: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        displayName: user.displayName,
+        bio: user.bio,
+        pronouns: user.pronouns,
+        createdAt: user.createdAt.toISOString(),
+        acceptedRequests: user.acceptedRequests,
+        showsActivity: user.showsActivity,
+        showsServersCommon: user.showsServersCommon,
+        showsFriendsCommon: user.showsFriendsCommon,
+        membersAllowDm: user.membersAllowDm,
+        spamFilter: user.spamFilter,
       },
-      servidores: membros.map((m) => ({
+      servers: members.map((m) => ({
         id: m.guild.id,
-        nome: m.guild.name,
-        entrouEm: m.joinedAt.toISOString(),
+        name: m.guild.name,
+        joinedAt: m.joinedAt.toISOString(),
       })),
-      amigos: amizades.map((a) => {
-        const outro = a.requester.id === userId ? a.addressee : a.requester;
+      friends: friendships.map((a) => {
+        const other = a.requester.id === userId ? a.addressee : a.requester;
         return {
-          id: outro.id,
-          username: outro.username,
-          desde: a.createdAt.toISOString(),
+          id: other.id,
+          username: other.username,
+          since: a.createdAt.toISOString(),
         };
       }),
-      mensagens: {
-        total: quantasMensagens,
-        incluidas: mensagens.length,
-        observacao:
-          quantasMensagens > mensagens.length
-            ? `Só as ${mensagens.length} mais recentes entraram neste arquivo.`
+      messages: {
+        total: countMessages,
+        included: messages.length,
+        note:
+          countMessages > messages.length
+            ? `Só as ${messages.length} mais recentes entraram neste arquivo.`
             : null,
-        lista: mensagens.map((m) => ({
+        list: messages.map((m) => ({
           id: m.id,
-          canalId: m.channelId,
-          conteudo: m.content,
-          quando: m.createdAt.toISOString(),
+          channelId: m.channelId,
+          content: m.content,
+          when: m.createdAt.toISOString(),
         })),
       },
     };
   },
 
   async updateProfile(userId: string, input: UpdateProfileInput) {
-    await respeitarVazao(userId);
+    await respectThroughput(userId);
 
-    if (input.perfil?.tagGuildId) {
-      await requirePodeVestirEtiqueta(userId, input.perfil.tagGuildId);
+    if (input.profile?.tagGuildId) {
+      await requireCanWearTag(userId, input.profile.tagGuildId);
     }
 
     return userRepository.update(userId, {
-      ...(input.aceitaPedidos !== undefined
-        ? { aceitaPedidos: input.aceitaPedidos }
+      ...(input.acceptedRequests !== undefined
+        ? { acceptedRequests: input.acceptedRequests }
         : {}),
-      ...(input.mostraAtividade !== undefined
-        ? { mostraAtividade: input.mostraAtividade }
+      ...(input.showsActivity !== undefined
+        ? { showsActivity: input.showsActivity }
         : {}),
-      ...(input.mostraServidoresEmComum !== undefined
-        ? { mostraServidoresEmComum: input.mostraServidoresEmComum }
+      ...(input.showsServersCommon !== undefined
+        ? { showsServersCommon: input.showsServersCommon }
         : {}),
-      ...(input.mostraAmigosEmComum !== undefined
-        ? { mostraAmigosEmComum: input.mostraAmigosEmComum }
+      ...(input.showsFriendsCommon !== undefined
+        ? { showsFriendsCommon: input.showsFriendsCommon }
         : {}),
-      ...(input.permitirDmDeMembros !== undefined
-        ? { permitirDmDeMembros: input.permitirDmDeMembros }
+      ...(input.membersAllowDm !== undefined
+        ? { membersAllowDm: input.membersAllowDm }
         : {}),
-      ...(input.filtroDeSpam !== undefined ? { filtroDeSpam: input.filtroDeSpam } : {}),
+      ...(input.spamFilter !== undefined ? { spamFilter: input.spamFilter } : {}),
       ...(input.displayName !== undefined
         ? { displayName: input.displayName }
         : {}),
       ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
       ...(input.bio !== undefined ? { bio: input.bio } : {}),
-      ...(input.pronomes !== undefined ? { pronomes: input.pronomes } : {}),
-      ...(input.perfil !== undefined
+      ...(input.pronouns !== undefined ? { pronouns: input.pronouns } : {}),
+      ...(input.profile !== undefined
         ? {
-            perfil: input.perfil
-              ? comConexoesLimpas(input.perfil)
+            profile: input.profile
+              ? withConnectionsClean(input.profile)
               : { unset: true },
           }
         : {}),
-      ...(input.statusPersonalizado !== undefined
+      ...(input.customStatus !== undefined
         ? {
-            statusPersonalizado: input.statusPersonalizado
+            customStatus: input.customStatus
               ? {
-                  texto: input.statusPersonalizado.texto,
-                  emoji: input.statusPersonalizado.emoji ?? null,
-                  expiraEm: input.statusPersonalizado.expiraEm
-                    ? new Date(input.statusPersonalizado.expiraEm)
+                  text: input.customStatus.text,
+                  emoji: input.customStatus.emoji ?? null,
+                  expiresAt: input.customStatus.expiresAt
+                    ? new Date(input.customStatus.expiresAt)
                     : null,
                 }
               : { unset: true },
@@ -183,34 +183,34 @@ export const meService = {
   },
 };
 
-function comConexoesLimpas(perfil: EstiloDePerfil): EstiloDePerfil {
-  if (!perfil.conexoes) return perfil;
+function withConnectionsClean(profile: ProfileStyle): ProfileStyle {
+  if (!profile.connections) return profile;
 
   return {
-    ...perfil,
-    conexoes: perfil.conexoes
-      .map((conexao) => ({
-        ...conexao,
-        valor: conexao.valor.trim().replace(/^@/, ""),
+    ...profile,
+    connections: profile.connections
+      .map((connection) => ({
+        ...connection,
+        value: connection.value.trim().replace(/^@/, ""),
       }))
-      .filter((conexao) => enderecoDaConexao(conexao) !== null),
+      .filter((connection) => connectionAddress(connection) !== null),
   };
 }
 
-async function requirePodeVestirEtiqueta(userId: string, guildId: string) {
-  const membro = await memberRepository.find(guildId, userId);
-  if (!membro) throw new AppError("Você não é membro desse servidor");
+async function requireCanWearTag(userId: string, guildId: string) {
+  const member = await memberRepository.find(guildId, userId);
+  if (!member) throw new AppError("Você não é membro desse servidor");
 
-  const etiquetas = await tagRepository.resolverMuitas([guildId]);
-  if (!etiquetas.has(guildId))
+  const tags = await tagRepository.resolveMany([guildId]);
+  if (!tags.has(guildId))
     throw new AppError("Esse servidor não tem etiqueta");
 }
 
-async function respeitarVazao(userId: string) {
-  const chave = `me:rate:${userId}`;
-  const usos = await redis.incr(chave);
+async function respectThroughput(userId: string) {
+  const key = `me:rate:${userId}`;
+  const uses = await redis.incr(key);
 
-  if (usos === 1) await redis.expire(chave, JANELA_S);
-  if (usos > POR_JANELA)
+  if (uses === 1) await redis.expire(key, WINDOW_S);
+  if (uses > BY_WINDOW)
     throw new AppError("Devagar — muitas alterações seguidas", 429);
 }

@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Acest profil nu a putut fi deschis.",
   carregando: "Se încarcă…",
   editar: "Editează profilul",
   mensagem: "Mesaj",

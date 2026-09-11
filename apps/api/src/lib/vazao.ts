@@ -1,10 +1,10 @@
 import type { FastifyRequest } from "fastify";
 import type { RateLimitOptions } from "@fastify/rate-limit";
 
-const TETO_POR_MINUTO = 300;
+const CEILING_BY_MINUTE = 300;
 
-export const politicaDeVazao = {
-  max: TETO_POR_MINUTO,
+export const throughputPolicy = {
+  max: CEILING_BY_MINUTE,
   timeWindow: "1 minute",
 
   skipOnError: true,

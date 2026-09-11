@@ -1,52 +1,52 @@
 import React from "react";
 import type { GuildEmoji } from "@gravae/shared";
 
-import { LinkDoTexto } from "~/features/conversa/components/LinkDoTexto";
+import { TextLink } from "~/features/conversa/components/LinkDoTexto";
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { EMOJI } from "~/features/expressao/lib/twemoji";
 
-import { BlocoDeCodigo } from "~/features/conversa/components/BlocoDeCodigo";
-import type { ResolverMencoes } from "~/features/conversa/hooks/use-mencoes";
-import { partirEmCodigo } from "~/features/conversa/lib/codigo";
+import { CodeBlock } from "~/features/conversa/components/BlocoDeCodigo";
+import type { ResolveMentions } from "~/features/conversa/hooks/use-mencoes";
+import { fromCode } from "~/features/conversa/lib/codigo";
 import {
-  partirEmAvisos,
-  ROTULO_DO_AVISO,
-  type TipoDeAviso,
+  fromNotices,
+  NOTICE_LABEL,
+  type NoticeKind,
 } from "~/features/conversa/lib/avisos";
-import { legivel } from "~/features/perfil/lib/contraste";
-import { MAX_IMAGEM_H, MAX_IMAGEM_W } from "~/lib/image";
-import { EH_IMAGEM, LINK, limparLink, SO_UM_LINK } from "~/features/conversa/lib/links";
+import { readable } from "~/features/perfil/lib/contraste";
+import { MAX_IMAGE_H, MAX_IMAGE_W } from "~/lib/image";
+import { IS_IMAGE, LINK, clearLink, SO_UM_LINK } from "~/features/conversa/lib/links";
 import { useLightbox } from "~/stores/lightbox";
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { i18next, useTranslation } from "~/traducao";
 import { cn } from "~/lib/utils";
-import { flxCls, type Lugares } from "~/lib/compat-de-tema";
+import { flxCls, type Places } from "~/lib/compat-de-tema";
 
-const RICO = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
+const RICH = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
 
 interface MessageContentProps {
   content: string;
   emojis: GuildEmoji[];
   className?: string;
-  mencoes?: ResolverMencoes;
-  blocos?: boolean;
+  mentions?: ResolveMentions;
+  blocks?: boolean;
 }
 
-const Pilula: React.FC<{
+const Pill: React.FC<{
   children: React.ReactNode;
-  cor?: string | null;
-  titulo?: string;
-  familia?: "mencao" | "everyone" | "here";
-}> = ({ children, cor, titulo, familia = "mencao" }) => (
+  color?: string | null;
+  title?: string;
+  family?: "mention" | "everyone" | "here";
+}> = ({ children, color, title, family = "mention" }) => (
   <span data-gc="conversa.message-content.span"
-    title={titulo}
-    className={cn("rounded px-1 py-px font-medium", flxCls("mencao"))}
+    title={title}
+    className={cn("rounded px-1 py-px font-medium", flxCls("mention"))}
     style={
-      cor
-        ? { color: legivel(cor), backgroundColor: `${legivel(cor)}26` }
+      color
+        ? { color: readable(color), backgroundColor: `${readable(color)}26` }
         : {
-            color: `var(--color-${familia})`,
-            backgroundColor: `color-mix(in srgb, var(--color-${familia}) 15%, transparent)`,
+            color: `var(--color-${family})`,
+            backgroundColor: `color-mix(in srgb, var(--color-${family}) 15%, transparent)`,
           }
     }
   >
@@ -54,97 +54,97 @@ const Pilula: React.FC<{
   </span>
 );
 
-function comTwemoji(texto: string, chave: string): React.ReactNode[] {
-  const achados = [...texto.matchAll(EMOJI)];
-  if (!achados.length) return [texto];
+function withTwemoji(text: string, key: string): React.ReactNode[] {
+  const matches = [...text.matchAll(EMOJI)];
+  if (!matches.length) return [text];
 
-  const partes: React.ReactNode[] = [];
-  let ultimo = 0;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
 
-  for (const achado of achados) {
-    const inicio = achado.index!;
-    if (inicio > ultimo) partes.push(texto.slice(ultimo, inicio));
+  for (const match of matches) {
+    const start = match.index!;
+    if (start > last) parts.push(text.slice(last, start));
 
-    partes.push(<Emoji data-gc="conversa.message-content.emoji" key={`${chave}-e${inicio}`} emoji={achado[0]} />);
-    ultimo = inicio + achado[0].length;
+    parts.push(<Emoji data-gc="conversa.message-content.emoji" key={`${key}-e${start}`} emoji={match[0]} />);
+    last = start + match[0].length;
   }
 
-  if (ultimo < texto.length) partes.push(texto.slice(ultimo));
+  if (last < text.length) parts.push(text.slice(last));
 
-  return partes;
+  return parts;
 }
 
-function enriquecer(
-  texto: string,
-  porNome: Map<string, GuildEmoji>,
-  chave: string,
-  mencoes?: ResolverMencoes,
+function enrich(
+  text: string,
+  byName: Map<string, GuildEmoji>,
+  key: string,
+  mentions?: ResolveMentions,
 ) {
-  const partes: React.ReactNode[] = [];
-  let ultimo = 0;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
 
-  for (const casamento of texto.matchAll(RICO)) {
-    const [inteiro, emoji, cargoId, usuarioId, todos] = casamento;
-    if (casamento.index === undefined) continue;
+  for (const match of text.matchAll(RICH)) {
+    const [whole, emoji, roleId, userId, all] = match;
+    if (match.index === undefined) continue;
 
-    const anterior = texto.slice(ultimo, casamento.index);
-    let pedaco: React.ReactNode = null;
-    const k = `${chave}-${casamento.index}`;
+    const anterior = text.slice(last, match.index);
+    let piece: React.ReactNode = null;
+    const k = `${key}-${match.index}`;
 
     if (emoji) {
-      const encontrado = porNome.get(emoji);
-      if (encontrado) {
-        pedaco = (
+      const found = byName.get(emoji);
+      if (found) {
+        piece = (
           <img data-gc="conversa.message-content.img"
             key={k}
-            src={encontrado.url}
-            alt={`:${encontrado.name}:`}
-            title={`:${encontrado.name}:`}
+            src={found.url}
+            alt={`:${found.name}:`}
+            title={`:${found.name}:`}
             className="inline-block size-6 align-text-bottom"
           />
         );
       }
-    } else if (cargoId) {
-      const cargo = mencoes?.cargos.get(cargoId);
-      pedaco = (
-        <Pilula data-gc="conversa.message-content.pilula" key={k} cor={cargo?.color} titulo={i18next.t("conversa.mencao.cargo")}>
-          @{cargo?.name ?? i18next.t("conversa.mencao.cargoSemNome")}
-        </Pilula>
+    } else if (roleId) {
+      const role = mentions?.roleList.get(roleId);
+      piece = (
+        <Pill data-gc="conversa.message-content.pill" key={k} color={role?.color} title={i18next.t("conversa.mencao.cargo")}>
+          @{role?.name ?? i18next.t("conversa.mencao.cargoSemNome")}
+        </Pill>
       );
-    } else if (usuarioId) {
-      pedaco = (
-        <Pilula data-gc="conversa.message-content.pilula--2" key={k} titulo={i18next.t("conversa.mencao.pessoa")}>
-          @{mencoes?.nomes.get(usuarioId) ?? i18next.t("conversa.mencao.alguem")}
-        </Pilula>
+    } else if (userId) {
+      piece = (
+        <Pill data-gc="conversa.message-content.pill--2" key={k} title={i18next.t("conversa.mencao.pessoa")}>
+          @{mentions?.names.get(userId) ?? i18next.t("conversa.mencao.alguem")}
+        </Pill>
       );
-    } else if (todos) {
-      pedaco = (
-        <Pilula data-gc="conversa.message-content.pilula--3"
+    } else if (all) {
+      piece = (
+        <Pill data-gc="conversa.message-content.pill--3"
           key={k}
-          familia={todos === "here" ? "here" : "everyone"}
-          titulo={i18next.t(
-            todos === "here" ? "conversa.mencao.here" : "conversa.mencao.everyone",
+          family={all === "here" ? "here" : "everyone"}
+          title={i18next.t(
+            all === "here" ? "conversa.mencao.here" : "conversa.mencao.everyone",
           )}
         >
-          @{todos}
-        </Pilula>
+          @{all}
+        </Pill>
       );
     }
 
-    if (!pedaco) continue;
+    if (!piece) continue;
 
-    if (anterior) partes.push(...comTwemoji(anterior, `${k}-a`));
-    partes.push(pedaco);
-    ultimo = casamento.index + inteiro.length;
+    if (anterior) parts.push(...withTwemoji(anterior, `${k}-a`));
+    parts.push(piece);
+    last = match.index + whole.length;
   }
 
-  if (!partes.length) return comTwemoji(texto, chave);
-  if (ultimo < texto.length) partes.push(...comTwemoji(texto.slice(ultimo), `${chave}-f`));
+  if (!parts.length) return withTwemoji(text, key);
+  if (last < text.length) parts.push(...withTwemoji(text.slice(last), `${key}-f`));
 
-  return partes;
+  return parts;
 }
 
-const COR_DO_AVISO: Record<TipoDeAviso, string> = {
+const NOTICE_COLOR: Record<NoticeKind, string> = {
   note: "var(--alert-note-color, var(--color-link))",
   tip: "var(--alert-tip-color, var(--color-online))",
   important: "var(--alert-important-color, var(--color-everyone))",
@@ -152,138 +152,138 @@ const COR_DO_AVISO: Record<TipoDeAviso, string> = {
   caution: "var(--alert-caution-color, var(--color-danger))",
 };
 
-const CLASSE_DO_AVISO: Record<TipoDeAviso, Lugares> = {
-  note: "avisoNota",
-  tip: "avisoDica",
-  important: "avisoImportante",
-  warning: "avisoAtencao",
-  caution: "avisoCuidado",
+const NOTICE_CLASS: Record<NoticeKind, Places> = {
+  note: "noticeNote",
+  tip: "noticeHint",
+  important: "noticeImportant",
+  warning: "noticeAttention",
+  caution: "noticeCaution",
 };
 
-const Aviso: React.FC<{ tipo: TipoDeAviso; children: React.ReactNode }> = ({
-  tipo,
+const Notice: React.FC<{ kind: NoticeKind; children: React.ReactNode }> = ({
+  kind,
   children,
 }) => (
   <div data-gc="conversa.message-content.div"
     className={cn(
-      flxCls("avisoDoMarkdown"),
-      flxCls(CLASSE_DO_AVISO[tipo]),
+      flxCls("markdownNotice"),
+      flxCls(NOTICE_CLASS[kind]),
       "my-1 rounded border-l-2 py-1.5 pl-2.5 pr-2",
     )}
     style={{
-      borderColor: COR_DO_AVISO[tipo],
-      background: `color-mix(in srgb, ${COR_DO_AVISO[tipo]} 8%, transparent)`,
+      borderColor: NOTICE_COLOR[kind],
+      background: `color-mix(in srgb, ${NOTICE_COLOR[kind]} 8%, transparent)`,
     }}
   >
     <p data-gc="conversa.message-content.p"
-      className={cn(flxCls("tituloDoAviso"), "mb-0.5 text-xs font-semibold")}
-      style={{ color: COR_DO_AVISO[tipo] }}
+      className={cn(flxCls("noticeTitle"), "mb-0.5 text-xs font-semibold")}
+      style={{ color: NOTICE_COLOR[kind] }}
     >
-      {ROTULO_DO_AVISO[tipo]}
+      {NOTICE_LABEL[kind]}
     </p>
-    <div data-gc="conversa.message-content.div--2" className={flxCls("corpoDoAviso")}>{children}</div>
+    <div data-gc="conversa.message-content.div--2" className={flxCls("noticeBody")}>{children}</div>
   </div>
 );
 
-const Citacao: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div data-gc="conversa.message-content.div--3" className={cn(flxCls("citacao"), "my-1 flex gap-2")}>
+const Quote: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div data-gc="conversa.message-content.div--3" className={cn(flxCls("quote"), "my-1 flex gap-2")}>
     <span data-gc="conversa.message-content.span--2"
       aria-hidden
-      className={cn(flxCls("divisorDaCitacao"), "w-0.5 shrink-0 rounded-full bg-line")}
+      className={cn(flxCls("quoteDivider"), "w-0.5 shrink-0 rounded-full bg-line")}
     />
     <div data-gc="conversa.message-content.div--4" className="min-w-0 flex-1 text-ink-muted">{children}</div>
   </div>
 );
 
-function corrido(
-  texto: string,
-  porNome: Map<string, GuildEmoji>,
-  chave: string,
-  mencoes?: ResolverMencoes,
+function running(
+  text: string,
+  byName: Map<string, GuildEmoji>,
+  key: string,
+  mentions?: ResolveMentions,
 ) {
-  const partes: React.ReactNode[] = [];
-  let ultimo = 0;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
 
-  for (const casamento of texto.matchAll(LINK)) {
-    if (casamento.index === undefined) continue;
+  for (const match of text.matchAll(LINK)) {
+    if (match.index === undefined) continue;
 
-    const url = limparLink(casamento[0]);
-    if (casamento.index > ultimo) {
-      partes.push(...enriquecer(texto.slice(ultimo, casamento.index), porNome, `${chave}-${ultimo}`, mencoes));
+    const url = clearLink(match[0]);
+    if (match.index > last) {
+      parts.push(...enrich(text.slice(last, match.index), byName, `${key}-${last}`, mentions));
     }
 
-    partes.push(
-      <LinkDoTexto data-gc="conversa.message-content.link-do-texto" key={`${chave}-l${casamento.index}`} url={url} />,
+    parts.push(
+      <TextLink data-gc="conversa.message-content.text-link" key={`${key}-l${match.index}`} url={url} />,
     );
 
-    ultimo = casamento.index + url.length;
+    last = match.index + url.length;
   }
 
-  if (ultimo < texto.length) {
-    partes.push(...enriquecer(texto.slice(ultimo), porNome, `${chave}-${ultimo}`, mencoes));
+  if (last < text.length) {
+    parts.push(...enrich(text.slice(last), byName, `${key}-${last}`, mentions));
   }
 
-  return partes;
+  return parts;
 }
 
 export const MessageContent: React.FC<MessageContentProps> = ({
   content,
   emojis,
   className,
-  mencoes,
-  blocos = false,
+  mentions,
+  blocks = false,
 }) => {
   useTranslation();
 
-  const abrirImagem = useLightbox((s) => s.abrir);
-  const abrirImagensDeLinks = useAparencia((s) => s.imagensDeLinks);
+  const openImage = useLightbox((s) => s.open);
+  const openLinksImages = useAppearance((s) => s.linksImages);
 
   if (!content) return null;
 
-  const sozinho = content.trim();
-  if (abrirImagensDeLinks && SO_UM_LINK.test(sozinho) && EH_IMAGEM.test(limparLink(sozinho))) {
+  const alone = content.trim();
+  if (openLinksImages && SO_UM_LINK.test(alone) && IS_IMAGE.test(clearLink(alone))) {
     return (
       <button data-gc="conversa.message-content.button"
-        onClick={() => abrirImagem(sozinho)}
+        onClick={() => openImage(alone)}
         aria-label={i18next.t("conversa.cartao.verImagem")}
         className="mt-1 block overflow-hidden rounded transition hover:brightness-110"
       >
         <img data-gc="conversa.message-content.img--2"
-          src={sozinho}
+          src={alone}
           alt=""
           loading="lazy"
           decoding="async"
-          style={{ maxWidth: `min(${MAX_IMAGEM_W}px, 100%)`, maxHeight: MAX_IMAGEM_H }}
+          style={{ maxWidth: `min(${MAX_IMAGE_W}px, 100%)`, maxHeight: MAX_IMAGE_H }}
           className="block h-auto w-auto object-contain"
         />
       </button>
     );
   }
 
-  const porNome = new Map(emojis.map((e) => [e.name, e]));
-  const pedacos = partirEmCodigo(content);
-  const partes: React.ReactNode[] = [];
-  let temPainel = false;
+  const byName = new Map(emojis.map((e) => [e.name, e]));
+  const pieces = fromCode(content);
+  const parts: React.ReactNode[] = [];
+  let hasPanel = false;
 
-  pedacos.forEach((pedaco, i) => {
-    if (pedaco.tipo === "texto") {
-      for (const [j, trecho] of partirEmAvisos(pedaco.texto).entries()) {
-        const dentro = corrido(trecho.texto, porNome, `t${i}-${j}`, mencoes);
+  pieces.forEach((piece, i) => {
+    if (piece.kind === "texto") {
+      for (const [j, snippet] of fromNotices(piece.text).entries()) {
+        const inside = running(snippet.text, byName, `t${i}-${j}`, mentions);
 
-        if (trecho.tipo === "texto") {
-          partes.push(...dentro);
+        if (snippet.kind === "texto") {
+          parts.push(...inside);
           continue;
         }
 
-        temPainel = true;
+        hasPanel = true;
 
-        partes.push(
-          trecho.tipo === "aviso" ? (
-            <Aviso data-gc="conversa.message-content.aviso" key={`a${i}-${j}`} tipo={trecho.aviso}>
-              {dentro}
-            </Aviso>
+        parts.push(
+          snippet.kind === "notice" ? (
+            <Notice data-gc="conversa.message-content.notice" key={`a${i}-${j}`} kind={snippet.notice}>
+              {inside}
+            </Notice>
           ) : (
-            <Citacao data-gc="conversa.message-content.citacao" key={`q${i}-${j}`}>{dentro}</Citacao>
+            <Quote data-gc="conversa.message-content.quote" key={`q${i}-${j}`}>{inside}</Quote>
           ),
         );
       }
@@ -291,32 +291,32 @@ export const MessageContent: React.FC<MessageContentProps> = ({
       return;
     }
 
-    if (pedaco.tipo === "linha" || !blocos) {
-      const codigo =
-        pedaco.tipo === "linha" ? pedaco.codigo : pedaco.codigo.replace(/\s*\n\s*/g, " ");
+    if (piece.kind === "linha" || !blocks) {
+      const code =
+        piece.kind === "linha" ? piece.code : piece.code.replace(/\s*\n\s*/g, " ");
 
-      partes.push(
-        <code data-gc="conversa.message-content.code" key={`c${i}`} className={cn("rounded bg-codigo px-1 py-px font-mono text-[0.9em]", flxCls("codigoEmLinha"))}>
-          {codigo}
+      parts.push(
+        <code data-gc="conversa.message-content.code" key={`c${i}`} className={cn("rounded bg-codigo px-1 py-px font-mono text-[0.9em]", flxCls("codeLine"))}>
+          {code}
         </code>,
       );
       return;
     }
 
-    temPainel = true;
-    partes.push(<BlocoDeCodigo data-gc="conversa.message-content.bloco-de-codigo" key={`b${i}`} codigo={pedaco.codigo} lingua={pedaco.lingua} />);
+    hasPanel = true;
+    parts.push(<CodeBlock data-gc="conversa.message-content.code-block" key={`b${i}`} code={piece.code} language={piece.language} />);
   });
 
-  if (temPainel)
+  if (hasPanel)
     return (
-      <div data-gc="conversa.message-content.div--5" className={cn(flxCls("textoMarcado"), className)}>
-        {partes}
+      <div data-gc="conversa.message-content.div--5" className={cn(flxCls("textMarked"), className)}>
+        {parts}
       </div>
     );
 
   return (
-    <span data-gc="conversa.message-content.span--3" className={cn(flxCls("textoMarcado"), className)}>
-      {partes}
+    <span data-gc="conversa.message-content.span--3" className={cn(flxCls("textMarked"), className)}>
+      {parts}
     </span>
   );
 };

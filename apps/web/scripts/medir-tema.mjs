@@ -6,12 +6,12 @@ import { join } from "node:path";
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORTA = 9333;
 
-const arg = (nome, padrao = null) => {
-  const i = process.argv.indexOf(nome);
-  return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : padrao;
+const arg = (name, fallback = null) => {
+  const i = process.argv.indexOf(name);
+  return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
 };
 
-const OLHAR = [
+const LOOK = [
   "backgroundColor",
   "backgroundImage",
   "color",
@@ -31,36 +31,36 @@ const OLHAR = [
   "height",
 ];
 
-async function cdp(ws, metodo, params = {}, id = { n: 0 }) {
-  const chamada = ++id.n;
-  ws.send(JSON.stringify({ id: chamada, method: metodo, params }));
+async function cdp(ws, method, params = {}, id = { n: 0 }) {
+  const call = ++id.n;
+  ws.send(JSON.stringify({ id: call, method: method, params }));
 
-  return new Promise((ok, falhou) => {
-    const ouvir = (evento) => {
-      const msg = JSON.parse(evento.data);
-      if (msg.id !== chamada) return;
-      ws.removeEventListener("message", ouvir);
-      msg.error ? falhou(new Error(`${metodo}: ${msg.error.message}`)) : ok(msg.result);
+  return new Promise((ok, failed) => {
+    const listen = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.id !== call) return;
+      ws.removeEventListener("message", listen);
+      msg.error ? failed(new Error(`${method}: ${msg.error.message}`)) : ok(msg.result);
     };
-    ws.addEventListener("message", ouvir);
-    setTimeout(() => falhou(new Error(`${metodo}: sem resposta em 30s`)), 30_000);
+    ws.addEventListener("message", listen);
+    setTimeout(() => failed(new Error(`${method}: sem resposta em 30s`)), 30_000);
   });
 }
 
-async function esperar(condicao, quanto = 20_000, passo = 200) {
-  const ate = Date.now() + quanto;
-  while (Date.now() < ate) {
+async function wait(condition, howMuch = 20_000, step = 200) {
+  const until = Date.now() + howMuch;
+  while (Date.now() < until) {
     try {
-      const r = await condicao();
+      const r = await condition();
       if (r) return r;
     } catch {
     }
-    await new Promise((r) => setTimeout(r, passo));
+    await new Promise((r) => setTimeout(r, step));
   }
   return null;
 }
 
-const PINTA = [
+const PAINTS = [
   "backgroundColor",
   "backgroundImage",
   "color",
@@ -71,56 +71,56 @@ const PINTA = [
   "fontFamily",
 ];
 
-function porGanchoUnico(lista) {
-  const vezes = new Map();
-  for (const e of lista) vezes.set(e.gancho, (vezes.get(e.gancho) ?? 0) + 1);
+function byHookUnique(list) {
+  const times = new Map();
+  for (const e of list) times.set(e.hook, (times.get(e.hook) ?? 0) + 1);
 
-  return new Map(lista.filter((e) => vezes.get(e.gancho) === 1).map((e) => [e.gancho, e]));
+  return new Map(list.filter((e) => times.get(e.hook) === 1).map((e) => [e.hook, e]));
 }
 
-function diferenca(a, b, tudo = false) {
-  const antes = porGanchoUnico(a);
-  const depois = porGanchoUnico(b);
-  const olhar = tudo ? OLHAR : PINTA;
-  const linhas = [];
+function difference(a, b, everything = false) {
+  const before = byHookUnique(a);
+  const after = byHookUnique(b);
+  const look = everything ? LOOK : PAINTS;
+  const lines = [];
 
-  for (const [gancho, agora] of depois) {
-    const era = antes.get(gancho);
-    if (!era) continue;
+  for (const [hook, now] of after) {
+    const was = before.get(hook);
+    if (!was) continue;
 
-    const mudou = olhar.filter((p) => era.estilo[p] !== agora.estilo[p]);
-    if (!mudou.length) continue;
+    const changed = look.filter((p) => was.style[p] !== now.style[p]);
+    if (!changed.length) continue;
 
-    linhas.push(`~ ${gancho}`);
-    for (const p of mudou) linhas.push(`    ${p.padEnd(16)} ${era.estilo[p]}  →  ${agora.estilo[p]}`);
+    lines.push(`~ ${hook}`);
+    for (const p of changed) lines.push(`    ${p.padEnd(16)} ${was.style[p]}  →  ${now.style[p]}`);
   }
 
-  return { linhas, comparados: [...depois].filter(([g]) => antes.has(g)).length };
+  return { lines, compared: [...after].filter(([g]) => before.has(g)).length };
 }
 
 if (process.argv.includes("--diff")) {
   const i = process.argv.indexOf("--diff");
   const a = JSON.parse(readFileSync(process.argv[i + 1], "utf8"));
   const b = JSON.parse(readFileSync(process.argv[i + 2], "utf8"));
-  const { linhas, comparados } = diferenca(a.elementos, b.elementos, process.argv.includes("--tudo"));
-  const quantos = linhas.filter((l) => l.startsWith("~")).length;
+  const { lines, compared } = difference(a.elements, b.elements, process.argv.includes("--tudo"));
+  const count = lines.filter((l) => l.startsWith("~")).length;
 
   console.log(
-    linhas.length
-      ? `${quantos} de ${comparados} elementos mudaram\n\n${linhas.join("\n")}`
-      : `nada mudou em ${comparados} elementos comparados`,
+    lines.length
+      ? `${count} de ${compared} elementos mudaram\n\n${lines.join("\n")}`
+      : `nada mudou em ${compared} elementos comparados`,
   );
 
   process.exit(0);
 }
 
-const perfil = mkdtempSync(join(tmpdir(), "gc-medir-"));
+const profile = mkdtempSync(join(tmpdir(), "gc-medir-"));
 const chrome = spawn(
   CHROME,
   [
     "--headless=new",
     `--remote-debugging-port=${PORTA}`,
-    `--user-data-dir=${perfil}`,
+    `--user-data-dir=${profile}`,
     "--window-size=1920,1080",
     "--no-first-run",
     "--disable-gpu",
@@ -128,37 +128,37 @@ const chrome = spawn(
   { stdio: "ignore" },
 );
 
-let encerrado = false;
+let ended = false;
 
-const encerrar = () => {
-  if (encerrado) return;
-  encerrado = true;
+const end = () => {
+  if (ended) return;
+  ended = true;
   chrome.kill();
 
-  for (let tentativa = 0; tentativa < 20; tentativa++) {
+  for (let attempt = 0; attempt < 20; attempt++) {
     try {
-      rmSync(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+      rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
       return;
     } catch {
     }
   }
 };
-process.on("exit", encerrar);
+process.on("exit", end);
 
 try {
-  const versao = await esperar(() => fetch(`http://127.0.0.1:${PORTA}/json/version`).then((r) => r.json()));
-  if (!versao) throw new Error("o Chrome não abriu a porta de depuração");
+  const version = await wait(() => fetch(`http://127.0.0.1:${PORTA}/json/version`).then((r) => r.json()));
+  if (!version) throw new Error("o Chrome não abriu a porta de depuração");
 
   const url = arg("--url", "http://localhost:5173");
-  const aba = await fetch(`http://127.0.0.1:${PORTA}/json/new?${encodeURIComponent(url)}`, {
+  const tab = await fetch(`http://127.0.0.1:${PORTA}/json/new?${encodeURIComponent(url)}`, {
     method: "PUT",
   }).then((r) => r.json());
 
-  const ws = new WebSocket(aba.webSocketDebuggerUrl);
+  const ws = new WebSocket(tab.webSocketDebuggerUrl);
   await new Promise((ok) => ws.addEventListener("open", ok, { once: true }));
 
   const id = { n: 0 };
-  const rodar = (expr) =>
+  const run = (expr) =>
     cdp(ws, "Runtime.evaluate", { expression: expr, awaitPromise: true, returnByValue: true }, id)
       .then((r) => r.result.value);
 
@@ -166,7 +166,7 @@ try {
   await cdp(ws, "Page.enable", {}, id);
 
   const email = arg("--email", "thbp777@gmail.com");
-  const entrou = await rodar(`
+  const joined = await run(`
     fetch("/api/auth/dev-login", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -174,11 +174,11 @@ try {
     }).then((r) => r.status)
   `);
 
-  if (entrou !== 200) throw new Error(`o login de desenvolvimento devolveu ${entrou}`);
+  if (joined !== 200) throw new Error(`o login de desenvolvimento devolveu ${joined}`);
 
-  const caminhoDoTema = arg("--tema");
-  const css = caminhoDoTema ? readFileSync(caminhoDoTema, "utf8") : "";
-  await rodar(`
+  const themePath = arg("--tema");
+  const css = themePath ? readFileSync(themePath, "utf8") : "";
+  await run(`
     (() => {
       const chave = "gravae:estudio";
       const atual = JSON.parse(localStorage.getItem(chave) ?? "{}");
@@ -189,28 +189,28 @@ try {
 
   await cdp(ws, "Page.navigate", { url }, id);
 
-  const montou = await esperar(
-    () => rodar(`document.querySelectorAll("[data-gc]").length > ${arg("--minimo", "80")}`),
+  const built = await wait(
+    () => run(`document.querySelectorAll("[data-gc]").length > ${arg("--minimo", "80")}`),
     25_000,
     500,
   );
 
-  if (!montou) throw new Error("o app não montou a tempo");
+  if (!built) throw new Error("o app não montou a tempo");
 
-  const temaDoApp = arg("--tema-do-app");
-  if (temaDoApp) {
-    await rodar(
-      `document.documentElement.setAttribute("data-tema", ${JSON.stringify(temaDoApp)}), true`,
+  const appTheme = arg("--tema-do-app");
+  if (appTheme) {
+    await run(
+      `document.documentElement.setAttribute("data-tema", ${JSON.stringify(appTheme)}), true`,
     );
   }
 
   await new Promise((r) => setTimeout(r, 2500));
 
-  const filtro = arg("--gancho", "");
-  const elementos = await rodar(`
+  const filter = arg("--gancho", "");
+  const elements = await run(`
     (() => {
-      const olhar = ${JSON.stringify(OLHAR)};
-      const filtro = ${JSON.stringify(filtro)};
+      const olhar = ${JSON.stringify(LOOK)};
+      const filtro = ${JSON.stringify(filter)};
       const saida = [];
 
       for (const el of document.querySelectorAll("[data-gc]")) {
@@ -236,28 +236,28 @@ try {
     })()
   `);
 
-  const foto = arg("--foto");
-  if (foto) {
+  const photo = arg("--foto");
+  if (photo) {
     const { data } = await cdp(ws, "Page.captureScreenshot", { format: "png" }, id);
-    writeFileSync(foto, Buffer.from(data, "base64"));
-    console.log(`foto → ${foto}`);
+    writeFileSync(photo, Buffer.from(data, "base64"));
+    console.log(`foto → ${photo}`);
   }
 
-  if (!elementos?.length) throw new Error("nenhum elemento medido — o app carregou?");
+  if (!elements?.length) throw new Error("nenhum elemento medido — o app carregou?");
 
-  const medida = { url, tema: caminhoDoTema, quando: new Date().toISOString(), elementos };
-  const saida = arg("--saida");
+  const measure = { url, theme: themePath, when: new Date().toISOString(), elements };
+  const output = arg("--saida");
 
-  if (saida) {
-    writeFileSync(saida, `${JSON.stringify(medida, null, 2)}\n`);
-    console.log(`${elementos.length} elementos medidos → ${saida}`);
+  if (output) {
+    writeFileSync(output, `${JSON.stringify(measure, null, 2)}\n`);
+    console.log(`${elements.length} elementos medidos → ${output}`);
   } else {
-    for (const e of elementos.slice(0, 40))
+    for (const e of elements.slice(0, 40))
       console.log(
-        `${e.gancho.padEnd(52)} <${e.tag}> ${e.caixa[2]}x${e.caixa[3]}  ${e.estilo.backgroundColor}`,
+        `${e.hook.padEnd(52)} <${e.tag}> ${e.box[2]}x${e.box[3]}  ${e.style.backgroundColor}`,
       );
-    console.log(`\n${elementos.length} elementos medidos (use --saida para o JSON inteiro)`);
+    console.log(`\n${elements.length} elementos medidos (use --saida para o JSON inteiro)`);
   }
 } finally {
-  encerrar();
+  end();
 }

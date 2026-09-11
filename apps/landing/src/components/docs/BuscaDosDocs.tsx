@@ -4,9 +4,9 @@ import { CornerDownLeft, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { buscar, type Achado } from "~/dados/indice-da-busca";
+import { search, type Found } from "~/dados/indice-da-busca";
 
-const COR_DO_TIPO: Record<Achado["tipo"], string> = {
+const KIND_COLOR: Record<Found["kind"], string> = {
   Página: "bg-brand/15 text-brand",
   Rota: "bg-online/15 text-online",
   Evento: "bg-amber-400/15 text-amber-400",
@@ -14,60 +14,60 @@ const COR_DO_TIPO: Record<Achado["tipo"], string> = {
   Limite: "bg-surface-4 text-ink-muted",
 };
 
-export const BuscaDosDocs = ({ compacta = false }: { compacta?: boolean }) => {
+export const DocsSearch = ({ compact = false }: { compact?: boolean }) => {
   const router = useRouter();
-  const [aberta, setAberta] = useState(false);
-  const [termo, setTermo] = useState("");
-  const [escolhido, setEscolhido] = useState(0);
-  const campo = useRef<HTMLInputElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [term, setTerm] = useState("");
+  const [picked, setPicked] = useState(0);
+  const field = useRef<HTMLInputElement>(null);
 
-  const achados = useMemo(() => buscar(termo), [termo]);
+  const matches = useMemo(() => search(term), [term]);
 
   useEffect(() => {
-    const atalho = (evento: KeyboardEvent) => {
-      if (evento.key === "k" && (evento.metaKey || evento.ctrlKey)) {
-        evento.preventDefault();
-        setAberta(true);
+    const shortcut = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setIsOpen(true);
       }
 
-      if (evento.key === "Escape") setAberta(false);
+      if (event.key === "Escape") setIsOpen(false);
     };
 
-    window.addEventListener("keydown", atalho);
-    return () => window.removeEventListener("keydown", atalho);
+    window.addEventListener("keydown", shortcut);
+    return () => window.removeEventListener("keydown", shortcut);
   }, []);
 
   useEffect(() => {
-    if (aberta) campo.current?.focus();
+    if (isOpen) field.current?.focus();
     else {
-      setTermo("");
-      setEscolhido(0);
+      setTerm("");
+      setPicked(0);
     }
-  }, [aberta]);
+  }, [isOpen]);
 
-  useEffect(() => setEscolhido(0), [termo]);
+  useEffect(() => setPicked(0), [term]);
 
-  const ir = (achado: Achado) => {
-    setAberta(false);
-    router.push(achado.href);
+  const ir = (match: Found) => {
+    setIsOpen(false);
+    router.push(match.href);
   };
 
-  const naTecla = (evento: React.KeyboardEvent) => {
-    if (!achados.length) return;
+  const inKey = (event: React.KeyboardEvent) => {
+    if (!matches.length) return;
 
-    if (evento.key === "ArrowDown") {
-      evento.preventDefault();
-      setEscolhido((antes) => (antes + 1) % achados.length);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setPicked((before) => (before + 1) % matches.length);
     }
 
-    if (evento.key === "ArrowUp") {
-      evento.preventDefault();
-      setEscolhido((antes) => (antes - 1 + achados.length) % achados.length);
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setPicked((before) => (before - 1 + matches.length) % matches.length);
     }
 
-    if (evento.key === "Enter") {
-      evento.preventDefault();
-      ir(achados[escolhido]);
+    if (event.key === "Enter") {
+      event.preventDefault();
+      ir(matches[picked]);
     }
   };
 
@@ -75,17 +75,17 @@ export const BuscaDosDocs = ({ compacta = false }: { compacta?: boolean }) => {
     <>
       <button
         type="button"
-        onClick={() => setAberta(true)}
+        onClick={() => setIsOpen(true)}
         aria-label="Buscar na documentação"
         className={
-          compacta
+          compact
             ? "rounded-md p-2 text-ink-muted transition hover:bg-surface-2 hover:text-ink"
             : "flex w-full items-center gap-2.5 rounded-lg border border-line bg-surface-1 px-3.5 py-2 text-sm text-ink-faint transition hover:border-surface-4"
         }
       >
-        <Search className={compacta ? "size-5" : "size-4"} />
+        <Search className={compact ? "size-5" : "size-4"} />
 
-        {compacta ? null : (
+        {compact ? null : (
           <>
             Buscar
             <kbd className="ml-auto rounded border border-line bg-surface-2 px-1.5 py-0.5 font-sans text-[11px] text-ink-faint">
@@ -95,12 +95,12 @@ export const BuscaDosDocs = ({ compacta = false }: { compacta?: boolean }) => {
         )}
       </button>
 
-      {aberta ? (
+      {isOpen ? (
         <div className="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-[12vh]">
           <button
             type="button"
             aria-label="Fechar a busca"
-            onClick={() => setAberta(false)}
+            onClick={() => setIsOpen(false)}
             className="fixed inset-0 bg-black/70 backdrop-blur-sm"
           />
 
@@ -109,10 +109,10 @@ export const BuscaDosDocs = ({ compacta = false }: { compacta?: boolean }) => {
               <Search className="size-4 shrink-0 text-ink-faint" />
 
               <input
-                ref={campo}
-                value={termo}
-                onChange={(evento) => setTermo(evento.target.value)}
-                onKeyDown={naTecla}
+                ref={field}
+                value={term}
+                onChange={(event) => setTerm(event.target.value)}
+                onKeyDown={inKey}
                 placeholder="Rota, evento, permissão, página…"
                 className="w-full bg-transparent py-3.5 text-sm outline-none placeholder:text-ink-faint"
               />
@@ -123,43 +123,43 @@ export const BuscaDosDocs = ({ compacta = false }: { compacta?: boolean }) => {
             </div>
 
             <div className="max-h-[55vh] overflow-y-auto p-2">
-              {termo && !achados.length ? (
+              {term && !matches.length ? (
                 <p className="px-3 py-8 text-center text-sm text-ink-faint">
-                  Nada com “{termo}”.
+                  Nada com “{term}”.
                 </p>
               ) : null}
 
-              {!termo ? (
+              {!term ? (
                 <p className="px-3 py-8 text-center text-sm text-ink-faint">
                   Busque por qualquer coisa da referência — <code>message:send</code>,{" "}
                   <code>SHARE_SCREEN</code>, <code>/bot/eu</code>.
                 </p>
               ) : null}
 
-              {achados.map((achado, indice) => (
+              {matches.map((match, index) => (
                 <button
-                  key={`${achado.tipo}-${achado.titulo}-${achado.href}`}
+                  key={`${match.kind}-${match.title}-${match.href}`}
                   type="button"
-                  onClick={() => ir(achado)}
-                  onMouseEnter={() => setEscolhido(indice)}
+                  onClick={() => ir(match)}
+                  onMouseEnter={() => setPicked(index)}
                   className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition ${
-                    indice === escolhido ? "bg-surface-3" : ""
+                    index === picked ? "bg-surface-3" : ""
                   }`}
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-ink">{achado.titulo}</span>
+                    <span className="block truncate text-sm text-ink">{match.title}</span>
                     <span className="block truncate text-xs text-ink-faint">
-                      {achado.contexto}
+                      {match.context}
                     </span>
                   </span>
 
                   <span
-                    className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] ${COR_DO_TIPO[achado.tipo]}`}
+                    className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] ${KIND_COLOR[match.kind]}`}
                   >
-                    {achado.tipo}
+                    {match.kind}
                   </span>
 
-                  {indice === escolhido ? (
+                  {index === picked ? (
                     <CornerDownLeft className="size-3.5 shrink-0 text-ink-faint" />
                   ) : null}
                 </button>

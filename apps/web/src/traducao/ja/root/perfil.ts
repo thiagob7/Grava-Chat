@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "このプロフィールは開けませんでした。",
   carregando: "読み込み中…",
   editar: "プロフィールを編集",
   mensagem: "メッセージ",

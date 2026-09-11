@@ -1,106 +1,106 @@
 import type {
-  Decoracao,
-  EfeitoDeNome,
-  EfeitoDePerfil,
-  EstiloDePerfil,
-  FonteDeNome,
-  Moldura,
-  Patente,
-  Placa,
+  Decoration,
+  NameEffect,
+  ProfileEffect,
+  ProfileStyle,
+  NameFont,
+  Frame,
+  Rank,
+  Plate,
 } from "@gravae/shared";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { VAZIOS } from "~/features/perfil/lib/catalogo";
+import { EMPTY } from "~/features/perfil/lib/catalogo";
 
-export interface RascunhoDePerfil {
+export interface ProfileDraft {
   displayName: string;
-  etiqueta: string;
+  tag: string;
   tagGuildId: string | null;
   bio: string;
-  pronomes: string;
+  pronouns: string;
   avatarUrl: string | null;
 
-  fonte: FonteDeNome;
-  efeitoDoNome: EfeitoDeNome;
-  cor: string | null;
-  cor2: string | null;
+  font: NameFont;
+  nameEffect: NameEffect;
+  color: string | null;
+  color2: string | null;
 
-  patente: Patente;
-  decoracao: Decoracao;
-  moldura: Moldura;
-  efeitoDoPerfil: EfeitoDePerfil;
-  placa: Placa;
+  rank: Rank;
+  decoration: Decoration;
+  frame: Frame;
+  profileEffect: ProfileEffect;
+  plate: Plate;
 
   bannerUrl: string | null;
-  bannerCor: string | null;
-  temaPrimario: string | null;
-  temaSecundario: string | null;
+  bannerColor: string | null;
+  themePrimary: string | null;
+  secondaryTheme: string | null;
 }
 
-export function doUsuario(user: SelfUserModel): RascunhoDePerfil {
-  const p = user.perfil;
+export function fromUser(user: SelfUserModel): ProfileDraft {
+  const p = user.profile;
 
   return {
     displayName: user.displayName,
-    etiqueta: p?.etiqueta ?? "",
+    tag: p?.tag ?? "",
     tagGuildId: p?.tagGuildId ?? null,
     bio: user.bio ?? "",
-    pronomes: user.pronomes ?? "",
+    pronouns: user.pronouns ?? "",
     avatarUrl: user.avatarUrl,
 
-    fonte: p?.nome?.fonte ?? "padrao",
-    efeitoDoNome: p?.nome?.efeito ?? "solido",
-    cor: p?.nome?.cor ?? null,
-    cor2: p?.nome?.cor2 ?? null,
+    font: p?.name?.font ?? "padrao",
+    nameEffect: p?.name?.effect ?? "solido",
+    color: p?.name?.color ?? null,
+    color2: p?.name?.color2 ?? null,
 
-    patente: p?.patente ?? "nenhuma",
-    decoracao: p?.decoracao ?? "nenhuma",
-    moldura: p?.moldura ?? "nenhuma",
-    efeitoDoPerfil: p?.efeito ?? "nenhum",
-    placa: p?.placa ?? "nenhuma",
+    rank: p?.rank ?? "nenhuma",
+    decoration: p?.decoration ?? "nenhuma",
+    frame: p?.frame ?? "nenhuma",
+    profileEffect: p?.effect ?? "nenhum",
+    plate: p?.plate ?? "nenhuma",
 
     bannerUrl: p?.bannerUrl ?? null,
-    bannerCor: p?.bannerCor ?? null,
-    temaPrimario: p?.temaPrimario ?? null,
-    temaSecundario: p?.temaSecundario ?? null,
+    bannerColor: p?.bannerColor ?? null,
+    themePrimary: p?.themePrimary ?? null,
+    secondaryTheme: p?.secondaryTheme ?? null,
   };
 }
 
-export function paraPerfil(r: RascunhoDePerfil): EstiloDePerfil | null {
-  const nome = semVazios({
-    fonte: r.fonte,
-    efeito: r.efeitoDoNome,
-    cor: r.cor,
-    cor2: r.cor2,
+export function forProfile(r: ProfileDraft): ProfileStyle | null {
+  const name = emptyWithout({
+    font: r.font,
+    effect: r.nameEffect,
+    color: r.color,
+    color2: r.color2,
   });
 
-  const perfil = semVazios({
-    ...(Object.keys(nome).length ? { nome } : {}),
-    etiqueta: r.etiqueta.trim(),
+  const profile = emptyWithout({
+    ...(Object.keys(name).length ? { name } : {}),
+    tag: r.tag.trim(),
     tagGuildId: r.tagGuildId,
-    patente: r.patente,
-    decoracao: r.decoracao,
-    moldura: r.moldura,
-    efeito: r.efeitoDoPerfil,
-    placa: r.placa,
+    rank: r.rank,
+    decoration: r.decoration,
+    frame: r.frame,
+    effect: r.profileEffect,
+    plate: r.plate,
     bannerUrl: r.bannerUrl,
-    bannerCor: r.bannerCor,
-    temaPrimario: r.temaPrimario,
-    temaSecundario: r.temaSecundario,
+    bannerColor: r.bannerColor,
+    themePrimary: r.themePrimary,
+    secondaryTheme: r.secondaryTheme,
   });
 
-  return Object.keys(perfil).length ? (perfil as EstiloDePerfil) : null;
+  return Object.keys(profile).length ? (profile as ProfileStyle) : null;
 }
 
-function semVazios<T extends Record<string, unknown>>(obj: T): Partial<T> {
-  const saida: Record<string, unknown> = {};
+function emptyWithout<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  const output: Record<string, unknown> = {};
 
-  for (const [chave, valor] of Object.entries(obj)) {
-    if (valor === null || valor === undefined || valor === "") continue;
-    if (typeof valor === "string" && VAZIOS.has(valor)) continue;
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === null || value === undefined || value === "") continue;
+    if (typeof value === "string" && EMPTY.has(value)) continue;
 
-    saida[chave] = valor;
+    output[key] = value;
   }
 
-  return saida as Partial<T>;
+  return output as Partial<T>;
 }

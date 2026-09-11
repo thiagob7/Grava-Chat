@@ -1,11 +1,11 @@
 
-export interface EscolhaDeAlvo {
-  atual: string | null;
-  alvoAindaTransmite: boolean;
+export interface TargetChoice {
+  current: string | null;
+  targetStillBroadcasts: boolean;
 }
 
-export function proximoAlvo({ atual, alvoAindaTransmite }: EscolhaDeAlvo): string | null {
-  if (atual && alvoAindaTransmite) return atual;
+export function nextTarget({ current, targetStillBroadcasts }: TargetChoice): string | null {
+  if (current && targetStillBroadcasts) return current;
 
   return null;
 }

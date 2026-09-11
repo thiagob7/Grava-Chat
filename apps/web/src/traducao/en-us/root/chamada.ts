@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Move the chat to the bottom",
+    paraOLado: "Move the chat to the side",
+  },
+  aparelhoNovo: {
+    microfone: "A new microphone turned up",
+    saida: "A new audio output turned up",
+    apareceu: "{{nome}} turned up.",
+    falarPorEle: "Want to speak through it?",
+    ouvirPorEle: "Want to listen through it?",
+    trocaNaHora: "The change takes effect right away, without leaving the call.",
+    naoSugerir: "Don't suggest this device again",
+    trocar: "Switch to it",
+  },
   conectando: "Connecting to the call…",
   naoEntrou: "Couldn't join the call",
   sair: "Leave the call",

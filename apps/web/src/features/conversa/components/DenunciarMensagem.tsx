@@ -3,29 +3,29 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import type { Message } from "@gravae/shared";
 
-import { useDenunciarMensagem } from "~/@core/application/queries/message/use-denunciar-mensagem";
-import { MOTIVOS_DE_DENUNCIA, type MotivoDeDenuncia } from "~/@core/application/requests/guild/denunciar-guild";
+import { useReportMessage } from "~/@core/application/queries/message/use-denunciar-mensagem";
+import { REPORT_REASONS, type ReportReason } from "~/@core/application/requests/guild/denunciar-guild";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Label, Textarea } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 
-const TRECHO = 300;
+const SNIPPET = 300;
 
-export const DenunciarMensagem: React.FC<{
-  mensagem: Message;
-  aberto: boolean;
-  onFechar: () => void;
-}> = ({ mensagem, aberto, onFechar }) => {
+export const ReportMessage: React.FC<{
+  message: Message;
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ message, isOpen, onClose }) => {
   const { t } = useTranslation();
-  const denunciar = useDenunciarMensagem();
-  const [motivo, setMotivo] = useState<MotivoDeDenuncia>("spam");
-  const [detalhes, setDetalhes] = useState("");
+  const report = useReportMessage();
+  const [reason, setReason] = useState<ReportReason>("spam");
+  const [details, setDetails] = useState("");
 
-  const trecho = mensagem.content.slice(0, TRECHO);
+  const snippet = message.content.slice(0, SNIPPET);
 
   return (
-    <Dialog data-gc="conversa.denunciar-mensagem.dialog" open={aberto} onOpenChange={(a) => !a && onFechar()}>
+    <Dialog data-gc="conversa.denunciar-mensagem.dialog" open={isOpen} onOpenChange={(a) => !a && onClose()}>
       <DialogContent data-gc="conversa.denunciar-mensagem.dialog-content" className="max-w-md">
         <DialogHeader data-gc="conversa.denunciar-mensagem.dialog-header">
           <DialogTitle data-gc="conversa.denunciar-mensagem.dialog-title">{t("conversa.denuncia.titulo")}</DialogTitle>
@@ -36,10 +36,10 @@ export const DenunciarMensagem: React.FC<{
 
           <div data-gc="conversa.denunciar-mensagem.div" className="rounded-md border border-line bg-surface-1 p-3">
             <p data-gc="conversa.denunciar-mensagem.p--2" className="text-xs font-semibold text-ink-muted">
-              {t("conversa.denuncia.de", { nome: mensagem.author.username })}
+              {t("conversa.denuncia.de", { nome: message.author.username })}
             </p>
             <p data-gc="conversa.denunciar-mensagem.p--3" className="mt-1 whitespace-pre-wrap break-words text-sm text-ink">
-              {trecho || t("conversa.denuncia.semTexto")}
+              {snippet || t("conversa.denuncia.semTexto")}
             </p>
           </div>
 
@@ -47,9 +47,9 @@ export const DenunciarMensagem: React.FC<{
             <Label data-gc="conversa.denunciar-mensagem.label" htmlFor="motivo-da-denuncia-da-mensagem">{t("conversa.denuncia.motivo")}</Label>
             <SelectField data-gc="conversa.denunciar-mensagem.select-field"
               id="motivo-da-denuncia-da-mensagem"
-              value={motivo}
-              onSelect={(valor) => setMotivo(valor as MotivoDeDenuncia)}
-              options={MOTIVOS_DE_DENUNCIA.map((m) => ({ value: m, label: t(`conversa.denuncia.motivos.${m}`) }))}
+              value={reason}
+              onSelect={(value) => setReason(value as ReportReason)}
+              options={REPORT_REASONS.map((m) => ({ value: m, label: t(`conversa.denuncia.motivos.${m}`) }))}
             />
           </div>
 
@@ -57,28 +57,28 @@ export const DenunciarMensagem: React.FC<{
             <Label data-gc="conversa.denunciar-mensagem.label--2" htmlFor="detalhes-da-denuncia-da-mensagem">{t("conversa.denuncia.detalhes")}</Label>
             <Textarea data-gc="conversa.denunciar-mensagem.textarea"
               id="detalhes-da-denuncia-da-mensagem"
-              value={detalhes}
+              value={details}
               maxLength={1000}
               rows={4}
-              onChange={(e) => setDetalhes(e.target.value)}
+              onChange={(e) => setDetails(e.target.value)}
             />
           </div>
         </DialogBody>
 
         <DialogFooter data-gc="conversa.denunciar-mensagem.dialog-footer">
-          <Button data-gc="conversa.denunciar-mensagem.button.on-fechar" variant="surface" onClick={onFechar}>
+          <Button data-gc="conversa.denunciar-mensagem.button.on-close" variant="surface" onClick={onClose}>
             {t("comum.cancelar")}
           </Button>
           <Button data-gc="conversa.denunciar-mensagem.button"
-            disabled={denunciar.isPending}
+            disabled={report.isPending}
             onClick={() =>
-              denunciar.mutate(
-                { messageId: mensagem.id, motivo, detalhes: detalhes.trim() || undefined },
+              report.mutate(
+                { messageId: message.id, reason, details: details.trim() || undefined },
                 {
                   onSuccess: () => {
                     toast.success(t("conversa.denuncia.enviada"));
-                    setDetalhes("");
-                    onFechar();
+                    setDetails("");
+                    onClose();
                   },
                 },
               )

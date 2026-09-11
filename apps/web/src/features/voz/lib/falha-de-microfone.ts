@@ -1,10 +1,10 @@
-export type ReacaoAFalhaDeMicrofone = "ignorar" | "adiar" | "mutar" | "estourar";
+export type MicrophoneReactionFailure = "ignorar" | "adiar" | "mutar" | "estourar";
 
-export interface ContextoDaFalhaDeMicrofone {
-  reconectando: boolean;
+export interface FailureMicrophoneContext {
+  reconnecting: boolean;
 }
 
-const PEDEM_ACAO_DA_PESSOA = new Set([
+const PERSON_REQUEST_ACTION = new Set([
   "NotAllowedError",
   "NotFoundError",
   "NotReadableError",
@@ -15,7 +15,7 @@ const PEDEM_ACAO_DA_PESSOA = new Set([
   "DeviceUnsupportedError",
 ]);
 
-const PASSAGEIRAS = new Set([
+const TRANSIENT = new Set([
   "AbortError",
   "InvalidStateError",
   "UnexpectedConnectionState",
@@ -23,44 +23,44 @@ const PASSAGEIRAS = new Set([
   "PublishTrackError",
 ]);
 
-const ERRO_DE_PROGRAMACAO = new Set(["TypeError", "TrackInvalidError"]);
+const SCHEDULING_ERROR = new Set(["TypeError", "TrackInvalidError"]);
 
-const SEM_CONEXAO = /not connected|disconnected|no connection|closed/i;
+const WITHOUT_CONNECTION = /not connected|disconnected|no connection|closed/i;
 
-const nomeDoErro = (erro: unknown): string => {
-  if (erro instanceof Error) return erro.name;
-  if (typeof erro === "object" && erro !== null && "name" in erro) {
-    const nome = (erro as { name: unknown }).name;
-    return typeof nome === "string" ? nome : "";
+const errorName = (error: unknown): string => {
+  if (error instanceof Error) return error.name;
+  if (typeof error === "object" && error !== null && "name" in error) {
+    const name = (error as { name: unknown }).name;
+    return typeof name === "string" ? name : "";
   }
   return "";
 };
 
-const mensagemDoErro = (erro: unknown): string => {
-  if (erro instanceof Error) return erro.message;
-  if (typeof erro === "string") return erro;
-  if (typeof erro === "object" && erro !== null && "message" in erro) {
-    const mensagem = (erro as { message: unknown }).message;
-    return typeof mensagem === "string" ? mensagem : "";
+const errorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message: unknown }).message;
+    return typeof message === "string" ? message : "";
   }
   return "";
 };
 
-export function reacaoAFalhaDeMicrofone(
-  erro: unknown,
-  contexto: ContextoDaFalhaDeMicrofone = { reconectando: false },
-): ReacaoAFalhaDeMicrofone {
-  if (erro === null || erro === undefined) return "ignorar";
+export function microphoneReactionFailure(
+  error: unknown,
+  context: FailureMicrophoneContext = { reconnecting: false },
+): MicrophoneReactionFailure {
+  if (error === null || error === undefined) return "ignorar";
 
-  const nome = nomeDoErro(erro);
+  const name = errorName(error);
 
-  if (ERRO_DE_PROGRAMACAO.has(nome)) return "estourar";
+  if (SCHEDULING_ERROR.has(name)) return "estourar";
 
-  if (PEDEM_ACAO_DA_PESSOA.has(nome)) return "mutar";
+  if (PERSON_REQUEST_ACTION.has(name)) return "mutar";
 
-  if (PASSAGEIRAS.has(nome)) return "adiar";
+  if (TRANSIENT.has(name)) return "adiar";
 
-  if (SEM_CONEXAO.test(mensagemDoErro(erro))) return "adiar";
+  if (WITHOUT_CONNECTION.test(errorMessage(error))) return "adiar";
 
-  return contexto.reconectando ? "adiar" : "mutar";
+  return context.reconnecting ? "adiar" : "mutar";
 }

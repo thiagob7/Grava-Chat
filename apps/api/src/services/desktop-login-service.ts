@@ -3,32 +3,32 @@ import { createHash, randomBytes } from "node:crypto";
 import { UnauthorizedError } from "~/lib/http.js";
 import { keys, redis } from "~/lib/redis.js";
 
-const VALIDADE_SEGUNDOS = 120;
+const VALIDITY_SECONDS = 120;
 
-const hash = (valor: string) => createHash("sha256").update(valor).digest("base64url");
+const hash = (value: string) => createHash("sha256").update(value).digest("base64url");
 
 export const desktopLoginService = {
-  novoDesafio: () => randomBytes(32).toString("base64url"),
+  newChallenge: () => randomBytes(32).toString("base64url"),
 
-  async emitirCodigo(userId: string, desafio: string) {
-    const codigo = randomBytes(32).toString("base64url");
+  async emitCode(userId: string, challenge: string) {
+    const code = randomBytes(32).toString("base64url");
 
     await redis.set(
-      keys.desktopLogin(codigo),
-      JSON.stringify({ userId, desafio }),
+      keys.desktopLogin(code),
+      JSON.stringify({ userId, challenge }),
       "EX",
-      VALIDADE_SEGUNDOS,
+      VALIDITY_SECONDS,
     );
 
-    return codigo;
+    return code;
   },
 
-  async resgatar(codigo: string, verificador: string): Promise<string> {
-    const bruto = await redis.getdel(keys.desktopLogin(codigo));
-    if (!bruto) throw new UnauthorizedError("Código de login expirado ou já usado");
+  async redeem(code: string, verifier: string): Promise<string> {
+    const raw = await redis.getdel(keys.desktopLogin(code));
+    if (!raw) throw new UnauthorizedError("Código de login expirado ou já usado");
 
-    const { userId, desafio } = JSON.parse(bruto) as { userId: string; desafio: string };
-    if (hash(verificador) !== desafio) throw new UnauthorizedError("Código de login inválido");
+    const { userId, challenge } = JSON.parse(raw) as { userId: string; challenge: string };
+    if (hash(verifier) !== challenge) throw new UnauthorizedError("Código de login inválido");
 
     return userId;
   },

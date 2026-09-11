@@ -1,4 +1,5 @@
 export const perfil = {
+  semCartao: "Profil ini tidak bisa dibuka.",
   carregando: "Memuat…",
   editar: "Edit profil",
   mensagem: "Pesan",

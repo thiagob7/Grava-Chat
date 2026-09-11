@@ -1,9 +1,9 @@
 import React from "react";
 import { toast } from "react-toastify";
 
-import { pesoDoTema } from "@gravae/shared";
+import { themeWeight } from "@gravae/shared";
 
-import { useTema } from "~/@core/application/queries/tema/use-temas";
+import { useTheme } from "~/@core/application/queries/tema/use-temas";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -15,45 +15,46 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useConfiguracoes } from "~/features/configuracoes/stores/configuracoes";
-import { useEstudio } from "~/features/configuracoes/stores/estudio";
-import { PreviaDosAtivos } from "~/features/tema/components/PreviaDosAtivos";
-import { PreviaDoTema } from "~/features/tema/components/PreviaDoTema";
-import { useImportarTema } from "~/features/tema/stores/importar-tema";
+import { useSettings } from "~/features/configuracoes/stores/configuracoes";
+import { useStudio } from "~/features/configuracoes/stores/estudio";
+import { ActivePreview } from "~/features/tema/components/PreviaDosAtivos";
+import { ThemePreview } from "~/features/tema/components/PreviaDoTema";
+import { useImportTheme } from "~/features/tema/stores/importar-tema";
+import { useTranslation } from "~/traducao";
 
-export const ModalDeImportarTema: React.FC = () => {
-  const temaId = useImportarTema((s) => s.temaId);
-  const fechar = useImportarTema((s) => s.fechar);
-  const importar = useEstudio((s) => s.importar);
-  const abrirConfiguracoes = useConfiguracoes((s) => s.abrir);
+export const ImportThemeModal: React.FC = () => {
+  const { t } = useTranslation();
+  const themeId = useImportTheme((s) => s.themeId);
+  const close = useImportTheme((s) => s.close);
+  const doImport = useStudio((s) => s.doImport);
+  const openSettings = useSettings((s) => s.open);
 
-  const { data: tema, isLoading, isError } = useTema(temaId ?? undefined);
+  const { data: theme, isLoading, isError } = useTheme(themeId ?? undefined);
 
-  const aplicar = () => {
-    if (!tema) return;
+  const apply = () => {
+    if (!theme) return;
 
-    importar({
-      css: tema.css,
-      substituicoes: tema.substituicoes,
-      ativos: tema.ativos,
-      nome: tema.nome,
-      origemId: tema.id,
+    doImport({
+      css: theme.css,
+      overrides: theme.overrides,
+      actives: theme.actives,
+      name: theme.name,
+      originId: theme.id,
     });
-    abrirConfiguracoes("aparencia", "tema");
-    toast.success(`${tema.nome} aplicado. Está no estúdio de temas.`);
-    fechar();
+    openSettings("appearance", "tema");
+    toast.success(`${theme.name} aplicado. Está no estúdio de temas.`);
+    close();
   };
 
-  const quantosTokens = tema ? Object.keys(tema.substituicoes).length : 0;
+  const countTokens = theme ? Object.keys(theme.overrides).length : 0;
 
   return (
-    <Dialog data-gc="tema.modal-de-importar-tema.dialog" open={temaId !== null} onOpenChange={(aberto) => !aberto && fechar()}>
+    <Dialog data-gc="tema.modal-de-importar-tema.dialog" open={themeId !== null} onOpenChange={(isOpen) => !isOpen && close()}>
       <DialogContent data-gc="tema.modal-de-importar-tema.dialog-content" className="max-w-xl">
         <DialogHeader data-gc="tema.modal-de-importar-tema.dialog-header">
-          <DialogTitle data-gc="tema.modal-de-importar-tema.dialog-title">Importar tema</DialogTitle>
+          <DialogTitle data-gc="tema.modal-de-importar-tema.dialog-title">{t("configuracoes.tema.importar")}</DialogTitle>
           <DialogDescription data-gc="tema.modal-de-importar-tema.dialog-description">
-            Isso substitui o tema que você tem agora. Dá para editar depois em Configurações
-            {" > "}Aparência{" > "}Estúdio de temas.
+            {t("configuracoes.tema.importarDetalhe")}
           </DialogDescription>
         </DialogHeader>
 
@@ -62,54 +63,55 @@ export const ModalDeImportarTema: React.FC = () => {
 
           {isError && (
             <p data-gc="tema.modal-de-importar-tema.p" className="rounded-lg bg-surface-2 p-4 text-sm text-ink-muted">
-              Tema indisponível. Quem publicou apagou, ou o link está errado.
+              {t("configuracoes.tema.indisponivelLinha")}
             </p>
           )}
 
-          {tema && (
+          {theme && (
             <>
               <p data-gc="tema.modal-de-importar-tema.p--2" className="text-sm">
-                <span data-gc="tema.modal-de-importar-tema.span" className="font-semibold">{tema.nome}</span>
-                {(tema.autor || tema.versao) && (
+                <span data-gc="tema.modal-de-importar-tema.span" className="font-semibold">{theme.name}</span>
+                {(theme.author || theme.version) && (
                   <span data-gc="tema.modal-de-importar-tema.span--2" className="text-ink-faint">
                     {" · "}
-                    {[tema.autor && `por ${tema.autor}`, tema.versao && `v${tema.versao}`]
+                    {[theme.author && t("configuracoes.tema.porAutor", { autor: theme.author }), theme.version && `v${theme.version}`]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>
                 )}
               </p>
 
-              {quantosTokens > 0 && (
+              {countTokens > 0 && (
                 <p data-gc="tema.modal-de-importar-tema.p--3" className="text-xs text-ink-faint">
-                  {quantosTokens} {quantosTokens === 1 ? "cor trocada" : "cores trocadas"}
+                  {countTokens === 1
+                    ? t("configuracoes.tema.umaCorTrocada")
+                    : t("configuracoes.tema.coresTrocadas", { quantas: countTokens })}
                 </p>
               )}
 
-              <PreviaDoTema data-gc="tema.modal-de-importar-tema.previa-do-tema"
-                temaId={tema.id}
+              <ThemePreview data-gc="tema.modal-de-importar-tema.theme-preview"
+                themeId={theme.id}
                 className="aspect-video w-full overflow-hidden rounded-lg border border-line"
               />
 
-              <PreviaDosAtivos data-gc="tema.modal-de-importar-tema.previa-dos-ativos"
-                ativos={tema.ativos}
-                peso={pesoDoTema(tema.css, tema.ativos)}
+              <ActivePreview data-gc="tema.modal-de-importar-tema.active-preview"
+                actives={theme.actives}
+                weight={themeWeight(theme.css, theme.actives)}
               />
 
-              {tema.css.trim() ? (
+              {theme.css.trim() ? (
                 <>
                   <pre data-gc="tema.modal-de-importar-tema.pre" className="max-h-72 overflow-auto rounded-lg border border-line bg-surface-0 p-4 font-mono text-13 leading-relaxed text-ink">
-                    {tema.css}
+                    {theme.css}
                   </pre>
 
                   <p data-gc="tema.modal-de-importar-tema.p--4" className="text-xs text-aviso">
-                    Este tema traz CSS de quem escreveu, e CSS mexe em qualquer canto da tela. Só
-                    importe de gente em quem você confia.
+                    {t("configuracoes.tema.avisoDeCss")}
                   </p>
                 </>
               ) : (
                 <p data-gc="tema.modal-de-importar-tema.p--5" className="rounded-lg bg-surface-2 p-4 text-sm text-ink-muted">
-                  Este tema só troca cores. Nada de CSS de fora.
+                  {t("configuracoes.tema.soCores")}
                 </p>
               )}
             </>
@@ -117,11 +119,11 @@ export const ModalDeImportarTema: React.FC = () => {
         </DialogBody>
 
         <DialogFooter data-gc="tema.modal-de-importar-tema.dialog-footer">
-          <Button data-gc="tema.modal-de-importar-tema.button.fechar" variant="surface" onClick={fechar}>
-            Cancelar
+          <Button data-gc="tema.modal-de-importar-tema.button.close" variant="surface" onClick={close}>
+            {t("comum.cancelar")}
           </Button>
-          <Button data-gc="tema.modal-de-importar-tema.button.aplicar" disabled={!tema} onClick={aplicar}>
-            Aplicar
+          <Button data-gc="tema.modal-de-importar-tema.button.apply" disabled={!theme} onClick={apply}>
+            {t("configuracoes.tema.aplicar")}
           </Button>
         </DialogFooter>
       </DialogContent>

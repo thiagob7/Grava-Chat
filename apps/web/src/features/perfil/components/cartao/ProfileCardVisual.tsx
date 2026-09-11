@@ -2,86 +2,86 @@ import React, { useState, type ReactNode } from "react";
 import { Camera, NotebookPen, Pencil, PlusCircle, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 import type {
-  Emblema,
-  EstiloDePerfil,
+  Badge,
+  ProfileStyle,
   PresenceStatus,
   Role,
-  StatusPersonalizado,
+  CustomStatus,
 } from "@gravae/shared";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { PatenteAnimada } from "~/features/perfil/components/PatenteAnimada";
-import { SeletorDeCargos } from "~/features/perfil/components/cartao/SeletorDeCargos";
-import { SeletorDeEtiqueta } from "~/features/perfil/components/cartao/SeletorDeEtiqueta";
+import { RankAnimated } from "~/features/perfil/components/PatenteAnimada";
+import { RolesPicker } from "~/features/perfil/components/cartao/SeletorDeCargos";
+import { TagPicker } from "~/features/perfil/components/cartao/SeletorDeEtiqueta";
 import { ServerTag } from "~/features/perfil/components/ServerTag";
 import { UserName } from "~/features/perfil/components/UserName";
 import {
-  classeDoEnfeite,
-  variaveisDoEnfeite,
-  type EstiloCss,
+  charmClass,
+  charmVariables,
+  type StyleCss,
 } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
-import { idiomaAtual, useTranslation } from "~/traducao";
-import { flx, flxCls, type Lugares } from "~/lib/compat-de-tema";
+import { currentLanguage, useTranslation } from "~/traducao";
+import { flx, flxCls, type Places } from "~/lib/compat-de-tema";
 
 interface ProfileCardVisualProps {
   id: string;
   displayName: string;
   username: string;
-  ehBot?: boolean;
-  ehSistema?: boolean;
+  isBot?: boolean;
+  isSystem?: boolean;
   avatarUrl: string | null;
   status?: PresenceStatus;
-  perfil?: EstiloDePerfil | null;
-  etiquetaDoServidor?: {
+  profile?: ProfileStyle | null;
+  serverTag?: {
     guildId: string;
     tag: string;
     tagIcon: string | null;
   } | null;
-  statusPersonalizado?: StatusPersonalizado | null;
-  corDoCargo?: string | null;
+  customStatus?: CustomStatus | null;
+  roleColor?: string | null;
   bio?: string | null;
-  pronomes?: string | null;
-  onPronomes?: (valor: string) => void;
+  pronouns?: string | null;
+  onPronouns?: (value: string) => void;
   createdAt?: string | null;
-  entrouEm?: string | null;
-  nomeDoServidor?: string | null;
+  joinedAt?: string | null;
+  serverName?: string | null;
   mutualFriends?: number;
   mutualGuilds?: number;
-  cargos?: Role[];
-  cargosDisponiveis?: Role[];
-  onAlternarCargo?: (roleId: string) => void;
-  salvandoCargos?: boolean;
-  emblemas?: Emblema[];
-  acoesDoTopo?: ReactNode;
-  acoes?: ReactNode;
-  acoesDeBaixo?: ReactNode;
+  roleList?: Role[];
+  availableRoles?: Role[];
+  onToggleRole?: (roleId: string) => void;
+  savingRoles?: boolean;
+  badges?: Badge[];
+  topActions?: ReactNode;
+  actions?: ReactNode;
+  downActions?: ReactNode;
   children?: ReactNode;
   className?: string;
-  editavel?: boolean;
-  onAbrirPerfil?: () => void;
-  onIrParaNota?: () => void;
-  onEtiqueta?: (valor: string) => void;
-  onEtiquetaDoServidor?: (guildId: string | null) => void;
+  editable?: boolean;
+  onOpenProfile?: () => void;
+  onIrForNote?: () => void;
+  onTag?: (value: string) => void;
+  onServerTag?: (guildId: string | null) => void;
   onStatus?: () => void;
-  onEditarFaixa?: () => void;
-  menuDaFaixa?: ReactNode;
-  onEditarFoto?: () => void;
-  onBio?: (valor: string) => void;
+  onEditTrack?: () => void;
+  trackMenu?: ReactNode;
+  onEditPhoto?: () => void;
+  onBio?: (value: string) => void;
 }
 
-const MascaraDaFaixa: React.FC<{ id: string; lugar: Lugares; cx: number; raio: number }> = ({
+const TrackMask: React.FC<{ id: string; place: Places; cx: number; radius: number }> = ({
   id,
-  lugar,
+  place,
   cx,
-  raio,
+  radius,
 }) => (
-  <svg data-gc="perfil.cartao.profile-card-visual.svg" aria-hidden className={cn(flxCls(lugar), "absolute size-0")}>
+  <svg data-gc="perfil.cartao.profile-card-visual.svg" aria-hidden className={cn(flxCls(place), "absolute size-0")}>
     <mask data-gc="perfil.cartao.profile-card-visual.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
       <rect data-gc="perfil.cartao.profile-card-visual.rect" width="100%" height="100%" fill="white" />
-      <circle data-gc="perfil.cartao.profile-card-visual.circle" cx={cx} cy="100%" r={raio} fill="black" />
+      <circle data-gc="perfil.cartao.profile-card-visual.circle" cx={cx} cy="100%" r={radius} fill="black" />
     </mask>
   </svg>
 );
@@ -90,62 +90,62 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   id,
   displayName,
   username,
-  ehBot = false,
-  ehSistema = false,
+  isBot = false,
+  isSystem = false,
   avatarUrl,
   status,
-  perfil,
-  etiquetaDoServidor,
-  statusPersonalizado,
-  corDoCargo,
+  profile,
+  serverTag,
+  customStatus,
+  roleColor,
   bio,
-  pronomes,
-  onPronomes,
+  pronouns,
+  onPronouns,
   createdAt,
-  entrouEm,
-  nomeDoServidor,
+  joinedAt,
+  serverName,
   mutualFriends = 0,
   mutualGuilds = 0,
-  cargos = [],
-  cargosDisponiveis = [],
-  onAlternarCargo,
-  salvandoCargos = false,
-  emblemas = [],
-  acoesDoTopo,
-  acoes,
-  acoesDeBaixo,
+  roleList = [],
+  availableRoles = [],
+  onToggleRole,
+  savingRoles = false,
+  badges = [],
+  topActions,
+  actions,
+  downActions,
   children,
   className,
-  editavel = false,
-  onAbrirPerfil,
-  onIrParaNota,
-  onEtiqueta,
-  onEtiquetaDoServidor,
+  editable = false,
+  onOpenProfile,
+  onIrForNote,
+  onTag,
+  onServerTag,
   onStatus,
-  onEditarFaixa,
-  menuDaFaixa,
-  onEditarFoto,
+  onEditTrack,
+  trackMenu,
+  onEditPhoto,
   onBio,
 }) => {
   const { t } = useTranslation();
-  const idDaMascara = React.useId();
-  const [editandoEtiqueta, setEditandoEtiqueta] = useState(false);
-  const [editandoBio, setEditandoBio] = useState(false);
+  const maskId = React.useId();
+  const [editingTag, setEditingTag] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
 
-  const gerenciaCargos = Boolean(onAlternarCargo);
-  const cargosGeriveis = new Set(cargosDisponiveis.map((cargo) => cargo.id));
+  const managesRoles = Boolean(onToggleRole);
+  const rolesManageable = new Set(availableRoles.map((role) => role.id));
 
-  const temDecoracao = Boolean(perfil?.decoracao && perfil.decoracao !== "nenhuma");
-  const molduraDoCartao = classeDoEnfeite("moldura", perfil?.moldura);
-  const efeito = classeDoEnfeite("perfil", perfil?.efeito);
-  const placa = classeDoEnfeite("placa", perfil?.placa);
+  const hasDecoration = Boolean(profile?.decoration && profile.decoration !== "nenhuma");
+  const cardFrame = charmClass("moldura", profile?.frame);
+  const effect = charmClass("perfil", profile?.effect);
+  const plate = charmClass("placa", profile?.plate);
 
-  const tema: EstiloCss | undefined = perfil?.temaPrimario
+  const theme: StyleCss | undefined = profile?.themePrimary
     ? {
-        background: perfil.temaSecundario
-          ? `linear-gradient(160deg, ${perfil.temaPrimario}, ${perfil.temaSecundario})`
-          : perfil.temaPrimario,
-        "--gc-recorte": perfil.temaSecundario ?? perfil.temaPrimario,
+        background: profile.secondaryTheme
+          ? `linear-gradient(160deg, ${profile.themePrimary}, ${profile.secondaryTheme})`
+          : profile.themePrimary,
+        "--gc-recorte": profile.secondaryTheme ?? profile.themePrimary,
       }
     : undefined;
 
@@ -153,39 +153,39 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
     <div data-gc="perfil.cartao.profile-card-visual.div"
       className={cn(
         "group/cartao relative overflow-hidden rounded-lg bg-surface-0",
-        flxCls("cartaoDePerfil"),
+        flxCls("profileCard"),
         className,
       )}
-      style={tema}
+      style={theme}
     >
-      {molduraDoCartao && (
+      {cardFrame && (
         <span data-gc="perfil.cartao.profile-card-visual.span"
           aria-hidden
-          className={cn("gc-camada--cartao", molduraDoCartao)}
-          style={variaveisDoEnfeite({ animar: true, velocidade: "10s" })}
+          className={cn("gc-camada--cartao", cardFrame)}
+          style={charmVariables({ animate: true, speed: "10s" })}
         />
       )}
-      <MascaraDaFaixa data-gc="perfil.cartao.profile-card-visual.mascara-da-faixa" id={idDaMascara} lugar="mascaraDaFaixa" cx={56} raio={47} />
+      <TrackMask data-gc="perfil.cartao.profile-card-visual.track-mask" id={maskId} place="trackMask" cx={56} radius={47} />
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
         className="relative aspect-[20/7] bg-cover bg-center"
         style={{
-          mask: `url(#${idDaMascara})`,
-          WebkitMask: `url(#${idDaMascara})`,
-          backgroundColor: perfil?.bannerCor ?? avatarColor(id),
-          ...(perfil?.bannerUrl
-            ? { backgroundImage: `url(${perfil.bannerUrl})` }
+          mask: `url(#${maskId})`,
+          WebkitMask: `url(#${maskId})`,
+          backgroundColor: profile?.bannerColor?.trim() || avatarColor(id),
+          ...(profile?.bannerUrl
+            ? { backgroundImage: `url(${profile.bannerUrl})` }
             : null),
         }}
       >
 
-        {menuDaFaixa && (
-          <div data-gc="perfil.cartao.profile-card-visual.div--3" className="absolute right-3 top-3">{menuDaFaixa}</div>
+        {trackMenu && (
+          <div data-gc="perfil.cartao.profile-card-visual.div--3" className="absolute right-3 top-3">{trackMenu}</div>
         )}
 
-        {!menuDaFaixa && onEditarFaixa && (
-          <button data-gc="perfil.cartao.profile-card-visual.button.on-editar-faixa"
+        {!trackMenu && onEditTrack && (
+          <button data-gc="perfil.cartao.profile-card-visual.button.on-edit-track"
             type="button"
-            onClick={onEditarFaixa}
+            onClick={onEditTrack}
             aria-label={t("perfil.cartao.trocarFaixa")}
             title={t("perfil.cartao.trocarFaixaCurto")}
             className="absolute right-3 top-3 rounded-full bg-sobre-midia p-1.5 text-palco-ink/80 backdrop-blur-sm transition hover:bg-sobre-midia hover:text-palco-ink"
@@ -195,41 +195,41 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
       </div>
 
-      {acoesDoTopo && (
+      {topActions && (
         <div data-gc="perfil.cartao.profile-card-visual.div--4" className="absolute right-3 top-3 z-10 flex items-center gap-1.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/cartao:opacity-100">
-          {acoesDoTopo}
+          {topActions}
         </div>
       )}
 
-      <div data-gc="perfil.cartao.profile-card-visual.div--5" className={cn("relative px-4 pb-4 [--gc-recorte:var(--color-surface-0)]", flxCls("secaoDoCartaoDePerfil"))}>
-        {efeito && (
+      <div data-gc="perfil.cartao.profile-card-visual.div--5" className={cn("relative px-4 pb-4 [--gc-recorte:var(--color-surface-0)]", flxCls("cardProfileSection"))}>
+        {effect && (
           <span data-gc="perfil.cartao.profile-card-visual.span--2"
             aria-hidden
-            className={cn("gc-perfil", efeito)}
-            style={variaveisDoEnfeite({ animar: true, velocidade: "12s" })}
+            className={cn("gc-perfil", effect)}
+            style={charmVariables({ animate: true, speed: "12s" })}
           />
         )}
 
         <div data-gc="perfil.cartao.profile-card-visual.div--6" className="relative -mt-10 mb-3 flex items-start gap-3">
-          <span data-gc="perfil.cartao.profile-card-visual.span--3" {...flx("molduraDaFotoDoPerfil", "relative shrink-0")}>
+          <span data-gc="perfil.cartao.profile-card-visual.span--3" {...flx("photoProfileFrame", "relative shrink-0")}>
           <Avatar data-gc="perfil.cartao.profile-card-visual.avatar"
             id={id}
             name={displayName}
             url={avatarUrl}
             size={80}
             status={status}
-            enfeites={perfil}
-            animar
+            charms={profile}
+            animate
             className={cn(
               "rounded-full",
-              !temDecoracao && "ring-[6px] ring-surface-0",
+              !hasDecoration && "ring-[6px] ring-surface-0",
             )}
           />
 
-          {onEditarFoto && (
-            <button data-gc="perfil.cartao.profile-card-visual.button.on-editar-foto"
+          {onEditPhoto && (
+            <button data-gc="perfil.cartao.profile-card-visual.button.on-edit-photo"
               type="button"
-              onClick={onEditarFoto}
+              onClick={onEditPhoto}
               aria-label={t("perfil.cartao.trocarFoto")}
               title={t("perfil.cartao.trocarFotoCurto")}
               className="absolute inset-0 flex items-center justify-center rounded-full bg-sobre-midia text-palco-ink opacity-0 transition hover:opacity-100 focus-visible:opacity-100"
@@ -239,8 +239,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
           </span>
 
-          {(statusPersonalizado || onStatus) && (
-            <span data-gc="perfil.cartao.profile-card-visual.span--4" {...flx("recadoDoPerfil", "relative ml-2 mt-8 min-w-0")}>
+          {(customStatus || onStatus) && (
+            <span data-gc="perfil.cartao.profile-card-visual.span--4" {...flx("profileNote", "relative ml-2 mt-8 min-w-0")}>
               <span data-gc="perfil.cartao.profile-card-visual.span--5"
                 aria-hidden
                 className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
@@ -255,30 +255,30 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   onClick={onStatus}
                   className="flex max-w-52 items-center gap-2 rounded-full bg-surface-3 px-4 py-2.5 text-left text-sm text-ink-muted shadow-lg shadow-sombra transition hover:bg-surface-4 hover:text-ink"
                 >
-                  {statusPersonalizado ? (
+                  {customStatus ? (
                     <>
-                      {statusPersonalizado.emoji && (
-                        <span data-gc="perfil.cartao.profile-card-visual.span--7">{statusPersonalizado.emoji}</span>
+                      {customStatus.emoji && (
+                        <span data-gc="perfil.cartao.profile-card-visual.span--7">{customStatus.emoji}</span>
                       )}
-                      <span data-gc="perfil.cartao.profile-card-visual.span--8" {...flx("textoDoRecado", "min-w-0 truncate italic")}>
-                        {statusPersonalizado.texto}
+                      <span data-gc="perfil.cartao.profile-card-visual.span--8" {...flx("noteText", "min-w-0 truncate italic")}>
+                        {customStatus.text}
                       </span>
                     </>
                   ) : (
                     <>
                       <PlusCircle data-gc="perfil.cartao.profile-card-visual.plus-circle" size={14} className="shrink-0" />
-                      <span data-gc="perfil.cartao.profile-card-visual.span--9" {...flx("recadoVazio", "truncate italic")}>{t("perfil.cartao.adicionarStatus")}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--9" {...flx("emptyNote", "truncate italic")}>{t("perfil.cartao.adicionarStatus")}</span>
                     </>
                   )}
                 </button>
               ) : (
-                statusPersonalizado && (
+                customStatus && (
                   <span data-gc="perfil.cartao.profile-card-visual.span--10" className="flex max-w-52 items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-2 text-sm text-ink-muted shadow-lg shadow-sombra">
-                    {statusPersonalizado.emoji && (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--11">{statusPersonalizado.emoji}</span>
+                    {customStatus.emoji && (
+                      <span data-gc="perfil.cartao.profile-card-visual.span--11">{customStatus.emoji}</span>
                     )}
-                    <span data-gc="perfil.cartao.profile-card-visual.span--12" {...flx("textoDoRecado", "min-w-0 truncate italic")}>
-                      {statusPersonalizado.texto}
+                    <span data-gc="perfil.cartao.profile-card-visual.span--12" {...flx("noteText", "min-w-0 truncate italic")}>
+                      {customStatus.text}
                     </span>
                   </span>
                 )
@@ -287,49 +287,49 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
         </div>
 
-        <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("dadosDoPerfil", "relative")}>
-          <div data-gc="perfil.cartao.profile-card-visual.div--8" {...flx("linhaDoNomeDoPerfil", "flex items-center gap-2")}>
+        <div data-gc="perfil.cartao.profile-card-visual.div--7" {...flx("profileData", "relative")}>
+          <div data-gc="perfil.cartao.profile-card-visual.div--8" {...flx("nameProfileLine", "flex items-center gap-2")}>
             <p data-gc="perfil.cartao.profile-card-visual.p"
               className={cn(
                 "min-w-0 truncate text-xl font-bold leading-tight",
-                placa && "gc-placa",
-                placa,
+                plate && "gc-placa",
+                plate,
               )}
             >
-              {onAbrirPerfil ? (
-                <button data-gc="perfil.cartao.profile-card-visual.button.on-abrir-perfil"
+              {onOpenProfile ? (
+                <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile"
                   type="button"
-                  onClick={onAbrirPerfil}
+                  onClick={onOpenProfile}
                   className="min-w-0 max-w-full truncate text-left hover:underline"
                 >
                   <UserName data-gc="perfil.cartao.profile-card-visual.user-name"
-                    nome={displayName}
-                    perfil={perfil}
-                    corDoCargo={corDoCargo}
-                    tamanho="md"
-                    animar
-                    ehBot={ehBot}
-                    ehSistema={ehSistema}
+                    name={displayName}
+                    profile={profile}
+                    roleColor={roleColor}
+                    size="md"
+                    animate
+                    isBot={isBot}
+                    isSystem={isSystem}
                   />
                 </button>
               ) : (
                 <UserName data-gc="perfil.cartao.profile-card-visual.user-name--2"
-                  nome={displayName}
-                  perfil={perfil}
-                  corDoCargo={corDoCargo}
-                  tamanho="md"
-                  animar
-                  ehBot={ehBot}
-                  ehSistema={ehSistema}
+                  name={displayName}
+                  profile={profile}
+                  roleColor={roleColor}
+                  size="md"
+                  animate
+                  isBot={isBot}
+                  isSystem={isSystem}
                 />
               )}
             </p>
 
-            {onIrParaNota && (
+            {onIrForNote && (
               <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip" label={t("perfil.nota.adicionar")}>
-                <button data-gc="perfil.cartao.profile-card-visual.button.on-ir-para-nota"
+                <button data-gc="perfil.cartao.profile-card-visual.button.on-ir-for-note"
                   type="button"
-                  onClick={onIrParaNota}
+                  onClick={onIrForNote}
                   aria-label={t("perfil.nota.adicionar")}
                   className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-ink focus-visible:opacity-100 group-hover/cartao:opacity-100"
                 >
@@ -339,118 +339,118 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             )}
           </div>
 
-          <p data-gc="perfil.cartao.profile-card-visual.p--2" {...flx("linhaDoUsuarioDoPerfil", "flex flex-wrap items-center gap-1.5 text-sm text-ink-muted")}>
-            {onAbrirPerfil ? (
-              <button data-gc="perfil.cartao.profile-card-visual.button.on-abrir-perfil--2" type="button" onClick={onAbrirPerfil} {...flx("botaoDoUsuarioDoPerfil", "hover:underline")}>
+          <p data-gc="perfil.cartao.profile-card-visual.p--2" {...flx("userProfileLine", "flex flex-wrap items-center gap-1.5 text-sm text-ink-muted")}>
+            {onOpenProfile ? (
+              <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile--2" type="button" onClick={onOpenProfile} {...flx("userProfileButton", "hover:underline")}>
                 @{username}
               </button>
             ) : (
-              <span data-gc="perfil.cartao.profile-card-visual.span--13" className={flxCls("botaoDoUsuarioDoPerfil")}>@{username}</span>
+              <span data-gc="perfil.cartao.profile-card-visual.span--13" className={flxCls("userProfileButton")}>@{username}</span>
             )}
 
-            {(pronomes || onPronomes) && (
+            {(pronouns || onPronouns) && (
               <>
                 <span data-gc="perfil.cartao.profile-card-visual.span--14" className="text-ink-faint">•</span>
-                {onPronomes ? (
+                {onPronouns ? (
                   <input data-gc="perfil.cartao.profile-card-visual.input"
-                    value={pronomes ?? ""}
-                    onChange={(e) => onPronomes(e.target.value)}
-                    maxLength={LIMITS.pronomes}
+                    value={pronouns ?? ""}
+                    onChange={(e) => onPronouns(e.target.value)}
+                    maxLength={LIMITS.pronouns}
                     placeholder={t("perfil.cartao.pronomes")}
                     aria-label={t("perfil.cartao.pronomes")}
                     size={12}
                     className={cn(
-                      flxCls("pronomesNoCartao"),
-                      flxCls("campoDeEditarNoLugar"),
+                      flxCls("pronounsCard"),
+                      flxCls("editPlaceField"),
                       "w-24 rounded bg-surface-3 px-1.5 py-0 text-sm text-ink outline-none ring-ink-faint/70 transition focus:ring-2",
                     )}
                   />
                 ) : (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--15" className={cn(flxCls("pronomesNoCartao"), "truncate")}>{pronomes}</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--15" className={cn(flxCls("pronounsCard"), "truncate")}>{pronouns}</span>
                 )}
               </>
             )}
 
-            {editavel ? (
+            {editable ? (
               <span data-gc="perfil.cartao.profile-card-visual.span--16"
                 className={cn(
-                  flxCls("molduraDeEditarNoLugar"),
-                  flxCls("caixaDeEditarNoLugar"),
+                  flxCls("editPlaceFrame"),
+                  flxCls("editPlaceBox"),
                   "flex items-center gap-1.5",
                 )}
               >
                 <span data-gc="perfil.cartao.profile-card-visual.span--17" className="text-ink-faint">•</span>
-                {editandoEtiqueta ? (
+                {editingTag ? (
                   <input data-gc="perfil.cartao.profile-card-visual.input--2"
                     autoFocus
-                    value={perfil?.etiqueta ?? ""}
-                    onChange={(e) => onEtiqueta?.(e.target.value)}
-                    onBlur={() => setEditandoEtiqueta(false)}
+                    value={profile?.tag ?? ""}
+                    onChange={(e) => onTag?.(e.target.value)}
+                    onBlur={() => setEditingTag(false)}
                     onKeyDown={(e) =>
-                      e.key === "Enter" && setEditandoEtiqueta(false)
+                      e.key === "Enter" && setEditingTag(false)
                     }
-                    maxLength={LIMITS.etiqueta}
+                    maxLength={LIMITS.tag}
                     placeholder="etiqueta"
                     aria-label={t("perfil.cartao.suaEtiqueta")}
-                    size={LIMITS.etiqueta}
+                    size={LIMITS.tag}
                     className={cn(
-                      flxCls("campoDeEditarNoLugar"),
+                      flxCls("editPlaceField"),
                       "w-16 rounded bg-surface-3 px-1.5 py-0 text-sm font-semibold text-ink outline-none ring-ink-faint/70 transition focus:ring-2",
                     )}
                   />
                 ) : (
                   <button data-gc="perfil.cartao.profile-card-visual.button"
-                    onClick={() => setEditandoEtiqueta(true)}
+                    onClick={() => setEditingTag(true)}
                     title={t("perfil.cartao.editarEtiqueta")}
                     className={cn(
-                      flxCls("botaoDeEditarNoLugar"),
+                      flxCls("editPlaceButton"),
                       "rounded px-1 font-semibold text-ink transition hover:bg-surface-3",
                     )}
                   >
-                    {perfil?.etiqueta || (
+                    {profile?.tag || (
                       <span data-gc="perfil.cartao.profile-card-visual.span--18" className="text-ink-faint">etiqueta</span>
                     )}
                   </button>
                 )}
               </span>
             ) : (
-              perfil?.etiqueta && (
+              profile?.tag && (
                 <>
                   <span data-gc="perfil.cartao.profile-card-visual.span--19" className="text-ink-faint">•</span>
                   <span data-gc="perfil.cartao.profile-card-visual.span--20" className="font-semibold text-ink">
-                    {perfil.etiqueta}
+                    {profile.tag}
                   </span>
                 </>
               )
             )}
 
-            {editavel ? (
-              <SeletorDeEtiqueta data-gc="perfil.cartao.profile-card-visual.seletor-de-etiqueta"
-                atual={perfil?.tagGuildId}
-                onEscolher={(guildId) => onEtiquetaDoServidor?.(guildId)}
+            {editable ? (
+              <TagPicker data-gc="perfil.cartao.profile-card-visual.tag-picker"
+                current={profile?.tagGuildId}
+                onPick={(guildId) => onServerTag?.(guildId)}
               />
             ) : (
-              <ServerTag data-gc="perfil.cartao.profile-card-visual.server-tag" etiqueta={etiquetaDoServidor} />
+              <ServerTag data-gc="perfil.cartao.profile-card-visual.server-tag" tag={serverTag} />
             )}
 
-            {perfil?.patente && (
-              <PatenteAnimada data-gc="perfil.cartao.profile-card-visual.patente-animada" patente={perfil.patente} animar />
+            {profile?.rank && (
+              <RankAnimated data-gc="perfil.cartao.profile-card-visual.rank-animated" rank={profile.rank} animate />
             )}
 
-            {emblemas.map((emblema) => (
+            {badges.map((badge) => (
               <span data-gc="perfil.cartao.profile-card-visual.span--21"
-                key={emblema.id}
-                title={emblema.nome}
+                key={badge.id}
+                title={badge.name}
                 className="inline-flex items-center"
               >
-                {emblema.emoji ? (
+                {badge.emoji ? (
                   <span data-gc="perfil.cartao.profile-card-visual.span--22" className="text-base leading-none">
-                    {emblema.emoji}
+                    {badge.emoji}
                   </span>
-                ) : emblema.iconUrl ? (
+                ) : badge.iconUrl ? (
                   <img data-gc="perfil.cartao.profile-card-visual.img"
-                    src={emblema.iconUrl}
-                    alt={emblema.nome}
+                    src={badge.iconUrl}
+                    alt={badge.name}
                     className="size-4 object-contain"
                   />
                 ) : null}
@@ -458,7 +458,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             ))}
           </p>
 
-          {acoes && <div data-gc="perfil.cartao.profile-card-visual.div--9" className="mt-3 flex items-center gap-2">{acoes}</div>}
+          {actions && <div data-gc="perfil.cartao.profile-card-visual.div--9" className="mt-3 flex items-center gap-2">{actions}</div>}
 
           {(mutualGuilds > 0 || mutualFriends > 0) && (
             <p data-gc="perfil.cartao.profile-card-visual.p--3" className="mt-2 text-xs text-ink-faint">
@@ -474,14 +474,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           )}
 
           {onBio ? (
-            editandoBio ? (
+            editingBio ? (
               <div data-gc="perfil.cartao.profile-card-visual.div--10" className="mt-4">
                 <textarea data-gc="perfil.cartao.profile-card-visual.textarea"
                   autoFocus
                   rows={3}
                   value={bio ?? ""}
                   onChange={(e) => onBio(e.target.value)}
-                  onBlur={() => setEditandoBio(false)}
+                  onBlur={() => setEditingBio(false)}
                   maxLength={LIMITS.bio}
                   placeholder={t("perfil.cartao.conteAlgo")}
                   className="w-full resize-none rounded-lg border border-brand/70 bg-surface-1 px-3 py-2 text-sm text-ink outline-none ring-2 ring-brand/25 placeholder:text-ink-faint"
@@ -493,7 +493,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             ) : (
               <button data-gc="perfil.cartao.profile-card-visual.button--2"
                 type="button"
-                onClick={() => setEditandoBio(true)}
+                onClick={() => setEditingBio(true)}
                 className="mt-4 block w-full rounded-lg px-1 py-0.5 text-left text-sm transition hover:bg-surface-3/60"
               >
                 {bio ? (
@@ -509,27 +509,27 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             bio && <p data-gc="perfil.cartao.profile-card-visual.p--5" className="mt-4 whitespace-pre-wrap text-sm text-ink">{bio}</p>
           )}
 
-          {(cargos.length > 0 || gerenciaCargos) && (
+          {(roleList.length > 0 || managesRoles) && (
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--6" className="mb-2 mt-5 text-sm font-bold text-ink">
-                {cargos.length === 0
+                {roleList.length === 0
                   ? t("perfil.cartao.cargos")
-                  : cargos.length === 1
+                  : roleList.length === 1
                     ? t("perfil.cartao.cargo")
-                    : t("perfil.cartao.cargosCom", { quantidade: cargos.length })}
+                    : t("perfil.cartao.cargosCom", { quantidade: roleList.length })}
               </p>
 
               <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-1.5">
-                {cargos.map((cargo) => (
+                {roleList.map((role) => (
                   <span data-gc="perfil.cartao.profile-card-visual.span--25"
-                    key={cargo.id}
+                    key={role.id}
                     className="flex items-center gap-1.5 rounded bg-surface-3 px-2 py-0.5 text-xs font-medium"
                   >
-                    {cargo.iconEmoji ? (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--26">{cargo.iconEmoji}</span>
-                    ) : cargo.iconUrl ? (
+                    {role.iconEmoji ? (
+                      <span data-gc="perfil.cartao.profile-card-visual.span--26">{role.iconEmoji}</span>
+                    ) : role.iconUrl ? (
                       <img data-gc="perfil.cartao.profile-card-visual.img--2"
-                        src={cargo.iconUrl}
+                        src={role.iconUrl}
                         alt=""
                         className="size-3.5 rounded-sm object-cover"
                       />
@@ -538,19 +538,19 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                         className="size-2.5 rounded-full"
                         style={{
                           backgroundColor:
-                            cargo.color ?? "var(--color-ink-faint)",
+                            role.color ?? "var(--color-ink-faint)",
                         }}
                       />
                     )}
-                    {cargo.name}
+                    {role.name}
 
-                    {onAlternarCargo && cargosGeriveis.has(cargo.id) && (
+                    {onToggleRole && rolesManageable.has(role.id) && (
                       <button data-gc="perfil.cartao.profile-card-visual.button--3"
                         type="button"
-                        onClick={() => onAlternarCargo(cargo.id)}
-                        disabled={salvandoCargos}
-                        aria-label={t("perfil.cartao.tirarCargo", { cargo: cargo.name })}
-                        title={t("perfil.cartao.tirarCargo", { cargo: cargo.name })}
+                        onClick={() => onToggleRole(role.id)}
+                        disabled={savingRoles}
+                        aria-label={t("perfil.cartao.tirarCargo", { cargo: role.name })}
+                        title={t("perfil.cartao.tirarCargo", { cargo: role.name })}
                         className="-mr-1 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
                       >
                         <X data-gc="perfil.cartao.profile-card-visual.x" size={11} />
@@ -559,12 +559,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   </span>
                 ))}
 
-                {onAlternarCargo && (
-                  <SeletorDeCargos data-gc="perfil.cartao.profile-card-visual.seletor-de-cargos.on-alternar-cargo"
-                    disponiveis={cargosDisponiveis}
-                    atuais={cargos.map((cargo) => cargo.id)}
-                    onAlternar={onAlternarCargo}
-                    desabilitado={salvandoCargos}
+                {onToggleRole && (
+                  <RolesPicker data-gc="perfil.cartao.profile-card-visual.roles-picker.on-toggle-role"
+                    available={availableRoles}
+                    current={roleList.map((role) => role.id)}
+                    onToggle={onToggleRole}
+                    disabled={savingRoles}
                   />
                 )}
               </div>
@@ -577,14 +577,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">
                 <span data-gc="perfil.cartao.profile-card-visual.span--28" className="flex items-start gap-1.5" title="Gravaê">
                   <img data-gc="perfil.cartao.profile-card-visual.img--3" src="/brand/logo%20g%20branco.svg" alt="" className="size-3.5 opacity-80" draggable={false} />
-                  {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "medium" }).format(new Date(createdAt))}
+                  {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "medium" }).format(new Date(createdAt))}
                 </span>
-                {entrouEm && (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--29" className="flex items-center gap-1.5" title={nomeDoServidor ?? undefined}>
+                {joinedAt && (
+                  <span data-gc="perfil.cartao.profile-card-visual.span--29" className="flex items-center gap-1.5" title={serverName ?? undefined}>
                     <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex size-3.5 items-center justify-center rounded-full bg-surface-4 text-[8px] font-bold uppercase text-ink">
-                      {(nomeDoServidor ?? "").slice(0, 1)}
+                      {(serverName ?? "").slice(0, 1)}
                     </span>
-                    {new Intl.DateTimeFormat(idiomaAtual(), { dateStyle: "medium" }).format(new Date(entrouEm))}
+                    {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "medium" }).format(new Date(joinedAt))}
                   </span>
                 )}
               </div>
@@ -593,7 +593,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {children}
 
-          {acoesDeBaixo && <div data-gc="perfil.cartao.profile-card-visual.div--13" className="mt-4 flex flex-col gap-2">{acoesDeBaixo}</div>}
+          {downActions && <div data-gc="perfil.cartao.profile-card-visual.div--13" className="mt-4 flex flex-col gap-2">{downActions}</div>}
         </div>
       </div>
     </div>

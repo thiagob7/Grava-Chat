@@ -94,84 +94,84 @@ export const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] =
   },
 ];
 
-export const PERMISSION_LABELS: Record<Permission, { nome: string; descricao: string }> = {
+export const PERMISSION_LABELS: Record<Permission, { name: string; description: string }> = {
   ADMINISTRATOR: {
-    nome: "Administrador",
-    descricao: "Concede TODAS as permissões e ignora restrições de canal. Dê com cuidado.",
+    name: "Administrador",
+    description: "Concede TODAS as permissões e ignora restrições de canal. Dê com cuidado.",
   },
-  MANAGE_GUILD: { nome: "Gerenciar servidor", descricao: "Mudar nome, ícone e descrição." },
+  MANAGE_GUILD: { name: "Gerenciar servidor", description: "Mudar nome, ícone e descrição." },
   MANAGE_ROLES: {
-    nome: "Gerenciar cargos",
-    descricao: "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
+    name: "Gerenciar cargos",
+    description: "Criar e editar cargos abaixo do seu mais alto, e atribuí-los.",
   },
-  MANAGE_CHANNELS: { nome: "Gerenciar canais", descricao: "Criar, editar e apagar canais." },
+  MANAGE_CHANNELS: { name: "Gerenciar canais", description: "Criar, editar e apagar canais." },
   MANAGE_EVENTS: {
-    nome: "Gerenciar eventos",
-    descricao: "Criar, editar e cancelar os eventos do servidor.",
+    name: "Gerenciar eventos",
+    description: "Criar, editar e cancelar os eventos do servidor.",
   },
-  MANAGE_WEBHOOKS: { nome: "Gerenciar webhooks", descricao: "Criar e apagar integrações." },
+  MANAGE_WEBHOOKS: { name: "Gerenciar webhooks", description: "Criar e apagar integrações." },
   MANAGE_EXPRESSIONS: {
-    nome: "Gerenciar expressões",
-    descricao: "Subir e apagar emojis, figurinhas e efeitos sonoros do servidor.",
+    name: "Gerenciar expressões",
+    description: "Subir e apagar emojis, figurinhas e efeitos sonoros do servidor.",
   },
   VIEW_AUDIT_LOG: {
-    nome: "Ver registro de auditoria",
-    descricao: "Ver quem fez o quê no servidor.",
+    name: "Ver registro de auditoria",
+    description: "Ver quem fez o quê no servidor.",
   },
-  CREATE_INVITE: { nome: "Criar convite", descricao: "Gerar links para convidar pessoas." },
-  KICK_MEMBERS: { nome: "Expulsar membros", descricao: "Remover quem está abaixo de você." },
+  CREATE_INVITE: { name: "Criar convite", description: "Gerar links para convidar pessoas." },
+  KICK_MEMBERS: { name: "Expulsar membros", description: "Remover quem está abaixo de você." },
   BAN_MEMBERS: {
-    nome: "Banir membros",
-    descricao: "Remover e impedir de voltar, mesmo com convite novo.",
+    name: "Banir membros",
+    description: "Remover e impedir de voltar, mesmo com convite novo.",
   },
   MODERATE_MEMBERS: {
-    nome: "Castigar membros",
-    descricao: "Deixar alguém sem escrever nem falar por um tempo.",
+    name: "Castigar membros",
+    description: "Deixar alguém sem escrever nem falar por um tempo.",
   },
-  MANAGE_NICKNAMES: { nome: "Gerenciar apelidos", descricao: "Mudar o apelido de outras pessoas." },
-  CHANGE_NICKNAME: { nome: "Alterar apelido", descricao: "Mudar o próprio apelido neste servidor." },
+  MANAGE_NICKNAMES: { name: "Gerenciar apelidos", description: "Mudar o apelido de outras pessoas." },
+  CHANGE_NICKNAME: { name: "Alterar apelido", description: "Mudar o próprio apelido neste servidor." },
   CREATE_EXPRESSIONS: {
-    nome: "Criar expressões",
-    descricao: "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
+    name: "Criar expressões",
+    description: "Subir emojis, figurinhas e sons — sem poder apagar os dos outros.",
   },
 
-  VIEW_CHANNEL: { nome: "Ver canal", descricao: "Ver o canal e ler o histórico." },
-  SEND_MESSAGES: { nome: "Enviar mensagens", descricao: "Escrever nos canais de texto." },
-  MANAGE_MESSAGES: { nome: "Gerenciar mensagens", descricao: "Apagar mensagens de outras pessoas." },
-  ATTACH_FILES: { nome: "Anexar arquivos", descricao: "Enviar imagens e arquivos." },
-  ADD_REACTIONS: { nome: "Adicionar reações", descricao: "Reagir às mensagens." },
-  MENTION_EVERYONE: { nome: "Mencionar @everyone", descricao: "Notificar o servidor inteiro." },
+  VIEW_CHANNEL: { name: "Ver canal", description: "Ver o canal e ler o histórico." },
+  SEND_MESSAGES: { name: "Enviar mensagens", description: "Escrever nos canais de texto." },
+  MANAGE_MESSAGES: { name: "Gerenciar mensagens", description: "Apagar mensagens de outras pessoas." },
+  ATTACH_FILES: { name: "Anexar arquivos", description: "Enviar imagens e arquivos." },
+  ADD_REACTIONS: { name: "Adicionar reações", description: "Reagir às mensagens." },
+  MENTION_EVERYONE: { name: "Mencionar @everyone", description: "Notificar o servidor inteiro." },
   READ_MESSAGE_HISTORY: {
-    nome: "Ver histórico de mensagens",
-    descricao: "Ler o que foi dito antes de você abrir o canal.",
+    name: "Ver histórico de mensagens",
+    description: "Ler o que foi dito antes de você abrir o canal.",
   },
-  PIN_MESSAGES: { nome: "Fixar mensagens", descricao: "Fixar e desafixar qualquer mensagem." },
+  PIN_MESSAGES: { name: "Fixar mensagens", description: "Fixar e desafixar qualquer mensagem." },
   BYPASS_SLOWMODE: {
-    nome: "Ignorar modo lento",
-    descricao: "Escrever sem esperar o intervalo do canal.",
+    name: "Ignorar modo lento",
+    description: "Escrever sem esperar o intervalo do canal.",
   },
-  CREATE_POLLS: { nome: "Criar enquetes", descricao: "Publicar enquetes nos canais." },
+  CREATE_POLLS: { name: "Criar enquetes", description: "Publicar enquetes nos canais." },
 
-  CONNECT: { nome: "Conectar", descricao: "Entrar em canais de voz." },
-  SPEAK: { nome: "Falar", descricao: "Transmitir áudio na chamada." },
-  VIDEO: { nome: "Câmera", descricao: "Ligar a webcam na chamada." },
-  SHARE_SCREEN: { nome: "Compartilhar tela", descricao: "Transmitir a tela na chamada." },
+  CONNECT: { name: "Conectar", description: "Entrar em canais de voz." },
+  SPEAK: { name: "Falar", description: "Transmitir áudio na chamada." },
+  VIDEO: { name: "Câmera", description: "Ligar a webcam na chamada." },
+  SHARE_SCREEN: { name: "Compartilhar tela", description: "Transmitir a tela na chamada." },
   USE_SOUNDBOARD: {
-    nome: "Usar efeitos sonoros",
-    descricao: "Tocar os sons do painel na chamada.",
+    name: "Usar efeitos sonoros",
+    description: "Tocar os sons do painel na chamada.",
   },
-  MUTE_MEMBERS: { nome: "Silenciar membros", descricao: "Mutar outras pessoas na chamada." },
+  MUTE_MEMBERS: { name: "Silenciar membros", description: "Mutar outras pessoas na chamada." },
   DEAFEN_MEMBERS: {
-    nome: "Ensurdecer membros",
-    descricao: "Tirar o áudio da chamada de outra pessoa.",
+    name: "Ensurdecer membros",
+    description: "Tirar o áudio da chamada de outra pessoa.",
   },
   MOVE_MEMBERS: {
-    nome: "Mover membros",
-    descricao: "Puxar alguém para outro canal de voz, ou desconectar.",
+    name: "Mover membros",
+    description: "Puxar alguém para outro canal de voz, ou desconectar.",
   },
   USE_VAD: {
-    nome: "Usar detecção de voz",
-    descricao: "Falar sem apertar tecla. Sem isto, só push-to-talk.",
+    name: "Usar detecção de voz",
+    description: "Falar sem apertar tecla. Sem isto, só push-to-talk.",
   },
 };
 
@@ -207,9 +207,9 @@ export interface OverwriteLike {
   deny: string[];
 }
 
-const asPermissions = (lista: string[]) => lista.filter(ehPermissao);
-const ehPermissao = (valor: string): valor is Permission =>
-  (PERMISSIONS as readonly string[]).includes(valor);
+const asPermissions = (list: string[]) => list.filter(isPermission);
+const isPermission = (value: string): value is Permission =>
+  (PERMISSIONS as readonly string[]).includes(value);
 
 export function computePermissions(params: {
   userId: string;
@@ -221,7 +221,7 @@ export function computePermissions(params: {
 
   const base = new Set<Permission>();
   for (const role of params.roles) {
-    for (const permissao of asPermissions(role.permissions)) base.add(permissao);
+    for (const permission of asPermissions(role.permissions)) base.add(permission);
   }
 
   if (base.has("ADMINISTRATOR")) return new Set(PERMISSIONS);
@@ -229,36 +229,36 @@ export function computePermissions(params: {
   const overwrites = params.overwrites;
   if (!overwrites?.length) return base;
 
-  const idsDosCargos = new Set(params.roles.map((r) => r.id));
+  const rolesIds = new Set(params.roles.map((r) => r.id));
   const everyoneId = params.roles.find((r) => r.isEveryone)?.id;
 
-  const aplicar = (allow: string[], deny: string[]) => {
-    for (const permissao of asPermissions(deny)) base.delete(permissao);
-    for (const permissao of asPermissions(allow)) base.add(permissao);
+  const apply = (allow: string[], deny: string[]) => {
+    for (const permission of asPermissions(deny)) base.delete(permission);
+    for (const permission of asPermissions(allow)) base.add(permission);
   };
 
-  const doEveryone = overwrites.find((o) => o.type === "ROLE" && o.targetId === everyoneId);
-  if (doEveryone) aplicar(doEveryone.allow, doEveryone.deny);
+  const fromEveryone = overwrites.find((o) => o.type === "ROLE" && o.targetId === everyoneId);
+  if (fromEveryone) apply(fromEveryone.allow, fromEveryone.deny);
 
-  const dosCargos = overwrites.filter(
-    (o) => o.type === "ROLE" && o.targetId !== everyoneId && idsDosCargos.has(o.targetId),
+  const fromRoles = overwrites.filter(
+    (o) => o.type === "ROLE" && o.targetId !== everyoneId && rolesIds.has(o.targetId),
   );
 
-  if (dosCargos.length) {
-    aplicar(
-      dosCargos.flatMap((o) => o.allow),
-      dosCargos.flatMap((o) => o.deny),
+  if (fromRoles.length) {
+    apply(
+      fromRoles.flatMap((o) => o.allow),
+      fromRoles.flatMap((o) => o.deny),
     );
   }
 
-  const daPessoa = overwrites.find((o) => o.type === "MEMBER" && o.targetId === params.userId);
-  if (daPessoa) aplicar(daPessoa.allow, daPessoa.deny);
+  const fromPerson = overwrites.find((o) => o.type === "MEMBER" && o.targetId === params.userId);
+  if (fromPerson) apply(fromPerson.allow, fromPerson.deny);
 
   return base;
 }
 
-export const has = (permissoes: Set<Permission>, permissao: Permission) =>
-  permissoes.has("ADMINISTRATOR") || permissoes.has(permissao);
+export const has = (permissions: Set<Permission>, permission: Permission) =>
+  permissions.has("ADMINISTRATOR") || permissions.has(permission);
 
 export const highestPosition = (roles: RoleLike[]) =>
-  roles.reduce((maior, role) => Math.max(maior, role.position), -1);
+  roles.reduce((larger, role) => Math.max(larger, role.position), -1);

@@ -3,39 +3,39 @@ import { isIP } from "node:net";
 
 export interface Embed {
   url: string;
-  tipo: "link" | "video" | "imagem";
+  kind: "link" | "video" | "imagem";
   site: string | null;
-  titulo: string | null;
-  descricao: string | null;
-  imagem: string | null;
+  title: string | null;
+  description: string | null;
+  image: string | null;
   favicon: string | null;
-  autor: string | null;
+  author: string | null;
   player: string | null;
-  cor: string | null;
-  largura: number | null;
-  altura: number | null;
+  color: string | null;
+  width: number | null;
+  height: number | null;
 }
 
-const TEMPO_LIMITE = 6_000;
-const MAXIMO_DE_BYTES = 768 * 1024;
+const TEMPO_LIMIT = 6_000;
+const BYTES_MAX = 768 * 1024;
 const CACHE_MS = 30 * 60_000;
-const CACHE_FALHA_MS = 5 * 60_000;
-const CACHE_MAXIMO = 500;
+const CACHE_FAILURE_MS = 5 * 60_000;
+const CACHE_MAX = 500;
 
 const UA = "Mozilla/5.0 (compatible; GravaeBot/1.0)";
 
-const cache = new Map<string, { em: number; ate: number; valor: Embed | null }>();
+const cache = new Map<string, { em: number; until: number; value: Embed | null }>();
 
-function enderecoPrivado(ip: string): boolean {
+function privateAddress(ip: string): boolean {
   if (ip.includes(":")) {
-    const baixo = ip.toLowerCase();
-    if (baixo.startsWith("::ffff:")) return enderecoPrivado(baixo.slice(7));
+    const down = ip.toLowerCase();
+    if (down.startsWith("::ffff:")) return privateAddress(down.slice(7));
     return (
-      baixo === "::1" ||
-      baixo === "::" ||
-      baixo.startsWith("fc") ||
-      baixo.startsWith("fd") ||
-      baixo.startsWith("fe80")
+      down === "::1" ||
+      down === "::" ||
+      down.startsWith("fc") ||
+      down.startsWith("fd") ||
+      down.startsWith("fe80")
     );
   }
 
@@ -52,306 +52,306 @@ function enderecoPrivado(ip: string): boolean {
   );
 }
 
-async function podeBuscar(alvo: URL): Promise<boolean> {
-  if (alvo.protocol !== "http:" && alvo.protocol !== "https:") return false;
+async function canSearch(target: URL): Promise<boolean> {
+  if (target.protocol !== "http:" && target.protocol !== "https:") return false;
 
-  const host = alvo.hostname.replace(/^\[|\]$/g, "");
-  if (isIP(host)) return !enderecoPrivado(host);
+  const host = target.hostname.replace(/^\[|\]$/g, "");
+  if (isIP(host)) return !privateAddress(host);
 
   return lookup(host, { all: true })
-    .then((achados) => achados.length > 0 && achados.every(({ address }) => !enderecoPrivado(address)))
+    .then((matches) => matches.length > 0 && matches.every(({ address }) => !privateAddress(address)))
     .catch(() => false);
 }
 
-async function buscar(url: string, accept: string) {
-  const controle = new AbortController();
-  const relogio = setTimeout(() => controle.abort(), TEMPO_LIMITE);
+async function search(url: string, accept: string) {
+  const control = new AbortController();
+  const clock = setTimeout(() => control.abort(), TEMPO_LIMIT);
 
   return fetch(url, {
-    signal: controle.signal,
+    signal: control.signal,
     redirect: "follow",
     headers: { "user-agent": UA, accept, "accept-language": "pt-BR,pt;q=0.9,en;q=0.8" },
-  }).finally(() => clearTimeout(relogio));
+  }).finally(() => clearTimeout(clock));
 }
 
-async function lerInicio(resposta: Response): Promise<string> {
-  const leitor = resposta.body?.getReader();
-  if (!leitor) return "";
+async function readStart(reply: Response): Promise<string> {
+  const reader = reply.body?.getReader();
+  if (!reader) return "";
 
-  const decodificador = new TextDecoder("utf-8");
-  let texto = "";
-  let lidos = 0;
+  const decoder = new TextDecoder("utf-8");
+  let text = "";
+  let read = 0;
 
   for (;;) {
-    const { done, value } = await leitor.read();
+    const { done, value } = await reader.read();
     if (done) break;
 
-    lidos += value.length;
-    texto += decodificador.decode(value, { stream: true });
+    read += value.length;
+    text += decoder.decode(value, { stream: true });
 
-    const jaTemOQuePrecisa = /og:(title|description|image)/i.test(texto) && /<\/head>/i.test(texto);
+    const alreadyHasNeeds = /og:(title|description|image)/i.test(text) && /<\/head>/i.test(text);
 
-    if (lidos >= MAXIMO_DE_BYTES || jaTemOQuePrecisa) {
-      await leitor.cancel().catch(() => undefined);
+    if (read >= BYTES_MAX || alreadyHasNeeds) {
+      await reader.cancel().catch(() => undefined);
       break;
     }
   }
 
-  return texto;
+  return text;
 }
 
-const ENTIDADES: Record<string, string> = {
+const ENTITIES: Record<string, string> = {
   amp: "&",
   lt: "<",
   gt: ">",
   quot: '"',
-  apos: "'",
+  after: "'",
   nbsp: " ",
   "#39": "'",
   "#x27": "'",
   "#x2F": "/",
 };
 
-const desescapar = (texto: string) =>
-  texto.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (inteiro, nome: string) => {
-    const conhecida = ENTIDADES[nome] ?? ENTIDADES[nome.toLowerCase()];
-    if (conhecida) return conhecida;
+const unescape = (text: string) =>
+  text.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (whole, name: string) => {
+    const known = ENTITIES[name] ?? ENTITIES[name.toLowerCase()];
+    if (known) return known;
 
-    const numero = /^#x/i.test(nome)
-      ? Number.parseInt(nome.slice(2), 16)
-      : /^#/.test(nome)
-        ? Number.parseInt(nome.slice(1), 10)
+    const number = /^#x/i.test(name)
+      ? Number.parseInt(name.slice(2), 16)
+      : /^#/.test(name)
+        ? Number.parseInt(name.slice(1), 10)
         : NaN;
 
-    return Number.isFinite(numero) ? String.fromCodePoint(numero) : inteiro;
+    return Number.isFinite(number) ? String.fromCodePoint(number) : whole;
   });
 
-const atributo = (tag: string, nome: string) =>
-  new RegExp(`${nome}\\s*=\\s*("([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i")
+const attribute = (tag: string, name: string) =>
+  new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i")
     .exec(tag)
     ?.slice(2)
     .find((v) => v !== undefined) ?? null;
 
 function metatags(html: string): Map<string, string> {
-  const achadas = new Map<string, string>();
+  const matches = new Map<string, string>();
 
   for (const [tag] of html.matchAll(/<meta\s[^>]*>/gi)) {
-    const chave = atributo(tag, "property") ?? atributo(tag, "name") ?? atributo(tag, "itemprop");
-    const valor = atributo(tag, "content");
-    if (!chave || !valor) continue;
+    const key = attribute(tag, "property") ?? attribute(tag, "name") ?? attribute(tag, "itemprop");
+    const value = attribute(tag, "content");
+    if (!key || !value) continue;
 
-    const nome = chave.trim().toLowerCase();
-    if (!achadas.has(nome)) achadas.set(nome, desescapar(valor.trim()));
+    const name = key.trim().toLowerCase();
+    if (!matches.has(name)) matches.set(name, unescape(value.trim()));
   }
 
-  return achadas;
+  return matches;
 }
 
-function iconeDaPagina(html: string, base: URL): string | null {
+function pageIcon(html: string, base: URL): string | null {
   for (const [tag] of html.matchAll(/<link\s[^>]*>/gi)) {
-    const rel = atributo(tag, "rel")?.toLowerCase() ?? "";
+    const rel = attribute(tag, "rel")?.toLowerCase() ?? "";
     if (!/\bicon\b/.test(rel)) continue;
 
-    const href = atributo(tag, "href");
-    if (href) return absoluto(desescapar(href), base);
+    const href = attribute(tag, "href");
+    if (href) return absolute(unescape(href), base);
   }
 
   return `${base.origin}/favicon.ico`;
 }
 
-const absoluto = (endereco: string, base: URL): string | null => {
+const absolute = (address: string, base: URL): string | null => {
   try {
-    return new URL(endereco, base).toString();
+    return new URL(address, base).toString();
   } catch {
     return null;
   }
 };
 
-const numero = (valor: string | undefined) => {
-  const n = Number(valor);
+const number = (value: string | undefined) => {
+  const n = Number(value);
   return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
 };
 
-function corDoTema(valor: string | null): string | null {
-  const cor = valor?.trim();
-  if (!cor || !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cor)) return null;
+function themeColor(value: string | null): string | null {
+  const color = value?.trim();
+  if (!color || !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(color)) return null;
 
-  const cheio =
-    cor.length === 4
-      ? `#${cor[1]}${cor[1]}${cor[2]}${cor[2]}${cor[3]}${cor[3]}`
-      : cor;
+  const full =
+    color.length === 4
+      ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+      : color;
 
-  const canal = (inicio: number) => {
-    const bruto = Number.parseInt(cheio.slice(inicio, inicio + 2), 16) / 255;
-    return bruto <= 0.03928 ? bruto / 12.92 : ((bruto + 0.055) / 1.055) ** 2.4;
+  const channel = (start: number) => {
+    const raw = Number.parseInt(full.slice(start, start + 2), 16) / 255;
+    return raw <= 0.03928 ? raw / 12.92 : ((raw + 0.055) / 1.055) ** 2.4;
   };
 
-  const luminancia = 0.2126 * canal(1) + 0.7152 * canal(3) + 0.0722 * canal(5);
+  const luminance = 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
 
-  return luminancia >= 0.05 ? cheio : null;
+  return luminance >= 0.05 ? full : null;
 }
 
 const VIDEO_DO_YOUTUBE =
   /^https?:\/\/(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{6,20})/i;
 
-async function doYouTube(url: string, id: string): Promise<Embed | null> {
+async function fromYouTube(url: string, id: string): Promise<Embed | null> {
   const oembed = `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(
     `https://www.youtube.com/watch?v=${id}`,
   )}`;
 
-  const dados = await buscar(oembed, "application/json")
+  const data = await search(oembed, "application/json")
     .then((r) => (r.ok ? (r.json() as Promise<Record<string, unknown>>) : null))
     .catch(() => null);
 
-  if (!dados) return null;
+  if (!data) return null;
 
-  const texto = (chave: string) =>
-    typeof dados[chave] === "string" ? (dados[chave] as string) : null;
+  const text = (key: string) =>
+    typeof data[key] === "string" ? (data[key] as string) : null;
 
   return {
     url,
-    tipo: "video",
+    kind: "video",
     site: "YouTube",
-    titulo: texto("title"),
-    descricao: null,
-    imagem: texto("thumbnail_url") ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+    title: text("title"),
+    description: null,
+    image: text("thumbnail_url") ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     favicon: "https://www.youtube.com/favicon.ico",
-    autor: texto("author_name"),
+    author: text("author_name"),
     player: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`,
-    cor: "#ff0000",
-    largura: numero(String(dados.thumbnail_width)) ?? 480,
-    altura: numero(String(dados.thumbnail_height)) ?? 360,
+    color: "#ff0000",
+    width: number(String(data.thumbnail_width)) ?? 480,
+    height: number(String(data.thumbnail_height)) ?? 360,
   };
 }
 
-async function montar(url: string): Promise<Embed | null> {
-  let alvo: URL;
+async function build(url: string): Promise<Embed | null> {
+  let target: URL;
   try {
-    alvo = new URL(url);
+    target = new URL(url);
   } catch {
     return null;
   }
 
-  if (!(await podeBuscar(alvo))) return null;
+  if (!(await canSearch(target))) return null;
 
-  const doTubo = VIDEO_DO_YOUTUBE.exec(url);
-  if (doTubo?.[1]) return doVideoDoYouTube(url, doTubo[1], alvo);
+  const fromPipe = VIDEO_DO_YOUTUBE.exec(url);
+  if (fromPipe?.[1]) return youTubeFromVideo(url, fromPipe[1], target);
 
-  return cartaoDaPagina(url, alvo);
+  return pageCard(url, target);
 }
 
-async function cartaoDaPagina(url: string, alvo: URL): Promise<Embed | null> {
-  const resposta = await buscar(url, "text/html,application/xhtml+xml").catch(() => null);
-  if (!resposta?.ok) return null;
+async function pageCard(url: string, target: URL): Promise<Embed | null> {
+  const reply = await search(url, "text/html,application/xhtml+xml").catch(() => null);
+  if (!reply?.ok) return null;
 
-  const tipoDeConteudo = resposta.headers.get("content-type") ?? "";
+  const contentKind = reply.headers.get("content-type") ?? "";
 
-  if (tipoDeConteudo.startsWith("image/")) {
-    await resposta.body?.cancel().catch(() => undefined);
+  if (contentKind.startsWith("image/")) {
+    await reply.body?.cancel().catch(() => undefined);
     return {
       url,
-      tipo: "imagem",
-      site: alvo.hostname.replace(/^www\./, ""),
-      titulo: null,
-      descricao: null,
-      imagem: url,
-      favicon: `${alvo.origin}/favicon.ico`,
-      autor: null,
+      kind: "imagem",
+      site: target.hostname.replace(/^www\./, ""),
+      title: null,
+      description: null,
+      image: url,
+      favicon: `${target.origin}/favicon.ico`,
+      author: null,
       player: null,
-      cor: null,
-      largura: null,
-      altura: null,
+      color: null,
+      width: null,
+      height: null,
     };
   }
 
-  if (!tipoDeConteudo.includes("html")) {
-    await resposta.body?.cancel().catch(() => undefined);
+  if (!contentKind.includes("html")) {
+    await reply.body?.cancel().catch(() => undefined);
     return null;
   }
 
-  const html = await lerInicio(resposta);
+  const html = await readStart(reply);
   const meta = metatags(html);
-  const base = new URL(resposta.url || url);
+  const base = new URL(reply.url || url);
 
-  const primeiro = (...chaves: string[]) => {
-    for (const chave of chaves) {
-      const valor = meta.get(chave);
-      if (valor) return valor;
+  const first = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = meta.get(key);
+      if (value) return value;
     }
     return null;
   };
 
-  const tituloDaTag = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1];
-  const titulo =
-    primeiro("og:title", "twitter:title") ??
-    (tituloDaTag ? desescapar(tituloDaTag.trim()) : null);
+  const tagTitle = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1];
+  const title =
+    first("og:title", "twitter:title") ??
+    (tagTitle ? unescape(tagTitle.trim()) : null);
 
-  const imagem = primeiro("og:image:secure_url", "og:image:url", "og:image", "twitter:image", "twitter:image:src");
-  const player = primeiro("og:video:secure_url", "og:video:url", "og:video", "twitter:player");
-  const descricao = primeiro("og:description", "twitter:description", "description");
+  const image = first("og:image:secure_url", "og:image:url", "og:image", "twitter:image", "twitter:image:src");
+  const player = first("og:video:secure_url", "og:video:url", "og:video", "twitter:player");
+  const description = first("og:description", "twitter:description", "description");
 
-  if (!titulo && !descricao && !imagem) return null;
+  if (!title && !description && !image) return null;
 
   return {
     url,
-    tipo: player ? "video" : "link",
-    site: primeiro("og:site_name", "application-name") ?? base.hostname.replace(/^www\./, ""),
-    titulo,
-    descricao,
-    imagem: imagem ? absoluto(imagem, base) : null,
-    favicon: iconeDaPagina(html, base),
-    autor: primeiro("article:author", "twitter:creator", "author"),
-    player: player ? absoluto(player, base) : null,
-    cor: corDoTema(primeiro("theme-color", "msapplication-TileColor")),
-    largura: numero(primeiro("og:image:width") ?? undefined),
-    altura: numero(primeiro("og:image:height") ?? undefined),
+    kind: player ? "video" : "link",
+    site: first("og:site_name", "application-name") ?? base.hostname.replace(/^www\./, ""),
+    title,
+    description,
+    image: image ? absolute(image, base) : null,
+    favicon: pageIcon(html, base),
+    author: first("article:author", "twitter:creator", "author"),
+    player: player ? absolute(player, base) : null,
+    color: themeColor(first("theme-color", "msapplication-TileColor")),
+    width: number(first("og:image:width") ?? undefined),
+    height: number(first("og:image:height") ?? undefined),
   };
 }
 
-async function doVideoDoYouTube(url: string, id: string, alvo: URL): Promise<Embed | null> {
-  const porOembed = await doYouTube(url, id);
-  if (porOembed) return porOembed;
+async function youTubeFromVideo(url: string, id: string, target: URL): Promise<Embed | null> {
+  const byOembed = await fromYouTube(url, id);
+  if (byOembed) return byOembed;
 
-  const pagina = await cartaoDaPagina(url, alvo);
-  if (!pagina?.titulo || !pagina.imagem) return null;
+  const page = await pageCard(url, target);
+  if (!page?.title || !page.image) return null;
 
   return {
-    ...pagina,
+    ...page,
     site: "YouTube",
-    tipo: "video",
+    kind: "video",
     player: null,
-    imagem: pagina.imagem ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+    image: page.image ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
   };
 }
 
-function guardar(url: string, valor: Embed | null) {
-  if (cache.size >= CACHE_MAXIMO) {
-    const maisVelho = [...cache.entries()].reduce((a, b) => (a[1].em <= b[1].em ? a : b));
-    cache.delete(maisVelho[0]);
+function keep(url: string, value: Embed | null) {
+  if (cache.size >= CACHE_MAX) {
+    const oldMore = [...cache.entries()].reduce((a, b) => (a[1].em <= b[1].em ? a : b));
+    cache.delete(oldMore[0]);
   }
 
-  cache.set(url, { em: Date.now(), ate: Date.now() + (valor ? CACHE_MS : CACHE_FALHA_MS), valor });
+  cache.set(url, { em: Date.now(), until: Date.now() + (value ? CACHE_MS : CACHE_FAILURE_MS), value });
 }
 
-const emVoo = new Map<string, Promise<Embed | null>>();
+const inFlight = new Map<string, Promise<Embed | null>>();
 
 export const embedService = {
-  async resolver(url: string): Promise<Embed | null> {
-    const guardado = cache.get(url);
-    if (guardado && guardado.ate > Date.now()) return guardado.valor;
+  async resolve(url: string): Promise<Embed | null> {
+    const kept = cache.get(url);
+    if (kept && kept.until > Date.now()) return kept.value;
 
-    const jaPedido = emVoo.get(url);
-    if (jaPedido) return jaPedido;
+    const alreadyRequest = inFlight.get(url);
+    if (alreadyRequest) return alreadyRequest;
 
-    const pedido = montar(url)
+    const request = build(url)
       .catch(() => null)
-      .then((valor) => {
-        guardar(url, valor);
-        return valor;
+      .then((value) => {
+        keep(url, value);
+        return value;
       })
-      .finally(() => emVoo.delete(url));
+      .finally(() => inFlight.delete(url));
 
-    emVoo.set(url, pedido);
-    return pedido;
+    inFlight.set(url, request);
+    return request;
   },
 };

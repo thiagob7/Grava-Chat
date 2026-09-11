@@ -1,21 +1,21 @@
-export type ModoDeLeitura = "nunca" | "canal-aberto" | "todos";
+export type ReadingMode = "nunca" | "canal-aberto" | "todos";
 
-const IDIOMAS_PREFERIDOS = ["pt-BR", "pt-PT", "pt"];
+const LANGUAGES_PREFERRED = ["pt-BR", "pt-PT", "pt"];
 
-export interface Falado {
-  autor: string;
-  texto: string;
+export interface Spoken {
+  author: string;
+  text: string;
 }
 
-const MAXIMO = 300;
+const MAX = 300;
 
-export function comoSeFala({ autor, texto }: Falado): string {
-  let limpo = texto
+export function asSpeech({ author, text }: Spoken): string {
+  let clean = text
     .replace(/```[\s\S]*?```/g, " bloco de código ")
     .replace(/`([^`]+)`/g, "$1")
     .replace(
       /https?:\/\/([^\s/]+)\S*/g,
-      (_, dominio: string) => ` link de ${dominio} `,
+      (_, domain: string) => ` link de ${domain} `,
     )
     .replace(/<@!?[0-9a-f]{24}>/gi, " menção ")
     .replace(/<#[0-9a-f]{24}>/gi, " canal ")
@@ -24,60 +24,60 @@ export function comoSeFala({ autor, texto }: Falado): string {
     .replace(/\s+/g, " ")
     .trim();
 
-  if (limpo.length > MAXIMO)
-    limpo = `${limpo.slice(0, MAXIMO)}… mensagem cortada`;
+  if (clean.length > MAX)
+    clean = `${clean.slice(0, MAX)}… mensagem cortada`;
 
-  if (!limpo) return `${autor} mandou um anexo`;
+  if (!clean) return `${author} mandou um anexo`;
 
-  return `${autor} diz: ${limpo}`;
+  return `${author} diz: ${clean}`;
 }
 
-export function vozesDisponiveis(): SpeechSynthesisVoice[] {
+export function availableVoices(): SpeechSynthesisVoice[] {
   if (typeof window === "undefined" || !("speechSynthesis" in window))
     return [];
 
-  const todas = window.speechSynthesis.getVoices();
+  const all = window.speechSynthesis.getVoices();
 
-  return [...todas].sort((a, b) => {
-    const pesoA = IDIOMAS_PREFERIDOS.indexOf(a.lang) === -1 ? 1 : 0;
-    const pesoB = IDIOMAS_PREFERIDOS.indexOf(b.lang) === -1 ? 1 : 0;
+  return [...all].sort((a, b) => {
+    const weight = LANGUAGES_PREFERRED.indexOf(a.lang) === -1 ? 1 : 0;
+    const weightB = LANGUAGES_PREFERRED.indexOf(b.lang) === -1 ? 1 : 0;
 
-    if (pesoA !== pesoB) return pesoA - pesoB;
+    if (weight !== weightB) return weight - weightB;
     return a.name.localeCompare(b.name);
   });
 }
 
-export function daPraFalar(): boolean {
+export function fromForSpeak(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
-export interface OpcoesDeFala {
-  voz?: string | null;
-  velocidade?: number;
+export interface SpeechOptions {
+  voice?: string | null;
+  speed?: number;
 }
 
-export function falar(frase: string, opcoes: OpcoesDeFala = {}): void {
-  if (!daPraFalar() || !frase.trim()) return;
+export function speak(phrase: string, options: SpeechOptions = {}): void {
+  if (!fromForSpeak() || !phrase.trim()) return;
 
   window.speechSynthesis.cancel();
 
-  const fala = new SpeechSynthesisUtterance(frase);
-  fala.rate = opcoes.velocidade ?? 1;
+  const speech = new SpeechSynthesisUtterance(phrase);
+  speech.rate = options.speed ?? 1;
 
-  const escolhida = opcoes.voz
-    ? window.speechSynthesis.getVoices().find((v) => v.name === opcoes.voz)
+  const picked = options.voice
+    ? window.speechSynthesis.getVoices().find((v) => v.name === options.voice)
     : undefined;
 
-  if (escolhida) {
-    fala.voice = escolhida;
-    fala.lang = escolhida.lang;
+  if (picked) {
+    speech.voice = picked;
+    speech.lang = picked.lang;
   } else {
-    fala.lang = "pt-BR";
+    speech.lang = "pt-BR";
   }
 
-  window.speechSynthesis.speak(fala);
+  window.speechSynthesis.speak(speech);
 }
 
-export function calar(): void {
-  if (daPraFalar()) window.speechSynthesis.cancel();
+export function silence(): void {
+  if (fromForSpeak()) window.speechSynthesis.cancel();
 }

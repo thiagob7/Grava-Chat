@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 
-import { useAparencia } from "~/features/configuracoes/stores/aparencia";
-import { usarLottie } from "~/features/perfil/lib/lottie";
+import { useAppearance } from "~/features/configuracoes/stores/aparencia";
+import { useLottie } from "~/features/perfil/lib/lottie";
 import { cn } from "~/lib/utils";
 
 interface LottieArtProps {
@@ -13,13 +13,13 @@ interface LottieArtProps {
 
 export const LottieArt: React.FC<LottieArtProps> = ({ name, load, label, className }) => {
   const box = useRef<HTMLSpanElement>(null);
-  const stillImage = useAparencia((state) => state.reduzirAnimacao);
+  const stillImage = useAppearance((state) => state.reduceAnimation);
 
-  usarLottie(box, {
-    chave: name,
-    carregar: useCallback(() => load(), [load]),
-    animar: !stillImage,
-    repetir: true,
+  useLottie(box, {
+    key: name,
+    load: useCallback(() => load(), [load]),
+    animate: !stillImage,
+    repeat: true,
   });
 
   return (

@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 
 export const fieldBase =
-  `${flxCls("molduraDoCampo")} ${flxCls("superficieDeCampo")} ` +
+  `${flxCls("fieldFrame")} ${flxCls("fieldSurface")} ` +
   "w-full min-w-0 rounded-lg border border-line bg-campo px-3 py-2 text-sm text-ink shadow-xs outline-none transition placeholder:text-ink-faint focus-visible:border-ink-faint/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
 interface InputProps extends React.ComponentProps<"input"> {
@@ -13,47 +13,47 @@ interface InputProps extends React.ComponentProps<"input"> {
 }
 
 export const Input = ({ className, error, type, id, ...props }: InputProps) => {
-  const [mostrando, setMostrando] = React.useState(false);
+  const [showing, setShowing] = React.useState(false);
   const generatedId = React.useId();
-  const idDoErro = `${id ?? generatedId}-erro`;
-  const ehSenha = type === "password";
+  const errorId = `${id ?? generatedId}-erro`;
+  const isPassword = type === "password";
 
   const fieldClass = (
     <input data-gc="ui.input.input"
       id={id}
-      type={ehSenha && mostrando ? "text" : type}
+      type={isPassword && showing ? "text" : type}
       aria-invalid={error ? true : props["aria-invalid"]}
-      aria-describedby={error ? idDoErro : props["aria-describedby"]}
-      className={cn(fieldBase, "h-10 py-1", ehSenha && "pr-10", flxCls("campo"), className)}
+      aria-describedby={error ? errorId : props["aria-describedby"]}
+      className={cn(fieldBase, "h-10 py-1", isPassword && "pr-10", flxCls("field"), className)}
       {...props}
     />
   );
 
-  if (!error && !ehSenha) return fieldClass;
+  if (!error && !isPassword) return fieldClass;
 
   return (
     <div data-gc="ui.input.div" className="w-full">
       <div data-gc="ui.input.div--2" className="relative">
         {fieldClass}
 
-        {ehSenha && (
+        {isPassword && (
           <button data-gc="ui.input.button"
             type="button"
-            onClick={() => setMostrando((v) => !v)}
-            aria-label={mostrando ? "Esconder a senha" : "Mostrar a senha"}
-            aria-pressed={mostrando}
+            onClick={() => setShowing((v) => !v)}
+            aria-label={showing ? "Esconder a senha" : "Mostrar a senha"}
+            aria-pressed={showing}
             className={cn(
-              flxCls("olhoDaSenha"),
+              flxCls("passwordEye"),
               "absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-lg text-ink-faint transition hover:text-ink",
             )}
           >
-            {mostrando ? <EyeOff data-gc="ui.input.eye-off" size={16} /> : <Eye data-gc="ui.input.eye" size={16} />}
+            {showing ? <EyeOff data-gc="ui.input.eye-off" size={16} /> : <Eye data-gc="ui.input.eye" size={16} />}
           </button>
         )}
       </div>
 
       {error && (
-        <p data-gc="ui.input.p" id={idDoErro} className={cn(flxCls("erroDoCampo"), "mt-1 text-xs text-danger")}>
+        <p data-gc="ui.input.p" id={errorId} className={cn(flxCls("fieldError"), "mt-1 text-xs text-danger")}>
           {error}
         </p>
       )}
@@ -63,7 +63,7 @@ export const Input = ({ className, error, type, id, ...props }: InputProps) => {
 
 export const Textarea = ({ className, ...props }: React.ComponentProps<"textarea">) => (
   <textarea data-gc="ui.input.textarea"
-    className={cn(fieldBase, "resize-none", flxCls("campo"), className)}
+    className={cn(fieldBase, "resize-none", flxCls("field"), className)}
     {...props}
   />
 );

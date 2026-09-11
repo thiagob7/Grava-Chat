@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 export const Breadcrumb = (props: React.ComponentProps<"nav">) => (
   <nav data-gc="ui.breadcrumb.nav" aria-label="breadcrumb" {...props} />
@@ -65,14 +66,18 @@ export const BreadcrumbSeparator = ({
   </li>
 );
 
-export const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => (
-  <span data-gc="ui.breadcrumb.span--2"
-    role="presentation"
-    aria-hidden="true"
-    className={cn("flex size-9 items-center justify-center", className)}
-    {...props}
-  >
-    <MoreHorizontal data-gc="ui.breadcrumb.more-horizontal" className="size-4" />
-    <span data-gc="ui.breadcrumb.span--3" className="sr-only">Mais</span>
-  </span>
-);
+export const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => {
+  const { t } = useTranslation();
+
+  return (
+    <span data-gc="ui.breadcrumb.span--2"
+      role="presentation"
+      aria-hidden="true"
+      className={cn("flex size-9 items-center justify-center", className)}
+      {...props}
+    >
+      <MoreHorizontal data-gc="ui.breadcrumb.more-horizontal" className="size-4" />
+      <span data-gc="ui.breadcrumb.span--3" className="sr-only">{t("comum.mais")}</span>
+    </span>
+  );
+};

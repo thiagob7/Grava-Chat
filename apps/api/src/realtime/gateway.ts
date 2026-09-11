@@ -4,7 +4,7 @@ import Redis from "ioredis";
 import type { FastifyInstance } from "fastify";
 import { rooms } from "@gravae/shared";
 import { env } from "~/env.js";
-import { vigiar } from "~/lib/redis.js";
+import { watch } from "~/lib/redis.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
@@ -13,7 +13,7 @@ import {
   registerHandlers,
   cleanupVoiceOnDisconnect,
   broadcastPresence,
-  vigiarChamadasFantasma,
+  watchCallsGhost,
 } from "./handlers.js";
 import { presenceService } from "~/services/presence-service.js";
 import { voiceService } from "~/services/voice-service.js";
@@ -27,8 +27,8 @@ export async function createGateway(app: FastifyInstance) {
     pingTimeout: 25_000,
   });
 
-  const pub = vigiar(new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }), "pub");
-  const sub = vigiar(pub.duplicate(), "sub");
+  const pub = watch(new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }), "pub");
+  const sub = watch(pub.duplicate(), "sub");
   server.adapter(createAdapter(pub, sub));
 
   server.use(async (socket, next) => {
@@ -36,15 +36,15 @@ export async function createGateway(app: FastifyInstance) {
 
     if (!token) return next(new Error("Sem token"));
 
-    const ehBot = token.startsWith("Bot ");
+    const isBot = token.startsWith("Bot ");
 
-    if (ehBot) {
-      const dono = await botService.resolverToken(token.slice(4).trim());
-      if (!dono) return next(new Error("Token de bot inválido"));
+    if (isBot) {
+      const owner = await botService.resolveToken(token.slice(4).trim());
+      if (!owner) return next(new Error("Token de bot inválido"));
 
-      socket.data.userId = dono.userId;
+      socket.data.userId = owner.userId;
       socket.data.voiceChannelId = null;
-      socket.data.ehBot = true;
+      socket.data.isBot = true;
     } else {
       try {
         const payload = app.jwt.verify<{ sub: string }>(token);
@@ -82,7 +82,7 @@ export async function createGateway(app: FastifyInstance) {
 
     socket.join([rooms.user(userId), ...socket.data.guildIds.map(rooms.guild)]);
 
-    inscreverNosCanais(socket).catch((err) =>
+    subscribeChannels(socket).catch((err) =>
       app.log.error({ err, userId }, "falha ao inscrever nos canais"),
     );
 
@@ -95,12 +95,12 @@ export async function createGateway(app: FastifyInstance) {
   setIo(server);
   await Promise.all([presenceService.reset(), voiceService.reset()]);
 
-  const pararVigia = vigiarChamadasFantasma((err) =>
+  const stopWatches = watchCallsGhost((err) =>
     app.log.error({ err }, "falha ao varrer chamadas fantasma"),
   );
 
   app.addHook("onClose", async () => {
-    pararVigia();
+    stopWatches();
     await server.close();
     await Promise.allSettled([pub.quit(), sub.quit()]);
   });
@@ -108,14 +108,14 @@ export async function createGateway(app: FastifyInstance) {
   return server;
 }
 
-async function inscreverNosCanais(socket: {
-  data: { userId: string; guildIds: string[]; ehBot?: boolean };
+async function subscribeChannels(socket: {
+  data: { userId: string; guildIds: string[]; isBot?: boolean };
   join: (rooms: string[]) => void;
 }) {
-  const canais = await accessService.listenableChannels(
+  const channels = await accessService.listenableChannels(
     socket.data.userId,
     socket.data.guildIds,
   );
 
-  if (canais.length) socket.join(canais.map(rooms.channel));
+  if (channels.length) socket.join(channels.map(rooms.channel));
 }

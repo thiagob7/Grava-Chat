@@ -23,7 +23,7 @@ interface AuditLogSectionProps {
   members: GuildMember[];
 }
 
-const FRASES: Record<string, (alvo: string) => string> = {
+const PHRASES: Record<string, (target: string) => string> = {
   "guild.update": () => "fez alterações no servidor",
   "channel.create": (a) => `criou o canal ${a}`,
   "channel.update": (a) => `fez alterações em ${a}`,
@@ -48,7 +48,7 @@ const FRASES: Record<string, (alvo: string) => string> = {
   "automod.delete": (a) => `apagou a regra de AutoMod ${a}`,
 };
 
-const ICONES: Record<string, React.ElementType> = {
+const ICONS: Record<string, React.ElementType> = {
   guild: Shield,
   channel: Hash,
   role: Shield,
@@ -60,14 +60,14 @@ const ICONES: Record<string, React.ElementType> = {
   webhook: Webhook,
 };
 
-const FILTROS = [
-  { valor: "", label: "servidor.auditoria.todasAsAcoes" },
-  { valor: "member", label: "servidor.auditoria.filtroMembros" },
-  { valor: "role", label: "servidor.cargos.titulo" },
-  { valor: "channel", label: "servidor.auditoria.filtroCanais" },
-  { valor: "emoji", label: "servidor.auditoria.filtroEmojis" },
-  { valor: "automod", label: "servidor.automod.titulo" },
-  { valor: "guild", label: "servidor.auditoria.filtroServidor" },
+const FILTERS = [
+  { value: "", label: "servidor.auditoria.todasAsAcoes" },
+  { value: "member", label: "servidor.auditoria.filtroMembros" },
+  { value: "role", label: "servidor.cargos.titulo" },
+  { value: "channel", label: "servidor.auditoria.filtroCanais" },
+  { value: "emoji", label: "servidor.auditoria.filtroEmojis" },
+  { value: "automod", label: "servidor.automod.titulo" },
+  { value: "guild", label: "servidor.auditoria.filtroServidor" },
 ];
 
 export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
@@ -110,7 +110,7 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
             value={action}
             onSelect={setAction}
             className="mt-1 w-40 font-normal normal-case"
-            options={FILTROS.map((f) => ({ value: f.valor, label: t(f.label) }))}
+            options={FILTERS.map((f) => ({ value: f.value, label: t(f.label) }))}
           />
         </label>
       </div>
@@ -124,70 +124,70 @@ export const AuditLogSection: React.FC<AuditLogSectionProps> = ({
           </p>
         )}
 
-        {(data?.entries ?? []).map((entrada) => (
-          <Entrada data-gc="servidor.server-settings.audit-log-section.entrada" key={entrada.id} entrada={entrada} />
+        {(data?.entries ?? []).map((entry) => (
+          <Entry data-gc="servidor.server-settings.audit-log-section.entry" key={entry.id} entry={entry} />
         ))}
       </div>
     </div>
   );
 };
 
-const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
+const Entry: React.FC<{ entry: AuditEntryModel }> = ({ entry }) => {
   const { t } = useTranslation();
-  const [aberto, setAberto] = useState(false);
-  const Icone =
-    ICONES[entrada.targetType] ??
-    (entrada.action.includes("ban") ? Ban : Trash2);
+  const [isOpen, setIsOpen] = useState(false);
+  const Icon =
+    ICONS[entry.targetType] ??
+    (entry.action.includes("ban") ? Ban : Trash2);
 
-  const frase =
-    FRASES[entrada.action]?.(entrada.targetName ?? "algo") ??
-    `${entrada.action} ${entrada.targetName ?? ""}`;
+  const phrase =
+    PHRASES[entry.action]?.(entry.targetName ?? "algo") ??
+    `${entry.action} ${entry.targetName ?? ""}`;
 
-  const mudancas = Object.entries(entrada.changes ?? {});
+  const changes = Object.entries(entry.changes ?? {});
 
   return (
     <article data-gc="servidor.server-settings.audit-log-section.article" className="rounded-lg bg-surface-1">
       <button data-gc="servidor.server-settings.audit-log-section.button"
-        onClick={() => setAberto((v) => !v)}
-        disabled={!mudancas.length && !entrada.reason}
+        onClick={() => setIsOpen((v) => !v)}
+        disabled={!changes.length && !entry.reason}
         className="flex w-full items-center gap-3 p-3 text-left"
       >
         <span data-gc="servidor.server-settings.audit-log-section.span" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-0 text-ink-muted">
-          <Icone data-gc="servidor.server-settings.audit-log-section.icone" size={16} />
+          <Icon data-gc="servidor.server-settings.audit-log-section.icon" size={16} />
         </span>
 
         <Avatar data-gc="servidor.server-settings.audit-log-section.avatar"
-          id={entrada.actor.id}
-          name={entrada.actor.displayName}
-          url={entrada.actor.avatarUrl}
+          id={entry.actor.id}
+          name={entry.actor.displayName}
+          url={entry.actor.avatarUrl}
           size={24}
         />
 
         <span data-gc="servidor.server-settings.audit-log-section.span--2" className="min-w-0 flex-1">
           <span data-gc="servidor.server-settings.audit-log-section.span--3" className="block truncate text-sm">
             <strong data-gc="servidor.server-settings.audit-log-section.strong" className="font-medium text-ink">
-              {entrada.actor.displayName}
+              {entry.actor.displayName}
             </strong>{" "}
-            {frase}
+            {phrase}
           </span>
           <span data-gc="servidor.server-settings.audit-log-section.span--4" className="block text-xs text-ink-faint">
-            {formatTimestamp(entrada.createdAt)}
+            {formatTimestamp(entry.createdAt)}
           </span>
         </span>
       </button>
 
-      {aberto && (
+      {isOpen && (
         <div data-gc="servidor.server-settings.audit-log-section.div--4" className="border-t border-line px-3 py-2 text-xs text-ink-muted">
-          {entrada.reason && (
+          {entry.reason && (
             <p data-gc="servidor.server-settings.audit-log-section.p--3" className="mb-1">
-              <span data-gc="servidor.server-settings.audit-log-section.span--5" className="text-ink-faint">{t("servidor.auditoria.motivo")}</span> {entrada.reason}
+              <span data-gc="servidor.server-settings.audit-log-section.span--5" className="text-ink-faint">{t("servidor.auditoria.motivo")}</span> {entry.reason}
             </p>
           )}
 
-          {mudancas.map(([campo, valor]) => (
-            <p data-gc="servidor.server-settings.audit-log-section.p--4" key={campo}>
-              <span data-gc="servidor.server-settings.audit-log-section.span--6" className="text-ink-faint">{campo}:</span>{" "}
-              {formatar(valor.de)} → {formatar(valor.para)}
+          {changes.map(([field, value]) => (
+            <p data-gc="servidor.server-settings.audit-log-section.p--4" key={field}>
+              <span data-gc="servidor.server-settings.audit-log-section.span--6" className="text-ink-faint">{field}:</span>{" "}
+              {format(value.de)} → {format(value.toward)}
             </p>
           ))}
         </div>
@@ -196,10 +196,10 @@ const Entrada: React.FC<{ entrada: AuditEntryModel }> = ({ entrada }) => {
   );
 };
 
-const formatar = (valor: unknown) => {
-  if (valor === null || valor === undefined || valor === "") return "vazio";
-  if (Array.isArray(valor)) return valor.length ? valor.join(", ") : "vazio";
-  if (typeof valor === "boolean") return valor ? "sim" : "não";
+const format = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return "vazio";
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "vazio";
+  if (typeof value === "boolean") return value ? "sim" : "não";
 
-  return String(valor);
+  return String(value);
 };

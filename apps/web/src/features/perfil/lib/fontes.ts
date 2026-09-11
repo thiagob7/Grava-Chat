@@ -1,6 +1,6 @@
-import type { FonteDeNome } from "@gravae/shared";
+import type { NameFont } from "@gravae/shared";
 
-export const FAMILIA_DE_FONTE: Record<FonteDeNome, string> = {
+export const FONT_FAMILY: Record<NameFont, string> = {
   padrao: "var(--font-sans)",
   serifada: '"Lora", ui-serif, Georgia, serif',
   monoespacada: '"JetBrains Mono", ui-monospace, "SF Mono", monospace',
@@ -8,16 +8,16 @@ export const FAMILIA_DE_FONTE: Record<FonteDeNome, string> = {
   manuscrita: '"Caveat", "Brush Script MT", cursive',
 };
 
-export function familiaDaFonte(
-  fonte: FonteDeNome | null | undefined,
+export function fontFamily(
+  font: NameFont | null | undefined,
 ): string | null {
-  if (!fonte || fonte === "padrao") return null;
+  if (!font || font === "padrao") return null;
 
-  return FAMILIA_DE_FONTE[fonte] ?? null;
+  return FONT_FAMILY[font] ?? null;
 }
 
-const CARREGADORES: Record<
-  Exclude<FonteDeNome, "padrao">,
+const LOADERS: Record<
+  Exclude<NameFont, "padrao">,
   () => Promise<unknown>
 > = {
   serifada: () => import("@fontsource/lora/400.css"),
@@ -26,16 +26,16 @@ const CARREGADORES: Record<
   manuscrita: () => import("@fontsource/caveat/400.css"),
 };
 
-const carregadas = new Set<string>();
+const loaded = new Set<string>();
 
-export function carregarFonte(fonte: FonteDeNome | null | undefined): void {
-  if (!fonte || fonte === "padrao" || carregadas.has(fonte)) return;
+export function loadFont(font: NameFont | null | undefined): void {
+  if (!font || font === "padrao" || loaded.has(font)) return;
 
-  carregadas.add(fonte);
-  void CARREGADORES[fonte]?.().catch(() => carregadas.delete(fonte));
+  loaded.add(font);
+  void LOADERS[font]?.().catch(() => loaded.delete(font));
 }
 
-export const carregarTodasAsFontes = () =>
-  (Object.keys(CARREGADORES) as (keyof typeof CARREGADORES)[]).forEach(
-    carregarFonte,
+export const loadAllFonts = () =>
+  (Object.keys(LOADERS) as (keyof typeof LOADERS)[]).forEach(
+    loadFont,
   );

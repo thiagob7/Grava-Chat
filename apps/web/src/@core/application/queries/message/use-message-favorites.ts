@@ -28,8 +28,8 @@ export const useToggleFavoriteMessage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ messageId, favorita }: { messageId: string; favorita: boolean }) =>
-      toggleFavoriteMessage(messageId, !favorita),
+    mutationFn: ({ messageId, favorite }: { messageId: string; favorite: boolean }) =>
+      toggleFavoriteMessage(messageId, !favorite),
 
     onSuccess: (ids) => {
       queryClient.setQueryData([queryKeys.message.favorite_ids], ids);

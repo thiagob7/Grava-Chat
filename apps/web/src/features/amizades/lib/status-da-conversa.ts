@@ -1,20 +1,20 @@
 
-export type TipoDeStatus = "chamada" | "voz";
+export type StatusKind = "chamada" | "voz";
 
-export interface StatusDaConversa {
-  texto: string;
-  tipo: TipoDeStatus;
+export interface ChatStatus {
+  key: string;
+  kind: StatusKind;
 }
 
-export function statusDaConversa({
-  emChamadaComigo,
-  emVozNoServidor,
+export function chatStatus({
+  inCallWithMe,
+  inVoiceServer,
 }: {
-  emChamadaComigo: boolean;
-  emVozNoServidor: boolean;
-}): StatusDaConversa | null {
-  if (emChamadaComigo) return { texto: "Em uma chamada", tipo: "chamada" };
-  if (emVozNoServidor) return { texto: "Em voz", tipo: "voz" };
+  inCallWithMe: boolean;
+  inVoiceServer: boolean;
+}): ChatStatus | null {
+  if (inCallWithMe) return { key: "amizades.status.emChamada", kind: "chamada" };
+  if (inVoiceServer) return { key: "amizades.status.emVoz", kind: "voz" };
 
   return null;
 }

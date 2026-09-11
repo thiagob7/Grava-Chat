@@ -2,10 +2,10 @@ import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const DIST = join(AQUI, "..", "dist", "assets");
-const LISTA = join(
-  AQUI,
+const HERE = dirname(fileURLToPath(import.meta.url));
+const DIST = join(HERE, "..", "dist", "assets");
+const LIST = join(
+  HERE,
   "..",
   "src",
   "features",
@@ -14,46 +14,46 @@ const LISTA = join(
   "tokens-vivos.json",
 );
 
-const MAQUINARIO =
+const MACHINERY =
   /^--(tw|radix|default|animate|ease|aspect|blur|perspective|breakpoint|container|leading|tracking|spacing|inset|drop)-|^--(tw|s|y|g|spacing)$/;
 
-const DE_RUNTIME = /^--gc-/;
+const FROM_RUNTIME = /^--gc-/;
 
-const DE_BIBLIOTECA = /^--toastify-/;
+const FROM_LIBRARY = /^--toastify-/;
 
-const RAIZ = /^(:root|:host|html)(\[[^\]]*\]|[.:][^\s>+~,]+)*$/;
+const ROOT = /^(:root|:host|html)(\[[^\]]*\]|[.:][^\s>+~,]+)*$/;
 
-function ehRaiz(seletor) {
-  return seletor.split(",").every((parte) => RAIZ.test(parte.trim()));
+function isRoot(picker) {
+  return picker.split(",").every((part) => ROOT.test(part.trim()));
 }
 
-export function extrairVivos(css) {
-  const declaradosNaRaiz = new Set();
-  const consumidos = new Set();
+export function extractLive(css) {
+  const declaredRoot = new Set();
+  const consumed = new Set();
 
-  for (const [, seletor, corpo] of css.matchAll(/([^{}@]*)\{([^{}]*)\}/g)) {
-    const alvo = seletor.trim();
-    if (!alvo) continue;
+  for (const [, picker, body] of css.matchAll(/([^{}@]*)\{([^{}]*)\}/g)) {
+    const target = picker.trim();
+    if (!target) continue;
 
-    if (ehRaiz(alvo)) {
-      for (const [, nome] of corpo.matchAll(/(--[a-z0-9-]+)\s*:/g)) {
-        declaradosNaRaiz.add(nome);
+    if (isRoot(target)) {
+      for (const [, name] of body.matchAll(/(--[a-z0-9-]+)\s*:/g)) {
+        declaredRoot.add(name);
       }
       continue;
     }
 
-    if (alvo.startsWith("*")) continue;
+    if (target.startsWith("*")) continue;
 
-    for (const [, nome] of corpo.matchAll(/var\((--[a-z0-9-]+)/g)) {
-      consumidos.add(nome);
+    for (const [, name] of body.matchAll(/var\((--[a-z0-9-]+)/g)) {
+      consumed.add(name);
     }
   }
 
-  return [...consumidos]
-    .filter((nome) => declaradosNaRaiz.has(nome))
-    .filter((nome) => !MAQUINARIO.test(nome) && !DE_RUNTIME.test(nome))
-    .filter((nome) => !DE_BIBLIOTECA.test(nome))
-    .filter((nome) => !nome.endsWith("--line-height"))
+  return [...consumed]
+    .filter((name) => declaredRoot.has(name))
+    .filter((name) => !MACHINERY.test(name) && !FROM_RUNTIME.test(name))
+    .filter((name) => !FROM_LIBRARY.test(name))
+    .filter((name) => !name.endsWith("--line-height"))
     .sort();
 }
 
@@ -64,30 +64,30 @@ function cssDoBuild() {
     );
   }
 
-  const folhas = readdirSync(DIST).filter((nome) => nome.endsWith(".css"));
+  const leaves = readdirSync(DIST).filter((name) => name.endsWith(".css"));
 
-  if (!folhas.length) throw new Error("o build não tem folha de estilo");
+  if (!leaves.length) throw new Error("o build não tem folha de estilo");
 
-  return folhas.map((nome) => readFileSync(join(DIST, nome), "utf8")).join("\n");
+  return leaves.map((name) => readFileSync(join(DIST, name), "utf8")).join("\n");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const vivos = extrairVivos(cssDoBuild());
-  const saida = `${JSON.stringify(vivos, null, 2)}\n`;
+  const live = extractLive(cssDoBuild());
+  const output = `${JSON.stringify(live, null, 2)}\n`;
 
   if (process.argv[2] === "--check") {
-    const atual = existsSync(LISTA) ? readFileSync(LISTA, "utf8") : "";
+    const current = existsSync(LIST) ? readFileSync(LIST, "utf8") : "";
 
-    if (atual !== saida) {
+    if (current !== output) {
       console.error(
-        `\ntokens-vivos.json está fora de dia (${vivos.length} vivos no build). Rode: yarn tokens\n`,
+        `\ntokens-vivos.json está fora de dia (${live.length} vivos no build). Rode: yarn tokens\n`,
       );
       process.exit(1);
     }
 
-    console.log(`tokens vivos em dia — ${vivos.length}`);
+    console.log(`tokens vivos em dia — ${live.length}`);
   } else {
-    writeFileSync(LISTA, saida);
-    console.log(`${vivos.length} tokens vivos · lista em ${relative(AQUI, LISTA)}`);
+    writeFileSync(LIST, output);
+    console.log(`${live.length} tokens vivos · lista em ${relative(HERE, LIST)}`);
   }
 }

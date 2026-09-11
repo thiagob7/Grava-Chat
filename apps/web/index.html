@@ -76,37 +76,37 @@
           var aparencia = ler("gravae:aparencia") || {};
           var estudio = ler("gravae:estudio") || {};
 
-          var tema = aparencia.tema || "escuro";
+          var tema = aparencia.theme || "escuro";
           raiz.dataset.tema = tema;
-          raiz.dataset.densidade = aparencia.densidade || "confortavel";
+          raiz.dataset.densidade = aparencia.density || "confortavel";
 
           /// O vocabulário da referência, para um tema que só vale no escuro.
           raiz.classList.add(tema === "claro" ? "theme-light" : tema === "mais-escuro" ? "theme-coal" : "theme-dark");
 
-          if (aparencia.cantosArredondados === false) raiz.dataset.cantos = "retos";
-          if (aparencia.reduzirAnimacao) raiz.dataset.animacao = "reduzida";
-          if (aparencia.focoSempreVisivel) raiz.dataset.foco = "sempre";
+          if (aparencia.cornersRounded === false) raiz.dataset.cantos = "retos";
+          if (aparencia.reduceAnimation) raiz.dataset.animacao = "reduzida";
+          if (aparencia.visibleFocusAlways) raiz.dataset.foco = "sempre";
 
           if (aparencia.zoomDoApp && aparencia.zoomDoApp !== 100) {
             raiz.style.setProperty("zoom", String(aparencia.zoomDoApp / 100));
           }
 
-          if (aparencia.escalaDoChat && aparencia.escalaDoChat !== 100) {
-            raiz.style.setProperty("--gc-escala-do-chat", String(aparencia.escalaDoChat / 100));
+          if (aparencia.chatScale && aparencia.chatScale !== 100) {
+            raiz.style.setProperty("--gc-escala-do-chat", String(aparencia.chatScale / 100));
           }
 
-          var trocadas = estudio.substituicoes || {};
+          var trocadas = estudio.overrides || {};
 
           for (var nome in trocadas) {
             if (nome.indexOf("--") === 0) raiz.style.setProperty(nome, trocadas[nome]);
           }
 
           /// A cor de destaque só vale se o estúdio não tiver mandado na marca.
-          if (aparencia.destaque && !trocadas["--color-brand"]) {
-            raiz.style.setProperty("--color-brand", aparencia.destaque);
+          if (aparencia.highlight && !trocadas["--color-brand"]) {
+            raiz.style.setProperty("--color-brand", aparencia.highlight);
             raiz.style.setProperty(
               "--color-brand-hover",
-              "color-mix(in oklab, " + aparencia.destaque + ", black 18%)"
+              "color-mix(in oklab, " + aparencia.highlight + ", black 18%)"
             );
           }
         } catch (erro) {

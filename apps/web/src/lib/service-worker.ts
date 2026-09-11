@@ -1,9 +1,9 @@
-import { ehDesktop } from "~/lib/desktop";
+import { isDesktop } from "~/lib/desktop";
 
-export function registrarServiceWorker() {
+export function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
 
-  if (ehDesktop()) return;
+  if (isDesktop()) return;
   if (import.meta.env.DEV) return;
 
   window.addEventListener("load", () => {

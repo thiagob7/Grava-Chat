@@ -9,7 +9,7 @@ export const useAuthConfig = () =>
     queryFn: findAuthConfig,
 
     retry: 6,
-    retryDelay: (tentativa) => Math.min(1000 * 2 ** tentativa, 8000),
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
 
     refetchInterval: (query) => (query.state.status === "error" ? 5000 : false),
     refetchIntervalInBackground: false,

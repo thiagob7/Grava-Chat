@@ -6,26 +6,26 @@ import { z } from "zod";
 import {
   channelSchema,
   clientEventSchemas,
-  comandoDeBotSchema,
+  botCommandSchema,
   DEFAULT_EVERYONE_PERMISSIONS,
   guildEmojiSchema,
   guildMemberSchema,
   guildSchema,
   LIMITS,
   messageSchema,
-  MOTIVOS_DE_FALHA,
+  FAILURE_REASONS,
   roleSchema,
   voiceStateSchema,
   PERMISSION_GROUPS,
   PERMISSION_LABELS,
 } from "@gravae/shared";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const ROTAS = join(AQUI, "..", "..", "api", "src", "routes", "bot-api.ts");
-const EVENTOS = join(AQUI, "..", "..", "..", "packages", "shared", "src", "events.ts");
-const SAIDA = join(AQUI, "..", "src", "dados", "referencia.json");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROTAS = join(HERE, "..", "..", "api", "src", "routes", "bot-api.ts");
+const EVENTOS = join(HERE, "..", "..", "..", "packages", "shared", "src", "events.ts");
+const OUTPUT = join(HERE, "..", "src", "dados", "referencia.json");
 
-const DESCRICOES = {
+const DESCRIPTIONS = {
   "GET /bot/eu": "Quem é o bot deste token.",
   "GET /bot/servidores": "Os servidores em que o bot está.",
   "GET /bot/servidores/:guildId/canais": "Os canais de um servidor, com o que o bot alcança.",
@@ -131,7 +131,7 @@ const CODIGOS = {
   500: "Erro nosso. Se repetir, é bug: abra um chamado com o horário.",
 };
 
-const MOTIVOS = {
+const REASONS = {
   "sem-conexao": "A conexão de tempo real caiu no meio do envio.",
   "sem-acesso": "O canal saiu do alcance do bot, ou nunca esteve.",
   "sem-permissao": "Falta a permissão que a ação exige.",
@@ -144,7 +144,7 @@ const MOTIVOS = {
   erro: "Falha genérica. Vale tentar de novo.",
 };
 
-const CORPOS = {
+const BODIES = {
   "PUT /bot/mensagens/:messageId/fixar": "sem corpo — o id vai no endereço",
   "PATCH /bot/servidores/:guildId": "updateGuildInput — tudo opcional",
   "POST /bot/servidores/:guildId/cargos": "createRoleInput — name, permissions[]",
@@ -167,52 +167,52 @@ const CORPOS = {
 };
 
 const LIMITES = [
-  { chave: "messageLength", rotulo: "Tamanho de uma mensagem", formato: "caracteres" },
-  { chave: "attachmentsPerMessage", rotulo: "Anexos por mensagem", formato: "numero" },
-  { chave: "attachmentBytes", rotulo: "Tamanho de cada anexo", formato: "bytes" },
-  { chave: "avatarBytes", rotulo: "Tamanho da foto de perfil", formato: "bytes" },
-  { chave: "bannerBytes", rotulo: "Tamanho do banner", formato: "bytes" },
-  { chave: "bio", rotulo: "Sobre mim", formato: "caracteres" },
-  { chave: "statusPersonalizado", rotulo: "Recado do perfil", formato: "caracteres" },
-  { chave: "emojisPorServidor", rotulo: "Emojis por servidor", formato: "numero" },
-  { chave: "figurinhasPorServidor", rotulo: "Figurinhas por servidor", formato: "numero" },
-  { chave: "sonsPorServidor", rotulo: "Sons por servidor", formato: "numero" },
-  { chave: "opcoesPorEnquete", rotulo: "Opções por enquete", formato: "numero" },
-  { chave: "mensagensFixadas", rotulo: "Mensagens fixadas por canal", formato: "numero" },
-  { chave: "modoLentoMax", rotulo: "Modo lento, no máximo", formato: "segundos" },
+  { key: "messageLength", label: "Tamanho de uma mensagem", format: "caracteres" },
+  { key: "attachmentsPerMessage", label: "Anexos por mensagem", format: "numero" },
+  { key: "attachmentBytes", label: "Tamanho de cada anexo", format: "bytes" },
+  { key: "avatarBytes", label: "Tamanho da foto de perfil", format: "bytes" },
+  { key: "bannerBytes", label: "Tamanho do banner", format: "bytes" },
+  { key: "bio", label: "Sobre mim", format: "caracteres" },
+  { key: "customStatus", label: "Recado do perfil", format: "caracteres" },
+  { key: "emojisByServer", label: "Emojis por servidor", format: "numero" },
+  { key: "stickersByServer", label: "Figurinhas por servidor", format: "numero" },
+  { key: "soundsByServer", label: "Sons por servidor", format: "numero" },
+  { key: "optionsByPoll", label: "Opções por enquete", format: "numero" },
+  { key: "messagesPinned", label: "Mensagens fixadas por canal", format: "numero" },
+  { key: "modeSlowMax", label: "Modo lento, no máximo", format: "segundos" },
 ] as const;
 
-const sumido = LIMITES.filter(({ chave }) => !(chave in LIMITS));
+const sumido = LIMITES.filter(({ key }) => !(key in LIMITS));
 
 if (sumido.length) {
   console.error(
     `\n  A ajuda cita limite que não existe mais no @gravae/shared:\n\n` +
-      sumido.map(({ chave }) => `    LIMITS.${chave}`).join("\n") +
+      sumido.map(({ key }) => `    LIMITS.${key}`).join("\n") +
       `\n\n  Acerte em apps/landing/scripts/gerar-referencia.mts e rode de novo.\n`,
   );
   process.exit(1);
 }
 
-const limites = LIMITES.map(({ chave, rotulo, formato }) => ({
-  rotulo,
-  formato,
-  valor: LIMITS[chave],
+const limits = LIMITES.map(({ key, label, format }) => ({
+  label,
+  format,
+  value: LIMITS[key],
 }));
 
-const padrao = new Set<string>(DEFAULT_EVERYONE_PERMISSIONS);
+const fallback = new Set<string>(DEFAULT_EVERYONE_PERMISSIONS);
 
-const permissoes = PERMISSION_GROUPS.map((grupo) => ({
-  titulo: grupo.label,
-  itens: grupo.permissions.map((chave) => ({
-    chave,
-    nome: PERMISSION_LABELS[chave].nome,
-    descricao: PERMISSION_LABELS[chave].descricao,
-    padrao: padrao.has(chave),
+const permissions = PERMISSION_GROUPS.map((group) => ({
+  title: group.label,
+  items: group.permissions.map((key) => ({
+    key,
+    name: PERMISSION_LABELS[key].name,
+    description: PERMISSION_LABELS[key].description,
+    fallback: fallback.has(key),
   })),
 }));
 
 const forasDoGrupo = Object.keys(PERMISSION_LABELS).filter(
-  (chave) => !PERMISSION_GROUPS.some((grupo) => grupo.permissions.includes(chave as never)),
+  (key) => !PERMISSION_GROUPS.some((group) => group.permissions.includes(key as never)),
 );
 
 if (forasDoGrupo.length) {
@@ -224,20 +224,20 @@ if (forasDoGrupo.length) {
   process.exit(1);
 }
 
-const fonte = await readFile(ROTAS, "utf8");
+const font = await readFile(ROTAS, "utf8");
 
-const rotas = [...fonte.matchAll(/app\.(get|post|patch|put|delete)\(\s*"([^"]+)"/g)].map(
-  ([, metodo, caminho]) => ({ metodo: metodo.toUpperCase(), caminho }),
+const routes = [...font.matchAll(/app\.(get|post|patch|put|delete)\(\s*"([^"]+)"/g)].map(
+  ([, method, path]) => ({ method: method.toUpperCase(), path }),
 );
 
-if (!rotas.length) {
+if (!routes.length) {
   console.error("\n  Não achei rota nenhuma no bot-api.ts. O formato mudou?\n");
   process.exit(1);
 }
 
-const semDescricao = rotas
-  .map(({ metodo, caminho }) => `${metodo} ${caminho}`)
-  .filter((chave) => !DESCRICOES[chave]);
+const semDescricao = routes
+  .map(({ method, path }) => `${method} ${path}`)
+  .filter((key) => !DESCRIPTIONS[key]);
 
 if (semDescricao.length) {
   console.error(
@@ -262,11 +262,11 @@ if (semDescricao.length) {
 const OBJETOS = [
   {
     id: "mensagem",
-    nome: "Mensagem",
-    resumo: "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
+    name: "Mensagem",
+    summary: "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
     esquema: "messageSchema",
-    rotas: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/,
-    eventos: [
+    routes: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/,
+    events: [
       "message:created",
       "message:updated",
       "message:deleted",
@@ -277,59 +277,59 @@ const OBJETOS = [
   },
   {
     id: "canal",
-    nome: "Canal",
-    resumo: "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
+    name: "Canal",
+    summary: "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
     esquema: "channelSchema",
-    rotas: /^\/bot\/servidores\/:guildId\/canais/,
-    eventos: ["channel:created", "channel:updated", "channel:deleted", "post:created", "post:updated"],
+    routes: /^\/bot\/servidores\/:guildId\/canais/,
+    events: ["channel:created", "channel:updated", "channel:deleted", "post:created", "post:updated"],
   },
   {
     id: "servidor",
-    nome: "Servidor",
-    resumo: "A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.",
+    name: "Servidor",
+    summary: "A comunidade inteira. O bot só enxerga os servidores em que foi adicionado.",
     esquema: "guildSchema",
-    rotas: /^\/bot\/servidores(\/:guildId)?$/,
-    eventos: ["guild:updated", "guild:deleted", "guild:refresh", "event:updated"],
+    routes: /^\/bot\/servidores(\/:guildId)?$/,
+    events: ["guild:updated", "guild:deleted", "guild:refresh", "event:updated"],
   },
   {
     id: "membro",
-    nome: "Membro",
-    resumo: "Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.",
+    name: "Membro",
+    summary: "Uma pessoa dentro de um servidor: apelido, cargos e desde quando está lá.",
     esquema: "guildMemberSchema",
-    rotas: /^\/bot\/servidores\/:guildId\/membros/,
-    eventos: ["member:joined", "member:updated", "member:left", "presence:changed", "user:updated"],
+    routes: /^\/bot\/servidores\/:guildId\/membros/,
+    events: ["member:joined", "member:updated", "member:left", "presence:changed", "user:updated"],
   },
   {
     id: "cargo",
-    nome: "Cargo",
-    resumo: "O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.",
+    name: "Cargo",
+    summary: "O que dá poder a um membro. Ordem importa: o de cima ganha na cor e na hierarquia.",
     esquema: "roleSchema",
-    rotas: /^\/bot\/servidores\/:guildId\/cargos/,
-    eventos: [],
+    routes: /^\/bot\/servidores\/:guildId\/cargos/,
+    events: [],
   },
   {
     id: "moderacao",
-    nome: "Moderação",
-    resumo: "Castigo e banimento. As duas ações que tiram alguém de circulação.",
+    name: "Moderação",
+    summary: "Castigo e banimento. As duas ações que tiram alguém de circulação.",
     esquema: null,
-    rotas: /^\/bot\/servidores\/:guildId\/(castigos|banimentos)/,
-    eventos: [],
+    routes: /^\/bot\/servidores\/:guildId\/(castigos|banimentos)/,
+    events: [],
   },
   {
     id: "expressao",
-    nome: "Expressão",
-    resumo: "Emojis, figurinhas e sons do servidor.",
+    name: "Expressão",
+    summary: "Emojis, figurinhas e sons do servidor.",
     esquema: "guildEmojiSchema",
-    rotas: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/,
-    eventos: ["expressions:changed"],
+    routes: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/,
+    events: ["expressions:changed"],
   },
   {
     id: "voz",
-    nome: "Voz",
-    resumo: "Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.",
+    name: "Voz",
+    summary: "Quem está na chamada e o que está fazendo lá. Só por evento — não há rota REST de voz.",
     esquema: "voiceStateSchema",
-    rotas: null,
-    eventos: [
+    routes: null,
+    events: [
       "voice:states",
       "voice:joined",
       "voice:left",
@@ -343,102 +343,102 @@ const OBJETOS = [
   },
   {
     id: "aplicativo",
-    nome: "Aplicativo",
-    resumo: "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
-    esquema: "comandoDeBotSchema",
-    rotas: /^\/bot\/(eu|comandos)$/,
-    eventos: ["command:invoked", "commands:changed"],
+    name: "Aplicativo",
+    summary: "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
+    esquema: "botCommandSchema",
+    routes: /^\/bot\/(eu|comandos)$/,
+    events: ["command:invoked", "commands:changed"],
   },
   {
     id: "webhook",
-    nome: "Webhook",
-    resumo: "Um endereço que escreve num canal sem precisar de bot conectado.",
+    name: "Webhook",
+    summary: "Um endereço que escreve num canal sem precisar de bot conectado.",
     esquema: null,
-    rotas: /^\/bot\/servidores\/:guildId\/webhooks/,
-    eventos: [],
+    routes: /^\/bot\/servidores\/:guildId\/webhooks/,
+    events: [],
   },
   {
     id: "convite",
-    nome: "Convite",
-    resumo: "O link que leva alguém para dentro do servidor.",
+    name: "Convite",
+    summary: "O link que leva alguém para dentro do servidor.",
     esquema: null,
-    rotas: /^\/bot\/servidores\/:guildId\/convites/,
-    eventos: [],
+    routes: /^\/bot\/servidores\/:guildId\/convites/,
+    events: [],
   },
   {
     id: "auditoria",
-    nome: "Auditoria",
-    resumo: "O registro do que a equipe fez no servidor, e de quem fez.",
+    name: "Auditoria",
+    summary: "O registro do que a equipe fez no servidor, e de quem fez.",
     esquema: null,
-    rotas: /^\/bot\/servidores\/:guildId\/auditoria/,
-    eventos: [],
+    routes: /^\/bot\/servidores\/:guildId\/auditoria/,
+    events: [],
   },
 ] as const;
 
 const GRUPOS_DE_ROTA = [
-  { titulo: "Identidade", teste: /^\/bot\/(eu|comandos)$/ },
-  { titulo: "Mensagens", teste: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/ },
-  { titulo: "Servidores e canais", teste: /^\/bot\/servidores(\/:guildId(\/canais|\/convites)?)?$/ },
-  { titulo: "Membros e moderação", teste: /^\/bot\/servidores\/:guildId\/(membros|castigos|banimentos|auditoria)/ },
-  { titulo: "Cargos", teste: /^\/bot\/servidores\/:guildId\/cargos/ },
-  { titulo: "Expressões", teste: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/ },
-  { titulo: "Webhooks", teste: /^\/bot\/servidores\/:guildId\/webhooks/ },
-  { titulo: "Servidores e canais", teste: /^\/bot\/servidores\/:guildId\/canais/ },
+  { title: "Identidade", test: /^\/bot\/(eu|comandos)$/ },
+  { title: "Mensagens", test: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/ },
+  { title: "Servidores e canais", test: /^\/bot\/servidores(\/:guildId(\/canais|\/convites)?)?$/ },
+  { title: "Membros e moderação", test: /^\/bot\/servidores\/:guildId\/(membros|castigos|banimentos|auditoria)/ },
+  { title: "Cargos", test: /^\/bot\/servidores\/:guildId\/cargos/ },
+  { title: "Expressões", test: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/ },
+  { title: "Webhooks", test: /^\/bot\/servidores\/:guildId\/webhooks/ },
+  { title: "Servidores e canais", test: /^\/bot\/servidores\/:guildId\/canais/ },
 ];
 
-const grupoDa = (caminho: string) =>
-  GRUPOS_DE_ROTA.find(({ teste }) => teste.test(caminho))?.titulo;
+const grupoDa = (path: string) =>
+  GRUPOS_DE_ROTA.find(({ test }) => test.test(path))?.title;
 
-const semGrupo = rotas.filter(({ caminho }) => !grupoDa(caminho));
+const semGrupo = routes.filter(({ path }) => !grupoDa(path));
 
 if (semGrupo.length) {
   console.error(
     `\n  Rota que não cai em grupo nenhum, então ficaria solta na página:\n\n` +
-      semGrupo.map(({ metodo, caminho }) => `    ${metodo} ${caminho}`).join("\n") +
+      semGrupo.map(({ method, path }) => `    ${method} ${path}`).join("\n") +
       `\n\n  Acrescente um GRUPOS_DE_ROTA em apps/landing/scripts/gerar-referencia.mts.\n`,
   );
   process.exit(1);
 }
 
-const rest = rotas.map(({ metodo, caminho }) => {
-  const chave = `${metodo} ${caminho}`;
+const rest = routes.map(({ method, path }) => {
+  const key = `${method} ${path}`;
 
   return {
-    metodo,
-    caminho,
-    grupo: grupoDa(caminho)!,
-    descricao: DESCRICOES[chave],
-    corpo: CORPOS[chave] ?? null,
-    parametros: [...caminho.matchAll(/:(\w+)/g)].map(([, nome]) => nome),
+    method,
+    path,
+    group: grupoDa(path)!,
+    description: DESCRIPTIONS[key],
+    body: BODIES[key] ?? null,
+    parametros: [...path.matchAll(/:(\w+)/g)].map(([, name]) => name),
   };
 });
 
-const eventos = Object.entries(clientEventSchemas).map(([nome, schema]) => {
+const events = Object.entries(clientEventSchemas).map(([name, schema]) => {
   const json = z.toJSONSchema(schema, { io: "input" });
   const obrigatorios = new Set(json.required ?? []);
 
   return {
-    nome,
-    campos: Object.entries(json.properties ?? {}).map(([campo, tipo]) => ({
-      nome: campo,
-      tipo: tipo.type ?? (tipo.anyOf ? "vários" : "objeto"),
-      obrigatorio: obrigatorios.has(campo),
-      limite: tipo.maxLength ?? tipo.maximum ?? null,
+    name,
+    fields: Object.entries(json.properties ?? {}).map(([field, kind]) => ({
+      name: field,
+      kind: kind.type ?? (kind.anyOf ? "vários" : "objeto"),
+      required: obrigatorios.has(field),
+      limit: kind.maxLength ?? kind.maximum ?? null,
     })),
   };
 });
 
 const fonteDosEventos = await readFile(EVENTOS, "utf8");
-const bloco = fonteDosEventos.match(/export type ServerToClientEvents = \{\n([\s\S]*?)\n\};/);
+const block = fonteDosEventos.match(/export type ServerToClientEvents = \{\n([\s\S]*?)\n\};/);
 
-if (!bloco) {
+if (!block) {
   console.error("\n  Não achei o ServerToClientEvents no events.ts. O formato mudou?\n");
   process.exit(1);
 }
 
-const nomesRecebidos = [...bloco[1].matchAll(/^  "?([\w:]+)"?: \(/gm)].map(([, nome]) => nome);
+const nomesRecebidos = [...block[1].matchAll(/^  "?([\w:]+)"?: \(/gm)].map(([, name]) => name);
 
-const semTexto = nomesRecebidos.filter((nome) => !RECEBIDOS[nome]);
+const semTexto = nomesRecebidos.filter((name) => !RECEBIDOS[name]);
 
 if (semTexto.length) {
   console.error(
@@ -449,7 +449,7 @@ if (semTexto.length) {
   process.exit(1);
 }
 
-const semTextoDeFalha = MOTIVOS_DE_FALHA.filter((motivo) => !MOTIVOS[motivo]);
+const semTextoDeFalha = FAILURE_REASONS.filter((reason) => !REASONS[reason]);
 
 if (semTextoDeFalha.length) {
   console.error(
@@ -473,15 +473,15 @@ const ESQUEMAS: Record<string, z.ZodType> = {
   roleSchema,
   guildEmojiSchema,
   voiceStateSchema,
-  comandoDeBotSchema,
+  botCommandSchema,
 };
 
-const camposDe = (nome: string | null) => {
-  if (!nome) return [];
+const camposDe = (name: string | null) => {
+  if (!name) return [];
 
-  const esquema = ESQUEMAS[nome];
+  const esquema = ESQUEMAS[name];
   if (!esquema) {
-    console.error(`\n  Objeto aponta para um esquema que não existe: ${nome}\n`);
+    console.error(`\n  Objeto aponta para um esquema que não existe: ${name}\n`);
     process.exit(1);
   }
 
@@ -492,28 +492,28 @@ const camposDe = (nome: string | null) => {
 
   const obrigatorios = new Set(json.required ?? []);
 
-  return Object.entries(json.properties ?? {}).map(([campo, tipo]) => ({
-    nome: campo,
-    tipo: tipo.type ?? (tipo.anyOf ? "vários" : "objeto"),
-    obrigatorio: obrigatorios.has(campo),
+  return Object.entries(json.properties ?? {}).map(([field, kind]) => ({
+    name: field,
+    kind: kind.type ?? (kind.anyOf ? "vários" : "objeto"),
+    required: obrigatorios.has(field),
   }));
 };
 
-const objetos = OBJETOS.map((objeto) => ({
-  id: objeto.id,
-  nome: objeto.nome,
-  resumo: objeto.resumo,
-  campos: camposDe(objeto.esquema),
-  rotas: objeto.rotas ? rest.filter((rota) => objeto.rotas!.test(rota.caminho)) : [],
-  eventos: objeto.eventos.map((nome) => {
-    const achado = RECEBIDOS[nome];
+const objects = OBJETOS.map((object) => ({
+  id: object.id,
+  name: object.name,
+  summary: object.summary,
+  fields: camposDe(object.esquema),
+  routes: object.routes ? rest.filter((route) => object.routes!.test(route.path)) : [],
+  events: object.events.map((name) => {
+    const match = RECEBIDOS[name];
 
-    if (!achado) {
-      console.error(`\n  Objeto ${objeto.id} cita um evento que não existe: ${nome}\n`);
+    if (!match) {
+      console.error(`\n  Objeto ${object.id} cita um evento que não existe: ${name}\n`);
       process.exit(1);
     }
 
-    return { nome, descricao: achado };
+    return { name, description: match };
   }),
 }));
 
@@ -523,27 +523,27 @@ const objetos = OBJETOS.map((objeto) => ({
   procurar por ela e não achar.
 */
 const foraDeObjeto = rest.filter(
-  (rota) => !OBJETOS.some((objeto) => objeto.rotas?.test(rota.caminho)),
+  (route) => !OBJETOS.some((object) => object.routes?.test(route.path)),
 );
 
 if (foraDeObjeto.length) {
   console.error(
     `\n  Rota que não pertence a objeto nenhum:\n\n` +
-      foraDeObjeto.map((r) => `    ${r.metodo} ${r.caminho}`).join("\n") +
+      foraDeObjeto.map((r) => `    ${r.method} ${r.path}`).join("\n") +
       `\n\n  Acrescente um OBJETOS em apps/landing/scripts/gerar-referencia.mts.\n`,
   );
   process.exit(1);
 }
 
-const falhas = {
-  codigos: Object.entries(CODIGOS).map(([codigo, quando]) => ({ codigo: Number(codigo), quando })),
-  motivos: MOTIVOS_DE_FALHA.map((motivo) => ({ motivo, quando: MOTIVOS[motivo] })),
+const failures = {
+  codes: Object.entries(CODIGOS).map(([code, when]) => ({ code: Number(code), when })),
+  reasons: FAILURE_REASONS.map((reason) => ({ reason, when: REASONS[reason] })),
 };
 
-const recebidos = nomesRecebidos.map((nome) => ({ nome, descricao: RECEBIDOS[nome] }));
+const received = nomesRecebidos.map((name) => ({ name, description: RECEBIDOS[name] }));
 
-await mkdir(dirname(SAIDA), { recursive: true });
-await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos, objetos, limites, permissoes, falhas }, null, 2)}\n`);
+await mkdir(dirname(OUTPUT), { recursive: true });
+await writeFile(OUTPUT, `${JSON.stringify({ rest, events, received, objects, limits, permissions, failures }, null, 2)}\n`);
 
 /*
   O índice em texto puro, para quem lê com máquina.
@@ -560,47 +560,47 @@ await writeFile(SAIDA, `${JSON.stringify({ rest, eventos, recebidos, objetos, li
   script já faz assim com o `events.ts`. Importar o módulo puxaria junto o
   resto do app; ler o texto pega só o que interessa e não acopla nada.
 */
-const fonteDosDocs = await readFile(join(AQUI, "..", "src", "dados", "docs.ts"), "utf8");
+const fonteDosDocs = await readFile(join(HERE, "..", "src", "dados", "docs.ts"), "utf8");
 
 const paginasDosDocs = [
   ...fonteDosDocs.matchAll(
-    /href:\s*"([^"]+)",\s*\n\s*titulo:\s*"([^"]+)",\s*\n\s*resumo:\s*"([^"]+)"/g,
+    /href:\s*"([^"]+)",\s*\n\s*title:\s*"([^"]+)",\s*\n\s*summary:\s*"([^"]+)"/g,
   ),
-].map(([, href, titulo, resumo]) => ({ href, titulo, resumo }));
+].map(([, href, title, summary]) => ({ href, title, summary }));
 
 if (!paginasDosDocs.length) {
   console.error("\n  Não achei as páginas em src/dados/docs.ts. O formato mudou?\n");
   process.exit(1);
 }
 
-const indice = [
+const index = [
   "# Gravaê — documentação para desenvolvedores",
   "",
   "Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.",
   "",
   "## Páginas",
   "",
-  ...paginasDosDocs.map((pagina) => `- [${pagina.titulo}](${pagina.href}): ${pagina.resumo}`),
+  ...paginasDosDocs.map((page) => `- [${page.title}](${page.href}): ${page.summary}`),
   "",
   "## Rotas REST",
   "",
-  ...rest.map((rota) => `- ${rota.metodo} ${rota.caminho} — ${rota.descricao}`),
+  ...rest.map((route) => `- ${route.method} ${route.path} — ${route.description}`),
   "",
   "## Eventos que o bot envia",
   "",
-  ...eventos.map((evento) => `- ${evento.nome}`),
+  ...events.map((event) => `- ${event.name}`),
   "",
   "## Eventos que o bot recebe",
   "",
-  ...recebidos.map((evento) => `- ${evento.nome} — ${evento.descricao}`),
+  ...received.map((event) => `- ${event.name} — ${event.description}`),
   "",
   "## Motivos de falha",
   "",
-  ...falhas.motivos.map((m) => `- ${m.motivo} — ${m.quando}`),
+  ...failures.reasons.map((m) => `- ${m.reason} — ${m.when}`),
   "",
 ].join("\n");
 
-await writeFile(join(AQUI, "..", "public", "llms.txt"), `${indice}\n`);
+await writeFile(join(HERE, "..", "public", "llms.txt"), `${index}\n`);
 
 /*
   A mesma coisa em inglês.
@@ -623,43 +623,43 @@ const indiceEmIngles = [
   "",
   "## Pages",
   "",
-  ...paginasDosDocs.map((pagina) => `- ${pagina.href}`),
+  ...paginasDosDocs.map((page) => `- ${page.href}`),
   "",
   "## Objects",
   "",
-  ...objetos.map(
-    (objeto) =>
-      `- ${objeto.nome} (${objeto.id}) — ${objeto.campos.length} fields, ` +
-      `${objeto.rotas.length} routes, ${objeto.eventos.length} events`,
+  ...objects.map(
+    (object) =>
+      `- ${object.name} (${object.id}) — ${object.fields.length} fields, ` +
+      `${object.routes.length} routes, ${object.events.length} events`,
   ),
   "",
   "## REST routes",
   "",
-  ...rest.map((rota) => `- ${rota.metodo} ${rota.caminho}`),
+  ...rest.map((route) => `- ${route.method} ${route.path}`),
   "",
   "## Events the bot sends",
   "",
-  ...eventos.map((evento) => `- ${evento.nome}`),
+  ...events.map((event) => `- ${event.name}`),
   "",
   "## Events the bot receives",
   "",
-  ...recebidos.map((evento) => `- ${evento.nome}`),
+  ...received.map((event) => `- ${event.name}`),
   "",
   "## Failure reasons",
   "",
-  ...falhas.motivos.map((m) => `- ${m.motivo}`),
+  ...failures.reasons.map((m) => `- ${m.reason}`),
   "",
   "## HTTP codes",
   "",
-  ...falhas.codigos.map((c) => `- ${c.codigo}`),
+  ...failures.codes.map((c) => `- ${c.code}`),
   "",
 ].join("\n");
 
-await writeFile(join(AQUI, "..", "public", "llms-en.txt"), `${indiceEmIngles}\n`);
+await writeFile(join(HERE, "..", "public", "llms-en.txt"), `${indiceEmIngles}\n`);
 
 console.log(
-  `referência: ${rest.length} rotas, ${eventos.length} eventos enviados, ` +
-    `${recebidos.length} recebidos, ${limites.length} limites e ` +
-    `${permissoes.reduce((total, g) => total + g.itens.length, 0)} permissões ` +
+  `referência: ${rest.length} rotas, ${events.length} eventos enviados, ` +
+    `${received.length} recebidos, ${limits.length} limites e ` +
+    `${permissions.reduce((total, g) => total + g.items.length, 0)} permissões ` +
     `em src/dados/referencia.json`,
 );

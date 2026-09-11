@@ -1,41 +1,41 @@
 {
   "escuro": {
-    "amostra": [
+    "sample": [
       "#1a181e",
       "#1a181e",
       "#1e1d23"
     ],
-    "acento": "#413cdd"
+    "accent": "#413cdd"
   },
   "mais-escuro": {
-    "amostra": [
+    "sample": [
       "#020203",
       "#020203",
       "#020203"
     ],
-    "acento": "#413cdd"
+    "accent": "#413cdd"
   },
   "gravae": {
-    "amostra": [
+    "sample": [
       "#0b0708",
       "#120c0d",
       "#171011"
     ],
-    "acento": "#ff0000"
+    "accent": "#ff0000"
   },
   "claro": {
-    "amostra": [
+    "sample": [
       "#ebecef",
       "#ebecef",
       "#f0f1f3"
     ],
-    "acento": "#413cdd"
+    "accent": "#413cdd"
   },
   "sistema": {
-    "amostra": [
+    "sample": [
       "#f0f1f3",
       "#1e1d23"
     ],
-    "acento": "#413cdd"
+    "accent": "#413cdd"
   }
 }

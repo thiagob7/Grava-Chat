@@ -1,4 +1,18 @@
 export const chamada = {
+  chat: {
+    paraBaixo: "Flytt praten ned",
+    paraOLado: "Flytt praten til siden",
+  },
+  aparelhoNovo: {
+    microfone: "Det dukket opp en ny mikrofon",
+    saida: "Det dukket opp en ny lydutgang",
+    apareceu: "{{nome}} dukket opp.",
+    falarPorEle: "Vil du snakke gjennom den?",
+    ouvirPorEle: "Vil du høre gjennom den?",
+    trocaNaHora: "Byttet gjelder med en gang, uten å forlate samtalen.",
+    naoSugerir: "Ikke foreslå denne enheten igjen",
+    trocar: "Bytt til den",
+  },
   conectando: "Kobler til samtalen…",
   naoEntrou: "Kunne ikke bli med i samtalen",
   sair: "Forlat samtalen",

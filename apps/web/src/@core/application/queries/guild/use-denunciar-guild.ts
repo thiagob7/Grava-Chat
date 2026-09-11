@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import { denunciarGuild, type DenunciarGuildDTO } from "~/@core/application/requests/guild/denunciar-guild";
+import { reportGuild, type ReportGuildDto } from "~/@core/application/requests/guild/denunciar-guild";
 import { apiErrorMessage } from "~/@core/lib/api";
 
-export const useDenunciarGuild = () =>
+export const useReportGuild = () =>
   useMutation({
-    mutationFn: (data: DenunciarGuildDTO) => denunciarGuild(data),
+    mutationFn: (data: ReportGuildDto) => reportGuild(data),
     onError: (error) => toast.error(apiErrorMessage(error, "Não deu para enviar a denúncia.")),
   });

@@ -1,34 +1,34 @@
 import { Hash, Mic, Monitor, ChevronDown, Plus, Smile } from "lucide-react";
 
-const CANAIS = ["avisos", "geral", "jogatina", "musica"];
+const CHANNELS = ["avisos", "geral", "jogatina", "musica"];
 
-const CONVERSA = [
-  { nome: "Bia", cor: "#e0568a", texto: "gente, tô subindo o servidor de voz agora" },
-  { nome: "Léo", cor: "#4f8cf0", texto: "opa, entra lá que eu tô esperando" },
-  { nome: "Bia", cor: "#e0568a", texto: "cheguei! tá ouvindo?" },
-  { nome: "Thi", cor: "#d30404", texto: "ouvindo demais, teu microfone tá ótimo 🎧" },
+const CHAT = [
+  { name: "Bia", color: "#e0568a", text: "gente, tô subindo o servidor de voz agora" },
+  { name: "Léo", color: "#4f8cf0", text: "opa, entra lá que eu tô esperando" },
+  { name: "Bia", color: "#e0568a", text: "cheguei! tá ouvindo?" },
+  { name: "Thi", color: "#d30404", text: "ouvindo demais, teu microfone tá ótimo 🎧" },
 ];
 
-const MEMBROS = [
-  { nome: "Bia", cor: "#e0568a", estado: "online" },
-  { nome: "Léo", cor: "#4f8cf0", estado: "online" },
-  { nome: "Thi", cor: "#d30404", estado: "online" },
-  { nome: "Duda", cor: "#f0a63c", estado: "ausente" },
+const MEMBERS = [
+  { name: "Bia", color: "#e0568a", state: "online" },
+  { name: "Léo", color: "#4f8cf0", state: "online" },
+  { name: "Thi", color: "#d30404", state: "online" },
+  { name: "Duda", color: "#f0a63c", state: "ausente" },
 ];
 
-const PASSO_S = 0.45;
-const INICIO_S = 0.35;
+const STEP_S = 0.45;
+const START_S = 0.35;
 
-const Bolinha = ({ cor, letra }: { cor: string; letra: string }) => (
+const Dot = ({ color, letter }: { color: string; letter: string }) => (
   <span
     className="flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
-    style={{ backgroundColor: cor }}
+    style={{ backgroundColor: color }}
   >
-    {letra}
+    {letter}
   </span>
 );
 
-export const PalcoDoApp = () => (
+export const AppStage = () => (
   <div className="palco-do-app mx-auto mt-14 w-full max-w-5xl px-2 sm:px-0">
     <div className="janela-do-palco overflow-hidden rounded-xl border border-line bg-surface-1 shadow-2xl shadow-black/60">
       <div className="flex h-8 items-center gap-1.5 border-b border-line bg-surface-0 px-3">
@@ -44,11 +44,11 @@ export const PalcoDoApp = () => (
             G
           </span>
           <span className="h-px w-6 rounded bg-surface-3" />
-          {["#4f8cf0", "#e0568a", "#f0a63c"].map((cor, i) => (
+          {["#4f8cf0", "#e0568a", "#f0a63c"].map((color, i) => (
             <span
-              key={cor}
+              key={color}
               className="surge size-9 rounded-2xl opacity-80"
-              style={{ backgroundColor: cor, animationDelay: `${INICIO_S + i * 0.1}s` }}
+              style={{ backgroundColor: color, animationDelay: `${START_S + i * 0.1}s` }}
             />
           ))}
           <span className="flex size-9 items-center justify-center rounded-2xl bg-surface-0 text-ink-faint">
@@ -64,16 +64,16 @@ export const PalcoDoApp = () => (
           <div className="flex-1 space-y-0.5 p-2">
             <p className="px-1 py-1.5 text-sm font-semibold leading-5 text-ink-faint">Canais de texto</p>
 
-            {CANAIS.map((canal, i) => (
+            {CHANNELS.map((channel, i) => (
               <div
-                key={canal}
+                key={channel}
                 className={`surge flex items-center gap-1.5 rounded-md px-2 py-1.5 text-base font-medium leading-5 ${
-                  canal === "geral" ? "bg-white/10 text-ink" : "text-ink-faint"
+                  channel === "geral" ? "bg-white/10 text-ink" : "text-ink-faint"
                 }`}
-                style={{ animationDelay: `${INICIO_S + i * 0.08}s` }}
+                style={{ animationDelay: `${START_S + i * 0.08}s` }}
               >
                 <Hash size={20} className="shrink-0" />
-                <span className="truncate">{canal}</span>
+                <span className="truncate">{channel}</span>
               </div>
             ))}
 
@@ -85,15 +85,15 @@ export const PalcoDoApp = () => (
             </div>
 
             <div className="space-y-1 pl-6 pt-1">
-              {MEMBROS.slice(0, 2).map(({ nome, cor }, i) => (
-                <div key={nome} className="flex items-center gap-2">
+              {MEMBERS.slice(0, 2).map(({ name, color }, i) => (
+                <div key={name} className="flex items-center gap-2">
                   <span className="relative flex">
-                    <Bolinha cor={cor} letra={nome[0]!} />
+                    <Dot color={color} letter={name[0]!} />
                     {i === 0 && (
                       <span className="anel-de-fala absolute inset-0 rounded-full ring-2 ring-online" />
                     )}
                   </span>
-                  <span className="truncate text-sm font-medium text-ink-muted">{nome}</span>
+                  <span className="truncate text-sm font-medium text-ink-muted">{name}</span>
                 </div>
               ))}
             </div>
@@ -110,19 +110,19 @@ export const PalcoDoApp = () => (
           </div>
 
           <div className="flex-1 space-y-3 overflow-hidden p-4">
-            {CONVERSA.map(({ nome, cor, texto }, i) => (
+            {CHAT.map(({ name, color, text }, i) => (
               <div
-                key={texto}
+                key={text}
                 className={`surge gap-2.5 ${i === 0 ? "hidden sm:flex" : "flex"}`}
-                style={{ animationDelay: `${INICIO_S + i * PASSO_S}s` }}
+                style={{ animationDelay: `${START_S + i * STEP_S}s` }}
               >
-                <Bolinha cor={cor} letra={nome[0]!} />
+                <Dot color={color} letter={name[0]!} />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold" style={{ color: cor }}>
-                    {nome}
+                  <p className="text-xs font-semibold" style={{ color: color }}>
+                    {name}
                   </p>
-                  <p className="text-sm leading-relaxed text-ink-muted">{texto}</p>
-                  {i === CONVERSA.length - 1 && (
+                  <p className="text-sm leading-relaxed text-ink-muted">{text}</p>
+                  {i === CHAT.length - 1 && (
                     <span className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-line bg-surface-3 px-1.5 py-0.5 text-[11px]">
                       🔥 <span className="font-semibold text-ink-muted">3</span>
                     </span>
@@ -133,12 +133,12 @@ export const PalcoDoApp = () => (
 
             <div
               className="surge flex items-center gap-2 pt-1"
-              style={{ animationDelay: `${INICIO_S + CONVERSA.length * PASSO_S}s` }}
+              style={{ animationDelay: `${START_S + CHAT.length * STEP_S}s` }}
             >
               <span className="flex -space-x-1.5">
-                {MEMBROS.slice(0, 2).map(({ nome, cor }) => (
-                  <span key={nome} className="ring-2 ring-surface-2">
-                    <Bolinha cor={cor} letra={nome[0]!} />
+                {MEMBERS.slice(0, 2).map(({ name, color }) => (
+                  <span key={name} className="ring-2 ring-surface-2">
+                    <Dot color={color} letter={name[0]!} />
                   </span>
                 ))}
               </span>
@@ -171,21 +171,21 @@ export const PalcoDoApp = () => (
           <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
             Na sala — 4
           </p>
-          {MEMBROS.map(({ nome, cor, estado }, i) => (
+          {MEMBERS.map(({ name, color, state }, i) => (
             <div
-              key={nome}
+              key={name}
               className="surge flex items-center gap-2 rounded-md px-1 py-1"
-              style={{ animationDelay: `${INICIO_S + i * 0.1}s` }}
+              style={{ animationDelay: `${START_S + i * 0.1}s` }}
             >
               <span className="relative">
-                <Bolinha cor={cor} letra={nome[0]!} />
+                <Dot color={color} letter={name[0]!} />
                 <span
                   className={`absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full ring-2 ring-surface-1 ${
-                    estado === "online" ? "bg-online" : "bg-[#f0a63c]"
+                    state === "online" ? "bg-online" : "bg-[#f0a63c]"
                   }`}
                 />
               </span>
-              <span className="truncate text-sm font-medium text-ink-muted">{nome}</span>
+              <span className="truncate text-sm font-medium text-ink-muted">{name}</span>
             </div>
           ))}
         </div>

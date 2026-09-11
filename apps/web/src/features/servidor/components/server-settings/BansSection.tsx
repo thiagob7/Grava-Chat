@@ -14,15 +14,15 @@ import { useTranslation } from "~/traducao";
 export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
   const { t } = useTranslation();
   const { data: bans = [], isLoading } = useFindBans(guildId);
-  const desbanir = useUnbanMember(guildId);
-  const [busca, setBusca] = useState("");
+  const unban = useUnbanMember(guildId);
+  const [search, setSearch] = useState("");
 
-  const termo = busca.trim().toLowerCase();
-  const filtrados = termo
+  const term = search.trim().toLowerCase();
+  const filtered = term
     ? bans.filter(
         (b) =>
-          b.user.displayName.toLowerCase().includes(termo) ||
-          b.user.username.toLowerCase().includes(termo),
+          b.user.displayName.toLowerCase().includes(term) ||
+          b.user.username.toLowerCase().includes(term),
       )
     : bans;
 
@@ -36,8 +36,8 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
       <div data-gc="servidor.server-settings.bans-section.div--2" className="mt-4 flex items-center gap-2 rounded bg-surface-0 px-3">
         <Search data-gc="servidor.server-settings.bans-section.search" size={16} className="text-ink-faint" />
         <Input data-gc="servidor.server-settings.bans-section.input"
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder={t("servidor.banimentos.procurar")}
           className="bg-transparent px-0"
         />
@@ -56,7 +56,7 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
       )}
 
       <div data-gc="servidor.server-settings.bans-section.div--4" className="mt-4 space-y-px">
-        {filtrados.map((ban) => (
+        {filtered.map((ban) => (
           <div data-gc="servidor.server-settings.bans-section.div--5"
             key={ban.user.id}
             className="flex items-center gap-3 border-t border-line px-2 py-3"
@@ -86,8 +86,8 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
             <Button data-gc="servidor.server-settings.bans-section.button"
               variant="surface"
               size="sm"
-              disabled={desbanir.isPending}
-              onClick={() => desbanir.mutate({ guildId, userId: ban.user.id })}
+              disabled={unban.isPending}
+              onClick={() => unban.mutate({ guildId, userId: ban.user.id })}
             >
               {t("servidor.banimentos.desbanir")}
             </Button>

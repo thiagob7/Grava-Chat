@@ -1,52 +1,52 @@
 import { create } from "zustand";
 
 import {
-  alternarPasta,
-  desfazerPasta,
-  editarPasta,
-  moverServidor,
-  type Arrumacao,
-  type Destino,
+  toggleFolder,
+  undoFolder,
+  editFolder,
+  moveServer,
+  type Layout,
+  type Destination,
 } from "~/features/servidor/lib/trilho";
 
-interface StoreDePastas {
-  arrumacao: Arrumacao;
-  mover: (guildIds: string[], guildId: string, destino: Destino) => void;
-  alternar: (pastaId: string) => void;
-  editar: (pastaId: string, dados: Parameters<typeof editarPasta>[2]) => void;
-  desfazer: (pastaId: string) => void;
+interface FoldersStore {
+  layout: Layout;
+  move: (guildIds: string[], guildId: string, destination: Destination) => void;
+  toggle: (folderId: string) => void;
+  edit: (folderId: string, data: Parameters<typeof editFolder>[2]) => void;
+  undo: (folderId: string) => void;
 }
 
-const CHAVE = "gravae:trilho";
+const KEY = "gravae:trilho";
 
-function ler(): Arrumacao {
+function read(): Layout {
   try {
-    const salvo = localStorage.getItem(CHAVE);
-    const lido = salvo ? (JSON.parse(salvo) as Partial<Arrumacao>) : null;
-    return { ordem: lido?.ordem ?? [], pastas: lido?.pastas ?? [] };
+    const saved = localStorage.getItem(KEY);
+    const read = saved ? (JSON.parse(saved) as Partial<Layout>) : null;
+    return { order: read?.order ?? [], folders: read?.folders ?? [] };
   } catch {
-    return { ordem: [], pastas: [] };
+    return { order: [], folders: [] };
   }
 }
 
-function guardar(arrumacao: Arrumacao) {
+function keep(layout: Layout) {
   try {
-    localStorage.setItem(CHAVE, JSON.stringify(arrumacao));
+    localStorage.setItem(KEY, JSON.stringify(layout));
   } catch {
   }
 }
 
-export const usePastas = create<StoreDePastas>((set, store) => {
-  const aplicar = (arrumacao: Arrumacao) => {
-    set({ arrumacao });
-    guardar(arrumacao);
+export const useFolders = create<FoldersStore>((set, store) => {
+  const apply = (layout: Layout) => {
+    set({ layout });
+    keep(layout);
   };
 
   return {
-    arrumacao: ler(),
-    mover: (guildIds, guildId, destino) => aplicar(moverServidor(guildIds, store().arrumacao, guildId, destino)),
-    alternar: (pastaId) => aplicar(alternarPasta(store().arrumacao, pastaId)),
-    editar: (pastaId, dados) => aplicar(editarPasta(store().arrumacao, pastaId, dados)),
-    desfazer: (pastaId) => aplicar(desfazerPasta(store().arrumacao, pastaId)),
+    layout: read(),
+    move: (guildIds, guildId, destination) => apply(moveServer(guildIds, store().layout, guildId, destination)),
+    toggle: (folderId) => apply(toggleFolder(store().layout, folderId)),
+    edit: (folderId, data) => apply(editFolder(store().layout, folderId, data)),
+    undo: (folderId) => apply(undoFolder(store().layout, folderId)),
   };
 });
