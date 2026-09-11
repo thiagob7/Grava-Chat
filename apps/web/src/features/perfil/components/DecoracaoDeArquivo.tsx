@@ -1,48 +1,48 @@
 import React, { useCallback, useRef } from "react";
-import type { Decoracao } from "@gravae/shared";
+import type { Decoration } from "@gravae/shared";
 
 import {
-  carregarDecoracao,
-  folgaDaDecoracao,
-  imagemDaDecoracao,
-  segmentoDaDecoracao,
+  loadDecoration,
+  decorationSlack,
+  decorationImage,
+  decorationSegment,
 } from "~/features/perfil/lib/decoracoes";
-import { usarLottie } from "~/features/perfil/lib/lottie";
+import { useLottie } from "~/features/perfil/lib/lottie";
 
-interface DecoracaoDeArquivoProps {
-  decoracao: Decoracao;
-  animar: boolean;
-  recorte?: React.CSSProperties;
+interface FilePropsDecoration {
+  decoration: Decoration;
+  animate: boolean;
+  crop?: React.CSSProperties;
 }
 
-export const DecoracaoDeArquivo: React.FC<DecoracaoDeArquivoProps> = ({
-  decoracao,
-  animar,
-  recorte,
+export const FileDecoration: React.FC<FilePropsDecoration> = ({
+  decoration,
+  animate,
+  crop,
 }) => {
-  const inset = folgaDaDecoracao(decoracao);
-  const url = imagemDaDecoracao(decoracao);
+  const inset = decorationSlack(decoration);
+  const url = decorationImage(decoration);
 
   if (url)
-    return <ComoImagem data-gc="perfil.decoracao-de-arquivo.como-imagem" key={`imagem:${decoracao}`} url={url} inset={inset} recorte={recorte} />;
+    return <AsImage data-gc="perfil.decoracao-de-arquivo.as-image" key={`imagem:${decoration}`} url={url} inset={inset} crop={crop} />;
 
   return (
-    <ComoLottie data-gc="perfil.decoracao-de-arquivo.como-lottie"
-      key={`lottie:${decoracao}`}
-      decoracao={decoracao}
-      animar={animar}
+    <AsLottie data-gc="perfil.decoracao-de-arquivo.as-lottie"
+      key={`lottie:${decoration}`}
+      decoration={decoration}
+      animate={animate}
       inset={inset}
-      recorte={recorte}
+      crop={crop}
     />
   );
 };
 
-const ComoImagem: React.FC<{ url: string; inset: string; recorte?: React.CSSProperties }> = ({
+const AsImage: React.FC<{ url: string; inset: string; crop?: React.CSSProperties }> = ({
   url,
   inset,
-  recorte,
+  crop,
 }) => (
-  <span data-gc="perfil.decoracao-de-arquivo.span" aria-hidden className="gc-camada" style={{ inset, ...recorte }}>
+  <span data-gc="perfil.decoracao-de-arquivo.span" aria-hidden className="gc-camada" style={{ inset, ...crop }}>
     <img data-gc="perfil.decoracao-de-arquivo.img"
       src={url}
       alt=""
@@ -53,21 +53,21 @@ const ComoImagem: React.FC<{ url: string; inset: string; recorte?: React.CSSProp
   </span>
 );
 
-const ComoLottie: React.FC<{
-  decoracao: Decoracao;
-  animar: boolean;
+const AsLottie: React.FC<{
+  decoration: Decoration;
+  animate: boolean;
   inset: string;
-  recorte?: React.CSSProperties;
-}> = ({ decoracao, animar, inset, recorte }) => {
-  const caixa = useRef<HTMLSpanElement>(null);
+  crop?: React.CSSProperties;
+}> = ({ decoration, animate, inset, crop }) => {
+  const box = useRef<HTMLSpanElement>(null);
 
-  usarLottie(caixa, {
-    chave: decoracao,
-    carregar: useCallback(() => carregarDecoracao(decoracao), [decoracao]),
-    animar,
-    repetir: true,
-    segmento: segmentoDaDecoracao(decoracao),
+  useLottie(box, {
+    key: decoration,
+    load: useCallback(() => loadDecoration(decoration), [decoration]),
+    animate,
+    repeat: true,
+    segment: decorationSegment(decoration),
   });
 
-  return <span data-gc="perfil.decoracao-de-arquivo.span--2" ref={caixa} aria-hidden className="gc-camada" style={{ inset, ...recorte }} />;
+  return <span data-gc="perfil.decoracao-de-arquivo.span--2" ref={box} aria-hidden className="gc-camada" style={{ inset, ...crop }} />;
 };
