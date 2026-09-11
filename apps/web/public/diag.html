@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Medidas do aparelho</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { margin: 0; background: #0c0b0e; color: #f2f3f5; font: 14px/1.5 system-ui, sans-serif; }
+      body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+      main { padding: 16px; }
+      h1 { font-size: 16px; margin: 0 0 12px; }
+      table { border-collapse: collapse; width: 100%; }
+      td { padding: 5px 6px; border-bottom: 1px solid #2a2a33; vertical-align: top; }
+      td:first-child { color: #9a9aa8; white-space: nowrap; }
+      td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+      .regua { position: fixed; left: 0; right: 0; height: 2px; background: #e5484d; }
+      #dvh { position: fixed; left: 0; width: 6px; top: 0; height: 100dvh; background: #2ecc71; }
+      #svh { position: fixed; left: 8px; width: 6px; top: 0; height: 100svh; background: #f1c40f; }
+      #lvh { position: fixed; left: 16px; width: 6px; top: 0; height: 100lvh; background: #9b59b6; }
+      .legenda { margin-top: 14px; color: #9a9aa8; font-size: 12px; }
+      .legenda b { color: #f2f3f5; }
+    </style>
+  </head>
+  <body>
+    <div id="dvh"></div><div id="svh"></div><div id="lvh"></div>
+    <main>
+      <h1>Medidas do aparelho</h1>
+      <table id="tabela"></table>
+      <p class="legenda">
+        As três barras coloridas na borda esquerda vão do topo até o fim de
+        <b style="color:#2ecc71">100dvh</b>, <b style="color:#f1c40f">100svh</b> e
+        <b style="color:#9b59b6">100lvh</b>. Se alguma não chega no fim da tela, é ela que está curta.
+      </p>
+    </main>
+    <script>
+      const px = (n) => Math.round(n) + " px";
+      const env = (lado) => {
+        const s = document.createElement("div");
+        s.style.cssText = "position:fixed;visibility:hidden;height:env(safe-area-inset-" + lado + ")";
+        document.body.appendChild(s);
+        const v = s.getBoundingClientRect().height;
+        s.remove();
+        return v;
+      };
+      const modo = ["standalone", "fullscreen", "minimal-ui", "browser"].find(
+        (m) => matchMedia("(display-mode: " + m + ")").matches,
+      );
+      const vv = window.visualViewport;
+      const linhas = [
+        ["modo", modo || "?"],
+        ["largura da janela", px(innerWidth)],
+        ["altura da janela", px(innerHeight)],
+        ["altura da tela", px(screen.height)],
+        ["altura útil da tela", px(screen.availHeight)],
+        ["viewport visual", vv ? px(vv.height) : "-"],
+        ["100dvh", px(document.getElementById("dvh").getBoundingClientRect().height)],
+        ["100svh", px(document.getElementById("svh").getBoundingClientRect().height)],
+        ["100lvh", px(document.getElementById("lvh").getBoundingClientRect().height)],
+        ["altura do html", px(document.documentElement.getBoundingClientRect().height)],
+        ["altura do body", px(document.body.getBoundingClientRect().height)],
+        ["recuo em cima", px(env("top"))],
+        ["recuo embaixo", px(env("bottom"))],
+        ["recuo à esquerda", px(env("left"))],
+        ["recuo à direita", px(env("right"))],
+        ["densidade", String(devicePixelRatio)],
+      ];
+      document.getElementById("tabela").innerHTML = linhas
+        .map((l) => "<tr><td>" + l[0] + "</td><td>" + l[1] + "</td></tr>")
+        .join("");
+    </script>
+  </body>
+</html>
