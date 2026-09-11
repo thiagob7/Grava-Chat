@@ -21,8 +21,8 @@ export async function inviteRoutes(app: FastifyInstance) {
       io().to(rooms.guild(result.guildId)).emit("member:joined", result.member);
       io().in(rooms.user(req.userId)).socketsJoin(rooms.guild(result.guildId));
 
-      const saudacao = await guildService.boasVindas(result.guildId, req.userId);
-      if (saudacao) io().to(rooms.channel(saudacao.channelId)).emit("message:created", saudacao);
+      const greeting = await guildService.goodWelcome(result.guildId, req.userId);
+      if (greeting) io().to(rooms.channel(greeting.channelId)).emit("message:created", greeting);
     }
 
     return { guildId: result.guildId, alreadyMember: result.alreadyMember };
