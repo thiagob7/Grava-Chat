@@ -444,6 +444,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
       <div data-gc="voz.voice-stage.div--19"
         className={cn(
           cells > 1 && "grade-de-varios",
+          showInvite && cells === 2 && "grade-com-convite",
           cells === 1 && "grid max-h-full quadro-de-um [&>*]:size-full",
         )}
         style={
