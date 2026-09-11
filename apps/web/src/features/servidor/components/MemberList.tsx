@@ -20,6 +20,7 @@ interface MemberListProps {
   guildId?: string;
   canModerate?: boolean;
   inVoice?: Set<string>;
+  fluid?: boolean;
 }
 
 export const MemberList: React.FC<MemberListProps> = ({
@@ -30,6 +31,7 @@ export const MemberList: React.FC<MemberListProps> = ({
   ownerId,
   guildId,
   canModerate = false,
+  fluid = false,
 }) => {
   const { t } = useTranslation();
   const charms = useCharms(guildId);
@@ -67,14 +69,19 @@ export const MemberList: React.FC<MemberListProps> = ({
     ];
   }, [members, roles]);
 
-  if (!show) return null;
+  if (!show && !fluid) return null;
 
   if (loading) {
     return (
       <aside data-gc="servidor.member-list.aside"
         aria-busy
         aria-label={t("comum.carregando")}
-        {...flx("listMembers", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}
+        {...flx("listMembers", cn(
+          "lista-de-membros relative bg-surface-2",
+          fluid
+            ? "flex min-h-0 w-full flex-1 flex-col"
+            : "hidden w-[var(--layout-member-list-width)] shrink-0 lg:block",
+        ))}
       >
         <div data-gc="servidor.member-list.div" aria-hidden {...flx("membersDivider", "absolute inset-y-0 left-0 w-px bg-line")} />
         <div data-gc="servidor.member-list.div--2" className="h-full overflow-hidden px-2 py-4">
@@ -92,7 +99,12 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <aside data-gc="servidor.member-list.aside--2" {...flx("listMembers", "lista-de-membros relative hidden w-[var(--layout-member-list-width)] shrink-0 bg-surface-2 lg:block")}>
+    <aside data-gc="servidor.member-list.aside--2" {...flx("listMembers", cn(
+          "lista-de-membros relative bg-surface-2",
+          fluid
+            ? "flex min-h-0 w-full flex-1 flex-col"
+            : "hidden w-[var(--layout-member-list-width)] shrink-0 lg:block",
+        ))}>
       <div data-gc="servidor.member-list.div--4" aria-hidden {...flx("membersDivider", "absolute inset-y-0 left-0 w-px bg-line")} />
       <div data-gc="servidor.member-list.div--5" {...flx("membersScroller", cn("h-full overflow-y-auto px-2 py-4", flxCls("listMembersContent")))}>
         {groups.map((group) => (

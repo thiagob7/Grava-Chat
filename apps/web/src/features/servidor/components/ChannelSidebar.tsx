@@ -209,9 +209,9 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           style={
             withTrack
               ? {
-                  height: width / ratio,
+                  aspectRatio: String(ratio),
                   minHeight: "var(--layout-header-height)",
-                  maxHeight: "30vh",
+                  maxHeight: "min(30vh, 13rem)",
                 }
               : undefined
           }

@@ -12,13 +12,15 @@ export const DropdownMenuTrigger = DropdownPrimitive.Trigger;
 export const DropdownMenuContent = ({
   className,
   sideOffset = 6,
+  collisionPadding = 8,
   ...props
 }: React.ComponentProps<typeof DropdownPrimitive.Content>) => (
   <DropdownPrimitive.Portal>
     <DropdownPrimitive.Content data-gc="ui.dropdown-menu.dropdown-primitivecontent"
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
       className={cn(
-        "menu regiao-sem-arrasto z-50 min-w-56 rounded-lg border border-line bg-surface-4 p-1.5 shadow-2xl outline-none",
+        "menu regiao-sem-arrasto z-50 min-w-56 max-w-[calc(100vw-1rem)] rounded-lg border border-line bg-surface-4 p-1.5 shadow-2xl outline-none",
         flxCls("menu"),
         className,
       )}

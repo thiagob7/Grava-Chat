@@ -43,6 +43,7 @@ import { usePermissions } from "~/hooks/use-permissions";
 import { detectCommand, useCommands } from "~/features/conversa/hooks/use-comandos";
 import { detectMention, useMentions, type Mentionable } from "~/features/conversa/hooks/use-mencoes";
 import { fontFamily } from "~/features/perfil/lib/fontes";
+import { useScreenNarrow } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAppearance } from "~/features/configuracoes/stores/aparencia";
@@ -131,7 +132,15 @@ export const Composer: React.FC<ComposerProps> = ({
 
   const showSuggestions = useAppearance((s) => s.suggestions);
   const convertEmoticon = useAppearance((s) => s.emoticons);
-  const showSendButton = useAppearance((s) => s.sendButton);
+  const chosenSendButton = useAppearance((s) => s.sendButton);
+  const screenNarrow = useScreenNarrow();
+
+  /*
+    No telefone não existe Enter à mão: sem o botão, não há como mandar a
+    mensagem. Então lá ele aparece sempre, e a preferência só manda na tela
+    grande, onde o Enter resolve.
+  */
+  const showSendButton = chosenSendButton || screenNarrow;
 
   const { filter } = useMentions(guildId, canInChannel(channelId, "MENTION_EVERYONE"));
   const suggestions = showSuggestions && mention ? filter(mention.term) : [];
