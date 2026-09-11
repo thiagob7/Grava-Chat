@@ -1,58 +1,58 @@
 import type { Role } from "@gravae/shared";
 
-import { legivel } from "./contraste";
-import { variaveisDoEnfeite } from "./estilos";
-import type { Enfeite } from "./nome";
+import { readable } from "./contraste";
+import { charmVariables } from "./estilos";
+import type { Charm } from "./nome";
 
-export function corDoCargoMaisAlto(roleIds: string[], roles: Role[]): string | null {
-  const meus = new Set(roleIds);
+export function roleMoreHighColor(roleIds: string[], roles: Role[]): string | null {
+  const mine = new Set(roleIds);
 
-  return corMaisAlta(roles.filter((r) => meus.has(r.id)));
+  return colorMoreHigh(roles.filter((r) => mine.has(r.id)));
 }
 
-export function corMaisAlta(cargos: Role[]): string | null {
+export function colorMoreHigh(roleList: Role[]): string | null {
   return (
-    cargos
+    roleList
       .filter((r) => r.color)
       .sort((a, b) => b.position - a.position)[0]?.color ?? null
   );
 }
 
-export function cargoQuePinta(roleIds: string[], roles: Role[]): Role | null {
-  const meus = new Set(roleIds);
+export function rolePaints(roleIds: string[], roles: Role[]): Role | null {
+  const mine = new Set(roleIds);
 
   return (
     roles
-      .filter((r) => meus.has(r.id) && (r.color || r.iconUrl || r.iconEmoji))
+      .filter((r) => mine.has(r.id) && (r.color || r.iconUrl || r.iconEmoji))
       .sort((a, b) => b.position - a.position)[0] ?? null
   );
 }
 
-interface OpcoesDoCargo {
-  tamanho?: "sm" | "md";
-  animar?: boolean;
-  fundo?: string;
+interface RoleOptions {
+  size?: "sm" | "md";
+  animate?: boolean;
+  background?: string;
 }
 
-export function estiloDoCargo(
-  cargo: Pick<Role, "color" | "colorSecondary" | "estilo">,
-  { tamanho = "sm", animar = false, fundo }: OpcoesDoCargo = {},
-): Enfeite {
-  const cor = cargo.color ? legivel(cargo.color, fundo) : null;
-  const cor2 = cargo.colorSecondary ? legivel(cargo.colorSecondary, fundo) : null;
+export function roleStyle(
+  role: Pick<Role, "color" | "colorSecondary" | "style">,
+  { size = "sm", animate = false, background }: RoleOptions = {},
+): Charm {
+  const color = role.color ? readable(role.color, background) : null;
+  const color2 = role.colorSecondary ? readable(role.colorSecondary, background) : null;
 
-  const pedido = cargo.estilo ?? "solido";
-  const estilo =
-    (pedido === "gradiente" && (!cor2 || tamanho === "sm")) || pedido === "solido"
+  const request = role.style ?? "solido";
+  const style =
+    (request === "gradiente" && (!color2 || size === "sm")) || request === "solido"
       ? "solido"
-      : pedido;
+      : request;
 
-  if (estilo === "solido") {
-    return cor ? { style: { color: cor } } : {};
+  if (style === "solido") {
+    return color ? { style: { color: color } } : {};
   }
 
   return {
-    className: `gc-cargo--${estilo}`,
-    style: variaveisDoEnfeite({ cor1: cor, cor2, animar }),
+    className: `gc-cargo--${style}`,
+    style: charmVariables({ color1: color, color2, animate }),
   };
 }
