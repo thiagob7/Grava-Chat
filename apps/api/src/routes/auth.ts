@@ -208,6 +208,13 @@ export async function authRoutes(app: FastifyInstance) {
       },
       startRedirectPath: "/auth/google",
       callbackUri: callbackUrl,
+      /*
+        O nome engana: `callbackUriParams` entra na URL de AUTORIZAÇÃO, não na
+        de retorno. `select_account` obriga o Google a mostrar o seletor. Sem
+        ele, quem já tem uma sessão no navegador entra direto nela e não tem
+        como escolher outra.
+      */
+      callbackUriParams: { prompt: "select_account" },
       cookie: cookiePolicy,
     });
 
