@@ -1,145 +1,145 @@
 import Color from "color";
 
-import mapa from "~/features/configuracoes/lib/cores-mae.json";
+import map from "~/features/configuracoes/lib/cores-mae.json";
 
-export interface FilhaDeCor {
-  nome: string;
+export interface ColorChild {
+  name: string;
   dL: number;
-  razaoC: number;
+  reasonC: number;
   dH: number;
   alfa: number | null;
-  espelha?: boolean;
-  contraste?: boolean;
-  ancora?: boolean;
+  mirrors?: boolean;
+  contrast?: boolean;
+  anchor?: boolean;
   L?: number;
 }
 
-export interface FamiliaDeCor {
-  rotulo: string;
-  dica: string;
-  mae: string;
-  padrao: string;
-  filhas: FilhaDeCor[];
+export interface ColorFamily {
+  label: string;
+  hint: string;
+  base: string;
+  fallback: string;
+  children: ColorChild[];
 }
 
-export const CORES_MAE = mapa as Record<string, FamiliaDeCor>;
+export const COLORS_BASE = map as Record<string, ColorFamily>;
 
-export const MAES = Object.keys(CORES_MAE);
+export const BASE = Object.keys(COLORS_BASE);
 
-const PISO_DE_CROMA = 3;
-const TETO_DE_CROMA = 132;
+const CHROMA_FLOOR = 3;
+const CHROMA_CEILING = 132;
 
 const MEIO = 50;
 
-type Cor = ReturnType<typeof Color>;
+type Color = ReturnType<typeof Color>;
 
-const entre = (n: number, min: number, max: number) =>
+const between = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n));
 
-function escrever(cor: Cor, alfa: number | null): string {
-  if (alfa === null) return cor.hex().toLowerCase();
+function write(color: Color, alfa: number | null): string {
+  if (alfa === null) return color.hex().toLowerCase();
 
-  const [r = 0, g = 0, b = 0] = cor.rgb().array().map(Math.round);
+  const [r = 0, g = 0, b = 0] = color.rgb().array().map(Math.round);
   return `rgb(${r} ${g} ${b} / ${alfa})`;
 }
 
-function escalar(dL: number, inverte: boolean, maeL: number, padraoL: number) {
-  const alvo = inverte ? -dL : dL;
-  const espacoNovo = alvo > 0 ? 100 - maeL : maeL;
-  const espacoBase = dL > 0 ? 100 - padraoL : padraoL;
+function scale(dL: number, inverts: boolean, baseL: number, defaultL: number) {
+  const target = inverts ? -dL : dL;
+  const spaceNew = target > 0 ? 100 - baseL : baseL;
+  const spaceBase = dL > 0 ? 100 - defaultL : defaultL;
 
-  return maeL + alvo * (espacoNovo / Math.max(espacoBase, 1));
+  return baseL + target * (spaceNew / Math.max(spaceBase, 1));
 }
 
-export function derivar(
+export function derive(
   id: string,
-  escolhida: string,
-  fator = 1,
+  picked: string,
+  factor = 1,
 ): Record<string, string> {
-  const familia = CORES_MAE[id];
-  if (!familia) return {};
+  const family = COLORS_BASE[id];
+  if (!family) return {};
 
-  let mae: Cor;
+  let base: Color;
   try {
-    mae = Color(escolhida);
+    base = Color(picked);
   } catch {
     return {};
   }
 
-  const [maeL = 0, maeC = 0, maeH = 0] = mae.lch().array();
-  const [padraoL = 0] = Color(familia.padrao).lch().array();
+  const [baseL = 0, baseC = 0, baseH = 0] = base.lch().array();
+  const [defaultL = 0] = Color(family.fallback).lch().array();
 
-  const virou = maeL > MEIO !== padraoL > MEIO;
+  const turned = baseL > MEIO !== defaultL > MEIO;
 
-  const saida: Record<string, string> = {
-    [familia.mae]: escrever(
-      Color.lch(maeL, entre(maeC * fator, 0, TETO_DE_CROMA), maeH),
-      mae.alpha() < 1 ? Number(mae.alpha().toFixed(4)) : null,
+  const output: Record<string, string> = {
+    [family.base]: write(
+      Color.lch(baseL, between(baseC * factor, 0, CHROMA_CEILING), baseH),
+      base.alpha() < 1 ? Number(base.alpha().toFixed(4)) : null,
     ),
   };
 
-  for (const filha of familia.filhas) {
-    const inverte =
-      !filha.ancora &&
-      (Boolean(filha.espelha) || Boolean(filha.contraste)) &&
-      virou;
+  for (const child of family.children) {
+    const inverts =
+      !child.anchor &&
+      (Boolean(child.mirrors) || Boolean(child.contrast)) &&
+      turned;
 
     const L =
-      filha.L === undefined
-        ? escalar(filha.dL, inverte, maeL, padraoL)
-        : inverte
-          ? 100 - filha.L
-          : filha.L;
+      child.L === undefined
+        ? scale(child.dL, inverts, baseL, defaultL)
+        : inverts
+          ? 100 - child.L
+          : child.L;
 
-    const C = Math.max(maeC, PISO_DE_CROMA) * filha.razaoC * fator;
-    const H = (((maeH + filha.dH) % 360) + 360) % 360;
+    const C = Math.max(baseC, CHROMA_FLOOR) * child.reasonC * factor;
+    const H = (((baseH + child.dH) % 360) + 360) % 360;
 
-    saida[filha.nome] = escrever(
-      Color.lch(entre(L, 0, 100), entre(C, 0, TETO_DE_CROMA), H),
-      filha.alfa,
+    output[child.name] = write(
+      Color.lch(between(L, 0, 100), between(C, 0, CHROMA_CEILING), H),
+      child.alfa,
     );
   }
 
-  return saida;
+  return output;
 }
 
-export const TOKENS_DERIVADOS = new Set(
-  Object.values(CORES_MAE).flatMap((f) => [
-    f.mae,
-    ...f.filhas.map((c) => c.nome),
+export const TOKENS_DERIVED = new Set(
+  Object.values(COLORS_BASE).flatMap((f) => [
+    f.base,
+    ...f.children.map((c) => c.name),
   ]),
 );
 
-export function montarTema(
-  coresMae: Record<string, string>,
-  saturacao: number,
-  manuais: Record<string, string>,
+export function buildTheme(
+  colorsBase: Record<string, string>,
+  saturation: number,
+  manual: Record<string, string>,
 ): Record<string, string> {
-  const derivadas: Record<string, string> = {};
+  const derived: Record<string, string> = {};
 
-  for (const [id, cor] of Object.entries(coresMae)) {
-    Object.assign(derivadas, derivar(id, cor, saturacao));
+  for (const [id, color] of Object.entries(colorsBase)) {
+    Object.assign(derived, derive(id, color, saturation));
   }
 
-  return { ...derivadas, ...manuais };
+  return { ...derived, ...manual };
 }
 
-export function completarComDerivacao(
-  traduzidos: Record<string, string>,
-  saturacao = 1,
+export function completeWithDerivation(
+  translated: Record<string, string>,
+  saturation = 1,
 ): Record<string, string> {
-  const saida: Record<string, string> = {};
+  const output: Record<string, string> = {};
 
-  for (const id of MAES) {
-    const familia = CORES_MAE[id];
-    const cor = familia && traduzidos[familia.mae];
-    if (!cor) continue;
+  for (const id of BASE) {
+    const family = COLORS_BASE[id];
+    const color = family && translated[family.base];
+    if (!color) continue;
 
-    for (const [nome, valor] of Object.entries(derivar(id, cor, saturacao))) {
-      if (nome in traduzidos) continue;
-      saida[nome] = valor;
+    for (const [name, value] of Object.entries(derive(id, color, saturation))) {
+      if (name in translated) continue;
+      output[name] = value;
     }
   }
 
-  return saida;
+  return output;
 }
