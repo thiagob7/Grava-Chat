@@ -3,14 +3,14 @@ import { DEFAULT_EVERYONE_PERMISSIONS } from "@gravae/shared";
 
 const prisma = new PrismaClient();
 
-const antigos = (await prisma.guildMember.aggregateRaw({
+const old = (await prisma.guildMember.aggregateRaw({
   pipeline: [{ $match: { role: { $exists: true } } }, { $project: { _id: 1, role: 1 } }],
 })) as unknown as { _id: { $oid: string } | string; role: string }[];
 
 const oid = (v: { $oid: string } | string) => (typeof v === "string" ? v : v.$oid);
-const papelAntigo = new Map(antigos.map((m) => [oid(m._id), m.role]));
+const oldRole = new Map(old.map((m) => [oid(m._id), m.role]));
 
-console.log(`${papelAntigo.size} membro(s) com papel antigo\n`);
+console.log(`${oldRole.size} membro(s) com papel antigo\n`);
 
 const guilds = await prisma.guild.findMany({ include: { members: true } });
 
@@ -30,9 +30,9 @@ for (const guild of guilds) {
     console.log(`  ${guild.name}: @everyone criado`);
   }
 
-  const eramAdmin = guild.members.filter((m) => papelAntigo.get(m.id) === "ADMIN");
+  const wereAdmin = guild.members.filter((m) => oldRole.get(m.id) === "ADMIN");
 
-  if (eramAdmin.length) {
+  if (wereAdmin.length) {
     let admin = await prisma.role.findFirst({
       where: { guildId: guild.id, name: "Admin", isEveryone: false },
     });
@@ -48,18 +48,18 @@ for (const guild of guilds) {
       },
     });
 
-    for (const membro of eramAdmin) {
-      if (membro.roleIds.includes(admin.id)) continue;
+    for (const member of wereAdmin) {
+      if (member.roleIds.includes(admin.id)) continue;
       await prisma.guildMember.update({
-        where: { id: membro.id },
+        where: { id: member.id },
         data: { roleIds: { push: admin.id } },
       });
     }
 
-    console.log(`  ${guild.name}: cargo Admin para ${eramAdmin.length} pessoa(s)`);
+    console.log(`  ${guild.name}: cargo Admin para ${wereAdmin.length} pessoa(s)`);
   }
 }
 
-const totalCargos = await prisma.role.count();
-console.log(`\n${guilds.length} servidor(es) migrado(s), ${totalCargos} cargo(s) no total`);
+const totalRoles = await prisma.role.count();
+console.log(`\n${guilds.length} servidor(es) migrado(s), ${totalRoles} cargo(s) no total`);
 await prisma.$disconnect();
