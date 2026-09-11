@@ -1,95 +1,95 @@
 import { describe, expect, it } from "vitest";
 
-import { partirEmCodigo, rotuloDaLingua,
-  adivinharLingua,
-  pareceCodigo,
-  textoParaArquivo,
+import { fromCode, languageLabel,
+  guessLanguage,
+  looksCode,
+  textForFile,
 } from "./codigo";
 
 describe("partirEmCodigo", () => {
   it("texto sem crase sai inteiro, num pedaço só", () => {
-    expect(partirEmCodigo("oi, tudo bem?")).toEqual([
-      { tipo: "texto", texto: "oi, tudo bem?" },
+    expect(fromCode("oi, tudo bem?")).toEqual([
+      { kind: "texto", text: "oi, tudo bem?" },
     ]);
   });
 
   it("guarda a língua da cerca e tira a quebra que sobra no fim", () => {
-    expect(partirEmCodigo('```json\n{ "a": 1 }\n```')).toEqual([
-      { tipo: "bloco", codigo: '{ "a": 1 }', lingua: "json" },
+    expect(fromCode('```json\n{ "a": 1 }\n```')).toEqual([
+      { kind: "bloco", code: '{ "a": 1 }', language: "json" },
     ]);
   });
 
   it("sem língua o bloco continua bloco", () => {
-    expect(partirEmCodigo("```\nls -la\n```")).toEqual([
-      { tipo: "bloco", codigo: "ls -la", lingua: null },
+    expect(fromCode("```\nls -la\n```")).toEqual([
+      { kind: "bloco", code: "ls -la", language: null },
     ]);
   });
 
   it("do informe só a primeira palavra vira língua", () => {
-    const [bloco] = partirEmCodigo("```sh # instala\nyarn\n```");
-    expect(bloco).toEqual({ tipo: "bloco", codigo: "yarn", lingua: "sh" });
+    const [block] = fromCode("```sh # instala\nyarn\n```");
+    expect(block).toEqual({ kind: "bloco", code: "yarn", language: "sh" });
   });
 
   it("separa o texto de antes e o de depois da cerca", () => {
-    expect(partirEmCodigo("olha:\n```ts\nconst a = 1;\n```\npronto")).toEqual([
-      { tipo: "texto", texto: "olha:\n" },
-      { tipo: "bloco", codigo: "const a = 1;", lingua: "ts" },
-      { tipo: "texto", texto: "\npronto" },
+    expect(fromCode("olha:\n```ts\nconst a = 1;\n```\npronto")).toEqual([
+      { kind: "texto", text: "olha:\n" },
+      { kind: "bloco", code: "const a = 1;", language: "ts" },
+      { kind: "texto", text: "\npronto" },
     ]);
   });
 
   it("crase solta no meio da frase é código de linha", () => {
-    expect(partirEmCodigo("roda `yarn dev` aí")).toEqual([
-      { tipo: "texto", texto: "roda " },
-      { tipo: "linha", codigo: "yarn dev" },
-      { tipo: "texto", texto: " aí" },
+    expect(fromCode("roda `yarn dev` aí")).toEqual([
+      { kind: "texto", text: "roda " },
+      { kind: "linha", code: "yarn dev" },
+      { kind: "texto", text: " aí" },
     ]);
   });
 
   it("cerca vazia é só alguém escrevendo crase, não bloco", () => {
-    expect(partirEmCodigo("``` ```")).toEqual([{ tipo: "texto", texto: "``` ```" }]);
+    expect(fromCode("``` ```")).toEqual([{ kind: "texto", text: "``` ```" }]);
   });
 
   it("link dentro da cerca fica no código, longe do enriquecedor", () => {
-    expect(partirEmCodigo("```\nhttps://exemplo.com :teste: <@000000000000000000000000>\n```")).toEqual([
+    expect(fromCode("```\nhttps://exemplo.com :teste: <@000000000000000000000000>\n```")).toEqual([
       {
-        tipo: "bloco",
-        codigo: "https://exemplo.com :teste: <@000000000000000000000000>",
-        lingua: null,
+        kind: "bloco",
+        code: "https://exemplo.com :teste: <@000000000000000000000000>",
+        language: null,
       },
     ]);
   });
 
   it("duas cercas seguidas viram dois blocos", () => {
-    const pedacos = partirEmCodigo("```js\na\n```\ne\n```py\nb\n```");
-    expect(pedacos.map((p) => p.tipo)).toEqual(["bloco", "texto", "bloco"]);
+    const pieces = fromCode("```js\na\n```\ne\n```py\nb\n```");
+    expect(pieces.map((p) => p.kind)).toEqual(["bloco", "texto", "bloco"]);
   });
 
   it("cerca aberta e não fechada continua sendo texto", () => {
-    expect(partirEmCodigo("```js\nconst a = 1;")).toEqual([
-      { tipo: "texto", texto: "```js\nconst a = 1;" },
+    expect(fromCode("```js\nconst a = 1;")).toEqual([
+      { kind: "texto", text: "```js\nconst a = 1;" },
     ]);
   });
 });
 
 describe("rotuloDaLingua", () => {
   it("normaliza o apelido, seja qual for a caixa", () => {
-    expect(rotuloDaLingua("js")).toBe("JavaScript");
-    expect(rotuloDaLingua("JSON")).toBe("JSON");
-    expect(rotuloDaLingua("  ts  ")).toBe("TypeScript");
+    expect(languageLabel("js")).toBe("JavaScript");
+    expect(languageLabel("JSON")).toBe("JSON");
+    expect(languageLabel("  ts  ")).toBe("TypeScript");
   });
 
   it("o que não está na tabela aparece como veio, com maiúscula", () => {
-    expect(rotuloDaLingua("zig")).toBe("Zig");
+    expect(languageLabel("zig")).toBe("Zig");
   });
 
   it("sem língua, o cabeçalho ainda diz o que é", () => {
-    expect(rotuloDaLingua(null)).toBe("Código");
-    expect(rotuloDaLingua("")).toBe("Código");
+    expect(languageLabel(null)).toBe("Código");
+    expect(languageLabel("")).toBe("Código");
   });
 });
 
-const CODIGO: Record<string, string> = {
+const CODE: Record<string, string> = {
   "o TypeScript do print": `import { cameraTimeline } from "@gravae/ai-analytics";
 
 await cameraTimeline({
@@ -119,7 +119,7 @@ FROM pessoas
 WHERE idade > 18;`,
 };
 
-const NAO_CODIGO: Record<string, string> = {
+const NOT_CODE: Record<string, string> = {
   "parágrafo": `Oi gente, tudo bem com vocês?
 Queria avisar que amanhã não vou conseguir participar da reunião.
 Se alguém puder anotar o que foi decidido eu agradeço muito.`,
@@ -141,38 +141,38 @@ Em cada despedida eu vou te amar`,
 };
 
 describe("reconhecer código sem cerca", () => {
-  for (const [nome, texto] of Object.entries(CODIGO)) {
-    it(`reconhece: ${nome}`, () => expect(pareceCodigo(texto)).toBe(true));
+  for (const [name, text] of Object.entries(CODE)) {
+    it(`reconhece: ${name}`, () => expect(looksCode(text)).toBe(true));
   }
-  for (const [nome, texto] of Object.entries(NAO_CODIGO)) {
-    it(`NÃO reconhece: ${nome}`, () => expect(pareceCodigo(texto)).toBe(false));
+  for (const [name, text] of Object.entries(NOT_CODE)) {
+    it(`NÃO reconhece: ${name}`, () => expect(looksCode(text)).toBe(false));
   }
 });
 
 describe("adivinhar a língua", () => {
   it.each([
-    ["json", CODIGO.json],
-    ["py", CODIGO.python],
-    ["sh", CODIGO.shell],
-    ["html", CODIGO.html],
-    ["sql", CODIGO.sql],
+    ["json", CODE.json],
+    ["py", CODE.python],
+    ["sh", CODE.shell],
+    ["html", CODE.html],
+    ["sql", CODE.sql],
     [
       "css",
       ".lista-de-membros {\n  transition: width 0.3s ease;\n  width: 3rem;\n}",
     ],
     ["css", "@media (min-width: 640px) {\n  body { margin: 0; }\n}"],
-  ])("%s", (esperada, texto) => expect(adivinharLingua(texto!)).toBe(esperada));
+  ])("%s", (expected, text) => expect(guessLanguage(text!)).toBe(expected));
 
   it("nao confunde objeto de javascript com css", () => {
-    expect(adivinharLingua("const a = { cor: azul };")).toBe("js");
+    expect(guessLanguage("const a = { cor: azul };")).toBe("js");
   });
 
   it("nao chuta lingua para texto comum", () => {
-    expect(adivinharLingua("bom dia, tudo certo por aí?")).toBeNull();
+    expect(guessLanguage("bom dia, tudo certo por aí?")).toBeNull();
   });
 });
 
-const DIFICEIS: Record<string, string> = {
+const HARD: Record<string, string> = {
   "valores em reais": `Total: R$ 1.200,00
 Desconto: R$ 200,00
 Final: R$ 1.000,00`,
@@ -196,7 +196,7 @@ Não acredito que ele fez isso... de novo!!
 Alguém me explica pfv 🙏`,
 };
 
-const AINDA_CODIGO: Record<string, string> = {
+const STILL_CODE: Record<string, string> = {
   "erro de pilha": `TypeError: Cannot read properties of undefined (reading 'map')
     at MessageList (MessageList.tsx:214:31)
     at renderWithHooks (react-dom.development.js:15486:18)`,
@@ -211,67 +211,67 @@ GRAVAE_FONTE=soundcloud`,
 };
 
 describe("não promove mensagem comum a código", () => {
-  for (const [nome, texto] of Object.entries(DIFICEIS)) {
-    it(nome, () => expect(pareceCodigo(texto)).toBe(false));
+  for (const [name, text] of Object.entries(HARD)) {
+    it(name, () => expect(looksCode(text)).toBe(false));
   }
 });
 
 describe("mas continua pegando o que é código", () => {
-  for (const [nome, texto] of Object.entries(AINDA_CODIGO)) {
-    it(nome, () => expect(pareceCodigo(texto)).toBe(true));
+  for (const [name, text] of Object.entries(STILL_CODE)) {
+    it(name, () => expect(looksCode(text)).toBe(true));
   }
 });
 
 describe("virar arquivo", () => {
-  const bloco = (lingua: string, corpo: string) => "```" + lingua + "\n" + corpo + "\n```";
+  const block = (language: string, body: string) => "```" + language + "\n" + body + "\n```";
 
   it("tira as cercas: um .js com ``` dentro nao e JavaScript", () => {
-    const { conteudo } = textoParaArquivo(bloco("js", "const a = 1;"));
+    const { content } = textForFile(block("js", "const a = 1;"));
 
-    expect(conteudo).toBe("const a = 1;");
-    expect(conteudo).not.toContain("```");
+    expect(content).toBe("const a = 1;");
+    expect(content).not.toContain("```");
   });
 
   it("emenda TODOS os blocos num arquivo so", () => {
-    const texto = bloco("js", "const a = 1;") + bloco("js", "const b = 2;");
-    const { conteudo } = textoParaArquivo(texto);
+    const text = block("js", "const a = 1;") + block("js", "const b = 2;");
+    const { content } = textForFile(text);
 
-    expect(conteudo).toBe("const a = 1;\n\nconst b = 2;");
+    expect(content).toBe("const a = 1;\n\nconst b = 2;");
   });
 
   it("a extensao sai da cerca", () => {
-    expect(textoParaArquivo(bloco("ts", "const a: number = 1;")).nome).toBe("mensagem.ts");
-    expect(textoParaArquivo(bloco("css", "body { color: red; }")).nome).toBe("mensagem.css");
+    expect(textForFile(block("ts", "const a: number = 1;")).name).toBe("mensagem.ts");
+    expect(textForFile(block("css", "body { color: red; }")).name).toBe("mensagem.css");
   });
 
   it("sem cerca declarando, adivinha pelo codigo", () => {
-    expect(textoParaArquivo(bloco("", "SELECT * FROM gente;")).nome).toBe("mensagem.sql");
+    expect(textForFile(block("", "SELECT * FROM gente;")).name).toBe("mensagem.sql");
   });
 
   it("texto solto no meio derruba tudo para .txt, com as cercas", () => {
-    const texto = "olha isso:\n" + bloco("js", "const a = 1;");
-    const { nome, conteudo } = textoParaArquivo(texto);
+    const text = "olha isso:\n" + block("js", "const a = 1;");
+    const { name, content } = textForFile(text);
 
-    expect(nome).toBe("mensagem.txt");
-    expect(conteudo).toContain("olha isso:");
-    expect(conteudo).toContain("```");
+    expect(name).toBe("mensagem.txt");
+    expect(content).toContain("olha isso:");
+    expect(content).toContain("```");
   });
 
   it("texto puro vira .txt", () => {
-    expect(textoParaArquivo("bom dia").nome).toBe("mensagem.txt");
+    expect(textForFile("bom dia").name).toBe("mensagem.txt");
   });
 
   it("markdown colado inteiro vira um .js so, sem cerca aninhada", () => {
-    const markdown = bloco("js", "const a = 1;") + bloco("js", "const b = 2;");
-    const { nome, conteudo } = textoParaArquivo(markdown);
+    const markdown = block("js", "const a = 1;") + block("js", "const b = 2;");
+    const { name, content } = textForFile(markdown);
 
-    expect(nome).toBe("mensagem.js");
-    expect(conteudo).not.toContain("`");
+    expect(name).toBe("mensagem.js");
+    expect(content).not.toContain("`");
   });
 
   it("espaco em branco entre blocos nao conta como texto solto", () => {
-    const texto = bloco("js", "const a = 1;") + "\n\n" + bloco("js", "const b = 2;");
+    const text = block("js", "const a = 1;") + "\n\n" + block("js", "const b = 2;");
 
-    expect(textoParaArquivo(texto).nome).toBe("mensagem.js");
+    expect(textForFile(text).name).toBe("mensagem.js");
   });
 });

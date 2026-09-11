@@ -1,11 +1,11 @@
-export type TemNaBusca = "link" | "imagem" | "video" | "som" | "arquivo" | "anexo";
+export type HasSearch = "link" | "imagem" | "video" | "som" | "arquivo" | "anexo";
 
-export interface BuscaInterpretada {
-  termo: string;
+export interface SearchParsed {
+  term: string;
   from?: string;
   in?: string;
   mentions?: string;
-  has?: TemNaBusca;
+  has?: HasSearch;
   before?: string;
   after?: string;
   on?: string;
@@ -14,20 +14,20 @@ export interface BuscaInterpretada {
   sort?: "recente" | "antiga";
 }
 
-export const FILTROS_DE_BUSCA: { chave: string; dica: string }[] = [
-  { chave: "from", dica: "um usuário" },
-  { chave: "in", dica: "um canal" },
-  { chave: "has", dica: "link, imagem, vídeo, som, arquivo" },
-  { chave: "mentions", dica: "um usuário" },
-  { chave: "before", dica: "uma data, AAAA-MM-DD" },
-  { chave: "on", dica: "uma data, AAAA-MM-DD" },
-  { chave: "after", dica: "uma data, AAAA-MM-DD" },
-  { chave: "pinned", dica: "verdadeiro ou falso" },
-  { chave: "author-type", dica: "usuário ou bot" },
-  { chave: "sort", dica: "recente ou antiga" },
+export const SEARCH_FILTERS: { key: string; hint: string }[] = [
+  { key: "from", hint: "um usuário" },
+  { key: "in", hint: "um canal" },
+  { key: "has", hint: "link, imagem, vídeo, som, arquivo" },
+  { key: "mentions", hint: "um usuário" },
+  { key: "before", hint: "uma data, AAAA-MM-DD" },
+  { key: "on", hint: "uma data, AAAA-MM-DD" },
+  { key: "after", hint: "uma data, AAAA-MM-DD" },
+  { key: "pinned", hint: "verdadeiro ou falso" },
+  { key: "author-type", hint: "usuário ou bot" },
+  { key: "sort", hint: "recente ou antiga" },
 ];
 
-const TEM: Record<string, TemNaBusca> = {
+const HAS: Record<string, HasSearch> = {
   link: "link",
   links: "link",
   imagem: "imagem",
@@ -44,48 +44,48 @@ const TEM: Record<string, TemNaBusca> = {
   attachment: "anexo",
 };
 
-const DIA = /^\d{4}-\d{2}-\d{2}$/;
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
-function dia(valor: string): string | undefined {
-  return DIA.test(valor) ? valor : undefined;
+function day(value: string): string | undefined {
+  return DAY.test(value) ? value : undefined;
 }
 
-export function interpretarBusca(texto: string): BuscaInterpretada {
-  const saida: BuscaInterpretada = { termo: "" };
-  const sobras: string[] = [];
+export function parseSearch(text: string): SearchParsed {
+  const output: SearchParsed = { term: "" };
+  const leftovers: string[] = [];
 
-  for (const pedaco of texto.trim().split(/\s+/).filter(Boolean)) {
-    const m = /^([a-z-]+):(.+)$/i.exec(pedaco);
+  for (const piece of text.trim().split(/\s+/).filter(Boolean)) {
+    const m = /^([a-z-]+):(.+)$/i.exec(piece);
     if (!m) {
-      sobras.push(pedaco);
+      leftovers.push(piece);
       continue;
     }
 
-    const chave = m[1]!.toLowerCase();
-    const valor = m[2]!;
-    const nome = valor.replace(/^[@#]/, "");
-    const baixo = valor.toLowerCase();
+    const key = m[1]!.toLowerCase();
+    const value = m[2]!;
+    const name = value.replace(/^[@#]/, "");
+    const down = value.toLowerCase();
 
-    if (chave === "from") saida.from = nome;
-    else if (chave === "in") saida.in = nome;
-    else if (chave === "mentions") saida.mentions = nome;
-    else if (chave === "has" && TEM[baixo]) saida.has = TEM[baixo];
-    else if (chave === "before") saida.before = dia(valor);
-    else if (chave === "after") saida.after = dia(valor);
-    else if (chave === "on" || chave === "during") saida.on = dia(valor);
-    else if (chave === "pinned") saida.pinned = ["true", "verdadeiro", "sim", "yes"].includes(baixo) ? true : ["false", "falso", "nao", "não", "no"].includes(baixo) ? false : undefined;
-    else if (chave === "author-type") saida.authorType = ["bot", "app", "webhook"].includes(baixo) ? "bot" : ["usuario", "usuário", "user"].includes(baixo) ? "usuario" : undefined;
-    else if (chave === "sort" || chave === "order") saida.sort = ["antiga", "asc", "old", "oldest"].includes(baixo) ? "antiga" : ["recente", "desc", "new", "newest"].includes(baixo) ? "recente" : undefined;
-    else sobras.push(pedaco);
+    if (key === "from") output.from = name;
+    else if (key === "in") output.in = name;
+    else if (key === "mentions") output.mentions = name;
+    else if (key === "has" && HAS[down]) output.has = HAS[down];
+    else if (key === "before") output.before = day(value);
+    else if (key === "after") output.after = day(value);
+    else if (key === "on" || key === "during") output.on = day(value);
+    else if (key === "pinned") output.pinned = ["true", "verdadeiro", "sim", "yes"].includes(down) ? true : ["false", "falso", "nao", "não", "no"].includes(down) ? false : undefined;
+    else if (key === "author-type") output.authorType = ["bot", "app", "webhook"].includes(down) ? "bot" : ["usuario", "usuário", "user"].includes(down) ? "usuario" : undefined;
+    else if (key === "sort" || key === "order") output.sort = ["antiga", "asc", "old", "oldest"].includes(down) ? "antiga" : ["recente", "desc", "new", "newest"].includes(down) ? "recente" : undefined;
+    else leftovers.push(piece);
   }
 
-  saida.termo = sobras.join(" ");
-  return saida;
+  output.term = leftovers.join(" ");
+  return output;
 }
 
-export function temOQueBuscar(b: BuscaInterpretada): boolean {
+export function hasSearch(b: SearchParsed): boolean {
   return (
-    b.termo.length >= 2 ||
+    b.term.length >= 2 ||
     Boolean(b.from || b.in || b.mentions || b.has || b.before || b.after || b.on || b.authorType) ||
     b.pinned !== undefined
   );
