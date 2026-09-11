@@ -14,7 +14,7 @@ import {
   useUpdateSound,
 } from "~/@core/application/queries/expression/use-expressions";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { SeletorDeEmoji } from "~/features/expressao/components/SeletorDeEmoji";
+import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import { Button } from "~/components/ui/button";
 import { fieldBase, Input, Label } from "~/components/ui/input";
 import {
@@ -25,78 +25,78 @@ import {
 import { Slider } from "~/components/ui/slider";
 import { useConfirm } from "~/components/ui/confirm";
 import { formatBytes } from "~/lib/image";
-import { uploadArquivo } from "~/lib/upload";
+import { sendFile } from "~/lib/upload";
 import { cn } from "~/lib/utils";
 import { i18next, useTranslation } from "~/traducao";
 
-interface SecaoProps {
+interface SectionProps {
   guildId: string;
-  podeGerenciar: boolean;
+  canManage: boolean;
 }
 
-const VOLUME_PADRAO = 0.5;
+const DEFAULT_VOLUME = 0.5;
 
-const nomeSeguro = (text: string) =>
+const nameSafe = (text: string) =>
   text
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-zA-Z0-9_]/g, "_")
     .slice(0, 32);
 
-export const EmojiSection: React.FC<SecaoProps> = ({
+export const EmojiSection: React.FC<SectionProps> = ({
   guildId,
-  podeGerenciar,
+  canManage,
 }) => {
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
-  const criar = useCreateEmoji(guildId);
+  const create = useCreateEmoji(guildId);
   const confirm = useConfirm();
-  const apagar = useDeleteEmoji(guildId);
+  const doDelete = useDeleteEmoji(guildId);
   const input = useRef<HTMLInputElement>(null);
-  const [subindo, setSubindo] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  const escolher = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const arquivos = [...(event.target.files ?? [])];
+  const pick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = [...(event.target.files ?? [])];
     event.target.value = "";
-    if (!arquivos.length) return;
+    if (!files.length) return;
 
-    setSubindo(true);
+    setUploading(true);
 
-    for (const arquivo of arquivos) {
-      const anexo = await uploadArquivo(arquivo).catch(() => null);
-      if (!anexo) continue;
+    for (const file of files) {
+      const attachment = await sendFile(file).catch(() => null);
+      if (!attachment) continue;
 
-      const nome = nomeSeguro(arquivo.name.replace(/\.[^.]+$/, "")) || "emoji";
-      await criar
+      const name = nameSafe(file.name.replace(/\.[^.]+$/, "")) || "emoji";
+      await create
         .mutateAsync({
           guildId,
-          name: nome,
-          url: anexo.url,
-          animated: arquivo.type === "image/gif",
+          name: name,
+          url: attachment.url,
+          animated: file.type === "image/gif",
         })
         .catch(() => null);
     }
 
-    setSubindo(false);
+    setUploading(false);
   };
 
-  const restantes = LIMITS.emojisPorServidor - data.emojis.length;
+  const remaining = LIMITS.emojisByServer - data.emojis.length;
 
   return (
     <div data-gc="servidor.server-settings.expressions-sections.div" className="max-w-3xl pb-10">
       <h2 data-gc="servidor.server-settings.expressions-sections.h2" className="text-xl font-semibold">{t("comum.emoji")}</h2>
       <p data-gc="servidor.server-settings.expressions-sections.p" className="mt-1 text-sm text-ink-muted">
-        {t("servidor.expressoes.comoUsar", { limite: LIMITS.emojisPorServidor })}
+        {t("servidor.expressoes.comoUsar", { limite: LIMITS.emojisByServer })}
       </p>
 
-      {podeGerenciar && (
+      {canManage && (
         <>
           <Button data-gc="servidor.server-settings.expressions-sections.button"
             className="mt-4"
-            disabled={subindo || restantes <= 0}
+            disabled={uploading || remaining <= 0}
             onClick={() => input.current?.click()}
           >
-            <Upload data-gc="servidor.server-settings.expressions-sections.upload" size={16} /> {subindo ? "Enviando…" : "Enviar emoji"}
+            <Upload data-gc="servidor.server-settings.expressions-sections.upload" size={16} /> {uploading ? "Enviando…" : "Enviar emoji"}
           </Button>
 
           <input data-gc="servidor.server-settings.expressions-sections.input"
@@ -104,12 +104,12 @@ export const EmojiSection: React.FC<SecaoProps> = ({
             type="file"
             multiple
             accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void escolher(e)}
+            onChange={(e) => void pick(e)}
             className="hidden"
           />
 
           <p data-gc="servidor.server-settings.expressions-sections.p--2" className="mt-2 text-xs text-ink-faint">
-            O nome vem do arquivo — dá pra subir vários de uma vez. {restantes}{" "}
+            O nome vem do arquivo — dá pra subir vários de uma vez. {remaining}{" "}
             espaços disponíveis.
           </p>
         </>
@@ -149,15 +149,15 @@ export const EmojiSection: React.FC<SecaoProps> = ({
                 )}
               </td>
               <td data-gc="servidor.server-settings.expressions-sections.td--4" className="py-2 text-right">
-                {podeGerenciar && (
+                {canManage && (
                   <button data-gc="servidor.server-settings.expressions-sections.button--2"
                     onClick={() =>
                       void confirm(
-                        pedidoDeExclusao("emoji", emoji.name),
+                        deletionRequest("emoji", emoji.name),
                       ).then(
                         ({ confirmed }) =>
                           confirmed &&
-                          apagar.mutate({ guildId, emojiId: emoji.id }),
+                          doDelete.mutate({ guildId, emojiId: emoji.id }),
                       )
                     }
                     title={t("comum.apagar")}
@@ -181,56 +181,56 @@ export const EmojiSection: React.FC<SecaoProps> = ({
   );
 };
 
-export const StickersSection: React.FC<SecaoProps> = ({
+export const StickersSection: React.FC<SectionProps> = ({
   guildId,
-  podeGerenciar,
+  canManage,
 }) => {
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
-  const criar = useCreateSticker(guildId);
+  const create = useCreateSticker(guildId);
   const confirm = useConfirm();
-  const apagar = useDeleteSticker(guildId);
+  const doDelete = useDeleteSticker(guildId);
   const input = useRef<HTMLInputElement>(null);
-  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(
+  const [pending, setPending] = useState<{ file: File; url: string } | null>(
     null,
   );
-  const [nome, setNome] = useState("");
+  const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("😀");
 
-  const escolher = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const arquivo = event.target.files?.[0];
+  const pick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     event.target.value = "";
-    if (!arquivo) return;
+    if (!file) return;
 
-    if (arquivo.size > LIMITS.figurinhaBytes) {
+    if (file.size > LIMITS.stickerBytes) {
       toast.error(
-        t("servidor.expressoes.figurinhaGrande", { limite: formatBytes(LIMITS.figurinhaBytes) }),
+        t("servidor.expressoes.figurinhaGrande", { limite: formatBytes(LIMITS.stickerBytes) }),
       );
       return;
     }
 
-    const anexo = await uploadArquivo(arquivo).catch(() => null);
-    if (!anexo) return toast.error(t("servidor.expressoes.falhaEnvio"));
+    const attachment = await sendFile(file).catch(() => null);
+    if (!attachment) return toast.error(t("servidor.expressoes.falhaEnvio"));
 
-    setPendente({ file: arquivo, url: anexo.url });
-    setNome(arquivo.name.replace(/\.[^.]+$/, "").slice(0, 30));
+    setPending({ file: file, url: attachment.url });
+    setName(file.name.replace(/\.[^.]+$/, "").slice(0, 30));
   };
 
-  const restantes = LIMITS.figurinhasPorServidor - data.stickers.length;
+  const remaining = LIMITS.stickersByServer - data.stickers.length;
 
   return (
     <div data-gc="servidor.server-settings.expressions-sections.div--2" className="max-w-2xl pb-10">
       <h2 data-gc="servidor.server-settings.expressions-sections.h2--2" className="text-xl font-semibold">{t("servidor.expressoes.figurinhas")}</h2>
       <p data-gc="servidor.server-settings.expressions-sections.p--4" className="mt-1 text-sm text-ink-muted">
-        Até {LIMITS.figurinhasPorServidor} figurinhas, de no máximo{" "}
-        {formatBytes(LIMITS.figurinhaBytes)} cada (PNG, APNG, GIF ou WebP).
+        Até {LIMITS.stickersByServer} figurinhas, de no máximo{" "}
+        {formatBytes(LIMITS.stickerBytes)} cada (PNG, APNG, GIF ou WebP).
       </p>
 
-      {podeGerenciar && (
+      {canManage && (
         <>
           <Button data-gc="servidor.server-settings.expressions-sections.button--3"
             className="mt-4"
-            disabled={restantes <= 0}
+            disabled={remaining <= 0}
             onClick={() => input.current?.click()}
           >
             <Upload data-gc="servidor.server-settings.expressions-sections.upload--2" size={16} /> {t("servidor.expressoes.enviarFigurinha")}
@@ -239,19 +239,19 @@ export const StickersSection: React.FC<SecaoProps> = ({
             ref={input}
             type="file"
             accept="image/png,image/gif,image/webp,image/apng"
-            onChange={(e) => void escolher(e)}
+            onChange={(e) => void pick(e)}
             className="hidden"
           />
           <p data-gc="servidor.server-settings.expressions-sections.p--5" className="mt-2 text-xs text-ink-faint">
-            {restantes} espaços disponíveis.
+            {remaining} espaços disponíveis.
           </p>
         </>
       )}
 
-      {pendente && (
+      {pending && (
         <div data-gc="servidor.server-settings.expressions-sections.div--3" className="mt-4 flex items-start gap-4 rounded-lg bg-surface-1 p-4">
           <img data-gc="servidor.server-settings.expressions-sections.img--2"
-            src={pendente.url}
+            src={pending.url}
             alt=""
             className="size-24 rounded object-contain bg-surface-0"
           />
@@ -261,29 +261,29 @@ export const StickersSection: React.FC<SecaoProps> = ({
               <Label data-gc="servidor.server-settings.expressions-sections.label" htmlFor="fig-nome">{t("servidor.expressoes.nomeDaFigurinha")}</Label>
               <Input data-gc="servidor.server-settings.expressions-sections.input--3"
                 id="fig-nome"
-                value={nome}
+                value={name}
                 maxLength={30}
-                onChange={(e) => setNome(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 placeholder={t("servidor.expressoes.exemploFigurinha")}
               />
             </div>
 
-            <CampoDeEmoji data-gc="servidor.server-settings.expressions-sections.campo-de-emoji.set-emoji" id="fig-emoji" emoji={emoji} onEscolher={setEmoji} />
+            <EmojiField data-gc="servidor.server-settings.expressions-sections.emoji-field.set-emoji" id="fig-emoji" emoji={emoji} onPick={setEmoji} />
 
             <div data-gc="servidor.server-settings.expressions-sections.div--6" className="flex gap-2">
               <Button data-gc="servidor.server-settings.expressions-sections.button--4"
                 size="sm"
-                disabled={!nome.trim() || criar.isPending}
+                disabled={!name.trim() || create.isPending}
                 onClick={() =>
-                  criar.mutate(
+                  create.mutate(
                     {
                       guildId,
-                      name: nome.trim(),
+                      name: name.trim(),
                       relatedEmoji: emoji || "😀",
-                      url: pendente.url,
-                      size: pendente.file.size,
+                      url: pending.url,
+                      size: pending.file.size,
                     },
-                    { onSuccess: () => setPendente(null) },
+                    { onSuccess: () => setPending(null) },
                   )
                 }
               >
@@ -292,7 +292,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
               <Button data-gc="servidor.server-settings.expressions-sections.button--5"
                 variant="surface"
                 size="sm"
-                onClick={() => setPendente(null)}
+                onClick={() => setPending(null)}
               >
                 {t("servidor.expressoes.deixaPraLa")}
               </Button>
@@ -316,15 +316,15 @@ export const StickersSection: React.FC<SecaoProps> = ({
               {sticker.name}
             </p>
 
-            {podeGerenciar && (
+            {canManage && (
               <button data-gc="servidor.server-settings.expressions-sections.button--6"
                 onClick={() =>
                   void confirm(
-                    pedidoDeExclusao("figurinha", sticker.name),
+                    deletionRequest("figurinha", sticker.name),
                   ).then(
                     ({ confirmed }) =>
                       confirmed &&
-                      apagar.mutate({ guildId, stickerId: sticker.id }),
+                      doDelete.mutate({ guildId, stickerId: sticker.id }),
                   )
                 }
                 title={t("comum.apagar")}
@@ -336,7 +336,7 @@ export const StickersSection: React.FC<SecaoProps> = ({
           </div>
         ))}
 
-        {Array.from({ length: Math.max(0, restantes) }).map((_, i) => (
+        {Array.from({ length: Math.max(0, remaining) }).map((_, i) => (
           <div data-gc="servidor.server-settings.expressions-sections.div--9"
             key={`vazio-${i}`}
             className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-line text-ink-faint"
@@ -349,59 +349,59 @@ export const StickersSection: React.FC<SecaoProps> = ({
   );
 };
 
-export const SoundboardSection: React.FC<SecaoProps> = ({
+export const SoundboardSection: React.FC<SectionProps> = ({
   guildId,
-  podeGerenciar,
+  canManage,
 }) => {
   const { t } = useTranslation();
   const { data } = useFindExpressions(guildId);
-  const criar = useCreateSound(guildId);
+  const create = useCreateSound(guildId);
   const confirm = useConfirm();
-  const apagar = useDeleteSound(guildId);
+  const doDelete = useDeleteSound(guildId);
   const input = useRef<HTMLInputElement>(null);
 
-  const [pendente, setPendente] = useState<{ file: File; url: string } | null>(
+  const [pending, setPending] = useState<{ file: File; url: string } | null>(
     null,
   );
-  const [nome, setNome] = useState("");
+  const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("🔊");
-  const [volume, setVolume] = useState(VOLUME_PADRAO);
+  const [volume, setVolume] = useState(DEFAULT_VOLUME);
 
-  const escolher = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const arquivo = event.target.files?.[0];
+  const pick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     event.target.value = "";
-    if (!arquivo) return;
+    if (!file) return;
 
-    if (arquivo.size > LIMITS.somBytes) {
-      toast.error(t("servidor.expressoes.somGrande", { limite: formatBytes(LIMITS.somBytes) }));
+    if (file.size > LIMITS.soundBytes) {
+      toast.error(t("servidor.expressoes.somGrande", { limite: formatBytes(LIMITS.soundBytes) }));
       return;
     }
 
-    const anexo = await uploadArquivo(arquivo).catch(() => null);
-    if (!anexo) return toast.error(t("servidor.expressoes.falhaEnvio"));
+    const attachment = await sendFile(file).catch(() => null);
+    if (!attachment) return toast.error(t("servidor.expressoes.falhaEnvio"));
 
-    setPendente({ file: arquivo, url: anexo.url });
-    setNome(arquivo.name.replace(/\.[^.]+$/, "").slice(0, 32));
+    setPending({ file: file, url: attachment.url });
+    setName(file.name.replace(/\.[^.]+$/, "").slice(0, 32));
     setEmoji("🔊");
-    setVolume(VOLUME_PADRAO);
+    setVolume(DEFAULT_VOLUME);
   };
 
-  const restantes = LIMITS.sonsPorServidor - data.sounds.length;
+  const remaining = LIMITS.soundsByServer - data.sounds.length;
 
   return (
     <div data-gc="servidor.server-settings.expressions-sections.div--10" className="max-w-2xl pb-10">
       <h2 data-gc="servidor.server-settings.expressions-sections.h2--3" className="text-xl font-semibold">{t("servidor.expressoes.sons")}</h2>
       <p data-gc="servidor.server-settings.expressions-sections.p--7" className="mt-1 text-sm text-ink-muted">
         Sons que qualquer pessoa na chamada pode tocar. Até{" "}
-        {LIMITS.sonsPorServidor}, de no máximo {formatBytes(LIMITS.somBytes)}{" "}
+        {LIMITS.soundsByServer}, de no máximo {formatBytes(LIMITS.soundBytes)}{" "}
         cada.
       </p>
 
-      {podeGerenciar && (
+      {canManage && (
         <>
           <Button data-gc="servidor.server-settings.expressions-sections.button--7"
             className="mt-4"
-            disabled={restantes <= 0}
+            disabled={remaining <= 0}
             onClick={() => input.current?.click()}
           >
             <Upload data-gc="servidor.server-settings.expressions-sections.upload--3" size={16} /> {t("servidor.expressoes.enviarSom")}
@@ -410,28 +410,28 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
             ref={input}
             type="file"
             accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/webm"
-            onChange={(e) => void escolher(e)}
+            onChange={(e) => void pick(e)}
             className="hidden"
           />
           <p data-gc="servidor.server-settings.expressions-sections.p--8" className="mt-2 text-xs text-ink-faint">
-            {restantes} de {LIMITS.sonsPorServidor} espaços disponíveis.
+            {remaining} de {LIMITS.soundsByServer} espaços disponíveis.
           </p>
         </>
       )}
 
-      {pendente && (
+      {pending && (
         <div data-gc="servidor.server-settings.expressions-sections.div--11" className="mt-4 space-y-3 rounded-lg bg-surface-1 p-4">
           <div data-gc="servidor.server-settings.expressions-sections.div--12" className="grid grid-cols-2 gap-3">
             <div data-gc="servidor.server-settings.expressions-sections.div--13">
               <Label data-gc="servidor.server-settings.expressions-sections.label--2" htmlFor="som-nome">{t("servidor.expressoes.nomeDoSom")}</Label>
               <Input data-gc="servidor.server-settings.expressions-sections.input--5"
                 id="som-nome"
-                value={nome}
+                value={name}
                 maxLength={32}
-                onChange={(e) => setNome(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <CampoDeEmoji data-gc="servidor.server-settings.expressions-sections.campo-de-emoji.set-emoji--2" id="som-emoji" emoji={emoji} onEscolher={setEmoji} />
+            <EmojiField data-gc="servidor.server-settings.expressions-sections.emoji-field.set-emoji--2" id="som-emoji" emoji={emoji} onPick={setEmoji} />
           </div>
 
           <div data-gc="servidor.server-settings.expressions-sections.div--14">
@@ -449,18 +449,18 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
           <div data-gc="servidor.server-settings.expressions-sections.div--15" className="flex gap-2">
             <Button data-gc="servidor.server-settings.expressions-sections.button--8"
               size="sm"
-              disabled={!nome.trim() || criar.isPending}
+              disabled={!name.trim() || create.isPending}
               onClick={() =>
-                criar.mutate(
+                create.mutate(
                   {
                     guildId,
-                    name: nome.trim(),
+                    name: name.trim(),
                     emoji,
-                    url: pendente.url,
+                    url: pending.url,
                     volume,
-                    size: pendente.file.size,
+                    size: pending.file.size,
                   },
-                  { onSuccess: () => setPendente(null) },
+                  { onSuccess: () => setPending(null) },
                 )
               }
             >
@@ -469,7 +469,7 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
             <Button data-gc="servidor.server-settings.expressions-sections.button--9"
               variant="surface"
               size="sm"
-              onClick={() => setPendente(null)}
+              onClick={() => setPending(null)}
             >
               {t("servidor.expressoes.deixaPraLa")}
             </Button>
@@ -478,30 +478,30 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
       )}
 
       <div data-gc="servidor.server-settings.expressions-sections.div--16" className="mt-6 space-y-px">
-        {data.sounds.map((som) => (
+        {data.sounds.map((sound) => (
           <div data-gc="servidor.server-settings.expressions-sections.div--17"
-            key={som.id}
+            key={sound.id}
             className="group flex items-center gap-3 border-t border-line py-3"
           >
-            <span data-gc="servidor.server-settings.expressions-sections.span--3" className="text-xl">{som.emoji || "🔊"}</span>
-            <span data-gc="servidor.server-settings.expressions-sections.span--4" className="min-w-0 flex-1 truncate text-sm">{som.name}</span>
+            <span data-gc="servidor.server-settings.expressions-sections.span--3" className="text-xl">{sound.emoji || "🔊"}</span>
+            <span data-gc="servidor.server-settings.expressions-sections.span--4" className="min-w-0 flex-1 truncate text-sm">{sound.name}</span>
 
-            {som.createdBy && (
+            {sound.createdBy && (
               <span data-gc="servidor.server-settings.expressions-sections.span--5" className="flex items-center gap-2 text-xs text-ink-faint">
                 <Avatar data-gc="servidor.server-settings.expressions-sections.avatar--2"
-                  id={som.createdBy.id}
-                  name={som.createdBy.displayName}
-                  url={som.createdBy.avatarUrl}
+                  id={sound.createdBy.id}
+                  name={sound.createdBy.displayName}
+                  url={sound.createdBy.avatarUrl}
                   size={20}
                 />
-                {som.createdBy.displayName}
+                {sound.createdBy.displayName}
               </span>
             )}
 
             <button data-gc="servidor.server-settings.expressions-sections.button--10"
               onClick={() => {
-                const audio = new Audio(som.url);
-                audio.volume = som.volume;
+                const audio = new Audio(sound.url);
+                audio.volume = sound.volume;
                 void audio.play().catch(() => undefined);
               }}
               title={t("servidor.expressoes.ouvir")}
@@ -510,14 +510,14 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
               <Play data-gc="servidor.server-settings.expressions-sections.play" size={16} />
             </button>
 
-            {podeGerenciar && <VolumeDoSom data-gc="servidor.server-settings.expressions-sections.volume-do-som" guildId={guildId} som={som} />}
+            {canManage && <SoundVolume data-gc="servidor.server-settings.expressions-sections.sound-volume" guildId={guildId} sound={sound} />}
 
-            {podeGerenciar && (
+            {canManage && (
               <button data-gc="servidor.server-settings.expressions-sections.button--11"
                 onClick={() =>
-                  void confirm(pedidoDeExclusao("som", som.name)).then(
+                  void confirm(deletionRequest("som", sound.name)).then(
                     ({ confirmed }) =>
-                      confirmed && apagar.mutate({ guildId, soundId: som.id }),
+                      confirmed && doDelete.mutate({ guildId, soundId: sound.id }),
                   )
                 }
                 title={t("comum.apagar")}
@@ -539,17 +539,17 @@ export const SoundboardSection: React.FC<SecaoProps> = ({
   );
 };
 
-const CampoDeEmoji: React.FC<{
+const EmojiField: React.FC<{
   id: string;
   emoji: string;
-  onEscolher: (emoji: string) => void;
-}> = ({ id, emoji, onEscolher }) => {
+  onPick: (emoji: string) => void;
+}> = ({ id, emoji, onPick }) => {
   const { t } = useTranslation();
 
   return (
   <div data-gc="servidor.server-settings.expressions-sections.div--18">
     <Label data-gc="servidor.server-settings.expressions-sections.label--4" htmlFor={id}>{t("servidor.expressoes.emojiRelacionado")}</Label>
-    <SeletorDeEmoji data-gc="servidor.server-settings.expressions-sections.seletor-de-emoji.on-escolher" onEscolher={onEscolher}>
+    <EmojiPicker data-gc="servidor.server-settings.expressions-sections.emoji-picker.on-pick" onPick={onPick}>
       <button data-gc="servidor.server-settings.expressions-sections.button--12"
         id={id}
         type="button"
@@ -561,31 +561,31 @@ const CampoDeEmoji: React.FC<{
         <span data-gc="servidor.server-settings.expressions-sections.span--6" className="text-xl leading-none">{emoji || "😀"}</span>
         <span data-gc="servidor.server-settings.expressions-sections.span--7" className="text-xs text-ink-faint">{t("comum.trocar")}</span>
       </button>
-    </SeletorDeEmoji>
+    </EmojiPicker>
   </div>
   );
 };
 
-const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
+const SoundVolume: React.FC<{ guildId: string; sound: GuildSound }> = ({
   guildId,
-  som,
+  sound,
 }) => {
   const { t } = useTranslation();
-  const atualizar = useUpdateSound(guildId);
-  const [volume, setVolume] = useState(som.volume);
+  const update = useUpdateSound(guildId);
+  const [volume, setVolume] = useState(sound.volume);
 
-  useEffect(() => setVolume(som.volume), [som.volume]);
+  useEffect(() => setVolume(sound.volume), [sound.volume]);
 
-  const salvar = () => {
-    if (volume === som.volume) return;
-    atualizar.mutate({ guildId, soundId: som.id, volume });
+  const save = () => {
+    if (volume === sound.volume) return;
+    update.mutate({ guildId, soundId: sound.id, volume });
   };
 
   return (
-    <Popover data-gc="servidor.server-settings.expressions-sections.popover" onOpenChange={(aberto) => !aberto && salvar()}>
+    <Popover data-gc="servidor.server-settings.expressions-sections.popover" onOpenChange={(isOpen) => !isOpen && save()}>
       <PopoverTrigger data-gc="servidor.server-settings.expressions-sections.popover-trigger" asChild>
         <button data-gc="servidor.server-settings.expressions-sections.button--13"
-          title={`Volume do som — ${Math.round(som.volume * 100)}%`}
+          title={`Volume do som — ${Math.round(sound.volume * 100)}%`}
           className="rounded p-1.5 text-ink-muted transition hover:text-ink"
         >
           <Volume2 data-gc="servidor.server-settings.expressions-sections.volume2" size={16} />
@@ -594,22 +594,22 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
 
       <PopoverContent data-gc="servidor.server-settings.expressions-sections.popover-content" side="top" align="end" portal={false} className="w-64">
         <Label data-gc="servidor.server-settings.expressions-sections.label--5">Volume do som — {Math.round(volume * 100)}%</Label>
-        <Slider data-gc="servidor.server-settings.expressions-sections.slider.salvar"
+        <Slider data-gc="servidor.server-settings.expressions-sections.slider.save"
           min={0}
           max={1}
           step={0.05}
           value={volume}
           filled={volume}
-          aria-label={t("servidor.expressoes.volumeDe", { nome: som.name })}
+          aria-label={t("servidor.expressoes.volumeDe", { nome: sound.name })}
           onChange={(e) => setVolume(Number(e.target.value))}
-          onPointerUp={salvar}
-          onKeyUp={salvar}
+          onPointerUp={save}
+          onKeyUp={save}
         />
 
         <button data-gc="servidor.server-settings.expressions-sections.button--14"
           type="button"
           onClick={() => {
-            const audio = new Audio(som.url);
+            const audio = new Audio(sound.url);
             audio.volume = volume;
             void audio.play().catch(() => undefined);
           }}
@@ -626,9 +626,9 @@ const VolumeDoSom: React.FC<{ guildId: string; som: GuildSound }> = ({
   );
 };
 
-function pedidoDeExclusao(tipo: "emoji" | "figurinha" | "som", nome: string) {
+function deletionRequest(kind: "emoji" | "figurinha" | "som", name: string) {
   return {
-    title: i18next.t("servidor.expressoes.excluirTitulo", { tipo, nome }),
+    title: i18next.t("servidor.expressoes.excluirTitulo", { tipo: kind, nome: name }),
     description: i18next.t("servidor.expressoes.excluirDescricao"),
     action: i18next.t("comum.excluir"),
   } as const;
