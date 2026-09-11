@@ -3,87 +3,87 @@ import type { Role } from "@gravae/shared";
 
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 
-export interface Mencionavel {
-  texto: string;
+export interface Mentionable {
+  text: string;
   id: string;
-  tipo: "usuario" | "cargo" | "todos";
-  nome: string;
-  detalhe?: string;
+  kind: "usuario" | "cargo" | "todos";
+  name: string;
+  detail?: string;
   avatarUrl?: string | null;
-  cor?: string | null;
+  color?: string | null;
 }
 
-export function useMencoes(
+export function useMentions(
   guildId: string | undefined,
-  podeMencionarTodos = false,
+  canMentionAll = false,
   currentUserId?: string,
 ) {
   const { data: detail } = useFindGuild(guildId);
 
-  const lista = useMemo<Mencionavel[]>(() => {
+  const list = useMemo<Mentionable[]>(() => {
     if (!detail) return [];
 
-    const pessoas: Mencionavel[] = detail.members.map((m) => ({
-      texto: `<@${m.user.id}>`,
+    const people: Mentionable[] = detail.members.map((m) => ({
+      text: `<@${m.user.id}>`,
       id: m.user.id,
-      tipo: "usuario",
-      nome: m.nickname ?? m.user.displayName,
-      detalhe: m.user.username,
+      kind: "usuario",
+      name: m.nickname ?? m.user.displayName,
+      detail: m.user.username,
       avatarUrl: m.user.avatarUrl,
     }));
 
-    const cargos: Mencionavel[] = detail.roles
-      .filter((r) => !r.isEveryone && (podeMencionarTodos || r.mentionable))
+    const roleList: Mentionable[] = detail.roles
+      .filter((r) => !r.isEveryone && (canMentionAll || r.mentionable))
       .sort((a, b) => b.position - a.position)
       .map((r) => ({
-        texto: `<@&${r.id}>`,
+        text: `<@&${r.id}>`,
         id: r.id,
-        tipo: "cargo",
-        nome: r.name,
-        cor: r.color,
+        kind: "cargo",
+        name: r.name,
+        color: r.color,
       }));
 
-    const todos: Mencionavel[] = podeMencionarTodos
+    const all: Mentionable[] = canMentionAll
       ? [
-          { texto: "@everyone", id: "everyone", tipo: "todos", nome: "everyone", detalhe: "Notifica todo mundo do servidor" },
-          { texto: "@here", id: "here", tipo: "todos", nome: "here", detalhe: "Notifica só quem está online" },
+          { text: "@everyone", id: "everyone", kind: "todos", name: "everyone", detail: "Notifica todo mundo do servidor" },
+          { text: "@here", id: "here", kind: "todos", name: "here", detail: "Notifica só quem está online" },
         ]
       : [];
 
-    return [...todos, ...cargos, ...pessoas];
-  }, [detail, podeMencionarTodos]);
+    return [...all, ...roleList, ...people];
+  }, [detail, canMentionAll]);
 
-  const nomes = useMemo(() => {
-    const mapa = new Map<string, string>();
-    for (const m of detail?.members ?? []) mapa.set(m.user.id, m.nickname ?? m.user.displayName);
+  const names = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const m of detail?.members ?? []) map.set(m.user.id, m.nickname ?? m.user.displayName);
 
-    return mapa;
+    return map;
   }, [detail]);
 
-  const cargos = useMemo(() => {
-    const mapa = new Map<string, Role>();
-    for (const r of detail?.roles ?? []) mapa.set(r.id, r);
+  const roleList = useMemo(() => {
+    const map = new Map<string, Role>();
+    for (const r of detail?.roles ?? []) map.set(r.id, r);
 
-    return mapa;
+    return map;
   }, [detail]);
 
-  const filtrar = useCallback(
-    (termo: string) => {
-      const alvo = termo.toLowerCase().trim();
-      const casa = (m: Mencionavel) =>
-        !alvo || m.nome.toLowerCase().includes(alvo) || (m.detalhe ?? "").toLowerCase().includes(alvo);
+  const filter = useCallback(
+    (term: string) => {
+      const target = term.toLowerCase().trim();
+      const house = (m: Mentionable) =>
+        !target || m.name.toLowerCase().includes(target) || (m.detail ?? "").toLowerCase().includes(target);
 
-      return lista.filter(casa).slice(0, 10);
+      return list.filter(house).slice(0, 10);
     },
-    [lista],
+    [list],
   );
 
-  const meusCargos = useMemo(() => {
+  const mineRoles = useMemo(() => {
     const eu = detail?.members.find((m) => m.user.id === currentUserId);
     return new Set(eu?.roleIds ?? []);
   }, [detail, currentUserId]);
 
-  const mencionaVoce = useCallback(
+  const mentionsYou = useCallback(
     (m: {
       author: { id: string };
       mentions: string[];
@@ -94,20 +94,20 @@ export function useMencoes(
       if (m.mentionEveryone) return true;
       if (m.mentions.includes(currentUserId)) return true;
 
-      return m.mentionRoleIds.some((id) => meusCargos.has(id));
+      return m.mentionRoleIds.some((id) => mineRoles.has(id));
     },
-    [currentUserId, meusCargos],
+    [currentUserId, mineRoles],
   );
 
-  return { filtrar, nomes, cargos, mencionaVoce };
+  return { filter, names, roleList, mentionsYou };
 }
 
-export type ResolverMencoes = Pick<ReturnType<typeof useMencoes>, "nomes" | "cargos">;
+export type ResolveMentions = Pick<ReturnType<typeof useMentions>, "names" | "roleList">;
 
-export function detectarMencao(texto: string, cursor: number) {
-  const casamento = /(^|\s)@([^\s@]*)$/.exec(texto.slice(0, cursor));
-  if (!casamento) return null;
+export function detectMention(text: string, cursor: number) {
+  const match = /(^|\s)@([^\s@]*)$/.exec(text.slice(0, cursor));
+  if (!match) return null;
 
-  const termo = casamento[2] ?? "";
-  return { termo, inicio: cursor - termo.length - 1 };
+  const term = match[2] ?? "";
+  return { term, start: cursor - term.length - 1 };
 }

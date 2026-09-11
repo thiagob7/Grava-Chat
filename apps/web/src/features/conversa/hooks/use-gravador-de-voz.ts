@@ -1,55 +1,56 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  encaixarOndas,
-  escreverOndas,
-  extensaoDoFormato,
-  formatoDeGravacao,
-  LIMITE_MS,
-  TAXA_DE_VOZ,
+  fitWaves,
+  writeWaves,
+  formatExtension,
+  formatRecording,
+  LIMIT_MS,
+  VOICE_RATE,
 } from "~/features/conversa/lib/gravador-de-voz";
+import { i18next } from "~/traducao";
 
-export interface RecadoGravado {
+export interface NoteRecorded {
   file: File;
-  duracaoMs: number;
-  ondas: string;
+  durationMs: number;
+  waves: string;
 }
 
-const PASSO_MS = 50;
+const STEP_MS = 50;
 
-export function useGravadorDeVoz() {
-  const [gravando, setGravando] = useState(false);
+export function useVoiceRecorder() {
+  const [recording, setRecording] = useState(false);
   const [ms, setMs] = useState(0);
-  const [picos, setPicos] = useState<number[]>([]);
-  const [erro, setErro] = useState<string | null>(null);
+  const [peaks, setPeaks] = useState<number[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const gravador = useRef<MediaRecorder | null>(null);
-  const trilha = useRef<MediaStream | null>(null);
-  const contexto = useRef<AudioContext | null>(null);
-  const relogio = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pedacos = useRef<Blob[]>([]);
-  const medidos = useRef<number[]>([]);
-  const comecou = useRef(0);
+  const recorder = useRef<MediaRecorder | null>(null);
+  const trail = useRef<MediaStream | null>(null);
+  const context = useRef<AudioContext | null>(null);
+  const clock = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pieces = useRef<Blob[]>([]);
+  const measured = useRef<number[]>([]);
+  const started = useRef(0);
 
-  const desligar = useCallback(() => {
-    if (relogio.current) clearInterval(relogio.current);
-    relogio.current = null;
+  const turnoff = useCallback(() => {
+    if (clock.current) clearInterval(clock.current);
+    clock.current = null;
 
-    trilha.current?.getTracks().forEach((t) => t.stop());
-    trilha.current = null;
+    trail.current?.getTracks().forEach((t) => t.stop());
+    trail.current = null;
 
-    void contexto.current?.close().catch(() => undefined);
-    contexto.current = null;
+    void context.current?.close().catch(() => undefined);
+    context.current = null;
   }, []);
 
-  useEffect(() => desligar, [desligar]);
+  useEffect(() => turnoff, [turnoff]);
 
-  const comecar = useCallback(async () => {
-    setErro(null);
+  const start = useCallback(async () => {
+    setError(null);
 
-    const formato = formatoDeGravacao((tipo) => MediaRecorder.isTypeSupported(tipo));
-    if (!formato) {
-      setErro("Este navegador não grava áudio.");
+    const format = formatRecording((kind) => MediaRecorder.isTypeSupported(kind));
+    if (!format) {
+      setError(i18next.t("conversa.recado.semSuporte"));
       return false;
     }
 
@@ -59,79 +60,79 @@ export function useGravadorDeVoz() {
         audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
       });
     } catch {
-      setErro("Sem acesso ao microfone.");
+      setError(i18next.t("conversa.recado.semMicrofone"));
       return false;
     }
 
-    trilha.current = stream;
-    pedacos.current = [];
-    medidos.current = [];
-    comecou.current = Date.now();
+    trail.current = stream;
+    pieces.current = [];
+    measured.current = [];
+    started.current = Date.now();
 
     const ctx = new AudioContext();
-    contexto.current = ctx;
+    context.current = ctx;
 
-    const analisador = ctx.createAnalyser();
-    analisador.fftSize = 1024;
-    ctx.createMediaStreamSource(stream).connect(analisador);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    ctx.createMediaStreamSource(stream).connect(analyser);
 
-    const amostra = new Uint8Array(analisador.frequencyBinCount);
+    const sample = new Uint8Array(analyser.frequencyBinCount);
 
-    const rec = new MediaRecorder(stream, { mimeType: formato, audioBitsPerSecond: TAXA_DE_VOZ });
-    rec.ondataavailable = (e) => e.data.size && pedacos.current.push(e.data);
+    const rec = new MediaRecorder(stream, { mimeType: format, audioBitsPerSecond: VOICE_RATE });
+    rec.ondataavailable = (e) => e.data.size && pieces.current.push(e.data);
     rec.start(250);
-    gravador.current = rec;
+    recorder.current = rec;
 
-    relogio.current = setInterval(() => {
-      analisador.getByteTimeDomainData(amostra);
+    clock.current = setInterval(() => {
+      analyser.getByteTimeDomainData(sample);
 
-      let maior = 0;
-      for (const v of amostra) maior = Math.max(maior, Math.abs(v - 128) / 128);
+      let larger = 0;
+      for (const v of sample) larger = Math.max(larger, Math.abs(v - 128) / 128);
 
-      medidos.current.push(maior);
-      setPicos([...medidos.current]);
+      measured.current.push(larger);
+      setPeaks([...measured.current]);
 
-      const passado = Date.now() - comecou.current;
+      const passado = Date.now() - started.current;
       setMs(passado);
 
-      if (passado >= LIMITE_MS) rec.stop();
-    }, PASSO_MS);
+      if (passado >= LIMIT_MS) rec.stop();
+    }, STEP_MS);
 
-    setGravando(true);
+    setRecording(true);
     return true;
   }, []);
 
-  const parar = useCallback(
-    (guardar = true): Promise<RecadoGravado | null> => {
-      const rec = gravador.current;
+  const stop = useCallback(
+    (keep = true): Promise<NoteRecorded | null> => {
+      const rec = recorder.current;
       if (!rec) return Promise.resolve(null);
 
       return new Promise((resolve) => {
         rec.onstop = () => {
-          const duracaoMs = Math.min(Date.now() - comecou.current, LIMITE_MS);
-          const tipo = rec.mimeType || "audio/webm";
-          const blob = new Blob(pedacos.current, { type: tipo });
+          const durationMs = Math.min(Date.now() - started.current, LIMIT_MS);
+          const kind = rec.mimeType || "audio/webm";
+          const blob = new Blob(pieces.current, { type: kind });
 
-          desligar();
-          gravador.current = null;
-          setGravando(false);
+          turnoff();
+          recorder.current = null;
+          setRecording(false);
           setMs(0);
-          setPicos([]);
+          setPeaks([]);
 
-          if (!guardar || !blob.size) return resolve(null);
+          if (!keep || !blob.size) return resolve(null);
 
           resolve({
-            file: new File([blob], `recado.${extensaoDoFormato(tipo)}`, { type: tipo }),
-            duracaoMs,
-            ondas: escreverOndas(encaixarOndas(medidos.current)),
+            file: new File([blob], `recado.${formatExtension(kind)}`, { type: kind }),
+            durationMs,
+            waves: writeWaves(fitWaves(measured.current)),
           });
         };
 
         rec.state === "inactive" ? rec.onstop?.(new Event("stop")) : rec.stop();
       });
     },
-    [desligar],
+    [turnoff],
   );
 
-  return { gravando, ms, picos, erro, comecar, parar };
+  return { recording, ms, peaks, error, start, stop };
 }

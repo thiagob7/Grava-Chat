@@ -31,19 +31,19 @@ export function useAttachments() {
     [],
   );
 
-  const patch = useCallback((id: string, dados: Partial<PendingAttachment>) => {
-    setItems((atuais) => atuais.map((item) => (item.id === id ? { ...item, ...dados } : item)));
+  const patch = useCallback((id: string, data: Partial<PendingAttachment>) => {
+    setItems((current) => current.map((item) => (item.id === id ? { ...item, ...data } : item)));
   }, []);
 
   const patchAttachment = useCallback(
-    (id: string, dados: { filename?: string; description?: string | null; spoiler?: boolean }) => {
-      setItems((atuais) =>
-        atuais.map((item) =>
+    (id: string, data: { filename?: string; description?: string | null; spoiler?: boolean }) => {
+      setItems((current) =>
+        current.map((item) =>
           item.id === id && item.attachment
             ? {
                 ...item,
-                filename: dados.filename ?? item.filename,
-                attachment: { ...item.attachment, ...dados },
+                filename: data.filename ?? item.filename,
+                attachment: { ...item.attachment, ...data },
               }
             : item,
         ),
@@ -52,35 +52,35 @@ export function useAttachments() {
     [],
   );
 
-  const [grandeDemais, setGrandeDemais] = useState<string | null>(null);
+  const [largeToo, setLargeToo] = useState<string | null>(null);
 
   const add = useCallback(
     async (files: File[]) => {
-      const espaco = LIMITS.attachmentsPerMessage - items.length;
+      const space = LIMITS.attachmentsPerMessage - items.length;
 
-      if (espaco <= 0) {
+      if (space <= 0) {
         toast.error(`Máximo de ${LIMITS.attachmentsPerMessage} anexos por mensagem.`);
         return;
       }
 
-      const aceitos = files.slice(0, espaco);
-      if (files.length > espaco) {
-        toast.warn(`Só cabem mais ${espaco} anexo(s) nesta mensagem.`);
+      const accepted = files.slice(0, space);
+      if (files.length > space) {
+        toast.warn(`Só cabem mais ${space} anexo(s) nesta mensagem.`);
       }
 
-      for (const file of aceitos) {
+      for (const file of accepted) {
         if (file.size > LIMITS.attachmentBytes) {
-          setGrandeDemais(file.name);
+          setLargeToo(file.name);
           continue;
         }
 
         const id = crypto.randomUUID();
-        const ehImagem = file.type.startsWith("image/");
-        const previewUrl = ehImagem ? URL.createObjectURL(file) : null;
+        const isImage = file.type.startsWith("image/");
+        const previewUrl = isImage ? URL.createObjectURL(file) : null;
         if (previewUrl) previews.current.add(previewUrl);
 
-        setItems((atuais) => [
-          ...atuais,
+        setItems((current) => [
+          ...current,
           {
             id,
             filename: file.name,
@@ -94,10 +94,10 @@ export function useAttachments() {
         ]);
 
         try {
-          const enviado = await uploadImage(file, { maxSize: MESSAGE_IMAGE_MAX_PX });
-          patch(id, { attachment: enviado.attachment, uploadedSize: enviado.uploadedSize });
-        } catch (erro) {
-          patch(id, { error: apiErrorMessage(erro, "Falha no envio") });
+          const sent = await uploadImage(file, { maxSize: MESSAGE_IMAGE_MAX_PX });
+          patch(id, { attachment: sent.attachment, uploadedSize: sent.uploadedSize });
+        } catch (error) {
+          patch(id, { error: apiErrorMessage(error, "Falha no envio") });
         }
       }
     },
@@ -105,19 +105,19 @@ export function useAttachments() {
   );
 
   const remove = useCallback((id: string) => {
-    setItems((atuais) => {
-      const alvo = atuais.find((item) => item.id === id);
-      if (alvo?.previewUrl) {
-        URL.revokeObjectURL(alvo.previewUrl);
-        previews.current.delete(alvo.previewUrl);
+    setItems((current) => {
+      const target = current.find((item) => item.id === id);
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+        previews.current.delete(target.previewUrl);
       }
-      return atuais.filter((item) => item.id !== id);
+      return current.filter((item) => item.id !== id);
     });
   }, []);
 
   const clear = useCallback(() => {
-    setItems((atuais) => {
-      atuais.forEach((item) => {
+    setItems((current) => {
+      current.forEach((item) => {
         if (item.previewUrl) {
           URL.revokeObjectURL(item.previewUrl);
           previews.current.delete(item.previewUrl);
@@ -129,13 +129,13 @@ export function useAttachments() {
 
   return {
     items,
-    grandeDemais,
-    esquecerGrandeDemais: () => setGrandeDemais(null),
+    largeToo,
+    forgetLargeToo: () => setLargeToo(null),
     add,
     remove,
     clear,
     patchAttachment,
-    prontos: items.map((item) => item.attachment).filter((a): a is Attachment => Boolean(a)),
-    subindo: items.some((item) => !item.attachment && !item.error),
+    ready: items.map((item) => item.attachment).filter((a): a is Attachment => Boolean(a)),
+    uploading: items.some((item) => !item.attachment && !item.error),
   };
 }
