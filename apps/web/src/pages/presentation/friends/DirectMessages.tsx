@@ -138,8 +138,6 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
     if (!useVoiceStore.getState().cameraEnabled) await turnonCamera();
   };
 
-  if (!user) return null;
-
   const side = useResizableWidth("dm", {
     initial: 320,
     token: "--layout-sidebar-width",
@@ -147,6 +145,8 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
     max: 420,
     edge: "right",
   });
+
+  if (!user) return null;
 
   const navigation = (
     <LeftColumn data-gc="friends.direct-messages.left-column"
