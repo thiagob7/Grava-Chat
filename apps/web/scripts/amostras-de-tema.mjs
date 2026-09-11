@@ -2,10 +2,10 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const CSS = join(AQUI, "..", "src", "styles", "index.css");
-const LISTA = join(
-  AQUI,
+const HERE = dirname(fileURLToPath(import.meta.url));
+const CSS = join(HERE, "..", "src", "styles", "index.css");
+const LIST = join(
+  HERE,
   "..",
   "src",
   "features",
@@ -14,94 +14,94 @@ const LISTA = join(
   "amostras-de-tema.json",
 );
 
-const ONDE = {
-  escuro: "@theme {",
+const WHERE = {
+  dark: "@theme {",
   "mais-escuro": ':root[data-tema="mais-escuro"] {',
   gravae: ':root[data-tema="gravae"] {',
-  claro: ':root[data-tema="claro"],',
+  light: ':root[data-tema="claro"],',
 };
 
-function bloco(css, abertura) {
-  const inicio = css.indexOf(abertura);
-  if (inicio < 0) throw new Error(`não achei o bloco \`${abertura}\``);
+function block(css, opening) {
+  const start = css.indexOf(opening);
+  if (start < 0) throw new Error(`não achei o bloco \`${opening}\``);
 
-  const chave = css.indexOf("{", inicio);
-  const fim = css.indexOf("\n}", chave);
-  if (fim < 0) throw new Error(`o bloco \`${abertura}\` não fecha`);
+  const key = css.indexOf("{", start);
+  const end = css.indexOf("\n}", key);
+  if (end < 0) throw new Error(`o bloco \`${opening}\` não fecha`);
 
-  return css.slice(chave, fim);
+  return css.slice(key, end);
 }
 
-function declarado(corpo, nome) {
-  return new RegExp(`^\\s+${nome}:\\s*([^;]+);`, "m").exec(corpo)?.[1]?.trim() ?? null;
+function declared(body, name) {
+  return new RegExp(`^\\s+${name}:\\s*([^;]+);`, "m").exec(body)?.[1]?.trim() ?? null;
 }
 
-function corDe(corpo, nome, cadeia) {
-  const laco = cadeia?.[nome];
+function color(body, name, chain) {
+  const loop = chain?.[name];
 
-  for (const macaneta of laco?.nomes ?? []) {
-    const achado = declarado(corpo, macaneta);
-    if (achado) return achado;
+  for (const knob of loop?.names ?? []) {
+    const match = declared(body, knob);
+    if (match) return match;
   }
 
-  const nosso = declarado(corpo, nome);
+  const our = declared(body, name);
 
-  return (nosso?.startsWith("var(") ? null : nosso) ?? laco?.reserva ?? null;
+  return (our?.startsWith("var(") ? null : our) ?? loop?.reserve ?? null;
 }
 
-function cadeiaDoTema(css) {
-  const corpo = bloco(css, "@theme {");
-  const mapa = {};
+function themeChain(css) {
+  const body = block(css, "@theme {");
+  const map = {};
 
-  for (const [, nome, valor] of corpo.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)) {
-    const nomes = [...valor.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]);
-    let reserva = valor.trim();
+  for (const [, name, value] of body.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)) {
+    const names = [...value.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]);
+    let reserve = value.trim();
 
-    while (reserva.startsWith("var(")) {
-      const virgula = reserva.indexOf(",");
+    while (reserve.startsWith("var(")) {
+      const virgula = reserve.indexOf(",");
       if (virgula < 0) break;
-      reserva = reserva.slice(virgula + 1, reserva.lastIndexOf(")")).trim();
+      reserve = reserve.slice(virgula + 1, reserve.lastIndexOf(")")).trim();
     }
 
-    mapa[nome] = { nomes, reserva };
+    map[name] = { names, reserve };
   }
 
-  return mapa;
+  return map;
 }
 
-export function extrairAmostras(css) {
-  const porTema = {};
-  const cadeia = cadeiaDoTema(css);
+export function extractSamples(css) {
+  const byTheme = {};
+  const chain = themeChain(css);
 
-  for (const [tema, abertura] of Object.entries(ONDE)) {
-    const corpo = bloco(css, abertura);
-    const cor = (nome) => {
-      const achado = corDe(corpo, nome, cadeia);
-      if (!achado) throw new Error(`não achei ${nome} em \`${abertura}\``);
-      return achado;
+  for (const [theme, opening] of Object.entries(WHERE)) {
+    const body = block(css, opening);
+    const color = (name) => {
+      const match = color(body, name, chain);
+      if (!match) throw new Error(`não achei ${name} em \`${opening}\``);
+      return match;
     };
 
-    porTema[tema] = {
-      amostra: [cor("--color-surface-0"), cor("--color-surface-1"), cor("--color-surface-2")],
-      acento: cor("--color-brand"),
+    byTheme[theme] = {
+      sample: [color("--color-surface-0"), color("--color-surface-1"), color("--color-surface-2")],
+      accent: color("--color-brand"),
     };
   }
 
-  porTema.sistema = {
-    amostra: [porTema.claro.amostra[2], porTema.escuro.amostra[2]],
-    acento: porTema.escuro.acento,
+  byTheme.system = {
+    sample: [byTheme.light.sample[2], byTheme.dark.sample[2]],
+    accent: byTheme.dark.accent,
   };
 
-  return porTema;
+  return byTheme;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const saida = `${JSON.stringify(extrairAmostras(readFileSync(CSS, "utf8")), null, 2)}\n`;
+  const output = `${JSON.stringify(extractSamples(readFileSync(CSS, "utf8")), null, 2)}\n`;
 
   if (process.argv[2] === "--check") {
-    const atual = existsSync(LISTA) ? readFileSync(LISTA, "utf8") : "";
+    const current = existsSync(LIST) ? readFileSync(LIST, "utf8") : "";
 
-    if (atual !== saida) {
+    if (current !== output) {
       console.error(
         "\namostras-de-tema.json está fora de dia. Rode: yarn tokens\n",
       );
@@ -110,7 +110,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
     console.log("amostras de tema em dia");
   } else {
-    writeFileSync(LISTA, saida);
-    console.log(`amostras em ${relative(AQUI, LISTA)}`);
+    writeFileSync(LIST, output);
+    console.log(`amostras em ${relative(HERE, LIST)}`);
   }
 }

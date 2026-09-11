@@ -2,80 +2,80 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AQUI = dirname(fileURLToPath(import.meta.url));
-const VOCABULARIO = join(AQUI, "vocabulario-de-temas.json");
-const TOKENS = join(AQUI, "..", "src", "styles", "tokens.css");
-const SAIDA = join(AQUI, "..", "src", "styles", "base-de-tema.css");
-const EXISTENTES = join(
-  AQUI, "..", "src", "features", "configuracoes", "lib", "existe-na-referencia.json",
+const HERE = dirname(fileURLToPath(import.meta.url));
+const VOCABULARY = join(HERE, "vocabulario-de-temas.json");
+const TOKENS = join(HERE, "..", "src", "styles", "tokens.css");
+const OUTPUT = join(HERE, "..", "src", "styles", "base-de-tema.css");
+const EXISTING = join(
+  HERE, "..", "src", "features", "configuracoes", "lib", "existe-na-referencia.json",
 );
 
-export function montarExistentes(vocabulario) {
-  const modulos = [...new Set(vocabulario.classes.map((c) => c.split(".module__")[0]))].sort();
-  const areas = [...new Set(vocabulario.flx.map((f) => f.split(".").slice(0, 2).join(".")))].sort();
-  return `${JSON.stringify({ modulos, areas })}\n`;
+export function buildExisting(vocabulary) {
+  const modules = [...new Set(vocabulary.classes.map((c) => c.split(".module__")[0]))].sort();
+  const areas = [...new Set(vocabulary.flx.map((f) => f.split(".").slice(0, 2).join(".")))].sort();
+  return `${JSON.stringify({ modules, areas })}\n`;
 }
 
-export function declaradasNaRaiz(css) {
-  const semComentario = css.replace(/\/\*[\s\S]*?\*\//g, "");
-  const nomes = new Set();
+export function declaredRoot(css) {
+  const withoutComment = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const names = new Set();
 
-  for (const [, seletor, corpo] of semComentario.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
-    if (seletor.trim() !== ":root") continue;
-    for (const [, nome] of corpo.matchAll(/(--[a-z0-9-]+)\s*:/g)) nomes.add(nome);
+  for (const [, picker, body] of withoutComment.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    if (picker.trim() !== ":root") continue;
+    for (const [, name] of body.matchAll(/(--[a-z0-9-]+)\s*:/g)) names.add(name);
   }
 
-  return nomes;
+  return names;
 }
 
-export function montar(variaveis, jaTemos) {
-  const faltando = Object.keys(variaveis)
-    .filter((nome) => !jaTemos.has(nome))
+export function build(variables, alreadyHave) {
+  const missing = Object.keys(variables)
+    .filter((name) => !alreadyHave.has(name))
     .sort();
 
-  const linhas = faltando.map((nome) => `    ${nome}: ${variaveis[nome].valor};`);
+  const lines = missing.map((name) => `    ${name}: ${variables[name].value};`);
 
   return `/*
   GERADO por scripts/base-de-tema.mjs — não edite à mão.
 
-  Os ${faltando.length} nós do grafo de cores da referência que o tokens.css não declara.
+  Os ${missing.length} nós do grafo de cores da referência que o tokens.css não declara.
   O porquê da camada, e por que isto não sombreia a cadeia do @theme, está no
   cabeçalho do gerador.
 */
 @layer variantes-do-app {
   :root {
-${linhas.join("\n")}
+${lines.join("\n")}
   }
 }
 `;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  if (!existsSync(VOCABULARIO)) {
+  if (!existsSync(VOCABULARY)) {
     console.error("\nfalta o vocabulario-de-temas.json. Rode: yarn vocabulario\n");
     process.exit(1);
   }
 
-  const vocabulario = JSON.parse(readFileSync(VOCABULARIO, "utf8"));
-  const css = montar(vocabulario.variaveis, declaradasNaRaiz(readFileSync(TOKENS, "utf8")));
-  const existentes = montarExistentes(vocabulario);
+  const vocabulary = JSON.parse(readFileSync(VOCABULARY, "utf8"));
+  const css = build(vocabulary.variables, declaredRoot(readFileSync(TOKENS, "utf8")));
+  const existing = buildExisting(vocabulary);
 
   if (process.argv[2] === "--check") {
-    const atual = existsSync(SAIDA) ? readFileSync(SAIDA, "utf8") : "";
+    const current = existsSync(OUTPUT) ? readFileSync(OUTPUT, "utf8") : "";
 
-    const atualExistentes = existsSync(EXISTENTES) ? readFileSync(EXISTENTES, "utf8") : "";
+    const currentExisting = existsSync(EXISTING) ? readFileSync(EXISTING, "utf8") : "";
 
-    if (atual !== css || atualExistentes !== existentes) {
+    if (current !== css || currentExisting !== existing) {
       console.error("\nbase-de-tema.css ou existe-na-referencia.json está fora de dia. Rode: yarn base-de-tema\n");
       process.exit(1);
     }
 
-    const quantos = css.match(/^ {4}--/gm)?.length ?? 0;
-    console.log(`base da referência em dia — ${quantos} nós`);
+    const count = css.match(/^ {4}--/gm)?.length ?? 0;
+    console.log(`base da referência em dia — ${count} nós`);
   } else {
-    writeFileSync(SAIDA, css);
-    writeFileSync(EXISTENTES, existentes);
-    const quantos = css.match(/^ {4}--/gm)?.length ?? 0;
-    console.log(`${quantos} nós em ${relative(process.cwd(), SAIDA)}`);
+    writeFileSync(OUTPUT, css);
+    writeFileSync(EXISTING, existing);
+    const count = css.match(/^ {4}--/gm)?.length ?? 0;
+    console.log(`${count} nós em ${relative(process.cwd(), OUTPUT)}`);
   }
 }
