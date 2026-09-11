@@ -1,10 +1,10 @@
 import { io, type Socket } from "socket.io-client";
-import type { ClientToServerEvents, MotivoDeFalha, ServerToClientEvents } from "@gravae/shared";
+import type { ClientToServerEvents, FailureReason, ServerToClientEvents } from "@gravae/shared";
 
 import { getAccessToken } from "~/@core/lib/api";
 
-const comMotivo = (mensagem: string, motivo: MotivoDeFalha) =>
-  Object.assign(new Error(mensagem), { motivo });
+const withReason = (message: string, reason: FailureReason) =>
+  Object.assign(new Error(message), { reason });
 
 export type GravaeSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -37,7 +37,7 @@ function whenConnected(timeoutMs = 10_000): Promise<GravaeSocket> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       s.off("connect", onConnect);
-      reject(comMotivo("Sem conexão com o servidor", "sem-conexao"));
+      reject(withReason("Sem conexão com o servidor", "sem-conexao"));
     }, timeoutMs);
 
     const onConnect = () => {
@@ -57,7 +57,7 @@ export async function emit<E extends keyof ClientToServerEvents>(
 
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
-      () => reject(comMotivo("O servidor não respondeu", "sem-conexao")),
+      () => reject(withReason("O servidor não respondeu", "sem-conexao")),
       10_000,
     );
 
@@ -65,11 +65,11 @@ export async function emit<E extends keyof ClientToServerEvents>(
       s.emit as (
         e: string,
         p: unknown,
-        ack: (r: { ok: boolean; data?: unknown; error?: string; motivo?: MotivoDeFalha }) => void,
+        ack: (r: { ok: boolean; data?: unknown; error?: string; reason?: FailureReason }) => void,
       ) => void
     )(event as string, payload, (res) => {
       clearTimeout(timer);
-      res.ok ? resolve(res.data) : reject(comMotivo(res.error ?? "Erro", res.motivo ?? "erro"));
+      res.ok ? resolve(res.data) : reject(withReason(res.error ?? "Erro", res.reason ?? "erro"));
     });
   });
 }
