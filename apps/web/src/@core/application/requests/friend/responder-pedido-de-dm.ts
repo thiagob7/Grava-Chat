@@ -1,8 +1,8 @@
 import { api } from "~/@core/lib/api";
 
-export type AcaoDoPedido = "aceitar" | "ignorar" | "spam";
+export type RequestAction = "aceitar" | "ignorar" | "spam";
 
-export async function responderPedidoDeDm(channelId: string, acao: AcaoDoPedido) {
-  const response = await api.post<{ aceito: boolean }>(`/dms/pedidos/${channelId}`, { acao });
+export async function dmReplyRequest(channelId: string, action: RequestAction) {
+  const response = await api.post<{ accepted: boolean }>(`/dms/pedidos/${channelId}`, { action });
   return response.data;
 }
