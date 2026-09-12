@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "@{{usuario}} को लिखें",
     enviar: "भेजें",
-    enviada: "संदेश भेजा गया",
     falhou: "भेजा नहीं जा सका। बातचीत से आज़माएँ।",
   },
   cartao: {

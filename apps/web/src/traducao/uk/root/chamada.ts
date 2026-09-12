@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Закрити чат",
   mostrarChat: "Показати чат",
   aoVivo: "Наживо",
+  estado: {
+    mudo: "Мікрофон вимкнено",
+    mudoPeloServidor: "Мікрофон вимкнено сервером",
+    semAudio: "Звук вимкнено",
+    semAudioPeloServidor: "Звук вимкнено сервером",
+  },
   convidar: "Запросити до дзвінка",
   carregandoPrevia: "Завантаження попереднього перегляду…",
   maisOpcoes: "Ще",

@@ -24,6 +24,12 @@ export const chamada = {
   fecharChat: "Fechar chat",
   mostrarChat: "Mostrar o chat",
   aoVivo: "Ao vivo",
+  estado: {
+    mudo: "Microfone desligado",
+    mudoPeloServidor: "Microfone desligado pelo servidor",
+    semAudio: "Áudio desligado",
+    semAudioPeloServidor: "Áudio desligado pelo servidor",
+  },
   convidar: "Convidar para a chamada",
   carregandoPrevia: "Carregando a prévia…",
   maisOpcoes: "Mais opções",

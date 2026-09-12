@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "إغلاق الدردشة",
   mostrarChat: "إظهار الدردشة",
   aoVivo: "مباشر",
+  estado: {
+    mudo: "الميكروفون مغلق",
+    mudoPeloServidor: "الخادم أغلق الميكروفون",
+    semAudio: "الصوت مغلق",
+    semAudioPeloServidor: "الخادم أغلق الصوت",
+  },
   convidar: "دعوة إلى المكالمة",
   carregandoPrevia: "جارٍ تحميل المعاينة…",
   maisOpcoes: "خيارات أخرى",

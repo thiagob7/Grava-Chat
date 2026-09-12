@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Κλείσιμο συνομιλίας",
   mostrarChat: "Εμφάνιση συνομιλίας",
   aoVivo: "Ζωντανά",
+  estado: {
+    mudo: "Το μικρόφωνο είναι κλειστό",
+    mudoPeloServidor: "Ο διακομιστής έκλεισε το μικρόφωνο",
+    semAudio: "Ο ήχος είναι κλειστός",
+    semAudioPeloServidor: "Ο διακομιστής έκλεισε τον ήχο",
+  },
   convidar: "Πρόσκληση στην κλήση",
   carregandoPrevia: "Φόρτωση προεπισκόπησης…",
   maisOpcoes: "Περισσότερα",

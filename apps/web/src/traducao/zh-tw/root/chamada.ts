@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "關閉聊天",
   mostrarChat: "顯示聊天",
   aoVivo: "直播",
+  estado: {
+    mudo: "麥克風已關閉",
+    mudoPeloServidor: "伺服器已關閉麥克風",
+    semAudio: "音訊已關閉",
+    semAudioPeloServidor: "伺服器已關閉音訊",
+  },
   convidar: "邀請加入通話",
   carregandoPrevia: "正在載入預覽…",
   maisOpcoes: "更多選項",

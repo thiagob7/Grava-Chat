@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Sohbeti kapat",
   mostrarChat: "Sohbeti göster",
   aoVivo: "Canlı",
+  estado: {
+    mudo: "Mikrofon kapalı",
+    mudoPeloServidor: "Mikrofon sunucu tarafından kapatıldı",
+    semAudio: "Ses kapalı",
+    semAudioPeloServidor: "Ses sunucu tarafından kapatıldı",
+  },
   convidar: "Aramaya davet et",
   carregandoPrevia: "Önizleme yükleniyor…",
   maisOpcoes: "Diğer seçenekler",

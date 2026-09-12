@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Csevegés bezárása",
   mostrarChat: "Csevegés megjelenítése",
   aoVivo: "Élő",
+  estado: {
+    mudo: "Mikrofon kikapcsolva",
+    mudoPeloServidor: "A kiszolgáló kikapcsolta a mikrofont",
+    semAudio: "Hang kikapcsolva",
+    semAudioPeloServidor: "A kiszolgáló kikapcsolta a hangot",
+  },
   convidar: "Meghívás a hívásba",
   carregandoPrevia: "Előnézet betöltése…",
   maisOpcoes: "További lehetőségek",

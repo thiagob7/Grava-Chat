@@ -71,7 +71,7 @@ export const TOKENS_GROUPS: TokensGroup[] = [
       {
         name: "--font-sans",
         label: "Fonte da interface",
-        hint: "Radio Canada Big — a mesma da referência, com o nome de verdade",
+        hint: "IBM Plex Sans — a mesma da referência, com o nome de verdade",
       },
       { name: "--font-mono", label: "Fonte do código", hint: "IBM Plex Mono" },
       {

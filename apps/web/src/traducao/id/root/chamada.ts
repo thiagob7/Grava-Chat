@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Tutup obrolan",
   mostrarChat: "Tampilkan obrolan",
   aoVivo: "Langsung",
+  estado: {
+    mudo: "Mikrofon mati",
+    mudoPeloServidor: "Mikrofon dimatikan server",
+    semAudio: "Audio mati",
+    semAudioPeloServidor: "Audio dimatikan server",
+  },
   convidar: "Undang ke panggilan",
   carregandoPrevia: "Memuat pratinjau…",
   maisOpcoes: "Opsi lain",

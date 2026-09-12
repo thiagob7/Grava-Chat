@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Scrie-i lui @{{usuario}}",
     enviar: "Trimite",
-    enviada: "Mesaj trimis",
     falhou: "Nu s-a putut trimite. Încearcă din conversație.",
   },
   cartao: {

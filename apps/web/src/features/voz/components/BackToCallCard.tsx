@@ -12,7 +12,7 @@ export const BackToCallCard: React.FC<{ name: string; onBack: () => void }> = ({
     onClick={onBack}
     aria-label="Voltar para a chamada"
     className={cn(
-      "relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-surface-3 transition",
+      "relative aspect-video w-[clamp(7rem,12vw,10rem)] shrink-0 overflow-hidden rounded-lg bg-surface-3 transition",
       "hover:bg-surface-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand",
     )}
   >

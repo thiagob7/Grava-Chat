@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "चैट बंद करें",
   mostrarChat: "चैट दिखाएँ",
   aoVivo: "लाइव",
+  estado: {
+    mudo: "माइक्रोफ़ोन बंद",
+    mudoPeloServidor: "सर्वर ने माइक्रोफ़ोन बंद किया",
+    semAudio: "ऑडियो बंद",
+    semAudioPeloServidor: "सर्वर ने ऑडियो बंद किया",
+  },
   convidar: "कॉल में आमंत्रित करें",
   carregandoPrevia: "झलक लोड हो रही है…",
   maisOpcoes: "और विकल्प",

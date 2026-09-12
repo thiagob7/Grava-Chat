@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Nhắn cho @{{usuario}}",
     enviar: "Gửi",
-    enviada: "Đã gửi tin nhắn",
     falhou: "Không gửi được. Thử từ cuộc trò chuyện.",
   },
   cartao: {
