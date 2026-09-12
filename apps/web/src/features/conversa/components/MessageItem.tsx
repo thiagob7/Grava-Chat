@@ -333,8 +333,17 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       )}
 
       <div data-gc="conversa.message-item.div--4" {...flx("messageGutter", "w-10 shrink-0")}>
+        {/*
+          A hora fica invisível, e não escondida: escondida ela não ocupa
+          lugar, e aparecer no ponteiro empurrava a linha dois pixels para
+          baixo — a conversa andava a cada mensagem que o ponteiro tocava.
+          Invisível, o espaço já está lá e só a tinta muda. E em bloco: solta na
+          linha, a caixa de 11 px ao lado da de 16 esticava a altura em dois
+          pixels: em bloco ela faz a própria caixa, menor que a do texto, e
+          quem manda na altura da linha continua sendo a mensagem.
+        */}
         {compact || !showAvatars ? (
-          <span data-gc="conversa.message-item.span--8" {...flx("hourPassMouse", "hidden text-11 leading-6 text-ink-muted group-hover:block")}>
+          <span data-gc="conversa.message-item.span--8" {...flx("hourPassMouse", "invisible block text-11 text-ink-muted group-hover:visible")}>
             {formatTime(message.createdAt)}
           </span>
         ) : (
