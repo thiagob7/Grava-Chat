@@ -5,7 +5,7 @@ import {
   Maximize,
   Mic,
   Minimize,
-  Monitor,
+  MonitorUp,
   MessageSquare,
   MoreHorizontal,
   PhoneOff,
@@ -274,10 +274,10 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          <IconeRiscado
-            data-gc="voz.voice-stage-controls.icone-riscado--4"
-            icone={Monitor}
-            riscado={!screenEnabled}
+          {/* Igual ao painel: a tela parada não é uma tela proibida. */}
+          <MonitorUp data-gc="voz.voice-stage-controls.monitor-up"
+            size={18}
+            className={screenEnabled ? "text-online" : undefined}
           />
         </Control>
 

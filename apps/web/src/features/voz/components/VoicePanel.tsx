@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AudioLines, Monitor, PhoneOff, Signal, Video } from "lucide-react";
+import { AudioLines, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
@@ -158,9 +158,14 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
           onClick={() => void toggleScreen()}
         >
-          <IconeRiscado data-gc="voz.voice-panel.icone-riscado--2"
-            icone={Monitor}
-            riscado={!screenEnabled}
+          {/*
+            A tela não fica riscada quando está parada, e a câmera fica. Não é
+            descuido: desligar a câmera é um estado que vale anunciar, e não
+            compartilhar a tela é o repouso — riscar aqui diria que a pessoa não
+            pode compartilhar. Enquanto ela compartilha, o ícone acende.
+          */}
+          <MonitorUp data-gc="voz.voice-panel.monitor-up"
+            size={18}
             className={screenEnabled ? "text-online" : undefined}
           />
         </VoiceControl>
