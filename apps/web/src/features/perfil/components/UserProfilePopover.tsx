@@ -7,6 +7,8 @@ import {
   type Connection,
 } from "@gravae/shared";
 import { toast } from "react-toastify";
+
+import { apiErrorMessage } from "~/@core/lib/api";
 import {
   Ban,
   Check,
@@ -269,7 +271,23 @@ const ProfileCard: React.FC<{
 
   const isSystem = Boolean(profile.system);
   const isBot = profile.isBot && !isSystem;
-  const canChat = profile.friendship === "ACCEPTED" || isSystem || isBot;
+  /*
+    Escrever para quem não é amigo é permitido, e quem decide é o servidor: ele
+    aceita quando vocês dividem alguma comunidade e a pessoa não fechou a porta,
+    e a primeira mensagem cai nas Solicitações dela — na aba Pedidos, ou na aba
+    Spam, conforme o filtro que ela escolheu.
+
+    Aqui só não se oferece o que com certeza não vai: para quem bloqueou, para
+    você mesmo, e para quem não divide comunidade nenhuma. O resto tenta, e a
+    recusa do servidor chega escrita.
+  */
+  const canChat =
+    profile.friendship === "ACCEPTED" ||
+    isSystem ||
+    isBot ||
+    (profile.friendship !== "SELF" &&
+      profile.friendship !== "BLOCKED" &&
+      profile.mutualGuilds > 0);
 
   const topActions =
     profile.friendship === "SELF" ? null : (
@@ -375,14 +393,8 @@ const ProfileCard: React.FC<{
       </Button>
     ) : (
       <>
-        {canChat && profile.friendship !== "ACCEPTED" && (
-          <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void chat()} disabled={busy}>
-            <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} /> {t("perfil.mensagem")}
-          </Button>
-        )}
-
         {isBot && profile.botId && (
-          <Button data-gc="perfil.user-profile-popover.button--4"
+          <Button data-gc="perfil.user-profile-popover.button--3"
             className="w-full"
             variant={canChat ? "surface" : "primary"}
             onClick={() => {
@@ -399,7 +411,7 @@ const ProfileCard: React.FC<{
           pegava o fundo do popover — mais claro que o do cartão — e o pé virava
           uma faixa de outra cor, com um vazio preto acima.
         */}
-        {profile.friendship === "ACCEPTED" && (
+        {canChat && (
           <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer.on-close"
             userId={profile.id}
             username={profile.username}
@@ -516,7 +528,7 @@ const ProfileCard: React.FC<{
                   <p data-gc="perfil.user-profile-popover.p" className="mb-1 text-center text-xs text-ink-faint">
                     {t("perfil.amizade.teMandouPedido")}
                   </p>
-                  <Button data-gc="perfil.user-profile-popover.button--5"
+                  <Button data-gc="perfil.user-profile-popover.button--4"
                     variant="success"
                     onClick={() =>
                       profile.friendshipId &&
@@ -574,8 +586,9 @@ const ProfileComposer: React.FC<{
       setText("");
       onGo();
       navigate(`/dm/${channel.id}`);
-    } catch {
-      toast.error(t("perfil.recado.falhou"));
+    } catch (error) {
+      /* A recusa do servidor explica o motivo; a nossa frase é o último caso. */
+      toast.error(apiErrorMessage(error, t("perfil.recado.falhou")));
     } finally {
       setSending(false);
     }
