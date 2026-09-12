@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { ChevronRight, Compass, UserRoundPlus } from "lucide-react";
+import { ChevronRight, Compass } from "lucide-react";
 import { NOTE_LIMIT } from "@gravae/shared";
 
+import mascotUrl from "~/assets/mascote/capivara-acena.svg?url";
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
 import { Button } from "~/components/ui/button";
 import { bareField } from "~/components/ui/input";
@@ -44,9 +45,18 @@ export const AddFriendForm: React.FC = () => {
           </p>
         </div>
 
-        <span data-gc="amizades.add-friend-form.span" className="hidden size-16 shrink-0 items-center justify-center rounded-2xl bg-brand/15 text-brand sm:flex">
-          <UserRoundPlus data-gc="amizades.add-friend-form.user-round-plus" size={30} />
-        </span>
+        {/*
+          A capivara é desenho nosso, e é de propósito: o lugar pede um bicho
+          acenando, e um boneco de biblioteca de animação viria com licença
+          atrás, cor cravada no arquivo e um tocador junto. Este é um SVG que se
+          move sozinho, do mesmo traço dos bichos das decorações.
+        */}
+        <img data-gc="amizades.add-friend-form.img"
+          src={mascotUrl}
+          alt=""
+          aria-hidden
+          className="hidden size-20 shrink-0 sm:block"
+        />
       </div>
 
       <div data-gc="amizades.add-friend-form.div--4" className={cn(
@@ -86,7 +96,7 @@ export const AddFriendForm: React.FC = () => {
             className={cn(bareField, "min-w-0 flex-1 resize-none text-sm")}
           />
 
-          <span data-gc="amizades.add-friend-form.span--2" className="shrink-0 pb-1 text-11 tabular-nums text-ink-faint">
+          <span data-gc="amizades.add-friend-form.span" className="shrink-0 pb-1 text-11 tabular-nums text-ink-faint">
             {NOTE_LIMIT - note.length}
           </span>
         </div>
@@ -113,11 +123,11 @@ export const AddFriendForm: React.FC = () => {
           onClick={() => navigate("/explorar")}
           className="mt-4 flex w-full max-w-md items-center gap-3 rounded-lg border border-line bg-surface-2 px-3 py-3 text-left transition hover:border-ink-faint/40"
         >
-          <span data-gc="amizades.add-friend-form.span--3" className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-online/15 text-online">
+          <span data-gc="amizades.add-friend-form.span--2" className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-online/15 text-online">
             <Compass data-gc="amizades.add-friend-form.compass" size={18} />
           </span>
 
-          <span data-gc="amizades.add-friend-form.span--4" className="min-w-0 flex-1 truncate text-sm font-medium">
+          <span data-gc="amizades.add-friend-form.span--3" className="min-w-0 flex-1 truncate text-sm font-medium">
             {t("amizades.adicionar.explorarComunidades")}
           </span>
 
