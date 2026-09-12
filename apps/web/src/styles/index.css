@@ -1033,10 +1033,27 @@ button:not(:disabled),
 [role="option"],
 [role="tab"],
 [role="switch"],
+[role="radio"],
+[role="checkbox"],
+[role="combobox"],
+[role="link"],
 a[href],
 summary,
+label[for],
 label:has(> input[type="checkbox"]),
-select:not(:disabled) {
+label:has(> input[type="radio"]),
+select:not(:disabled),
+input:is(
+    [type="button"],
+    [type="checkbox"],
+    [type="color"],
+    [type="file"],
+    [type="image"],
+    [type="radio"],
+    [type="range"],
+    [type="reset"],
+    [type="submit"]
+  ):not(:disabled) {
   cursor: var(--cursor-clicavel, pointer);
 }
 
@@ -1047,7 +1064,29 @@ select:disabled,
   cursor: var(--cursor-bloqueado, not-allowed);
 }
 
-input:not([type="checkbox"]):not([type="radio"]):not(:disabled),
+/*
+  Lista pelo que É campo de texto, não pelo que não é.
+
+  A regra antiga dizia "todo input que não for caixa de marcar nem rádio", e
+  com isso o controle de volume, o seletor de cor e o botão de escolher arquivo
+  ganhavam o cursor de escrever. São 33 campos assim no app, e o de volume é o
+  que a pessoa mais encosta.
+*/
+input:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="email"],
+    [type="month"],
+    [type="number"],
+    [type="password"],
+    [type="search"],
+    [type="tel"],
+    [type="text"],
+    [type="time"],
+    [type="url"],
+    [type="week"]
+  ):not(:disabled),
+input:not([type]):not(:disabled),
 textarea:not(:disabled),
 [contenteditable="true"] {
   cursor: var(--cursor-texto, text);
