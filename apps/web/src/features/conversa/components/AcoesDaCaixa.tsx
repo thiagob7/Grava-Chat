@@ -1,7 +1,7 @@
 import React from "react";
-import { GifIcon, ImageIcon, Sticker, Smiley } from "@phosphor-icons/react";
+import { GifIcon, ImageIcon, Sticker } from "@phosphor-icons/react";
 
-import { Emoji } from "~/features/expressao/components/Emoji";
+import { PickerFace, usePickerFace } from "~/features/expressao/components/CarinhaDoSeletor";
 import { Tooltip } from "~/components/ui/tooltip";
 import { SHORTCUTS, writeCombo } from "~/features/configuracoes/lib/atalhos";
 import { cn } from "~/lib/utils";
@@ -42,34 +42,12 @@ export const BoxButton: React.FC<{
   </Tooltip>
 );
 
-/*
-  As caras que o botão de emoji empresta.
-
-  Não é o acervo inteiro de propósito: a lista é escolhida para dar uma cara
-  diferente a cada vez que o ponteiro chega, e um sorteio no acervo inteiro
-  cairia num sinal de trânsito ou numa bandeira, que não é o que se espera de um
-  botão de emoji.
-*/
-const FACES = [
-  "😀", "😄", "😁", "😆", "😅", "🤣", "😊", "😇", "🙂", "😉",
-  "😍", "🤩", "😘", "😋", "😜", "🤪", "🤨", "😎", "🥳", "😏",
-  "😢", "😭", "😤", "😡", "🤯", "😳", "🥺", "😱", "🤔", "🤗",
-  "🤠", "🥶", "🤢", "😈", "👻", "🤖", "🐸", "🦊", "🐱", "🐼",
-];
-
 const EmojiButton: React.FC<{
   shortcut?: string[];
   active: boolean;
   onClick: () => void;
 }> = ({ shortcut, active, onClick }) => {
-  const [face, setFace] = React.useState<string | null>(null);
-
-  /* Sorteia sem repetir a de agora: repetir faria parecer que travou. */
-  const draw = () =>
-    setFace((current) => {
-      const others = FACES.filter((one) => one !== current);
-      return others[Math.floor(Math.random() * others.length)] ?? null;
-    });
+  const { face, lit, enter, leave } = usePickerFace();
 
   return (
     <BoxButton data-gc="conversa.acoes-da-caixa.box-button.on-click"
@@ -78,14 +56,10 @@ const EmojiButton: React.FC<{
       active={active}
       motion="bate"
       onClick={onClick}
-      onEnter={draw}
-      onLeave={() => setFace(null)}
+      onEnter={enter}
+      onLeave={leave}
     >
-      {face ? (
-        <Emoji data-gc="conversa.acoes-da-caixa.emoji" emoji={face} className="size-5 align-middle" />
-      ) : (
-        <Smiley data-gc="conversa.acoes-da-caixa.smiley" size={20} />
-      )}
+      <PickerFace data-gc="conversa.acoes-da-caixa.picker-face" face={face} lit={lit || active} />
     </BoxButton>
   );
 };

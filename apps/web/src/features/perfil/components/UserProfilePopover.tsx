@@ -6,7 +6,6 @@ import {
   SERVICES_NAMES,
   type Connection,
 } from "@gravae/shared";
-import { Smiley } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import {
   Ban,
@@ -56,6 +55,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { PickerFace, usePickerFace } from "~/features/expressao/components/CarinhaDoSeletor";
 import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import { FullProfileModal } from "~/features/perfil/components/FullProfileModal";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
@@ -552,6 +552,7 @@ const ProfileComposer: React.FC<{
 }> = ({ userId, username, onGo }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const face = usePickerFace();
   const openDm = useOpenDm();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -603,12 +604,16 @@ const ProfileComposer: React.FC<{
         />
 
         <EmojiPicker data-gc="perfil.user-profile-popover.emoji-picker" onPick={(emoji) => setText((current) => current + emoji)}>
-          <button data-gc="perfil.user-profile-popover.button--6"
+          <button data-gc="perfil.user-profile-popover.button.enter"
             aria-label="Emoji"
             disabled={sending}
-            className="shrink-0 rounded-md p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
+            onMouseEnter={face.enter}
+            onMouseLeave={face.leave}
+            onFocus={face.enter}
+            onBlur={face.leave}
+            className="shrink-0 rounded-md p-1.5 transition disabled:opacity-40"
           >
-            <Smiley data-gc="perfil.user-profile-popover.smiley" size={20} weight="fill" />
+            <PickerFace data-gc="perfil.user-profile-popover.picker-face" face={face.face} lit={face.lit} />
           </button>
         </EmojiPicker>
       </div>
