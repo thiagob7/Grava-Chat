@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "@{{usuario}} さんにメッセージ",
     enviar: "送信",
-    enviada: "メッセージを送信しました",
     falhou: "送信できませんでした。会話から試してください。",
   },
   cartao: {

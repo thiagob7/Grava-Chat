@@ -132,6 +132,13 @@ const gridSpace = (frames: number) => {
   return 12;
 };
 
+/*
+  A largura do cartão da fileira acompanha a tela: some quando a janela é
+  estreita, para de crescer quando é larga. Era fixa em 10rem, e numa janela
+  pequena a fileira não caberia.
+*/
+const CARD_STRIP = "w-[clamp(7rem,12vw,10rem)]";
+
 export const VoiceStage: React.FC<VoiceStageProps> = ({
   channelName,
   guildId,
@@ -362,7 +369,12 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
           </Tooltip>
 
           {!hiddenMembers && (
-            <div data-gc="voz.voice-stage.div--14" className="flex shrink-0 justify-center gap-2">
+            /*
+              A fileira rola de lado em vez de esticar: com muita gente na
+              chamada ela passava da largura do palco, e a última pessoa ficava
+              atrás da barra de controles.
+            */
+            <div data-gc="voz.voice-stage.div--14" className="flex max-w-full shrink-0 items-center justify-center gap-2 overflow-x-auto px-2 pb-0.5">
               {!inFocus.track.length && (
                 <BackToCallCard data-gc="voz.voice-stage.back-to-call-card"
                   name={inFocus.highlight.de.tile.name}
@@ -372,8 +384,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
               {inFocus.track.map((frame) => (
                 <Tooltip data-gc="voz.voice-stage.tooltip--4" key={frame.key} label="Voltar para a chamada">
-                  <div data-gc="voz.voice-stage.div--15" className="relative w-40 shrink-0">
-                    {draw(frame, true, false, false, () => setFocused(null))}
+                  <div data-gc="voz.voice-stage.div--15" className={cn("relative aspect-video shrink-0", CARD_STRIP)}>
+                    {draw(frame, true, true, false, () => setFocused(null))}
 
                     <span data-gc="voz.voice-stage.span--6"
                       aria-hidden
@@ -523,7 +535,7 @@ const Tile: React.FC<TileProps> = ({
           "group/tile relative flex items-center justify-center overflow-hidden bg-surface-1 transition",
           !withoutCorner && "rounded-xl",
           onFocus && "cursor-pointer",
-          compact ? "h-16 w-24 shrink-0" : fill ? "size-full" : "aspect-video",
+          fill ? "size-full" : compact ? "h-16 w-24 shrink-0" : "aspect-video",
         ),
       )}
     >

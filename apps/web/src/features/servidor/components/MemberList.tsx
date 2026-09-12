@@ -3,6 +3,7 @@ import type { GuildMember, Role } from "@gravae/shared";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { ServerTag } from "~/features/perfil/components/ServerTag";
+import { OwnerSeal } from "~/features/servidor/components/SeloDeDono";
 import { UserName } from "~/features/perfil/components/UserName";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { useCharms, type ResolveCharms } from "~/features/perfil/hooks/use-enfeites";
@@ -195,9 +196,7 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 tag={profile?.serverTag}
                 interactive={false}
               />
-              {member.user.id === ownerId && (
-                <span data-gc="servidor.member-list.span" title="Dono do servidor">👑</span>
-              )}
+              {member.user.id === ownerId && <OwnerSeal data-gc="servidor.member-list.owner-seal" />}
             </button>
           </UserProfilePopover>
         );

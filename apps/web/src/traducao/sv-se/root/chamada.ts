@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Stäng chatten",
   mostrarChat: "Visa chatten",
   aoVivo: "Live",
+  estado: {
+    mudo: "Mikrofon av",
+    mudoPeloServidor: "Mikrofonen avstängd av servern",
+    semAudio: "Ljud av",
+    semAudioPeloServidor: "Ljudet avstängt av servern",
+  },
   convidar: "Bjud in till samtalet",
   carregandoPrevia: "Läser in förhandsvisningen…",
   maisOpcoes: "Fler alternativ",

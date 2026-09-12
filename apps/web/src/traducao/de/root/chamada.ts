@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Chat schließen",
   mostrarChat: "Chat anzeigen",
   aoVivo: "Live",
+  estado: {
+    mudo: "Mikrofon aus",
+    mudoPeloServidor: "Mikrofon vom Server ausgeschaltet",
+    semAudio: "Ton aus",
+    semAudioPeloServidor: "Ton vom Server ausgeschaltet",
+  },
   convidar: "Zum Anruf einladen",
   carregandoPrevia: "Vorschau wird geladen…",
   maisOpcoes: "Mehr Optionen",

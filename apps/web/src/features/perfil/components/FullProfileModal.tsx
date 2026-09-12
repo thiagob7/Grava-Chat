@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Role } from "@gravae/shared";
 
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { NoteField } from "~/features/perfil/components/cartao/CampoDeNota";
 import { UserName } from "~/features/perfil/components/UserName";
 import {
   Dialog,
@@ -22,6 +23,8 @@ interface FullProfileModalProps {
   open: boolean;
   profile: ProfileModel;
   roleList?: Role[];
+  /** Abre já com o cursor na nota, para quem chegou pelo lápis do cartão. */
+  focusNote?: boolean;
   onClose: () => void;
 }
 
@@ -31,11 +34,31 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
   profile,
   roleList = [],
+  focusNote = false,
   onClose,
 }) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("geral");
   const inCommon = useFindCommon(profile.id, tab !== "geral");
+  const note = useRef<HTMLTextAreaElement>(null);
+
+  const notes = profile.friendship !== "SELF" && !profile.system;
+
+  /*
+    O lápis ao lado do nome, no cartão, abre esta janela e pede o cursor na
+    nota. O quadro precisa de uma pintura para o textarea existir, então o foco
+    espera um quadro em vez de acontecer no mesmo.
+  */
+  useEffect(() => {
+    if (!open || !focusNote) return;
+
+    const relogio = setTimeout(() => {
+      note.current?.focus();
+      note.current?.scrollIntoView({ block: "nearest" });
+    }, 0);
+
+    return () => clearTimeout(relogio);
+  }, [open, focusNote]);
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "geral" as const, label: t("perfil.visaoGeral") },
@@ -200,6 +223,12 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
                 new Date(profile.createdAt),
               )}
             </p>
+          </Block>
+        )}
+
+        {tab === "geral" && notes && (
+          <Block data-gc="perfil.full-profile-modal.block--4" title={t("perfil.nota.rotulo")}>
+            <NoteField data-gc="perfil.full-profile-modal.note-field" userId={profile.id} note={profile.note} field={note} bare />
           </Block>
         )}
       </div>

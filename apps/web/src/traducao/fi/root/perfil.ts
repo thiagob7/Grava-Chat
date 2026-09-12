@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Kirjoita käyttäjälle @{{usuario}}",
     enviar: "Lähetä",
-    enviada: "Viesti lähetetty",
     falhou: "Lähetys ei onnistunut. Kokeile keskustelusta.",
   },
   cartao: {

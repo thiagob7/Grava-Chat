@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Sulje keskustelu",
   mostrarChat: "Näytä keskustelu",
   aoVivo: "Live",
+  estado: {
+    mudo: "Mikrofoni pois",
+    mudoPeloServidor: "Palvelin mykisti mikrofonin",
+    semAudio: "Ääni pois",
+    semAudioPeloServidor: "Palvelin mykisti äänen",
+  },
   convidar: "Kutsu puheluun",
   carregandoPrevia: "Ladataan esikatselua…",
   maisOpcoes: "Lisää",

@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Tulis ke @{{usuario}}",
     enviar: "Kirim",
-    enviada: "Pesan terkirim",
     falhou: "Tidak terkirim. Coba dari percakapan.",
   },
   cartao: {

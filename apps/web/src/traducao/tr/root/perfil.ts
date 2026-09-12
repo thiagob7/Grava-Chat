@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "@{{usuario}} kişisine yaz",
     enviar: "Gönder",
-    enviada: "Mesaj gönderildi",
     falhou: "Gönderilemedi. Sohbetten dene.",
   },
   cartao: {

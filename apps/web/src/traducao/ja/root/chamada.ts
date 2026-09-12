@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "チャットを閉じる",
   mostrarChat: "チャットを表示",
   aoVivo: "ライブ",
+  estado: {
+    mudo: "マイクがオフ",
+    mudoPeloServidor: "サーバーによってマイクがオフ",
+    semAudio: "音声がオフ",
+    semAudioPeloServidor: "サーバーによって音声がオフ",
+  },
   convidar: "通話に招待",
   carregandoPrevia: "プレビューを読み込んでいます…",
   maisOpcoes: "その他の操作",

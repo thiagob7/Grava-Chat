@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "סגירת הצ׳אט",
   mostrarChat: "הצגת הצ׳אט",
   aoVivo: "בשידור חי",
+  estado: {
+    mudo: "המיקרופון כבוי",
+    mudoPeloServidor: "השרת השתיק את המיקרופון",
+    semAudio: "השמע כבוי",
+    semAudioPeloServidor: "השרת השתיק את השמע",
+  },
   convidar: "הזמנה לשיחה",
   carregandoPrevia: "טוען תצוגה מקדימה…",
   maisOpcoes: "אפשרויות נוספות",

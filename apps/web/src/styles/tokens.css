@@ -1,7 +1,7 @@
 :root {
 
   --font-sans:
-    "Radio Canada Big Variable", "Radio Canada Big", ui-sans-serif, system-ui,
+    "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", var(--font-fallback-sans);
   --font-mono:
     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,

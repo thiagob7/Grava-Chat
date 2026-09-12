@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Zavřít chat",
   mostrarChat: "Zobrazit chat",
   aoVivo: "Živě",
+  estado: {
+    mudo: "Mikrofon vypnutý",
+    mudoPeloServidor: "Mikrofon vypnutý serverem",
+    semAudio: "Zvuk vypnutý",
+    semAudioPeloServidor: "Zvuk vypnutý serverem",
+  },
   convidar: "Pozvat do hovoru",
   carregandoPrevia: "Načítání náhledu…",
   maisOpcoes: "Další možnosti",

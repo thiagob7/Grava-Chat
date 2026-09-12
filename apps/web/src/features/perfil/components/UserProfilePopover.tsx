@@ -1,4 +1,4 @@
-import React, { useRef, useState, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
   asLe,
@@ -6,6 +6,7 @@ import {
   SERVICES_NAMES,
   type Connection,
 } from "@gravae/shared";
+import { Smiley } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import {
   Ban,
@@ -19,7 +20,6 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
-  SendHorizontal,
   ShieldAlert,
   User,
   UserCheck,
@@ -43,7 +43,6 @@ import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-pr
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
-import { NoteField } from "~/features/perfil/components/cartao/CampoDeNota";
 import { PickBadges } from "~/features/perfil/components/cartao/EscolherEmblemas";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -57,6 +56,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import { FullProfileModal } from "~/features/perfil/components/FullProfileModal";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useCreateInvite } from "~/@core/application/queries/guild/use-create-invite";
@@ -139,7 +139,7 @@ const ProfileCard: React.FC<{
 }> = ({ profile, onClose, guildId, roles, roleIds, canModerate }) => {
   const { t } = useTranslation();
   const [completeProfile, setProfileComplete] = useState(false);
-  const noteField = useRef<HTMLTextAreaElement>(null);
+  const [noteWanted, setNoteWanted] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [settingStatus, setSettingStatus] = useState(false);
   const { data: eu } = useMe(true);
@@ -393,6 +393,19 @@ const ProfileCard: React.FC<{
             <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
           </Button>
         )}
+
+        {/*
+          A caixa de escrever fica no pé do cartão, e dentro dele. Fora, ela
+          pegava o fundo do popover — mais claro que o do cartão — e o pé virava
+          uma faixa de outra cor, com um vazio preto acima.
+        */}
+        {profile.friendship === "ACCEPTED" && (
+          <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer.on-close"
+            userId={profile.id}
+            username={profile.username}
+            onGo={onClose}
+          />
+        )}
       </>
     );
 
@@ -427,18 +440,25 @@ const ProfileCard: React.FC<{
           open
           profile={profile}
           roleList={memberRoles}
-          onClose={() => setProfileComplete(false)}
+          focusNote={noteWanted}
+          onClose={() => {
+            setProfileComplete(false);
+            setNoteWanted(false);
+          }}
         />
       )}
 
       <ProfileCardVisual data-gc="perfil.user-profile-popover.profile-card-visual"
-        onOpenProfile={() => setProfileComplete(true)}
+        onOpenProfile={() => {
+          setNoteWanted(false);
+          setProfileComplete(true);
+        }}
         onIrForNote={
           profile.friendship === "SELF" || profile.system
             ? undefined
             : () => {
-                noteField.current?.scrollIntoView({ block: "nearest" });
-                noteField.current?.focus();
+                setNoteWanted(true);
+                setProfileComplete(true);
               }
         }
         id={profile.id}
@@ -480,10 +500,6 @@ const ProfileCard: React.FC<{
       >
         <ProfileConnections data-gc="perfil.user-profile-popover.profile-connections" connections={profile.profile?.connections} />
 
-        {profile.friendship !== "SELF" && !profile.system && (
-          <NoteField data-gc="perfil.user-profile-popover.note-field" userId={profile.id} note={profile.note} field={noteField} />
-        )}
-
         {profile.friendship === "SELF" && guildId && (
           <PickBadges data-gc="perfil.user-profile-popover.pick-badges"
             guildId={guildId}
@@ -520,23 +536,25 @@ const ProfileCard: React.FC<{
           )}
         </div>
       </ProfileCardVisual>
-
-      {profile.friendship === "ACCEPTED" && (
-        <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer" userId={profile.id} username={profile.username} />
-      )}
     </>
   );
 };
 
-const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
-  userId,
-  username,
-}) => {
+/*
+  Escrever daqui abre a conversa e leva a pessoa para lá. Antes a mensagem
+  saía, o cartão dizia "enviada" e você ficava onde estava — do outro lado
+  alguém respondia e você não via, porque nada te levou para a conversa.
+*/
+const ProfileComposer: React.FC<{
+  userId: string;
+  username: string;
+  onGo: () => void;
+}> = ({ userId, username, onGo }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const openDm = useOpenDm();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const send = async () => {
     const content = text.trim();
@@ -553,8 +571,8 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
       });
 
       setText("");
-      setSent(true);
-      setTimeout(() => setSent(false), 2500);
+      onGo();
+      navigate(`/dm/${channel.id}`);
     } catch {
       toast.error(t("perfil.recado.falhou"));
     } finally {
@@ -562,9 +580,14 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
     }
   };
 
+  /*
+    A caixa não tem botão de enviar, e isso é de propósito: quem escreve aqui
+    escreve uma linha e aperta Enter. O lugar do botão fica com o emoji, que é
+    o que falta quando a caixa é pequena — a referência faz igual.
+  */
   return (
-    <div data-gc="perfil.user-profile-popover.div--4" className="border-t border-line p-3">
-      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
+    <div data-gc="perfil.user-profile-popover.div--4">
+      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1 rounded-lg border border-line bg-surface-2 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -576,23 +599,20 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
           }}
           placeholder={t("perfil.recado.escrever", { usuario: username })}
           disabled={sending}
-          className="border-0 bg-transparent text-sm"
+          className="border-0 bg-transparent shadow-none"
         />
-        <button data-gc="perfil.user-profile-popover.button--6"
-          onClick={() => void send()}
-          disabled={!text.trim() || sending}
-          aria-label={t("perfil.recado.enviar")}
-          className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
-        >
-          <SendHorizontal data-gc="perfil.user-profile-popover.send-horizontal" size={16} />
-        </button>
+
+        <EmojiPicker data-gc="perfil.user-profile-popover.emoji-picker" onPick={(emoji) => setText((current) => current + emoji)}>
+          <button data-gc="perfil.user-profile-popover.button--6"
+            aria-label="Emoji"
+            disabled={sending}
+            className="shrink-0 rounded-md p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
+          >
+            <Smiley data-gc="perfil.user-profile-popover.smiley" size={20} weight="fill" />
+          </button>
+        </EmojiPicker>
       </div>
 
-      {sent && (
-        <p data-gc="perfil.user-profile-popover.p--2" className="mt-1.5 flex items-center gap-1 text-xs text-online">
-          <Check data-gc="perfil.user-profile-popover.check--2" size={12} /> {t("perfil.recado.enviada")}
-        </p>
-      )}
     </div>
   );
 };
@@ -667,7 +687,7 @@ const ProfileConnections: React.FC<{ connections?: Connection[] }> = ({ connecti
 
   return (
     <div data-gc="perfil.user-profile-popover.div--6" className="mt-3">
-      <p data-gc="perfil.user-profile-popover.p--3" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
+      <p data-gc="perfil.user-profile-popover.p--2" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
         {t("perfil.conexoes")}
       </p>
 

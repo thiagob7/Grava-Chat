@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Rašyti @{{usuario}}",
     enviar: "Siųsti",
-    enviada: "Žinutė išsiųsta",
     falhou: "Nepavyko išsiųsti. Pabandykite iš pokalbio.",
   },
   cartao: {
