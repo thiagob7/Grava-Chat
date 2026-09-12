@@ -6,6 +6,7 @@ import {
   SERVICES_NAMES,
   type Connection,
 } from "@gravae/shared";
+import { Smiley } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import {
   Ban,
@@ -19,7 +20,6 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
-  SendHorizontal,
   ShieldAlert,
   User,
   UserCheck,
@@ -57,6 +57,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import { FullProfileModal } from "~/features/perfil/components/FullProfileModal";
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useCreateInvite } from "~/@core/application/queries/guild/use-create-invite";
@@ -562,9 +563,14 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
     }
   };
 
+  /*
+    A caixa não tem botão de enviar, e isso é de propósito: quem escreve aqui
+    escreve uma linha e aperta Enter. O lugar do botão fica com o emoji, que é
+    o que falta quando a caixa é pequena — a referência faz igual.
+  */
   return (
-    <div data-gc="perfil.user-profile-popover.div--4" className="border-t border-line p-3">
-      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1.5 rounded bg-surface-0 pr-1.5">
+    <div data-gc="perfil.user-profile-popover.div--4" className="px-3 pb-3 pt-1">
+      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1 rounded-lg bg-surface-3 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -576,16 +582,18 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
           }}
           placeholder={t("perfil.recado.escrever", { usuario: username })}
           disabled={sending}
-          className="border-0 bg-transparent text-sm"
+          className="border-0 bg-transparent shadow-none"
         />
-        <button data-gc="perfil.user-profile-popover.button--6"
-          onClick={() => void send()}
-          disabled={!text.trim() || sending}
-          aria-label={t("perfil.recado.enviar")}
-          className="shrink-0 rounded p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
-        >
-          <SendHorizontal data-gc="perfil.user-profile-popover.send-horizontal" size={16} />
-        </button>
+
+        <EmojiPicker data-gc="perfil.user-profile-popover.emoji-picker" onPick={(emoji) => setText((current) => current + emoji)}>
+          <button data-gc="perfil.user-profile-popover.button--6"
+            aria-label="Emoji"
+            disabled={sending}
+            className="shrink-0 rounded-md p-1.5 text-ink-muted transition hover:text-ink disabled:opacity-40"
+          >
+            <Smiley data-gc="perfil.user-profile-popover.smiley" size={20} weight="fill" />
+          </button>
+        </EmojiPicker>
       </div>
 
       {sent && (
