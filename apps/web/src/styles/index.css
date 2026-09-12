@@ -11,6 +11,8 @@
 */
 @import "./base-de-tema.css";
 
+@import "./icones.css";
+
 @theme {
 
   /*
@@ -968,6 +970,30 @@ body[data-scroll-locked] .regiao-de-arrasto {
 
 .hljs-strong {
   font-weight: 600;
+}
+
+/*
+  Os três pontos de quem está digitando.
+
+  Era o `animate-bounce` do Tailwind, que sobe um quarto da própria altura: num
+  ponto de quatro pixels isso vira um pulo de circo. Aqui o ponto sobe dois
+  pixels e clareia, que é o que se lê como digitação.
+*/
+@keyframes gc-digitando {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+.gc-ponto-digitando {
+  animation: gc-digitando 1.2s ease-in-out infinite;
 }
 
 /* A flutuação das artes de modal. Discreta de propósito: chama o olho sem

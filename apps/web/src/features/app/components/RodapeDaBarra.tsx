@@ -66,7 +66,7 @@ export const BarFooter: React.FC<BarPropsFooter> = ({
         data-gc-usuario={user?.id}
         {...flx(
           "userCard",
-          "flex min-h-[var(--user-card-min-height)] w-full flex-col justify-center overflow-hidden rounded-[var(--footer-box-radius)] bg-painel p-2 shadow-lg shadow-sombra [--gc-recorte:var(--color-painel)]",
+          "flex min-h-[var(--user-card-min-height)] w-full flex-col justify-center overflow-hidden rounded-[var(--footer-box-radius)] bg-painel p-2 shadow-lg shadow-sombra [--cor-do-vao:var(--color-painel)] [--gc-recorte:var(--color-painel)]",
         )}
       >
         <VoicePanel data-gc="app.rodape-da-barra.voice-panel" accountChannelId={accountChannelId} />

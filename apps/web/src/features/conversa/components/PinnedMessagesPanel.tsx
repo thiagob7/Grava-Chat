@@ -26,7 +26,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
       <PopoverTrigger data-gc="conversa.pinned-messages-panel.popover-trigger" asChild>
         <button data-gc="conversa.pinned-messages-panel.button"
           aria-label={t("conversa.fixadas.titulo")}
-          className="text-ink-muted transition hover:text-ink"
+          className="gc-icone gc-icone--balanca text-ink-muted transition hover:text-ink"
         >
           <Tooltip data-gc="conversa.pinned-messages-panel.tooltip" label={t("conversa.fixadas.titulo")}>
             <PushPin data-gc="conversa.pinned-messages-panel.push-pin" size={20} weight="fill" />
