@@ -4,13 +4,13 @@ import {
   ArrowUpDown,
   Ban,
   Clock,
-  Crown,
   MoreVertical,
   Search,
   UserX,
 } from "lucide-react";
 import type { GuildMember, Role } from "@gravae/shared";
 
+import { OwnerSeal } from "~/features/servidor/components/SeloDeDono";
 import { useRemoveMember } from "~/@core/application/queries/guild/use-remove-member";
 import {
   useBanMember,
@@ -216,7 +216,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                     <div data-gc="servidor.server-settings.members-section.div--5" className="min-w-0">
                       <p data-gc="servidor.server-settings.members-section.p" className="flex items-center gap-1.5 truncate text-sm font-medium">
                         {member.nickname ?? member.user.displayName}
-                        {isOwner && <Crown data-gc="servidor.server-settings.members-section.crown" size={13} className="text-idle" />}
+                        {isOwner && <OwnerSeal data-gc="servidor.server-settings.members-section.owner-seal" size={13} />}
                         {fromTimeout && (
                           <span data-gc="servidor.server-settings.members-section.span" className="flex items-center gap-1 rounded bg-danger/15 px-1.5 py-0.5 text-10 text-danger">
                             <Clock data-gc="servidor.server-settings.members-section.clock" size={10} /> {t("servidor.membros.deCastigo")}
