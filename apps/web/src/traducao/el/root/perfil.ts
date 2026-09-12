@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Γράψε στον/στην @{{usuario}}",
     enviar: "Αποστολή",
-    enviada: "Το μήνυμα στάλθηκε",
     falhou: "Δεν στάλθηκε. Δοκίμασε από τη συνομιλία.",
   },
   cartao: {

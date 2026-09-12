@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Пиши на @{{usuario}}",
     enviar: "Изпрати",
-    enviada: "Съобщението е изпратено",
     falhou: "Не успя да се изпрати. Опитай от разговора.",
   },
   cartao: {

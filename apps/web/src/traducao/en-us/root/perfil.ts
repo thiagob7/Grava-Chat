@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Message @{{usuario}}",
     enviar: "Send",
-    enviada: "Message sent",
     falhou: "Couldn't send it. Try from the conversation.",
   },
   cartao: {

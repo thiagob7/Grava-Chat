@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "给 @{{usuario}} 发消息",
     enviar: "发送",
-    enviada: "消息已发送",
     falhou: "没能发送。试试从会话里发。",
   },
   cartao: {

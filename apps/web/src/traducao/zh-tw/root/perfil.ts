@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "傳訊息給 @{{usuario}}",
     enviar: "傳送",
-    enviada: "訊息已送出",
     falhou: "沒能送出。試試從對話裡傳。",
   },
   cartao: {

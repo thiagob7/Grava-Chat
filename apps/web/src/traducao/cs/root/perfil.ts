@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Napiš @{{usuario}}",
     enviar: "Odeslat",
-    enviada: "Zpráva odeslána",
     falhou: "Nepodařilo se odeslat. Zkus to z konverzace.",
   },
   cartao: {

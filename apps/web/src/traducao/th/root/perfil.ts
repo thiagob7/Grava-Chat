@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "เขียนถึง @{{usuario}}",
     enviar: "ส่ง",
-    enviada: "ส่งข้อความแล้ว",
     falhou: "ส่งไม่สำเร็จ ลองจากหน้าสนทนา",
   },
   cartao: {

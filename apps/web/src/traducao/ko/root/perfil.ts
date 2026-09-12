@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "@{{usuario}} 님에게 메시지",
     enviar: "보내기",
-    enviada: "메시지를 보냈습니다",
     falhou: "보내지 못했습니다. 대화에서 다시 시도해 주세요.",
   },
   cartao: {

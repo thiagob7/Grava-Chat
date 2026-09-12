@@ -400,7 +400,11 @@ const ProfileCard: React.FC<{
           uma faixa de outra cor, com um vazio preto acima.
         */}
         {profile.friendship === "ACCEPTED" && (
-          <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer" userId={profile.id} username={profile.username} />
+          <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer.on-close"
+            userId={profile.id}
+            username={profile.username}
+            onGo={onClose}
+          />
         )}
       </>
     );
@@ -536,15 +540,21 @@ const ProfileCard: React.FC<{
   );
 };
 
-const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
-  userId,
-  username,
-}) => {
+/*
+  Escrever daqui abre a conversa e leva a pessoa para lá. Antes a mensagem
+  saía, o cartão dizia "enviada" e você ficava onde estava — do outro lado
+  alguém respondia e você não via, porque nada te levou para a conversa.
+*/
+const ProfileComposer: React.FC<{
+  userId: string;
+  username: string;
+  onGo: () => void;
+}> = ({ userId, username, onGo }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const openDm = useOpenDm();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const send = async () => {
     const content = text.trim();
@@ -561,8 +571,8 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
       });
 
       setText("");
-      setSent(true);
-      setTimeout(() => setSent(false), 2500);
+      onGo();
+      navigate(`/dm/${channel.id}`);
     } catch {
       toast.error(t("perfil.recado.falhou"));
     } finally {
@@ -603,11 +613,6 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
         </EmojiPicker>
       </div>
 
-      {sent && (
-        <p data-gc="perfil.user-profile-popover.p--2" className="mt-1.5 flex items-center gap-1 text-xs text-online">
-          <Check data-gc="perfil.user-profile-popover.check--2" size={12} /> {t("perfil.recado.enviada")}
-        </p>
-      )}
     </div>
   );
 };
@@ -682,7 +687,7 @@ const ProfileConnections: React.FC<{ connections?: Connection[] }> = ({ connecti
 
   return (
     <div data-gc="perfil.user-profile-popover.div--6" className="mt-3">
-      <p data-gc="perfil.user-profile-popover.p--3" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
+      <p data-gc="perfil.user-profile-popover.p--2" className="mb-1.5 text-11 font-semibold uppercase tracking-wide text-ink-faint">
         {t("perfil.conexoes")}
       </p>
 

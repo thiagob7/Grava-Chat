@@ -40,7 +40,6 @@ export const perfil = {
   recado: {
     escrever: "Írj neki: @{{usuario}}",
     enviar: "Küldés",
-    enviada: "Üzenet elküldve",
     falhou: "Nem sikerült elküldeni. Próbáld a beszélgetésből.",
   },
   cartao: {
