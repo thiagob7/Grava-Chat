@@ -108,7 +108,7 @@ export function OptionsGrid<T extends string>({
               </span>
             )}
 
-            {sample && <span data-gc="configuracoes.perfil.campos.span--3" className="flex h-8 items-center justify-center">{sample(option.id)}</span>}
+            {sample && <span data-gc="configuracoes.perfil.campos.span--3" className="flex min-h-8 items-center justify-center">{sample(option.id)}</span>}
             <span data-gc="configuracoes.perfil.campos.span--4" className="text-center leading-tight">{option.label}</span>
           </button>
         ))}

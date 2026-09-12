@@ -111,7 +111,7 @@ export const ProfileEditorModal: React.FC<{
                 set={set}
               />
               <div data-gc="perfil.cartao.profile-editor-modal.div--2" className="h-px bg-line" />
-              <CharmsTab data-gc="perfil.cartao.profile-editor-modal.charms-tab" draft={draft} set={set} />
+              <CharmsTab data-gc="perfil.cartao.profile-editor-modal.charms-tab" id={user.id} draft={draft} set={set} />
             </div>
           </aside>
 
@@ -240,7 +240,12 @@ export const ProfileEditorModal: React.FC<{
             value={draft.decoration}
             onPick={(id) => set("decoration", id)}
             onClose={() => setCharmIsOpen(null)}
-            sample={(id) => <Sample data-gc="perfil.cartao.profile-editor-modal.sample" family="decoration" id={id} />}
+            sample={(option) => (
+              <Sample data-gc="perfil.cartao.profile-editor-modal.sample"
+                decoration={option}
+                photo={{ id: user.id, name: cardPreview.displayName, url: draft.avatarUrl }}
+              />
+            )}
             preview={<ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual--2" {...cardPreview} />}
           />
 
