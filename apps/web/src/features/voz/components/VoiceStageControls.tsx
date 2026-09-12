@@ -5,7 +5,7 @@ import {
   Maximize,
   Mic,
   Minimize,
-  MonitorUp,
+  Monitor,
   MessageSquare,
   MoreHorizontal,
   PhoneOff,
@@ -276,7 +276,7 @@ export const VoiceStageControls: React.FC<{
         >
           <IconeRiscado
             data-gc="voz.voice-stage-controls.icone-riscado--4"
-            icone={MonitorUp}
+            icone={Monitor}
             riscado={!screenEnabled}
           />
         </Control>

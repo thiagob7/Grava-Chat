@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AudioLines, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
+import { AudioLines, Monitor, PhoneOff, Signal, Video } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
@@ -159,7 +159,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           onClick={() => void toggleScreen()}
         >
           <IconeRiscado data-gc="voz.voice-panel.icone-riscado--2"
-            icone={MonitorUp}
+            icone={Monitor}
             riscado={!screenEnabled}
             className={screenEnabled ? "text-online" : undefined}
           />
@@ -180,7 +180,7 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
     <button data-gc="voz.voice-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
-      className="gc-icone flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink hover:[--cor-do-vao:var(--color-surface-4)]"
+      className="gc-icone flex items-center justify-center rounded-lg bg-surface-3 py-2 text-ink-muted transition [--cor-do-vao:var(--color-surface-3)] hover:bg-surface-4 hover:text-ink hover:[--cor-do-vao:var(--color-surface-4)]"
     >
       {children}
     </button>
