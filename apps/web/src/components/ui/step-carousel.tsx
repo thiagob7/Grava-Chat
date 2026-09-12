@@ -73,9 +73,9 @@ export const StepCarousel: React.FC<Props> = ({ step, steps, panels, className }
           ref={measure}
           custom={direction}
           variants={inAnimation ? withoutMotion : swipe}
-          initial="entra"
-          animate="centro"
-          exit="sai"
+          initial="entering"
+          animate="center"
+          exit="leaving"
           transition={inAnimation ? instant : undefined}
           className="flex flex-col"
         >

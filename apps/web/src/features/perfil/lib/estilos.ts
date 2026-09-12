@@ -12,6 +12,23 @@ export function charmClass(family: string, id: string | null | undefined): strin
   return `gc-${family}--${id}`;
 }
 
+/*
+  A faixa do cartão abre um buraco redondo embaixo, onde a foto senta.
+
+  Isto era uma `<mask>` de SVG e não funcionava: o `100%` do `<rect>` media
+  contra o `<svg>` que guardava a máscara, e esse svg tem tamanho zero. A
+  máscara saía vazia, apagava a faixa inteira, e no lugar dela aparecia o fundo
+  do cartão — a faixa preta. Aqui a conta é do próprio elemento mascarado.
+
+  O meio-pixel entre o transparente e o opaco é só para a borda do buraco não
+  sair serrada.
+*/
+export function trackNotch(cx: number, radius: number): StyleCss {
+  const hole = `radial-gradient(circle ${radius}px at ${cx}px 100%, transparent ${radius - 0.5}px, #000 ${radius}px)`;
+
+  return { maskImage: hole, WebkitMaskImage: hole };
+}
+
 interface Variables {
   color1?: string | null;
   color2?: string | null;

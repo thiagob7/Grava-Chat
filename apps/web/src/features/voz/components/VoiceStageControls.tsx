@@ -2,19 +2,15 @@ import React from "react";
 import {
   ChevronUp,
   Headphones,
-  HeadphoneOff,
   Maximize,
   Mic,
-  MicOff,
   Minimize,
   MonitorUp,
-  MonitorX,
   MessageSquare,
   MoreHorizontal,
   PhoneOff,
   Settings,
   Video,
-  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -37,6 +33,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
+import { IconeRiscado } from "~/features/voz/components/IconeRiscado";
 import { Tooltip } from "~/components/ui/tooltip";
 import { deviceName, useDevices } from "~/features/voz/hooks/use-dispositivos";
 import { useScreenFull } from "~/features/voz/hooks/use-tela-cheia";
@@ -110,7 +107,7 @@ export const VoiceStageControls: React.FC<{
         )}
       </div>
 
-      <div data-gc="voz.voice-stage-controls.div--3" className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-line-sutil backdrop-blur">
+      <div data-gc="voz.voice-stage-controls.div--3" className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface-0/95 p-1.5 shadow-lg ring-1 ring-line-sutil backdrop-blur [--cor-do-vao:var(--color-surface-0)]">
         <Control data-gc="voz.voice-stage-controls.control.on-toggle-menu"
           onOpenChange={onToggleMenu}
           label={micBlocked ? "Microfone bloqueado" : micEnabled ? "Mutar" : "Desmutar"}
@@ -149,7 +146,12 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          {micEnabled && !micBlocked ? <Mic data-gc="voz.voice-stage-controls.mic" size={18} /> : <MicOff data-gc="voz.voice-stage-controls.mic-off" size={18} className="text-danger" />}
+          <IconeRiscado
+            data-gc="voz.voice-stage-controls.icone-riscado"
+            icone={Mic}
+            riscado={!micEnabled || micBlocked}
+            alerta
+          />
         </Control>
 
         <Control data-gc="voz.voice-stage-controls.control.on-toggle-menu--2"
@@ -196,7 +198,12 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          {deafened ? <HeadphoneOff data-gc="voz.voice-stage-controls.headphone-off" size={18} className="text-danger" /> : <Headphones data-gc="voz.voice-stage-controls.headphones" size={18} />}
+          <IconeRiscado
+            data-gc="voz.voice-stage-controls.icone-riscado--2"
+            icone={Headphones}
+            riscado={deafened}
+            alerta
+          />
         </Control>
 
         <Control data-gc="voz.voice-stage-controls.control.on-toggle-menu--3"
@@ -237,7 +244,11 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          {cameraEnabled ? <Video data-gc="voz.voice-stage-controls.video" size={18} /> : <VideoOff data-gc="voz.voice-stage-controls.video-off" size={18} />}
+          <IconeRiscado
+            data-gc="voz.voice-stage-controls.icone-riscado--3"
+            icone={Video}
+            riscado={!cameraEnabled}
+          />
         </Control>
 
         <Control data-gc="voz.voice-stage-controls.control.on-toggle-menu--4"
@@ -263,7 +274,11 @@ export const VoiceStageControls: React.FC<{
             </>
           }
         >
-          {screenEnabled ? <MonitorX data-gc="voz.voice-stage-controls.monitor-x" size={18} /> : <MonitorUp data-gc="voz.voice-stage-controls.monitor-up" size={18} />}
+          <IconeRiscado
+            data-gc="voz.voice-stage-controls.icone-riscado--4"
+            icone={MonitorUp}
+            riscado={!screenEnabled}
+          />
         </Control>
 
         <DropdownMenu data-gc="voz.voice-stage-controls.dropdown-menu.on-toggle-menu" onOpenChange={onToggleMenu}>
@@ -409,8 +424,11 @@ const Control: React.FC<{
         aria-pressed={active}
         className={cn(
           "flex size-10 items-center justify-center rounded-full transition",
+          // O vão do risco acompanha o fundo do botão, senão aparece um rastro
+          // da cor da barra em cima do hover.
+          "hover:[--cor-do-vao:var(--color-surface-3)]",
           active
-            ? "bg-surface-3 text-ink hover:bg-surface-4"
+            ? "bg-surface-3 text-ink hover:bg-surface-4 [--cor-do-vao:var(--color-surface-3)]"
             : "text-ink-muted hover:bg-surface-3 hover:text-ink",
         )}
       >

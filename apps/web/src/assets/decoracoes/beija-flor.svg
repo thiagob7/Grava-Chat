@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-asa { 0%,100% { transform: rotate(-30deg) scaleY(1) } 50% { transform: rotate(16deg) scaleY(.7) } }
+    @keyframes gc-flutua { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-2px,-3.5px) } }
+    .bicho { animation: gc-flutua 1.5s ease-in-out infinite }
+    .asa { animation: gc-asa .16s linear infinite; transform-origin: 128px 26px }
+    @media (prefers-reduced-motion: reduce) { .bicho, .asa { animation: none } }
+  </style>
+  <g class="bicho">
+    <path d="M152 30 l20 -6 l-12 16 z" fill="#2f7f66"/>
+    <ellipse cx="134" cy="30" rx="22" ry="14" transform="rotate(-14 134 30)" fill="#2bbf8a"/>
+    <ellipse cx="128" cy="36" rx="12" ry="7" transform="rotate(-14 128 36)" fill="#ffd257"/>
+    <circle cx="112" cy="26" r="12" fill="#27a97b"/>
+    <path d="M104 32 l-22 16" fill="none" stroke="#22303a" stroke-width="4.4" stroke-linecap="round"/>
+    <circle cx="110" cy="23" r="3.4" fill="#12211b"/>
+    <ellipse class="asa" cx="140" cy="16" rx="24" ry="9" fill="#7ee0bb" opacity=".92"/>
+  </g>
+</svg>

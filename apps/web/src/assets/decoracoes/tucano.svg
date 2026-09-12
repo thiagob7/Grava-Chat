@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-bico { 0%,100% { transform: rotate(0deg) } 35% { transform: rotate(-10deg) } 70% { transform: rotate(5deg) } }
+    .cabeca { animation: gc-bico 3.4s ease-in-out infinite; transform-origin: 112px 36px }
+    @media (prefers-reduced-motion: reduce) { .cabeca { animation: none } }
+  </style>
+  <ellipse cx="114" cy="42" rx="25" ry="20" fill="#26262e"/>
+  <path d="M134 48 l22 -4 l-11 15 z" fill="#26262e"/>
+  <ellipse cx="104" cy="47" rx="13" ry="11" fill="#f2f0ea"/>
+  <g class="cabeca">
+    <circle cx="102" cy="27" r="17" fill="#26262e"/>
+    <path d="M88 21 q-32 8 -36 15 q11 9 36 9 z" fill="#f2a33c"/>
+    <path d="M52 36 q11 9 36 9 l0 -6 q-21 -1 -36 -3 z" fill="#d9772a"/>
+    <path d="M88 21 q-17 4 -26 8" fill="none" stroke="#f7c46b" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="105" cy="23" r="5.6" fill="#f2f0ea"/>
+    <circle cx="106" cy="23" r="2.9" fill="#1b1b20"/>
+  </g>
+</svg>

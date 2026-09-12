@@ -2,7 +2,14 @@ import React from "react";
 import { Check, X } from "lucide-react";
 
 import type { Choice } from "~/features/perfil/lib/catalogo";
-import { Label, colorFieldClass } from "~/components/ui/input";
+import { ColorField as ColorPicker } from "~/components/ui/color-picker";
+import { Label } from "~/components/ui/input";
+import {
+  Popover,
+  PopoverArrow,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
 
 interface ColorPropsField {
@@ -13,20 +20,40 @@ interface ColorPropsField {
   hint?: string;
 }
 
+/*
+  O quadradinho abre o seletor da casa — o mesmo do estúdio de temas, com
+  matiz, opacidade e conta-gotas. Era o `input type="color"` do navegador, que
+  abre a janela do sistema operacional e ignora o resto do app.
+
+  O xadrez atrás da cor é para a opacidade aparecer no próprio quadradinho.
+*/
 export const ColorField: React.FC<ColorPropsField> = ({ label, value, onChange, fallback = "#a8a8b3", hint }) => (
   <div data-gc="configuracoes.perfil.campos.div">
     <Label data-gc="configuracoes.perfil.campos.label">{label}</Label>
     <div data-gc="configuracoes.perfil.campos.div--2" className="flex items-center gap-2">
-      <input data-gc="configuracoes.perfil.campos.input"
-        type="color"
-        value={value ?? fallback}
-        onChange={(e) => onChange(e.target.value)}
-        className={cn(colorFieldClass, "size-9")}
-        aria-label={label}
-      />
+      <Popover data-gc="configuracoes.perfil.campos.popover">
+        <PopoverTrigger data-gc="configuracoes.perfil.campos.popover-trigger" asChild>
+          <button data-gc="configuracoes.perfil.campos.button"
+            type="button"
+            aria-label={label}
+            style={{
+              backgroundImage: `linear-gradient(${value ?? fallback}, ${value ?? fallback}),
+                repeating-conic-gradient(rgb(255 255 255 / 0.14) 0 25%, transparent 0 50%)`,
+              backgroundSize: "auto, 8px 8px",
+            }}
+            className="size-9 shrink-0 cursor-pointer rounded-md border border-line-sutil transition hover:border-line"
+          />
+        </PopoverTrigger>
+
+        <PopoverContent data-gc="configuracoes.perfil.campos.popover-content" align="start" className="w-60 p-3">
+          <PopoverArrow data-gc="configuracoes.perfil.campos.popover-arrow" />
+          <ColorPicker data-gc="configuracoes.perfil.campos.color-picker.on-change" value={value ?? fallback} onChange={onChange} />
+        </PopoverContent>
+      </Popover>
+
       <span data-gc="configuracoes.perfil.campos.span" className="flex-1 font-mono text-xs text-ink-faint">{value ?? "herdada"}</span>
       {value && (
-        <button data-gc="configuracoes.perfil.campos.button"
+        <button data-gc="configuracoes.perfil.campos.button--2"
           type="button"
           onClick={() => onChange(null)}
           className="rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
@@ -60,7 +87,7 @@ export function OptionsGrid<T extends string>({
       <Label data-gc="configuracoes.perfil.campos.label--2">{label}</Label>
       <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {options.map((option) => (
-          <button data-gc="configuracoes.perfil.campos.button--2"
+          <button data-gc="configuracoes.perfil.campos.button--3"
             key={option.id}
             type="button"
             onClick={() => onPick(option.id)}
@@ -81,7 +108,7 @@ export function OptionsGrid<T extends string>({
               </span>
             )}
 
-            {sample && <span data-gc="configuracoes.perfil.campos.span--3" className="flex h-8 items-center justify-center">{sample(option.id)}</span>}
+            {sample && <span data-gc="configuracoes.perfil.campos.span--3" className="flex min-h-8 items-center justify-center">{sample(option.id)}</span>}
             <span data-gc="configuracoes.perfil.campos.span--4" className="text-center leading-tight">{option.label}</span>
           </button>
         ))}

@@ -8,7 +8,7 @@ import type { GuildSummaryModel } from "~/@core/domain/models/guild-model";
 import { ServerHint } from "~/features/servidor/components/DicaDoServidor";
 import { ServerMenu } from "~/features/servidor/components/MenuDoServidor";
 import type { Destination } from "~/features/servidor/lib/trilho";
-import { avatarColor, initials } from "~/lib/format";
+import { initials } from "~/lib/format";
 import { serverMuted, useNotices } from "~/stores/notificacoes";
 import { cn } from "~/lib/utils";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
@@ -128,12 +128,11 @@ export const ServerItem: React.FC<ServerPropsItem> = ({
               "flex items-center justify-center overflow-hidden font-semibold transition-all duration-200 ease-out active:translate-y-px active:scale-95",
               compact ? "size-10 text-sm" : "size-[var(--guild-icon-size)]",
               active
-                ? cn("rounded-2xl bg-brand", flxCls("serverActiveIcon"))
-                : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
+                ? cn("rounded-xl bg-brand text-sobre-marca", flxCls("serverActiveIcon"))
+                : "rounded-[calc(var(--guild-icon-size)*0.5)] bg-surface-3 text-ink hover:rounded-xl hover:bg-brand hover:text-sobre-marca",
               zone === "juntar" && !folderId && "ring-2 ring-brand ring-offset-2 ring-offset-surface-1",
               muted && !active && "opacity-60",
             )}
-            style={!active && !guild.iconUrl ? { color: avatarColor(guild.id) } : undefined}
           >
             {guild.iconUrl ? (
               <img data-gc="servidor.item-do-servidor.img" src={guild.iconUrl} alt={guild.name} draggable={false} className="size-full object-cover" />

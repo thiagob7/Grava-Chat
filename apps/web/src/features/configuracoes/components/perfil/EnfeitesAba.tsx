@@ -7,10 +7,8 @@ import {
   FONTS,
   PROFILE_RANKS,
 } from "~/features/perfil/lib/catalogo";
-import { FileDecoration } from "~/features/perfil/components/DecoracaoDeArquivo";
+import { Avatar } from "~/features/perfil/components/Avatar";
 import { RankAnimated } from "~/features/perfil/components/PatenteAnimada";
-import { isFile } from "~/features/perfil/lib/decoracoes";
-import { charmClass, charmVariables } from "~/features/perfil/lib/estilos";
 import { loadAllFonts, fontFamily } from "~/features/perfil/lib/fontes";
 import { nameStyle } from "~/features/perfil/lib/nome";
 import {
@@ -21,6 +19,7 @@ import type { ProfileDraft } from "~/features/configuracoes/components/perfil/ra
 import { cn } from "~/lib/utils";
 
 interface CharmsTabProps {
+  id: string;
   draft: ProfileDraft;
   set: <K extends keyof ProfileDraft>(
     field: K,
@@ -29,10 +28,13 @@ interface CharmsTabProps {
 }
 
 export const CharmsTab: React.FC<CharmsTabProps> = ({
+  id,
   draft,
   set,
 }) => {
   useEffect(() => loadAllFonts(), []);
+
+  const photo = { id, name: draft.displayName, url: draft.avatarUrl };
 
   return (
     <div data-gc="configuracoes.perfil.enfeites-aba.div" className="space-y-6">
@@ -96,7 +98,7 @@ export const CharmsTab: React.FC<CharmsTabProps> = ({
         options={AVATAR_DECORATIONS}
         value={draft.decoration}
         onPick={(id) => set("decoration", id)}
-        sample={(id) => <Sample data-gc="configuracoes.perfil.enfeites-aba.sample" family="decoration" id={id} />}
+        sample={(option) => <Sample data-gc="configuracoes.perfil.enfeites-aba.sample" decoration={option} photo={photo} />}
       />
 
       <div data-gc="configuracoes.perfil.enfeites-aba.div--4" className="h-px bg-line" />
@@ -113,34 +115,27 @@ export const CharmsTab: React.FC<CharmsTabProps> = ({
   );
 };
 
-export const Sample: React.FC<{ family: string; id: string }> = ({
-  family,
-  id,
-}) => {
-  const cssClass = charmClass(family, id);
-  const fromFile = family === "decoration" && isFile(id as Decoration);
+export interface SamplePhoto {
+  id: string;
+  name: string;
+  url: string | null;
+}
 
-  const fromCard = family === "frame";
-
-  return (
-    <span data-gc="configuracoes.perfil.enfeites-aba.span--3"
-      className={cn(
-        "relative block bg-surface-4",
-        fromCard ? "h-7 w-10 rounded" : "size-7 rounded-full",
-      )}
-    >
-      {fromFile && <FileDecoration data-gc="configuracoes.perfil.enfeites-aba.file-decoration" decoration={id as Decoration} animate />}
-
-      {!fromFile && cssClass && (
-        <span data-gc="configuracoes.perfil.enfeites-aba.span--4"
-          aria-hidden
-          className={cn(fromCard ? "gc-camada--cartao" : "gc-camada", cssClass)}
-          style={{
-            ...charmVariables({ animate: true, speed: "8s" }),
-            ...(fromCard ? { "--gc-borda": "7px" } : null),
-          }}
-        />
-      )}
-    </span>
-  );
-};
+/*
+  A amostra é a foto de quem está escolhendo, com o enfeite em cima — não um
+  disco cinza. O bicho senta na borda de cima do avatar, e num disco de 28 px
+  não dava para saber qual era qual: todos viravam um risco colorido.
+*/
+export const Sample: React.FC<{
+  decoration: Decoration;
+  photo: SamplePhoto;
+}> = ({ decoration, photo }) => (
+  <Avatar data-gc="configuracoes.perfil.enfeites-aba.avatar"
+    id={photo.id}
+    name={photo.name}
+    url={photo.url}
+    size={48}
+    charms={{ decoration, frame: "nenhuma" }}
+    animate
+  />
+);

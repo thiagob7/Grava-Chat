@@ -93,6 +93,9 @@ export const PLACES = {
   channelActiveItem: {
     classes: ["ChannelItemSurface.module__channelItemSurfaceSelected_gc"],
   },
+  channelUnreadPill: {
+    classes: ["ChannelItem.module__unreadIndicator_gc"],
+  },
 
   userArea: {
     classes: ["GuildsLayout.module__userAreaWrapper_gc"],

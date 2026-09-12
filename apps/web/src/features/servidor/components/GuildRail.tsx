@@ -78,10 +78,10 @@ export const GuildRail: React.FC<GuildRailProps> = ({
             <button data-gc="servidor.guild-rail.button.on-open-friends"
               onClick={onOpenFriends}
               className={cn(
-                "relative flex size-[var(--guild-icon-size)] items-center justify-center text-xl font-bold transition-all",
+                "relative flex size-[var(--guild-icon-size)] items-center justify-center text-xl font-bold transition-all duration-200 ease-out",
                 inChats
-                  ? "rounded-2xl bg-brand"
-                  : "rounded-3xl bg-surface-0 hover:rounded-2xl hover:bg-brand",
+                  ? "rounded-xl bg-brand"
+                  : "rounded-[calc(var(--guild-icon-size)*0.5)] bg-surface-3 hover:rounded-xl hover:bg-brand",
               )}
             >
               <img data-gc="servidor.guild-rail.img"

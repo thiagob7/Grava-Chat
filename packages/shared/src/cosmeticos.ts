@@ -20,17 +20,21 @@ export type NameEffect = (typeof NAME_EFFECTS)[number];
 
 export const DECORATIONS = [
   "nenhuma",
-  "aurora",
-  "chamas",
-  "circuito",
-  "petalas",
-  "orbita",
-  "aro",
   "alada",
   "gelo",
   "coroa",
   "runas",
   "loureiro",
+  "capivara",
+  "gato",
+  "tucano",
+  "sapo",
+  "beija-flor",
+  "arara",
+  "preguica",
+  "coruja",
+  "borboleta",
+  "cachorro",
 ] as const;
 export type Decoration = (typeof DECORATIONS)[number];
 

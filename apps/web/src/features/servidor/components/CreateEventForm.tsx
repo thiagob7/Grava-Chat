@@ -367,7 +367,7 @@ export const CreateEventForm: React.FC<{
 
         {step === "done" && created && (
           <div data-gc="servidor.create-event-form.div--16" className="py-2 text-center">
-            <span data-gc="servidor.create-event-form.span--8"
+            <span data-gc="servidor.create-event-form.span--3"
               className="mx-auto flex size-14 items-center justify-center rounded-full bg-surface-3 text-ink"
             >
               <CalendarBlank data-gc="servidor.create-event-form.calendar-blank" size={26} weight="fill" />
@@ -388,7 +388,7 @@ export const CreateEventForm: React.FC<{
 
       <DialogFooter data-gc="servidor.create-event-form.dialog-footer">
         {step === "done" ? (
-          <Button data-gc="servidor.create-event-form.button.leave--2" className="ml-auto" onClick={leave}>
+          <Button data-gc="servidor.create-event-form.button.leave" className="ml-auto" onClick={leave}>
             Concluir
           </Button>
         ) : (
@@ -403,7 +403,7 @@ export const CreateEventForm: React.FC<{
           </Button>
         )}
 
-        <Button data-gc="servidor.create-event-form.button.leave" variant="surface" onClick={leave}>
+        <Button data-gc="servidor.create-event-form.button.leave--2" variant="surface" onClick={leave}>
           Cancelar
         </Button>
 
@@ -443,21 +443,21 @@ const Choice: React.FC<{
       checked ? "bg-surface-2" : "hover:bg-hover",
     )}
   >
-    <span data-gc="servidor.create-event-form.span--3"
+    <span data-gc="servidor.create-event-form.span--4"
       className={cn(
         "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border-2 transition",
         checked ? "border-brand" : "border-line",
       )}
     >
-      {checked && <span data-gc="servidor.create-event-form.span--4" className="size-2 rounded-full bg-brand" />}
+      {checked && <span data-gc="servidor.create-event-form.span--5" className="size-2 rounded-full bg-brand" />}
     </span>
 
-    <span data-gc="servidor.create-event-form.span--5" className="min-w-0">
-      <span data-gc="servidor.create-event-form.span--6" className="flex items-center gap-1.5 text-sm font-medium leading-5">
+    <span data-gc="servidor.create-event-form.span--6" className="min-w-0">
+      <span data-gc="servidor.create-event-form.span--7" className="flex items-center gap-1.5 text-sm font-medium leading-5">
         {icon}
         {title}
       </span>
-      <span data-gc="servidor.create-event-form.span--7" className="mt-0.5 block text-13 leading-[18px] text-ink-muted">{detail}</span>
+      <span data-gc="servidor.create-event-form.span--8" className="mt-0.5 block text-13 leading-[18px] text-ink-muted">{detail}</span>
     </span>
   </button>
 );
@@ -483,9 +483,9 @@ const EventLink: React.FC<{ guildId: string; eventId: string }> = ({ guildId, ev
 
   return (
     <div data-gc="servidor.create-event-form.div--17" className="mt-5 flex items-center gap-2">
-      <Input data-gc="servidor.create-event-form.input--3" readOnly value={link} className="min-w-0 flex-1" />
+      <Input data-gc="servidor.create-event-form.input--5" readOnly value={link} className="min-w-0 flex-1" />
 
-      <Button data-gc="servidor.create-event-form.button.copy" onClick={() => void copy()} className="shrink-0">
+      <Button data-gc="servidor.create-event-form.button--5" onClick={() => void copy()} className="shrink-0">
         {copied ? (
           <>
             <Check data-gc="servidor.create-event-form.check" size={16} /> Copiado
