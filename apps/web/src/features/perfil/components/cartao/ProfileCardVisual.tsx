@@ -60,6 +60,7 @@ interface ProfileCardVisualProps {
   downActions?: ReactNode;
   children?: ReactNode;
   className?: string;
+  detailed?: boolean;
   editable?: boolean;
   onOpenProfile?: () => void;
   onIrForNote?: () => void;
@@ -116,6 +117,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   downActions,
   children,
   className,
+  detailed = false,
   editable = false,
   onOpenProfile,
   onIrForNote,
@@ -511,15 +513,17 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {(roleList.length > 0 || managesRoles) && (
             <>
-              <p data-gc="perfil.cartao.profile-card-visual.p--6" className="mb-2 mt-5 text-sm font-bold text-ink">
-                {roleList.length === 0
-                  ? t("perfil.cartao.cargos")
-                  : roleList.length === 1
-                    ? t("perfil.cartao.cargo")
-                    : t("perfil.cartao.cargosCom", { quantidade: roleList.length })}
-              </p>
+              {detailed && (
+                <p data-gc="perfil.cartao.profile-card-visual.p--6" className="mb-2 mt-5 text-sm font-bold text-ink">
+                  {roleList.length === 0
+                    ? t("perfil.cartao.cargos")
+                    : roleList.length === 1
+                      ? t("perfil.cartao.cargo")
+                      : t("perfil.cartao.cargosCom", { quantidade: roleList.length })}
+                </p>
+              )}
 
-              <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-1.5">
+              <div data-gc="perfil.cartao.profile-card-visual.div--11" className={cn("flex flex-wrap items-center gap-1.5", !detailed && "mt-4")}>
                 {roleList.map((role) => (
                   <span data-gc="perfil.cartao.profile-card-visual.span--25"
                     key={role.id}
@@ -571,7 +575,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </>
           )}
 
-          {createdAt && (
+          {detailed && createdAt && (
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
               <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">

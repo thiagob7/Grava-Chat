@@ -835,6 +835,7 @@
   "features/perfil/components/cartao/ProfileEditorModal.tsx :: Suas decorações",
   "features/perfil/components/cartao/ProfileEditorModal.tsx :: Trocar a faixa",
   "features/perfil/components/cartao/SeletorDeCargos.tsx :: hover:bg-brand hover:text-sobre-marca focus-visible:bg-brand focus-visible:text-sobre-marca",
+  "features/perfil/components/cartao/SeletorDeCargos.tsx :: Não há cargo para dar neste servidor. Crie um em Configurações do servidor, na aba Cargos.",
   "features/perfil/components/cartao/SeletorDeCargos.tsx :: Nenhum cargo com esse nome",
   "features/perfil/components/cartao/SeletorDeEtiqueta.tsx :: tag",
   "features/perfil/components/ContaEmExclusao.tsx :: Esta conta está marcada para exclusão",
