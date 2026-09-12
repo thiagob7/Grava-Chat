@@ -531,7 +531,7 @@ export const Composer: React.FC<ComposerProps> = ({
                 className={cn(
                   flxCls("boxButton"),
                   boxButtonClass,
-                  "text-ink-muted hover:bg-hover hover:text-ink",
+                  "gc-icone--bate text-ink-muted hover:bg-hover hover:text-ink",
                 )}
               >
                 <Plus data-gc="conversa.composer.plus" size={22} />

@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Trash2, X } from "lucide-react";
 import type { Channel, GuildMember, Role } from "@gravae/shared";
 
+import { IntegrationsSection } from "~/features/servidor/components/server-settings/IntegrationsSection";
 import { InvitesSection } from "~/features/servidor/components/server-settings/InvitesSection";
 import { ChannelOverviewSection } from "~/features/servidor/components/channel-settings/ChannelOverviewSection";
 import { ChannelPermissionsSection } from "~/features/servidor/components/channel-settings/ChannelPermissionsSection";
@@ -10,7 +11,7 @@ import { DeleteChannelSection } from "~/features/servidor/components/channel-set
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
-type Section = "visao" | "permissoes" | "convites" | "excluir";
+type Section = "visao" | "permissoes" | "convites" | "webhooks" | "excluir";
 
 interface ChannelSettingsModalProps {
   open: boolean;
@@ -44,6 +45,11 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
     { id: "visao", label: t("servidor.canal.visaoGeral"), visible: canManageChannels },
     { id: "permissoes", label: t("servidor.cargos.abaPermissoes"), visible: canManageRoles },
     { id: "convites", label: t("servidor.convites.titulo"), visible: true },
+    {
+      id: "webhooks",
+      label: "Webhooks",
+      visible: canManageChannels && channel.type !== "VOICE",
+    },
     { id: "excluir", label: t("servidor.canal.excluir.titulo"), visible: canManageChannels, danger: true },
   ] satisfies Item[]).filter((item) => item.visible);
 
@@ -96,6 +102,19 @@ export const ChannelSettingsModal: React.FC<ChannelSettingsModalProps> = ({
             )}
 
             {section === "convites" && <InvitesSection data-gc="servidor.channel-settings.channel-settings-modal.invites-section" guildId={guildId} />}
+
+            {/*
+              A lista é a mesma das configurações do servidor, presa a este
+              canal: ela mostra só os webhooks daqui e o novo já nasce apontando
+              para cá.
+            */}
+            {section === "webhooks" && (
+              <IntegrationsSection data-gc="servidor.channel-settings.channel-settings-modal.integrations-section"
+                guildId={guildId}
+                channels={[channel]}
+                channelId={channel.id}
+              />
+            )}
 
             {section === "excluir" && (
               <DeleteChannelSection data-gc="servidor.channel-settings.channel-settings-modal.delete-channel-section.on-close" guildId={guildId} channel={channel} onClose={onClose} />

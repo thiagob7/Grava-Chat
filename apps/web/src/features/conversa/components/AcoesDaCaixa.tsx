@@ -1,6 +1,7 @@
 import React from "react";
-import { GifIcon, ImageIcon, Sticker, Smiley } from "@phosphor-icons/react";
+import { GifIcon, ImageIcon, Sticker } from "@phosphor-icons/react";
 
+import { PickerFace, usePickerFace } from "~/features/expressao/components/CarinhaDoSeletor";
 import { Tooltip } from "~/components/ui/tooltip";
 import { SHORTCUTS, writeCombo } from "~/features/configuracoes/lib/atalhos";
 import { cn } from "~/lib/utils";
@@ -12,18 +13,27 @@ export const BoxButton: React.FC<{
   shortcut?: string[];
   active?: boolean;
   off?: boolean;
+  /** O feitio do movimento no ponteiro. Ver `styles/icones.css`. */
+  motion?: "pula" | "bate" | "gira" | "balanca" | "brilha";
   onClick?: () => void;
+  onEnter?: () => void;
+  onLeave?: () => void;
   children: React.ReactNode;
-}> = ({ label, shortcut, active, off, onClick, children }) => (
+}> = ({ label, shortcut, active, off, motion = "pula", onClick, onEnter, onLeave, children }) => (
   <Tooltip data-gc="conversa.acoes-da-caixa.tooltip" label={label} shortcut={shortcut}>
     <button data-gc="conversa.acoes-da-caixa.button.on-click"
       type="button"
       onClick={onClick}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      onFocus={onEnter}
+      onBlur={onLeave}
       disabled={off}
       aria-label={label}
       aria-pressed={active}
       className={cn(
         boxButtonClass,
+        `gc-icone--${motion}`,
         active ? "bg-hover text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
       )}
     >
@@ -31,6 +41,28 @@ export const BoxButton: React.FC<{
     </button>
   </Tooltip>
 );
+
+const EmojiButton: React.FC<{
+  shortcut?: string[];
+  active: boolean;
+  onClick: () => void;
+}> = ({ shortcut, active, onClick }) => {
+  const { face, lit, enter, leave } = usePickerFace();
+
+  return (
+    <BoxButton data-gc="conversa.acoes-da-caixa.box-button.on-click"
+      label="Emojis"
+      shortcut={shortcut}
+      active={active}
+      motion="bate"
+      onClick={onClick}
+      onEnter={enter}
+      onLeave={leave}
+    >
+      <PickerFace data-gc="conversa.acoes-da-caixa.picker-face" face={face} lit={lit || active} />
+    </BoxButton>
+  );
+};
 
 const shortcut = (id: string) => {
   const match = SHORTCUTS.find((a) => a.id === id);
@@ -83,14 +115,11 @@ export const BoxActions: React.FC<BoxPropsActions> = ({
         </BoxButton>
       </span>
 
-      <BoxButton data-gc="conversa.acoes-da-caixa.box-button--3"
-        label="Emojis"
+      <EmojiButton data-gc="conversa.acoes-da-caixa.emoji-button"
         shortcut={shortcut("expressoes")}
         active={isOpen === "emoji"}
         onClick={() => onOpen("emoji")}
-      >
-        <Smiley data-gc="conversa.acoes-da-caixa.smiley" size={20} />
-      </BoxButton>
+      />
     </>
   );
 };

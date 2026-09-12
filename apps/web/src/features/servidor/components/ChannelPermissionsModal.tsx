@@ -19,27 +19,39 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
-const PERMISSIONS_BY_KIND: Record<"TEXTO" | "VOZ", Permission[]> = {
+/*
+  As permissões em grupos, e não numa lista corrida.
+
+  São nove numa lista de texto e oito na de voz, todas com nome e explicação, e
+  corridas assim não se acha nada: quem abre isto está procurando uma, não
+  lendo todas. Os títulos são os mesmos da referência, porque quem vem de lá
+  procura na mesma ordem.
+*/
+const PERMISSIONS_BY_KIND: Record<"TEXTO" | "VOZ", { title: string; permissions: Permission[] }[]> = {
   TEXTO: [
-    "VIEW_CHANNEL",
-    "SEND_MESSAGES",
-    "MANAGE_MESSAGES",
-    "ATTACH_FILES",
-    "ADD_REACTIONS",
-    "MENTION_EVERYONE",
-    "MANAGE_CHANNELS",
-    "MANAGE_ROLES",
-    "MANAGE_WEBHOOKS",
+    { title: "Acesso ao canal", permissions: ["VIEW_CHANNEL"] },
+    {
+      title: "Gerenciamento do canal",
+      permissions: ["MANAGE_CHANNELS", "MANAGE_ROLES", "MANAGE_WEBHOOKS"],
+    },
+    {
+      title: "Mensagens e mídia",
+      permissions: [
+        "SEND_MESSAGES",
+        "MANAGE_MESSAGES",
+        "ATTACH_FILES",
+        "ADD_REACTIONS",
+        "MENTION_EVERYONE",
+      ],
+    },
   ],
   VOZ: [
-    "VIEW_CHANNEL",
-    "CONNECT",
-    "SPEAK",
-    "VIDEO",
-    "SHARE_SCREEN",
-    "MUTE_MEMBERS",
-    "MANAGE_CHANNELS",
-    "MANAGE_ROLES",
+    { title: "Acesso ao canal", permissions: ["VIEW_CHANNEL", "CONNECT"] },
+    { title: "Voz e vídeo", permissions: ["SPEAK", "VIDEO", "SHARE_SCREEN"] },
+    {
+      title: "Moderação do canal",
+      permissions: ["MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES"],
+    },
   ],
 };
 
@@ -116,7 +128,7 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
     : [];
 
   const current = overwrites.find((o) => o.targetId === target?.id);
-  const permissions = PERMISSIONS_BY_KIND[channelType === "VOICE" ? "VOZ" : "TEXTO"];
+  const groups = PERMISSIONS_BY_KIND[channelType === "VOICE" ? "VOZ" : "TEXTO"];
   const amAdmin = minePermissions.includes("ADMINISTRATOR");
 
   const stateFor = (permission: Permission): State => {
@@ -202,7 +214,13 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
             <div data-gc="servidor.channel-permissions-modal.div--5" className="min-w-0 flex-1 overflow-y-auto pr-1">
               {target ? (
                 <div data-gc="servidor.channel-permissions-modal.div--6" className="space-y-4">
-                  {permissions.map((permission) => {
+                  {groups.map((group) => (
+                  <section data-gc="servidor.channel-permissions-modal.section" key={group.title} className="space-y-4 pt-2 first:pt-0">
+                    <h4 data-gc="servidor.channel-permissions-modal.h4" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                      {group.title}
+                    </h4>
+
+                  {group.permissions.map((permission) => {
                     const label = PERMISSION_LABELS[permission];
                     const blocked = !amAdmin && !minePermissions.includes(permission);
                     const state = stateFor(permission);
@@ -246,6 +264,8 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                       </div>
                     );
                   })}
+                  </section>
+                  ))}
 
                   {current && (
                     <Button data-gc="servidor.channel-permissions-modal.button--3"

@@ -52,7 +52,7 @@ export const Button = ({ className, variant, size, asChild = false, ...props }: 
 export { buttonVariants };
 
 export const boxButtonClass = cn(
-  "flex shrink-0 items-center justify-center rounded-md transition",
+  "gc-icone flex shrink-0 items-center justify-center rounded-md transition",
   "size-[var(--textarea-button-height)] [&>svg]:size-[var(--textarea-button-icon-size)]",
   "disabled:cursor-not-allowed disabled:opacity-30",
 );
