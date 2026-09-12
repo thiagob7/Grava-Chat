@@ -185,6 +185,50 @@ const Notice: React.FC<{ kind: NoticeKind; children: React.ReactNode }> = ({
   </div>
 );
 
+/*
+  Título e lista saem do texto da mensagem, então herdam a cor e a fonte dela: o
+  que muda é o peso, o tamanho e o espaço em volta. O primeiro de uma mensagem
+  não leva margem em cima, senão a mensagem começa afastada do próprio nome.
+*/
+const TITLE_SIZE: Record<1 | 2 | 3, string> = {
+  1: "text-xl",
+  2: "text-lg",
+  3: "text-base",
+};
+
+const Title: React.FC<{ level: 1 | 2 | 3; children: React.ReactNode }> = ({
+  level,
+  children,
+}) => (
+  <p data-gc="conversa.message-content.p--2"
+    role="heading"
+    aria-level={level}
+    className={cn("mb-1 mt-3 font-bold leading-snug text-ink first:mt-0", TITLE_SIZE[level])}
+  >
+    {children}
+  </p>
+);
+
+const List: React.FC<{ ordered: boolean; items: React.ReactNode[] }> = ({
+  ordered,
+  items,
+}) => {
+  const Tag = ordered ? "ol" : "ul";
+
+  return (
+    <Tag data-gc="conversa.message-content.tag"
+      className={cn(
+        "my-1 space-y-0.5 ps-6 marker:text-ink-faint",
+        ordered ? "list-decimal" : "list-disc",
+      )}
+    >
+      {items.map((item, i) => (
+        <li data-gc="conversa.message-content.li" key={i}>{item}</li>
+      ))}
+    </Tag>
+  );
+};
+
 const Quote: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div data-gc="conversa.message-content.div--3" className={cn(flxCls("quote"), "my-1 flex gap-2")}>
     <span data-gc="conversa.message-content.span--2"
@@ -268,10 +312,35 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   pieces.forEach((piece, i) => {
     if (piece.kind === "texto") {
       for (const [j, snippet] of fromNotices(piece.text).entries()) {
+        if (snippet.kind === "lista") {
+          hasPanel = true;
+
+          parts.push(
+            <List data-gc="conversa.message-content.list"
+              key={`l${i}-${j}`}
+              ordered={snippet.ordered}
+              items={snippet.items.map((item, k) =>
+                running(item, byName, `li${i}-${j}-${k}`, mentions),
+              )}
+            />,
+          );
+          continue;
+        }
+
         const inside = running(snippet.text, byName, `t${i}-${j}`, mentions);
 
         if (snippet.kind === "texto") {
           parts.push(...inside);
+          continue;
+        }
+
+        if (snippet.kind === "titulo") {
+          hasPanel = true;
+          parts.push(
+            <Title data-gc="conversa.message-content.title" key={`h${i}-${j}`} level={snippet.level}>
+              {inside}
+            </Title>,
+          );
           continue;
         }
 
