@@ -240,7 +240,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     >
       {fresh && (
         <div data-gc="conversa.message-list.div--5"
-          className="sticky top-0 z-20 flex items-center justify-between gap-3 bg-brand px-4 py-1.5 text-sm font-semibold text-sobre-marca shadow-sm"
+          className="sticky top-0 z-20 mx-2 flex items-center justify-between gap-3 rounded-b-lg bg-brand px-3 py-1.5 text-13 font-semibold text-sobre-marca shadow-md @sm:mx-4 @sm:px-4"
         >
           <span data-gc="conversa.message-list.span" className="min-w-0 truncate">
             {fresh.count} {fresh.count === 1 ? "mensagem nova" : "mensagens novas"}
