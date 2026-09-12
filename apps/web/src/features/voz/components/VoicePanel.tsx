@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AudioLines, MonitorUp, MonitorX, PhoneOff, Signal, Video, VideoOff } from "lucide-react";
+import { AudioLines, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
@@ -10,6 +10,7 @@ import { NoisePopoverSuppression } from "~/features/voz/components/SupressaoDeRu
 import { VoiceDetailsPopover } from "~/features/voz/components/VoiceDetailsPopover";
 import { pingColor, useVoicePing, type CallPing } from "~/features/voz/hooks/use-voice-ping";
 import { desktop } from "~/lib/desktop";
+import { IconeRiscado } from "~/features/voz/components/IconeRiscado";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { flx } from "~/lib/compat-de-tema";
@@ -146,18 +147,22 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
         <SoundboardPanel data-gc="voz.voice-panel.soundboard-panel" guildId={guildId ?? undefined} canUse={canUseSounds} />
 
         <VoiceControl data-gc="voz.voice-panel.voice-control" label={t("chamada.aparelhos.camera")} onClick={() => void toggleCamera()}>
-          {cameraEnabled ? <Video data-gc="voz.voice-panel.video" size={18} className="text-online" /> : <VideoOff data-gc="voz.voice-panel.video-off" size={18} />}
+          <IconeRiscado data-gc="voz.voice-panel.icone-riscado"
+            icone={Video}
+            riscado={!cameraEnabled}
+            className={cameraEnabled ? "text-online" : undefined}
+          />
         </VoiceControl>
 
         <VoiceControl data-gc="voz.voice-panel.voice-control--2"
           label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
           onClick={() => void toggleScreen()}
         >
-          {screenEnabled ? (
-            <MonitorX data-gc="voz.voice-panel.monitor-x" size={18} className="text-online" />
-          ) : (
-            <MonitorUp data-gc="voz.voice-panel.monitor-up" size={18} />
-          )}
+          <IconeRiscado data-gc="voz.voice-panel.icone-riscado--2"
+            icone={MonitorUp}
+            riscado={!screenEnabled}
+            className={screenEnabled ? "text-online" : undefined}
+          />
         </VoiceControl>
       </div>
     </div>
@@ -175,7 +180,7 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
     <button data-gc="voz.voice-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
-      className="gc-icone flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+      className="gc-icone flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink hover:[--cor-do-vao:var(--color-surface-4)]"
     >
       {children}
     </button>

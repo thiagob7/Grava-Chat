@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Headphones, HeadphoneOff, Mic, MicOff, Phone, Settings, Volume2 } from "lucide-react";
+import { Headphones, Mic, Phone, Settings, Volume2 } from "lucide-react";
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { IconeRiscado } from "~/features/voz/components/IconeRiscado";
 import { UserName } from "~/features/perfil/components/UserName";
 import { OwnCardMenu, stateLabel } from "~/features/perfil/components/cartao/MenuDoProprioCartao";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
@@ -119,7 +120,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
             onClick={() => void toggleMic()}
             cut={!micEnabled || micBlocked}
           >
-            {micEnabled && !micBlocked ? <Mic data-gc="perfil.user-panel.mic" size={18} /> : <MicOff data-gc="perfil.user-panel.mic-off" size={18} />}
+            <IconeRiscado data-gc="perfil.user-panel.icone-riscado" icone={Mic} riscado={!micEnabled || micBlocked} />
           </PanelButton>
 
           <PanelButton data-gc="perfil.user-panel.panel-button--2"
@@ -127,7 +128,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
             onClick={() => void toggleDeafen()}
             cut={deafened}
           >
-            {deafened ? <HeadphoneOff data-gc="perfil.user-panel.headphone-off" size={18} /> : <Headphones data-gc="perfil.user-panel.headphones" size={18} />}
+            <IconeRiscado data-gc="perfil.user-panel.icone-riscado--2" icone={Headphones} riscado={deafened} />
           </PanelButton>
 
           <Tooltip data-gc="perfil.user-panel.tooltip" label="Configurações">
@@ -199,7 +200,7 @@ const PanelButton: React.FC<PanelPropsButton> = ({ children, label, onClick, cut
       aria-pressed={cut}
       className={cn(
         flxCls("footerButton"),
-        "gc-icone shrink-0 rounded p-1.5 transition hover:bg-surface-3",
+        "gc-icone shrink-0 rounded p-1.5 transition hover:bg-surface-3 hover:[--cor-do-vao:var(--color-surface-3)]",
         cut ? "text-danger" : "text-ink-muted hover:text-ink",
       )}
     >
