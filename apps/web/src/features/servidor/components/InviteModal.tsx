@@ -36,8 +36,13 @@ interface InviteModalProps {
 
 type Sending = "enviando" | "enviado" | "erro";
 
-type Step = "convidar" | "opcoes";
-const STEPS: readonly Step[] = ["convidar", "opcoes"];
+/*
+  Os nomes aqui são as chaves dos painéis do carrossel. Estavam em português
+  enquanto os painéis já tinham virado inglês, e `panels[step]` não achava
+  nada: o modal abria com o conteúdo vazio.
+*/
+type Step = "invite" | "options";
+const STEPS: readonly Step[] = ["invite", "options"];
 
 const MASK = "••••••••••••••••••••••••••";
 
@@ -46,7 +51,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
   const [link, setLink] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [view, setView] = useState<Step>("convidar");
+  const [view, setView] = useState<Step>("invite");
   const [options, setOptions] = useState<InviteOptions>({
     expiresInHours: null,
     maxUses: null,
@@ -75,7 +80,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
           setLink(`${window.location.origin}/invite/${invite.code}`);
           setExpiresAt(invite.expiresAt);
           setOptions(picked);
-          setView("convidar");
+          setView("invite");
         })
         .catch(() => undefined);
     },
@@ -87,7 +92,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
     setSearch("");
     setSendings({});
-    setView("convidar");
+    setView("invite");
     generate({ expiresInHours: null, maxUses: null });
   }, [open, guildId, generate]);
 
@@ -143,7 +148,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                 <InviteSettings data-gc="servidor.invite-modal.invite-settings.generate"
                   current={options}
                   generating={createInvite.isPending}
-                  onBack={() => setView("convidar")}
+                  onBack={() => setView("invite")}
                   onCreate={generate}
                 />
               ),
@@ -253,7 +258,7 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
 
                   <button data-gc="servidor.invite-modal.button--3"
                     type="button"
-                    onClick={() => setView("opcoes")}
+                    onClick={() => setView("options")}
                     className="text-brand transition hover:underline"
                   >
                     Editar link de convite
