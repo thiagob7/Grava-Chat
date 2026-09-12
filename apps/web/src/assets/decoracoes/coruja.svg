@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-vira { 0%,100% { transform: rotate(0deg) } 25% { transform: rotate(-10deg) } 58% { transform: rotate(7deg) } }
+    @keyframes gc-pisca { 0%,88%,100% { transform: scaleY(0) } 91%,95% { transform: scaleY(1) } }
+    .cabeca { animation: gc-vira 4.2s ease-in-out infinite; transform-origin: 108px 44px }
+    .palpebra { animation: gc-pisca 4.2s steps(1,end) infinite }
+    .pe { transform-origin: 99px 26px }
+    .pd { transform-origin: 117px 26px }
+    @media (prefers-reduced-motion: reduce) { .cabeca, .palpebra { animation: none } }
+  </style>
+  <ellipse cx="108" cy="48" rx="25" ry="21" fill="#7d6552"/>
+  <ellipse cx="108" cy="53" rx="15" ry="15" fill="#c9ab88"/>
+  <ellipse cx="87" cy="46" rx="7" ry="14" fill="#6a5443"/>
+  <ellipse cx="129" cy="46" rx="7" ry="14" fill="#6a5443"/>
+  <g class="cabeca">
+    <path d="M92 15 l1 -13 l10 9 z" fill="#7d6552"/>
+    <path d="M124 15 l-1 -13 l-10 9 z" fill="#7d6552"/>
+    <circle cx="108" cy="28" r="19" fill="#7d6552"/>
+    <ellipse cx="108" cy="29" rx="16" ry="15" fill="#e9dcc4"/>
+    <circle cx="99" cy="26" r="7" fill="#f6f0e2"/>
+    <circle cx="117" cy="26" r="7" fill="#f6f0e2"/>
+    <circle cx="99" cy="26" r="3.8" fill="#241c14"/>
+    <circle cx="117" cy="26" r="3.8" fill="#241c14"/>
+    <ellipse class="palpebra pe" cx="99" cy="26" rx="7.3" ry="7.3" fill="#d7c5a6"/>
+    <ellipse class="palpebra pd" cx="117" cy="26" rx="7.3" ry="7.3" fill="#d7c5a6"/>
+    <path d="M108 31 l4.5 7 l-9 0 z" fill="#e8a33c"/>
+  </g>
+</svg>

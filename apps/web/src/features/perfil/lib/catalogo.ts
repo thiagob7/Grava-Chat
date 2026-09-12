@@ -52,17 +52,21 @@ export const NAME_EFFECT_OPTIONS: Choice<NameEffect>[] = catalog(NAME_EFFECTS, {
 
 export const AVATAR_DECORATIONS: Choice<Decoration>[] = catalog(DECORATIONS, {
   nenhuma: "Nenhuma",
-  aurora: "Aurora",
-  chamas: "Chamas",
-  circuito: "Circuito",
-  petalas: "Pétalas",
-  orbita: "Órbita",
-  aro: ["Aro dourado", "animada — arquivo Lottie, não CSS"],
   alada: ["Moldura alada", "animada — asas e estrela"],
   gelo: ["Anel de gelo", "animada — neve acumulada e cristais"],
   coroa: ["Coroa dourada", "imagem — gemas piscando e lampejo girando"],
   runas: ["Anel rúnico", "imagem — glifos acendendo em pedra"],
   loureiro: ["Coroa de louros", "imagem — ramos com balanço leve"],
+  capivara: ["Capivara", "bicho — dorme na cabeça e respira"],
+  gato: ["Gato", "bicho — enrodilhado, com o rabo batendo"],
+  tucano: ["Tucano", "bicho — pousa na borda e vira o bico"],
+  sapo: ["Sapo", "bicho — pisca e dá um pulinho"],
+  "beija-flor": ["Beija-flor", "bicho — para no ar batendo as asas"],
+  arara: ["Arara", "bicho — inclina a cabeça e balança a cauda"],
+  preguica: ["Preguiça", "bicho — pendura no galho e balança devagar"],
+  coruja: ["Coruja", "bicho — vira a cabeça e pisca"],
+  borboleta: ["Borboleta", "bicho — abre e fecha as asas"],
+  cachorro: ["Cachorro", "bicho — abana o rabo e sacode a orelha"],
 });
 
 export const AVATAR_FRAMES: Choice<Frame>[] = catalog(FRAMES, {

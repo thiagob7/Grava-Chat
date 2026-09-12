@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-balanca { 0%,100% { transform: rotate(-3.5deg) } 50% { transform: rotate(3.5deg) } }
+    @keyframes gc-pisca { 0%,90%,100% { transform: scaleY(0) } 93%,96% { transform: scaleY(1) } }
+    .bicho { animation: gc-balanca 5s ease-in-out infinite; transform-origin: 124px 18px }
+    .palpebra { animation: gc-pisca 5s steps(1,end) infinite }
+    .pe { transform-origin: 117px 34px }
+    .pd { transform-origin: 131px 34px }
+    @media (prefers-reduced-motion: reduce) { .bicho, .palpebra { animation: none } }
+  </style>
+  <path d="M58 25 L176 14" fill="none" stroke="#6b4f35" stroke-width="7" stroke-linecap="round"/>
+  <g class="bicho">
+    <path d="M114 38 q2 -22 5 -24 q5 -3 4 4" fill="none" stroke="#7f6f58" stroke-width="8" stroke-linecap="round"/>
+    <path d="M134 38 q-2 -22 -5 -24 q-5 -3 -4 4" fill="none" stroke="#7f6f58" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="124" cy="50" rx="17" ry="16" fill="#8a7a63"/>
+    <ellipse cx="124" cy="54" rx="11" ry="11" fill="#a2927a"/>
+    <circle cx="124" cy="35" r="15" fill="#9a8a71"/>
+    <ellipse cx="124" cy="37" rx="11" ry="10" fill="#d8cbb0"/>
+    <path d="M112 30 q5 4 5 10 M136 30 q-5 4 -5 10" fill="none" stroke="#5d4c39" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="118" cy="35" r="2.6" fill="#2a2118"/>
+    <circle cx="130" cy="35" r="2.6" fill="#2a2118"/>
+    <ellipse class="palpebra pe" cx="118" cy="35" rx="3.4" ry="3.4" fill="#c8b99c"/>
+    <ellipse class="palpebra pd" cx="130" cy="35" rx="3.4" ry="3.4" fill="#c8b99c"/>
+    <path d="M122 40 q2 2 4 0" fill="none" stroke="#5d4c39" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M119 44 q5 4 10 0" fill="none" stroke="#5d4c39" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>

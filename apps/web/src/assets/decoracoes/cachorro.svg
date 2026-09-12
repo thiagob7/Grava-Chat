@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-rabo { 0%,100% { transform: rotate(-16deg) } 50% { transform: rotate(18deg) } }
+    @keyframes gc-orelha { 0%,70%,100% { transform: rotate(0deg) } 78% { transform: rotate(-15deg) } 87% { transform: rotate(6deg) } }
+    .rabo { animation: gc-rabo .7s ease-in-out infinite; transform-origin: 76px 44px }
+    .orelha { animation: gc-orelha 3.2s ease-in-out infinite; transform-origin: 99px 20px }
+    @media (prefers-reduced-motion: reduce) { .rabo, .orelha { animation: none } }
+  </style>
+  <path class="rabo" d="M76 44 q-22 -2 -24 -19" fill="none" stroke="#c98a4b" stroke-width="9" stroke-linecap="round"/>
+  <ellipse cx="104" cy="46" rx="30" ry="16" fill="#c98a4b"/>
+  <ellipse cx="104" cy="51" rx="22" ry="10" fill="#e0a468"/>
+  <circle cx="116" cy="28" r="17" fill="#c98a4b"/>
+  <ellipse class="orelha" cx="97" cy="29" rx="7" ry="13" transform="rotate(-13 97 29)" fill="#a86f37"/>
+  <ellipse cx="132" cy="25" rx="6.5" ry="12" transform="rotate(14 132 25)" fill="#a86f37"/>
+  <ellipse cx="121" cy="38" rx="12" ry="9" fill="#f0dcc2"/>
+  <ellipse cx="126" cy="34" rx="4" ry="3.2" fill="#3a2a1c"/>
+  <path d="M120 41 q5 4 9 0" fill="none" stroke="#3a2a1c" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="110" cy="23" r="2.8" fill="#3a2a1c"/>
+  <circle cx="123" cy="23" r="2.8" fill="#3a2a1c"/>
+</svg>
