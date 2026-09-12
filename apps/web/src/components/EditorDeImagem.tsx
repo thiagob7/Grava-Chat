@@ -159,7 +159,7 @@ export const ImageEditor: React.FC<{
       <DialogContent data-gc="editor-de-imagem.dialog-content" className="max-w-md">
         <DialogTitle data-gc="editor-de-imagem.dialog-title" className="text-base font-semibold">Editar imagem</DialogTitle>
 
-        <div data-gc="editor-de-imagem.div"
+        <div data-gc="editor-de-imagem.div.start-drag"
           ref={stage}
           className="relative mt-4 select-none overflow-hidden rounded-lg bg-surface-3"
           style={{ height: box.height || undefined }}
@@ -214,7 +214,7 @@ export const ImageEditor: React.FC<{
 
           <ImageIcon data-gc="editor-de-imagem.image-icon--2" size={24} className="shrink-0 text-ink-faint" />
 
-          <button data-gc="editor-de-imagem.button.turn"
+          <button data-gc="editor-de-imagem.button"
             type="button"
             aria-label="Girar"
             onClick={() => change({ turn: (frame.turn + 90) % 360 })}
@@ -225,7 +225,7 @@ export const ImageEditor: React.FC<{
         </div>
 
         <DialogFooter data-gc="editor-de-imagem.dialog-footer">
-          <Button data-gc="editor-de-imagem.button.reset" variant="link" className="mr-auto" onClick={() => setFrame(START)}>
+          <Button data-gc="editor-de-imagem.button--2" variant="link" className="mr-auto" onClick={() => setFrame(START)}>
             Redefinir
           </Button>
 

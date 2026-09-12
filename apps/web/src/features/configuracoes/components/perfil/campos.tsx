@@ -87,7 +87,7 @@ export function OptionsGrid<T extends string>({
       <Label data-gc="configuracoes.perfil.campos.label--2">{label}</Label>
       <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {options.map((option) => (
-          <button data-gc="configuracoes.perfil.campos.button--2"
+          <button data-gc="configuracoes.perfil.campos.button--3"
             key={option.id}
             type="button"
             onClick={() => onPick(option.id)}

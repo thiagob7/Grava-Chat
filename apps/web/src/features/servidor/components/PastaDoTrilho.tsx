@@ -149,9 +149,9 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
     >
       {folder.isOpen || folder.showIconMinimized ? (
         folder.isOpen ? (
-          <DrawingIsOpen data-gc="servidor.pasta-do-trilho.folder-open" size={22} />
+          <DrawingIsOpen data-gc="servidor.pasta-do-trilho.drawing-is-open" size={22} />
         ) : (
-          <Drawing data-gc="servidor.pasta-do-trilho.desenho" size={22} />
+          <Drawing data-gc="servidor.pasta-do-trilho.drawing" size={22} />
         )
       ) : (
         <span data-gc="servidor.pasta-do-trilho.span" className="grid size-9 grid-cols-2 gap-1">
@@ -198,7 +198,7 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
               />
             )}
 
-            <DropBrand data-gc="servidor.pasta-do-trilho.marca-de-soltar" zone={zone} />
+            <DropBrand data-gc="servidor.pasta-do-trilho.drop-brand" zone={zone} />
 
             <div data-gc="servidor.pasta-do-trilho.div--2" className="relative flex w-full justify-center">
               <span data-gc="servidor.pasta-do-trilho.span--4"
@@ -226,7 +226,7 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
             {folder.isOpen && (
               <div data-gc="servidor.pasta-do-trilho.div--3" className="mt-2 flex w-full flex-col items-center gap-2">
                 {guilds.map((guild) => (
-                  <ServerItem data-gc="servidor.pasta-do-trilho.item-do-servidor.on-select"
+                  <ServerItem data-gc="servidor.pasta-do-trilho.server-item.on-select"
                     key={guild.id}
                     guild={guild}
                     active={guild.id === activeGuildId}
@@ -268,16 +268,16 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
               <ContextMenuSeparator data-gc="servidor.pasta-do-trilho.context-menu-separator--2" />
 
               <ContextMenuItem data-gc="servidor.pasta-do-trilho.context-menu-item--3" onSelect={() => forAll({ mutedUntil: null })}>
-                {t("servidor.pasta.reativarTodas")} <Brand data-gc="servidor.pasta-do-trilho.marca" on={!muted} />
+                {t("servidor.pasta.reativarTodas")} <Brand data-gc="servidor.pasta-do-trilho.brand" on={!muted} />
               </ContextMenuItem>
 
               <ContextMenuSeparator data-gc="servidor.pasta-do-trilho.context-menu-separator--3" />
 
               <ContextMenuItem data-gc="servidor.pasta-do-trilho.context-menu-item--4" onSelect={() => forAll({ hideMuted: true })}>
-                {t("servidor.menu.ocultarSilenciados")} <Brand data-gc="servidor.pasta-do-trilho.marca--2" on={hiding} />
+                {t("servidor.menu.ocultarSilenciados")} <Brand data-gc="servidor.pasta-do-trilho.brand--2" on={hiding} />
               </ContextMenuItem>
               <ContextMenuItem data-gc="servidor.pasta-do-trilho.context-menu-item--5" onSelect={() => forAll({ hideMuted: false })}>
-                {t("servidor.pasta.mostrarSilenciados")} <Brand data-gc="servidor.pasta-do-trilho.marca--3" on={!hiding} />
+                {t("servidor.pasta.mostrarSilenciados")} <Brand data-gc="servidor.pasta-do-trilho.brand--3" on={!hiding} />
               </ContextMenuItem>
             </ContextMenuSubContent>
           </ContextMenuSub>
@@ -289,7 +289,7 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
             <ContextMenuSubContent data-gc="servidor.pasta-do-trilho.context-menu-sub-content--2">
               {modes.map((m) => (
                 <ContextMenuItem data-gc="servidor.pasta-do-trilho.context-menu-item--6" key={m.key} onSelect={() => forAll({ mode: m.mode })}>
-                  {t(`servidor.menu.${m.key}`)} <Brand data-gc="servidor.pasta-do-trilho.marca--4" on={modeCommon === m.mode} />
+                  {t(`servidor.menu.${m.key}`)} <Brand data-gc="servidor.pasta-do-trilho.brand--4" on={modeCommon === m.mode} />
                 </ContextMenuItem>
               ))}
 
@@ -325,7 +325,7 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
         </ContextMenuContent>
       </ContextMenu>
 
-      <FolderSettings data-gc="servidor.pasta-do-trilho.configuracoes-da-pasta"
+      <FolderSettings data-gc="servidor.pasta-do-trilho.folder-settings"
         folder={folder}
         suggestion={guilds.map((g) => g.name).join(", ")}
         isOpen={configuring}
@@ -409,7 +409,7 @@ const FolderSettings: React.FC<{
               <p data-gc="servidor.pasta-do-trilho.p--2" className="text-sm font-medium">{t("servidor.pasta.mostrarIcone")}</p>
               <p data-gc="servidor.pasta-do-trilho.p--3" className="mt-0.5 text-xs text-ink-faint">{t("servidor.pasta.dicaDoIcone")}</p>
             </div>
-            <Switch data-gc="servidor.pasta-do-trilho.switch.set-minimizado" checked={minimized} onCheckedChange={setMinimized} />
+            <Switch data-gc="servidor.pasta-do-trilho.switch.set-minimized" checked={minimized} onCheckedChange={setMinimized} />
           </div>
 
           <div data-gc="servidor.pasta-do-trilho.div--9">
@@ -425,7 +425,7 @@ const FolderSettings: React.FC<{
                   value: iconName,
                   label: (
                     <span data-gc="servidor.pasta-do-trilho.span--7" className="flex items-center gap-2">
-                      <Drawing data-gc="servidor.pasta-do-trilho.desenho--2" size={15} />
+                      <Drawing data-gc="servidor.pasta-do-trilho.drawing--2" size={15} />
                       {t(`servidor.pasta.icones.${iconName}`)}
                     </span>
                   ),
@@ -436,15 +436,15 @@ const FolderSettings: React.FC<{
         </DialogBody>
 
         <DialogFooter data-gc="servidor.pasta-do-trilho.dialog-footer" className="justify-between">
-          <Button data-gc="servidor.pasta-do-trilho.button.on-desfazer" variant="danger" onClick={onUndo}>
+          <Button data-gc="servidor.pasta-do-trilho.button.on-undo" variant="danger" onClick={onUndo}>
             {t("servidor.pasta.excluir")}
           </Button>
 
           <span data-gc="servidor.pasta-do-trilho.span--8" className="flex gap-2">
-            <Button data-gc="servidor.pasta-do-trilho.button.on-fechar" variant="surface" onClick={onClose}>
+            <Button data-gc="servidor.pasta-do-trilho.button.on-close" variant="surface" onClick={onClose}>
               {t("comum.cancelar")}
             </Button>
-            <Button data-gc="servidor.pasta-do-trilho.button.salvar" onClick={save}>{t("servidor.pasta.salvar")}</Button>
+            <Button data-gc="servidor.pasta-do-trilho.button.save" onClick={save}>{t("servidor.pasta.salvar")}</Button>
           </span>
         </DialogFooter>
       </DialogContent>
