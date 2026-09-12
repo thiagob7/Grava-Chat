@@ -13,9 +13,10 @@ import {
 import { useFindCommon } from "~/@core/application/queries/user/use-find-em-comum";
 import { colorMoreHigh } from "~/features/perfil/lib/cargo";
 import { cn } from "~/lib/utils";
+import { trackNotch } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { currentLanguage, useTranslation } from "~/traducao";
-import { flx, flxCls, type Places } from "~/lib/compat-de-tema";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface FullProfileModalProps {
   open: boolean;
@@ -26,20 +27,6 @@ interface FullProfileModalProps {
 
 type Tab = "geral" | "amigos" | "servidores";
 
-const TrackMask: React.FC<{ id: string; place: Places; cx: number; radius: number }> = ({
-  id,
-  place,
-  cx,
-  radius,
-}) => (
-  <svg data-gc="perfil.full-profile-modal.svg" aria-hidden className={cn(flxCls(place), "absolute size-0")}>
-    <mask data-gc="perfil.full-profile-modal.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
-      <rect data-gc="perfil.full-profile-modal.rect" width="100%" height="100%" fill="white" />
-      <circle data-gc="perfil.full-profile-modal.circle" cx={cx} cy="100%" r={radius} fill="black" />
-    </mask>
-  </svg>
-);
-
 export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   open,
   profile,
@@ -47,7 +34,6 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const maskId = React.useId();
   const [tab, setTab] = useState<Tab>("geral");
   const inCommon = useFindCommon(profile.id, tab !== "geral");
 
@@ -67,12 +53,10 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
       className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("completeProfile"), flxCls("profileCompleteContent"))}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
-      <TrackMask data-gc="perfil.full-profile-modal.track-mask" id={maskId} place="trackProfileMask" cx={72} radius={56} />
       <div data-gc="perfil.full-profile-modal.div"
-        className="h-28 bg-cover bg-center"
+        className={cn("h-28 bg-cover bg-center", flxCls("trackProfileMask"))}
         style={{
-          mask: `url(#${maskId})`,
-          WebkitMask: `url(#${maskId})`,
+          ...trackNotch(72, 56),
           backgroundColor: profile.profile?.bannerColor?.trim() || avatarColor(profile.id),
           ...(profile.profile?.bannerUrl
             ? { backgroundImage: `url(${profile.profile.bannerUrl})` }

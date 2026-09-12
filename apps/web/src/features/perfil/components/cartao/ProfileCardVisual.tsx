@@ -18,13 +18,14 @@ import { UserName } from "~/features/perfil/components/UserName";
 import {
   charmClass,
   charmVariables,
+  trackNotch,
   type StyleCss,
 } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
 import { currentLanguage, useTranslation } from "~/traducao";
-import { flx, flxCls, type Places } from "~/lib/compat-de-tema";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -73,20 +74,6 @@ interface ProfileCardVisualProps {
   onBio?: (value: string) => void;
 }
 
-const TrackMask: React.FC<{ id: string; place: Places; cx: number; radius: number }> = ({
-  id,
-  place,
-  cx,
-  radius,
-}) => (
-  <svg data-gc="perfil.cartao.profile-card-visual.svg" aria-hidden className={cn(flxCls(place), "absolute size-0")}>
-    <mask data-gc="perfil.cartao.profile-card-visual.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
-      <rect data-gc="perfil.cartao.profile-card-visual.rect" width="100%" height="100%" fill="white" />
-      <circle data-gc="perfil.cartao.profile-card-visual.circle" cx={cx} cy="100%" r={radius} fill="black" />
-    </mask>
-  </svg>
-);
-
 export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   id,
   displayName,
@@ -130,7 +117,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   onBio,
 }) => {
   const { t } = useTranslation();
-  const maskId = React.useId();
   const [editingTag, setEditingTag] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
 
@@ -167,12 +153,10 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           style={charmVariables({ animate: true, speed: "10s" })}
         />
       )}
-      <TrackMask data-gc="perfil.cartao.profile-card-visual.track-mask" id={maskId} place="trackMask" cx={56} radius={47} />
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
-        className="relative aspect-[20/7] bg-cover bg-center"
+        className={cn("relative aspect-[20/7] bg-cover bg-center", flxCls("trackMask"))}
         style={{
-          mask: `url(#${maskId})`,
-          WebkitMask: `url(#${maskId})`,
+          ...trackNotch(56, 47),
           backgroundColor: profile?.bannerColor?.trim() || avatarColor(id),
           ...(profile?.bannerUrl
             ? { backgroundImage: `url(${profile.bannerUrl})` }
