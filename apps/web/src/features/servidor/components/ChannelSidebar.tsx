@@ -456,6 +456,12 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                       return (
                         <div data-gc="servidor.channel-sidebar.div--9" key={channel.id} className="group/canal relative" data-canal={channel.id} data-nao-lido={unread ? "1" : undefined}>
+                          {unread && (
+                            <span data-gc="servidor.channel-sidebar.span--4"
+                              aria-hidden
+                              {...flx("channelUnreadPill", "pointer-events-none absolute -left-2 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-pilula")}
+                            />
+                          )}
                           <button data-gc="servidor.channel-sidebar.button--8"
                             onClick={() =>
                               channel.type === "LINK"
@@ -516,10 +522,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                 className="shrink-0 text-ink-faint"
                               />
                             )}
-                            <span data-gc="servidor.channel-sidebar.span--4"
+                            <span data-gc="servidor.channel-sidebar.span--5"
                               className="flex min-w-0 flex-1 flex-col items-start justify-center text-left leading-[18px]"
                             >
-                              <span data-gc="servidor.channel-sidebar.span--5"
+                              <span data-gc="servidor.channel-sidebar.span--6"
                                 className="-my-0.5 w-full truncate py-0.5"
                                 style={{
                                   fontFamily:
@@ -541,10 +547,10 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               )}
                             </span>
 
-                            <span data-gc="servidor.channel-sidebar.span--6" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
+                            <span data-gc="servidor.channel-sidebar.span--7" className="ml-auto flex shrink-0 items-center gap-1.5 group-hover/canal:invisible">
                               {channel.type === "VOICE" &&
                                 channel.userLimit > 0 && (
-                                  <span data-gc="servidor.channel-sidebar.span--7"
+                                  <span data-gc="servidor.channel-sidebar.span--8"
                                     title={`${entries.length} de ${channel.userLimit}`}
                                     className={cn(
                                       "text-11 font-medium tabular-nums",
@@ -563,7 +569,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                               {unread &&
                                 (notRead > 0 ? (
-                                  <span data-gc="servidor.channel-sidebar.span--8"
+                                  <span data-gc="servidor.channel-sidebar.span--9"
                                     title={
                                       mentions > 0
                                         ? `${mentions} menção(ões) a você`
@@ -580,7 +586,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                                     {notRead > 99 ? "99+" : notRead}
                                   </span>
                                 ) : (
-                                  <span data-gc="servidor.channel-sidebar.span--9" className="size-2 rounded-full bg-ink" />
+                                  <span data-gc="servidor.channel-sidebar.span--10" className="size-2 rounded-full bg-ink" />
                                 ))}
                             </span>
                           </button>
