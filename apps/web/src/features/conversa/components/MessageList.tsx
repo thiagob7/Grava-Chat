@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Check, Hash, Lock } from "lucide-react";
+import { ArrowDown, Check, Hash, Lock } from "lucide-react";
 
 import { useFindMessages } from "~/@core/application/queries/message/use-find-messages";
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
@@ -158,6 +158,30 @@ export const MessageList: React.FC<MessageListProps> = ({
   const unread = readStates?.[channelId];
   const fresh = unread?.notRead ? { count: unread.notRead, sinceId: unread.read } : null;
 
+  /* A primeira que chegou depois da última lida, quando ela está na página. */
+  const firstFreshId = useMemo(() => {
+    if (!fresh?.sinceId) return null;
+
+    const seen = messages.findIndex((message) => message.id === fresh.sinceId);
+    return seen >= 0 ? (messages[seen + 1]?.id ?? null) : null;
+  }, [fresh, messages]);
+
+  const [readingOld, setReadingOld] = useState(false);
+
+  const goTo = (messageId: string) => {
+    scroller.current
+      ?.querySelector(`[data-mensagem="${messageId}"]`)
+      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
+
+  const goToEnd = () => {
+    const box = scroller.current;
+    if (!box) return;
+
+    bottomAnchor.current = true;
+    box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+  };
+
   /* A hora é a da primeira que chegou depois da última que você leu. */
   const freshSince = useMemo(() => {
     if (!fresh?.sinceId) return null;
@@ -175,8 +199,16 @@ export const MessageList: React.FC<MessageListProps> = ({
     const el = scroller.current;
     if (!el) return;
 
-    bottomAnchor.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    const far = el.scrollHeight - el.scrollTop - el.clientHeight;
+
+    bottomAnchor.current = far < 120;
     if (bottomAnchor.current) markCurrentRead();
+
+    /*
+      O aviso de "você está lá atrás" só aparece depois de uma tela inteira de
+      distância. Perto do fim ele seria um botão para andar dois dedos.
+    */
+    setReadingOld(far > el.clientHeight);
 
     if (el.scrollTop < 200 && hasNextPage && !isFetchingNextPage) {
       previousHeight.current = el.scrollHeight;
@@ -240,17 +272,27 @@ export const MessageList: React.FC<MessageListProps> = ({
     >
       {fresh && (
         <div data-gc="conversa.message-list.div--5"
-          className="sticky top-0 z-20 mx-2 flex items-center justify-between gap-3 rounded-b-lg bg-brand px-3 py-1.5 text-13 font-semibold text-sobre-marca shadow-md @sm:mx-4 @sm:px-4"
+          className="sticky top-0 z-20 mx-2 flex items-center justify-between gap-3 rounded-b-lg bg-brand text-13 font-semibold text-sobre-marca shadow-md @sm:mx-4"
         >
-          <span data-gc="conversa.message-list.span" className="min-w-0 truncate">
+          {/*
+            O texto é o caminho até a primeira que chegou: clicar leva para
+            onde a leitura parou. Se essa mensagem ainda não está na página,
+            não há para onde ir, e ele é só texto.
+          */}
+          <button data-gc="conversa.message-list.button"
+            type="button"
+            disabled={!firstFreshId}
+            onClick={() => firstFreshId && goTo(firstFreshId)}
+            className="min-w-0 truncate px-3 py-1.5 text-left enabled:hover:underline disabled:cursor-default @sm:px-4"
+          >
             {fresh.count} {fresh.count === 1 ? "mensagem nova" : "mensagens novas"}
             {freshSince ? ` desde ${formatTimestamp(freshSince)}` : ""}
-          </span>
+          </button>
 
           <button data-gc="conversa.message-list.button.mark-current-read"
             type="button"
             onClick={markCurrentRead}
-            className="flex shrink-0 items-center gap-1.5 rounded px-1 transition hover:underline"
+            className="flex shrink-0 items-center gap-1.5 py-1.5 pe-3 transition hover:underline @sm:pe-4"
           >
             Marcar como lida <Check data-gc="conversa.message-list.check" size={15} />
           </button>
@@ -315,7 +357,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
           return (
             <div data-gc="conversa.message-list.div--9" key={message.id}>
-              <button data-gc="conversa.message-list.button"
+              <button data-gc="conversa.message-list.button--2"
                 type="button"
                 onClick={() => setIsOpen((current) => new Set([...current, ...ids]))}
                 className={cn(
@@ -324,7 +366,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                 )}
               >
                 {t("conversa.mensagem.bloqueadas", { quantas: count })}
-                <span data-gc="conversa.message-list.span--2" className="font-medium">{t("conversa.mensagem.mostrarBloqueadas")}</span>
+                <span data-gc="conversa.message-list.span" className="font-medium">{t("conversa.mensagem.mostrarBloqueadas")}</span>
               </button>
             </div>
           );
@@ -332,13 +374,27 @@ export const MessageList: React.FC<MessageListProps> = ({
 
         return (
           <div data-gc="conversa.message-list.div--10" key={message.id}>
-            {isNewDay && (
+            {/*
+              O risco de NOVO marca onde a leitura parou, e não se mistura com
+              o risco do dia: um separa datas, o outro separa o que você já
+              tinha visto do que chegou depois.
+            */}
+            {message.id === firstFreshId && (
               <div data-gc="conversa.message-list.div--11" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
-                <span data-gc="conversa.message-list.span--3" className="h-px flex-1 bg-line" />
-                <span data-gc="conversa.message-list.span--4" {...flx("dayDivider", "text-xs font-semibold text-ink-faint")}>
+                <span data-gc="conversa.message-list.span--2" className="h-px flex-1 bg-danger" />
+                <span data-gc="conversa.message-list.span--3" className="rounded-full bg-danger px-1.5 py-px text-10 font-bold uppercase tracking-wide text-sobre-marca">
+                  Novo
+                </span>
+              </div>
+            )}
+
+            {isNewDay && (
+              <div data-gc="conversa.message-list.div--12" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
+                <span data-gc="conversa.message-list.span--4" className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--5" {...flx("dayDivider", "text-xs font-semibold text-ink-faint")}>
                   {formatDayDivider(message.createdAt)}
                 </span>
-                <span data-gc="conversa.message-list.span--5" className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--6" className="h-px flex-1 bg-line" />
               </div>
             )}
             <MessageItem data-gc="conversa.message-list.message-item.retry"
@@ -362,6 +418,28 @@ export const MessageList: React.FC<MessageListProps> = ({
         );
       })}
       </div>
+
+      {/*
+        A pílula fica colada no fim da área que rola, numa caixa sem altura:
+        assim ela não empurra a última mensagem para cima quando aparece.
+      */}
+      {readingOld && (
+        <div data-gc="conversa.message-list.div--13" className="sticky bottom-0 z-20 h-0">
+          <div data-gc="conversa.message-list.div--14" className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center px-3">
+            <div data-gc="conversa.message-list.div--15" className="pointer-events-auto flex items-center gap-2 rounded-full border border-line bg-surface-4/95 py-1 pe-1 ps-3.5 text-13 text-ink-muted shadow-lg backdrop-blur">
+              <span data-gc="conversa.message-list.span--7" className="truncate">Você está vendo mensagens antigas</span>
+
+              <button data-gc="conversa.message-list.button.go-to-end"
+                type="button"
+                onClick={goToEnd}
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3 py-1 font-semibold text-sobre-marca transition hover:bg-brand-hover"
+              >
+                Ir para as recentes <ArrowDown data-gc="conversa.message-list.arrow-down" size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
