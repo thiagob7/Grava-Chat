@@ -7,7 +7,9 @@ export const NoteField: React.FC<{
   userId: string;
   note: string | null;
   field?: React.RefObject<HTMLTextAreaElement | null>;
-}> = ({ userId, note, field }) => {
+  /** Sem o rótulo, para quem já desenha um título em volta. */
+  bare?: boolean;
+}> = ({ userId, note, field, bare = false }) => {
   const { t } = useTranslation();
   const save = useSaveNote(userId);
   const [text, setText] = useState(note ?? "");
@@ -15,8 +17,13 @@ export const NoteField: React.FC<{
   useEffect(() => setText(note ?? ""), [note, userId]);
 
   return (
-    <div data-gc="perfil.cartao.campo-de-nota.div" className="mt-3">
-      <p data-gc="perfil.cartao.campo-de-nota.p" className="mb-1 text-xs font-semibold uppercase text-ink-faint">{t("perfil.nota.rotulo")}</p>
+    <div data-gc="perfil.cartao.campo-de-nota.div" className={bare ? undefined : "mt-3"}>
+      {!bare && (
+        <p data-gc="perfil.cartao.campo-de-nota.p" className="mb-1 text-xs font-semibold uppercase text-ink-faint">
+          {t("perfil.nota.rotulo")}
+        </p>
+      )}
+
       <textarea data-gc="perfil.cartao.campo-de-nota.textarea"
         ref={field}
         value={text}

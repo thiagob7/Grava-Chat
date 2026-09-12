@@ -1,4 +1,4 @@
-import React, { useRef, useState, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
   asLe,
@@ -43,7 +43,6 @@ import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-pr
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
-import { NoteField } from "~/features/perfil/components/cartao/CampoDeNota";
 import { PickBadges } from "~/features/perfil/components/cartao/EscolherEmblemas";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -140,7 +139,7 @@ const ProfileCard: React.FC<{
 }> = ({ profile, onClose, guildId, roles, roleIds, canModerate }) => {
   const { t } = useTranslation();
   const [completeProfile, setProfileComplete] = useState(false);
-  const noteField = useRef<HTMLTextAreaElement>(null);
+  const [noteWanted, setNoteWanted] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [settingStatus, setSettingStatus] = useState(false);
   const { data: eu } = useMe(true);
@@ -428,18 +427,25 @@ const ProfileCard: React.FC<{
           open
           profile={profile}
           roleList={memberRoles}
-          onClose={() => setProfileComplete(false)}
+          focusNote={noteWanted}
+          onClose={() => {
+            setProfileComplete(false);
+            setNoteWanted(false);
+          }}
         />
       )}
 
       <ProfileCardVisual data-gc="perfil.user-profile-popover.profile-card-visual"
-        onOpenProfile={() => setProfileComplete(true)}
+        onOpenProfile={() => {
+          setNoteWanted(false);
+          setProfileComplete(true);
+        }}
         onIrForNote={
           profile.friendship === "SELF" || profile.system
             ? undefined
             : () => {
-                noteField.current?.scrollIntoView({ block: "nearest" });
-                noteField.current?.focus();
+                setNoteWanted(true);
+                setProfileComplete(true);
               }
         }
         id={profile.id}
@@ -480,10 +486,6 @@ const ProfileCard: React.FC<{
         className="rounded-none"
       >
         <ProfileConnections data-gc="perfil.user-profile-popover.profile-connections" connections={profile.profile?.connections} />
-
-        {profile.friendship !== "SELF" && !profile.system && (
-          <NoteField data-gc="perfil.user-profile-popover.note-field" userId={profile.id} note={profile.note} field={noteField} />
-        )}
 
         {profile.friendship === "SELF" && guildId && (
           <PickBadges data-gc="perfil.user-profile-popover.pick-badges"
@@ -570,7 +572,7 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
   */
   return (
     <div data-gc="perfil.user-profile-popover.div--4" className="px-3 pb-3 pt-1">
-      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1 rounded-lg bg-surface-3 pr-1.5">
+      <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1 rounded-lg border border-line bg-surface-2 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
           value={text}
           onChange={(e) => setText(e.target.value)}
