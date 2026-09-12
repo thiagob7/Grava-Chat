@@ -29,19 +29,30 @@ import { useTranslation } from "~/traducao";
 interface IntegrationsSectionProps {
   guildId: string;
   channels: Channel[];
+  /*
+    Quando vem de dentro das configurações de um canal, a lista é só a dele e o
+    webhook novo já nasce apontando para lá — ninguém abriu a aba de um canal
+    para ver o webhook de outro.
+  */
+  channelId?: string;
 }
 
 export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
   guildId,
   channels,
+  channelId,
 }) => {
   const { t } = useTranslation();
-  const { data: webhooks = [], isLoading } = useFindWebhooks(guildId);
+  const { data: all = [], isLoading } = useFindWebhooks(guildId);
   const create = useCreateWebhook(guildId);
+
+  const webhooks = channelId ? all.filter((hook) => hook.channelId === channelId) : all;
 
   const textChannels = channels.filter(
     (c) => c.type === "TEXT" || c.type === "FORUM",
   );
+
+  const target = channelId ?? textChannels[0]?.id;
 
   return (
     <div data-gc="servidor.server-settings.integrations-section.div" className="max-w-2xl pb-10">
@@ -55,12 +66,13 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
 
         <Button data-gc="servidor.server-settings.integrations-section.button"
           size="sm"
-          disabled={create.isPending || !textChannels.length}
+          disabled={create.isPending || !target}
           onClick={() =>
+            target &&
             create.mutate({
               guildId,
               name: "Webhook",
-              channelId: textChannels[0]!.id,
+              channelId: target,
             })
           }
         >
