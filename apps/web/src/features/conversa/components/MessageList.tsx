@@ -1,18 +1,19 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Hash, Lock } from "lucide-react";
+import { Check, Hash, Lock } from "lucide-react";
 
 import { useFindMessages } from "~/@core/application/queries/message/use-find-messages";
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
 import type { PendingMessageModel } from "~/@core/domain/models/message-model";
 import { useMarkRead } from "~/@core/application/queries/message/use-mark-read";
+import { useReadStates } from "~/@core/application/queries/message/use-read-states";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { MessageItem, shouldGroup } from "~/features/conversa/components/MessageItem";
 import { useCharms } from "~/features/perfil/hooks/use-enfeites";
 import { useMentions } from "~/features/conversa/hooks/use-mencoes";
-import { formatDayDivider } from "~/lib/format";
+import { formatDayDivider, formatTimestamp } from "~/lib/format";
 import { lineWidth, Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/traducao";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
@@ -48,6 +49,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   const pinMessage = usePinMessage(channelId);
   const sendMessage = useSendMessage();
   const markRead = useMarkRead();
+  const { data: readStates } = useReadStates(true);
 
   const scroller = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -146,6 +148,24 @@ export const MessageList: React.FC<MessageListProps> = ({
     return () => clearTimeout(clock);
   }, [target, messages, hasNextPage, isFetchingNextPage, fetchNextPage, setParams]);
 
+  /*
+    O aviso de mensagem nova sai do próprio estado de leitura, sem cópia
+    guardada: ele conta enquanto houver coisa por ler, e a única maneira de
+    zerar é a lista chegar ao fim — que é justamente quando o aviso não serve
+    mais. Por isso ele some sozinho quando você desce, e não precisa de um
+    interruptor de "já vi".
+  */
+  const unread = readStates?.[channelId];
+  const fresh = unread?.notRead ? { count: unread.notRead, sinceId: unread.read } : null;
+
+  /* A hora é a da primeira que chegou depois da última que você leu. */
+  const freshSince = useMemo(() => {
+    if (!fresh?.sinceId) return null;
+
+    const seen = messages.findIndex((message) => message.id === fresh.sinceId);
+    return seen >= 0 ? (messages[seen + 1]?.createdAt ?? null) : null;
+  }, [fresh, messages]);
+
   const markCurrentRead = () => {
     const last = messages.findLast((m) => !m.pending && !m.failed);
     if (last) markRead(channelId, last.id);
@@ -216,17 +236,36 @@ export const MessageList: React.FC<MessageListProps> = ({
       ref={scroller}
       {...flxAttr("scrollerContent")}
       onScroll={onScroll}
-      className={cn("lista-de-mensagens mede-a-largura flex-1 overflow-y-auto pt-4", flxCls("scroller"), flxCls("scrollerContent"))}
+      className={cn("lista-de-mensagens mede-a-largura flex-1 overflow-y-auto", flxCls("scroller"), flxCls("scrollerContent"))}
     >
-      <div data-gc="conversa.message-list.div--5" ref={content} {...flx("messagesContent", "pb-4")}>
+      {fresh && (
+        <div data-gc="conversa.message-list.div--5"
+          className="sticky top-0 z-20 flex items-center justify-between gap-3 bg-brand px-4 py-1.5 text-sm font-semibold text-sobre-marca shadow-sm"
+        >
+          <span data-gc="conversa.message-list.span" className="min-w-0 truncate">
+            {fresh.count} {fresh.count === 1 ? "mensagem nova" : "mensagens novas"}
+            {freshSince ? ` desde ${formatTimestamp(freshSince)}` : ""}
+          </span>
+
+          <button data-gc="conversa.message-list.button.mark-current-read"
+            type="button"
+            onClick={markCurrentRead}
+            className="flex shrink-0 items-center gap-1.5 rounded px-1 transition hover:underline"
+          >
+            Marcar como lida <Check data-gc="conversa.message-list.check" size={15} />
+          </button>
+        </div>
+      )}
+
+      <div data-gc="conversa.message-list.div--6" ref={content} {...flx("messagesContent", "pb-4 pt-4")}>
       {hasNextPage ? (
         <p data-gc="conversa.message-list.p" className="py-3 text-center text-xs text-ink-faint">
           {t(isFetchingNextPage ? "conversa.lista.carregandoMais" : "conversa.lista.verMais")}
         </p>
       ) : (
         (header ?? (
-          <div data-gc="conversa.message-list.div--6" {...flx("channelGoodWelcome", "px-2 pb-6 pt-4 @sm:px-4")}>
-            <div data-gc="conversa.message-list.div--7" className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
+          <div data-gc="conversa.message-list.div--7" {...flx("channelGoodWelcome", "px-2 pb-6 pt-4 @sm:px-4")}>
+            <div data-gc="conversa.message-list.div--8" className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-4">
               {withoutHistory ? (
                 <Lock data-gc="conversa.message-list.lock" size={32} className="text-ink-muted" />
               ) : (
@@ -275,7 +314,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           }
 
           return (
-            <div data-gc="conversa.message-list.div--8" key={message.id}>
+            <div data-gc="conversa.message-list.div--9" key={message.id}>
               <button data-gc="conversa.message-list.button"
                 type="button"
                 onClick={() => setIsOpen((current) => new Set([...current, ...ids]))}
@@ -285,21 +324,21 @@ export const MessageList: React.FC<MessageListProps> = ({
                 )}
               >
                 {t("conversa.mensagem.bloqueadas", { quantas: count })}
-                <span data-gc="conversa.message-list.span" className="font-medium">{t("conversa.mensagem.mostrarBloqueadas")}</span>
+                <span data-gc="conversa.message-list.span--2" className="font-medium">{t("conversa.mensagem.mostrarBloqueadas")}</span>
               </button>
             </div>
           );
         }
 
         return (
-          <div data-gc="conversa.message-list.div--9" key={message.id}>
+          <div data-gc="conversa.message-list.div--10" key={message.id}>
             {isNewDay && (
-              <div data-gc="conversa.message-list.div--10" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
-                <span data-gc="conversa.message-list.span--2" className="h-px flex-1 bg-line" />
-                <span data-gc="conversa.message-list.span--3" {...flx("dayDivider", "text-xs font-semibold text-ink-faint")}>
+              <div data-gc="conversa.message-list.div--11" className="my-4 flex items-center gap-2 px-2 @sm:px-4">
+                <span data-gc="conversa.message-list.span--3" className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--4" {...flx("dayDivider", "text-xs font-semibold text-ink-faint")}>
                   {formatDayDivider(message.createdAt)}
                 </span>
-                <span data-gc="conversa.message-list.span--4" className="h-px flex-1 bg-line" />
+                <span data-gc="conversa.message-list.span--5" className="h-px flex-1 bg-line" />
               </div>
             )}
             <MessageItem data-gc="conversa.message-list.message-item.retry"
