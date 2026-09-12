@@ -342,7 +342,7 @@ export const Chat: React.FC = () => {
                     onClick={() => setVoiceIsOpenChat((isOpen) => !isOpen)}
                     aria-label={voiceIsOpenChat ? "Fechar chat" : "Abrir chat"}
                     className={cn(
-                      "transition hover:text-ink",
+                      "gc-icone transition hover:text-ink",
                       voiceIsOpenChat ? "text-ink" : "text-ink-muted",
                     )}
                   >
@@ -356,7 +356,7 @@ export const Chat: React.FC = () => {
                   onClick={() =>
                     screenNarrow ? setMembersIsOpen(true) : setShowMembers((v) => !v)
                   }
-                  className={cn("transition hover:text-ink", flxCls("topChannelButton"), showMembers || membersIsOpen ? "text-ink" : "text-ink-muted")}
+                  className={cn("gc-icone transition hover:text-ink", flxCls("topChannelButton"), showMembers || membersIsOpen ? "text-ink" : "text-ink-muted")}
                 >
                   <Users data-gc="chat.chat.users" size={20} weight="fill" />
                 </button>
@@ -554,7 +554,7 @@ const ChannelBell: React.FC<{ channelId: string }> = ({ channelId }) => {
         <button data-gc="chat.chat.button--6"
           aria-label="Avisos deste canal"
           className={cn(
-            "rounded p-1.5 transition hover:bg-surface-3 hover:text-ink",
+            "gc-icone gc-icone--balanca rounded p-1.5 transition hover:bg-surface-3 hover:text-ink",
             mode === "nada" ? "text-ink-faint" : "text-ink-muted",
           )}
         >

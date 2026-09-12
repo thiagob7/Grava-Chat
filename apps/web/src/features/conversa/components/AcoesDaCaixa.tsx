@@ -12,9 +12,11 @@ export const BoxButton: React.FC<{
   shortcut?: string[];
   active?: boolean;
   off?: boolean;
+  /** O feitio do movimento no ponteiro. Ver `styles/icones.css`. */
+  motion?: "pula" | "bate" | "gira" | "balanca" | "brilha";
   onClick?: () => void;
   children: React.ReactNode;
-}> = ({ label, shortcut, active, off, onClick, children }) => (
+}> = ({ label, shortcut, active, off, motion = "pula", onClick, children }) => (
   <Tooltip data-gc="conversa.acoes-da-caixa.tooltip" label={label} shortcut={shortcut}>
     <button data-gc="conversa.acoes-da-caixa.button.on-click"
       type="button"
@@ -24,6 +26,7 @@ export const BoxButton: React.FC<{
       aria-pressed={active}
       className={cn(
         boxButtonClass,
+        `gc-icone--${motion}`,
         active ? "bg-hover text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
       )}
     >

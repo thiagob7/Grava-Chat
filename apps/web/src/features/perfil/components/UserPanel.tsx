@@ -137,7 +137,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               aria-label="Configurações"
               className={cn(
               flxCls("footerButton"),
-              "rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink",
+              "gc-icone gc-icone--gira rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink",
             )}
             >
               <Settings data-gc="perfil.user-panel.settings" size={18} />
@@ -199,7 +199,7 @@ const PanelButton: React.FC<PanelPropsButton> = ({ children, label, onClick, cut
       aria-pressed={cut}
       className={cn(
         flxCls("footerButton"),
-        "shrink-0 rounded p-1.5 transition hover:bg-surface-3",
+        "gc-icone shrink-0 rounded p-1.5 transition hover:bg-surface-3",
         cut ? "text-danger" : "text-ink-muted hover:text-ink",
       )}
     >

@@ -120,7 +120,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
               aria-label={t("chamada.ruido.titulo")}
               aria-pressed={noiseFilter && noiseFilterAvailable}
               className={cn(
-                "rounded p-2 transition hover:bg-surface-3",
+                "gc-icone rounded p-2 transition hover:bg-surface-3",
                 noiseFilterBusy && "animate-pulse",
                 noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
               )}
@@ -132,7 +132,7 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           <Tooltip data-gc="voz.voice-panel.tooltip" label={t("chamada.desconectar")}>
             <button data-gc="voz.voice-panel.button--4"
               onClick={() => void leave()}
-              className="rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
+              className="gc-icone gc-icone--balanca rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
             >
               <PhoneOff data-gc="voz.voice-panel.phone-off" size={18} />
             </button>
@@ -175,7 +175,7 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick })
     <button data-gc="voz.voice-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
-      className="flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+      className="gc-icone flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
     >
       {children}
     </button>

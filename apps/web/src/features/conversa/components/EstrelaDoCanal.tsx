@@ -16,7 +16,7 @@ export const ChannelStar: React.FC<{ channelId: string }> = ({ channelId }) => {
         aria-label={favorite ? "Tirar dos favoritos" : "Favoritar"}
         aria-pressed={favorite}
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-md transition hover:bg-hover",
+          "gc-icone gc-icone--brilha flex size-8 shrink-0 items-center justify-center rounded-md transition hover:bg-hover",
           favorite ? "text-idle" : "text-ink-muted hover:text-ink",
         )}
       >

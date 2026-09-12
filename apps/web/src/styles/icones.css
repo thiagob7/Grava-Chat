@@ -1,0 +1,87 @@
+/*
+  O movimento dos ícones da interface.
+
+  Não veio de biblioteca de ícone animado. Aquelas entregam cada ícone como um
+  Lottie: um JSON por desenho, um tocador em cima, cor cravada dentro do
+  arquivo — e o tema deixa de mandar na cor. Aqui o desenho continua sendo o
+  mesmo SVG de sempre, que herda `currentColor`, e o movimento é uma regra de
+  CSS. Zero peso a mais para baixar.
+
+  A escala mora no `svg` e não no botão: mexer no botão faria o fundo dele
+  crescer junto, e o que se quer é o desenho respondendo dentro de um alvo que
+  fica parado.
+
+  Quem pediu menos animação não vê nada disso: a regra global de animação
+  reduzida zera duração de transição e de animação em tudo.
+*/
+
+.gc-icone > svg {
+  transition: transform 140ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.gc-icone:hover > svg {
+  transform: scale(1.12);
+}
+
+/* O aperto vence a festa: enquanto o dedo está no botão, nada mais mexe. */
+.gc-icone:active > svg {
+  transform: scale(0.88);
+  animation: none;
+}
+
+.gc-icone:disabled > svg {
+  transform: none;
+  animation: none;
+}
+
+@keyframes gc-icone-gira {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(45deg) scale(1.08); }
+}
+
+@keyframes gc-icone-balanca {
+  0%, 100% { transform: rotate(0deg) scale(1.08); }
+  25% { transform: rotate(-14deg) scale(1.08); }
+  55% { transform: rotate(9deg) scale(1.08); }
+  80% { transform: rotate(-4deg) scale(1.08); }
+}
+
+@keyframes gc-icone-pula {
+  0%, 100% { transform: translateY(0) scale(1.1); }
+  40% { transform: translateY(-3px) scale(1.14); }
+}
+
+@keyframes gc-icone-bate {
+  0%, 100% { transform: scale(1.1); }
+  35% { transform: scale(1.24); }
+  70% { transform: scale(1.04); }
+}
+
+@keyframes gc-icone-brilha {
+  0% { transform: rotate(0deg) scale(1); }
+  45% { transform: rotate(18deg) scale(1.22); }
+  100% { transform: rotate(0deg) scale(1.1); }
+}
+
+.gc-icone--gira:hover > svg {
+  animation: gc-icone-gira 220ms ease-out forwards;
+}
+
+.gc-icone--balanca:hover > svg {
+  animation: gc-icone-balanca 520ms ease-out;
+  transform: scale(1.08);
+}
+
+.gc-icone--pula:hover > svg {
+  animation: gc-icone-pula 320ms ease-out;
+  transform: scale(1.1);
+}
+
+.gc-icone--bate:hover > svg {
+  animation: gc-icone-bate 300ms ease-out;
+  transform: scale(1.1);
+}
+
+.gc-icone--brilha:hover > svg {
+  animation: gc-icone-brilha 380ms ease-out forwards;
+}
