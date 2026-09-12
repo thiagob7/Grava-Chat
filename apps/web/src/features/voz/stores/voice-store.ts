@@ -422,6 +422,20 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       set({ room, connecting: false, tiles: snapshot(room) });
       rememberVoiceTab(channelId);
 
+      /*
+        Entre o pedido do microfone, lá em cima, e esta linha, passam alguns
+        segundos de conexão — e nesses segundos a pessoa pode apertar o mudo ou
+        o fone. Os dois botões mexem no estado e avisam o servidor, mas não têm
+        sala para mandar calar: o `room` ainda não existe. O resultado era a
+        tela inteira dizendo mudo, o servidor dizendo mudo, e a voz saindo
+        assim mesmo.
+
+        Aqui o que está no ar passa a ser o que a tela diz. Quando ninguém
+        tocou em nada, isto não republica nada: o LiveKit já devolve a faixa
+        que existe quando o estado pedido é o estado atual.
+      */
+      await reapplyMicrophone(room, set, store);
+
       const state = (await joinVoiceChannel(
         channelId,
         options?.resume ?? false,
