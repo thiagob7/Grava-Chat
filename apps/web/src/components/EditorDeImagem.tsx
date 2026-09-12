@@ -44,9 +44,13 @@ export const ImageEditor: React.FC<{
   file: File | null;
   aspect: number;
   exportWidth: number;
+  /** JPEG por padrão. WebP para quem precisa guardar o transparente. */
+  mime?: "image/jpeg" | "image/webp";
+  /** Desenha a guia redonda, para o que vai virar foto de perfil. */
+  round?: boolean;
   onCancel: () => void;
   onApply: (file: File) => void;
-}> = ({ file, aspect, exportWidth, onCancel, onApply }) => {
+}> = ({ file, aspect, exportWidth, mime = "image/jpeg", round = false, onCancel, onApply }) => {
   const [source, setSource] = useState<HTMLImageElement | null>(null);
   const [frame, setFrame] = useState<Frame>(START);
   const [box, setBox] = useState({ width: 0, height: 0 });
@@ -137,13 +141,15 @@ export const ImageEditor: React.FC<{
     paper.scale(cover * frame.zoom * factor, cover * frame.zoom * factor);
     paper.drawImage(source, -naturalWidth / 2, -naturalHeight / 2);
 
+    const extension = mime === "image/webp" ? ".webp" : ".jpg";
+
     canvas.toBlob(
       (blob) => {
         if (!blob) return;
 
-        onApply(new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" }));
+        onApply(new File([blob], file.name.replace(/\.[^.]+$/, "") + extension, { type: mime }));
       },
-      "image/jpeg",
+      mime,
       0.92,
     );
   };
@@ -178,10 +184,18 @@ export const ImageEditor: React.FC<{
             />
           )}
 
-          <div data-gc="editor-de-imagem.div--2"
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-lg ring-2 ring-inset ring-sobre-marca/90"
-          />
+          {/* A guia redonda vira um furo: o que fica de fora sai escurecido. */}
+          {round ? (
+            <div data-gc="editor-de-imagem.div"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 m-auto aspect-square rounded-full shadow-[0_0_0_9999px_var(--color-sobre-midia)] ring-2 ring-sobre-marca/90"
+            />
+          ) : (
+            <div data-gc="editor-de-imagem.div--2"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-lg ring-2 ring-inset ring-sobre-marca/90"
+            />
+          )}
         </div>
 
         <div data-gc="editor-de-imagem.div--3" className="mt-4 flex items-center gap-3">
