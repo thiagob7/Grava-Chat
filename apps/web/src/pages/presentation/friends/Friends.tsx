@@ -1,6 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { List } from "@phosphor-icons/react";
-import { Check, MessageSquare, Search, Users, X } from "lucide-react";
+import {
+  Check,
+  ChatCircleDots,
+  DotsThreeVertical,
+  List,
+  UserMinus,
+  X,
+} from "@phosphor-icons/react";
+import { Search, Users } from "lucide-react";
 
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useRespondFriend } from "~/@core/application/queries/friend/use-respond-friend";
@@ -9,7 +16,14 @@ import type { FriendshipModel } from "~/@core/domain/models/friend-model";
 import { AddFriendForm } from "~/features/amizades/components/AddFriendForm";
 import { EntryBox } from "~/features/conversa/components/CaixaDeEntrada";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { UserFullProfile } from "~/features/perfil/components/PerfilCompletoDoUsuario";
 import { useConfirm } from "~/components/ui/confirm";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
@@ -204,13 +218,17 @@ interface FriendRowProps {
   onOpenConversation: (userId: string) => void;
 }
 
+const ACTION = "flex size-9 shrink-0 items-center justify-center rounded-full transition";
+const NEUTRAL = "bg-surface-4 text-ink-muted hover:bg-line hover:text-ink group-hover:text-ink";
+
 const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) => {
   const respond = useRespondFriend();
   const remove = useRemoveFriend();
   const confirm = useConfirm();
+  const [seeingProfile, setSeeingProfile] = useState(false);
 
-  const reply = async (event: React.MouseEvent, accept: boolean) => {
-    if (!event.shiftKey) {
+  const reply = async (accept: boolean, direct: boolean) => {
+    if (!direct) {
       const { confirmed } = await confirm({
         title: accept ? "Aceitar pedido de amizade" : "Recusar pedido de amizade",
         description: accept
@@ -227,8 +245,8 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
     respond.mutate({ friendshipId: relation.id, accept: accept });
   };
 
-  const undo = async (event: React.MouseEvent) => {
-    if (!event.shiftKey) {
+  const undo = async (direct: boolean) => {
+    if (!direct) {
       const { confirmed } = await confirm({
         title:
           relation.status === "ACCEPTED" ? "Desfazer amizade" : "Cancelar o pedido enviado",
@@ -246,70 +264,132 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
     remove.mutate(relation.id);
   };
 
+  const pending = relation.status !== "ACCEPTED";
+
   const legenda =
     relation.status === "PENDING_IN"
       ? "Pedido de amizade recebido"
       : relation.status === "PENDING_OUT"
         ? "Pedido enviado"
-        : `@${relation.user.username}`;
+        : null;
 
   return (
-    <div data-gc="friends.friends.div--7" className="flex items-center gap-3 rounded-lg border-t border-line px-2 py-2.5 transition hover:bg-surface-3">
-      <Avatar data-gc="friends.friends.avatar"
-        id={relation.user.id}
-        name={relation.user.displayName}
-        url={relation.user.avatarUrl}
-        size={36}
-        status={relation.status === "ACCEPTED" ? relation.user.status : undefined}
+    <>
+      <UserFullProfile data-gc="friends.friends.user-full-profile"
+        userId={relation.user.id}
+        open={seeingProfile}
+        onClose={() => setSeeingProfile(false)}
       />
 
-      <div data-gc="friends.friends.div--8" className="min-w-0 flex-1">
-        <p data-gc="friends.friends.p--4" className="truncate text-sm font-semibold">{relation.user.displayName}</p>
-        <p data-gc="friends.friends.p--5" className="truncate text-xs text-ink-faint">{legenda}</p>
-      </div>
-
-      <div data-gc="friends.friends.div--9" className="flex shrink-0 items-center gap-2">
-        {relation.status === "ACCEPTED" && (
-          <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
-            <button data-gc="friends.friends.button--2"
-              onClick={() => onOpenConversation(relation.user.id)}
-              className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-ink"
-            >
-              <MessageSquare data-gc="friends.friends.message-square" size={18} />
-            </button>
-          </Tooltip>
-        )}
-
-        {relation.status === "PENDING_IN" && (
-          <Tooltip data-gc="friends.friends.tooltip--2" label="Aceitar">
-            <button data-gc="friends.friends.button--3"
-              onClick={(e) => void reply(e, true)}
-              className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-online"
-            >
-              <Check data-gc="friends.friends.check" size={18} />
-            </button>
-          </Tooltip>
-        )}
-
-        <Tooltip data-gc="friends.friends.tooltip--3"
-          label={
-            relation.status === "ACCEPTED"
-              ? "Desfazer amizade"
-              : relation.status === "PENDING_IN"
-                ? "Recusar"
-                : "Cancelar pedido"
-          }
+      {/*
+        A linha em repouso é só o risco de cima separando uma da outra. No
+        ponteiro ela vira cartão e o risco sai, senão o cartão aparece com uma
+        linha atravessada no topo. O nome de usuário mora ao lado do nome e só
+        aparece aí, como na referência: em repouso a lista fica com uma
+        informação por pessoa.
+      */}
+      <div data-gc="friends.friends.div--7"
+        className="group flex items-center gap-3 border-t border-line px-2 py-2.5 transition hover:rounded-lg hover:border-transparent hover:bg-surface-3"
+      >
+        <button data-gc="friends.friends.button--2"
+          type="button"
+          onClick={() => setSeeingProfile(true)}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <button data-gc="friends.friends.button--4"
-            onClick={(e) =>
-              relation.status === "PENDING_IN" ? void reply(e, false) : void undo(e)
-            }
-            className="rounded-full bg-surface-0 p-2 text-ink-muted transition hover:text-danger"
-          >
-            <X data-gc="friends.friends.x" size={18} />
-          </button>
-        </Tooltip>
+          <Avatar data-gc="friends.friends.avatar"
+            id={relation.user.id}
+            name={relation.user.displayName}
+            url={relation.user.avatarUrl}
+            size={36}
+            status={relation.status === "ACCEPTED" ? relation.user.status : undefined}
+          />
+
+          <span data-gc="friends.friends.span--6" className="min-w-0 flex-1">
+            <span data-gc="friends.friends.span--7" className="flex min-w-0 items-baseline gap-1.5">
+              <span data-gc="friends.friends.span--8" className="truncate text-sm font-semibold">{relation.user.displayName}</span>
+              <span data-gc="friends.friends.span--9" className="hidden shrink-0 text-xs text-ink-faint group-hover:inline">
+                @{relation.user.username}
+              </span>
+            </span>
+
+            {legenda && (
+              <span data-gc="friends.friends.span--10" className="mt-0.5 block truncate text-xs text-ink-faint">{legenda}</span>
+            )}
+          </span>
+        </button>
+
+        <div data-gc="friends.friends.div--8" className="flex shrink-0 items-center gap-2">
+          {relation.status === "ACCEPTED" && (
+            <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
+              <button data-gc="friends.friends.button--3"
+                onClick={() => onOpenConversation(relation.user.id)}
+                aria-label="Conversar"
+                className={cn(ACTION, NEUTRAL)}
+              >
+                <ChatCircleDots data-gc="friends.friends.chat-circle-dots" size={18} weight="fill" />
+              </button>
+            </Tooltip>
+          )}
+
+          {relation.status === "PENDING_IN" && (
+            <Tooltip data-gc="friends.friends.tooltip--2" label="Aceitar">
+              <button data-gc="friends.friends.button--4"
+                onClick={(e) => void reply(true, e.shiftKey)}
+                aria-label="Aceitar"
+                className={cn(ACTION, "bg-brand text-sobre-marca hover:bg-brand-hover")}
+              >
+                <Check data-gc="friends.friends.check" size={18} weight="bold" />
+              </button>
+            </Tooltip>
+          )}
+
+          {pending && (
+            <Tooltip data-gc="friends.friends.tooltip--3" label={relation.status === "PENDING_IN" ? "Recusar" : "Cancelar pedido"}>
+              <button data-gc="friends.friends.button--5"
+                onClick={(e) =>
+                  relation.status === "PENDING_IN"
+                    ? void reply(false, e.shiftKey)
+                    : void undo(e.shiftKey)
+                }
+                aria-label={relation.status === "PENDING_IN" ? "Recusar" : "Cancelar pedido"}
+                className={cn(ACTION, NEUTRAL, "hover:bg-danger hover:text-sobre-marca")}
+              >
+                <X data-gc="friends.friends.x" size={18} weight="bold" />
+              </button>
+            </Tooltip>
+          )}
+
+          {/*
+            Desfazer amizade sai de um botão solto e entra no menu. Era um X do
+            lado do de conversar, e dois alvos iguais lado a lado, um deles
+            desfazendo uma amizade, é acidente esperando acontecer.
+          */}
+          {relation.status === "ACCEPTED" && (
+            <DropdownMenu data-gc="friends.friends.dropdown-menu">
+              <DropdownMenuTrigger data-gc="friends.friends.dropdown-menu-trigger" asChild>
+                <button data-gc="friends.friends.button--6" aria-label="Mais" className={cn(ACTION, NEUTRAL)}>
+                  <DotsThreeVertical data-gc="friends.friends.dots-three-vertical" size={18} weight="bold" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent data-gc="friends.friends.dropdown-menu-content" align="end">
+                <DropdownMenuItem data-gc="friends.friends.dropdown-menu-item" onSelect={() => setSeeingProfile(true)}>
+                  Ver perfil
+                </DropdownMenuItem>
+                <DropdownMenuItem data-gc="friends.friends.dropdown-menu-item--2" onSelect={() => onOpenConversation(relation.user.id)}>
+                  Conversar
+                </DropdownMenuItem>
+                <DropdownMenuItem data-gc="friends.friends.dropdown-menu-item--3"
+                  danger
+                  onSelect={() => void undo(false)}
+                >
+                  <UserMinus data-gc="friends.friends.user-minus" size={15} /> Desfazer amizade
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
