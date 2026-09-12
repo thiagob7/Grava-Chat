@@ -5,7 +5,9 @@ import { FileDecoration } from "~/features/perfil/components/DecoracaoDeArquivo"
 import { StatusIcon } from "~/features/perfil/components/IconeDeStatus";
 import { isFile, decorationSlack } from "~/features/perfil/lib/decoracoes";
 import { charmClass, charmVariables } from "~/features/perfil/lib/estilos";
+import { Tooltip } from "~/components/ui/tooltip";
 import { avatarColor, initials } from "~/lib/format";
+import { i18next } from "~/traducao";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 
@@ -20,6 +22,17 @@ interface AvatarProps {
   animate?: boolean;
   className?: string;
 }
+
+/*
+  A bolinha diz o que é ao ser apontada. O rótulo sai das mesmas frases do menu
+  de status, para a bolinha de alguém e a escolha de cada um nunca discordarem.
+*/
+const PRESENCE_LABEL: Record<PresenceStatus, () => string> = {
+  ONLINE: () => i18next.t("perfil.presenca.disponivel"),
+  IDLE: () => i18next.t("perfil.presenca.ausente"),
+  DND: () => i18next.t("perfil.presenca.naoPerturbar"),
+  OFFLINE: () => i18next.t("perfil.presenca.offline"),
+};
 
 export const Avatar: React.FC<AvatarProps> = ({
   id,
@@ -111,22 +124,32 @@ export const Avatar: React.FC<AvatarProps> = ({
       )}
 
       {status && seal && (
-        <span data-gc="perfil.avatar.span--2"
-          className="absolute"
-          style={{ left: seal.left, top: seal.top }}
-          {...flxAttr("statusDot")}
-        >
-          <StatusIcon data-gc="perfil.avatar.status-icon" kind={status} size={seal.side} />
-        </span>
+        <Tooltip data-gc="perfil.avatar.tooltip" label={PRESENCE_LABEL[status]()}>
+          <span data-gc="perfil.avatar.span--2"
+            className="absolute"
+            style={{ left: seal.left, top: seal.top }}
+            {...flxAttr("statusDot")}
+          >
+            <StatusIcon data-gc="perfil.avatar.status-icon" kind={status} size={seal.side} />
+          </span>
+        </Tooltip>
       )}
     </div>
   );
 };
 
+/*
+  A bolinha e o vão em volta dela.
+
+  Era uma bolinha pequena num vão largo, e o que se via era a mordida escura na
+  foto, não o estado da pessoa. A referência faz o contrário: bolinha maior,
+  vão fino e parelho. As duas medidas andam juntas — engordar a bolinha sem
+  afinar o vão só faria a mordida crescer.
+*/
 function statusCorner(size: number) {
-  const side = Math.max(8, Math.round(size * 0.22));
+  const side = Math.max(8, Math.round(size * 0.26));
   const center = size * 0.82;
-  const slack = Math.max(1.25, size * 0.045);
+  const slack = Math.max(1.5, size * 0.03);
 
   return {
     side,

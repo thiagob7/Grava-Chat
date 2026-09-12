@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "אינך מקבל התראה על הודעות חדשות",
     invisivel: "בלתי נראה",
     invisivelDetalhe: "לאחרים אתה נראה לא מחובר",
+    offline: "לא מחובר",
   },
   menu: {
     mudarDeConta: "החלפת חשבון",

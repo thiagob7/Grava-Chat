@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "新しいメッセージの通知は届きません",
     invisivel: "オフライン表示",
     invisivelDetalhe: "ほかの人にはオフラインに見えます",
+    offline: "オフライン",
   },
   menu: {
     mudarDeConta: "アカウントを切り替え",

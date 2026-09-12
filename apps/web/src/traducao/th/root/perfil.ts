@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "คุณจะไม่ได้รับแจ้งเตือนข้อความใหม่",
     invisivel: "ล่องหน",
     invisivelDetalhe: "คนอื่นจะเห็นคุณออฟไลน์",
+    offline: "ออฟไลน์",
   },
   menu: {
     mudarDeConta: "สลับบัญชี",

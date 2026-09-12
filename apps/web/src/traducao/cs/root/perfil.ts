@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Nedostáváš upozornění na nové zprávy",
     invisivel: "Neviditelný",
     invisivelDetalhe: "Ostatním se jevíš offline",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Přepnout účet",

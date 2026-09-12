@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Kamu tidak menerima pemberitahuan pesan baru",
     invisivel: "Tak terlihat",
     invisivelDetalhe: "Bagi yang lain kamu tampak luring",
+    offline: "Luring",
   },
   menu: {
     mudarDeConta: "Ganti akun",

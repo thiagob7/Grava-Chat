@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Δεν λαμβάνεις ειδοποίηση για νέα μηνύματα",
     invisivel: "Αόρατος",
     invisivelDetalhe: "Στους άλλους φαίνεσαι εκτός σύνδεσης",
+    offline: "Εκτός σύνδεσης",
   },
   menu: {
     mudarDeConta: "Αλλαγή λογαριασμού",

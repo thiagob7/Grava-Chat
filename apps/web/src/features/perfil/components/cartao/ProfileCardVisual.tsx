@@ -198,6 +198,18 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
         <div data-gc="perfil.cartao.profile-card-visual.div--6" className="relative -mt-10 mb-3 flex items-start gap-3">
           <span data-gc="perfil.cartao.profile-card-visual.span--3" {...flx("photoProfileFrame", "relative shrink-0")}>
+          {/*
+            A foto abre o perfil completo, como o nome ao lado dela já fazia. É
+            para onde a pessoa aponta quando quer ver mais de alguém, e clicar
+            nela não fazia nada.
+          */}
+          <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile"
+            type="button"
+            onClick={onOpenProfile}
+            disabled={!onOpenProfile}
+            aria-label={onOpenProfile ? t("perfil.verCompleto") : undefined}
+            className="block rounded-full disabled:cursor-default"
+          >
           <Avatar data-gc="perfil.cartao.profile-card-visual.avatar"
             id={id}
             name={displayName}
@@ -211,6 +223,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               !hasDecoration && "ring-[6px] ring-surface-0",
             )}
           />
+          </button>
 
           {onEditPhoto && (
             <button data-gc="perfil.cartao.profile-card-visual.button.on-edit-photo"
@@ -283,7 +296,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               )}
             >
               {onOpenProfile ? (
-                <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile"
+                <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile--2"
                   type="button"
                   onClick={onOpenProfile}
                   className="min-w-0 max-w-full truncate text-left hover:underline"
@@ -327,7 +340,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           <p data-gc="perfil.cartao.profile-card-visual.p--2" {...flx("userProfileLine", "flex flex-wrap items-center gap-1.5 text-sm text-ink-muted")}>
             {onOpenProfile ? (
-              <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile--2" type="button" onClick={onOpenProfile} {...flx("userProfileButton", "hover:underline")}>
+              <button data-gc="perfil.cartao.profile-card-visual.button.on-open-profile--3" type="button" onClick={onOpenProfile} {...flx("userProfileButton", "hover:underline")}>
                 @{username}
               </button>
             ) : (

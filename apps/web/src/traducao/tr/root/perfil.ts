@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Yeni mesaj bildirimi almazsın",
     invisivel: "Görünmez",
     invisivelDetalhe: "Diğerlerine çevrimdışı görünürsün",
+    offline: "Çevrimdışı",
   },
   menu: {
     mudarDeConta: "Hesap değiştir",

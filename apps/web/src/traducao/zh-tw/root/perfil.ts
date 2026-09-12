@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "你不會收到新訊息提醒",
     invisivel: "隱形",
     invisivelDetalhe: "在別人看來你處於離線",
+    offline: "離線",
   },
   menu: {
     mudarDeConta: "切換帳號",
