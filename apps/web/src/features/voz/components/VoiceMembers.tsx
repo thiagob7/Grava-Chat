@@ -125,11 +125,51 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
                 )}
                 {state.camera && <VideoCamera data-gc="voz.voice-members.video-camera" size={14} weight="fill" className="text-online" />}
 
+                {/*
+                  Os dois riscados dizem o que são. Sem a dica, um risco
+                  vermelho num ícone de 14 px é charada, e a de quem foi calado
+                  pela moderação não é a mesma de quem se calou.
+                */}
                 {(state.serverMute || state.selfMute) && (
-                  <MicrophoneSlash data-gc="voz.voice-members.microphone-slash" size={14} weight="fill" className="text-danger" />
+                  <Tooltip data-gc="voz.voice-members.tooltip--3"
+                    label={
+                      state.serverMute
+                        ? t("chamada.estado.mudoPeloServidor")
+                        : t("chamada.estado.mudo")
+                    }
+                  >
+                    <span data-gc="voz.voice-members.span--5"
+                      className="flex items-center"
+                      aria-label={
+                        state.serverMute
+                          ? t("chamada.estado.mudoPeloServidor")
+                          : t("chamada.estado.mudo")
+                      }
+                    >
+                      <MicrophoneSlash data-gc="voz.voice-members.microphone-slash" size={14} weight="fill" className="text-danger" />
+                    </span>
+                  </Tooltip>
                 )}
+
                 {(state.serverDeaf || state.selfDeaf) && (
-                  <SpeakerSlash data-gc="voz.voice-members.speaker-slash" size={14} weight="fill" className="text-danger" />
+                  <Tooltip data-gc="voz.voice-members.tooltip--4"
+                    label={
+                      state.serverDeaf
+                        ? t("chamada.estado.semAudioPeloServidor")
+                        : t("chamada.estado.semAudio")
+                    }
+                  >
+                    <span data-gc="voz.voice-members.span--6"
+                      className="flex items-center"
+                      aria-label={
+                        state.serverDeaf
+                          ? t("chamada.estado.semAudioPeloServidor")
+                          : t("chamada.estado.semAudio")
+                      }
+                    >
+                      <SpeakerSlash data-gc="voz.voice-members.speaker-slash" size={14} weight="fill" className="text-danger" />
+                    </span>
+                  </Tooltip>
                 )}
                 </span>
               </button>
@@ -195,8 +235,8 @@ const InviteForLive: React.FC<{
 
           {broadcast && <BroadcastPreview data-gc="voz.voice-members.broadcast-preview" track={broadcast} />}
 
-          <span data-gc="voz.voice-members.span--5" className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-sm bg-danger px-1.5 py-0.5 text-10 font-bold uppercase tracking-wide text-sobre-marca">
-            <span data-gc="voz.voice-members.span--6" className="size-1.5 animate-pulse rounded-full bg-sobre-marca" />
+          <span data-gc="voz.voice-members.span--7" className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-sm bg-danger px-1.5 py-0.5 text-10 font-bold uppercase tracking-wide text-sobre-marca">
+            <span data-gc="voz.voice-members.span--8" className="size-1.5 animate-pulse rounded-full bg-sobre-marca" />
             {t("chamada.live.etiquetaMaiuscula")}
           </span>
         </div>

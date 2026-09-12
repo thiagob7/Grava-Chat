@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "채팅 닫기",
   mostrarChat: "채팅 표시",
   aoVivo: "라이브",
+  estado: {
+    mudo: "마이크 꺼짐",
+    mudoPeloServidor: "서버가 마이크를 끔",
+    semAudio: "소리 꺼짐",
+    semAudioPeloServidor: "서버가 소리를 끔",
+  },
   convidar: "통화에 초대",
   carregandoPrevia: "미리보기를 불러오는 중…",
   maisOpcoes: "더 보기",

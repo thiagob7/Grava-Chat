@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "ปิดแชท",
   mostrarChat: "แสดงแชท",
   aoVivo: "สด",
+  estado: {
+    mudo: "ปิดไมโครโฟน",
+    mudoPeloServidor: "เซิร์ฟเวอร์ปิดไมโครโฟน",
+    semAudio: "ปิดเสียง",
+    semAudioPeloServidor: "เซิร์ฟเวอร์ปิดเสียง",
+  },
   convidar: "เชิญเข้าร่วมสาย",
   carregandoPrevia: "กำลังโหลดตัวอย่าง…",
   maisOpcoes: "ตัวเลือกเพิ่มเติม",

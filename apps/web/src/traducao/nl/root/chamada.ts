@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Chat sluiten",
   mostrarChat: "Chat tonen",
   aoVivo: "Live",
+  estado: {
+    mudo: "Microfoon uit",
+    mudoPeloServidor: "Microfoon uitgezet door de server",
+    semAudio: "Geluid uit",
+    semAudioPeloServidor: "Geluid uitgezet door de server",
+  },
   convidar: "Uitnodigen voor het gesprek",
   carregandoPrevia: "Voorbeeld laden…",
   maisOpcoes: "Meer opties",

@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Uždaryti pokalbį",
   mostrarChat: "Rodyti pokalbį",
   aoVivo: "Tiesiogiai",
+  estado: {
+    mudo: "Mikrofonas išjungtas",
+    mudoPeloServidor: "Serveris išjungė mikrofoną",
+    semAudio: "Garsas išjungtas",
+    semAudioPeloServidor: "Serveris išjungė garsą",
+  },
   convidar: "Pakviesti į skambutį",
   carregandoPrevia: "Įkeliama peržiūra…",
   maisOpcoes: "Daugiau",

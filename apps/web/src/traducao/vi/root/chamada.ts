@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Đóng trò chuyện",
   mostrarChat: "Hiện trò chuyện",
   aoVivo: "Trực tiếp",
+  estado: {
+    mudo: "Đã tắt micrô",
+    mudoPeloServidor: "Máy chủ đã tắt micrô",
+    semAudio: "Đã tắt âm thanh",
+    semAudioPeloServidor: "Máy chủ đã tắt âm thanh",
+  },
   convidar: "Mời vào cuộc gọi",
   carregandoPrevia: "Đang tải bản xem trước…",
   maisOpcoes: "Thêm tuỳ chọn",

@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Închide chatul",
   mostrarChat: "Afișează chatul",
   aoVivo: "Live",
+  estado: {
+    mudo: "Microfon oprit",
+    mudoPeloServidor: "Microfon oprit de server",
+    semAudio: "Sunet oprit",
+    semAudioPeloServidor: "Sunet oprit de server",
+  },
   convidar: "Invită la apel",
   carregandoPrevia: "Se încarcă previzualizarea…",
   maisOpcoes: "Mai multe",

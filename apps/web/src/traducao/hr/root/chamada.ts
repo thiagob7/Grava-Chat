@@ -23,6 +23,12 @@ export const chamada = {
   fecharChat: "Zatvori razgovor",
   mostrarChat: "Prikaži chat",
   aoVivo: "Uživo",
+  estado: {
+    mudo: "Mikrofon isključen",
+    mudoPeloServidor: "Server je isključio mikrofon",
+    semAudio: "Zvuk isključen",
+    semAudioPeloServidor: "Server je isključio zvuk",
+  },
   convidar: "Pozovi u poziv",
   carregandoPrevia: "Učitavanje pretpregleda…",
   maisOpcoes: "Više opcija",
