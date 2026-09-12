@@ -15,7 +15,6 @@ interface AvatarProps {
   url?: string | null;
   size?: number;
   status?: PresenceStatus;
-  inVoice?: boolean;
   speaking?: boolean;
   charms?: Pick<ProfilePublic, "decoration" | "frame"> | null;
   animate?: boolean;
@@ -28,7 +27,6 @@ export const Avatar: React.FC<AvatarProps> = ({
   url,
   size = 40,
   status,
-  inVoice,
   speaking,
   charms,
   animate = false,
@@ -40,7 +38,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const showImage = Boolean(url) && !failed;
 
-  const seal = status || inVoice ? statusCorner(size) : null;
+  const seal = status ? statusCorner(size) : null;
 
   const gap = (slack: number) => {
     if (!seal) return undefined;
@@ -112,13 +110,13 @@ export const Avatar: React.FC<AvatarProps> = ({
         />
       )}
 
-      {seal && (
+      {status && seal && (
         <span data-gc="perfil.avatar.span--2"
           className="absolute"
           style={{ left: seal.left, top: seal.top }}
           {...flxAttr("statusDot")}
         >
-          <StatusIcon data-gc="perfil.avatar.status-icon" kind={inVoice ? "VOZ" : status!} size={seal.side} />
+          <StatusIcon data-gc="perfil.avatar.status-icon" kind={status} size={seal.side} />
         </span>
       )}
     </div>
