@@ -180,7 +180,7 @@ export const AppearanceSection: React.FC = () => {
         title="Cor de destaque"
         detail="A cor dos botões, dos links e de tudo o que o app quer que você veja primeiro."
       >
-        <div data-gc="configuracoes.appearance-section.div--4" className="flex flex-wrap items-center gap-2">
+        <div data-gc="configuracoes.appearance-section.div--5" className="flex flex-wrap items-center gap-2">
           {HIGHLIGHT_COLORS.map((color, index) => {
             const value = index === 0 ? null : color.value;
             const picked = prefs.highlight === value;
@@ -289,7 +289,7 @@ export const AppearanceSection: React.FC = () => {
         title="Privacidade de transmissão"
         detail="Para quando a sua tela está sendo vista por gente que não está na conversa."
       >
-        <div data-gc="configuracoes.appearance-section.div--5" className="mb-3 flex items-start gap-3 rounded bg-surface-2 p-3">
+        <div data-gc="configuracoes.appearance-section.div--6" className="mb-3 flex items-start gap-3 rounded bg-surface-2 p-3">
           <Video data-gc="configuracoes.appearance-section.video"
             size={18}
             className={cn(
@@ -297,7 +297,7 @@ export const AppearanceSection: React.FC = () => {
               prefs.modeStreamer ? "text-brand" : "text-ink-faint",
             )}
           />
-          <div data-gc="configuracoes.appearance-section.div--6" className="min-w-0 flex-1">
+          <div data-gc="configuracoes.appearance-section.div--7" className="min-w-0 flex-1">
             <p data-gc="configuracoes.appearance-section.p--3" className="text-sm font-medium">
               {prefs.modeStreamer
                 ? "Ligado — a tela está protegida"
@@ -343,7 +343,7 @@ export const AppearanceSection: React.FC = () => {
         />
       </Section>
 
-      <div data-gc="configuracoes.appearance-section.div--7" className="mt-10 border-t border-line pt-5">
+      <div data-gc="configuracoes.appearance-section.div--8" className="mt-10 border-t border-line pt-5">
         <Button data-gc="configuracoes.appearance-section.button.default-restore" variant="surface" size="sm" onClick={prefs.defaultRestore}>
           Voltar ao padrão
         </Button>

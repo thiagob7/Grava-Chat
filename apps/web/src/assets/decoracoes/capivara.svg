@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-respira { 0%,100% { transform: scale(1,1) } 50% { transform: scale(1.03,1.06) } }
+    @keyframes gc-orelha { 0%,84%,100% { transform: rotate(0deg) } 90% { transform: rotate(-16deg) } }
+    .bicho { animation: gc-respira 3s ease-in-out infinite; transform-origin: 100px 52px }
+    .orelha { animation: gc-orelha 3s ease-in-out infinite; transform-origin: 72px 22px }
+    @media (prefers-reduced-motion: reduce) { .bicho, .orelha { animation: none } }
+  </style>
+  <g class="bicho">
+    <ellipse cx="96" cy="38" rx="36" ry="18" fill="#8d6748"/>
+    <ellipse cx="96" cy="42" rx="30" ry="12" fill="#a3805c"/>
+    <ellipse cx="70" cy="26" rx="6" ry="7" fill="#6d4d34" class="orelha"/>
+    <ellipse cx="128" cy="27" rx="20" ry="17" fill="#8d6748"/>
+    <ellipse cx="120" cy="14" rx="5" ry="6" fill="#6d4d34"/>
+    <ellipse cx="142" cy="31" rx="9" ry="7" fill="#a3805c"/>
+    <ellipse cx="146" cy="30" rx="3.4" ry="2.6" fill="#4a3222"/>
+    <path d="M124 26 q5 4 10 0" fill="none" stroke="#4a3222" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>

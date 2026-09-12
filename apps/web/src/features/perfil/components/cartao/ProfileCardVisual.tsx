@@ -18,13 +18,14 @@ import { UserName } from "~/features/perfil/components/UserName";
 import {
   charmClass,
   charmVariables,
+  trackNotch,
   type StyleCss,
 } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { Tooltip } from "~/components/ui/tooltip";
 import { currentLanguage, useTranslation } from "~/traducao";
-import { flx, flxCls, type Places } from "~/lib/compat-de-tema";
+import { flx, flxCls } from "~/lib/compat-de-tema";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -60,6 +61,7 @@ interface ProfileCardVisualProps {
   downActions?: ReactNode;
   children?: ReactNode;
   className?: string;
+  detailed?: boolean;
   editable?: boolean;
   onOpenProfile?: () => void;
   onIrForNote?: () => void;
@@ -71,20 +73,6 @@ interface ProfileCardVisualProps {
   onEditPhoto?: () => void;
   onBio?: (value: string) => void;
 }
-
-const TrackMask: React.FC<{ id: string; place: Places; cx: number; radius: number }> = ({
-  id,
-  place,
-  cx,
-  radius,
-}) => (
-  <svg data-gc="perfil.cartao.profile-card-visual.svg" aria-hidden className={cn(flxCls(place), "absolute size-0")}>
-    <mask data-gc="perfil.cartao.profile-card-visual.mask" id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
-      <rect data-gc="perfil.cartao.profile-card-visual.rect" width="100%" height="100%" fill="white" />
-      <circle data-gc="perfil.cartao.profile-card-visual.circle" cx={cx} cy="100%" r={radius} fill="black" />
-    </mask>
-  </svg>
-);
 
 export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   id,
@@ -116,6 +104,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   downActions,
   children,
   className,
+  detailed = false,
   editable = false,
   onOpenProfile,
   onIrForNote,
@@ -128,7 +117,6 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   onBio,
 }) => {
   const { t } = useTranslation();
-  const maskId = React.useId();
   const [editingTag, setEditingTag] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
 
@@ -165,12 +153,10 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           style={charmVariables({ animate: true, speed: "10s" })}
         />
       )}
-      <TrackMask data-gc="perfil.cartao.profile-card-visual.track-mask" id={maskId} place="trackMask" cx={56} radius={47} />
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
-        className="relative aspect-[20/7] bg-cover bg-center"
+        className={cn("relative aspect-[20/7] bg-cover bg-center", flxCls("trackMask"))}
         style={{
-          mask: `url(#${maskId})`,
-          WebkitMask: `url(#${maskId})`,
+          ...trackNotch(56, 47),
           backgroundColor: profile?.bannerColor?.trim() || avatarColor(id),
           ...(profile?.bannerUrl
             ? { backgroundImage: `url(${profile.bannerUrl})` }
@@ -511,15 +497,17 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
           {(roleList.length > 0 || managesRoles) && (
             <>
-              <p data-gc="perfil.cartao.profile-card-visual.p--6" className="mb-2 mt-5 text-sm font-bold text-ink">
-                {roleList.length === 0
-                  ? t("perfil.cartao.cargos")
-                  : roleList.length === 1
-                    ? t("perfil.cartao.cargo")
-                    : t("perfil.cartao.cargosCom", { quantidade: roleList.length })}
-              </p>
+              {detailed && (
+                <p data-gc="perfil.cartao.profile-card-visual.p--6" className="mb-2 mt-5 text-sm font-bold text-ink">
+                  {roleList.length === 0
+                    ? t("perfil.cartao.cargos")
+                    : roleList.length === 1
+                      ? t("perfil.cartao.cargo")
+                      : t("perfil.cartao.cargosCom", { quantidade: roleList.length })}
+                </p>
+              )}
 
-              <div data-gc="perfil.cartao.profile-card-visual.div--11" className="flex flex-wrap items-center gap-1.5">
+              <div data-gc="perfil.cartao.profile-card-visual.div--11" className={cn("flex flex-wrap items-center gap-1.5", !detailed && "mt-4")}>
                 {roleList.map((role) => (
                   <span data-gc="perfil.cartao.profile-card-visual.span--25"
                     key={role.id}
@@ -571,7 +559,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </>
           )}
 
-          {createdAt && (
+          {detailed && createdAt && (
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
               <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">

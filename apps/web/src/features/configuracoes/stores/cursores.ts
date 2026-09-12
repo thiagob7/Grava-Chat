@@ -44,13 +44,17 @@ function keep(cursors: SetCursors) {
   variáveis. Fazer assim, em vez de injetar regra de cursor para cada seletor,
   significa que uma folha de estilo só é escrita uma vez e nunca cresce.
 */
+/* Última peneira: só escreve o que o próprio navegador disser que entende. */
+const accepted = (rule: string) =>
+  typeof CSS === "undefined" || !CSS.supports ? true : CSS.supports("cursor", rule);
+
 export function applyCursors(cursors: SetCursors) {
   const root = document.documentElement;
 
   for (const role of CURSOR_ROLES) {
     const rule = asRule(cursors[role] ?? null, role);
 
-    if (rule) root.style.setProperty(`--cursor-${role}`, rule);
+    if (rule && accepted(rule)) root.style.setProperty(`--cursor-${role}`, rule);
     else root.style.removeProperty(`--cursor-${role}`);
   }
 }

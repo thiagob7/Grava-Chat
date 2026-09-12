@@ -79,7 +79,7 @@ export const EffectsSection: React.FC = () => {
             onChange={(trailColor) => prefs.set({ trailColor })}
           />
 
-          <Range data-gc="configuracoes.secao-de-efeitos.range--2"
+          <Range data-gc="configuracoes.secao-de-efeitos.range"
             label={t("configuracoes.efeitos.espessura")}
             value={prefs.trailSize}
             min={2}
@@ -87,7 +87,7 @@ export const EffectsSection: React.FC = () => {
             onChange={(trailSize) => prefs.set({ trailSize })}
           />
 
-          <Range data-gc="configuracoes.secao-de-efeitos.range--3"
+          <Range data-gc="configuracoes.secao-de-efeitos.range--2"
             label={t("configuracoes.efeitos.comprimento")}
             value={prefs.trailWisp}
             min={6}
@@ -114,7 +114,7 @@ export const EffectsSection: React.FC = () => {
             onChange={(sparkColor) => prefs.set({ sparkColor })}
           />
 
-          <Range data-gc="configuracoes.secao-de-efeitos.range--4"
+          <Range data-gc="configuracoes.secao-de-efeitos.range--3"
             label={t("configuracoes.efeitos.tamanho")}
             value={prefs.sparkSize}
             min={4}
@@ -122,7 +122,7 @@ export const EffectsSection: React.FC = () => {
             onChange={(sparkSize) => prefs.set({ sparkSize })}
           />
 
-          <Range data-gc="configuracoes.secao-de-efeitos.range--5"
+          <Range data-gc="configuracoes.secao-de-efeitos.range--4"
             label={t("configuracoes.efeitos.quantidade")}
             value={prefs.countSparks}
             min={3}

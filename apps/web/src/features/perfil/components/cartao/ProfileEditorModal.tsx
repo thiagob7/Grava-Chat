@@ -8,6 +8,7 @@ import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-ima
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
+import { ProfileImageFraming } from "~/features/perfil/components/EnquadrarImagemDePerfil";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
 import { PickCharmModal } from "~/features/perfil/components/cartao/EscolherEnfeiteModal";
 import { AVATAR_DECORATIONS } from "~/features/perfil/lib/catalogo";
@@ -44,7 +45,9 @@ export const ProfileEditorModal: React.FC<{
   const saved = useMemo(() => fromUser(user), [user]);
   const { draft, set, discard, dirty } = useDraft(saved);
   const profile = forProfile(draft);
-  const { send } = useImageProfileSending((field, url) => set(field, url));
+  const { send, framing, cancelFrame, applyFrame } = useImageProfileSending(
+    (field, url) => set(field, url),
+  );
 
   const cardPreview = {
     id: user.id,
@@ -108,11 +111,17 @@ export const ProfileEditorModal: React.FC<{
                 set={set}
               />
               <div data-gc="perfil.cartao.profile-editor-modal.div--2" className="h-px bg-line" />
-              <CharmsTab data-gc="perfil.cartao.profile-editor-modal.charms-tab" draft={draft} set={set} />
+              <CharmsTab data-gc="perfil.cartao.profile-editor-modal.charms-tab" id={user.id} draft={draft} set={set} />
             </div>
           </aside>
 
           <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-4 md:p-8">
+            <ProfileImageFraming data-gc="perfil.cartao.profile-editor-modal.profile-image-framing.cancel-frame"
+              framing={framing}
+              onCancel={cancelFrame}
+              onApply={(cut) => void applyFrame(cut)}
+            />
+
             <input data-gc="perfil.cartao.profile-editor-modal.input"
               ref={pickPhoto}
               type="file"
@@ -231,7 +240,12 @@ export const ProfileEditorModal: React.FC<{
             value={draft.decoration}
             onPick={(id) => set("decoration", id)}
             onClose={() => setCharmIsOpen(null)}
-            sample={(id) => <Sample data-gc="perfil.cartao.profile-editor-modal.sample" family="decoration" id={id} />}
+            sample={(option) => (
+              <Sample data-gc="perfil.cartao.profile-editor-modal.sample"
+                decoration={option}
+                photo={{ id: user.id, name: cardPreview.displayName, url: draft.avatarUrl }}
+              />
+            )}
             preview={<ProfileCardVisual data-gc="perfil.cartao.profile-editor-modal.profile-card-visual--2" {...cardPreview} />}
           />
 

@@ -110,7 +110,9 @@ export const RolesPicker: React.FC<RolesPropsPicker> = ({
 
           {!list.length && (
             <p data-gc="perfil.cartao.seletor-de-cargos.p" className="px-2.5 py-2 text-sm text-ink-faint">
-              {term ? "Nenhum cargo com esse nome" : "Nenhum cargo pra dar"}
+              {term
+                ? "Nenhum cargo com esse nome"
+                : "Não há cargo para dar neste servidor. Crie um em Configurações do servidor, na aba Cargos."}
             </p>
           )}
         </div>

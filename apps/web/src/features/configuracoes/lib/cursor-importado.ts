@@ -88,8 +88,20 @@ export async function readCursor(file: File): Promise<CursorImported> {
 export const dotAllowed = (value: number, side: number) =>
   Math.max(0, Math.min(Math.round(value), Math.floor(side / 2)));
 
+/*
+  A imagem entra crua numa declaração de CSS, então ela precisa ser um endereço
+  e nada mais: aspas, barra invertida ou quebra de linha no meio fechariam o
+  `url()` e o resto viraria CSS escrito por quem mandou o pacote.
+
+  E há o motivo mais chato: `cursor` é uma propriedade herdada. Valor que o
+  navegador não entende não cai na reserva — ele invalida a declaração inteira,
+  a propriedade passa a herdar do pai, e o app inteiro fica sem cursor de
+  clique. Um campo torto num pacote de cursores não pode ter esse poder.
+*/
+const ADDRESS = /^(?:data:image\/|https?:\/\/|\/)[^"'\\\s]*$/;
+
 export function asRule(cursor: CursorImported | null, role: CursorRole) {
-  if (!cursor) return null;
+  if (!cursor || !ADDRESS.test(cursor.image)) return null;
 
   const x = dotAllowed(cursor.dotX, cursor.width);
   const y = dotAllowed(cursor.dotY, cursor.height);

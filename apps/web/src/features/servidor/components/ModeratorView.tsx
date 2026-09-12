@@ -85,7 +85,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
               <h2 data-gc="servidor.moderator-view.h2" className="truncate text-base font-semibold">{target.displayName}</h2>
               <p data-gc="servidor.moderator-view.p" className="truncate text-xs text-ink-muted">@{target.username}</p>
             </div>
-            <button data-gc="servidor.moderator-view.button.fechar"
+            <button data-gc="servidor.moderator-view.button.close"
               onClick={close}
               aria-label={t("comum.fechar")}
               title={t("servidor.moderacao.fecharEsc")}
@@ -95,7 +95,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
             </button>
           </div>
 
-          <ActionsBar data-gc="servidor.moderator-view.barra-de-acoes.fechar"
+          <ActionsBar data-gc="servidor.moderator-view.actions-bar.close"
             guildId={guildId}
             userId={userId}
             displayName={target.displayName}
@@ -105,7 +105,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
 
         <div data-gc="servidor.moderator-view.div--3" className="min-h-0 flex-1 overflow-y-auto">
           {detail ? (
-            <ListMessages data-gc="servidor.moderator-view.lista-de-mensagens"
+            <ListMessages data-gc="servidor.moderator-view.list-messages"
               guildId={guildId}
               userId={userId}
               filter={detail}
@@ -130,31 +130,31 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
 
               {data && (
                 <>
-                  <Section data-gc="servidor.moderator-view.secao" title={t("servidor.moderacao.atividade")}>
-                    <Line data-gc="servidor.moderator-view.linha"
+                  <Section data-gc="servidor.moderator-view.section" title={t("servidor.moderacao.atividade")}>
+                    <Line data-gc="servidor.moderator-view.line"
                       icon={<MessageSquare data-gc="servidor.moderator-view.message-square" size={15} />}
                       label={t("servidor.moderacao.mensagens")}
                       value={data.activity.messages}
                       onClick={data.activity.messages ? () => setDetail("todas") : undefined}
                     />
-                    <Line data-gc="servidor.moderator-view.linha--2"
+                    <Line data-gc="servidor.moderator-view.line--2"
                       icon={<Link2 data-gc="servidor.moderator-view.link2" size={15} />}
                       label={t("servidor.moderacao.links")}
                       value={data.activity.links}
                       onClick={data.activity.links ? () => setDetail("links") : undefined}
                     />
-                    <Line data-gc="servidor.moderator-view.linha--3"
+                    <Line data-gc="servidor.moderator-view.line--3"
                       icon={<ImageIcon data-gc="servidor.moderator-view.image-icon" size={15} />}
                       label={t("servidor.moderacao.midia")}
                       value={data.activity.media}
                       onClick={data.activity.media ? () => setDetail("midia") : undefined}
                     />
-                    <Line data-gc="servidor.moderator-view.linha--4"
+                    <Line data-gc="servidor.moderator-view.line--4"
                       icon={<FileText data-gc="servidor.moderator-view.file-text" size={15} />}
                       label={t("servidor.moderacao.acoesNaAuditoria")}
                       value={data.audit.made}
                     />
-                    <Line data-gc="servidor.moderator-view.linha--5"
+                    <Line data-gc="servidor.moderator-view.line--5"
                       icon={<ShieldAlert data-gc="servidor.moderator-view.shield-alert--2" size={15} />}
                       label={t("servidor.moderacao.moderacoesSofridas")}
                       value={data.audit.suffered}
@@ -162,7 +162,7 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                     />
                   </Section>
 
-                  <Section data-gc="servidor.moderator-view.secao--2" title={t("servidor.moderacao.permissoes", { quantas: data.permissions.length })}>
+                  <Section data-gc="servidor.moderator-view.section--2" title={t("servidor.moderacao.permissoes", { quantas: data.permissions.length })}>
                     <div data-gc="servidor.moderator-view.div--5" className="flex flex-wrap gap-1.5 p-3">
                       {data.permissions.length ? (
                         data.permissions.map((p) => (
@@ -179,8 +179,8 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                     </div>
                   </Section>
 
-                  <Section data-gc="servidor.moderator-view.secao--3" title={t("servidor.cargos.titulo")}>
-                    <RolesEditor data-gc="servidor.moderator-view.editor-de-cargos"
+                  <Section data-gc="servidor.moderator-view.section--3" title={t("servidor.cargos.titulo")}>
+                    <RolesEditor data-gc="servidor.moderator-view.roles-editor"
                       guildId={guildId}
                       userId={userId}
                       roles={roles}
@@ -188,13 +188,13 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
                     />
                   </Section>
 
-                  <Section data-gc="servidor.moderator-view.secao--4" title={t("servidor.moderacao.conta")}>
-                    <Line data-gc="servidor.moderator-view.linha--6" label={t("servidor.moderacao.entrouNoServidor")} value={data.joinedServer} data />
-                    <Line data-gc="servidor.moderator-view.linha--7" label={t("servidor.moderacao.contaCriadaEm")} value={data.joinedGravae} data />
+                  <Section data-gc="servidor.moderator-view.section--4" title={t("servidor.moderacao.conta")}>
+                    <Line data-gc="servidor.moderator-view.line--6" label={t("servidor.moderacao.entrouNoServidor")} value={data.joinedServer} data />
+                    <Line data-gc="servidor.moderator-view.line--7" label={t("servidor.moderacao.contaCriadaEm")} value={data.joinedGravae} data />
                     {data.timeoutUntil && (
-                      <Line data-gc="servidor.moderator-view.linha--8" label={t("servidor.moderacao.deCastigoAte")} value={data.timeoutUntil} data alert />
+                      <Line data-gc="servidor.moderator-view.line--8" label={t("servidor.moderacao.deCastigoAte")} value={data.timeoutUntil} data alert />
                     )}
-                    <Line data-gc="servidor.moderator-view.linha--9"
+                    <Line data-gc="servidor.moderator-view.line--9"
                       icon={<Ticket data-gc="servidor.moderator-view.ticket" size={15} />}
                       label={t("servidor.moderacao.formaDeAdesao")}
                       value={
@@ -290,19 +290,19 @@ const ActionsBar: React.FC<{
 
   return (
     <div data-gc="servidor.moderator-view.div--6" className="grid grid-cols-3 gap-1 border-t border-divisor p-2 sm:grid-cols-5">
-      <TopAction data-gc="servidor.moderator-view.acao-do-topo" label={t("servidor.moderacao.mensagem")} onClick={() => void chat()}>
+      <TopAction data-gc="servidor.moderator-view.top-action" label={t("servidor.moderacao.mensagem")} onClick={() => void chat()}>
         <MessageSquare data-gc="servidor.moderator-view.message-square--2" size={18} />
       </TopAction>
-      <TopAction data-gc="servidor.moderator-view.acao-do-topo--2" label={t("servidor.membros.expulsar")} onClick={() => void kick()} danger>
+      <TopAction data-gc="servidor.moderator-view.top-action--2" label={t("servidor.membros.expulsar")} onClick={() => void kick()} danger>
         <UserMinus data-gc="servidor.moderator-view.user-minus" size={18} />
       </TopAction>
-      <TopAction data-gc="servidor.moderator-view.acao-do-topo--3" label={t("servidor.membros.banir")} onClick={() => void banMember()} danger>
+      <TopAction data-gc="servidor.moderator-view.top-action--3" label={t("servidor.membros.banir")} onClick={() => void banMember()} danger>
         <Gavel data-gc="servidor.moderator-view.gavel" size={18} />
       </TopAction>
-      <TopAction data-gc="servidor.moderator-view.acao-do-topo--4" label={t("servidor.moderacao.castigo")} onClick={() => void timeoutMember()} danger>
+      <TopAction data-gc="servidor.moderator-view.top-action--4" label={t("servidor.moderacao.castigo")} onClick={() => void timeoutMember()} danger>
         <Clock data-gc="servidor.moderator-view.clock" size={18} />
       </TopAction>
-      <TopAction data-gc="servidor.moderator-view.acao-do-topo--5" label={t("servidor.moderacao.copiarId")} onClick={() => void copyId()}>
+      <TopAction data-gc="servidor.moderator-view.top-action--5" label={t("servidor.moderacao.copiarId")} onClick={() => void copyId()}>
         <IdCard data-gc="servidor.moderator-view.id-card" size={18} />
       </TopAction>
     </div>
@@ -348,7 +348,7 @@ const ListMessages: React.FC<{
   return (
     <div data-gc="servidor.moderator-view.div--7">
       <div data-gc="servidor.moderator-view.div--8" className="sticky top-0 z-10 flex items-center justify-between border-b border-divisor bg-surface-2 px-4 py-2.5">
-        <button data-gc="servidor.moderator-view.button.on-voltar"
+        <button data-gc="servidor.moderator-view.button.on-back"
           onClick={onBack}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-ink"
         >
@@ -367,7 +367,7 @@ const ListMessages: React.FC<{
         )}
 
         {data?.map((message) => (
-          <ListMessage data-gc="servidor.moderator-view.mensagem-da-lista"
+          <ListMessage data-gc="servidor.moderator-view.list-message"
             key={message.id}
             message={message}
             filter={filter}
@@ -414,7 +414,7 @@ const ListMessage: React.FC<{
       </time>
     </header>
 
-    {filter === "links" && <MessageLinks data-gc="servidor.moderator-view.links-da-mensagem" content={message.content} />}
+    {filter === "links" && <MessageLinks data-gc="servidor.moderator-view.message-links" content={message.content} />}
 
     {message.content && (
       <p data-gc="servidor.moderator-view.p--8"
@@ -460,7 +460,7 @@ const MessageLinks: React.FC<{ content: string }> = ({ content }) => {
   return (
     <div data-gc="servidor.moderator-view.div--11" className="flex flex-col gap-1">
       {links.map((url) => (
-        <LinkLine data-gc="servidor.moderator-view.linha-de-link" key={url} url={url} />
+        <LinkLine data-gc="servidor.moderator-view.link-line" key={url} url={url} />
       ))}
     </div>
   );
@@ -509,7 +509,7 @@ const LinkLine: React.FC<{ url: string }> = ({ url }) => {
 };
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <section data-gc="servidor.moderator-view.section" className="mb-4">
+  <section data-gc="servidor.moderator-view.section--5" className="mb-4">
     <h4 data-gc="servidor.moderator-view.h4" className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">{title}</h4>
     <div data-gc="servidor.moderator-view.div--12" className="overflow-hidden rounded-lg bg-surface-1">{children}</div>
   </section>

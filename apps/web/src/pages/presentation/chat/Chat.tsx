@@ -150,12 +150,6 @@ export const Chat: React.FC = () => {
 
   const accountVoiceChannelId = myVoiceState?.channelId ?? null;
 
-  const whoThisVoice = new Set(
-    Object.values(detail?.voiceStates ?? {})
-      .flat()
-      .map((state) => state.userId),
-  );
-
   useReconnectVoice(Boolean(user));
 
   const inCallHere = voiceChannelId !== null;
@@ -272,14 +266,14 @@ export const Chat: React.FC = () => {
       {screenNarrow && (
         <Sheet data-gc="chat.chat.sheet.set-members-is-open" open={membersIsOpen} onOpenChange={setMembersIsOpen}>
           <SheetContent data-gc="chat.chat.sheet-content--2" className="w-full max-w-none p-0">
-            <header data-gc="chat.chat.header--2"
+            <header data-gc="chat.chat.header"
               className="flex h-[var(--layout-header-height)] shrink-0 items-center justify-between border-b border-divisor bg-cabecalho px-4 shadow-sm"
             >
               <SheetTitle data-gc="chat.chat.sheet-title--2" className="text-sm font-semibold text-ink">Membros</SheetTitle>
               <SheetCloseButton data-gc="chat.chat.sheet-close-button--2" className="-mr-1" />
             </header>
 
-            <MemberList data-gc="chat.chat.member-list--2"
+            <MemberList data-gc="chat.chat.member-list"
               fluid
               members={detail?.members ?? []}
               loading={!detail}
@@ -287,7 +281,6 @@ export const Chat: React.FC = () => {
               ownerId={detail?.guild.ownerId}
               guildId={detail?.guild.id}
               canModerate={can("MODERATE_MEMBERS")}
-              inVoice={whoThisVoice}
             />
           </SheetContent>
         </Sheet>
@@ -295,7 +288,7 @@ export const Chat: React.FC = () => {
 
       <div data-gc="chat.chat.div--2" {...flx("coreColumn", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
         {!withoutHeader && (
-        <header data-gc="chat.chat.header" {...flx("channelTop", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
+        <header data-gc="chat.chat.header--2" {...flx("channelTop", "topo-do-canal regiao-de-arrasto mede-a-largura h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-cabecalho shadow-sm")}>
           <div data-gc="chat.chat.div--3"
             {...flx("topChannelCore", "flex h-full w-full items-center gap-2 px-4")}
           >
@@ -513,14 +506,13 @@ export const Chat: React.FC = () => {
           )}
 
           {showMembers && channel?.type !== "VOICE" && !voiceVisibleChat && !search && (
-            <MemberList data-gc="chat.chat.member-list"
+            <MemberList data-gc="chat.chat.member-list--2"
               members={detail?.members ?? []}
               loading={!detail}
               roles={detail?.roles ?? []}
               ownerId={detail?.guild.ownerId}
               guildId={detail?.guild.id}
               canModerate={can("MODERATE_MEMBERS")}
-              inVoice={whoThisVoice}
             />
           )}
 

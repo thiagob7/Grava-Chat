@@ -334,7 +334,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
       <div data-gc="conversa.message-item.div--4" {...flx("messageGutter", "w-10 shrink-0")}>
         {compact || !showAvatars ? (
-          <span data-gc="conversa.message-item.span--8" {...flx("hourPassMouse", "hidden text-10 leading-6 text-ink-faint group-hover:block")}>
+          <span data-gc="conversa.message-item.span--8" {...flx("hourPassMouse", "hidden text-11 leading-6 text-ink-muted group-hover:block")}>
             {formatTime(message.createdAt)}
           </span>
         ) : (
@@ -367,7 +367,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               </button>
             </UserProfilePopover>
             <ServerTag data-gc="conversa.message-item.server-tag" tag={charms?.profile?.serverTag} />
-            <span data-gc="conversa.message-item.span--9" {...flx("messageHour", "shrink-0 text-xs text-ink-faint")} title={formatTimestamp(message.createdAt)}>
+            <span data-gc="conversa.message-item.span--9" {...flx("messageHour", "shrink-0 text-xs text-ink-muted")} title={formatTimestamp(message.createdAt)}>
               <span data-gc="conversa.message-item.span--10" className="@md:hidden">{formatTime(message.createdAt)}</span>
               <span data-gc="conversa.message-item.span--11" className="hidden @md:inline">{formatTimestamp(message.createdAt)}</span>
             </span>
@@ -412,7 +412,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <div data-gc="conversa.message-item.div--8"
-              className={cn("whitespace-pre-wrap break-words text-ink-muted", flxCls("messageBody"), flxCls("messageText"))}
+              className={cn("whitespace-pre-wrap break-words text-ink", flxCls("messageBody"), flxCls("messageText"))}
               style={{ fontFamily: fontFamily(message.font) ?? undefined }}
             >
               <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mentions={mentions} blocks />
@@ -835,20 +835,20 @@ const ReactionPill: React.FC<{
   return (
     <Tooltip data-gc="conversa.message-item.tooltip.set-is-open"
       onOpenChange={setIsOpen}
-      className="max-w-[17rem] px-3 py-2.5"
+      className="max-w-[18rem] px-3 py-4"
       label={
-        <span data-gc="conversa.message-item.span--15" className="flex items-center gap-2.5 text-left">
+        <span data-gc="conversa.message-item.span--15" className="flex items-center gap-3 text-left">
           <ReactionEmoji data-gc="conversa.message-item.reaction-emoji"
             emoji={reaction.emoji}
             fromServer={emojis}
-            className="size-8 shrink-0"
+            className="size-12 shrink-0"
           />
 
           <span data-gc="conversa.message-item.span--16" className="flex min-w-0 flex-col gap-0.5">
-            <span data-gc="conversa.message-item.span--17" className="text-xs leading-snug text-ink">
+            <span data-gc="conversa.message-item.span--17" className="text-sm font-semibold leading-tight text-ink">
               {whoReactedPhrase(t, reaction, names)}
             </span>
-            <span data-gc="conversa.message-item.span--18" className="text-10 text-ink-faint">
+            <span data-gc="conversa.message-item.span--18" className="text-xs text-ink-muted">
               {t("conversa.reacao.dicaSuper")}
             </span>
           </span>

@@ -19,7 +19,6 @@ interface MemberListProps {
   ownerId: string | undefined;
   guildId?: string;
   canModerate?: boolean;
-  inVoice?: Set<string>;
   fluid?: boolean;
 }
 
@@ -27,7 +26,6 @@ export const MemberList: React.FC<MemberListProps> = ({
   members,
   loading = false,
   roles = [],
-  inVoice,
   ownerId,
   guildId,
   canModerate = false,
@@ -117,7 +115,6 @@ export const MemberList: React.FC<MemberListProps> = ({
             dim={group.dim}
             guildId={guildId}
             canModerate={canModerate}
-            inVoice={inVoice}
             charms={charms}
           />
         ))}
@@ -140,7 +137,6 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
   dim,
   guildId,
   canModerate = false,
-  inVoice,
   charms,
 }) => {
   if (!members.length) return null;
@@ -179,7 +175,6 @@ const MemberGroup: React.FC<MemberGroupProps> = ({
                 url={member.user.avatarUrl}
                 size={32}
                 status={member.user.status}
-                inVoice={inVoice?.has(member.user.id)}
                 charms={profile}
                 className={flxCls("memberAvatar")}
               />

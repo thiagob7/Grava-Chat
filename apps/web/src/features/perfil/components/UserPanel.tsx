@@ -99,6 +99,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
               customStatus={user.customStatus}
               bio={user.bio}
               createdAt={user.createdAt}
+              detailed
               roleList={mineRoles}
               onStatus={() => setSettingStatus(true)}
               className="rounded-none"

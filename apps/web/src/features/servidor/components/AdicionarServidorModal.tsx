@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { Home, Link2, Upload } from "lucide-react";
+import { Home, Link2, Plus, Upload } from "lucide-react";
 
 import { useCreateGuild } from "~/@core/application/queries/guild/use-create-guild";
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
-import { ImageCrop } from "~/components/RecorteDeImagem";
+import { ImageEditor } from "~/components/EditorDeImagem";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -18,6 +18,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input, Label } from "~/components/ui/input";
 import { initials } from "~/lib/format";
+import { cn } from "~/lib/utils";
 
 interface Props {
   open: boolean;
@@ -147,16 +148,41 @@ const Create: React.FC<{
 
       <DialogBody data-gc="servidor.adicionar-servidor-modal.dialog-body--2">
         <div data-gc="servidor.adicionar-servidor-modal.div--2" className="flex items-center gap-4">
+          {/*
+            O disco fica um degrau acima do fundo do modal, senão o tracejado
+            flutua no vazio e não se lê como lugar de soltar imagem. A bolinha
+            com o mais só aparece enquanto não há ícone.
+          */}
           <button data-gc="servidor.adicionar-servidor-modal.button"
             onClick={() => picker.current?.click()}
-            className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-surface-4 bg-surface-0 text-xl font-bold text-ink-muted transition hover:border-brand hover:text-ink"
+            aria-label={icon ? "Trocar ícone do servidor" : "Enviar ícone do servidor"}
+            className="group/icone relative size-20 shrink-0 rounded-full transition focus-visible:outline-none"
           >
-            {icon ? (
-              <img data-gc="servidor.adicionar-servidor-modal.img" src={icon.preview} alt="" className="size-full object-cover" />
-            ) : name.trim() ? (
-              initials(name)
-            ) : (
-              <Upload data-gc="servidor.adicionar-servidor-modal.upload" size={20} />
+            <span data-gc="servidor.adicionar-servidor-modal.span--4"
+              className={cn(
+                "flex size-full items-center justify-center overflow-hidden rounded-full bg-surface-3 text-xl font-bold text-ink-muted transition",
+                "group-hover/icone:bg-surface-4 group-hover/icone:text-ink",
+                icon
+                  ? "border-2 border-line-sutil"
+                  : "border-2 border-dashed border-line group-hover/icone:border-brand",
+              )}
+            >
+              {icon ? (
+                <img data-gc="servidor.adicionar-servidor-modal.img" src={icon.preview} alt="" className="size-full object-cover" />
+              ) : name.trim() ? (
+                initials(name)
+              ) : (
+                <Upload data-gc="servidor.adicionar-servidor-modal.upload" size={20} />
+              )}
+            </span>
+
+            {!icon && (
+              <span data-gc="servidor.adicionar-servidor-modal.span--5"
+                aria-hidden
+                className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-brand text-sobre-marca ring-2 ring-surface-1"
+              >
+                <Plus data-gc="servidor.adicionar-servidor-modal.plus" size={14} strokeWidth={3} />
+              </span>
             )}
           </button>
 
@@ -206,10 +232,14 @@ const Create: React.FC<{
         </Button>
       </DialogFooter>
 
-      <ImageCrop data-gc="servidor.adicionar-servidor-modal.image-crop"
+      <ImageEditor data-gc="servidor.adicionar-servidor-modal.image-editor"
         file={forCrop}
+        aspect={1}
+        exportWidth={256}
+        mime="image/webp"
+        round
         onCancel={() => setForCrop(null)}
-        onReady={(cropped) => {
+        onApply={(cropped) => {
           setForCrop(null);
           setIcon({ file: cropped, preview: URL.createObjectURL(cropped) });
         }}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="presentation">
+  <style>
+    @keyframes gc-rabo { 0%,100% { transform: rotate(-8deg) } 50% { transform: rotate(14deg) } }
+    @keyframes gc-sono { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-1.6px) } }
+    .bicho { animation: gc-sono 2.8s ease-in-out infinite }
+    .rabo { animation: gc-rabo 1.9s ease-in-out infinite; transform-origin: 130px 40px }
+    @media (prefers-reduced-motion: reduce) { .bicho, .rabo { animation: none } }
+  </style>
+  <g class="bicho">
+    <path class="rabo" d="M130 42 q26 4 22 -16 q-2 -11 -12 -8" fill="none" stroke="#d9812f" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="104" cy="40" rx="34" ry="17" fill="#e8933c"/>
+    <path d="M92 27 l-3 -15 l13 8 z" fill="#e8933c"/>
+    <path d="M116 26 l9 -13 l3 15 z" fill="#e8933c"/>
+    <circle cx="106" cy="30" r="18" fill="#f0a352"/>
+    <path d="M88 36 h10 M112 46 h12 M96 48 h10" stroke="#cf7526" stroke-width="4" stroke-linecap="round"/>
+    <path d="M99 30 q4 4 8 0 M113 30 q4 4 8 0" fill="none" stroke="#5b3a17" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M108 37 l3 3 l3 -3" fill="none" stroke="#5b3a17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

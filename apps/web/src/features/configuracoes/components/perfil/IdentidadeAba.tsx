@@ -5,6 +5,7 @@ import { LIMITS } from "@gravae/shared";
 import { importImage } from "~/@core/application/requests/upload/importar-imagem";
 import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
 import { ImagePicker } from "~/components/SeletorDeImagem";
+import { ProfileImageFraming } from "~/features/perfil/components/EnquadrarImagemDePerfil";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
@@ -20,9 +21,8 @@ interface IdentityTabProps {
 }
 
 export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, set }) => {
-  const { send, saving, sending } = useImageProfileSending((field, url) =>
-    set(field, url),
-  );
+  const { send, framing, cancelFrame, applyFrame, saving, sending } =
+    useImageProfileSending((field, url) => set(field, url));
   const pickPhoto = useRef<HTMLInputElement>(null);
   const pickBanner = useRef<HTMLInputElement>(null);
   const [pickingTrack, setPickingTrack] = useState(false);
@@ -42,6 +42,12 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
 
   return (
     <div data-gc="configuracoes.perfil.identidade-aba.div" className="space-y-6">
+      <ProfileImageFraming data-gc="configuracoes.perfil.identidade-aba.profile-image-framing.cancel-frame"
+        framing={framing}
+        onCancel={cancelFrame}
+        onApply={(cut) => void applyFrame(cut)}
+      />
+
       <div data-gc="configuracoes.perfil.identidade-aba.div--2" className="flex items-center gap-4">
         <Avatar data-gc="configuracoes.perfil.identidade-aba.avatar"
           id={id}
@@ -66,7 +72,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
           <p data-gc="configuracoes.perfil.identidade-aba.p" className="mt-1.5 text-xs text-ink-faint">
             {saving
               ? `Comprimida antes de subir: ${saving}`
-              : "A imagem é reduzida no navegador antes de subir."}
+              : "Você enquadra a foto antes de ela subir."}
           </p>
 
           <input data-gc="configuracoes.perfil.identidade-aba.input"

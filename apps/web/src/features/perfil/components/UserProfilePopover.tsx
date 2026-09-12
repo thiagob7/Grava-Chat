@@ -180,12 +180,11 @@ const ProfileCard: React.FC<{
   const canTouchPerson =
     amOwner || highestPosition(memberRoles) < myPosition;
 
-  const rolesCanGive =
-    guildId && can("MANAGE_ROLES") && canTouchPerson
-      ? serverRoles.filter(
-          (r) => !r.isEveryone && r.position < myPosition,
-        )
-      : [];
+  const givesRoles = Boolean(guildId) && can("MANAGE_ROLES") && canTouchPerson;
+
+  const rolesCanGive = givesRoles
+    ? serverRoles.filter((r) => !r.isEveryone && r.position < myPosition)
+    : [];
 
   const toggleRole = (roleId: string) => {
     if (!guildId) return;
@@ -376,7 +375,7 @@ const ProfileCard: React.FC<{
       </Button>
     ) : (
       <>
-        {canChat && (
+        {canChat && profile.friendship !== "ACCEPTED" && (
           <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void chat()} disabled={busy}>
             <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} /> {t("perfil.mensagem")}
           </Button>
@@ -454,14 +453,20 @@ const ProfileCard: React.FC<{
         customStatus={profile.customStatus}
         roleColor={roleColor}
         bio={profile.bio}
-        createdAt={profile.system ? null : profile.createdAt}
-        joinedAt={serverDetail?.members.find((m) => m.user.id === profile.id)?.joinedAt}
-        serverName={serverDetail?.guild.name}
+        pronouns={profile.pronouns}
+        detailed={profile.friendship === "SELF"}
+        createdAt={profile.friendship === "SELF" ? profile.createdAt : null}
+        joinedAt={
+          profile.friendship === "SELF"
+            ? serverDetail?.members.find((m) => m.user.id === profile.id)?.joinedAt
+            : undefined
+        }
+        serverName={profile.friendship === "SELF" ? serverDetail?.guild.name : undefined}
         mutualFriends={profile.mutualFriends}
         mutualGuilds={profile.mutualGuilds}
         roleList={memberRoles}
         availableRoles={rolesCanGive}
-        onToggleRole={rolesCanGive.length ? toggleRole : undefined}
+        onToggleRole={givesRoles ? toggleRole : undefined}
         savingRoles={setRoles.isPending}
         onStatus={
           profile.friendship === "SELF"
