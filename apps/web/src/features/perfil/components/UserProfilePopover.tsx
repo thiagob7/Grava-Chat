@@ -393,6 +393,15 @@ const ProfileCard: React.FC<{
             <Plus data-gc="perfil.user-profile-popover.plus" size={14} /> {t("perfil.adicionarAoServidor")}
           </Button>
         )}
+
+        {/*
+          A caixa de escrever fica no pé do cartão, e dentro dele. Fora, ela
+          pegava o fundo do popover — mais claro que o do cartão — e o pé virava
+          uma faixa de outra cor, com um vazio preto acima.
+        */}
+        {profile.friendship === "ACCEPTED" && (
+          <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer" userId={profile.id} username={profile.username} />
+        )}
       </>
     );
 
@@ -523,10 +532,6 @@ const ProfileCard: React.FC<{
           )}
         </div>
       </ProfileCardVisual>
-
-      {profile.friendship === "ACCEPTED" && (
-        <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer" userId={profile.id} username={profile.username} />
-      )}
     </>
   );
 };
@@ -571,7 +576,7 @@ const ProfileComposer: React.FC<{ userId: string; username: string }> = ({
     o que falta quando a caixa é pequena — a referência faz igual.
   */
   return (
-    <div data-gc="perfil.user-profile-popover.div--4" className="px-3 pb-3 pt-1">
+    <div data-gc="perfil.user-profile-popover.div--4">
       <div data-gc="perfil.user-profile-popover.div--5" className="flex items-center gap-1 rounded-lg border border-line bg-surface-2 pr-1.5">
         <Input data-gc="perfil.user-profile-popover.input"
           value={text}
