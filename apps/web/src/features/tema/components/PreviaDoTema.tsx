@@ -74,6 +74,7 @@ function useTurn(wants: boolean) {
       const index = waiting.indexOf(start);
       if (index >= 0) waiting.splice(index, 1);
       else free();
+      setTurn(false);
     };
   }, [wants]);
 
@@ -85,9 +86,12 @@ function useTurn(wants: boolean) {
   porque um tema pesa e são dezenas na tela. Cada cartão busca o seu só quando
   chega perto da janela, e o cache do TanStack cuida de não pedir duas vezes.
 */
+const NEAR_MARGIN = "300px";
+
 function useAppeared<T extends HTMLElement>() {
   const target = useRef<T>(null);
   const [appeared, setAppeared] = useState(false);
+  const [near, setNear] = useState(false);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
@@ -99,24 +103,25 @@ function useAppeared<T extends HTMLElement>() {
       if (measure) setWidth(measure);
     });
 
-    slider.observe(element);
-
-    if (appeared) return () => slider.disconnect();
-
     const eye = new IntersectionObserver(
-      ([entry]) => entry?.isIntersecting && setAppeared(true),
-      { rootMargin: "200px" },
+      ([entry]) => {
+        const inside = Boolean(entry?.isIntersecting);
+        setNear(inside);
+        if (inside) setAppeared(true);
+      },
+      { rootMargin: NEAR_MARGIN },
     );
 
+    slider.observe(element);
     eye.observe(element);
 
     return () => {
       eye.disconnect();
       slider.disconnect();
     };
-  }, [appeared]);
+  }, []);
 
-  return { target, appeared, width };
+  return { target, appeared, near, width };
 }
 
 export const ThemePreview: React.FC<{
@@ -126,10 +131,10 @@ export const ThemePreview: React.FC<{
   still?: boolean;
 }> = ({ themeId, className, still = false }) => {
   const { t } = useTranslation();
-  const { target, appeared, width } = useAppeared<HTMLDivElement>();
+  const { target, appeared, near, width } = useAppeared<HTMLDivElement>();
   const { data: theme } = useTheme(appeared ? themeId : undefined);
   const scale = width ? width / WIDTH : 0;
-  const { turn, loaded } = useTurn(Boolean(theme && scale > 0));
+  const { turn, loaded } = useTurn(Boolean(theme && scale > 0 && near));
   const documentHtml = useMemo(
     () => (theme ? previewDocument(theme.css, theme.overrides, { still }) : ""),
     [theme, still],
@@ -142,7 +147,7 @@ export const ThemePreview: React.FC<{
       ref={target}
       className={cn("relative overflow-hidden bg-surface-3", className)}
     >
-      {theme && scale > 0 && turn && (
+      {theme && scale > 0 && near && turn && (
         <iframe
           data-gc="tema.previa-do-tema.iframe.loaded"
           title={`Prévia de ${theme.name}`}
