@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Diğer",
     },
   },
+  fila: {
+    esperando: "Bağlantı dönünce gönderilecek",
+  },
+
   falha: {
     tentarDeNovo: "Yeniden dene",
     erro: "İletilmedi",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Konu ne?",
     primeiraMensagem: "İlk mesaj",
     conteDoCaso: "Anlat",
+  },
+  sistema: {
+    naoEntregue: "Mesajın iletilemedi. Bu genellikle ortak bir topluluğunuz olmadığında ya da bu kişi yalnızca arkadaşlarından doğrudan mesaj kabul ettiğinde olur. Kendi gizlilik ayarlarını da Ayarlar > Gizlilik bölümünden düzenlemen gerekebilir.",
+    soVoce: "Bu mesajı yalnızca sen görebilirsin.",
+    dispensar: "Kapat",
   },
 };

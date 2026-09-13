@@ -133,6 +133,10 @@ export const conversa = {
       outro: "その他",
     },
   },
+  fila: {
+    esperando: "接続が戻ったら送信されます",
+  },
+
   falha: {
     tentarDeNovo: "もう一度試す",
     erro: "送信できませんでした",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "どんな話ですか？",
     primeiraMensagem: "最初のメッセージ",
     conteDoCaso: "くわしく書いてください",
+  },
+  sistema: {
+    naoEntregue: "メッセージを届けられませんでした。共通のコミュニティがないか、相手がフレンドからのダイレクトメッセージしか受け付けていない場合によく起こります。自分のプライバシー設定も「設定 > プライバシー」で見直す必要があるかもしれません。",
+    soVoce: "このメッセージはあなたにだけ表示されています。",
+    dispensar: "閉じる",
   },
 };

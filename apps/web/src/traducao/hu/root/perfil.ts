@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Nem kapsz értesítést új üzenetről",
     invisivel: "Láthatatlan",
     invisivelDetalhe: "Másoknak offline-nak látszol",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Fiókváltás",

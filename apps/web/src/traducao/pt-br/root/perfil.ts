@@ -101,6 +101,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Você não recebe aviso de mensagem nova",
     invisivel: "Invisível",
     invisivelDetalhe: "Você aparece offline para os outros",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Mudar de conta",

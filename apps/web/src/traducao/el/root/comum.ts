@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Διαγραφή",
   remover: "Αφαίρεση",
   trocar: "Αλλαγή",
+  loginNoApp: {
+    titulo: "Όλα έτοιμα!",
+    detalhe: "Συνδέθηκες. Επέστρεψε στο Gravaê, η εφαρμογή σε περιμένει ήδη.",
+    abrir: "Άνοιγμα Gravaê",
+    fecharAba: "Μπορείς να κλείσεις αυτή την καρτέλα.",
+    falhouTitulo: "Η σύνδεση απέτυχε",
+    falhouDetalhe: "Επέστρεψε στην εφαρμογή και δοκίμασε ξανά.",
+    legenda: "Ένα ρομπότ που χαιρετά",
+    legendaFalhou: "Ένα γατάκι που κλαίει",
+  },
 };

@@ -67,11 +67,13 @@ export async function friendRoutes(app: FastifyInstance) {
 
   app.post("/dms", async (req) => {
     const { userId } = openDmInput.parse(req.body);
-    const { channel, request } = await friendshipService.openDm(req.userId, userId);
+    const { channel, request, silent } = await friendshipService.openDm(req.userId, userId);
 
-    io()
-      .to(rooms.user(userId))
-      .emit(request ? "dm:pedido" : "dm:created", { channelId: channel.id });
+    if (!silent) {
+      io()
+        .to(rooms.user(userId))
+        .emit(request ? "dm:pedido" : "dm:created", { channelId: channel.id });
+    }
 
     return { ...channel, request };
   });

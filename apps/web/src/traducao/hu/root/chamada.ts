@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Csevegés bezárása",
   mostrarChat: "Csevegés megjelenítése",
   aoVivo: "Élő",
+  aparelhoDaPessoa: {
+    desktop: "Asztali alkalmazás",
+    web: "Böngésző",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon kikapcsolva",
     mudoPeloServidor: "A kiszolgáló kikapcsolta a mikrofont",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "A rendszer egyetlen megosztható képernyőt vagy ablakot sem adott vissza.",
     pararDeCompartilhar: "Megosztás leállítása",
     encerrarTransmissao: "Az adás befejezése",
+    pararTransmissao: "Közvetítés leállítása",
+    alterarTransmissao: "Közvetítés módosítása",
+    qualidade: "Közvetítés minősége",
+    resolucao: "Felbontás",
+    taxaDeQuadros: "Képkockasebesség",
+    original: "Eredeti",
+    compartilharAudio: "Közvetítés hangjának megosztása",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "A felbontás felső határ: a kisebb ablak megtartja a méretét. Több felbontás és képkocka több sávszélességet kér, tőled és a nézőktől. A futó közvetítésre is vonatkozik.",
   },
   live: {
     etiqueta: "Élő",

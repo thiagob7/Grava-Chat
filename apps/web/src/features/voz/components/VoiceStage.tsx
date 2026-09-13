@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Mic, MicOff, Monitor, MonitorUp, Play, SignalLow, Volume2, VolumeX, X } from "lucide-react";
 
 import { CaretDown, CaretUp, ChatCircle, PhoneCall, SpeakerHigh, UserPlus, UsersThree } from "@phosphor-icons/react";
@@ -18,6 +18,7 @@ import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore, type VoiceTile } from "~/features/voz/stores/voice-store";
 import { focus, formatGrid, buildGrid } from "~/features/voz/lib/grade-da-call";
 import { qualityNotice } from "~/features/voz/lib/qualidade-da-conexao";
+import { deviceIcon } from "~/features/voz/lib/aparelho-do-quadro";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -179,6 +180,34 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }, [setStageVisible]);
   const error = useVoiceStore((s) => s.error);
 
+  const clearFocus = useCallback(() => setFocused(null), []);
+
+  const focusToggle = useMemo(() => {
+    const cache = new Map<string, () => void>();
+
+    return (key: string) => {
+      const already = cache.get(key);
+      if (already) return already;
+
+      const made = () => setFocused((current) => (current === key ? null : key));
+      cache.set(key, made);
+      return made;
+    };
+  }, []);
+
+  const watchToggle = useMemo(() => {
+    const cache = new Map<string, () => void>();
+
+    return (identity: string) => {
+      const already = cache.get(identity);
+      if (already) return already;
+
+      const made = () => setWatching(identity);
+      cache.set(identity, made);
+      return made;
+    };
+  }, [setWatching]);
+
   if (error) {
     return (
       <div data-gc="voz.voice-stage.div--2" className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
@@ -266,7 +295,12 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
               <div data-gc="voz.voice-stage.div--8" className="flex shrink-0 gap-2">
                 {tiles.map((tile) => (
                   <WithMenu data-gc="voz.voice-stage.with-menu" key={tile.identity} tile={tile} context={context}>
-                    <Tile data-gc="voz.voice-stage.tile" tile={tile} guildId={guildId} compact />
+                    <Tile data-gc="voz.voice-stage.tile"
+                      tile={tile}
+                      voiceState={voiceStates.find((v) => v.userId === tile.identity)}
+                      guildId={guildId}
+                      compact
+                    />
                   </WithMenu>
                 ))}
               </div>
@@ -300,6 +334,14 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
   const { columns, dense } = formatGrid(cells);
 
+  /*
+    Uma função por pessoa, criada uma vez e guardada.
+
+    Escrita solta no JSX, a seta vira função NOVA a cada redesenho, e prop nova
+    faz o memo do quadro desistir — o cuidado todo com a identidade da lista ia
+    embora aqui. Guardando por chave, o quadro de quem não mudou recebe
+    exatamente as mesmas props de antes.
+  */
   const draw = (
     frame: (typeof grid)[number],
     compact?: boolean,
@@ -313,22 +355,42 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         tile={frame.de.tile}
         dense={dense || compact}
         className={fill ? "size-full" : undefined}
-        onWatch={() => setWatching(frame.de.identity)}
+        onWatch={watchToggle(frame.de.identity)}
       />
     ) : (
       <WithMenu data-gc="voz.voice-stage.with-menu--3" key={frame.key} tile={frame.de.tile} context={context}>
         <Tile data-gc="voz.voice-stage.tile--2"
           tile={frame.de.tile}
+          voiceState={voiceStates.find((v) => v.userId === frame.de.identity)}
           guildId={guildId}
           dense={dense || compact}
           fill={fill}
           withoutCorner={withoutCorner}
-          onFocus={onClick ?? (() => setFocused((current) => (current === frame.key ? null : frame.key)))}
+          onFocus={onClick ?? focusToggle(frame.key)}
         />
       </WithMenu>
     );
 
   if (inFocus) {
+    const membersToggle = (
+      <Tooltip data-gc="voz.voice-stage.tooltip--3" label={hiddenMembers ? "Mostrar membros" : "Ocultar membros"}>
+        <button data-gc="voz.voice-stage.button--3"
+          type="button"
+          onClick={() => setMembersHidden((current) => !current)}
+          aria-label={hiddenMembers ? "Mostrar membros" : "Ocultar membros"}
+          aria-expanded={!hiddenMembers}
+          className={cn(
+            "absolute z-10 flex items-center gap-1.5 rounded-full border border-line bg-surface-4/95 px-3 py-1.5 text-xs font-medium text-ink-muted opacity-0 shadow-lg backdrop-blur transition focus-visible:opacity-100 group-hover:opacity-100 hover:text-ink",
+            hiddenMembers ? "bottom-3" : "-top-4",
+          )}
+        >
+          {hiddenMembers ? <CaretUp data-gc="voz.voice-stage.caret-up" size={13} weight="bold" /> : <CaretDown data-gc="voz.voice-stage.caret-down" size={13} weight="bold" />}
+          <UsersThree data-gc="voz.voice-stage.users-three" size={15} weight="fill" />
+          <span data-gc="voz.voice-stage.span--5" className="tabular-nums">{inFocus.track.length + 1}</span>
+        </button>
+      </Tooltip>
+    );
+
     return (
       <div data-gc="voz.voice-stage.div--10"
         ref={stage}
@@ -348,25 +410,19 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
         )}
 
         <div data-gc="voz.voice-stage.div--11" className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2">
-          <div data-gc="voz.voice-stage.div--12" className="aspect-video w-full max-h-full [&>*]:size-full">
+          <div data-gc="voz.voice-stage.div--12" className="relative flex aspect-video w-full max-h-full justify-center [&>:first-child]:size-full">
             {draw(inFocus.highlight, false, true)}
+
+            {/*
+              Com a fileira escondida, o botão desce para dentro do quadro grande
+              em vez de ficar sozinho no vão entre ele e a barra de controles.
+            */}
+            {hiddenMembers && membersToggle}
           </div>
         </div>
 
         <div data-gc="voz.voice-stage.div--13" className="relative flex shrink-0 flex-col items-center">
-          <Tooltip data-gc="voz.voice-stage.tooltip--3" label={hiddenMembers ? "Mostrar membros" : "Ocultar membros"}>
-            <button data-gc="voz.voice-stage.button--3"
-              type="button"
-              onClick={() => setMembersHidden((current) => !current)}
-              aria-label={hiddenMembers ? "Mostrar membros" : "Ocultar membros"}
-              aria-expanded={!hiddenMembers}
-              className="absolute -top-4 z-10 flex items-center gap-1.5 rounded-full border border-line bg-surface-4/95 px-3 py-1.5 text-xs font-medium text-ink-muted opacity-0 shadow-lg backdrop-blur transition focus-visible:opacity-100 group-hover:opacity-100 hover:text-ink"
-            >
-              {hiddenMembers ? <CaretUp data-gc="voz.voice-stage.caret-up" size={13} weight="bold" /> : <CaretDown data-gc="voz.voice-stage.caret-down" size={13} weight="bold" />}
-              <UsersThree data-gc="voz.voice-stage.users-three" size={15} weight="fill" />
-              <span data-gc="voz.voice-stage.span--5" className="tabular-nums">{inFocus.track.length + 1}</span>
-            </button>
-          </Tooltip>
+          {!hiddenMembers && membersToggle}
 
           {!hiddenMembers && (
             /*
@@ -384,8 +440,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
               {inFocus.track.map((frame) => (
                 <Tooltip data-gc="voz.voice-stage.tooltip--4" key={frame.key} label="Voltar para a chamada">
-                  <div data-gc="voz.voice-stage.div--15" className={cn("relative aspect-video shrink-0", CARD_STRIP)}>
-                    {draw(frame, true, true, false, () => setFocused(null))}
+                  <div data-gc="voz.voice-stage.div--15" className={cn("relative aspect-video shrink-0 [&>*]:size-full", CARD_STRIP)}>
+                    {draw(frame, true, true, false, clearFocus)}
 
                     <span data-gc="voz.voice-stage.span--6"
                       aria-hidden
@@ -499,6 +555,8 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
 interface TileProps {
   tile: VoiceTile;
+  /* O que o SFU não sabe: sem áudio, mudo pelo servidor, de que aparelho. */
+  voiceState?: VoiceState;
   guildId?: string;
   compact?: boolean;
   dense?: boolean;
@@ -507,8 +565,17 @@ interface TileProps {
   onFocus?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({
+/*
+  Memo aqui é o que faz o trabalho de `keepSteady` chegar na tela.
+
+  A lista de quadros já devolve o MESMO objeto para quem não mudou. Sem memo
+  isso não adiantaria: o palco redesenha, e o React refaz todo filho mesmo com
+  prop idêntica. Com memo, quem recebeu o mesmo quadro não é tocado, e o
+  elemento de vídeo lá dentro nem pisca.
+*/
+const Tile: React.FC<TileProps> = React.memo(({
   tile,
+  voiceState,
   guildId,
   compact,
   dense,
@@ -521,6 +588,16 @@ const Tile: React.FC<TileProps> = ({
   const mirror = useVoicePrefs((s) => s.mirrorCamera);
   const playingSound = usePanelSound((s) => s.who === tile.identity);
   const speaking = tile.speaking || playingSound;
+
+  /*
+    O microfone a gente vê pela faixa publicada, que é a verdade do que sai.
+    Áudio desligado ninguém vê pela faixa — é escolha de quem ESCUTA, e só o
+    servidor sabe. Por isso os dois selos vêm de lugares diferentes.
+  */
+  const deafened = Boolean(voiceState?.selfDeaf || voiceState?.serverDeaf);
+  const mutedByServer = Boolean(voiceState?.serverMute) && !tile.micEnabled;
+  const device = voiceState?.device ?? null;
+  const DeviceIcon = deviceIcon(device);
   const participant = resolve(tile.identity, {
     name: tile.name,
     avatarUrl: tile.avatarUrl,
@@ -570,10 +647,49 @@ const Tile: React.FC<TileProps> = ({
           ),
         )}
       >
-        {tile.micEnabled ? (
-          <Mic data-gc="voz.voice-stage.mic" size={12} className="shrink-0 text-ink-muted" />
-        ) : (
-          <MicOff data-gc="voz.voice-stage.mic-off" size={12} className="shrink-0 text-danger" />
+        <Tooltip data-gc="voz.voice-stage.tooltip--5"
+          label={
+            mutedByServer
+              ? t("chamada.estado.mudoPeloServidor")
+              : tile.micEnabled
+                ? t("chamada.aparelhos.microfone")
+                : t("chamada.estado.mudo")
+          }
+        >
+          <span data-gc="voz.voice-stage.span--9" className="flex shrink-0">
+            {tile.micEnabled ? (
+              <Mic data-gc="voz.voice-stage.mic" size={12} className="text-ink-muted" />
+            ) : (
+              <MicOff data-gc="voz.voice-stage.mic-off" size={12} className="text-danger" />
+            )}
+          </span>
+        </Tooltip>
+
+        {/*
+          O fone cortado só aparece quando a pessoa está SEM ÁUDIO, e não o
+          tempo todo como o microfone. Quem está ouvindo é o normal: selo que
+          nunca muda não informa nada, só ocupa a etiqueta.
+        */}
+        {deafened && (
+          <Tooltip data-gc="voz.voice-stage.tooltip--6"
+            label={
+              voiceState?.serverDeaf
+                ? t("chamada.estado.semAudioPeloServidor")
+                : t("chamada.estado.semAudio")
+            }
+          >
+            <span data-gc="voz.voice-stage.span--10" className="flex shrink-0">
+              <VolumeX data-gc="voz.voice-stage.volume-x" size={12} className="text-danger" />
+            </span>
+          </Tooltip>
+        )}
+
+        {device && DeviceIcon && (
+          <Tooltip data-gc="voz.voice-stage.tooltip--7" label={t(`chamada.aparelhoDaPessoa.${device}`)}>
+            <span data-gc="voz.voice-stage.span--11" className="flex shrink-0">
+              <DeviceIcon data-gc="voz.voice-stage.device-icon" size={12} className="text-ink-muted" />
+            </span>
+          </Tooltip>
         )}
 
         <ConnectionNotice data-gc="voz.voice-stage.connection-notice" quality={tile.quality} />
@@ -597,7 +713,9 @@ const Tile: React.FC<TileProps> = ({
       </div>
     </div>
   );
-};
+});
+
+Tile.displayName = "Tile";
 
 const TileDaLive: React.FC<{
   tile: VoiceTile;
@@ -618,8 +736,8 @@ const TileDaLive: React.FC<{
       <button data-gc="voz.voice-stage.button.on-watch" onClick={onWatch} className="absolute inset-0 size-full">
         <VoiceVideo data-gc="voz.voice-stage.voice-video--3" track={tile.screenTrack} />
 
-        <span data-gc="voz.voice-stage.span--9" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
-          <span data-gc="voz.voice-stage.span--10" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--12" className="pointer-events-none absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--13" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
       </button>
     ) : (
@@ -627,11 +745,11 @@ const TileDaLive: React.FC<{
         onClick={onWatch}
         className="absolute inset-0 flex items-center justify-center transition hover:bg-palco-ink/5"
       >
-        <span data-gc="voz.voice-stage.span--11" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
-          <span data-gc="voz.voice-stage.span--12" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
+        <span data-gc="voz.voice-stage.span--14" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
+          <span data-gc="voz.voice-stage.span--15" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
 
-        <span data-gc="voz.voice-stage.span--13"
+        <span data-gc="voz.voice-stage.span--16"
           title={t("chamada.live.assistir")}
           className={cn(
             "flex items-center justify-center bg-brand font-medium text-palco-ink shadow-lg",
@@ -649,7 +767,7 @@ const TileDaLive: React.FC<{
 
     <div data-gc="voz.voice-stage.div--23" className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded bg-sobre-midia px-2 py-1">
       <Monitor data-gc="voz.voice-stage.monitor" size={12} className="shrink-0 text-online" />
-      <span data-gc="voz.voice-stage.span--14" className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
+      <span data-gc="voz.voice-stage.span--17" className="min-w-0 truncate whitespace-nowrap text-xs font-medium">
         {tile.name}
         {tile.isLocal && " (sua tela)"}
       </span>
@@ -669,7 +787,7 @@ const VolumeLiveControl: React.FC<{ identity: string; className?: string }> = ({
 
   return (
     <Popover data-gc="voz.voice-stage.popover">
-      <Tooltip data-gc="voz.voice-stage.tooltip--5" label={volume === 0 ? "Live sem som" : `Volume da live · ${Math.round(volume * 100)}%`}>
+      <Tooltip data-gc="voz.voice-stage.tooltip--8" label={volume === 0 ? "Live sem som" : `Volume da live · ${Math.round(volume * 100)}%`}>
         <PopoverTrigger data-gc="voz.voice-stage.popover-trigger" asChild>
           <button data-gc="voz.voice-stage.button--5"
             aria-label="Volume da live"
@@ -678,7 +796,7 @@ const VolumeLiveControl: React.FC<{ identity: string; className?: string }> = ({
               className,
             )}
           >
-            {volume === 0 ? <VolumeX data-gc="voz.voice-stage.volume-x" size={14} className="text-danger" /> : <Volume2 data-gc="voz.voice-stage.volume2" size={14} />}
+            {volume === 0 ? <VolumeX data-gc="voz.voice-stage.volume-x--2" size={14} className="text-danger" /> : <Volume2 data-gc="voz.voice-stage.volume2" size={14} />}
           </button>
         </PopoverTrigger>
       </Tooltip>
@@ -706,15 +824,15 @@ const ConnectionNotice: React.FC<{ quality: string }> = ({ quality }) => {
   if (!notice) return null;
 
   return (
-    <Tooltip data-gc="voz.voice-stage.tooltip--6" label={notice.label}>
-      <span data-gc="voz.voice-stage.span--15" className={cn("flex shrink-0 items-center", notice.color)} aria-label={notice.label}>
+    <Tooltip data-gc="voz.voice-stage.tooltip--9" label={notice.label}>
+      <span data-gc="voz.voice-stage.span--18" className={cn("flex shrink-0 items-center", notice.color)} aria-label={notice.label}>
         <SignalLow data-gc="voz.voice-stage.signal-low" size={12} className={notice.pulsing ? "animate-pulse" : undefined} />
       </span>
     </Tooltip>
   );
 };
 
-const ColumnFace: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
+const ColumnFace: React.FC<{ tile: VoiceTile }> = React.memo(({ tile }) => {
   const mirror = useVoicePrefs((s) => s.mirrorCamera);
   const playingSound = usePanelSound((s) => s.who === tile.identity);
   const speaking = tile.speaking || playingSound;
@@ -739,13 +857,15 @@ const ColumnFace: React.FC<{ tile: VoiceTile }> = ({ tile }) => {
       )}
 
       {!tile.micEnabled && (
-        <span data-gc="voz.voice-stage.span--16" className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
+        <span data-gc="voz.voice-stage.span--19" className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-0 ring-2 ring-surface-2">
           <MicOff data-gc="voz.voice-stage.mic-off--2" size={9} className="text-danger" />
         </span>
       )}
     </div>
   );
-};
+});
+
+ColumnFace.displayName = "ColumnFace";
 
 interface StageContext {
   guildId?: string;

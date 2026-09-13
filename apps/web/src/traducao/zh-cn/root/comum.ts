@@ -96,4 +96,14 @@ export const comum = {
   excluir: "删除",
   remover: "移除",
   trocar: "更换",
+  loginNoApp: {
+    titulo: "一切就绪！",
+    detalhe: "你已登录。回到 Gravaê 吧，应用正在等你。",
+    abrir: "打开 Gravaê",
+    fecharAba: "现在可以关闭此标签页了。",
+    falhouTitulo: "登录失败",
+    falhouDetalhe: "请回到应用并重新登录。",
+    legenda: "挥手的机器人",
+    legendaFalhou: "哭泣的小猫",
+  },
 };

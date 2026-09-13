@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "チャットを閉じる",
   mostrarChat: "チャットを表示",
   aoVivo: "ライブ",
+  aparelhoDaPessoa: {
+    desktop: "デスクトップアプリ",
+    web: "ブラウザ",
+    mobile: "スマートフォン",
+  },
   estado: {
     mudo: "マイクがオフ",
     mudoPeloServidor: "サーバーによってマイクがオフ",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "共有できる画面もウインドウもシステムから返ってきませんでした。",
     pararDeCompartilhar: "共有をやめる",
     encerrarTransmissao: "配信を終了",
+    pararTransmissao: "配信を停止",
+    alterarTransmissao: "配信を切り替え",
+    qualidade: "配信の画質",
+    resolucao: "解像度",
+    taxaDeQuadros: "フレームレート",
+    original: "オリジナル",
+    compartilharAudio: "配信の音声を共有",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "解像度は上限です。小さいウインドウは元のサイズのまま送られます。解像度とフレームレートを上げるほど、あなたと視聴者の回線を使います。配信中の画面にもすぐ反映されます。",
   },
   live: {
     etiqueta: "ライブ",

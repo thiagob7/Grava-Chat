@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Удалить",
   remover: "Убрать",
   trocar: "Заменить",
+  loginNoApp: {
+    titulo: "Всё готово!",
+    detalhe: "Вы вошли в аккаунт. Возвращайтесь в Gravaê — приложение уже ждёт.",
+    abrir: "Открыть Gravaê",
+    fecharAba: "Эту вкладку можно закрыть.",
+    falhouTitulo: "Не удалось войти",
+    falhouDetalhe: "Вернитесь в приложение и попробуйте войти ещё раз.",
+    legenda: "Робот машет рукой",
+    legendaFalhou: "Плачущий котёнок",
+  },
 };

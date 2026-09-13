@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Annet",
     },
   },
+  fila: {
+    esperando: "Sendes når tilkoblingen er tilbake",
+  },
+
   falha: {
     tentarDeNovo: "Prøv igjen",
     erro: "Ikke levert",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Hva handler det om?",
     primeiraMensagem: "Første melding",
     conteDoCaso: "Fortell",
+  },
+  sistema: {
+    naoEntregue: "Meldingen din kunne ikke leveres. Det skjer som regel fordi dere ikke deler et fellesskap, eller fordi personen bare tar imot direktemeldinger fra venner. Du må kanskje også justere ditt eget personvern under Innstillinger > Personvern.",
+    soVoce: "Bare du kan se denne meldingen.",
+    dispensar: "Avvis",
   },
 };

@@ -43,16 +43,39 @@ export const messageRepository = {
     return prisma.message.findUniqueOrThrow({ where: { id }, include: messageInclude });
   },
 
-  findPage(params: { channelId: string; postId?: string | null; before?: string; limit: number }) {
+  /*
+    `before` pagina para trás, que é subir na conversa. `after` pagina para a
+    FRENTE, que é outra pergunta: "o que entrou depois desta mensagem?".
+
+    Quem precisa da segunda é o cache local do aplicativo. Sem ela, voltar
+    depois de um tempo fora obriga a rebaixar as últimas cinquenta mensagens
+    mesmo que quarenta e nove já estejam no disco.
+
+    A ordem tem que virar junto com o sentido, senão o cursor recorta o lado
+    errado e a página volta vazia. Quem chama devolve tudo na mesma ordem no
+    fim, então o resto do código não vê diferença.
+  */
+  findPage(params: {
+    channelId: string;
+    postId?: string | null;
+    before?: string;
+    after?: string;
+    limit: number;
+  }) {
+    const forward = Boolean(params.after);
+    const cursor = params.after ?? params.before;
+
     return prisma.message.findMany({
       where: {
         channelId: params.channelId,
         AND: [params.postId ? { postId: params.postId } : unset("postId"), notDeleted],
       },
       include: messageInclude,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      orderBy: forward
+        ? [{ createdAt: "asc" }, { id: "asc" }]
+        : [{ createdAt: "desc" }, { id: "desc" }],
       take: params.limit,
-      ...(params.before ? { cursor: { id: params.before }, skip: 1 } : {}),
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
   },
 
@@ -141,8 +164,21 @@ export const messageRepository = {
     poll?: Prisma.PollCreateInput;
     stickerId?: string;
     postId?: string;
+    nonce?: string;
   }) {
     return prisma.message.create({ data, include: messageInclude });
+  },
+
+  /*
+    Sem índice novo de propósito: o deploy não roda `db push`. O filtro por canal
+    e data cai no índice (channelId, createdAt) que já existe, e só roda para
+    reenvio da fila, não para todo envio.
+  */
+  findByNonce(channelId: string, authorId: string, nonce: string, since: Date) {
+    return prisma.message.findFirst({
+      where: { channelId, authorId, nonce, createdAt: { gte: since } },
+      include: messageInclude,
+    });
   },
 
   update(id: string, data: Prisma.MessageUpdateInput) {

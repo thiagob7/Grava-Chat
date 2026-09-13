@@ -133,6 +133,10 @@ export const conversa = {
       outro: "其他",
     },
   },
+  fila: {
+    esperando: "网络恢复后会自动发送",
+  },
+
   falha: {
     tentarDeNovo: "重试",
     erro: "未送出",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "关于什么？",
     primeiraMensagem: "第一条消息",
     conteDoCaso: "说说看",
+  },
+  sistema: {
+    naoEntregue: "你的消息未能送达。通常是因为你们没有共同的社区，或对方只接受好友的私信。你可能也需要在 设置 > 隐私 中调整自己的隐私设置。",
+    soVoce: "只有你能看到这条消息。",
+    dispensar: "忽略",
   },
 };

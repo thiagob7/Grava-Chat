@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Uždaryti pokalbį",
   mostrarChat: "Rodyti pokalbį",
   aoVivo: "Tiesiogiai",
+  aparelhoDaPessoa: {
+    desktop: "Kompiuterio programa",
+    web: "Naršyklė",
+    mobile: "Telefonas",
+  },
   estado: {
     mudo: "Mikrofonas išjungtas",
     mudoPeloServidor: "Serveris išjungė mikrofoną",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Sistema negrąžino nė vieno ekrano ar lango bendrinti.",
     pararDeCompartilhar: "Nustoti bendrinti",
     encerrarTransmissao: "Baigti transliaciją",
+    pararTransmissao: "Stabdyti transliaciją",
+    alterarTransmissao: "Keisti transliaciją",
+    qualidade: "Transliacijos kokybė",
+    resolucao: "Raiška",
+    taxaDeQuadros: "Kadrų dažnis",
+    original: "Originali",
+    compartilharAudio: "Bendrinti transliacijos garsą",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Raiška yra viršutinė riba: mažesnis langas išlaiko savo dydį. Didesnė raiška ir daugiau kadrų reikalauja daugiau interneto, jūsų ir žiūrovų. Taikoma ir vykstančiai transliacijai.",
   },
   live: {
     etiqueta: "Tiesiogiai",

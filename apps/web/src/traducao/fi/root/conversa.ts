@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Muu",
     },
   },
+  fila: {
+    esperando: "Lähtee, kun yhteys palaa",
+  },
+
   falha: {
     tentarDeNovo: "Yritä uudelleen",
     erro: "Ei toimitettu",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Mistä on kyse?",
     primeiraMensagem: "Ensimmäinen viesti",
     conteDoCaso: "Kerro siitä",
+  },
+  sistema: {
+    naoEntregue: "Viestiäsi ei voitu toimittaa. Tämä johtuu yleensä siitä, ettei teillä ole yhteistä yhteisöä, tai siitä, että henkilö ottaa yksityisviestejä vastaan vain ystäviltä. Voit joutua myös säätämään omaa yksityisyyttäsi kohdassa Asetukset > Yksityisyys.",
+    soVoce: "Vain sinä näet tämän viestin.",
+    dispensar: "Hylkää",
   },
 };

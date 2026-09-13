@@ -7,6 +7,8 @@ import {
   type Connection,
 } from "@gravae/shared";
 import { toast } from "react-toastify";
+
+import { apiErrorMessage } from "~/@core/lib/api";
 import {
   Ban,
   Check,
@@ -32,6 +34,9 @@ import { useRequestFriend } from "~/@core/application/queries/friend/use-request
 import { useRespondFriend } from "~/@core/application/queries/friend/use-respond-friend";
 import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-friend";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
+import { prefetchMessages } from "~/@core/application/queries/message/use-find-messages";
+import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
+import { useQueryClient } from "@tanstack/react-query";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { highestPosition, type Role } from "@gravae/shared";
 
@@ -269,7 +274,23 @@ const ProfileCard: React.FC<{
 
   const isSystem = Boolean(profile.system);
   const isBot = profile.isBot && !isSystem;
-  const canChat = profile.friendship === "ACCEPTED" || isSystem || isBot;
+  /*
+    Escrever para quem não é amigo é permitido, e quem decide é o servidor: ele
+    aceita quando vocês dividem alguma comunidade e a pessoa não fechou a porta,
+    e a primeira mensagem cai nas Solicitações dela — na aba Pedidos, ou na aba
+    Spam, conforme o filtro que ela escolheu.
+
+    Aqui só não se oferece o que com certeza não vai: para quem bloqueou, para
+    você mesmo, e para quem não divide comunidade nenhuma. O resto tenta, e a
+    recusa do servidor chega escrita.
+  */
+  const canChat =
+    profile.friendship === "ACCEPTED" ||
+    isSystem ||
+    isBot ||
+    (profile.friendship !== "SELF" &&
+      profile.friendship !== "BLOCKED" &&
+      profile.mutualGuilds > 0);
 
   const topActions =
     profile.friendship === "SELF" ? null : (
@@ -375,14 +396,8 @@ const ProfileCard: React.FC<{
       </Button>
     ) : (
       <>
-        {canChat && profile.friendship !== "ACCEPTED" && (
-          <Button data-gc="perfil.user-profile-popover.button--3" className="w-full" onClick={() => void chat()} disabled={busy}>
-            <MessageSquare data-gc="perfil.user-profile-popover.message-square--2" size={14} /> {t("perfil.mensagem")}
-          </Button>
-        )}
-
         {isBot && profile.botId && (
-          <Button data-gc="perfil.user-profile-popover.button--4"
+          <Button data-gc="perfil.user-profile-popover.button--3"
             className="w-full"
             variant={canChat ? "surface" : "primary"}
             onClick={() => {
@@ -399,7 +414,7 @@ const ProfileCard: React.FC<{
           pegava o fundo do popover — mais claro que o do cartão — e o pé virava
           uma faixa de outra cor, com um vazio preto acima.
         */}
-        {profile.friendship === "ACCEPTED" && (
+        {canChat && (
           <ProfileComposer data-gc="perfil.user-profile-popover.profile-composer.on-close"
             userId={profile.id}
             username={profile.username}
@@ -516,7 +531,7 @@ const ProfileCard: React.FC<{
                   <p data-gc="perfil.user-profile-popover.p" className="mb-1 text-center text-xs text-ink-faint">
                     {t("perfil.amizade.teMandouPedido")}
                   </p>
-                  <Button data-gc="perfil.user-profile-popover.button--5"
+                  <Button data-gc="perfil.user-profile-popover.button--4"
                     variant="success"
                     onClick={() =>
                       profile.friendshipId &&
@@ -554,9 +569,16 @@ const ProfileComposer: React.FC<{
   const navigate = useNavigate();
   const face = usePickerFace();
   const openDm = useOpenDm();
+  const queryClient = useQueryClient();
+  const sendToConversation = useSendMessage();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
+  /*
+    A mensagem sai pela conversa, e não por fora dela. Assim, se o servidor
+    recusar, a recusa aparece onde a pessoa vai estar olhando — na conversa,
+    marcada, com o aviso do Gravaê explicando — em vez de um toast que some.
+  */
   const send = async () => {
     const content = text.trim();
     if (!content || sending) return;
@@ -564,18 +586,15 @@ const ProfileComposer: React.FC<{
     setSending(true);
 
     try {
-      const channel = await openDm.mutateAsync(userId);
-      await sendMessage({
-        channelId: channel.id,
-        content: content,
-        nonce: crypto.randomUUID(),
-      });
+      const channel = await openDm.mutateAsync(userId).catch(() => null);
+      if (!channel) return;
+
+      await prefetchMessages(queryClient, channel.id);
+      sendToConversation.mutate({ channelId: channel.id, content, nonce: crypto.randomUUID() });
 
       setText("");
       onGo();
       navigate(`/dm/${channel.id}`);
-    } catch {
-      toast.error(t("perfil.recado.falhou"));
     } finally {
       setSending(false);
     }

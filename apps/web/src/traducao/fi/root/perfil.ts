@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Et saa ilmoitusta uusista viesteistä",
     invisivel: "Näkymätön",
     invisivelDetalhe: "Muille näytät olevan poissa",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Vaihda tiliä",

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Zatvori razgovor",
   mostrarChat: "Prikaži chat",
   aoVivo: "Uživo",
+  aparelhoDaPessoa: {
+    desktop: "Aplikacija za računalo",
+    web: "Preglednik",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon isključen",
     mudoPeloServidor: "Server je isključio mikrofon",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Sustav nije vratio nijedan zaslon ni prozor za dijeljenje.",
     pararDeCompartilhar: "Prestani dijeliti",
     encerrarTransmissao: "Završi prijenos",
+    pararTransmissao: "Zaustavi prijenos",
+    alterarTransmissao: "Promijeni prijenos",
+    qualidade: "Kvaliteta prijenosa",
+    resolucao: "Razlučivost",
+    taxaDeQuadros: "Broj sličica",
+    original: "Izvorna",
+    compartilharAudio: "Dijeli zvuk prijenosa",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Razlučivost je gornja granica: manji prozor zadržava svoju veličinu. Veća razlučivost i više sličica traže više interneta, tvog i gledatelja. Vrijedi i za prijenos u tijeku.",
   },
   live: {
     etiqueta: "Uživo",

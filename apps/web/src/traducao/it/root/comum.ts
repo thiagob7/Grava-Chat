@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Elimina",
   remover: "Rimuovi",
   trocar: "Cambia",
+  loginNoApp: {
+    titulo: "Tutto a posto!",
+    detalhe: "Hai effettuato l'accesso. Torna su Gravaê, l'app ti sta già aspettando.",
+    abrir: "Apri Gravaê",
+    fecharAba: "Ora puoi chiudere questa scheda.",
+    falhouTitulo: "Accesso non riuscito",
+    falhouDetalhe: "Torna nell'app e riprova ad accedere.",
+    legenda: "Un robot che saluta",
+    legendaFalhou: "Un gattino che piange",
+  },
 };

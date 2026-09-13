@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Löschen",
   remover: "Entfernen",
   trocar: "Ändern",
+  loginNoApp: {
+    titulo: "Alles erledigt!",
+    detalhe: "Du bist angemeldet. Geh zurück zu Gravaê, die App wartet schon auf dich.",
+    abrir: "Gravaê öffnen",
+    fecharAba: "Du kannst diesen Tab jetzt schließen.",
+    falhouTitulo: "Anmeldung fehlgeschlagen",
+    falhouDetalhe: "Geh zurück zur App und versuch es noch einmal.",
+    legenda: "Ein winkender Roboter",
+    legendaFalhou: "Ein weinendes Kätzchen",
+  },
 };

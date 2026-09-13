@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Vous ne recevez pas d'alerte pour les nouveaux messages",
     invisivel: "Invisible",
     invisivelDetalhe: "Vous apparaissez hors ligne pour les autres",
+    offline: "Hors ligne",
   },
   menu: {
     mudarDeConta: "Changer de compte",

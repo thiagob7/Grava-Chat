@@ -96,4 +96,14 @@ export const comum = {
   excluir: "حذف",
   remover: "إزالة",
   trocar: "تغيير",
+  loginNoApp: {
+    titulo: "كل شيء جاهز!",
+    detalhe: "لقد سجّلت الدخول. عُد إلى Gravaê، التطبيق بانتظارك.",
+    abrir: "فتح Gravaê",
+    fecharAba: "يمكنك إغلاق علامة التبويب هذه الآن.",
+    falhouTitulo: "تعذّر تسجيل الدخول",
+    falhouDetalhe: "عُد إلى التطبيق وحاول تسجيل الدخول مرة أخرى.",
+    legenda: "روبوت يلوّح",
+    legendaFalhou: "قطة صغيرة تبكي",
+  },
 };

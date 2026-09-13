@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Xóa",
   remover: "Gỡ",
   trocar: "Đổi",
+  loginNoApp: {
+    titulo: "Xong rồi!",
+    detalhe: "Bạn đã đăng nhập. Quay lại Gravaê nhé, ứng dụng đang chờ bạn.",
+    abrir: "Mở Gravaê",
+    fecharAba: "Bạn có thể đóng tab này.",
+    falhouTitulo: "Đăng nhập không thành công",
+    falhouDetalhe: "Quay lại ứng dụng và thử đăng nhập lại.",
+    legenda: "Một chú robot vẫy tay",
+    legendaFalhou: "Một chú mèo con đang khóc",
+  },
 };

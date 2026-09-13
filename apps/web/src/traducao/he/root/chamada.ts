@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "סגירת הצ׳אט",
   mostrarChat: "הצגת הצ׳אט",
   aoVivo: "בשידור חי",
+  aparelhoDaPessoa: {
+    desktop: "אפליקציית שולחן עבודה",
+    web: "דפדפן",
+    mobile: "טלפון",
+  },
   estado: {
     mudo: "המיקרופון כבוי",
     mudoPeloServidor: "השרת השתיק את המיקרופון",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "המערכת לא החזירה שום מסך או חלון לשיתוף.",
     pararDeCompartilhar: "הפסקת השיתוף",
     encerrarTransmissao: "סיום השידור",
+    pararTransmissao: "הפסקת שידור",
+    alterarTransmissao: "החלפת שידור",
+    qualidade: "איכות השידור",
+    resolucao: "רזולוציה",
+    taxaDeQuadros: "קצב פריימים",
+    original: "מקורית",
+    compartilharAudio: "שיתוף שמע השידור",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "הרזולוציה היא תקרה: חלון קטן יותר שומר על גודלו. יותר רזולוציה ופריימים דורשים יותר אינטרנט, שלך ושל הצופים. חל גם על שידור פעיל.",
   },
   live: {
     etiqueta: "בשידור חי",

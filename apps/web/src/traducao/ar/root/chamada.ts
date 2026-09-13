@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "إغلاق الدردشة",
   mostrarChat: "إظهار الدردشة",
   aoVivo: "مباشر",
+  aparelhoDaPessoa: {
+    desktop: "تطبيق سطح المكتب",
+    web: "المتصفح",
+    mobile: "الهاتف",
+  },
   estado: {
     mudo: "الميكروفون مغلق",
     mudoPeloServidor: "الخادم أغلق الميكروفون",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "لم يُرجع النظام أي شاشة أو نافذة للمشاركة.",
     pararDeCompartilhar: "إيقاف المشاركة",
     encerrarTransmissao: "إنهاء البث",
+    pararTransmissao: "إيقاف البث",
+    alterarTransmissao: "تغيير البث",
+    qualidade: "جودة البث",
+    resolucao: "الدقة",
+    taxaDeQuadros: "معدل الإطارات",
+    original: "الأصلية",
+    compartilharAudio: "مشاركة صوت البث",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "الدقة حدٌّ أعلى: النافذة الأصغر تحتفظ بحجمها. دقة وإطارات أكثر تحتاج إنترنت أكثر، لديك ولدى المشاهدين. ينطبق أيضًا على البث الجاري.",
   },
   live: {
     etiqueta: "مباشر",

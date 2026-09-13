@@ -11,6 +11,7 @@ import { useFindFriends } from "~/@core/application/queries/friend/use-find-frie
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { MessageItem, shouldGroup } from "~/features/conversa/components/MessageItem";
+import { UndeliveredNotice } from "~/features/conversa/components/AvisoDeNaoEntregue";
 import { useCharms } from "~/features/perfil/hooks/use-enfeites";
 import { useMentions } from "~/features/conversa/hooks/use-mencoes";
 import { formatDayDivider, formatTimestamp } from "~/lib/format";
@@ -66,6 +67,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     [friendships],
   );
   const [isOpen, setIsOpen] = useState<Set<string>>(() => new Set());
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
   const pagesRequested = useRef(0);
 
   const messages = useMemo(
@@ -414,6 +416,15 @@ export const MessageList: React.FC<MessageListProps> = ({
               onPin={(target, pin) => pinMessage.mutate({ messageId: target.id, pin: pin })}
               onRetry={retry}
             />
+
+            {(message as PendingMessageModel).failed &&
+              (message as PendingMessageModel).reason === "nao-entregue" &&
+              !dismissed.has(message.id) && (
+                <UndeliveredNotice data-gc="conversa.message-list.undelivered-notice"
+                  createdAt={message.createdAt}
+                  onDismiss={() => setDismissed((current) => new Set([...current, message.id]))}
+                />
+              )}
           </div>
         );
       })}

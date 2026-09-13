@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Chiudi la chat",
   mostrarChat: "Mostra la chat",
   aoVivo: "In diretta",
+  aparelhoDaPessoa: {
+    desktop: "App desktop",
+    web: "Browser",
+    mobile: "Telefono",
+  },
   estado: {
     mudo: "Microfono spento",
     mudoPeloServidor: "Microfono spento dal server",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Il sistema non ha restituito nessuno schermo o finestra da condividere.",
     pararDeCompartilhar: "Smetti di condividere",
     encerrarTransmissao: "Termina la diretta",
+    pararTransmissao: "Interrompi trasmissione",
+    alterarTransmissao: "Cambia trasmissione",
+    qualidade: "Qualità della trasmissione",
+    resolucao: "Risoluzione",
+    taxaDeQuadros: "Frequenza fotogrammi",
+    original: "Originale",
+    compartilharAudio: "Condividi audio della trasmissione",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "La risoluzione è un limite: una finestra più piccola mantiene la sua dimensione. Più risoluzione e fotogrammi richiedono più banda, tua e di chi guarda. Vale anche per la trasmissione in corso.",
   },
   live: {
     etiqueta: "In diretta",

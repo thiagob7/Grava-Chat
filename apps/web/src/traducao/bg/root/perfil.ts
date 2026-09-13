@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Не получаваш известие за нови съобщения",
     invisivel: "Невидим",
     invisivelDetalhe: "За другите изглеждаш офлайн",
+    offline: "Извън линия",
   },
   menu: {
     mudarDeConta: "Смени акаунта",

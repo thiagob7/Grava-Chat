@@ -15,6 +15,8 @@ const channelsById = vi.fn();
 const participations = vi.fn();
 const withRelations = vi.fn();
 const removeFiles = vi.fn();
+const byNonce = vi.fn();
+const redisGet = vi.fn();
 
 vi.mock("~/repositories/message-repository.js", () => ({
   messageRepository: {
@@ -23,6 +25,7 @@ vi.mock("~/repositories/message-repository.js", () => ({
     update: (...a: unknown[]) => updateMessage(...a),
     create: (...a: unknown[]) => createMessage(...a),
     findByIdWithRelations: (...a: unknown[]) => withRelations(...a),
+    findByNonce: (...a: unknown[]) => byNonce(...a),
   },
   reactionRepository: { findManyByMessage: vi.fn(), add: vi.fn(), remove: vi.fn() },
   readStateRepository: {
@@ -79,12 +82,32 @@ vi.mock("~/services/forum-service.js", () => ({
   forumService: { requirePostIsOpen: vi.fn(), registerReply: vi.fn() },
 }));
 
-vi.mock("~/lib/redis.js", () => ({
-  redis: { set: vi.fn(), ttl: vi.fn(), incr: vi.fn(async () => 1), expire: vi.fn() },
-  keys: { slowmode: () => "slow:teste", messagesFlow: () => "fluxo:teste" },
-}));
+vi.mock("~/lib/redis.js", () => {
+  /* O `multi` devolve a si mesmo até o `exec`, que responde no feitio do ioredis. */
+  const chain: Record<string, unknown> = {
+    incr: () => chain,
+    expire: () => chain,
+    exec: async () => [[null, 1]],
+  };
 
-const { messageService } = await import("~/services/message-service.js");
+  return {
+    redis: {
+      get: (...a: unknown[]) => redisGet(...a),
+      set: vi.fn(async () => "OK"),
+      ttl: vi.fn(),
+      incr: vi.fn(async () => 1),
+      expire: vi.fn(),
+      multi: vi.fn(() => chain),
+    },
+    keys: {
+      slowmode: () => "slow:teste",
+      messagesFlow: () => "fluxo:teste",
+      sendReceipt: (u: string, n: string) => `recibo:${u}:${n}`,
+    },
+  };
+});
+
+const { messageService, wasReplay } = await import("~/services/message-service.js");
 
 const AUTHOR = "6a8781da7415b08f427be1a4";
 const OTHER = "6a8781f57415b08f427be1ad";
@@ -541,5 +564,44 @@ describe("remover um anexo", () => {
     await expect(messageService.removeAttachment(AUTHOR, "m1", "a9")).rejects.toBeInstanceOf(
       NotFoundError,
     );
+  });
+});
+
+describe("reenvio pelo nonce", () => {
+  beforeEach(() => {
+    redisGet.mockResolvedValue(null);
+    byNonce.mockResolvedValue(null);
+  });
+
+  it("guarda o nonce na mensagem criada", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi", nonce: "n1" });
+
+    expect(recorded()).toMatchObject({ nonce: "n1" });
+  });
+
+  it("reenvio da fila acha a mensagem no banco depois que o recibo venceu", async () => {
+    byNonce.mockResolvedValue(messageRow);
+
+    const message = await messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi", nonce: "n1", retry: true });
+
+    expect(createMessage).not.toHaveBeenCalled();
+    expect(message.id).toBe("m1");
+    expect(wasReplay(message)).toBe(true);
+  });
+
+  it("envio comum sem recibo não consulta o banco", async () => {
+    const message = await messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi", nonce: "n2" });
+
+    expect(byNonce).not.toHaveBeenCalled();
+    expect(createMessage).toHaveBeenCalledOnce();
+    expect(wasReplay(message)).toBe(false);
+  });
+
+  it("mensagem apagada depois não volta como fantasma", async () => {
+    byNonce.mockResolvedValue({ ...messageRow, deletedAt: new Date() });
+
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "oi", nonce: "n3", retry: true });
+
+    expect(createMessage).toHaveBeenCalledOnce();
   });
 });

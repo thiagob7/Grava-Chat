@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Anders",
     },
   },
+  fila: {
+    esperando: "Wordt verzonden zodra de verbinding terug is",
+  },
+
   falha: {
     tentarDeNovo: "Opnieuw proberen",
     erro: "Niet bezorgd",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Waar gaat het over?",
     primeiraMensagem: "Eerste bericht",
     conteDoCaso: "Vertel het",
+  },
+  sistema: {
+    naoEntregue: "Je bericht kon niet worden bezorgd. Dit komt meestal doordat jullie geen community delen, of doordat deze persoon alleen directe berichten van vrienden accepteert. Misschien moet je ook je eigen privacy aanpassen bij Instellingen > Privacy.",
+    soVoce: "Alleen jij kunt dit bericht zien.",
+    dispensar: "Negeren",
   },
 };

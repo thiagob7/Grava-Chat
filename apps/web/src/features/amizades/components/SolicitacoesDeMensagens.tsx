@@ -21,7 +21,7 @@ export const MessagesRequests: React.FC<{ onOpenMenu?: () => void }> = ({ onOpen
   const list = tab === "pedidos" ? requests : spam;
 
   return (
-    <div data-gc="amizades.solicitacoes-de-mensagens.div" className="topo-do-miolo flex min-h-0 flex-1 flex-col bg-surface-0">
+    <div data-gc="amizades.solicitacoes-de-mensagens.div" className="topo-do-miolo flex min-h-0 flex-1 flex-col bg-surface-2">
       <header data-gc="amizades.solicitacoes-de-mensagens.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 overflow-x-auto border-b border-line px-4 sm:gap-3">
         {onOpenMenu && (
           <button data-gc="amizades.solicitacoes-de-mensagens.button.on-open-menu"

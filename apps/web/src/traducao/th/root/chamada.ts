@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "ปิดแชท",
   mostrarChat: "แสดงแชท",
   aoVivo: "สด",
+  aparelhoDaPessoa: {
+    desktop: "แอปบนเดสก์ท็อป",
+    web: "เบราว์เซอร์",
+    mobile: "โทรศัพท์",
+  },
   estado: {
     mudo: "ปิดไมโครโฟน",
     mudoPeloServidor: "เซิร์ฟเวอร์ปิดไมโครโฟน",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "ระบบไม่ได้ส่งหน้าจอหรือหน้าต่างใดมาให้แชร์",
     pararDeCompartilhar: "หยุดแชร์",
     encerrarTransmissao: "จบการถ่ายทอด",
+    pararTransmissao: "หยุดสตรีม",
+    alterarTransmissao: "เปลี่ยนสตรีม",
+    qualidade: "คุณภาพสตรีม",
+    resolucao: "ความละเอียด",
+    taxaDeQuadros: "อัตราเฟรม",
+    original: "ต้นฉบับ",
+    compartilharAudio: "แชร์เสียงของสตรีม",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "ความละเอียดคือเพดาน: หน้าต่างที่เล็กกว่าจะคงขนาดเดิม ความละเอียดและเฟรมที่มากขึ้นต้องใช้อินเทอร์เน็ตมากขึ้น ทั้งของคุณและผู้ชม มีผลกับสตรีมที่กำลังออกอากาศด้วย",
   },
   live: {
     etiqueta: "ไลฟ์",

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Cerrar el chat",
   mostrarChat: "Mostrar el chat",
   aoVivo: "En directo",
+  aparelhoDaPessoa: {
+    desktop: "Aplicación de escritorio",
+    web: "Navegador",
+    mobile: "Teléfono",
+  },
   estado: {
     mudo: "Micrófono apagado",
     mudoPeloServidor: "Micrófono apagado por el servidor",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "El sistema no devolvió ninguna pantalla ni ventana para compartir.",
     pararDeCompartilhar: "Dejar de compartir",
     encerrarTransmissao: "Terminar la retransmisión",
+    pararTransmissao: "Detener transmisión",
+    alterarTransmissao: "Cambiar transmisión",
+    qualidade: "Calidad de la transmisión",
+    resolucao: "Resolución",
+    taxaDeQuadros: "Velocidad de fotogramas",
+    original: "Original",
+    compartilharAudio: "Compartir audio de la transmisión",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "La resolución es un límite: una ventana más pequeña conserva su tamaño. Más resolución y fotogramas piden más internet, tuyo y de quien mira. También se aplica a la transmisión en curso.",
   },
   live: {
     etiqueta: "En directo",

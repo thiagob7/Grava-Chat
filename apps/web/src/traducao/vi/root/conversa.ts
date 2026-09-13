@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Khác",
     },
   },
+  fila: {
+    esperando: "Sẽ gửi khi có kết nối trở lại",
+  },
+
   falha: {
     tentarDeNovo: "Thử lại",
     erro: "Chưa gửi được",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Về chuyện gì?",
     primeiraMensagem: "Tin nhắn đầu tiên",
     conteDoCaso: "Kể đi",
+  },
+  sistema: {
+    naoEntregue: "Không thể gửi tin nhắn của bạn. Thường là do hai người không cùng cộng đồng nào, hoặc người đó chỉ nhận tin nhắn trực tiếp từ bạn bè. Có thể bạn cũng cần chỉnh quyền riêng tư của mình trong Cài đặt > Quyền riêng tư.",
+    soVoce: "Chỉ bạn thấy tin nhắn này.",
+    dispensar: "Bỏ qua",
   },
 };

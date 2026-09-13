@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Du får ingen besked om nye beskeder",
     invisivel: "Usynlig",
     invisivelDetalhe: "For andre ser du offline ud",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Skift konto",

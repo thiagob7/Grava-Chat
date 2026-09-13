@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Κλείσιμο συνομιλίας",
   mostrarChat: "Εμφάνιση συνομιλίας",
   aoVivo: "Ζωντανά",
+  aparelhoDaPessoa: {
+    desktop: "Εφαρμογή υπολογιστή",
+    web: "Πρόγραμμα περιήγησης",
+    mobile: "Τηλέφωνο",
+  },
   estado: {
     mudo: "Το μικρόφωνο είναι κλειστό",
     mudoPeloServidor: "Ο διακομιστής έκλεισε το μικρόφωνο",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Το σύστημα δεν επέστρεψε καμία οθόνη ή παράθυρο για κοινή χρήση.",
     pararDeCompartilhar: "Διακοπή κοινής χρήσης",
     encerrarTransmissao: "Τερματισμός μετάδοσης",
+    pararTransmissao: "Διακοπή μετάδοσης",
+    alterarTransmissao: "Αλλαγή μετάδοσης",
+    qualidade: "Ποιότητα μετάδοσης",
+    resolucao: "Ανάλυση",
+    taxaDeQuadros: "Ρυθμός καρέ",
+    original: "Αρχική",
+    compartilharAudio: "Κοινή χρήση ήχου μετάδοσης",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Η ανάλυση είναι ανώτατο όριο: ένα μικρότερο παράθυρο κρατά το μέγεθός του. Περισσότερη ανάλυση και καρέ θέλουν περισσότερο internet, δικό σου και των θεατών. Ισχύει και για τη μετάδοση σε εξέλιξη.",
   },
   live: {
     etiqueta: "Ζωντανά",

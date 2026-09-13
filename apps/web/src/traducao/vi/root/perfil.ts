@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Bạn không nhận thông báo tin nhắn mới",
     invisivel: "Ẩn danh",
     invisivelDetalhe: "Người khác thấy bạn ngoại tuyến",
+    offline: "Ngoại tuyến",
   },
   menu: {
     mudarDeConta: "Đổi tài khoản",

@@ -50,6 +50,17 @@ enum PresenceStatus {
   OFFLINE
 }
 
+/// O que a pessoa ESCOLHEU, que não é o mesmo que os outros veem.
+/// Quem escolhe INVISIBLE aparece OFFLINE para todo mundo, e quem escolhe
+/// ONLINE aparece IDLE depois de um tempo parado. A projeção das duas coisas
+/// é o `PresenceStatus` acima.
+enum DesiredStatus {
+  ONLINE
+  IDLE
+  DND
+  INVISIBLE
+}
+
 enum OverwriteType {
   ROLE
   MEMBER
@@ -71,6 +82,7 @@ enum PedidoDeDmStatus {
   PENDING
   ACCEPTED
   IGNORED
+  UNDELIVERED
 }
 
 type Attachment {
@@ -115,6 +127,8 @@ model User {
   passwordHash   String? @map("senhaHash")
   emailVerifiedAt DateTime? @map("emailVerificadoEm")
   status      PresenceStatus @default(OFFLINE)
+  /// Escolha durável, não cache: tem que sobreviver a um Redis reiniciado.
+  desiredStatus DesiredStatus @default(ONLINE) @map("statusEscolhido")
   profile              ProfileStyle?
   customStatus CustomStatus?
   lastSeenAt  DateTime?
@@ -393,6 +407,8 @@ model Message {
   channel     Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
   authorId    String       @db.ObjectId
   author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  /// O `nonce` do envio, para reconhecer o reenvio da fila depois que o recibo do Redis venceu.
+  nonce       String?
   content     String
   font       String? @map("fonte")
   kind        MessageType  @default(USER) @map("tipo")

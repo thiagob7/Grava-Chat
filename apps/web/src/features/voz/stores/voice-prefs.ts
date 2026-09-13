@@ -1,6 +1,12 @@
 import { create } from "zustand";
 
 import { DEFAULT_SETTINGS, type VoiceSettings, type EntryMode } from "~/features/voz/lib/audio-gate";
+import {
+  DEFAULT_SCREEN_FRAME_RATE,
+  DEFAULT_SCREEN_RESOLUTION,
+  type ScreenFrameRate,
+  type ScreenResolution,
+} from "~/features/voz/lib/qualidade-da-transmissao";
 
 export interface VoicePrefs extends VoiceSettings {
   entryId: string | null;
@@ -12,6 +18,8 @@ export interface VoicePrefs extends VoiceSettings {
   keyPtt: string;
   interfaceSound: boolean;
   screenSound: boolean;
+  screenResolution: ScreenResolution;
+  screenFrameRate: ScreenFrameRate;
   panelSound: boolean;
   panelVolume: number;
 }
@@ -27,6 +35,8 @@ const DEFAULT: VoicePrefs = {
   keyPtt: "Space",
   interfaceSound: true,
   screenSound: true,
+  screenResolution: DEFAULT_SCREEN_RESOLUTION,
+  screenFrameRate: DEFAULT_SCREEN_FRAME_RATE,
   panelSound: true,
   panelVolume: 1,
 };

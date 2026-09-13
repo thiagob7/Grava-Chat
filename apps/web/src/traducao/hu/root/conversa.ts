@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Egyéb",
     },
   },
+  fila: {
+    esperando: "Elküldjük, amint visszatér a kapcsolat",
+  },
+
   falha: {
     tentarDeNovo: "Újrapróbálom",
     erro: "Nem kézbesítve",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Miről szól?",
     primeiraMensagem: "Első üzenet",
     conteDoCaso: "Mesélj róla",
+  },
+  sistema: {
+    naoEntregue: "Az üzenetedet nem sikerült kézbesíteni. Ez általában azért van, mert nincs közös közösségetek, vagy mert az illető csak barátoktól fogad közvetlen üzenetet. Lehet, hogy a saját adatvédelmi beállításaidat is módosítanod kell: Beállítások > Adatvédelem.",
+    soVoce: "Ezt az üzenetet csak te látod.",
+    dispensar: "Elvetés",
   },
 };

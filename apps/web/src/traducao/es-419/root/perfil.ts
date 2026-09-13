@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "No recibes aviso de mensajes nuevos",
     invisivel: "Invisible",
     invisivelDetalhe: "Apareces desconectado para los demás",
+    offline: "Desconectado",
   },
   menu: {
     mudarDeConta: "Cambiar de cuenta",

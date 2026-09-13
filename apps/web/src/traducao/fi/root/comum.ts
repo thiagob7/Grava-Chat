@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Poista",
   remover: "Poista",
   trocar: "Vaihda",
+  loginNoApp: {
+    titulo: "Kaikki valmista!",
+    detalhe: "Olet kirjautunut sisään. Palaa Gravaêhen, sovellus odottaa jo.",
+    abrir: "Avaa Gravaê",
+    fecharAba: "Voit sulkea tämän välilehden.",
+    falhouTitulo: "Kirjautuminen epäonnistui",
+    falhouDetalhe: "Palaa sovellukseen ja yritä kirjautua uudelleen.",
+    legenda: "Vilkuttava robotti",
+    legendaFalhou: "Itkevä kissanpentu",
+  },
 };

@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Other",
     },
   },
+  fila: {
+    esperando: "Will send when the connection is back",
+  },
+
   falha: {
     tentarDeNovo: "Try again",
     erro: "Not delivered",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "What is it about?",
     primeiraMensagem: "First message",
     conteDoCaso: "Tell us about it",
+  },
+  sistema: {
+    naoEntregue: "Your message could not be delivered. This usually happens because you don't share a community with them, or because they only accept direct messages from friends. You may also need to adjust your own privacy in Settings > Privacy.",
+    soVoce: "Only you can see this message.",
+    dispensar: "Dismiss",
   },
 };

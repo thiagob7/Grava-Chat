@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Ne dobivaš obavijest o novim porukama",
     invisivel: "Nevidljiv",
     invisivelDetalhe: "Drugima izgledaš izvan mreže",
+    offline: "Izvan mreže",
   },
   menu: {
     mudarDeConta: "Promijeni račun",

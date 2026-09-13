@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Lukk chatten",
   mostrarChat: "Vis chatten",
   aoVivo: "Direkte",
+  aparelhoDaPessoa: {
+    desktop: "Skrivebordsapp",
+    web: "Nettleser",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon av",
     mudoPeloServidor: "Mikrofonen er slått av av serveren",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Systemet returnerte ingen skjerm eller vindu å dele.",
     pararDeCompartilhar: "Slutt å dele",
     encerrarTransmissao: "Avslutt sendingen",
+    pararTransmissao: "Stopp strømming",
+    alterarTransmissao: "Bytt strøm",
+    qualidade: "Strømkvalitet",
+    resolucao: "Oppløsning",
+    taxaDeQuadros: "Bildefrekvens",
+    original: "Original",
+    compartilharAudio: "Del strømlyd",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Oppløsningen er et tak: et mindre vindu beholder sin størrelse. Mer oppløsning og flere bilder krever mer bredbånd, ditt og seernes. Gjelder også en pågående strøm.",
   },
   live: {
     etiqueta: "Direkte",

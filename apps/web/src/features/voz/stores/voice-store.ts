@@ -7,15 +7,20 @@ import {
   type Participant,
   type TrackPublication,
   type LocalAudioTrack,
+  type LocalVideoTrack,
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
 import { nextTarget } from "~/features/voz/lib/assistir";
+import { keepSteady } from "~/features/voz/lib/quadros";
+import { audioBitrate } from "~/features/voz/lib/taxa-de-bits";
+import { screenQuality } from "~/features/voz/lib/qualidade-da-transmissao";
 import {
   microphoneReactionFailure,
   type MicrophoneReactionFailure,
 } from "~/features/voz/lib/falha-de-microfone";
 import { describeFont } from "~/lib/fonte-da-tela";
 import { VoiceProcessor } from "~/features/voz/lib/audio-gate";
+import { deviceKind } from "~/lib/aparelho";
 import { desktop } from "~/lib/desktop";
 import { stopPanelSound } from "~/features/voz/lib/soundboard";
 import { playSound, type InterfaceSound } from "~/lib/ui-sounds";
@@ -73,6 +78,9 @@ type VoiceStore = {
   toggleDeafen: () => Promise<void>;
   toggleCamera: () => Promise<void>;
   toggleScreen: () => Promise<void>;
+  swapScreen: () => Promise<void>;
+  setScreenSound: (on: boolean) => Promise<void>;
+  setScreenQuality: (change: Partial<Pick<VoicePrefs, "screenResolution" | "screenFrameRate">>) => Promise<void>;
   toggleNoiseFilter: () => Promise<void>;
   watch: (identity: string | null) => void;
   setStageVisible: (visible: boolean) => void;
@@ -98,7 +106,7 @@ function participantAvatar(metadata: string | undefined): string | null {
   }
 }
 
-function snapshot(room: Room): VoiceTile[] {
+function snapshot(room: Room, previous: VoiceTile[] = []): VoiceTile[] {
   const build = (p: Participant, isLocal: boolean): VoiceTile => {
     const track = (source: Track.Source) => {
       const pub = p.getTrackPublication(source) as TrackPublication | undefined;
@@ -122,10 +130,10 @@ function snapshot(room: Room): VoiceTile[] {
     };
   };
 
-  return [
+  return keepSteady(previous, [
     build(room.localParticipant, true),
     ...[...room.remoteParticipants.values()].map((p: RemoteParticipant) => build(p, false)),
-  ];
+  ]);
 }
 
 const TAB_VOICE_KEY = "gravae:voice-channel";
@@ -169,6 +177,48 @@ function storeSettingsByPerson(settings: SettingsByPerson) {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   } catch {
   }
+}
+
+function currentScreenQuality() {
+  const { screenResolution, screenFrameRate } = useVoicePrefs.getState();
+  return screenQuality(screenResolution, screenFrameRate);
+}
+
+/*
+  Aplica a qualidade escolhida na transmissão que já está no ar, sem derrubar
+  quem assiste: a captura recebe o novo teto, e o codificador a nova taxa. O
+  LiveKit guarda as opções de publicação para recalcular as camadas quando a
+  faixa é trocada, então elas vão junto, senão a troca de janela voltaria à
+  qualidade antiga.
+*/
+async function tuneScreen(room: Room) {
+  const track = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.track as
+    | LocalVideoTrack
+    | undefined;
+  if (!track) return;
+
+  const quality = currentScreenQuality();
+  track.publishOptions = { ...track.publishOptions, screenShareEncoding: quality.encoding };
+
+  const media = track.mediaStreamTrack;
+  media.contentHint = quality.contentHint;
+  await media.applyConstraints(quality.constraints).catch(() => undefined);
+
+  const sender = track.sender;
+  const params = sender?.getParameters();
+  if (!sender || !params?.encodings?.length) return;
+
+  const top = params.encodings.reduce((best, encoding) =>
+    (encoding.scaleResolutionDownBy ?? 1) <= (best.scaleResolutionDownBy ?? 1) ? encoding : best,
+  );
+
+  for (const encoding of params.encodings) {
+    encoding.maxFramerate = Math.min(encoding.maxFramerate ?? quality.frameRate, quality.frameRate);
+  }
+  top.maxBitrate = quality.encoding.maxBitrate;
+  top.maxFramerate = quality.frameRate;
+
+  await sender.setParameters(params).catch(() => undefined);
 }
 
 const pointsProLocalhost = (url: string) => /\/\/(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
@@ -318,7 +368,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     set({ connecting: true, error: null, channelId });
 
     try {
-      const { url, token, requiresPushToTalk } = await findVoiceToken(channelId);
+      const { url, token, requiresPushToTalk, bitrate } = await findVoiceToken(channelId);
 
       if (pointsProLocalhost(url) && !areLocalhost()) {
         throw new Error(
@@ -330,10 +380,25 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       const room = new Room({
         adaptiveStream: true,
         dynacast: true,
+        publishDefaults: {
+          /*
+            Quem manda na taxa é o CANAL, não uma constante aqui.
+
+            Antes valia o padrão do LiveKit, o preset de música a 48 kbps, igual
+            para todo mundo — e o controle que já existia na tela de
+            configuração do canal não fazia efeito nenhum, porque ninguém lia o
+            valor. Agora ele chega junto do passe de entrada.
+
+            Um canal de música quer taxa alta; um canal de conversa com gente de
+            internet ruim quer baixa. Fixar um número no código é escolher
+            errado para metade dos casos.
+          */
+          audioPreset: { maxBitrate: audioBitrate(bitrate) },
+        },
       });
 
       const refresh = () => {
-        const tiles = snapshot(room);
+        const tiles = snapshot(room, store().tiles);
 
         const eu = tiles.find((t) => t.isLocal);
         const camera = Boolean(eu?.cameraTrack);
@@ -419,13 +484,28 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         await room.switchActiveDevice("audiooutput", prefs.outputId).catch(() => undefined);
       }
 
-      set({ room, connecting: false, tiles: snapshot(room) });
+      set({ room, connecting: false, tiles: snapshot(room, store().tiles) });
       rememberVoiceTab(channelId);
+
+      /*
+        Entre o pedido do microfone, lá em cima, e esta linha, passam alguns
+        segundos de conexão — e nesses segundos a pessoa pode apertar o mudo ou
+        o fone. Os dois botões mexem no estado e avisam o servidor, mas não têm
+        sala para mandar calar: o `room` ainda não existe. O resultado era a
+        tela inteira dizendo mudo, o servidor dizendo mudo, e a voz saindo
+        assim mesmo.
+
+        Aqui o que está no ar passa a ser o que a tela diz. Quando ninguém
+        tocou em nada, isto não republica nada: o LiveKit já devolve a faixa
+        que existe quando o estado pedido é o estado atual.
+      */
+      await reapplyMicrophone(room, set, store);
 
       const state = (await joinVoiceChannel(
         channelId,
         options?.resume ?? false,
         clientThisTab(),
+        deviceKind(Boolean(desktop()), navigator.userAgent),
       )) as
         | { guildId?: string }
         | undefined;
@@ -503,7 +583,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
       next,
       cameraId ? { deviceId: { exact: cameraId } } : undefined,
     );
-    set({ cameraEnabled: next, tiles: snapshot(room) });
+    set({ cameraEnabled: next, tiles: snapshot(room, store().tiles) });
     await notifyServer({ camera: next });
   },
 
@@ -593,8 +673,16 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
     try {
       const { screenSound } = useVoicePrefs.getState();
-      await room.localParticipant.setScreenShareEnabled(next, { audio: screenSound });
-      const tiles = snapshot(room);
+      const quality = currentScreenQuality();
+
+      await room.localParticipant.setScreenShareEnabled(
+        next,
+        { audio: screenSound, resolution: quality.capture, contentHint: quality.contentHint },
+        { screenShareEncoding: quality.encoding },
+      );
+      if (next) await tuneScreen(room);
+
+      const tiles = snapshot(room, store().tiles);
 
       set({
         screenEnabled: next,
@@ -608,6 +696,91 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     } catch {
       set({ screenEnabled: false, screenFont: null });
     }
+  },
+
+  /*
+    Trocar o que se transmite sem parar a transmissão. Quem assiste continua
+    assistindo: a faixa publicada é a mesma, só a fonte por baixo muda.
+  */
+  swapScreen: async () => {
+    const { room, screenEnabled, screenFont } = store();
+    if (!room || !screenEnabled) return;
+
+    const local = room.localParticipant;
+    const video = local.getTrackPublication(Track.Source.ScreenShare)?.track as LocalVideoTrack | undefined;
+    if (!video) return;
+
+    const { screenSound } = useVoicePrefs.getState();
+    const quality = currentScreenQuality();
+
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: quality.constraints, audio: screenSound });
+    } catch {
+      set({ screenFont });
+      return;
+    }
+
+    const [nextVideo] = stream.getVideoTracks();
+    const [nextAudio] = stream.getAudioTracks();
+
+    if (!nextVideo) {
+      stream.getTracks().forEach((t) => t.stop());
+      set({ screenFont });
+      return;
+    }
+
+    const previousVideo = video.mediaStreamTrack;
+    try {
+      await video.replaceTrack(nextVideo, false);
+    } catch {
+      stream.getTracks().forEach((t) => t.stop());
+      set({ screenFont });
+      return;
+    }
+    previousVideo.stop();
+    set({ screenFont: describeFont(desktop() ? store().screenFont : null, nextVideo) });
+
+    try {
+      const audio = local.getTrackPublication(Track.Source.ScreenShareAudio)?.track as LocalAudioTrack | undefined;
+
+      if (audio && nextAudio) {
+        const previousAudio = audio.mediaStreamTrack;
+        await audio.replaceTrack(nextAudio, false);
+        previousAudio.stop();
+      } else if (audio) {
+        await local.unpublishTrack(audio);
+      } else if (nextAudio) {
+        await local.publishTrack(nextAudio, { source: Track.Source.ScreenShareAudio });
+      }
+
+      await tuneScreen(room);
+    } catch {
+      nextAudio?.stop();
+    }
+
+    set({ tiles: snapshot(room, store().tiles) });
+  },
+
+  /*
+    O som que já está no ar só pode ser calado ou devolvido; som que não foi
+    capturado não aparece do nada. Nesse caso a escolha vale para a próxima
+    captura, seja a troca de janela ou a próxima transmissão.
+  */
+  setScreenSound: async (on) => {
+    useVoicePrefs.getState().set({ screenSound: on });
+
+    const publication = store().room?.localParticipant.getTrackPublication(Track.Source.ScreenShareAudio);
+    if (!publication) return;
+
+    await (on ? publication.unmute() : publication.mute()).catch(() => undefined);
+  },
+
+  setScreenQuality: async (change) => {
+    useVoicePrefs.getState().set(change);
+
+    const { room, screenEnabled } = store();
+    if (room && screenEnabled) await tuneScreen(room);
   },
   };
 });
