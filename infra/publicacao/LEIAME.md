@@ -37,3 +37,15 @@ reiniciar o `gravae-api`, e nada mais.
 
 Sem o ambiente `producao` com revisor, o fluxo publica sozinho — que é
 justamente o que se quer evitar.
+
+## Estado em 13/09/2026
+
+Configurado e ligado. A chave de publicação foi trocada (a de 08/09 não tinha
+ficado guardada): a pública está no `authorized_keys` com `command=` e
+`restrict`, e a privada só existe no secret `VM_SSH_KEY`. `VM_HOST` está nas
+variáveis, e o ambiente `producao` pede aprovação de `thiagob7` e só aceita a
+`master`.
+
+O fluxo agora espera a Vercel publicar o web do mesmo commit antes de pedir a
+aprovação, para a API nunca subir antes do web. O `~/oracle-a1/deploy-api.sh`
+continua valendo como plano B.
