@@ -1,13 +1,44 @@
 import { describe, expect, it, vi } from "vitest";
 
+const mget = vi.fn();
+const del = vi.fn();
+const idsWithoutDesired = vi.fn();
+const setDesiredMany = vi.fn();
+
 vi.mock("~/lib/redis.js", () => ({
-  redis: {},
-  keys: { presence: () => "", sessions: () => "", idle: () => "" },
+  redis: { mget: (...a: unknown[]) => mget(...a), del: (...a: unknown[]) => del(...a) },
+  keys: { sessions: () => "", idle: () => "", legacyPresence: (id: string) => `presence:${id}` },
 }));
 
-vi.mock("~/repositories/user-repository.js", () => ({ userRepository: {} }));
+vi.mock("~/repositories/user-repository.js", () => ({
+  userRepository: {
+    idsWithoutDesired: (...a: unknown[]) => idsWithoutDesired(...a),
+    setDesiredMany: (...a: unknown[]) => setDesiredMany(...a),
+  },
+}));
 
-const { visible } = await import("~/services/presence-service.js");
+const { visible, presenceService } = await import("~/services/presence-service.js");
+
+describe("migração do status escolhido", () => {
+  it("quem estava invisível continua invisível depois do deploy", async () => {
+    idsWithoutDesired.mockResolvedValue(["a", "b", "c"]);
+    mget.mockResolvedValue(["INVISIBLE", null, "lixo"]);
+
+    await expect(presenceService.migrateDesired()).resolves.toBe(3);
+
+    expect(setDesiredMany).toHaveBeenCalledWith(["a"], "INVISIBLE");
+    expect(setDesiredMany).toHaveBeenCalledWith(["b", "c"], "ONLINE");
+    expect(del).toHaveBeenCalledWith("presence:a", "presence:b", "presence:c");
+  });
+
+  it("na segunda subida não há o que migrar", async () => {
+    vi.clearAllMocks();
+    idsWithoutDesired.mockResolvedValue([]);
+
+    await expect(presenceService.migrateDesired()).resolves.toBe(0);
+    expect(mget).not.toHaveBeenCalled();
+  });
+});
 
 describe("projecao de presenca", () => {
   it("quem nao esta conectado esta offline, escolha o que escolher", () => {

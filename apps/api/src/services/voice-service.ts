@@ -1,5 +1,5 @@
 import { AccessToken, RoomServiceClient, TrackSource } from "livekit-server-sdk";
-import type { VoiceState, VoiceServer } from "@gravae/shared";
+import type { VoiceState, VoiceServer, VoiceDevice } from "@gravae/shared";
 import { has, rooms } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError, ConflictError, ForbiddenError } from "~/lib/http.js";
@@ -59,6 +59,19 @@ export const VOICE_GRACE_MS = 6_000;
 
 const ORPHAN_MS_TTL = 60_000;
 
+/*
+  Rede de segurança do estado de voz.
+
+  Quem sai da chamada some do Redis na hora, pela `leave`. Este prazo só existe
+  para o caso em que ninguém chama a `leave`: a API morre com gente dentro. Sem
+  ele a chave fica órfã para sempre, e chave órfã é o que faz o Redis engordar.
+
+  Tem que ser folgado o bastante para não expirar no meio de uma chamada de
+  verdade, por isso doze horas, e toda escrita do estado o renova — menos a do
+  estado órfão, que guarda o prazo curto dele.
+*/
+const STATE_S_TTL = 12 * 60 * 60;
+
 const SFU_MS_GRACE = 25_000;
 
 export function fontsCanPublish(
@@ -76,17 +89,73 @@ export function fontsCanPublish(
   return fonts;
 }
 
+/*
+  Quem está em chamada agora, lido do índice em vez de varrido.
+
+  O conjunto e as chaves de estado são escritos no mesmo `multi`, então andam
+  juntos. Mas o estado tem prazo de validade e o conjunto não, então um id pode
+  sobrar aqui sem estado do outro lado — é justamente o caso do processo que
+  morreu. Quando isso acontece, tiramos o id do conjunto na hora: o índice se
+  conserta sozinho, em vez de acumular lixo como o modelo antigo acumulava.
+*/
+async function statesInVoice(): Promise<VoiceState[]> {
+  const ids = await redis.smembers(keys.voicePeople);
+  if (!ids.length) return [];
+
+  const raw = await redis.mget(ids.map((id) => keys.voiceState(id)));
+
+  const gone = ids.filter((_, i) => raw[i] === null);
+  if (gone.length) await redis.srem(keys.voicePeople, ...gone);
+
+  return raw
+    .filter((v): v is string => Boolean(v))
+    .map((v) => hydrate(JSON.parse(v) as VoiceState));
+}
+
+/*
+  Regrava o estado renovando o prazo de doze horas. Antes era `KEEPTTL`, que só
+  mantinha o prazo do `join`: numa chamada de mais de doze horas a chave vencia
+  no meio, e a varredura via a pessoa no SFU sem estado e a expulsava.
+
+  O estado órfão é a exceção: ele tem sessenta segundos para a pessoa voltar, e
+  renovar para doze horas deixaria o fantasma na lista por meio dia.
+*/
+async function writeState(state: VoiceState) {
+  const raw = JSON.stringify(state);
+
+  if (state.orphanedAt) await redis.set(keys.voiceState(state.userId), raw, "KEEPTTL");
+  else await redis.set(keys.voiceState(state.userId), raw, "EX", STATE_S_TTL);
+}
+
+/*
+  Quem está de fato no canal, conferido contra o estado.
+
+  O conjunto do canal não tem prazo e o estado tem: quando o estado vence sem
+  passar pela `leave` (API que morreu, chamada de meio dia), o id sobra no
+  conjunto. Contar o conjunto cru fazia um canal com limite dizer "cheio" com
+  gente que já tinha ido embora. Aqui só conta quem tem estado neste canal, e
+  quem sobrou é tirado do conjunto na mesma hora.
+*/
+async function liveMembers(channelId: string): Promise<string[]> {
+  const ids = await redis.smembers(keys.voiceChannel(channelId));
+  if (!ids.length) return [];
+
+  const raw = await redis.mget(ids.map((id) => keys.voiceState(id)));
+
+  const live = ids.filter((_, i) => {
+    const value = raw[i];
+    return value !== null && value !== undefined && (JSON.parse(value) as VoiceState).channelId === channelId;
+  });
+
+  const stale = ids.filter((id) => !live.includes(id));
+  if (stale.length) await redis.srem(keys.voiceChannel(channelId), ...stale);
+
+  return live;
+}
+
 export const voiceService = {
   async sfuState() {
-    const [rooms, keys] = await Promise.all([
-      roomService().listRooms(),
-      redis.keys("voice:user:*"),
-    ]);
-
-    const raw = keys.length ? await redis.mget(keys) : [];
-    const inRedis = raw
-      .filter((v): v is string => Boolean(v))
-      .map((v) => hydrate(JSON.parse(v) as VoiceState));
+    const [rooms, inRedis] = await Promise.all([roomService().listRooms(), statesInVoice()]);
 
     const withFolks = await Promise.all(
       rooms.map(async (room) => ({
@@ -228,7 +297,7 @@ export const voiceService = {
     }
 
     const next: VoiceState = { ...state, ...patch };
-    await redis.set(keys.voiceState(targetId), JSON.stringify(next));
+    await writeState(next);
 
     return next;
   },
@@ -297,7 +366,22 @@ export const voiceService = {
 
     const requiresPushToTalk = Boolean(context) && !has(context!.permissions, "USE_VAD");
 
-    return { url: env.LIVEKIT_URL, token: await token.toJwt(), requiresPushToTalk };
+    /*
+      A taxa de bits sai daqui junto do passe, e não de uma constante no
+      cliente.
+
+      Ela já existia no canal e já tinha controle na tela de configuração —
+      o que faltava era alguém LER. Quem manda é o dono do canal: um canal de
+      música quer taxa alta, um canal de conversa com gente de internet ruim
+      quer baixa. Decidir isso no código, igual para todo mundo, é escolher
+      errado para metade dos casos.
+    */
+    return {
+      url: env.LIVEKIT_URL,
+      token: await token.toJwt(),
+      requiresPushToTalk,
+      bitrate: channel.bitrate,
+    };
   },
 
   async join(
@@ -306,6 +390,7 @@ export const voiceService = {
     socketId: string,
     resume = false,
     clientId: string | null = null,
+    device: VoiceDevice | null = null,
   ) {
     const { channel } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
@@ -315,8 +400,8 @@ export const voiceService = {
     const previous = await voiceService.get(userId);
 
     if (channel.userLimit > 0 && previous?.channelId !== channelId) {
-      const inside = await redis.scard(keys.voiceChannel(channelId));
-      if (inside >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
+      const inside = await liveMembers(channelId);
+      if (inside.length >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
     }
 
     if (isOtherTab({ resuming: resume, anterior: previous, channelRequest: channelId, client: clientId })) {
@@ -338,12 +423,14 @@ export const voiceService = {
       serverMute: previous?.serverMute ?? false,
       serverDeaf: previous?.serverDeaf ?? false,
       orphanedAt: null,
+      device: device ?? previous?.device ?? null,
     };
 
     await redis
       .multi()
-      .set(keys.voiceState(userId), JSON.stringify(state))
+      .set(keys.voiceState(userId), JSON.stringify(state), "EX", STATE_S_TTL)
       .sadd(keys.voiceChannel(channelId), userId)
+      .sadd(keys.voicePeople, userId)
       .exec();
 
     return { state, left };
@@ -374,6 +461,7 @@ export const voiceService = {
       .multi()
       .del(keys.voiceState(userId))
       .srem(keys.voiceChannel(state.channelId), userId)
+      .srem(keys.voicePeople, userId)
       .exec();
 
     return state;
@@ -387,7 +475,7 @@ export const voiceService = {
     if (!state) throw new ConflictError("Você não está num canal de voz");
 
     const next = { ...state, ...patch };
-    await redis.set(keys.voiceState(userId), JSON.stringify(next));
+    await writeState(next);
     return next;
   },
 
@@ -466,15 +554,10 @@ export const voiceService = {
   async reconcile(): Promise<{ fromRedis: VoiceState[]; fromSfu: number }> {
     const now = Date.now();
 
-    const [keys, rooms] = await Promise.all([
-      redis.keys("voice:user:*"),
+    const [inRedis, rooms] = await Promise.all([
+      statesInVoice(),
       roomService().listRooms().catch(() => []),
     ]);
-
-    const raw = keys.length ? await redis.mget(keys) : [];
-    const inRedis = raw
-      .filter((v): v is string => Boolean(v))
-      .map((v) => hydrate(JSON.parse(v) as VoiceState));
 
     const our = rooms.filter((room) => room.name.startsWith("channel-"));
 
