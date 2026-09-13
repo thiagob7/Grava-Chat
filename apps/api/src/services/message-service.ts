@@ -223,6 +223,8 @@ export const messageService = {
 
     if (input.postId) await forumService.requirePostIsOpen(input.postId, channel.id);
 
+    let pendingRequestCheck = false;
+
     if (!channel.guildId) {
       const otherId = (channel.recipients ?? []).find((id) => id !== userId);
       const other = otherId ? await userRepository.findById(otherId) : null;
@@ -233,7 +235,10 @@ export const messageService = {
         );
       }
 
-      if (other && !other.isBot) await friendshipService.requireDeliverable(userId, channel.id, other);
+      if (other && !other.isBot) {
+        await friendshipService.requireDeliverable(userId, channel.id, other);
+        pendingRequestCheck = true;
+      }
     }
 
     let messageGuild: Awaited<ReturnType<typeof guildRepository.findById>> = null;
@@ -324,6 +329,10 @@ export const messageService = {
     if (input.postId) await forumService.registerReply(input.postId).catch(() => undefined);
 
     await readStateRepository.markRead(userId, input.channelId, created.id);
+
+    if (pendingRequestCheck) {
+      await friendshipService.announcePendingMessage(userId, input.channelId).catch(() => undefined);
+    }
 
     if (input.nonce) {
       /*

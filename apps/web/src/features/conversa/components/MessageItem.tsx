@@ -783,6 +783,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 export const shouldGroup = (prev: Message | undefined, current: Message) =>
   Boolean(
     prev &&
+      (prev.kind ?? "USER") === "USER" &&
+      (current.kind ?? "USER") === "USER" &&
+      !current.replyToId &&
       prev.author.id === current.author.id &&
       new Date(current.createdAt).getTime() - new Date(prev.createdAt).getTime() < 5 * 60_000,
   );

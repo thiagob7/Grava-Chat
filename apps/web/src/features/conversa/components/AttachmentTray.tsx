@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { AlertCircle, Eye, EyeOff, FileText, Loader2, Pencil, Trash2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, FileText, Pencil, Trash2 } from "lucide-react";
 
 import type { PendingAttachment } from "~/features/conversa/hooks/use-attachments";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton, LoadingDots } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import {
   Dialog,
@@ -44,7 +44,7 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
   if (!items.length) return null;
 
   return (
-    <div data-gc="conversa.attachment-tray.div" {...flx("attachmentUploading", "flex flex-wrap gap-2 border-b border-line px-4 py-3")}>
+    <div data-gc="conversa.attachment-tray.div" {...flx("attachmentUploading", "flex gap-3 overflow-x-auto border-b border-line-sutil px-3 pb-3 pt-3")}>
       {items.map((item) => {
         const uploading = !item.attachment && !item.error;
         const saved =
@@ -56,97 +56,95 @@ export const AttachmentTray: React.FC<AttachmentTrayProps> = ({ items, onRemove,
           <div data-gc="conversa.attachment-tray.div--2"
             key={item.id}
             className={cn(
-              "group relative w-40 overflow-hidden rounded-lg bg-surface-0 p-2",
-              item.error && "ring-1 ring-danger",
+              "group relative flex w-48 shrink-0 flex-col rounded-xl border bg-surface-2 p-2 transition",
+              item.error ? "border-danger/60" : "border-line-sutil hover:border-line",
             )}
           >
-            <div data-gc="conversa.attachment-tray.div--3" className="absolute right-1.5 top-1.5 z-10 flex items-center gap-0.5 rounded-lg bg-surface-3 p-0.5 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100">
+            <div data-gc="conversa.attachment-tray.div--3" className="absolute -right-2 -top-2 z-10 flex items-center gap-0.5 rounded-lg border border-line-sutil bg-surface-1 p-0.5 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100">
               {item.previewUrl && (
-                <button data-gc="conversa.attachment-tray.button"
+                <IconButton data-gc="conversa.attachment-tray.icon-button"
+                  size="sm"
+                  label={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
                   onClick={() => openLightbox(item.previewUrl!, item.filename)}
-                  aria-label={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
-                  title={t("conversa.anexos.verPrevia", { arquivo: item.filename })}
-                  className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
                 >
-                  <Eye data-gc="conversa.attachment-tray.eye" size={14} />
-                </button>
+                  <Eye data-gc="conversa.attachment-tray.eye" />
+                </IconButton>
               )}
 
               {item.attachment && (
-                <button data-gc="conversa.attachment-tray.button--2"
+                <IconButton data-gc="conversa.attachment-tray.icon-button--2"
+                  size="sm"
+                  label={t("conversa.anexos.modificar", { arquivo: item.filename })}
                   onClick={() => setEditing(item)}
-                  aria-label={t("conversa.anexos.modificar", { arquivo: item.filename })}
-                  title={t("conversa.anexos.modificar", { arquivo: item.filename })}
-                  className="flex size-6 items-center justify-center rounded text-ink-muted transition hover:bg-hover hover:text-ink"
                 >
-                  <Pencil data-gc="conversa.attachment-tray.pencil" size={14} />
-                </button>
+                  <Pencil data-gc="conversa.attachment-tray.pencil" />
+                </IconButton>
               )}
 
-              <button data-gc="conversa.attachment-tray.button--3"
+              <IconButton data-gc="conversa.attachment-tray.icon-button--3"
+                size="sm"
+                variant="danger"
+                label={t("conversa.anexos.remover", { arquivo: item.filename })}
                 onClick={() => onRemove(item.id)}
-                aria-label={t("conversa.anexos.remover", { arquivo: item.filename })}
-                title={t("conversa.anexos.remover", { arquivo: item.filename })}
-                className="flex size-6 items-center justify-center rounded text-danger transition hover:bg-danger hover:text-sobre-marca"
               >
-                <Trash2 data-gc="conversa.attachment-tray.trash2" size={14} />
-              </button>
+                <Trash2 data-gc="conversa.attachment-tray.trash2" />
+              </IconButton>
             </div>
 
-            {item.attachment?.spoiler && (
-              <span data-gc="conversa.attachment-tray.span" className="absolute left-1 top-1 z-10 flex items-center gap-1 rounded bg-surface-2/90 px-1.5 py-0.5 text-10 font-semibold uppercase text-ink-muted">
-                <EyeOff data-gc="conversa.attachment-tray.eye-off" size={10} /> {t("conversa.anexos.spoiler")}
-              </span>
-            )}
-
-            <div data-gc="conversa.attachment-tray.div--4" className="relative mb-2 flex aspect-square items-center justify-center overflow-hidden rounded-md bg-surface-3">
+            <div data-gc="conversa.attachment-tray.div--4" className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-surface-0">
               {item.previewUrl ? (
                 <img data-gc="conversa.attachment-tray.img"
                   src={item.previewUrl}
                   alt=""
-                  className={cn("size-full object-cover transition", uploading && "opacity-40")}
+                  className={cn(
+                    "size-full object-contain transition",
+                    uploading && "opacity-50",
+                    item.attachment?.spoiler && "scale-110 blur-xl",
+                  )}
                 />
               ) : (
-                <FileText data-gc="conversa.attachment-tray.file-text" size={56} strokeWidth={1.5} className={FILE_ART} />
+                <FileText data-gc="conversa.attachment-tray.file-text" size={48} strokeWidth={1.5} className={FILE_ART} />
               )}
 
-              {uploading && <Loader2 data-gc="conversa.attachment-tray.loader2" size={20} className="absolute animate-spin text-ink" />}
-            </div>
+              {item.attachment?.spoiler && (
+                <span data-gc="conversa.attachment-tray.span" className="absolute inset-0 flex items-center justify-center">
+                  <span data-gc="conversa.attachment-tray.span--2" className="flex items-center gap-1 rounded-full bg-sobre-midia px-2.5 py-1 text-11 font-semibold uppercase text-palco-ink">
+                    <EyeOff data-gc="conversa.attachment-tray.eye-off" size={12} /> {t("conversa.anexos.spoiler")}
+                  </span>
+                </span>
+              )}
 
-            <div data-gc="conversa.attachment-tray.div--5" className="flex items-end gap-2">
-              <div data-gc="conversa.attachment-tray.div--6" className="min-w-0 flex-1">
-                <p data-gc="conversa.attachment-tray.p" className="truncate text-13 font-semibold" title={item.filename}>
-                  {item.filename}
-                </p>
-
-                <p data-gc="conversa.attachment-tray.p--2"
-                  className={cn(
-                    "truncate text-11",
-                    item.error ? "text-danger" : "text-ink-faint",
-                  )}
-                >
-                  {item.error ? (
-                    <span data-gc="conversa.attachment-tray.span--2" className="flex items-center gap-1">
-                      <AlertCircle data-gc="conversa.attachment-tray.alert-circle" size={11} /> {item.error}
-                    </span>
-                  ) : uploading ? (
-                    t("conversa.anexos.enviando")
-                  ) : (
-                    saved
-                  )}
-                </p>
-              </div>
+              {uploading && (
+                <span data-gc="conversa.attachment-tray.span--3" className="absolute inset-0 flex items-center justify-center text-ink">
+                  <LoadingDots data-gc="conversa.attachment-tray.loading-dots" />
+                </span>
+              )}
 
               {!item.previewUrl && extension(item.filename) && (
-                <span data-gc="conversa.attachment-tray.span--3"
-                  className={cn(
-                    "shrink-0 text-11 font-bold uppercase tracking-wide",
-                    TINTA_SUAVE,
-                  )}
+                <span data-gc="conversa.attachment-tray.span--4"
+                  className={cn("absolute bottom-1.5 right-2 text-11 font-bold uppercase tracking-wide", TINTA_SUAVE)}
                 >
                   {extension(item.filename)}
                 </span>
               )}
+            </div>
+
+            <div data-gc="conversa.attachment-tray.div--5" className="min-w-0 px-0.5 pb-0.5 pt-2">
+              <p data-gc="conversa.attachment-tray.p" className="truncate text-13 font-semibold text-ink" title={item.filename}>
+                {item.filename}
+              </p>
+
+              <p data-gc="conversa.attachment-tray.p--2" className={cn("mt-0.5 truncate text-11", item.error ? "text-danger" : "text-ink-faint")}>
+                {item.error ? (
+                  <span data-gc="conversa.attachment-tray.span--5" className="flex items-center gap-1">
+                    <AlertCircle data-gc="conversa.attachment-tray.alert-circle" size={11} /> {item.error}
+                  </span>
+                ) : uploading ? (
+                  t("conversa.anexos.enviando")
+                ) : (
+                  saved
+                )}
+              </p>
             </div>
           </div>
         );
@@ -194,7 +192,7 @@ const ModifyAttachment: React.FC<ModifyAttachmentProps> = ({ item, onClose, onSa
             />
           )}
 
-          <div data-gc="conversa.attachment-tray.div--7">
+          <div data-gc="conversa.attachment-tray.div--6">
             <Label data-gc="conversa.attachment-tray.label" htmlFor="anexo-nome">{t("conversa.anexos.nomeDoArquivo")}</Label>
             <Input data-gc="conversa.attachment-tray.input"
               id="anexo-nome"
@@ -205,10 +203,10 @@ const ModifyAttachment: React.FC<ModifyAttachmentProps> = ({ item, onClose, onSa
             />
           </div>
 
-          <div data-gc="conversa.attachment-tray.div--8">
-            <div data-gc="conversa.attachment-tray.div--9" className="flex items-baseline justify-between gap-3">
+          <div data-gc="conversa.attachment-tray.div--7">
+            <div data-gc="conversa.attachment-tray.div--8" className="flex items-baseline justify-between gap-3">
               <Label data-gc="conversa.attachment-tray.label--2" htmlFor="anexo-descricao">{t("conversa.anexos.descricao")}</Label>
-              <span data-gc="conversa.attachment-tray.span--4" className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">
+              <span data-gc="conversa.attachment-tray.span--6" className="mb-1.5 shrink-0 text-xs tabular-nums text-ink-faint">
                 {description.length}/1024
               </span>
             </div>
@@ -222,8 +220,8 @@ const ModifyAttachment: React.FC<ModifyAttachmentProps> = ({ item, onClose, onSa
             />
           </div>
 
-          <div data-gc="conversa.attachment-tray.div--10" className="flex items-center justify-between gap-4">
-            <span data-gc="conversa.attachment-tray.span--5" className="text-sm">{t("conversa.anexos.marcarSpoiler")}</span>
+          <div data-gc="conversa.attachment-tray.div--9" className="flex items-center justify-between gap-4">
+            <span data-gc="conversa.attachment-tray.span--7" className="text-sm">{t("conversa.anexos.marcarSpoiler")}</span>
             <Switch data-gc="conversa.attachment-tray.switch.set-spoiler" checked={spoiler} onCheckedChange={setSpoiler} />
           </div>
         </DialogBody>
@@ -232,7 +230,7 @@ const ModifyAttachment: React.FC<ModifyAttachmentProps> = ({ item, onClose, onSa
           <Button data-gc="conversa.attachment-tray.button.on-close" variant="ghost" onClick={onClose}>
             {t("conversa.anexos.cancelar")}
           </Button>
-          <Button data-gc="conversa.attachment-tray.button--4"
+          <Button data-gc="conversa.attachment-tray.button"
             onClick={() =>
               onSave({
                 filename: filename.trim() || item.filename,
