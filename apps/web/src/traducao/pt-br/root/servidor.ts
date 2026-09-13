@@ -254,8 +254,8 @@ export const servidor = {
     descricao:
       "Quem está aqui não entra nem com convite novo. Desbanir devolve o acesso na hora.",
     procurar: "Procurar banimentos por nome de usuário",
-    vazioTitulo: "Sem banimentos",
-    vazio: "Você ainda não baniu ninguém… mas se e quando precisar, não hesite.",
+    vazioTitulo: "Nenhum usuário banido",
+    vazio: "Ninguém foi banido desta comunidade até agora.",
     desbanir: "Desbanir",
   },
 
@@ -300,6 +300,12 @@ export const servidor = {
       "username e avatar_url são opcionais e valem por mensagem. O limite é de 5 mensagens a cada 5 segundos.",
     apagarDescricao:
       "A URL para de funcionar na hora. As mensagens que ele já mandou continuam no canal.",
+  },
+
+  geral: {
+
+    titulo: "Visão geral",
+
   },
 
   explorar: {

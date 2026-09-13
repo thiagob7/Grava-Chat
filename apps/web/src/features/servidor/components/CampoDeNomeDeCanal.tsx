@@ -23,6 +23,7 @@ interface NameChannelPropsField {
   font: NameFont;
   onFont: (font: NameFont) => void;
   isVoice: boolean;
+  flexible?: boolean;
   icon?: React.ReactNode;
   placeholder?: string;
   autoFocus?: boolean;
@@ -36,6 +37,7 @@ export const NameChannelField: React.FC<NameChannelPropsField> = ({
   font,
   onFont,
   isVoice,
+  flexible = false,
   icon,
   placeholder,
   autoFocus,
@@ -45,7 +47,7 @@ export const NameChannelField: React.FC<NameChannelPropsField> = ({
 
   useEffect(() => loadAllFonts(), []);
 
-  const normalize = (raw: string) => raw.replace(/\s+/g, isVoice ? " " : "-");
+  const normalize = (raw: string) => raw.replace(/\s+/g, isVoice || flexible ? " " : "-");
 
   const insertEmoji = (emoji: string) => {
     const el = field.current;

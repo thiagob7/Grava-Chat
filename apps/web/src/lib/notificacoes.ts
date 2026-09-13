@@ -33,6 +33,7 @@ interface Context {
   mention: { direct: boolean; everyone: boolean; role: boolean };
   channelName: string | undefined;
   isDm: boolean;
+  serverDefault?: "tudo" | "mencoes";
   ignored: boolean;
   onOpen: () => void;
 }
@@ -61,6 +62,7 @@ export function notifyMessage({
   ignored,
   onOpen,
   guildId,
+  serverDefault,
 }: Context) {
   if (!myId || message.author.id === myId || ignored) return;
 
@@ -87,6 +89,7 @@ export function notifyMessage({
   if (readingThisChannel && !meMentions) return;
   if (fromChannel === "mencoes" && !meMentions) return;
   if (fromChannel === null && prefs.soMentions && !important) return;
+  if (fromChannel === null && fromServer === null && serverDefault === "mencoes" && !important) return;
 
   if (prefs.sound && !readingThisChannel) playSound(important ? "mention" : "message");
 

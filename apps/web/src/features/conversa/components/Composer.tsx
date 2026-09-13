@@ -500,7 +500,7 @@ export const Composer: React.FC<ComposerProps> = ({
           onPatch={attachments.patchAttachment}
         />
 
-        <div data-gc="conversa.composer.div--4" {...flx("writeStack")}>
+        <div data-gc="conversa.composer.div--4" {...flx("writeStack", "flex min-h-[var(--composer-box-height)] flex-col justify-center")}>
         <div data-gc="conversa.composer.div--5" {...flx("writeLine", "relative flex items-end gap-1 px-2 @sm:gap-1.5 @sm:px-3")}>
           <MentionSuggestions data-gc="conversa.composer.mention-suggestions.insert-mention"
             items={suggestions}

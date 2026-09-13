@@ -5,8 +5,8 @@ import type { DmRequest } from "@gravae/shared";
 import { useDmRequests } from "~/@core/application/queries/friend/use-pedidos-de-dm";
 import { useDmReplyRequest } from "~/@core/application/queries/friend/use-responder-pedido-de-dm";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
+import { Button, IconButton } from "~/components/ui/button";
+import { TabButton } from "~/components/ui/nav-item";
 import { useTranslation } from "~/traducao";
 
 type Tab = "pedidos" | "spam";
@@ -24,13 +24,14 @@ export const MessagesRequests: React.FC<{ onOpenMenu?: () => void }> = ({ onOpen
     <div data-gc="amizades.solicitacoes-de-mensagens.div" className="topo-do-miolo flex min-h-0 flex-1 flex-col bg-surface-2">
       <header data-gc="amizades.solicitacoes-de-mensagens.header" className="regiao-de-arrasto flex h-[var(--layout-header-height)] shrink-0 items-center gap-2 overflow-x-auto border-b border-line px-4 sm:gap-3">
         {onOpenMenu && (
-          <button data-gc="amizades.solicitacoes-de-mensagens.button.on-open-menu"
+          <IconButton data-gc="amizades.solicitacoes-de-mensagens.icon-button.on-open-menu"
+            size="md"
+            label={t("amizades.abrirMenu")}
             onClick={onOpenMenu}
-            aria-label={t("amizades.abrirMenu")}
-            className="-ml-1 shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink md:hidden"
+            className="-ml-1 md:hidden"
           >
-            <List data-gc="amizades.solicitacoes-de-mensagens.list" size={20} />
-          </button>
+            <List data-gc="amizades.solicitacoes-de-mensagens.list" />
+          </IconButton>
         )}
 
         <span data-gc="amizades.solicitacoes-de-mensagens.span" className="flex shrink-0 items-center gap-2 font-semibold">
@@ -42,7 +43,7 @@ export const MessagesRequests: React.FC<{ onOpenMenu?: () => void }> = ({ onOpen
           •
         </span>
 
-        <nav data-gc="amizades.solicitacoes-de-mensagens.nav" className="flex items-center gap-1">
+        <nav data-gc="amizades.solicitacoes-de-mensagens.nav" role="tablist" className="flex items-center gap-1">
           <TabButton data-gc="amizades.solicitacoes-de-mensagens.tab-button" active={tab === "pedidos"} onClick={() => setTab("pedidos")}>
             {t("amizades.pedidos")}
           </TabButton>
@@ -75,22 +76,6 @@ export const MessagesRequests: React.FC<{ onOpenMenu?: () => void }> = ({ onOpen
     </div>
   );
 };
-
-const TabButton: React.FC<{
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}> = ({ active, onClick, children }) => (
-  <button data-gc="amizades.solicitacoes-de-mensagens.button.on-click"
-    onClick={onClick}
-    className={cn(
-      "rounded px-2 py-1 text-sm font-medium transition",
-      active ? "bg-selecionado text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
-    )}
-  >
-    {children}
-  </button>
-);
 
 const Empty: React.FC<{ tab: Tab }> = ({ tab }) => {
   const { t } = useTranslation();

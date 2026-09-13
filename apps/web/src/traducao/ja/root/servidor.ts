@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "使い方",
     comoUsarTexto: "JSON を付けて POST を送ってください：",
   },
+  geral: {
+    titulo: "概要",
+  },
   explorar: {
     titulo: "見つける",
   },

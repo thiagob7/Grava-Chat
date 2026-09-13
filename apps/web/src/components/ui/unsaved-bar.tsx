@@ -44,10 +44,10 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
       <Button data-gc="ui.unsaved-bar.button.on-save"
         variant="success"
         size="sm"
-        disabled={saving}
+        loading={saving}
         onClick={onSave}
       >
-        {t(saving ? "comum.salvando" : "comum.salvar")}
+        {t("comum.salvar")}
       </Button>
     </footer>
   );

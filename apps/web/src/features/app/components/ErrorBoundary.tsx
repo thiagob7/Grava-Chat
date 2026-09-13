@@ -52,13 +52,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
           {i18next.t("comum.erro.recarregar")}
         </Button>
 
-        <button data-gc="app.error-boundary.button--3"
-          type="button"
+        <Button data-gc="app.error-boundary.button--3"
+          variant="link"
+          size="xs"
+          className="text-ink-muted"
           onClick={() => void copyText(this.details())}
-          className="text-xs text-ink-muted underline-offset-2 hover:underline"
         >
           {i18next.t("comum.erro.copiarDetalhes")}
-        </button>
+        </Button>
       </div>
     );
 

@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Cách dùng",
     comoUsarTexto: "Gửi một POST kèm JSON:",
   },
+  geral: {
+    titulo: "Tổng quan",
+  },
   explorar: {
     titulo: "Khám phá",
   },

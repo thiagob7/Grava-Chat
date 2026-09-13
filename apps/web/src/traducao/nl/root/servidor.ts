@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Zo gebruik je het",
     comoUsarTexto: "Stuur een POST met JSON:",
   },
+  geral: {
+    titulo: "Overzicht",
+  },
   explorar: {
     titulo: "Ontdekken",
   },

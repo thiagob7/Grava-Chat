@@ -1,3 +1,5 @@
+import { EmptyState } from "~/components/ui/empty-state";
+import { Ban } from "lucide-react";
 import React, { useState } from "react";
 import { Search, ShieldOff } from "lucide-react";
 
@@ -7,7 +9,7 @@ import {
 } from "~/@core/application/queries/moderation/use-moderation";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { Input, SearchField } from "~/components/ui/input";
 import { formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";
 
@@ -33,31 +35,28 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
         {t("servidor.banimentos.descricao")}
       </p>
 
-      <div data-gc="servidor.server-settings.bans-section.div--2" className="mt-4 flex items-center gap-2 rounded bg-surface-0 px-3">
-        <Search data-gc="servidor.server-settings.bans-section.search" size={16} className="text-ink-faint" />
-        <Input data-gc="servidor.server-settings.bans-section.input"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("servidor.banimentos.procurar")}
-          className="bg-transparent px-0"
-        />
-      </div>
+      <SearchField data-gc="servidor.server-settings.bans-section.search-field"
+        className="mt-4"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onClear={() => setSearch("")}
+        placeholder={t("servidor.banimentos.procurar")}
+      />
 
       {isLoading && <p data-gc="servidor.server-settings.bans-section.p--2" className="mt-6 text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
       {!isLoading && !bans.length && (
-        <div data-gc="servidor.server-settings.bans-section.div--3" className="mt-6 rounded-lg border border-dashed border-line px-6 py-12 text-center">
-          <ShieldOff data-gc="servidor.server-settings.bans-section.shield-off" size={28} className="mx-auto text-ink-faint" />
-          <p data-gc="servidor.server-settings.bans-section.p--3" className="mt-3 text-sm font-semibold">{t("servidor.banimentos.vazioTitulo")}</p>
-          <p data-gc="servidor.server-settings.bans-section.p--4" className="mt-1 text-sm text-ink-muted">
-            {t("servidor.banimentos.vazio")}
-          </p>
-        </div>
+        <EmptyState data-gc="servidor.server-settings.bans-section.empty-state"
+          className="mt-6"
+          icon={<Ban data-gc="servidor.server-settings.bans-section.ban" />}
+          title={t("servidor.banimentos.vazioTitulo")}
+          description={t("servidor.banimentos.vazio")}
+        />
       )}
 
-      <div data-gc="servidor.server-settings.bans-section.div--4" className="mt-4 space-y-px">
+      <div data-gc="servidor.server-settings.bans-section.div--2" className="mt-4 space-y-px">
         {filtered.map((ban) => (
-          <div data-gc="servidor.server-settings.bans-section.div--5"
+          <div data-gc="servidor.server-settings.bans-section.div--3"
             key={ban.user.id}
             className="flex items-center gap-3 border-t border-line px-2 py-3"
           >
@@ -68,11 +67,11 @@ export const BansSection: React.FC<{ guildId: string }> = ({ guildId }) => {
               size={36}
             />
 
-            <div data-gc="servidor.server-settings.bans-section.div--6" className="min-w-0 flex-1">
-              <p data-gc="servidor.server-settings.bans-section.p--5" className="truncate text-sm font-medium">
+            <div data-gc="servidor.server-settings.bans-section.div--4" className="min-w-0 flex-1">
+              <p data-gc="servidor.server-settings.bans-section.p--3" className="truncate text-sm font-medium">
                 {ban.user.displayName}
               </p>
-              <p data-gc="servidor.server-settings.bans-section.p--6" className="truncate text-xs text-ink-faint">
+              <p data-gc="servidor.server-settings.bans-section.p--4" className="truncate text-xs text-ink-faint">
                 @{ban.user.username}
                 {ban.reason ? ` · ${ban.reason}` : ""}
               </p>

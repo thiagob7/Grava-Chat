@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { objectId } from "~/validations/common.js";
 import {
+  AFK_TIMEOUTS,
   COMMUNITY_CATEGORIES,
+  DEFAULT_NOTIFICATIONS,
+  GUILD_TAGS_MAX,
+  GUILD_TAG_LENGTH,
   NAME_FONTS,
   createGuildInput,
   createChannelInput,
@@ -43,6 +47,13 @@ export const updateGuildInput = z.object({
   welcomeMessage: z.string().trim().max(500).nullable().optional(),
   category: z.enum(COMMUNITY_CATEGORIES).nullable().optional(),
   discoverable: z.boolean().optional(),
+  languagePrincipal: z.string().max(16).nullable().optional(),
+  tags: z.array(z.string().trim().toLowerCase().min(1).max(GUILD_TAG_LENGTH)).max(GUILD_TAGS_MAX).optional(),
+  afkChannelId: objectId.nullable().optional(),
+  afkTimeoutSeconds: z.number().int().refine((v) => (AFK_TIMEOUTS as readonly number[]).includes(v)).optional(),
+  defaultNotifications: z.enum(DEFAULT_NOTIFICATIONS).optional(),
+  flexibleChannelNames: z.boolean().optional(),
+  hideOwnerCrown: z.boolean().optional(),
 });
 export type UpdateGuildInput = z.infer<typeof updateGuildInput>;
 

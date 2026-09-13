@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "วิธีใช้",
     comoUsarTexto: "ส่ง POST เป็น JSON:",
   },
+  geral: {
+    titulo: "ภาพรวม",
+  },
   explorar: {
     titulo: "สำรวจ",
   },

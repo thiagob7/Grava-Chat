@@ -23,8 +23,38 @@ export const setSessionLostHandler = (fn: () => void) => {
 
 export const notifySessionLost = () => onSessionLost?.();
 
+/*
+  A senha do painel de administração abre uma sessão só desta aba. O token fica
+  na sessionStorage: some ao fechar a aba, não passa para outra janela e não
+  sobrevive a quem pega o computador emprestado no dia seguinte.
+*/
+const ADMIN_KEY = "gravae:painel";
+const ADMIN_HEADER = "x-gravae-admin";
+
+export const getAdminToken = (): string | null => {
+  try {
+    return sessionStorage.getItem(ADMIN_KEY);
+  } catch {
+    return null;
+  }
+};
+
+export const setAdminToken = (token: string | null) => {
+  try {
+    if (token) sessionStorage.setItem(ADMIN_KEY, token);
+    else sessionStorage.removeItem(ADMIN_KEY);
+  } catch {
+  }
+};
+
 api.interceptors.request.use((config) => {
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+
+  const admin = config.url?.startsWith("/admin") || config.url === "/status" || config.url?.endsWith("/verificacao")
+    ? getAdminToken()
+    : null;
+  if (admin) config.headers[ADMIN_HEADER] = admin;
+
   return config;
 });
 

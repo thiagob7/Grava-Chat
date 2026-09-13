@@ -239,8 +239,8 @@ export const servidor = {
     titulo: "Server ban list",
     descricao: "People here can't get back in, not even with a new invite. Unbanning restores access right away.",
     procurar: "Search bans by username",
-    vazioTitulo: "No bans",
-    vazio: "You haven't banned anyone yet… but if and when you need to, don't hesitate.",
+    vazioTitulo: "No banned users",
+    vazio: "Nobody has been banned from this community yet.",
     desbanir: "Unban",
   },
   excluir: {
@@ -275,6 +275,9 @@ export const servidor = {
     apagar: "Delete webhook",
     comoUsar: "How to use",
     comoUsarTexto: "Send a POST with JSON:",
+  },
+  geral: {
+    titulo: "Overview",
   },
   explorar: {
     titulo: "Discovery",

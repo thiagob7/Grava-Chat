@@ -51,12 +51,13 @@ export const DeleteChannelSection: React.FC<DeleteChannelSectionProps> = ({
       <Button data-gc="servidor.channel-settings.delete-channel-section.button"
         variant="danger"
         className="mt-4"
-        disabled={!can || doDelete.isPending}
+        disabled={!can}
         onClick={() =>
           doDelete.mutate({ guildId, channelId: channel.id }, { onSuccess: onClose })
         }
+        loading={doDelete.isPending}
       >
-        {doDelete.isPending ? "Excluindo…" : "Excluir canal permanentemente"}
+        Excluir canal permanentemente
       </Button>
     </div>
   );

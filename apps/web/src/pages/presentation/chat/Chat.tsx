@@ -278,7 +278,7 @@ export const Chat: React.FC = () => {
               members={detail?.members ?? []}
               loading={!detail}
               roles={detail?.roles ?? []}
-              ownerId={detail?.guild.ownerId}
+              ownerId={detail?.guild.hideOwnerCrown ? undefined : detail?.guild.ownerId}
               guildId={detail?.guild.id}
               canModerate={can("MODERATE_MEMBERS")}
             />
@@ -510,7 +510,7 @@ export const Chat: React.FC = () => {
               members={detail?.members ?? []}
               loading={!detail}
               roles={detail?.roles ?? []}
-              ownerId={detail?.guild.ownerId}
+              ownerId={detail?.guild.hideOwnerCrown ? undefined : detail?.guild.ownerId}
               guildId={detail?.guild.id}
               canModerate={can("MODERATE_MEMBERS")}
             />

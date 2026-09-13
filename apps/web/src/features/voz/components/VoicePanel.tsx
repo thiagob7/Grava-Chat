@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AudioLines, Monitor, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
+import { Button, IconButton } from "~/components/ui/button";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
@@ -119,26 +120,27 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
             onToggle={() => void toggleNoiseFilter()}
             onOpenSettings={() => openSettings("voice")}
           >
-            <button data-gc="voz.voice-panel.button--3"
-              aria-label={t("chamada.ruido.titulo")}
+            <IconButton data-gc="voz.voice-panel.icon-button"
+              label={t("chamada.ruido.titulo")}
               aria-pressed={noiseFilter && noiseFilterAvailable}
               className={cn(
-                "gc-icone rounded p-2 transition hover:bg-surface-3",
+                "gc-icone size-[34px] rounded hover:bg-surface-3 [&_svg]:size-[18px]",
                 noiseFilterBusy && "animate-pulse",
-                noiseFilter && noiseFilterAvailable ? "text-online" : "text-ink-muted hover:text-ink",
+                noiseFilter && noiseFilterAvailable && "text-online hover:text-online",
               )}
             >
-              <AudioLines data-gc="voz.voice-panel.audio-lines" size={18} />
-            </button>
+              <AudioLines data-gc="voz.voice-panel.audio-lines" />
+            </IconButton>
           </NoisePopoverSuppression>
 
           <Tooltip data-gc="voz.voice-panel.tooltip" label={t("chamada.desconectar")}>
-            <button data-gc="voz.voice-panel.button--4"
+            <IconButton data-gc="voz.voice-panel.icon-button--2"
+              label={t("chamada.desconectar")}
               onClick={() => void leave()}
-              className="gc-icone gc-icone--balanca rounded p-2 text-ink-muted transition hover:bg-surface-3 hover:text-danger"
+              className="gc-icone gc-icone--balanca size-[34px] rounded hover:bg-surface-3 hover:text-danger [&_svg]:size-[18px]"
             >
-              <PhoneOff data-gc="voz.voice-panel.phone-off" size={18} />
-            </button>
+              <PhoneOff data-gc="voz.voice-panel.phone-off" />
+            </IconButton>
           </Tooltip>
         </div>
       </div>
@@ -165,12 +167,12 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           <Tooltip data-gc="voz.voice-panel.tooltip--2" label={screenEnabled ? t("chamada.tela.pararDeCompartilhar") : t("chamada.tela.compartilhar")}>
             {screenEnabled ? (
               <DropdownMenuTrigger data-gc="voz.voice-panel.dropdown-menu-trigger" asChild>
-                <button data-gc="voz.voice-panel.button--5" aria-label={t("chamada.tela.pararDeCompartilhar")} className={VOICE_CONTROL}>
+                <button data-gc="voz.voice-panel.button--3" aria-label={t("chamada.tela.pararDeCompartilhar")} className={VOICE_CONTROL}>
                   <ScreenIcon data-gc="voz.voice-panel.screen-icon" on />
                 </button>
               </DropdownMenuTrigger>
             ) : (
-              <button data-gc="voz.voice-panel.button--6"
+              <button data-gc="voz.voice-panel.button--4"
                 onClick={() => void toggleScreen()}
                 aria-label={t("chamada.tela.compartilhar")}
                 className={VOICE_CONTROL}
@@ -249,12 +251,14 @@ const NoticeMicrophoneBlocked: React.FC = () => {
           {t("chamada.microfone.bloqueadoNoMac")} <b data-gc="voz.voice-panel.b">{bridge.nameSystem}</b> em{" "}
           <b data-gc="voz.voice-panel.b--2">{t("chamada.microfone.caminhoNoMac")}</b>.
         </p>
-        <button data-gc="voz.voice-panel.button--7"
+        <Button data-gc="voz.voice-panel.button--5"
+          variant="danger"
+          size="xs"
+          className="mt-1.5 bg-danger/25 text-ink hover:bg-danger/40 hover:brightness-100"
           onClick={() => bridge.media.openSettings("microphone")}
-          className="mt-1.5 rounded bg-danger/25 px-2 py-1 font-medium transition hover:bg-danger/40"
         >
           {t("chamada.microfone.abrirAjustes")}
-        </button>
+        </Button>
         <p data-gc="voz.voice-panel.p--4" className="mt-1.5 text-ink-faint">{t("chamada.microfone.vaiReabrir")}</p>
       </div>
     );

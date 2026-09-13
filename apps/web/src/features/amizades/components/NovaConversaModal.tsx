@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { Search } from "lucide-react";
 
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
@@ -12,8 +11,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { bareField, fieldGroup } from "~/components/ui/input";
-import { cn } from "~/lib/utils";
+import { SearchField } from "~/components/ui/input";
 import { useTranslation } from "~/traducao";
 
 interface NewChatModalProps {
@@ -67,19 +65,17 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
         </DialogHeader>
 
         <DialogBody data-gc="amizades.nova-conversa-modal.dialog-body">
-          <div data-gc="amizades.nova-conversa-modal.div" className={cn(fieldGroup, "h-9")}>
-            <Search data-gc="amizades.nova-conversa-modal.search" size={14} className="shrink-0 text-ink-faint" />
-            <input data-gc="amizades.nova-conversa-modal.input"
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("amizades.nova.procurar")}
-              aria-label={t("amizades.nova.procurar")}
-              className={bareField}
-            />
-          </div>
+          <SearchField data-gc="amizades.nova-conversa-modal.search-field"
+            className="h-9"
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            placeholder={t("amizades.nova.procurar")}
+            aria-label={t("amizades.nova.procurar")}
+          />
 
-          <div data-gc="amizades.nova-conversa-modal.div--2" className="mt-3 max-h-72 space-y-0.5 overflow-y-auto">
+          <div data-gc="amizades.nova-conversa-modal.div" className="mt-3 max-h-72 space-y-0.5 overflow-y-auto">
             {friends.length === 0 && (
               <p data-gc="amizades.nova-conversa-modal.p" className="px-2 py-6 text-center text-sm text-ink-faint">
                 {search ? t("amizades.nova.semResultado") : t("amizades.nova.semAmigos")}

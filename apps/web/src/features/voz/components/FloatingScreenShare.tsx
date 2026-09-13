@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Expand, Maximize2, MonitorUp, MonitorX, Shrink, X } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { VoiceVideo } from "~/features/voz/components/VoiceTrack";
 import { useScreenFull } from "~/features/voz/hooks/use-tela-cheia";
 import { fitCorner } from "~/features/voz/lib/cantos";
@@ -143,13 +144,14 @@ const MiniButton: React.FC<{
   label: string;
   onClick: () => void;
 }> = ({ children, label, onClick }) => (
-  <button data-gc="voz.floating-screen-share.button.on-click"
+  <IconButton data-gc="voz.floating-screen-share.icon-button.on-click"
+    size="xs"
+    label={label}
+    title={label}
     onPointerDown={(e) => e.stopPropagation()}
     onClick={onClick}
-    title={label}
-    aria-label={label}
-    className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-palco-ink/15 hover:text-ink"
+    className="size-auto p-1 hover:bg-palco-ink/15"
   >
     {children}
-  </button>
+  </IconButton>
 );

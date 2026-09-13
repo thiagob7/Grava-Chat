@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "사용법",
     comoUsarTexto: "JSON으로 POST를 보내세요:",
   },
+  geral: {
+    titulo: "개요",
+  },
   explorar: {
     titulo: "탐색",
   },

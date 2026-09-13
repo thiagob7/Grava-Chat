@@ -1,3 +1,5 @@
+import { EmptyState } from "~/components/ui/empty-state";
+import { AudioLines, Smile } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Play, Trash2, Upload, Volume2 } from "lucide-react";
@@ -173,9 +175,7 @@ export const EmojiSection: React.FC<SectionProps> = ({
       </table>
 
       {!data.emojis.length && (
-        <p data-gc="servidor.server-settings.expressions-sections.p--3" className="py-10 text-center text-sm text-ink-faint">
-          {t("servidor.expressoes.semEmoji")}
-        </p>
+        <EmptyState data-gc="servidor.server-settings.expressions-sections.empty-state" icon={<Smile data-gc="servidor.server-settings.expressions-sections.smile" />} title={t("servidor.expressoes.semEmoji")} />
       )}
     </div>
   );
@@ -221,7 +221,7 @@ export const StickersSection: React.FC<SectionProps> = ({
   return (
     <div data-gc="servidor.server-settings.expressions-sections.div--2" className="max-w-2xl pb-10">
       <h2 data-gc="servidor.server-settings.expressions-sections.h2--2" className="text-xl font-semibold">{t("servidor.expressoes.figurinhas")}</h2>
-      <p data-gc="servidor.server-settings.expressions-sections.p--4" className="mt-1 text-sm text-ink-muted">
+      <p data-gc="servidor.server-settings.expressions-sections.p--3" className="mt-1 text-sm text-ink-muted">
         Até {LIMITS.stickersByServer} figurinhas, de no máximo{" "}
         {formatBytes(LIMITS.stickerBytes)} cada (PNG, APNG, GIF ou WebP).
       </p>
@@ -242,7 +242,7 @@ export const StickersSection: React.FC<SectionProps> = ({
             onChange={(e) => void pick(e)}
             className="hidden"
           />
-          <p data-gc="servidor.server-settings.expressions-sections.p--5" className="mt-2 text-xs text-ink-faint">
+          <p data-gc="servidor.server-settings.expressions-sections.p--4" className="mt-2 text-xs text-ink-faint">
             {remaining} espaços disponíveis.
           </p>
         </>
@@ -312,7 +312,7 @@ export const StickersSection: React.FC<SectionProps> = ({
               alt={sticker.name}
               className="aspect-square w-full object-contain"
             />
-            <p data-gc="servidor.server-settings.expressions-sections.p--6" className="mt-2 truncate text-center text-xs text-ink-muted">
+            <p data-gc="servidor.server-settings.expressions-sections.p--5" className="mt-2 truncate text-center text-xs text-ink-muted">
               {sticker.name}
             </p>
 
@@ -391,7 +391,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
   return (
     <div data-gc="servidor.server-settings.expressions-sections.div--10" className="max-w-2xl pb-10">
       <h2 data-gc="servidor.server-settings.expressions-sections.h2--3" className="text-xl font-semibold">{t("servidor.expressoes.sons")}</h2>
-      <p data-gc="servidor.server-settings.expressions-sections.p--7" className="mt-1 text-sm text-ink-muted">
+      <p data-gc="servidor.server-settings.expressions-sections.p--6" className="mt-1 text-sm text-ink-muted">
         Sons que qualquer pessoa na chamada pode tocar. Até{" "}
         {LIMITS.soundsByServer}, de no máximo {formatBytes(LIMITS.soundBytes)}{" "}
         cada.
@@ -413,7 +413,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
             onChange={(e) => void pick(e)}
             className="hidden"
           />
-          <p data-gc="servidor.server-settings.expressions-sections.p--8" className="mt-2 text-xs text-ink-faint">
+          <p data-gc="servidor.server-settings.expressions-sections.p--7" className="mt-2 text-xs text-ink-faint">
             {remaining} de {LIMITS.soundsByServer} espaços disponíveis.
           </p>
         </>
@@ -530,9 +530,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
         ))}
 
         {!data.sounds.length && (
-          <p data-gc="servidor.server-settings.expressions-sections.p--9" className="py-10 text-center text-sm text-ink-faint">
-            {t("servidor.expressoes.semSom")}
-          </p>
+          <EmptyState data-gc="servidor.server-settings.expressions-sections.empty-state--2" icon={<AudioLines data-gc="servidor.server-settings.expressions-sections.audio-lines" />} title={t("servidor.expressoes.semSom")} />
         )}
       </div>
     </div>
@@ -618,7 +616,7 @@ const SoundVolume: React.FC<{ guildId: string; sound: GuildSound }> = ({
           <Play data-gc="servidor.server-settings.expressions-sections.play--2" size={13} /> {t("servidor.expressoes.ouvirAssim")}
         </button>
 
-        <p data-gc="servidor.server-settings.expressions-sections.p--10" className="mt-3 text-11 leading-snug text-ink-faint">
+        <p data-gc="servidor.server-settings.expressions-sections.p--8" className="mt-3 text-11 leading-snug text-ink-faint">
           {t("servidor.expressoes.volumeDica")}
         </p>
       </PopoverContent>

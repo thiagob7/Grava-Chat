@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
+import { Input, SearchField } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
@@ -152,18 +152,16 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
   return (
     <div data-gc="servidor.channel-permissions-modal.div" className="flex max-h-[60vh] gap-6">
             <aside data-gc="servidor.channel-permissions-modal.aside" className="flex w-52 shrink-0 flex-col">
-              <div data-gc="servidor.channel-permissions-modal.div--2" className="flex items-center gap-2 rounded bg-surface-0 px-2">
-                <Search data-gc="servidor.channel-permissions-modal.search" size={14} className="text-ink-faint" />
-                <Input data-gc="servidor.channel-permissions-modal.input"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Cargo ou pessoa"
-                  className="bg-transparent px-0 py-1.5 text-sm"
-                />
-              </div>
+              <SearchField data-gc="servidor.channel-permissions-modal.search-field"
+                className="h-9"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onClear={() => setSearch("")}
+                placeholder="Cargo ou pessoa"
+              />
 
               {suggestions.length > 0 && (
-                <div data-gc="servidor.channel-permissions-modal.div--3" className="mt-1 overflow-hidden rounded border border-line bg-surface-1">
+                <div data-gc="servidor.channel-permissions-modal.div--2" className="mt-1 overflow-hidden rounded border border-line bg-surface-1">
                   {suggestions.map((s) => (
                     <button data-gc="servidor.channel-permissions-modal.button"
                       key={`${s.type}-${s.id}`}
@@ -187,7 +185,7 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                 </div>
               )}
 
-              <div data-gc="servidor.channel-permissions-modal.div--4" className="mt-3 min-h-0 flex-1 overflow-y-auto">
+              <div data-gc="servidor.channel-permissions-modal.div--3" className="mt-3 min-h-0 flex-1 overflow-y-auto">
                 {list.map((item) => (
                   <button data-gc="servidor.channel-permissions-modal.button--2"
                     key={`${item.type}-${item.id}`}
@@ -211,9 +209,9 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
               </div>
             </aside>
 
-            <div data-gc="servidor.channel-permissions-modal.div--5" className="min-w-0 flex-1 overflow-y-auto pr-1">
+            <div data-gc="servidor.channel-permissions-modal.div--4" className="min-w-0 flex-1 overflow-y-auto pr-1">
               {target ? (
-                <div data-gc="servidor.channel-permissions-modal.div--6" className="space-y-4">
+                <div data-gc="servidor.channel-permissions-modal.div--5" className="space-y-4">
                   {groups.map((group) => (
                   <section data-gc="servidor.channel-permissions-modal.section" key={group.title} className="space-y-4 pt-2 first:pt-0">
                     <h4 data-gc="servidor.channel-permissions-modal.h4" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
@@ -226,13 +224,13 @@ export const ChannelPermissionsBoard: React.FC<ChannelPermissionsBoardProps> = (
                     const state = stateFor(permission);
 
                     return (
-                      <div data-gc="servidor.channel-permissions-modal.div--7" key={permission} className={cn("flex items-start gap-4", blocked && "opacity-60")}>
-                        <div data-gc="servidor.channel-permissions-modal.div--8" className="min-w-0 flex-1">
+                      <div data-gc="servidor.channel-permissions-modal.div--6" key={permission} className={cn("flex items-start gap-4", blocked && "opacity-60")}>
+                        <div data-gc="servidor.channel-permissions-modal.div--7" className="min-w-0 flex-1">
                           <p data-gc="servidor.channel-permissions-modal.p" className="text-sm font-medium">{label.name}</p>
                           <p data-gc="servidor.channel-permissions-modal.p--2" className="mt-0.5 text-xs text-ink-faint">{label.description}</p>
                         </div>
 
-                        <div data-gc="servidor.channel-permissions-modal.div--9" className="flex shrink-0 overflow-hidden rounded border border-line">
+                        <div data-gc="servidor.channel-permissions-modal.div--8" className="flex shrink-0 overflow-hidden rounded border border-line">
                           <ButtonState data-gc="servidor.channel-permissions-modal.button-state"
                             active={state === "negar"}
                             disabled={blocked}

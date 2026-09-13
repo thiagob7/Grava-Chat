@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Search, X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
@@ -78,16 +78,28 @@ export const fieldGroup =
 export const bareField =
   "h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-ink shadow-none outline-none placeholder:text-ink-faint focus-visible:border-0";
 
+export const FieldGroup = ({ className, ...props }: React.ComponentProps<"div">) => (
+  <div data-gc="ui.input.div--3" className={cn(fieldGroup, className)} {...props} />
+);
+
+export const BareInput = ({ className, ...props }: React.ComponentProps<"input">) => (
+  <input data-gc="ui.input.input--2" className={cn(bareField, className)} {...props} />
+);
+
+export const BareTextarea = ({ className, ...props }: React.ComponentProps<"textarea">) => (
+  <textarea data-gc="ui.input.textarea--2" className={cn(bareField, "resize-none", className)} {...props} />
+);
+
 export const FieldWithAction: React.FC<
   React.ComponentProps<"input"> & { action: React.ReactNode }
 > = ({ action, className, ...props }) => (
-  <div data-gc="ui.input.div--3"
+  <div data-gc="ui.input.div--4"
     className={cn(
       "flex items-center gap-2 rounded-lg border border-line bg-campo p-1.5 pl-3 transition",
       "focus-within:border-ink-faint/40",
     )}
   >
-    <input data-gc="ui.input.input--2" className={cn(bareField, "h-8", className)} {...props} />
+    <input data-gc="ui.input.input--3" className={cn(bareField, "h-8", className)} {...props} />
     {action}
   </div>
 );
@@ -150,7 +162,7 @@ export function SegmentedGroup<T extends string>({
   options,
 }: SegmentedGroupProps<T>) {
   return (
-    <div data-gc="ui.input.div--4" className="flex gap-2">
+    <div data-gc="ui.input.div--5" className="flex gap-2">
       {options.map((o) => (
         <button data-gc="ui.input.button--2"
           key={o.value}
@@ -169,3 +181,32 @@ export function SegmentedGroup<T extends string>({
     </div>
   );
 }
+
+/*
+  Campo de busca de uma caixa só.
+
+  O jeito antigo punha um Input (que tem borda e sombra) dentro de uma caixa com
+  fundo, e o resultado eram duas caixas, uma dentro da outra. Aqui a caixa é a
+  do grupo, e o campo por dentro não desenha nada.
+*/
+export const SearchField = ({
+  className,
+  iconClassName,
+  onClear,
+  ...props
+}: React.ComponentProps<"input"> & { onClear?: () => void; iconClassName?: string }) => (
+  <div data-gc="ui.input.div--6" className={cn(fieldGroup, className)}>
+    <Search data-gc="ui.input.search" size={14} className={cn("shrink-0 text-ink-faint", iconClassName)} aria-hidden />
+    <input data-gc="ui.input.input--4" type="text" className={bareField} {...props} />
+    {onClear && props.value ? (
+      <button data-gc="ui.input.button.on-clear"
+        type="button"
+        onClick={onClear}
+        aria-label="Limpar a busca"
+        className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
+      >
+        <X data-gc="ui.input.x" size={14} />
+      </button>
+    ) : null}
+  </div>
+);

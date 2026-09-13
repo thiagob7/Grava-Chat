@@ -108,14 +108,18 @@ const Card: React.FC<{
 }> = ({ name, preview, icon, seal, onClick }) => (
   <button data-gc="expressao.seletor.aba-gifs.button.on-click"
     onClick={onClick}
-    className="group relative h-[86px] overflow-hidden rounded-lg ring-line-sutil transition hover:ring-2"
+    className={cn(
+      "group relative h-[86px] overflow-hidden rounded-lg outline-none",
+      "after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:border-2 after:border-transparent after:transition",
+      "hover:after:border-brand focus-visible:after:border-brand",
+    )}
   >
     {preview ? (
       <img data-gc="expressao.seletor.aba-gifs.img"
         src={preview}
         alt=""
         loading="lazy"
-        className="size-full object-cover transition duration-200 group-hover:scale-105"
+        className="size-full object-cover"
       />
     ) : (
       <span data-gc="expressao.seletor.aba-gifs.span--2" className="block size-full bg-gradient-to-br from-brand/70 to-brand-hover" />
@@ -191,14 +195,18 @@ const Grid: React.FC<{
           <div data-gc="expressao.seletor.aba-gifs.div--6" key={gif.id} className="group relative mb-2 break-inside-avoid">
             <button data-gc="expressao.seletor.aba-gifs.button"
               onClick={() => onGif(gif)}
-              title={gif.description}
-              className="block w-full overflow-hidden rounded-lg ring-brand/70 transition hover:ring-2 focus-visible:ring-2"
+              aria-label={gif.description}
+              className={cn(
+                "relative block w-full overflow-hidden rounded-lg outline-none",
+                "after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:border-2 after:border-transparent after:transition",
+                "hover:after:border-brand focus-visible:after:border-brand",
+              )}
             >
               <img data-gc="expressao.seletor.aba-gifs.img--2"
                 src={gif.preview}
                 alt={gif.description}
                 loading="lazy"
-                className="w-full transition duration-200 group-hover:scale-[1.03]"
+                className="block w-full"
               />
             </button>
 

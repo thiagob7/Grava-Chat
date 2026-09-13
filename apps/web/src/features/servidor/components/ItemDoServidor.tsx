@@ -12,6 +12,7 @@ import { initials } from "~/lib/format";
 import { serverMuted, useNotices } from "~/stores/notificacoes";
 import { cn } from "~/lib/utils";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { HoverGif } from "~/components/GifNoHover";
 
 export const DRAG_KIND = "text/gravae-servidor";
 
@@ -61,6 +62,7 @@ export const ServerItem: React.FC<ServerPropsItem> = ({
 }) => {
   const { t } = useTranslation();
   const [zone, setZone] = useState<DropZone>(null);
+  const [hovering, setHovering] = useState(false);
 
   const broadcasting = voices.some((channel) => channel.broadcasting);
   const inCall = voices.reduce((total, channel) => total + channel.people.length, 0);
@@ -118,6 +120,10 @@ export const ServerItem: React.FC<ServerPropsItem> = ({
           <Link data-gc="servidor.item-do-servidor.link"
             to={`/channels/${guild.id}`}
             onClick={() => onSelect(guild.id)}
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+            onFocus={() => setHovering(true)}
+            onBlur={() => setHovering(false)}
             draggable
             onDragStart={(e) => {
               e.dataTransfer.setData(DRAG_KIND, guild.id);
@@ -135,7 +141,7 @@ export const ServerItem: React.FC<ServerPropsItem> = ({
             )}
           >
             {guild.iconUrl ? (
-              <img data-gc="servidor.item-do-servidor.img" src={guild.iconUrl} alt={guild.name} draggable={false} className="size-full object-cover" />
+              <HoverGif data-gc="servidor.item-do-servidor.hover-gif" src={guild.iconUrl} alt={guild.name} playing={hovering} className="size-full object-cover" />
             ) : (
               initials(guild.name)
             )}

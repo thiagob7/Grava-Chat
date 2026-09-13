@@ -1,3 +1,5 @@
+import { EmptyState } from "~/components/ui/empty-state";
+import { UserSearch } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
@@ -27,7 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
+import { Input, SearchField } from "~/components/ui/input";
 import { useConfirm } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
@@ -145,15 +147,13 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       </h2>
 
       <div data-gc="servidor.server-settings.members-section.div--2" className="mt-4 flex items-center gap-3">
-        <div data-gc="servidor.server-settings.members-section.div--3" className="flex flex-1 items-center gap-2 rounded bg-surface-0 px-3">
-          <Search data-gc="servidor.server-settings.members-section.search" size={16} className="text-ink-faint" />
-          <Input data-gc="servidor.server-settings.members-section.input"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("servidor.membros.procurar")}
-            className="bg-transparent px-0"
-          />
-        </div>
+        <SearchField data-gc="servidor.server-settings.members-section.search-field"
+          className="flex-1"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          placeholder={t("servidor.membros.procurar")}
+        />
 
         <Button data-gc="servidor.server-settings.members-section.button"
           variant="surface"
@@ -205,7 +205,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                 className="group border-b border-line align-middle"
               >
                 <td data-gc="servidor.server-settings.members-section.td" className="py-3">
-                  <div data-gc="servidor.server-settings.members-section.div--4" className="flex items-center gap-3">
+                  <div data-gc="servidor.server-settings.members-section.div--3" className="flex items-center gap-3">
                     <Avatar data-gc="servidor.server-settings.members-section.avatar"
                       id={member.user.id}
                       name={member.user.displayName}
@@ -213,7 +213,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                       size={36}
                       status={member.user.status}
                     />
-                    <div data-gc="servidor.server-settings.members-section.div--5" className="min-w-0">
+                    <div data-gc="servidor.server-settings.members-section.div--4" className="min-w-0">
                       <p data-gc="servidor.server-settings.members-section.p" className="flex items-center gap-1.5 truncate text-sm font-medium">
                         {member.nickname ?? member.user.displayName}
                         {isOwner && <OwnerSeal data-gc="servidor.server-settings.members-section.owner-seal" size={13} />}
@@ -237,7 +237,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                 </td>
 
                 <td data-gc="servidor.server-settings.members-section.td--3" className="py-3">
-                  <div data-gc="servidor.server-settings.members-section.div--6" className="flex flex-wrap gap-1">
+                  <div data-gc="servidor.server-settings.members-section.div--5" className="flex flex-wrap gap-1">
                     {roleList.map((role) => (
                       <span data-gc="servidor.server-settings.members-section.span--2"
                         key={role.id}
@@ -370,9 +370,7 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
       </table>
 
       {!list.length && (
-        <p data-gc="servidor.server-settings.members-section.p--3" className={cn("py-10 text-center text-sm text-ink-faint")}>
-          {t("servidor.membros.vazio")}
-        </p>
+        <EmptyState data-gc="servidor.server-settings.members-section.empty-state" icon={<UserSearch data-gc="servidor.server-settings.members-section.user-search" />} title={t("servidor.membros.vazio")} description="Tente outro nome ou limpe a busca." />
       )}
     </div>
   );

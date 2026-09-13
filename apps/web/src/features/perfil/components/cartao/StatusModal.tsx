@@ -3,11 +3,10 @@ import { Smile, X } from "lucide-react";
 import { LIMITS, type CustomStatus } from "@gravae/shared";
 
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { SelectField } from "~/components/ui/select";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { Label, bareField, fieldGroup } from "~/components/ui/input";
-import { cn } from "~/lib/utils";
+import { BareInput, FieldGroup, Label } from "~/components/ui/input";
 import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import type { ProfileStyle } from "@gravae/shared";
@@ -102,41 +101,39 @@ export const StatusModal: React.FC<StatusModalProps> = ({
         <div data-gc="perfil.cartao.status-modal.div--2" className="mt-5">
           <Label data-gc="perfil.cartao.status-modal.label" htmlFor="status-texto">{t("perfil.status.titulo")}</Label>
 
-          <div data-gc="perfil.cartao.status-modal.div--3" className={cn(fieldGroup, "gap-1 px-1.5")}>
+          <FieldGroup data-gc="perfil.cartao.status-modal.field-group" className="gap-1 px-1.5">
             <EmojiPicker data-gc="perfil.cartao.status-modal.emoji-picker.set-emoji" onPick={setEmoji}>
-              <button data-gc="perfil.cartao.status-modal.button"
-                type="button"
-                aria-label={t("perfil.status.escolherEmoji")}
-                className="flex size-8 shrink-0 items-center justify-center rounded text-lg text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+              <IconButton data-gc="perfil.cartao.status-modal.icon-button"
+                label={t("perfil.status.escolherEmoji")}
+                className="text-lg text-ink-faint"
               >
-                {emoji || <Smile data-gc="perfil.cartao.status-modal.smile" size={16} />}
-              </button>
+                {emoji || <Smile data-gc="perfil.cartao.status-modal.smile" />}
+              </IconButton>
             </EmojiPicker>
 
-            <input data-gc="perfil.cartao.status-modal.input"
+            <BareInput data-gc="perfil.cartao.status-modal.bare-input"
               id="status-texto"
               autoFocus
               value={text}
               onChange={(e) => setText(e.target.value)}
               maxLength={LIMITS.customStatus}
               placeholder={t("perfil.status.oQuePensa")}
-              className={bareField}
             />
 
             {emoji && (
-              <button data-gc="perfil.cartao.status-modal.button--2"
-                type="button"
+              <IconButton data-gc="perfil.cartao.status-modal.icon-button--2"
+                size="xs"
+                label={t("perfil.status.tirarEmoji")}
                 onClick={() => setEmoji("")}
-                aria-label={t("perfil.status.tirarEmoji")}
-                className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink"
+                className="text-ink-faint"
               >
-                <X data-gc="perfil.cartao.status-modal.x" size={14} />
-              </button>
+                <X data-gc="perfil.cartao.status-modal.x" />
+              </IconButton>
             )}
-          </div>
+          </FieldGroup>
         </div>
 
-        <div data-gc="perfil.cartao.status-modal.div--4" className="mt-4 flex items-center gap-3">
+        <div data-gc="perfil.cartao.status-modal.div--3" className="mt-4 flex items-center gap-3">
           <SelectField data-gc="perfil.cartao.status-modal.select-field.set-deadline"
             value={deadline}
             onSelect={setDeadline}
@@ -144,18 +141,20 @@ export const StatusModal: React.FC<StatusModalProps> = ({
             options={DEADLINES.map((p) => ({ value: p.id, label: labelWithHour(p) }))}
           />
 
-          <Button data-gc="perfil.cartao.status-modal.button.save" onClick={save} disabled={saving}>
-            {t(saving ? "comum.salvando" : "comum.salvar")}
+          <Button data-gc="perfil.cartao.status-modal.button.save" onClick={save} loading={saving}>
+            {t("comum.salvar")}
           </Button>
         </div>
 
         {current && (
-          <button data-gc="perfil.cartao.status-modal.button--3"
+          <Button data-gc="perfil.cartao.status-modal.button"
+            variant="link"
+            size="xs"
             onClick={() => onSave(null)}
-            className="mt-3 text-xs text-ink-faint transition hover:text-danger"
+            className="mt-3 px-0 font-normal text-ink-faint hover:text-danger hover:no-underline"
           >
             {t("perfil.status.limparAgora")}
-          </button>
+          </Button>
         )}
       </DialogContent>
     </Dialog>
