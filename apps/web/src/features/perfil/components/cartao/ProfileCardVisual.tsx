@@ -208,7 +208,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             onClick={onOpenProfile}
             disabled={!onOpenProfile}
             aria-label={onOpenProfile ? t("perfil.verCompleto") : undefined}
-            className="block rounded-full disabled:cursor-default"
+            className="block cursor-pointer rounded-full disabled:cursor-default [&_.avatar>*:not(span)]:transition-[filter] [&_.avatar>*:not(span)]:duration-150 enabled:hover:[&_.avatar>*:not(span)]:brightness-[0.6] enabled:focus-visible:[&_.avatar>*:not(span)]:brightness-[0.6]"
           >
           <Avatar data-gc="perfil.cartao.profile-card-visual.avatar"
             id={id}
