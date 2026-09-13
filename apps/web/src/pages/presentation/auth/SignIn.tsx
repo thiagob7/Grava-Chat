@@ -118,7 +118,7 @@ export const SignIn: React.FC = () => {
             disabled={!googleEnabled}
             variant="surface"
             title={googleEnabled ? undefined : "Configure GOOGLE_CLIENT_ID no .env"}
-            className="mb-2 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
+            className="mb-2 w-full bg-white text-[#1f1f1f] hover:bg-white/90"
             onClick={() => bridge.login.start()}
           >
             <GoogleMark data-gc="auth.sign-in.google-mark" /> Entrar com Google
@@ -129,7 +129,7 @@ export const SignIn: React.FC = () => {
             disabled={!googleEnabled}
             variant="surface"
             title={googleEnabled ? undefined : "Configure GOOGLE_CLIENT_ID no .env"}
-            className="mb-4 w-full bg-sobre-marca/90 text-ink/80 hover:bg-sobre-marca"
+            className="mb-4 w-full bg-white text-[#1f1f1f] hover:bg-white/90"
           >
             {googleEnabled ? (
               <a data-gc="auth.sign-in.a" href={`${BASE_DA_API}/auth/google`}>
